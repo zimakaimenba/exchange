@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="GB2312"?>
+<Checklists>
+
+
+<gudong value="股东研究">
+	<item id="gd01">  股东人数减少,人均持股数增加。 </item>
+	<item id="gd07" selectedcolor="GREEN">  股东人数大幅增加,人均持股数减少明显。 </item>
+	<item id="gd09">  央企 </item>
+	<item id="gd10">  地方控制的国企 </item>
+	<item id="gd11">  民营 </item>
+	<item id="gd02">  定增及价格？和当前价格比高还是低？定增占总股本百分比</item>
+	<item id="gd03">  定增最好有有高管/控股股东参与。定增锁定时间是否临近？</item>
+	<item id="gd04">  大股东/员工持股是否有股权质押。股价是否危及股权质押，是否需要抛售股票追加保证金。</item>
+	<item id="gd05" selectedcolor="GREEN">  有主要股东在大涨后减持？</item>
+	<item id="gd06"> 近期有无限售股解禁？限售股成本多少？</item>
+	<item id="gd08"> 社保汇金进入或者增持。</item>
+	<item id="gd12"> 流通市值与总市值之比。</item>
+</gudong>
+
+
+</Checklists>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<TwelveZhongDianGuanZhuanBanKuaiDetail>
+  <DaLeiBanKuai daleiname="国新政策">
+    <Item addedTime="17-05-17" tdxbk="4G概念">4G概念-&gt;测试概念-&gt;</Item>
+    <Item addedTime="17-05-18" tdxbk="区块链">区块链-&gt;测试去快链-&gt;</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="成长股">
+    <Item addedTime="17-05-15" tdxbk="安防服务">安防服务-&gt;</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="涨价概念"/>
+  <DaLeiBanKuai daleiname="次新股"/>
+  <DaLeiBanKuai daleiname="重大事件">
+    <Item addedTime="17-05-18" tdxbk="高速公路">高速公路-&gt;</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="特定时间"/>
+  <DaLeiBanKuai daleiname="超跌周期"/>
+  <DaLeiBanKuai daleiname="券商参券"/>
+  <DaLeiBanKuai daleiname="重组收购"/>
+  <DaLeiBanKuai daleiname="稳定增长"/>
+  <DaLeiBanKuai daleiname="业绩反转"/>
+  <DaLeiBanKuai daleiname="黑天鹅受益"/>
+</TwelveZhongDianGuanZhuanBanKuaiDetail>

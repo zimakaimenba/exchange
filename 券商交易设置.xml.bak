@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<SystemSettings>
+  <JiaoYiGuanJianCiZhaoShang>
+  	<item isbuy="true">买入</item>
+  	<item isbuy="true">红股入帐</item>
+  	<item isbuy="true">配股入帐</item>
+  	<item isbuy="true">申购中签</item>
+  	<item isbuy="true">配售中签</item>
+  	<item isbuy="false">卖出</item>
+  </JiaoYiGuanJianCiZhaoShang>
+  <ZiJingGuanJianCiZhaoShang>
+		<item iszhuanru="true" shuxing="true" shuoming="银行到券商">银行转存</item>
+  	<item iszhuanru="true" shuxing="true">批量利息归本</item>
+  	<item iszhuanru="true" shuxing="true">批量利税代扣</item>
+  	<item iszhuanru="true" shuxing="true">股息入帐</item>
+  	<item iszhuanru="true" shuxing="true">资金调拨调入</item>
+  	<item iszhuanru="false" shuxing="false">批量利税代扣</item>
+  	<item iszhuanru="false" shuxing="false" shuoming="券商到银行">银行转取</item>
+  	<item iszhuanru="false" shuxing="false">资金调拨调出</item>
+   </ZiJingGuanJianCiZhaoShang>
+</SystemSettings>

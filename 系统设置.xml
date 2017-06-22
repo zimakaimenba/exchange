@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<SystemSettings>
+  <tdxpah>D:/stock/zd_zszq_for板块/</tdxpah>
+  <databasesources>
+    <singledbs dbsname="access" user="sa" password="987" databasetype="Access" curselecteddbs="no">C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/stockmanager/exchange info manager.accdb</singledbs>
+    <singledbs dbsname="accesstest" user="sa" password="987" databasetype="Access" curselecteddbs="no">C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/exchange info manager test.accdb</singledbs>
+    <singledbs dbsname="mysql" user="root" password="123456789" databasetype="MySql" curselecteddbs="no">localhost:3306/stockinfomanagement</singledbs>
+    <singledbs dbsname="mysqltest" user="root" password="123456789" databasetype="MySql" curselecteddbs="yes">localhost:3306/stockinfomanagementtest</singledbs>
+  </databasesources>
+</SystemSettings>

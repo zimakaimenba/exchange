@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<SystemSettings>
+  <tdxpah>D:/stock/zd_zszq/</tdxpah>
+  <databasesources>
+    <singledbs dbsname="access" user="sa" password="987" databasetype="Access" curselecteddbs="no">C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/stockmanager/exchange info manager.accdb</singledbs>
+    <singledbs dbsname="accesstest" user="sa" password="987" databasetype="Access" curselecteddbs="no">C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/exchange info manager test.accdb</singledbs>
+    <singledbs dbsname="mysqltest" user="root" password="123456789" databasetype="MySql" curselecteddbs="yes">localhost:3306/stockinfomanagementtest</singledbs>
+ 		<singledbs dbsname="mysql" user="root" password="123456789" databasetype="MySql" curselecteddbs="no">localhost:3306/stockinfomanagement</singledbs>
+  </databasesources>
+  <JiaoYiGuanJianCiZhaoShang>
+  	<item isbuy="true">买入</item>
+  	<item isbuy="true">红股入帐</item>
+  	<item isbuy="true">配股入帐</item>
+  	<item isbuy="true">申购中签</item>
+  	<item isbuy="true">配售中签</item>
+  	<item isbuy="false">卖出</item>
+  </JiaoYiGuanJianCiZhaoShang>
+  <ZiJingGuanJianCiZhaoShang>
+  	<item iszhuanru="true">银行转存</item>
+  	<item iszhuanru="true">批量利息归本</item>
+  	<item iszhuanru="true">批量利税代扣</item>
+  	<item iszhuanru="true">股息入帐</item>
+  	<item iszhuanru="true">资金调拨调入</item>
+  	<item iszhuanru="false">批量利税代扣</item>
+  	<item iszhuanru="false">银行转取</item>
+  	<item iszhuanru="false">资金调拨调出</item>
+   </ZiJingGuanJianCiZhaoShang>
+</SystemSettings>
