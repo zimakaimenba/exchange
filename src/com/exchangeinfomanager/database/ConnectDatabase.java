@@ -20,7 +20,8 @@ public class ConnectDatabase
 		
 		
 		Connection con;
-
+		Connection rmtcon;
+		boolean rmtdatabaseconnected = false;
 		boolean databaseconnected = false;
 		boolean anewstockcode = false;
 		private String databasetype;
@@ -41,6 +42,60 @@ public class ConnectDatabase
 		        private static ConnectDatabase instance =  new ConnectDatabase ();  
 		 }
 		   
+		 private Connection setupDataBaseConnection (CurDataBase curdb)
+		 {
+			 	Connection tmpcon = null;
+			 	String dbconnectstr = curdb.getDataBaseConStr();
+				String user = curdb.getUser();
+				String password =  curdb.getPassWord();
+
+				String tmpdatabasetype = curdb.getCurDatabaseType().toLowerCase();
+				String urlToDababasecrypt = null;
+				switch(tmpdatabasetype) {
+				case "access": 
+							try	{
+									Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
+							} catch(ClassNotFoundException e)	{
+								System.out.println("找不到驱动程序类 ，加载驱动失败！");
+								e.printStackTrace();
+							}
+
+	//jdbc:ucanaccess://C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/exchange info manager test.accdb;jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener
+							urlToDababasecrypt = "jdbc:ucanaccess://" + dbconnectstr + ";jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener";
+							System.out.println(urlToDababasecrypt);
+							break;
+				case "mysql":
+							try	{
+									Class.forName("com.mysql.jdbc.Driver");
+									 System.out.println("成功加载MySQL驱动！");
+								} catch(ClassNotFoundException e)	{
+									System.out.println("找不到驱动程序类 ，加载驱动失败！");
+									e.printStackTrace();
+								}
+							urlToDababasecrypt = "jdbc:mysql://" +  dbconnectstr;  						// "jdbc:mysql://localhost:3306/stockinfomanagementtest" ;
+							break;
+				case "sqlserver": //Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+									break;
+									
+				}
+				
+				try	{	// 方式二 通过数据源与数据库建立连接
+					System.out.println("begin to connect database");
+					tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,password);
+//					con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+					if(tmpcon != null)	{
+						System.out.println("Sucessed database");
+						setDatabaseconnected(true);
+					}
+				} catch(SQLException se) {   
+				    se.printStackTrace();
+				    JOptionPane.showMessageDialog(null,"数据库连接失败，数据库可能未启动！，再见！", "警告",JOptionPane.INFORMATION_MESSAGE);  
+					System.exit(0);
+				}
+							
+				return tmpcon;
+			 
+		 }
 		public void refreshDatabaseConnection ()
 		{
 			
@@ -53,59 +108,12 @@ public class ConnectDatabase
 			
 			sysconfig = SystemConfigration.getInstance();
 			CurDataBase curdb = sysconfig.getCurrentDataBase ();
-			String dbconnectstr = curdb.getDataBaseConStr();
-			String user = curdb.getUser();
-			String password =  curdb.getPassWord();
-
-			databasename = setDatabaseName (curdb);
-			System.out.println(databasename);
 			
 			databasetype = curdb.getCurDatabaseType().toLowerCase();
-			String urlToDababasecrypt = null;
-			switch(databasetype) {
-			case "access": 
-						try	{
-								Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
-						} catch(ClassNotFoundException e)	{
-							System.out.println("找不到驱动程序类 ，加载驱动失败！");
-							e.printStackTrace();
-						}
-
-//jdbc:ucanaccess://C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/exchange info manager test.accdb;jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener
-						urlToDababasecrypt = "jdbc:ucanaccess://" + dbconnectstr + ";jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener";
-						System.out.println(urlToDababasecrypt);
-						break;
-			case "mysql":
-						try	{
-								Class.forName("com.mysql.jdbc.Driver");
-								 System.out.println("成功加载MySQL驱动！");
-							} catch(ClassNotFoundException e)	{
-								System.out.println("找不到驱动程序类 ，加载驱动失败！");
-								e.printStackTrace();
-							}
-						urlToDababasecrypt = "jdbc:mysql://" +  dbconnectstr;  						// "jdbc:mysql://localhost:3306/stockinfomanagementtest" ;
-						break;
-			case "sqlserver": //Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-								break;
-								
-			}
+			con = setupDataBaseConnection(curdb);
 			
-			try	{	// 方式二 通过数据源与数据库建立连接
-				System.out.println("begin to connect database");
-				con = DriverManager.getConnection(urlToDababasecrypt,user,password);
-//				con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-				if(con != null)	{
-					System.out.println("Sucessed database");
-					setDatabaseconnected(true);
-				}
-			} catch(SQLException se) {   
-			    System.out.println("数据库连接失败，数据库可能未启动！");
-			    
-			    se.printStackTrace();
-			    JOptionPane.showMessageDialog(null,"数据库连接失败，数据库可能未启动！，再见！", "警告",JOptionPane.INFORMATION_MESSAGE);  
-				System.exit(0);
-			}
-						
+			databasename = setDatabaseName (curdb);
+									
 		}
 		
 		/*
@@ -147,6 +155,9 @@ public class ConnectDatabase
 					if(con != null)
 						con.close();
 					databaseconnected = false;
+					
+					if(rmtcon != null)
+						rmtcon.close ();
 				}catch(Exception ex) {
 					System.out.println(ex);
 				}

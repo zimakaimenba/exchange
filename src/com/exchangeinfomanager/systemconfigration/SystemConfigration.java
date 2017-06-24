@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
@@ -36,7 +37,8 @@ public class SystemConfigration
 	String systeminstalledpath;
 	String tdxinstalledpath;
 	private String curdatabasetype;
-	private CurDataBase curdbs;
+	private CurDataBase curdbs; //本地数据库连接信息
+	private CurDataBase rmtcurdb; //远程数据库连接信息
 	private int tryingcount = 0; //系统如果出错，会重试3次，3次不成直接退出
 	private String tdxvolpath;
 	
@@ -58,14 +60,14 @@ public class SystemConfigration
 	{
 		File directory = new File("");//设定为当前文件夹
 		try{
-		    System.out.println(directory.getCanonicalPath());//获取标准的路径
-		    System.out.println(directory.getAbsolutePath());//获取绝对路径
-
-		    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
+//		    System.out.println(directory.getCanonicalPath());//获取标准的路径
+//		    System.out.println(directory.getAbsolutePath());//获取绝对路径
+//		    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
+		    Properties properties = System.getProperties();
+		    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
 		    System.out.println(this.systeminstalledpath );
 		}catch(Exception e)
 		{
-			//e.printStackTrace();
 			System.exit(0);
 		}
 		
@@ -127,6 +129,7 @@ public class SystemConfigration
 //			Element eletdxvol = xmlroot.element("tdxvolpah");
 //			this.tdxvolpath = eletdxvol.getText(); 
 			
+			//本地数据库信息
 			Element elesorce = xmlroot.element("databasesources");
 			Iterator it = elesorce.elementIterator();
 			while (it.hasNext()) 
@@ -135,15 +138,40 @@ public class SystemConfigration
 				String cursel = tmpelement.attributeValue("curselecteddbs");
 				if(tmpelement.attributeValue("curselecteddbs").equals("yes")) {
 					curdbs = new CurDataBase (tmpelement.attributeValue("dbsname") );
-					System.out.println( tmpelement.getText() );
-					System.out.println(tmpelement.attributeValue("user") );
-					System.out.println( tmpelement.attributeValue("password") );
-					System.out.println( tmpelement.attributeValue("databasetype").trim()  ) ;
+//					System.out.println( tmpelement.getText() );
+//					System.out.println(tmpelement.attributeValue("user") );
+//					System.out.println( tmpelement.attributeValue("password") );
+//					System.out.println( tmpelement.attributeValue("databasetype").trim()  ) ;
 					
 					curdbs.setDataBaseConStr (tmpelement.getText() );
 					curdbs.setUser (tmpelement.attributeValue("user").trim() );
 					curdbs.setPassWord (tmpelement.attributeValue("password").trim() );
 					curdbs.setCurDatabaseType(tmpelement.attributeValue("databasetype").trim());
+				}
+			}
+			//远程数据库信息
+			Element elermtsorce = xmlroot.element("serverdatabasesources");
+			Iterator itrmt = elermtsorce.elementIterator();
+			while (itrmt.hasNext()) 
+			{
+				Element tmpelement = (Element) itrmt.next();
+				String cursel = tmpelement.attributeValue("curselecteddbs");
+				if(tmpelement.attributeValue("curselecteddbs").equals("yes")) {
+					rmtcurdb = new CurDataBase (tmpelement.attributeValue("dbsname") );
+					System.out.println( tmpelement.getText() );
+					System.out.println(tmpelement.attributeValue("user") );
+					System.out.println( tmpelement.attributeValue("password") );
+					System.out.println( tmpelement.attributeValue("databasetype").trim()  ) ;
+					
+					if(tmpelement.getText().trim().equals(curdbs.getCurDatabaseType() ) )
+						rmtcurdb = curdbs;
+					else {
+						rmtcurdb.setDataBaseConStr (tmpelement.getText() );
+						rmtcurdb.setUser (tmpelement.attributeValue("user").trim() );
+						rmtcurdb.setPassWord (tmpelement.attributeValue("password").trim() );
+						rmtcurdb.setCurDatabaseType(tmpelement.attributeValue("databasetype").trim());
+					}
+					
 				}
 			}
 			
@@ -195,6 +223,10 @@ public class SystemConfigration
 	 {
 		 return curdbs;
 	 }
+	 public  CurDataBase getRemoteCurrentDatabaseSource ()
+	 {
+		 return rmtcurdb;
+	 } 
 	 /*
 	  * 
 	  */
