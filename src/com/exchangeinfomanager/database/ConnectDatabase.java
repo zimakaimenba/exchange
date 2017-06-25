@@ -16,17 +16,6 @@ import org.bouncycastle.util.Strings;
 
 public class ConnectDatabase 
 {		
-		SystemConfigration sysconfig = null;
-		
-		
-		Connection con;
-		Connection rmtcon;
-		boolean rmtdatabaseconnected = false;
-		boolean databaseconnected = false;
-		boolean anewstockcode = false;
-		private String databasetype;
-		private String databasename;
-		
 		 private ConnectDatabase ()
 		 {  
 			 refreshDatabaseConnection();  
@@ -42,6 +31,18 @@ public class ConnectDatabase
 		        private static ConnectDatabase instance =  new ConnectDatabase ();  
 		 }
 		   
+			SystemConfigration sysconfig = null;
+			
+			
+			Connection con;
+			Connection rmtcon;
+			boolean rmtdatabaseconnected = false;
+			boolean databaseconnected = false;
+			//boolean anewstockcode = false;
+			private String databasetype;
+			private String databasename;
+			
+
 		 private Connection setupDataBaseConnection (CurDataBase curdb)
 		 {
 			 	Connection tmpcon = null;
@@ -107,7 +108,7 @@ public class ConnectDatabase
 				}
 			
 			sysconfig = SystemConfigration.getInstance();
-			CurDataBase curdb = sysconfig.getCurrentDataBase ();
+			CurDataBase curdb = sysconfig.getCurrentDatabaseSource ();
 			
 			databasetype = curdb.getCurDatabaseType().toLowerCase();
 			con = setupDataBaseConnection(curdb);
@@ -127,15 +128,15 @@ public class ConnectDatabase
 			
 			return dbtype + " " + curconstr; 
 		}
-		public boolean isAnewstockcode() 
-		{
-			return anewstockcode;
-		}
-
-		public void setAnewstockcoder(boolean anewstockcodeindicator) 
-		{
-			this.anewstockcode = anewstockcodeindicator;
-		}
+//		public boolean isAnewstockcode() 
+//		{
+//			return anewstockcode;
+//		}
+//
+//		public void setAnewstockcoder(boolean anewstockcodeindicator) 
+//		{
+//			this.anewstockcode = anewstockcodeindicator;
+//		}
 		
 		
 		private void setDatabaseconnected(boolean databaseconnected) 
@@ -281,7 +282,7 @@ public class ConnectDatabase
 			return null;
 		}
 		
-		
 
 //END				
 }
+

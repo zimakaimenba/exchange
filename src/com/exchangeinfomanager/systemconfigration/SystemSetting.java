@@ -57,11 +57,13 @@ public class SystemSetting extends JDialog
 		createEvents ();
 		this.systemxmlfile = systemxmlfile;
 		curdbmap = new HashMap<String,CurDataBase> ();
+		rmtcurdbmap = new HashMap<String,CurDataBase> ();
 		parseSystemSettingXML ();
 	}
 
 	private String systemxmlfile;
 	private HashMap<String, CurDataBase> curdbmap;
+	private HashMap<String, CurDataBase> rmtcurdbmap;
 	private boolean  newsystemsetting = false;
 	
 	private void parseSystemSettingXML()  
@@ -128,9 +130,38 @@ public class SystemSetting extends JDialog
 				 curdbmap.put( elementdbs.attributeValue("dbsname"), tmpdb);
 			 }
 			 
-			((DatabaseSourceTableModel)table.getModel()).refresh(curdbmap );
-			((DatabaseSourceTableModel)table.getModel()).fireTableDataChanged();
+			((DatabaseSourceTableModel)tablelocal.getModel()).refresh(curdbmap );
+			((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 			
+			//serverdatabasesources
+			Element elermtsorce = xmlroot.element("serverdatabasesources");
+			Iterator itrmt = elermtsorce.elementIterator();
+			 while (itrmt.hasNext()) 
+			 {
+				 Element elementdbs = (Element) itrmt.next();
+
+				 System.out.println( elementdbs.attributeValue("dbsname") ) ;
+				 CurDataBase tmpdb = new CurDataBase (elementdbs.attributeValue("dbsname"));
+				 System.out.println( elementdbs.attributeValue("user") ) ;
+				 tmpdb.setUser(elementdbs.attributeValue("user"));
+				 System.out.println( elementdbs.attributeValue("password") ) ;
+				 tmpdb.setPassWord(elementdbs.attributeValue("password"));
+				 System.out.println( elementdbs.getText() ) ;
+				 tmpdb.setDataBaseConStr(elementdbs.getText());
+				 tmpdb.setCurDatabaseType( elementdbs.attributeValue("databasetype") );
+				 System.out.println( elementdbs.attributeValue("curselecteddbs") ) ;
+				 if(elementdbs.attributeValue("curselecteddbs").equals("yes")){
+					 tmpdb.setCurrentSelectedDbs(true);
+					 //curselecteddbs = elementdbs.attributeValue("dbsname");
+				 }
+				 else
+					 tmpdb.setCurrentSelectedDbs(false);
+				 
+				 rmtcurdbmap.put( elementdbs.attributeValue("dbsname"), tmpdb);
+			 }
+			 
+			((DatabaseSourceTableModel)tablermt.getModel()).refresh(rmtcurdbmap );
+			((DatabaseSourceTableModel)tablermt.getModel()).fireTableDataChanged();
 			
 			 
 		} catch (DocumentException e) {
@@ -143,8 +174,6 @@ public class SystemSetting extends JDialog
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
-		
 	}
 	public boolean isNewSystemSetting() 
 	{
@@ -183,18 +212,99 @@ public class SystemSetting extends JDialog
 	 }
 	private void createEvents() 
 	{
-		
-		btnEditDb.addMouseListener(new MouseAdapter() {
+		btnrmteditdb.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) 
+			public void mouseClicked(MouseEvent arg0) 
 			{
-				int row = table.getSelectedRow();
+				int row = tablermt.getSelectedRow();
 				if(row <0) {
 					JOptionPane.showMessageDialog(null,"请选择数据源","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
-				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
+				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)tablermt.getModel()).getDbsAtRow(row);
+				String dbnewname = tmpcur.getCurDataBaseName();
+				
+				int exchangeresult = JOptionPane.showConfirmDialog(null, tmpcur, "修改数据源", JOptionPane.OK_CANCEL_OPTION);
+				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
+
+				rmtcurdbmap.put( dbnewname, tmpcur );
+				
+				((DatabaseSourceTableModel)tablermt.getModel()).refresh(rmtcurdbmap );
+				((DatabaseSourceTableModel)tablermt.getModel()).fireTableDataChanged();
+				
+				saveButton.setEnabled(true);
+
+			}
+		});
+		btnrmtadd.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				String dbnewname = JOptionPane.showInputDialog(null,"请输入新的数据库源名:","加入数据库源", JOptionPane.QUESTION_MESSAGE);
+				KeyStroke escapeStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0); 
+				if(rmtcurdbmap.keySet().contains(dbnewname)) {
+					JOptionPane.showMessageDialog(null,"数据库源名重复！");
+					return;
+				}
+				
+				
+				CurDataBase addnewsr = new CurDataBase (dbnewname);
+				int exchangeresult = JOptionPane.showConfirmDialog(null, addnewsr, "加入数据源", JOptionPane.OK_CANCEL_OPTION);
+				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
+				
+				System.out.println(addnewsr.getCurDataBaseName());
+				rmtcurdbmap.put( dbnewname, addnewsr );
+				
+				((DatabaseSourceTableModel)tablermt.getModel()).refresh(rmtcurdbmap );
+				((DatabaseSourceTableModel)tablermt.getModel()).fireTableDataChanged();
+				
+				saveButton.setEnabled(true);
+			}
+		});
+		btndelrmtdbs.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				int row = tablermt.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择数据源","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				int n = JOptionPane.showConfirmDialog(null, "确认删除该数据源?", "删除数据源",JOptionPane.YES_NO_OPTION);//i=0/1
+				if(n == 1)
+					return;
+				
+				((DatabaseSourceTableModel)tablermt.getModel()).deleteRow(row);
+				
+//				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
+//				
+//				String dbsdeleted = tmpcur.getCurDataBaseName (); 
+//				curdbmap.remove(dbsdeleted);
+//				
+//				((DatabaseSourceTableModel)table.getModel()).refresh(curdbmap );
+				((DatabaseSourceTableModel)tablermt.getModel()).fireTableDataChanged();
+				
+				saveButton.setEnabled(true);
+			}
+		});
+		
+		
+		
+		btnEditDb.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				int row = tablelocal.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择数据源","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)tablelocal.getModel()).getDbsAtRow(row);
 				String dbnewname = tmpcur.getCurDataBaseName();
 				
 				int exchangeresult = JOptionPane.showConfirmDialog(null, tmpcur, "加入数据源", JOptionPane.OK_CANCEL_OPTION);
@@ -203,8 +313,8 @@ public class SystemSetting extends JDialog
 
 				curdbmap.put( dbnewname, tmpcur );
 				
-				((DatabaseSourceTableModel)table.getModel()).refresh(curdbmap );
-				((DatabaseSourceTableModel)table.getModel()).fireTableDataChanged();
+				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(curdbmap );
+				((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 				
 				saveButton.setEnabled(true);
 
@@ -225,20 +335,40 @@ public class SystemSetting extends JDialog
 
 			
 		});
-		table.addMouseListener(new MouseAdapter() {
+		
+		tablermt.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) 
+			public void mouseClicked(MouseEvent e) 
 			{
-				int row = table.getSelectedRow();
-				int column = table.getSelectedColumn();
+				int row = tablermt.getSelectedRow();
+				int column = tablermt.getSelectedColumn();
 				
 				
 				if(column !=0)
 					return;
 				
-				Object tmp = ((DatabaseSourceTableModel)table.getModel()).getValueAt(row, column);
+				Object tmp = ((DatabaseSourceTableModel)tablermt.getModel()).getValueAt(row, column);
 				System.out.println(tmp);
-				 ((DatabaseSourceTableModel)table.getModel()).setValueAt(row, column);
+				 ((DatabaseSourceTableModel)tablermt.getModel()).setValueAt(row, column);
+//				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
+//				String dbsdeleted = tmpcur.getCurDataBaseName ();
+			}
+		});
+		
+		tablelocal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				int row = tablelocal.getSelectedRow();
+				int column = tablelocal.getSelectedColumn();
+				
+				
+				if(column !=0)
+					return;
+				
+				Object tmp = ((DatabaseSourceTableModel)tablelocal.getModel()).getValueAt(row, column);
+				System.out.println(tmp);
+				 ((DatabaseSourceTableModel)tablelocal.getModel()).setValueAt(row, column);
 //				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
 //				String dbsdeleted = tmpcur.getCurDataBaseName ();
 				
@@ -248,7 +378,7 @@ public class SystemSetting extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
-				int row = table.getSelectedRow();
+				int row = tablelocal.getSelectedRow();
 				if(row <0) {
 					JOptionPane.showMessageDialog(null,"请选择数据源","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
@@ -258,7 +388,7 @@ public class SystemSetting extends JDialog
 				if(n == 1)
 					return;
 				
-				((DatabaseSourceTableModel)table.getModel()).deleteRow(row);
+				((DatabaseSourceTableModel)tablelocal.getModel()).deleteRow(row);
 				
 //				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
 //				
@@ -266,7 +396,7 @@ public class SystemSetting extends JDialog
 //				curdbmap.remove(dbsdeleted);
 //				
 //				((DatabaseSourceTableModel)table.getModel()).refresh(curdbmap );
-				((DatabaseSourceTableModel)table.getModel()).fireTableDataChanged();
+				((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 				
 				saveButton.setEnabled(true);
 			}
@@ -291,8 +421,8 @@ public class SystemSetting extends JDialog
 				System.out.println(addnewsr.getCurDataBaseName());
 				curdbmap.put( dbnewname, addnewsr );
 				
-				((DatabaseSourceTableModel)table.getModel()).refresh(curdbmap );
-				((DatabaseSourceTableModel)table.getModel()).fireTableDataChanged();
+				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(curdbmap );
+				((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 				
 				saveButton.setEnabled(true);
 			}
@@ -339,6 +469,31 @@ public class SystemSetting extends JDialog
 					else
 						eleonedbs.addAttribute("curselecteddbs", "no" );
 				}
+				
+				Element elermtsorce = rootele.addElement("serverdatabasesources");
+				
+				Set<String> rmtdbsnameset = rmtcurdbmap.keySet();
+				Iterator<String> rmtdbsit = rmtdbsnameset.iterator();
+				while(rmtdbsit.hasNext()) {
+					String tmpdbsname = rmtdbsit.next();
+					
+					CurDataBase tmpcurbs = rmtcurdbmap.get(tmpdbsname);
+					
+					Element eleonedbs = elermtsorce.addElement("singledbs");
+					
+					eleonedbs.addAttribute("dbsname", tmpcurbs.getCurDataBaseName());
+					eleonedbs.addAttribute("user", tmpcurbs.getUser() );
+					eleonedbs.addAttribute("password", tmpcurbs.getPassWord() );
+					eleonedbs.addAttribute("databasetype", tmpcurbs.getCurDatabaseType() );
+					eleonedbs.setText(tmpcurbs.getDataBaseConStr());
+					if(tmpcurbs.getCurrentSelectedDbs())
+						eleonedbs.addAttribute("curselecteddbs", "yes" );
+					else
+						eleonedbs.addAttribute("curselecteddbs", "no" );
+				}
+				
+				
+				
 				
 				OutputFormat format = OutputFormat.createPrettyPrint();
 				format.setEncoding("GBK");    // 指定XML编码        
@@ -399,8 +554,12 @@ public class SystemSetting extends JDialog
 			sucessfail = false;
 		}
 		
-		if(   ((DatabaseSourceTableModel)table.getModel()).getCurSelectedDbs().trim().isEmpty() ) {
-			txtareacheckresult.append("必须选择一个数据库连接源！" + "\n");
+		if(   ((DatabaseSourceTableModel)tablelocal.getModel()).getCurSelectedDbs().trim().isEmpty() ) {
+			txtareacheckresult.append("必须为基本信息选择一个数据库连接源！" + "\n");
+			sucessfail = false;
+		}
+		if(   ((DatabaseSourceTableModel)tablermt.getModel()).getCurSelectedDbs().trim().isEmpty() ) {
+			txtareacheckresult.append("必须为通达信同步数据选择一个数据库连接源！" + "\n");
 			sucessfail = false;
 		}
 		
@@ -429,14 +588,19 @@ public class SystemSetting extends JDialog
 	private JTextField tfldSysInstallPath;
 	private JTextField tfldTDXInstalledPath;
 	private JTable table;
+	private JTable tablelocal;
 	private JButton btnEditDb;
 	private JButton btmaddnewdb;
 	private JButton btndeletedbs;
 	private JButton btnChosTDXDict;
-	private JScrollPane scrollPane;
+	private JScrollPane scrollPanelocal;
 	private JButton saveButton;
 	private JButton okButton;
 	private JTextArea txtareacheckresult;
+	private JTable tablermt;
+	private JButton btnrmteditdb;
+	private JButton btnrmtadd;
+	private JButton btndelrmtdbs;
 	private void initializeGui() 
 	{
 		setTitle("\u7CFB\u7EDF\u8BBE\u7F6E");
@@ -463,7 +627,7 @@ public class SystemSetting extends JDialog
 		btnChosTDXDict = new JButton("");
 		btnChosTDXDict.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		
-		JLabel lblNewLabel_2 = new JLabel("\u6570\u636E\u6E90\u5217\u8868");
+		JLabel lblNewLabel_2 = new JLabel("\u57FA\u672C\u4FE1\u606F\u6570\u636E\u6E90\u5217\u8868");
 		
 		btnEditDb = new JButton("");
 		btnEditDb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
@@ -474,74 +638,107 @@ public class SystemSetting extends JDialog
 		btndeletedbs = new JButton("");
 		btndeletedbs.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/minus_red.png")));
 		
-		scrollPane = new JScrollPane();
+		scrollPanelocal = new JScrollPane();
 		
 		saveButton = new JButton("");
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
+		
+		JLabel label = new JLabel("\u901A\u8FBE\u4FE1\u540C\u6B65\u6570\u636E\u6570\u636E\u6E90\u5217\u8868");
+		
+		btnrmteditdb = new JButton("");
+		
+		btnrmteditdb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
+		
+		btnrmtadd = new JButton("");
+		
+		btnrmtadd.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/add_24px_1181422_easyicon.net.png")));
+		
+		btndelrmtdbs = new JButton("");
+		
+		btndelrmtdbs.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/minus_red20.png")));
+		
+		JScrollPane scrollPane = new JScrollPane();
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(26)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(lblNewLabel_1)
-						.addComponent(lblNewLabel)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 439, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnChosTDXDict))
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(lblNewLabel_2)
-									.addGap(120)
-									.addComponent(btnEditDb)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btmaddnewdb)
-									.addGap(18)
-									.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(saveButton))
-								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)))
-						.addComponent(tfldSysInstallPath))
-					.addContainerGap(45, Short.MAX_VALUE))
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(lblNewLabel_1)
+							.addComponent(lblNewLabel)
+							.addComponent(tfldSysInstallPath)
+							.addGroup(gl_contentPanel.createSequentialGroup()
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addComponent(lblNewLabel_2)
+										.addGap(120)
+										.addComponent(btnEditDb)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(btmaddnewdb)
+										.addGap(18)
+										.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+										.addGap(18)
+										.addComponent(saveButton))
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 439, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(btnChosTDXDict))
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addComponent(label)
+										.addGap(106)
+										.addComponent(btnrmteditdb)
+										.addGap(18)
+										.addComponent(btnrmtadd)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(btndelrmtdbs))
+									.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
+									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE))
+								.addGap(242))))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblNewLabel)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblNewLabel_1)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnChosTDXDict, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(tfldTDXInstalledPath, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.RELATED, 87, Short.MAX_VALUE)
+					.addGap(12)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblNewLabel_2)
-						.addComponent(btnEditDb)
-						.addComponent(btndeletedbs)
-						.addComponent(btmaddnewdb)
-						.addComponent(saveButton))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(lblNewLabel)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblNewLabel_1)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(btnChosTDXDict, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(tfldTDXInstalledPath, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+							.addGap(18)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblNewLabel_2)
+								.addComponent(btnEditDb)
+								.addComponent(btndeletedbs)
+								.addComponent(btmaddnewdb)
+								.addComponent(saveButton))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(label)
+								.addComponent(btnrmtadd)
+								.addComponent(btndelrmtdbs)))
+						.addComponent(btnrmteditdb))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
 					.addGap(18)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 138, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 122, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
 		
-		txtareacheckresult = new JTextArea();
-		txtareacheckresult.setEditable(false);
-		scrollPane_1.setViewportView(txtareacheckresult);
-		
-		DatabaseSourceTableModel rongquanmodel = new DatabaseSourceTableModel( null );
-		table = new  JTable(rongquanmodel){
+		DatabaseSourceTableModel rmttablemode = new DatabaseSourceTableModel( null );
+		tablermt =  new  JTable(rmttablemode){
 			private static final long serialVersionUID = 1L;
 
 			public String getToolTipText(MouseEvent e) {
@@ -559,7 +756,33 @@ public class SystemSetting extends JDialog
                 return tip;
             }
 		};
-		scrollPane.setViewportView(table);
+		
+		scrollPane.setViewportView(tablermt);
+		
+		txtareacheckresult = new JTextArea();
+		txtareacheckresult.setEditable(false);
+		scrollPane_1.setViewportView(txtareacheckresult);
+		
+		DatabaseSourceTableModel localtablemodel = new DatabaseSourceTableModel( null );
+		tablelocal = new  JTable(localtablemodel){
+			private static final long serialVersionUID = 1L;
+
+			public String getToolTipText(MouseEvent e) {
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+
+                try {
+                    tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {
+                    //catch null pointer exception if mouse is over an empty line
+                }
+
+                return tip;
+            }
+		};
+		scrollPanelocal.setViewportView(tablelocal);
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();

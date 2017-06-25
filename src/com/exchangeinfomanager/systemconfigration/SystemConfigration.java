@@ -171,7 +171,6 @@ public class SystemConfigration
 						rmtcurdb.setPassWord (tmpelement.attributeValue("password").trim() );
 						rmtcurdb.setCurDatabaseType(tmpelement.attributeValue("databasetype").trim());
 					}
-					
 				}
 			}
 			
@@ -211,10 +210,10 @@ public class SystemConfigration
 	 {  
 	        private static SystemConfigration instance =  new SystemConfigration ();  
 	 }
-	 public CurDataBase getCurrentDataBase ()
-	 {
-		 return curdbs;
-	 }
+//	 public CurDataBase getCurrentDataBase ()
+//	 {
+//		 return curdbs;
+//	 }
 	 public String getSystemDataBaseType ()
 	 {
 		 return this.curdatabasetype;

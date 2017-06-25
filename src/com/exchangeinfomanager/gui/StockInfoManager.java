@@ -137,7 +137,7 @@ public class StockInfoManager
 		
 		initializeGui();
 		initializeSysConfig();
-		connectdb = ConnectDatabase.getInstance();
+		connectdb = ConnectDataBase2.getInstance();
 		initializeAccountAndChiCang ();
 		initializeDb();
     	createEvents();
@@ -161,7 +161,7 @@ public class StockInfoManager
 		}
 	}
 
-	private ConnectDatabase connectdb = null;
+	private ConnectDataBase2 connectdb = null;
 	private SystemConfigration sysconfig = null;
 	private AccountAndChiCangConfiguration accountschicangconfig;
 	private ASingleStockInfo stockbasicinfo;
@@ -180,16 +180,18 @@ public class StockInfoManager
 	
 	private void initializeDb() 
 	{
-		if(connectdb.isDatabaseconnected()){
+		if(connectdb.isLocalDatabaseconnected()){
 			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
-			lblStatusBarOperationIndicatior.setText(connectdb.getDatabaseName("full")+"数据库已连接");
-			btnDBStatus.setToolTipText(connectdb.getDatabaseName("full")+"数据库已连接");
+			lblStatusBarOperationIndicatior.setText(connectdb.getLocalDatabaseName("full")+"数据库已连接");
+			btnDBStatus.setToolTipText(connectdb.getLocalDatabaseName("full")+"数据库已连接");
 		}
 		else {
-			JOptionPane.showMessageDialog(null,"数据库连接失败！");
+			
 			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201711_easyicon.net.png")));
-			lblStatusBarOperationIndicatior.setText(connectdb.getDatabaseName("full")+"数据库连接失败");
-			btnDBStatus.setToolTipText(connectdb.getDatabaseName("full")+"数据库连接失败");
+			lblStatusBarOperationIndicatior.setText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
+			btnDBStatus.setToolTipText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
+			JOptionPane.showMessageDialog(null,"数据库连接失败！再见！");
+			System.exit(0);
 		}
 		
 		acntdbopt = new AccountDbOperation();
@@ -1016,10 +1018,10 @@ public class StockInfoManager
 			public void mousePressed(MouseEvent arg0) 
 			{
 				String dbfile = null;
-				switch (connectdb.getDatabaseType() ) {
+				switch (connectdb.getLocalDatabaseType().toLowerCase() ) {
 				case "mysql":    dbfile = "D:\\tools\\HeidiSQL\\heidisql.exe";
 					break;
-				case "access":  dbfile = connectdb.getDatabaseName("full");
+				case "access":  dbfile = connectdb.getLocalDatabaseName("full");
 					break;
 				}
 				try {
