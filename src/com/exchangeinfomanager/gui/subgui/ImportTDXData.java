@@ -73,7 +73,7 @@ public class ImportTDXData extends JDialog {
 		ArrayList<String> zdybknames = new ArrayList<String> ();
 		try {
 			zdybknames.addAll(zdybkmap.keySet());
-		} catch (java.lang.NullPointerException e) {
+			
 			Collator collator = Collator.getInstance(Locale.CHINESE); //用中文排序
 	 		Collections.sort(zdybknames,collator);
 	 		
@@ -86,6 +86,9 @@ public class ImportTDXData extends JDialog {
 				pnlZdy.add(zdybkckbxs[i]);
 				i++;
 			}
+		} catch (java.lang.NullPointerException e) {
+			JLabel zdyfilenull = new JLabel ("没有自定义板块");
+			pnlZdy.add(zdyfilenull);
 		}
 		
 	}
