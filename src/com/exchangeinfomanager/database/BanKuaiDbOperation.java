@@ -1868,7 +1868,8 @@ public class BanKuaiDbOperation
 			Files.append("系统共有"+ allbkcode.size() + "个板块！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		
 			for(String tmpbkcode:allbkcode) {
-				String bkfilename = "SH" + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
+				//String bkfilename = "SH" + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
+				String bkfilename = (filenamerule.replaceAll("YY","SH")).replaceAll("XXXXXX", tmpbkcode);
 				
 				File tmpbkfile = new File(exportath + "/" + bkfilename);
 					
@@ -1953,7 +1954,7 @@ public class BanKuaiDbOperation
 	public File preCheckTDXZhiShuVolAmoToDb ()
 	{
 		File tmpreportfolder = Files.createTempDir();
-		File tmprecordfile = new File(tmpreportfolder + "同步通达信交易所成交量预检查.tmp");
+		File tmprecordfile = new File(tmpreportfolder + "同步通达信交易所指数成交量预检查.tmp");
 		
 		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
 		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
