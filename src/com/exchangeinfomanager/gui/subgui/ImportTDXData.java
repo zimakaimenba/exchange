@@ -74,21 +74,20 @@ public class ImportTDXData extends JDialog {
 		try {
 			zdybknames.addAll(zdybkmap.keySet());
 		} catch (java.lang.NullPointerException e) {
-			zdybknames.add("");
+			Collator collator = Collator.getInstance(Locale.CHINESE); //用中文排序
+	 		Collections.sort(zdybknames,collator);
+	 		
+			zdybkckbxs = new JCheckBox[zdybknames.size()];
+			Iterator<String> tmpit = zdybknames.iterator();
+			int i=0;
+			while (tmpit.hasNext()) {
+				String tmpname = tmpit.next();
+				zdybkckbxs[i] = new JCheckBox(tmpname);
+				pnlZdy.add(zdybkckbxs[i]);
+				i++;
+			}
 		}
-		Collator collator = Collator.getInstance(Locale.CHINESE); //用中文排序
- 		Collections.sort(zdybknames,collator);
- 		
-		zdybkckbxs = new JCheckBox[zdybknames.size()];
-		Iterator<String> tmpit = zdybknames.iterator();
-		int i=0;
-		while (tmpit.hasNext()) {
-			String tmpname = tmpit.next();
-			zdybkckbxs[i] = new JCheckBox(tmpname);
-			pnlZdy.add(zdybkckbxs[i]);
-			i++;
-		}
-
+		
 	}
 
 
