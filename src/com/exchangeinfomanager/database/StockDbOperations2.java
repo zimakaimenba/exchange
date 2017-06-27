@@ -35,19 +35,23 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
 
-public class StockDbOperations 
+public class StockDbOperations2 
 {
 
 	
-	public StockDbOperations() 
+	public StockDbOperations2() 
 	{
-		this.connectdb = ConnectDataBase2.getInstance();
+		//this.stockcode = stockcode;
+		
+		this.connectdb = ConnectDatabase.getInstance();
 		this.sysconfig = SystemConfigration.getInstance();
+		databasetype = connectdb.getDatabaseType();
 	}
 	
-	private ConnectDataBase2 connectdb;
+	 //private String stockcode;
+	private ConnectDatabase connectdb;
 	private SystemConfigration sysconfig ;
-	
+	private String databasetype;
 	
 	static Element xmlroot;
 	private Document ggcylxmldocument ;
@@ -56,27 +60,28 @@ public class StockDbOperations
 	//private Object[][] zdgzmrmcykRecords = null;
 	public ASingleStockInfo getZdgzMrmcZdgzYingKuiFromDB (ASingleStockInfo stockbasicinfo)
 	{
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 		String sqlquerystat = null;
-		sqlquerystat = getZdgzMrmcYingKuiSQLForMysql (stockbasicinfo);
-		sqlstatmap.put("mysql", sqlquerystat);
+		switch(databasetype) {
+		case "mysql": sqlquerystat = getZdgzMrmcYingKuiSQLForMysql (stockbasicinfo);
+						break;
+		case "access": sqlquerystat = getZdgzMrmcYingKuiSQLForAccess (stockbasicinfo);
+						break;
+		}
 		
-		sqlquerystat = getZdgzMrmcYingKuiSQLForAccess (stockbasicinfo);
-		sqlstatmap.put("access", sqlquerystat);
      
-		 CachedRowSetImpl rs = null;
-		 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
-		 stockbasicinfo.setZdgzmrmcykRecords( setZdgzMrmcZdgzYingKuiRecords (rs) );
-		 
-		 try {
-				rs.close();
-				rs = null;
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-		 } 
-		
-		 return stockbasicinfo;
+	CachedRowSetImpl rs = null;
+	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	 stockbasicinfo.setZdgzmrmcykRecords( setZdgzMrmcZdgzYingKuiRecords (rs) );
+	 
+	 try {
+			rs.close();
+			rs = null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	
+	 return stockbasicinfo;
 	}
 	
 	private String getZdgzMrmcYingKuiSQLForAccess(ASingleStockInfo stockbasicinfo) 
@@ -265,18 +270,23 @@ public class StockDbOperations
 	
 	public String getMingRiJiHua() 
 	{
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
+		String databasetype = connectdb.getDatabaseType ();
 		String sqlquerystat =null;
-		sqlquerystat= "SELECT * FROM 操作记录重点关注   WHERE 日期= date_sub(curdate(),interval 1 day) AND 加入移出标志 = '明日计划' " ;
-		sqlstatmap.put("mysql", sqlquerystat);
+		switch(databasetype) {
+		case "mysql":
+			sqlquerystat= "SELECT * FROM 操作记录重点关注   WHERE 日期= date_sub(curdate(),interval 1 day) AND 加入移出标志 = '明日计划' " ;
+			break;
+		case "access":
+			sqlquerystat=  "SELECT * FROM 操作记录重点关注 "
+					+ " WHERE 日期 <  DATE() AND  日期 > IIF( Weekday( date() ) =  2,date()-3,date()-1)  "
+					+ "AND 加入移出标志 = '明日计划'"
+					;  
+			break;
+		}
 		
-		sqlquerystat=  "SELECT * FROM 操作记录重点关注 "
-				+ " WHERE 日期 <  DATE() AND  日期 > IIF( Weekday( date() ) =  2,date()-3,date()-1)  "
-				+ "AND 加入移出标志 = '明日计划'"
-				;
-		sqlstatmap.put("access", sqlquerystat);
+		//System.out.println(sqlquerystat);
 		
-		CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlstatmap);
+		CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		
 		String pmdresult = "";
 		try  {     
@@ -487,7 +497,7 @@ public class StockDbOperations
 		return stockbasicinfo;
 	}
 	
-	private String formateDateForDiffDatabase (String databasetype,String dbdate)
+	private String formateDateForDiffDatabase (String dbdate)
 	{
 		if(dbdate != null) {
 			switch(databasetype) {
@@ -512,9 +522,9 @@ public class StockDbOperations
 		String stockname = "'" +  stockbasicinfo.getStockname().trim() + "'" ;
 		String stockcode = "'" +  stockbasicinfo.getStockcode().trim() + "'" ;
 		
-//		dategainiants = formateDateForDiffDatabase(  sysconfig.formatDate(stockbasicinfo.getGainiantishidate()) );
-//		datequanshangpj = formateDateForDiffDatabase( sysconfig.formatDate(stockbasicinfo.getQuanshangpingjidate() ) );
-//		datefumianxx = formateDateForDiffDatabase( sysconfig.formatDate(stockbasicinfo.getFumianxiaoxidate()  ) );
+		dategainiants = formateDateForDiffDatabase(  sysconfig.formatDate(stockbasicinfo.getGainiantishidate()) );
+		datequanshangpj = formateDateForDiffDatabase( sysconfig.formatDate(stockbasicinfo.getQuanshangpingjidate() ) );
+		datefumianxx = formateDateForDiffDatabase( sysconfig.formatDate(stockbasicinfo.getFumianxiaoxidate()  ) );
 	    
 		try {
 				txtareainputgainiants = "'" + stockbasicinfo.getGainiantishi().trim() + "'";
@@ -533,35 +543,33 @@ public class StockDbOperations
     
 		 if(!stockbasicinfo.isaNewDtockCodeIndicate())
 		 {
-			 HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 			 String sqlupdatestat= "UPDATE A股  SET "
 						+ " 股票名称=" + stockname +","
-						+ " 概念时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(stockbasicinfo.getGainiantishidate()) ) +","
+						+ " 概念时间=" + dategainiants +","
 						+ " 概念板块提醒=" + txtareainputgainiants +","
-						+ " 券商评级时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(stockbasicinfo.getQuanshangpingjidate() ) ) +","
+						+ " 券商评级时间=" + datequanshangpj +","
 						+ " 券商评级提醒=" + txtfldinputquanshangpj +","
-						+ " 负面消息时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(stockbasicinfo.getFumianxiaoxidate()  ) ) +","
+						+ " 负面消息时间=" + datefumianxx +","
 						+ " 负面消息=" + txtfldinputfumianxx +","
 						+ " 正相关及客户=" + txtfldinputzhengxiangguan +","
 						+ " 负相关及竞争对手=" + txtfldinputfuxiangguan +","
 						+ " 客户=" + "'" + keHuCustom +"'" + ","
 						+ " 竞争对手=" + "'" + jingZhengDuiShou + "'"  
 						+ " WHERE 股票代码=" + stockcode
+						
 						;
-			 sqlstatmap.put("mysql", sqlupdatestat);
 			 //System.out.println(sqlupdatestat);
 			 
-			 if( connectdb.sqlUpdateStatExecute(sqlstatmap) !=0)
+			 if( connectdb.sqlUpdateStatExecute(sqlupdatestat) !=0)
 				 return true;
 			 else return false;
 		 }
 		 else
 		 {
-			 HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 			 String sqlinsertstat = "INSERT INTO A股(股票名称,股票代码,概念时间,概念板块提醒,券商评级时间,券商评级提醒,负面消息时间,负面消息,正相关及客户,负相关及竞争对手) values ("
 						+ stockname + ","
 						+ stockcode + ","
-						+ formateDateForDiffDatabase("mysql" , sysconfig.formatDate(stockbasicinfo.getGainiantishidate()) ) + ","
+						+ dategainiants + ","
 						+ txtareainputgainiants + ","
 						+ datequanshangpj + ","
 						+ txtfldinputquanshangpj + ","
@@ -572,17 +580,16 @@ public class StockDbOperations
 						+ ")"
 						;
 			 //System.out.println(sqlinsertstat); 
-			 sqlstatmap.put("mysql", sqlinsertstat);
-			 if( connectdb.sqlInsertStatExecute(sqlstatmap) >0 ) {
+			 if( connectdb.sqlInsertStatExecute(sqlinsertstat) >0 ) {
 				 stockbasicinfo.setaNewDtockCodeIndicate(false);
 				 return true;
 			 } else return false;
 		 }
-		 
 
 		
 	}
-
+	
+	
 
 	public boolean updateChecklistsitemsToDb (ASingleStockInfo stockbasicinfo)
 	{
@@ -601,7 +608,7 @@ public class StockDbOperations
 	public int setZdgzRelatedActions(JiaRuJiHua jiarujihua) 
 	{
 		String stockcode = jiarujihua.getStockCode();		
-		//String addedday = formateDateForDiffDatabase(sysconfig.formatDate(new Date() ));
+		String addedday = formateDateForDiffDatabase(sysconfig.formatDate(new Date() ));
 		String zdgzsign = jiarujihua.getGuanZhuType();
 		String shuoming = "";
 		if(jiarujihua.isMingRiJiHua()) {
@@ -610,17 +617,15 @@ public class StockDbOperations
 		} else
 			shuoming =  jiarujihua.getJiHuaShuoMing();
 		
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 		String sqlinsertstat = "INSERT INTO 操作记录重点关注(股票代码,日期,加入移出标志,原因描述) values ("
 				+ "'" +  stockcode.trim() + "'" + "," 
-				+ formateDateForDiffDatabase("mysql",sysconfig.formatDate(new Date() )) + ","
+				+ addedday + ","
 				+  "'" + zdgzsign + "'" + ","
 				+ "'" + shuoming + "'"  
 				+ ")"
 				;
 		//System.out.println(sqlinsertstat);
-		sqlstatmap.put("mysql", sqlinsertstat);
-		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		return autoIncKeyFromApi;
 		
 		
@@ -629,6 +634,7 @@ public class StockDbOperations
 	public ASingleStockInfo getTDXBanKuaiInfo(ASingleStockInfo stockbasicinfo) 
 	{
 		String stockcode = stockbasicinfo.getStockcode();
+		String databasetype = connectdb.getDatabaseType ();
 		HashSet<String> tmpsysbk = new HashSet<String> ();
 		
 		String sqlquerystat =null;
@@ -720,14 +726,19 @@ public class StockDbOperations
 
 	public String getStockCodeByEverUsedName(String stockname) 
 	{
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
+		//SELECT 股票代码 FROM A股   WHERE 曾用名  LIKE '%*st阿继%' ORDER BY 股票代码
 		String sqlquerystat = null;
-		sqlquerystat= "SELECT 股票代码 FROM A股   WHERE 曾用名  LIKE" +"'%" + stockname +"%'" ;
-		sqlstatmap.put("mysql", sqlquerystat);
-		sqlquerystat= "SELECT 股票代码 FROM A股   WHERE 曾用名  LIKE" +"'*" + stockname +"*%'" ;
-		sqlstatmap.put("access", sqlquerystat);
-
-		CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlstatmap);
+		switch(databasetype) {
+		case "mysql":
+			 sqlquerystat= "SELECT 股票代码 FROM A股   WHERE 曾用名  LIKE" +"'%" + stockname +"%'" ; 
+			break;
+		case "access":
+			 sqlquerystat= "SELECT 股票代码 FROM A股   WHERE 曾用名  LIKE" +"'*" + stockname +"*%'" ;  
+			break;
+		}	
+		
+		System.out.println(sqlquerystat);
+		CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
 
 		String stockcode = "";
 		try {

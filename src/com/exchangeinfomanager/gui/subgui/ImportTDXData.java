@@ -241,11 +241,11 @@ public class ImportTDXData extends JDialog {
 		
 		scrollPane_1 = new JScrollPane();
 		
-		chbxdaorutdxsysbk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u677F\u5757\u4FE1\u606F");
+		chbxdaorutdxsysbk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u677F\u5757\u4FE1\u606F(*)");
 		
 		chbxdaorutdxzdybk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757(\u9009\u62E9\u8981\u5BFC\u5165\u7684\u81EA\u5B9A\u4E49\u677F\u5757)");
 		
-		chbxdaorutdxsysbkvol = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u6210\u4EA4\u91CF\u6210\u4EA4\u989D\u4FE1\u606F");
+		chbxdaorutdxsysbkvol = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u6210\u4EA4\u91CF\u6210\u4EA4\u989D\u4FE1\u606F(*)");
 		
 		chbximportcym = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u80A1\u7968\u66FE\u7528\u540D\u4FE1\u606F");
 		
@@ -319,7 +319,7 @@ public class ImportTDXData extends JDialog {
 				getRootPane().setDefaultButton(okButton);
 			}
 			
-			lblstatus = new JLabel("New label");
+			lblstatus = new JLabel("* \u5B58\u653E\u5728\u901A\u8FBE\u4FE1\u540C\u6B65\u6570\u636E\u5E93\u4E2D");
 			
 			btnStart = new JButton("\u5F00\u59CB\u5BFC\u5165");
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
@@ -328,11 +328,11 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addGap(18)
 						.addComponent(lblstatus)
-						.addGap(256)
+						.addGap(136)
 						.addComponent(btnStart)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addComponent(okButton)
-						.addContainerGap())
+						.addGap(120))
 			);
 			gl_buttonPane.setVerticalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -340,12 +340,19 @@ public class ImportTDXData extends JDialog {
 						.addGap(5)
 						.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 							.addComponent(lblstatus)
-							.addComponent(okButton)
-							.addComponent(btnStart)))
+							.addComponent(btnStart)
+							.addComponent(okButton)))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}
 		this.setLocationRelativeTo(null);
+		
+		//根据系统model定制哪些components可以被用户使用
+		if(sysconfig.getSoftWareMode() == sysconfig.MODELCLIENT) {
+			
+		} else if(sysconfig.getSoftWareMode() == sysconfig.MODELSERVER) {
+			
+		}
 		
 	}
 

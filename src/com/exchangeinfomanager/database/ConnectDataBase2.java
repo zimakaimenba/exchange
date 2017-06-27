@@ -5,6 +5,7 @@ import com.google.common.base.Splitter;
 import com.sun.rowset.CachedRowSetImpl;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.sql.rowset.CachedRowSet;
@@ -56,7 +57,17 @@ public class ConnectDataBase2
 			if(localconstr.equals(rmtconstr))
 				remotcon = localcon;
 			else 
-				remotcon = new DataBaseConnection (rmtcurdb); 						
+				remotcon = new DataBaseConnection (rmtcurdb); 
+			
+			boolean localconnect = localcon.isDatabaseconnected();
+			boolean rmtconnect = remotcon.isDatabaseconnected();
+			if(localconnect == true && rmtconnect == true)
+				sysconfig.setSoftWareMode (sysconfig.MODELSERVERCLIENT);
+			else if(localconnect == false && rmtconnect == true) 
+				sysconfig.setSoftWareMode (sysconfig.MODELSERVER);
+			else if(localconnect == true && rmtconnect == false) 
+				sysconfig.setSoftWareMode (sysconfig.MODELCLIENT);
+			
 		}
 		
 		
@@ -88,73 +99,185 @@ public class ConnectDataBase2
 				}
         } 
 		
-		public CachedRowSetImpl sqlQueryStatExecute(String sqlstatement)
+		
+		
+		public CachedRowSetImpl sqlQueryStatExecute(HashMap<String,String> sqlstatementmap )
 		{
-			CachedRowSetImpl cachedRS = null;
+			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
+			String sqlstatement = sqlstatementmap.get("mysql");
 			boolean exectrmtcon = false;
 			for(String str:rmtservertable) {
 				if(sqlstatement.contains(str) )
 					exectrmtcon = true;
 			}
-			
-			if(exectrmtcon == true)
-				cachedRS = remotcon.sqlQueryStatExecute(sqlstatement);
+
+			DataBaseConnection tmpdbcon;
+			if(exectrmtcon == true) {
+				tmpdbcon = remotcon;
+			}
 			else 
-				cachedRS = localcon.sqlQueryStatExecute(sqlstatement);
+				tmpdbcon = localcon;
+
+			//在相应的数据库连接执行数据
 			
+			String dbtype = tmpdbcon.getDatabaseType();
+			sqlstatement = sqlstatementmap.get(dbtype);
+			CachedRowSetImpl cachedRS = null;
+			cachedRS = tmpdbcon.sqlQueryStatExecute(sqlstatement);
 			return cachedRS;
+		}
+		public CachedRowSetImpl sqlQueryStatExecute(String sqlstatement )
+		{
+			boolean exectrmtcon = false;
+			for(String str:rmtservertable) {
+				if(sqlstatement.contains(str) )
+					exectrmtcon = true;
+			}
+
+			DataBaseConnection tmpdbcon;
+			if(exectrmtcon == true) {
+				tmpdbcon = remotcon;
+			}
+			else 
+				tmpdbcon = localcon;
+
+			//在相应的数据库连接执行数据
+			CachedRowSetImpl cachedRS = null;
+			cachedRS = tmpdbcon.sqlQueryStatExecute(sqlstatement);
+			return cachedRS;
+		}
+
+		
+		public int sqlUpdateStatExecute(HashMap<String,String> sqlstatementmap)
+		{
+			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
+			String sqlstatement = sqlstatementmap.get("mysql");
+			boolean exectrmtcon = false;
+			for(String str:rmtservertable) {
+				if(sqlstatement.contains(str) )
+					exectrmtcon = true;
+			}
+			DataBaseConnection tmpdbcon;
+			if(exectrmtcon == true) {
+				tmpdbcon = remotcon;
+			}
+			else 
+				tmpdbcon = localcon;
+			
+			String dbtype = tmpdbcon.getDatabaseType();
+			sqlstatement = sqlstatementmap.get(dbtype);
+			int autoIncKeyFromApi = -1;
+			autoIncKeyFromApi = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
+			
+			return autoIncKeyFromApi;
 		}
 		public int sqlUpdateStatExecute(String sqlstatement)
 		{
-			int autoIncKeyFromApi = -1;
-			
 			boolean exectrmtcon = false;
 			for(String str:rmtservertable) {
 				if(sqlstatement.contains(str) )
 					exectrmtcon = true;
 			}
-			
-			if(exectrmtcon == true)
-				autoIncKeyFromApi = remotcon.sqlUpdateStatExecute(sqlstatement);
+			DataBaseConnection tmpdbcon;
+			if(exectrmtcon == true) {
+				tmpdbcon = remotcon;
+			}
 			else 
-				autoIncKeyFromApi = localcon.sqlUpdateStatExecute(sqlstatement);
+				tmpdbcon = localcon;
+			
+			int autoIncKeyFromApi = -1;
+			autoIncKeyFromApi = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
 			
 			return autoIncKeyFromApi;
 		}
 		
-		public int sqlInsertStatExecute(String sqlstatement) 
+		public int sqlInsertStatExecute(HashMap<String,String> sqlstatementmap) 
 		{
-			int result =0;
+			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
+			String sqlstatement = sqlstatementmap.get("mysql");
 			boolean exectrmtcon = false;
 			for(String str:rmtservertable) {
 				if(sqlstatement.contains(str) )
 					exectrmtcon = true;
 			}
-			
-			if(exectrmtcon == true)
-				result = remotcon.sqlUpdateStatExecute(sqlstatement);
+			DataBaseConnection tmpdbcon;
+			if(exectrmtcon == true) {
+				tmpdbcon = remotcon;
+			}
 			else 
-				result = localcon.sqlUpdateStatExecute(sqlstatement);
+				tmpdbcon = localcon;
+			
+			String dbtype = tmpdbcon.getDatabaseType();
+			sqlstatement = sqlstatementmap.get(dbtype);
+			int result = 0; 
+			result = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
 			
 			return result;
 			
+		}
+		public int sqlInsertStatExecute(String sqlstatement) 
+		{
+			boolean exectrmtcon = false;
+			for(String str:rmtservertable) {
+				if(sqlstatement.contains(str) )
+					exectrmtcon = true;
+			}
+			DataBaseConnection tmpdbcon;
+			if(exectrmtcon == true) {
+				tmpdbcon = remotcon;
+			}
+			else 
+				tmpdbcon = localcon;
+			
+			int result = 0; 
+			result = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
+			
+			return result;
+		}
+		
+		public int sqlDeleteStatExecute(HashMap<String,String> sqlstatementmap) 
+		{
+			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
+			String sqlstatement = sqlstatementmap.get("mysql");
+			boolean exectrmtcon = false;
+			for(String str:rmtservertable) {
+				if(sqlstatement.contains(str) )
+					exectrmtcon = true;
+			}
+			DataBaseConnection tmpdbcon;
+			if(exectrmtcon == true) {
+				tmpdbcon = remotcon;
+			}
+			else 
+				tmpdbcon = localcon;
+			
+			String dbtype = tmpdbcon.getDatabaseType();
+			sqlstatement = sqlstatementmap.get(dbtype);
+			int result = 0; 
+			result = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
+			
+			return result;
 		}
 		public int sqlDeleteStatExecute(String sqlstatement) 
 		{
-			int result =0;
 			boolean exectrmtcon = false;
 			for(String str:rmtservertable) {
 				if(sqlstatement.contains(str) )
 					exectrmtcon = true;
 			}
-			
-			if(exectrmtcon == true)
-				result = remotcon.sqlUpdateStatExecute(sqlstatement);
+			DataBaseConnection tmpdbcon;
+			if(exectrmtcon == true) {
+				tmpdbcon = remotcon;
+			}
 			else 
-				result = localcon.sqlUpdateStatExecute(sqlstatement);
+				tmpdbcon = localcon;
+			
+			int result = 0; 
+			result = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
 			
 			return result;
 		}
+		
 		public String getLocalDatabaseType() 
 		{
 			return localcon.getDatabaseType();
@@ -185,12 +308,11 @@ class DataBaseConnection
 				e1.printStackTrace();
 		}
 		
-		//sysconfig = SystemConfigration.getInstance();
-		
-		databasetype = curdb.getCurDatabaseType().toLowerCase();
 		con = setupDataBaseConnection(curdb);
-		databasename = setDatabaseName (curdb);
-		
+		if(con != null) {
+			databasetype = curdb.getCurDatabaseType().toLowerCase();
+			databasename = setDatabaseName (curdb);
+		}
 	}
 	
 	private Connection con;
@@ -322,8 +444,10 @@ class DataBaseConnection
 
 		}  catch(net.ucanaccess.jdbc.UcanaccessSQLException ex) {
 			ex.printStackTrace();
+		} catch(java.lang.NullPointerException e) {
+			System.out.println("数据库连接为NULL");
 		}	catch(Exception e) {
-			JOptionPane.showMessageDialog(null,"读取数据库失败");
+			System.out.println("数据库SQL执行失败");
 			e.printStackTrace();
 		} finally {
 			if(rsquery != null)

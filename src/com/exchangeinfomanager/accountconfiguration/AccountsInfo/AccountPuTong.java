@@ -11,7 +11,7 @@ public class AccountPuTong extends AccountInfoBasic
 	public AccountPuTong(String accountname) 
 	{
 		super(accountname);
-		super.setAccounttype("∆’Õ®");
+		super.setAccounttype(super.TYPEPUTONG);
 		this.hasxinyongacnt = false;
 	}
 	

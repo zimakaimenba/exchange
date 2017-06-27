@@ -10,7 +10,7 @@ public class AccountXinYongPuTong  extends AccountInfoBasic
 	public AccountXinYongPuTong(String accountname) 
 	{
 		super(accountname);
-		super.setAccounttype("ÈÚÈ¯");
+		super.setAccounttype(super.TYPEXYPUTONG);
 	}
 	
 	

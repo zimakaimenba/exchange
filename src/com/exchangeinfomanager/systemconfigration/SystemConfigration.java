@@ -34,14 +34,6 @@ import net.ginkgo.dom4jcopy.GinkgoNode;
 
 public class SystemConfigration 
 {
-	String systeminstalledpath;
-	String tdxinstalledpath;
-	private String curdatabasetype;
-	private CurDataBase curdbs; //本地数据库连接信息
-	private CurDataBase rmtcurdb; //远程数据库连接信息
-	private int tryingcount = 0; //系统如果出错，会重试3次，3次不成直接退出
-	private String tdxvolpath;
-	
 	private SystemConfigration ()
 	{  
 		getSystemInfoFromXML ();
@@ -54,7 +46,17 @@ public class SystemConfigration
 	public  String toUNIXpath(String filePath) 
 	{
 		    return filePath.replace('\\', '/');
-	 }
+	}
+	
+	String systeminstalledpath;
+	String tdxinstalledpath;
+	private String curdatabasetype;
+	private CurDataBase curdbs; //本地数据库连接信息
+	private CurDataBase rmtcurdb; //远程数据库连接信息
+	private int tryingcount = 0; //系统如果出错，会重试3次，3次不成直接退出
+	private String tdxvolpath;
+	private int setSoftWareMode; //设定系统模式，有2种，基本数据和通达信同步数据。
+	public static int MODELSERVER=0, MODELCLIENT=1, MODELSERVERCLIENT=2;
 	
 	private void getSystemInfoFromXML() 
 	{
@@ -473,6 +475,14 @@ public class SystemConfigration
 			}
 			
 			return date;
+		}
+		public void setSoftWareMode(int model) 
+		{
+			this.setSoftWareMode = model;
+		}
+		public int getSoftWareMode() 
+		{
+			return this.setSoftWareMode;
 		}
 
 }

@@ -64,19 +64,19 @@ import com.sun.rowset.CachedRowSetImpl;
 
 import net.ginkgo.dom4jcopy.GinkgoNode;
 
-public class BanKuaiDbOperation 
+public class BanKuaiDbOperation1 
 {
-	public BanKuaiDbOperation() 
+	public BanKuaiDbOperation1() 
 	{
 		initializeDb ();
 		initialzieSysconf ();
 		bankuaichanyelianxml = sysconfig.getBanKuaiChanYeLianXml ();
 		geguchanyelianxml = sysconfig.getGeGuChanYeLianXmlFile ();
 		twelvezdgzxmlname = sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile();
-
+		databasetype = connectdb.getDatabaseType();
 	}
 	
-	private  ConnectDataBase2 connectdb;
+	private  ConnectDatabase connectdb;
 	private  SystemConfigration sysconfig;
 	private String bankuaichanyelianxml;
 	private String geguchanyelianxml;
@@ -87,12 +87,12 @@ public class BanKuaiDbOperation
 	private Element gegucylxmlroot;
 	private Document twelvezdgzxmldoc;
 	private Element twelvezdgzxmlroot;
-	
+	private String databasetype;
 	
 
 	private void initializeDb() 
 	{
-		connectdb = ConnectDataBase2.getInstance();
+		connectdb = ConnectDatabase.getInstance();
 	}
 	private void initialzieSysconf ()
 	{
@@ -323,7 +323,7 @@ public class BanKuaiDbOperation
 		    for (String str : differencebankuainew) {
 				String sqlinsertstat = "INSERT INTO  通达信自定义板块列表(板块名称,创建时间) values ("
 						+ "'" + str.trim() + "'" + ","
-						+ "\"" +  sysconfig.formatDate(new Date())   + "\""  
+						+  formateDateForDiffDatabase( sysconfig.formatDate(new Date()) ) 
 						+ ")"
 						;
 				//System.out.println(sqlinsertstat);
@@ -468,6 +468,8 @@ public class BanKuaiDbOperation
                zdybkmap.put(zdybankuainame, bkfilename );
                
               }
+             
+              
 		 } catch (Exception e) {
 			 e.printStackTrace();
 			 return null;
@@ -1299,7 +1301,7 @@ public class BanKuaiDbOperation
         	String newbktdxswcode = tmpsysbkmap.get(newbkcode).get(5);
 			String sqlinsertstat = "INSERT INTO  通达信板块列表(板块名称,创建时间,板块ID,对应TDXSWID) values ("
 					+ "'" + newbk.trim() + "'" + ","
-					+ "\"" +  sysconfig.formatDate(new Date())   + "\"" + ","
+					+  formateDateForDiffDatabase( sysconfig.formatDate(new Date()) ) + ","
 					+ "'" + newbkcode + "'" + ","
 					+ "'" + newbktdxswcode + "'"
 					+ ")"
@@ -1832,19 +1834,19 @@ public class BanKuaiDbOperation
 			    return tmpsysbankuailiebiaoinfo;
 	}
 	
-//	private String formateDateForDiffDatabase (String dbdate)
-//	{
-//		if(dbdate != null) {
-//			switch(databasetype) {
-//			case "access": return "#" + dbdate + "#";
-//							
-//			case "mysql":  return "\"" + dbdate + "\"";
-//							
-//			}
-//		} else
-//			return null;
-//		return null;
-//	}
+	private String formateDateForDiffDatabase (String dbdate)
+	{
+		if(dbdate != null) {
+			switch(databasetype) {
+			case "access": return "#" + dbdate + "#";
+							
+			case "mysql":  return "\"" + dbdate + "\"";
+							
+			}
+		} else
+			return null;
+		return null;
+	}
 	/*
 	 * 检查数据库中的通达信板块哪些有记录文件，哪些没有。 
 	 */
@@ -2181,7 +2183,7 @@ public class BanKuaiDbOperation
 /*
  * google guava files 类，可以直接处理读出的line
  */
-class TDXBanKuaiFielProcessor implements LineProcessor<List<String>> 
+class TDXBanKuaiFielProcessor1 implements LineProcessor<List<String>> 
 {
    
     private List<String> stocklists = Lists.newArrayList();

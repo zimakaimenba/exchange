@@ -25,22 +25,22 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 import com.sun.rowset.CachedRowSetImpl;
 
-public class AccountDbOperation 
+public class AccountDbOperation1 
 {
-	public AccountDbOperation() 
+	public AccountDbOperation1() 
 	{
 		initializeDb ();
 		initialzieSysconf ();
-		
+		databasetype = connectdb.getDatabaseType();
 	}
 	private SystemConfigration sysconfig ;
-	private ConnectDataBase2 connectdb;
-	
+	private ConnectDatabase connectdb;
+	private String databasetype;
 	
 	
 	private void initializeDb() 
 	{
-		connectdb = ConnectDataBase2.getInstance();
+		connectdb = ConnectDatabase.getInstance();
 	}
 	private void initialzieSysconf ()
 	{
@@ -51,31 +51,31 @@ public class AccountDbOperation
 	 */
 	public Object[][] getStockChiCang() 
 	{
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> (); 
 		String sqlquerystat = null;
-		sqlquerystat = " SELECT t1.买卖账号,t1.股票代码, t2.股票名称,  "
-				+ " SUM(SWITCH(t1.买入卖出标志 = true, t1.买卖股数, t1.买入卖出标志 = false, -t1.买卖股数)) as 买卖股数, "
-				+ " SUM(SWITCH(t1.买入卖出标志 = true, t1.买卖金额, t1.买入卖出标志 = false, -t1.买卖金额)) as 买卖金额  "
-				+ " FROM 操作记录买卖 t1, A股 t2 "
-				+ " WHERE t1.股票代码 = t2.股票代码  AND 持仓标志 = true "
-				+ " GROUP BY t1.股票代码, t2.股票名称, t1.买卖账号 "
-				;
-		sqlstatmap.put("access", sqlquerystat);
-		
-		sqlquerystat = " SELECT t1.买卖账号,t1.股票代码, t2.股票名称,  "
+		switch(connectdb.getDatabaseType().toLowerCase()){
+		case "access":  sqlquerystat = " SELECT t1.买卖账号,t1.股票代码, t2.股票名称,  "
+											+ " SUM(SWITCH(t1.买入卖出标志 = true, t1.买卖股数, t1.买入卖出标志 = false, -t1.买卖股数)) as 买卖股数, "
+											+ " SUM(SWITCH(t1.买入卖出标志 = true, t1.买卖金额, t1.买入卖出标志 = false, -t1.买卖金额)) as 买卖金额  "
+											+ " FROM 操作记录买卖 t1, A股 t2 "
+											+ " WHERE t1.股票代码 = t2.股票代码  AND 持仓标志 = true "
+											+ " GROUP BY t1.股票代码, t2.股票名称, t1.买卖账号 "
+											;
+											break;
+		case "mysql":	sqlquerystat = " SELECT t1.买卖账号,t1.股票代码, t2.股票名称,  "
 				+ "	       SUM(CASE WHEN t1.买入卖出标志 = true then t1.买卖股数 ELSE -t1.买卖股数 END) AS 买卖股数,"
 				+ "	       SUM(CASE WHEN t1.买入卖出标志 = true then t1.买卖金额 ELSE -t1.买卖金额 END) AS 买卖金额 "
 				+ " FROM 操作记录买卖 t1, A股 t2 "
 				+ " WHERE t1.股票代码 = t2.股票代码  AND 持仓标志 = true "
 				+ " GROUP BY t1.股票代码, t2.股票名称, t1.买卖账号 "
 				; 
-		sqlstatmap.put("mysql", sqlquerystat);
-		
+						break;
+		}
+		//System.out.println(connectdb.getDatabaseType().toLowerCase() + ":" + sqlquerystat);
 		
 		Object[][] data = null;  
 		CachedRowSetImpl rs = null; 
 	    try {  
-	    	 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
+	    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	    	
 	        rs.last();  
 	        int rows = rs.getRow();  
@@ -124,20 +124,22 @@ public class AccountDbOperation
 
 	public int setZijingLiuShui(Date actiondate,String accountname, String actionqstype, boolean ischuru, double zhuanruxianjing,String actionshuoming) 
 	{
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 		String sqlinsertstat = null;
-		sqlinsertstat = "INSERT INTO 资金流水(操作日期,操作账户,操作类型,转入转出,资金金额,操作说明) values ("
-				+ "\"" +  sysconfig.formatDate(actiondate)  + "\"" + ","
-				+ "'" + accountname.trim() + "'" + ","
-				+ "'" + actionqstype.trim() + "'" + ","
-				+ ischuru + ","
-				+ zhuanruxianjing + ","
-				+ "'" + actionshuoming.trim() + "'"  
-				+ ")"
-				;
-		sqlstatmap.put("mysql", sqlinsertstat);
-		
-		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+
+		switch(connectdb.getDatabaseType().toLowerCase()){
+		case "mysql":	sqlinsertstat = "INSERT INTO 资金流水(操作日期,操作账户,操作类型,转入转出,资金金额,操作说明) values ("
+												+ formateDateForDiffDatabase( sysconfig.formatDate(actiondate) ) + ","
+												+ "'" + accountname.trim() + "'" + ","
+												+ "'" + actionqstype.trim() + "'" + ","
+												+ ischuru + ","
+												+ zhuanruxianjing + ","
+												+ "'" + actionshuoming.trim() + "'"  
+												+ ")"
+												;
+			
+		}
+		System.out.println(sqlinsertstat);
+		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
 		return autoIncKeyFromApi;
 	}
@@ -193,6 +195,25 @@ public class AccountDbOperation
 	}
 
 
+	
+//	private String formateBuyResult (int stocknumber, double actionprice,String shuoming,boolean actiontype)
+//	{
+//		String buyresult;
+//		double tmpchengben = stocknumber*actionprice;
+//		NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+//		if(actiontype) {
+//			buyresult = "'" + "(" + stocknumber + " * " + currencyFormat.format(actionprice) + "=" + (0-tmpchengben)     + ")" + "|" + shuoming+ "'" ;
+//		} else {
+//			buyresult = "'" + "(" + stocknumber + " * " + currencyFormat.format(actionprice) + "=" + tmpchengben + ")" +  "|"  +shuoming + "'" ;
+//		}
+//		
+//		return buyresult;
+//	}
+		
+
+
+	
+
 	public int setChicangKongcang(AccountInfoBasic accountPuTong, String stockcode) 
 	{
 		String stockaccount =  accountPuTong.getAccountName();
@@ -206,6 +227,13 @@ public class AccountDbOperation
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
 		return autoIncKeyFromApi;
 	}
+
+
+
+
+
+
+	
 
 	 
 	public HashMap<String,AccountPuTong> getPuTongSubAccounts()
@@ -250,27 +278,28 @@ public class AccountDbOperation
 	            //计算该账号当日的挂单金额，因为可用现金要减去挂单金额才合理
 	            CachedRowSetImpl rs_jiner = null;
 	            try {
-	            	HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 	            	String sqlquerystat2 = null;
-	            	sqlquerystat2 = "SELECT 买入卖出标志 , SUM(买卖金额) AS 金额  FROM 操作记录买卖   "
-							+ " WHERE 买卖账号 =" +"'" + (String)row[1] +"'" 
-							+ " AND 挂单=true "
-							+ " AND 日期>=Date () "
-							+ " GROUP BY 买入卖出标志 , 买卖金额"   
-							;
-	            	sqlstatmap.put("access", sqlquerystat2);
-	            	
-	            	sqlquerystat2 = "SELECT 买入卖出标志 , SUM(买卖金额) AS 金额  FROM 操作记录买卖   "
-							+ " WHERE 买卖账号 =" +"'" + (String)row[1] +"'" 
-							+ " AND 挂单=true "
-							+ " AND 日期>=curdate() "
-							+ " GROUP BY 买入卖出标志 , 买卖金额"   
-							;
-	            	sqlstatmap.put("mysql", sqlquerystat2);
-
-		    		rs_jiner = connectdb.sqlQueryStatExecute(sqlstatmap);
+	            	switch(connectdb.getDatabaseType()) {
+	            	case "access": sqlquerystat2 = "SELECT 买入卖出标志 , SUM(买卖金额) AS 金额  FROM 操作记录买卖   "
+		    										+ " WHERE 买卖账号 =" +"'" + (String)row[1] +"'" 
+		    										+ " AND 挂单=true "
+		    										+ " AND 日期>=Date () "
+		    										+ " GROUP BY 买入卖出标志 , 买卖金额"   
+		    										; 
+	            					break;
+	            	case "mysql":	sqlquerystat2 = "SELECT 买入卖出标志 , SUM(买卖金额) AS 金额  FROM 操作记录买卖   "
+													+ " WHERE 买卖账号 =" +"'" + (String)row[1] +"'" 
+													+ " AND 挂单=true "
+													+ " AND 日期>=curdate() "
+													+ " GROUP BY 买入卖出标志 , 买卖金额"   
+													;
+	            					break;
+	            	}
+					//System.out.println(sqlquerystat2);
+	
+		    		rs_jiner = connectdb.sqlQueryStatExecute(sqlquerystat2);
 		    		while(rs_jiner.next()) {
-		    			boolean mairumaichusign = rs_jiner.getBoolean("买入卖出标志");
+		    			boolean mairumaichusign = rs_jiner.getBoolean(" 买入卖出标志");
 		    			
 		    			if(mairumaichusign) {
 							try {
@@ -300,7 +329,19 @@ public class AccountDbOperation
 	    	    }
 	            
 	            ptacntsmap.put((String)row[1], putongaccount);
-            
+	            
+//	            if(rs.getBoolean("激活状态")) {
+//	            	SubAccountSetting tmpaccountinfo = new SubAccountSetting (rs.getString("账户代码"),rs.getString("账户名称"));
+//	            	tmpaccountinfo.setAccountcurrentcurrency(rs.getDouble("可用现金"));
+//	            	tmpaccountinfo.setAccountusedcurrency(rs.getDouble("已用现金"));
+//	            	tmpaccountinfo.setAccountprofit(rs.getDouble("历史盈亏"));
+//	            	stockaccoutsinfo.put(rs.getString("账户名称"),tmpaccountinfo);
+//	            	
+//	            	if((boolean)row[6]) 
+//	            		rzrqaccountsnamelist.add((String)row[1]);
+//	            	else putongaccountsnamelist.add((String)row[1]); 
+//	            }
+	            
 	            rs.next();
 	        }
 		} catch(java.lang.NullPointerException e) { 
@@ -591,18 +632,29 @@ public class AccountDbOperation
 		Cal.setTime(stocknumberpricepanel.getActionDay());
 		Cal.add(java.util.Calendar.SECOND,10);
 		
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 		String sqlinsertstat  = null;
-		sqlinsertstat = "INSERT INTO A股个股盈亏(股票代码,日期,原因描述,盈亏金额,操作账号) VALUES ("
+		switch(connectdb.getDatabaseType().toLowerCase()){
+		case "access":	sqlinsertstat = "INSERT INTO A股个股盈亏(股票代码,日期,原因描述,盈亏金额,操作账号) VALUES ("
+					+ "'" +  stockcode.trim() + "'" + "," 
+					+ "#" + sysconfig.formatDate( Cal.getTime() ) + "#" + "," 
+					+ "'" + "(" + geguprofit + ")" + "'" + ","
+					+ geguprofit + ","
+					+ "'" + subaccount + "'" 
+					+ ")"
+					;
+			break;
+		case "mysql": sqlinsertstat = "INSERT INTO A股个股盈亏(股票代码,日期,原因描述,盈亏金额,操作账号) VALUES ("
 				+ "'" +  stockcode.trim() + "'" + "," 
-				+ "\"" + sysconfig.formatDate( Cal.getTime() )   + "\""   + "," 
+				+ "'" + sysconfig.formatDate(Cal.getTime() ) + "'" + "," 
 				+ "'" + "(" + geguprofit + ")" + "'" + ","
 				+ geguprofit + ","
 				+ "'" + subaccount + "'" 
 				+ ")"
 				;
-		sqlstatmap.put("mysql", sqlinsertstat);
-		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+			break;
+		}
+		//System.out.println(sqlinsertstat);
+		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 
 		//更新买卖数据库中profit的ID，
 		String actiontable = this.getActionTableName (subaccount); 
@@ -753,7 +805,7 @@ public class AccountDbOperation
 		
 		String sqlinsertstat = "INSERT INTO " + actiontable + "(股票代码,日期,买入卖出标志,原因描述,买卖账号,持仓标志,买卖股数,买卖金额,挂单) VALUES ("
 				+ "'" +  stockcode.trim() + "'"  + ","
-				+ "\"" + sysconfig.formatDate( actionDay )   + "\""   + ","
+				+ formateDateForDiffDatabase( sysconfig.formatDate(actionDay) ) + ","  
 				+ actiontype + ","
 				+ shuoming + "," 
 				+ "'" + actionaccountname + "'" + ","  
@@ -782,7 +834,7 @@ public class AccountDbOperation
 
 		String sqlinsertstat = "INSERT INTO " + actiontable + "(股票代码,日期,买入卖出标志,原因描述,买卖账号,持仓标志,买卖股数,买卖金额,挂单) VALUES ("
 				+ "'" +  stockcode.trim() + "'"  + ","
-				+ "\"" + sysconfig.formatDate( actionday )   + "\""   + ","  
+				+ formateDateForDiffDatabase( sysconfig.formatDate(actionday) ) + ","   
 				+ actiontype + ","
 				+ shuoming + "," 
 				+ "'" + actionaccountname + "'" + ","  
@@ -851,12 +903,13 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + sysconfig.formatDate( new Date() )   + "\""   + ","
+				+ formateDateForDiffDatabase( sysconfig.formatDate(new Date() ) ) + ","
 				+ tmpselected  
 				+ "," + tmprzrq 
 				+ "," + "'" + tmpactquanshang + "'" 
 				+ ")"
 				;
+		
 		System.out.println(sqlinsertstat);
 			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 			if(autoIncKeyFromApi <0) return -1;
@@ -868,7 +921,7 @@ public class AccountDbOperation
 					+ 0 + ","
 					+ tmpselected + ","
 					//+ "'" + tmpactname.trim() + "'" + ","
-					+ "\"" + sysconfig.formatDate( new Date() )   + "\""      
+					+ formateDateForDiffDatabase( sysconfig.formatDate(new Date() ) )  
 					+ ")"
 					;
 			System.out.println(sqlinsertstat);
@@ -894,7 +947,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + sysconfig.formatDate( new Date() )   + "\""   + ","
+				+ formateDateForDiffDatabase( sysconfig.formatDate(new Date() ) ) + ","
 				+ tmpselected //+ ","
 				+ "," + "'" + tmpactquanshang + "'"
 				+ ")"
@@ -912,7 +965,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + sysconfig.formatDate( new Date() )   + "\""   + ","
+				+ formateDateForDiffDatabase( sysconfig.formatDate(new Date() ) ) + ","
 				+ true //+ ","
 				+ "," + "'" + tmpactquanshang + "'" 
 				+ ")"
@@ -929,7 +982,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + sysconfig.formatDate( new Date() )   + "\""   + ","
+				+ formateDateForDiffDatabase( sysconfig.formatDate(new Date()) ) + ","
 				+ true + ","
 				+ true 
 				+ "," + "'" + tmpactquanshang + "'"
@@ -1067,19 +1120,19 @@ public class AccountDbOperation
 		return stocknumberpricepanel;
 	}
 
-//	private String formateDateForDiffDatabase (String dbdate)
-//	{
-//		if(dbdate != null) {
-//			switch(databasetype) {
-//			case "access": return "#" + dbdate + "#";
-//							
-//			case "mysql":  return "\"" + dbdate + "\"";
-//							
-//			}
-//		} else
-//			return null;
-//		return null;
-//	}
+	private String formateDateForDiffDatabase (String dbdate)
+	{
+		if(dbdate != null) {
+			switch(databasetype) {
+			case "access": return "#" + dbdate + "#";
+							
+			case "mysql":  return "\"" + dbdate + "\"";
+							
+			}
+		} else
+			return null;
+		return null;
+	}
 
 
 }

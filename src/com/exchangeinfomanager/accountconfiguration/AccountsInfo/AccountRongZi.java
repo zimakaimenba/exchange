@@ -8,7 +8,7 @@ public class AccountRongZi extends AccountInfoBasic
 	public AccountRongZi(String accountname) 
 	{
 		super(accountname);
-		super.setAccounttype("ÈÚ×Ê");
+		super.setAccounttype(super.TYPERONGZI);
 	}
 	private double rongzizhaiwu;
 	

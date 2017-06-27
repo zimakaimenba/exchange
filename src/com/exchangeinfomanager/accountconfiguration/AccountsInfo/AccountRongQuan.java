@@ -10,7 +10,7 @@ public class AccountRongQuan extends AccountInfoBasic
 	{
 		super(accountname);
 		// TODO Auto-generated constructor stub
-		super.setAccounttype("ÈÚÈ¯");
+		super.setAccounttype(super.TYPERONGQUAN);
 		// TODO Auto-generated constructor stub
 	}
 	

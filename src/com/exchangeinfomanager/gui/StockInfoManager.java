@@ -132,14 +132,33 @@ public class StockInfoManager
 	 */
 	public StockInfoManager() 
 	{
+		sysconfig = SystemConfigration.getInstance();
+		
+		connectdb = ConnectDataBase2.getInstance();
+		boolean localconnect = connectdb.isLocalDatabaseconnected();
+		boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
+		if(localconnect == true && rmtconnect == true) {
+			;
+		}
+		else if(localconnect == false && rmtconnect == true) {
+				JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
+		} else if(localconnect == true && rmtconnect == false) {
+				JOptionPane.showMessageDialog(null,"仅基本数据可用！");
+		} else{
+				JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
+				System.exit(0);
+		}
+		
 		accountschicangconfig = new AccountAndChiCangConfiguration ();
 		stockdbopt = new StockDbOperations ();
+		acntdbopt = new AccountDbOperation();
+		bkdbopt = new BanKuaiDbOperation ();
+		zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler2 ();
+		cylxmlhandler = new ChanYeLianXMLHandler ();
 		
 		initializeGui();
-		initializeSysConfig();
-		connectdb = ConnectDataBase2.getInstance();
-		initializeAccountAndChiCang ();
-		initializeDb();
+		displayAccountAndChiCang ();
+		displayDbInfo();
     	createEvents();
     	initializePaoMaDeng ();
  	}
@@ -147,17 +166,32 @@ public class StockInfoManager
 	protected void refeshSystem() 
 	{
 		if(sysconfig.reconfigSystemSettings () ) {
+			connectdb = ConnectDataBase2.getInstance();
+			boolean localconnect = connectdb.isLocalDatabaseconnected();
+			boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
+			if(localconnect == false && rmtconnect == true) {
+					JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
+			} else if(localconnect == true && rmtconnect == false) {
+					JOptionPane.showMessageDialog(null,"仅基本数据可用！");
+			} else{
+					JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
+					System.exit(0);
+			}
+			
 			accountschicangconfig = new AccountAndChiCangConfiguration ();
 			stockdbopt = new StockDbOperations ();
-			connectdb.refreshDatabaseConnection();
-			initializeAccountAndChiCang ();
+			acntdbopt = new AccountDbOperation();
+			bkdbopt = new BanKuaiDbOperation ();
+			zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler2 ();
+			cylxmlhandler = new ChanYeLianXMLHandler ();
 			
+			displayAccountAndChiCang ();
 			clearGuiDispalyedInfo ();
 			kspanel.resetInput();
-			initializeDb();
+			displayDbInfo();
 	    	createEvents();
 	    	initializePaoMaDeng ();
-	    	//initizlizeBanKuaiRelatedDialog ();
+
 		}
 	}
 
@@ -177,28 +211,40 @@ public class StockInfoManager
 	private ChanYeLianXMLHandler cylxmlhandler;
 	
 
-	
-	private void initializeDb() 
+/*
+ * @数据库可以有2个数据库，一个存放基本数据，一个存放通达信同步数据，这样减轻基本数据库的负荷	
+ */
+	private void displayDbInfo() 
 	{
-		if(connectdb.isLocalDatabaseconnected()){
+		boolean localconnect = false;
+		boolean rmtconnect = false;
+		if(connectdb.isRemoteDatabaseconnected()){
 			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
-			lblStatusBarOperationIndicatior.setText(connectdb.getLocalDatabaseName("full")+"数据库已连接");
-			btnDBStatus.setToolTipText(connectdb.getLocalDatabaseName("full")+"数据库已连接");
-		}
-		else {
-			
-			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201711_easyicon.net.png")));
-			lblStatusBarOperationIndicatior.setText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
-			btnDBStatus.setToolTipText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
-			JOptionPane.showMessageDialog(null,"数据库连接失败！再见！");
-			System.exit(0);
+			lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText()+ connectdb.getRemoteDatabaseName("full")+"数据库已连接");
+			btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
+			rmtconnect = true;
 		}
 		
-		acntdbopt = new AccountDbOperation();
-		stockdbopt = new StockDbOperations ();
-		bkdbopt = new BanKuaiDbOperation ();
-		zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler2 ();
-		cylxmlhandler = new ChanYeLianXMLHandler ();
+		if(connectdb.isLocalDatabaseconnected()){
+			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
+			lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
+			btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
+			localconnect = true;
+		}
+
+//		 if(localconnect == false && rmtconnect == true) {
+//			JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
+//		} else if(localconnect == true && rmtconnect == false) {
+//			JOptionPane.showMessageDialog(null,"仅基本数据可用！");
+//		} else{
+//			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201711_easyicon.net.png")));
+//			lblStatusBarOperationIndicatior.setText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
+//			btnDBStatus.setToolTipText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
+//			JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
+//			System.exit(0);
+//		}
+		
+		
 	}
 
 	private void initlizedBuyCheckListTreeDialog ()
@@ -219,7 +265,7 @@ public class StockInfoManager
 	}
 
 
-	private void initializeAccountAndChiCang()
+	private void displayAccountAndChiCang()
 	{
 		//在checkbox添加现有持仓，方便启动后就可以查询现有持仓
 		ArrayList<ASingleStockInfo> tmpchicangname = new ArrayList<ASingleStockInfo>(accountschicangconfig.getStockChiCangdetailmap ().values());
@@ -236,7 +282,7 @@ public class StockInfoManager
 
 	private void initializeSysConfig()
 	{
-		sysconfig = SystemConfigration.getInstance();
+		
 	}
 
 	private void createEvents()
@@ -417,7 +463,16 @@ public class StockInfoManager
 			{
 				AccountSeeting accountsetting= new AccountSeeting(accountschicangconfig,frame); 
 				accountsetting.setVisible(true);
-				
+
+				String stockcode = "";
+				try{
+					stockcode = cBxstockcode.getSelectedItem().toString();
+				} catch (java.lang.NullPointerException e) {
+					
+				}
+				kspanel = new BuyStockNumberPrice(stockcode,accountschicangconfig,true);
+				tabbedPane.remove(0);
+				tabbedPane.addTab("\u4E70\u5165\u5FEB\u901F\u8BB0\u5F55", null, kspanel, null);
 			}
 		});
 			
@@ -742,7 +797,7 @@ public class StockInfoManager
 					return;
 				}
 				
-				//refreshChiCangAccountPanel ();
+				refreshChiCangAccountPanel ();
 			}
 		});
 		/*
@@ -806,6 +861,7 @@ public class StockInfoManager
 					updatActionResultToGui (stocknumberpricepanel);
 			    } else {
 			    	JOptionPane.showMessageDialog(frame, "账户现金余额可能不足，无法买入！","Warning", JOptionPane.WARNING_MESSAGE);
+			    	return;
 			    }
 
 				refreshChiCangAccountPanel ();
@@ -847,6 +903,9 @@ public class StockInfoManager
 				if(autoIncKeyFromApi > 0) {
 					stocknumberpricepanel.setDatabaseid(autoIncKeyFromApi);
 					updatActionResultToGui (stocknumberpricepanel);
+			    }else {
+			    	JOptionPane.showMessageDialog(frame, "账户可能没有这么多数量股票，无法卖出！","Warning", JOptionPane.WARNING_MESSAGE);
+			    	return;
 			    }
 	
 				postSellAction (stocknumberpricepanel);
@@ -1012,7 +1071,7 @@ public class StockInfoManager
 //			}
 //		});
 		
-		mntmopendbfile.addMouseListener(new MouseAdapter() 
+		mntmopenlcldbfile.addMouseListener(new MouseAdapter() 
 		{
 			@Override
 			public void mousePressed(MouseEvent arg0) 
@@ -1032,6 +1091,28 @@ public class StockInfoManager
 				}catch (Exception e1){
 					e1.printStackTrace();
 				}
+			}
+		});
+		mntmOpenRmtDb.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				String dbfile = null;
+				switch (connectdb.getRemoteDatabaseType().toLowerCase() ) {
+				case "mysql":    dbfile = "D:\\tools\\HeidiSQL\\heidisql.exe";
+					break;
+				case "access":  dbfile = connectdb.getLocalDatabaseName("full");
+					break;
+				}
+				try {
+					String cmd = "rundll32 url.dll,FileProtocolHandler " + dbfile;
+					System.out.println(cmd);
+					Process p  = Runtime.getRuntime().exec(cmd);
+					p.waitFor();
+				}catch (Exception e1){
+					e1.printStackTrace();
+				}
+				
 			}
 		});
 		
@@ -2058,7 +2139,7 @@ public class StockInfoManager
 	private JButton btnCaiwufengxi;
 	private JComboBox<String> cBxstockcode;
 	private JButton btnSlack;
-	private JMenuItem mntmopendbfile;
+	private JMenuItem mntmopenlcldbfile;
 	private JMenuItem mntmbankuaifenlei;
 	private JTable tblzhongdiangz;
 	private CheckBoxTree checklisttree = null;
@@ -2096,6 +2177,7 @@ public class StockInfoManager
 	private JMenuItem menuItemChanYeLian;
 	private JMenuItem menuItemSysSet;
 	private JMenuItem menuItemimportrecords;
+	private JMenuItem mntmOpenRmtDb;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2837,8 +2919,12 @@ public class StockInfoManager
 		
 		menuOperationList.add(menuItemimportrecords);
 		
-		mntmopendbfile = new JMenuItem("\u6253\u5F00\u6570\u636E\u5E93\u6587\u4EF6");
-		menuOperationList.add(mntmopendbfile);
+		mntmopenlcldbfile = new JMenuItem("\u6253\u5F00\u57FA\u672C\u6570\u636E\u6570\u636E\u5E93");
+		menuOperationList.add(mntmopenlcldbfile);
+		
+		mntmOpenRmtDb = new JMenuItem("\u6253\u5F00\u901A\u8FBE\u4FE1\u540C\u6B65\u6570\u636E\u6570\u636E\u5E93");
+		
+		menuOperationList.add(mntmOpenRmtDb);
 		
 		mntmNewMenuItem_1 = new JMenuItem("\u67E5\u8BE2");
 		
@@ -2881,7 +2967,12 @@ public class StockInfoManager
 		};
 		scrollPane.setViewportView(tableStockAccountsInfo);
 		
-		
+		//根据系统model定制哪些components可以被用户使用
+		if(sysconfig.getSoftWareMode() == sysconfig.MODELCLIENT) {
+			
+		} else if(sysconfig.getSoftWareMode() == sysconfig.MODELSERVER) {
+			
+		}
 		
 		
 	}
@@ -3055,33 +3146,33 @@ class AccountsInfoTableModel extends AbstractTableModel
 /*
  * google guava files 类，可以直接处理读出的line
  */
-class BuySellRecordsProcessor implements LineProcessor<List<String>> 
-{
-    private List<String> recoreslists = Lists.newArrayList();
-    private String zhanghuid = null;
-   
-    @Override
-    public boolean processLine(String line) throws IOException {
-    	List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
-    	System.out.println(tmplinelist);
-    	if(tmplinelist.isEmpty())
-    		return true;
-    	if( tmplinelist.get(0).trim().contains("客户号") && zhanghuid == null) {
-    		zhanghuid =  tmplinelist.get(0).replace("客户号:", "").trim();
-    		recoreslists.add( zhanghuid ); //直接返回用户账号ID
-    	}
-    	
-        if( Pattern.matches("\\d{8}",tmplinelist.get(0)) ) {
-        	String tmpactiontype = tmplinelist.get(2).trim();
-        	if( (tmpactiontype.contains("证券买入") || tmpactiontype.contains("证券卖出") || tmpactiontype.trim().contains("红股入帐") || tmpactiontype.contains("申购中签")) ) {
-            	recoreslists.add(line);
-        	}
-        }
-        
-        return true;
-    }
-    @Override
-    public List<String> getResult() {
-        return recoreslists;
-    }
-}
+//class BuySellRecordsProcessor implements LineProcessor<List<String>> 
+//{
+//    private List<String> recoreslists = Lists.newArrayList();
+//    private String zhanghuid = null;
+//   
+//    @Override
+//    public boolean processLine(String line) throws IOException {
+//    	List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
+//    	System.out.println(tmplinelist);
+//    	if(tmplinelist.isEmpty())
+//    		return true;
+//    	if( tmplinelist.get(0).trim().contains("客户号") && zhanghuid == null) {
+//    		zhanghuid =  tmplinelist.get(0).replace("客户号:", "").trim();
+//    		recoreslists.add( zhanghuid ); //直接返回用户账号ID
+//    	}
+//    	
+//        if( Pattern.matches("\\d{8}",tmplinelist.get(0)) ) {
+//        	String tmpactiontype = tmplinelist.get(2).trim();
+//        	if( (tmpactiontype.contains("证券买入") || tmpactiontype.contains("证券卖出") || tmpactiontype.trim().contains("红股入帐") || tmpactiontype.contains("申购中签")) ) {
+//            	recoreslists.add(line);
+//        	}
+//        }
+//        
+//        return true;
+//    }
+//    @Override
+//    public List<String> getResult() {
+//        return recoreslists;
+//    }
+//}

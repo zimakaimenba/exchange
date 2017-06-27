@@ -141,8 +141,10 @@ public class AccountInfoBasic extends CashAccountBasic
 	{
 		//System.out.println(this.getAccountName() + "买入前有现金" + this.getCurrentAvailableXianJin() );
 		if(checkIfSameDay(actionDay) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
-			if( actionBuyPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 )
+			if( actionBuyPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
+				System.out.println("未通过买入合法性检查");
 				return null;
+			}
 		}
 			
 			super.setCash( super.getCurrentCash() - guquanshu * guquandanjia); //可用现金
@@ -156,7 +158,7 @@ public class AccountInfoBasic extends CashAccountBasic
 				((StockChiCangInfo)chicanggupiaodetailsmap.get(stockcode)).setChicanggushu(guquanshu);
 				((StockChiCangInfo)chicanggupiaodetailsmap.get(stockcode)).setChicangchenben(chengben);
 			}
-
+			System.out.println(this.getAccountName() + "买入后持有" + this.chicanggupiaodetailsmap.get(stockcode).getChicanggushu() );
 			return this.getCurrentAvailableXianJin();
 	}
 	/*
@@ -167,26 +169,28 @@ public class AccountInfoBasic extends CashAccountBasic
 		if( !this.isChiCang(stockcode) ) { 
 			System.out.println("错误，账户没有该股票！");
 			return -1;
-		} else  
-			return 1;
+		} else if(guquanshu > this.getChiCangGuPiaoGuShu(stockcode) && this.getAccountType() != super.TYPERONGQUAN  ) { //融券账户例外，可以先卖
+			System.out.println("下单错误，账户不持有这么多数量该股票！");
+			return -1;
+		} 
+		
+		return 1;
 
 	}
 	/*
 	 * 如果持仓卖完，直接返回卖出后的利润额，还有股票就返回null 
 	 */
 	
-	public Double actionSell(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public String actionSell(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		if(checkIfSameDay(actionDay) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
-			if( actionSellPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 )
-				return null;
+			if( actionSellPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
+				System.out.println("未通过卖出合法性检查");
+				return "FAIL";
+			}
 		}
 		
-		if(guquanshu > this.getChiCangGuPiaoGuShu(stockcode) ) {
-			System.out.println("下单错误，账户不持有这么多数量该股票！");
-			return null;
-		} 
-		
+
 			Double finalprofit = null;
 
 			//对持仓股票进行更改
@@ -218,16 +222,21 @@ public class AccountInfoBasic extends CashAccountBasic
 			}
 			this.setTotoalZiJingChenBen(tmpchenben);
 		
-		return finalprofit;
+			if(finalprofit != null)
+				return String.valueOf(finalprofit);
+			else
+				return null;
  	}
 	/*
-	 * 如果金额不足，就返回-1，否则返回挂单后还有多少现金
+	 * 如果金额不足，就返回null，否则返回挂单后还有多少现金
 	 */
 	public Double  actionBuyGuaDan(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		if(checkIfSameDay(actionDay) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
-			if( actionBuyPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 )
+			if( actionBuyPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
+				System.out.println("未通过买入挂单合法性检查");
 				return null;
+			}
 		}
 		
 		this.setTotoalBuyGuaDanJinEr ( this.getTotoalBuyGuaDanJinEr() +  guquanshu * guquandanjia); //增加挂单的金额
@@ -242,15 +251,17 @@ public class AccountInfoBasic extends CashAccountBasic
 	/*
 	 * 如果金额不足，就返回-1，否则返回挂单后还有多少现金
 	 */
-	public Double actionSellGuaDan(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public String actionSellGuaDan(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		if(checkIfSameDay(actionDay) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
-			if( actionSellPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 )
-				return null;
+			if( actionSellPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
+				System.out.println("未通过卖出挂单合法性检查");
+				return "FAIL";
+			}
 		}
 		
 		this.setTotoalSellGuaDanJinEr ( this.getTotoalSellGuaDanJinEr() + guquanshu * guquandanjia);
-		return this.getCurrentAvailableXianJin() ;
+		return String.valueOf( this.getCurrentAvailableXianJin()  );
 	}
 	private void actionSellGuaDanCannelled (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
@@ -259,15 +270,15 @@ public class AccountInfoBasic extends CashAccountBasic
 	/*
 	 * 挂单结束的2个动作，一个是把挂单锁定的资金解锁，另一个是完成买入或卖出操作
 	 */
-	public void actionBuyGuadanDone (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public Double actionBuyGuadanDone (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		actionBuyGuaDanCannelled(actionDay, stockcode, guquanshu, guquandanjia, shuoming);
-		actionBuy(actionDay, stockcode, guquanshu, guquandanjia, shuoming);
+		return actionBuy(actionDay, stockcode, guquanshu, guquandanjia, shuoming);
 	}
 	/*
 	 * 挂单结束的2个动作，一个是把挂单锁定的资金解锁，另一个是完成买入或卖出操作
 	 */
-	public Double actionSellGuadanDone (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public String actionSellGuadanDone (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		actionSellGuaDanCannelled(actionDay, stockcode, guquanshu, guquandanjia, shuoming);
 		return  actionSell(actionDay, stockcode, guquanshu, guquandanjia, shuoming);

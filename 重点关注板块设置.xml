@@ -1,34 +1,18 @@
 <?xml version="1.0" encoding="GBK"?>
 
-<ZhongDianGuanZhuanBanKuaiDetail>
-  <DaLeiBanKuai daleiname="特定时间">
-    <Item tdxbk="OLED概念" addedTime="17-05-19">OLED概念-&gt;传输和发光材料</Item>
-    <Item tdxbk="公共交通" addedTime="17-06-01">公共交通</Item>
-  </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="重组收购"/>
-  <DaLeiBanKuai daleiname="成长股2">
-    <Item tdxbk="区块链" addedTime="17-06-01">区块链</Item>
-  </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="稳定增长"/>
-  <DaLeiBanKuai daleiname="黑天鹅受益"/>
-  <DaLeiBanKuai daleiname="业绩反转">
-    <Item tdxbk="OLED概念" addedTime="17-05-19">OLED概念-&gt;传输和发光材料</Item>
-  </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="重大事件"/>
-  <DaLeiBanKuai daleiname="涨价概念">
-    <Item tdxbk="公共交通" addedTime="17-05-26">公共交通</Item>
-  </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="次新股">
-    <Item tdxbk="高速公路" addedTime="17-05-19">高速公路</Item>
-    <Item tdxbk="公共交通" addedTime="17-06-19">公共交通</Item>
-  </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="超跌周期">
-    <Item tdxbk="OLED概念" addedTime="17-05-19">OLED概念-&gt;水汽阻隔膜</Item>
-  </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="券商参券">
-    <Item tdxbk="区块链" addedTime="17-05-26">区块链</Item>
-  </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="国新政策">
-    <Item tdxbk="雄安新区" addedTime="17-05-19">雄安新区</Item>
-  </DaLeiBanKuai>
+<ZhongDianGuanZhuanBanKuaiDetail> 
+  <DaLeiBanKuai daleiname="特定时间"> 
+    <Item tdxbk="OLED概念" addedTime="17-05-19">OLED概念-&gt;传输和发光材料</Item> 
+  </DaLeiBanKuai>  
+  <DaLeiBanKuai daleiname="重组收购"/>  
+  <DaLeiBanKuai daleiname="成长股2"/>  
+  <DaLeiBanKuai daleiname="稳定增长"/>  
+  <DaLeiBanKuai daleiname="黑天鹅受益"/>  
+  <DaLeiBanKuai daleiname="业绩反转"/>  
+  <DaLeiBanKuai daleiname="重大事件"/>  
+  <DaLeiBanKuai daleiname="涨价概念"/>  
+  <DaLeiBanKuai daleiname="次新股"/>  
+  <DaLeiBanKuai daleiname="超跌周期"/>  
+  <DaLeiBanKuai daleiname="券商参券"/>  
+  <DaLeiBanKuai daleiname="国新政策"/> 
 </ZhongDianGuanZhuanBanKuaiDetail>

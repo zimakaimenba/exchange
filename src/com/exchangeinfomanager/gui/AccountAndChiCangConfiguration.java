@@ -463,7 +463,7 @@ public class AccountAndChiCangConfiguration
 	/*
 	 * 处理和卖出相关的账户变化，如果卖完账户持仓数变为0，则返回预估的利润数目，盈利为负数，亏损为正数
 	 */
-	public Double setSellAccountRelatedActions(BuyStockNumberPrice stocknumberpricepanel) 
+	public String setSellAccountRelatedActions(BuyStockNumberPrice stocknumberpricepanel) 
 	{
 		int stocknumber = stocknumberpricepanel.getJiaoyiGushu();
 		double stockprice = stocknumberpricepanel.getJiaoyiJiage();
@@ -476,7 +476,7 @@ public class AccountAndChiCangConfiguration
 		AccountInfoBasic tmpactionacnt = this.getAccount(actionstockaccount);
 		
 		
-		Double finailprofit = null;
+		String finailprofit = null;
 		if(!guadan) { 
 			//账户处理
 			try {
@@ -485,13 +485,13 @@ public class AccountAndChiCangConfiguration
 				
 			}
 		} else {
-			 tmpactionacnt.actionSellGuaDan(actionday,stockcode, stocknumber, stockprice,shuoming);
+			finailprofit = tmpactionacnt.actionSellGuaDan(actionday,stockcode, stocknumber, stockprice,shuoming);
 		}
 		
 		return finailprofit;
 	}
 	
-	public Double setGuaDanFinished (BuyStockNumberPrice stocknumberpricepanel)
+	public String setGuaDanFinished (BuyStockNumberPrice stocknumberpricepanel)
 	{
 		int gushu = stocknumberpricepanel.getJiaoyiGushu();
 		double stockprice = stocknumberpricepanel.getJiaoyiJiage();
@@ -504,7 +504,7 @@ public class AccountAndChiCangConfiguration
 		
 		AccountInfoBasic tmpaccount = this.getAccount(actionstockaccount);
 		
-		Double finailprofit = null;
+		String finailprofit = null;
 		if(maimaisign) {
 			tmpaccount.actionBuyGuadanDone(actionday, stockcode, gushu, stockprice, null); //把挂单记录的资金相应减少，复合CANELL的操作
 		} else { 
@@ -514,9 +514,10 @@ public class AccountAndChiCangConfiguration
 			} catch (java.lang.NullPointerException e) {
 				
 			}
-			 if(finailprofit != (Double)null)
-				 stocknumberpricepanel.setProfit(finailprofit);
+			 if(finailprofit != null && !finailprofit.toUpperCase().equals("FAIL"))
+				 stocknumberpricepanel.setProfit(Double.parseDouble(finailprofit) );
 		}
+		
 		return finailprofit;
 	}
 	
@@ -530,7 +531,7 @@ public class AccountAndChiCangConfiguration
 		AccountInfoBasic tmpactionacnt = this.getAccount(actionstockaccount);
 		if(stocknumberpricepanel.isBuySell()) { //买
 			if(this.setBuyAccountRelatedActions (stocknumberpricepanel) == null) //处理账户变化
-				return -1; 
+				return -65535; 
 			this.setBuyStockChiCangRelatedActions (stocknumberpricepanel); //处理持仓股票的变化
 			
 			 //修改说明，增加当前持有多少股,便于用户直观感受
@@ -544,18 +545,22 @@ public class AccountAndChiCangConfiguration
 			if(!tmpactionacnt.isChiCang(stocknumberpricepanel.getStockcode()) )
 				return -2;
 			
-			Double finailprofit = this.setSellAccountRelatedActions (stocknumberpricepanel);//处理账户变化
-			if(finailprofit != null)
-				 stocknumberpricepanel.setProfit(finailprofit);
+			String finailprofit = this.setSellAccountRelatedActions (stocknumberpricepanel);//处理账户变化
+			if( finailprofit!= null && finailprofit.toUpperCase().equals("FAIL") )
+				return -65535;
+			
+			if(finailprofit != null) 
+				stocknumberpricepanel.setProfit(Double.parseDouble(finailprofit) );
 			
 			this.setSellStockChiCangRelatedActions (stocknumberpricepanel);//处理持仓股票的变化
-			
+				
 			 //修改说明，增加当前持有多少股
 			int curallgushu = tmpactionacnt.getChiCangGuPiaoGuShu(stocknumberpricepanel.getStockcode());
 			if(curallgushu >=0)
 				stocknumberpricepanel.setFormatedShuoMing(curallgushu);
-			
+				
 			autoIncKeyFromApi =	acntdbop.setSellExchangeRelatedActions(stocknumberpricepanel);
+
 		}
 		
 		return autoIncKeyFromApi;

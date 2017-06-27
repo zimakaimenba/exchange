@@ -23,8 +23,13 @@ public class CashAccountBasic
 	private String accountname;
 	private String accountid;
 	private boolean jihuo;
-	private String accounttype;
+	private int accounttype;
 	private boolean isallowedzhuanruxianjing ;
+	protected static int TYPECASH=0;
+	protected static int TYPEPUTONG=1;
+	protected static int TYPEXYPUTONG=2;
+	protected static int TYPERONGZI=3;
+	public int TYPERONGQUAN=4;
 	
 	/**
 	 * @ÀúÊ·Ó¯¿÷
@@ -65,11 +70,11 @@ public class CashAccountBasic
 	{
 		this.isallowedzhuanruxianjing = false;
 	}
-	public String getAccounttype() {
+	public int getAccountType() {
 		return accounttype;
 	}
-	protected void setAccounttype(String accounttype) {
-		this.accounttype = accounttype;
+	protected void setAccounttype(int accounttype2) {
+		this.accounttype = accounttype2;
 	}
 	public String getAccountName ()
 	{
