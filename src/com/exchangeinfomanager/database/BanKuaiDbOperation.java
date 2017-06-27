@@ -1905,8 +1905,8 @@ public class BanKuaiDbOperation
 		HashMap<String, BanKuai> allsysbk = this.getSystemAllBanKuaiList ();
 		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
 		for(String tmpbkcode:allbkcode) {
-			String bkfilename = "SH" + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
-			
+			//String bkfilename = "SH" + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
+			String bkfilename = (filenamerule.replaceAll("YY","SH")).replaceAll("XXXXXX", tmpbkcode);
 			File tmpbkfile = new File(exportath + "/" + bkfilename);
 			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
 			    continue; 
@@ -1971,8 +1971,8 @@ public class BanKuaiDbOperation
 			Files.append("数据库共有"+ allbkcode.size() + "个通达信交易所指数！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		
 			for(String tmpbkcode:allbkcode) {
-				String bkfilename = allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim() + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
-				
+				//String bkfilename = allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim() + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
+				String bkfilename = (filenamerule.replaceAll("YY", allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim())).replaceAll("XXXXXX", tmpbkcode);
 				File tmpbkfile = new File(exportath + "/" + bkfilename);
 					
 					if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {
@@ -2007,8 +2007,8 @@ public class BanKuaiDbOperation
 		HashMap<String, BanKuai> allsysbk = this.getTDXAllZhiShuList ();
 		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
 		for(String tmpbkcode:allbkcode) {
-			String bkfilename = allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim() + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
-			
+			//String bkfilename = allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim() + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
+			String bkfilename = (filenamerule.replaceAll("YY", allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim())).replaceAll("XXXXXX", tmpbkcode);
 			File tmpbkfile = new File(exportath + "/" + bkfilename);
 			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
 			    continue; 
