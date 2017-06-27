@@ -440,7 +440,7 @@ public class BanKuaiDbOperation
 		File file = new File(sysconfig.getTDXSysZDYBanKuaiFile () );
 		 
 		 if(!file.exists() ) {
-			 System.out.println("File not exist");
+			 System.out.println("Zdy BanKuai File not exist");
 			 return null;
 		 }
 		 
