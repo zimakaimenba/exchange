@@ -130,8 +130,9 @@ public class ConnectDataBase2
 		{
 			boolean exectrmtcon = false;
 			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
+				if(sqlstatement.contains(str) ) 
 					exectrmtcon = true;
+				
 			}
 
 			DataBaseConnection tmpdbcon;

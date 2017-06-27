@@ -71,7 +71,11 @@ public class ImportTDXData extends JDialog {
 	{
 		zdybkmap = this.bkdbopt.getTDXZiDingYiBanKuaiList ();
 		ArrayList<String> zdybknames = new ArrayList<String> ();
-		zdybknames.addAll(zdybkmap.keySet());
+		try {
+			zdybknames.addAll(zdybkmap.keySet());
+		} catch (java.lang.NullPointerException e) {
+			zdybknames.add("");
+		}
 		Collator collator = Collator.getInstance(Locale.CHINESE); //”√÷–Œƒ≈≈–Ú
  		Collections.sort(zdybknames,collator);
  		
