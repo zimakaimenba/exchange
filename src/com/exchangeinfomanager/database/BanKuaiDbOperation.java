@@ -19,6 +19,7 @@ import java.text.Collator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -1848,14 +1849,18 @@ public class BanKuaiDbOperation
 	/*
 	 * 检查数据库中的通达信板块哪些有记录文件，哪些没有。 
 	 */
+	
 	public File preCheckTDXBanKuaiVolAmoToDb ()
 	{
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步通达信板块成交量预检查.tmp");
 		
-		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
-		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
-		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
+		List<String> volamooutput = getTDXVolFilesRule ();
+		String exportath = volamooutput.get(0);
+		String filenamerule = volamooutput.get(1);
+//		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
+//		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
+//		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
 //		boolean header;
 //		if(volamooutput.get(4).endsWith("1"))
 //			header = true;
@@ -1898,9 +1903,14 @@ public class BanKuaiDbOperation
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步通达信板块成交量报告.tmp");
 		
-		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
-		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
-		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
+		List<String> volamooutput = getTDXVolFilesRule ();
+		String exportath = volamooutput.get(0);
+		String filenamerule = volamooutput.get(1);
+		String dateRule = volamooutput.get(2);
+//		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
+//		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
+//		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
+//		String dateRule = getTDXDateExportDateRule(Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(2)).get(1));
 		
 		HashMap<String, BanKuai> allsysbk = this.getSystemAllBanKuaiList ();
 		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
@@ -1919,13 +1929,12 @@ public class BanKuaiDbOperation
 							+ " FROM 通达信板块每日交易信息  WHERE  代码 = " 
    							+ "'"  + tmpbkcode + "'" 
    							;
-
 					System.out.println(sqlquerystat);
    			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	while(rs.next()) {
-   			    		System.out.println(rs.getMetaData().getColumnCount());
+//   			    		System.out.println(rs.getMetaData().getColumnCount());
    			    		 lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
-   			    		System.out.println(lastestdbrecordsdate);
+   			    		 System.out.println(lastestdbrecordsdate);
    			    	}
    			    } catch(java.lang.NullPointerException e) { 
    			    	e.printStackTrace();
@@ -1943,7 +1952,7 @@ public class BanKuaiDbOperation
 						}
    			    }
 				
-				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,lastestdbrecordsdate,"通达信板块每日交易信息",tmprecordfile);
+				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,lastestdbrecordsdate,"通达信板块每日交易信息",dateRule,tmprecordfile);
 		}
 		
 		return tmprecordfile;
@@ -1956,9 +1965,12 @@ public class BanKuaiDbOperation
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步通达信交易所指数成交量预检查.tmp");
 		
-		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
-		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
-		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
+		List<String> volamooutput = getTDXVolFilesRule ();
+		String exportath = volamooutput.get(0);
+		String filenamerule = volamooutput.get(1);
+//		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
+//		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
+//		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
 //		boolean header;
 //		if(volamooutput.get(4).endsWith("1"))
 //			header = true;
@@ -2000,10 +2012,15 @@ public class BanKuaiDbOperation
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步通达信指数成交量报告.tmp");
 		
-		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
-		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
-		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
-		
+		List<String> volamooutput = getTDXVolFilesRule ();
+		String exportath = volamooutput.get(0);
+		String filenamerule = volamooutput.get(1);
+		String dateRule = volamooutput.get(2);
+//		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
+//		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
+//		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
+//		String dateRule = getTDXDateExportDateRule(Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(2)).get(1));
+				
 		HashMap<String, BanKuai> allsysbk = this.getTDXAllZhiShuList ();
 		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
 		for(String tmpbkcode:allbkcode) {
@@ -2024,8 +2041,10 @@ public class BanKuaiDbOperation
 					System.out.println(sqlquerystat);
    			    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	//rs.first();
-   			    	while(rs.next()) 
+   			    	while(rs.next()) {
    			    		lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME");
+   			    		System.out.println(lastestdbrecordsdate);
+   			    	}
    			    }catch(java.lang.NullPointerException e){ 
    			    	e.printStackTrace();
    			    } catch (SQLException e) {
@@ -2042,19 +2061,64 @@ public class BanKuaiDbOperation
 						}
    			    }
 				
-				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,lastestdbrecordsdate,"通达信交易所指数每日交易信息",tmprecordfile);
+				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,lastestdbrecordsdate,"通达信交易所指数每日交易信息",dateRule,tmprecordfile);
 		}
 		
 		return tmprecordfile;
 	}
 
-	private void setVolAmoRecordsFromFileToDatabase (String tmpbkcode, File tmpbkfile, Date lastestdbrecordsdate, String inserttablename, File tmprecordfile)
+	private List<String> getTDXVolFilesRule ()
+	{
+		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
+		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
+		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
+		String dateRule = getTDXDateExportDateRule(Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(2)).get(1));
+		
+		List<String> tdxVolFileRule = new ArrayList<String> ();
+		tdxVolFileRule.add(exportath);
+		tdxVolFileRule.add(filenamerule);
+		tdxVolFileRule.add(dateRule);
+		
+		return tdxVolFileRule;
+	}
+	private String getTDXDateExportDateRule(String ruleindex) 
+	{
+		String value = null;
+		switch (ruleindex.trim()) {
+		case "0": 	value = "MM/dd/yyyy";
+			break;
+		case "1": 	value = "yyyy/MM/dd";
+			break;
+		case "2":	value = "dd/MM/yyyy";
+			break;
+		case "3":	value = "MM-dd-yyyy";
+			break;
+		case "4":	value = "yyyy-MM-dd";
+			break;
+		case "5":	value = "dd-MM-yyyy";
+			break;
+		case "6":	value = "MMddyyyy";
+			break;
+		case "7":	value = "yyyyMMdd";
+			break;
+		case "8":	value = "ddMMyyyy";
+			break;
+		}
+		
+		return value;
+	}
+	private void setVolAmoRecordsFromFileToDatabase (String tmpbkcode, File tmpbkfile, Date lastestdbrecordsdate, String inserttablename, String datarule,File tmprecordfile)
 	{
 		 
 		Charset charset = sysconfig.charSet();
 		if(lastestdbrecordsdate == null) //null说明数据库里面还没有相关的数据，把时间设置为1900年把文件中所有数据都导入
 			try {
-				lastestdbrecordsdate =  new SimpleDateFormat("yyyy-MM-dd").parse("1900-01-01");
+				Calendar rightNow = Calendar.getInstance();
+		        rightNow.setTime(new Date() );
+		        rightNow.add(Calendar.YEAR,-100);//日期减1年
+		        Date rightdate = rightNow.getTime();
+		        SimpleDateFormat formatter = new SimpleDateFormat(datarule); 
+				lastestdbrecordsdate =  formatter.parse( formatter.format(rightdate) );
 				Files.append(tmpbkcode + "板块成交量记录将导入所有记录！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 			} catch (ParseException e1) {
 				e1.printStackTrace();
@@ -2078,34 +2142,38 @@ public class BanKuaiDbOperation
                 if (c == '\n' || c == '\r') {  
                     line = rf.readLine();  
                     if (line != null) {  
-                        List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
-                        if(Pattern.matches("\\d{2}/\\d{2}/\\d{4}",tmplinelist.get(0)) && !tmplinelist.get(5).equals("0")) {
+                        @SuppressWarnings("deprecation")
+						List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
+                        //if(Pattern.matches("\\d{2}/\\d{2}/\\{4}",tmplinelist.get(0)) && !tmplinelist.get(5).equals("0")) { //有可能是半天数据，有0，不完整，不能录入
+                        if( tmplinelist.size() ==7 && !tmplinelist.get(5).equals("0")) { //有可能是半天数据，有0，不完整，不能录入
                         	Date curlinedate = null;
                     		try {
-                    			curlinedate =  new SimpleDateFormat( "MM/dd/yyyy" ).parse(tmplinelist.get(0)) ;
+                    			String beforparsedate = tmplinelist.get(0);
+                    			curlinedate =  new SimpleDateFormat( datarule ).parse(beforparsedate) ;
+                    			
+                    			if(curlinedate.after(lastestdbrecordsdate)) {
+                        			String sqlinsertstat = "INSERT INTO " + inserttablename +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额) values ("
+                    						+ "'" + tmpbkcode + "'" + ","
+                    						+ "'" +  sysconfig.formatDate(curlinedate) + "'" + ","
+                    						+ "'" +  tmplinelist.get(1) + "'" + "," 
+                    						+ "'" +  tmplinelist.get(2) + "'" + "," 
+                    						+ "'" +  tmplinelist.get(3) + "'" + "," 
+                    						+ "'" +  tmplinelist.get(4) + "'" + "," 
+                    						+ "'" +  tmplinelist.get(5) + "'" + "," 
+                    						+ "'" +  tmplinelist.get(6) + "'"  
+                    						+ ")"
+                    						;
+                        			System.out.println(sqlinsertstat);
+                    				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+                    				lineimportcount ++;
+                        		} else if(curlinedate.compareTo(lastestdbrecordsdate) == 0) {
+                        			finalneededsavelinefound = true;
+                        			Files.append(tmpbkcode + "指数成交量记录导入起始时间为:" + line + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+                        			Files.append(tmpbkcode + "共导入:" + lineimportcount + "个记录" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+                        		}
                     		} catch (ParseException e) {
-                    			e.printStackTrace();
-                    		}
-                    		
-                    		if(curlinedate.after(lastestdbrecordsdate)) {
-                    			String sqlinsertstat = "INSERT INTO " + inserttablename +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额) values ("
-                						+ "'" + tmpbkcode + "'" + ","
-                						+ "'" +  sysconfig.formatDate(curlinedate) + "'" + ","
-                						+ "'" +  tmplinelist.get(1) + "'" + "," 
-                						+ "'" +  tmplinelist.get(2) + "'" + "," 
-                						+ "'" +  tmplinelist.get(3) + "'" + "," 
-                						+ "'" +  tmplinelist.get(4) + "'" + "," 
-                						+ "'" +  tmplinelist.get(5) + "'" + "," 
-                						+ "'" +  tmplinelist.get(6) + "'"  
-                						+ ")"
-                						;
-                    			System.out.println(sqlinsertstat);
-                				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-                				lineimportcount ++;
-                    		} else if(curlinedate.compareTo(lastestdbrecordsdate) == 0) {
-                    			finalneededsavelinefound = true;
-                    			Files.append(tmpbkcode + "指数成交量记录导入起始时间为:" + line + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-                    			Files.append(tmpbkcode + "共导入:" + lineimportcount + "个记录" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+//                    			e.printStackTrace();
+                    			System.out.println("不是有日期的数据行");
                     		}
                         }
                     } //else {  
