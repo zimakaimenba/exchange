@@ -9,7 +9,7 @@
     <singledbs dbsname="mysqltest" user="root" password="123456789" databasetype="MySql" curselecteddbs="yes">localhost:3306/stockinfomanagementtest</singledbs>
   </databasesources>
   <serverdatabasesources>
-    <singledbs dbsname="mysqltest" user="liuwei" password="987654321" databasetype="MySql" curselecteddbs="yes">192.168.2.8:3306/stockinfomanagementtest</singledbs>
-    <singledbs dbsname="mysqllocal" user="root" password="123456789" databasetype="MySql" curselecteddbs="no">localhost:3306/stockinfomanagementtest</singledbs>
+    <singledbs dbsname="mysqltest" user="liuwei" password="987654321" databasetype="MySql" curselecteddbs="no">192.168.2.8:3306/stockinfomanagementtest</singledbs>
+    <singledbs dbsname="mysqllocal" user="root" password="123456789" databasetype="MySql" curselecteddbs="yes">localhost:3306/stockinfomanagementtest</singledbs>
   </serverdatabasesources>
 </SystemSettings>

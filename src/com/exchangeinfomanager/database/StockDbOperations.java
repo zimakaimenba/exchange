@@ -828,6 +828,95 @@ public class StockDbOperations
 		return tmprecordfile;
 	}
 
+	public Object[][] getTodaysOperations() 
+	{
+		 String searchdate = sysconfig.formatDate( new Date () );
+		 searchdate = searchdate.replaceAll("\\d{2}:\\d{2}:\\d{2}", "");
+		 String sqlquerystat2=" SELECT czjl.股票代码, " 
+					+ " IF( czjl.买卖金额=0.0,'送转股',IF(czjl.挂单 = true,IF(czjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(czjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
+					+ " czjl.原因描述,"
+					+ " czjl.ID,"
+					+ " czjl.买卖账号,"
+					+ "'操作记录买卖'" 
+					+ " FROM 操作记录买卖 czjl "
+					+ "	WHERE czjl.日期>=" + "'" + searchdate + "'"
+					
+					+ " UNION ALL " 
+					;
+		System.out.println(sqlquerystat2);
+		String sqlquerystat3=" SELECT rqczjl.股票代码, "
+							+ "IF( rqczjl.买卖金额=0.0,'送转股',IF(rqczjl.挂单 = true,IF(rqczjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(rqczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
+							+ "rqczjl.原因描述,"
+							+ "rqczjl.ID,"
+							+ "rqczjl.买卖账号,"
+							+ "'操作记录融券买卖'"
+							+ " FROM 操作记录融券买卖 rqczjl"
+							+ "	WHERE rqczjl.日期>=" + "'" + searchdate + "'"
+							
+							+ " UNION  ALL "
+							;
+		System.out.println(sqlquerystat3);
+		String sqlquerystat4=" SELECT rzczjl.股票代码,"
+							+ "IF( rzczjl.买卖金额=0.0,'送转股',IF(rzczjl.挂单 = true,IF(rzczjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(rzczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
+							+ "rzczjl.原因描述,"
+							+ "rzczjl.ID,"
+							+ "rzczjl.买卖账号,"
+							+ "'操作记录融资买卖'"
+							+ " FROM 操作记录融资买卖 rzczjl"
+							+ " WHERE rzczjl.日期>=" + "'" + searchdate + "'"
+							
+							
+							;
+		System.out.println(sqlquerystat4);
+		String sqlquerystat =  sqlquerystat2 + sqlquerystat3 + sqlquerystat4 ;
+		
+		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
+		sqlstatmap.put("mysql", sqlquerystat);
+		
+//		sqlquerystat = getZdgzMrmcYingKuiSQLForAccess (stockbasicinfo);
+//		sqlstatmap.put("access", sqlquerystat);
+     
+		 CachedRowSetImpl rs = null;
+		 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
+		 
+		 Object[][] data = null;  
+		    try  {     
+		        rs.last();  
+		        int rows = rs.getRow();  
+		        data = new Object[rows][];    
+		        int columnCount = 4;//列数  
+		        rs.first();  
+		        int k = 0;  
+		        //while(rs.next())
+		        for(int j=0;j<rows;j++) {   //{ "日期", "操作", "说明","ID","操作账户","信息表" };
+		            Object[] row = new Object[columnCount];  
+		            row[0] = rs.getString(1);
+		            row[1] = rs.getString(2);
+		            row[2] = rs.getString(3);
+		            row[3] = rs.getString(5);
+
+		            data[k] = row;  
+		            k++; 
+		            rs.next();
+		        } 
+		       
+		    } catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+		    }catch(Exception e) {
+		    	e.printStackTrace();
+		    } finally {
+		    	if(rs != null)
+					try {
+						rs.close();
+						rs = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+		    }
+		    
+		    return data;
+	}
+
 
 
 }

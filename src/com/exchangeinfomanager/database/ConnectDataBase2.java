@@ -352,7 +352,7 @@ class DataBaseConnection
 			case "mysql":
 						try	{
 								Class.forName("com.mysql.jdbc.Driver");
-								 System.out.println("成功加载MySQL驱动！");
+								 System.out.println("成功加载MySQL驱动 for" + dbconnectstr);
 							} catch(ClassNotFoundException e)	{
 								System.out.println("找不到驱动程序类 ，加载驱动失败！");
 								e.printStackTrace();
@@ -369,13 +369,12 @@ class DataBaseConnection
 				tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,password);
 //				con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 				if(tmpcon != null)	{
-					System.out.println("Sucessed database");
+					System.out.println( "Sucessed connect database:" + dbconnectstr );
 					this.databaseconnected = true;
 				}
 			} catch(SQLException se) {   
-			    se.printStackTrace();
-//			    JOptionPane.showMessageDialog(null,"数据库连接失败，数据库可能未启动！，再见！", "警告",JOptionPane.INFORMATION_MESSAGE);  
-//				System.exit(0);
+			    //se.printStackTrace();
+			    System.out.println( "Failed connect database:" + dbconnectstr );
 			}
 						
 			return tmpcon;

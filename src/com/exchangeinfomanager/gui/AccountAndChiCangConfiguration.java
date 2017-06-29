@@ -34,7 +34,8 @@ public class AccountAndChiCangConfiguration
 {
 	AccountAndChiCangConfiguration() 
 	{
-		acntdbop = new AccountDbOperation ();
+		 acntdbop = new AccountDbOperation ();
+		 stockdbopt = new StockDbOperations ();
 	
 		 cashaccountsdetailmap = new HashMap<String,CashAccountBasic>();
 		 putongaccountsdetailmap = new HashMap<String,AccountPuTong>();
@@ -44,19 +45,22 @@ public class AccountAndChiCangConfiguration
 
 		initializeAccounts ();
 		initiazlizeStockChiCang ();
-		
+		//initiazlizeTodayOpt ();
 	}
 	
+	
+
 	SystemConfigration sysconfig ;
 
 	private AccountDbOperation acntdbop;
-
+	private StockDbOperations stockdbopt;
 	private HashMap<String, CashAccountBasic> cashaccountsdetailmap;
 	private HashMap<String ,AccountPuTong> putongaccountsdetailmap;
 	private HashMap<String ,AccountXinYongPuTong> rzrqputongaccountsdetailmap; 
 	private HashMap<String ,AccountRongZi> rongziaccountsdetailmap;
 	private HashMap<String ,AccountRongQuan> rongquanaccountsdetailmap;
-	private HashMap<String ,ASingleStockInfo> stockChiCangdetailmap;
+	private HashMap<String ,ASingleStockInfo> stockChiCangdetailmap; //当前系统持仓
+	private HashMap<String ,BuyStockNumberPrice> todayoptmap; //当前系统持仓
 	
 
 	public boolean isSystemChiCang(String stockcode) 
@@ -262,7 +266,14 @@ public class AccountAndChiCangConfiguration
 	public HashMap<String, ASingleStockInfo> getStockChiCangdetailmap() {
 		return stockChiCangdetailmap;
 	}
-
+/*
+ * 初始化今日操作
+ */
+//	private void initiazlizeTodayOpt() 
+//	{
+//		todayoptmap = new  HashMap<String ,BuyStockNumberPrice> ();
+//		Object[][] ptacntsmap = stockdbopt.getTodaysOperations ();
+//	}
 /*
  * 初始化持仓股票。方法是
  */
