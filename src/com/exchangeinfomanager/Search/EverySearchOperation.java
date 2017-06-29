@@ -96,7 +96,7 @@ public class EverySearchOperation extends JPanel
 		add(btnSearch);
 		
 		cbxSearchAction = new JComboBox();
-		cbxSearchAction.setModel(new DefaultComboBoxModel(new String[] {" ", "\u4E70\u5356\u8BB0\u5F55", "\u6302\u5355\u8BB0\u5F55", "\u5173\u6CE8\u8BB0\u5F55", "\u5F53\u524D\u6301\u4ED3"}));
+		cbxSearchAction.setModel(new DefaultComboBoxModel(new String[] {" ", "\u4E70\u5356\u8BB0\u5F55", "\u5173\u6CE8\u8BB0\u5F55", "\u5F53\u524D\u6301\u4ED3"}));
 		
 		cbxSearchAction.setEditable(true);
 		cbxSearchAction.setBounds(87, 10, 170, 23);
