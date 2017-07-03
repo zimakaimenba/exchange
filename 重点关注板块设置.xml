@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="GBK"?>
 
-<ZhongDianGuanZhuanBanKuaiDetail> 
-  <DaLeiBanKuai daleiname="特定时间"> 
-    <Item tdxbk="OLED概念" addedTime="17-05-19">OLED概念-&gt;传输和发光材料</Item> 
-  </DaLeiBanKuai>  
-  <DaLeiBanKuai daleiname="重组收购"/>  
-  <DaLeiBanKuai daleiname="成长股2"/>  
-  <DaLeiBanKuai daleiname="稳定增长"/>  
-  <DaLeiBanKuai daleiname="黑天鹅受益"/>  
-  <DaLeiBanKuai daleiname="业绩反转"/>  
-  <DaLeiBanKuai daleiname="重大事件"/>  
-  <DaLeiBanKuai daleiname="涨价概念"/>  
-  <DaLeiBanKuai daleiname="次新股"/>  
-  <DaLeiBanKuai daleiname="超跌周期"/>  
-  <DaLeiBanKuai daleiname="券商参券"/>  
-  <DaLeiBanKuai daleiname="国新政策"/> 
+<ZhongDianGuanZhuanBanKuaiDetail>
+  <DaLeiBanKuai daleiname="特定时间">
+    <Item tdxbk="OLED概念" addedTime="17-05-19">OLED概念-&gt;传输和发光材料</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="重组收购"/>
+  <DaLeiBanKuai daleiname="成长股2"/>
+  <DaLeiBanKuai daleiname="稳定增长"/>
+  <DaLeiBanKuai daleiname="黑天鹅受益"/>
+  <DaLeiBanKuai daleiname="业绩反转"/>
+  <DaLeiBanKuai daleiname="重大事件"/>
+  <DaLeiBanKuai daleiname="涨价概念"/>
+  <DaLeiBanKuai daleiname="次新股"/>
+  <DaLeiBanKuai daleiname="超跌周期"/>
+  <DaLeiBanKuai daleiname="券商参券"/>
+  <DaLeiBanKuai daleiname="国新政策"/>
 </ZhongDianGuanZhuanBanKuaiDetail>

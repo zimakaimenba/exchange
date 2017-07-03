@@ -66,8 +66,8 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.exchangeinfomanager.bankuai.gui.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.database.StockDbOperations;
 
 
@@ -264,6 +264,8 @@ public class Ginkgo2 extends JPanel
 	                }
 	                
 	                if( parent.getStatus() != GinkgoNode.BKGEGU) { //父节点不是个股，可以加
+	                	String suoshubkcode = parent.getTDXBanKuaiZhiShuCode();
+	                	newNode.setTDXBanKuaiZhiShuCode(suoshubkcode);
 	                	parent.add(newNode);
 		                parent.setExpansion(true);
 	                } else { ////父节点是个股，不可以加
@@ -360,6 +362,8 @@ public class Ginkgo2 extends JPanel
 		                }
 
 	                	if( parent.getStatus() != GinkgoNode.BKGEGU) { //父节点不是个股，可以加
+		                	String suoshubkcode = parent.getTDXBanKuaiZhiShuCode();
+		                	newNode.setTDXBanKuaiZhiShuCode(suoshubkcode);
 			                parent.add(newNode);
 			                parent.setExpansion(true);
 		                } else { ////父节点是个股，不可以加
@@ -978,8 +982,6 @@ public class Ginkgo2 extends JPanel
 	             getReleatedInfoAndActionsForTreePathNode (bkpath);
 	             tree.setSelectionPath(bkpath);
 	     	     tree.scrollPathToVisible(bkpath);
-	     	     
-	     	    
 	        }
 	    }
 	    

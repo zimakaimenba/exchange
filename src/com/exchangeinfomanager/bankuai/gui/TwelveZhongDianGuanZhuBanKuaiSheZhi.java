@@ -18,7 +18,9 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.database.StockDbOperations;
+import com.exchangeinfomanager.database.TwelveZhongDianGuanZhuXmlHandler;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.google.common.collect.ArrayListMultimap;
@@ -84,7 +86,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 	 * Create the dialog.
 	 * @param zdgzbkxmlhandler2 
 	 */
-	public TwelveZhongDianGuanZhuBanKuaiSheZhi (BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt, TwelveZhongDianGuanZhuXmlHandler2 zdgzbkxmlhandler,ChanYeLianXMLHandler cylxmhandler) 
+	public TwelveZhongDianGuanZhuBanKuaiSheZhi (BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler,ChanYeLianXMLHandler cylxmhandler) 
 	{
 		this.bkdbopt = bkdbopt2;
 		this.stockdbopt = stockdbopt;
@@ -95,7 +97,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 		initializeGui ();
 		createEvents();
 
-		//startDialog ();
+		startDialog ();
 	}
 	
 	public void startDialog ()
@@ -106,7 +108,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 	}
 
 	private HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> daleidetailmap;
-	private TwelveZhongDianGuanZhuXmlHandler2 zdgzbkxmlhandler;
+	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
 	private SystemConfigration sysconfig;
 	private BanKuaiDbOperation bkdbopt;
 	private StockDbOperations stockdbopt;
@@ -151,11 +153,11 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 	}
 	
 		
-	private boolean saveAllZdgzbkToXml ()
-	{
-		return zdgzbkxmlhandler.saveAllZdgzbkToXml () ;
-		
-	}
+//	private boolean saveAllZdgzbkToXml ()
+//	{
+//		return zdgzbkxmlhandler.saveAllZdgzbkToXml () ;
+//		
+//	}
 	
 	/*
      * 展开所选取的节点
@@ -292,7 +294,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 				if(btnSave.isEnabled()) {
 					int action = JOptionPane.showConfirmDialog(null, "更改后的信息未存！是否需要保存？","Warning", JOptionPane.YES_NO_OPTION);
 					if(0 == action) {
-						saveAllZdgzbkToXml();
+						zdgzbkxmlhandler.saveAllZdgzbkToXml () ;
 						//setZdgzMrmcInfoToDb();
 					}
 					 
@@ -321,7 +323,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				if( saveAllZdgzbkToXml() )
+				if( zdgzbkxmlhandler.saveAllZdgzbkToXml () )
 					btnSave.setEnabled(false);
 				else
 					JOptionPane.showMessageDialog(null, "保存XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
@@ -356,21 +358,24 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 				 tmpgzbk.setBkchanyelian(chanyelian.substring(0, chanyelian.length()-2)); //去掉最后的->
 				 tmpgzbk.setTdxbk(tdxbk);
 				 
-				 HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> allzdgzbkmap = zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ();
-				 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist; //右边显示的内容
-				 try {
-					tmpzdgzbklist = allzdgzbkmap.get(cbxDale.getSelectedItem().toString());
-					tmpzdgzbklist.add(tmpgzbk);
-				} catch (java.lang.NullPointerException e) {
-					tmpzdgzbklist = new ArrayList<GuanZhuBanKuaiInfo> ();
-					tmpzdgzbklist.add(tmpgzbk);
-				}
-				allzdgzbkmap.put(cbxDale.getSelectedItem().toString(), tmpzdgzbklist);
+				 String daleiname = cbxDale.getSelectedItem().toString();
+				 zdgzbkxmlhandler.addNewGuanZhuBanKuai(daleiname, tmpgzbk);
 				 
-				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(allzdgzbkmap);
+//				 HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> allzdgzbkmap = zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ();
+//				 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist; //右边显示的内容
+//				 try {
+//					tmpzdgzbklist = allzdgzbkmap.get(cbxDale.getSelectedItem().toString());
+//					tmpzdgzbklist.add(tmpgzbk);
+//				} catch (java.lang.NullPointerException e) {
+//					tmpzdgzbklist = new ArrayList<GuanZhuBanKuaiInfo> ();
+//					tmpzdgzbklist.add(tmpgzbk);
+//				}
+//				allzdgzbkmap.put(cbxDale.getSelectedItem().toString(), tmpzdgzbklist);
+				 
+				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ());
 				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 				 
-				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(allzdgzbkmap);
+				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ());
 				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 				 
 				 
@@ -391,15 +396,22 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 					return;
 				}
 				
-				 HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> allzdgzbkmap = zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ();
-				 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist = allzdgzbkmap.get(cbxDale.getSelectedItem().toString());
-				 tmpzdgzbklist.remove(row);
-				 allzdgzbkmap.put(cbxDale.getSelectedItem().toString(), tmpzdgzbklist);
-				 
-				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(allzdgzbkmap);
+				
+				 //HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> allzdgzbkmap = zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ();
+//				 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist = allzdgzbkmap.get(cbxDale.getSelectedItem().toString());
+//				 tmpzdgzbklist.remove(row);
+//				 allzdgzbkmap.put(cbxDale.getSelectedItem().toString(), tmpzdgzbklist);
+				
+				 String daleiname = cbxDale.getSelectedItem().toString();
+				 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+				 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzbk);
+					
+				 //((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(allzdgzbkmap);
+				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai () );
 				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 				 
-				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(allzdgzbkmap);
+				 //((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(allzdgzbkmap);
+				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai () );
 				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 				 
 			     btnSave.setEnabled(true);
@@ -422,7 +434,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 				if(btnSave.isEnabled()) {
 					int action = JOptionPane.showConfirmDialog(null, "更改后的信息未存！是否需要保存？","Warning", JOptionPane.YES_NO_OPTION);
 					if(0 == action) {
-						saveAllZdgzbkToXml();
+						zdgzbkxmlhandler.saveAllZdgzbkToXml () ;
 					}
 					dispose ();
 					 
@@ -698,7 +710,9 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 
 
 
-
+/*
+ * 重点关注板块表
+ */
 class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel 
 {
 	private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap;
@@ -802,6 +816,10 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 	    
 }
 
+
+/*
+ * 12个大类某个具体大类的关注内容表
+ */
 class CurZdgzBanKuaiTableModel extends AbstractTableModel 
 {
 	private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap;
@@ -820,6 +838,12 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 		this.gzbkmap =  gzbkmap;
 	}
 
+	public GuanZhuBanKuaiInfo getGuanZhuBanKuaiInfo (int rowindex)
+	{
+		String currentdalei = cbxDale.getSelectedItem().toString();
+		ArrayList<GuanZhuBanKuaiInfo> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
+		return tmpgzbkinfo.get(rowindex);
+	}
 
 	 public int getRowCount() 
 	 {

@@ -21,9 +21,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInf
 import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
-import com.exchangeinfomanager.bankuai.gui.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.bankuai.gui.TwelveZhongDianGuanZhuBanKuaiSheZhi;
-import com.exchangeinfomanager.bankuai.gui.TwelveZhongDianGuanZhuXmlHandler2;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -153,8 +151,8 @@ public class StockInfoManager
 		stockdbopt = new StockDbOperations ();
 		acntdbopt = new AccountDbOperation();
 		bkdbopt = new BanKuaiDbOperation ();
-		zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler2 ();
-		cylxmlhandler = new ChanYeLianXMLHandler ();
+		zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
+		cylxmlhandler = new ChanYeLianXMLHandler (bkdbopt);
 		
 		initializeGui();
 		displayAccountAndChiCang ();
@@ -182,8 +180,8 @@ public class StockInfoManager
 			stockdbopt = new StockDbOperations ();
 			acntdbopt = new AccountDbOperation();
 			bkdbopt = new BanKuaiDbOperation ();
-			zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler2 ();
-			cylxmlhandler = new ChanYeLianXMLHandler ();
+			zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
+			cylxmlhandler = new ChanYeLianXMLHandler (bkdbopt);
 			
 			displayAccountAndChiCang ();
 			clearGuiDispalyedInfo ();
@@ -207,7 +205,7 @@ public class StockInfoManager
 	private TwelveZhongDianGuanZhuBanKuaiSheZhi zdgzdialog;
 	private BanKuaiGuanLi bkgldialog;
 	private SearchDialog searchdialog;
-	private TwelveZhongDianGuanZhuXmlHandler2 zdgzbkxmlhandler;
+	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
 	private ChanYeLianXMLHandler cylxmlhandler;
 	
 
@@ -265,6 +263,9 @@ public class StockInfoManager
 	}
 
 
+	/*
+	 * 把持仓显示在相应的位置
+	 */
 	private void displayAccountAndChiCang()
 	{
 		//在checkbox添加现有持仓，方便启动后就可以查询现有持仓
@@ -275,15 +276,19 @@ public class StockInfoManager
 			System.out.println(tmpsgstock.getStockname());
 			cBxstockcode.addItem(tmpsgstock.getStockcode()+tmpsgstock.getStockname());
 		}
+		try {
+			kspanel.setStockcode(cBxstockcode.getSelectedItem().toString().substring(0, 6));
+		} catch (java.lang.NullPointerException e) {
 			
+		}
 	}
 
 
 
-	private void initializeSysConfig()
-	{
-		
-	}
+//	private void initializeSysConfig()
+//	{
+//		
+//	}
 
 	private void createEvents()
 	{
@@ -2191,7 +2196,7 @@ public class StockInfoManager
 		frame.getContentPane().setEnabled(false);
 				
 		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u7406");
-		frame.setBounds(100, 100, 874, 928);
+		frame.setBounds(100, 100, 874, 896);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel panelStatusBar = new JPanel();
@@ -2371,35 +2376,37 @@ public class StockInfoManager
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+												.addComponent(scrollPane_1)
+												.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE))
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
+										.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE))
+									.addGap(7)
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+										.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 398, Short.MAX_VALUE)
+										.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addComponent(pnl_paomd, GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
+											.addPreferredGap(ComponentPlacement.UNRELATED)
+											.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 242, GroupLayout.PREFERRED_SIZE)
+											.addGap(24)
+											.addComponent(btnDBStatus))
+										.addGroup(groupLayout.createSequentialGroup()
+											.addPreferredGap(ComponentPlacement.RELATED, 716, Short.MAX_VALUE)
+											.addComponent(btnKsBaoCun)))
+									.addGap(10)))
+							.addGap(17))
+						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 643, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addGroup(groupLayout.createSequentialGroup()
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-									.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE)
-									.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE)
-									.addGroup(groupLayout.createSequentialGroup()
-										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-											.addComponent(scrollPane_1)
-											.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE))
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE)))
-								.addGap(7)
-								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-									.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 398, Short.MAX_VALUE)
-									.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
-									.addGroup(groupLayout.createSequentialGroup()
-										.addPreferredGap(ComponentPlacement.RELATED, 283, Short.MAX_VALUE)
-										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-											.addComponent(btnDBStatus)
-											.addComponent(btnKsBaoCun))
-										.addGap(10)))
-								.addGap(17))
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(pnl_paomd, GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 242, GroupLayout.PREFERRED_SIZE)
-								.addGap(84)))))
+							.addContainerGap(205, Short.MAX_VALUE))))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -2422,17 +2429,20 @@ public class StockInfoManager
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 488, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnKsBaoCun)))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)))
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnKsBaoCun))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(26)
+							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addComponent(panelStatusBar, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
-						.addComponent(pnl_paomd, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE))
-					.addGap(87))
+						.addComponent(pnl_paomd, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		
 		txaBanKuai = new JTextPane();
@@ -2456,8 +2466,9 @@ public class StockInfoManager
 		
 		JLabel lblNewLabel_5 = new JLabel("\u8D70\u9A6C\u706F");
 		
-		kspanel = new BuyStockNumberPrice(null,accountschicangconfig,true);
-		tabbedPane.addTab("\u4E70\u5165\u5FEB\u901F\u8BB0\u5F55", null, kspanel, null);
+		
+		//kspanel = new BuyStockNumberPrice(null,accountschicangconfig,true);
+		
 		
 //		tableStockAccountsInfo = new JTable();
 //		String[] jtableTitleStrings2 = { "账户名称", "信用操作","持仓成本", "持仓股数","持仓均价" };
@@ -2907,11 +2918,11 @@ public class StockInfoManager
 		
 		menuOperationList.add(menuItemRfshBk);
 		
-		mntmbankuaifenlei = new JMenuItem("\u8BBE\u7F6E\u91CD\u70B9\u5173\u6CE8\u677F\u5757");
+		mntmbankuaifenlei = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u677F\u5757");
 		
 				menuOperationList.add(mntmbankuaifenlei);
 		
-		menuItemChanYeLian = new JMenuItem("\u901A\u8FBE\u4FE1\u677F\u5757/\u677F\u5757\u4EA7\u4E1A\u94FE");
+		menuItemChanYeLian = new JMenuItem("\u4EA7\u4E1A\u94FE");
 		
 		menuOperationList.add(menuItemChanYeLian);
 		
@@ -2967,12 +2978,14 @@ public class StockInfoManager
 		};
 		scrollPane.setViewportView(tableStockAccountsInfo);
 		
+		kspanel = new BuyStockNumberPrice(null,accountschicangconfig,true);
+		tabbedPane.addTab("\u4E70\u5165\u5FEB\u901F\u8BB0\u5F55", null, kspanel, null);
 		//根据系统model定制哪些components可以被用户使用
-		if(sysconfig.getSoftWareMode() == sysconfig.MODELCLIENT) {
-			
-		} else if(sysconfig.getSoftWareMode() == sysconfig.MODELSERVER) {
-			
-		}
+//		if(sysconfig.getSoftWareMode() == sysconfig.MODELCLIENT) {
+//			
+//		} else if(sysconfig.getSoftWareMode() == sysconfig.MODELSERVER) {
+//			
+//		}
 		
 		
 	}

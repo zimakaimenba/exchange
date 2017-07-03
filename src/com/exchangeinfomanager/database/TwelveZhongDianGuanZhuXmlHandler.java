@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuai.gui;
+package com.exchangeinfomanager.database;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,30 +23,28 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.exchangeinfomanager.bankuai.gui.GuanZhuBanKuaiInfo;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
-public class TwelveZhongDianGuanZhuXmlHandler2 
+public class TwelveZhongDianGuanZhuXmlHandler 
 {
-	public  TwelveZhongDianGuanZhuXmlHandler2() 
+	public  TwelveZhongDianGuanZhuXmlHandler() 
 	{
 		initializeSysConfig ();
 		gzbkmap = new HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> ();
-		refreshContentsFromXml ();
-	}
-	private void refreshContentsFromXml ()
-	{
+		
 		this.xmlfile =   sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile ();
-		File sysconfigfile = new File(this.xmlfile );
-		if(!sysconfigfile.exists()) { //不存在，创建该文件
+		File zdgzxml = new File(this.xmlfile );
+		if(!zdgzxml.exists()) { //不存在，创建该文件
 			try {
-				sysconfigfile.createNewFile();
+				zdgzxml.createNewFile();
 			} catch (IOException e) {
-				System.out.println(this.xmlfile + "不存在，已经创建");
-				//e.printStackTrace();
+				//System.out.println(this.xmlfile + "不存在，已经创建");
+				e.printStackTrace();
 			}
 		}
 	
@@ -61,29 +59,30 @@ public class TwelveZhongDianGuanZhuXmlHandler2
 			SAXReader reader = new SAXReader();
 			document = reader.read(xmlfileinput);
 			xmlroot = document.getRootElement();
-			initializeZdgzbkXml ();
 		} catch (DocumentException e) {
 			System.out.println(this.xmlfile + "存在错误");
-			//e.printStackTrace();
+			return;
 		}
-	}
 	
+		getZdgzbkXml ();
+	}
 	
 	private String xmlfile;
-	static Element xmlroot = null;
+	private static Element xmlroot = null;
 	private Document document;
 	private SystemConfigration sysconfig;
-	private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap;
+	private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap; //重点关注的板块
+	private boolean hasXmlRevised;
 	
-	public HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> getZhongDianGuanZhuBanKuai () 
-	{
-		return gzbkmap;
-	}
 	private void initializeSysConfig()
 	{
 		sysconfig = SystemConfigration.getInstance();
 	}
-	private  void initializeZdgzbkXml()
+	public boolean hasXmlRevised ()
+	{
+		return hasXmlRevised;
+	}
+	private  void getZdgzbkXml()
 	{
 		 Iterator it = xmlroot.elementIterator();
 		 while (it.hasNext()) 
@@ -106,7 +105,27 @@ public class TwelveZhongDianGuanZhuXmlHandler2
 			   gzbkmap.put(daleiname, tmpdllist);
 		}
 	}
-	
+	public HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> getZhongDianGuanZhuBanKuai () 
+	{
+		return gzbkmap;
+	}
+	/*
+	 * 增加某个大类关注的子板块
+	 */
+	public void addNewGuanZhuBanKuai (String daleiname,GuanZhuBanKuaiInfo tmpgzbk)
+	{
+		 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist = gzbkmap.get(daleiname );
+		 tmpzdgzbklist.add(tmpgzbk);
+	}
+	/*
+	 * 删除某个大类的关注的子板块
+	 */
+	public void removeGuanZhuBanKuai (String daleiname,GuanZhuBanKuaiInfo gzbk)
+	{
+		 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist = gzbkmap.get(daleiname );
+		 tmpzdgzbklist.remove(gzbk);
+
+	}
 	public void addNewDaLei (String daleiname) 
 	{
 		if( !gzbkmap.keySet().contains(daleiname)) {
@@ -169,7 +188,7 @@ public class TwelveZhongDianGuanZhuXmlHandler2
 			e.printStackTrace();
 		}
 
-		refreshContentsFromXml ();
+		hasXmlRevised = true;
 		return false;
 		
 	}

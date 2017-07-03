@@ -73,7 +73,7 @@ public class ConnectDatabase
 									System.out.println("找不到驱动程序类 ，加载驱动失败！");
 									e.printStackTrace();
 								}
-							urlToDababasecrypt = "jdbc:mysql://" +  dbconnectstr;  						// "jdbc:mysql://localhost:3306/stockinfomanagementtest" ;
+							urlToDababasecrypt = "jdbc:mysql://" +  dbconnectstr  + "&autoReconnect=true&failOverReadOnly=false&maxReconnects=10";	// "jdbc:mysql://localhost:3306/stockinfomanagementtest" ;
 							break;
 				case "sqlserver": //Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 									break;

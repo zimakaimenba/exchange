@@ -1,465 +1,403 @@
 <?xml version="1.0" encoding="GBK"?>
 
-<JTree> 
-  <Node Subject="高速公路" Status="4"> 
-    <Node Subject="江苏" Status="5"/> 
-  </Node>  
-  <Node Subject="区块链" Status="4"/>  
-  <Node Subject="上海板块" Status="4"/>  
-  <Node Subject="公共交通" Status="4"/>  
-  <Node Subject="免疫治疗" Status="4"/>  
-  <Node Subject="电力" Status="4"/>  
-  <Node Subject="昨曾涨停" Status="4"/>  
-  <Node Subject="电子制造" Status="4"/>  
-  <Node Subject="服饰" Status="4"/>  
-  <Node Subject="黑龙江" Status="4"/>  
-  <Node Subject="智能穿戴" Status="4"> 
-    <Node Subject="002217合力泰" Status="6"/>  
-    <Node Subject="002230科大讯飞" Status="6"/>  
-    <Node Subject="002288超华科技" Status="6"/> 
-  </Node>  
-  <Node Subject="活跃股" Status="4"> 
-    <Node Subject="上海活跃股" Status="5"> 
-      <Node Subject="002542中化岩土" Status="6"/> 
-    </Node>  
-    <Node Subject="广东" Status="5"> 
-      <Node Subject="002847盐津铺子" Status="6"/> 
-    </Node> 
-  </Node>  
-  <Node Subject="送转潜力" Status="4"/>  
-  <Node Subject="通达信88" Status="4"/>  
-  <Node Subject="昨高换手" Status="4"/>  
-  <Node Subject="物联网" Status="4"/>  
-  <Node Subject="配股股" Status="4"/>  
-  <Node Subject="稀土永磁" Status="4"/>  
-  <Node Subject="玻璃" Status="4"/>  
-  <Node Subject="电气设备" Status="4"/>  
-  <Node Subject="景点" Status="4"/>  
-  <Node Subject="无人机" Status="4"/>  
-  <Node Subject="汽车部件" Status="4"/>  
-  <Node Subject="化学制药" Status="4"/>  
-  <Node Subject="外资背景" Status="4"/>  
-  <Node Subject="已高送转" Status="4"/>  
-  <Node Subject="维生素" Status="4"/>  
-  <Node Subject="食品加工" Status="4"/>  
-  <Node Subject="低市净率" Status="4"/>  
-  <Node Subject="石油开采" Status="4"/>  
-  <Node Subject="路桥" Status="4"/>  
-  <Node Subject="甘肃板块" Status="4"/>  
-  <Node Subject="钢铁" Status="4"/>  
-  <Node Subject="低市盈率" Status="4"/>  
-  <Node Subject="污水处理" Status="4"/>  
-  <Node Subject="红黄药酒" Status="4"/>  
-  <Node Subject="湖南板块" Status="4"/>  
-  <Node Subject="空气治理" Status="4"/>  
-  <Node Subject="生物制药" Status="4"/>  
-  <Node Subject="人工智能" Status="4"/>  
-  <Node Subject="TDX 金融" Status="4"/>  
-  <Node Subject="国开持股" Status="4"/>  
-  <Node Subject="采掘服务" Status="4"/>  
-  <Node Subject="啤酒" Status="4"/>  
-  <Node Subject="传媒娱乐" Status="4"/>  
-  <Node Subject="重庆板块" Status="4"/>  
-  <Node Subject="民营银行" Status="4"/>  
-  <Node Subject="视听器材" Status="4"/>  
-  <Node Subject="医疗服务" Status="4"/>  
-  <Node Subject="蓝宝石" Status="4"/>  
-  <Node Subject="锂电池" Status="4"/>  
-  <Node Subject="小盘股" Status="4"/>  
-  <Node Subject="昨日振荡" Status="4"/>  
-  <Node Subject="TDX 建设" Status="4"/>  
-  <Node Subject="赛马概念" Status="4"/>  
-  <Node Subject="专用设备" Status="4"/>  
-  <Node Subject="长株潭" Status="4"/>  
-  <Node Subject="综合" Status="4"/>  
-  <Node Subject="有色" Status="4"/>  
-  <Node Subject="化工原料" Status="4"/>  
-  <Node Subject="食品安全" Status="4"/>  
-  <Node Subject="综合类" Status="4"/>  
-  <Node Subject="定增预案" Status="4"/>  
-  <Node Subject="成渝特区" Status="4"/>  
-  <Node Subject="长三角" Status="4"/>  
-  <Node Subject="饮料制造" Status="4"/>  
-  <Node Subject="建筑施工" Status="4"/>  
-  <Node Subject="空运" Status="4"/>  
-  <Node Subject="阿里概念" Status="4"/>  
-  <Node Subject="全国地产" Status="4"/>  
-  <Node Subject="日用化工" Status="4"/>  
-  <Node Subject="民营医院" Status="4"/>  
-  <Node Subject="TDX 信息" Status="4"/>  
-  <Node Subject="TDX 消费" Status="4"/>  
-  <Node Subject="TDX 商贸" Status="4"/>  
-  <Node Subject="4G概念" Status="4"/>  
-  <Node Subject="装饰园林" Status="4"/>  
-  <Node Subject="高管减持" Status="4"/>  
-  <Node Subject="辽宁板块" Status="4"/>  
-  <Node Subject="TDX 制造" Status="4"/>  
-  <Node Subject="青海板块" Status="4"/>  
-  <Node Subject="苹果概念" Status="4"/>  
-  <Node Subject="钛金属" Status="4"/>  
-  <Node Subject="智能电视" Status="4"/>  
-  <Node Subject="多元金融" Status="4"/>  
-  <Node Subject="石油加工" Status="4"/>  
-  <Node Subject="高股息股" Status="4"/>  
-  <Node Subject="员工持股" Status="4"/>  
-  <Node Subject="化学纤维" Status="4"/>  
-  <Node Subject="TDX 材料" Status="4"/>  
-  <Node Subject="海水淡化" Status="4"/>  
-  <Node Subject="绩优股" Status="4"/>  
-  <Node Subject="智能家居" Status="4"/>  
-  <Node Subject="在线教育" Status="4"/>  
-  <Node Subject="水力发电" Status="4"/>  
-  <Node Subject="铜" Status="4"/>  
-  <Node Subject="铝" Status="4"/>  
-  <Node Subject="上海自贸" Status="4"/>  
-  <Node Subject="水务" Status="4"/>  
-  <Node Subject="充电桩" Status="4"/>  
-  <Node Subject="零售" Status="4"/>  
-  <Node Subject="焦炭加工" Status="4"/>  
-  <Node Subject="种植业" Status="4"/>  
-  <Node Subject="通信设备" Status="4"/>  
-  <Node Subject="汽车配件" Status="4"/>  
-  <Node Subject="包装印刷" Status="4"/>  
-  <Node Subject="福建板块" Status="4"/>  
-  <Node Subject="生态农业" Status="4"/>  
-  <Node Subject="家用电器" Status="4"/>  
-  <Node Subject="铅锌" Status="4"/>  
-  <Node Subject="生物制品" Status="4"/>  
-  <Node Subject="破净资产" Status="4"/>  
-  <Node Subject="中市净率" Status="4"/>  
-  <Node Subject="出版业" Status="4"/>  
-  <Node Subject="中市盈率" Status="4"/>  
-  <Node Subject="河南板块" Status="4"/>  
-  <Node Subject="特种钢" Status="4"/>  
-  <Node Subject="土地流转" Status="4"/>  
-  <Node Subject="博彩概念" Status="4"/>  
-  <Node Subject="金属制品" Status="4"/>  
-  <Node Subject="承诺注资" Status="4"/>  
-  <Node Subject="碳纤维" Status="4"/>  
-  <Node Subject="QFII重仓" Status="4"/>  
-  <Node Subject="旅游" Status="4"/>  
-  <Node Subject="社保重仓" Status="4"/>  
-  <Node Subject="通信运营" Status="4"/>  
-  <Node Subject="触摸屏" Status="4"/>  
-  <Node Subject="梧桐持股" Status="4"/>  
-  <Node Subject="江苏板块" Status="4"/>  
-  <Node Subject="参股金融" Status="4"/>  
-  <Node Subject="两年新股" Status="4"/>  
-  <Node Subject="智能电网" Status="4"/>  
-  <Node Subject="股权激励" Status="4"/>  
-  <Node Subject="宽带提速" Status="4"/>  
-  <Node Subject="白色家电" Status="4"/>  
-  <Node Subject="特钢" Status="4"/>  
-  <Node Subject="水利建设" Status="4"/>  
-  <Node Subject="其它交运" Status="4"/>  
-  <Node Subject="债转股" Status="4"/>  
-  <Node Subject="陶瓷" Status="4"/>  
-  <Node Subject="摘帽概念" Status="4"/>  
-  <Node Subject="矿物制品" Status="4"/>  
-  <Node Subject="贵州板块" Status="4"/>  
-  <Node Subject="铁路" Status="4"/>  
-  <Node Subject="黄金概念" Status="4"/>  
-  <Node Subject="钢加工" Status="4"/>  
-  <Node Subject="内蒙板块" Status="4"/>  
-  <Node Subject="安防服务" Status="4"/>  
-  <Node Subject="陕西板块" Status="4"/>  
-  <Node Subject="商贸代理" Status="4"/>  
-  <Node Subject="电器连锁" Status="4"/>  
-  <Node Subject="低价股" Status="4"/>  
-  <Node Subject="草甘膦" Status="4"/>  
-  <Node Subject="大盘股" Status="4"/>  
-  <Node Subject="煤炭开采" Status="4"/>  
-  <Node Subject="林业" Status="4"/>  
-  <Node Subject="广告包装" Status="4"/>  
-  <Node Subject="四川板块" Status="4"/>  
-  <Node Subject="预计扭亏" Status="4"/>  
-  <Node Subject="珠三角" Status="4"/>  
-  <Node Subject="医疗保健" Status="4"/>  
-  <Node Subject="农村金融" Status="4"/>  
-  <Node Subject="航空" Status="4"/>  
-  <Node Subject="生物质能" Status="4"/>  
-  <Node Subject="化工" Status="4"/>  
-  <Node Subject="运输设备" Status="4"/>  
-  <Node Subject="页岩气" Status="4"/>  
-  <Node Subject="3D打印" Status="4"/>  
-  <Node Subject="其他建材" Status="4"/>  
-  <Node Subject="湖北板块" Status="4"/>  
-  <Node Subject="小金属" Status="4"/>  
-  <Node Subject="量子通信" Status="4"/>  
-  <Node Subject="无人驾驶" Status="4"/>  
-  <Node Subject="建筑节能" Status="4"/>  
-  <Node Subject="央企改革" Status="4"/>  
-  <Node Subject="医疗器械" Status="4"/>  
-  <Node Subject="皖江区域" Status="4"/>  
-  <Node Subject="核电核能" Status="4"/>  
-  <Node Subject="专用机械" Status="4"/>  
-  <Node Subject="抗流感" Status="4"/>  
-  <Node Subject="运输服务" Status="4"/>  
-  <Node Subject="铁路基建" Status="4"/>  
-  <Node Subject="石油贸易" Status="4"/>  
-  <Node Subject="超导概念" Status="4"/>  
-  <Node Subject="东亚自贸" Status="4"/>  
-  <Node Subject="地热能" Status="4"/>  
-  <Node Subject="化工机械" Status="4"/>  
-  <Node Subject="石墨烯" Status="4"/>  
-  <Node Subject="装修装饰" Status="4"/>  
-  <Node Subject="文化振兴" Status="4"/>  
-  <Node Subject="新三板" Status="4"/>  
-  <Node Subject="燃料电池" Status="4"/>  
-  <Node Subject="职业教育" Status="4"/>  
-  <Node Subject="OLED概念" Status="4"> 
-    <Node Subject="面板" Status="5"> 
-      <Node Subject="000725京东方Ａ" Status="6"/>  
-      <Node Subject="000050深天马Ａ" Status="6"/> 
-    </Node>  
-    <Node Subject="传输和发光材料" Status="5"> 
-      <Node Subject="002643烟台万润" Status="6"/>  
-      <Node Subject="300481濮阳惠成" Status="6"/>  
-      <Node Subject="300429强力新材" Status="6"/> 
-    </Node>  
-    <Node Subject="水汽阻隔膜" Status="5"/> 
-  </Node>  
-  <Node Subject="聚氨酯" Status="4"/>  
-  <Node Subject="固废处理" Status="4"/>  
-  <Node Subject="河北板块" Status="4"/>  
-  <Node Subject="海峡西岸" Status="4"/>  
-  <Node Subject="深圳板块" Status="4"/>  
-  <Node Subject="户数减少" Status="4"/>  
-  <Node Subject="批发业" Status="4"/>  
-  <Node Subject="云南板块" Status="4"/>  
-  <Node Subject="稀缺资源" Status="4"/>  
-  <Node Subject="农林牧渔" Status="4"/>  
-  <Node Subject="信息安全" Status="4"/>  
-  <Node Subject="ST板块" Status="4"/>  
-  <Node Subject="中小银行" Status="4"/>  
-  <Node Subject="养老概念" Status="4"/>  
-  <Node Subject="TDX 综企" Status="4"/>  
-  <Node Subject="机械基件" Status="4"/>  
-  <Node Subject="环境保护" Status="4"/>  
-  <Node Subject="风能" Status="4"/>  
-  <Node Subject="基金独门" Status="4"/>  
-  <Node Subject="含可转债" Status="4"/>  
-  <Node Subject="环渤海" Status="4"/>  
-  <Node Subject="银行" Status="4"/>  
-  <Node Subject="汽车服务" Status="4"/>  
-  <Node Subject="油气改革" Status="4"/>  
-  <Node Subject="家用轻工" Status="4"/>  
-  <Node Subject="交运服务" Status="4"/>  
-  <Node Subject="基因概念" Status="4"/>  
-  <Node Subject="公路" Status="4"/>  
-  <Node Subject="网络游戏" Status="4"/>  
-  <Node Subject="水运" Status="4"/>  
-  <Node Subject="北京板块" Status="4"/>  
-  <Node Subject="元件" Status="4"/>  
-  <Node Subject="农用机械" Status="4"/>  
-  <Node Subject="电信运营" Status="4"/>  
-  <Node Subject="有色金属" Status="4"/>  
-  <Node Subject="保险" Status="4"/>  
-  <Node Subject="股份回购" Status="4"/>  
-  <Node Subject="建筑装饰" Status="4"/>  
-  <Node Subject="畜禽养殖" Status="4"/>  
-  <Node Subject="智能医疗" Status="4"/>  
-  <Node Subject="水域改革" Status="4"/>  
-  <Node Subject="染料涂料" Status="4"/>  
-  <Node Subject="奢侈品" Status="4"/>  
-  <Node Subject="化纤" Status="4"/>  
-  <Node Subject="证金持股" Status="4"/>  
-  <Node Subject="次新股" Status="4"/>  
-  <Node Subject="餐饮" Status="4"/>  
-  <Node Subject="跨境电商" Status="4"/>  
-  <Node Subject="参股新股" Status="4"/>  
-  <Node Subject="铁路运输" Status="4"/>  
-  <Node Subject="黄河三角" Status="4"/>  
-  <Node Subject="股权分散" Status="4"/>  
-  <Node Subject="航空运输" Status="4"/>  
-  <Node Subject="化工新材" Status="4"/>  
-  <Node Subject="雄安新区" Status="4"/>  
-  <Node Subject="百货" Status="4"/>  
-  <Node Subject="旅游服务" Status="4"/>  
-  <Node Subject="风沙治理" Status="4"/>  
-  <Node Subject="多晶硅" Status="4"/>  
-  <Node Subject="饲料" Status="4"/>  
-  <Node Subject="一带一路" Status="4"/>  
-  <Node Subject="高端装备" Status="4"/>  
-  <Node Subject="智能交通" Status="4"/>  
-  <Node Subject="TDX 可选" Status="4"/>  
-  <Node Subject="白酒" Status="4"/>  
-  <Node Subject="汽车电子" Status="4"/>  
-  <Node Subject="金融改革" Status="4"/>  
-  <Node Subject="中盘股" Status="4"/>  
-  <Node Subject="全息概念" Status="4"/>  
-  <Node Subject="证券" Status="4"/>  
-  <Node Subject="整体上市" Status="4"/>  
-  <Node Subject="造纸" Status="4"/>  
-  <Node Subject="特斯拉" Status="4"/>  
-  <Node Subject="渔业" Status="4"/>  
-  <Node Subject="商业连锁" Status="4"/>  
-  <Node Subject="房地产" Status="4"/>  
-  <Node Subject="猪肉" Status="4"/>  
-  <Node Subject="环保工程" Status="4"/>  
-  <Node Subject="抗癌" Status="4"/>  
-  <Node Subject="中字头" Status="4"/>  
-  <Node Subject="文教休闲" Status="4"/>  
-  <Node Subject="房产服务" Status="4"/>  
-  <Node Subject="轻工机械" Status="4"/>  
-  <Node Subject="节能" Status="4"/>  
-  <Node Subject="信托重仓" Status="4"/>  
-  <Node Subject="新型电力" Status="4"/>  
-  <Node Subject="公交" Status="4"/>  
-  <Node Subject="软件服务" Status="4"/>  
-  <Node Subject="太阳能" Status="4"/>  
-  <Node Subject="微利股" Status="4"/>  
-  <Node Subject="橡胶" Status="4"/>  
-  <Node Subject="互联网" Status="4"/>  
-  <Node Subject="高市盈率" Status="4"/>  
-  <Node Subject="汽车类" Status="4"/>  
-  <Node Subject="金属新材" Status="4"/>  
-  <Node Subject="燃气" Status="4"/>  
-  <Node Subject="高市净率" Status="4"/>  
-  <Node Subject="通用机械" Status="4"/>  
-  <Node Subject="亏损股" Status="4"/>  
-  <Node Subject="房产开发" Status="4"/>  
-  <Node Subject="网贷概念" Status="4"/>  
-  <Node Subject="昨日涨停" Status="4"/>  
-  <Node Subject="仪器仪表" Status="4"/>  
-  <Node Subject="高校背景" Status="4"/>  
-  <Node Subject="创投概念" Status="4"/>  
-  <Node Subject="半导体" Status="4"/>  
-  <Node Subject="其他电子" Status="4"/>  
-  <Node Subject="虚拟现实" Status="4"/>  
-  <Node Subject="粤港澳" Status="4"/>  
-  <Node Subject="中药" Status="4"/>  
-  <Node Subject="智慧城市" Status="4"/>  
-  <Node Subject="高贝塔值" Status="4"/>  
-  <Node Subject="国产软件" Status="4"/>  
-  <Node Subject="连续亏损" Status="4"/>  
-  <Node Subject="预高送转" Status="4"/>  
-  <Node Subject="互联金融" Status="4"/>  
-  <Node Subject="航运" Status="4"/>  
-  <Node Subject="业绩预升" Status="4"/>  
-  <Node Subject="保障房" Status="4"/>  
-  <Node Subject="浙江板块" Status="4"/>  
-  <Node Subject="超市连锁" Status="4"/>  
-  <Node Subject="影视音像" Status="4"/>  
-  <Node Subject="船舶" Status="4"/>  
-  <Node Subject="宁夏板块" Status="4"/>  
-  <Node Subject="安徽板块" Status="4"/>  
-  <Node Subject="石油化工" Status="4"/>  
-  <Node Subject="图们江" Status="4"/>  
-  <Node Subject="吉林板块" Status="4"/>  
-  <Node Subject="酒店餐饮" Status="4"/>  
-  <Node Subject="TDX 能源" Status="4"/>  
-  <Node Subject="TDX 服务" Status="4"/>  
-  <Node Subject="石油" Status="4"/>  
-  <Node Subject="建筑材料" Status="4"/>  
-  <Node Subject="元器件" Status="4"/>  
-  <Node Subject="个人持股" Status="4"/>  
-  <Node Subject="电子支付" Status="4"/>  
-  <Node Subject="旅游综合" Status="4"/>  
-  <Node Subject="ETF基金" Status="4"/>  
-  <Node Subject="家居用品" Status="4"/>  
-  <Node Subject="定增获准" Status="4"/>  
-  <Node Subject="区域地产" Status="4"/>  
-  <Node Subject="含B股" Status="4"/>  
-  <Node Subject="纺织制造" Status="4"/>  
-  <Node Subject="新零售" Status="4"/>  
-  <Node Subject="水泥" Status="4"/>  
-  <Node Subject="TDX 公用" Status="4"/>  
-  <Node Subject="纺织" Status="4"/>  
-  <Node Subject="电器仪表" Status="4"/>  
-  <Node Subject="保险重仓" Status="4"/>  
-  <Node Subject="农业综合" Status="4"/>  
-  <Node Subject="纺织机械" Status="4"/>  
-  <Node Subject="机场" Status="4"/>  
-  <Node Subject="体育概念" Status="4"/>  
-  <Node Subject="火力发电" Status="4"/>  
-  <Node Subject="涉矿概念" Status="4"/>  
-  <Node Subject="农产加工" Status="4"/>  
-  <Node Subject="光学光电" Status="4"/>  
-  <Node Subject="云计算" Status="4"/>  
-  <Node Subject="塑料" Status="4"/>  
-  <Node Subject="机床制造" Status="4"/>  
-  <Node Subject="近期新低" Status="4"/>  
-  <Node Subject="西藏板块" Status="4"/>  
-  <Node Subject="山西板块" Status="4"/>  
-  <Node Subject="海南板块" Status="4"/>  
-  <Node Subject="工程机械" Status="4"/>  
-  <Node Subject="传媒" Status="4"/>  
-  <Node Subject="百元股" Status="4"/>  
-  <Node Subject="中成药" Status="4"/>  
-  <Node Subject="化学制品" Status="4"/>  
-  <Node Subject="三沙概念" Status="4"/>  
-  <Node Subject="海工装备" Status="4"/>  
-  <Node Subject="供气供热" Status="4"/>  
-  <Node Subject="券商重仓" Status="4"/>  
-  <Node Subject="最近复牌" Status="4"/>  
-  <Node Subject="其他商业" Status="4"/>  
-  <Node Subject="旅游景点" Status="4"/>  
-  <Node Subject="高管增持" Status="4"/>  
-  <Node Subject="纺织服饰" Status="4"/>  
-  <Node Subject="酒店" Status="4"/>  
-  <Node Subject="港口" Status="4"/>  
-  <Node Subject="建筑" Status="4"/>  
-  <Node Subject="婴童概念" Status="4"/>  
-  <Node Subject="广西板块" Status="4"/>  
-  <Node Subject="建材" Status="4"/>  
-  <Node Subject="黄金" Status="4"/>  
-  <Node Subject="医药" Status="4"/>  
-  <Node Subject="酿酒" Status="4"/>  
-  <Node Subject="TDX 交运" Status="4"/>  
-  <Node Subject="行业龙头" Status="4"/>  
-  <Node Subject="低碳经济" Status="4"/>  
-  <Node Subject="电脑应用" Status="4"/>  
-  <Node Subject="绿色照明" Status="4"/>  
-  <Node Subject="工业机械" Status="4"/>  
-  <Node Subject="其他轻工" Status="4"/>  
-  <Node Subject="扣非亏损" Status="4"/>  
-  <Node Subject="电商概念" Status="4"/>  
-  <Node Subject="摩托车" Status="4"/>  
-  <Node Subject="被举牌" Status="4"/>  
-  <Node Subject="卫星导航" Status="4"/>  
-  <Node Subject="户数增加" Status="4"/>  
-  <Node Subject="软饮料" Status="4"/>  
-  <Node Subject="电脑设备" Status="4"/>  
-  <Node Subject="商品城" Status="4"/>  
-  <Node Subject="园区开发" Status="4"/>  
-  <Node Subject="重组概念" Status="4"/>  
-  <Node Subject="汽车整车" Status="4"/>  
-  <Node Subject="PPP模式" Status="4"/>  
-  <Node Subject="煤炭" Status="4"/>  
-  <Node Subject="武汉规划" Status="4"/>  
-  <Node Subject="贸易" Status="4"/>  
-  <Node Subject="化学原料" Status="4"/>  
-  <Node Subject="乳制品" Status="4"/>  
-  <Node Subject="基金重仓" Status="4"/>  
-  <Node Subject="生物疫苗" Status="4"/>  
-  <Node Subject="食品" Status="4"/>  
-  <Node Subject="广东板块" Status="4"/>  
-  <Node Subject="网络服务" Status="4"/>  
-  <Node Subject="交通设施" Status="4"/>  
-  <Node Subject="定增实施" Status="4"/>  
-  <Node Subject="军工航天" Status="4"/>  
-  <Node Subject="食品饮料" Status="4"/>  
-  <Node Subject="动物保健" Status="4"/>  
-  <Node Subject="三网融合" Status="4"/>  
-  <Node Subject="医药商业" Status="4"/>  
-  <Node Subject="近期新高" Status="4"/>  
-  <Node Subject="业绩预降" Status="4"/>  
-  <Node Subject="江西板块" Status="4"/>  
-  <Node Subject="新疆板块" Status="4"/>  
-  <Node Subject="股权转让" Status="4"/>  
-  <Node Subject="农药化肥" Status="4"/>  
-  <Node Subject="山东板块" Status="4"/>  
-  <Node Subject="物流" Status="4"/>  
-  <Node Subject="智能机器" Status="4"/>  
-  <Node Subject="普钢" Status="4"/>  
-  <Node Subject="含H股" Status="4"/>  
-  <Node Subject="服装家纺" Status="4"/>  
-  <Node Subject="天津板块" Status="4"/>  
-  <Node Subject="仓储物流" Status="4"/>  
-  <Node Subject="可燃冰" Status="4"/>  
-  <Node Subject="价值稳健" Status="4"/>  
-  <Node Subject="价值发现" Status="4"/>  
-  <Node Subject="出口退税" Status="4"/>  
-  <Node Subject="价值优势" Status="4"/> 
-</JTree>
+<TongDaXinBanKuaiAndZhiShu> 
+  <BanKuai bkname="染料涂料" suoshubkcode="880340" Type="4"> 
+    <SubBanKuai subbkname="浙江" suoshubkcode="880340" Type="5"> 
+      <gegu geguname="600352浙江龙盛" suoshubkcode="880340" Type="6"/>  
+      <gegu geguname="300192科斯伍德" Type="6"/> 
+    </SubBanKuai> 
+  </BanKuai>  
+  <BanKuai bkname="水运" suoshubkcode="880461" Type="4"/>  
+  <BanKuai bkname="风能" suoshubkcode="880582" Type="4"/>  
+  <BanKuai bkname="空气治理" suoshubkcode="880581" Type="4"/>  
+  <BanKuai bkname="铁路" suoshubkcode="880460" Type="4"/>  
+  <BanKuai bkname="智能交通" suoshubkcode="880580" Type="4"/>  
+  <BanKuai bkname="湖北板块" suoshubkcode="880219" Type="4"/>  
+  <BanKuai bkname="橡胶" suoshubkcode="880339" Type="4"/>  
+  <BanKuai bkname="深圳板块" suoshubkcode="880218" Type="4"/>  
+  <BanKuai bkname="塑料" suoshubkcode="880338" Type="4"/>  
+  <BanKuai bkname="山西板块" suoshubkcode="880217" Type="4"/>  
+  <BanKuai bkname="运输服务" suoshubkcode="880459" Type="4"/>  
+  <BanKuai bkname="地热能" suoshubkcode="880575" Type="4"/>  
+  <BanKuai bkname="广东板块" suoshubkcode="880212" Type="4"/>  
+  <BanKuai bkname="水务" suoshubkcode="880454" Type="4"/>  
+  <BanKuai bkname="公共交通" suoshubkcode="880453" Type="4"/>  
+  <BanKuai bkname="河北板块" suoshubkcode="880211" Type="4"/>  
+  <BanKuai bkname="苹果概念" suoshubkcode="880574" Type="4"/>  
+  <BanKuai bkname="广西板块" suoshubkcode="880210" Type="4"/>  
+  <BanKuai bkname="摘帽概念" suoshubkcode="880573" Type="4"/>  
+  <BanKuai bkname="电信运营" suoshubkcode="880452" Type="4"/>  
+  <BanKuai bkname="化纤" suoshubkcode="880330" Type="4"/>  
+  <BanKuai bkname="新零售" suoshubkcode="880572" Type="4"/>  
+  <BanKuai bkname="上海板块" suoshubkcode="880216" Type="4"/>  
+  <BanKuai bkname="农药化肥" suoshubkcode="880337" Type="4"/>  
+  <BanKuai bkname="生态农业" suoshubkcode="880579" Type="4"/>  
+  <BanKuai bkname="化工原料" suoshubkcode="880336" Type="4"/>  
+  <BanKuai bkname="山东板块" suoshubkcode="880215" Type="4"/>  
+  <BanKuai bkname="建筑节能" suoshubkcode="880578" Type="4"/>  
+  <BanKuai bkname="化工" suoshubkcode="880335" Type="4"/>  
+  <BanKuai bkname="宁夏板块" suoshubkcode="880214" Type="4"/>  
+  <BanKuai bkname="安防服务" suoshubkcode="880577" Type="4"/>  
+  <BanKuai bkname="环境保护" suoshubkcode="880456" Type="4"/>  
+  <BanKuai bkname="供气供热" suoshubkcode="880455" Type="4"/>  
+  <BanKuai bkname="河南板块" suoshubkcode="880213" Type="4"/>  
+  <BanKuai bkname="重组概念" suoshubkcode="880576" Type="4"/>  
+  <BanKuai bkname="碳纤维" suoshubkcode="880571" Type="4"/>  
+  <BanKuai bkname="海水淡化" suoshubkcode="880570" Type="4"/>  
+  <BanKuai bkname="天津板块" suoshubkcode="880209" Type="4"/>  
+  <BanKuai bkname="小金属" suoshubkcode="880329" Type="4"/>  
+  <BanKuai bkname="陕西板块" suoshubkcode="880208" Type="4"/>  
+  <BanKuai bkname="北京板块" suoshubkcode="880207" Type="4"/>  
+  <BanKuai bkname="黄金" suoshubkcode="880328" Type="4"/>  
+  <BanKuai bkname="3D打印" suoshubkcode="880569" Type="4"/>  
+  <BanKuai bkname="电器仪表" suoshubkcode="880448" Type="4"/>  
+  <BanKuai bkname="铅锌" suoshubkcode="880327" Type="4"/>  
+  <BanKuai bkname="青海板块" suoshubkcode="880206" Type="4"/>  
+  <BanKuai bkname="奢侈品" suoshubkcode="880564" Type="4"/>  
+  <BanKuai bkname="纺织机械" suoshubkcode="880443" Type="4"/>  
+  <BanKuai bkname="黑龙江" suoshubkcode="880201" Type="4"/>  
+  <BanKuai bkname="轻工机械" suoshubkcode="880442" Type="4"/>  
+  <BanKuai bkname="钢加工" suoshubkcode="880321" Type="4"/>  
+  <BanKuai bkname="食品安全" suoshubkcode="880563" Type="4"/>  
+  <BanKuai bkname="化工机械" suoshubkcode="880441" Type="4"/>  
+  <BanKuai bkname="特种钢" suoshubkcode="880320" Type="4"/>  
+  <BanKuai bkname="高校背景" suoshubkcode="880562" Type="4"/>  
+  <BanKuai bkname="工业机械" suoshubkcode="880440" Type="4"/>  
+  <BanKuai bkname="工程机械" suoshubkcode="880447" Type="4"/>  
+  <BanKuai bkname="生物质能" suoshubkcode="880568" Type="4"/>  
+  <BanKuai bkname="辽宁板块" suoshubkcode="880205" Type="4"/>  
+  <BanKuai bkname="铝" suoshubkcode="880326" Type="4"/>  
+  <BanKuai bkname="三沙概念" suoshubkcode="880567" Type="4"/>  
+  <BanKuai bkname="甘肃板块" suoshubkcode="880204" Type="4"/>  
+  <BanKuai bkname="电气设备" suoshubkcode="880446" Type="4"/>  
+  <BanKuai bkname="铜" suoshubkcode="880325" Type="4"/>  
+  <BanKuai bkname="专用机械" suoshubkcode="880445" Type="4"/>  
+  <BanKuai bkname="吉林板块" suoshubkcode="880203" Type="4"/>  
+  <BanKuai bkname="图们江" suoshubkcode="880566" Type="4"/>  
+  <BanKuai bkname="有色" suoshubkcode="880324" Type="4"/>  
+  <BanKuai bkname="农用机械" suoshubkcode="880444" Type="4"/>  
+  <BanKuai bkname="新疆板块" suoshubkcode="880202" Type="4"/>  
+  <BanKuai bkname="送转潜力" suoshubkcode="880565" Type="4"/>  
+  <BanKuai bkname="全国地产" suoshubkcode="880483" Type="4"/>  
+  <BanKuai bkname="渔业" suoshubkcode="880362" Type="4"/>  
+  <BanKuai bkname="房地产" suoshubkcode="880482" Type="4"/>  
+  <BanKuai bkname="种植业" suoshubkcode="880361" Type="4"/>  
+  <BanKuai bkname="农林牧渔" suoshubkcode="880360" Type="4"/>  
+  <BanKuai bkname="粤港澳" suoshubkcode="880919" Type="4"/>  
+  <BanKuai bkname="全息概念" suoshubkcode="880918" Type="4"/>  
+  <BanKuai bkname="基因概念" suoshubkcode="880913" Type="4"/>  
+  <BanKuai bkname="电商概念" suoshubkcode="880912" Type="4"/>  
+  <BanKuai bkname="雄安新区" suoshubkcode="880911" Type="4"/>  
+  <BanKuai bkname="草甘膦" suoshubkcode="880910" Type="4"/>  
+  <BanKuai bkname="央企改革" suoshubkcode="880917" Type="4"/>  
+  <BanKuai bkname="国产软件" suoshubkcode="880916" Type="4"/>  
+  <BanKuai bkname="职业教育" suoshubkcode="880915" Type="4"/>  
+  <BanKuai bkname="养老概念" suoshubkcode="880597" Type="4"/>  
+  <BanKuai bkname="建筑" suoshubkcode="880476" Type="4"/>  
+  <BanKuai bkname="日用化工" suoshubkcode="880355" Type="4"/>  
+  <BanKuai bkname="体育概念" suoshubkcode="880596" Type="4"/>  
+  <BanKuai bkname="内蒙板块" suoshubkcode="880232" Type="4"/>  
+  <BanKuai bkname="多元金融" suoshubkcode="880474" Type="4"/>  
+  <BanKuai bkname="民营银行" suoshubkcode="880595" Type="4"/>  
+  <BanKuai bkname="一带一路" suoshubkcode="880594" Type="4"/>  
+  <BanKuai bkname="保险" suoshubkcode="880473" Type="4"/>  
+  <BanKuai bkname="西藏板块" suoshubkcode="880231" Type="4"/>  
+  <BanKuai bkname="民营医院" suoshubkcode="880599" Type="4"/>  
+  <BanKuai bkname="装修装饰" suoshubkcode="880478" Type="4"/>  
+  <BanKuai bkname="博彩概念" suoshubkcode="880598" Type="4"/>  
+  <BanKuai bkname="建筑施工" suoshubkcode="880477" Type="4"/>  
+  <BanKuai bkname="婴童概念" suoshubkcode="880593" Type="4"/>  
+  <BanKuai bkname="海南板块" suoshubkcode="880230" Type="4"/>  
+  <BanKuai bkname="矿物制品" suoshubkcode="880351" Type="4"/>  
+  <BanKuai bkname="证券" suoshubkcode="880472" Type="4"/>  
+  <BanKuai bkname="互联金融" suoshubkcode="880592" Type="4"/>  
+  <BanKuai bkname="造纸" suoshubkcode="880350" Type="4"/>  
+  <BanKuai bkname="银行" suoshubkcode="880471" Type="4"/>  
+  <BanKuai bkname="上海自贸" suoshubkcode="880591" Type="4"/>  
+  <BanKuai bkname="网络游戏" suoshubkcode="880590" Type="4"/>  
+  <BanKuai bkname="燃料电池" suoshubkcode="880909" Type="4"/>  
+  <BanKuai bkname="在线教育" suoshubkcode="880908" Type="4"/>  
+  <BanKuai bkname="蓝宝石" suoshubkcode="880907" Type="4"/>  
+  <BanKuai bkname="特斯拉" suoshubkcode="880902" Type="4"/>  
+  <BanKuai bkname="信息安全" suoshubkcode="880901" Type="4"/>  
+  <BanKuai bkname="贵州板块" suoshubkcode="880229" Type="4"/>  
+  <BanKuai bkname="浙江板块" suoshubkcode="880228" Type="4"/>  
+  <BanKuai bkname="智能家居" suoshubkcode="880906" Type="4"/>  
+  <BanKuai bkname="超导概念" suoshubkcode="880905" Type="4"/>  
+  <BanKuai bkname="智能机器" suoshubkcode="880904" Type="4"/>  
+  <BanKuai bkname="水域改革" suoshubkcode="880903" Type="4"/>  
+  <BanKuai bkname="交通设施" suoshubkcode="880465" Type="4"/>  
+  <BanKuai bkname="四川板块" suoshubkcode="880223" Type="4"/>  
+  <BanKuai bkname="土地流转" suoshubkcode="880586" Type="4"/>  
+  <BanKuai bkname="建材" suoshubkcode="880344" Type="4"/>  
+  <BanKuai bkname="仓储物流" suoshubkcode="880464" Type="4"/>  
+  <BanKuai bkname="江西板块" suoshubkcode="880222" Type="4"/>  
+  <BanKuai bkname="风沙治理" suoshubkcode="880585" Type="4"/>  
+  <BanKuai bkname="公路" suoshubkcode="880463" Type="4"/>  
+  <BanKuai bkname="湖南板块" suoshubkcode="880221" Type="4"/>  
+  <BanKuai bkname="石墨烯" suoshubkcode="880584" Type="4"/>  
+  <BanKuai bkname="充电桩" suoshubkcode="880583" Type="4"/>  
+  <BanKuai bkname="福建板块" suoshubkcode="880220" Type="4"/>  
+  <BanKuai bkname="空运" suoshubkcode="880462" Type="4"/>  
+  <BanKuai bkname="云南板块" suoshubkcode="880227" Type="4"/>  
+  <BanKuai bkname="其他建材" suoshubkcode="880348" Type="4"/>  
+  <BanKuai bkname="智能穿戴" suoshubkcode="880589" Type="4"/>  
+  <BanKuai bkname="江苏板块" suoshubkcode="880226" Type="4"/>  
+  <BanKuai bkname="港口" suoshubkcode="880468" Type="4"/>  
+  <BanKuai bkname="玻璃" suoshubkcode="880347" Type="4"/>  
+  <BanKuai bkname="机场" suoshubkcode="880467" Type="4"/>  
+  <BanKuai bkname="水泥" suoshubkcode="880346" Type="4"/>  
+  <BanKuai bkname="绿色照明" suoshubkcode="880588" Type="4"/>  
+  <BanKuai bkname="重庆板块" suoshubkcode="880225" Type="4"/>  
+  <BanKuai bkname="安徽板块" suoshubkcode="880224" Type="4"/>  
+  <BanKuai bkname="聚氨酯" suoshubkcode="880587" Type="4"/>  
+  <BanKuai bkname="路桥" suoshubkcode="880466" Type="4"/>  
+  <BanKuai bkname="陶瓷" suoshubkcode="880345" Type="4"/>  
+  <BanKuai bkname="传媒娱乐" suoshubkcode="880418" Type="4"/>  
+  <BanKuai bkname="股权激励" suoshubkcode="880539" Type="4"/>  
+  <BanKuai bkname="参股金融" suoshubkcode="880538" Type="4"/>  
+  <BanKuai bkname="核电核能" suoshubkcode="880537" Type="4"/>  
+  <BanKuai bkname="多晶硅" suoshubkcode="880536" Type="4"/>  
+  <BanKuai bkname="出版业" suoshubkcode="880419" Type="4"/>  
+  <BanKuai bkname="医药商业" suoshubkcode="880410" Type="4"/>  
+  <BanKuai bkname="武汉规划" suoshubkcode="880531" Type="4"/>  
+  <BanKuai bkname="三网融合" suoshubkcode="880530" Type="4"/>  
+  <BanKuai bkname="商贸代理" suoshubkcode="880414" Type="4"/>  
+  <BanKuai bkname="稀土永磁" suoshubkcode="880535" Type="4"/>  
+  <BanKuai bkname="批发业" suoshubkcode="880413" Type="4"/>  
+  <BanKuai bkname="锂电池" suoshubkcode="880534" Type="4"/>  
+  <BanKuai bkname="商品城" suoshubkcode="880412" Type="4"/>  
+  <BanKuai bkname="物联网" suoshubkcode="880533" Type="4"/>  
+  <BanKuai bkname="其他商业" suoshubkcode="880411" Type="4"/>  
+  <BanKuai bkname="整体上市" suoshubkcode="880532" Type="4"/>  
+  <BanKuai bkname="环渤海" suoshubkcode="880528" Type="4"/>  
+  <BanKuai bkname="百货" suoshubkcode="880407" Type="4"/>  
+  <BanKuai bkname="商业连锁" suoshubkcode="880406" Type="4"/>  
+  <BanKuai bkname="珠三角" suoshubkcode="880527" Type="4"/>  
+  <BanKuai bkname="长三角" suoshubkcode="880526" Type="4"/>  
+  <BanKuai bkname="铁路基建" suoshubkcode="880525" Type="4"/>  
+  <BanKuai bkname="电器连锁" suoshubkcode="880409" Type="4"/>  
+  <BanKuai bkname="次新股" suoshubkcode="880529" Type="4"/>  
+  <BanKuai bkname="超市连锁" suoshubkcode="880408" Type="4"/>  
+  <BanKuai bkname="MSCI成份" suoshubkcode="880883" Type="4"/>  
+  <BanKuai bkname="智能电网" suoshubkcode="880520" Type="4"/>  
+  <BanKuai bkname="久不分红" suoshubkcode="880882" Type="4"/>  
+  <BanKuai bkname="上周弱势" suoshubkcode="880881" Type="4"/>  
+  <BanKuai bkname="上周强势" suoshubkcode="880880" Type="4"/>  
+  <BanKuai bkname="中成药" suoshubkcode="880403" Type="4"/>  
+  <BanKuai bkname="含可转债" suoshubkcode="880524" Type="4"/>  
+  <BanKuai bkname="生物制药" suoshubkcode="880402" Type="4"/>  
+  <BanKuai bkname="黄河三角" suoshubkcode="880523" Type="4"/>  
+  <BanKuai bkname="化学制药" suoshubkcode="880401" Type="4"/>  
+  <BanKuai bkname="成渝特区" suoshubkcode="880522" Type="4"/>  
+  <BanKuai bkname="医药" suoshubkcode="880400" Type="4"/>  
+  <BanKuai bkname="黄金概念" suoshubkcode="880521" Type="4"/>  
+  <BanKuai bkname="高端装备" suoshubkcode="880560" Type="4"/>  
+  <BanKuai bkname="普钢" suoshubkcode="880319" Type="4"/>  
+  <BanKuai bkname="机械基件" suoshubkcode="880439" Type="4"/>  
+  <BanKuai bkname="钢铁" suoshubkcode="880318" Type="4"/>  
+  <BanKuai bkname="宽带提速" suoshubkcode="880559" Type="4"/>  
+  <BanKuai bkname="机床制造" suoshubkcode="880438" Type="4"/>  
+  <BanKuai bkname="节能" suoshubkcode="880558" Type="4"/>  
+  <BanKuai bkname="通用机械" suoshubkcode="880437" Type="4"/>  
+  <BanKuai bkname="石油开采" suoshubkcode="880311" Type="4"/>  
+  <BanKuai bkname="运输设备" suoshubkcode="880432" Type="4"/>  
+  <BanKuai bkname="页岩气" suoshubkcode="880553" Type="4"/>  
+  <BanKuai bkname="石油" suoshubkcode="880310" Type="4"/>  
+  <BanKuai bkname="船舶" suoshubkcode="880431" Type="4"/>  
+  <BanKuai bkname="金融改革" suoshubkcode="880552" Type="4"/>  
+  <BanKuai bkname="涉矿概念" suoshubkcode="880551" Type="4"/>  
+  <BanKuai bkname="航空" suoshubkcode="880430" Type="4"/>  
+  <BanKuai bkname="保障房" suoshubkcode="880550" Type="4"/>  
+  <BanKuai bkname="生物疫苗" suoshubkcode="880557" Type="4"/>  
+  <BanKuai bkname="文化振兴" suoshubkcode="880556" Type="4"/>  
+  <BanKuai bkname="石油贸易" suoshubkcode="880313" Type="4"/>  
+  <BanKuai bkname="东亚自贸" suoshubkcode="880554" Type="4"/>  
+  <BanKuai bkname="石油加工" suoshubkcode="880312" Type="4"/>  
+  <BanKuai bkname="新型电力" suoshubkcode="880308" Type="4"/>  
+  <BanKuai bkname="可燃冰" suoshubkcode="880549" Type="4"/>  
+  <BanKuai bkname="火力发电" suoshubkcode="880307" Type="4"/>  
+  <BanKuai bkname="新三板" suoshubkcode="880548" Type="4"/>  
+  <BanKuai bkname="水力发电" suoshubkcode="880306" Type="4"/>  
+  <BanKuai bkname="旅游景点" suoshubkcode="880426" Type="4"/>  
+  <BanKuai bkname="电力" suoshubkcode="880305" Type="4"/>  
+  <BanKuai bkname="电子支付" suoshubkcode="880547" Type="4"/>  
+  <BanKuai bkname="广告包装" suoshubkcode="880421" Type="4"/>  
+  <BanKuai bkname="水利建设" suoshubkcode="880542" Type="4"/>  
+  <BanKuai bkname="影视音像" suoshubkcode="880420" Type="4"/>  
+  <BanKuai bkname="触摸屏" suoshubkcode="880541" Type="4"/>  
+  <BanKuai bkname="创投概念" suoshubkcode="880540" Type="4"/>  
+  <BanKuai bkname="卫星导航" suoshubkcode="880546" Type="4"/>  
+  <BanKuai bkname="旅游服务" suoshubkcode="880425" Type="4"/>  
+  <BanKuai bkname="云计算" suoshubkcode="880545" Type="4"/>  
+  <BanKuai bkname="旅游" suoshubkcode="880424" Type="4"/>  
+  <BanKuai bkname="焦炭加工" suoshubkcode="880303" Type="4"/>  
+  <BanKuai bkname="太阳能" suoshubkcode="880544" Type="4"/>  
+  <BanKuai bkname="煤炭开采" suoshubkcode="880302" Type="4"/>  
+  <BanKuai bkname="酒店餐饮" suoshubkcode="880423" Type="4"/>  
+  <BanKuai bkname="外资背景" suoshubkcode="880543" Type="4"/>  
+  <BanKuai bkname="文教休闲" suoshubkcode="880422" Type="4"/>  
+  <BanKuai bkname="煤炭" suoshubkcode="880301" Type="4"/>  
+  <BanKuai bkname="国开持股" suoshubkcode="880858" Type="4"/>  
+  <BanKuai bkname="证金持股" suoshubkcode="880857" Type="4"/>  
+  <BanKuai bkname="定增实施" suoshubkcode="880856" Type="4"/>  
+  <BanKuai bkname="定增获准" suoshubkcode="880855" Type="4"/>  
+  <BanKuai bkname="员工持股" suoshubkcode="880859" Type="4"/>  
+  <BanKuai bkname="定增预案" suoshubkcode="880850" Type="4"/>  
+  <BanKuai bkname="预高送转" suoshubkcode="880854" Type="4"/>  
+  <BanKuai bkname="中字头" suoshubkcode="880853" Type="4"/>  
+  <BanKuai bkname="参股新股" suoshubkcode="880852" Type="4"/>  
+  <BanKuai bkname="已高送转" suoshubkcode="880851" Type="4"/>  
+  <BanKuai bkname="行业龙头" suoshubkcode="880847" Type="4"/>  
+  <BanKuai bkname="破净资产" suoshubkcode="880846" Type="4"/>  
+  <BanKuai bkname="高股息股" suoshubkcode="880845" Type="4"/>  
+  <BanKuai bkname="预计扭亏" suoshubkcode="880844" Type="4"/>  
+  <BanKuai bkname="股份回购" suoshubkcode="880849" Type="4"/>  
+  <BanKuai bkname="被举牌" suoshubkcode="880848" Type="4"/>  
+  <BanKuai bkname="业绩预降" suoshubkcode="880843" Type="4"/>  
+  <BanKuai bkname="业绩预升" suoshubkcode="880842" Type="4"/>  
+  <BanKuai bkname="油气改革" suoshubkcode="880600" Type="4"/>  
+  <BanKuai bkname="ST板块" suoshubkcode="880516" Type="4"/>  
+  <BanKuai bkname="低价股" suoshubkcode="880879" Type="4"/>  
+  <BanKuai bkname="百元股" suoshubkcode="880878" Type="4"/>  
+  <BanKuai bkname="通达信88" suoshubkcode="880515" Type="4"/>  
+  <BanKuai bkname="户数减少" suoshubkcode="880877" Type="4"/>  
+  <BanKuai bkname="低碳经济" suoshubkcode="880519" Type="4"/>  
+  <BanKuai bkname="TDX 综企" suoshubkcode="880993" Type="4"/>  
+  <BanKuai bkname="最近复牌" suoshubkcode="880872" Type="4"/>  
+  <BanKuai bkname="TDX 信息" suoshubkcode="880992" Type="4"/>  
+  <BanKuai bkname="股权分散" suoshubkcode="880871" Type="4"/>  
+  <BanKuai bkname="TDX 建设" suoshubkcode="880991" Type="4"/>  
+  <BanKuai bkname="两年新股" suoshubkcode="880870" Type="4"/>  
+  <BanKuai bkname="TDX 金融" suoshubkcode="880990" Type="4"/>  
+  <BanKuai bkname="户数增加" suoshubkcode="880876" Type="4"/>  
+  <BanKuai bkname="海峡西岸" suoshubkcode="880513" Type="4"/>  
+  <BanKuai bkname="中小银行" suoshubkcode="880875" Type="4"/>  
+  <BanKuai bkname="承诺注资" suoshubkcode="880511" Type="4"/>  
+  <BanKuai bkname="昨曾涨停" suoshubkcode="880874" Type="4"/>  
+  <BanKuai bkname="ETF基金" suoshubkcode="880510" Type="4"/>  
+  <BanKuai bkname="个人持股" suoshubkcode="880873" Type="4"/>  
+  <BanKuai bkname="4G概念" suoshubkcode="880506" Type="4"/>  
+  <BanKuai bkname="股权转让" suoshubkcode="880869" Type="4"/>  
+  <BanKuai bkname="TDX 交运" suoshubkcode="880989" Type="4"/>  
+  <BanKuai bkname="稀缺资源" suoshubkcode="880505" Type="4"/>  
+  <BanKuai bkname="高贝塔值" suoshubkcode="880868" Type="4"/>  
+  <BanKuai bkname="TDX 公用" suoshubkcode="880988" Type="4"/>  
+  <BanKuai bkname="昨高换手" suoshubkcode="880867" Type="4"/>  
+  <BanKuai bkname="长株潭" suoshubkcode="880504" Type="4"/>  
+  <BanKuai bkname="TDX 制造" suoshubkcode="880987" Type="4"/>  
+  <BanKuai bkname="皖江区域" suoshubkcode="880503" Type="4"/>  
+  <BanKuai bkname="近期新低" suoshubkcode="880866" Type="4"/>  
+  <BanKuai bkname="军工航天" suoshubkcode="880507" Type="4"/>  
+  <BanKuai bkname="TDX 材料" suoshubkcode="880982" Type="4"/>  
+  <BanKuai bkname="连续亏损" suoshubkcode="880861" Type="4"/>  
+  <BanKuai bkname="TDX 能源" suoshubkcode="880981" Type="4"/>  
+  <BanKuai bkname="扣非亏损" suoshubkcode="880860" Type="4"/>  
+  <BanKuai bkname="TDX 服务" suoshubkcode="880986" Type="4"/>  
+  <BanKuai bkname="含B股" suoshubkcode="880502" Type="4"/>  
+  <BanKuai bkname="近期新高" suoshubkcode="880865" Type="4"/>  
+  <BanKuai bkname="TDX 商贸" suoshubkcode="880985" Type="4"/>  
+  <BanKuai bkname="含H股" suoshubkcode="880501" Type="4"/>  
+  <BanKuai bkname="昨日振荡" suoshubkcode="880864" Type="4"/>  
+  <BanKuai bkname="TDX 可选" suoshubkcode="880984" Type="4"/>  
+  <BanKuai bkname="昨日涨停" suoshubkcode="880863" Type="4"/>  
+  <BanKuai bkname="TDX 消费" suoshubkcode="880983" Type="4"/>  
+  <BanKuai bkname="梧桐持股" suoshubkcode="880862" Type="4"/>  
+  <BanKuai bkname="酿酒" suoshubkcode="880380" Type="4"/>  
+  <BanKuai bkname="红黄药酒" suoshubkcode="880383" Type="4"/>  
+  <BanKuai bkname="啤酒" suoshubkcode="880382" Type="4"/>  
+  <BanKuai bkname="白酒" suoshubkcode="880381" Type="4"/>  
+  <BanKuai bkname="智能电视" suoshubkcode="880935" Type="4"/>  
+  <BanKuai bkname="智能医疗" suoshubkcode="880933" Type="4"/>  
+  <BanKuai bkname="农村金融" suoshubkcode="880932" Type="4"/>  
+  <BanKuai bkname="无人机" suoshubkcode="880939" Type="4"/>  
+  <BanKuai bkname="污水处理" suoshubkcode="880938" Type="4"/>  
+  <BanKuai bkname="网贷概念" suoshubkcode="880937" Type="4"/>  
+  <BanKuai bkname="猪肉" suoshubkcode="880936" Type="4"/>  
+  <BanKuai bkname="综合类" suoshubkcode="880497" Type="4"/>  
+  <BanKuai bkname="食品" suoshubkcode="880375" Type="4"/>  
+  <BanKuai bkname="软饮料" suoshubkcode="880374" Type="4"/>  
+  <BanKuai bkname="装饰园林" suoshubkcode="880931" Type="4"/>  
+  <BanKuai bkname="汽车电子" suoshubkcode="880930" Type="4"/>  
+  <BanKuai bkname="通信设备" suoshubkcode="880490" Type="4"/>  
+  <BanKuai bkname="乳制品" suoshubkcode="880373" Type="4"/>  
+  <BanKuai bkname="互联网" suoshubkcode="880494" Type="4"/>  
+  <BanKuai bkname="软件服务" suoshubkcode="880493" Type="4"/>  
+  <BanKuai bkname="食品饮料" suoshubkcode="880372" Type="4"/>  
+  <BanKuai bkname="元器件" suoshubkcode="880492" Type="4"/>  
+  <BanKuai bkname="半导体" suoshubkcode="880491" Type="4"/>  
+  <BanKuai bkname="基金独门" suoshubkcode="880809" Type="4"/>  
+  <BanKuai bkname="维生素" suoshubkcode="880929" Type="4"/>  
+  <BanKuai bkname="高管减持" suoshubkcode="880808" Type="4"/>  
+  <BanKuai bkname="券商重仓" suoshubkcode="880803" Type="4"/>  
+  <BanKuai bkname="QFII重仓" suoshubkcode="880802" Type="4"/>  
+  <BanKuai bkname="赛马概念" suoshubkcode="880923" Type="4"/>  
+  <BanKuai bkname="基金重仓" suoshubkcode="880801" Type="4"/>  
+  <BanKuai bkname="钛金属" suoshubkcode="880922" Type="4"/>  
+  <BanKuai bkname="阿里概念" suoshubkcode="880921" Type="4"/>  
+  <BanKuai bkname="抗流感" suoshubkcode="880928" Type="4"/>  
+  <BanKuai bkname="高管增持" suoshubkcode="880807" Type="4"/>  
+  <BanKuai bkname="抗癌" suoshubkcode="880927" Type="4"/>  
+  <BanKuai bkname="社保重仓" suoshubkcode="880806" Type="4"/>  
+  <BanKuai bkname="保险重仓" suoshubkcode="880805" Type="4"/>  
+  <BanKuai bkname="固废处理" suoshubkcode="880926" Type="4"/>  
+  <BanKuai bkname="信托重仓" suoshubkcode="880804" Type="4"/>  
+  <BanKuai bkname="特钢" suoshubkcode="880925" Type="4"/>  
+  <BanKuai bkname="农业综合" suoshubkcode="880366" Type="4"/>  
+  <BanKuai bkname="房产服务" suoshubkcode="880486" Type="4"/>  
+  <BanKuai bkname="园区开发" suoshubkcode="880485" Type="4"/>  
+  <BanKuai bkname="饲料" suoshubkcode="880364" Type="4"/>  
+  <BanKuai bkname="区域地产" suoshubkcode="880484" Type="4"/>  
+  <BanKuai bkname="林业" suoshubkcode="880363" Type="4"/>  
+  <BanKuai bkname="免疫治疗" suoshubkcode="880920" Type="4"/>  
+  <BanKuai bkname="服饰" suoshubkcode="880369" Type="4"/>  
+  <BanKuai bkname="电脑设备" suoshubkcode="880489" Type="4"/>  
+  <BanKuai bkname="纺织" suoshubkcode="880368" Type="4"/>  
+  <BanKuai bkname="纺织服饰" suoshubkcode="880367" Type="4"/>  
+  <BanKuai bkname="配股股" suoshubkcode="880836" Type="4"/>  
+  <BanKuai bkname="绩优股" suoshubkcode="880835" Type="4"/>  
+  <BanKuai bkname="微利股" suoshubkcode="880834" Type="4"/>  
+  <BanKuai bkname="亏损股" suoshubkcode="880833" Type="4"/>  
+  <BanKuai bkname="活跃股" suoshubkcode="880837" Type="4"/>  
+  <BanKuai bkname="家居用品" suoshubkcode="880399" Type="4"/>  
+  <BanKuai bkname="医疗保健" suoshubkcode="880398" Type="4"/>  
+  <BanKuai bkname="汽车整车" suoshubkcode="880391" Type="4"/>  
+  <BanKuai bkname="汽车类" suoshubkcode="880390" Type="4"/>  
+  <BanKuai bkname="摩托车" suoshubkcode="880394" Type="4"/>  
+  <BanKuai bkname="汽车服务" suoshubkcode="880393" Type="4"/>  
+  <BanKuai bkname="汽车配件" suoshubkcode="880392" Type="4"/>  
+  <BanKuai bkname="中市盈率" suoshubkcode="880825" Type="4"/>  
+  <BanKuai bkname="区块链" suoshubkcode="880946" Type="4"/>  
+  <BanKuai bkname="OLED概念" suoshubkcode="880945" Type="4"> 
+    <SubBanKuai subbkname="薄膜" suoshubkcode="880945" Type="5"/>  
+    <SubBanKuai subbkname="传输和发光材料" suoshubkcode="880945" Type="5"/>  
+    <SubBanKuai subbkname="面板" suoshubkcode="880945" Type="5"/>  
+    <SubBanKuai subbkname="水汽阻隔膜" suoshubkcode="880945" Type="5"/> 
+  </BanKuai>  
+  <BanKuai bkname="高市盈率" suoshubkcode="880824" Type="4"/>  
+  <BanKuai bkname="小盘股" suoshubkcode="880823" Type="4"/>  
+  <BanKuai bkname="无人驾驶" suoshubkcode="880944" Type="4"/>  
+  <BanKuai bkname="中盘股" suoshubkcode="880822" Type="4"/>  
+  <BanKuai bkname="量子通信" suoshubkcode="880943" Type="4"/>  
+  <BanKuai bkname="低市净率" suoshubkcode="880829" Type="4"/>  
+  <BanKuai bkname="中市净率" suoshubkcode="880828" Type="4"/>  
+  <BanKuai bkname="智慧城市" suoshubkcode="880949" Type="4"/>  
+  <BanKuai bkname="人工智能" suoshubkcode="880948" Type="4"/>  
+  <BanKuai bkname="高市净率" suoshubkcode="880827" Type="4"/>  
+  <BanKuai bkname="低市盈率" suoshubkcode="880826" Type="4"/>  
+  <BanKuai bkname="债转股" suoshubkcode="880947" Type="4"/>  
+  <BanKuai bkname="家用电器" suoshubkcode="880387" Type="4"/>  
+  <BanKuai bkname="大盘股" suoshubkcode="880821" Type="4"/>  
+  <BanKuai bkname="虚拟现实" suoshubkcode="880942" Type="4"/>  
+  <BanKuai bkname="跨境电商" suoshubkcode="880941" Type="4"/>  
+  <BanKuai bkname="PPP模式" suoshubkcode="880940" Type="4"/>  
+  <BanKuai bkname="沪深300" suoshubkcode="000300" Type="4"/>  
+  <BanKuai bkname="上证50" suoshubkcode="000016" Type="4"/>  
+  <BanKuai bkname="创业板指" suoshubkcode="399006" Type="4"/>  
+  <BanKuai bkname="中小板指" suoshubkcode="399005" Type="4"/>  
+  <BanKuai bkname="深证100" suoshubkcode="399330" Type="4"/>  
+  <BanKuai bkname="上证380" suoshubkcode="000009" Type="4"/>  
+  <BanKuai bkname="创业板50" suoshubkcode="399673" Type="4"/>  
+  <BanKuai bkname="上证180" suoshubkcode="000010" Type="4"/>  
+  <BanKuai bkname="中证100" suoshubkcode="399903" Type="4"/> 
+</TongDaXinBanKuaiAndZhiShu>

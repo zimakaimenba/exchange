@@ -75,7 +75,7 @@ public class EverySearchOperation extends JPanel
 //	}
 
 	private void initializeDB() {
-		// TODO Auto-generated method stub
+
 		connectdb = ConnectDatabase.getInstance();
 				
 //				if(connectdb.isDatabaseconnected())

@@ -12,6 +12,7 @@ public class GinkgoNode extends DefaultMutableTreeNode{
     private boolean expanded;
     private String noteText = null;
     private String hanyupingyin;
+	private String tdxbkzscode;
 //    private boolean willbedeleted = false;
 //    private boolean isnewbk = false;
     
@@ -53,7 +54,14 @@ public class GinkgoNode extends DefaultMutableTreeNode{
     public void setNoteText(String text){
         noteText = text;
     }
-    
+    public void setTDXBanKuaiZhiShuCode (String code)
+    {
+    	tdxbkzscode = code;
+    }
+    public String getTDXBanKuaiZhiShuCode ()
+    {
+    	return this.tdxbkzscode;
+    }
     public String getNoteText(){
         return noteText;
     }

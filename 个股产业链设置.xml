@@ -1,34 +1,10 @@
 <?xml version="1.0" encoding="GBK"?>
 
 <geguchanyelian> 
-  <gegu stockcode="002217" stockname="合力泰"> 
-    <item bankuai="智能穿戴">智能穿戴</item> 
+  <gegu stockcode="600352" stockname="浙江龙盛"> 
+    <chanyelian bankuai="染料涂料" suoshubkcode="880340">染料涂料-浙江</chanyelian> 
   </gegu>  
-  <gegu stockcode="002230" stockname="科大讯飞"> 
-    <item bankuai="智能穿戴">智能穿戴</item> 
-  </gegu>  
-  <gegu stockcode="002288" stockname="超华科技"> 
-    <item bankuai="智能穿戴">智能穿戴</item> 
-  </gegu>  
-  <gegu stockcode="002542" stockname="中化岩土"> 
-    <item bankuai="活跃股">活跃股-上海活跃股</item> 
-  </gegu>  
-  <gegu stockcode="002847" stockname="盐津铺子"> 
-    <item bankuai="活跃股">活跃股-广东</item> 
-  </gegu>  
-  <gegu stockcode="000725" stockname="京东方Ａ"> 
-    <item bankuai="OLED概念">OLED概念-面板</item> 
-  </gegu>  
-  <gegu stockcode="000050" stockname="深天马Ａ"> 
-    <item bankuai="OLED概念">OLED概念-面板</item> 
-  </gegu>  
-  <gegu stockcode="002643" stockname="烟台万润"> 
-    <item bankuai="OLED概念">OLED概念-传输和发光材料</item> 
-  </gegu>  
-  <gegu stockcode="300481" stockname="濮阳惠成"> 
-    <item bankuai="OLED概念">OLED概念-传输和发光材料</item> 
-  </gegu>  
-  <gegu stockcode="300429" stockname="强力新材"> 
-    <item bankuai="OLED概念">OLED概念-传输和发光材料</item> 
+  <gegu stockcode="300192" stockname="科斯伍德"> 
+    <chanyelian bankuai="染料涂料">染料涂料-浙江</chanyelian> 
   </gegu> 
 </geguchanyelian>

@@ -16,6 +16,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.google.common.collect.Ordering;
@@ -61,35 +62,46 @@ public class BanKuaiGuanLi extends JDialog
 		this.stockdbopt = stockdbopt;
 		this.cylxmlhandler = cylxmlhandler;
 		
-		//startDialog ();
+		startDialog ();
 	}
 	
 	
 
 	private BanKuaiDbOperation bkdbopt;
 	private StockDbOperations stockdbopt;
-	HashMap<String,BanKuai> sysbankuailist;
-	HashMap<String,BanKuai> zdybankuailist;
+//	private HashMap<String,BanKuai> sysbankuailist;
+//	private HashMap<String,BanKuai> zdybankuailist;
+//	private HashMap<String, BanKuai> zhishulist;
 
 	public void startDialog ()
 	{
 		initializeGui ();
 		createEvents ();
-		initializeSystemBanKuaiLists ();
+		initializeTDXBanKuaiLists ();
+		initializeTDXZhiShuLists ();
 		initialzieZdyBanKuaList ();
+	}
+
+	private void initializeTDXZhiShuLists() 
+	{
+		 HashMap<String,BanKuai> zhishulist = bkdbopt.getTDXAllZhiShuList (); 
+		
+		((BanKuaiDetailTableModel)tablezhishu.getModel()).refresh(zhishulist);
+		((BanKuaiDetailTableModel)tablezhishu.getModel()).fireTableDataChanged();
+		
 	}
 
 	private void initialzieZdyBanKuaList() 
 	{
-		zdybankuailist = bkdbopt.getZdyBanKuaiList (); 
+		 HashMap<String,BanKuai> zdybankuailist = bkdbopt.getZdyBanKuaiList (); 
 		
 		((BanKuaiDetailTableModel)tableZdy.getModel()).refresh(zdybankuailist);
 		((BanKuaiDetailTableModel)tableZdy.getModel()).fireTableDataChanged();
 		
 	}
-	private void initializeSystemBanKuaiLists() 
+	private void initializeTDXBanKuaiLists() 
 	{
-		sysbankuailist = bkdbopt.getSystemAllBanKuaiList (); 
+		 HashMap<String,BanKuai> sysbankuailist = bkdbopt.getTDXBanKuaiList (); 
 		
 		((BanKuaiDetailTableModel)tableSysBk.getModel()).refresh(sysbankuailist);
 		((BanKuaiDetailTableModel)tableSysBk.getModel()).fireTableDataChanged();
@@ -121,6 +133,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JPanel panelSys;
 	private JTable tableZdy;
 	private ChanYeLianXMLHandler cylxmlhandler;
+	private JTable tablezhishu;
 	
 	private void initializeGui()
 	{
@@ -154,44 +167,72 @@ public class BanKuaiGuanLi extends JDialog
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
-		JLabel label = new JLabel("\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u677F\u5757");
+		JLabel label = new JLabel("\u901A\u8FBE\u4FE1\u677F\u5757");
 		
 		JLabel label_1 = new JLabel("\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757");
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		
+		JLabel lblNewLabel = new JLabel("\u901A\u8FBE\u4FE1\u4EA4\u6613\u6240\u6307\u6570");
 
 
 		GroupLayout gl_panelSys = new GroupLayout(panelSys);
 		gl_panelSys.setHorizontalGroup(
-			gl_panelSys.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panelSys.createSequentialGroup()
+			gl_panelSys.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panelSys.createSequentialGroup()
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelSys.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 327, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panelSys.createSequentialGroup()
 							.addGap(23)
-							.addComponent(label)))
-					.addPreferredGap(ComponentPlacement.RELATED, 120, Short.MAX_VALUE)
-					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(label))
 						.addGroup(gl_panelSys.createSequentialGroup()
-							.addComponent(label_1)
-							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						.addGroup(Alignment.TRAILING, gl_panelSys.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 359, GroupLayout.PREFERRED_SIZE)
-							.addGap(75))))
+							.addContainerGap()
+							.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)))
+					.addGap(44)
+					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 278, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel))
+					.addPreferredGap(ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
+					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 217, GroupLayout.PREFERRED_SIZE)
+						.addComponent(label_1))
+					.addGap(75))
 		);
 		gl_panelSys.setVerticalGroup(
 			gl_panelSys.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panelSys.createSequentialGroup()
-					.addContainerGap(19, Short.MAX_VALUE)
+					.addContainerGap(46, Short.MAX_VALUE)
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
 						.addComponent(label)
-						.addComponent(label_1))
+						.addComponent(label_1)
+						.addComponent(lblNewLabel))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 443, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 441, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 447, GroupLayout.PREFERRED_SIZE))
 					.addGap(38))
 		);
+		
+		BanKuaiDetailTableModel zhishubankmodel = new BanKuaiDetailTableModel(null);
+		tablezhishu = new JTable(zhishubankmodel) {
+			private static final long serialVersionUID = 1L;
+
+			public String getToolTipText(MouseEvent e) {
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+
+                try {
+                    tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {
+                    //catch null pointer exception if mouse is over an empty line
+                }
+
+                return tip;
+            }
+		};
+		scrollPane_1.setViewportView(tablezhishu);
 		
 		BanKuaiDetailTableModel zidingyibankmodel = new BanKuaiDetailTableModel(null);
 		tableZdy = new JTable(zidingyibankmodel){
@@ -276,20 +317,6 @@ public class BanKuaiGuanLi extends JDialog
 		this.setLocationRelativeTo(null);
 		
 	}
-	
-//	/**
-//	 * Launch the application.
-//	 */
-//	public static void main(String[] args) {
-//		try {
-//			BanKuaiGuanLi dialog = new BanKuaiGuanLi(null,null);
-//			//dialog.dialogStart();
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 }
 
 
@@ -299,7 +326,6 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 
 	List<BanKuai> valuesList; //存放板块对象列表
 	String[] jtableTitleStrings = { "板块名称", "板块代码","创建时间"};
-	//String[] bankuaidaleiname = { "国新政策","成长股","涨价概念","次新股","重大事件","特定时间","超跌周期","券商参券","重组收购","稳定增长","业绩反转","黑天鹅受益"};
 	
 	BanKuaiDetailTableModel (HashMap<String,BanKuai> bankuailist)
 	{

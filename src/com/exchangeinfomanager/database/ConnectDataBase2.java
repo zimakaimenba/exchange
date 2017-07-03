@@ -295,6 +295,10 @@ public class ConnectDataBase2
 		{
 			return remotcon.getDatabaseName(string);
 		}
+		public String[] getTDXDataSysRelatedTablesNames ()
+		{
+			return rmtservertable;
+		}
 
 }
 
