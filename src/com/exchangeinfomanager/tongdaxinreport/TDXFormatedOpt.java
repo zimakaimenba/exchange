@@ -48,7 +48,9 @@ public class TDXFormatedOpt {
 	{
 		return TDXFormatedOpt.formateStockCodeForTDX(stockcode) + "  |  " + geguchanyelian +  " | " + "1.000" + System.getProperty("line.separator");
 	}
-	
+	/*
+	 * 
+	 */
 	public static boolean parseZdgzBkToTDXCode(HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> zdgzbkmap)
 	{
 		Iterator<String> bankuaidaleiname = zdgzbkmap.keySet().iterator();
@@ -78,9 +80,11 @@ public class TDXFormatedOpt {
 		   		String result = "";
 		   		try {
 			   		for(GuanZhuBanKuaiInfo tmpgz:tmpgzbklist) {
-		        		String chanyelian =  tmpgz.getBkchanyelian();
-		        		String seltime = tmpgz.getSelectedtime();
-		        		result =  result + chanyelian + "(" + seltime +")" + "  |  "; 
+			   			if(tmpgz.isOfficallySelected() ) {
+			   				String chanyelian =  tmpgz.getBkchanyelian();
+			        		String seltime = tmpgz.getSelectedtime();
+			        		result =  result + chanyelian + "(" + seltime +")" + "  |  ";
+			   			}
 		        	}
 		   		} catch (Exception e) { 
 		   			
@@ -109,7 +113,9 @@ public class TDXFormatedOpt {
 		
 		return runresult;
 	}
-	
+	/*
+	 * 
+	 */
 	private static String formatedWholeContents(int i, String daleibankuai, String result) 
 	{
 		//DRAWTEXT_FIX( NOT(CODELIKE('880')), PSTN_ULX_C2,PSTN_ULY+0*PSTN_STEP_ULY,0, ' 国新政策:钢铁行业(17-04-05) 京津冀(17-04-05) ZDY项目PPP(17-04-05)   ')    {};
@@ -123,7 +129,9 @@ public class TDXFormatedOpt {
 			return part1  + i + part2 + daleibankuai +" : " + result + part3;
 		
 	}
-	
+	/*
+	 * 
+	 */
 	public static String parseChanYeLianXmlToTDXReport () 
 	{
 		SystemConfigration sysconfig = SystemConfigration.getInstance();
@@ -186,7 +194,9 @@ public class TDXFormatedOpt {
 		
 		return cylreport.getParent();
 	}
-
+/*
+ * 
+ */
 	public static String stockJiBenMianToReports ()
 	{
 		ConnectDatabase connectdb = ConnectDatabase.getInstance();
@@ -283,7 +293,7 @@ public class TDXFormatedOpt {
 				String formatedfuxiangguan = null;
 				if( !Strings.isNullOrEmpty(rs.getString("负相关及竞争对手") ) || !Strings.isNullOrEmpty(rs.getString("竞争对手") ) ) {
 					formatedfuxiangguan = "负相关及竞争对手(#" + Strings.nullToEmpty(rs.getString("负相关及竞争对手") )
-											 + " " + Strings.nullToEmpty(rs.getString("客户") ) + "#) " ;
+											 + " " + Strings.nullToEmpty(rs.getString("竞争对手") ) + "#) " ;
 				}
 				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
 					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan) );

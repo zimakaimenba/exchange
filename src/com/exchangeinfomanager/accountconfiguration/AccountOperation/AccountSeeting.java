@@ -458,7 +458,9 @@ public class AccountSeeting extends JDialog
 		});
 		
 	}
-
+/*
+ * 保住每个表都统一显示相关的账户
+ */
 	protected void allTablesDispalyRelatedAcnt(String acntname) 
 	{
 		tableputong.clearSelection();

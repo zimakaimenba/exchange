@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.swing.JCheckBox;
 
+
 public class ImportQuanShangJiaoYiRecords extends JDialog {
 
 
@@ -184,7 +185,8 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 											+"如果是卖出可能该账户不持有该股票，注意是否是股票代码填写错误导致;" +"\n" 
 									,"警告！", JOptionPane.WARNING_MESSAGE);
 							if(JOptionPane.showConfirmDialog(null, "是否再次导入该条数据？","警告", JOptionPane.YES_NO_OPTION) == 1) {
-								return;
+								//return;
+								break;
 							}
 						}
 						

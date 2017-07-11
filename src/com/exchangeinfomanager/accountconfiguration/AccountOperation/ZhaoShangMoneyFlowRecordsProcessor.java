@@ -23,6 +23,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.io.LineProcessor;
 
+/*
+ * 专门为招商证券
+ */
 public class ZhaoShangMoneyFlowRecordsProcessor implements LineProcessor<List<String>>
 {
 

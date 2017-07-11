@@ -9,11 +9,21 @@ public class GuanZhuBanKuaiInfo
 
 	public GuanZhuBanKuaiInfo() 
 	{
-		
+		this.isofficallyselected = false;
 	}
 	private String tdxbk;
 	private String bkchanyelian;
 	private Date selectedtime;
+	private boolean isofficallyselected ;
+	
+	public void setOfficallySelected (boolean ofslt)
+	{
+		this.isofficallyselected = ofslt;
+	}
+	public boolean isOfficallySelected ()
+	{
+		return this.isofficallyselected;
+	}
 	/**
 	 * @return the tdxbk
 	 */

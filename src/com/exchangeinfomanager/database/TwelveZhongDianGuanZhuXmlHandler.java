@@ -98,6 +98,10 @@ public class TwelveZhongDianGuanZhuXmlHandler
 				   tmpgzbkinfo.setTdxbk(iteele.attributeValue("tdxbk"));
 				   tmpgzbkinfo.setBkchanyelian(iteele.getText() );
 				   tmpgzbkinfo.setSelectedtime(iteele.attributeValue("addedTime") );
+				   if(iteele.attributeValue("officallyselected") == null || iteele.attributeValue("officallyselected").toLowerCase().equals("no")) {
+					   tmpgzbkinfo.setOfficallySelected(false);
+				   } else 
+					   tmpgzbkinfo.setOfficallySelected(true);
 				   
 				   tmpdllist.add(tmpgzbkinfo);
 			   }
@@ -164,11 +168,13 @@ public class TwelveZhongDianGuanZhuXmlHandler
         		String tdxbk = tmpgzbkifno.getTdxbk();
         		String subcyl = tmpgzbkifno.getBkchanyelian();
         		String addedtime = tmpgzbkifno.getSelectedtime();
+        		String offselted = String.valueOf(tmpgzbkifno.isOfficallySelected() ).toLowerCase();
         		
         		Element subcylele = bkele.addElement("Item");
         		subcylele.addAttribute("tdxbk", tdxbk);
        			subcylele.setText(subcyl); //后面多一个 -> ，如何删除还要考虑。直接sub会导致下次载入后，又再删一次
         		subcylele.addAttribute("addedTime", addedtime);
+        		subcylele.addAttribute("officallyselected",offselted);
         		
         	}
         	

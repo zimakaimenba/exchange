@@ -1,5 +1,8 @@
 package com.exchangeinfomanager.bankuai.gui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class BanKuai 
 {
 
@@ -13,7 +16,8 @@ public class BanKuai
 	private String bankuainame;
 	private String bankuaicode;
 	private String bankuaicreatedtime;
-	private String bankuaijiaoyisuo;
+	private String bankuaijiaoyisuo; //是上证还是深证的板块指数
+	//private HashMap<String,ArrayList<String>> bkchanyelian ;
 	
 	public void setBanKuaiJiaoYiSuo (String jiaoyisuo)
 	{

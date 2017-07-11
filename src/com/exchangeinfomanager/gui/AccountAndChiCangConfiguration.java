@@ -626,7 +626,42 @@ public class AccountAndChiCangConfiguration
 		return autoIncKeyFromApi;
 		
 	}
-//CLASS END
+
+	/*
+	 * 目前可以对当日的买入记录更改买入账号, 下面是涉及到该操作的原子操作
+	 */
+	public BuyStockNumberPrice changeBuyRecordAccountYuanZiChaoZuo(String currentacnt, String newacnt, Integer dabataseid) 
+	{
+		BuyStockNumberPrice stocknumberpricepanel = acntdbop.changeAcntToNewAcnt(currentacnt,dabataseid.intValue(),newacnt);
+		
+		AccountInfoBasic tmpcuraccount = this.getAccount(currentacnt); //从几个账户list里面找到当前操作的账户
+		AccountInfoBasic tmpnewaccount = this.getAccount(newacnt); //从几个账户list里面找到新的修改的账户
+		
+		if(stocknumberpricepanel.isBuySell()) { //是买入操作
+			//新账户买入
+			 this.setBuyAccountRelatedActions (stocknumberpricepanel); //处理账户变化
+			 this.setBuyStockChiCangRelatedActions (stocknumberpricepanel); //处理持仓股票的变化
+			
+		} else { //卖出操作
+			this.setSellAccountRelatedActions (stocknumberpricepanel);
+			 this.setSellStockChiCangRelatedActions (stocknumberpricepanel);
+		}
+		
+		stocknumberpricepanel.setBuySell(!stocknumberpricepanel.isBuySell());
+		stocknumberpricepanel.setJiaoyiZhanghu(currentacnt);
+		if(stocknumberpricepanel.isBuySell()) { //是买入操作
+			//新账户买入
+			 this.setBuyAccountRelatedActions (stocknumberpricepanel); //处理账户变化
+			 this.setBuyStockChiCangRelatedActions (stocknumberpricepanel); //处理持仓股票的变化
+			
+		} else { //卖出操作
+			this.setSellAccountRelatedActions (stocknumberpricepanel);
+			 this.setSellStockChiCangRelatedActions (stocknumberpricepanel);
+		}
+
+		
+		return stocknumberpricepanel;
+	}
 }
 
 

@@ -103,8 +103,8 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 	public void startDialog ()
 	{
 		initializeChanYeLianXMLTree ();
-		initializeAllDaLeiZdgzTableFromXml ();
-		initializeSingleDaLeiZdgzTableFromXml (); 
+		initializeAllDaLeiZdgzTableFromXml (null);
+		initializeSingleDaLeiZdgzTableFromXml (0); 
 	}
 
 	private HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> daleidetailmap;
@@ -138,18 +138,31 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 	}
 	
 
-	private void initializeAllDaLeiZdgzTableFromXml ()
+	private void initializeAllDaLeiZdgzTableFromXml (String daleiname )
 	{
 		
 		((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap);
 		((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
-
+		
+		if(daleiname == null)
+			tableZdgzBankDetails.setRowSelectionInterval(0,0);
+		else {
+			int cursorpostion = ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).getDaLeiIndex(daleiname);
+			tableZdgzBankDetails.setRowSelectionInterval(cursorpostion,cursorpostion);
+		}
 	}
-	
-	private void initializeSingleDaLeiZdgzTableFromXml () 
+	/*
+	 * 参数为操作后光标位置
+	 */
+	private void initializeSingleDaLeiZdgzTableFromXml (int row)
 	{
-		((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap);
-		((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+		String selectedalei = getCurSelectedDaLei ();
+		if( selectedalei != null) {
+			((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap,selectedalei);
+			((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+		}
+		
+		tableCurZdgzbk.setRowSelectionInterval(row,row);
 	}
 	
 		
@@ -193,9 +206,83 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 	    
 	    return null;
 	}
+    private String getCurSelectedDaLei ()
+    {
+    	int row = tableZdgzBankDetails.getSelectedRow();
+		if(row <0) {
+			return null;
+		} 
+		
+		 String selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).getZdgzDaLei (row);
+		 tableZdgzBankDetails.setRowSelectionInterval(row, row);
+		 return  selecteddalei;
+    }
     
 	private void createEvents() 
 	{
+		buttonremoveoffical.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				int row = tableCurZdgzbk.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
+					return ;
+				}
+				
+				String selectedalei = getCurSelectedDaLei ();
+				if( selectedalei != null) {
+					 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+					 gzbk.setOfficallySelected(false);
+					 initializeAllDaLeiZdgzTableFromXml(selectedalei);
+					 //zdgzbkxmlhandler.addNewGuanZhuBanKuai(selectedalei, gzbk);
+				} else
+					 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+				
+				if(JOptionPane.showConfirmDialog(null, "是否直接从候补产业链中删除？","Warning", JOptionPane.YES_NO_OPTION) == 0) {
+					GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+					zdgzbkxmlhandler.removeGuanZhuBanKuai(selectedalei, gzbk);
+					initializeSingleDaLeiZdgzTableFromXml (0);
+				} else
+					initializeSingleDaLeiZdgzTableFromXml (row);
+				
+				btnSave.setEnabled(true);
+				
+//				((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai (),selectedalei);
+//				((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+				
+			}
+		});
+		
+		buttonaddofficial.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				int row = tableCurZdgzbk.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
+					return ;
+				}
+				
+				String selectedalei = getCurSelectedDaLei ();
+				if( selectedalei != null) {
+					 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+					 gzbk.setOfficallySelected(true);
+					 //zdgzbkxmlhandler.addNewGuanZhuBanKuai(selectedalei, gzbk);
+				} else
+					 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+				
+				initializeAllDaLeiZdgzTableFromXml (selectedalei);
+				initializeSingleDaLeiZdgzTableFromXml (row);
+				btnSave.setEnabled(true);
+//				((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap);
+//				((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
+//				
+//				((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai (),selectedalei);
+//				((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+			}
+		});
+		
 		btnadddalei.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -205,13 +292,16 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 					ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = new ArrayList<GuanZhuBanKuaiInfo> (); 
 					daleidetailmap.put(newdaleiname, tmpgzbklist);
 					
-					((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap);
-					((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
+					initializeAllDaLeiZdgzTableFromXml (newdaleiname);
+					initializeSingleDaLeiZdgzTableFromXml (0);
 					
-					((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap);
-					((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 					
-					cbxDale.addItem(newdaleiname);
+//					((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap);
+//					((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
+//					
+//					((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap,newdaleiname);
+//					((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+					
 					btnSave.setEnabled(true);
 				}
 			}
@@ -231,13 +321,16 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 				int n = JOptionPane.showConfirmDialog(null, "确定删除" + daleiname + "?", "删除大类",JOptionPane.YES_NO_OPTION);//i=0/1  
 				if(n == 0) {
 					daleidetailmap.remove(daleiname);
-					((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap);
-					((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 					
-					((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap);
-					((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+					initializeAllDaLeiZdgzTableFromXml (daleiname);
+					initializeSingleDaLeiZdgzTableFromXml (row);
 					
-					cbxDale.removeItem(daleiname);
+//					((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap);
+//					((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
+//					
+//					((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap,daleiname);
+//					((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+					
 					btnSave.setEnabled(true);
 				}
 			}
@@ -280,9 +373,13 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 					return;
 				} 
 				
-				 String selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).getZdgzDaLei (row);
+				initializeSingleDaLeiZdgzTableFromXml (0);
+//				 String selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).getZdgzDaLei (row);
+//				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai (),selecteddalei);
+//				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+//				 
 				 
-				 cbxDale.setSelectedItem(selecteddalei);
+//				 cbxDale.setSelectedItem(selecteddalei);
 				
 			}
 		});
@@ -337,9 +434,9 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 				 TreePath path = treechanyelian.getSelectionPath();
 				 GinkgoNode parent = (GinkgoNode) treechanyelian.getSelectionPath().getLastPathComponent();
 				 
-				 System.out.println(path.toString());
-				 System.out.print(path.getPathCount() );
-				 System.out.print(parent.getStatus());
+//				 System.out.println(path.toString());
+//				 System.out.print(path.getPathCount() );
+//				 System.out.print(parent.getStatus());
 				 
 				 GuanZhuBanKuaiInfo tmpgzbk = new GuanZhuBanKuaiInfo ();
 				 String tdxbk = path.getPathComponent(1).toString();
@@ -354,13 +451,22 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 					 }
 				 }
 				 System.out.println(chanyelian);
+				 
+				 
+				 
 				 tmpgzbk.setSelectedtime(new Date ());
 				 tmpgzbk.setBkchanyelian(chanyelian.substring(0, chanyelian.length()-2)); //去掉最后的->
 				 tmpgzbk.setTdxbk(tdxbk);
-				 
-				 String daleiname = cbxDale.getSelectedItem().toString();
-				 zdgzbkxmlhandler.addNewGuanZhuBanKuai(daleiname, tmpgzbk);
-				 
+				 if(JOptionPane.showConfirmDialog(null, "是否直接加入重点关注？","Warning", JOptionPane.YES_NO_OPTION) == 1) {
+					 tmpgzbk.setOfficallySelected(false);
+				 } else
+					 tmpgzbk.setOfficallySelected(true);
+
+				 String daleiname = getCurSelectedDaLei();
+				 if( daleiname != null)
+					 zdgzbkxmlhandler.addNewGuanZhuBanKuai(daleiname, tmpgzbk);
+				 else
+					 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
 //				 HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> allzdgzbkmap = zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ();
 //				 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist; //右边显示的内容
 //				 try {
@@ -372,13 +478,15 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 //				}
 //				allzdgzbkmap.put(cbxDale.getSelectedItem().toString(), tmpzdgzbklist);
 				 
-				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ());
-				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+				 initializeAllDaLeiZdgzTableFromXml (daleiname);
+				 int rowindex = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfoIndex(tmpgzbk);
+				 initializeSingleDaLeiZdgzTableFromXml (rowindex);
 				 
-				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ());
-				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
-				 
-				 
+//				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai (),daleiname);
+//				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+//				 
+//				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ());
+//				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 				 
 			     btnSave.setEnabled(true);
 			     
@@ -402,28 +510,31 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 //				 tmpzdgzbklist.remove(row);
 //				 allzdgzbkmap.put(cbxDale.getSelectedItem().toString(), tmpzdgzbklist);
 				
-				 String daleiname = cbxDale.getSelectedItem().toString();
-				 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
-				 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzbk);
+				 //String daleiname = cbxDale.getSelectedItem().toString();
+				String daleiname = getCurSelectedDaLei();
+				 if( daleiname != null) {
+					 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+					 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzbk);
+				 }
+				 else
+					 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+				 
+				 initializeAllDaLeiZdgzTableFromXml (daleiname);
+				 initializeSingleDaLeiZdgzTableFromXml (0);
+				 
+				 
+				 
 					
 				 //((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(allzdgzbkmap);
-				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai () );
-				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+//				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai (),daleiname );
+//				 ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 				 
 				 //((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(allzdgzbkmap);
-				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai () );
-				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
+//				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai () );
+//				 ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 				 
 			     btnSave.setEnabled(true);
 			    
-			}
-		});
-		
-		cbxDale.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent arg0) 
-			{
-				//initializeSingleDaLeiZdgzTableFromXml ();
-				((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 			}
 		});
 		
@@ -479,7 +590,6 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 	private JButton btnBkGl;
 	private JTable tableZdgzBankDetails;
 	private JButton btnSave;
-	private JComboBox<String> cbxDale;
 	private JMenuBar menuBar;
 	private JMenu mnNewMenu;
 	private JMenuItem mntmNewMenuItem;
@@ -488,6 +598,8 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 	private JTextField tfldfindbk;
 	private JButton btnadddalei;
 	private JButton btndeldalei;
+	private JButton buttonaddofficial;
+	private JButton buttonremoveoffical;
 
 	@SuppressWarnings("unchecked")
 	private void initializeGui() 
@@ -498,7 +610,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		
-		ZdgzBanKuaiDetailXmlTableModel xmlaccountsmodel = new ZdgzBanKuaiDetailXmlTableModel( null);
+		ZdgzBanKuaiDetailXmlTableModel xmlaccountsmodel = new ZdgzBanKuaiDetailXmlTableModel( );
 		tableZdgzBankDetails = new JTable(xmlaccountsmodel){
 
 			private static final long serialVersionUID = 1L;
@@ -529,15 +641,11 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 		//scrollPane.setViewportView(tableZdgzBankDetails);
 		
 		JScrollPane scrollPane = new JScrollPane(tableZdgzBankDetails, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-//		JScrollPane scrollPane = new JScrollPane();
-		
-		cbxDale = new JComboBox<String>();
 //		for (int i=0;i<bankuaidaleiname.length;i++) {
 //			cbxDale.addItem(bankuaidaleiname[i]);
 //		}
-		for (String str:daleidetailmap.keySet())
-				cbxDale.addItem(str);
+//		for (String str:daleidetailmap.keySet())
+//				cbxDale.addItem(str);
 		
 		btnLeftToRight = new JButton("->");
 
@@ -564,6 +672,14 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 		
 		btnadddalei = new JButton("\u589E\u52A0\u5927\u7C7B");
 		
+		buttonaddofficial = new JButton("\u52A0\u5165\u91CD\u70B9\u5173\u6CE8");
+		
+		JLabel label = new JLabel("\u5019\u9009\u677F\u5757");
+		
+		buttonremoveoffical = new JButton("\u79FB\u9664\u91CD\u70B9\u5173\u6CE8");
+		
+		
+		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -573,20 +689,22 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(cbxDale, 0, 219, Short.MAX_VALUE)
-									.addGap(18))
-								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 231, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)))
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnLeftToRight)
-								.addComponent(btnRightToLeft))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addComponent(btnLeftToRight)
+										.addComponent(btnRightToLeft)))
+								.addComponent(label))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE)
-							.addGap(104))
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(buttonaddofficial)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(buttonremoveoffical))
+								.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
 							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 538, GroupLayout.PREFERRED_SIZE)
-							.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createSequentialGroup()
 								.addComponent(btnSave)
 								.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(btnadddalei)
@@ -598,7 +716,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 							.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(button)))
-					.addContainerGap())
+					.addGap(15))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -610,20 +728,21 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 						.addComponent(btnadddalei))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 222, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(cbxDale, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGap(14)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(label)
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(buttonaddofficial)
+							.addComponent(buttonremoveoffical)))
+					.addGap(18)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(69)
 							.addComponent(btnLeftToRight)
 							.addGap(73)
 							.addComponent(btnRightToLeft))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(18)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
-								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE))))
+						.addComponent(scrollPane_2, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
+						.addComponent(scrollPane_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnBkGl)
@@ -631,10 +750,8 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 						.addComponent(button))
 					.addContainerGap())
 		);
-		
-			
-		CurZdgzBanKuaiTableModel signldaleigzbk = new CurZdgzBanKuaiTableModel(null,cbxDale);
-		tableCurZdgzbk = new  JTable(signldaleigzbk)
+		CurZdgzBanKuaiTableModel curzdgzbkmodel = new CurZdgzBanKuaiTableModel (); 
+		tableCurZdgzbk = new  JTable(curzdgzbkmodel)
 		{
 			private static final long serialVersionUID = 1L;
 			public String getToolTipText(MouseEvent e) 
@@ -720,14 +837,14 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 	String[] jtableTitleStrings = { "股票池", "关注板块"};
 	private ArrayList<String> gzdalei;
 	
-	ZdgzBanKuaiDetailXmlTableModel (HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap)
+	ZdgzBanKuaiDetailXmlTableModel ()
 	{
-		this.gzbkmap =  gzbkmap;
-		try {
-			this.gzdalei = new ArrayList<String>(gzbkmap.keySet() );
-		} catch (java.lang.NullPointerException e)		{
-			
-		}
+//		this.gzbkmap =  gzbkmap;
+//		try {
+//			this.gzdalei = new ArrayList<String>(gzbkmap.keySet() );
+//		} catch (java.lang.NullPointerException e)		{
+//			
+//		}
 	}
 
 	
@@ -746,6 +863,10 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 	 public String getZdgzDaLei (int row)
 	 {
 		 return (String)gzdalei.get(row);
+	 }
+	 public int getDaLeiIndex (String dalei)
+	 {
+		 return this.gzdalei.indexOf(dalei);
 	 }
 
 	    @Override
@@ -771,9 +892,12 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
             	String result = "";
             	try {
             		for( GuanZhuBanKuaiInfo tmpgzcyl : gzbkmap.get(gzdalei.get(rowIndex) )) {
-            			String chanyelian =  tmpgzcyl.getBkchanyelian();
-	            		String seltime = tmpgzcyl.getSelectedtime();
-	            		result = result + chanyelian + "(" + seltime +")" + "|" + " ";
+            			if(tmpgzcyl.isOfficallySelected()) {
+            				String chanyelian =  tmpgzcyl.getBkchanyelian();
+    	            		String seltime = tmpgzcyl.getSelectedtime();
+    	            		result = result + chanyelian + "(" + seltime +")" + "|" + " ";
+            			}
+            			
             		}
             	 } catch (java.lang.NullPointerException e) {
             		 
@@ -823,24 +947,30 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 class CurZdgzBanKuaiTableModel extends AbstractTableModel 
 {
 	private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap;
-	private JComboBox<String> cbxDale;
+	private String cbxDale;
 
-	String[] jtableTitleStrings = {  "板块产业链","创建时间"};
+	String[] jtableTitleStrings = {  "板块产业链","创建时间","入选"};
 	
-	CurZdgzBanKuaiTableModel (HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap, JComboBox<String> cbxDale)
+	CurZdgzBanKuaiTableModel ()
 	{
-		this.gzbkmap =  gzbkmap;
-		this.cbxDale = cbxDale;
+//		this.gzbkmap =  gzbkmap;
+//		this.cbxDale = cbxDale2;
 	}
 
-	public void refresh (HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap) 
+	public void refresh (HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap,String cbxDale2) 
 	{
 		this.gzbkmap =  gzbkmap;
+		this.cbxDale = cbxDale2;
 	}
-
+	public int getGuanZhuBanKuaiInfoIndex (GuanZhuBanKuaiInfo gzbk)
+	{
+		String currentdalei = this.cbxDale;
+		ArrayList<GuanZhuBanKuaiInfo> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
+		return tmpgzbkinfo.indexOf(gzbk);
+	}
 	public GuanZhuBanKuaiInfo getGuanZhuBanKuaiInfo (int rowindex)
 	{
-		String currentdalei = cbxDale.getSelectedItem().toString();
+		String currentdalei = this.cbxDale;
 		ArrayList<GuanZhuBanKuaiInfo> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
 		return tmpgzbkinfo.get(rowindex);
 	}
@@ -848,7 +978,7 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 	 public int getRowCount() 
 	 {
 		 try {
-			 String currentdalei = cbxDale.getSelectedItem().toString();  
+			 String currentdalei = this.cbxDale;  
 			 ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = gzbkmap.get(currentdalei);
 			 return tmpgzbklist.size();
 		 } catch (java.lang.NullPointerException e) {
@@ -868,7 +998,7 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 	    	if(gzbkmap == null)
 	    		return null;
 	    	
-	    	String currentdalei = cbxDale.getSelectedItem().toString();  
+	    	String currentdalei = this.cbxDale;  
 			ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = gzbkmap.get(currentdalei);
 			GuanZhuBanKuaiInfo tmpgzbk = tmpgzbklist.get(rowIndex);
 	    	
@@ -880,6 +1010,9 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
                 break;
             case 1:
             	value = tmpgzbk.getSelectedtime();
+                break;
+            case 2:
+                value = new Boolean(tmpgzbk.isOfficallySelected() );
                 break;
 	    	}
 
@@ -896,7 +1029,7 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = String.class;
+			          clazz = Boolean.class;
 			          break;
 		      }
 		      

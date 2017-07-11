@@ -20,6 +20,9 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.LineProcessor;
 
+/*
+ * 专门为招商证券
+ */
 class ZhaoShangBuySellRecordsProcessor implements LineProcessor<List<String>>
 {
     private List<String> recoreslists = Lists.newArrayList();

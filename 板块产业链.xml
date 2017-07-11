@@ -399,5 +399,9 @@
   <BanKuai bkname="上证380" suoshubkcode="000009" Type="4"/>  
   <BanKuai bkname="创业板50" suoshubkcode="399673" Type="4"/>  
   <BanKuai bkname="上证180" suoshubkcode="000010" Type="4"/>  
-  <BanKuai bkname="中证100" suoshubkcode="399903" Type="4"/> 
+  <BanKuai bkname="中证100" suoshubkcode="399903" Type="4"/>  
+  <BanKuai bkname="价值稳健" suoshubkcode="880841" Type="4"/>  
+  <BanKuai bkname="价值发现" suoshubkcode="880840" Type="4"/>  
+  <BanKuai bkname="出口退税" suoshubkcode="880512" Type="4"/>  
+  <BanKuai bkname="价值优势" suoshubkcode="880839" Type="4"/> 
 </TongDaXinBanKuaiAndZhiShu>

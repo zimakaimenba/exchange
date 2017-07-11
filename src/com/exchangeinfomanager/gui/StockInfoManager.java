@@ -608,7 +608,7 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"重点关注" ); 
+				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
 				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "计划细节", JOptionPane.OK_CANCEL_OPTION);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
@@ -682,34 +682,10 @@ public class StockInfoManager
 					return;
 				
 				String newacnt = ggzhpnl.getNewAccount ();	
-				BuyStockNumberPrice stocknumberpricepanel = acntdbopt.changeAcntToNewAcnt(currentacnt,dabataseid.intValue(),newacnt);
 				
-				AccountInfoBasic tmpcuraccount = accountschicangconfig.getAccount(currentacnt); //从几个账户list里面找到当前操作的账户
-				AccountInfoBasic tmpnewaccount = accountschicangconfig.getAccount(newacnt); //从几个账户list里面找到当前操作的账户
+				BuyStockNumberPrice stocknumberpricepanel  = accountschicangconfig.changeBuyRecordAccountYuanZiChaoZuo (currentacnt,newacnt,dabataseid); ;
 				
-				if(stocknumberpricepanel.isBuySell()) { //是买入操作
-					//新账户买入
-					 accountschicangconfig.setBuyAccountRelatedActions (stocknumberpricepanel); //处理账户变化
-					 accountschicangconfig.setBuyStockChiCangRelatedActions (stocknumberpricepanel); //处理持仓股票的变化
-					
-				} else { //卖出操作
-					accountschicangconfig.setSellAccountRelatedActions (stocknumberpricepanel);
-					 accountschicangconfig.setSellStockChiCangRelatedActions (stocknumberpricepanel);
-				}
-				
-				stocknumberpricepanel.setBuySell(!stocknumberpricepanel.isBuySell());
-				stocknumberpricepanel.setJiaoyiZhanghu(currentacnt);
-				if(stocknumberpricepanel.isBuySell()) { //是买入操作
-					//新账户买入
-					 accountschicangconfig.setBuyAccountRelatedActions (stocknumberpricepanel); //处理账户变化
-					 accountschicangconfig.setBuyStockChiCangRelatedActions (stocknumberpricepanel); //处理持仓股票的变化
-					
-				} else { //卖出操作
-					accountschicangconfig.setSellAccountRelatedActions (stocknumberpricepanel);
-					 accountschicangconfig.setSellStockChiCangRelatedActions (stocknumberpricepanel);
-				}
-
-				// { "日期", "操作", "说明","ID","操作账户","信息表" };
+				//修改界面 { "日期", "操作", "说明","ID","操作账户","信息表" };
 				((DefaultTableModel)tblzhongdiangz.getModel()).setValueAt( newacnt, rowIndex, 4); //更新账户
 				((DefaultTableModel)tblzhongdiangz.getModel()).setValueAt( stocknumberpricepanel.getDatabaseid(), rowIndex, 3); //更新数据库ID
 				
@@ -1712,7 +1688,9 @@ public class StockInfoManager
 
 			
 	}
-
+/*
+ * 显示板块信息
+ */
 	private void displayStockSuoShuBanKuai() 
 	{
 		HashSet<String> suosusysbankuai = stockbasicinfo.getSuoShuTDXSysBanKuai(); //所属通达信系统板块

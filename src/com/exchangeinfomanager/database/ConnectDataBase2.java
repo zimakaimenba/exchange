@@ -450,10 +450,13 @@ class DataBaseConnection
 			ex.printStackTrace();
 		} catch(java.lang.NullPointerException e) {
 			System.out.println("数据库连接为NULL");
+		} catch(com.mysql.jdbc.exceptions.jdbc4.CommunicationsException e1) {
+			System.out.println("与数据库的连接断开，需要重新连接");
+			e1.printStackTrace();
 		}	catch(Exception e) {
 			System.out.println("数据库SQL执行失败");
 			e.printStackTrace();
-		} finally {
+		}finally {
 			if(rsquery != null)
 				try {
 					rsquery.close();
