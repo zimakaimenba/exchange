@@ -19,7 +19,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.bankuai.gui.GuanZhuBanKuaiInfo;
-import com.exchangeinfomanager.database.ConnectDatabase;
+import com.exchangeinfomanager.database.ConnectDataBase2;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -199,7 +199,7 @@ public class TDXFormatedOpt {
  */
 	public static String stockJiBenMianToReports ()
 	{
-		ConnectDatabase connectdb = ConnectDatabase.getInstance();
+		ConnectDataBase2 connectdb = ConnectDataBase2.getInstance();
 		SystemConfigration sysconfig = SystemConfigration.getInstance();
 		
 		 File filegnts = new File( sysconfig.getTdxBbFileGaiNianTiShi() );

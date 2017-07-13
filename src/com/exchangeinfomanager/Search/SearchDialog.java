@@ -13,7 +13,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import com.exchangeinfomanager.database.ConnectDatabase;
+import com.exchangeinfomanager.database.ConnectDataBase2;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
@@ -56,7 +56,7 @@ import javax.swing.DefaultComboBoxModel;
 
 public class SearchDialog extends JDialog {
 
-	private ConnectDatabase connectdb;
+	private ConnectDataBase2 connectdb;
 	private SystemConfigration sysconfig ;
 	
 	private final JPanel contentPanel = new JPanel();
@@ -86,7 +86,7 @@ public class SearchDialog extends JDialog {
 	 */
 	public SearchDialog(StockInfoManager stockinfomanager)
 	{
-		this.connectdb = ConnectDatabase.getInstance();
+		this.connectdb = ConnectDataBase2.getInstance();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.stockinfomanager = stockinfomanager;
 		initializeGui ();

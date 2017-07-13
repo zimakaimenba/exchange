@@ -35,7 +35,6 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.database.AccountDbOperation;
-import com.exchangeinfomanager.database.ConnectDatabase;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.StockInfoManager;

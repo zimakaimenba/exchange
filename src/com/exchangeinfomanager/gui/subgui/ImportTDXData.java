@@ -37,6 +37,8 @@ import javax.swing.JTextArea;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.Collator;
 
@@ -58,14 +60,37 @@ public class ImportTDXData extends JDialog {
 		this.stockdbopt = stockdbopt;
 		sysconfig = SystemConfigration.getInstance(); 
 		initializeGui ();
+		importPreCheckTDX ();
 		iniiazlizeZdyGui ();
 		createEvents ();
 	}
+	
 	JCheckBox[] zdybkckbxs;
 	private StockDbOperations stockdbopt;
 	HashMap<String, String> zdybkmap;
 	private BanKuaiDbOperation bkdbopt;
 	private SystemConfigration sysconfig;
+	
+	private void importPreCheckTDX()
+	{
+		String tdxpath = sysconfig.getTDXInstalledLocation();
+		
+		File file = new File(sysconfig.getTDXStockEverUsedNameFile() );
+		if(!file.exists() ) {
+			 System.out.println("通达信目录不正确:" + tdxpath );
+			 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前目录:" + tdxpath);
+			 dispose();
+		 }
+		
+		tfldresult.append("当前通达信目录:" + tdxpath + "\n");
+//		FileReader tongdaxinfile = null;
+//		try {
+//			tongdaxinfile = new FileReader(sysconfig.getTDXSysAllBanKuaiFile() );
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+		
+	}
 	
 	private void iniiazlizeZdyGui() 
 	{

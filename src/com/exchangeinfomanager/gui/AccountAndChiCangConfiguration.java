@@ -22,7 +22,6 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.database.AccountDbOperation;
-import com.exchangeinfomanager.database.ConnectDatabase;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
