@@ -38,15 +38,15 @@ public class ZiJingHuaZhuan extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 
-	public ZiJingHuaZhuan(AccountInfoBasic actionzhanghu) 
+	public ZiJingHuaZhuan(AccountInfoBasic actionzhanghu2) 
 	{
-		this.actionzhanghu = actionzhanghu;
+		this.actionzhanghu = actionzhanghu2;
 		//this.hasxinyongzhanghu = hasxinyongzhanghu2; //标记是否有信用账户
 		sysconfig = SystemConfigration.getInstance();
 		gjcbuysellmaps = new HashMap<String,String> ();
 		gjctosystemmaps = new HashMap<String,String> ();
 		gjcshuomingmmaps = new HashMap<String,String> ();
-		this.quanshangzijingguanjianci (actionzhanghu);
+		this.quanShangZiJingGuanJianCi (actionzhanghu);
 		initializeGui ();
 		createEvents();
 	}
@@ -166,7 +166,7 @@ public class ZiJingHuaZhuan extends JPanel {
 		return dateChooser.getDate();
 	}
 
-	private void quanshangzijingguanjianci (AccountInfoBasic actionzhanghu)
+	private void quanShangZiJingGuanJianCi (AccountInfoBasic actionzhanghu)
 	{
 		String suoshuquanshang = actionzhanghu.getSuoShuQuanShngYingHang ();
 		 
@@ -205,7 +205,10 @@ public class ZiJingHuaZhuan extends JPanel {
 	   	 		  gjcshuomingmmaps.put(qsgjc, shuoming);
 	   	 	  }
 	   	 	}
-		}
+		} else if(suoshuquanshang.contains("湘财") ) {
+			
+			
+		} 
 	}
 	
 	private void initializeGui() 

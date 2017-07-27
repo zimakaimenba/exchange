@@ -98,7 +98,7 @@ public class TwelveZhongDianGuanZhuXmlHandler
 				   tmpgzbkinfo.setTdxbk(iteele.attributeValue("tdxbk"));
 				   tmpgzbkinfo.setBkchanyelian(iteele.getText() );
 				   tmpgzbkinfo.setSelectedtime(iteele.attributeValue("addedTime") );
-				   if(iteele.attributeValue("officallyselected") == null || iteele.attributeValue("officallyselected").toLowerCase().equals("no")) {
+				   if(iteele.attributeValue("officallyselected") == null || iteele.attributeValue("officallyselected").toLowerCase().equals("false")) {
 					   tmpgzbkinfo.setOfficallySelected(false);
 				   } else 
 					   tmpgzbkinfo.setOfficallySelected(true);

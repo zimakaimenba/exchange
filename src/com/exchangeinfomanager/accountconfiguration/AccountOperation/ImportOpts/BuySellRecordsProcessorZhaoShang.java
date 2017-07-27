@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.accountconfiguration.AccountOperation;
+package com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,14 +23,14 @@ import com.google.common.io.LineProcessor;
 /*
  * 专门为招商证券
  */
-class ZhaoShangBuySellRecordsProcessor implements LineProcessor<List<String>>
+public class BuySellRecordsProcessorZhaoShang implements LineProcessor<List<String>>
 {
     private List<String> recoreslists = Lists.newArrayList();
     private String zhanghuid = null;
     private boolean newformate = false;
 	private SystemConfigration sysconfig;
    
-	public ZhaoShangBuySellRecordsProcessor ()
+	public BuySellRecordsProcessorZhaoShang ()
 	{
 		sysconfig = SystemConfigration.getInstance();
 		initializeIsBuySellList ();

@@ -123,6 +123,7 @@ import java.awt.FlowLayout;
 import javax.swing.JTextPane;
 import javax.swing.JTabbedPane;
 
+
 public class StockInfoManager 
 {
 	/**
@@ -326,11 +327,8 @@ public class StockInfoManager
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				BanKuaiGuanLi bkgldialog = new BanKuaiGuanLi(bkdbopt,stockdbopt,cylxmlhandler);
-				bkgldialog.setModal(true);
-				bkgldialog.startDialog ();
-				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				bkgldialog.setVisible(true);
+				startBanKuaiGuanLiDlg ();
+				
 			}
 		});
 		
@@ -1490,6 +1488,16 @@ public class StockInfoManager
 		});
 				
 }
+protected void startBanKuaiGuanLiDlg()
+{
+	BanKuaiGuanLi bkgldialog = new BanKuaiGuanLi(this,bkdbopt,stockdbopt,zdgzbkxmlhandler,cylxmlhandler);
+	bkgldialog.setModal(true);
+	bkgldialog.startDialog ();
+	bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	bkgldialog.setVisible(true);
+	
+}
+
 //	protected void quickImportBuySellRecords() 
 //	{
 //		

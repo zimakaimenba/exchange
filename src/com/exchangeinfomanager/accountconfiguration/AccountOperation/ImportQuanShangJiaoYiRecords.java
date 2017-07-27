@@ -11,6 +11,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.BuySellRecordsProcessorXiangCai;
+import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.BuySellRecordsProcessorZhaoShang;
+import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.MoneyFlowRecordsProcessorZhaoShang;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountPuTong;
 import com.exchangeinfomanager.database.AccountDbOperation;
@@ -88,8 +91,10 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 	protected void performImportRecordsActions(ArrayList<String> filenamelist) 
 	{
 		String acntname = actionacnt.getAccountName();
-		int listindex = 0;
+		String acntquanshang = checkAcntSuoShuQuanShang(actionacnt.getSuoShuQuanShngYingHang());
 		
+		
+		int listindex = 0;
 		for(String str:filenamelist) {
 			listRight.setSelectedIndex(listindex);
 			listRight.ensureIndexIsVisible(listindex);
@@ -99,7 +104,13 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 			 //这里后面要插入判断是哪个券商，以便调用不同的类的代码
 		     List<String> readLines = null;
 		     try {
-					readLines = Files.readLines(recordsfile,sysconfig.charSet(),new ZhaoShangBuySellRecordsProcessor ());
+		    	 switch(acntquanshang) {
+		    	 case "招商": readLines = Files.readLines(recordsfile,sysconfig.charSet(),new BuySellRecordsProcessorZhaoShang ());
+		    	 				break;
+		    	 case "湘财": readLines = Files.readLines(recordsfile,sysconfig.charSet(),new BuySellRecordsProcessorXiangCai ());
+	 				break;
+		    	 }
+					
 			 } catch (IOException ex) {
 					ex.printStackTrace();
 			 }
@@ -115,7 +126,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		    	 }
 		    	 readLines.remove(0);
 		     } else {
-		    	 JOptionPane.showMessageDialog(null, "记录文件不包含客户号，请自行确保数据准确性！","Warning", JOptionPane.WARNING_MESSAGE);
+		    	 JOptionPane.showMessageDialog(null, "记录文件不包含客户号，请自行确保记录是该账户的数据！","Warning", JOptionPane.WARNING_MESSAGE);
 		     }
 		     
 		     for(String everyline:readLines) {
@@ -199,6 +210,19 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		JOptionPane.showMessageDialog(null,  "所有股票买卖交易记录文件导入成功，请复查！","Warning", JOptionPane.WARNING_MESSAGE);
 		
 	}
+	private String checkAcntSuoShuQuanShang(String suoShuQuanShngYingHang) 
+	{
+		String quanshang = null;
+		if(suoShuQuanShngYingHang.contains("招商"))
+			quanshang = "招商";
+		else if(suoShuQuanShngYingHang.contains("湘财"))
+			quanshang = "湘财";
+		else if(suoShuQuanShngYingHang.contains("申万宏源") || suoShuQuanShngYingHang.contains("申银万国") || suoShuQuanShngYingHang.contains("申万") )
+			quanshang = "申万";
+		
+		return quanshang;
+	}
+
 	/*
 	 * @导入资金流水信息
 	 */
@@ -215,7 +239,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 			File recordsfile = new File(tfldrecordspath.getText() + str);
 		     List<String> readLines = null;
 		     try {
-					readLines = Files.readLines(recordsfile,sysconfig.charSet(),new ZhaoShangMoneyFlowRecordsProcessor ());
+					readLines = Files.readLines(recordsfile,sysconfig.charSet(),new MoneyFlowRecordsProcessorZhaoShang ());
 			 } catch (IOException ex) {
 					ex.printStackTrace();
 			 }

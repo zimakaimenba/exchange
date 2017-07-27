@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.accountconfiguration.AccountOperation;
+package com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +26,7 @@ import com.google.common.io.LineProcessor;
 /*
  * 专门为招商证券
  */
-public class ZhaoShangMoneyFlowRecordsProcessor implements LineProcessor<List<String>>
+public class MoneyFlowRecordsProcessorZhaoShang implements LineProcessor<List<String>>
 {
 
 	private List<String> recoreslists = Lists.newArrayList();
@@ -34,7 +34,7 @@ public class ZhaoShangMoneyFlowRecordsProcessor implements LineProcessor<List<St
 	private SystemConfigration sysconfig;
 	boolean newformate = false;
    
-    public ZhaoShangMoneyFlowRecordsProcessor ()
+    public MoneyFlowRecordsProcessorZhaoShang ()
 	{
 		 sysconfig = SystemConfigration.getInstance();
 		 //initializeZhuanRuChuMap ();

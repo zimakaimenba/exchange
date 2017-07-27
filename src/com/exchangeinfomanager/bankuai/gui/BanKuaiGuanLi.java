@@ -18,9 +18,12 @@ import javax.swing.table.DefaultTableModel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.database.StockDbOperations;
+import com.exchangeinfomanager.database.TwelveZhongDianGuanZhuXmlHandler;
+import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.google.common.collect.Ordering;
 
+import net.ginkgo.dom4jcopy.BanKuaiAndChanYeLian;
 //import net.ginkgo.copy.Ginkgo2;
 import net.ginkgo.dom4jcopy.Ginkgo2;
 import java.awt.event.MouseAdapter;
@@ -47,26 +50,27 @@ import java.awt.event.KeyEvent;
 
 public class BanKuaiGuanLi extends JDialog 
 {
-
-
 	/**
 	 * Create the dialog.
+	 * @param stockInfoManager 
 	 * @param zhongDianGuanZhuBanKuaiSheZhi 
 	 * @param bkdbopt2 
+	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt, ChanYeLianXMLHandler cylxmlhandler) 
+	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt2, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler2, ChanYeLianXMLHandler cylxmlhandler2) 
 	{
 
 		this.bkdbopt = bkdbopt2;
-		this.stockdbopt = stockdbopt;
-		this.cylxmlhandler = cylxmlhandler;
-		
+		this.stockdbopt = stockdbopt2;
+		this.cylxmlhandler = cylxmlhandler2;
+		this.zdgzbkxmlhandler = zdgzbkxmlhandler2;
+		this.stockInfoManager = stockInfoManager2;
 		startDialog ();
 	}
 	
-	
-
+	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
+	private StockInfoManager stockInfoManager;	
 	private BanKuaiDbOperation bkdbopt;
 	private StockDbOperations stockdbopt;
 //	private HashMap<String,BanKuai> sysbankuailist;
@@ -130,6 +134,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JTable tableSysBk;
 	private final JPanel contentPanel = new JPanel();
 	private Ginkgo2 pnlGingo2;
+	private BanKuaiAndChanYeLian bkcylpnl;
 	private JPanel panelSys;
 	private JTable tableZdy;
 	private ChanYeLianXMLHandler cylxmlhandler;
@@ -138,7 +143,7 @@ public class BanKuaiGuanLi extends JDialog
 	private void initializeGui()
 	{
 		setTitle("\u901A\u8FBE\u4FE1\u677F\u5757/\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E");
-		setBounds(100, 100, 956, 677);
+		setBounds(100, 100, 975, 986);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -283,9 +288,11 @@ public class BanKuaiGuanLi extends JDialog
 		
 		BanKuaiDetailTableModel zdyaccountsmodel = new BanKuaiDetailTableModel(null);
 		
-		pnlGingo2 = new Ginkgo2(this.bkdbopt, this.stockdbopt,this.cylxmlhandler);
+		//pnlGingo2 = new Ginkgo2(this.bkdbopt, this.stockdbopt,this.cylxmlhandler);
+		bkcylpnl = new BanKuaiAndChanYeLian(this.stockInfoManager, this.bkdbopt,this.stockdbopt, this.zdgzbkxmlhandler, this.cylxmlhandler) ;
 		
-		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, pnlGingo2, null);
+		//tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, pnlGingo2, null);
+		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, bkcylpnl, null);
 		tabbedPane.setSelectedIndex(1) ;
 		
 		contentPanel.setLayout(gl_contentPanel);

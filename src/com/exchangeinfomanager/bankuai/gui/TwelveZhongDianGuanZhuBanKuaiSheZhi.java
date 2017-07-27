@@ -162,7 +162,8 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 			((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 		}
 		
-		tableCurZdgzbk.setRowSelectionInterval(row,row);
+		if(((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getRowCount() != 0)
+			tableCurZdgzbk.setRowSelectionInterval(row,row);
 	}
 	
 		
@@ -242,7 +243,7 @@ public class TwelveZhongDianGuanZhuBanKuaiSheZhi extends JDialog {
 				if(JOptionPane.showConfirmDialog(null, "是否直接从候补产业链中删除？","Warning", JOptionPane.YES_NO_OPTION) == 0) {
 					GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
 					zdgzbkxmlhandler.removeGuanZhuBanKuai(selectedalei, gzbk);
-					initializeSingleDaLeiZdgzTableFromXml (0);
+					initializeSingleDaLeiZdgzTableFromXml (1);
 				} else
 					initializeSingleDaLeiZdgzTableFromXml (row);
 				
