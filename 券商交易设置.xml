@@ -18,4 +18,19 @@
   	<item iszhuanru="false" shuxing="xianjing" shuoming="券商到银行">银行转取</item>
   	<item iszhuanru="false" shuxing="xianjing">资金调拨调出</item>
    </ZiJingGuanJianCiZhaoShang>
+   <JiaoYiGuanJianCiXiangCai>
+  	<item isbuy="true">证券买入</item>
+  	<item isbuy="true">市值申购中签</item>
+  	<item isbuy="true">红股入账</item>
+  	<item isbuy="false">证券卖出</item>
+  </JiaoYiGuanJianCiXiangCai>
+  <ZiJingGuanJianCiXiangCai>
+	<item iszhuanru="true" shuxing="xianjing" shuoming="银行到券商">银行转存</item>
+  	<item iszhuanru="true" shuxing="lixi">利息归本</item>
+  	<item iszhuanru="true" shuxing="lixi">股息入帐</item>
+  	<item iszhuanru="true" shuxing="xianjing">资金调拨调入</item>
+  	<item iszhuanru="false" shuxing="lixi">股息红利税补缴</item>
+  	<item iszhuanru="false" shuxing="xianjing" shuoming="券商到银行">银行转取</item>
+  	<item iszhuanru="false" shuxing="xianjing">资金调拨调出</item>
+   </ZiJingGuanJianCiXiangCai>
 </SystemSettings>

@@ -177,7 +177,11 @@
   <BanKuai bkname="长三角" suoshubkcode="880526" Type="4"/>  
   <BanKuai bkname="铁路基建" suoshubkcode="880525" Type="4"/>  
   <BanKuai bkname="电器连锁" suoshubkcode="880409" Type="4"/>  
-  <BanKuai bkname="次新股" suoshubkcode="880529" Type="4"/>  
+  <BanKuai bkname="次新股" suoshubkcode="880529" Type="4"> 
+    <SubBanKuai subbkname="深次新股" suoshubkcode="880529" Type="5"> 
+      <SubBanKuai subbkname="沪次新股" suoshubkcode="880529" Type="5"/> 
+    </SubBanKuai> 
+  </BanKuai>  
   <BanKuai bkname="超市连锁" suoshubkcode="880408" Type="4"/>  
   <BanKuai bkname="MSCI成份" suoshubkcode="880883" Type="4"/>  
   <BanKuai bkname="智能电网" suoshubkcode="880520" Type="4"/>  
@@ -403,5 +407,6 @@
   <BanKuai bkname="价值稳健" suoshubkcode="880841" Type="4"/>  
   <BanKuai bkname="价值发现" suoshubkcode="880840" Type="4"/>  
   <BanKuai bkname="出口退税" suoshubkcode="880512" Type="4"/>  
-  <BanKuai bkname="价值优势" suoshubkcode="880839" Type="4"/> 
+  <BanKuai bkname="价值优势" suoshubkcode="880839" Type="4"/>  
+  <BanKuai bkname="军民融合" suoshubkcode="880950" Type="4"/> 
 </TongDaXinBanKuaiAndZhiShu>

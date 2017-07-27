@@ -3,19 +3,22 @@
 <ZhongDianGuanZhuanBanKuaiDetail>
   <DaLeiBanKuai daleiname="成长股">
     <Item tdxbk="染料涂料" addedTime="17-07-11" officallyselected="true">染料涂料-&gt;浙江</Item>
+    <Item tdxbk="水运" addedTime="17-07-27" officallyselected="false">水运</Item>
   </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="特定时间"/>
+  <DaLeiBanKuai daleiname="特定时间">
+    <Item tdxbk="水运" addedTime="17-07-27" officallyselected="true">水运</Item>
+  </DaLeiBanKuai>
   <DaLeiBanKuai daleiname="重组收购"/>
   <DaLeiBanKuai daleiname="稳定白马"/>
   <DaLeiBanKuai daleiname="黑天鹅受益"/>
   <DaLeiBanKuai daleiname="业绩反转">
     <Item tdxbk="上证50" addedTime="17-07-04" officallyselected="true">上证50</Item>
-    <Item tdxbk="沪深300" addedTime="17-07-04" officallyselected="false">沪深300</Item>
+    <Item tdxbk="沪深300" addedTime="17-07-04" officallyselected="true">沪深300</Item>
   </DaLeiBanKuai>
   <DaLeiBanKuai daleiname="重大事件"/>
   <DaLeiBanKuai daleiname="涨价概念"/>
   <DaLeiBanKuai daleiname="次新股">
-    <Item tdxbk="次新股" addedTime="17-06-08" officallyselected="false">次新股-&gt;深次新股</Item>
+    <Item tdxbk="次新股" addedTime="17-06-08" officallyselected="true">次新股-&gt;深次新股</Item>
     <Item tdxbk="铁路" addedTime="17-07-11" officallyselected="true">铁路</Item>
   </DaLeiBanKuai>
   <DaLeiBanKuai daleiname="超跌周期"/>
