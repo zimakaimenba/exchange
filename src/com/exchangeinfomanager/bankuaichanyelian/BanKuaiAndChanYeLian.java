@@ -30,6 +30,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.tree.TreePath;
 
+
 import com.exchangeinfomanager.bankuai.gui.GuanZhuBanKuaiInfo;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -112,43 +113,44 @@ public class BanKuaiAndChanYeLian extends JPanel
 		sysconfig = SystemConfigration.getInstance();
 	}
 
-	private void initializeAllDaLeiZdgzTableFromXml (String daleiname )
+	private void initializeAllDaLeiZdgzTableFromXml (String daleiname)
 	{
+		//ZdgzBanKuaiDetailXmlTableModel CurZdgzBanKuaiTableModel
 		
-		((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap);
-		((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
+		((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap);
+		((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 		
 		if(daleiname == null)
-			tableZdgzBankDetails.setRowSelectionInterval(0,0);
+			tableCurZdgzbk.setRowSelectionInterval(0,0);
 		else {
-			int cursorpostion = ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).getDaLeiIndex(daleiname);
-			tableZdgzBankDetails.setRowSelectionInterval(cursorpostion,cursorpostion);
+			int cursorpostion = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getDaLeiIndex(daleiname);
+			tableCurZdgzbk.setRowSelectionInterval(cursorpostion,cursorpostion);
 		}
 	}
 	
 	/*
 	 * 参数为操作后光标位置
 	 */
-	private void initializeSingleDaLeiZdgzTableFromXml (int row)
+	private void initializeSingleDaLeiZdgzTableFromXml (int row )
 	{
 		String selectedalei = getCurSelectedDaLei ();
 		if( selectedalei != null) {
-			((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap,selectedalei);
-			((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+			((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap,selectedalei);
+			((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 		}
 		
-		if(((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getRowCount() != 0)
-			tableCurZdgzbk.setRowSelectionInterval(row,row);
+		if(((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getRowCount() != 0)
+			tableZdgzBankDetails.setRowSelectionInterval(row,row);
 	}
 	private String getCurSelectedDaLei ()
     {
-    	int row = tableZdgzBankDetails.getSelectedRow();
+    	int row = tableCurZdgzbk.getSelectedRow();
 		if(row <0) {
 			return null;
 		} 
 		
-		 String selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableZdgzBankDetails.getModel()).getZdgzDaLei (row);
-		 tableZdgzBankDetails.setRowSelectionInterval(row, row);
+		 String selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getZdgzDaLei (row);
+		 tableCurZdgzbk.setRowSelectionInterval(row, row);
 		 return  selecteddalei;
     }
 	
@@ -407,7 +409,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 				String chanyelian = gzbk.getBkchanyelian();
 					 
 					 initializeAllDaLeiZdgzTableFromXml (daleiname);
-					 int rowindex = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfoIndex(gzbk);
+					 int rowindex = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(gzbk);
 					 initializeSingleDaLeiZdgzTableFromXml (rowindex);
 					 treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,false,true);
 				     btnSaveZdgz.setEnabled(true);
@@ -491,17 +493,17 @@ public class BanKuaiAndChanYeLian extends JPanel
 		        	}
 		        });
 				
-				tableCurZdgzbk.addMouseListener(new MouseAdapter() {
+				tableZdgzBankDetails.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) 
 					{
-						int row = tableCurZdgzbk.getSelectedRow();
+						int row = tableZdgzBankDetails.getSelectedRow();
 						if(row <0) {
 							JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
 							return;
 						} 
 						
-						GuanZhuBanKuaiInfo selectedgzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+						GuanZhuBanKuaiInfo selectedgzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
 						String tdxbk = selectedgzbk.getTdxbk();
 						findBanKuaiInTree(tdxbk);
 					}
@@ -512,7 +514,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 					public void mouseClicked(MouseEvent arg0) 
 					{
 
-						int row = tableCurZdgzbk.getSelectedRow();
+						int row = tableZdgzBankDetails.getSelectedRow();
 						if(row <0) {
 							JOptionPane.showMessageDialog(null,"请选择产业链","Warning",JOptionPane.WARNING_MESSAGE);
 							return;
@@ -520,7 +522,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 						String daleiname = getCurSelectedDaLei();
 						 if( daleiname != null) {
-							 GuanZhuBanKuaiInfo gzcyl = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+							 GuanZhuBanKuaiInfo gzcyl = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
 							 String gzcylinfo = gzcyl.getBkchanyelian();
 							 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzcyl);
 							 
@@ -571,7 +573,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 							 zdgzbkxmlhandler.addNewGuanZhuBanKuai(daleiname, tmpgzbk);
 							 
 							 initializeAllDaLeiZdgzTableFromXml (daleiname);
-							 int rowindex = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfoIndex(tmpgzbk);
+							 int rowindex = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(tmpgzbk);
 							 initializeSingleDaLeiZdgzTableFromXml (rowindex);
 							 if(tmpgzbk.isOfficallySelected())
 								 treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,true ,true);
@@ -601,7 +603,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 					@Override
 					public void mouseClicked(MouseEvent arg0) 
 					{
-						int row = tableCurZdgzbk.getSelectedRow();
+						int row = tableZdgzBankDetails.getSelectedRow();
 						if(row <0) {
 							JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
 							return ;
@@ -609,7 +611,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 						
 						String selectedalei = getCurSelectedDaLei ();
 						if( selectedalei != null) {
-							 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+							 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
 							 gzbk.setOfficallySelected(false);
 							 initializeAllDaLeiZdgzTableFromXml(selectedalei);
 							 
@@ -634,7 +636,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 					@Override
 					public void mouseClicked(MouseEvent arg0) 
 					{
-						int row = tableCurZdgzbk.getSelectedRow();
+						int row = tableZdgzBankDetails.getSelectedRow();
 						if(row <0) {
 							JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
 							return ;
@@ -642,7 +644,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 						
 						String selectedalei = getCurSelectedDaLei ();
 						if( selectedalei != null) {
-							 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableCurZdgzbk.getModel()).getGuanZhuBanKuaiInfo(row);
+							 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
 							 String chanyelian = gzbk.getBkchanyelian();
 							 gzbk.setOfficallySelected(true);
 							 
@@ -656,11 +658,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 					}
 				});
 				
-				tableZdgzBankDetails.addMouseListener(new MouseAdapter() {
+				tableCurZdgzbk.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent arg0) 
 					{
-						int row = tableZdgzBankDetails.getSelectedRow();
+						int row = tableCurZdgzbk.getSelectedRow();
 						if(row <0) {
 							JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
 							return;
@@ -845,8 +847,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    
 	    
 	private JTextField tfldparsefilename;
-	private JTable tableZdgzBankDetails;
 	private JTable tableCurZdgzbk;
+	private JTable tableZdgzBankDetails;
 	private JTable tablebkgegu;
 	private JTextField tfldfindbk;
 	private JTextField tfldfindgegu;
@@ -884,14 +886,14 @@ public class BanKuaiAndChanYeLian extends JPanel
 		JPanel panelcyltree = new JPanel();
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panelcyltree, GroupLayout.DEFAULT_SIZE, 920, Short.MAX_VALUE)
-						.addComponent(panelzdgz, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 920, Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 920, Short.MAX_VALUE)
+						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(10)
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 883, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 883, GroupLayout.PREFERRED_SIZE))
+						.addComponent(panelcyltree, GroupLayout.DEFAULT_SIZE, 920, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -899,10 +901,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 				.addGroup(groupLayout.createSequentialGroup()
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 362, GroupLayout.PREFERRED_SIZE)
+					.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 296, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panelcyltree, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
-					.addContainerGap())
+					.addComponent(panelcyltree, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGap(76))
 		);
 		
 		btnCylAddToZdgz = new JButton("\u52A0\u5165\u91CD\u70B9\u5173\u6CE8");
@@ -910,10 +912,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 		btnCylRemoveFromZdgz = new JButton("\u79FB\u9664\u91CD\u70B9\u5173\u6CE8");
 		
 		addSubnodeButton = new JButton("");
-		addSubnodeButton.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
+		addSubnodeButton.setIcon(new ImageIcon(BanKuaiAndChanYeLian.class.getResource("/images/subnode24.png")));
 		
 		addGeGuButton = new JButton("");
-		addGeGuButton.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
+		addGeGuButton.setIcon(new ImageIcon(BanKuaiAndChanYeLian.class.getResource("/images/subnode24.png")));
 		
 		btnAddSubBk = new JButton("\u589E\u52A0\u5B50\u677F\u5757");
 		
@@ -944,42 +946,48 @@ public class BanKuaiAndChanYeLian extends JPanel
 		gl_panelcyltree.setHorizontalGroup(
 			gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panelcyltree.createSequentialGroup()
-					.addContainerGap()
 					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelcyltree.createSequentialGroup()
-							.addComponent(jSplitPane, GroupLayout.PREFERRED_SIZE, 379, GroupLayout.PREFERRED_SIZE)
-							.addGap(17)
+							.addContainerGap()
 							.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panelcyltree.createSequentialGroup()
-									.addComponent(addSubnodeButton)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(scrollPanesubbk, GroupLayout.PREFERRED_SIZE, 426, GroupLayout.PREFERRED_SIZE))
+									.addComponent(btnCylAddToZdgz)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(btnCylRemoveFromZdgz)
+									.addGap(267)
+									.addComponent(btnAddSubBk))
 								.addGroup(gl_panelcyltree.createSequentialGroup()
-									.addComponent(addGeGuButton)
+									.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
+										.addComponent(jSplitPane, GroupLayout.PREFERRED_SIZE, 379, GroupLayout.PREFERRED_SIZE)
+										.addGroup(gl_panelcyltree.createSequentialGroup()
+											.addComponent(saveButton)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(deleteButton)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(notesButton)))
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 										.addGroup(gl_panelcyltree.createSequentialGroup()
-											.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(btnfindbk)
-											.addGap(18)
-											.addComponent(tfldfindgegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(btnfindgegu))
-										.addComponent(scrollPanegegu, GroupLayout.PREFERRED_SIZE, 427, GroupLayout.PREFERRED_SIZE)))))
+											.addGap(6)
+											.addComponent(addGeGuButton)
+											.addGap(17)
+											.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
+												.addGroup(gl_panelcyltree.createSequentialGroup()
+													.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+													.addPreferredGap(ComponentPlacement.UNRELATED)
+													.addComponent(btnfindbk)
+													.addGap(18)
+													.addComponent(tfldfindgegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+													.addPreferredGap(ComponentPlacement.UNRELATED)
+													.addComponent(btnfindgegu))
+												.addComponent(scrollPanegegu, GroupLayout.PREFERRED_SIZE, 427, GroupLayout.PREFERRED_SIZE)))
+										.addGroup(gl_panelcyltree.createSequentialGroup()
+											.addGap(81)
+											.addComponent(scrollPanesubbk, GroupLayout.PREFERRED_SIZE, 426, GroupLayout.PREFERRED_SIZE))))))
 						.addGroup(gl_panelcyltree.createSequentialGroup()
-							.addComponent(btnCylAddToZdgz)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnCylRemoveFromZdgz)
-							.addGap(267)
-							.addComponent(btnAddSubBk))
-						.addGroup(gl_panelcyltree.createSequentialGroup()
-							.addComponent(saveButton)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(deleteButton)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(notesButton)))
-					.addContainerGap(24, Short.MAX_VALUE))
+							.addGap(395)
+							.addComponent(addSubnodeButton)))
+					.addContainerGap(13, Short.MAX_VALUE))
 		);
 		gl_panelcyltree.setVerticalGroup(
 			gl_panelcyltree.createParallelGroup(Alignment.LEADING)
@@ -990,28 +998,28 @@ public class BanKuaiAndChanYeLian extends JPanel
 						.addComponent(btnCylRemoveFromZdgz)
 						.addComponent(btnAddSubBk))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING, false)
+					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelcyltree.createSequentialGroup()
 							.addComponent(scrollPanesubbk, GroupLayout.PREFERRED_SIZE, 82, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(scrollPanegegu, 0, 0, Short.MAX_VALUE))
-						.addComponent(jSplitPane, GroupLayout.PREFERRED_SIZE, 416, GroupLayout.PREFERRED_SIZE))
+						.addComponent(jSplitPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
 						.addComponent(saveButton)
-						.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-						.addComponent(notesButton)
+						.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 						.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnfindbk)
 						.addComponent(tfldfindgegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnfindgegu))
+						.addComponent(btnfindgegu)
+						.addComponent(notesButton))
 					.addGap(12))
 				.addGroup(gl_panelcyltree.createSequentialGroup()
-					.addGap(67)
+					.addGap(69)
 					.addComponent(addSubnodeButton)
-					.addPreferredGap(ComponentPlacement.RELATED, 218, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 224, Short.MAX_VALUE)
 					.addComponent(addGeGuButton)
-					.addGap(139))
+					.addGap(141))
 		);
 		
 		treeScrollPane = new JScrollPane();
@@ -1053,6 +1061,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		panelcyltree.setLayout(gl_panelcyltree);
 		
 		btnSaveZdgz = new JButton("\u4FDD\u5B58\u91CD\u70B9\u5173\u6CE8");
+		btnSaveZdgz.setEnabled(false);
 		
 		btnGenTDXCode = new JButton("\u751F\u6210TDX\u4EE3\u7801");
 		
@@ -1071,7 +1080,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		JSeparator separator_1 = new JSeparator();
 		GroupLayout gl_panelzdgz = new GroupLayout(panelzdgz);
 		gl_panelzdgz.setHorizontalGroup(
-			gl_panelzdgz.createParallelGroup(Alignment.LEADING)
+			gl_panelzdgz.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panelzdgz.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
@@ -1092,8 +1101,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btndeldalei))
 						.addComponent(scrollPaneDaLei, GroupLayout.PREFERRED_SIZE, 505, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(12, Short.MAX_VALUE))
-				.addGroup(Alignment.TRAILING, gl_panelzdgz.createSequentialGroup()
+					.addContainerGap(26, Short.MAX_VALUE))
+				.addGroup(gl_panelzdgz.createSequentialGroup()
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 906, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
@@ -1115,16 +1124,18 @@ public class BanKuaiAndChanYeLian extends JPanel
 								.addComponent(btnadddalei)
 								.addComponent(btndeldalei))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPaneDaLei, GroupLayout.PREFERRED_SIZE, 308, GroupLayout.PREFERRED_SIZE)
-								.addComponent(scrollPaneDaLeiDetail, GroupLayout.PREFERRED_SIZE, 308, GroupLayout.PREFERRED_SIZE))))
+							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(scrollPaneDaLei, 0, 0, Short.MAX_VALUE)
+								.addComponent(scrollPaneDaLeiDetail, GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE))))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap(66, Short.MAX_VALUE))
 		);
 		
-		CurZdgzBanKuaiTableModel curzdgzbkmodel = new CurZdgzBanKuaiTableModel (); 
-		tableCurZdgzbk = new  JTable(curzdgzbkmodel)
+		//ZdgzBanKuaiDetailXmlTableModel xmlaccountsmodel = new ZdgzBanKuaiDetailXmlTableModel( );
+		//tableZdgzBankDetails = new  JTable(xmlaccountsmodel)
+		CurZdgzBanKuaiTableModel curzdgzbkmodel = new CurZdgzBanKuaiTableModel ();
+		tableZdgzBankDetails = new  JTable(curzdgzbkmodel)
 		{
 			private static final long serialVersionUID = 1L;
 			public String getToolTipText(MouseEvent e) 
@@ -1142,17 +1153,21 @@ public class BanKuaiAndChanYeLian extends JPanel
                 return tip;
             } 
 		};
+		tableZdgzBankDetails.setToolTipText("tableZdgzBankDetails");
 		int preferedwidth = 170;
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(preferedwidth);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMinWidth(preferedwidth);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setWidth(preferedwidth);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(preferedwidth);
+		tableZdgzBankDetails.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(preferedwidth);
+		tableZdgzBankDetails.getTableHeader().getColumnModel().getColumn(0).setMinWidth(preferedwidth);
+		tableZdgzBankDetails.getTableHeader().getColumnModel().getColumn(0).setWidth(preferedwidth);
+		tableZdgzBankDetails.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(preferedwidth);
 
-		scrollPaneDaLei.setViewportView(tableCurZdgzbk);
+		scrollPaneDaLeiDetail.setViewportView(tableZdgzBankDetails);
 		
+		
+		
+//		CurZdgzBanKuaiTableModel curzdgzbkmodel = new CurZdgzBanKuaiTableModel (); 
+//		tableCurZdgzbk = new  JTable(curzdgzbkmodel) {
 		ZdgzBanKuaiDetailXmlTableModel xmlaccountsmodel = new ZdgzBanKuaiDetailXmlTableModel( );
-		tableZdgzBankDetails = new JTable(xmlaccountsmodel){
-
+		tableCurZdgzbk = new  JTable(xmlaccountsmodel) {
 			private static final long serialVersionUID = 1L;
 
 			public String getToolTipText(MouseEvent e) {
@@ -1170,15 +1185,16 @@ public class BanKuaiAndChanYeLian extends JPanel
                 return tip;
             }
 		};
+		tableCurZdgzbk.setToolTipText("tableZdgzBankDetails");
 		
 		
-		tableZdgzBankDetails.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(100);
-		tableZdgzBankDetails.getTableHeader().getColumnModel().getColumn(0).setMinWidth(100);
-		tableZdgzBankDetails.getTableHeader().getColumnModel().getColumn(0).setWidth(100);
-		tableZdgzBankDetails.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(100);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(100);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMinWidth(100);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setWidth(100);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(100);
 //		tableZdgzBankDetails.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 //		tableZdgzBankDetails.setPreferredScrollableViewportSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
-		scrollPaneDaLeiDetail.setViewportView(tableZdgzBankDetails);
+		scrollPaneDaLei.setViewportView(tableCurZdgzbk);
 		panelzdgz.setLayout(gl_panelzdgz);
 		
 		JLabel label = new JLabel("\u89E3\u6790\u677F\u5757\u6587\u4EF6");
