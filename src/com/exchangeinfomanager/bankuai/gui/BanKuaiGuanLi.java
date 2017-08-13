@@ -15,6 +15,8 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.database.StockDbOperations;
@@ -23,7 +25,6 @@ import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.google.common.collect.Ordering;
 
-import net.ginkgo.dom4jcopy.BanKuaiAndChanYeLian;
 //import net.ginkgo.copy.Ginkgo2;
 import net.ginkgo.dom4jcopy.Ginkgo2;
 import java.awt.event.MouseAdapter;
@@ -58,7 +59,7 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt2, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler2, ChanYeLianXMLHandler cylxmlhandler2) 
+	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt2, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler2, ChanYeLianXMLHandler2 cylxmlhandler2) 
 	{
 
 		this.bkdbopt = bkdbopt2;
@@ -73,6 +74,7 @@ public class BanKuaiGuanLi extends JDialog
 	private StockInfoManager stockInfoManager;	
 	private BanKuaiDbOperation bkdbopt;
 	private StockDbOperations stockdbopt;
+	private ChanYeLianXMLHandler2 cylxmlhandler;
 //	private HashMap<String,BanKuai> sysbankuailist;
 //	private HashMap<String,BanKuai> zdybankuailist;
 //	private HashMap<String, BanKuai> zhishulist;
@@ -137,7 +139,6 @@ public class BanKuaiGuanLi extends JDialog
 	private BanKuaiAndChanYeLian bkcylpnl;
 	private JPanel panelSys;
 	private JTable tableZdy;
-	private ChanYeLianXMLHandler cylxmlhandler;
 	private JTable tablezhishu;
 	
 	private void initializeGui()

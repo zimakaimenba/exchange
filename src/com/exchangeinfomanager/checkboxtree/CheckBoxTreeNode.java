@@ -35,8 +35,19 @@ import javax.swing.tree.TreeNode;
  */
 @SuppressWarnings("serial")
 public  class CheckBoxTreeNode extends DefaultMutableTreeNode 
-
 {  
+    public CheckBoxTreeNode(Object userObject) 
+    {  
+        this(userObject, true, false);
+
+    }
+    
+    public CheckBoxTreeNode(Object userObject, boolean allowsChildren,boolean isSelected) 
+    {  
+        super(userObject, allowsChildren);  
+        this.isSelected = isSelected;  
+        setSelectionMode(DIG_IN_SELECTION);
+    }
 
     private static final long serialVersionUID = 1L;  
 
@@ -69,21 +80,6 @@ public  class CheckBoxTreeNode extends DefaultMutableTreeNode
         this(null);  
     }  
 
-    public CheckBoxTreeNode(Object userObject) 
-    {  
-        this(userObject, true, false);
-
-    }  
-
-    public CheckBoxTreeNode(Object userObject, boolean allowsChildren,boolean isSelected) 
-    {  
-        super(userObject, allowsChildren);  
-        this.isSelected = isSelected;  
-        setSelectionMode(DIG_IN_SELECTION);
-
-    }  
-
-   
 
 	public void setSelectionMode(int mode) {  
         selectionMode = mode;  

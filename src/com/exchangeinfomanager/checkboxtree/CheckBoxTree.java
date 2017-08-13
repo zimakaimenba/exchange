@@ -39,7 +39,12 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 public class CheckBoxTree extends JTree 
 {  
 	  
-    //private static final long serialVersionUID = 1L;  
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	//private static final long serialVersionUID = 1L;  
 	private String stockcode;
 	
 	static Element xmlroot;
