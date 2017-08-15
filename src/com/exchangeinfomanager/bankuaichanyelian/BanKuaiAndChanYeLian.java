@@ -263,6 +263,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    {
 	    	 BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getPathComponent(1);
 	    	 String tdxbk = bknode.getUserObject().toString();
+	    	 HashSet<String> stockinparsefile = bknode.getParseFileStockSet ();
 	         if(!tdxbk.equals(currentselectedtdxbk)) { //和当前的板块不一样，
 	  	       	//鼠标点击某个树，读出所属的通达信板块，在读出该板块的产业链子板块 
 	        	DefaultListModel<String> listmodel = ((DefaultListModel<String>)lstTags.getModel());
@@ -276,10 +277,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	       	
 	  	       	//读出该板块所有的个股
 	  	       	HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (currentselectedtdxbk);
+	  	       	if(stockinparsefile.size() !=0 )
 	  	       	
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
 	  	   		((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).fireTableDataChanged();
-	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tmpallbkge);
+	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tmpallbkge,stockinparsefile);
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).fireTableDataChanged();
 	  	       	
 		    	 HashSet<String> intersectionbk = bknode.getParseFileStockSet();
@@ -1124,7 +1126,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		notesPane = new JTextPane();
 		notesScrollPane.setViewportView(notesPane);
 		
-		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel(null);
+		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel(null,null);
 		tablebkgegu = new  JTable(bkgegumapmdl)
 		{
 			private static final long serialVersionUID = 1L;
@@ -1133,31 +1135,17 @@ public class BanKuaiAndChanYeLian extends JPanel
 					 
 			        Component comp = super.prepareRenderer(renderer, row, col);
 			        BanKuaiGeGuTableModel tablemodel = (BanKuaiGeGuTableModel)this.getModel(); 
+			        HashSet<String> stockinparsefile = tablemodel.getStockInParseFile();
 			        Object value = tablemodel.getValueAt(row, col);
 			        
-			        try{
-			        	if(value == null)
-			        		return null;
-			            if (value.toString().trim().contains("买入") && !value.toString().trim().contains("挂单") && 1==col) { 
-			                comp.setForeground(Color.red);
-			            } else if ( value.toString().trim().contains("卖出") && !value.toString().trim().contains("挂单") && 1==col) {
-			                comp.setForeground(Color.green);
-			            } else if( value.toString().trim().contains("挂单") && 1==col ) {
-			            	comp.setBackground(Color.yellow);
-			            } else if ("加入关注".equals(value.toString().trim()) && 1==col ) {
-			                comp.setForeground(Color.blue);
-			            } else if ( "盈利".equals(value.toString().trim()) && 1==col ) {
-			            	comp.setBackground(Color.red);
-			            } else if ( "亏损".equals(value.toString().trim()) && 1==col ) {
-			            	comp.setBackground(Color.green);
-			            } else if ("明日计划".equals(value.toString().trim()) && 1==col ) {
-			            	comp.setBackground(Color.ORANGE);
-			            }else {
-			                comp.setBackground(Color.white);
-			                comp.setForeground(Color.BLACK);
-			            }
-			        } catch (java.lang.NullPointerException e ){
-			        	e.printStackTrace();
+			        if (!isRowSelected(row)) {
+			        	comp.setBackground(getBackground());
+			        	int modelRow = convertRowIndexToModel(row);
+			        	String stockcode = (String)getModel().getValueAt(modelRow, 0);
+						if(stockinparsefile.contains(stockcode)) 
+							comp.setBackground(Color.GREEN);
+						
+						
 			        }
 			        
 			        return comp;
@@ -1636,12 +1624,18 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	private ArrayList<String> bkgeguname;
 	private HashSet<String> stockcodeinparsefile;
 	
-	BanKuaiGeGuTableModel (HashMap<String,String> bkgegu)
+	BanKuaiGeGuTableModel (HashMap<String,String> bkgegu,HashSet<String> stockcodeinparsefile2)
 	{
 		if(bkgegu != null) {
 			this.bkgegumap = bkgegu;
 			this.bkgeguname = new ArrayList<String> (bkgegu.keySet() );
 		}
+		if(stockcodeinparsefile2 != null)
+			this.stockcodeinparsefile = stockcodeinparsefile2;
+		else 
+			this.stockcodeinparsefile = new HashSet<String> ();
+		
+		
 	}
 
 	public void refresh  (HashMap<String,String> bkgegu,HashSet<String> stockcodeinparsefile2)
@@ -1653,6 +1647,10 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
  		Collections.sort(bkgeguname,collator);
 		
  		this.stockcodeinparsefile = stockcodeinparsefile2;
+	}
+	public HashSet<String> getStockInParseFile ()
+	{
+		return this.stockcodeinparsefile;
 	}
 	 public int getRowCount() 
 	 {

@@ -7,7 +7,8 @@ import javax.swing.tree.*;
 
 import com.exchangeinfomanager.checkboxtree.CheckBoxTreeNode;
 
-public class CustomTreeCellRenderer extends DefaultTreeCellRenderer{
+public class CustomTreeCellRenderer extends DefaultTreeCellRenderer
+{
 
 	private static final long serialVersionUID = 1L;
 	GinkgoIconFactory ginkgoIconFactory;

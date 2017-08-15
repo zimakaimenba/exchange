@@ -18,7 +18,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.bankuai.gui.GuanZhuBanKuaiInfo;
+import com.exchangeinfomanager.bankuaichanyelian.GuanZhuBanKuaiInfo;
 import com.exchangeinfomanager.database.ConnectDataBase2;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;

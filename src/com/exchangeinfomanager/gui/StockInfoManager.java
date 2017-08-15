@@ -21,7 +21,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInf
 import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
-import com.exchangeinfomanager.bankuai.gui.TwelveZhongDianGuanZhuBanKuaiSheZhi;
+import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -153,7 +153,7 @@ public class StockInfoManager
 		acntdbopt = new AccountDbOperation();
 		bkdbopt = new BanKuaiDbOperation ();
 		zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
-		cylxmlhandler = new ChanYeLianXMLHandler (bkdbopt);
+		cylxmlhandler = new ChanYeLianXMLHandler2 ();
 		
 		initializeGui();
 		displayAccountAndChiCang ();
@@ -182,7 +182,7 @@ public class StockInfoManager
 			acntdbopt = new AccountDbOperation();
 			bkdbopt = new BanKuaiDbOperation ();
 			zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
-			cylxmlhandler = new ChanYeLianXMLHandler (bkdbopt);
+			cylxmlhandler = new ChanYeLianXMLHandler2 ();
 			
 			displayAccountAndChiCang ();
 			clearGuiDispalyedInfo ();
@@ -203,11 +203,11 @@ public class StockInfoManager
 	private StockDbOperations stockdbopt;
 	private AccountDbOperation acntdbopt;
 	//private TongDaXinJiBenMianReport tongdaxinreport;
-	private TwelveZhongDianGuanZhuBanKuaiSheZhi zdgzdialog;
+	
 	private BanKuaiGuanLi bkgldialog;
 	private SearchDialog searchdialog;
 	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
-	private ChanYeLianXMLHandler cylxmlhandler;
+	private ChanYeLianXMLHandler2 cylxmlhandler;
 	
 
 /*
@@ -1469,23 +1469,7 @@ public class StockInfoManager
 			}
 		});
 		
-		mntmbankuaifenlei.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				try {
-					TwelveZhongDianGuanZhuBanKuaiSheZhi zdgzdialog = new TwelveZhongDianGuanZhuBanKuaiSheZhi (bkdbopt,stockdbopt,zdgzbkxmlhandler,cylxmlhandler);
-					zdgzdialog.setModal(true);
-					zdgzdialog.startDialog ();
-					zdgzdialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-					zdgzdialog.setVisible(true);
-					
-				} catch (Exception eX) {
-					eX.printStackTrace();
-				}
-
-			}
-		});
+		
 				
 }
 protected void startBanKuaiGuanLiDlg()
@@ -2131,7 +2115,6 @@ protected void startBanKuaiGuanLiDlg()
 	private JComboBox<String> cBxstockcode;
 	private JButton btnSlack;
 	private JMenuItem mntmopenlcldbfile;
-	private JMenuItem mntmbankuaifenlei;
 	private JTable tblzhongdiangz;
 	private CheckBoxTree checklisttree = null;
 	private JButton btnMai;
@@ -2904,11 +2887,7 @@ protected void startBanKuaiGuanLiDlg()
 		
 		menuOperationList.add(menuItemRfshBk);
 		
-		mntmbankuaifenlei = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u677F\u5757");
-		
-				menuOperationList.add(mntmbankuaifenlei);
-		
-		menuItemChanYeLian = new JMenuItem("\u4EA7\u4E1A\u94FE");
+		menuItemChanYeLian = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u677F\u5757\u4E0E\u4EA7\u4E1A\u94FE");
 		
 		menuOperationList.add(menuItemChanYeLian);
 		

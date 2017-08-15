@@ -4,7 +4,14 @@ import javax.swing.tree.*;
 
 
 
-public class GinkgoNode extends DefaultMutableTreeNode{
+public class GinkgoNode extends DefaultMutableTreeNode
+{
+
+	public GinkgoNode()
+	{
+        expanded = false;
+    }
+
     
     //public static int INACTIVE = 0, ACTIVE = 1, COMPLETE = 2, NOW = 3, TDXBK = 4, SUBBK = 5, BKGEGU = 6;
 	public static int  TDXBK = 4, SUBBK = 5, BKGEGU = 6;
@@ -16,10 +23,6 @@ public class GinkgoNode extends DefaultMutableTreeNode{
 //    private boolean willbedeleted = false;
 //    private boolean isnewbk = false;
     
-    public GinkgoNode(){
-        expanded = false;
-        
-    }
     
     public GinkgoNode(String subject ){
         super(subject);
