@@ -165,7 +165,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		 tableCurZdgzbk.setRowSelectionInterval(row, row);
 		 return  selecteddalei;
     }
-	
+	/*
+	 * 统一界面上各个部件鼠标点击后的动作，保住一致。
+	 */
 	private void unifyDisplaysInDifferentCompOnGui (String selecteddalei,BkChanYeLianTreeNode bknode) 
 	{
 		String tdxbk = null;
@@ -195,7 +197,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 				
 				if( ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getRowCount() != 0) {
 					int rowinsubzdgz = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex (bknode);
-					tableZdgzBankDetails.setRowSelectionInterval(rowinsubzdgz,rowinsubzdgz);
+					if(rowinsubzdgz != -1)
+						tableZdgzBankDetails.setRowSelectionInterval(rowinsubzdgz,rowinsubzdgz);
+					else 
+						tableZdgzBankDetails.setRowSelectionInterval(0,0);
 				}
 			} else {
 				//不存在任何大类里面
@@ -313,14 +318,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 	        
 	        BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
 	        unifyDisplaysInDifferentCompOnGui (null,bknode);
-	     	//高选相关
-//	  	      private void unifyDisplaysInDifferentCompOnGui (bknode) {
-//	  	       	int row = tableCurZdgzbk.getSelectedRow();	
-//	  	       	((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
-//	  	       	tableCurZdgzbk.setRowSelectionInterval(row,row);
-//	  	      getReleatedInfoAndActionsForTreePathNode (closestPath);
-//	  	      }
-//	        getReleatedInfoAndActionsForTreePathNode (closestPath);
 	               
 	    }//GEN-LAST:event_treeMousePressed
 	    
@@ -505,17 +502,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 				
 			}   
 			
-//			private void chanYeLianAddOpertaions (GuanZhuBanKuaiInfo gzbk) 
-//			{
-//				String daleiname = getCurSelectedDaLei();
-//				String chanyelian = gzbk.getBkchanyelian();
-//					 
-//					 initializeAllDaLeiZdgzTableFromXml (daleiname);
-//					 int rowindex = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(gzbk);
-//					 initializeSingleDaLeiZdgzTableFromXml (rowindex);
-//					 treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,false,true);
-//					 zdgzxmlneedsave = true;
-//			}
 			
 			private void notesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_notesButtonActionPerformed
 		        
@@ -672,20 +658,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 						BkChanYeLianTreeNode selectedgzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
 						
 						unifyDisplaysInDifferentCompOnGui (zdgzdalei,selectedgzbk);
-						
-//						unifyDisplaysInDifferentCompOnGui (selectedgzbk);
-						
 					}
 
-//					private void unifyDisplaysInDifferentCompOnGui(BkChanYeLianTreeNode selectedgzbk) {
-//						treechanyelian.expandTreePathAllNode( new TreePath(selectedgzbk.getPath()) );
-////			             treechanyelian.setSelectionPath(bkpath);
-////			     	     treechanyelian.scrollPathToVisible(bkpath);
-////			     	     treechanyelian.expandTreePathAllNode(bkpath);
-////						selectedgzbk.getPath();
-////						String tdxbk = selectedgzbk.getTdxBk();
-////						findBanKuaiInTree(tdxbk); //在产业链树上定位用户选择的产业链
-//					}
+
 				});
 				
 				btnCylRemoveFromZdgz.addMouseListener(new MouseAdapter() {
@@ -1562,7 +1537,23 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 	{
 		String currentdalei = this.cbxDale;
 		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
-		return tmpgzbkinfo.indexOf(parent);
+		
+		int index = -1;
+		
+		for(BkChanYeLianTreeNode bkcylnode : tmpgzbkinfo) {
+			
+			String cylinmapnode = bkcylnode.getChanYeLian().trim();
+			String cylinverfiednode = parent.getChanYeLian().trim();
+			
+			if(cylinmapnode.contains(cylinverfiednode) )
+				index = -1;
+			if(cylinmapnode.equals(cylinverfiednode) ) {
+				index ++;
+				return index;
+			}
+		}
+
+		return index;
 	}
 	public BkChanYeLianTreeNode getGuanZhuBanKuaiInfo (int rowindex)
 	{

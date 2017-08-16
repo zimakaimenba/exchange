@@ -75,9 +75,7 @@ public class BanKuaiGuanLi extends JDialog
 	private BanKuaiDbOperation bkdbopt;
 	private StockDbOperations stockdbopt;
 	private ChanYeLianXMLHandler2 cylxmlhandler;
-//	private HashMap<String,BanKuai> sysbankuailist;
-//	private HashMap<String,BanKuai> zdybankuailist;
-//	private HashMap<String, BanKuai> zhishulist;
+
 
 	public void startDialog ()
 	{

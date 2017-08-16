@@ -40,7 +40,7 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 //	         System.out.println("cellrenderer=" + bktreenodename);
 	         HashSet<String> parsefilestockset = ((BkChanYeLianTreeNode)value).getParseFileStockSet ();
 	         if(parsefilestockset !=null && parsefilestockset.size() !=0) {
-	        	 lblnodenameandcount.setText( bktreenodename + "(" + parsefilestockset.size() + ")"  ); 
+	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + parsefilestockset.size() + ")"  ); 
 	         } else
 	        	 lblnodenameandcount.setText( bktreenodename );
 	         
