@@ -460,6 +460,18 @@ public class ChanYeLianXMLHandler2
 	        }
 		}
 		
+		public void openChanYeLianXmlInWinSystem ()
+		{
+			String gegucylxmlfilepath = sysconfig.getBanKuaiChanYeLianXml ();
+			try {
+				String cmd = "rundll32 url.dll,FileProtocolHandler " + gegucylxmlfilepath;
+				Process p  = Runtime.getRuntime().exec(cmd);
+				p.waitFor();
+			} catch (Exception e1) 
+			{
+				e1.printStackTrace();
+			}
+		}
 //		public void gethGeGuChanYeLianXml() 
 //		{
 ////			String gegucylxmlfilepath = sysconfig.getGeGuChanYeLianXmlFile ();

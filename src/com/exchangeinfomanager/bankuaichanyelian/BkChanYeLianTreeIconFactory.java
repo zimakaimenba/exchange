@@ -10,7 +10,7 @@ public class BkChanYeLianTreeIconFactory {
 		// TODO Auto-generated constructor stub
 	}
 	
-	  ImageIcon completeLeafIcon = new ImageIcon(getClass().getResource("/images/check15.png"));
+	  	ImageIcon completeLeafIcon = new ImageIcon(getClass().getResource("/images/check15.png"));
 	    ImageIcon completeClosedIcon = new ImageIcon(getClass().getResource("/images/greenClosed15.png"));
 	    ImageIcon completeOpenIcon = new ImageIcon(getClass().getResource("/images/greenOpen15.png"));
 	    

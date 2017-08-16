@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.database;
+package com.exchangeinfomanager.bankuaichanyelian;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +23,6 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.exchangeinfomanager.bankuai.gui.GuanZhuBanKuaiInfo;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -35,7 +34,7 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	public  TwelveZhongDianGuanZhuXmlHandler() 
 	{
 		initializeSysConfig ();
-		gzbkmap = new HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> ();
+		gzbkdetailmap = new HashMap<String,ArrayList<BkChanYeLianTreeNode>>();
 		
 		this.xmlfile =   sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile ();
 		File zdgzxml = new File(this.xmlfile );
@@ -64,14 +63,16 @@ public class TwelveZhongDianGuanZhuXmlHandler
 			return;
 		}
 	
-		getZdgzbkXml ();
+//		getZdgzbkXml ();
 	}
-	
-	private String xmlfile;
+	HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkdetailmap;
 	private static Element xmlroot = null;
 	private Document document;
 	private SystemConfigration sysconfig;
-	private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap; //重点关注的板块
+
+	
+	private String xmlfile;
+	//private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap; //重点关注的板块
 	private boolean hasXmlRevised;
 	
 	private void initializeSysConfig()
@@ -82,59 +83,94 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	{
 		return hasXmlRevised;
 	}
-	private  void getZdgzbkXml()
+	public HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBanKuaiFromXmlAndCylTree (BkChanYeLianTree cyltree)
 	{
-		 Iterator it = xmlroot.elementIterator();
+		gzbkdetailmap = new HashMap<String,ArrayList<BkChanYeLianTreeNode>>  (); //重点关注的板块
+		
+		Iterator it = xmlroot.elementIterator();
 		 while (it.hasNext()) 
 		 {
 			   Element daleielement = (Element) it.next();
-			   ArrayList<GuanZhuBanKuaiInfo> tmpdllist = new ArrayList<GuanZhuBanKuaiInfo> ();
+			   ArrayList<BkChanYeLianTreeNode> tmpgzbksublist = new ArrayList<BkChanYeLianTreeNode> (); //重点关注的板块
 			   String daleiname = daleielement.attributeValue("daleiname");
 			   
 			   Iterator daleiit = daleielement.elementIterator();
 			   while(daleiit.hasNext()) {
 				   Element iteele = (Element)daleiit.next();
-				   GuanZhuBanKuaiInfo tmpgzbkinfo = new GuanZhuBanKuaiInfo ();
-				   tmpgzbkinfo.setTdxbk(iteele.attributeValue("tdxbk"));
-				   tmpgzbkinfo.setBkchanyelian(iteele.getText() );
-				   tmpgzbkinfo.setSelectedtime(iteele.attributeValue("addedTime") );
-				   if(iteele.attributeValue("officallyselected") == null || iteele.attributeValue("officallyselected").toLowerCase().equals("false")) {
-					   tmpgzbkinfo.setOfficallySelected(false);
-				   } else 
-					   tmpgzbkinfo.setOfficallySelected(true);
 				   
-				   tmpdllist.add(tmpgzbkinfo);
+				   String chanyelian = iteele.getText() ;
+				   String addedtime = iteele.attributeValue("addedTime") ;
+				   boolean officallyselt;
+				   if(iteele.attributeValue("officallyselected") == null || iteele.attributeValue("officallyselected").toLowerCase().equals("false")) {
+					   officallyselt = false;
+				   } else 
+					   officallyselt = true;
+				   
+				    BkChanYeLianTreeNode expectnode = cyltree.updateZdgzInfoToBkCylTreeNode(chanyelian, addedtime,officallyselt);
+				    tmpgzbksublist.add(expectnode);
 			   }
-			   
-			   gzbkmap.put(daleiname, tmpdllist);
-		}
+			   gzbkdetailmap.put(daleiname, tmpgzbksublist);
+		 }
+		 
+		 return gzbkdetailmap;
 	}
-	public HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> getZhongDianGuanZhuBanKuai () 
+	public  HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBkDetail()
 	{
-		return gzbkmap;
+		return gzbkdetailmap;
 	}
+//	private  void getZdgzbkXml()
+//	{
+//		 Iterator it = xmlroot.elementIterator();
+//		 while (it.hasNext()) 
+//		 {
+//			   Element daleielement = (Element) it.next();
+//			   ArrayList<GuanZhuBanKuaiInfo> tmpdllist = new ArrayList<GuanZhuBanKuaiInfo> ();
+//			   String daleiname = daleielement.attributeValue("daleiname");
+//			   
+//			   Iterator daleiit = daleielement.elementIterator();
+//			   while(daleiit.hasNext()) {
+//				   Element iteele = (Element)daleiit.next();
+//				   GuanZhuBanKuaiInfo tmpgzbkinfo = new GuanZhuBanKuaiInfo ();
+//				   tmpgzbkinfo.setTdxbk(iteele.attributeValue("tdxbk"));
+//				   tmpgzbkinfo.setBkchanyelian(iteele.getText() );
+//				   tmpgzbkinfo.setSelectedtime(iteele.attributeValue("addedTime") );
+//				   if(iteele.attributeValue("officallyselected") == null || iteele.attributeValue("officallyselected").toLowerCase().equals("false")) {
+//					   tmpgzbkinfo.setOfficallySelected(false);
+//				   } else 
+//					   tmpgzbkinfo.setOfficallySelected(true);
+//				   
+//				   tmpdllist.add(tmpgzbkinfo);
+//			   }
+//			   
+//			   gzbkmap.put(daleiname, tmpdllist);
+//		}
+//	}
+//	public HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> getZhongDianGuanZhuBanKuai () 
+//	{
+//		return gzbkmap;
+//	}
 	/*
 	 * 增加某个大类关注的子板块
 	 */
-	public void addNewGuanZhuBanKuai (String daleiname,GuanZhuBanKuaiInfo tmpgzbk)
+	public void addNewGuanZhuBanKuai (String daleiname,BkChanYeLianTreeNode parent)
 	{
-		 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist = gzbkmap.get(daleiname );
-		 tmpzdgzbklist.add(tmpgzbk);
+		 ArrayList<BkChanYeLianTreeNode> tmpzdgzbklist = gzbkdetailmap.get(daleiname);
+		 tmpzdgzbklist.add(parent);
 	}
 	/*
 	 * 删除某个大类的关注的子板块
 	 */
-	public void removeGuanZhuBanKuai (String daleiname,GuanZhuBanKuaiInfo gzbk)
+	public void removeGuanZhuBanKuai (String daleiname,BkChanYeLianTreeNode gzcyl)
 	{
-		 ArrayList<GuanZhuBanKuaiInfo> tmpzdgzbklist = gzbkmap.get(daleiname );
-		 tmpzdgzbklist.remove(gzbk);
+		 ArrayList<BkChanYeLianTreeNode> tmpzdgzbklist = gzbkdetailmap.get(daleiname );
+		 tmpzdgzbklist.remove(gzcyl);
 
 	}
 	public void addNewDaLei (String daleiname) 
 	{
-		if( !gzbkmap.keySet().contains(daleiname)) {
-			ArrayList<GuanZhuBanKuaiInfo> tmpdllist = new ArrayList<GuanZhuBanKuaiInfo> ();
-			gzbkmap.put(daleiname, tmpdllist);
+		if( !gzbkdetailmap.keySet().contains(daleiname)) {
+			ArrayList<BkChanYeLianTreeNode> tmpdllist = new ArrayList<BkChanYeLianTreeNode> ();
+			gzbkdetailmap.put(daleiname, tmpdllist);
 			
 			xmlroot.addElement(daleiname);
 			
@@ -142,12 +178,12 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	}
 	public void deleteDaLei (String daleiname) 
 	{
-		if( gzbkmap.keySet().contains(daleiname)) {
+		if( gzbkdetailmap.keySet().contains(daleiname)) {
 			
-			gzbkmap.remove(daleiname);
+			gzbkdetailmap.remove(daleiname);
 			
-			Element delele = xmlroot.element(daleiname);
-			xmlroot.remove(delele);
+//			Element delele = xmlroot.element(daleiname);
+//			xmlroot.remove(delele);
 			
 		}
 	}
@@ -158,15 +194,15 @@ public class TwelveZhongDianGuanZhuXmlHandler
 		Document documenttosave = DocumentFactory.getInstance().createDocument();
         Element rootele = documenttosave.addElement("ZhongDianGuanZhuanBanKuaiDetail");//添加文档根
         
-        for(String dastr:gzbkmap.keySet() ) {
+        for(String dastr:gzbkdetailmap.keySet() ) {
         	System.out.print(dastr);
         	Element bkele = rootele.addElement("DaLeiBanKuai");
 			bkele.addAttribute("daleiname",dastr);
         	
-        	ArrayList<GuanZhuBanKuaiInfo> tmpsubcyllist = gzbkmap.get(dastr);
-        	for(GuanZhuBanKuaiInfo tmpgzbkifno :tmpsubcyllist) {
-        		String tdxbk = tmpgzbkifno.getTdxbk();
-        		String subcyl = tmpgzbkifno.getBkchanyelian();
+        	ArrayList<BkChanYeLianTreeNode> tmpsubcyllist = gzbkdetailmap.get(dastr);
+        	for(BkChanYeLianTreeNode tmpgzbkifno :tmpsubcyllist) {
+        		String tdxbk = tmpgzbkifno.getTdxBk();
+        		String subcyl = tmpgzbkifno.getChanYeLian();
         		String addedtime = tmpgzbkifno.getSelectedtime();
         		String offselted = String.valueOf(tmpgzbkifno.isOfficallySelected() ).toLowerCase();
         		
@@ -195,7 +231,7 @@ public class TwelveZhongDianGuanZhuXmlHandler
 		}
 
 		hasXmlRevised = true;
-		return false;
+		return true;
 		
 	}
 
@@ -205,11 +241,11 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	public Multimap<String,Set<String>> subBkSuoSuTwelveDaLei (SetView stockcurbks)
 	{
 		Multimap<String,Set<String>> tmpdalei =  ArrayListMultimap.create();
-		Object[] bankuaidaleiname = gzbkmap.keySet().toArray();
+		Object[] bankuaidaleiname = gzbkdetailmap.keySet().toArray();
 		try {
 			for(Object currentdalei:bankuaidaleiname) {
 				
-				SetView<String> intersectionbankuai = calSetIntersectionOfZdgz(gzbkmap.get((String)currentdalei),stockcurbks);
+				SetView<String> intersectionbankuai = calSetIntersectionOfZdgz(gzbkdetailmap.get((String)currentdalei),stockcurbks);
 				if(  intersectionbankuai.size() >0  )
 					tmpdalei.put((String)currentdalei,intersectionbankuai);
 			}
@@ -222,17 +258,36 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	/*
 	 * 
 	 */
-	private SetView<String> calSetIntersectionOfZdgz (ArrayList<GuanZhuBanKuaiInfo> arrayList,SetView stockcurbks)
+	private SetView<String> calSetIntersectionOfZdgz (ArrayList<BkChanYeLianTreeNode> arrayList,SetView stockcurbks)
 	{
 		Set<String> tmpset = new HashSet<String>();
-		for(GuanZhuBanKuaiInfo tmpgzbk:arrayList) {
-			String tmpbank = tmpgzbk.getTdxbk().trim();
+		for(BkChanYeLianTreeNode tmpgzbk:arrayList) {
+			String tmpbank = tmpgzbk.getTdxBk().trim();
 			tmpset.add(tmpbank);
 		}
 		SetView<String> intersectionbankuai = Sets.intersection(tmpset, stockcurbks);
 		
 		return intersectionbankuai;
 	}
+	public ArrayList<BkChanYeLianTreeNode> getASubDaiLeiDetail(String daleiname)
+	{
+		
+		return gzbkdetailmap.get(daleiname);
+	}
+	public void openZdgzXmlInWinSystem() 
+	{
+		String gegucylxmlfilepath = sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile ();
+		try {
+			String cmd = "rundll32 url.dll,FileProtocolHandler " + gegucylxmlfilepath;
+			Process p  = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+		} catch (Exception e1) 
+		{
+			e1.printStackTrace();
+		}
+		
+	}
+	
 
 	
 

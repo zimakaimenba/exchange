@@ -568,6 +568,23 @@ public class BanKuaiAndChanYeLian extends JPanel
 	}	    
 	private void createEvents() 
 	{
+		btnopencylxml.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				cylxmhandler.openChanYeLianXmlInWinSystem ();
+			}
+		});
+		
+		btnopenzdgzxml.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				zdgzbkxmlhandler.openZdgzXmlInWinSystem ();
+			}
+		});
+		
 		btnSaveAll.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -1079,6 +1096,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private JScrollPane treeScrollPane;
 	private JSplitPane jSplitPane;
 	private JButton btnSaveAll;
+	private JButton btnopenzdgzxml;
+	private JButton btnopencylxml;
 
 	private void initializeGui() 
 	{
@@ -1141,6 +1160,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		tfldfindgegu.setColumns(10);
 		
 		btnfindgegu = new JButton("\u5B9A\u4F4D\u4E2A\u80A1");
+		
+		btnopencylxml = new JButton("\u6253\u5F00XML");
+		
 		GroupLayout gl_panelcyltree = new GroupLayout(panelcyltree);
 		gl_panelcyltree.setHorizontalGroup(
 			gl_panelcyltree.createParallelGroup(Alignment.LEADING)
@@ -1161,7 +1183,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 										.addGroup(gl_panelcyltree.createSequentialGroup()
 											.addComponent(deleteButton)
 											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(notesButton)))
+											.addComponent(notesButton)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btnopencylxml)))
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 										.addGroup(gl_panelcyltree.createSequentialGroup()
@@ -1210,7 +1234,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 							.addComponent(btnfindgegu))
 						.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
 							.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-							.addComponent(notesButton)))
+							.addComponent(notesButton)
+							.addComponent(btnopencylxml)))
 					.addGap(12))
 				.addGroup(gl_panelcyltree.createSequentialGroup()
 					.addGap(69)
@@ -1297,6 +1322,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 		
 		JSeparator separator_1 = new JSeparator();
+		
+		btnopenzdgzxml = new JButton("\u6253\u5F00XML");
+		
 		GroupLayout gl_panelzdgz = new GroupLayout(panelzdgz);
 		gl_panelzdgz.setHorizontalGroup(
 			gl_panelzdgz.createParallelGroup(Alignment.TRAILING)
@@ -1315,7 +1343,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 						.addGroup(gl_panelzdgz.createSequentialGroup()
 							.addComponent(btnadddalei)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btndeldalei))
+							.addComponent(btndeldalei)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnopenzdgzxml))
 						.addComponent(scrollPaneDaLei, GroupLayout.PREFERRED_SIZE, 505, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap(26, Short.MAX_VALUE))
 				.addGroup(gl_panelzdgz.createSequentialGroup()
@@ -1337,7 +1367,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.BASELINE)
 								.addComponent(btnadddalei)
 								.addComponent(btndeldalei)
-								.addComponent(btnGenTDXCode))
+								.addComponent(btnGenTDXCode)
+								.addComponent(btnopenzdgzxml))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING, false)
 								.addComponent(scrollPaneDaLei, 0, 0, Short.MAX_VALUE)
@@ -1538,22 +1569,21 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 		String currentdalei = this.cbxDale;
 		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
 		
-		int index = -1;
+//		boolean findexsitsamenode = false;
+		int findsimilarnode = -1;
 		
-		for(BkChanYeLianTreeNode bkcylnode : tmpgzbkinfo) {
-			
-			String cylinmapnode = bkcylnode.getChanYeLian().trim();
+		//for(BkChanYeLianTreeNode bkcylnode : tmpgzbkinfo) {
+		for(int i=0;i<tmpgzbkinfo.size();i++) {
+			String cylinmapnode = tmpgzbkinfo.get(i).getChanYeLian().trim();
 			String cylinverfiednode = parent.getChanYeLian().trim();
-			
-			if(cylinmapnode.contains(cylinverfiednode) )
-				index = -1;
-			if(cylinmapnode.equals(cylinverfiednode) ) {
-				index ++;
-				return index;
-			}
+
+			if(cylinmapnode.equals(cylinverfiednode) ) 
+				return i;
+			else if(cylinmapnode.contains(cylinverfiednode) )
+				findsimilarnode = i;
 		}
 
-		return index;
+		return findsimilarnode;
 	}
 	public BkChanYeLianTreeNode getGuanZhuBanKuaiInfo (int rowindex)
 	{

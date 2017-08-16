@@ -46,9 +46,9 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         
 	         BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) value;
 	        //ICON
-	         if (value.getClass().toString().equals("com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTreeNode")) {
-	             setIcon(bkcyliconfactory.getIcon(node, leaf, expanded));
-	         }
+	         
+	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon(node, leaf, expanded));
+	         
 	         //各种状态下的COLOR
 	         if(node.getInZdgzOfficalCount() >0 ) {
 	        	 lblnodenameandcount.setForeground(Color.RED);
