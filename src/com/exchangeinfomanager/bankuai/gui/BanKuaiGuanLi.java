@@ -17,10 +17,10 @@ import javax.swing.table.DefaultTableModel;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
+import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.database.StockDbOperations;
-import com.exchangeinfomanager.database.TwelveZhongDianGuanZhuXmlHandler;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.google.common.collect.Ordering;
@@ -144,7 +144,7 @@ public class BanKuaiGuanLi extends JDialog
 	private void initializeGui()
 	{
 		setTitle("\u901A\u8FBE\u4FE1\u677F\u5757/\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E");
-		setBounds(100, 100, 975, 986);
+		setBounds(100, 100, 993, 980);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -290,7 +290,7 @@ public class BanKuaiGuanLi extends JDialog
 		BanKuaiDetailTableModel zdyaccountsmodel = new BanKuaiDetailTableModel(null);
 		
 		//pnlGingo2 = new Ginkgo2(this.bkdbopt, this.stockdbopt,this.cylxmlhandler);
-		bkcylpnl = new BanKuaiAndChanYeLian(this.stockInfoManager, this.bkdbopt,this.stockdbopt, this.zdgzbkxmlhandler, this.cylxmlhandler) ;
+		bkcylpnl = new BanKuaiAndChanYeLian(this.stockInfoManager) ;
 		
 		//tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, pnlGingo2, null);
 		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, bkcylpnl, null);
@@ -305,19 +305,26 @@ public class BanKuaiGuanLi extends JDialog
 				okButton.setActionCommand("OK");
 				getRootPane().setDefaultButton(okButton);
 			}
+			
+			JLabel lblNewLabel_1 = new JLabel("New label");
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
-				gl_buttonPane.createParallelGroup(Alignment.LEADING)
-					.addGroup(Alignment.TRAILING, gl_buttonPane.createSequentialGroup()
-						.addContainerGap(443, Short.MAX_VALUE)
+				gl_buttonPane.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_buttonPane.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(lblNewLabel_1, GroupLayout.PREFERRED_SIZE, 426, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED, 429, Short.MAX_VALUE)
 						.addComponent(okButton)
 						.addGap(37))
 			);
 			gl_buttonPane.setVerticalGroup(
-				gl_buttonPane.createParallelGroup(Alignment.LEADING)
-					.addGroup(Alignment.TRAILING, gl_buttonPane.createSequentialGroup()
+				gl_buttonPane.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(okButton))
+						.addGroup(gl_buttonPane.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(lblNewLabel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(okButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addContainerGap())
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}

@@ -4,9 +4,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.tree.*;
+
+import com.google.common.base.Splitter;
 
 
 
@@ -17,26 +20,19 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
         super(subject);
         expanded = false;
         parsefilestockset = new HashSet<String> ();
-        //this.status = status;
-        //this.ginkgo = ginkgo;
-        //this.nodestockNew = nodeNew; //仅对个股节点作用，如果是新加入个股，就标记为new, 最后存盘时候要存入数据库 
     }
 
-
-    
-    //public static int INACTIVE = 0, ACTIVE = 1, COMPLETE = 2, NOW = 3, TDXBK = 4, SUBBK = 5, BKGEGU = 6;
 	public static int  TDXBK = 4, SUBBK = 5, BKGEGU = 6;
     private int nodetype;
     private boolean expanded;
     private String noteText = null;
     private String hanyupingyin;
-	private String tdxbkzscode;
+	private String tdxbkzscode; //所属通达信板块指数代码
 	private HashSet<String> parsefilestockset;
 	private int inzdgzofficalcount =0;
 	private int inzdgzcandidatecount =0;
 	
-	private String tdxbk;
-	private TreePath pathintree;
+	//private TreePath pathintree;
 	private String bkchanyelian;
 	
 	private Date selectedtime;
@@ -102,26 +98,33 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
     {
     	return this.hanyupingyin;
     }
-    public void setAddInZdgzOfficalCount ()
+    public void increaseZdgzOfficalCount ()
     {
     	inzdgzofficalcount ++;
+    	System.out.println(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
     }
-    public void setMinesInZdgzOfficalCount ()
+    public void decreaseZdgzOfficalCount ()
     {
     	inzdgzofficalcount --;
+    	if(inzdgzofficalcount == 0 )
+    		isofficallyselected = false;
+    	System.out.println(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
     }
     
-    public void setAddInZdgzCandidateCount ()
+    public void increaseZdgzCandidateCount ()
     {
     	inzdgzcandidatecount ++;
+    	System.out.println(this.getUserObject().toString() +"node cand count = " + inzdgzcandidatecount);
     }
-    public void setMinesInZdgzCandidateCount ()
+    public void decreasedgzCandidateCount ()
     {
     	inzdgzcandidatecount --;
+    	System.out.println(this.getUserObject().toString() + "node cand count = " + inzdgzcandidatecount);
     }
     public int getInZdgzOfficalCount ()
     {
     	return inzdgzofficalcount;
+    	
     }
     public int getInZdgzCandidateCount ()
     {
@@ -139,27 +142,43 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 	/**
 	 * @return the tdxbk
 	 */
-	public String getTdxbk() {
+	public String getTdxBk() {
+		
+		 TreeNode[] nodepath = this.getPath();
+		 String tdxbk =	 ((BkChanYeLianTreeNode)nodepath[1]).getUserObject().toString() ;
 		return tdxbk;
 	}
-	/**
-	 * @param tdxbk the tdxbk to set
-	 */
-	public void setTdxbk(String tdxbk) {
-		this.tdxbk = tdxbk;
-	}
+//	/**
+//	 * @param tdxbk the tdxbk to set
+//	 */
+//	public void setTdxbk(TreePath path) {
+//		this.tdxbk = tdxbk;
+//	}
 	/**
 	 * @return the bkchanyelian
 	 */
-	public String getBkchanyelian() {
-		return bkchanyelian;
+	public String getChanYeLian() {
+		
+		String bkchanyelian = "";
+		 TreeNode[] nodepath = this.getPath();
+		 for(int i=1;i<nodepath.length;i++) {
+			 bkchanyelian = bkchanyelian + ((BkChanYeLianTreeNode)nodepath[i]).getUserObject().toString() + "->";
+		 }
+
+		return bkchanyelian.substring(0,bkchanyelian.length()-2);
 	}
-	/**
-	 * @param bkchanyelian the bkchanyelian to set
-	 */
-	public void setBkchanyelian(String bkchanyelian) {
-		this.bkchanyelian = bkchanyelian;
-	}
+//	/**
+//	 * @param bkchanyelian the bkchanyelian to set
+//	 */
+//	public void setChanYeLian(String bkchanyelian) {
+//		this.bkchanyelian = bkchanyelian;
+//	}
+//	public void setChanYeLian(TreePath path)
+//	{
+//		this.bkchanyelian = path.toString();
+//		Object[] objpath = this.getUserObjectPath();
+//		System.out.println(objpath.toString() );
+//	}
 	/**
 	 * @return the selectedtime
 	 */

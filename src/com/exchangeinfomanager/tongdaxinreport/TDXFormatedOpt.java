@@ -18,7 +18,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.bankuaichanyelian.GuanZhuBanKuaiInfo;
+import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.database.ConnectDataBase2;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
@@ -51,7 +51,7 @@ public class TDXFormatedOpt {
 	/*
 	 * 
 	 */
-	public static boolean parseZdgzBkToTDXCode(HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> zdgzbkmap)
+	public static boolean parseZdgzBkToTDXCode(HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap)
 	{
 		Iterator<String> bankuaidaleiname = zdgzbkmap.keySet().iterator();
 
@@ -76,12 +76,12 @@ public class TDXFormatedOpt {
 			while(bankuaidaleiname.hasNext())
 			{
 				String siglebkname = bankuaidaleiname.next().toString() ;
-		   		ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = zdgzbkmap.get(siglebkname);
+		   		ArrayList<BkChanYeLianTreeNode> tmpgzbklist = zdgzbkmap.get(siglebkname);
 		   		String result = "";
 		   		try {
-			   		for(GuanZhuBanKuaiInfo tmpgz:tmpgzbklist) {
+			   		for(BkChanYeLianTreeNode tmpgz:tmpgzbklist) {
 			   			if(tmpgz.isOfficallySelected() ) {
-			   				String chanyelian =  tmpgz.getBkchanyelian();
+			   				String chanyelian =  tmpgz.getChanYeLian();
 			        		String seltime = tmpgz.getSelectedtime();
 			        		result =  result + chanyelian + "(" + seltime +")" + "  |  ";
 			   			}

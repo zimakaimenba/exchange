@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.Collator;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -33,13 +34,18 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockDbOperations;
-import com.exchangeinfomanager.database.TwelveZhongDianGuanZhuXmlHandler;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
@@ -51,6 +57,7 @@ import com.google.common.io.LineProcessor;
 import net.ginkgo.dom4jcopy.SubnodeButton;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JSeparator;
 import javax.swing.JScrollPane;
@@ -76,20 +83,19 @@ public class BanKuaiAndChanYeLian extends JPanel
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiAndChanYeLian (StockInfoManager stockInfoManager2, BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler2, ChanYeLianXMLHandler2 cylxmlhandler2) 
+	public BanKuaiAndChanYeLian (StockInfoManager stockInfoManager2) 
 	{
 		this.stockInfoManager = stockInfoManager2;
-		this.bkdbopt = bkdbopt2;
 		
-		this.cylxmhandler = cylxmlhandler2;
-		this.zdgzbkxmlhandler = zdgzbkxmlhandler2;
-		daleidetailmap = zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ();
+		this.bkdbopt = new BanKuaiDbOperation ();
+		this.cylxmhandler = new ChanYeLianXMLHandler2 ();
+		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
 		
 		initializeGui ();
 		initializeSysConfig ();
+		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndCylTree(treechanyelian);
 		initializeAllDaLeiZdgzTableFromXml (null);
 		initializeSingleDaLeiZdgzTableFromXml (0);
-		updateZdgzInfoToBkCylTree ();
 		
 		createEvents ();
 	}
@@ -97,33 +103,33 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 
 	public static final int UP=0, LEFT=1, RIGHT=2, DOWN=3, NONE=4;
-
-	private HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> daleidetailmap;
-	private StockInfoManager stockInfoManager;
-    //javax.swing.JFileChooser fc = new javax.swing.JFileChooser();
-	//BkChanYeLianTreeNode topNode,  viewNodeParent, notesNode=null;
-    //int viewNodeIndex;
-    //DefaultTreeModel treeModel;
-    boolean modifiedTitle = false;
-    boolean editingNodeText = false;
-    boolean ignoreExpansion = false;
-//    int savedNodeCount = 0;
-//    int currentNodeCount = 0;
-    private ChanYeLianXMLHandler2 cylxmhandler;
+	
+	private SystemConfigration sysconfig;
+	HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap;
+	private ChanYeLianXMLHandler2 cylxmhandler;
     private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
     private BkChanYeLianTree treechanyelian;
     private BanKuaiDbOperation bkdbopt;
-	private SystemConfigration sysconfig;
-	private String currentselectedtdxbk;
+	private StockInfoManager stockInfoManager;
+	private boolean cylneedsave; //标记产业链树有更改
+	private boolean zdgzxmlneedsave; //标记重点关注有更改
+
+    
+    boolean editingNodeText = false;
+	private String currentselectedtdxbk = "";
+
 	
 	private void initializeSysConfig()
 	{
 		sysconfig = SystemConfigration.getInstance();
 	}
 
+	/*
+	 * 
+	 */
 	private void initializeAllDaLeiZdgzTableFromXml (String daleiname)
 	{
-		((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).refresh(daleidetailmap);
+		((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkmap);
 		((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 		
 		if(daleiname == null)
@@ -141,7 +147,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	{
 		String selectedalei = getCurSelectedDaLei ();
 		if( selectedalei != null) {
-			((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).refresh(daleidetailmap,selectedalei);
+			((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkmap,selectedalei);
 			((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 		}
 		
@@ -160,21 +166,73 @@ public class BanKuaiAndChanYeLian extends JPanel
 		 return  selecteddalei;
     }
 	
-	/*
-	 * 把重点关注的信息update到tree上去
-	 */
-	private void updateZdgzInfoToBkCylTree() 
+	private void unifyDisplaysInDifferentCompOnGui (String selecteddalei,BkChanYeLianTreeNode bknode) 
 	{
-		//private HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> daleidetailmap;
-		for(ArrayList<GuanZhuBanKuaiInfo> tmpsubgzbkinfolist : daleidetailmap.values()) {
-			
-			for(GuanZhuBanKuaiInfo subgzbkinfo : tmpsubgzbkinfolist) {
-				String bkcyl = subgzbkinfo.getBkchanyelian();
-				boolean isofficallslt = subgzbkinfo.isOfficallySelected();
-				treechanyelian.updateZdgzInfoToBkCylTreeNode (bkcyl,isofficallslt,true,true); //如果是offic slt，则两个都要加，否则只加一个
+		String tdxbk = null;
+		if(bknode != null) {
+			tdxbk = bknode.getTdxBk();
+			currentselectedtdxbk = tdxbk;
+		}
+		
+		if(selecteddalei == null && bknode.getInZdgzCandidateCount() > 0) //通过node找到大类，可能为null
+			selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getCylNodesDaLei (bknode);
+		//for 重点关注股票池表
+		if(selecteddalei != null) {
+
+			int rowInZdgz = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getDaLeiIndex(selecteddalei);
+
+			((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+		 	tableCurZdgzbk.setRowSelectionInterval(rowInZdgz,rowInZdgz);
+		} else //不存在任何大类里面
+				((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+		
+		
+		
+		//for sub重点关注
+		if( selecteddalei != null) {
+				((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkmap,selecteddalei);
+				((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
+				
+				if( ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getRowCount() != 0) {
+					int rowinsubzdgz = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex (bknode);
+					tableZdgzBankDetails.setRowSelectionInterval(rowinsubzdgz,rowinsubzdgz);
+				}
+			} else {
+				//不存在任何大类里面
+				((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).deleteAllRows ();
+				((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 			}
+	
+		//for tree
+		if(bknode != null)
+			treechanyelian.expandTreePathAllNode( new TreePath(bknode.getPath()) );
+	   		
+	    //for 个股Talble 
+		if(bknode != null) {
+			HashSet<String> stockinparsefile = bknode.getParseFileStockSet ();
+		    
+			       	//鼠标点击某个树，读出所属的通达信板块，在读出该板块的产业链子板块 
+				   	DefaultListModel<String> listmodel = ((DefaultListModel<String>)lstTags.getModel());
+				   	listmodel.removeAllElements();
+			       	
+			       	ArrayList<String> tmpsubbk = bkdbopt.getSubBanKuai (tdxbk);
+			       	Collator collator = Collator.getInstance(Locale.CHINESE); //用中文排序
+			   		Collections.sort(tmpsubbk,collator);
+			       	for(String str:tmpsubbk)
+			       		( (DefaultListModel<String>)lstTags.getModel() ) .addElement(str );
+			       	
+			       	//读出该板块所有的个股
+			       	HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk);
+			       	//if(stockinparsefile.size() !=0 )
+			       	
+			       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
+			   		((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).fireTableDataChanged();
+			       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tmpallbkge,stockinparsefile);
+			       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).fireTableDataChanged();
 		}
 	}
+
+
 	
 	/*
 	 * 加子节点
@@ -220,7 +278,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  
 	  private void addSubnodeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_addSubnodeButtonActionPerformed 
 	  {
-			 saveButton.setEnabled(true);
+		  cylneedsave = true;
 			 
 			 int direction = ((SubnodeButton)addSubnodeButton).getDirection();
 			 
@@ -252,7 +310,17 @@ public class BanKuaiAndChanYeLian extends JPanel
 	            if (evt.getY() > maxY) treechanyelian.clearSelection();
 	            else if (evt.getX() < minX || evt.getX() > maxX) treechanyelian.clearSelection();
 	        }
-	        getReleatedInfoAndActionsForTreePathNode (closestPath);
+	        
+	        BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
+	        unifyDisplaysInDifferentCompOnGui (null,bknode);
+	     	//高选相关
+//	  	      private void unifyDisplaysInDifferentCompOnGui (bknode) {
+//	  	       	int row = tableCurZdgzbk.getSelectedRow();	
+//	  	       	((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+//	  	       	tableCurZdgzbk.setRowSelectionInterval(row,row);
+//	  	      getReleatedInfoAndActionsForTreePathNode (closestPath);
+//	  	      }
+//	        getReleatedInfoAndActionsForTreePathNode (closestPath);
 	               
 	    }//GEN-LAST:event_treeMousePressed
 	    
@@ -277,14 +345,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	       	
 	  	       	//读出该板块所有的个股
 	  	       	HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (currentselectedtdxbk);
-	  	       	if(stockinparsefile.size() !=0 )
+	  	       	//if(stockinparsefile.size() !=0 )
 	  	       	
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
 	  	   		((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).fireTableDataChanged();
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tmpallbkge,stockinparsefile);
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).fireTableDataChanged();
-	  	       	
-		    	 HashSet<String> intersectionbk = bknode.getParseFileStockSet();
+	  	      
 	         }
 	    }
 	    
@@ -319,18 +386,21 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	            button.setIcon(addSubnodeIcon);
 	  	            button.setToolTipText("Add subnode");
 	  	        }
-	  	    }//GEN-LAST:event_addSubnodeButtonMouseMoved
-	    private void addGeGuButtonMouseExited(java.awt.event.MouseEvent evt) //GEN-FIRST:event_addSubnodeButtonMouseExited 
+	  	    }
+	    
+	    
+	    private void addGeGuButtonMouseExited(java.awt.event.MouseEvent evt)  
 	    {
 	    	addGeGuButton.setIcon(addSubnodeIcon);
 	    	addGeGuButton.setToolTipText("添加个股");
 	    }
 	    
-	    private void addGeGuButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_addSubnodeButtonActionPerformed 
+	    private void addGeGuButtonActionPerformed(java.awt.event.ActionEvent evt) 
 	    {
-	    	saveButton.setEnabled(true);
+	    	cylneedsave = true;
 	    	addGeGunode(((SubnodeButton)addGeGuButton).getDirection());
-	    }//GEN-LAST:event_addSubnodeButtonActionPerformed
+	    }
+	    
 	    public void addGeGunode(int direction)
 	    {
 	   	int row = tablebkgegu.getSelectedRow();
@@ -346,18 +416,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 	    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
 			  if(treechanyelian.deleteNodes () )
-				  saveButton.setEnabled(true);
+				  cylneedsave = true;
 		        
 		    }//GEN-LAST:event_deleteButtonActionPerformed
 
-		   public boolean saveButtonActionPerformed (java.awt.event.ActionEvent evt) //GEN-FIRST:event_saveButtonActionPerformed 
-		   {
-			   BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treechanyelian.getModel().getRoot();
-				cylxmhandler.saveTreeToChanYeLianXML(treeroot);
-				saveButton.setEnabled(false); 
-
-				return false;
-		   }
+	   
 		   /*
 		    * 产业链树上定位用户选择的板块，只选择到板块一级，子板块不找
 		    */
@@ -372,12 +435,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 			    	String bkHypy = node.getHanYuPingYin();
 			    	String bkName = node.getUserObject().toString();
 			    	
-//			    	TreePath path = new TreePath(node.getPath());
-//			    	String chanyelian = "";
-//			    	for(int i=1;i<path.getPathCount()-1;i++) {
-//						 chanyelian = chanyelian + path.getPathComponent(i).toString() + "->";
-//					 }
-//			    	System.out.println("tree path=" + chanyelian);
 			        if (bkHypy.equalsIgnoreCase(bkinputed) || bkName.equalsIgnoreCase(bkinputed)) {
 			             bkpath = new TreePath(node.getPath());
 			             treechanyelian.setSelectionPath(bkpath);
@@ -394,7 +451,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			}
 		    public boolean isXmlEdited ()
 		    {
-		    	return saveButton.isEnabled();
+		    	return cylneedsave ;
 		    }
 
 		    /*
@@ -405,8 +462,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 				JFileChooser chooser = new JFileChooser();
 				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-				    System.out.println(chooser.getSelectedFile());
-				    String linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+				    
+				    String linuxpath;
+				    if(chooser.getSelectedFile().isDirectory())
+				    	linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+				    else
+				    	linuxpath = (chooser.getSelectedFile()).toString().replace('\\', '/');
+				    
 				    System.out.println(linuxpath);
 				    tfldparsefilename.setText(linuxpath);
 				    
@@ -436,21 +498,24 @@ public class BanKuaiAndChanYeLian extends JPanel
 					HashSet<String> stockinfile = new HashSet<String> (readparsefileLines);
 					
 					treechanyelian.updateTreeParseFileInfo(stockinfile);
+					
+					((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+					((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 				}
 				
 			}   
 			
-			private void chanYeLianAddOpertaions (GuanZhuBanKuaiInfo gzbk) 
-			{
-				String daleiname = getCurSelectedDaLei();
-				String chanyelian = gzbk.getBkchanyelian();
-					 
-					 initializeAllDaLeiZdgzTableFromXml (daleiname);
-					 int rowindex = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(gzbk);
-					 initializeSingleDaLeiZdgzTableFromXml (rowindex);
-					 treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,false,true);
-				     btnSaveZdgz.setEnabled(true);
-			}
+//			private void chanYeLianAddOpertaions (GuanZhuBanKuaiInfo gzbk) 
+//			{
+//				String daleiname = getCurSelectedDaLei();
+//				String chanyelian = gzbk.getBkchanyelian();
+//					 
+//					 initializeAllDaLeiZdgzTableFromXml (daleiname);
+//					 int rowindex = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(gzbk);
+//					 initializeSingleDaLeiZdgzTableFromXml (rowindex);
+//					 treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,false,true);
+//					 zdgzxmlneedsave = true;
+//			}
 			
 			private void notesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_notesButtonActionPerformed
 		        
@@ -496,14 +561,40 @@ public class BanKuaiAndChanYeLian extends JPanel
 		        }
 		    }//GEN-LAST:event_notesPaneFocusGained
 
-	    
+		    /*
+		     * 保存2个XML 
+		     */
+	public boolean saveCylXmlAndZdgzXml () //GEN-FIRST:event_saveButtonActionPerformed 
+	{
+		if(cylneedsave == true) {
+			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treechanyelian.getModel().getRoot();
+			if(cylxmhandler.saveTreeToChanYeLianXML(treeroot) )
+				JOptionPane.showMessageDialog(null, "保存产业链XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
+			
+		}
+		 
+		if(zdgzxmlneedsave == true) {
+			if( !zdgzbkxmlhandler.saveAllZdgzbkToXml () )
+				JOptionPane.showMessageDialog(null, "保存重点关注股票池XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
+		}
+
+		return true;
+	}	    
 	private void createEvents() 
 	{
+		btnSaveAll.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				saveCylXmlAndZdgzXml ();
+			}
+		});
+		
 		btnGenTDXCode.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
-				TDXFormatedOpt.parseZdgzBkToTDXCode(zdgzbkxmlhandler.getZhongDianGuanZhuBanKuai ());
+				TDXFormatedOpt.parseZdgzBkToTDXCode(zdgzbkxmlhandler.getZdgzBkDetail ());
 			}
 		});
 		
@@ -511,28 +602,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int row = tableCurZdgzbk.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				
-				String daleiname = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getZdgzDaLei(row);
-				int n = JOptionPane.showConfirmDialog(null, "确定删除" + daleiname + "?", "删除大类",JOptionPane.YES_NO_OPTION);//i=0/1  
-				if(n == 0) {
-					ArrayList<GuanZhuBanKuaiInfo> daleicyl = daleidetailmap.get(daleiname);
-					for(GuanZhuBanKuaiInfo tmpgzbkinfo : daleicyl ) {
-						String gzcylinfo = tmpgzbkinfo.getBkchanyelian();
-						treechanyelian.updateZdgzInfoToBkCylTreeNode (gzcylinfo,tmpgzbkinfo.isOfficallySelected(),true ,false);
-					}
-					
-					daleidetailmap.remove(daleiname);
-					
-					initializeAllDaLeiZdgzTableFromXml (null);
-					initializeSingleDaLeiZdgzTableFromXml (0);
-					
-					btnSaveZdgz.setEnabled(true);
-				}
+				deleteDaLeiGuPiaoChi ();
 			}
 		});
 		
@@ -540,16 +610,17 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				String newdaleiname = JOptionPane.showInputDialog(null,"请输入新的大类名称:","添加大类", JOptionPane.QUESTION_MESSAGE);
-				if( !newdaleiname.isEmpty() && !daleidetailmap.keySet().contains(newdaleiname)) {
-					ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = new ArrayList<GuanZhuBanKuaiInfo> (); 
-					daleidetailmap.put(newdaleiname, tmpgzbklist);
+				String newdaleiname = JOptionPane.showInputDialog(null,"请输入新的股票池名称:","添加股票池", JOptionPane.QUESTION_MESSAGE);
+				if( !newdaleiname.isEmpty() && !zdgzbkmap.keySet().contains(newdaleiname)) {
+					ArrayList<BkChanYeLianTreeNode> tmpgzbklist = new ArrayList<BkChanYeLianTreeNode> (); 
+					zdgzbkmap.put(newdaleiname, tmpgzbklist);
 					
 					initializeAllDaLeiZdgzTableFromXml (newdaleiname);
 					initializeSingleDaLeiZdgzTableFromXml (0);
 					
-					btnSaveZdgz.setEnabled(true);
-				}
+					zdgzxmlneedsave = true;
+				} else
+					JOptionPane.showMessageDialog(null,"股票池名称已经存在！","Warning",JOptionPane.WARNING_MESSAGE);
 			}
 		});
 
@@ -595,41 +666,33 @@ public class BanKuaiAndChanYeLian extends JPanel
 							return;
 						} 
 						
-						GuanZhuBanKuaiInfo selectedgzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
-						String tdxbk = selectedgzbk.getTdxbk();
-						findBanKuaiInTree(tdxbk); //在产业链树上定位用户选择的产业链
+						int rowInZdgz = tableCurZdgzbk.getSelectedRow();
+						String zdgzdalei = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getZdgzDaLei(rowInZdgz);
+						
+						BkChanYeLianTreeNode selectedgzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
+						
+						unifyDisplaysInDifferentCompOnGui (zdgzdalei,selectedgzbk);
+						
+//						unifyDisplaysInDifferentCompOnGui (selectedgzbk);
+						
 					}
+
+//					private void unifyDisplaysInDifferentCompOnGui(BkChanYeLianTreeNode selectedgzbk) {
+//						treechanyelian.expandTreePathAllNode( new TreePath(selectedgzbk.getPath()) );
+////			             treechanyelian.setSelectionPath(bkpath);
+////			     	     treechanyelian.scrollPathToVisible(bkpath);
+////			     	     treechanyelian.expandTreePathAllNode(bkpath);
+////						selectedgzbk.getPath();
+////						String tdxbk = selectedgzbk.getTdxBk();
+////						findBanKuaiInTree(tdxbk); //在产业链树上定位用户选择的产业链
+//					}
 				});
 				
 				btnCylRemoveFromZdgz.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent arg0) 
 					{
-
-						int row = tableZdgzBankDetails.getSelectedRow();
-						if(row <0) {
-							JOptionPane.showMessageDialog(null,"请选择产业链","Warning",JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-
-						String daleiname = getCurSelectedDaLei();
-						 if( daleiname != null) {
-							 GuanZhuBanKuaiInfo gzcyl = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
-							 String gzcylinfo = gzcyl.getBkchanyelian();
-							 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzcyl);
-							 
-							 initializeAllDaLeiZdgzTableFromXml (daleiname);
-							 initializeSingleDaLeiZdgzTableFromXml (0);
-							 
-							 treechanyelian.updateZdgzInfoToBkCylTreeNode (gzcylinfo,gzcyl.isOfficallySelected(),true ,false);
-							 
-							 btnSaveZdgz.setEnabled(true);
-							 
-						 }
-						 else
-							 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
-						 
-					    
+						removeTreeChanYeLianNodeFromZdgz (arg0);
 					}
 				});
 
@@ -639,87 +702,18 @@ public class BanKuaiAndChanYeLian extends JPanel
 					 @Override
 					public void mouseClicked(MouseEvent arg0) 
 					{
-						 TreePath path = treechanyelian.getSelectionPath();
-						 BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
-						 
-						 GuanZhuBanKuaiInfo tmpgzbk = new GuanZhuBanKuaiInfo ();
-						 String tdxbk = path.getPathComponent(1).toString();
-						 String chanyelian = "";
-						 for(int i=1;i<path.getPathCount();i++)  //不是个股，一直保存到底
-							 chanyelian = chanyelian + path.getPathComponent(i).toString() + "->";
-						 System.out.println(chanyelian);
-						 
-						 tmpgzbk.setSelectedtime(new Date ());
-						 tmpgzbk.setBkchanyelian(chanyelian.substring(0, chanyelian.length()-2)); //去掉最后的->
-						 tmpgzbk.setTdxbk(tdxbk);
-						 if(JOptionPane.showConfirmDialog(null, "是否直接加入重点关注？","Warning", JOptionPane.YES_NO_OPTION) == 1) {
-							 tmpgzbk.setOfficallySelected(false);
-							 //treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,tmpgzbk.isOfficallySelected() ,true);
-						 } else {
-							 tmpgzbk.setOfficallySelected(true);
-//							 treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,tmpgzbk.isOfficallySelected() ,true);
-						 }
-
-						 String daleiname = getCurSelectedDaLei();
-						 if( daleiname != null) {
-							 zdgzbkxmlhandler.addNewGuanZhuBanKuai(daleiname, tmpgzbk);
-							 
-							 initializeAllDaLeiZdgzTableFromXml (daleiname);
-							 int rowindex = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(tmpgzbk);
-							 initializeSingleDaLeiZdgzTableFromXml (rowindex);
-							 if(tmpgzbk.isOfficallySelected())
-								 treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,true ,true);
-							 else 
-								 treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,false,true ,true);
-
-							 btnSaveZdgz.setEnabled(true);
-						 }
-						 else
-							 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+						 adddTreeChanYeLianNodeToZdgz ( arg0);
+		
 					}
 				});
 
 				
-				btnSaveZdgz.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) 
-					{
-						if( zdgzbkxmlhandler.saveAllZdgzbkToXml () )
-							btnSaveZdgz.setEnabled(false);
-						else
-							JOptionPane.showMessageDialog(null, "保存XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
-					}
-				});
 				
 				buttonremoveoffical.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent arg0) 
 					{
-						int row = tableZdgzBankDetails.getSelectedRow();
-						if(row <0) {
-							JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
-							return ;
-						}
-						
-						String selectedalei = getCurSelectedDaLei ();
-						if( selectedalei != null) {
-							 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
-							 gzbk.setOfficallySelected(false);
-							 initializeAllDaLeiZdgzTableFromXml(selectedalei);
-							 
-							 String chanyelian = gzbk.getBkchanyelian();
-							 if(JOptionPane.showConfirmDialog(null, "是否直接从候补产业链中删除？","Warning", JOptionPane.YES_NO_OPTION) == 0) {
-									zdgzbkxmlhandler.removeGuanZhuBanKuai(selectedalei, gzbk);
-									initializeSingleDaLeiZdgzTableFromXml (1);
-									treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,true,false);
-								} else {
-									initializeSingleDaLeiZdgzTableFromXml (row);
-									treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,false,false);
-								}
-								
-								btnSaveZdgz.setEnabled(true);
-						} else
-							 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+						removeChanYeLianFromOffical ();
 					}
 				});
 				
@@ -728,26 +722,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 					@Override
 					public void mouseClicked(MouseEvent arg0) 
 					{
-						int row = tableZdgzBankDetails.getSelectedRow();
-						if(row <0) {
-							JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
-							return ;
-						}
-						
-						String selectedalei = getCurSelectedDaLei ();
-						if( selectedalei != null) {
-							 GuanZhuBanKuaiInfo gzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
-							 String chanyelian = gzbk.getBkchanyelian();
-							 gzbk.setOfficallySelected(true);
-							 
-							 	initializeAllDaLeiZdgzTableFromXml (selectedalei);
-								initializeSingleDaLeiZdgzTableFromXml (row);
-								treechanyelian.updateZdgzInfoToBkCylTreeNode (chanyelian,true,false,true);
-								
-								btnSaveZdgz.setEnabled(true);
-						} else
-							 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+						addChanYeLianToOffical ();
 					}
+					
+
 				});
 				
 				tableCurZdgzbk.addMouseListener(new MouseAdapter() {
@@ -760,13 +738,35 @@ public class BanKuaiAndChanYeLian extends JPanel
 							return;
 						} 
 						
-						initializeSingleDaLeiZdgzTableFromXml (0);
+						//initializeSingleDaLeiZdgzTableFromXml (0);
+						String selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getZdgzDaLei (row);
+						ArrayList<BkChanYeLianTreeNode> selectedgzbklist = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getDaLeiChanYeLianList(selecteddalei);
+						BkChanYeLianTreeNode selectedgzbk = null ;
+						try {
+							 selectedgzbk = selectedgzbklist.get(0);
+						} catch ( java.lang.IndexOutOfBoundsException e) {
+							
+						}
 						
-						GuanZhuBanKuaiInfo selectedgzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(0);
-						String tdxbk = selectedgzbk.getTdxbk();
-						findBanKuaiInTree(tdxbk);
+						unifyDisplaysInDifferentCompOnGui(selecteddalei,selectedgzbk);
+						
 
 					}
+
+//					private void unifyDisplaysInDifferentCompOnGui(BkChanYeLianTreeNode selectedgzbk,int row) 
+//					{
+//						treechanyelian.expandTreePathAllNode( new TreePath(selectedgzbk.getPath()) );
+//						
+//						//相关table高选对应的产业链
+//						currentselectedtdxbk = selectedgzbk.getUserObject().toString();
+//						
+//						((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+//						tableCurZdgzbk.setRowSelectionInterval(row,row);
+//						
+//						String tdxbk = selectedgzbk.getTdxBk();
+//						findBanKuaiInTree(tdxbk);
+//						
+//					}
 				});
 				
 				tfldfindgegu.addMouseListener(new MouseAdapter() {
@@ -913,30 +913,168 @@ public class BanKuaiAndChanYeLian extends JPanel
 		            }
 		        }); 
 		        
-		        saveButton.addActionListener(new java.awt.event.ActionListener() {
-		            public void actionPerformed(java.awt.event.ActionEvent evt) {
-		                saveButtonActionPerformed(evt);
-		            }
-		        });
+
 		        notesPane.addFocusListener(new java.awt.event.FocusAdapter() {
 		            public void focusGained(java.awt.event.FocusEvent evt) {
-		                notesPaneFocusGained(evt);
+		                //notesPaneFocusGained(evt);
 		            }
 		            public void focusLost(java.awt.event.FocusEvent evt) {
-		                notesPaneFocusLost(evt);
+		                //notesPaneFocusLost(evt);
 		            }
 		        });
 		        notesPane.addKeyListener(new java.awt.event.KeyAdapter() {
 		            public void keyTyped(java.awt.event.KeyEvent evt) {
-		                notesPaneKeyTyped(evt);
+		               // notesPaneKeyTyped(evt);
 		            }
 		        });
 			}
+	    
+	    
+	private void deleteDaLeiGuPiaoChi () 
+	{
+		int row = tableCurZdgzbk.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个股票池","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		String daleiname = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getZdgzDaLei(row);
+		int n = JOptionPane.showConfirmDialog(null, "确定删除" + daleiname + "?", "删除股票池",JOptionPane.YES_NO_OPTION);//i=0/1  
+		if(n == 0) {
+			ArrayList<BkChanYeLianTreeNode> daleicyl = zdgzbkxmlhandler.getASubDaiLeiDetail(daleiname);
+			for(BkChanYeLianTreeNode tmpgzbkinfo : daleicyl ) {
+				 treechanyelian.removeZdgzBkCylInfoFromTreeNode (tmpgzbkinfo,false);
+			}
 			
+			zdgzbkxmlhandler.deleteDaLei(daleiname);
+			
+			initializeAllDaLeiZdgzTableFromXml (null);
+			initializeSingleDaLeiZdgzTableFromXml (0);
+			
+			zdgzxmlneedsave = true;
+		}
+		
+	}
+	
     
-	    
-	    
-	    
+	private void removeTreeChanYeLianNodeFromZdgz(MouseEvent arg0) 
+	{
+		int row = tableZdgzBankDetails.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个板块产业链","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		String daleiname = getCurSelectedDaLei();
+		 if( daleiname != null) {
+			  BkChanYeLianTreeNode gzcyl = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
+			 
+			 treechanyelian.removeZdgzBkCylInfoFromTreeNode (gzcyl,false);
+			 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzcyl);
+			 initializeAllDaLeiZdgzTableFromXml (daleiname);
+			 initializeSingleDaLeiZdgzTableFromXml (0);
+			 
+			 zdgzxmlneedsave = true;
+			 
+		 }
+		 else
+			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+		
+	}
+
+	private void addChanYeLianToOffical ()
+	{
+		int row = tableZdgzBankDetails.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
+			return ;
+		}
+		
+		String selectedalei = getCurSelectedDaLei ();
+		if( selectedalei != null) {
+			 BkChanYeLianTreeNode gzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
+			 gzbk.setOfficallySelected(true);
+			 
+			 treechanyelian.addZdgzBkCylInfoToTreeNode(gzbk,true);
+			 initializeAllDaLeiZdgzTableFromXml (selectedalei);
+			 initializeSingleDaLeiZdgzTableFromXml (row);
+
+			 zdgzxmlneedsave = true;
+		} else
+			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+	}
+	private void removeChanYeLianFromOffical ()
+	{
+		int row = tableZdgzBankDetails.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个产业链","Warning",JOptionPane.WARNING_MESSAGE);
+			return ;
+		}
+		
+		String selectedalei = getCurSelectedDaLei ();
+		if( selectedalei != null) {
+			 BkChanYeLianTreeNode gzbk = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
+			 if(!gzbk.isOfficallySelected()) {
+				 JOptionPane.showMessageDialog(null,"选择的产业链只是候补关注，不在当前重点关注股票池中,不用移出！","Warning",JOptionPane.WARNING_MESSAGE);
+				 return;
+			 }
+				 
+			 if(JOptionPane.showConfirmDialog(null, "是否直接从候补产业链中删除？","Warning", JOptionPane.YES_NO_OPTION) == 0) {
+					zdgzbkxmlhandler.removeGuanZhuBanKuai(selectedalei, gzbk);
+					initializeSingleDaLeiZdgzTableFromXml (0);
+					treechanyelian.removeZdgzBkCylInfoFromTreeNode (gzbk,false);
+				} else {
+					initializeSingleDaLeiZdgzTableFromXml (row);
+					treechanyelian.removeZdgzBkCylInfoFromTreeNode (gzbk,true);
+				}
+			 initializeAllDaLeiZdgzTableFromXml(selectedalei);
+			 
+			 
+			 
+			 zdgzxmlneedsave = true;
+			 
+		} else
+			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+		
+	}
+		
+	
+	private void adddTreeChanYeLianNodeToZdgz(MouseEvent arg0) 
+	{
+		 String daleiname = getCurSelectedDaLei();
+		 if( daleiname != null) {
+			 TreePath path = treechanyelian.getSelectionPath();
+			 BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
+
+			 boolean isofficallyselected = false;
+			 if(JOptionPane.showConfirmDialog(null, "是否直接加入重点关注？","Warning", JOptionPane.YES_NO_OPTION) == 1) {
+				 parent.setOfficallySelected(false);
+			 } else {
+				 parent.setOfficallySelected(true);
+			 }
+			 parent.setSelectedtime( formatDate(new Date() ) );
+			 
+			 treechanyelian.addZdgzBkCylInfoToTreeNode(parent,false);
+			 zdgzbkxmlhandler.addNewGuanZhuBanKuai(daleiname, parent);
+			 initializeAllDaLeiZdgzTableFromXml (daleiname);
+			 int rowindex = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(parent);
+			 initializeSingleDaLeiZdgzTableFromXml (rowindex);
+			
+			 zdgzxmlneedsave = true;
+		 }
+		 else
+			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
+		 
+	}
+	
+	private String formatDate(Date tmpdate)
+	{
+		SimpleDateFormat formatterhwy=new SimpleDateFormat("yy-MM-dd");
+		return formatterhwy.format(tmpdate);
+		//return formatterhwy;
+	}
+
+
 	private JTextField tfldparsefilename;
 	private JTable tableCurZdgzbk;
 	private JTable tableZdgzBankDetails;
@@ -945,7 +1083,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private JTextField tfldfindgegu;
 	private JButton btnCylAddToZdgz;
 	private JButton btnCylRemoveFromZdgz;
-	private JButton saveButton;
 	private JButton deleteButton;
 	private JButton notesButton;
 	private JTextPane notesPane;
@@ -959,7 +1096,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private JButton btnChsParseFile;
 	private JButton addGeGuButton;
 	private JButton addSubnodeButton;
-	private JButton btnSaveZdgz;
 	private JButton btnGenTDXCode;
 	private JButton btnadddalei;
 	private JButton btndeldalei;
@@ -967,6 +1103,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private JScrollPane notesScrollPane;
 	private JScrollPane treeScrollPane;
 	private JSplitPane jSplitPane;
+	private JButton btnSaveAll;
 
 	private void initializeGui() 
 	{
@@ -981,10 +1118,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 920, Short.MAX_VALUE)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(10)
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 883, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panelcyltree, GroupLayout.DEFAULT_SIZE, 920, Short.MAX_VALUE))
+						.addComponent(panelcyltree, GroupLayout.DEFAULT_SIZE, 920, Short.MAX_VALUE)
+						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 893, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -994,7 +1129,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 296, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panelcyltree, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(panelcyltree, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
 					.addGap(76))
 		);
 		
@@ -1016,9 +1151,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 		jSplitPane = new JSplitPane();
 		jSplitPane.setResizeWeight(1.0);
-		
-		saveButton = new JButton("\u4FDD\u5B58\u4EA7\u4E1A\u94FE\u6811");
-		saveButton.setEnabled(false);
 		
 		deleteButton = new JButton("\u5220\u9664\u8282\u70B9");
 		deleteButton.setIcon(null);
@@ -1052,16 +1184,14 @@ public class BanKuaiAndChanYeLian extends JPanel
 									.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 										.addComponent(jSplitPane, GroupLayout.PREFERRED_SIZE, 379, GroupLayout.PREFERRED_SIZE)
 										.addGroup(gl_panelcyltree.createSequentialGroup()
-											.addComponent(saveButton)
-											.addPreferredGap(ComponentPlacement.RELATED)
 											.addComponent(deleteButton)
-											.addPreferredGap(ComponentPlacement.RELATED)
+											.addPreferredGap(ComponentPlacement.UNRELATED)
 											.addComponent(notesButton)))
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 										.addGroup(gl_panelcyltree.createSequentialGroup()
 											.addGap(6)
-											.addComponent(addGeGuButton)
+											.addComponent(addGeGuButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 											.addGap(17)
 											.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 												.addGroup(gl_panelcyltree.createSequentialGroup()
@@ -1078,8 +1208,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 											.addComponent(scrollPanesubbk, GroupLayout.PREFERRED_SIZE, 426, GroupLayout.PREFERRED_SIZE))))))
 						.addGroup(gl_panelcyltree.createSequentialGroup()
 							.addGap(395)
-							.addComponent(addSubnodeButton)))
-					.addContainerGap(13, Short.MAX_VALUE))
+							.addComponent(addSubnodeButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(24, Short.MAX_VALUE))
 		);
 		gl_panelcyltree.setVerticalGroup(
 			gl_panelcyltree.createParallelGroup(Alignment.LEADING)
@@ -1097,20 +1227,21 @@ public class BanKuaiAndChanYeLian extends JPanel
 							.addComponent(scrollPanegegu, 0, 0, Short.MAX_VALUE))
 						.addComponent(jSplitPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
-						.addComponent(saveButton)
-						.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnfindbk)
-						.addComponent(tfldfindgegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnfindgegu)
-						.addComponent(notesButton))
+					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
+							.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnfindbk)
+							.addComponent(tfldfindgegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnfindgegu))
+						.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
+							.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+							.addComponent(notesButton)))
 					.addGap(12))
 				.addGroup(gl_panelcyltree.createSequentialGroup()
 					.addGap(69)
-					.addComponent(addSubnodeButton)
-					.addPreferredGap(ComponentPlacement.RELATED, 224, Short.MAX_VALUE)
-					.addComponent(addGeGuButton)
+					.addComponent(addSubnodeButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 190, Short.MAX_VALUE)
+					.addComponent(addGeGuButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(141))
 		);
 		
@@ -1140,12 +1271,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 			        
 			        if (!isRowSelected(row)) {
 			        	comp.setBackground(getBackground());
+			        	comp.setForeground(getForeground());
 			        	int modelRow = convertRowIndexToModel(row);
 			        	String stockcode = (String)getModel().getValueAt(modelRow, 0);
-						if(stockinparsefile.contains(stockcode)) 
-							comp.setBackground(Color.GREEN);
-						
-						
+						if(stockinparsefile.contains(stockcode)) {
+							//comp.setBackground(Color.YELLOW);
+							comp.setForeground(Color.BLUE);
+						}
 			        }
 			        
 			        return comp;
@@ -1173,9 +1305,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 		lstTags = new JList<String>(new DefaultListModel<String>());
 		scrollPanesubbk.setViewportView(lstTags);
 		panelcyltree.setLayout(gl_panelcyltree);
-		
-		btnSaveZdgz = new JButton("\u4FDD\u5B58\u91CD\u70B9\u5173\u6CE8");
-		btnSaveZdgz.setEnabled(false);
 		
 		btnGenTDXCode = new JButton("\u751F\u6210TDX\u4EE3\u7801");
 		
@@ -1205,10 +1334,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
 								.addComponent(buttonremoveoffical)
 								.addComponent(buttonaddofficial)))
-						.addGroup(gl_panelzdgz.createSequentialGroup()
-							.addComponent(btnSaveZdgz)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnGenTDXCode)))
+						.addComponent(btnGenTDXCode))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelzdgz.createSequentialGroup()
@@ -1234,17 +1360,16 @@ public class BanKuaiAndChanYeLian extends JPanel
 						.addGroup(gl_panelzdgz.createSequentialGroup()
 							.addContainerGap()
 							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnSaveZdgz)
-								.addComponent(btnGenTDXCode)
 								.addComponent(btnadddalei)
-								.addComponent(btndeldalei))
+								.addComponent(btndeldalei)
+								.addComponent(btnGenTDXCode))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING, false)
 								.addComponent(scrollPaneDaLei, 0, 0, Short.MAX_VALUE)
 								.addComponent(scrollPaneDaLeiDetail, GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE))))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(66, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		
 		//ZdgzBanKuaiDetailXmlTableModel xmlaccountsmodel = new ZdgzBanKuaiDetailXmlTableModel( );
@@ -1285,6 +1410,28 @@ public class BanKuaiAndChanYeLian extends JPanel
 		tableCurZdgzbk = new  JTable(xmlaccountsmodel) {
 			private static final long serialVersionUID = 1L;
 
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				
+				Border outside = new MatteBorder(1, 0, 1, 0, Color.RED);
+				Border inside = new EmptyBorder(0, 1, 0, 1);
+				Border highlight = new CompoundBorder(outside, inside);
+				 
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        JComponent jc = (JComponent)comp;
+		        ZdgzBanKuaiDetailXmlTableModel tablemodel = (ZdgzBanKuaiDetailXmlTableModel)this.getModel(); 
+		        Object value = tablemodel.getValueAt(row, col);
+		        
+		        if (!isRowSelected(row)) {
+		        	comp.setBackground(getBackground());
+		        	int modelRow = convertRowIndexToModel(row);
+		        	String chanyelian = (String)getModel().getValueAt(modelRow, 1);
+					if(chanyelian != null && !currentselectedtdxbk.equals("") && chanyelian.contains(currentselectedtdxbk)) 
+						jc.setBorder( highlight );
+		        }
+		        
+		        return comp;
+		    }
+
 			public String getToolTipText(MouseEvent e) {
                 String tip = null;
                 java.awt.Point p = e.getPoint();
@@ -1303,10 +1450,14 @@ public class BanKuaiAndChanYeLian extends JPanel
 		tableCurZdgzbk.setToolTipText("tableZdgzBankDetails");
 		
 		
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(100);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMinWidth(100);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setWidth(100);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(100);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(70);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMinWidth(70);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setWidth(70);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(70);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(1).setMaxWidth(390);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(1).setMinWidth(390);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(1).setWidth(390);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(1).setPreferredWidth(390);
 //		tableZdgzBankDetails.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 //		tableZdgzBankDetails.setPreferredScrollableViewportSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
 		scrollPaneDaLei.setViewportView(tableCurZdgzbk);
@@ -1321,23 +1472,23 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 		JSeparator separator = new JSeparator();
 		
-		JButton btnNewButton = new JButton("\u4FDD\u5B58\u4FEE\u6539");
+		btnSaveAll = new JButton("\u4FDD\u5B58\u4FEE\u6539");
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(label)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tfldparsefilename, GroupLayout.PREFERRED_SIZE, 565, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnChsParseFile)
-					.addGap(33)
-					.addComponent(btnNewButton)
-					.addContainerGap(41, Short.MAX_VALUE))
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 895, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(label)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(tfldparsefilename, GroupLayout.PREFERRED_SIZE, 565, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnChsParseFile)
+							.addGap(33)
+							.addComponent(btnSaveAll))
+						.addComponent(separator, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 905, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
@@ -1348,7 +1499,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 						.addComponent(label)
 						.addComponent(tfldparsefilename, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnChsParseFile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnNewButton))
+						.addComponent(btnSaveAll))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1392,32 +1543,31 @@ public class BanKuaiAndChanYeLian extends JPanel
  */
 class CurZdgzBanKuaiTableModel extends AbstractTableModel 
 {
-	private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap;
+	private HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkmap;
 	private String cbxDale;
 
-	String[] jtableTitleStrings = {  "板块产业链","创建时间","入选"};
+	String[] jtableTitleStrings = {  "板块产业链","创建时间","入选","发现"};
 	
 	CurZdgzBanKuaiTableModel ()
 	{
-//		this.gzbkmap =  gzbkmap;
-//		this.cbxDale = cbxDale2;
+
 	}
 
-	public void refresh (HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap,String cbxDale2) 
+	public void refresh (HashMap<String,ArrayList<BkChanYeLianTreeNode>> zdgzbkmap2,String cbxDale2) 
 	{
-		this.gzbkmap =  gzbkmap;
+		this.gzbkmap =  zdgzbkmap2;
 		this.cbxDale = cbxDale2;
 	}
-	public int getGuanZhuBanKuaiInfoIndex (GuanZhuBanKuaiInfo gzbk)
+	public int getGuanZhuBanKuaiInfoIndex (BkChanYeLianTreeNode parent)
 	{
 		String currentdalei = this.cbxDale;
-		ArrayList<GuanZhuBanKuaiInfo> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
-		return tmpgzbkinfo.indexOf(gzbk);
+		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
+		return tmpgzbkinfo.indexOf(parent);
 	}
-	public GuanZhuBanKuaiInfo getGuanZhuBanKuaiInfo (int rowindex)
+	public BkChanYeLianTreeNode getGuanZhuBanKuaiInfo (int rowindex)
 	{
 		String currentdalei = this.cbxDale;
-		ArrayList<GuanZhuBanKuaiInfo> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
+		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
 		return tmpgzbkinfo.get(rowindex);
 	}
 
@@ -1425,7 +1575,7 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 	 {
 		 try {
 			 String currentdalei = this.cbxDale;  
-			 ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = gzbkmap.get(currentdalei);
+			 ArrayList<BkChanYeLianTreeNode> tmpgzbklist = gzbkmap.get(currentdalei);
 			 return tmpgzbklist.size();
 		 } catch (java.lang.NullPointerException e) {
 			 return 0;
@@ -1445,24 +1595,38 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 	    		return null;
 	    	
 	    	String currentdalei = this.cbxDale;  
-			ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = gzbkmap.get(currentdalei);
-			GuanZhuBanKuaiInfo tmpgzbk = tmpgzbklist.get(rowIndex);
+			ArrayList<BkChanYeLianTreeNode> tmpgzbklist = gzbkmap.get(currentdalei);
+			if(tmpgzbklist == null)
+				return null;
+			BkChanYeLianTreeNode tmpgzbk = tmpgzbklist.get(rowIndex);
 	    	
 	    	Object value = "??";
 
 	    	switch (columnIndex) {
             case 0:
-                value = tmpgzbk.getBkchanyelian();
+                value = tmpgzbk.getChanYeLian();
                 break;
             case 1:
-            	value = tmpgzbk.getSelectedtime();
+            	try {
+            		value = tmpgzbk.getSelectedtime();
+            	} catch (java.lang.NullPointerException e) {
+            		value = "";
+            	}
+            	
                 break;
             case 2:
                 value = new Boolean(tmpgzbk.isOfficallySelected() );
                 break;
+            case 3:
+            	if(tmpgzbk.getParseFileStockSet() != null && tmpgzbk.getParseFileStockSet().size() >0)
+            		value = new Boolean(true );
+            	else 
+            		value = new Boolean(false );
+                break;
 	    	}
+	    	
 
-        return value;
+	    	return value;
 	  }
 
      public Class<?> getColumnClass(int columnIndex) {
@@ -1475,6 +1639,9 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 			          clazz = String.class;
 			          break;
 		        case 2:
+			          clazz = Boolean.class;
+			          break;
+		        case 3:
 			          clazz = Boolean.class;
 			          break;
 		      }
@@ -1492,6 +1659,7 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 	    
 	    public void deleteAllRows()
 	    {
+			this.cbxDale = "";
 	    }
 //	    public void deleteRow(int row)
 //	    {
@@ -1508,27 +1676,20 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
  */
 class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel 
 {
-	private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap;
+	private HashMap<String, ArrayList<BkChanYeLianTreeNode>> gzbkmap;
 	
-	String[] jtableTitleStrings = { "股票池", "关注板块"};
+	private String[] jtableTitleStrings = { "股票池", "关注板块","发现"};
 	private ArrayList<String> gzdalei;
+	private boolean foundstockinparsefile = false;
 	
 	ZdgzBanKuaiDetailXmlTableModel ()
 	{
-//		this.gzbkmap =  gzbkmap;
-//		try {
-//			this.gzdalei = new ArrayList<String>(gzbkmap.keySet() );
-//		} catch (java.lang.NullPointerException e)		{
-//			
-//		}
 	}
 
-	
-
-	public void refresh (HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap) 
+	public void refresh (HashMap<String,ArrayList<BkChanYeLianTreeNode>> zdgzbkmap) 
 	{
-		this.gzbkmap =  gzbkmap;
-		this.gzdalei = new ArrayList<String>(gzbkmap.keySet() );
+		this.gzbkmap =  zdgzbkmap;
+		this.gzdalei = new ArrayList<String>(zdgzbkmap.keySet() );
 	}
 
 	 public int getRowCount() 
@@ -1543,6 +1704,10 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 	 public int getDaLeiIndex (String dalei)
 	 {
 		 return this.gzdalei.indexOf(dalei);
+	 }
+	 public ArrayList<BkChanYeLianTreeNode>  getDaLeiChanYeLianList (String dalei)
+	 {
+		 return gzbkmap.get(dalei) ;
 	 }
 
 	    @Override
@@ -1567,18 +1732,33 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
             case 1:
             	String result = "";
             	try {
-            		for( GuanZhuBanKuaiInfo tmpgzcyl : gzbkmap.get(gzdalei.get(rowIndex) )) {
-            			if(tmpgzcyl.isOfficallySelected()) {
-            				String chanyelian =  tmpgzcyl.getBkchanyelian();
-    	            		String seltime = tmpgzcyl.getSelectedtime();
-    	            		result = result + chanyelian + "(" + seltime +")" + "|" + " ";
+            		ArrayList<BkChanYeLianTreeNode> zdgzsub = this.getDaLeiChanYeLianList(this.getZdgzDaLei(rowIndex)) ;// gzbkmap.get(getZdgzDaLei(rowIndex) );
+            		if(zdgzsub.size() == 0)
+            			foundstockinparsefile = false;
+            		
+            		for(BkChanYeLianTreeNode gznode : zdgzsub) {
+            			if(gznode.isOfficallySelected()) {
+            				String chanyelian = gznode.getChanYeLian(); 
+            				
+            				String seltime = "";
+            				if(gznode.getSelectedtime() != null)
+            					seltime = gznode.getSelectedtime();
+            				result = result + chanyelian + "(" + seltime +")" + " | " + " ";
+            				
+            				if(gznode.getParseFileStockSet() != null && gznode.getParseFileStockSet().size() > 0)
+            					foundstockinparsefile = true;
+            				else
+            					foundstockinparsefile = false;
             			}
-            			
             		}
+
             	 } catch (java.lang.NullPointerException e) {
             		 
             	 }
             	value = result;
+                break;
+            case 2:
+                value = new Boolean (foundstockinparsefile);
                 break;
 	    	}
         return value;
@@ -1592,6 +1772,9 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 		    	  break;
 		        case 1:
 			          clazz = String.class;
+			          break;
+		        case 2:
+			          clazz = Boolean.class;
 			          break;
 		      }
 		      
@@ -1611,8 +1794,25 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 	    public boolean isCellEditable(int row,int column) {
 	    	return false;
 		}
-	    
 
+		public String getCylNodesDaLei(BkChanYeLianTreeNode bknode) 
+		{
+			for(String daleiname : this.gzdalei) {
+				ArrayList<BkChanYeLianTreeNode> zdgzsub = gzbkmap.get(daleiname );
+        		if(zdgzsub.size() == 0)
+        			continue;
+        		
+        		for(BkChanYeLianTreeNode gznode : zdgzsub) {
+        			String cylinmapnode = gznode.getChanYeLian().trim();
+        			String cylinverfiednode = bknode.getChanYeLian().trim();
+        			
+        			if(cylinmapnode.contains(cylinverfiednode) )
+        				return daleiname;
+        			
+        		}
+			}
+			return null;
+		}
 	    
 }
 
@@ -1755,3 +1955,4 @@ class ParseBanKuaiFielProcessor implements LineProcessor<List<String>>
         return stocklists;
     }
 }
+

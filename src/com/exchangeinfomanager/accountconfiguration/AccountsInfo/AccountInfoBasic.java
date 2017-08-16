@@ -111,13 +111,16 @@ public class AccountInfoBasic extends CashAccountBasic
 	 */
 	public int actionBuyPreCheck (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
+		int cashisenough;
 		 System.out.println("需要做资金合法性检查");
 		if( (this.getCurrentAvailableXianJin() - guquanshu * guquandanjia) >=0 ) { //判断是否有足够的现金
-			return 1;
+			cashisenough = 1;
 		} else {
 			System.out.print("账户现金不足，无法买入");
-			return -1;
+			cashisenough = -1;
 		} 
+		
+		return cashisenough =1; //17.08.05当前先暂时不做任何资金合法性检查
 	}
 	
 	/*

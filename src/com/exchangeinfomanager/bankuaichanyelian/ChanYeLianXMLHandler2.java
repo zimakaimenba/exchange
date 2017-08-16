@@ -297,6 +297,7 @@ public class ChanYeLianXMLHandler2
 				   parentsleaf.setNodeType( Integer.parseInt(element.attributeValue("Type") ) );
 				   parentsleaf.setHanYuPingYin(getBanKuaiNameOfPinYin(bkname ) );
 				   topNode.add(parentsleaf);
+				   
 
 				   importFromXML(parentsleaf,element);
 			}
