@@ -174,7 +174,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 		if(bknode != null) {
 			tdxbk = bknode.getTdxBk();
 			currentselectedtdxbk = tdxbk;
-		}
+		} else
+			currentselectedtdxbk = "";
 		
 		if(selecteddalei == null && bknode.getInZdgzCandidateCount() > 0) //通过node找到大类，可能为null
 			selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getCylNodesDaLei (bknode);
@@ -315,9 +316,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 	            if (evt.getY() > maxY) treechanyelian.clearSelection();
 	            else if (evt.getX() < minX || evt.getX() > maxX) treechanyelian.clearSelection();
 	        }
-	        
-	        BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
-	        unifyDisplaysInDifferentCompOnGui (null,bknode);
+	        getReleatedInfoAndActionsForTreePathNode ( closestPath);
+//	        BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
+//	        unifyDisplaysInDifferentCompOnGui (null,bknode);
 	               
 	    }//GEN-LAST:event_treeMousePressed
 	    
@@ -348,6 +349,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	   		((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).fireTableDataChanged();
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tmpallbkge,stockinparsefile);
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).fireTableDataChanged();
+	  	       	
+	  	       	int row = tableCurZdgzbk.getSelectedRow();
+	  	       	((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+	  	       	tableCurZdgzbk.setRowSelectionInterval(row,row);
 	  	      
 	         }
 	    }
@@ -554,7 +559,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	{
 		if(cylneedsave == true) {
 			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treechanyelian.getModel().getRoot();
-			if(cylxmhandler.saveTreeToChanYeLianXML(treeroot) )
+			if(!cylxmhandler.saveTreeToChanYeLianXML(treeroot) )
 				JOptionPane.showMessageDialog(null, "保存产业链XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
 			
 		}
@@ -1428,11 +1433,21 @@ public class BanKuaiAndChanYeLian extends JPanel
 		        Object value = tablemodel.getValueAt(row, col);
 		        
 		        if (!isRowSelected(row)) {
-		        	comp.setBackground(getBackground());
+		        	comp.setBackground(this.getBackground()); 
 		        	int modelRow = convertRowIndexToModel(row);
 		        	String chanyelian = (String)getModel().getValueAt(modelRow, 1);
 					if(chanyelian != null && !currentselectedtdxbk.equals("") && chanyelian.contains(currentselectedtdxbk)) 
 						jc.setBorder( highlight );
+		        }
+		        
+		        if (isRowSelected(row)) {
+		        	comp.setBackground(this.getSelectionBackground());
+		        	
+		        	int modelRow = convertRowIndexToModel(row);
+		        	String chanyelian = (String)getModel().getValueAt(modelRow, 1);
+					if(chanyelian != null && !currentselectedtdxbk.equals("") && chanyelian.contains(currentselectedtdxbk)) 
+						jc.setBorder( highlight );
+		        	
 		        }
 		        
 		        return comp;

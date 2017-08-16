@@ -22,6 +22,7 @@ import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
+import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -1475,7 +1476,7 @@ public class StockInfoManager
 protected void startBanKuaiGuanLiDlg()
 {
 	BanKuaiGuanLi bkgldialog = new BanKuaiGuanLi(this,bkdbopt,stockdbopt,zdgzbkxmlhandler,cylxmlhandler);
-	bkgldialog.setModal(true);
+	bkgldialog.setModal(false);
 	bkgldialog.startDialog ();
 	bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	bkgldialog.setVisible(true);
@@ -2887,7 +2888,7 @@ protected void startBanKuaiGuanLiDlg()
 		
 		menuOperationList.add(menuItemRfshBk);
 		
-		menuItemChanYeLian = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u677F\u5757\u4E0E\u4EA7\u4E1A\u94FE");
+		menuItemChanYeLian = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u4E0E\u4EA7\u4E1A\u94FE");
 		
 		menuOperationList.add(menuItemChanYeLian);
 		
