@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +55,7 @@ public class BkChanYeLianTree extends JTree
 //        setModifiedTitle(false);
 
 		 bkdbopt = new BanKuaiDbOperation(); 
+		 hypy = new HanYuPinYing ();
 		this.createEvents(this);
 //      
 	}
@@ -61,6 +63,7 @@ public class BkChanYeLianTree extends JTree
 	private String currentselectedtdxbk;
 	private boolean ignoreExpansion = false;
 	private BanKuaiDbOperation bkdbopt;
+	private HanYuPinYing hypy;
 	
 	private void createEvents(final JTree tree) 
 	{
@@ -206,7 +209,7 @@ public class BkChanYeLianTree extends JTree
 	    }
 	}
 
-
+	
 
 	public void addNewNode(int addnodetype, String subbkname, int direction)
 	{
@@ -214,6 +217,7 @@ public class BkChanYeLianTree extends JTree
 
 			BkChanYeLianTreeNode newNode = new BkChanYeLianTreeNode(subbkname);
             newNode.setNodeType(addnodetype);
+            newNode.setHanYuPingYin(hypy.getBanKuaiNameOfPinYin(subbkname));
             
             if (direction == BanKuaiAndChanYeLian.RIGHT){
             	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
@@ -225,8 +229,6 @@ public class BkChanYeLianTree extends JTree
                 }
                 
                 if( parent.getNodeType() != BkChanYeLianTreeNode.BKGEGU) { //父节点不是个股，可以加
-                	String suoshubkcode = parent.getTDXBanKuaiZhiShuCode();
-                	newNode.setTDXBanKuaiZhiShuCode(suoshubkcode);
                 	parent.add(newNode);
 	                parent.setExpansion(true);
                 } else { ////父节点是个股，不可以加
@@ -252,6 +254,7 @@ public class BkChanYeLianTree extends JTree
                 else return;
             }
 
+            nodeDnaFromParentToChild ( (BkChanYeLianTreeNode)newNode.getParent(),newNode);
             DefaultTreeModel treeModel = (DefaultTreeModel) this.getModel();
             treeModel.nodesWereInserted(newNode.getParent(), new int[] {newNode.getParent().getIndex(newNode)});
             this.startEditingAtPath(new TreePath(newNode.getPath()));
@@ -259,7 +262,13 @@ public class BkChanYeLianTree extends JTree
         }
 	}
 	
-    private boolean checkNodeDuplicate(BkChanYeLianTreeNode parent,  BkChanYeLianTreeNode newNode) 
+    private void nodeDnaFromParentToChild(BkChanYeLianTreeNode parent, BkChanYeLianTreeNode child) 
+    {
+    	String suoshubkcode = parent.getTDXBanKuaiZhiShuCode();
+    	child.setTDXBanKuaiZhiShuCode(suoshubkcode);
+	}
+
+	private boolean checkNodeDuplicate(BkChanYeLianTreeNode parent,  BkChanYeLianTreeNode newNode) 
     {
     	String gegucodename = newNode.getUserObject().toString().trim();
     	String parentname = parent.getUserObject().toString().trim();
@@ -523,6 +532,50 @@ public class BkChanYeLianTree extends JTree
 		    	model.nodeChanged(parentnode);
 		 }
 		
+	}
+
+	public TreePath locateNodeByNameOrHypyOrBkCode(String bkinputed) 
+	{
+		TreePath bkpath = null ;
+    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+	    @SuppressWarnings("unchecked")
+		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
+	    while (e.hasMoreElements() ) {
+	    	BkChanYeLianTreeNode node = e.nextElement();
+	    	String bkHypy ;
+	    	try {
+	    		 bkHypy = node.getHanYuPingYin().toLowerCase();
+	    	} catch (java.lang.NullPointerException ex) {
+	    		//System.out.println(node.getUserObject().toString() + "汉语拼音是 " + node.getHanYuPingYin());
+	    		bkHypy = "";
+	    	}
+	    	String bkName = node.getUserObject().toString();
+	    	String bkcode;
+	    	try {
+	    		bkcode = node.getTDXBanKuaiZhiShuCode().toString();
+	    	} catch (java.lang.NullPointerException ex) {
+	    		System.out.println(node.getUserObject().toString() + "板块指数是 " + node.getTDXBanKuaiZhiShuCode());
+	    		bkcode = "";
+	    	}
+	    	
+	    	boolean found = false;
+	    	if(bkHypy.equalsIgnoreCase(bkinputed)) 
+	    		found = true;
+	    	else if(bkName.equalsIgnoreCase(bkinputed))
+	    		found = true;
+	    	else if(bkcode.equals(bkinputed))
+	    		found = true;
+	    	
+	        if (found) {
+	             bkpath = new TreePath(node.getPath());
+	             this.setSelectionPath(bkpath);
+	     	     this.scrollPathToVisible(bkpath);
+	     	     this.expandTreePathAllNode(bkpath);
+
+	     	     return bkpath;
+	        }
+	    }
+		return null;
 	}
 	
 	

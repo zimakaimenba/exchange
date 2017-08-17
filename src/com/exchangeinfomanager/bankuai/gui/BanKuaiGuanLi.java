@@ -67,7 +67,7 @@ public class BanKuaiGuanLi extends JDialog
 		this.cylxmlhandler = cylxmlhandler2;
 		this.zdgzbkxmlhandler = zdgzbkxmlhandler2;
 		this.stockInfoManager = stockInfoManager2;
-		startDialog ();
+		//startDialog ();
 	}
 	
 	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;

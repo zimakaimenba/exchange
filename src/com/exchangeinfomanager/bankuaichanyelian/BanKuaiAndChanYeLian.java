@@ -429,27 +429,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 		   protected TreePath findBanKuaiInTree(String bkinputed) 
 		   {
 		    	@SuppressWarnings("unchecked")
-		    	TreePath bkpath = null ;
-		    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treechanyelian.getModel().getRoot();
-			    Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
-			    while (e.hasMoreElements()) {
-			    	BkChanYeLianTreeNode node = e.nextElement();
-			    	String bkHypy = node.getHanYuPingYin();
-			    	String bkName = node.getUserObject().toString();
-			    	
-			        if (bkHypy.equalsIgnoreCase(bkinputed) || bkName.equalsIgnoreCase(bkinputed)) {
-			             bkpath = new TreePath(node.getPath());
-			             treechanyelian.setSelectionPath(bkpath);
-			     	     treechanyelian.scrollPathToVisible(bkpath);
-			     	     treechanyelian.expandTreePathAllNode(bkpath);
-			     	     
-			             getReleatedInfoAndActionsForTreePathNode (bkpath); //显示和板块相关的子产业链和个股
-			             
-			     	     return bkpath;
-			        }
-			    }
-			    
-			    return null;
+		    	TreePath bkpath = treechanyelian.locateNodeByNameOrHypyOrBkCode (bkinputed);
+		    	getReleatedInfoAndActionsForTreePathNode (bkpath); //显示和板块相关的子产业链和个股
+		    	
+			    return bkpath;
 			}
 		    public boolean isXmlEdited ()
 		    {

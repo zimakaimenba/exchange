@@ -205,7 +205,7 @@ public class StockInfoManager
 	private AccountDbOperation acntdbopt;
 	//private TongDaXinJiBenMianReport tongdaxinreport;
 	
-	private BanKuaiGuanLi bkgldialog;
+	private BanKuaiGuanLi bkgldialog = null;
 	private SearchDialog searchdialog;
 	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
 	private ChanYeLianXMLHandler2 cylxmlhandler;
@@ -1475,11 +1475,16 @@ public class StockInfoManager
 }
 protected void startBanKuaiGuanLiDlg()
 {
-	BanKuaiGuanLi bkgldialog = new BanKuaiGuanLi(this,bkdbopt,stockdbopt,zdgzbkxmlhandler,cylxmlhandler);
-	bkgldialog.setModal(false);
-	bkgldialog.startDialog ();
-	bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-	bkgldialog.setVisible(true);
+	if(bkgldialog == null ) {
+		BanKuaiGuanLi bkgldialog = new BanKuaiGuanLi(this,bkdbopt,stockdbopt,zdgzbkxmlhandler,cylxmlhandler);
+		bkgldialog.setModal(false);
+		bkgldialog.startDialog ();
+		bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		bkgldialog.setVisible(true);
+	} else
+		bkgldialog.toFront();
+	
+	
 	
 }
 

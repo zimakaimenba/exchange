@@ -56,6 +56,7 @@ public class ChanYeLianXMLHandler2
 		bankuaichanyelianxml = sysconfig.getBanKuaiChanYeLianXml ();
 		geguchanyelianxml = sysconfig.getGeGuChanYeLianXmlFile ();
 		this.bkopt = new BanKuaiDbOperation ();
+		this.hypy = new HanYuPinYing();
 		
 		FileInputStream xmlfileinput = null;
 		try {
@@ -99,6 +100,7 @@ public class ChanYeLianXMLHandler2
 	private Document ggcylxmldocument;
 	private Element ggcylxmlroot;
 	private boolean hasXmlRevised = false;
+	private HanYuPinYing hypy;
 
 	
 	private void initialzieSysconf ()
@@ -295,63 +297,65 @@ public class ChanYeLianXMLHandler2
 				   String bkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
 				   parentsleaf.setTDXBanKuaiZhiShuCode (bkcode);
 				   parentsleaf.setNodeType( Integer.parseInt(element.attributeValue("Type") ) );
-				   parentsleaf.setHanYuPingYin(getBanKuaiNameOfPinYin(bkname ) );
+				   if(parentsleaf.getNodeType() != BkChanYeLianTreeNode.BKGEGU)
+					   parentsleaf.setHanYuPingYin(hypy.getBanKuaiNameOfPinYin(bkname ) );
+				   else //个股的话只存名字的汉语拼音，把股票代码去掉
+					   parentsleaf.setHanYuPingYin(hypy.getBanKuaiNameOfPinYin(bkname.substring(6,bkname.length()) ) );
 				   topNode.add(parentsleaf);
-				   
 
 				   importFromXML(parentsleaf,element);
 			}
 	}
 	
-	 private String getBanKuaiNameOfPinYin (String chinese)
-	 {
-		 //System.out.println(chinese);
-		 //这部分获得全部拼音
-		 HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
-	        format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
-	        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-	        format.setVCharType(HanyuPinyinVCharType.WITH_V);
-	 
-	        char[] input = chinese.trim().toCharArray();
-	        String output = "";
-	 
-	        try {
-	            for (int i = 0; i < input.length; i++) {
-	                if (java.lang.Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) {
-	                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(input[i], format);
-	                    output += temp[0];
-	                } else
-	                    output += java.lang.Character.toString(input[i]);
-	            }
-	        } catch (BadHanyuPinyinOutputFormatCombination e) {
-	            e.printStackTrace();
-	        }
-	       //System.out.println(output);
-	       
-	       //这部分获得首字母拼音
-	        StringBuffer pybf = new StringBuffer();  
-            char[] arr = chinese.toCharArray();  
-            HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();  
-            defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);  
-            defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);  
-            for (int i = 0; i < arr.length; i++) {  
-                    if (arr[i] > 128) {  
-                            try {  
-                                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat);  
-                                    if (temp != null) {  
-                                            pybf.append(temp[0].charAt(0));  
-                                    }  
-                            } catch (BadHanyuPinyinOutputFormatCombination e) {  
-                                    e.printStackTrace();  
-                            }  
-                    } else {  
-                            pybf.append(arr[i]);  
-                    }  
-            }  
-            //System.out.println( pybf.toString().replaceAll("\\W", "").trim() ); 
-            
-            return pybf.toString().replaceAll("\\W", "").trim(); //返回首字母拼音
-	 }
+//	 private String getBanKuaiNameOfPinYin (String chinese)
+//	 {
+//		 //System.out.println(chinese);
+//		 //这部分获得全部拼音
+//		 HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+//	        format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+//	        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+//	        format.setVCharType(HanyuPinyinVCharType.WITH_V);
+//	 
+//	        char[] input = chinese.trim().toCharArray();
+//	        String output = "";
+//	 
+//	        try {
+//	            for (int i = 0; i < input.length; i++) {
+//	                if (java.lang.Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) {
+//	                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(input[i], format);
+//	                    output += temp[0];
+//	                } else
+//	                    output += java.lang.Character.toString(input[i]);
+//	            }
+//	        } catch (BadHanyuPinyinOutputFormatCombination e) {
+//	            e.printStackTrace();
+//	        }
+//	       //System.out.println(output);
+//	       
+//	       //这部分获得首字母拼音
+//	        StringBuffer pybf = new StringBuffer();  
+//            char[] arr = chinese.toCharArray();  
+//            HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();  
+//            defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);  
+//            defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);  
+//            for (int i = 0; i < arr.length; i++) {  
+//                    if (arr[i] > 128) {  
+//                            try {  
+//                                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat);  
+//                                    if (temp != null) {  
+//                                            pybf.append(temp[0].charAt(0));  
+//                                    }  
+//                            } catch (BadHanyuPinyinOutputFormatCombination e) {  
+//                                    e.printStackTrace();  
+//                            }  
+//                    } else {  
+//                            pybf.append(arr[i]);  
+//                    }  
+//            }  
+//            //System.out.println( pybf.toString().replaceAll("\\W", "").trim() ); 
+//            
+//            return pybf.toString().replaceAll("\\W", "").trim(); //返回首字母拼音
+//	 }
 	 
 	 public boolean saveTreeToChanYeLianXML (BkChanYeLianTreeNode ginkgorootnode) //GEN-FIRST:event_saveButtonActionPerformed 
      {
