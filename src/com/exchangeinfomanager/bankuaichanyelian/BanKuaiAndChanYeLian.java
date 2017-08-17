@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.text.Collator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -39,6 +40,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -68,6 +70,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JMenuItem;
 
 public class BanKuaiAndChanYeLian extends JPanel 
 {
@@ -96,10 +100,15 @@ public class BanKuaiAndChanYeLian extends JPanel
 		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndCylTree(treechanyelian);
 		initializeAllDaLeiZdgzTableFromXml (null);
 		initializeSingleDaLeiZdgzTableFromXml (0);
+		initializeBanKuaiParsedFile ();
 		
 		createEvents ();
 	}
 	
+
+
+	
+
 
 
 	public static final int UP=0, LEFT=1, RIGHT=2, DOWN=3, NONE=4;
@@ -352,7 +361,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	       	
 	  	       	int row = tableCurZdgzbk.getSelectedRow();
 	  	       	((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
-	  	       	tableCurZdgzbk.setRowSelectionInterval(row,row);
+	  	       	if(row >= 0)
+	  	       		tableCurZdgzbk.setRowSelectionInterval(row,row);
+	  	       	else
+	  	       	tableCurZdgzbk.setRowSelectionInterval(0,0);
 	  	      
 	         }
 	    }
@@ -438,14 +450,65 @@ public class BanKuaiAndChanYeLian extends JPanel
 		    {
 		    	return cylneedsave ;
 		    }
+		    
+		    private void initializeBanKuaiParsedFile() 
+			{
+				String parsedpath = sysconfig.getBanKuaiParsedFileStoredPath ();
+				if(parsedpath == null || parsedpath == "")
+					return;
+				
+				Date date=new Date();//取时间
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(date);
+				calendar.add(calendar.DATE,-1);//把日期往后增加一天.整数往后推,负数往前移动
+				date=calendar.getTime(); //这个时间就是日期往后推一天的结果 
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+				String dateString = formatter.format(date);
+				System.out.println(dateString);
+				
+				String parsefilename = parsedpath + dateString + ".ebk";
+				tfldparsefilename.setText(parsefilename);
+				
+				parseSelectedBanKuaiFile (parsefilename);
+				
+			}
+		    
+		    private void parseSelectedBanKuaiFile (String filename)
+		    {
+		    	File parsefile = new File(filename);
+		    	if(!parsefile.exists() )
+		    		return;
+		    	
+				List<String> readparsefileLines = null;
+				try {
+					readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiFielProcessor ());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				HashSet<String> stockinfile = new HashSet<String> (readparsefileLines);
+				
+				treechanyelian.updateTreeParseFileInfo(stockinfile);
+				
+				((BanKuaiGeGuTableModel)tablebkgegu.getModel()).deleteAllRows();
+				((BanKuaiGeGuTableModel)tablebkgegu.getModel()).fireTableDataChanged ();
+				//((DefaultTableModel)tblzhongdiangz.getModel()).setRowCount(0);
+				
+//				((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+//				((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
+		    	
+		    }
 
 		    /*
 		     * 选择要分析的板块文件
 		     */
 		    private void selectBanKuaiParseFile ()
 			{
+		    	String parsedpath = sysconfig.getBanKuaiParsedFileStoredPath ();
 				JFileChooser chooser = new JFileChooser();
 				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				chooser.setCurrentDirectory(new File(parsedpath) );
+				
 				if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 				    
 				    String linuxpath;
@@ -456,6 +519,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 				    
 				    System.out.println(linuxpath);
 				    tfldparsefilename.setText(linuxpath);
+				    
+				    parseSelectedBanKuaiFile (linuxpath);
 				    
 //				    File recordspath = chooser.getSelectedFile();
 //				    File[] filesList = recordspath.listFiles();
@@ -472,20 +537,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 //						e.printStackTrace();
 //					}
 					
-					File parsefile = new File(linuxpath);
-					List<String> readparsefileLines = null;
-					try {
-						readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiFielProcessor ());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 					
-					HashSet<String> stockinfile = new HashSet<String> (readparsefileLines);
-					
-					treechanyelian.updateTreeParseFileInfo(stockinfile);
-					
-					((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
-					((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
 				}
 				
 			}   
@@ -556,6 +608,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 	}	    
 	private void createEvents() 
 	{
+		mntmNewMenuItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				addChanYeLianNews (arg0);
+			}
+		});
+		
 		btnopencylxml.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -910,6 +969,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 			}
 	    
 	    
+	protected void addChanYeLianNews(MouseEvent arg0) 
+	{
+		
+		
+	}
+
 	private void deleteDaLeiGuPiaoChi () 
 	{
 		int row = tableCurZdgzbk.getSelectedRow();
@@ -1086,6 +1151,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private JButton btnSaveAll;
 	private JButton btnopenzdgzxml;
 	private JButton btnopencylxml;
+	private JPopupMenu popupMenu;
+	private JMenuItem mntmNewMenuItem;
 
 	private void initializeGui() 
 	{
@@ -1535,9 +1602,33 @@ public class BanKuaiAndChanYeLian extends JPanel
 		BkChanYeLianTreeNode topNode = cylxmhandler.getBkChanYeLianXMLTree();
 		
 		BkChanYeLianTree tmptreechanyelian = new BkChanYeLianTree(topNode);
+		
+		popupMenu = new JPopupMenu();
+		addPopup(tmptreechanyelian, popupMenu);
+		
+		mntmNewMenuItem = new JMenuItem("\u6DFB\u52A0\u4EA7\u4E1A\u94FE\u65B0\u95FB");
+		
+		popupMenu.add(mntmNewMenuItem);
 		return tmptreechanyelian;
 		
 
+	}
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
 	}
 }
 
@@ -1856,6 +1947,8 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 		
 		
 	}
+
+	
 
 	public void refresh  (HashMap<String,String> bkgegu,HashSet<String> stockcodeinparsefile2)
 	{

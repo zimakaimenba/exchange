@@ -212,6 +212,13 @@ public class SystemSetting extends JDialog
 	 }
 	private void createEvents() 
 	{
+		btnchsparsefilepath.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				setBanKuaiParseFileInstalledPath ();
+			}
+		});
+		
 		btnrmteditdb.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -446,7 +453,8 @@ public class SystemSetting extends JDialog
 				Element eletdx = rootele.addElement("tdxpah");
 				eletdx.setText( toUNIXpath(tfldTDXInstalledPath.getText() ) );
 				
-				
+				Element eletbkparsefile = rootele.addElement("bankuaiparsefilepah");
+				eletbkparsefile.setText( toUNIXpath(tfldparsefilepath.getText() ) );
 				
 				Element elesorce = rootele.addElement("databasesources");
 				
@@ -523,6 +531,18 @@ public class SystemSetting extends JDialog
 		
 	}
 
+	protected void setBanKuaiParseFileInstalledPath()
+	{
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+		    System.out.println(chooser.getSelectedFile());
+		    String linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+		    System.out.println(linuxpath);
+		    tfldparsefilepath.setText(linuxpath);
+		}
+		
+	}
 	private boolean preSaveCheck() 
 	{
 		txtareacheckresult.setText("系统设置检查结果:" + "\n");
@@ -601,11 +621,13 @@ public class SystemSetting extends JDialog
 	private JButton btnrmteditdb;
 	private JButton btnrmtadd;
 	private JButton btndelrmtdbs;
+	private JTextField tfldparsefilepath;
+	private JButton btnchsparsefilepath;
 	private void initializeGui() 
 	{
 		setTitle("\u7CFB\u7EDF\u8BBE\u7F6E");
 		
-		setBounds(100, 100, 603, 664);
+		setBounds(100, 100, 603, 744);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -659,6 +681,16 @@ public class SystemSetting extends JDialog
 		btndelrmtdbs.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/minus_red20.png")));
 		
 		JScrollPane scrollPane = new JScrollPane();
+		
+		JLabel label_1 = new JLabel("\u6BCF\u65E5\u677F\u5757\u5206\u6790\u6587\u4EF6\u5B58\u653E\u8DEF\u5F84");
+		
+		tfldparsefilepath = new JTextField();
+		tfldparsefilepath.setEditable(false);
+		tfldparsefilepath.setColumns(10);
+		
+		btnchsparsefilepath = new JButton("");
+		
+		btnchsparsefilepath.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -666,72 +698,85 @@ public class SystemSetting extends JDialog
 					.addGap(26)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(lblNewLabel_1)
-							.addComponent(lblNewLabel)
-							.addComponent(tfldSysInstallPath)
-							.addGroup(gl_contentPanel.createSequentialGroup()
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_contentPanel.createSequentialGroup()
-										.addComponent(lblNewLabel_2)
-										.addGap(120)
-										.addComponent(btnEditDb)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(btmaddnewdb)
-										.addGap(18)
-										.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-										.addGap(18)
-										.addComponent(saveButton))
-									.addGroup(gl_contentPanel.createSequentialGroup()
-										.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 439, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(btnChosTDXDict))
-									.addGroup(gl_contentPanel.createSequentialGroup()
-										.addComponent(label)
-										.addGap(106)
-										.addComponent(btnrmteditdb)
-										.addGap(18)
-										.addComponent(btnrmtadd)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(btndelrmtdbs))
-									.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
-									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE))
-								.addGap(242))))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel_1)
+								.addComponent(lblNewLabel)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addGap(424)
+											.addComponent(saveButton))
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 439, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btnChosTDXDict))
+										.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addComponent(label)
+											.addGap(106)
+											.addComponent(btnrmteditdb)
+											.addGap(18)
+											.addComponent(btnrmtadd)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btndelrmtdbs))
+										.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addComponent(lblNewLabel_2)
+											.addGap(120)
+											.addComponent(btnEditDb)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btmaddnewdb)
+											.addGap(18)
+											.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addComponent(label_1)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btnchsparsefilepath))))
+								.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 539, GroupLayout.PREFERRED_SIZE))
+							.addGap(205)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(12)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(lblNewLabel)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblNewLabel_1)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(btnChosTDXDict, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(tfldTDXInstalledPath, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
-							.addGap(18)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblNewLabel_2)
-								.addComponent(btnEditDb)
-								.addComponent(btndeletedbs)
-								.addComponent(btmaddnewdb)
-								.addComponent(saveButton))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(label)
-								.addComponent(btnrmtadd)
-								.addComponent(btndelrmtdbs)))
-						.addComponent(btnrmteditdb))
+					.addComponent(lblNewLabel)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblNewLabel_1)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnChosTDXDict, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(tfldTDXInstalledPath, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+						.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnchsparsefilepath))
+					.addGap(9)
+					.addComponent(saveButton)
+					.addPreferredGap(ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblNewLabel_2)
+						.addComponent(btnEditDb)
+						.addComponent(btndeletedbs)
+						.addComponent(btmaddnewdb))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+							.addComponent(label)
+							.addComponent(btnrmtadd)
+							.addComponent(btndelrmtdbs))
+						.addComponent(btnrmteditdb, Alignment.TRAILING))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 122, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())

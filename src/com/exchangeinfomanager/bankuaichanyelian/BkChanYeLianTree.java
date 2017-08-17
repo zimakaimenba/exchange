@@ -167,6 +167,7 @@ public class BkChanYeLianTree extends JTree
 	    	String bkname = childNode.getUserObject().toString();
 	    	
 	    	int childNodetype = childNode.getNodeType();
+	    	childNode.clearCurParseFileStockSet ( );
 
 	    	if( childNodetype == BkChanYeLianTreeNode.TDXBK ) {
 	    		HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bkname);

@@ -50,9 +50,9 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
     }
     public void setParseFileStockSet (HashSet<String> parsefilestockset2)
     {
-    	if(this.nodetype == BkChanYeLianTreeNode.SUBBK ) //对于子板块来说，set是增加的
+    	if(this.nodetype == BkChanYeLianTreeNode.SUBBK ) { //对于子板块来说，set是增加的
     		this.parsefilestockset.addAll(parsefilestockset2);
-    	else
+    	} else
     		this.parsefilestockset = parsefilestockset2;
     }
     public HashSet<String> getParseFileStockSet ()
@@ -213,8 +213,8 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 		
 		return date;
 	}
-
-    
-	    
+	public void clearCurParseFileStockSet() {
+		this.parsefilestockset.clear();
+	}
     
 }

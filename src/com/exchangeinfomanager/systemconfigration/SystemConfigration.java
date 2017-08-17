@@ -54,7 +54,7 @@ public class SystemConfigration
 	private CurDataBase curdbs; //本地数据库连接信息
 	private CurDataBase rmtcurdb; //远程数据库连接信息
 	private int tryingcount = 0; //系统如果出错，会重试3次，3次不成直接退出
-	private String tdxvolpath;
+	private String bkparsestoredpath;
 	private int setSoftWareMode; //设定系统模式，有2种，基本数据和通达信同步数据。
 	public static int MODELSERVER=0, MODELCLIENT=1, MODELSERVERCLIENT=2;
 	
@@ -127,6 +127,9 @@ public class SystemConfigration
 			
 			Element eletdx = xmlroot.element("tdxpah");
 			this.tdxinstalledpath = eletdx.getText();
+			
+			Element eletbkparsefile = xmlroot.element("bankuaiparsefilepah");
+			this.bkparsestoredpath = eletbkparsefile.getText();
 			
 //			Element eletdxvol = xmlroot.element("tdxvolpah");
 //			this.tdxvolpath = eletdxvol.getText(); 
@@ -234,6 +237,11 @@ public class SystemConfigration
 	 public String getSystemInstalledPath ()
 	 {
 		 return this.systeminstalledpath;
+	 }
+	 
+	 public String getBanKuaiParsedFileStoredPath ()
+	 {
+		 return this.bkparsestoredpath;
 	 }
 		/**
 		 * @return the tdxbbfilenamegainiantishi
