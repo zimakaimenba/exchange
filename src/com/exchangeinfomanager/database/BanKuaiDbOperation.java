@@ -47,6 +47,8 @@ import org.dom4j.io.XMLWriter;
 
 import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.bankuai.gui.BanKuai;
+import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
@@ -82,6 +84,7 @@ public class BanKuaiDbOperation
 //	private String bankuaichanyelianxml;
 //	private String geguchanyelianxml;
 	private String twelvezdgzxmlname;
+
 //	private Document cylxmldoc;
 //	private Element cylxmlroot;
 //	private Document gegucylxmldoc;
@@ -1460,6 +1463,56 @@ public class BanKuaiDbOperation
 	    return  tmpsysbankuailiebiaoinfo;
    
 	}
+	
+	/*
+	 * 找出通达信定义的所有板块.不包括交易所的指数板块，用新的BkChanYeLianTreeNode存储
+	 */
+	public HashMap<String, BkChanYeLianTreeNode> getTDXBanKuaiList2()   
+	{
+
+		HashMap<String,BkChanYeLianTreeNode> tmpsysbankuailiebiaoinfo = new HashMap<String,BkChanYeLianTreeNode> ();
+
+		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信板块列表 	ORDER BY 板块名称 ,板块ID,创建时间 "
+							   ;   
+		System.out.println(sqlquerystat);
+		CachedRowSetImpl rs = null;
+	    try {  
+	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	    	
+	        rs.last();  
+	        int rows = rs.getRow();  
+//	        data = new Object[rows][];    
+//	        int columnCount = 3;//列数  
+	        rs.first();  
+	        //int k = 0;  
+	        //while(rs.next())
+	        for(int j=0;j<rows;j++) { 
+	        	
+	        	BkChanYeLianTreeNode tmpbk = new BkChanYeLianTreeNode (rs.getString("板块名称"),rs.getString("板块ID"));
+	        	tmpbk.setTongDaXingBanKuaiCode(rs.getString("板块ID") );
+	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块ID"), tmpbk);
+	            rs.next();
+	        }
+	        
+	    }catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    } finally {
+	    	if(rs != null)
+				try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    } 
+	    
+	    return tmpsysbankuailiebiaoinfo;
+	}
+
 	/*
 	 * 找出通达信定义的所有板块.不包括交易所的指数板块
 	 */
@@ -1468,8 +1521,7 @@ public class BanKuaiDbOperation
 
 		HashMap<String,BanKuai> tmpsysbankuailiebiaoinfo = new HashMap<String,BanKuai> ();
 
-		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信板块列表 	ORDER BY 板块名称 ,板块ID,创建时间 "
-							   ;   
+		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信板块列表 	ORDER BY 板块名称 ,板块ID,创建时间 "  ;   
 		System.out.println(sqlquerystat);
 		CachedRowSetImpl rs = null;
 	    try {  
@@ -1510,14 +1562,14 @@ public class BanKuaiDbOperation
 	/*
 	 * 找出某通达信板块的所有子板块，为板块产业链
 	 */
-	public ArrayList<String> getSubBanKuai(String tdxbk) 
+	public HashMap<String,String> getSubBanKuai(String tdxbk) 
 	{
 		String sqlquerystat = "SELECT * FROM 产业链子板块列表 	"
 								+" WHERE 所属通达信板块 =" + "'" + tdxbk + "'" 
 								+ "ORDER BY 子板块名称"
 				   			   ;   
 		System.out.println(sqlquerystat);
-		ArrayList<String> tmpsubbklist = new ArrayList<String>();
+		HashMap<String,String> tmpsubbklist = new HashMap<String,String> ();
 		CachedRowSetImpl rs = null;
 		try {  
 			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -1526,9 +1578,10 @@ public class BanKuaiDbOperation
 			int rows = rs.getRow();  
 			rs.first();  
 			for(int j=0;j<rows;j++) {  
-				String tmpbk = rs.getString("子板块名称");
-				tmpsubbklist.add(tmpbk);
-			 rs.next();
+				String tmpbkcode = rs.getString("子板块代码");
+				String tmpbkname = rs.getString("子板块名称");
+				tmpsubbklist.put(tmpbkcode,tmpbkname);
+				rs.next();
 			}
 		
 		}catch(java.lang.NullPointerException e){ 
@@ -1750,18 +1803,24 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	public int addNewSubBanKuai(String newsubbk,String tdxbk) 
+	public String addNewSubBanKuai(String tdxbk,String newsubbk) 
 	{
-		
-		String sqlinsertstat = "INSERT INTO  产业链子板块列表(子板块名称,所属通达信板块) values ("
+		HashMap<String, String> cursubbks = this.getSubBanKuai(tdxbk);
+		int cursize = cursubbks.size();
+		if(cursubbks.containsValue(newsubbk)) 
+			return null;
+			
+		String subcylcode = tdxbk + String.valueOf(cursize+1);
+		String sqlinsertstat = "INSERT INTO  产业链子板块列表(子板块名称,所属通达信板块,子板块代码) values ("
 								+ "'" + newsubbk.trim() + "'" + ","
-								+ "'" + tdxbk.trim() + "'"
+								+ "'" + tdxbk.trim() + "'" + ","
+								+ "'" + subcylcode.trim() + "'"
 								+ ")"
 								;
 		System.out.println(sqlinsertstat);
 		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
-		return autoIncKeyFromApi;
+		return subcylcode;
 		
 	}
 	
@@ -2202,6 +2261,53 @@ public class BanKuaiDbOperation
             }  
         }  
 	}
+	
+	/*
+	 * 交易所定义的所有指数 用新的BkChanYeLianTreeNode存储
+	 */
+	public HashMap<String, BkChanYeLianTreeNode> getTDXAllZhiShuList2() 
+	{
+		HashMap<String,BkChanYeLianTreeNode> tmpsysbankuailiebiaoinfo = new HashMap<String,BkChanYeLianTreeNode> ();
+
+		String sqlquerystat = "SELECT *  FROM 通达信交易所指数列表 WHERE 板块ID IS NOT NULL"
+							   ;   
+		System.out.println(sqlquerystat);
+		CachedRowSetImpl rs = null;
+	    try {  
+	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	    	
+	        rs.last();  
+	        int rows = rs.getRow();  
+	        rs.first();  
+	        //int k = 0;  
+//	        while(rs.next()) {
+	        for(int j=0;j<rows;j++) {  
+	        	BkChanYeLianTreeNode tmpbk = new BkChanYeLianTreeNode (rs.getString("指数名称"),rs.getString("板块ID"));
+	        	tmpbk.setTongDaXingBanKuaiCode(rs.getString("板块ID") );
+	        	//tmpbk.setBanKuaiJiaoYiSuo(rs.getString("指数所属交易所"));
+	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块ID"), tmpbk);
+	            rs.next();
+	        }
+	        
+	    }catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    } finally {
+	    	if(rs != null)
+				try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    } 
+	    
+	    return tmpsysbankuailiebiaoinfo;
+	}
+
 	/*
 	 * 交易所定义的所有指数
 	 */
@@ -2308,8 +2414,7 @@ public class BanKuaiDbOperation
 		List<String> rmtservertable = Lists.newArrayList("通达信板块列表", "通达信交易所指数列表");
 		
 		
-			String sqlquerystat = null;
-			sqlquerystat = " show OPEN TABLES where In_use > 0" ;
+			String sqlquerystat =  " show OPEN TABLES where In_use > 0" ;
 			//sqlquerystat = "SHOW OPEN TABLES WHERE `Table` LIKE '%[a股]%' AND `Database` LIKE '[stockinfomanagementtest]' AND In_use > 0";		   
 			System.out.println(sqlquerystat);
 			sqlstatmap.put("mysql", sqlquerystat);
@@ -2345,6 +2450,334 @@ public class BanKuaiDbOperation
 		
 		
 		return tableunderupdated;
+	}
+	public String getTdxBanKuaiNameByCode(String tmpbkcode) 
+	{
+		String sqlquerystatfrombk     = "SELECT 板块名称  FROM 通达信板块列表             WHERE 板块ID = " + tmpbkcode;
+		String sqlquerystatfromzhishu = "SELECT 指数名称  FROM 通达信交易所指数列表   WHERE 板块ID = " + tmpbkcode;
+		
+		System.out.println(sqlquerystatfrombk);
+		String bkname = null ;
+		CachedRowSetImpl rs = null;
+	    try {  
+	    	rs = connectdb.sqlQueryStatExecute(sqlquerystatfrombk);
+	    	
+	        rs.last();  
+	        int rows = rs.getRow(); 
+	        if(rows  == 0) {
+	        	rs = connectdb.sqlQueryStatExecute(sqlquerystatfromzhishu);
+	        	rs.last();
+	        	rows = rs.getRow();
+	        }
+	        rs.first();
+	        if(rows>0)
+	        	bkname = rs.getString(1);
+	        
+	    }catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    } finally {
+	    	if(rs != null)
+				try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    } 
+	
+		
+		return bkname;
+	}
+	public boolean addBanKuaiNews (String bankuaiid,ChanYeLianNews newdetail)
+	{
+		int autoIncKeyFromApi = newdetail.getNewsId();
+		String title = newdetail.getNewsTitle();
+		Date newdate = newdetail.getGenerateDate();
+		String slackurl = newdetail.getNewsSlackUrl();
+		String keywords = newdetail.getKeyWords ();
+		
+		if( autoIncKeyFromApi == -1) { //说明是新的NEWS
+			//先update商业新闻表
+			String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,SLACK链接,录入日期,关联板块) values ("
+					+ "'" + title + "'" + ","
+					+ "'" + keywords + "'" + ","
+					+ "'" + slackurl  + "'" + ","
+					+ formateDateForDiffDatabase("mysql", sysconfig.formatDate( newdate) ) + ","
+					+ "'" +  bankuaiid + "|" + "'"
+					+ ")"
+					;
+			System.out.println(sqlinsertstat);
+			 autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
+		} else {
+			//如果板块id是不是已经在新闻的板块list里面了，已经加过了。
+			String  updatestat = "UPDATE 商业新闻 "
+								  + " SET 关联板块 = "
+								  + " CASE WHEN 关联板块 like '%" + bankuaiid + "%' THEN"
+								  + " CONCAT(关联板块,  ' ') " 
+								  + " ELSE " 
+								  + " CONCAT(关联板块,  '"+ bankuaiid + "|' )"
+								  +	" END" 
+								  + " WHERE ID=" +  autoIncKeyFromApi
+								  ;
+			System.out.println(updatestat);
+			connectdb.sqlUpdateStatExecute (updatestat);
+		}
+		
+		
+		//再把新闻id update到板块表或者指数表
+//		boolean inzhishutable = false;
+//		String checkstat = "SELECT COUNT(1) FROM 通达信交易所指数列表 WHERE 板块ID = '" + bankuaiid + "'";
+//		CachedRowSetImpl rs = null; 
+//	    try {  
+//	    	 rs = connectdb.sqlQueryStatExecute(checkstat);
+//	    	 while(rs.next()) {
+//	    		 int exists = rs.getInt("COUNT(1)");
+//		    	 if(exists == 1)
+//		    		 inzhishutable = true;
+//	    	 }
+//	    	 
+//	    }catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    } catch (SQLException e) {
+//	    	e.printStackTrace();
+//	    }catch(Exception e){
+//	    	e.printStackTrace();
+//	    }  finally {
+//	    	if(rs != null)
+//				try {
+//					rs.close();
+//					rs = null;
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//	    }
+//	    
+//	    String updatestat;
+//	    if(inzhishutable) 
+//	    	updatestat = "UPDATE 通达信交易所指数列表"  
+//	    				+ "  SET 相关新闻 ="
+//	    				+ " CASE WHEN 相关新闻 IS NULL THEN "
+//	    				+  "'" + autoIncKeyFromApi + "|'"
+//	    				+ "  ELSE "
+//	    				+ "  CONCAT(相关新闻," + "'" + autoIncKeyFromApi + "|')" 
+//	    				+ " END "
+//	    				+ " WHERE 板块ID='" +  bankuaiid.trim() + "'"
+//	    				;
+//	     else
+//	    	updatestat = "UPDATE 通达信板块列表"  
+//	    				+ "  SET 相关新闻 ="
+//	    				+ " CASE WHEN 相关新闻 IS NULL THEN "
+//	    				+  "'" + autoIncKeyFromApi + "|'"
+//	    				+ "  ELSE "
+//	    				+ "  CONCAT(相关新闻," + "'" + autoIncKeyFromApi + "|')" 
+//	    				+ " END "
+//	    				+ " WHERE 板块ID='" +  bankuaiid.trim() + "'"
+//	    				;
+//	    
+//		System.out.println(updatestat);
+//		connectdb.sqlUpdateStatExecute (updatestat);
+		
+		return true;
+	}
+
+	public void deleteBanKuaiNews(String myowncode, ChanYeLianNews aseltnews)
+	{
+		int newsid = aseltnews.getNewsId();
+		
+		if("ALL".equals(myowncode.toUpperCase())) { //删除该新闻
+			String deletestat = "DELETE  FROM 商业新闻 WHERE ID=" + newsid;
+			
+			System.out.println(deletestat);
+			connectdb.sqlUpdateStatExecute (deletestat);
+			
+//			updatestat = "UPDATE 通达信板块列表  SET 相关新闻 = REPLACE (相关新闻, '" + String.valueOf(newsid).trim() + "|', ' ' ) WHERE 板块ID='" + myowncode + "'";
+//			System.out.println(updatestat);
+//			connectdb.sqlUpdateStatExecute (updatestat);
+//			
+//			updatestat = "UPDATE 通达信交易所指数列表  SET 相关新闻 = REPLACE (相关新闻, '" + String.valueOf(newsid).trim() + "|', ' ' ) WHERE 板块ID='" + myowncode + "'";
+//			System.out.println(updatestat);
+//			connectdb.sqlUpdateStatExecute (updatestat);
+		} else { //删除在所有板块里的新闻
+			String updatestat = "UPDATE 商业新闻  SET 关联板块 = REPLACE (关联板块, '" + myowncode.trim() + "|', ' ' ) WHERE ID=" + newsid;
+			System.out.println(updatestat);
+			connectdb.sqlDeleteStatExecute(updatestat);
+			
+//			String  updatestat = "UPDATE 通达信板块列表 "
+//					  + " SET 相关新闻 = "
+//					  + " CASE WHEN 关联板块 like '%" + String.valueOf(newsid)+"|"  + "%' THEN"
+//					  + " CONCAT(关联板块,  ' ') " 
+//					  + " ELSE " 
+//					  + " CONCAT(关联板块,  '"+ bankuaiid + "|' )"
+//					  +	" END" 
+//					  + " WHERE ID=" +  autoIncKeyFromApi
+//					  ;
+//			System.out.println(updatestat);
+//			connectdb.sqlUpdateStatExecute (updatestat);
+			
+		}
+		
+		
+		
+	}
+	
+	public ArrayList<ChanYeLianNews> getBanKuaiRelatedNews(String bankuaiid) 
+	{
+		ArrayList<ChanYeLianNews> newslist = new ArrayList<ChanYeLianNews>();
+		if("ALL".equals(bankuaiid.toUpperCase()) ) {
+			String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 7 DAY"
+									;
+			CachedRowSetImpl rs = null; 
+		    try {  
+		    	System.out.println(sqlquerystat);
+		    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+		    	 
+		    	 while(rs.next()) {
+		    		 ChanYeLianNews cylnew = new ChanYeLianNews ();
+		    		 int newsid = rs.getInt("id");
+		    		 Date selectednew = rs.getDate("录入日期");
+		    		 String newtitle = rs.getString("新闻标题");
+		    		 String keywords = rs.getString("关键词");
+		    		 String slack = rs.getString("SLACK链接");
+		    		 String relatedbk = rs.getString("关联板块");
+
+		    		 cylnew.setNewsId(newsid);
+		    		 cylnew.setGenerateDate (selectednew);
+		    		 cylnew.setNewsTitle(newtitle);
+		    		 cylnew.setNewsSlackUrl(slack);
+		    		 cylnew.setKeyWords (keywords);
+		    		 cylnew.setNewsRelatedBanKuai(relatedbk);
+		    		 
+		    		 newslist.add(cylnew);
+		    	 }
+		    		  
+		    }catch(java.lang.NullPointerException e){ 
+		    	e.printStackTrace();
+		    } catch (SQLException e) {
+		    	e.printStackTrace();
+		    }catch(Exception e){
+		    	e.printStackTrace();
+		    }  finally {
+		    	if(rs != null)
+					try {
+						rs.close();
+						rs = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+		    }
+			
+			return newslist;
+		}
+		
+		//个股新闻part
+		String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 关联板块 like '%" + bankuaiid.trim()+"|"  + "%'";
+		CachedRowSetImpl rs = null;
+		try {
+			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+   		 	while(rs.next()) {
+	   		 	ChanYeLianNews cylnew = new ChanYeLianNews ();
+	   			 int newsid = rs.getInt("id");
+	   			 Date selectednew = rs.getDate("录入日期");
+		    		 String newtitle = rs.getString("新闻标题");
+		    		 String keywords = rs.getString("关键词");
+		    		 String slack = rs.getString("SLACK链接");
+		    		 
+		    		 cylnew.setNewsId(newsid);
+		    		 cylnew.setGenerateDate (selectednew);
+		    		 cylnew.setNewsTitle(newtitle);
+		    		 cylnew.setNewsSlackUrl(slack);
+		    		 cylnew.setKeyWords (keywords);
+		    		 
+		    		 newslist.add(cylnew);
+   		 	}
+		}catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    }  finally {
+	    	if(rs != null)
+				try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+		return newslist;
+		
+//		String sqlquerystat = "SELECT 相关新闻 FROM 通达信板块列表   WHERE 板块ID =  " + bankuaiid
+//							   + " UNION "
+//							   + "SELECT 相关新闻  FROM 通达信交易所指数列表   WHERE 板块ID =  " + bankuaiid
+//							   ;
+//		
+//		CachedRowSetImpl rs = null; 
+//	    try {
+//	    	List<String> tmpbknewslist = null;
+//	    	System.out.println(sqlquerystat);
+//	    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+//	    	 while(rs.next()) {
+//	    		 String tmpnewids = rs.getString("相关新闻");
+//	    		 tmpbknewslist = Splitter.on("|").omitEmptyStrings().splitToList(tmpnewids); //
+//	    	 }
+//	    	 
+//	    	 for(String newid:tmpbknewslist) {
+//	    		 ChanYeLianNews cylnew = new ChanYeLianNews ();
+//	    		 String sqlquerystat2 = "SELECT * FROM 商业新闻   WHERE ID = '" + newid.trim().substring(2, newid.trim().length()) + "'"; //个股新闻对应的ID是ID+ID号，因为后面替换时候防止出现ID号|重复的情况
+//	    		 rs = connectdb.sqlQueryStatExecute(sqlquerystat2);
+//	    		 while(rs.next()) {
+//	    			 int newsid = rs.getInt("id");
+//	    			 Date selectednew = rs.getDate("录入日期");
+//		    		 String newtitle = rs.getString("新闻标题");
+//		    		 String keywords = rs.getString("关键词");
+//		    		 String slack = rs.getString("SLACK链接");
+//		    		 
+//		    		 cylnew.setNewsId(newsid);
+//		    		 cylnew.setGenerateDate (selectednew);
+//		    		 cylnew.setNewsTitle(newtitle);
+//		    		 cylnew.setNewsSlackUrl(slack);
+//		    		 cylnew.setKeyWords (keywords);
+//		    		 
+//		    		 newslist.add(cylnew);
+//	    		 }
+//	    		 
+//	    	 }
+//	    }catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    } catch (SQLException e) {
+//	    	e.printStackTrace();
+//	    }catch(Exception e){
+//	    	e.printStackTrace();
+//	    }  finally {
+//	    	if(rs != null)
+//				try {
+//					rs.close();
+//					rs = null;
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//	    }
+//		
+//		return newslist;
+	}
+	
+	private String formateDateForDiffDatabase (String databasetype,String dbdate)
+	{
+		if(dbdate != null) {
+			switch(databasetype) {
+			case "access": return "#" + dbdate + "#";
+							
+			case "mysql":  return "\"" + dbdate + "\"";
+							
+			}
+		} else
+			return null;
+		return null;
 	}
 	
 

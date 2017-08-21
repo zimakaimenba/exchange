@@ -35,9 +35,13 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 		 Component returnValue = null;
 		 if(value !=null && value instanceof DefaultMutableTreeNode) {
 			 
-	         
-	         String bktreenodename = ((BkChanYeLianTreeNode)value).getUserObject().toString();
-//	         System.out.println("cellrenderer=" + bktreenodename);
+	         int nodetype = ((BkChanYeLianTreeNode)value).getNodeType();
+	         String bktreenodename;
+	         if(nodetype != BkChanYeLianTreeNode.BKGEGU)
+	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getUserObject().toString();
+	         else
+	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getNodeOwnCode() + ((BkChanYeLianTreeNode)value).getUserObject().toString();
+
 	         HashSet<String> parsefilestockset = ((BkChanYeLianTreeNode)value).getParseFileStockSet ();
 	         if(parsefilestockset !=null && parsefilestockset.size() !=0) {
 	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + parsefilestockset.size() + ")"  ); 

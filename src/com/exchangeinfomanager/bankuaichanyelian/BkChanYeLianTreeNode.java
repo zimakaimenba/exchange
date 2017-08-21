@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -16,38 +17,61 @@ import com.google.common.base.Splitter;
 public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 {
 
-    public BkChanYeLianTreeNode(String subject ){
+    public BkChanYeLianTreeNode(String subject, String myowncode1  ){
         super(subject);
+        this.myowncode = myowncode1;
         expanded = false;
-        parsefilestockset = new HashSet<String> ();
+        //parsefilestockset = new HashSet<String> ();
     }
 
+    private String suoshutdxbkzscode; //所属通达信板块指数代码
+	//private String bkname;
+	private ArrayList<String> hanyupingyin;
+	private String myowncode; //node自己的code,对通达信板块就是板块指数，和tdxbkzscode一致，对子板块，就是子板块code，对个股就是个股代码
+    
 	public static int  TDXBK = 4, SUBBK = 5, BKGEGU = 6;
     private int nodetype;
     private boolean expanded;
-    private String noteText = null;
-    private String hanyupingyin;
-	private String tdxbkzscode; //所属通达信板块指数代码
+   
+    //private String noteText = null;
+//    private HanYuPinYing hypy;
+	
 	private HashSet<String> parsefilestockset;
+	
+	private boolean isofficallyselected ;
 	private int inzdgzofficalcount =0;
 	private int inzdgzcandidatecount =0;
 	
 	//private TreePath pathintree;
-	private String bkchanyelian;
+
 	
 	private Date selectedtime;
-	private boolean isofficallyselected ;
+	
 	
 //    private boolean willbedeleted = false;
 //    private boolean isnewbk = false;
     
+	public void setTongDaXingBanKuaiCode (String tdxcode)
+	{
+		this.suoshutdxbkzscode = tdxcode;
+	}
+	public String getTongDaXingBanKuaiCode ()
+	{
+		return this.suoshutdxbkzscode ;
+	}
+//	public void setNodeOwnCode (String code) {
+//		this.myowncode = code;
+//	}
+	public String getNodeOwnCode () {
+		return this.myowncode;
+	}
 
     
-    @Override
-    public void setUserObject(Object userObject){
-        super.setUserObject(userObject);
-        //ginkgo.nodeChanged();
-    }
+//    @Override
+//    public void setUserObject(Object userObject){
+//        super.setUserObject(userObject);
+//        //ginkgo.nodeChanged();
+//    }
     public void setParseFileStockSet (HashSet<String> parsefilestockset2)
     {
     	if(this.nodetype == BkChanYeLianTreeNode.SUBBK ) { //对于子板块来说，set是增加的
@@ -57,7 +81,10 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
     }
     public HashSet<String> getParseFileStockSet ()
     {
-    	return this.parsefilestockset;
+    	if(this.parsefilestockset == null)
+    		return new HashSet<String> ();
+    	else
+    		return this.parsefilestockset;
     }
     public void setExpansion(boolean expanded){
         this.expanded = expanded;
@@ -74,29 +101,44 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
     
     public void setNodeType(int newType){
     	nodetype = newType;
+    	
+//    	if(nodetype == BkChanYeLianTreeNode.TDXBK)
+//    		this.myowncode = this.suoshutdxbkzscode;
+    	
+    	HanYuPinYing hypy = new HanYuPinYing ();
+    	hanyupingyin = new ArrayList<String> ();
+   		String codehypy = hypy.getBanKuaiNameOfPinYin(myowncode); 
+   		String namehypy = hypy.getBanKuaiNameOfPinYin(this.getUserObject().toString() );
+   		hanyupingyin.add(codehypy);
+   		hanyupingyin.add(namehypy);
+    	
     }
     
-    public void setNoteText(String text){
-        noteText = text;
-    }
-    public String getNoteText(){
-        return noteText;
-    }
-    public void setTDXBanKuaiZhiShuCode (String code)
+//    public void setNoteText(String text){
+//        noteText = text;
+//    }
+//    public String getNoteText(){
+//        return noteText;
+//    }
+//    public void setTDXBanKuaiZhiShuCode (String code)
+//    {
+//    	tdxbkzscode = code;
+//    }
+//    public String getTDXBanKuaiZhiShuCode ()
+//    {
+//    	return this.tdxbkzscode;
+//    }
+
+    public boolean checktHanYuPingYin (String nameorhypy)
     {
-    	tdxbkzscode = code;
-    }
-    public String getTDXBanKuaiZhiShuCode ()
-    {
-    	return this.tdxbkzscode;
-    }
-    public void setHanYuPingYin (String pingyin)
-    {
-    	this.hanyupingyin =  pingyin;
-    }
-    public String getHanYuPingYin ()
-    {
-    	return this.hanyupingyin;
+    	boolean found = false;
+    	for(String parthypy: this.hanyupingyin)
+    		if(nameorhypy.equals(parthypy)) {
+    			found = true;
+    			return found;
+    		}
+    	return found;
+    	
     }
     public void increaseZdgzOfficalCount ()
     {
@@ -158,8 +200,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 	 * @return the bkchanyelian
 	 */
 	public String getChanYeLian() {
-		
-		String bkchanyelian = "";
+		 String bkchanyelian = "";
 		 TreeNode[] nodepath = this.getPath();
 		 for(int i=1;i<nodepath.length;i++) {
 			 bkchanyelian = bkchanyelian + ((BkChanYeLianTreeNode)nodepath[i]).getUserObject().toString() + "->";
@@ -214,7 +255,8 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 		return date;
 	}
 	public void clearCurParseFileStockSet() {
-		this.parsefilestockset.clear();
+		if(this.parsefilestockset != null)
+			this.parsefilestockset.clear();
 	}
     
 }

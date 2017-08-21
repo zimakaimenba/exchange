@@ -503,6 +503,7 @@ public class StockDbOperations
 	public boolean updateStockNewInfoToDb(ASingleStockInfo stockbasicinfo) 
 	{
 		String dategainiants = null;
+		
 		String txtareainputgainiants = null;
 		String datequanshangpj = null;
 		String txtfldinputquanshangpj;

@@ -153,10 +153,7 @@ public class BkChanYeLianTree extends JTree
 		BkChanYeLianTreeNode root = (BkChanYeLianTreeNode) model.getRoot();
 		updateParseFileInfoToTree (root,stockinfile);
 		
-		
 		model.nodeStructureChanged(root);
-		
-
 	}
 	private void updateParseFileInfoToTree(BkChanYeLianTreeNode node, HashSet<String> stockinfile) 
 	{
@@ -181,7 +178,7 @@ public class BkChanYeLianTree extends JTree
 	    	}
 	    	
 	    	if( childNodetype == BkChanYeLianTreeNode.BKGEGU ) {
-	    		String gegustockcode = childNode.getUserObject().toString().substring(0, 6);
+	    		String gegustockcode = childNode.getNodeOwnCode();
 	    		Set<String> curbkallbkset = new HashSet<String> ();
 	    		curbkallbkset.add(gegustockcode);
 	    		SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset);
@@ -212,13 +209,13 @@ public class BkChanYeLianTree extends JTree
 
 	
 
-	public void addNewNode(int addnodetype, String subbkname, int direction)
+	public void addNewNode(int addnodetype, String subcode, String subname, int direction)
 	{
 		if (this.getSelectionCount() == 1) {
 
-			BkChanYeLianTreeNode newNode = new BkChanYeLianTreeNode(subbkname);
+			BkChanYeLianTreeNode newNode = new BkChanYeLianTreeNode(subname,subcode);
             newNode.setNodeType(addnodetype);
-            newNode.setHanYuPingYin(hypy.getBanKuaiNameOfPinYin(subbkname));
+            
             
             if (direction == BanKuaiAndChanYeLian.RIGHT){
             	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
@@ -265,8 +262,8 @@ public class BkChanYeLianTree extends JTree
 	
     private void nodeDnaFromParentToChild(BkChanYeLianTreeNode parent, BkChanYeLianTreeNode child) 
     {
-    	String suoshubkcode = parent.getTDXBanKuaiZhiShuCode();
-    	child.setTDXBanKuaiZhiShuCode(suoshubkcode);
+    	String suoshubkcode = parent.getTongDaXingBanKuaiCode();
+    	child.setTongDaXingBanKuaiCode(suoshubkcode);
 	}
 
 	private boolean checkNodeDuplicate(BkChanYeLianTreeNode parent,  BkChanYeLianTreeNode newNode) 
@@ -543,30 +540,7 @@ public class BkChanYeLianTree extends JTree
 		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
 	    while (e.hasMoreElements() ) {
 	    	BkChanYeLianTreeNode node = e.nextElement();
-	    	String bkHypy ;
-	    	try {
-	    		 bkHypy = node.getHanYuPingYin().toLowerCase();
-	    	} catch (java.lang.NullPointerException ex) {
-	    		//System.out.println(node.getUserObject().toString() + "汉语拼音是 " + node.getHanYuPingYin());
-	    		bkHypy = "";
-	    	}
-	    	String bkName = node.getUserObject().toString();
-	    	String bkcode;
-	    	try {
-	    		bkcode = node.getTDXBanKuaiZhiShuCode().toString();
-	    	} catch (java.lang.NullPointerException ex) {
-	    		System.out.println(node.getUserObject().toString() + "板块指数是 " + node.getTDXBanKuaiZhiShuCode());
-	    		bkcode = "";
-	    	}
-	    	
-	    	boolean found = false;
-	    	if(bkHypy.equalsIgnoreCase(bkinputed)) 
-	    		found = true;
-	    	else if(bkName.equalsIgnoreCase(bkinputed))
-	    		found = true;
-	    	else if(bkcode.equals(bkinputed))
-	    		found = true;
-	    	
+	    	Boolean found = node.checktHanYuPingYin(bkinputed);
 	        if (found) {
 	             bkpath = new TreePath(node.getPath());
 	             this.setSelectionPath(bkpath);

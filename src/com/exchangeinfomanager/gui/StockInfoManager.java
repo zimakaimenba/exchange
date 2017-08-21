@@ -1476,13 +1476,17 @@ public class StockInfoManager
 protected void startBanKuaiGuanLiDlg()
 {
 	if(bkgldialog == null ) {
-		BanKuaiGuanLi bkgldialog = new BanKuaiGuanLi(this,bkdbopt,stockdbopt,zdgzbkxmlhandler,cylxmlhandler);
+		bkgldialog = new BanKuaiGuanLi(this,bkdbopt,stockdbopt,zdgzbkxmlhandler,cylxmlhandler);
 		bkgldialog.setModal(false);
 		bkgldialog.startDialog ();
 		bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		bkgldialog.setVisible(true);
-	} else
-		bkgldialog.toFront();
+	} 
+	
+	if(!bkgldialog.isVisible() ) {
+		bkgldialog.setVisible(true);
+	 } 
+	bkgldialog.toFront();
 	
 	
 	

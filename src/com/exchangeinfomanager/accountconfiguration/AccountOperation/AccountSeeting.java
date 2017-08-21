@@ -1571,7 +1571,8 @@ class CashAccountsTableModel extends AbstractTableModel
 				boolean status = ((CashAccountBasic)accountslist.get(row)).isJiHuo();
 				((CashAccountBasic)accountslist.get(row)).setJihuo(!status);
 				return true;
-			} else return false;
+			} else 
+				return false;
 		}
 	    
 	    public CashAccountBasic getAccountsAt(int row) {
