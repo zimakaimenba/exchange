@@ -250,6 +250,30 @@ public class ChanYeLianXMLHandler2
 			}
 	    }
 	    
+	    SetView<String> intersectionbankuai = Sets.intersection(uniontdxbkindb, bkcylxmlset );
+	    for(String intsbkcode : intersectionbankuai) {
+	    	try {
+				String xpath = ".//BanKuai[@bkcode=\"" + intsbkcode + "\"]";
+				Element tmpnode = (Element)cylxmldoc.selectSingleNode(xpath);
+				String curnameinxml = tmpnode.attribute("bkname").getText();
+				
+				String bknameindb = null;
+				try {
+					bknameindb = tdxbk.get(intsbkcode).getUserObject().toString();
+				} catch (java.lang.NullPointerException ex) {
+					bknameindb = tdxzhishu.get(intsbkcode).getUserObject().toString();
+				}
+				
+				if(!bknameindb.equals(curnameinxml ) ) 
+					tmpnode.attribute("bkname").setText(bknameindb);
+				
+			} catch (java.lang.NullPointerException ex) {
+				
+			}
+	    	
+	    }
+	    
+	    
 	    OutputFormat format = OutputFormat.createPrettyPrint();
 		format.setEncoding("GBK");    // 指定XML编码        
 		//保存产业链XML
@@ -417,9 +441,14 @@ public class ChanYeLianXMLHandler2
 					   bkowncode = element.attributeValue("subbkcode");
 					    suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
 					   
-				   } else if(nodetype.equals("6") ) {//是自定义子板块
-					   bkname = element.attributeValue("geguname");
+				   } else if(nodetype.equals("6") ) {//是个股
+					  // bkname = element.attributeValue("geguname");
 					   bkowncode = element.attributeValue("gegucode");
+					   
+					   ASingleStockInfo tmpsinglestock = new ASingleStockInfo (bkowncode); 
+					   tmpsinglestock = stockopt.getSingleStockBasicInfo(tmpsinglestock);
+					   bkname = tmpsinglestock.getStockname();
+					   
 					   suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
 					   
 				   }
@@ -536,17 +565,16 @@ public class ChanYeLianXMLHandler2
 	            
 	            String tmpbkcode = treeChild.getNodeOwnCode() ;
 	            int nodetype = treeChild.getNodeType();
-	            //因为板块的名字经常会变，所以存到XML中需要从数据库中查出最新的名字
-	            String tmpname = null;
-	            if(nodetype == BkChanYeLianTreeNode.BKGEGU ) {
-	            	ASingleStockInfo tmpsinglestock = new ASingleStockInfo (tmpbkcode); 
-	            	tmpsinglestock = stockopt.getSingleStockBasicInfo(tmpsinglestock);
-	            	tmpname = tmpsinglestock.getStockname();
-	            } else if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
-	            	tmpname = bkopt.getTdxBanKuaiNameByCode (tmpbkcode);
-	            } else {
-	            	tmpname = treeChild.getUserObject().toString();
-	            }
+	            String tmpname = treeChild.getUserObject().toString();
+//	            if(nodetype == BkChanYeLianTreeNode.BKGEGU ) {
+//	            	ASingleStockInfo tmpsinglestock = new ASingleStockInfo (tmpbkcode); 
+//	            	tmpsinglestock = stockopt.getSingleStockBasicInfo(tmpsinglestock);
+//	            	tmpname = tmpsinglestock.getStockname();
+//	            } else if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
+//	            	tmpname = bkopt.getTdxBanKuaiNameByCode (tmpbkcode);
+//	            } else {
+//	            	tmpname = treeChild.getUserObject().toString();
+//	            }
 
 		        String status = String.valueOf(nodetype);
 		        Element cylchildele = null;
