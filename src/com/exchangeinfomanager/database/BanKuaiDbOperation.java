@@ -1728,8 +1728,8 @@ public class BanKuaiDbOperation
 		CachedRowSetImpl rsfg = null;
 		try {  
 			 rsfg = connectdb.sqlQueryStatExecute(sqlquerystat);
-			
-			rsfg.last();  
+
+			 rsfg.last();  
 			int rows = rsfg.getRow();  
 			rsfg.first();  
 			for(int j=0;j<rows;j++) {  
@@ -1740,14 +1740,16 @@ public class BanKuaiDbOperation
 			}
 			rsfg.close();
 		}catch(java.lang.NullPointerException e){ 
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println( "数据库连接为NULL!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}catch(Exception e){
 			e.printStackTrace();
 		} finally {
 			try {
-				rsfg.close();
+				if(rsfg != null)
+					rsfg.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -2500,7 +2502,7 @@ public class BanKuaiDbOperation
 		String slackurl = newdetail.getNewsSlackUrl();
 		String keywords = newdetail.getKeyWords ();
 		
-		if( autoIncKeyFromApi == -1) { //说明是新的NEWS
+		if( autoIncKeyFromApi == -1) { //说明是新的NEWS sysconfig.formatDate( actionday )
 			//先update商业新闻表
 			String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,SLACK链接,录入日期,关联板块) values ("
 					+ "'" + title + "'" + ","
@@ -2628,7 +2630,7 @@ public class BanKuaiDbOperation
 	{
 		ArrayList<ChanYeLianNews> newslist = new ArrayList<ChanYeLianNews>();
 		if("ALL".equals(bankuaiid.toUpperCase()) ) {
-			String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 7 DAY"
+			String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 7 DAY ORDER BY  录入日期 DESC"
 									;
 			CachedRowSetImpl rs = null; 
 		    try {  
@@ -2674,7 +2676,7 @@ public class BanKuaiDbOperation
 		}
 		
 		//个股新闻part
-		String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 关联板块 like '%" + bankuaiid.trim()+"|"  + "%'";
+		String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 关联板块 like '%" + bankuaiid.trim()+"|"  + "%' ORDER BY  录入日期 DESC";
 		CachedRowSetImpl rs = null;
 		try {
 			rs = connectdb.sqlQueryStatExecute(sqlquerystat);

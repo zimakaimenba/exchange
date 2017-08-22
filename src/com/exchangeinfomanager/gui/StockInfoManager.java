@@ -23,6 +23,7 @@ import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
 import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -388,14 +389,18 @@ public class StockInfoManager
 		btnSearch.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) 
 			{
-				initializeSearchDialog();
+				String stockcode = "";
+				try{
+					stockcode = cBxstockcode.getSelectedItem().toString();
+				} catch (java.lang.NullPointerException ex) {
+					ex.printStackTrace();
+				} 
+				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
+				int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加个股新闻", JOptionPane.OK_CANCEL_OPTION);
+				System.out.print(exchangeresult);
+				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
 				
-				if(!searchdialog.isVisible() ) {
-					 System.out.println("dialog not v");
-					 searchdialog.setVisible(true);
-				 } else
-					 System.out.println("dialog v");
-				searchdialog.toFront();
 			}
 		});
 		
@@ -2743,7 +2748,7 @@ protected void startBanKuaiGuanLiDlg()
 		btnXueQiu.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/Snow_flake_24px_1094255_easyicon.net.png")));
 		
 		btnSearch = new JButton("");
-		btnSearch.setToolTipText("\u67E5\u627E");
+		btnSearch.setToolTipText("\u4E2A\u80A1\u65B0\u95FB");
 		
 		btnSearch.setEnabled(false);
 		btnSearch.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/search_results_30.918276374443px_1194419_easyicon.net.png")));

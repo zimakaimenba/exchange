@@ -291,9 +291,9 @@ public class ConnectDataBase2
 		{
 			return localcon.getDatabaseName(string);
 		}
-		public String getRemoteDatabaseName(String string) 
+		public String getRemoteDatabaseName(String shortorfull) 
 		{
-			return remotcon.getDatabaseName(string);
+			return remotcon.getDatabaseName(shortorfull);
 		}
 		public String[] getTDXDataSysRelatedTablesNames ()
 		{

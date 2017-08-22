@@ -407,16 +407,17 @@ public class ChanYeLianXMLHandler2
 				   //System.out.println("id: " + element.attributeValue("Status")); //标记是板块还是个股
 			   
 				   String bkname = null, bkowncode = null; String suoshubkcode = null;
-				   if(element.attributeValue("Type").trim().equals("4") ) { //是通达信板块  
+				   String nodetype = element.attributeValue("Type").trim();
+				   if(nodetype.equals("4") ) { //是通达信板块  
 					   bkname = element.attributeValue("bkname");
 					   bkowncode = element.attributeValue("bkcode");
 					   suoshubkcode = bkowncode;
-				   } else if(element.attributeValue("Type").trim().equals("5") ) {//是自定义子板块
+				   } else if(nodetype.equals("5") ) {//是自定义子板块
 					   bkname = element.attributeValue("subbkname");
 					   bkowncode = element.attributeValue("subbkcode");
 					    suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
 					   
-				   } else if(element.attributeValue("Type").trim().equals("6") ) {//是自定义子板块
+				   } else if(nodetype.equals("6") ) {//是自定义子板块
 					   bkname = element.attributeValue("geguname");
 					   bkowncode = element.attributeValue("gegucode");
 					   suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
@@ -425,7 +426,7 @@ public class ChanYeLianXMLHandler2
 				   
 				   BkChanYeLianTreeNode parentsleaf  = new BkChanYeLianTreeNode( bkname,bkowncode);
 				   parentsleaf.setTongDaXingBanKuaiCode (suoshubkcode);
-				   parentsleaf.setNodeType( Integer.parseInt(element.attributeValue("Type") ) );
+				   parentsleaf.setNodeType( Integer.parseInt(nodetype ) );
 
 				   topNode.add(parentsleaf);
 
@@ -543,6 +544,8 @@ public class ChanYeLianXMLHandler2
 	            	tmpname = tmpsinglestock.getStockname();
 	            } else if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
 	            	tmpname = bkopt.getTdxBanKuaiNameByCode (tmpbkcode);
+	            } else {
+	            	tmpname = treeChild.getUserObject().toString();
 	            }
 
 		        String status = String.valueOf(nodetype);

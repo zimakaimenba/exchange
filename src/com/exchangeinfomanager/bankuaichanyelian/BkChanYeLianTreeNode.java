@@ -74,6 +74,8 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 //    }
     public void setParseFileStockSet (HashSet<String> parsefilestockset2)
     {
+    	if(this.parsefilestockset == null)
+    		this.parsefilestockset = new HashSet<String> ();
     	if(this.nodetype == BkChanYeLianTreeNode.SUBBK ) { //对于子板块来说，set是增加的
     		this.parsefilestockset.addAll(parsefilestockset2);
     	} else
