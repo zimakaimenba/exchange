@@ -35,9 +35,9 @@ public class ConnectDataBase2
 		 DataBaseConnection localcon;
 		 DataBaseConnection remotcon;
 		 SystemConfigration sysconfig = null;
-		 String[] rmtservertable = {"股票通达信交易所指数对应表","股票通达信概念板块对应表","股票通达信行业板块对应表","股票通达信风格板块对应表",
-				 					"通达信交易所指数列表","通达信交易所指数每日交易信息","通达信板块列表","通达信板块每日交易信息"};	
-//			Connection con;
+//		 String[] rmtservertable = {"股票通达信交易所指数对应表","股票通达信概念板块对应表","股票通达信行业板块对应表","股票通达信风格板块对应表",
+//				 					"通达信交易所指数列表","通达信交易所指数每日交易信息","通达信板块列表","通达信板块每日交易信息","产业链子板块列表"};	
+////			Connection con;
 //			Connection rmtcon;
 //			boolean rmtdatabaseconnected = false;
 //			//boolean databaseconnected = false;
@@ -99,17 +99,22 @@ public class ConnectDataBase2
 				}
         } 
 		
-		
+		private boolean checkExecuteOnServer (String sqlstatement)
+		{
+			List<String> rmtservertable = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(sysconfig.getTablesDataSelectedFromServer() );
+			for(String str:rmtservertable) {
+				if(sqlstatement.contains(str) )
+					return true;
+			}
+			
+			return false;
+		}
 		
 		public CachedRowSetImpl sqlQueryStatExecute(HashMap<String,String> sqlstatementmap )
 		{
 			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
 			String sqlstatement = sqlstatementmap.get("mysql");
-			boolean exectrmtcon = false;
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
-					exectrmtcon = true;
-			}
+			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 
 			DataBaseConnection tmpdbcon;
 			if(exectrmtcon == true) {
@@ -128,12 +133,7 @@ public class ConnectDataBase2
 		}
 		public CachedRowSetImpl sqlQueryStatExecute(String sqlstatement )
 		{
-			boolean exectrmtcon = false;
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) ) 
-					exectrmtcon = true;
-				
-			}
+			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 
 			DataBaseConnection tmpdbcon;
 			if(exectrmtcon == true) {
@@ -153,11 +153,8 @@ public class ConnectDataBase2
 		{
 			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
 			String sqlstatement = sqlstatementmap.get("mysql");
-			boolean exectrmtcon = false;
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
-					exectrmtcon = true;
-			}
+			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
+			
 			DataBaseConnection tmpdbcon;
 			if(exectrmtcon == true) {
 				tmpdbcon = remotcon;
@@ -174,11 +171,8 @@ public class ConnectDataBase2
 		}
 		public int sqlUpdateStatExecute(String sqlstatement)
 		{
-			boolean exectrmtcon = false;
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
-					exectrmtcon = true;
-			}
+			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
+			
 			DataBaseConnection tmpdbcon;
 			if(exectrmtcon == true) {
 				tmpdbcon = remotcon;
@@ -196,11 +190,8 @@ public class ConnectDataBase2
 		{
 			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
 			String sqlstatement = sqlstatementmap.get("mysql");
-			boolean exectrmtcon = false;
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
-					exectrmtcon = true;
-			}
+			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
+			
 			DataBaseConnection tmpdbcon;
 			if(exectrmtcon == true) {
 				tmpdbcon = remotcon;
@@ -218,11 +209,8 @@ public class ConnectDataBase2
 		}
 		public int sqlInsertStatExecute(String sqlstatement) 
 		{
-			boolean exectrmtcon = false;
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
-					exectrmtcon = true;
-			}
+			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
+			
 			DataBaseConnection tmpdbcon;
 			if(exectrmtcon == true) {
 				tmpdbcon = remotcon;
@@ -240,11 +228,8 @@ public class ConnectDataBase2
 		{
 			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
 			String sqlstatement = sqlstatementmap.get("mysql");
-			boolean exectrmtcon = false;
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
-					exectrmtcon = true;
-			}
+			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
+			
 			DataBaseConnection tmpdbcon;
 			if(exectrmtcon == true) {
 				tmpdbcon = remotcon;
@@ -261,11 +246,8 @@ public class ConnectDataBase2
 		}
 		public int sqlDeleteStatExecute(String sqlstatement) 
 		{
-			boolean exectrmtcon = false;
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
-					exectrmtcon = true;
-			}
+			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
+			
 			DataBaseConnection tmpdbcon;
 			if(exectrmtcon == true) {
 				tmpdbcon = remotcon;
@@ -295,10 +277,10 @@ public class ConnectDataBase2
 		{
 			return remotcon.getDatabaseName(shortorfull);
 		}
-		public String[] getTDXDataSysRelatedTablesNames ()
-		{
-			return rmtservertable;
-		}
+//		public String[] getTDXDataSysRelatedTablesNames ()
+//		{
+//			return rmtservertable;
+//		}
 
 }
 

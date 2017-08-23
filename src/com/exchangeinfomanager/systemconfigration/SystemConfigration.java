@@ -48,14 +48,15 @@ public class SystemConfigration
 		    return filePath.replace('\\', '/');
 	}
 	
-	String systeminstalledpath;
-	String tdxinstalledpath;
+	private String systeminstalledpath;
+	private String tdxinstalledpath;
 	private String curdatabasetype;
 	private CurDataBase curdbs; //本地数据库连接信息
 	private CurDataBase rmtcurdb; //远程数据库连接信息
 	private int tryingcount = 0; //系统如果出错，会重试3次，3次不成直接退出
 	private String bkparsestoredpath;
 	private int setSoftWareMode; //设定系统模式，有2种，基本数据和通达信同步数据。
+	private String datatablesfromserver;
 	public static int MODELSERVER=0, MODELCLIENT=1, MODELSERVERCLIENT=2;
 	
 	private void getSystemInfoFromXML() 
@@ -179,6 +180,10 @@ public class SystemConfigration
 				}
 			}
 			
+			//哪些数据从server读取
+			Element elermtdatatablefromserver = xmlroot.element("tablesfromserver");
+			this.datatablesfromserver = elermtdatatablefromserver.getText();
+			
 			try {
 				xmlfileinput.close();
 				tryingcount = 0;
@@ -231,6 +236,13 @@ public class SystemConfigration
 	 {
 		 return rmtcurdb;
 	 } 
+	 /*
+	  * 哪些数据从server表读取
+	  */
+	 public String getTablesDataSelectedFromServer ()
+	 {
+		 return this.datatablesfromserver;
+	 }
 	 /*
 	  * 
 	  */

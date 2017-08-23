@@ -59,6 +59,8 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
@@ -191,7 +193,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		tableZdgzBankDetails.setRowSelectionInterval(selectrowfordaleiinsubcyl,selectrowfordaleiinsubcyl);
 		BkChanYeLianTreeNode curselectnode = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(selectrowfordaleiinsubcyl);
 		if(curselectnode != null) {
-			currentselectedtdxbk = curselectnode.getTdxBk();
+//			currentselectedtdxbk = curselectnode.getTdxBk();
 			
 			((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 			tableCurZdgzbk.setRowSelectionInterval(selecteddaleirow,selecteddaleirow);
@@ -298,6 +300,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    	 String tdxbkcode = bknode.getTongDaXingBanKuaiCode();
 	    	 HashSet<String> stockinparsefile = bknode.getParseFileStockSet ();
 	         if(!tdxbk.equals(currentselectedtdxbk)) { //和当前的板块不一样，
+	        	 
 	  	       	//鼠标点击某个树，读出所属的通达信板块，在读出该板块的产业链子板块 
 	  	       	HashMap<String, String> tmpsubbk = bkdbopt.getSubBanKuai (tdxbkcode);
 	  	        ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).refresh(tmpsubbk);
@@ -306,7 +309,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	       
 	  	       	//读出该板块所有的个股
 	  	       	HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk);
-	  	       	
+	  	      
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tmpallbkge,stockinparsefile);
 	  	       	
@@ -1974,12 +1977,22 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	public void refresh  (HashMap<String,String> bkgegu,HashSet<String> stockcodeinparsefile2)
 	{
 		this.bkgegumap = bkgegu;
-		bkgeguname = new ArrayList<String> (bkgegu.keySet() );
-
-		Collator collator = Collator.getInstance(Locale.CHINESE); //用中文排序
- 		Collections.sort(bkgeguname,collator);
 		
  		this.stockcodeinparsefile = stockcodeinparsefile2;
+
+ 		
+ 		if(stockcodeinparsefile.size() >0 ) { //优先把parsefile里的个股显示在前面
+ 			Set<String> bkgegucodelist = bkgegu.keySet() ;
+ 	 		SetView<String> commonbkcode = Sets.intersection(bkgegucodelist, this.stockcodeinparsefile);
+ 	 		SetView<String> diffbkcode = Sets.difference(bkgegucodelist, this.stockcodeinparsefile);
+ 	 		
+ 	 		ArrayList<String> tmpbkgeguname = new ArrayList<String> (commonbkcode);
+ 	 		tmpbkgeguname.addAll(diffbkcode);
+ 	 		
+ 	 		bkgeguname = tmpbkgeguname;
+ 		} else
+ 			bkgeguname = new ArrayList<String> (bkgegu.keySet() );
+ 		
  		this.fireTableDataChanged();
 	}
 	public HashSet<String> getStockInParseFile ()
@@ -2006,14 +2019,14 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	    {
 	    	if(bkgegumap.isEmpty())
 	    		return null;
-	    	
+	    	String bkcode = bkgeguname.get(rowIndex);
 	    	Object value = "??";
 	    	switch (columnIndex) {
             case 0:
-                value = bkgeguname.get(rowIndex);
+                value = bkcode;
                 break;
             case 1:
-            	value = bkgegumap.get( bkgeguname.get(rowIndex) );
+            	value = bkgegumap.get( bkcode );
                 break;
 	    	}
 

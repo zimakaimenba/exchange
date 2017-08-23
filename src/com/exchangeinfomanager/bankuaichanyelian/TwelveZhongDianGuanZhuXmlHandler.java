@@ -83,7 +83,7 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	{
 		return hasXmlRevised;
 	}
-	public HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBanKuaiFromXmlAndCylTree (BkChanYeLianTree cyltree)
+	public HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBanKuaiFromXmlAndUpatedToCylTree (BkChanYeLianTree cyltree)
 	{
 		gzbkdetailmap = new HashMap<String,ArrayList<BkChanYeLianTreeNode>>  (); //重点关注的板块
 		
@@ -105,7 +105,7 @@ public class TwelveZhongDianGuanZhuXmlHandler
 					   officallyselt = false;
 				   } else 
 					   officallyselt = true;
-				   
+				   //
 				    BkChanYeLianTreeNode expectnode = cyltree.updateZdgzInfoToBkCylTreeNode(chanyelian, addedtime,officallyselt);
 				    tmpgzbksublist.add(expectnode);
 			   }
