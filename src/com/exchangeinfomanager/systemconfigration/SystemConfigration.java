@@ -30,7 +30,6 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
-import net.ginkgo.dom4jcopy.GinkgoNode;
 
 public class SystemConfigration 
 {
@@ -227,6 +226,31 @@ public class SystemConfigration
 	 public String getSystemDataBaseType ()
 	 {
 		 return this.curdatabasetype;
+	 }
+	 public String getTdxFoxProFileSource ()
+	 {
+//		 //"Provider=vfpoledb;Data Source=C:\\path\\to\\Data\\;Collating Sequence=general;";
+//		 //urlToDababasecrypt = "jdbc:ucanaccess://" + dbconnectstr + ";jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener";
+//		 CurDataBase foxprodbs = new CurDataBase ("FoxPro");
+//		 foxprodbs.setUser("sa");
+//		 foxprodbs.setPassWord("");
+////		 String dbconstr = "Provider=vfpoledb;Data Source="
+////				 			+ this.tdxinstalledpath + "T0002/hq_cache/base.dbf"
+////				 			+ ";Collating Sequence=general;"
+////				 			;
+//		 String dbconstr =
+//					"jdbc:odbc:Driver={Microsoft FoxPro VFP Driver (*.dbf)};" + 		//写法相对固定
+//					"UID=;"+
+//					"Deleted=Yes;"+
+//					"Null=Yes;"+
+//					"Collate=Machine;"+
+//					"BackgroundFetch=Yes;"+
+//					"Exclusive=No;"+
+//					"SourceType=DBF;"+     							//此处指定解析文件的后缀
+//					"SourceDB=" + this.tdxinstalledpath + "T0002/hq_cache/base.dbf"; 	//此处为dbf文件所在的目录
+//		 foxprodbs.setDataBaseConStr (dbconstr);
+		 
+		 return  this.tdxinstalledpath + "T0002/hq_cache/base.dbf";
 	 }
 	 public CurDataBase getCurrentDatabaseSource ()
 	 {
@@ -484,9 +508,17 @@ public class SystemConfigration
 		}
 		public Date formateStringToDate(String tmpdate) 
 		{
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			DateFormat format = null;
+			if(tmpdate.length()>8)
+				 format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			else if(tmpdate.length() == 10)
+				format = new SimpleDateFormat("yyyy-MM-dd");
+			else if(tmpdate.length() == 8)
+				format = new SimpleDateFormat("yyyyMMdd");
+			
 			Date date = null;
 			try {
+				System.out.println("Data need to be parsed is" + tmpdate);
 				date = format.parse(tmpdate);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block

@@ -24,7 +24,7 @@ import org.dom4j.DocumentException;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTreeNode;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
-import com.exchangeinfomanager.database.ConnectDataBase2;
+import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
 
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -82,7 +82,7 @@ public class BuyCheckListTreeDialog extends JDialog
 
 
 	//private AccountConfiguration accountsconfig;
-	private ConnectDataBase2 connectdb = null;
+	private ConnectDataBase connectdb = null;
 	private SystemConfigration sysconfig = null;
 	//private NetworkOperation networkoperation;
 	private String stockcode;
@@ -333,7 +333,7 @@ public class BuyCheckListTreeDialog extends JDialog
 	private void initializeDb() 
 	{
 		// TODO Auto-generated method stub
-		connectdb = ConnectDataBase2.getInstance();
+		connectdb = ConnectDataBase.getInstance();
 	}
 
 	private void initializeSysConfig()

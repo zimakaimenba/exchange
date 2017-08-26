@@ -1,17 +1,23 @@
 package com.exchangeinfomanager.database;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -29,11 +35,17 @@ import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
+
+import net.iryndin.jdbf.core.DbfMetadata;
+import net.iryndin.jdbf.core.DbfRecord;
+import net.iryndin.jdbf.reader.DbfReader;
 
 public class StockDbOperations 
 {
@@ -41,11 +53,11 @@ public class StockDbOperations
 	
 	public StockDbOperations() 
 	{
-		this.connectdb = ConnectDataBase2.getInstance();
+		this.connectdb = ConnectDataBase.getInstance();
 		this.sysconfig = SystemConfigration.getInstance();
 	}
 	
-	private ConnectDataBase2 connectdb;
+	private ConnectDataBase connectdb;
 	private SystemConfigration sysconfig ;
 	
 	
@@ -917,6 +929,187 @@ public class StockDbOperations
 		    
 		    return data;
 	}
+	
+	public File refreshStockJiBenMianInfoFromTdxFoxProFile ()
+	{
+		File tmpreportfolder = Files.createTempDir();
+		File tmprecordfile = new File(tmpreportfolder + "同步通达信指数基本面报告.tmp");
+		
+		Charset stringCharset = Charset.forName("Cp866");
+		String dbffile = sysconfig.getTdxFoxProFileSource();
+//        InputStream dbf = getClass().getClassLoader().getResourceAsStream(dbffile);
+        InputStream dbf = null;
+		try {
+			dbf = new FileInputStream(new File(dbffile) );
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+
+        DbfRecord rec;
+        try (DbfReader reader = new DbfReader(dbf)) {
+            DbfMetadata meta = reader.getMetadata();
+
+            System.out.println("Read DBF Metadata: " + meta);
+            int recCounter = 0;
+            while ( (rec = reader.read() ) != null) {
+                rec.setStringCharset(stringCharset);
+                System.out.println("Record is DELETED: " + rec.isDeleted());
+                System.out.println(rec.getRecordNumber());
+                System.out.println(rec.toMap());
+//        		{SC=0, GPDM=000001, GXRQ=20170811, ZGB=1717041.12, GJG=180199.00, FQRFRG=12292000.00, FRG=54769000.00, BG=0.00, HG=0.00, LTAG=1691799.00, ZGG=0.68, 
+//        		ZPG=null, ZZC=3092142080.0, LDZC=0.0, GDZC=7961000.0, WXZC=4636000.0, CQTZ=379179.0, LDFZ=0.0, CQFZ=0.0, ZBGJJ=56465000.0, JZC=211454000.0, 
+//        		ZYSY=54073000.0, ZYLY=0.0, QTLY=0.0, YYLY=40184000.0, TZSY=739000.0, BTSY=-128180000.0, YYWSZ=-107760000.0, SNSYTZ=0.0, LYZE=16432000.0, 
+//        		SHLY=12554000.0, JLY=12554000.0, WFPLY=73110000.0, TZMGJZ=11.150, DY=18, HY=1, ZBNB=6, SSDATE=19910403, MODIDATE=null, GDRS=null}
+
+                Map<String, Object> jbminfomap = rec.toMap();
+                String stockcode = jbminfomap.get("GPDM").toString();
+                String datavalueindb = jbminfomap.get("GXRQ").toString() ;
+                if( !(stockcode.startsWith("00") || stockcode.startsWith("30") || stockcode.startsWith("60") ) 
+                		|| stockcode.equals("000003") 
+                		|| datavalueindb.equals("0") )
+                	continue;
+
+                String lastupdatedate = formateDateForDiffDatabase("mysql", sysconfig.formatDate(  sysconfig.formateStringToDate(datavalueindb) ) );
+                double zgb = Double.parseDouble(jbminfomap.get("ZGB").toString());
+                double gjg  = Double.parseDouble(jbminfomap.get("GJG").toString());
+                double fqrfrg  = Double.parseDouble(jbminfomap.get("FQRFRG").toString());
+                double frg  = Double.parseDouble(jbminfomap.get("FRG").toString());
+                double bg  = Double.parseDouble(jbminfomap.get("BG").toString());
+                double hg  = Double.parseDouble(jbminfomap.get("HG").toString());
+                double ltag  = Double.parseDouble(jbminfomap.get("LTAG").toString());
+                double zgg  = Double.parseDouble(jbminfomap.get("ZGG").toString());
+                
+                String zpg = "' '";
+                if(jbminfomap.get("ZPG") != null)
+                	zpg  = jbminfomap.get("ZPG").toString(); 
+                double zzc  = Double.parseDouble(jbminfomap.get("ZZC").toString());
+                double ldzc  = Double.parseDouble(jbminfomap.get("LDZC").toString());
+                double gdzc  = Double.parseDouble(jbminfomap.get("GDZC").toString());
+                double wxzc  = Double.parseDouble(jbminfomap.get("WXZC").toString());
+                float cqtz  = Float.parseFloat(jbminfomap.get("CQTZ").toString());
+                double ldfz  = Double.parseDouble(jbminfomap.get("LDFZ").toString());
+                double cqfz  = Double.parseDouble(jbminfomap.get("CQFZ").toString());
+                double zbgjj  = Double.parseDouble(jbminfomap.get("ZBGJJ").toString());
+                double jzc  = Double.parseDouble(jbminfomap.get("JZC").toString());
+                
+                double zysy  = Double.parseDouble(jbminfomap.get("ZYSY").toString());
+                double zyly  = Double.parseDouble(jbminfomap.get("ZYLY").toString());
+                double qtly  = Double.parseDouble(jbminfomap.get("QTLY").toString());
+                double yyly  = Double.parseDouble(jbminfomap.get("YYLY").toString());
+                double tzsy  = Double.parseDouble(jbminfomap.get("TZSY").toString());
+                double btsy  = Double.parseDouble(jbminfomap.get("BTSY").toString());
+                double yywsz  = Double.parseDouble(jbminfomap.get("YYWSZ").toString());
+                double snsytz  = Double.parseDouble(jbminfomap.get("SNSYTZ").toString()); 
+                double lyze  = Double.parseDouble(jbminfomap.get("LYZE").toString());
+                
+                double shly  = Double.parseDouble(jbminfomap.get("SHLY").toString());
+                double jly  = Double.parseDouble(jbminfomap.get("JLY").toString());
+                double wfply  = Double.parseDouble(jbminfomap.get("WFPLY").toString());
+                double tzmgjz  = Double.parseDouble(jbminfomap.get("TZMGJZ").toString());
+                int dy = Integer.parseInt(jbminfomap.get("DY").toString() );
+                int hy = Integer.parseInt(jbminfomap.get("HY").toString() );
+                int zbnb = Integer.parseInt(jbminfomap.get("ZBNB").toString() );
+                
+                String sqlinsetstat = "INSERT INTO 股票通达信基本面信息对应表 (股票代码GPDM, 总股本ZGB,更新日期GXRQ, GJG,FQRFRG,法人股FRG,B股BG,H股HG,流通A股LTAG,每股收益ZGG,"
+                														+  "ZPG,总资产ZZC,流动资产LDZC,固定资产GDZC,无形资产WXZC,股东人数CQTZ,流动负债LDFZ,少数股权CQFZ,"
+                														+ "公积金ZBGJJ,净资产JZC,主营收益ZYSY,营业成本ZYLY,应收帐款QTLY,营业利润YYLY,投资收益TZSY,"
+                														+ "经营现金流BTSY,总现金流YYWSZ,存货SNSYTZ,利润总额LYZE,税后利润SHLY,净利润JLY,"
+                														+ "未分配利益WFPLY,净资产TZMGJZ,地域DY,行业HY,ZBNB) "
+                		              		+ "VALUES("
+                		              		+ "'" + stockcode + "'" +","
+                		              		+ zgb +","
+                		              		+ lastupdatedate +","
+                		              		+ gjg +","
+                		              		+ fqrfrg +","
+                		              		+ frg +","
+		                					+ bg +","
+		                					+ hg +","
+		                					 + ltag +","
+		                					 + zgg + ","
+		                					+ zpg +","
+		                					+ zzc +","
+		                					+ ldzc +","
+		                					+ gdzc +","
+		                					+ wxzc +","
+		                					+ cqtz +","
+		                					+ ldfz +","
+		                					+ cqfz +","
+		                					+ zbgjj +","
+		                					+ jzc +","
+		                					+ zysy +","
+		                					+ zyly +","
+		                					+ qtly +","
+		                					+ yyly +","
+		                					+ tzsy +","
+		                					+ btsy +","
+		                					+ yywsz +","
+		                					+ snsytz +","
+		                					+ lyze +","
+		                					+ shly +","
+		                					+ jly +","
+		                					+ wfply +","
+		                					+ tzmgjz +","
+		                					+ dy +","
+		                					+ hy +","
+		                					+ zbnb
+                		              		+ ")"
+                		              		+ " ON DUPLICATE KEY UPDATE "
+                        					+ " 总股本ZGB=" + zgb +","
+                        					+ " 更新日期GXRQ=" + lastupdatedate +","
+                        					+ " GJG=" + gjg +","
+                        					+ " FQRFRG=" + fqrfrg +","
+                        					+ " 法人股FRG=" + frg +","
+                        					+ " B股BG=" + bg +","
+                        					+ " H股HG=" + hg +","
+                        					+ " 流通A股LTAG=" + ltag +","
+                        					+ " 每股收益ZGG=" + zgg + ","
+                        					+ " ZPG=" + zpg +","
+                        					+ " 总资产ZZC=" + zzc +","
+                        					+ " 流动资产LDZC=" + ldzc +","
+                        					+ " 固定资产GDZC=" + gdzc +","
+                        					+ " 无形资产WXZC=" + wxzc +","
+                        					+ " 股东人数CQTZ=" + cqtz +","
+                        					+ " 流动负债LDFZ=" + ldfz +","
+                        					+ " 少数股权CQFZ=" + cqfz +","
+                        					+ " 公积金ZBGJJ=" + zbgjj +","
+                        					+ " 净资产JZC=" + jzc +","
+                        					+ " 主营收益ZYSY=" + zysy +","
+                        					+ " 营业成本ZYLY=" + zyly +","
+                        					+ " 应收帐款QTLY=" + qtly +","
+                        					+ " 营业利润YYLY=" + yyly +","
+                        					+ " 投资收益TZSY=" + tzsy +","
+                        					+ " 经营现金流BTSY=" + btsy +","
+                        					+ " 总现金流YYWSZ=" + yywsz +","
+                        					+ " 存货SNSYTZ=" + snsytz +","
+                        					+ " 利润总额LYZE=" + lyze +","
+                        					+ " 税后利润SHLY=" + shly +","
+                        					+ " 净利润JLY=" + jly +","
+                        					+ " 未分配利益WFPLY=" + wfply +","
+                        					+ " 净资产TZMGJZ=" + tzmgjz +","
+                        					+ " 地域DY=" + dy +","
+                        					+ " 行业HY=" + hy +","
+                        					+ " ZBNB=" + zbnb
+                        					; 
+              System.out.println(sqlinsetstat);
+              connectdb.sqlUpdateStatExecute(sqlinsetstat);
+                		              		
+                recCounter++;
+                //assertEquals(recCounter, rec.getRecordNumber());
+            }
+        } catch (IOException e1) {
+			
+			e1.printStackTrace();
+		} catch (ParseException e2) {
+			
+			e2.printStackTrace();
+		} catch (Exception e3) {
+			e3.printStackTrace();
+		}
+        
+        return tmprecordfile;
+		
+	}
+
 
 
 

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
@@ -19,11 +20,13 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -83,6 +86,9 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	{
 		return hasXmlRevised;
 	}
+	/*
+	 * 读取重点关注XML,把每个关注的产业链包装成产业链XML TREE的节点
+	 */
 	public HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBanKuaiFromXmlAndUpatedToCylTree (BkChanYeLianTree cyltree)
 	{
 		gzbkdetailmap = new HashMap<String,ArrayList<BkChanYeLianTreeNode>>  (); //重点关注的板块
@@ -91,12 +97,14 @@ public class TwelveZhongDianGuanZhuXmlHandler
 		 while (it.hasNext()) 
 		 {
 			   Element daleielement = (Element) it.next();
-			   ArrayList<BkChanYeLianTreeNode> tmpgzbksublist = new ArrayList<BkChanYeLianTreeNode> (); //重点关注的板块
+			   ArrayList<BkChanYeLianTreeNode> tmpgzbksublist = new ArrayList<BkChanYeLianTreeNode> (); //重点关注的板块list
 			   String daleiname = daleielement.attributeValue("daleiname");
 			   
 			   Iterator daleiit = daleielement.elementIterator();
 			   while(daleiit.hasNext()) {
 				   Element iteele = (Element)daleiit.next();
+				   
+				   //String suoshutdxbkcode = iteele.attributeValue("tdxbkcode");
 				   
 				   String chanyelian = iteele.getText() ;
 				   String addedtime = iteele.attributeValue("addedTime") ;
@@ -107,48 +115,45 @@ public class TwelveZhongDianGuanZhuXmlHandler
 					   officallyselt = true;
 				   //
 				    BkChanYeLianTreeNode expectnode = cyltree.updateZdgzInfoToBkCylTreeNode(chanyelian, addedtime,officallyselt);
-				    tmpgzbksublist.add(expectnode);
+				    if(expectnode != null)
+				    	tmpgzbksublist.add(expectnode);
+				    else { //没有找到相关的node，说明这个重点关注可能在产业链XML里面已经删除了，那在这里也应该在XML里面删除
+				    	removeChanYeLianFromXml (daleiname,chanyelian);
+				    	hasXmlRevised = true;
+				    }
 			   }
 			   gzbkdetailmap.put(daleiname, tmpgzbksublist);
 		 }
 		 
 		 return gzbkdetailmap;
 	}
+	/*
+	 * 从重点关注中删除在产业链XML中已经不存在的重点关注，当日直接删除好么？这需要考虑，目前采用直接删除
+	 */
+	private void removeChanYeLianFromXml(String daleiname, String chanyelian) 
+	{
+		List<String> tmpcyltreepathlist =  Splitter.on("->").trimResults().omitEmptyStrings().splitToList(chanyelian);  
+		String bkname = tmpcyltreepathlist.get(0);
+		
+		try {
+			String xpath = ".//DaLeiBanKuai[@daleiname=\""+ daleiname + "\"]/Item[@tdxbk='" +  bkname + "\']";
+			@SuppressWarnings("unchecked")
+			List<Node> tmpnodegg = document.selectNodes(xpath);
+			for(Node singlenode:tmpnodegg) {
+				String nodecyl = singlenode.getText();
+				if(chanyelian.equals(nodecyl))
+					xmlroot.remove(singlenode);
+			}
+			System.out.println("重点关注XML中删除" + chanyelian);
+		} catch (java.lang.NullPointerException ex) {
+		}
+		
+	}
 	public  HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBkDetail()
 	{
 		return gzbkdetailmap;
 	}
-//	private  void getZdgzbkXml()
-//	{
-//		 Iterator it = xmlroot.elementIterator();
-//		 while (it.hasNext()) 
-//		 {
-//			   Element daleielement = (Element) it.next();
-//			   ArrayList<GuanZhuBanKuaiInfo> tmpdllist = new ArrayList<GuanZhuBanKuaiInfo> ();
-//			   String daleiname = daleielement.attributeValue("daleiname");
-//			   
-//			   Iterator daleiit = daleielement.elementIterator();
-//			   while(daleiit.hasNext()) {
-//				   Element iteele = (Element)daleiit.next();
-//				   GuanZhuBanKuaiInfo tmpgzbkinfo = new GuanZhuBanKuaiInfo ();
-//				   tmpgzbkinfo.setTdxbk(iteele.attributeValue("tdxbk"));
-//				   tmpgzbkinfo.setBkchanyelian(iteele.getText() );
-//				   tmpgzbkinfo.setSelectedtime(iteele.attributeValue("addedTime") );
-//				   if(iteele.attributeValue("officallyselected") == null || iteele.attributeValue("officallyselected").toLowerCase().equals("false")) {
-//					   tmpgzbkinfo.setOfficallySelected(false);
-//				   } else 
-//					   tmpgzbkinfo.setOfficallySelected(true);
-//				   
-//				   tmpdllist.add(tmpgzbkinfo);
-//			   }
-//			   
-//			   gzbkmap.put(daleiname, tmpdllist);
-//		}
-//	}
-//	public HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> getZhongDianGuanZhuBanKuai () 
-//	{
-//		return gzbkmap;
-//	}
+
 	/*
 	 * 增加某个大类关注的子板块
 	 */
@@ -202,12 +207,14 @@ public class TwelveZhongDianGuanZhuXmlHandler
         	ArrayList<BkChanYeLianTreeNode> tmpsubcyllist = gzbkdetailmap.get(dastr);
         	for(BkChanYeLianTreeNode tmpgzbkifno :tmpsubcyllist) {
         		String tdxbk = tmpgzbkifno.getTdxBk();
+        		String tdxbkcode = tmpgzbkifno.getTongDaXingBanKuaiCode();
         		String subcyl = tmpgzbkifno.getChanYeLian();
         		String addedtime = tmpgzbkifno.getSelectedtime();
         		String offselted = String.valueOf(tmpgzbkifno.isOfficallySelected() ).toLowerCase();
         		
         		Element subcylele = bkele.addElement("Item");
         		subcylele.addAttribute("tdxbk", tdxbk);
+        		subcylele.addAttribute("tdxbkcode", tdxbkcode);
        			subcylele.setText(subcyl); //后面多一个 -> ，如何删除还要考虑。直接sub会导致下次载入后，又再删一次
         		subcylele.addAttribute("addedTime", addedtime);
         		subcylele.addAttribute("officallyselected",offselted);

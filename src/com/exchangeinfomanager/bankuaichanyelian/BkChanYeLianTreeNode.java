@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.swing.tree.*;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 
 
 
@@ -104,9 +105,6 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
     public void setNodeType(int newType){
     	nodetype = newType;
     	
-//    	if(nodetype == BkChanYeLianTreeNode.TDXBK)
-//    		this.myowncode = this.suoshutdxbkzscode;
-    	
     	HanYuPinYing hypy = new HanYuPinYing ();
     	hanyupingyin = new ArrayList<String> ();
    		String codehypy = hypy.getBanKuaiNameOfPinYin(myowncode); 
@@ -133,12 +131,20 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 
     public boolean checktHanYuPingYin (String nameorhypy)
     {
+    	if(Strings.isNullOrEmpty(nameorhypy) )
+    		return false;
     	boolean found = false;
-    	for(String parthypy: this.hanyupingyin)
-    		if(nameorhypy.equals(parthypy)) {
-    			found = true;
-    			return found;
-    		}
+
+    	try {
+    		for(String parthypy: this.hanyupingyin)
+        		if(parthypy.equals(nameorhypy)) {
+        			found = true;
+        			return found;
+        		}
+    	} catch (java.lang.NullPointerException ex) {
+        	System.out.println(this.getUserObject().toString()+ "∆¥“Ù «NULL" );
+    	}
+    	
     	return found;
     	
     }

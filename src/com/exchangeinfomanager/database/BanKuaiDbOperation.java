@@ -65,7 +65,6 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.sun.rowset.CachedRowSetImpl;
 
-import net.ginkgo.dom4jcopy.GinkgoNode;
 
 public class BanKuaiDbOperation 
 {
@@ -73,30 +72,18 @@ public class BanKuaiDbOperation
 	{
 		initializeDb ();
 		initialzieSysconf ();
-//		bankuaichanyelianxml = sysconfig.getBanKuaiChanYeLianXml ();
-//		geguchanyelianxml = sysconfig.getGeGuChanYeLianXmlFile ();
 		twelvezdgzxmlname = sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile();
 
 	}
 	
-	private  ConnectDataBase2 connectdb;
+	private  ConnectDataBase connectdb;
 	private  SystemConfigration sysconfig;
-//	private String bankuaichanyelianxml;
-//	private String geguchanyelianxml;
 	private String twelvezdgzxmlname;
-
-//	private Document cylxmldoc;
-//	private Element cylxmlroot;
-//	private Document gegucylxmldoc;
-//	private Element gegucylxmlroot;
-//	private Document twelvezdgzxmldoc;
-//	private Element twelvezdgzxmlroot;
-	
 	
 
 	private void initializeDb() 
 	{
-		connectdb = ConnectDataBase2.getInstance();
+		connectdb = ConnectDataBase.getInstance();
 	}
 	private void initialzieSysconf ()
 	{
@@ -105,125 +92,15 @@ public class BanKuaiDbOperation
 	
 	
 	/*
-	 * 控制 同步通达信相关的信息，并反应到产业链XML里。  导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
+	 * 控制 同步通达信相关的信息  导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
 	 */
 	public File refreshTDXSystemBanKuai ()
 	{
 		File tmpreportfolder = Files.createTempDir(); 
 		File tmprecordfile = new File(tmpreportfolder + "同步通达信系统板块报告.txt");
-//		
-//		 //准备产业链XML文件
-//		File sysbkconfigfile = new File(bankuaichanyelianxml );
-//		if(!sysbkconfigfile.exists()) { //不存在，创建该文件	
-//			try {
-//				sysbkconfigfile.createNewFile();
-//				System.out.println(bankuaichanyelianxml + "不存在，已经创建");
-//			} catch (IOException e) {
-//				System.out.println(bankuaichanyelianxml + "不存在，创建失败！");
-//			}
-//		}
-//		FileInputStream sysbkxmlfileinput = null;
-//		try {
-//			sysbkxmlfileinput = new FileInputStream(sysbkconfigfile);
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//		try {
-//			SAXReader reader = new SAXReader();
-//			cylxmldoc = reader.read(sysbkxmlfileinput);
-//			cylxmlroot = cylxmldoc.getRootElement();
-//		} catch (DocumentException e) {
-//			System.out.println(bankuaichanyelianxml+ "存在错误");
-//			e.printStackTrace();
-//			cylxmldoc = DocumentFactory.getInstance().createDocument();
-//			cylxmlroot = cylxmldoc.addElement("JTree");//添加文档根
-//		}
-//		
-//		 //准备个股产业链XML文件
-//		File gegucylconfigfile = new File(geguchanyelianxml );
-//		if(!gegucylconfigfile.exists()) { //不存在，创建该文件	
-//			try {
-//				gegucylconfigfile.createNewFile();
-//				System.out.println(geguchanyelianxml + "不存在，已经创建");
-//			} catch (IOException e) {
-//				System.out.println(geguchanyelianxml + "不存在，创建失败！");
-//			}
-//		}
-//		FileInputStream ggcylxmlfileinput = null;
-//		try {
-//			ggcylxmlfileinput = new FileInputStream(gegucylconfigfile);
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//		try {
-//			SAXReader reader = new SAXReader();
-//			gegucylxmldoc = reader.read(ggcylxmlfileinput);
-//			gegucylxmlroot = gegucylxmldoc.getRootElement();
-//		} catch (DocumentException e) {
-//			System.out.println(geguchanyelianxml+ "存在错误");
-//			e.printStackTrace();
-//			gegucylxmldoc = DocumentFactory.getInstance().createDocument();
-//			gegucylxmlroot = gegucylxmldoc.addElement("geguchanyelian");//添加文档根
-//		}
-//
-//		//准备12大重点关注板块XML
-//		File twelvezdgzfile = new File(twelvezdgzxmlname );
-//		if(!twelvezdgzfile.exists()) { //不存在，创建该文件	
-//			try {
-//				twelvezdgzfile.createNewFile();
-//				System.out.println(twelvezdgzxmlname + "不存在，已经创建");
-//			} catch (IOException e) {
-//				System.out.println(twelvezdgzxmlname + "不存在，创建失败！");
-//			}
-//		}
-//		FileInputStream twelvezdgzfileinput = null;
-//		try {
-//			twelvezdgzfileinput = new FileInputStream(twelvezdgzfile);
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//		try {
-//			SAXReader reader = new SAXReader();
-//			twelvezdgzxmldoc = reader.read(twelvezdgzfileinput);
-//			twelvezdgzxmlroot = twelvezdgzxmldoc.getRootElement();
-//		} catch (DocumentException e) {
-//			System.out.println(twelvezdgzxmlname+ "存在错误");
-//			e.printStackTrace();
-//			twelvezdgzxmldoc = DocumentFactory.getInstance().createDocument();
-//			twelvezdgzxmlroot = twelvezdgzxmldoc.addElement("ZhongDianGuanZhuanBanKuaiDetail");//添加文档根
-//		}
-//		
-		
+
 		//更新通达信系统所有板块信息，在更新中，把新的存入数据库，加入XML， 旧的从XML和数据库删除
 		this.refreshTDXAllBanKuaiToSystem(tmprecordfile);
-		
-//		OutputFormat format = OutputFormat.createPrettyPrint();
-//		format.setEncoding("GBK");    // 指定XML编码        
-//		//保存产业链XML
-//		try {
-//			XMLWriter writer = new XMLWriter(new FileOutputStream(bankuaichanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-//				writer.write(cylxmldoc); //输出到文件  
-//				//writer.flush();
-//				writer.close();
-//		} catch (IOException e) {
-//				e.printStackTrace();
-//		}
-//		try {
-//			XMLWriter writer = new XMLWriter(new FileOutputStream(geguchanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-//				writer.write(gegucylxmldoc); //输出到文件  
-//				//writer.flush();
-//				writer.close();
-//		} catch (IOException e) {
-//				e.printStackTrace();
-//		}
-//		try {
-//			XMLWriter writer = new XMLWriter(new FileOutputStream(twelvezdgzxmlname),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-//				writer.write(twelvezdgzxmldoc); //输出到文件  
-//				//writer.flush();
-//				writer.close();
-//		} catch (IOException e) {
-//				e.printStackTrace();
-//		}
 
 		this.refreshTDXFengGeBanKuaiToGeGu(tmprecordfile);
 		this.refreshTDXGaiNianBanKuaiToGeGu(tmprecordfile);
@@ -1311,16 +1188,6 @@ public class BanKuaiDbOperation
 			System.out.println(sqlinsertstat);
 			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 
-//			//在XML 中加入新的板块
-//			String xpathnew = ".//Node[@Subject=\"" + newbk + "\"]";
-//			Node tmpnode = cylxmldoc.selectSingleNode(xpathnew);
-//			if(tmpnode == null) {
-//				Element newele = cylxmlroot.addElement("Node"); //在XML 中加入新的板块
-//				newele.addAttribute("Subject", newbk);
-//				newele.addAttribute("Status", "4");
-//				System.out.println("XML中加入" + newbk);
-//			}
-
 			try {
 				Files.append(newbk.trim() + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 			} catch (IOException e) {
@@ -1377,40 +1244,11 @@ public class BanKuaiDbOperation
 					;
 			System.out.println(sqldeletetstat);
 			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-			
-//			//从产业链XML中删除该板块
-//			try {
-//				String xpath = ".//Node[@Subject=\"" + oldbk + "\"]";
-//				//String xpath = ".//" + oldbk  ;
-//				Node tmpnode = cylxmldoc.selectSingleNode(xpath);
-//				cylxmlroot.remove(tmpnode);
-//				//xmldoc.remove(tmpnode);
-//				System.out.println("XML中删除" + oldbk);
-//			} catch (java.lang.NullPointerException ex) {
-//				
-//			}
-//			
-//			//从个股产业链XML中删除该板块
-//			try {
-//				String xpath = ".//gegu/item[@bankuai=\"" + oldbk + "\"]";
-//				//String xpath = ".//" + oldbk  ;
-//				Node tmpnodegg = gegucylxmldoc.selectSingleNode(xpath);
-//				gegucylxmlroot.remove(tmpnodegg);
-//				//xmldoc.remove(tmpnode);
-//				System.out.println("XML中删除" + oldbk);
-//			} catch (java.lang.NullPointerException ex) {
-//			}
-//			
-//			//从重点关注XML中删除该板块
-//			try {
-//				String xpath = ".//DaLeiBanKuai/Item[@tdxbk=\"" + oldbk + "\"]";
-//				Node tmpnodegg = gegucylxmldoc.selectSingleNode(xpath);
-//				gegucylxmlroot.remove(tmpnodegg);
-//				System.out.println("XML中删除" + oldbk);
-//			} catch (java.lang.NullPointerException ex) {
-//			}
         }
-   
+        
+        //对于没有变化的板块，要检查板块名称是否有变化
+        SetView<String> intersectionbankuai = Sets.intersection(curdaleidetaillistset, tmpsysbkset );
+        //其他代码目前还没有写，因为板块代码名称改变的情况并不多见，等发现有再开发
 		return true;
 	}
 
@@ -1692,37 +1530,74 @@ public class BanKuaiDbOperation
 	/*
 	 * 找出某通达信板块的所有行业/概念/风格个股
 	 */
-	public HashMap<String,String> getTDXBanKuaiGeGuOfHyGnFg(String currentbk)
+	public HashMap<String,String> getTDXBanKuaiGeGuOfHyGnFg(String currentbk,String currentbkcode)
 	{
-		String sqlquerystat = "SELECT hy.股票代码, agu.股票名称" 
-				+ " FROM 股票通达信行业板块对应表  AS hy, A股 AS agu"
-				+ " WHERE  hy.行业板块= " + "'" + currentbk + "'" 
-				+ " AND hy.股票代码  = agu.股票代码"
+		//如果传来的板块是地域板块，要到股票通达信基本面信息对应表查找
+				String diyusqlquerystat = "SELECT count(*)  FROM 通达信板块列表 WHERE 板块id = '" + currentbkcode +"' and CAST(对应TDXSWID AS signed) >0";
+				System.out.println(diyusqlquerystat);
+				CachedRowSetImpl rsdy = null;
+				int dy = -1;
+				try {  
+					 rsdy = connectdb.sqlQueryStatExecute(diyusqlquerystat);
+					 while(rsdy.next()) {
+						 dy = rsdy.getInt(1);
+						 System.out.println(dy);
+					 }
+				}catch(java.lang.NullPointerException e){ 
+					System.out.println( "数据库连接为NULL!");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}catch(Exception e){
+					e.printStackTrace();
+				} finally {
+					try {
+						if(rsdy != null)
+							rsdy.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					rsdy = null;
+				}
 				
-				+ " UNION "
-				
-				+ "SELECT gn.股票代码, agu.股票名称" 
-				+ " FROM 股票通达信概念板块对应表  AS gn, A股 AS agu"
-				+ " WHERE  gn.概念板块= " + "'" + currentbk + "'" 
-				+ " AND gn.股票代码  = agu.股票代码"
-				
-				+ " UNION "
-				
-				+ "SELECT fg.股票代码, agu.股票名称" 
-				+ " FROM 股票通达信风格板块对应表  AS fg,  A股  AS agu"
-				+ " WHERE  fg.风格板块= " + "'" + currentbk + "'" 
-				+ " AND fg.股票代码  = agu.股票代码"
-				
-				+ " UNION "
+				String sqlquerystat = null;
+				 if(dy == 1 ) {
+					 sqlquerystat = "SELECT tdxjbm.股票代码GPDM AS 股票代码, agu.股票名称" 
+								+ " FROM 股票通达信基本面信息对应表  AS tdxjbm, A股 AS agu, 通达信板块列表 AS tdxbk"
+								+ " WHERE  tdxbk.板块ID= " + "'" + currentbkcode + "'" 
+								+ " AND tdxbk.对应TDXSWID = tdxjbm.地域DY"
+								+ " AND tdxjbm.股票代码GPDM  = agu.股票代码"
+								;
+				 } else {
+					 sqlquerystat = "SELECT hy.股票代码, agu.股票名称" 
+								+ " FROM 股票通达信行业板块对应表  AS hy, A股 AS agu"
+								+ " WHERE  hy.行业板块= " + "'" + currentbk + "'" 
+								+ " AND hy.股票代码  = agu.股票代码"
+								
+								+ " UNION "
+								
+								+ "SELECT gn.股票代码, agu.股票名称" 
+								+ " FROM 股票通达信概念板块对应表  AS gn, A股 AS agu"
+								+ " WHERE  gn.概念板块= " + "'" + currentbk + "'" 
+								+ " AND gn.股票代码  = agu.股票代码"
+								
+								+ " UNION "
+								
+								+ "SELECT fg.股票代码, agu.股票名称" 
+								+ " FROM 股票通达信风格板块对应表  AS fg,  A股  AS agu"
+								+ " WHERE  fg.风格板块= " + "'" + currentbk + "'" 
+								+ " AND fg.股票代码  = agu.股票代码"
+								
+								+ " UNION "
 
-				+ "SELECT zs.股票代码, agu.股票名称" 
-				+ " FROM 股票通达信交易所指数对应表  AS zs,  A股  AS agu"
-				+ " WHERE  zs.指数板块= " + "'" + currentbk + "'" 
-				+ " AND zs.股票代码  = agu.股票代码"
+								+ "SELECT zs.股票代码, agu.股票名称" 
+								+ " FROM 股票通达信交易所指数对应表  AS zs,  A股  AS agu"
+								+ " WHERE  zs.指数板块= " + "'" + currentbk + "'" 
+								+ " AND zs.股票代码  = agu.股票代码"
+								
+								+ " ORDER BY 股票代码,股票名称 "
+								;
+				 }
 				
-				+ " ORDER BY 股票代码,股票名称 "
-				;
-		
 		System.out.println(sqlquerystat);
 		HashMap<String,String> tmpgnset = new HashMap<String,String>();
 		CachedRowSetImpl rsfg = null;
@@ -1733,8 +1608,8 @@ public class BanKuaiDbOperation
 			int rows = rsfg.getRow();  
 			rsfg.first();  
 			for(int j=0;j<rows;j++) {  
-				String tmpstockcode = rsfg.getString("股票代码");
-				String tmpstockname = rsfg.getString("股票名称");
+				String tmpstockcode = rsfg.getString(1); //"股票代码"
+				String tmpstockname = rsfg.getString("股票名称"); //"股票名称"
 				tmpgnset.put(tmpstockcode,tmpstockname);
 				rsfg.next();
 			}
@@ -1755,6 +1630,27 @@ public class BanKuaiDbOperation
 			}
 			rsfg = null;
 		}
+		
+		
+
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+//		SELECT CASE WHEN ( (select   count(*)  from 通达信板块列表 where 板块id = '880201' and CAST(对应TDXSWID AS signed) >0 ) >0)
+//		THEN 
+//			SELECT * FROM  通达信板块列表 where 板块id = '880202'
+//		ELSE 
+//			SELECT * FROM  通达信板块列表 where 板块id = '880203'
+//		END
 		
 		return tmpgnset;
 	}

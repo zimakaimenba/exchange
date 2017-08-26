@@ -19,14 +19,12 @@ import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
 import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.ChanYeLianXMLHandler;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.google.common.collect.Ordering;
 
 //import net.ginkgo.copy.Ginkgo2;
-import net.ginkgo.dom4jcopy.Ginkgo2;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.Collator;
@@ -63,18 +61,18 @@ public class BanKuaiGuanLi extends JDialog
 	{
 
 		this.bkdbopt = bkdbopt2;
-		this.stockdbopt = stockdbopt2;
-		this.cylxmlhandler = cylxmlhandler2;
-		this.zdgzbkxmlhandler = zdgzbkxmlhandler2;
+//		this.stockdbopt = stockdbopt2;
+//		this.cylxmlhandler = cylxmlhandler2;
+//		this.zdgzbkxmlhandler = zdgzbkxmlhandler2;
 		this.stockInfoManager = stockInfoManager2;
 		//startDialog ();
 	}
 	
-	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
+//	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
 	private StockInfoManager stockInfoManager;	
 	private BanKuaiDbOperation bkdbopt;
-	private StockDbOperations stockdbopt;
-	private ChanYeLianXMLHandler2 cylxmlhandler;
+//	private StockDbOperations stockdbopt;
+//	private ChanYeLianXMLHandler2 cylxmlhandler;
 
 
 	public void startDialog ()
@@ -120,7 +118,7 @@ public class BanKuaiGuanLi extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
-				if(pnlGingo2.isXmlEdited()) {
+				if(bkcylpnl.isXmlEdited()) {
 					JOptionPane.showMessageDialog(null,"°å¿é²úÒµÁ´±à¼­ºóÉÐÎ´±£´æ£¬ÇëÏÈ±£´æ");
 					return;
 				} else					
@@ -133,7 +131,6 @@ public class BanKuaiGuanLi extends JDialog
 	private JButton okButton;
 	private JTable tableSysBk;
 	private final JPanel contentPanel = new JPanel();
-	private Ginkgo2 pnlGingo2;
 	private BanKuaiAndChanYeLian bkcylpnl;
 	private JPanel panelSys;
 	private JTable tableZdy;

@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.gui;
 
 import java.awt.EventQueue;
+import static org.junit.Assert.assertEquals;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -39,6 +40,11 @@ import javax.swing.event.TableModelListener;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import com.toedter.calendar.JDateChooser;
+
+import net.iryndin.jdbf.core.DbfMetadata;
+import net.iryndin.jdbf.core.DbfRecord;
+import net.iryndin.jdbf.reader.DbfReader;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
@@ -115,7 +121,11 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EtchedBorder;
@@ -134,8 +144,7 @@ public class StockInfoManager
 	public StockInfoManager() 
 	{
 		sysconfig = SystemConfigration.getInstance();
-		
-		connectdb = ConnectDataBase2.getInstance();
+		connectdb = ConnectDataBase.getInstance();
 		boolean localconnect = connectdb.isLocalDatabaseconnected();
 		boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
 		if(localconnect == true && rmtconnect == true) {
@@ -167,7 +176,7 @@ public class StockInfoManager
 	protected void refeshSystem() 
 	{
 		if(sysconfig.reconfigSystemSettings () ) {
-			connectdb = ConnectDataBase2.getInstance();
+			connectdb = ConnectDataBase.getInstance();
 			boolean localconnect = connectdb.isLocalDatabaseconnected();
 			boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
 			if(localconnect == false && rmtconnect == true) {
@@ -196,7 +205,7 @@ public class StockInfoManager
 		}
 	}
 
-	private ConnectDataBase2 connectdb = null;
+	private ConnectDataBase connectdb = null;
 	private SystemConfigration sysconfig = null;
 	private AccountAndChiCangConfiguration accountschicangconfig;
 	private ASingleStockInfo stockbasicinfo;
@@ -286,7 +295,7 @@ public class StockInfoManager
 		}
 	}
 
-
+	
 
 //	private void initializeSysConfig()
 //	{

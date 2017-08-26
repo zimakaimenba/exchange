@@ -34,13 +34,13 @@ public class AccountDbOperation
 		
 	}
 	private SystemConfigration sysconfig ;
-	private ConnectDataBase2 connectdb;
+	private ConnectDataBase connectdb;
 	
 	
 	
 	private void initializeDb() 
 	{
-		connectdb = ConnectDataBase2.getInstance();
+		connectdb = ConnectDataBase.getInstance();
 	}
 	private void initialzieSysconf ()
 	{

@@ -64,8 +64,6 @@ import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
-import net.ginkgo.dom4jcopy.SubnodeButton;
-
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -103,6 +101,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		this.stockInfoManager = stockInfoManager2;
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
+		this.stockdbopt = new StockDbOperations ();
 		this.cylxmhandler = new ChanYeLianXMLHandler2 ();
 		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
 		
@@ -124,6 +123,7 @@ public class BanKuaiAndChanYeLian extends JPanel
     private BkChanYeLianTree treechanyelian;
     private BanKuaiDbOperation bkdbopt;
 	private StockInfoManager stockInfoManager;
+	private StockDbOperations stockdbopt;
 	private boolean cylneedsave; //标记产业链树有更改
 	private boolean zdgzxmlneedsave; //标记重点关注有更改
 
@@ -254,7 +254,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  
 	  private void addSubnodeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_addSubnodeButtonActionPerformed 
 	  {
-		  cylneedsave = true;
+//		  cylneedsave = true;
 			 
 			 int direction = ((SubnodeButton)addSubnodeButton).getDirection();
 			 int row = tablesubcyl.getSelectedRow() ;
@@ -267,6 +267,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 String subname = ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).getSubChanYeLianName(row);
 
 			 treechanyelian.addNewNode (BkChanYeLianTreeNode.SUBBK,subcode,subname,direction);
+			 btnSaveAll.setEnabled(true);
 			 
 		}//GEN-LAST:event_addSubnodeButtonActionPerformed
 
@@ -308,7 +309,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 //	  	   		Collections.sort(tmpsubbk,collator);
 	  	       
 	  	       	//读出该板块所有的个股
-	  	       	HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk);
+	  	       	HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode);
 	  	      
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tmpallbkge,stockinparsefile);
@@ -329,6 +330,19 @@ public class BanKuaiAndChanYeLian extends JPanel
   	       	 ArrayList<ChanYeLianNews> curnewlist = bkdbopt.getBanKuaiRelatedNews (curselectedbknodecode);
   	       	 createChanYeLianNewsHtml (curselectedbknodecode,curnewlist);
 	    }
+	    
+	    private void setGeGuAsLongTouOrNot()
+	    {
+			int row = tablebkgegu.getSelectedRow();
+			if(row < 0)
+				return;
+			
+			BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
+			String bkcode = curselectedbknode.getTongDaXingBanKuaiCode();
+			String stockcode = ((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).getStockCode(row);
+			boolean longtoustatus = ((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).getLongTouStatus ();
+			stockdbopt.setStockAsBanKuaiLongTouOrNot (bkcode,stockcode,longtoustatus);
+		}
 	    
 	    /*
 	     * 显示板块新闻连接
@@ -396,8 +410,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    
 	    private void addGeGuButtonActionPerformed(java.awt.event.ActionEvent evt) 
 	    {
-	    	cylneedsave = true;
+//	    	cylneedsave = true;
 	    	addGeGunode(((SubnodeButton)addGeGuButton).getDirection());
+	    	btnSaveAll.setEnabled(true);
 	    }
 	    
 	    public void addGeGunode(int direction)
@@ -416,7 +431,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 	    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
 			  if(treechanyelian.deleteNodes () )
-				  cylneedsave = true;
+//				  cylneedsave = true;
+				  btnSaveAll.setEnabled(true);
 		        
 		    }//GEN-LAST:event_deleteButtonActionPerformed
 
@@ -428,13 +444,21 @@ public class BanKuaiAndChanYeLian extends JPanel
 		   {
 		    	@SuppressWarnings("unchecked")
 		    	TreePath bkpath = treechanyelian.locateNodeByNameOrHypyOrBkCode (bkinputed);
-		    	getReleatedInfoAndActionsForTreePathNode (bkpath); //显示和板块相关的子产业链和个股
+		    	if(bkpath != null)
+		    		getReleatedInfoAndActionsForTreePathNode (bkpath); //显示和板块相关的子产业链和个股
 		    	
 			    return bkpath;
 			}
 		    public boolean isXmlEdited ()
 		    {
-		    	return cylneedsave ;
+//		    	if(cylneedsave == true || zdgzxmlneedsave == true )
+//		    		return true;
+//		    	else 
+//		    		return false ;
+		    	if(btnSaveAll.isEnabled() )
+		    		return true;
+		    	else
+		    		return false;
 		    }
 		    
 		    private void initializeBanKuaiParsedFile() 
@@ -453,10 +477,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 				System.out.println(dateString);
 				
 				String parsefilename = parsedpath + dateString + ".ebk";
-				tfldparsefilename.setText(parsefilename);
+//				tfldparsefilename.setText(parsefilename);
 				
 				parseSelectedBanKuaiFile (parsefilename);
-				
 			}
 		    
 		    private void parseSelectedBanKuaiFile (String filename)
@@ -465,6 +488,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		    	if(!parsefile.exists() )
 		    		return;
 		    	
+		    	tfldparsefilename.setText(filename);
 				List<String> readparsefileLines = null;
 				try {
 					readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiFielProcessor ());
@@ -505,67 +529,67 @@ public class BanKuaiAndChanYeLian extends JPanel
 				    tfldparsefilename.setText(linuxpath);
 				    
 				    parseSelectedBanKuaiFile (linuxpath);
-				    
-//				    File recordspath = chooser.getSelectedFile();
-//				    File[] filesList = recordspath.listFiles();
-//			        for(File f : filesList){
-//
-//			            if(f.isFile() && f.getName().endsWith("txt")){
-//			                ((DefaultListModel)listLeft.getModel()).addElement(f.getName());
-//			            }
-//			        }
-//				    FileInputStream xmlfileinput = null;
-//					try {
-//						xmlfileinput = new FileInputStream(linuxpath);
-//					} catch (FileNotFoundException e) {
-//						e.printStackTrace();
-//					}
-					
-					
 				}
 				
 			}   
 
 
-		    private void notesPaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_notesPaneFocusLost
-		        if(editingNodeText){
-		            notesNode.setNoteText(notesPane.getText());
-		            editingNodeText = false;
-		            notesPane.setEditable(false);
-		        }
-		    }//GEN-LAST:event_notesPaneFocusLost
+//		    private void notesPaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_notesPaneFocusLost
+//		        if(editingNodeText){
+//		            notesNode.setNoteText(notesPane.getText());
+//		            editingNodeText = false;
+//		            notesPane.setEditable(false);
+//		        }
+//		    }//GEN-LAST:event_notesPaneFocusLost
 
-		    private void notesPaneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_notesPaneFocusGained
-		        
-		        if (treechanyelian.getSelectionCount()==1 && notesNode != null){
-		            treechanyelian.stopEditing();
-		            editingNodeText = true;
-		            notesPane.setEditable(true);
-		            notesPane.getCaret().setVisible(true);
-		        } else {
-		            treeScrollPane.requestFocusInWindow();
-		            editingNodeText = false;
-		            notesPane.setEditable(false);
-		        }
-		    }//GEN-LAST:event_notesPaneFocusGained
+//		    private void notesPaneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_notesPaneFocusGained
+//		        
+//		        if (treechanyelian.getSelectionCount()==1 && notesNode != null){
+//		            treechanyelian.stopEditing();
+//		            editingNodeText = true;
+//		            notesPane.setEditable(true);
+//		            notesPane.getCaret().setVisible(true);
+//		        } else {
+//		            treeScrollPane.requestFocusInWindow();
+//		            editingNodeText = false;
+//		            notesPane.setEditable(false);
+//		        }
+//		    }//GEN-LAST:event_notesPaneFocusGained
 
 		    /*
 		     * 保存2个XML 
 		     */
 	public boolean saveCylXmlAndZdgzXml () //GEN-FIRST:event_saveButtonActionPerformed 
 	{
-		if(cylneedsave == true) {
+		if(btnSaveAll.isEnabled() ) {
 			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treechanyelian.getModel().getRoot();
-			if(!cylxmhandler.saveTreeToChanYeLianXML(treeroot) )
+			if(!cylxmhandler.saveTreeToChanYeLianXML(treeroot) ) {
 				JOptionPane.showMessageDialog(null, "保存产业链XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
 			
-		}
-		 
-		if(zdgzxmlneedsave == true) {
-			if( !zdgzbkxmlhandler.saveAllZdgzbkToXml () )
+			if( !zdgzbkxmlhandler.saveAllZdgzbkToXml () ) {
 				JOptionPane.showMessageDialog(null, "保存重点关注股票池XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
 		}
+//		if(cylneedsave == true) {
+//			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treechanyelian.getModel().getRoot();
+//			if(!cylxmhandler.saveTreeToChanYeLianXML(treeroot) ) {
+//				JOptionPane.showMessageDialog(null, "保存产业链XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
+//				return false;
+//			}
+//			
+//		}
+//		 
+//		if(zdgzxmlneedsave == true) {
+//			if( !zdgzbkxmlhandler.saveAllZdgzbkToXml () ) {
+//				JOptionPane.showMessageDialog(null, "保存重点关注股票池XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
+//				return false;
+//			}
+//		}
 
+		btnSaveAll.setEnabled(false);
 		return true;
 	}	    
 	private void createEvents() 
@@ -647,7 +671,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 					
 					unifyDisplaysInDifferentCompOnGui (newdaleiname,0);
 					
-					zdgzxmlneedsave = true;
+//					zdgzxmlneedsave = true;
+					btnSaveAll.setEnabled(true);
 				} else
 					JOptionPane.showMessageDialog(null,"股票池名称已经存在！","Warning",JOptionPane.WARNING_MESSAGE);
 			}
@@ -989,7 +1014,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 //			initializeAllDaLeiZdgzTableFromXml (null);
 //			initializeSingleDaLeiZdgzTableFromXml (0);
 			
-			zdgzxmlneedsave = true;
+//			zdgzxmlneedsave = true;
+			btnSaveAll.setEnabled(true);
 		}
 		
 	}
@@ -1011,7 +1037,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzcyl);
 			 unifyDisplaysInDifferentCompOnGui (daleiname,0);
 			 
-			 zdgzxmlneedsave = true;
+//			 zdgzxmlneedsave = true;
+			 btnSaveAll.setEnabled(true);
 			 
 		 }
 		 else
@@ -1035,7 +1062,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 treechanyelian.addZdgzBkCylInfoToTreeNode(gzbk,true);
 			 unifyDisplaysInDifferentCompOnGui (selectedalei,row);
 
-			 zdgzxmlneedsave = true;
+//			 zdgzxmlneedsave = true;
+			 btnSaveAll.setEnabled(true);
 		} else
 			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
 	}
@@ -1064,7 +1092,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 					treechanyelian.removeZdgzBkCylInfoFromTreeNode (gzbk,true);
 				}
 
-			 zdgzxmlneedsave = true;
+//			 zdgzxmlneedsave = true;
+			 btnSaveAll.setEnabled(true);
 			 
 		} else
 			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
@@ -1092,7 +1121,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 int addedrow = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(nodewilladded);
 			 unifyDisplaysInDifferentCompOnGui (daleiname,addedrow);
 			
-			 zdgzxmlneedsave = true;
+//			 zdgzxmlneedsave = true;
+			 btnSaveAll.setEnabled(true);
 		 }
 		 else
 			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
@@ -1369,7 +1399,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		//个股table也可以加个股新闻
 		JPopupMenu popupMenuGeguNews = new JPopupMenu();
 		JMenuItem menuItemAddNews = new JMenuItem("添加个股新闻");
+		JMenuItem menuItemMakeLongTou = new JMenuItem("标记/取消为龙头");
 		popupMenuGeguNews.add(menuItemAddNews);
+		popupMenuGeguNews.add(menuItemMakeLongTou);
 		tablebkgegu.setComponentPopupMenu(popupMenuGeguNews);
 		menuItemAddNews.addActionListener(new ActionListener() {
 			@Override
@@ -1380,6 +1412,17 @@ public class BanKuaiAndChanYeLian extends JPanel
 			}
 			
 		});
+		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
+		menuItemAddNews.addActionListener(new ActionListener() {
+			@Override
+
+			public void actionPerformed(ActionEvent evt) {
+
+				setGeGuAsLongTouOrNot ();
+			}
+			
+		});
+
 		scrollPanegegu.setViewportView(tablebkgegu);
 		panelcyltree.setLayout(gl_panelcyltree);
 		
@@ -1565,6 +1608,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		JSeparator separator = new JSeparator();
 		
 		btnSaveAll = new JButton("\u4FDD\u5B58\u4FEE\u6539");
+		btnSaveAll.setEnabled(false);
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
@@ -1618,6 +1662,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 		
 	}
+	
+
 	
 
 	private  BkChanYeLianTree initializeBkChanYeLianXMLTree()
@@ -1891,8 +1937,8 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 
             	 } catch (java.lang.NullPointerException e) {
             		 e.printStackTrace();
-            		 
             	 }
+            	
             	value = result;
                 break;
             case 2:
@@ -1958,22 +2004,13 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 class BanKuaiGeGuTableModel extends AbstractTableModel 
 {
 	private HashMap<String,String> bkgegumap; //包含股票代码和股票名称
-	String[] jtableTitleStrings = { "股票代码", "股票名称"};
+	String[] jtableTitleStrings = { "股票代码", "股票名称", "龙头"};
 	private ArrayList<String> bkgeguname;
 	private HashSet<String> stockcodeinparsefile;
 	
-	BanKuaiGeGuTableModel ()//HashMap<String,String> bkgegu,HashSet<String> stockcodeinparsefile2)
+	BanKuaiGeGuTableModel ()
 	{
-//		if(bkgegu != null) {
-//			this.bkgegumap = bkgegu;
-//			this.bkgeguname = new ArrayList<String> (bkgegu.keySet() );
-//		}
-//		if(stockcodeinparsefile2 != null)
-//			this.stockcodeinparsefile = stockcodeinparsefile2;
-//		else 
-//			this.stockcodeinparsefile = new HashSet<String> ();
 	}
-
 	public void refresh  (HashMap<String,String> bkgegu,HashSet<String> stockcodeinparsefile2)
 	{
 		this.bkgegumap = bkgegu;
@@ -1994,6 +2031,12 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
  			bkgeguname = new ArrayList<String> (bkgegu.keySet() );
  		
  		this.fireTableDataChanged();
+	}
+
+	public boolean getLongTouStatus(int rowIndex) 
+	{
+		boolean ltstatus = (Boolean)this.getValueAt(rowIndex, 2);
+		return false;
 	}
 	public HashSet<String> getStockInParseFile ()
 	{
@@ -2028,6 +2071,9 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
             case 1:
             	value = bkgegumap.get( bkcode );
                 break;
+            case 2:
+            	value = new Boolean(false);
+            	break;
 	    	}
 
         return value;
@@ -2041,6 +2087,9 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 		    	  break;
 		        case 1:
 			          clazz = String.class;
+			          break;
+		        case 2:
+			          clazz = Boolean.class;
 			          break;
 		      }
 		      

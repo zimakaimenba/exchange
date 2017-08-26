@@ -1,10 +1,9 @@
-package net.ginkgo.dom4jcopy;
+package com.exchangeinfomanager.bankuaichanyelian;
 
-//import net.ginkgo.copy.Ginkgo2;
 
 public class MoveButton extends javax.swing.JButton{
 
-    private int direction = Ginkgo2.NONE;
+    private int direction = BanKuaiAndChanYeLian.NONE;
         
     public void setDirection(int direction){
         this.direction = direction;

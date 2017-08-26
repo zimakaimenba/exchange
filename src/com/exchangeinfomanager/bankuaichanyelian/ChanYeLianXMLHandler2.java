@@ -206,6 +206,7 @@ public class ChanYeLianXMLHandler2
 		 
 		Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
 		
+		//XML没有，数据库有，要添加如XML
 		SetView<String> differencebankuainew = Sets.difference(uniontdxbkindb, bkcylxmlset );
         for (String newbkcode : differencebankuainew) {
         	System.out.println("XML将要中加入" + newbkcode);
@@ -225,6 +226,7 @@ public class ChanYeLianXMLHandler2
 				System.out.println("XML中加入" + newbkcode + bkname);
         }
         
+        //XML里面有，数据库中没有了，应该删除，要从几个XML都删除
         SetView<String> differencebankuaiold = Sets.difference(bkcylxmlset, uniontdxbkindb );
 	    for (String oldbkcode : differencebankuaiold) {
 			//从产业链XML中删除该板块
@@ -248,8 +250,11 @@ public class ChanYeLianXMLHandler2
 				System.out.println("个股产业链XML中删除" + oldbkcode);
 			} catch (java.lang.NullPointerException ex) {
 			}
+			
+			//从重点关注中也该删除啊？
 	    }
 	    
+	    //对于没有变化的板块，要检查板块的名字是否有改变
 	    SetView<String> intersectionbankuai = Sets.intersection(uniontdxbkindb, bkcylxmlset );
 	    for(String intsbkcode : intersectionbankuai) {
 	    	try {

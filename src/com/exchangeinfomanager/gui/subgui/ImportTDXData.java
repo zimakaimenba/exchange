@@ -54,10 +54,10 @@ public class ImportTDXData extends JDialog {
 	 * Create the dialog.
 	 * @param bkdbopt 
 	 */
-	public ImportTDXData(BanKuaiDbOperation bkdbopt,StockDbOperations stockdbopt) 
+	public ImportTDXData(BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt2) 
 	{
-		this.bkdbopt = bkdbopt;
-		this.stockdbopt = stockdbopt;
+		this.bkdbopt = bkdbopt2;
+		this.stockdbopt = stockdbopt2;
 		sysconfig = SystemConfigration.getInstance(); 
 		initializeGui ();
 		importPreCheckTDX ();
@@ -118,123 +118,147 @@ public class ImportTDXData extends JDialog {
 		
 	}
 
+	private void partthatcanimportduringwork ()
+	{
+		//从通达信中导入股票曾用名的信息
+		if(chbximportcym.isSelected() )	{
+			File resulttmpfilesys = stockdbopt.refreshEverUsedStorkName ();
+			chbximportcym.setEnabled(false);
+			
+			try {
+				List<String> lines = Files.readLines(resulttmpfilesys, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+		}
+		
+		//同步自定义板块
+		if(chbxdaorutdxzdybk.isSelected()) { 
+			for(JCheckBox tmpbox:zdybkckbxs) {
+				if(! tmpbox.isSelected() )
+					zdybkmap.remove(tmpbox.getText() );
+			}
+			File resulttmpfilezdy = bkdbopt.refreshTDXZDYBanKuai (zdybkmap);
+			chbxdaorutdxzdybk.setEnabled(false);
+			
+			try {
+				List<String> lines = Files.readLines(resulttmpfilezdy, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+		}
+		
+	}
+	private void partthathasimportafterwork () 
+	{
+		//同步通达信成交量成交额
+		if(chbxdaorutdxsysbkvol.isSelected() ) {
+			try {
+				File resulttmpfilebkamppreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ();
+				List<String> lines = Files.readLines(resulttmpfilebkamppreck, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+			
+			try {
+				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb();
+				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+			
+			try {
+				File resulttmpfilezhishupreck = bkdbopt.preCheckTDXZhiShuVolAmoToDb ();
+				List<String> lines = Files.readLines(resulttmpfilezhishupreck, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+			
+			try {
+				File resulttmpfilezsamo = bkdbopt.refreshTDXZhiShuVolAmoToDb ();
+				List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+			
+			chbxdaorutdxsysbkvol.setEnabled(false);
+		}
+		
+		//从通达信中导入股票的基本面信息
+		if(cbximporttdxgeguinfo.isSelected() ) {
+			try {
+				File resultimporttdxgegutinfo = this.stockdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
+				List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+			
+		}
+		
+		 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
+		if(chbxdaorutdxsysbk.isSelected()) {
+			File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();
+			chbxdaorutdxsysbk.setEnabled(false);
+			
+			try {
+				List<String> lines = Files.readLines(resulttmpfilesys, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+		}
+		
+	}
 
 	private void createEvents() 
 	{
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				//从通达信中导入股票曾用名的信息
-				if(chbximportcym.isSelected() )	{
-					File resulttmpfilesys = stockdbopt.refreshEverUsedStorkName ();
-					chbximportcym.setEnabled(false);
-					
-					try {
-						List<String> lines = Files.readLines(resulttmpfilesys, sysconfig.charSet());
-						for (String line : lines) {
-				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					}
-				}
-			
-				 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
-				if(chbxdaorutdxsysbk.isSelected()) {
-					File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();
-					chbxdaorutdxsysbk.setEnabled(false);
-					
-					try {
-						List<String> lines = Files.readLines(resulttmpfilesys, sysconfig.charSet());
-						for (String line : lines) {
-				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					}
-				}
+				partthatcanimportduringwork ();
 				
-				
-				//同步自定义板块
-				if(chbxdaorutdxzdybk.isSelected()) { 
-					for(JCheckBox tmpbox:zdybkckbxs) {
-						if(! tmpbox.isSelected() )
-							zdybkmap.remove(tmpbox.getText() );
-					}
-					File resulttmpfilezdy = bkdbopt.refreshTDXZDYBanKuai (zdybkmap);
-					chbxdaorutdxzdybk.setEnabled(false);
-					
-					try {
-						List<String> lines = Files.readLines(resulttmpfilezdy, sysconfig.charSet());
-						for (String line : lines) {
-				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					}
-				}
-				
-				
-				//同步通达信成交量成交额
-				if(chbxdaorutdxsysbkvol.isSelected()) {
+				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() ) {
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
 					int hour = cal.get(Calendar.HOUR_OF_DAY);
 					int wk = cal.get(Calendar.DAY_OF_WEEK) - 1;
 					if( (wk<=5 && wk>=1) && (hour<15 && hour>=9) ) {
-						JOptionPane.showMessageDialog(null,"为保证成交量成交额数据完整 ，请在交易日15点收盘后至次日9点前从通达信导出数据再导入本系统。");
+						JOptionPane.showMessageDialog(null,"涉及通达信大量数据同步，请在交易日15点收盘后至次日9点前从通达信导出数据后再导入本系统。");
 						return;
 					}
 					
-					try {
-						File resulttmpfilebkamppreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ();
-						List<String> lines = Files.readLines(resulttmpfilebkamppreck, sysconfig.charSet());
-						for (String line : lines) {
-				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					}
-					
-					try {
-						File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb();
-						List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
-						for (String line : lines) {
-				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					}
-					
-					try {
-						File resulttmpfilezhishupreck = bkdbopt.preCheckTDXZhiShuVolAmoToDb ();
-						List<String> lines = Files.readLines(resulttmpfilezhishupreck, sysconfig.charSet());
-						for (String line : lines) {
-				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					}
-					
-					try {
-						File resulttmpfilezsamo = bkdbopt.refreshTDXZhiShuVolAmoToDb ();
-						List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
-						for (String line : lines) {
-				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					}
-					
-					chbxdaorutdxsysbkvol.setEnabled(false);
+					partthathasimportafterwork();
 				}
-		        
 				lblstatus.setText("同步结束");
 			}
 		});
@@ -255,6 +279,8 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox chbxdaorutdxsysbkvol;
 	private JCheckBox chbximportcym;
 	private JProgressBar progressBar;
+	private JCheckBox cbximporttdxgeguinfo;
+	private JProgressBar progressBar_1;
 	
 	private void initializeGui() 
 	{
@@ -281,26 +307,30 @@ public class ImportTDXData extends JDialog {
 		chbximportcym = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u80A1\u7968\u66FE\u7528\u540D\u4FE1\u606F");
 		
 		progressBar = new JProgressBar();
+		
+		cbximporttdxgeguinfo = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u4E2A\u80A1\u57FA\u672C\u9762\u4FE1\u606F(*)");
+		
+		progressBar_1 = new JProgressBar();
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addComponent(cbximporttdxgeguinfo)
 						.addComponent(chbxdaorutdxsysbk)
 						.addComponent(chbximportcym)
 						.addComponent(chbxdaorutdxzdybk)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(pbarbankuai, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(scrollPane_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE))
-							.addGap(236))
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(pbarbankuai, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(scrollPane_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE))
 						.addComponent(chbxdaorutdxsysbkvol)
 						.addComponent(progressBar_2, GroupLayout.PREFERRED_SIZE, 440, GroupLayout.PREFERRED_SIZE)
+						.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 442, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
 							.addComponent(scrollPane, Alignment.LEADING)
-							.addComponent(progressBar, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addComponent(progressBar_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)))
+					.addContainerGap(18, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -321,8 +351,12 @@ public class ImportTDXData extends JDialog {
 					.addComponent(chbximportcym)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
-					.addGap(35)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 265, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(cbximporttdxgeguinfo)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(progressBar_1, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 224, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(65, Short.MAX_VALUE))
 		);
 		
@@ -386,19 +420,4 @@ public class ImportTDXData extends JDialog {
 		}
 		
 	}
-
-
-
-	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		try {
-//			ImportTDXData dialog = new ImportTDXData(null);
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 }

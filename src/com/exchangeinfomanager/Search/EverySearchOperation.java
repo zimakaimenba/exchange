@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
-import com.exchangeinfomanager.database.ConnectDataBase2;
+import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.toedter.calendar.JDateChooser;
@@ -42,7 +42,7 @@ import java.beans.PropertyChangeEvent;
 
 public class EverySearchOperation extends JPanel 
 {
-	private ConnectDataBase2 connectdb;
+	private ConnectDataBase connectdb;
 	private SystemConfigration sysconfig ;
 	
 	private JTable tblSearchResult;
@@ -76,7 +76,7 @@ public class EverySearchOperation extends JPanel
 
 	private void initializeDB() {
 
-		connectdb = ConnectDataBase2.getInstance();
+		connectdb = ConnectDataBase.getInstance();
 				
 //				if(connectdb.isDatabaseconnected())
 //					lblStatusBarDbstatusindictor.setText("数据库已连接.");

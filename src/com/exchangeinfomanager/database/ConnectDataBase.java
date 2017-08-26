@@ -15,21 +15,21 @@ import org.bouncycastle.util.Strings;
 
 
 
-public class ConnectDataBase2 
+public class ConnectDataBase 
 {		
-		 private ConnectDataBase2 ()
+		 private ConnectDataBase ()
 		 {  
 			 refreshDatabaseConnection();  
 		 }  
 		 // 单例实现  
-		 public static ConnectDataBase2 getInstance ()
+		 public static ConnectDataBase getInstance ()
 		 {  
 		        return Singtonle.instance;  
 		 }
 		 
 		 private static class Singtonle 
 		 {  
-		        private static ConnectDataBase2 instance =  new ConnectDataBase2 ();  
+		        private static ConnectDataBase instance =  new ConnectDataBase ();  
 		 }
 		 
 		 DataBaseConnection localcon;
@@ -353,7 +353,6 @@ class DataBaseConnection
 			try	{	// 方式二 通过数据源与数据库建立连接
 				System.out.println("begin to connect database");
 				tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,password);
-//				con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 				if(tmpcon != null)	{
 					System.out.println( "Sucessed connect database:" + dbconnectstr );
 					this.databaseconnected = true;

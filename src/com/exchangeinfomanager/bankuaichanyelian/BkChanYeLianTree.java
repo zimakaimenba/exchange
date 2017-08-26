@@ -29,8 +29,6 @@ import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
-import net.ginkgo.dom4jcopy.TreeTransferHandler;
-
 
 public class BkChanYeLianTree extends JTree 
 {
@@ -167,7 +165,8 @@ public class BkChanYeLianTree extends JTree
 	    	childNode.clearCurParseFileStockSet ( );
 
 	    	if( childNodetype == BkChanYeLianTreeNode.TDXBK ) {
-	    		HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bkname);
+	    		String bkcode = childNode.getTongDaXingBanKuaiCode();
+	    		HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bkname,bkcode);
 	    		Set<String> curbkallbkset = tmpallbkge.keySet();
 				SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset );
 				
