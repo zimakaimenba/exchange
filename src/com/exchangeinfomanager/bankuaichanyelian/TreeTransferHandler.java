@@ -1,4 +1,4 @@
-package net.ginkgo.dom4jcopy;
+package com.exchangeinfomanager.bankuaichanyelian;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
