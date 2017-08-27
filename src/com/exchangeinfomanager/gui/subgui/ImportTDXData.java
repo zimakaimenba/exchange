@@ -159,6 +159,24 @@ public class ImportTDXData extends JDialog {
 	}
 	private void partthathasimportafterwork () 
 	{
+		//注意代码的顺序，必须先同步板块信息，再同步成交量信息
+		
+		 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
+		if(chbxdaorutdxsysbk.isSelected()) {
+			File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();
+			chbxdaorutdxsysbk.setEnabled(false);
+			
+			try {
+				List<String> lines = Files.readLines(resulttmpfilesys, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+		}
+		
 		//同步通达信成交量成交额
 		if(chbxdaorutdxsysbkvol.isSelected() ) {
 			try {
@@ -223,21 +241,7 @@ public class ImportTDXData extends JDialog {
 			
 		}
 		
-		 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
-		if(chbxdaorutdxsysbk.isSelected()) {
-			File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();
-			chbxdaorutdxsysbk.setEnabled(false);
-			
-			try {
-				List<String> lines = Files.readLines(resulttmpfilesys, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-			}
-		}
+
 		
 	}
 
