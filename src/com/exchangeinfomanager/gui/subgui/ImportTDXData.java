@@ -159,6 +159,11 @@ public class ImportTDXData extends JDialog {
 	}
 	private void partthathasimportafterwork () 
 	{
+//<<<<<<< HEAD
+//=======
+//		//注意代码的顺序，必须先同步板块信息，再同步成交量信息
+//		
+//>>>>>>> refs/remotes/exchange/master
 		 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
 		if(chbxdaorutdxsysbk.isSelected()) {
 			File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();

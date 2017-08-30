@@ -99,7 +99,8 @@ public class BanKuaiDbOperation
 		this.refreshTDXAllBanKuaiToSystem(tmprecordfile);
 		this.refreshTDXZhiShuShangHaiLists (tmprecordfile); //这两个是同步沪深指数列表，指数板块一般没有太大变化，不用总是同步，同步一次后就注释掉
 		this.refreshTDXZhiShuShenZhenLists (tmprecordfile);
-		
+		 
+		//同步相关板块个股信息
 		this.refreshTDXFengGeBanKuaiToGeGu(tmprecordfile);
 		this.refreshTDXGaiNianBanKuaiToGeGu(tmprecordfile);
 		this.refreshTDXHangYeBanKuaiToGeGu(tmprecordfile);
