@@ -99,7 +99,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 	public BanKuaiAndChanYeLian (StockInfoManager stockInfoManager2) 
 	{
 		this.stockInfoManager = stockInfoManager2;
-		
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockdbopt = new StockDbOperations ();
 		this.cylxmhandler = new ChanYeLianXMLHandler2 ();
@@ -187,25 +186,27 @@ public class BanKuaiAndChanYeLian extends JPanel
 		int selecteddaleirow = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getDaLeiIndex (selecteddalei);
 		tableCurZdgzbk.setRowSelectionInterval(selecteddaleirow,selecteddaleirow);
 		
-		
 		//for sub重点关注
 		((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).refresh(zdgzbkmap,selecteddalei);
-		tableZdgzBankDetails.setRowSelectionInterval(selectrowfordaleiinsubcyl,selectrowfordaleiinsubcyl);
+		if( ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getRowCount() != 0)
+			tableZdgzBankDetails.setRowSelectionInterval(selectrowfordaleiinsubcyl,selectrowfordaleiinsubcyl);
+		
 		BkChanYeLianTreeNode curselectnode = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(selectrowfordaleiinsubcyl);
-		if(curselectnode != null) {
-//			currentselectedtdxbk = curselectnode.getTdxBk();
-			
-			((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
-			tableCurZdgzbk.setRowSelectionInterval(selecteddaleirow,selecteddaleirow);
-		}
-		System.out.println("current node is  " + currentselectedtdxbk );
+//		if(curselectnode != null) {
+//
+//			((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+//			tableCurZdgzbk.setRowSelectionInterval(selecteddaleirow,selecteddaleirow);
+//		}
+		//System.out.println("current node is  " + currentselectedtdxbk );
 
 		//for tree
-		TreePath nodepath = new TreePath(curselectnode.getPath());
-		treechanyelian.expandTreePathAllNode( new TreePath(curselectnode.getPath()) );
-	   		
-	    //for 个股Talble
-		getReleatedInfoAndActionsForTreePathNode (new TreePath(curselectnode.getPath()) );
+		if(curselectnode != null) {
+			TreePath nodepath = new TreePath(curselectnode.getPath());
+			treechanyelian.expandTreePathAllNode( new TreePath(curselectnode.getPath()) );
+		   		
+		    //for 个股Talble
+			getReleatedInfoAndActionsForTreePathNode (new TreePath(curselectnode.getPath()) );
+		}
 	}
 
 
@@ -1585,10 +1586,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 		tableCurZdgzbk.setToolTipText("tableZdgzBankDetails");
 		
 		
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(70);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMinWidth(70);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setWidth(70);
-		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(70);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(80);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setMinWidth(80);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setWidth(80);
+		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(80);
 		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(1).setMaxWidth(390);
 		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(1).setMinWidth(390);
 		tableCurZdgzbk.getTableHeader().getColumnModel().getColumn(1).setWidth(390);
@@ -1750,7 +1751,11 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 	{
 		String currentdalei = this.cbxDale;
 		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
-		return tmpgzbkinfo.get(rowindex);
+		try {
+			return tmpgzbkinfo.get(rowindex);
+		} catch (java.lang.IndexOutOfBoundsException ex) {
+			return null;
+		}
 	}
 
 	 public int getRowCount() 

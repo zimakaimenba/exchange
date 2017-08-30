@@ -77,7 +77,7 @@ public class ImportTDXData extends JDialog {
 		
 		File file = new File(sysconfig.getTDXStockEverUsedNameFile() );
 		if(!file.exists() ) {
-			 System.out.println("通达信目录不正确:" + tdxpath );
+			 System.out.println("通达信目录不正确:" + tdxpath ); 
 			 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前目录:" + tdxpath);
 			 dispose();
 		 }
@@ -159,8 +159,11 @@ public class ImportTDXData extends JDialog {
 	}
 	private void partthathasimportafterwork () 
 	{
-		//注意代码的顺序，必须先同步板块信息，再同步成交量信息
-		
+//<<<<<<< HEAD
+//=======
+//		//注意代码的顺序，必须先同步板块信息，再同步成交量信息
+//		
+//>>>>>>> refs/remotes/exchange/master
 		 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
 		if(chbxdaorutdxsysbk.isSelected()) {
 			File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();
@@ -213,7 +216,7 @@ public class ImportTDXData extends JDialog {
 			}
 			
 			try {
-				File resulttmpfilezsamo = bkdbopt.refreshTDXZhiShuVolAmoToDb ();
+				File resulttmpfilezsamo = bkdbopt.refreshTDXZhiShuVolAmoToDb (); 
 				List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
@@ -226,7 +229,7 @@ public class ImportTDXData extends JDialog {
 			chbxdaorutdxsysbkvol.setEnabled(false);
 		}
 		
-		//从通达信中导入股票的基本面信息
+		//从通达信foxpro中导入股票的基本面信息
 		if(cbximporttdxgeguinfo.isSelected() ) {
 			try {
 				File resultimporttdxgegutinfo = this.stockdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
@@ -256,7 +259,7 @@ public class ImportTDXData extends JDialog {
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
 					int hour = cal.get(Calendar.HOUR_OF_DAY);
 					int wk = cal.get(Calendar.DAY_OF_WEEK) - 1;
-					if( (wk<=5 && wk>=1) && (hour<15 && hour>=9) ) {
+					if( (wk<=5 && wk>=1) && (hour<15 && hour>= 9) ) {
 						JOptionPane.showMessageDialog(null,"涉及通达信大量数据同步，请在交易日15点收盘后至次日9点前从通达信导出数据后再导入本系统。");
 						return;
 					}
@@ -296,13 +299,13 @@ public class ImportTDXData extends JDialog {
 		
 		pbarbankuai = new JProgressBar();
 		
-		progressBar_2 = new JProgressBar();
+		progressBar_2 = new JProgressBar(); 
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
 		scrollPane_1 = new JScrollPane();
 		
-		chbxdaorutdxsysbk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u677F\u5757\u4FE1\u606F(*)");
+		chbxdaorutdxsysbk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u677F\u5757\u548C\u6307\u6570\u4FE1\u606F(*)");
 		
 		chbxdaorutdxzdybk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757(\u9009\u62E9\u8981\u5BFC\u5165\u7684\u81EA\u5B9A\u4E49\u677F\u5757)");
 		

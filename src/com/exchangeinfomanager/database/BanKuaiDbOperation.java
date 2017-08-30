@@ -72,14 +72,10 @@ public class BanKuaiDbOperation
 	{
 		initializeDb ();
 		initialzieSysconf ();
-		twelvezdgzxmlname = sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile();
-
 	}
 	
 	private  ConnectDataBase connectdb;
 	private  SystemConfigration sysconfig;
-	private String twelvezdgzxmlname;
-	
 
 	private void initializeDb() 
 	{
@@ -101,12 +97,14 @@ public class BanKuaiDbOperation
 
 		//更新通达信系统所有板块信息，在更新中，把新的存入数据库，加入XML， 旧的从XML和数据库删除
 		this.refreshTDXAllBanKuaiToSystem(tmprecordfile);
-
+		this.refreshTDXZhiShuShangHaiLists (tmprecordfile); //这两个是同步沪深指数列表，指数板块一般没有太大变化，不用总是同步，同步一次后就注释掉
+		this.refreshTDXZhiShuShenZhenLists (tmprecordfile);
+		 
+		//同步相关板块个股信息
 		this.refreshTDXFengGeBanKuaiToGeGu(tmprecordfile);
 		this.refreshTDXGaiNianBanKuaiToGeGu(tmprecordfile);
 		this.refreshTDXHangYeBanKuaiToGeGu(tmprecordfile);
 		this.refreshTDXZhiShuBanKuaiToGeGu(tmprecordfile); //通达信指数和股票对应关系
-		this.refreshTDXZhiShuLists (tmprecordfile);
 
 		return tmprecordfile;
 	}
@@ -858,104 +856,258 @@ public class BanKuaiDbOperation
 	/*
 	 * 从通达信更新所有的交易所指数，目前只更新在个股指数表中有的交易所指数。方法是直接从上表中读出指数，加入新的，删除旧的。
 	 */
-	private void refreshTDXZhiShuLists(File tmprecordfile) 
+	private int refreshTDXZhiShuShangHaiLists(File tmprecordfile)
 	{
-		 	Set<String> tmpzhishusetnew = new HashSet();
-			CachedRowSetImpl rsnew = null;
-		    try {
-		    	String sqlquerystat = "SELECT DISTINCT 指数板块 FROM 股票通达信交易所指数对应表" 
-		    							;
-		    	rsnew = connectdb.sqlQueryStatExecute(sqlquerystat);
-		    	
-		        rsnew.last();  
-		        int rows = rsnew.getRow();  
-		        rsnew.first();  
-		        for(int j=0;j<rows;j++) {  
-		        	String stockcode = rsnew.getString("指数板块");
-		        	tmpzhishusetnew.add(stockcode);
-		        	
-		        	rsnew.next();
-		        }
-		        
-		    }catch(java.lang.NullPointerException e){ 
-		    	e.printStackTrace();
-		    } catch (SQLException e) {
-		    	e.printStackTrace();
-		    }catch(Exception e){
-		    	e.printStackTrace();
-		    } finally {
-	    	if(rsnew != null)
-				try {
-					rsnew.close();
-					rsnew = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		    }
-		    
-		    Set<String> tmpzhishusetold = new HashSet();
-			CachedRowSetImpl rsold = null;
-		    try {
-		    	String sqlquerystat = "SELECT DISTINCT 指数名称 FROM 通达信交易所指数列表" 
-		    							;
-		    	rsold = connectdb.sqlQueryStatExecute(sqlquerystat);
-		    	
-		    	rsold.last();  
-		        int rows = rsold.getRow();  
-		        rsold.first();  
-		        for(int j=0;j<rows;j++) {  
-		        	String stockcode = rsold.getString("指数名称");
-		        	tmpzhishusetold.add(stockcode);
-		        	
-		        	rsold.next();
-		        }
-		        
-		    }catch(java.lang.NullPointerException e){ 
-		    	e.printStackTrace();
-		    } catch (SQLException e) {
-		    	e.printStackTrace();
-		    }catch(Exception e){
-		    	e.printStackTrace();
-		    } finally {
-	    	if(rsold != null)
-				try {
-					rsold.close();
-					rsold = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		    }
-		    try {
-			    //把tmpstockcodesetnew里面有的，tmpstockcodesetold没有的选出，这是新的，要加入数据库
-			        SetView<String> differencezhishunew = Sets.difference(tmpzhishusetnew, tmpzhishusetold ); 
-	   		    for (String str : differencezhishunew) {
-	   				
-	   				String sqlinsertstat = "INSERT INTO  通达信交易所指数列表(指数名称) values ("
-	   						+ "'" + str.trim() + "'"  
+		File file = new File(sysconfig.getTDXShangHaiZhiShuNameFile() );
+		
+		if(!file.exists() ) {
+			 System.out.println("File not exist");
+			 return -1;
+		 }
+		
+		 int addednumber =0;
+		 BufferedInputStream dis = null;
+		 FileInputStream in = null;
+		 try {
+			    in = new FileInputStream(file);  
+			    dis = new BufferedInputStream(in);
+               
+               int fileheadbytenumber = 50;
+               byte[] itemBuf = new byte[fileheadbytenumber];
+               dis.read(itemBuf, 0, fileheadbytenumber); 
+               String fileHead =new String(itemBuf,0,fileheadbytenumber);  
+               System.out.println(fileHead);
+               
+               int sigbk = 18*16+12+14;
+               byte[] itemBuf2 = new byte[sigbk];
+               int i=0;
+               Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+               while (dis.read(itemBuf2, 0, sigbk) != -1) {
+            	   String zhishuline =new String(itemBuf2,0,sigbk);
+            	   System.out.println(zhishuline);
+            	   String zhishucode = zhishuline.trim().substring(0, 6);
+            	   System.out.println(zhishucode);
+            	   
+            	   if(  !(zhishucode.startsWith("99") || zhishucode.startsWith("00")) )
+            		   continue;
+            	   
+            	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
+            	   String zhishuname = null;
+            	   try {
+	            	    zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
+            	   } catch (java.lang.StringIndexOutOfBoundsException ex) {
+            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
+            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
+            	   }
+            	   System.out.println(zhishuname);
+            	   
+            	   String sqlinsertstat = "INSERT INTO  通达信交易所指数列表(指数名称,板块ID,指数所属交易所) values ("
+	   						+ " '" + zhishuname.trim() + "'" + ","
+	   						+ " '" + zhishucode.trim() + "'" + ","
+	   						+ " '" + "sh" + "'"
 	   						+ ")"
+	   						+ " ON DUPLICATE KEY UPDATE "
+	   						+ " 指数名称=" + " '" + zhishuname.trim() + "'" + ","
+	   						+ " 指数所属交易所=" + " '" + "sh" + "'" 
 	   						;
-	   				System.out.println(sqlinsertstat);
+            	   System.out.println(sqlinsertstat);
 	   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-	                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-	   			}
-	   		    
-	   	        //把 tmpstockcodesetold 里面有的，tmpstockcodesetnew没有的选出，这是旧的，要从数据库中删除
-	   	        SetView<String> differencezhishuold = Sets.difference(tmpzhishusetold,tmpzhishusetnew  );
-	   	        for (String str : differencezhishuold) {
-	   	        	String sqldeletetstat = "DELETE  FROM 通达信交易所指数列表"
-	   	        							+ " WHERE 指数名称=" + "'" + str + "'" 
-	   	        							;
-	   	        	System.out.println(sqldeletetstat);
-	   	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-					Files.append("删除：" + str.trim() + " " +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-	   	        }
+//	                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+               }
+               
+		 } catch (Exception e) {
+			 e.printStackTrace();
+			 return -1;
+		 } finally {
+			 try {
+				in.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}        
-		    
+			}
+             try {
+				dis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}     
+		 }
 		
-		
+		return 1;
 	}
+	private int refreshTDXZhiShuShenZhenLists(File tmprecordfile)
+	{
+		File file = new File(sysconfig.getTDXShenZhenShuNameFile() );
+		
+		if(!file.exists() ) {
+			 System.out.println("File not exist");
+			 return -1;
+		 }
+		
+		 int addednumber =0;
+		 BufferedInputStream dis = null;
+		 FileInputStream in = null;
+		 try {
+			    in = new FileInputStream(file);  
+			    dis = new BufferedInputStream(in);
+               
+               int fileheadbytenumber = 50;
+               byte[] itemBuf = new byte[fileheadbytenumber];
+               dis.read(itemBuf, 0, fileheadbytenumber); 
+               String fileHead =new String(itemBuf,0,fileheadbytenumber);  
+               System.out.println(fileHead);
+               
+               int sigbk = 18*16+12+14;
+               byte[] itemBuf2 = new byte[sigbk];
+               int i=0;
+               Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+               while (dis.read(itemBuf2, 0, sigbk) != -1) {
+            	   String zhishuline =new String(itemBuf2,0,sigbk);
+            	   System.out.println(zhishuline);
+            	   String zhishucode = zhishuline.trim().substring(0, 6);
+            	   System.out.println(zhishucode);
+            	   
+            	   if(  !zhishucode.startsWith("3990") )
+            		   continue;
+            	   
+            	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
+            	   String zhishuname = null;
+            	   try {
+	            	    zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
+            	   } catch (java.lang.StringIndexOutOfBoundsException ex) {
+            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
+            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
+            	   }
+            	   System.out.println(zhishuname);
+            	   
+            	   String sqlinsertstat = "INSERT INTO  通达信交易所指数列表(指数名称,板块ID,指数所属交易所) values ("
+	   						+ " '" + zhishuname.trim() + "'" + ","
+	   						+ " '" + zhishucode.trim() + "'" + ","
+	   						+ " '" + "sz" + "'"
+	   						+ ")"
+	   						+ " ON DUPLICATE KEY UPDATE "
+	   						+ " 指数名称=" + " '" + zhishuname.trim() + "'" + ","
+	   						+ " 指数所属交易所=" + " '" + "sz" + "'" 
+	   						;
+            	   System.out.println(sqlinsertstat);
+	   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+//	                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+               }
+               
+		 } catch (Exception e) {
+			 e.printStackTrace();
+			 return -1;
+		 } finally {
+			 try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+             try {
+				dis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}     
+		 }
+		
+		return -1;
+	}
+//	private void refreshTDXZhiShuLists(File tmprecordfile) 
+//	{
+//		 	Set<String> tmpzhishusetnew = new HashSet();
+//			CachedRowSetImpl rsnew = null;
+//		    try {
+//		    	String sqlquerystat = "SELECT DISTINCT 指数板块 FROM 股票通达信交易所指数对应表" 
+//		    							;
+//		    	rsnew = connectdb.sqlQueryStatExecute(sqlquerystat);
+//		    	
+//		        rsnew.last();  
+//		        int rows = rsnew.getRow();  
+//		        rsnew.first();  
+//		        for(int j=0;j<rows;j++) {  
+//		        	String stockcode = rsnew.getString("指数板块");
+//		        	tmpzhishusetnew.add(stockcode);
+//		        	
+//		        	rsnew.next();
+//		        }
+//		        
+//		    }catch(java.lang.NullPointerException e){ 
+//		    	e.printStackTrace();
+//		    } catch (SQLException e) {
+//		    	e.printStackTrace();
+//		    }catch(Exception e){
+//		    	e.printStackTrace();
+//		    } finally {
+//	    	if(rsnew != null)
+//				try {
+//					rsnew.close();
+//					rsnew = null;
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//		    }
+//		    
+//		    Set<String> tmpzhishusetold = new HashSet();
+//			CachedRowSetImpl rsold = null;
+//		    try {
+//		    	String sqlquerystat = "SELECT DISTINCT 指数名称 FROM 通达信交易所指数列表" 
+//		    							;
+//		    	rsold = connectdb.sqlQueryStatExecute(sqlquerystat);
+//		    	
+//		    	rsold.last();  
+//		        int rows = rsold.getRow();  
+//		        rsold.first();  
+//		        for(int j=0;j<rows;j++) {  
+//		        	String stockcode = rsold.getString("指数名称");
+//		        	tmpzhishusetold.add(stockcode);
+//		        	
+//		        	rsold.next();
+//		        }
+//		        
+//		    }catch(java.lang.NullPointerException e){ 
+//		    	e.printStackTrace();
+//		    } catch (SQLException e) {
+//		    	e.printStackTrace();
+//		    }catch(Exception e){
+//		    	e.printStackTrace();
+//		    } finally {
+//	    	if(rsold != null)
+//				try {
+//					rsold.close();
+//					rsold = null;
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//		    }
+//		    try {
+//			    //把tmpstockcodesetnew里面有的，tmpstockcodesetold没有的选出，这是新的，要加入数据库
+//			        SetView<String> differencezhishunew = Sets.difference(tmpzhishusetnew, tmpzhishusetold ); 
+//	   		    for (String str : differencezhishunew) {
+//	   				
+//	   				String sqlinsertstat = "INSERT INTO  通达信交易所指数列表(指数名称) values ("
+//	   						+ "'" + str.trim() + "'"  
+//	   						+ ")"
+//	   						;	
+//	   				System.out.println(sqlinsertstat);
+//	   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+//	                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+//	   			}
+//	   		    
+//	   	        //把 tmpstockcodesetold 里面有的，tmpstockcodesetnew没有的选出，这是旧的，要从数据库中删除
+//	   	        SetView<String> differencezhishuold = Sets.difference(tmpzhishusetold,tmpzhishusetnew  );
+//	   	        for (String str : differencezhishuold) {
+//	   	        	String sqldeletetstat = "DELETE  FROM 通达信交易所指数列表"
+//	   	        							+ " WHERE 指数名称=" + "'" + str + "'" 
+//	   	        							;
+//	   	        	System.out.println(sqldeletetstat);
+//	   	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//					Files.append("删除：" + str.trim() + " " +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+//	   	        }
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}        
+//		    
+//		
+//		
+//	}
 	/*
 	 * 通达信的概念板块与个股对应
 	 */
@@ -1975,16 +2127,12 @@ public class BanKuaiDbOperation
 		String exportath = volamooutput.get(0);
 		String filenamerule = volamooutput.get(1);
 		String dateRule = volamooutput.get(2);
-//		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
-//		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
-//		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
-//		String dateRule = getTDXDateExportDateRule(Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(2)).get(1));
-				
+			
 		HashMap<String, BanKuai> allsysbk = this.getTDXAllZhiShuList ();
 		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
 		for(String tmpbkcode:allbkcode) {
-			//String bkfilename = allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim() + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
-			String bkfilename = (filenamerule.replaceAll("YY", allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim())).replaceAll("XXXXXX", tmpbkcode);
+
+			String bkfilename = (filenamerule.replaceAll("YY", allsysbk.get(tmpbkcode).getBanKuaiJiaoYiSuo().trim())).replaceAll("XXXXXX", tmpbkcode); 
 			File tmpbkfile = new File(exportath + "/" + bkfilename);
 			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
 			    continue; 
