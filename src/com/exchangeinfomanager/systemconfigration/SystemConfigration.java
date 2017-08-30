@@ -387,7 +387,7 @@ public class SystemConfigration
 			
 		}
 		public String getTDXZhiShuBanKuaiToGeGuFile() {
-			
+			 
 			return this.getTDXInstalledLocation() + "T0002/hq_cache/" + "block_zs.dat";
 			
 		}

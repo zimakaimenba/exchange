@@ -211,7 +211,7 @@ public class ImportTDXData extends JDialog {
 			}
 			
 			try {
-				File resulttmpfilezsamo = bkdbopt.refreshTDXZhiShuVolAmoToDb ();
+				File resulttmpfilezsamo = bkdbopt.refreshTDXZhiShuVolAmoToDb (); 
 				List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
