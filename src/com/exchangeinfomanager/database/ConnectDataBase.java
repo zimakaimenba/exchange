@@ -436,6 +436,7 @@ class DataBaseConnection
 			e1.printStackTrace();
 		}	catch(Exception e) {
 			System.out.println("数据库SQL执行失败");
+			System.out.println("出错SQL是:" + sqlstatement );
 			e.printStackTrace();
 		}finally {
 			if(rsquery != null)
@@ -476,6 +477,7 @@ class DataBaseConnection
             }
 		} catch(SQLException e)	{	
 			autoIncKeyFromApi = 0;
+			System.out.println("出错SQL是:" + sqlstatement );
 			e.printStackTrace();  
 		} finally {
 			if(rs!=null)
