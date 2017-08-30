@@ -884,9 +884,9 @@ public class BanKuaiDbOperation
                Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
                while (dis.read(itemBuf2, 0, sigbk) != -1) {
             	   String zhishuline =new String(itemBuf2,0,sigbk);
-            	   System.out.println(zhishuline);
+//            	   System.out.println(zhishuline);
             	   String zhishucode = zhishuline.trim().substring(0, 6);
-            	   System.out.println(zhishucode);
+//            	   System.out.println(zhishucode);
             	   
             	   if(  !(zhishucode.startsWith("99") || zhishucode.startsWith("00")) )
             		   continue;
@@ -899,7 +899,7 @@ public class BanKuaiDbOperation
             		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
             		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
             	   }
-            	   System.out.println(zhishuname);
+//            	   System.out.println(zhishuname);
             	   
             	   String sqlinsertstat = "INSERT INTO  通达信交易所指数列表(指数名称,板块ID,指数所属交易所) values ("
 	   						+ " '" + zhishuname.trim() + "'" + ","
@@ -961,9 +961,9 @@ public class BanKuaiDbOperation
                Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
                while (dis.read(itemBuf2, 0, sigbk) != -1) {
             	   String zhishuline =new String(itemBuf2,0,sigbk);
-            	   System.out.println(zhishuline);
+//            	   System.out.println(zhishuline);
             	   String zhishucode = zhishuline.trim().substring(0, 6);
-            	   System.out.println(zhishucode);
+//            	   System.out.println(zhishucode);
             	   
             	   if(  !zhishucode.startsWith("3990") )
             		   continue;
@@ -976,7 +976,7 @@ public class BanKuaiDbOperation
             		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
             		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
             	   }
-            	   System.out.println(zhishuname);
+//            	   System.out.println(zhishuname);
             	   
             	   String sqlinsertstat = "INSERT INTO  通达信交易所指数列表(指数名称,板块ID,指数所属交易所) values ("
 	   						+ " '" + zhishuname.trim() + "'" + ","
