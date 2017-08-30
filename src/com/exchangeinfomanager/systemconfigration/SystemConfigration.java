@@ -460,6 +460,20 @@ public class SystemConfigration
 			return systeminstalledpath + "个股产业链设置.xml";
 		}
 		/*
+		 * 指数对应关系文件shm.tnf
+		 */
+		public String getTDXShangHaiZhiShuNameFile ()
+		{
+			return this.getTDXInstalledLocation() + "T0002/hq_cache/" + "shm.tnf";
+		}
+		/*
+		 * 指数对应关系文件shm.tnf
+		 */
+		public String getTDXShenZhenShuNameFile ()
+		{
+			return this.getTDXInstalledLocation() + "T0002/hq_cache/" + "szm.tnf";
+		}
+		/*
 		 * 通达信曾用名文件
 		 */
 		public String getTDXStockEverUsedNameFile ()
