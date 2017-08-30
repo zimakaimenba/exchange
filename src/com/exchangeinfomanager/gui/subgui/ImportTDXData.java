@@ -77,7 +77,7 @@ public class ImportTDXData extends JDialog {
 		
 		File file = new File(sysconfig.getTDXStockEverUsedNameFile() );
 		if(!file.exists() ) {
-			 System.out.println("通达信目录不正确:" + tdxpath );
+			 System.out.println("通达信目录不正确:" + tdxpath ); 
 			 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前目录:" + tdxpath);
 			 dispose();
 		 }
@@ -294,7 +294,7 @@ public class ImportTDXData extends JDialog {
 		
 		pbarbankuai = new JProgressBar();
 		
-		progressBar_2 = new JProgressBar();
+		progressBar_2 = new JProgressBar(); 
 		
 		JScrollPane scrollPane = new JScrollPane();
 		

@@ -72,14 +72,10 @@ public class BanKuaiDbOperation
 	{
 		initializeDb ();
 		initialzieSysconf ();
-//		twelvezdgzxmlname = sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile();
-
 	}
 	
 	private  ConnectDataBase connectdb;
 	private  SystemConfigration sysconfig;
-//	private String twelvezdgzxmlname;
-	
 
 	private void initializeDb() 
 	{
