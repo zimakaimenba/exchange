@@ -946,6 +946,7 @@ public class StockDbOperations
 		}
 
         DbfRecord rec;
+        String sqlinsetstat = null;
         try (DbfReader reader = new DbfReader(dbf)) {
             DbfMetadata meta = reader.getMetadata();
 
@@ -953,9 +954,9 @@ public class StockDbOperations
             int recCounter = 0;
             while ( (rec = reader.read() ) != null) {
                 rec.setStringCharset(stringCharset);
-                System.out.println("Record is DELETED: " + rec.isDeleted());
-                System.out.println(rec.getRecordNumber());
-                System.out.println(rec.toMap());
+//                System.out.println("Record is DELETED: " + rec.isDeleted());
+//                System.out.println(rec.getRecordNumber());
+//                System.out.println(rec.toMap());
 //        		{SC=0, GPDM=000001, GXRQ=20170811, ZGB=1717041.12, GJG=180199.00, FQRFRG=12292000.00, FRG=54769000.00, BG=0.00, HG=0.00, LTAG=1691799.00, ZGG=0.68, 
 //        		ZPG=null, ZZC=3092142080.0, LDZC=0.0, GDZC=7961000.0, WXZC=4636000.0, CQTZ=379179.0, LDFZ=0.0, CQFZ=0.0, ZBGJJ=56465000.0, JZC=211454000.0, 
 //        		ZYSY=54073000.0, ZYLY=0.0, QTLY=0.0, YYLY=40184000.0, TZSY=739000.0, BTSY=-128180000.0, YYWSZ=-107760000.0, SNSYTZ=0.0, LYZE=16432000.0, 
@@ -1010,7 +1011,7 @@ public class StockDbOperations
                 int hy = Integer.parseInt(jbminfomap.get("HY").toString() );
                 int zbnb = Integer.parseInt(jbminfomap.get("ZBNB").toString() );
                 
-                String sqlinsetstat = "INSERT INTO 股票通达信基本面信息对应表 (股票代码GPDM, 总股本ZGB,更新日期GXRQ, GJG,FQRFRG,法人股FRG,B股BG,H股HG,流通A股LTAG,每股收益ZGG,"
+                 sqlinsetstat = "INSERT INTO 股票通达信基本面信息对应表 (股票代码GPDM, 总股本ZGB,更新日期GXRQ, GJG,FQRFRG,法人股FRG,B股BG,H股HG,流通A股LTAG,每股收益ZGG,"
                 														+  "ZPG,总资产ZZC,流动资产LDZC,固定资产GDZC,无形资产WXZC,股东人数CQTZ,流动负债LDFZ,少数股权CQFZ,"
                 														+ "公积金ZBGJJ,净资产JZC,主营收益ZYSY,营业成本ZYLY,应收帐款QTLY,营业利润YYLY,投资收益TZSY,"
                 														+ "经营现金流BTSY,总现金流YYWSZ,存货SNSYTZ,利润总额LYZE,税后利润SHLY,净利润JLY,"
@@ -1090,19 +1091,21 @@ public class StockDbOperations
                         					+ " 行业HY=" + hy +","
                         					+ " ZBNB=" + zbnb
                         					; 
-              System.out.println(sqlinsetstat);
+//              System.out.println(sqlinsetstat);
               connectdb.sqlUpdateStatExecute(sqlinsetstat);
                 		              		
                 recCounter++;
                 //assertEquals(recCounter, rec.getRecordNumber());
             }
         } catch (IOException e1) {
-			
+        	System.out.println("出错SQL是:" + sqlinsetstat);
 			e1.printStackTrace();
 		} catch (ParseException e2) {
+			System.out.println("出错SQL是:" + sqlinsetstat);
 			
 			e2.printStackTrace();
 		} catch (Exception e3) {
+			System.out.println("出错SQL是:" + sqlinsetstat);
 			e3.printStackTrace();
 		}
         
