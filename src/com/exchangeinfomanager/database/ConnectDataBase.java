@@ -469,6 +469,7 @@ class DataBaseConnection
 			sqlstat.executeUpdate(sqlstatement,Statement.RETURN_GENERATED_KEYS);
 
 			 rs = sqlstat.getGeneratedKeys();
+			 
 			 if (rs.next()) {
 			      autoIncKeyFromApi = rs.getInt(1);
 			    }

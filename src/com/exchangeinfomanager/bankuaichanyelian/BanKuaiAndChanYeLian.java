@@ -49,8 +49,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -66,6 +68,7 @@ import com.google.common.io.LineProcessor;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JSeparator;
 import javax.swing.JScrollPane;
@@ -595,6 +598,15 @@ public class BanKuaiAndChanYeLian extends JPanel
 	}	    
 	private void createEvents() 
 	{
+		buttonCjlFx.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				chengJiaoLiangFengXi ();
+			}
+		});
+		
+		
 		notesPane.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -957,6 +969,24 @@ public class BanKuaiAndChanYeLian extends JPanel
 			}
 	    
 	
+	protected void chengJiaoLiangFengXi() 
+	{
+		
+//		if(bkfx == null ) {
+			BanKuaiFengXi bkfx = new BanKuaiFengXi (treechanyelian,tfldparsefilename.getText());
+			bkfx.setModal(false);
+			bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			bkfx.setVisible(true);
+//		} 
+		
+//		if(!bkfx.isVisible() ) {
+//			bkfx.setVisible(true);
+//		 } 
+		bkfx.toFront();
+		
+		
+	}
+
 	protected void addGeGuNews() 
 	{
 		int row = tablebkgegu.getSelectedRow();
@@ -1170,6 +1200,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private JMenuItem mntmNewMenuItem;
 	private JTable tablesubcyl;
 	private JEditorPane notesPane;
+	private JButton buttonCjlFx;
 
 	private void initializeGui() 
 	{
@@ -1234,6 +1265,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 		btnopencylxml = new JButton("\u6253\u5F00XML");
 		
+		buttonCjlFx = new JButton("\u6210\u4EA4\u91CF\u5206\u6790");
+		
+		
 		GroupLayout gl_panelcyltree = new GroupLayout(panelcyltree);
 		gl_panelcyltree.setHorizontalGroup(
 			gl_panelcyltree.createParallelGroup(Alignment.LEADING)
@@ -1245,11 +1279,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 								.addGroup(gl_panelcyltree.createSequentialGroup()
 									.addComponent(deleteButton)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnopencylxml)
-									.addGap(64)
 									.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnfindbk))
+									.addComponent(btnfindbk)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(btnopencylxml)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(buttonCjlFx))
 								.addComponent(jSplitPane, GroupLayout.PREFERRED_SIZE, 504, GroupLayout.PREFERRED_SIZE))
 							.addGap(10)
 							.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
@@ -1267,13 +1303,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 										.addComponent(btnAddSubBk)
-										.addComponent(scrollPanesubbk, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE))))
-							.addGap(122))
+										.addComponent(scrollPanesubbk, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE)))))
 						.addGroup(gl_panelcyltree.createSequentialGroup()
 							.addComponent(btnCylAddToZdgz)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnCylRemoveFromZdgz)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap(11, Short.MAX_VALUE))
 		);
 		gl_panelcyltree.setVerticalGroup(
 			gl_panelcyltree.createParallelGroup(Alignment.LEADING)
@@ -1303,14 +1338,14 @@ public class BanKuaiAndChanYeLian extends JPanel
 					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
 							.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-							.addComponent(btnopencylxml, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
 							.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(btnfindbk))
+							.addComponent(btnfindbk)
+							.addComponent(btnopencylxml, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+							.addComponent(buttonCjlFx))
 						.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
 							.addComponent(tfldfindgegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addComponent(btnfindgegu)))
-					.addGap(12))
+					.addGap(13))
 		);
 		
 		BanKuaiSubChanYeLianTableModel subcylmode = new BanKuaiSubChanYeLianTableModel ();

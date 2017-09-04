@@ -44,6 +44,8 @@ import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.jfree.chart.ChartFactory;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.bankuai.gui.BanKuai;
@@ -2402,18 +2404,12 @@ public class BanKuaiDbOperation
 	public Date getTDXRelatedTableLastModfiedTime() 
 	{
 		Date lastesttdxtablesmdftime = null;
-        lastesttdxtablesmdftime =  sysconfig.formateStringToDate("1900-01-01 00:00:00"); //"yyyy-MM-dd HH:mm:ss"
+//        lastesttdxtablesmdftime =  sysconfig.formateStringToDate("1900-01-01 00:00:00"); //"yyyy-MM-dd HH:mm:ss"
 		
 		HashMap<String,String> sqlstatmap = new HashMap<String,String> (); 
-		String[] rmtservertable = { "通达信交易所指数列表","通达信板块列表" };
-		for(String tablename:rmtservertable) {
-			String sqlquerystat = null;
-			sqlquerystat = " SELECT UPDATE_TIME   " 
-						   +" FROM   information_schema.tables "
-						   +" WHERE  TABLE_SCHEMA = 'stockinfomanagementtest' "
-						   +" AND TABLE_NAME = '" + tablename + "' "
+		
+			String sqlquerystat = " SELECT MAX(数据最新更新时间) FROM 通达信板块列表" 
 						   ;
-			System.out.println(sqlquerystat);
 			sqlstatmap.put("mysql", sqlquerystat);
 			
 			CachedRowSetImpl rs = null; 
@@ -2422,17 +2418,19 @@ public class BanKuaiDbOperation
 		    	 
 		    	 java.sql.Timestamp tmplastmdftime = null;
 		    	 while(rs.next())
-		    		  tmplastmdftime = rs.getTimestamp("UPDATE_TIME");
+		    		  tmplastmdftime = rs.getTimestamp("MAX(数据最新更新时间)");
 		    	 System.out.println(tmplastmdftime);
-		    	 if(tmplastmdftime == null)
-		    		 lastesttdxtablesmdftime = sysconfig.formateStringToDate( sysconfig.formatDate(new Date() ) );
-		    	 else if(tmplastmdftime.after(lastesttdxtablesmdftime))
-		    		 	lastesttdxtablesmdftime = tmplastmdftime; 
-		    }catch(java.lang.NullPointerException e){ 
+		    	 lastesttdxtablesmdftime = tmplastmdftime;
+
+		    }catch(java.lang.NullPointerException e){
+		    	lastesttdxtablesmdftime = null;
 		    	e.printStackTrace();
 		    } catch (SQLException e) {
+		    	System.out.println(sqlquerystat);
+		    	lastesttdxtablesmdftime = null;
 		    	e.printStackTrace();
 		    }catch(Exception e){
+		    	lastesttdxtablesmdftime = null;
 		    	e.printStackTrace();
 		    }  finally {
 		    	if(rs != null)
@@ -2444,8 +2442,6 @@ public class BanKuaiDbOperation
 					}
 		    }
 			
-		}
-		
 		return lastesttdxtablesmdftime;
 	}
 	public boolean getTDXRelatedTablesStatus()
@@ -2818,13 +2814,247 @@ public class BanKuaiDbOperation
 			switch(databasetype) {
 			case "access": return "#" + dbdate + "#";
 							
-			case "mysql":  return "\"" + dbdate + "\"";
+			case "mysql":  return "\'" + dbdate + "\'";
 							
 			}
 		} else
 			return null;
 		return null;
 	}
+	/*
+	 * 板块成交额占比，以占比增长率排名
+	 */
+	public HashMap<String,Double> getBanKuaiFengXiBarInfoOfChenJiaoErZhanBiOrderByZhanBiGrowthRate(Date bkfxdate)
+	{
+		if(!precheckBeforeBanKuaiFengXi ( bkfxdate))
+			return null;
+		
+		HashMap<String, BanKuai> curdaleidetaillistmap = this.getTDXBanKuaiList();
+		Set<String> curdaleidetaillistset = curdaleidetaillistmap.keySet();
+		String fengxidate = formateDateForDiffDatabase("mysql",sysconfig.formatDate(bkfxdate).substring(0,10));
+		
+		HashMap<String,Double> bkfxzhanbimap = new HashMap<String,Double> ();
+		//上周的交易占比
+		String sqlquerystat = "SELECT  CALYEAR ,  CALWEEK,  BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称`"
+				+ "	FROM  ("
+				+ "	SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE ,"
+				+ " SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
+				+ "	FROM  通达信板块每日交易信息 BKJYE"
+				+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
+				+ "	ON ZSJYE.代码 in ('999999','399001' )"
+				+ "    AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
+				+ "    AND Year(BKJYE.`交易日期`) = YEAR(NOW())"
+				+ "    AND BKJYE.`交易日期` BETWEEN DATE_SUB( " +  fengxidate + " , INTERVAL( DAYOFWEEK( " +  fengxidate + " ) +5  )	DAY )"
+				+ "  						AND DATE_SUB( " +  fengxidate + " , INTERVAL( DAYOFWEEK( " +  fengxidate + " )   ) DAY )"
+				+ "	GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
+				+ "	) X"
+				+ "	,通达信板块列表 BKLB"
+				+ "	WHERE BKCODE = BKLB.`板块ID`"
+				;
+				
+		System.out.println(sqlquerystat);
+		CachedRowSetImpl rs = null;
+		try {
+			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+   		 	while(rs.next()) {
+   		 		String bkname = rs.getString("板块名称");
+   		 		String bkcode = rs.getString("BKCODE");
+   		 		Double bkzhanbi = rs.getDouble("占比");
+   		 		
+   		 		bkfxzhanbimap.put(bkcode, bkzhanbi);
+   		 	}
+		}catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    }  finally {
+	    	if(rs != null)
+				try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+		
+		//这周的交易占比
+		sqlquerystat = "	SELECT  CALYEAR ,  CALWEEK,  BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称` "
+				+ "FROM  ("
+				+ "	SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE,"
+				+ "       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
+				+ "	FROM  通达信板块每日交易信息 BKJYE"
+				+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
+				+ "	ON ZSJYE.代码 in ('999999','399001' )"
+				+ "    AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
+				+ "    AND Year(BKJYE.`交易日期`) = YEAR(" +  fengxidate + " )"
+				+ "    AND BKJYE.`交易日期` BETWEEN DATE_SUB( " +  fengxidate + " ,  INTERVAL( WEEKDAY( " +  fengxidate + " ) ) DAY ) AND " +  fengxidate  
+				+ " GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
+				+ ") X"
+				+ ",通达信板块列表 BKLB"
+				+ "	WHERE BKCODE = BKLB.`板块ID`"
+				+ "	ORDER BY 占比 desc"
+				;
+		System.out.println(sqlquerystat);
+		CachedRowSetImpl rssz = null; 
+		try {  
+		 	 rssz = connectdb.sqlQueryStatExecute(sqlquerystat);
+		 	 while(rssz.next()) {
+		 		String bkname = rssz.getString("板块名称");
+   		 		String bkcode = rssz.getString("BKCODE");
+   		 		Double bkbenzhouzb  = rssz.getDouble("占比");
+   		 		
+   		 		try{
+	   		 		Double bkzhanbi = bkfxzhanbimap.get(bkcode);
+	   		 		Double bkzbgrowthrate = (bkbenzhouzb - bkzhanbi)/bkzhanbi;
+	   		 		bkfxzhanbimap.put(bkcode, bkzbgrowthrate); 
+   		 		} catch(java.lang.NullPointerException e){
+   		 			//没有，说明是新板块，怎么处理？
+   		 			bkfxzhanbimap.put(bkcode, 10000.0); //暂时设置增长率为10000
+   		 		}
+		 		 
+		 	 }
+		} catch(java.lang.NullPointerException e){ 
+		 	e.printStackTrace();
+		} catch (SQLException e) {
+		 	System.out.println(sqlquerystat);
+		 	e.printStackTrace();
+		} catch(Exception e){
+		 	e.printStackTrace();
+		} finally {
+		 	if(rssz != null)
+					try {
+						rssz.close();
+						rssz = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+		 }
+		
+		return bkfxzhanbimap;
+	}
+	/*
+	 * 检查设定日期周的数据是否完整
+	 */
+	private boolean precheckBeforeBanKuaiFengXi(Date bkfxdate)
+	{
+		String sqlquerystat = " SELECT MAX(交易日期) FROM 通达信交易所指数每日交易信息" ;
+		boolean dataisfull = false;
+
+		CachedRowSetImpl rs = null; 
+		try {  
+		 	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+		 	 
+		 	 java.sql.Timestamp tmplastmdftime = null;
+		 	 while(rs.next())
+		 		  tmplastmdftime = rs.getTimestamp("MAX(交易日期)");
+		 	 System.out.println(tmplastmdftime);
+		 	 
+		 	 Calendar cal = Calendar.getInstance();
+		 	 cal.setTime(bkfxdate);
+		 	 int whichdays = cal.get(Calendar.DAY_OF_WEEK);
+		 	 
+		 	 cal.add(cal.DATE, 6-whichdays); //计算出周五的日期
+		 	 Date checkdate = cal.getTime();
+		 	 if(tmplastmdftime.after(checkdate) || isSameDate(tmplastmdftime,checkdate) )
+		 		 dataisfull = true;
+		 	 else 
+		 		 dataisfull = false;
+		 		
+		 }catch(java.lang.NullPointerException e){ 
+		 	e.printStackTrace();
+		 } catch (SQLException e) {
+		 	System.out.println(sqlquerystat);
+		 	e.printStackTrace();
+		 }catch(Exception e){
+		 	e.printStackTrace();
+		 }  finally {
+		 	if(rs != null)
+					try {
+						rs.close();
+						rs = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+		 }
+		
+		return dataisfull;
+				
+	}
+	private boolean isSameDate(Date date1, Date date2) {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(date1);
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date2);
+
+        boolean isSameYear = cal1.get(Calendar.YEAR) == cal2
+                .get(Calendar.YEAR);
+        boolean isSameMonth = isSameYear
+                && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
+        boolean isSameDate = isSameMonth
+                && cal1.get(Calendar.DAY_OF_MONTH) == cal2
+                        .get(Calendar.DAY_OF_MONTH);
+
+        return isSameDate;
+    }
+	/*
+	 * 板块成交额占比，以占比排序
+	 */
+	public DefaultCategoryDataset getBanKuaiFengXiBarInfoOfChenJiaoErZhanBiOrderByZhanBi(Date bkfxdate) 
+	{
+		HashMap<String, BanKuai> curdaleidetaillistmap = this.getTDXBanKuaiList();
+		Set<String> curdaleidetaillistset = curdaleidetaillistmap.keySet();
+		String fengxidate = formateDateForDiffDatabase("mysql",sysconfig.formatDate(bkfxdate).substring(0,10)); 
+		
+		String sqlquerystat = "	SELECT  CALYEAR ,  CALWEEK,  BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称` "
+				+ "FROM  ("
+				+ "	SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE,"
+				+ "       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
+				+ "	FROM  通达信板块每日交易信息 BKJYE"
+				+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
+				+ "	ON ZSJYE.代码 in ('999999','399001' )"
+				+ "    AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
+				+ "    AND Year(BKJYE.`交易日期`) = YEAR(" +  fengxidate + " )"
+				+ "    AND BKJYE.`交易日期` BETWEEN DATE_SUB( " +  fengxidate + " ,  INTERVAL( WEEKDAY( " +  fengxidate + " ) ) DAY ) AND " +  fengxidate  
+				+ " GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
+				+ ") X"
+				+ ",通达信板块列表 BKLB"
+				+ "	WHERE BKCODE = BKLB.`板块ID`"
+				+ "	ORDER BY 占比 desc"
+				;
+		System.out.println(sqlquerystat);
+		CachedRowSetImpl rs = null;
+		DefaultCategoryDataset barchart_dataset = new DefaultCategoryDataset();
+		try {
+			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+   		 	while(rs.next()) {
+   		 		String bkname = rs.getString("板块名称");
+   		 		String bkcode = rs.getString("BKCODE");
+   		 		Double bkzhanbi = rs.getDouble("占比");
+   		 		
+   		 		barchart_dataset.addValue(bkzhanbi, "板块成交额占比", bkname);
+   		 	}
+		}catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    }  finally {
+	    	if(rs != null)
+				try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+		
+		return barchart_dataset;
+	}
+	
 	
 
 }

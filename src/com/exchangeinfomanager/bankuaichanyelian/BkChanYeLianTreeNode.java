@@ -26,31 +26,21 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
     }
 
     private String suoshutdxbkzscode; //所属通达信板块指数代码
-	//private String bkname;
-	private ArrayList<String> hanyupingyin;
-	private String myowncode; //node自己的code,对通达信板块就是板块指数，和tdxbkzscode一致，对子板块，就是子板块code，对个股就是个股代码
-    
+	private ArrayList<String> hanyupingyin; //汉语拼音
+	
 	public static int  TDXBK = 4, SUBBK = 5, BKGEGU = 6;
     private int nodetype;
-    private boolean expanded;
+	private String myowncode; //node自己的code,对通达信板块就是板块指数，和tdxbkzscode一致，对子板块，就是子板块code，对个股就是个股代码
+
+	private boolean expanded;
    
-    //private String noteText = null;
-//    private HanYuPinYing hypy;
-	
-	private HashSet<String> parsefilestockset;
+	private HashSet<String> parsefilestockset; //板块解析文件内含有的该板块列表
 	
 	private boolean isofficallyselected ;
 	private int inzdgzofficalcount =0;
 	private int inzdgzcandidatecount =0;
-	
-	//private TreePath pathintree;
-
-	
 	private Date selectedtime;
 	
-	
-//    private boolean willbedeleted = false;
-//    private boolean isnewbk = false;
     
 	public void setTongDaXingBanKuaiCode (String tdxcode)
 	{

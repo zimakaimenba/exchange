@@ -161,9 +161,12 @@ public class ChanYeLianXMLHandler2
 		System.out.println(calfilemdf.getTime() );
 		
 		Date bklastmodifiedtimeindb = bkopt.getTDXRelatedTableLastModfiedTime ();
+		if(bklastmodifiedtimeindb == null)
+			return false;
+		
 		Calendar  caldbmdf =  Calendar.getInstance();
 		caldbmdf.setTime(bklastmodifiedtimeindb);
-		System.out.println(caldbmdf.getTime() );
+		//System.out.println(caldbmdf.getTime() );
 		
 //		return true;//≤‚ ‘”√
 		if(caldbmdf.after(calfilemdf)) {
