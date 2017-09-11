@@ -24,6 +24,7 @@ import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
 import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 
 import javax.swing.GroupLayout;
@@ -35,6 +36,8 @@ import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.JScrollPane;
@@ -50,14 +53,17 @@ import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
@@ -83,11 +89,14 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
+import com.sun.rowset.CachedRowSetImpl;
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.TableCellListener;
+import com.exchangeinfomanager.gui.subgui.BoxAndWhiskerDemo;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
+import com.exchangeinfomanager.gui.subgui.GeGuBanKuaiZhanBiFengXi;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
@@ -105,8 +114,11 @@ import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.border.BevelBorder;
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -117,8 +129,18 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
@@ -126,6 +148,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EtchedBorder;
@@ -134,6 +157,7 @@ import java.awt.FlowLayout;
 
 import javax.swing.JTextPane;
 import javax.swing.JTabbedPane;
+import net.miginfocom.swing.MigLayout;
 
 
 public class StockInfoManager 
@@ -221,6 +245,45 @@ public class StockInfoManager
 	private ChanYeLianXMLHandler2 cylxmlhandler;
 	
 
+	public void preUpdateSearchResultToGui(String stockcode) 
+	{
+			btngengxinxx.setEnabled(false);
+			clearGuiDispalyedInfo ();
+			
+			if(accountschicangconfig.isSystemChiCang(stockcode)) {
+				//stockbasicinfo = accountschicangconfig.getStockChiCangdetailmap().get(stockcode);
+				stockbasicinfo = accountschicangconfig.getChicangStock(stockcode);
+			} else {
+				stockbasicinfo = new ASingleStockInfo(stockcode);
+			}
+			
+			stockbasicinfo = stockdbopt.getSingleStockBasicInfo(stockbasicinfo);
+
+			if(stockbasicinfo.isaNewDtockCodeIndicate()) {
+				lblStatusBarOperationIndicatior.setText("");
+				lblStatusBarOperationIndicatior.setText("股票代码不存在，可以在输入相关信息后点击 更新 按钮！");
+				JOptionPane.showMessageDialog(null,"股票代码不存在，可以在输入相关信息后点击 更新 按钮！");
+				initializeNetWorkOperation (stockcode); //生成对应的网站网址
+			} else {
+				stockbasicinfo = stockdbopt.getCheckListsXMLInfo (stockbasicinfo);
+				stockbasicinfo = stockdbopt.getZdgzMrmcZdgzYingKuiFromDB(stockbasicinfo);
+				stockbasicinfo = stockdbopt.getTDXBanKuaiInfo (stockbasicinfo); //通达信板块信息
+				stockbasicinfo = cylxmlhandler.getStockChanYeLianInfo (stockbasicinfo);
+			 
+				displayStockJibenmianInfotoGui ();
+				displayAccountTableToGui ();
+				displaySellBuyZdgzInfoToGui ();
+				displayStockSuoShuBanKuai ();
+				initializeNetWorkOperation (stockcode); //生成对应的网站网址
+				setKuaiSuGui (stockcode);
+				if(buychklstdialog!= null ) {
+					displayChecklistsItemsToGui ();
+				}
+			}
+			//initializeNetWorkOperation (stockcode); //生成对应的网站网址
+			enableGuiEditable();
+	}
+
 /*
  * @数据库可以有2个数据库，一个存放基本数据，一个存放通达信同步数据，这样减轻基本数据库的负荷	
  */
@@ -304,9 +367,43 @@ public class StockInfoManager
 
 	private void createEvents()
 	{
-		/*
-		 * 导入交易记录
-		 */
+		btnbankuaifengxi.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				computerSuoSuBanKuaiZhanbi ();
+				
+			}
+		});
+		
+		
+		//为个股板块信息的hyperlink注册时间  http://www.javalobby.org/java/forums/t19716.html
+		 ActionMap actionMap = new ActionMap(); 
+	     actionMap.put("openBanKuaiAndChanYeLianDialog", new AbstractAction (){
+			public void actionPerformed(ActionEvent e) {
+				 	HyperlinkEvent hle = (HyperlinkEvent)e.getSource(); 
+			        try{
+			        	Element elem = hle.getSourceElement(); 
+			            Document doc = elem.getDocument(); 
+			            int start = elem.getStartOffset(); 
+			            int end = elem.getEndOffset(); 
+			            String link = doc.getText(start, end-start);
+			            System.out.println(link);
+//			            link = link.equals("contains people") ? "" : link.substring("contains ".length()); 
+			            StringTokenizer stok = new StringTokenizer(link, ", "); 
+			            while(stok.hasMoreTokens()){ 
+			                String token = stok.nextToken(); 
+			            }
+			        } catch(BadLocationException ex){ 
+			            ex.printStackTrace(); 
+			        }
+				startBanKuaiGuanLiDlg ();
+			}
+	     }); 
+	    txaBanKuai.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
+
+			/*
+			 * 导入交易记录
+			 */
 		menuItemimportrecords.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -400,7 +497,7 @@ public class StockInfoManager
 			{
 				String stockcode = "";
 				try{
-					stockcode = cBxstockcode.getSelectedItem().toString();
+					stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
 				} catch (java.lang.NullPointerException ex) {
 					ex.printStackTrace();
 				} 
@@ -657,7 +754,7 @@ public class StockInfoManager
 			
 		});
 		/*
-		 * 目前可以对当日的买入记录更改买入账号
+		 * 目前可以对当日的买入记录更改买入账号,卖出记录因为涉及情况比较多，不支持
 		 */
 		menuItemGenggai.addActionListener(new ActionListener() 
 		{
@@ -751,49 +848,6 @@ public class StockInfoManager
 			}
 	
 		});
-
-		/*
-		 * 买入记录快速保存
-		 */
-		btnKsBaoCun.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) 
-			{
-				try {
-					
-					@SuppressWarnings("unused")
-					int stocknumber = kspanel.getJiaoyiGushu();
-					@SuppressWarnings("unused")
-					double stockprice = kspanel.getJiaoyiJiage();
-				} catch (java.lang.NumberFormatException ex) {
-					JOptionPane.showMessageDialog(frame, "股价或股数输入有误，请重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				
-				if(btngengxinxx.isEnabled() == true) {
-					int action = JOptionPane.showConfirmDialog(null, "更改后的信息未存！是否需要保存？","Warning", JOptionPane.YES_NO_OPTION);
-					if(0 == action) {
-						setGuiInfoToDatabase();
-					}
-				}
-				
-				kspanel.setActionDay(new Date());
-				int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
-				
-				if(autoIncKeyFromApi > 0) {
-					cBxstockcode.setSelectedItem(kspanel.getStockcode());
-					preUpdateSearchResultToGui(kspanel.getStockcode());
-					updateStockCombox();
-					
-					kspanel.resetInput(); 
-				} else {
-					JOptionPane.showMessageDialog(frame, "账户现金余额可能不足，无法买入！","Warning", JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				
-				refreshChiCangAccountPanel ();
-			}
-		});
 		/*
 		 * 送转股票
 		 */
@@ -832,6 +886,12 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
+				if(kspanel.getJiaoyiGushu()>0 && kspanel.getJiaoyiJiage()>0) {
+					saveKuaiSuJiLuJiaoYi ();
+					return ;
+				}
+					
+					
 				BuyStockNumberPrice stocknumberpricepanel = new BuyStockNumberPrice ( formatStockCode((String)cBxstockcode.getSelectedItem()),accountschicangconfig,true);
 				int exchangeresult = JOptionPane.showConfirmDialog(null, stocknumberpricepanel, "买入交易细节", JOptionPane.OK_CANCEL_OPTION);
 				System.out.print(exchangeresult);
@@ -1487,6 +1547,60 @@ public class StockInfoManager
 		
 				
 }
+protected void computerSuoSuBanKuaiZhanbi() 
+{
+		HashMap<String, String> suosubk = stockbasicinfo.getSuoShuTDXSysBanKuai();
+		GeGuBanKuaiZhanBiFengXi dialogbkfx = new GeGuBanKuaiZhanBiFengXi(suosubk);
+//		BoxAndWhiskerDemo demo = new BoxAndWhiskerDemo();
+		dialogbkfx.getContentPane().add(dialogbkfx.getChartPanel(), BorderLayout.CENTER);
+		dialogbkfx.getContentPane().add(dialogbkfx.getControlPanel(), BorderLayout.SOUTH);
+		dialogbkfx.pack();
+		dialogbkfx.setLocationRelativeTo(null);
+		dialogbkfx.setVisible(true);
+		
+	
+	
+	
+}
+
+protected void saveKuaiSuJiLuJiaoYi() 
+{
+	try {
+		
+		@SuppressWarnings("unused")
+		int stocknumber = kspanel.getJiaoyiGushu();
+		@SuppressWarnings("unused")
+		double stockprice = kspanel.getJiaoyiJiage();
+	} catch (java.lang.NumberFormatException ex) {
+		JOptionPane.showMessageDialog(frame, "股价或股数输入有误，请重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
+		return;
+	}
+	
+	if(btngengxinxx.isEnabled() == true) {
+		int action = JOptionPane.showConfirmDialog(null, "更改后的信息未存！是否需要保存？","Warning", JOptionPane.YES_NO_OPTION);
+		if(0 == action) {
+			setGuiInfoToDatabase();
+		}
+	}
+	
+	kspanel.setActionDay(new Date());
+	int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
+	
+	if(autoIncKeyFromApi > 0) {
+		cBxstockcode.setSelectedItem(kspanel.getStockcode());
+		preUpdateSearchResultToGui(kspanel.getStockcode());
+		updateStockCombox();
+		
+		kspanel.resetInput(); 
+	} else {
+		JOptionPane.showMessageDialog(frame, "账户现金余额可能不足，无法买入！","Warning", JOptionPane.WARNING_MESSAGE);
+		return;
+	}
+	
+	refreshChiCangAccountPanel ();
+	
+}
+
 protected void startBanKuaiGuanLiDlg()
 {
 	if(bkgldialog == null ) {
@@ -1658,83 +1772,60 @@ protected void startBanKuaiGuanLiDlg()
 	}	
 	
 	
-	public void preUpdateSearchResultToGui(String stockcode) 
-	{
-			btngengxinxx.setEnabled(false);
-			clearGuiDispalyedInfo ();
-			
-			if(accountschicangconfig.isSystemChiCang(stockcode)) {
-				//stockbasicinfo = accountschicangconfig.getStockChiCangdetailmap().get(stockcode);
-				stockbasicinfo = accountschicangconfig.getChicangStock(stockcode);
-			} else {
-				stockbasicinfo = new ASingleStockInfo(stockcode);
-			}
-			
-			stockbasicinfo = stockdbopt.getSingleStockBasicInfo(stockbasicinfo);
-			
-
-			if(stockbasicinfo.isaNewDtockCodeIndicate()) {
-				lblStatusBarOperationIndicatior.setText("");
-				lblStatusBarOperationIndicatior.setText("股票代码不存在，可以在输入相关信息后点击 更新 按钮！");
-				JOptionPane.showMessageDialog(null,"股票代码不存在，可以在输入相关信息后点击 更新 按钮！");
-				initializeNetWorkOperation (stockcode); //生成对应的网站网址
-//				return;
-			} else {
-				stockbasicinfo = stockdbopt.getCheckListsXMLInfo (stockbasicinfo);
-				stockbasicinfo = stockdbopt.getZdgzMrmcZdgzYingKuiFromDB(stockbasicinfo);
-				stockbasicinfo = stockdbopt.getTDXBanKuaiInfo (stockbasicinfo); //通达信板块信息
-				stockbasicinfo = cylxmlhandler.getStockChanYeLianInfo (stockbasicinfo);
-			 
-				displayStockJibenmianInfotoGui ();
-				displayAccountTableToGui ();
-				displaySellBuyZdgzInfoToGui ();
-				displayStockSuoShuBanKuai ();
-				initializeNetWorkOperation (stockcode); //生成对应的网站网址
-				setKuaiSuGui (stockcode);
-				if(buychklstdialog!= null ) {
-					displayChecklistsItemsToGui ();
-				}
-				
-				
-	
-			}
-			//initializeNetWorkOperation (stockcode); //生成对应的网站网址
-			
-			enableGuiEditable();
-
-			
-	}
-/*
+	/*
  * 显示板块信息
  */
 	private void displayStockSuoShuBanKuai() 
 	{
-		HashSet<String> suosusysbankuai = stockbasicinfo.getSuoShuTDXSysBanKuai(); //所属通达信系统板块
-		HashSet<String> suosuzdybankuai = stockbasicinfo.getSuoShuTDXZdyBanKuai(); //所属通达信自定义板块
-		
-		
-		SetView union = Sets.union(suosusysbankuai, suosuzdybankuai);
-		Multimap<String,Set<String>> daleibank = zdgzbkxmlhandler.subBkSuoSuTwelveDaLei (union); //获得板块是否属于12个大类板块
-		javax.swing.text.Document docs = txaBanKuai.getDocument();
-		if(daleibank.size()>0) {
-			SimpleAttributeSet attrset = new SimpleAttributeSet();
-		    StyleConstants.setForeground(attrset,Color.RED);
-		    StyleConstants.setBold(attrset,true);
-			try {
-				docs.insertString(docs.getLength(), "在重点关注板块中：" + daleibank.toString() + "\n", attrset);
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		try {
-			docs.insertString(docs.getLength(),"所属板块：" + suosusysbankuai.toString() + suosuzdybankuai.toString() + "\n",null) ;
-			docs.insertString(docs.getLength(),"产业链：" + stockbasicinfo.gettChanYeLianInfo().toString() + "\n",null) ;
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
-		txaBanKuai.setCaretPosition(0);
+		 HashMap<String, String> suosusysbankuai = stockbasicinfo.getSuoShuTDXSysBanKuai(); //所属通达信系统板块
+//		HashSet<String> suosuzdybankuai = stockbasicinfo.getSuoShuTDXZdyBanKuai(); //所属通达信自定义板块
+//		 SetView union = Sets.union(suosusysbankuai, suosuzdybankuai);
+		 Set<String> union =  suosusysbankuai.keySet();
+		 Multimap<String,String> suoshudaleibank = zdgzbkxmlhandler.subBkSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
+		 
+		 String htmlstring = "<html> "
+		 		+ "<body>"
+		 		+ " <p>所属板块:";
+	     for(String suoshubankcode : union ) {
+	    	 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
+	    	 if(daleilist.size()>0)
+	    			htmlstring  +=   "<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + suosusysbankuai.get(suoshubankcode) + daleilist.toString()  + "</a> ";
+	    		else
+	    			htmlstring  += "<a href=\"openBanKuaiAndChanYeLianDialog\"> " + suosusysbankuai.get(suoshubankcode) + "</a> ";
+	     } 
+	     htmlstring += "</p>";
+	     		
+	     
+	     String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+	     ArrayList<String> gegucyl = this.cylxmlhandler.getGeGuChanYeLian(stockcode);
+	     for(String cyl : gegucyl) {
+	    	 htmlstring += " <p>个股产业链:"
+	    	 		+ "<a  href=\"openBanKuaiAndChanYeLianDialog\">  " + cyl
+	    	 		;
+	     }
+	     if(gegucyl.size()>0)
+	    	 htmlstring += "</p>";
+	    	 
+	     ArrayList<ChanYeLianNews> curnewlist = bkdbopt.getBanKuaiRelatedNews (stockcode);
+	     if(curnewlist.size()>0)
+	    	 htmlstring += "<p>个股新闻</p>";
+	     for(ChanYeLianNews cylnew : curnewlist ) {
+	    		String title = cylnew.getNewsTitle();
+	    		String newdate = sysconfig.formatDate(cylnew.getGenerateDate() ).substring(0,11); 
+	    		String slackurl = cylnew.getNewsSlackUrl();
+	    		String keywords = cylnew.getKeyWords ();
+	    		if(slackurl != null && !slackurl.isEmpty() )	    		
+	    			htmlstring  += "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ";
+	    		else
+	    			htmlstring  += "<p>" + newdate  + title + "</p> ";
+	    		//notesPane.setText("<a href=\"http://www.google.com/finance?q=NYSE:C\">C</a>, <a href=\"http://www.google.com/finance?q=NASDAQ:MSFT\">MSFT</a>");
+	    	}
+	     
+	     htmlstring += "</body>"
+  						+ "</html>";
+	     
+	     txaBanKuai.setText(htmlstring);
+	     txaBanKuai.setCaretPosition(0);
 	}
 
 
@@ -1974,6 +2065,7 @@ protected void startBanKuaiGuanLiDlg()
 		
 		//btnAddZdy.setEnabled(true);
 		btnRemvZdy.setEnabled(true);
+		btnbankuaifengxi.setEnabled(true);
 
 	}
 	
@@ -2146,7 +2238,7 @@ protected void startBanKuaiGuanLiDlg()
 	private JButton btnjiaruzdgz;
 	private JButton btnyichuzdgz;
 	private JScrollPane sclpaneJtable;
-	private JTextPane txaBanKuai;
+	private JEditorPane  txaBanKuai;
 	private JPopupMenu popupMenu;
 	private JMenuItem mntmChengjiao;
 	private JButton btnSongZhuanGu;
@@ -2169,13 +2261,13 @@ protected void startBanKuaiGuanLiDlg()
 	private JButton btnDBStatus;
 	private JMenuItem menuItemChexiao;
 	private JMenuItem menuItemGenggai;
-	private JButton btnKsBaoCun; 
 	private JButton btnRemvZdy;
 	private JMenuItem menuItemRfshBk;
 	private JMenuItem menuItemChanYeLian;
 	private JMenuItem menuItemSysSet;
 	private JMenuItem menuItemimportrecords;
 	private JMenuItem mntmOpenRmtDb;
+	private JButton btnbankuaifengxi;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2189,8 +2281,10 @@ protected void startBanKuaiGuanLiDlg()
 		frame.getContentPane().setEnabled(false);
 				
 		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u7406");
-		frame.setBounds(100, 100, 874, 896);
+		frame.setBounds(100, 100, 879, 911);
+//		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		
 		JPanel panelStatusBar = new JPanel();
 		
@@ -2351,10 +2445,6 @@ protected void startBanKuaiGuanLiDlg()
 		
 		btnDBStatus = new JButton("");
 		
-		btnKsBaoCun = new JButton("\u4FDD\u5B58\u5FEB\u901F\u8BB0\u5F55");
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		
 		
 		btnRemvZdy = new JButton("");
 		btnRemvZdy.setEnabled(false);
@@ -2368,44 +2458,33 @@ protected void startBanKuaiGuanLiDlg()
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE)
+									.addGroup(groupLayout.createSequentialGroup()
+										.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+										.addComponent(tabbedPane, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+										.addComponent(sclpaneJtable, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)))
+								.addGap(7)
+								.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 398, GroupLayout.PREFERRED_SIZE)))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE)
-										.addGroup(groupLayout.createSequentialGroup()
-											.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-												.addComponent(scrollPane_1)
-												.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE))
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
-										.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE))
-									.addGap(7)
-									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-										.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 398, Short.MAX_VALUE)
-										.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-										.addGroup(groupLayout.createSequentialGroup()
-											.addComponent(pnl_paomd, GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 242, GroupLayout.PREFERRED_SIZE)
-											.addGap(24)
-											.addComponent(btnDBStatus))
-										.addGroup(groupLayout.createSequentialGroup()
-											.addPreferredGap(ComponentPlacement.RELATED, 716, Short.MAX_VALUE)
-											.addComponent(btnKsBaoCun)))
-									.addGap(10)))
-							.addGap(17))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 643, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(205, Short.MAX_VALUE))))
+							.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 474, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 242, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnDBStatus)))
+					.addContainerGap(447, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
@@ -2414,36 +2493,21 @@ protected void startBanKuaiGuanLiDlg()
 									.addComponent(btnRemvZdy))
 								.addGroup(groupLayout.createSequentialGroup()
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)))
+									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 488, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)))
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnKsBaoCun))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(26)
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))
+						.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 745, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 						.addComponent(panelStatusBar, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(pnl_paomd, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
+					.addContainerGap())
 		);
-		
-		txaBanKuai = new JTextPane();
-		txaBanKuai.setPreferredSize(new Dimension(200,30));
-		//txaBanKuai.setEditorKit(new WrapEditorKit());
-		//txaBanKuai.setLineWrap(true);
-		txaBanKuai.setEditable(false);
-		scrollPane_1.setViewportView(txaBanKuai);
 		panelStatusBar.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panelStatusBar.add(lblStatusBarOperationIndicatior);
 		GroupLayout gl_pnl_paomd = new GroupLayout(pnl_paomd);
@@ -2582,6 +2646,16 @@ protected void startBanKuaiGuanLiDlg()
 		tfdJingZhengDuiShou = new JTextField();
 		tfdJingZhengDuiShou.setEnabled(false);
 		tfdJingZhengDuiShou.setColumns(10);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		
+		txaBanKuai = new JEditorPane ();
+		txaBanKuai.setPreferredSize(new Dimension(200,30));
+		//txaBanKuai.setEditorKit(new WrapEditorKit());
+		//txaBanKuai.setLineWrap(true);
+		txaBanKuai.setEditable(false);
+		txaBanKuai.setContentType("text/html");
+		scrollPane_1.setViewportView(txaBanKuai);
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.LEADING)
@@ -2591,12 +2665,12 @@ protected void startBanKuaiGuanLiDlg()
 						.addGroup(gl_panel_3.createSequentialGroup()
 							.addComponent(lblstockinfo)
 							.addGap(11)
-							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
 							.addContainerGap())
 						.addGroup(gl_panel_3.createSequentialGroup()
 							.addComponent(lblfumianxiaoxi)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
 							.addContainerGap())
 						.addGroup(gl_panel_3.createSequentialGroup()
 							.addComponent(lblquanshangpj)
@@ -2607,7 +2681,7 @@ protected void startBanKuaiGuanLiDlg()
 							.addGap(3)
 							.addComponent(lblzhengxg, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(txtfldzhengxg, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+							.addComponent(txtfldzhengxg, GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
 							.addContainerGap())
 						.addGroup(gl_panel_3.createSequentialGroup()
 							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
@@ -2616,24 +2690,27 @@ protected void startBanKuaiGuanLiDlg()
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
 									.addGap(10)
-									.addComponent(txtfldfuxg, GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)))
+									.addComponent(txtfldfuxg, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)))
 							.addContainerGap())))
 				.addGroup(gl_panel_3.createSequentialGroup()
-					.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addComponent(scrollPanefumian, GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addComponent(scrollPanegainian, GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+					.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(gl_panel_3.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(label)
 					.addGap(30)
 					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addComponent(tfdJingZhengDuiShou, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
-						.addComponent(tfdCustom, GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE))
+						.addComponent(tfdJingZhengDuiShou, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+						.addComponent(tfdCustom, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE))
+					.addContainerGap())
+				.addGroup(gl_panel_3.createSequentialGroup()
+					.addComponent(scrollPanefumian, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(gl_panel_3.createSequentialGroup()
+					.addComponent(scrollPanegainian, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(gl_panel_3.createSequentialGroup()
+					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		gl_panel_3.setVerticalGroup(
@@ -2684,7 +2761,8 @@ protected void startBanKuaiGuanLiDlg()
 						.addGroup(gl_panel_3.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(tfdJingZhengDuiShou, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)))
-					.addGap(14))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE))
 		);
 		panel_3.setLayout(gl_panel_3);
 		
@@ -2824,7 +2902,7 @@ protected void startBanKuaiGuanLiDlg()
 		);
 		panel_2.setLayout(gl_panel_2);
 		
-		btnMai = new JButton("\u4E70");
+		btnMai = new JButton("\u4E70/\u4FDD\u5B58");
 		
 		btnMai.setEnabled(false);
 		btnMai.setForeground(Color.RED);
@@ -2854,44 +2932,19 @@ protected void startBanKuaiGuanLiDlg()
 		
 		JButton btnGudongzjc = new JButton("\u80A1\u4E1C\u589E\u51CF\u6301");
 		btnGudongzjc.setEnabled(false);
+		panel_1.setLayout(new MigLayout("", "[45px][45px][87px][57px][69px][81px][81px][93px][105px]", "[26px]"));
+		panel_1.add(btnMai, "cell 0 0,alignx left,aligny center");
+		panel_1.add(btnSell, "cell 1 0,alignx left,aligny center");
+		panel_1.add(btnjiaruzdgz, "cell 2 0,alignx left,growy");
+		panel_1.add(btnyichuzdgz, "cell 3 0,alignx left,growy");
+		panel_1.add(btnSongZhuanGu, "cell 4 0,alignx left,aligny center");
+		panel_1.add(btnNewButton_2, "cell 5 0,alignx left,aligny center");
+		panel_1.add(btnzengjiadingzeng, "cell 6 0,alignx left,aligny center");
+		panel_1.add(btnGudongzjc, "cell 7 0,alignx left,aligny center");
 		
-		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
-		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addComponent(btnMai)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSell)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnjiaruzdgz)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnyichuzdgz)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSongZhuanGu)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnNewButton_2)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnzengjiadingzeng)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnGudongzjc)
-					.addContainerGap(121, Short.MAX_VALUE))
-		);
-		gl_panel_1.setVerticalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnMai)
-						.addComponent(btnSell)
-						.addComponent(btnjiaruzdgz, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnyichuzdgz, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSongZhuanGu)
-						.addComponent(btnNewButton_2)
-						.addComponent(btnzengjiadingzeng)
-						.addComponent(btnGudongzjc))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		panel_1.setLayout(gl_panel_1);
+		btnbankuaifengxi = new JButton("\u677F\u5757\u6210\u4EA4\u91CF\u5360\u6BD4\u5206\u6790");
+		btnbankuaifengxi.setEnabled(false);
+		panel_1.add(btnbankuaifengxi, "cell 8 0");
 		frame.getContentPane().setLayout(groupLayout);
 		
 		menuBar = new JMenuBar();
@@ -2969,12 +3022,6 @@ protected void startBanKuaiGuanLiDlg()
 		
 		kspanel = new BuyStockNumberPrice(null,accountschicangconfig,true);
 		tabbedPane.addTab("\u4E70\u5165\u5FEB\u901F\u8BB0\u5F55", null, kspanel, null);
-		//根据系统model定制哪些components可以被用户使用
-//		if(sysconfig.getSoftWareMode() == sysconfig.MODELCLIENT) {
-//			
-//		} else if(sysconfig.getSoftWareMode() == sysconfig.MODELSERVER) {
-//			
-//		}
 		
 		
 	}
@@ -3178,3 +3225,21 @@ class AccountsInfoTableModel extends AbstractTableModel
 //        return recoreslists;
 //    }
 //}
+
+// http://www.javalobby.org/java/forums/t19716.html
+class ActionBasedBanKuaiAndChanYeLianHyperlinkListener implements HyperlinkListener{ 
+    ActionMap actionMap; 
+ 
+    public ActionBasedBanKuaiAndChanYeLianHyperlinkListener(ActionMap actionMap){ 
+        this.actionMap = actionMap; 
+    } 
+ 
+    public void hyperlinkUpdate(HyperlinkEvent e){ 
+        if(e.getEventType()!=HyperlinkEvent.EventType.ACTIVATED) 
+            return; 
+        String href = e.getDescription(); 
+        Action action = actionMap.get(href); 
+        if(action!=null) 
+            action.actionPerformed(new ActionEvent(e, ActionEvent.ACTION_PERFORMED, href)); 
+    } 
+}

@@ -82,7 +82,7 @@ public class TDXFormatedOpt {
 			   		for(BkChanYeLianTreeNode tmpgz:tmpgzbklist) {
 			   			if(tmpgz.isOfficallySelected() ) {
 			   				String chanyelian =  tmpgz.getChanYeLian();
-			        		String seltime = tmpgz.getSelectedtime();
+			        		String seltime = tmpgz.getSelectedToZdgzTime();
 			        		result =  result + chanyelian + "(" + seltime +")" + "  |  ";
 			   			}
 		        	}

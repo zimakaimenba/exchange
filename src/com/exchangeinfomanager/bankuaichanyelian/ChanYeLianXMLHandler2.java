@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian;
+ package com.exchangeinfomanager.bankuaichanyelian;
 
 
 import java.io.File;
@@ -103,7 +103,9 @@ public class ChanYeLianXMLHandler2
 	private Document ggcylxmldocument;
 	private Element ggcylxmlroot;
 	private boolean hasXmlRevised = false;
-	private HanYuPinYing hypy;
+	
+	
+	private SetView<String> oldBanKuaiFromDb = null;
 
 	
 	private void initialzieSysconf ()
@@ -112,17 +114,41 @@ public class ChanYeLianXMLHandler2
 	}
 	public  BkChanYeLianTreeNode getBkChanYeLianXMLTree()
 	{
-		if(this.isXmlShouldUpdated() )
-			this.updateBkCylXmlFileAfterDbChanged2 ();
+		 HashMap<String, BkChanYeLianTreeNode> tdxbk = null ;
+		 HashMap<String, BkChanYeLianTreeNode> tdxzhishu = null ;
+		 SetView<String> newBanKuaiFromDb = null;
+		
+		if(this.isXmlShouldUpdated() ) {
+			hasXmlRevised = true;
+			
+			tdxbk = bkopt.getTDXBanKuaiList2 ();
+			tdxzhishu = bkopt.getTDXAllZhiShuList2 ();
+			Set<String> tdxbkset = tdxbk.keySet();
+			Set<String> tdxzhishuset = tdxzhishu.keySet();
+			SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
+			 
+			Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
+			
+			//XML没有，数据库有，要添加如XML
+			newBanKuaiFromDb = Sets.difference(uniontdxbkindb, bkcylxmlset );
+			//XML 
+			oldBanKuaiFromDb = Sets.difference(bkcylxmlset, uniontdxbkindb );
+		}
+			
 		
 		BkChanYeLianTreeNode topNode = new BkChanYeLianTreeNode("TongDaXinBanKuaiAndZhiShu","000000");
 		if(cylxmlroot != null) {
-			generateChanYeLianTreeFromXML(topNode,cylxmlroot);
+			generateChanYeLianTreeFromXML(topNode,cylxmlroot); //生成产业链树
+			
+			if(newBanKuaiFromDb!= null && newBanKuaiFromDb.size()>0) {//把新的加进来
+				addNewTdxBanKuaiFromDbToChanYeLianTree (topNode,newBanKuaiFromDb,tdxbk,tdxzhishu);
+			}				
 		} else {
 			System.out.println(bankuaichanyelianxml+ "存在错误");
 		}
 		return topNode;
 	}
+	
 	/*
 	 * 
 	 */
@@ -195,248 +221,34 @@ public class ChanYeLianXMLHandler2
 		 return bkcylxmlset;
 	}
 	
-	/*
-	 * 把数据库中的板块信息保存到XML中, 用新的BkChanYeLianTreeNode存储
-	 */
-	private void updateBkCylXmlFileAfterDbChanged2 ()
+		
+	
+	private void addNewTdxBanKuaiFromDbToChanYeLianTree(BkChanYeLianTreeNode topNode, SetView<String> newBanKuaiFromDb, HashMap<String, BkChanYeLianTreeNode> tdxbk, HashMap<String, BkChanYeLianTreeNode> tdxzhishu) 
 	{
-		
-		HashMap<String, BkChanYeLianTreeNode> tdxbk = bkopt.getTDXBanKuaiList2 ();
-		HashMap<String, BkChanYeLianTreeNode> tdxzhishu = bkopt.getTDXAllZhiShuList2 ();
-		Set<String> tdxbkset = tdxbk.keySet();
-		Set<String> tdxzhishuset = tdxzhishu.keySet();
-		SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
-		 
-		Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
-		
-		//XML没有，数据库有，要添加如XML
-		SetView<String> differencebankuainew = Sets.difference(uniontdxbkindb, bkcylxmlset );
-        for (String newbkcode : differencebankuainew) {
-        	System.out.println("XML将要中加入" + newbkcode);
-			//在XML 中加入新的板块 //<BanKuai bkname="高速公路" Status="4">
-//			String xpathnew = ".//BanKuai[@bkname=\"" + newbk + "\"]";
-//			Node tmpnode = cylxmldoc.selectSingleNode(xpathnew);
-				Element newele = cylxmlroot.addElement("BanKuai"); //在XML 中加入新的板块
-				String bkname = null;
-				try {
-					bkname = tdxbk.get(newbkcode).getUserObject().toString();
-				} catch (java.lang.NullPointerException ex) {
-					bkname = tdxzhishu.get(newbkcode).getUserObject().toString();
-				}
-				newele.addAttribute("bkname", bkname);
-				newele.addAttribute("bkcode", newbkcode);
-				newele.addAttribute("Type", String.valueOf(BkChanYeLianTreeNode.TDXBK) );
-				System.out.println("XML中加入" + newbkcode + bkname);
-        }
-        
-        //XML里面有，数据库中没有了，应该删除，要从几个XML都删除
-        SetView<String> differencebankuaiold = Sets.difference(bkcylxmlset, uniontdxbkindb );
-	    for (String oldbkcode : differencebankuaiold) {
-			//从产业链XML中删除该板块
-			try {
-				String xpath = ".//BanKuai[@bkcode=\"" + oldbkcode + "\"]";
-				Node tmpnode = cylxmldoc.selectSingleNode(xpath);
-				cylxmlroot.remove(tmpnode);
-				System.out.println("产业链XML中删除" + oldbkcode);
-			} catch (java.lang.NullPointerException ex) {
-				
-			}
-			
-			//从个股产业链XML中删除该板块 //  <bankuai bkname="智能穿戴">智能穿戴</bankuai>
-			try {
-				String xpath = ".//gegu/chanyelian[@bkcode=\"" + oldbkcode + "\"]";
-				@SuppressWarnings("unchecked")
-				List<Node> tmpnodegg = ggcylxmldocument.selectNodes(xpath);
-				for(Node singlenode:tmpnodegg)
-					ggcylxmlroot.remove(singlenode);
-				//xmldoc.remove(tmpnode);
-				System.out.println("个股产业链XML中删除" + oldbkcode);
-			} catch (java.lang.NullPointerException ex) {
-			}
-			
-			//从重点关注中也该删除啊？
-	    }
-	    
-	    //对于没有变化的板块，要检查板块的名字是否有改变
-	    SetView<String> intersectionbankuai = Sets.intersection(uniontdxbkindb, bkcylxmlset );
-	    for(String intsbkcode : intersectionbankuai) {
-	    	try {
-				String xpath = ".//BanKuai[@bkcode=\"" + intsbkcode + "\"]";
-				Element tmpnode = (Element)cylxmldoc.selectSingleNode(xpath);
-				String curnameinxml = tmpnode.attribute("bkname").getText();
-				
-				String bknameindb = null;
-				try {
-					bknameindb = tdxbk.get(intsbkcode).getUserObject().toString();
-				} catch (java.lang.NullPointerException ex) {
-					bknameindb = tdxzhishu.get(intsbkcode).getUserObject().toString();
-				}
-				
-				if(!bknameindb.equals(curnameinxml ) ) 
-					tmpnode.attribute("bkname").setText(bknameindb);
-				
-			} catch (java.lang.NullPointerException ex) {
-				
-			}
-	    	
-	    }
-	    
-	    
-	    OutputFormat format = OutputFormat.createPrettyPrint();
-		format.setEncoding("GBK");    // 指定XML编码        
-		//保存产业链XML
-		try {
-			XMLWriter writer = new XMLWriter(new FileOutputStream(bankuaichanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-				writer.write(cylxmldoc); //输出到文件  
-				//writer.flush();
-				writer.close();
-		} catch (IOException e) {
-				e.printStackTrace();
-		}
-		//保存个股产业链XML		
-		try {
-			XMLWriter writer = new XMLWriter(new FileOutputStream(geguchanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-			writer.write(ggcylxmldocument); //输出到文件  
-			//writer.flush();
-			writer.close();
-			
-		} catch (IOException e) {
-				e.printStackTrace();
-		}
-		
-		hasXmlRevised = true;
-	}
+		for(String newbkcode:newBanKuaiFromDb) {
+		        	System.out.println("XML将要中加入" + newbkcode);
 	
-	
-	/*
-	 * 把数据库中的板块信息保存到XML中
-	 */
-//	private void updateBkCylXmlFileAfterDbChanged ()
-//	{
-//		
-//		HashMap<String, BanKuai> tdxbk = bkopt.getTDXBanKuaiList ();
-//		HashMap<String, BanKuai> tdxzhishu = bkopt.getTDXAllZhiShuList ();
-//		Set<String> tdxbkset = tdxbk.keySet();
-//		Set<String> tdxzhishuset = tdxzhishu.keySet();
-//		SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
-//		 
-//		Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
-//		
-//		SetView<String> differencebankuainew = Sets.difference(uniontdxbkindb, bkcylxmlset );
-//        for (String newbk : differencebankuainew) {
-//			//在XML 中加入新的板块 //<BanKuai bkname="高速公路" Status="4">
-////			String xpathnew = ".//BanKuai[@bkname=\"" + newbk + "\"]";
-////			Node tmpnode = cylxmldoc.selectSingleNode(xpathnew);
-//				Element newele = cylxmlroot.addElement("BanKuai"); //在XML 中加入新的板块
-//				String bkname = null;
-//				try {
-//					bkname = tdxbk.get(newbk).getBankuainame();
-//				} catch (java.lang.NullPointerException e ) { //
-//					//e.printStackTrace();
-//					bkname = tdxzhishu.get(newbk).getBankuainame();
-//				} 
-//				newele.addAttribute("bkname", bkname);
-//				newele.addAttribute("suoshubkcode", newbk);
-//				newele.addAttribute("Type", "4");
-//				System.out.println("XML中加入" + newbk + bkname);
-//        }
-//        
-//        SetView<String> differencebankuaiold = Sets.difference(bkcylxmlset, uniontdxbkindb );
-//	    for (String oldbk : differencebankuaiold) {
-//			//从产业链XML中删除该板块
-//			try {
-//				String xpath = ".//BanKuai[@bkname=\"" + oldbk + "\"]";
-//				Node tmpnode = cylxmldoc.selectSingleNode(xpath);
-//				cylxmlroot.remove(tmpnode);
-//				System.out.println("产业链XML中删除" + oldbk);
-//			} catch (java.lang.NullPointerException ex) {
-//				
-//			}
-//			
-//			//从个股产业链XML中删除该板块 //  <bankuai bkname="智能穿戴">智能穿戴</bankuai>
-//			try {
-//				String xpath = ".//gegu/bankuai[@bkname=\"" + oldbk + "\"]";
-//				Node tmpnodegg = ggcylxmldocument.selectSingleNode(xpath);
-//				ggcylxmlroot.remove(tmpnodegg);
-//				//xmldoc.remove(tmpnode);
-//				System.out.println("个股产业链XML中删除" + oldbk);
-//			} catch (java.lang.NullPointerException ex) {
-//			}
-//	    }
-//	    
-//	    OutputFormat format = OutputFormat.createPrettyPrint();
-//		format.setEncoding("GBK");    // 指定XML编码        
-//		//保存产业链XML
-//		try {
-//			XMLWriter writer = new XMLWriter(new FileOutputStream(bankuaichanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-//				writer.write(cylxmldoc); //输出到文件  
-//				//writer.flush();
-//				writer.close();
-//		} catch (IOException e) {
-//				e.printStackTrace();
-//		}
-//		//保存个股产业链XML		
-//		try {
-//			XMLWriter writer = new XMLWriter(new FileOutputStream(geguchanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-//			writer.write(ggcylxmldocument); //输出到文件  
-//			//writer.flush();
-//			writer.close();
-//			
-//		} catch (IOException e) {
-//				e.printStackTrace();
-//		}
-//		
-//		hasXmlRevised = true;
-//	}
-	
-	
-	
-//	 private void importFromXML(BkChanYeLianTreeNode topNode, Element xmlelement) 
-//	 {
-//	    	Iterator it = xmlelement.elementIterator();
-//	    	 while (it.hasNext()) 
-//			 {
-//				   Element element = (Element) it.next();
-//				   
-//				   BkChanYeLianTreeNode parentsleaf = null;
-//
-//				   //已知属性名称情况下
-//				   //System.out.println("id: " + element.attributeValue("Subject")); //通达信板块名称或者个股名称或子版块名称
-//				   //System.out.println("id: " + element.attributeValue("Status")); //标记是板块还是个股
-//			   
-//				   String bkname = null;
-//				   if(element.attributeValue("Type").trim().equals("4") ) //是通达信板块
-//					   bkname = element.attributeValue("bkname");
-//				   else if(element.attributeValue("Type").trim().equals("5") ) //是自定义子板块
-//					   bkname = element.attributeValue("subbkname");
-//				   else if(element.attributeValue("Type").trim().equals("6") ) //是自定义子板块
-//					   bkname = element.attributeValue("geguname");
-//				   parentsleaf = new BkChanYeLianTreeNode( bkname);
-//				   
-//				   
-//				   String bkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
-//				   parentsleaf.setTDXBanKuaiZhiShuCode (bkcode);
-//				   parentsleaf.setNodeType( Integer.parseInt(element.attributeValue("Type") ) );
-//				   if(parentsleaf.getNodeType() != BkChanYeLianTreeNode.BKGEGU)
-//					   parentsleaf.setHanYuPingYin(hypy.getBanKuaiNameOfPinYin(bkname ) );
-//				   else //个股的话只存代码的汉语拼音，把名字去掉，因为名字可能会变
-//					   parentsleaf.setHanYuPingYin(hypy.getBanKuaiNameOfPinYin(bkname.substring(0,6 ) ) );
-//				   topNode.add(parentsleaf);
-//
-//				   importFromXML(parentsleaf,element);
-//			}
-//	}
-	
-	 private void generateChanYeLianTreeFromXML(BkChanYeLianTreeNode topNode, Element xmlelement) 
-	 {
-	    	 Iterator it = xmlelement.elementIterator();
-	    	 while (it.hasNext() ) 
-			 {
-				   Element element = (Element) it.next();
+		        	String bkname = null;
+					try {
+						bkname = tdxbk.get(newbkcode).getUserObject().toString();
+					} catch (java.lang.NullPointerException ex) {
+						bkname = tdxzhishu.get(newbkcode).getUserObject().toString();
+					}
+					BkChanYeLianTreeNode parentsleaf  = new BkChanYeLianTreeNode( bkname,newbkcode);
+					   parentsleaf.setTongDaXingBanKuaiCode (newbkcode);
+					   parentsleaf.setNodeType( BkChanYeLianTreeNode.TDXBK );
 
-				   //已知属性名称情况下
-				   //System.out.println("id: " + element.attributeValue("Subject")); //通达信板块名称或者个股名称或子版块名称
-				   //System.out.println("id: " + element.attributeValue("Status")); //标记是板块还是个股
+					   topNode.add(parentsleaf);
+	        }
+	}
+	 private void generateChanYeLianTreeFromXML(BkChanYeLianTreeNode topNode, Element xmlelement ) 
+	 {//SetView<String> newBanKuaiFromDb, SetView<String> oldBanKuaiFromDb
+	    	 Iterator it = xmlelement.elementIterator();
+	    	 
+	    	 while (it.hasNext() ) 
+	    	 {
+	    		 boolean shouldremovedwhensavexml = false;
+				   Element element = (Element) it.next();
 			   
 				   String bkname = null, bkowncode = null; String suoshubkcode = null;
 				   String nodetype = element.attributeValue("Type").trim();
@@ -444,10 +256,15 @@ public class ChanYeLianXMLHandler2
 					   bkname = element.attributeValue("bkname");
 					   bkowncode = element.attributeValue("bkcode");
 					   suoshubkcode = bkowncode;
+					   
+					   if(oldBanKuaiFromDb != null && oldBanKuaiFromDb.size()>0 && oldBanKuaiFromDb.contains(bkowncode) ) //如果代码已经属于需要删除的，则标记好
+						   shouldremovedwhensavexml = true;
+					   
 				   } else if(nodetype.equals("5") ) {//是自定义子板块
 					   bkname = element.attributeValue("subbkname");
 					   bkowncode = element.attributeValue("subbkcode");
 					    suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
+					    
 					   
 				   } else if(nodetype.equals("6") ) {//是个股
 					  // bkname = element.attributeValue("geguname");
@@ -455,15 +272,30 @@ public class ChanYeLianXMLHandler2
 					   
 					   ASingleStockInfo tmpsinglestock = new ASingleStockInfo (bkowncode); 
 					   tmpsinglestock = stockopt.getSingleStockBasicInfo(tmpsinglestock);
+					   tmpsinglestock = stockopt.getTDXBanKuaiInfo (tmpsinglestock); //通达信板块信息
 					   bkname = tmpsinglestock.getStockname();
-					   
+
 					   suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
+					   Set<String> suoshutdxbkcode = tmpsinglestock.getSuoShuTDXSysBanKuai().keySet();
+					   if(!suoshutdxbkcode.contains(suoshubkcode))//如果该股已经不属于该板块，需要删除的，则标记好
+						   shouldremovedwhensavexml = true;
+					   
 					   
 				   }
+				   
 				   
 				   BkChanYeLianTreeNode parentsleaf  = new BkChanYeLianTreeNode( bkname,bkowncode);
 				   parentsleaf.setTongDaXingBanKuaiCode (suoshubkcode);
 				   parentsleaf.setNodeType( Integer.parseInt(nodetype ) );
+				   if(shouldremovedwhensavexml) //如果代码已经属于需要删除的，则标记好
+					   parentsleaf.setShouldBeRemovedWhenSaveXml ();
+				   
+				   try {
+					   String addedTime =  element.attributeValue("addedTime"); //板块或个股加入到产业链树的时间
+					   
+				   } catch (java.lang.NullPointerException ex) {
+					   
+				   }
 
 				   topNode.add(parentsleaf);
 
@@ -472,57 +304,7 @@ public class ChanYeLianXMLHandler2
 	}
 
 	 
-//	 private String getBanKuaiNameOfPinYin (String chinese)
-//	 {
-//		 //System.out.println(chinese);
-//		 //这部分获得全部拼音
-//		 HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
-//	        format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
-//	        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-//	        format.setVCharType(HanyuPinyinVCharType.WITH_V);
-//	 
-//	        char[] input = chinese.trim().toCharArray();
-//	        String output = "";
-//	 
-//	        try {
-//	            for (int i = 0; i < input.length; i++) {
-//	                if (java.lang.Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) {
-//	                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(input[i], format);
-//	                    output += temp[0];
-//	                } else
-//	                    output += java.lang.Character.toString(input[i]);
-//	            }
-//	        } catch (BadHanyuPinyinOutputFormatCombination e) {
-//	            e.printStackTrace();
-//	        }
-//	       //System.out.println(output);
-//	       
-//	       //这部分获得首字母拼音
-//	        StringBuffer pybf = new StringBuffer();  
-//            char[] arr = chinese.toCharArray();  
-//            HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();  
-//            defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);  
-//            defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);  
-//            for (int i = 0; i < arr.length; i++) {  
-//                    if (arr[i] > 128) {  
-//                            try {  
-//                                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat);  
-//                                    if (temp != null) {  
-//                                            pybf.append(temp[0].charAt(0));  
-//                                    }  
-//                            } catch (BadHanyuPinyinOutputFormatCombination e) {  
-//                                    e.printStackTrace();  
-//                            }  
-//                    } else {  
-//                            pybf.append(arr[i]);  
-//                    }  
-//            }  
-//            //System.out.println( pybf.toString().replaceAll("\\W", "").trim() ); 
-//            
-//            return pybf.toString().replaceAll("\\W", "").trim(); //返回首字母拼音
-//	 }
-	 
-	 public boolean saveTreeToChanYeLianXML (BkChanYeLianTreeNode ginkgorootnode) //GEN-FIRST:event_saveButtonActionPerformed 
+	 public boolean saveTreeToChanYeLianXML (BkChanYeLianTreeNode ginkgorootnode)  
      {
 			//产业链XML
 			Document cyldocument = DocumentFactory.getInstance().createDocument();
@@ -557,9 +339,7 @@ public class ChanYeLianXMLHandler2
 			
 			this.cylxmldoc = cyldocument;
 			this.cylxmlroot = cylrootele;
-			
-			 
-			
+
 			hasXmlRevised = true;
 			return hasXmlRevised;
 	    }
@@ -570,6 +350,9 @@ public class ChanYeLianXMLHandler2
 			for (Enumeration<BkChanYeLianTreeNode> child = parentnode.children(); child.hasMoreElements();) {
 				
 	            treeChild = (BkChanYeLianTreeNode) child.nextElement();
+	            
+	            if(treeChild.shouldBeRemovedWhenSaveXml()) //应该删除的节点，该节点以下的所有节点都不保存
+	            	continue;
 	            
 	            String tmpbkcode = treeChild.getNodeOwnCode() ;
 	            int nodetype = treeChild.getNodeType();
@@ -629,7 +412,7 @@ public class ChanYeLianXMLHandler2
 		            	 } else {
 				             Element tmpggcylele = ggcyldoc.getRootElement().addElement("gegu" );
 			    			 tmpggcylele.addAttribute("stockcode", tmpbkcode  );
-			    			 tmpggcylele.addAttribute("stockname", tmpbkcode  );
+			    			 tmpggcylele.addAttribute("stockname", tmpname  );
 			    			 Element tmpnewitem = tmpggcylele.addElement("chanyelian");
 			    			 tmpnewitem.addAttribute("bankuai", curbankuai);
 			    			 tmpnewitem.addAttribute("suoshubkcode", tmpbkcode);
@@ -679,5 +462,143 @@ public class ChanYeLianXMLHandler2
 			stockbasicinfo2.setChanYeLianInfo (ggcyl);
 			return stockbasicinfo2;
 		}
+		
+		public ArrayList<String> getGeGuChanYeLian(String stockcode)
+		{
+			ArrayList<String> gegucyllist = new ArrayList<String> ();
+			try {
+				String xpath = ".//gegu[@stockcode=\"" + stockcode + "\"]";
+				@SuppressWarnings("unchecked")
+				List<Element> tmpnodegg = ggcylxmldocument.selectNodes(xpath);
+				for(Element singlenode:tmpnodegg) {
+					 Iterator it = singlenode.elementIterator();
+			    	 while (it.hasNext() ) 
+			    	 {
+			    		Element element = (Element) it.next();
+					    String chanyelian = element.getText().trim();
+					    System.out.println(chanyelian);
+					    gegucyllist.add(chanyelian); 
+			    	 }
+					
+				}
+					
+			} catch (java.lang.NullPointerException ex) {
+			}
+			
+			return gegucyllist;
+		}
+		
+		/*
+		 * 把数据库中的板块信息保存到XML中, 用新的BkChanYeLianTreeNode存储
+		 */
+		private void updateBkCylXmlFileAfterDbChanged2 ()
+		{
+			
+			HashMap<String, BkChanYeLianTreeNode> tdxbk = bkopt.getTDXBanKuaiList2 ();
+			HashMap<String, BkChanYeLianTreeNode> tdxzhishu = bkopt.getTDXAllZhiShuList2 ();
+			Set<String> tdxbkset = tdxbk.keySet();
+			Set<String> tdxzhishuset = tdxzhishu.keySet();
+			SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
+			 
+			Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
+			
+			//XML没有，数据库有，要添加如XML
+			SetView<String> differencebankuainew = Sets.difference(uniontdxbkindb, bkcylxmlset );
+	        for (String newbkcode : differencebankuainew) {
+	        	System.out.println("XML将要中加入" + newbkcode);
+				//在XML 中加入新的板块 //<BanKuai bkname="高速公路" Status="4">
+//				String xpathnew = ".//BanKuai[@bkname=\"" + newbk + "\"]";
+//				Node tmpnode = cylxmldoc.selectSingleNode(xpathnew);
+					Element newele = cylxmlroot.addElement("BanKuai"); //在XML 中加入新的板块
+					String bkname = null;
+					try {
+						bkname = tdxbk.get(newbkcode).getUserObject().toString();
+					} catch (java.lang.NullPointerException ex) {
+						bkname = tdxzhishu.get(newbkcode).getUserObject().toString();
+					}
+					newele.addAttribute("bkname", bkname);
+					newele.addAttribute("bkcode", newbkcode);
+					newele.addAttribute("Type", String.valueOf(BkChanYeLianTreeNode.TDXBK) );
+					System.out.println("XML中加入" + newbkcode + bkname);
+	        }
+	        
+	        //XML里面有，数据库中没有了，应该删除，要从几个XML都删除
+	        SetView<String> differencebankuaiold = Sets.difference(bkcylxmlset, uniontdxbkindb );
+		    for (String oldbkcode : differencebankuaiold) {
+				//从产业链XML中删除该板块
+				try {
+					String xpath = ".//BanKuai[@bkcode=\"" + oldbkcode + "\"]";
+					Node tmpnode = cylxmldoc.selectSingleNode(xpath);
+					cylxmlroot.remove(tmpnode);
+					System.out.println("产业链XML中删除" + oldbkcode);
+				} catch (java.lang.NullPointerException ex) {
+					
+				}
+				
+				//从个股产业链XML中删除该板块 //  <bankuai bkname="智能穿戴">智能穿戴</bankuai>
+				try {
+					String xpath = ".//gegu/chanyelian[@bkcode=\"" + oldbkcode + "\"]";
+					@SuppressWarnings("unchecked")
+					List<Node> tmpnodegg = ggcylxmldocument.selectNodes(xpath);
+					for(Node singlenode:tmpnodegg)
+						ggcylxmlroot.remove(singlenode);
+					//xmldoc.remove(tmpnode);
+					System.out.println("个股产业链XML中删除" + oldbkcode);
+				} catch (java.lang.NullPointerException ex) {
+				}
+				
+				
+		    }
+		    
+		    //对于没有变化的板块，要检查板块的名字是否有改变
+		    SetView<String> intersectionbankuai = Sets.intersection(uniontdxbkindb, bkcylxmlset );
+		    for(String intsbkcode : intersectionbankuai) {
+		    	try {
+					String xpath = ".//BanKuai[@bkcode=\"" + intsbkcode + "\"]";
+					Element tmpnode = (Element)cylxmldoc.selectSingleNode(xpath);
+					String curnameinxml = tmpnode.attribute("bkname").getText();
+					
+					String bknameindb = null;
+					try {
+						bknameindb = tdxbk.get(intsbkcode).getUserObject().toString();
+					} catch (java.lang.NullPointerException ex) {
+						bknameindb = tdxzhishu.get(intsbkcode).getUserObject().toString();
+					}
+					
+					if(!bknameindb.equals(curnameinxml ) ) 
+						tmpnode.attribute("bkname").setText(bknameindb);
+					
+				} catch (java.lang.NullPointerException ex) {
+					
+				}
+		    	
+		    }
+		    
+		    
+		    OutputFormat format = OutputFormat.createPrettyPrint();
+			format.setEncoding("GBK");    // 指定XML编码        
+			//保存产业链XML
+			try {
+				XMLWriter writer = new XMLWriter(new FileOutputStream(bankuaichanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
+					writer.write(cylxmldoc); //输出到文件  
+					//writer.flush();
+					writer.close();
+			} catch (IOException e) {
+					e.printStackTrace();
+			}
+			//保存个股产业链XML		
+			try {
+				XMLWriter writer = new XMLWriter(new FileOutputStream(geguchanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
+				writer.write(ggcylxmldocument); //输出到文件  
+				//writer.flush();
+				writer.close();
+				
+			} catch (IOException e) {
+					e.printStackTrace();
+			}
+			
+			hasXmlRevised = true;
+		}
+
 
 }

@@ -642,65 +642,74 @@ public class StockDbOperations
 	public ASingleStockInfo getTDXBanKuaiInfo(ASingleStockInfo stockbasicinfo) 
 	{
 		String stockcode = stockbasicinfo.getStockcode();
-		HashSet<String> tmpsysbk = new HashSet<String> ();
+		HashMap<String,String> tmpsysbk = new HashMap<String,String> ();
 		
+//		SELECT gpgn.概念板块, tdxbk.`板块ID`
+//		FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk
+//		WHERE 股票代码= '000001' AND gpgn.概念板块 = tdxbk.`板块名称`
 		String sqlquerystat =null;
-		sqlquerystat=  "SELECT 概念板块 FROM 股票通达信概念板块对应表  WHERE 股票代码= "
-				+ "'" +  stockcode.trim() + "'"
+		sqlquerystat=  "SELECT gpgn.概念板块 板块, tdxbk.`板块ID` 板块代码 FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk"
+				+ "  WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gpgn.概念板块 = tdxbk.`板块名称`"
 				+ "UNION " 
-				+ " SELECT 行业板块 FROM 股票通达信行业板块对应表  WHERE 股票代码= "
-				+ "'" +  stockcode.trim() + "'"
+				+ " SELECT gphy.行业板块 板块, tdxbk.`板块ID` 板块代码 FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk "
+				+ " WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gphy.`行业板块` = tdxbk.`板块名称`"
 				+ "UNION " 
-				+ " SELECT 风格板块 FROM 股票通达信风格板块对应表  WHERE 股票代码= "
-				+ "'" +  stockcode.trim() + "'"
+				+ " SELECT gpfg.`风格板块`板块, tdxbk.`板块ID` 板块代码  FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk"
+				+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`风格板块` = tdxbk.`板块名称`"
 				;
 		
-		//System.out.println(sqlquerystat);
+		System.out.println(sqlquerystat);
 		CachedRowSetImpl rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
 		try  {     
-			rs_gn.last();  
-	        int rows = rs_gn.getRow();  
-	        rs_gn.first();  
-	        int k = 0;  
-	        //while(rs.next())
-	        for(int j=0;j<rows;j++) { 
-	        	tmpsysbk.add( rs_gn.getString("概念板块") );
-	        	rs_gn.next();
+	        while(rs_gn.next()) {
+	        	String bkcode = rs_gn.getString("板块代码");
+	        	String bkname = rs_gn.getString("板块");
+	        	tmpsysbk.put(bkcode,bkname);
 	        } 
-	        rs_gn.close();
+	        
 	    }catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
+	    	
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    } finally {
-	    	
-	    }
-		
-		sqlquerystat=  "SELECT 自定义板块 FROM 股票通达信自定义板块对应表  WHERE 股票代码= "
-						+ "'" +  stockcode.trim() + "'"
-						;
-		//System.out.println(sqlquerystat);
-		CachedRowSetImpl rs_zdy = connectdb.sqlQueryStatExecute(sqlquerystat);
-		HashSet<String> tmpzdybk = new HashSet<String> ();
-		try  {     
-			rs_zdy.last();  
-	        int rows = rs_zdy.getRow();  
-	        rs_zdy.first();  
-	        int k = 0;  
-	        //while(rs.next())
-	        for(int j=0;j<rows;j++) { 
-	        	tmpzdybk.add( rs_zdy.getString("自定义板块") );
-	        	rs_zdy.next();
-	        } 
-	        rs_zdy.close();
-	    }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    }catch(Exception e) {
-	    	e.printStackTrace();
+	    	if(rs_gn != null) {
+	    		try {
+					rs_gn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    		rs_gn = null;
+	    	}
 	    }
 		
 		stockbasicinfo.setSuoShuTDXSysBanKuai(tmpsysbk);
-		stockbasicinfo.setSuoShuTDXZdyBanKuai(tmpzdybk);
+		
+//		sqlquerystat=  "SELECT 自定义板块 FROM 股票通达信自定义板块对应表  WHERE 股票代码= "
+//						+ "'" +  stockcode.trim() + "'"
+//						;
+//		//System.out.println(sqlquerystat);
+//		CachedRowSetImpl rs_zdy = connectdb.sqlQueryStatExecute(sqlquerystat);
+//		HashSet<String> tmpzdybk = new HashSet<String> ();
+//		try  {     
+//			rs_zdy.last();  
+//	        int rows = rs_zdy.getRow();  
+//	        rs_zdy.first();  
+//	        int k = 0;  
+//	        //while(rs.next())
+//	        for(int j=0;j<rows;j++) { 
+//	        	tmpzdybk.add( rs_zdy.getString("自定义板块") );
+//	        	rs_zdy.next();
+//	        } 
+//	        rs_zdy.close();
+//	    }catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    }catch(Exception e) {
+//	    	e.printStackTrace();
+//	    }
+//		
+//		stockbasicinfo.setSuoShuTDXZdyBanKuai(tmpzdybk);
 		
 		return stockbasicinfo;
 	}
@@ -1093,9 +1102,13 @@ public class StockDbOperations
                         					; 
 //              System.out.println(sqlinsetstat);
               connectdb.sqlUpdateStatExecute(sqlinsetstat);
-                		              		
                 recCounter++;
-                //assertEquals(recCounter, rec.getRecordNumber());
+
+                //如果在表：A股中也没有这个股票代码，则在A股中也增加该股票
+                sqlinsetstat = "IF NOT EXISTS(SELECT 1 FROM A股  WHERE 股票代码 = '" + stockcode + "')"
+                		+ "    INSERT INTO A股 (股票代码) VALUES ('"+ stockcode + "')"
+                		;
+                connectdb.sqlInsertStatExecute(sqlinsetstat);
             }
         } catch (IOException e1) {
         	System.out.println("出错SQL是:" + sqlinsetstat);

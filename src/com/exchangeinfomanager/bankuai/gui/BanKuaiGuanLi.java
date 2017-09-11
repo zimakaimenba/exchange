@@ -46,6 +46,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class BanKuaiGuanLi extends JDialog 
 {
@@ -59,6 +61,7 @@ public class BanKuaiGuanLi extends JDialog
 	 */
 	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt2, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler2, ChanYeLianXMLHandler2 cylxmlhandler2) 
 	{
+		
 
 		this.bkdbopt = bkdbopt2;
 //		this.stockdbopt = stockdbopt2;
@@ -113,6 +116,11 @@ public class BanKuaiGuanLi extends JDialog
 
 	private void createEvents() 
 	{
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+			}
+		});
 		
 		okButton.addMouseListener(new MouseAdapter() {
 			@Override

@@ -36,6 +36,7 @@ import com.exchangeinfomanager.database.StockDbOperations;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
@@ -69,7 +70,7 @@ public class BanKuaiFengXi extends JDialog {
 		this.stockdbopt = new StockDbOperations ();
 		
 		createEvents ();
-		initializeBanKuaiZhanBiByGrowthRate ();
+//		initializeBanKuaiZhanBiByGrowthRate ();
 		
 	}
 	
@@ -93,18 +94,27 @@ public class BanKuaiFengXi extends JDialog {
 		sclpleft.setViewportView(chartPanel);
 		
 	}
-	
+	/*
+	 * 所有板块占比增长率的排名
+	 */
 	private void initializeBanKuaiZhanBiByGrowthRate ()
 	{
 		Date bkfxdate = dateChooser.getDate();
+		int wknum = bkdbopt.precheckBeforeBanKuaiFengXi(bkfxdate);
+		if(wknum == 0)
+			JOptionPane.showMessageDialog(null, "所选周没有数据，无法计算增长率！","Warning", JOptionPane.WARNING_MESSAGE);
+		if(wknum >0 ) {
+			int action = JOptionPane.showConfirmDialog(null, "所选周数据仅到星期" + wknum + ",是否继续","Warning", JOptionPane.YES_NO_OPTION);
+			if(1 == action) 
+				return;
+		}
+		
+			
 		HashMap<String, Double> bkzbmap = bkdbopt.getBanKuaiFengXiBarInfoOfChenJiaoErZhanBiOrderByZhanBiGrowthRate (bkfxdate);
 		if(bkzbmap != null) {
 			HashMap<String, BanKuai> curbanklist = bkdbopt.getTDXBanKuaiList();
-			
 			((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).refresh(curbanklist, bkzbmap);
 		}
-		
-		
 	}
 
 
@@ -154,8 +164,8 @@ public class BanKuaiFengXi extends JDialog {
 		JPanel panel_6 = new JPanel();
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
+			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 						.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 1624, Short.MAX_VALUE)
@@ -163,8 +173,8 @@ public class BanKuaiFengXi extends JDialog {
 							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 1369, Short.MAX_VALUE)
 								.addComponent(panel_5, GroupLayout.DEFAULT_SIZE, 1369, Short.MAX_VALUE)
+								.addComponent(panel_3, GroupLayout.DEFAULT_SIZE, 1369, Short.MAX_VALUE)
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 492, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -188,11 +198,12 @@ public class BanKuaiFengXi extends JDialog {
 									.addComponent(panel_4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 									.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE))
 								.addComponent(panel_6, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
-							.addComponent(panel_5, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(panel_5, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
+							.addGap(21))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, 736, Short.MAX_VALUE)))
+							.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
 		GroupLayout gl_panel_4 = new GroupLayout(panel_4);
@@ -283,8 +294,6 @@ public class BanKuaiFengXi extends JDialog {
 		
 		btnchosefile = new JButton("");
 		btnchosefile.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/open24.png")));
-		
-		dateChooser = new JDateChooser(new Date());
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -295,9 +304,7 @@ public class BanKuaiFengXi extends JDialog {
 					.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 621, GroupLayout.PREFERRED_SIZE)
 					.addGap(4)
 					.addComponent(btnchosefile)
-					.addGap(121)
-					.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
-					.addGap(575))
+					.addGap(859))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -311,9 +318,7 @@ public class BanKuaiFengXi extends JDialog {
 							.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGap(7)
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(dateChooser, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(btnchosefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+							.addComponent(btnchosefile)))
 					.addContainerGap(8, Short.MAX_VALUE))
 		);
 		panel.setLayout(gl_panel);
@@ -331,11 +336,15 @@ public class BanKuaiFengXi extends JDialog {
 				cancelButton.setActionCommand("Cancel");
 			}
 			
+			dateChooser = new JDateChooser();
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
-						.addGap(858)
+						.addGap(18)
+						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 224, GroupLayout.PREFERRED_SIZE)
+						.addGap(616)
 						.addComponent(okButton)
 						.addGap(5)
 						.addComponent(cancelButton))
@@ -344,9 +353,11 @@ public class BanKuaiFengXi extends JDialog {
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addContainerGap()
-						.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
-							.addComponent(okButton)
-							.addComponent(cancelButton))
+						.addGroup(gl_buttonPane.createParallelGroup(Alignment.TRAILING)
+							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
+								.addComponent(okButton)
+								.addComponent(cancelButton)))
 						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 			);
 			buttonPane.setLayout(gl_buttonPane);

@@ -41,6 +41,8 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getUserObject().toString();
 	         else
 	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getNodeOwnCode() + ((BkChanYeLianTreeNode)value).getUserObject().toString();
+	         
+	         
 
 	         HashSet<String> parsefilestockset = ((BkChanYeLianTreeNode)value).getParseFileStockSet ();
 	         if(parsefilestockset !=null && parsefilestockset.size() !=0) {
@@ -56,19 +58,24 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         //各种状态下的COLOR
 	         if(node.getInZdgzOfficalCount() >0 ) {
 	        	 lblnodenameandcount.setForeground(Color.RED);
-	        	 Font font=new Font("serif",Font.BOLD,15); 
-		         //lblnodenameandcount.setFont(font);
-//		         lblnodenameandcount.setBackground(Color.red);
 	         } else if(node.getInZdgzCandidateCount() >0 ) {
 	        	 lblnodenameandcount.setForeground(Color.ORANGE);
-	        	 Font font=new Font("serif",Font.BOLD,15); 
-		         //lblnodenameandcount.setFont(font);
 	         } else if(node.getParseFileStockSet().size()>0) {
 	        	 lblnodenameandcount.setForeground(Color.BLUE);
 	         } else 
 	        	 lblnodenameandcount.setForeground(this.getForeground());
 	         
-	         //
+	         //如果是要删除的节点，用特殊的字体表示
+	         if(node.shouldBeRemovedWhenSaveXml()) {
+	        	 Font font=new Font("黑体",Font.BOLD + Font.ITALIC,14); 
+		         lblnodenameandcount.setFont(font);
+	         } else {
+	        	 Font font=new Font("宋体",Font.PLAIN,14); 
+		         lblnodenameandcount.setFont(font);
+	         }
+	        	 
+	         
+	        	 
 	         if(isSelected) {
 	        	 lblnodenameandcount.setOpaque(true);
 	        	 lblnodenameandcount.setBackground(this.getBackgroundSelectionColor());
@@ -76,8 +83,7 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	        	 lblnodenameandcount.setOpaque(true);
 	        	 lblnodenameandcount.setBackground(this.getBackgroundNonSelectionColor());
 	         }
-	        	 
-	         
+
 	         setEnabled(tree.isEnabled());
 	         returnValue = lblnodenameandcount;
 	         

@@ -39,12 +39,10 @@ public class BkChanYeLianTree extends JTree
 		this.setDragEnabled(true);
 		this.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
 		this.setEditable(true);
-		
 		this.setCellRenderer(new BkChanYeLianTreeCellRenderer());
-		
 		this.setRootVisible(false);
 		this.setTransferHandler(new TreeTransferHandler());
-		
+
 	      //CellEditor cellEditor = new CellEditor(this); 
 //      treechanyelian.setCellEditor(new CustomTreeCellEditor(treechanyelian, (DefaultTreeCellRenderer) treechanyelian.getCellRenderer(),
 //          cellEditor));
@@ -53,15 +51,16 @@ public class BkChanYeLianTree extends JTree
 //        setModifiedTitle(false);
 
 		 bkdbopt = new BanKuaiDbOperation(); 
-		 hypy = new HanYuPinYing ();
-		this.createEvents(this);
+//		 hypy = new HanYuPinYing ();
+		 this.currentselectedtdxbk = "";
+		 this.createEvents(this);
 //      
 	}
 	
 	private String currentselectedtdxbk;
 	private boolean ignoreExpansion = false;
 	private BanKuaiDbOperation bkdbopt;
-	private HanYuPinYing hypy;
+//	private HanYuPinYing hypy;
 	
 	private void createEvents(final JTree tree) 
 	{
@@ -102,10 +101,9 @@ public class BkChanYeLianTree extends JTree
      * 
      */
 	private void treeMousePressed(MouseEvent evt) 
-	{
+	{System.out.println("get action notice at bkcyltree");
 		TreePath closestPath = this.getClosestPathForLocation(evt.getX(), evt.getY());
-	       
-        //System.out.println(closestPath);
+
         if(closestPath != null) {
             Rectangle pathBounds = this.getPathBounds(closestPath);
             int maxY = (int) pathBounds.getMaxY();
@@ -117,12 +115,12 @@ public class BkChanYeLianTree extends JTree
         expandTreePathAllNode (closestPath);
 	}
 	/*
-     * 展开节点
+     * 展开节点,在其他地方也有调用
      */
     public void expandTreePathAllNode (TreePath closestPath)
     {
-    	 String tdxbk = closestPath.getPathComponent(1).toString();
-//         if(!tdxbk.equals(currentselectedtdxbk)) { //和当前的板块不一样，
+    		 this.currentselectedtdxbk = closestPath.getPathComponent(1).toString();
+    		 String tdxbkcode = ((BkChanYeLianTreeNode)closestPath.getPathComponent(1)).getTongDaXingBanKuaiCode();
         	 BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
         	 this.setSelectionPath(closestPath);
         	 this.scrollPathToVisible(closestPath);
@@ -475,7 +473,7 @@ public class BkChanYeLianTree extends JTree
 	    		
 	    		if(cyltreepathlist.size() == 0) {
 	    			childNode.setOfficallySelected(officallsltopt);
-	    			childNode.setSelectedtime(addedtime);
+	    			childNode.setSelectedToZdgzTime(addedtime);
 	    			
 	    			expectedNode = childNode;
 	    			break;

@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import org.dom4j.io.XMLWriter;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -38,7 +40,7 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	{
 		initializeSysConfig ();
 		gzbkdetailmap = new HashMap<String,ArrayList<BkChanYeLianTreeNode>>();
-		
+
 		this.xmlfile =   sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile ();
 		File zdgzxml = new File(this.xmlfile );
 		if(!zdgzxml.exists()) { //不存在，创建该文件
@@ -66,9 +68,9 @@ public class TwelveZhongDianGuanZhuXmlHandler
 			return;
 		}
 	
-//		getZdgzbkXml ();
 	}
-	HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkdetailmap;
+	private HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkdetailmap;
+	private Multimap<String,String> gzbkdetailsimplemap;
 	private static Element xmlroot = null;
 	private Document document;
 	private SystemConfigration sysconfig;
@@ -85,6 +87,31 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	public boolean hasXmlRevised ()
 	{
 		return hasXmlRevised;
+	}
+	
+	/*
+	 * 简版的产业链重点关注信息。系统刚启动需要重点关注map，但还没有树，所以生成一个简版的用
+	 */
+	public Multimap<String,String> getSimpleZdgzBanKuaiFromXml ()
+	{
+		gzbkdetailsimplemap =  HashMultimap.create();
+		Iterator it = xmlroot.elementIterator();
+		 while (it.hasNext()) 
+		 {
+			   Element daleielement = (Element) it.next();
+			   ArrayList<BkChanYeLianTreeNode> tmpgzbksublist = new ArrayList<BkChanYeLianTreeNode> (); //重点关注的板块list
+			   String daleiname = daleielement.attributeValue("daleiname");
+			   
+			   Iterator daleiit = daleielement.elementIterator();
+			   while(daleiit.hasNext()) {
+				   Element iteele = (Element)daleiit.next();
+				   
+				   String suoshutdxbkcode = iteele.attributeValue("tdxbkcode");
+				   gzbkdetailsimplemap.put(daleiname, suoshutdxbkcode);
+			   }
+		 }
+
+		return gzbkdetailsimplemap;
 	}
 	/*
 	 * 读取重点关注XML,把每个关注的产业链包装成产业链XML TREE的节点
@@ -113,14 +140,15 @@ public class TwelveZhongDianGuanZhuXmlHandler
 					   officallyselt = false;
 				   } else 
 					   officallyselt = true;
-				   //
+				  
+				   //把重点关注信息添加到树上。
 				    BkChanYeLianTreeNode expectnode = cyltree.updateZdgzInfoToBkCylTreeNode(chanyelian, addedtime,officallyselt);
 				    if(expectnode != null)
 				    	tmpgzbksublist.add(expectnode);
-				    else { //没有找到相关的node，说明这个重点关注可能在产业链XML里面已经删除了，那在这里也应该在XML里面删除
-				    	removeChanYeLianFromXml (daleiname,chanyelian);
-				    	hasXmlRevised = true;
-				    }
+//				    else { //没有找到相关的node，说明这个重点关注可能在产业链XML里面已经删除了，那在这里也应该在XML里面删除
+//				    	removeChanYeLianFromXml (daleiname,chanyelian);
+//				    	hasXmlRevised = true;
+//				    }
 			   }
 			   gzbkdetailmap.put(daleiname, tmpgzbksublist);
 		 }
@@ -206,10 +234,13 @@ public class TwelveZhongDianGuanZhuXmlHandler
         	
         	ArrayList<BkChanYeLianTreeNode> tmpsubcyllist = gzbkdetailmap.get(dastr);
         	for(BkChanYeLianTreeNode tmpgzbkifno :tmpsubcyllist) {
+        		if(tmpgzbkifno.shouldBeRemovedWhenSaveXml())
+        			continue;
+        		
         		String tdxbk = tmpgzbkifno.getTdxBk();
         		String tdxbkcode = tmpgzbkifno.getTongDaXingBanKuaiCode();
         		String subcyl = tmpgzbkifno.getChanYeLian();
-        		String addedtime = tmpgzbkifno.getSelectedtime();
+        		String addedtime = tmpgzbkifno.getSelectedToZdgzTime();
         		String offselted = String.valueOf(tmpgzbkifno.isOfficallySelected() ).toLowerCase();
         		
         		Element subcylele = bkele.addElement("Item");
@@ -243,44 +274,43 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	}
 
 	/*
-	 * 计算12个大类的当前设置是否包含提供的板块
+	 * 计算12个大类的当前产业链设置是否包含提供的板块，只关注产业链的板块部分，只要板块一致就算入
 	 */
-	public Multimap<String,Set<String>> subBkSuoSuTwelveDaLei (SetView stockcurbks)
+	public Multimap<String,String> subBkSuoSuTwelveDaLei (Set<String> union)
 	{
-		Multimap<String,Set<String>> tmpdalei =  ArrayListMultimap.create();
-		Object[] bankuaidaleiname = gzbkdetailmap.keySet().toArray();
+		if(gzbkdetailsimplemap == null)
+			this.getSimpleZdgzBanKuaiFromXml();
+		
+		Multimap<String,String> tmpsuoshudalei =  HashMultimap.create();
+		String[] bankuaidaleiname = gzbkdetailsimplemap.keySet().toArray(new String[gzbkdetailsimplemap.keySet().size()]);
 		try {
-			for(Object currentdalei:bankuaidaleiname) {
-				
-				SetView<String> intersectionbankuai = calSetIntersectionOfZdgz(gzbkdetailmap.get((String)currentdalei),stockcurbks);
-				if(  intersectionbankuai.size() >0  )
-					tmpdalei.put((String)currentdalei,intersectionbankuai);
+			for(String currentdalei:bankuaidaleiname) {
+				  Collection<String> daleibankuailist = gzbkdetailsimplemap.get(currentdalei); //大类有的板块ID
+				  Set<String> daleibankuaiset = new HashSet<String>(daleibankuailist);
+				  SetView<String> intersectionbk = Sets.intersection( daleibankuaiset,union  );
+				  if(intersectionbk.size()>0) {
+					  for(String intersectionbkname : intersectionbk)
+						  tmpsuoshudalei.put(intersectionbkname, currentdalei);
+				  }
 			}
 		} catch (java.lang.NullPointerException ex) {
-			
+			ex.printStackTrace();
 		}
 
-		return tmpdalei;
+		return tmpsuoshudalei;
 	}
+
 	/*
 	 * 
 	 */
-	private SetView<String> calSetIntersectionOfZdgz (ArrayList<BkChanYeLianTreeNode> arrayList,SetView stockcurbks)
-	{
-		Set<String> tmpset = new HashSet<String>();
-		for(BkChanYeLianTreeNode tmpgzbk:arrayList) {
-			String tmpbank = tmpgzbk.getTdxBk().trim();
-			tmpset.add(tmpbank);
-		}
-		SetView<String> intersectionbankuai = Sets.intersection(tmpset, stockcurbks);
-		
-		return intersectionbankuai;
-	}
 	public ArrayList<BkChanYeLianTreeNode> getASubDaiLeiDetail(String daleiname)
 	{
 		
 		return gzbkdetailmap.get(daleiname);
 	}
+	/*
+	 * 
+	 */
 	public void openZdgzXmlInWinSystem() 
 	{
 		String gegucylxmlfilepath = sysconfig.getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile ();

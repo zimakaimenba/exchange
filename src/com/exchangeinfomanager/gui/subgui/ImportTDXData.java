@@ -118,10 +118,10 @@ public class ImportTDXData extends JDialog {
 		
 	}
 
-	private void partthatcanimportduringwork ()
+	private void partThatCanImportDuringWork ()
 	{
 		//从通达信中导入股票曾用名的信息
-		if(chbximportcym.isSelected() )	{
+		if(chbximportcym.isSelected() && chbximportcym.isEnabled())	{
 			File resulttmpfilesys = stockdbopt.refreshEverUsedStorkName ();
 			chbximportcym.setEnabled(false);
 			
@@ -137,7 +137,7 @@ public class ImportTDXData extends JDialog {
 		}
 		
 		//同步自定义板块
-		if(chbxdaorutdxzdybk.isSelected()) { 
+		if(chbxdaorutdxzdybk.isSelected() && chbxdaorutdxzdybk.isEnabled()) { 
 			for(JCheckBox tmpbox:zdybkckbxs) {
 				if(! tmpbox.isSelected() )
 					zdybkmap.remove(tmpbox.getText() );
@@ -157,7 +157,7 @@ public class ImportTDXData extends JDialog {
 		}
 		
 	}
-	private void partthathasimportafterwork () 
+	private void partThatHasBeImportAfterWsork () 
 	{
 //<<<<<<< HEAD
 //=======
@@ -165,7 +165,7 @@ public class ImportTDXData extends JDialog {
 //		
 //>>>>>>> refs/remotes/exchange/master
 		 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
-		if(chbxdaorutdxsysbk.isSelected()) {
+		if(chbxdaorutdxsysbk.isSelected() && chbxdaorutdxsysbk.isEnabled()) {
 			File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();
 			chbxdaorutdxsysbk.setEnabled(false);
 			
@@ -181,7 +181,7 @@ public class ImportTDXData extends JDialog {
 		}
 		
 		//同步通达信成交量成交额
-		if(chbxdaorutdxsysbkvol.isSelected() ) {
+		if(chbxdaorutdxsysbkvol.isSelected() &&  chbxdaorutdxsysbkvol.isEnabled()) {
 			try {
 				File resulttmpfilebkamppreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ();
 				List<String> lines = Files.readLines(resulttmpfilebkamppreck, sysconfig.charSet());
@@ -230,7 +230,7 @@ public class ImportTDXData extends JDialog {
 		}
 		
 		//从通达信foxpro中导入股票的基本面信息
-		if(cbximporttdxgeguinfo.isSelected() ) {
+		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
 			try {
 				File resultimporttdxgegutinfo = this.stockdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
 				List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
@@ -253,7 +253,7 @@ public class ImportTDXData extends JDialog {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				partthatcanimportduringwork ();
+				partThatCanImportDuringWork ();
 				
 				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() ) {
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
@@ -264,7 +264,7 @@ public class ImportTDXData extends JDialog {
 						return;
 					}
 					
-					partthathasimportafterwork();
+					partThatHasBeImportAfterWsork();
 				}
 				lblstatus.setText("同步结束");
 			}

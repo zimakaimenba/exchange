@@ -2,6 +2,7 @@ package com.exchangeinfomanager.asinglestockinfo;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import com.google.common.base.Strings;
@@ -32,7 +33,7 @@ public class ASingleStockInfo
 	private Object[][] zdgzmrmcykRecords ;
 
 	private ArrayList<String> chiCangAccountNameList; //持有该股票的所有账户的名字
-	private HashSet<String> suoShuSysBanKuai; //所属通达信系统板块
+	private HashMap<String,String> suoShuSysBanKuai; //所属通达信系统板块
 	private HashSet<String> suoShuZdyBanKuai; //所属自定义板块
 	
 	public boolean addNewChiCangAccountName (String tmpacntname)
@@ -198,15 +199,15 @@ public class ASingleStockInfo
 	/**
 	 * @return the suoShuBanKuai
 	 */
-	public HashSet<String> getSuoShuTDXSysBanKuai() {
+	public HashMap<String, String> getSuoShuTDXSysBanKuai() {
 		return suoShuSysBanKuai;
 	}
 
 	/**
-	 * @param tmpbk the suoShuBanKuai to set
+	 * @param tmpsysbk the suoShuBanKuai to set
 	 */
-	public void setSuoShuTDXSysBanKuai(HashSet<String> tmpbk) {
-		this.suoShuSysBanKuai = tmpbk;
+	public void setSuoShuTDXSysBanKuai(HashMap<String, String> tmpsysbk) {
+		this.suoShuSysBanKuai = tmpsysbk;
 	}
 	/**
 	 * @return the suoShuBanKuai

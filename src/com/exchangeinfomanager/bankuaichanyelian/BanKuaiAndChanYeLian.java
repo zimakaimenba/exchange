@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -114,6 +115,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 		initializeBanKuaiParsedFile ();
 		
 		createEvents ();
+		if(cylxmhandler.hasXmlRevised())
+			btnSaveAll.setEnabled(true);
 	}
 
 	public static final int UP=0, LEFT=1, RIGHT=2, DOWN=3, NONE=4;
@@ -139,6 +142,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		sysconfig = SystemConfigration.getInstance();
 	}
 
+	
 	/*
 	 * 
 	 */
@@ -280,7 +284,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	     * 鼠标点击某个树，读出所属的通达信板块，在读出该板块的产业链子板块 和通信性板块的相关个股
 	     */
 	    private void chanYeLianTreeMousePressed(java.awt.event.MouseEvent evt) //GEN-FIRST:event_treeMousePressed 
-	    {
+	    {System.out.println("get action notice at bkcyl");
 	        TreePath closestPath = treechanyelian.getClosestPathForLocation(evt.getX(), evt.getY());
 
 	        if(closestPath != null) {
@@ -577,21 +581,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 				return false;
 			}
 		}
-//		if(cylneedsave == true) {
-//			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treechanyelian.getModel().getRoot();
-//			if(!cylxmhandler.saveTreeToChanYeLianXML(treeroot) ) {
-//				JOptionPane.showMessageDialog(null, "保存产业链XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
-//				return false;
-//			}
-//			
-//		}
-//		 
-//		if(zdgzxmlneedsave == true) {
-//			if( !zdgzbkxmlhandler.saveAllZdgzbkToXml () ) {
-//				JOptionPane.showMessageDialog(null, "保存重点关注股票池XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
-//				return false;
-//			}
-//		}
 
 		btnSaveAll.setEnabled(false);
 		return true;
@@ -1145,7 +1134,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 } else 
 				 nodewilladded.setOfficallySelected(true);
 			 
-			 nodewilladded.setSelectedtime( formatDate(new Date() ) );
+			 nodewilladded.setSelectedToZdgzTime( formatDate(new Date() ) );
 			 
 			 treechanyelian.addZdgzBkCylInfoToTreeNode(nodewilladded,false);
 			 zdgzbkxmlhandler.addNewGuanZhuBanKuai(daleiname, nodewilladded);
@@ -1553,6 +1542,25 @@ public class BanKuaiAndChanYeLian extends JPanel
                 }
                 return tip;
             } 
+			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				
+				Border outside = new MatteBorder(1, 0, 1, 0, Color.RED);
+				Border inside = new EmptyBorder(0, 1, 0, 1);
+				Border highlight = new CompoundBorder(outside, inside);
+				 
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        JComponent jc = (JComponent)comp;
+		        CurZdgzBanKuaiTableModel tablemodel = (CurZdgzBanKuaiTableModel)this.getModel(); 
+		        Object value = tablemodel.getValueAt(row, col);
+		        
+		        if(tablemodel.shouldRemovedNodeWhenSaveXml(row) && col == 0) {
+		       	 	Font font=new Font("黑体",Font.BOLD + Font.ITALIC,14); 
+		        	comp.setFont(font);
+		        }
+		        
+		        return comp;
+		    }
 		};
 		tableZdgzBankDetails.setToolTipText("tableZdgzBankDetails");
 		int preferedwidth = 170;
@@ -1600,8 +1608,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 		        	
 		        }
 		        
+		        if(tablemodel.hasShouldRemovedNodeWhenSaveXml(row) && col == 0) {
+		       	 	Font font=new Font("黑体",Font.BOLD + Font.ITALIC,14); 
+		        	comp.setFont(font);
+		        }
 		        return comp;
 		    }
+			
 
 			public String getToolTipText(MouseEvent e) {
                 String tip = null;
@@ -1755,6 +1768,13 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 
 	}
 
+	public boolean shouldRemovedNodeWhenSaveXml(int row){
+		BkChanYeLianTreeNode bkcyltn = this.getGuanZhuBanKuaiInfo(row);
+		if(bkcyltn.shouldBeRemovedWhenSaveXml())
+			return true;
+		return false;
+	}
+
 	public void refresh (HashMap<String,ArrayList<BkChanYeLianTreeNode>> zdgzbkmap2,String cbxDale2) 
 	{
 		this.gzbkmap =  zdgzbkmap2;
@@ -1830,7 +1850,7 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
                 break;
             case 1:
             	try {
-            		value = tmpgzbk.getSelectedtime();
+            		value = tmpgzbk.getSelectedToZdgzTime();
             	} catch (java.lang.NullPointerException e) {
             		value = "";
             	}
@@ -1932,6 +1952,17 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 	 {
 		 return gzbkmap.get(dalei) ;
 	 }
+	 public boolean hasShouldRemovedNodeWhenSaveXml (int rowindex)
+	 {
+		 boolean hasnode = false;
+		String dalei = (String)gzdalei.get(rowindex);
+		ArrayList<BkChanYeLianTreeNode> daleidetail = gzbkmap.get(dalei) ;
+		for(BkChanYeLianTreeNode tmpbkcyltn : daleidetail)
+			if(tmpbkcyltn.shouldBeRemovedWhenSaveXml())
+				hasnode = true;
+		
+		return hasnode;
+	 }
 
 	    @Override
 	    public int getColumnCount() 
@@ -1964,8 +1995,8 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
             				String chanyelian = gznode.getChanYeLian(); 
             				
             				String seltime = "";
-            				if(gznode.getSelectedtime() != null)
-            					seltime = gznode.getSelectedtime();
+            				if(gznode.getSelectedToZdgzTime() != null)
+            					seltime = gznode.getSelectedToZdgzTime();
             				result = result + chanyelian + "(" + seltime +")" + " | " + " ";
             				
             				if(gznode.getParseFileStockSet() != null && gznode.getParseFileStockSet().size() > 0)
@@ -2019,25 +2050,6 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 	    	return false;
 		}
 
-//		public String getCylNodesDaLei(BkChanYeLianTreeNode bknode) 
-//		{
-//			for(String daleiname : this.gzdalei) {
-//				ArrayList<BkChanYeLianTreeNode> zdgzsub = gzbkmap.get(daleiname );
-//        		if(zdgzsub.size() == 0)
-//        			continue;
-//        		
-//        		for(BkChanYeLianTreeNode gznode : zdgzsub) {
-//        			String cylinmapnode = gznode.getChanYeLian().trim();
-//        			String cylinverfiednode = bknode.getChanYeLian().trim();
-//        			
-//        			if(cylinmapnode.contains(cylinverfiednode) )
-//        				return daleiname;
-//        			
-//        		}
-//			}
-//			return null;
-//		}
-	    
 }
 
 
@@ -2135,17 +2147,10 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 		      
 		      return clazz;
 		}
-	    
-//	    @Override
-//	    public Class<?> getColumnClass(int columnIndex) {
-//	        return // Return the class that best represents the column...
-//	    }
-	    
+    
 	    public String getColumnName(int column){ 
 	    	return jtableTitleStrings[column];
 	    }//设置表格列名 
-		
-
 	    public boolean isCellEditable(int row,int column) {
 	    	return false;
 		}
@@ -2171,7 +2176,23 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	    public int getStockRowIndex (String stockcode) 
 	    {
 	    	int index = bkgeguname.indexOf(stockcode);
-	    	return index;
+	    	
+	    	if(index == -1) {
+	    		HanYuPinYing hypy = new HanYuPinYing ();
+	    		for(int i=0;i<this.getRowCount();i++) {
+	    			String codename = this.getStockName(i); 
+	    			if(codename == null)
+	    				continue;
+	    			
+			   		String namehypy = hypy.getBanKuaiNameOfPinYin(codename );
+			   		if(namehypy.toLowerCase().equals(stockcode.toLowerCase())) {
+			   			index = i;
+			   			break;
+			   		}
+	    		}
+	    	}
+	   		
+	   		return index;
 	    }
 	    
 }
@@ -2313,3 +2334,5 @@ class TableMouseListener extends MouseAdapter {
         table.setRowSelectionInterval(currentRow, currentRow);
     }
 }
+
+

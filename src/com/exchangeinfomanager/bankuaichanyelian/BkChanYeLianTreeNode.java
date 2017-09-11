@@ -22,7 +22,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
         super(subject);
         this.myowncode = myowncode1;
         expanded = false;
-        //parsefilestockset = new HashSet<String> ();
+        shouldberemovedwhensavexml = false;
     }
 
     private String suoshutdxbkzscode; //所属通达信板块指数代码
@@ -39,7 +39,18 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 	private boolean isofficallyselected ;
 	private int inzdgzofficalcount =0;
 	private int inzdgzcandidatecount =0;
-	private Date selectedtime;
+	private Date selectedToZdgzTime;
+	
+	private boolean shouldberemovedwhensavexml;
+	
+	public void setShouldBeRemovedWhenSaveXml ( ) 
+	{
+		this.shouldberemovedwhensavexml = true;
+	}
+	public boolean shouldBeRemovedWhenSaveXml ( )
+	{
+		return this.shouldberemovedwhensavexml;
+	}
 	
     
 	public void setTongDaXingBanKuaiCode (String tdxcode)
@@ -104,21 +115,6 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
     	
     }
     
-//    public void setNoteText(String text){
-//        noteText = text;
-//    }
-//    public String getNoteText(){
-//        return noteText;
-//    }
-//    public void setTDXBanKuaiZhiShuCode (String code)
-//    {
-//    	tdxbkzscode = code;
-//    }
-//    public String getTDXBanKuaiZhiShuCode ()
-//    {
-//    	return this.tdxbkzscode;
-//    }
-
     public boolean checktHanYuPingYin (String nameorhypy)
     {
     	if(Strings.isNullOrEmpty(nameorhypy) )
@@ -221,17 +217,17 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode
 	/**
 	 * @return the selectedtime
 	 */
-	public String getSelectedtime() {
-		return this.formatDate(selectedtime);
+	public String getSelectedToZdgzTime() {
+		return this.formatDate(selectedToZdgzTime);
 	}
 	/**
 	 * @param selectedtime the selectedtime to set
 	 */
-	public void setSelectedtime(Date selectedtime) {
-		this.selectedtime = selectedtime;
+	public void setSelectedToZdgzTime(Date selectedtime) {
+		this.selectedToZdgzTime = selectedtime;
 	}
-	public void setSelectedtime(String selectedtime2) {
-		this.selectedtime = formatString(selectedtime2);
+	public void setSelectedToZdgzTime(String selectedtime2) {
+		this.selectedToZdgzTime = formatString(selectedtime2);
 	}
 	private String formatDate(Date tmpdate)
 	{

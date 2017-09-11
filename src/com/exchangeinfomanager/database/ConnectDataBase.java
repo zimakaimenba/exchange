@@ -412,29 +412,23 @@ class DataBaseConnection
 		CachedRowSetImpl cachedRS = null;
 		PreparedStatement sqlstat = null;
 		try	{
-			//sqlstat=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
 			sqlstat = con.prepareStatement(sqlstatement);
 			rsquery = sqlstat.executeQuery();
 			
-//			ResultSetMetaData metaData = rsquery.getMetaData();
-//			int count = metaData.getColumnCount();
-//			for (int i = 1; i <= count; i++)
-//			{
-//			    System.out.println(metaData.getColumnName(i) );
-//			}
-
 			cachedRS = new CachedRowSetImpl();
 			cachedRS.populate(rsquery);
-			
-
 		}  catch(net.ucanaccess.jdbc.UcanaccessSQLException ex) {
 			ex.printStackTrace();
 		} catch(java.lang.NullPointerException e) {
 			System.out.println("数据库连接为NULL");
+			e.printStackTrace();
 		} catch(com.mysql.jdbc.exceptions.jdbc4.CommunicationsException e1) {
 			System.out.println("与数据库的连接断开，需要重新连接");
 			e1.printStackTrace();
-		}	catch(Exception e) {
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException e1) {
+			System.out.println("与数据库的连接断开，需要重新连接");
+			e1.printStackTrace();
+		}catch(Exception e) {
 			System.out.println("数据库SQL执行失败");
 			System.out.println("出错SQL是:" + sqlstatement );
 			e.printStackTrace();
