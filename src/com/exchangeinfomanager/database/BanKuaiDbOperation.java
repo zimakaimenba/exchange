@@ -2841,30 +2841,82 @@ public class BanKuaiDbOperation
 	 */
 	public  CachedRowSetImpl getBanKuaiZhanBi (String bkcode)
 	{
-		String sqlquerystat = "SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , BKJYE.交易日期, DATE(BKJYE.交易日期 + INTERVAL (7 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate,"
-				+ "	       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
-				+ "	FROM  通达信板块每日交易信息 BKJYE"
-				+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
-				+ "	ON ZSJYE.代码 in ('999999','399001' )"
-				+ "	       AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
-				+ "	       AND Year(BKJYE.`交易日期`) = YEAR(NOW())"
-				+ "	       AND BKJYE.`代码` = '" + bkcode + "'"
-				+ "			GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
-				;
-		System.out.println(sqlquerystat);
-		CachedRowSetImpl rs = null;
+		//判断code是板块code还是指数code
+		String sqlcheckstat = "SELECT EXISTS(SELECT * FROM 通达信交易所指数每日交易信息 where 代码 = '" + bkcode + "') AS result";
+		System.out.println(sqlcheckstat);
+		boolean inzhishutable = false;
+		CachedRowSetImpl rspd = null;
 		try {
-			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-   		 	
+			rspd = connectdb.sqlQueryStatExecute(sqlcheckstat);
+   		 	int result = 0; 
+   		 	while(rspd.next())
+   		 		result = rspd.getInt("result");
+   		 	if(result == 1)
+   		 		inzhishutable = true;
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
 	    } catch(Exception e){
 	    	e.printStackTrace();
 	    }  finally {
-	    	
+	    	try {
+				rspd.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	rspd = null;
 	    }
 		
-		return rs;
+		if(!inzhishutable) { //板块是880的板块
+			String sqlquerystat = "SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , BKJYE.交易日期, DATE(BKJYE.交易日期 + INTERVAL (7 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate,"
+					+ "	       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
+					+ "	FROM  通达信板块每日交易信息 BKJYE"
+					+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
+					+ "	ON ZSJYE.代码 in ('999999','399001' )"
+					+ "	       AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
+					+ "	       AND Year(BKJYE.`交易日期`) = YEAR(NOW())"
+					+ "	       AND BKJYE.`代码` = '" + bkcode + "'"
+					+ "			GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
+					;
+			System.out.println(sqlquerystat);
+			CachedRowSetImpl rs = null;
+			try {
+				rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	   		 	
+			}catch(java.lang.NullPointerException e){ 
+		    	e.printStackTrace();
+		    } catch(Exception e){
+		    	e.printStackTrace();
+		    }  finally {
+		    	
+		    }
+			return rs;
+		} else { //板块是指数板块
+			String sqlquerystat = "SELECT Year(通达信交易所指数每日交易信息.交易日期) AS CALYEAR , WEEK(通达信交易所指数每日交易信息.交易日期) AS CALWEEK, 通达信交易所指数每日交易信息.`代码` AS BKCODE ,"
+					+ "	sum(通达信交易所指数每日交易信息.成交额) AS 板块周交易额,	sum(sum_dapan) AS 大盘周交易额, sum(通达信交易所指数每日交易信息.成交额) / sum(sum_dapan) AS 占比"
+					+ " FROM 通达信交易所指数每日交易信息 , ("
+					+ "    SELECT 通达信交易所指数每日交易信息.交易日期 dapanjyrq,  SUM(通达信交易所指数每日交易信息.成交额) sum_dapan"
+					+ "    FROM 通达信交易所指数每日交易信息"
+					+ "    where  通达信交易所指数每日交易信息.`代码` IN  ('999999','399001' )"
+					+ "    group by dapanjyrq"
+					+ ") sq"
+					+ " where  通达信交易所指数每日交易信息.交易日期 = dapanjyrq AND 通达信交易所指数每日交易信息.`代码` = '"  + bkcode + "'" + " AND Year(通达信交易所指数每日交易信息.交易日期)  = YEAR(now()) "
+					+ " GROUP BY Year(通达信交易所指数每日交易信息.交易日期)  , WEEK(通达信交易所指数每日交易信息.交易日期), 通达信交易所指数每日交易信息.`代码`"
+					; 
+			System.out.println(sqlquerystat);
+			CachedRowSetImpl rs = null;
+			try {
+				rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	   		 	
+			}catch(java.lang.NullPointerException e){ 
+		    	e.printStackTrace();
+		    } catch(Exception e){
+		    	e.printStackTrace();
+		    }  finally {
+		    	
+		    }
+			return rs;
+		}
 	}
 	/*
 	 * 板块成交额占比，以占比增长率排名

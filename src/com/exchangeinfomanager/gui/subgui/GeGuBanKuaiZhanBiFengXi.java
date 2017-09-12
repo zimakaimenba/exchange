@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,10 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.CategoryToolTipGenerator;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -30,9 +36,11 @@ import org.jfree.chart.renderer.category.BoxAndWhiskerRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer;
 import org.jfree.chart.title.LegendTitle;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.statistics.DefaultBoxAndWhiskerCategoryDataset;
 import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.sun.rowset.CachedRowSetImpl;
@@ -78,33 +86,13 @@ public class GeGuBanKuaiZhanBiFengXi extends JDialog {
 		currentDisplayedBkIndex = 0;
 		suosubkcodelist = new ArrayList<String>(suosubk.keySet());
 		suoshubkmap = suosubk;
-//		createData();
+
         createDataset(currentDisplayedBkIndex);
         createChartPanel(currentDisplayedBkIndex);
         createControlPanel();
 	}
 	
-//	 private void createData() {
-//	        columns = new ArrayList<String>(COLS);
-//	        data = new ArrayList<List<List<Double>>>();
-//	        for (int i = 0; i < COLS; i++) {
-//	            String name = "Category" + String.valueOf(i + 1);
-//	            columns.add(name);
-//	            List<List<Double>> list = new ArrayList<List<Double>>();
-//	            for (int j = 0; j < ROWS; j++) {
-//	                list.add(createValues());
-//	            }
-//	            data.add(list);
-//	        }
-//	    }
-//
-//	    private List<Double> createValues() {
-//	        List<Double> list = new ArrayList<Double>();
-//	        for (int i = 0; i < VALUES; i++) {
-//	            list.add(rnd.nextGaussian());
-//	        }
-//	        return list;
-//	    }
+
 
 	    private void createDataset(int start) {
 	    	barchartdataset = new DefaultCategoryDataset();
@@ -129,10 +117,18 @@ public class GeGuBanKuaiZhanBiFengXi extends JDialog {
 	    	}
 	    }
 	    
-	    private void createChartPanel(int start) 
+	    @SuppressWarnings("deprecation")
+		private void createChartPanel(int start) 
 	    {
-	        CategoryItemRenderer renderer = new StackedBarRenderer(); 
+//	    	https://www.youtube.com/watch?v=YV80Titt9Q4
+	    	BarRenderer renderer = new BarRenderer ();
+	        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+	        renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+	        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
+	        renderer.setItemLabelsVisible(true);
 	        renderer.setBaseItemLabelsVisible(true); 
+	        renderer.setToolTipGenerator(new CustomToolTipGenerator());
+	        
 	        plot = new CategoryPlot(); 
 	        LegendTitle legend = new LegendTitle(plot); 
 	        legend.setPosition(RectangleEdge.TOP); 
@@ -250,45 +246,14 @@ public class GeGuBanKuaiZhanBiFengXi extends JDialog {
 
 }
 
-//	HashMap<String, String> suosubk = stockbasicinfo.getSuoShuTDXSysBanKuai();
-//for(String bkcode:suosubk.keySet()) {
-//	StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
-//	standardChartTheme.setExtraLargeFont(new Font("隶书",Font.BOLD,20) );
-//	standardChartTheme.setRegularFont(new Font("隶书",Font.BOLD,20) );
-//	standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,20));
-//	ChartFactory.setChartTheme(standardChartTheme);
-//	DefaultCategoryDataset barchartdataset = new DefaultCategoryDataset();
-//	
-//	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (bkcode);
-//	int row =0;
-//	try {
-//		while (rs.next()) {
-//			String weeknumber =rs.getString("CALWEEK");
-//			Double zhanbi = rs.getDouble("占比");
-//			barchartdataset.setValue(zhanbi,"板块占比",weeknumber);
-//			row ++;
-//		}
-//	} catch (SQLException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
-//	
-//	JFreeChart barchart = ChartFactory.createBarChart("'" + bkcode + suosubk.get(bkcode) + "'"+"板块成交量占比", "周数", "占比", barchartdataset,PlotOrientation.VERTICAL, true,true,false);
-//	try {
-//		File tmpreportfolder = Files.createTempDir();
-//		File tmprecordfile = new File(tmpreportfolder + bkcode + ".jpg"); //new File("d:\\chart.jpg")
-//		int chartxlength = 35*row;
-//	     ChartUtilities.saveChartAsJPEG(tmprecordfile, barchart, chartxlength, 300);
-//	     
-//	     ImageIcon icon = new ImageIcon(tmpreportfolder + bkcode + ".jpg");
-//	     JLabel labelchart = new JLabel(icon);
-//	     scrollPanechenjl.add(labelchart);
-//	     scrollPanechenjl.setViewportView(labelchart);
-//	     
-//	} catch (IOException e) {
-//		e.printStackTrace();
-//	     System.err.println("Problem occurred creating chart.");
-//	}
-//}
-//
-//
+//http://www.jfree.org/phpBB2/viewtopic.php?f=3&t=29571#
+class CustomToolTipGenerator implements CategoryToolTipGenerator  {
+    public String generateToolTip(CategoryDataset dataset, int row, int column)   {
+    	NumberFormat numberFormat = NumberFormat.getNumberInstance();
+    	numberFormat.setMinimumFractionDigits(3);
+    	String zhanbiperct = new DecimalFormat("%#0.000").format(dataset.getValue(row, column));
+    	return "周" + column + ":" + zhanbiperct;
+           
+    }
+}
+

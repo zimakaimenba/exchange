@@ -93,7 +93,6 @@ import com.sun.rowset.CachedRowSetImpl;
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.TableCellListener;
-import com.exchangeinfomanager.gui.subgui.BoxAndWhiskerDemo;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GeGuBanKuaiZhanBiFengXi;
@@ -1557,10 +1556,6 @@ protected void computerSuoSuBanKuaiZhanbi()
 		dialogbkfx.pack();
 		dialogbkfx.setLocationRelativeTo(null);
 		dialogbkfx.setVisible(true);
-		
-	
-	
-	
 }
 
 protected void saveKuaiSuJiLuJiaoYi() 

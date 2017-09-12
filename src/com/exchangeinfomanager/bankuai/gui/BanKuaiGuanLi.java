@@ -68,7 +68,7 @@ public class BanKuaiGuanLi extends JDialog
 //		this.cylxmlhandler = cylxmlhandler2;
 //		this.zdgzbkxmlhandler = zdgzbkxmlhandler2;
 		this.stockInfoManager = stockInfoManager2;
-		//startDialog ();
+		startDialog ();
 	}
 	
 //	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
@@ -147,7 +147,7 @@ public class BanKuaiGuanLi extends JDialog
 	private void initializeGui()
 	{
 		setTitle("\u901A\u8FBE\u4FE1\u677F\u5757/\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E");
-		setBounds(100, 100, 993, 980);
+		setBounds(100, 100, 1576, 988);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
