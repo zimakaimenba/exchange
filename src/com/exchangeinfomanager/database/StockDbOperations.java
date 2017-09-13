@@ -1105,8 +1105,11 @@ public class StockDbOperations
                 recCounter++;
 
                 //如果在表：A股中也没有这个股票代码，则在A股中也增加该股票
-                sqlinsetstat = "IF NOT EXISTS(SELECT 1 FROM A股  WHERE 股票代码 = '" + stockcode + "')"
-                		+ "    INSERT INTO A股 (股票代码) VALUES ('"+ stockcode + "')"
+                sqlinsetstat = "INSERT INTO A股 (股票代码)"
+                		+ "   SELECT * FROM (SELECT '" + stockcode + "') AS tmp"
+                		+ "   WHERE NOT EXISTS ("
+                		+ "   SELECT 股票代码 FROM A股 WHERE 股票代码 = '" + stockcode + "'"
+                		+ ") LIMIT 1"
                 		;
                 connectdb.sqlInsertStatExecute(sqlinsetstat);
             }

@@ -163,11 +163,26 @@ public class BuyStockNumberPrice extends JPanel
 	}
 	public int getJiaoyiGushu()
 	{
-		return Integer.parseInt(tfldGushu.getText());
+		int jygs ;
+		try {
+			jygs = Integer.parseInt(tfldGushu.getText());
+		} catch (java.lang.NumberFormatException e) {
+			jygs = -1;
+		}
+		
+		
+		return jygs;
 	}
 	public double getJiaoyiJiage ()
 	{
-		return Double.parseDouble(tfldJiage.getText());
+		double jyjg;
+		try {
+			jyjg = Double.parseDouble(tfldJiage.getText());
+		} catch (java.lang.NumberFormatException e) {
+			jyjg = -1;
+		}
+		
+		return jyjg;
 	}
 	public void setJiaoYiJiaGe (double jiage)
 	{

@@ -126,15 +126,18 @@ public class ChanYeLianXMLHandler2
 			Set<String> tdxbkset = tdxbk.keySet();
 			Set<String> tdxzhishuset = tdxzhishu.keySet();
 			SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
-			 
+
 			Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
-			
-			//XML没有，数据库有，要添加如XML
-			newBanKuaiFromDb = Sets.difference(uniontdxbkindb, bkcylxmlset );
-			//XML 
-			oldBanKuaiFromDb = Sets.difference(bkcylxmlset, uniontdxbkindb );
+
+			if(uniontdxbkindb.size() != 0) { //个股不可能完全没有板块信息，如果为0，说明和数据库连接断了，要考虑
+				//XML没有，数据库有，要添加如XML
+				newBanKuaiFromDb = Sets.difference(uniontdxbkindb, bkcylxmlset );
+				//XML 
+				oldBanKuaiFromDb = Sets.difference(bkcylxmlset, uniontdxbkindb );
+			} else { //个股不可能完全没有板块信息，如果为0，说明和数据库连接断了，要考虑
+				
+			}
 		}
-			
 		
 		BkChanYeLianTreeNode topNode = new BkChanYeLianTreeNode("TongDaXinBanKuaiAndZhiShu","000000");
 		if(cylxmlroot != null) {
@@ -277,10 +280,8 @@ public class ChanYeLianXMLHandler2
 
 					   suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
 					   Set<String> suoshutdxbkcode = tmpsinglestock.getSuoShuTDXSysBanKuai().keySet();
-					   if(!suoshutdxbkcode.contains(suoshubkcode))//如果该股已经不属于该板块，需要删除的，则标记好
+					   if(suoshutdxbkcode.size()>0 && !suoshutdxbkcode.contains(suoshubkcode))//如果该股已经不属于该板块，需要删除的，则标记好
 						   shouldremovedwhensavexml = true;
-					   
-					   
 				   }
 				   
 				   
