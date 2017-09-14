@@ -182,7 +182,7 @@ public class ImportTDXData extends JDialog {
 		
 		if(cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled() ) {
 			try {
-				File resulttmpfilebkamo = bkdbopt.refreshTDXSzGeGuVolAmoToDb();
+				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sz");
 				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
@@ -195,7 +195,7 @@ public class ImportTDXData extends JDialog {
 		}
 		if(cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled() ) {
 			try {
-				File resulttmpfilebkamo = bkdbopt.refreshTDXSzGeGuVolAmoToDb();
+				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sh");
 				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
