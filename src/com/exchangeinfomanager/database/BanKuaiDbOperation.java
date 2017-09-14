@@ -3079,6 +3079,8 @@ public class BanKuaiDbOperation
 		return -1;
 	}
 	
+	
+	
 	/*
 	 * 板块成交额占比，以占比排序
 	 */
@@ -3134,6 +3136,97 @@ public class BanKuaiDbOperation
 		
 		return barchart_dataset;
 	}
+	/*
+	 * 同步深圳个股成交量信息
+	 */
+	public File refreshTDXSzGeGuVolAmoToDb() 
+	{
+		File tmpreportfolder = Files.createTempDir();
+		File tmprecordfile = new File(tmpreportfolder + "同步深圳个股成交量信息.tmp");
+		
+		List<String> volamooutput = getTDXVolFilesRule ();
+		String exportath = volamooutput.get(0);
+		String filenamerule = volamooutput.get(1);
+		String dateRule = volamooutput.get(2);
+//		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
+//		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
+//		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
+//		String dateRule = getTDXDateExportDateRule(Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(2)).get(1));
+		
+		ArrayList<String> allgegucode = new ArrayList<String>( );
+		CachedRowSetImpl  rsdm = null;
+		try { 	
+			
+			String sqlquerystat = "SELECT  股票代码  FROM A股  WHERE      ifnull(已退市,1 )  or 已退市 = false "
+						;
+			System.out.println(sqlquerystat);
+		    	rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
+		    	while(rsdm.next()) {
+		    		 String ggcode = rsdm.getString("股票代码"); //mOST_RECENT_TIME
+		    		 if(ggcode.startsWith("00") || ggcode.startsWith("30")) //只存深市股票
+		    			 allgegucode.add(ggcode);
+		    	}
+		    } catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+		    } catch (SQLException e) {
+		    	e.printStackTrace();
+		    }catch(Exception e){
+		    	e.printStackTrace();
+		    } finally {
+		    	if(rsdm != null)
+				try {
+					rsdm.close();
+					rsdm = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		    }
+		
+		for(String tmpbkcode:allgegucode) {
+			//String bkfilename = "SH" + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
+			String bkfilename = (filenamerule.replaceAll("YY","SZ")).replaceAll("XXXXXX", tmpbkcode);
+			File tmpbkfile = new File(exportath + "/" + bkfilename);
+			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
+				System.out.println("读取" + bkfilename + "发生错误！");
+			    continue; 
+			} 
+
+				CachedRowSetImpl  rs = null;
+				Date lastestdbrecordsdate = null;
+				try { 				
+					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME"
+							+ " FROM 通达信板块每日交易信息  WHERE  代码 = " 
+   							+ "'"  + tmpbkcode + "'" 
+   							;
+					System.out.println(sqlquerystat);
+   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+   			    	while(rs.next()) {
+//   			    		System.out.println(rs.getMetaData().getColumnCount());
+   			    		 lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
+   			    		 System.out.println(lastestdbrecordsdate);
+   			    	}
+   			    } catch(java.lang.NullPointerException e) { 
+   			    	e.printStackTrace();
+   			    } catch (SQLException e) {
+   			    	e.printStackTrace();
+   			    }catch(Exception e){
+   			    	e.printStackTrace();
+   			    } finally {
+   			    	if(rs != null)
+						try {
+							rs.close();
+							rs = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+   			    }
+				
+				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,lastestdbrecordsdate,"通达信深交所股票每日交易信息",dateRule,tmprecordfile);
+		}
+		
+		return tmprecordfile;
+	}
+	
 	
 	
 
