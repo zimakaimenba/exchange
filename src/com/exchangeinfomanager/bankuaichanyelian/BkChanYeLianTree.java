@@ -20,6 +20,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
 
+import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
@@ -164,7 +165,7 @@ public class BkChanYeLianTree extends JTree
 
 	    	if( childNodetype == BkChanYeLianTreeNode.TDXBK ) {
 	    		String bkcode = childNode.getTongDaXingBanKuaiCode();
-	    		HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bkname,bkcode);
+	    		HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bkname,bkcode);
 	    		Set<String> curbkallbkset = tmpallbkge.keySet();
 				SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset );
 				

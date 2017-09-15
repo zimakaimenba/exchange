@@ -73,6 +73,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
@@ -349,10 +350,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 //	  	   		Collections.sort(tmpsubbk,collator);
 	  	       
 	  	       	//读出该板块所有的个股
-	  	       	HashMap<String,String> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode);
+	  	       	HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode);
 	  	      
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
-	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tmpallbkge,stockinparsefile);
+	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tdxbk,tdxbkcode,tmpallbkge,stockinparsefile);
 	  	       	
 	  	       	int row = tableCurZdgzbk.getSelectedRow();
 	  	       	((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
@@ -471,17 +472,30 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    }
 
 
-		private void setGeGuAsLongTouOrNot()
+	    /*
+	     * 设置该板块个股的权重
+	     */
+		private void setGeGuWeightInBanKuai()
 	    {
 			int row = tablebkgegu.getSelectedRow();
 			if(row < 0)
 				return;
 			
-			BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
-			String bkcode = curselectedbknode.getTongDaXingBanKuaiCode();
+//			BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
+			String bkcode = ((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).getTdxBkCode();
+			String bkname = ((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).getTdxBkName();
 			String stockcode = ((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).getStockCode(row);
-			boolean longtoustatus = ((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).getLongTouStatus ();
-			stockdbopt.setStockAsBanKuaiLongTouOrNot (bkcode,stockcode,longtoustatus);
+			int weight = ((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).getStockCurWeight (row);
+			
+			String weightresult = JOptionPane.showInputDialog(null,"持股已卖完，请输入盈亏金额:",weight);
+			int newweight = Integer.parseInt(weightresult);
+			if(newweight>10)
+				JOptionPane.showMessageDialog(null,"权重值不能超过10！","Warning",JOptionPane.WARNING_MESSAGE);
+			
+			if(weight != newweight) {
+				bkdbopt.setStockWeightInBanKuai (bkcode,bkname,stockcode,newweight);
+				((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).setStockCurWeight (row,newweight);
+			}
 		}
 	    
 	    /*
@@ -1596,7 +1610,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		//个股table也可以加个股新闻
 		JPopupMenu popupMenuGeguNews = new JPopupMenu();
 		JMenuItem menuItemAddNews = new JMenuItem("添加个股新闻");
-		JMenuItem menuItemMakeLongTou = new JMenuItem("标记/取消为龙头");
+		JMenuItem menuItemMakeLongTou = new JMenuItem("设置股票权重");
 		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemMakeLongTou);
 		tablebkgegu.setComponentPopupMenu(popupMenuGeguNews);
@@ -1610,12 +1624,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 			
 		});
 		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
-		menuItemAddNews.addActionListener(new ActionListener() {
-			@Override
-
+		menuItemMakeLongTou.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-
-				setGeGuAsLongTouOrNot ();
+				setGeGuWeightInBanKuai ();
 			}
 			
 		});
@@ -2223,23 +2234,26 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 
 class BanKuaiGeGuTableModel extends AbstractTableModel 
 {
-	private HashMap<String,String> bkgegumap; //包含股票代码和股票名称
-	String[] jtableTitleStrings = { "股票代码", "股票名称", "龙头"};
+	private HashMap<String, ASingleStockInfo> bkgegumap; //包含股票代码和股票名称
+	String[] jtableTitleStrings = { "股票代码", "股票名称", "权重"};
 	private ArrayList<String> bkgeguname;
 	private HashSet<String> stockcodeinparsefile;
+	private String tdxbkname;
+	private String tdxbkcode;
 	
 	BanKuaiGeGuTableModel ()
 	{
 	}
-	public void refresh  (HashMap<String,String> bkgegu,HashSet<String> stockcodeinparsefile2)
+	
+	public void refresh  (String tdxbkname2, String tdxbkcode2, HashMap<String, ASingleStockInfo> tmpallbkge,HashSet<String> stockcodeinparsefile2)
 	{
-		this.bkgegumap = bkgegu;
-		
+		this.bkgegumap = tmpallbkge;
+		this.tdxbkname = tdxbkname2;
+		this.tdxbkcode = tdxbkcode2;
  		this.stockcodeinparsefile = stockcodeinparsefile2;
-
  		
  		if(stockcodeinparsefile.size() >0 ) { //优先把parsefile里的个股显示在前面
- 			Set<String> bkgegucodelist = bkgegu.keySet() ;
+ 			Set<String> bkgegucodelist = tmpallbkge.keySet() ;
  	 		SetView<String> commonbkcode = Sets.intersection(bkgegucodelist, this.stockcodeinparsefile);
  	 		SetView<String> diffbkcode = Sets.difference(bkgegucodelist, this.stockcodeinparsefile);
  	 		
@@ -2248,15 +2262,23 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
  	 		
  	 		bkgeguname = tmpbkgeguname;
  		} else
- 			bkgeguname = new ArrayList<String> (bkgegu.keySet() );
+ 			bkgeguname = new ArrayList<String> (tmpallbkge.keySet() );
  		
  		this.fireTableDataChanged();
 	}
 
-	public boolean getLongTouStatus(int rowIndex) 
+	public String getTdxBkName ()
 	{
-		boolean ltstatus = (Boolean)this.getValueAt(rowIndex, 2);
-		return false;
+		return this.tdxbkname;
+	}
+	public String getTdxBkCode ()
+	{
+		return this.tdxbkcode;
+	}
+	public int getStockCurWeight(int rowIndex) 
+	{
+		int weight = (Integer)this.getValueAt(rowIndex, 2);
+		return weight;
 	}
 	public HashSet<String> getStockInParseFile ()
 	{
@@ -2277,22 +2299,34 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	    {
 	        return jtableTitleStrings.length;
 	    } 
-	    
+	    public void setStockCurWeight(int row, int newweight) 
+		{
+	    	String bkcode = bkgeguname.get(row);
+	    	ASingleStockInfo tmpstock = bkgegumap.get( bkcode ); 
+	    	HashMap<String, Integer> stockweightmap = tmpstock.getSysBanKuaiWeight();
+	    	stockweightmap.put(this.tdxbkcode,newweight);
+	    	tmpstock.setSysBanKuaiWeight(stockweightmap);
+	    	this.fireTableDataChanged();
+		}
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
 	    	if(bkgegumap.isEmpty())
 	    		return null;
 	    	String bkcode = bkgeguname.get(rowIndex);
+	    	ASingleStockInfo tmpstock = bkgegumap.get( bkcode ); 
+	    	HashMap<String, Integer> stockweightmap = tmpstock.getSysBanKuaiWeight();
+	    	Object[] stockweight = stockweightmap.values().toArray();
+	    	
 	    	Object value = "??";
 	    	switch (columnIndex) {
             case 0:
                 value = bkcode;
                 break;
             case 1:
-            	value = bkgegumap.get( bkcode );
+            	value = tmpstock.getStockname();
                 break;
             case 2:
-            	value = new Boolean(false);
+            	value = (Integer)stockweight[0];
             	break;
 	    	}
 
@@ -2309,7 +2343,7 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = Boolean.class;
+			          clazz = Integer.class;
 			          break;
 		      }
 		      
@@ -2328,7 +2362,7 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	    }
 	    public String getStockName (int row) 
 	    {
-	    	return  bkgegumap.get( bkgeguname.get(row) );
+	    	return  (String) this.getValueAt(row, 1);
 	    }
 
 	    

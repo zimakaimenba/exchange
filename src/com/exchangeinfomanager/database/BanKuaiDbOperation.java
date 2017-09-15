@@ -100,8 +100,8 @@ public class BanKuaiDbOperation
 
 		//更新通达信系统所有板块信息，在更新中，把新的存入数据库，加入XML， 旧的从XML和数据库删除
 		this.refreshTDXAllBanKuaiToSystem(tmprecordfile);
-		this.refreshTDXZhiShuShangHaiLists (tmprecordfile); //这两个是同步沪深指数列表，指数板块一般没有太大变化，不用总是同步，同步一次后就注释掉
-		this.refreshTDXZhiShuShenZhenLists (tmprecordfile);
+		this.refreshTDXZhiShuShangHaiLists (tmprecordfile); //上海
+		this.refreshTDXZhiShuShenZhenLists (tmprecordfile); //深圳
 		 
 		//同步相关板块个股信息
 		this.refreshTDXFengGeBanKuaiToGeGu(tmprecordfile);
@@ -456,10 +456,11 @@ public class BanKuaiDbOperation
    			        int rows = rs.getRow();  
    			        rs.first();  
    			        if(rows == 0) { //该股票还不存在于数据库中，要添加
-   			        	String sqlinsertstat = "INSERT INTO  股票通达信行业板块对应表(股票代码,行业板块,对应TDXSWID) values ("
+   			        	String sqlinsertstat = "INSERT INTO  股票通达信行业板块对应表(股票代码,行业板块,对应TDXSWID,股票权重) values ("
 		   						+ "'" + stockcode.trim() + "'" + ","
 		   						+ "'" + stockbkname.trim() + "'"  + ","
-		   						+ "'" + stockbkcode.trim() + "'"
+		   						+ "'" + stockbkcode.trim() + "'" + ","
+		   						+ 10
 		   						+ ")"
 		   						;
 		   				System.out.println(sqlinsertstat);
@@ -638,9 +639,10 @@ public class BanKuaiDbOperation
 	   		        SetView<String> differencebankuainew = Sets.difference(tmpstockcodesetnew, tmpstockcodesetold ); 
 		   		    for (String str : differencebankuainew) {
 		   				
-		   				String sqlinsertstat = "INSERT INTO  股票通达信风格板块对应表(股票代码,风格板块) values ("
+		   				String sqlinsertstat = "INSERT INTO  股票通达信风格板块对应表(股票代码,风格板块,股票权重) values ("
 		   						+ "'" + str.trim() + "'" + ","
-		   						+ "'" + gupiaoheader + "'" 
+		   						+ "'" + gupiaoheader + "'"  + ","
+		   						+ 10
 		   						+ ")"
 		   						;
 		   				System.out.println(sqlinsertstat);
@@ -819,9 +821,10 @@ public class BanKuaiDbOperation
 	   		        SetView<String> differencebankuainew = Sets.difference(tmpstockcodesetnew, tmpstockcodesetold ); 
 		   		    for (String str : differencebankuainew) {
 		   				
-		   				String sqlinsertstat = "INSERT INTO  股票通达信交易所指数对应表(股票代码,指数板块) values ("
+		   				String sqlinsertstat = "INSERT INTO  股票通达信交易所指数对应表(股票代码,指数板块,股票权重) values ("
 		   						+ "'" + str.trim() + "'" + ","
-		   						+ "'" + gupiaoheader + "'" 
+		   						+ "'" + gupiaoheader + "'" + ","
+		   						+ 10
 		   						+ ")"
 		   						;
 		   				System.out.println(sqlinsertstat);
@@ -864,7 +867,7 @@ public class BanKuaiDbOperation
 		 return addednumber;
 	}
 	/*
-	 * 从通达信更新所有的交易所指数，目前只更新在个股指数表中有的交易所指数。方法是直接从上表中读出指数，加入新的，删除旧的。
+	 * 从通达信更新所有的交易所指数，上海part
 	 */
 	private int refreshTDXZhiShuShangHaiLists(File tmprecordfile)
 	{
@@ -943,6 +946,9 @@ public class BanKuaiDbOperation
 		
 		return 1;
 	}
+	/*
+	 * 从通达信更新所有的交易所指数，深圳part
+	 */
 	private int refreshTDXZhiShuShenZhenLists(File tmprecordfile)
 	{
 		File file = new File(sysconfig.getTDXShenZhenShuNameFile() );
@@ -1234,9 +1240,10 @@ public class BanKuaiDbOperation
 	   		        SetView<String> differencebankuainew = Sets.difference(tmpstockcodesetnew, tmpstockcodesetold ); 
 		   		    for (String str : differencebankuainew) {
 		   				
-		   				String sqlinsertstat = "INSERT INTO  股票通达信概念板块对应表(股票代码,概念板块) values ("
+		   				String sqlinsertstat = "INSERT INTO  股票通达信概念板块对应表(股票代码,概念板块,股票权重) values ("
 		   						+ "'" + str.trim() + "'" + ","
-		   						+ "'" + gupiaoheader + "'" 
+		   						+ "'" + gupiaoheader + "'"  + ","
+		   						+ 10 
 		   						+ ")"
 		   						;
 		   				System.out.println(sqlinsertstat);
@@ -1690,9 +1697,9 @@ public class BanKuaiDbOperation
 		return tmpgnset;
 	}
 	/*
-	 * 找出某通达信板块的所有行业/概念/风格个股
+	 * 找出某通达信板块的所有行业/概念/风格个股及个股权重
 	 */
-	public HashMap<String,String> getTDXBanKuaiGeGuOfHyGnFg(String currentbk,String currentbkcode)
+	public HashMap<String, ASingleStockInfo> getTDXBanKuaiGeGuOfHyGnFg(String currentbk,String currentbkcode)
 	{
 		//如果传来的板块是地域板块，要到股票通达信基本面信息对应表查找
 				String diyusqlquerystat = "SELECT count(*)  FROM 通达信板块列表 WHERE 板块id = '" + currentbkcode +"' and CAST(对应TDXSWID AS signed) >0";
@@ -1721,37 +1728,38 @@ public class BanKuaiDbOperation
 					rsdy = null;
 				}
 				
+				HashMap<String,ASingleStockInfo> gegumap = new HashMap<String,ASingleStockInfo> ();
 				String sqlquerystat = null;
-				 if(dy == 1 ) {
-					 sqlquerystat = "SELECT tdxjbm.股票代码GPDM AS 股票代码, agu.股票名称" 
+				 if(dy == 1 ) { //找地域板块
+					 sqlquerystat = "SELECT tdxjbm.股票代码GPDM AS 股票代码, agu.股票名称, tdxjbm.股票权重" 
 								+ " FROM 股票通达信基本面信息对应表  AS tdxjbm, A股 AS agu, 通达信板块列表 AS tdxbk"
 								+ " WHERE  tdxbk.板块ID= " + "'" + currentbkcode + "'" 
 								+ " AND tdxbk.对应TDXSWID = tdxjbm.地域DY"
 								+ " AND tdxjbm.股票代码GPDM  = agu.股票代码"
 								;
-				 } else {
-					 sqlquerystat = "SELECT hy.股票代码, agu.股票名称" 
+				 } else { //概念风格行业板块
+					 sqlquerystat = "SELECT hy.股票代码, agu.股票名称, hy.股票权重" 
 								+ " FROM 股票通达信行业板块对应表  AS hy, A股 AS agu"
 								+ " WHERE  hy.行业板块= " + "'" + currentbk + "'" 
 								+ " AND hy.股票代码  = agu.股票代码"
 								
 								+ " UNION "
 								
-								+ "SELECT gn.股票代码, agu.股票名称" 
+								+ "SELECT gn.股票代码, agu.股票名称, gn.股票权重" 
 								+ " FROM 股票通达信概念板块对应表  AS gn, A股 AS agu"
 								+ " WHERE  gn.概念板块= " + "'" + currentbk + "'" 
 								+ " AND gn.股票代码  = agu.股票代码"
 								
 								+ " UNION "
 								
-								+ "SELECT fg.股票代码, agu.股票名称" 
+								+ "SELECT fg.股票代码, agu.股票名称, fg.股票权重" 
 								+ " FROM 股票通达信风格板块对应表  AS fg,  A股  AS agu"
 								+ " WHERE  fg.风格板块= " + "'" + currentbk + "'" 
 								+ " AND fg.股票代码  = agu.股票代码"
 								
 								+ " UNION "
 
-								+ "SELECT zs.股票代码, agu.股票名称" 
+								+ "SELECT zs.股票代码, agu.股票名称, zs.股票权重" 
 								+ " FROM 股票通达信交易所指数对应表  AS zs,  A股  AS agu"
 								+ " WHERE  zs.指数板块= " + "'" + currentbk + "'" 
 								+ " AND zs.股票代码  = agu.股票代码"
@@ -1761,18 +1769,28 @@ public class BanKuaiDbOperation
 				 }
 				
 		System.out.println(sqlquerystat);
-		HashMap<String,String> tmpgnset = new HashMap<String,String>();
+//		HashMap<String,String> tmpgnset = new HashMap<String,String>();
+		 
 		CachedRowSetImpl rsfg = null;
 		try {  
 			 rsfg = connectdb.sqlQueryStatExecute(sqlquerystat);
 
-			 rsfg.last();  
+			rsfg.last();  
 			int rows = rsfg.getRow();  
 			rsfg.first();  
 			for(int j=0;j<rows;j++) {  
 				String tmpstockcode = rsfg.getString(1); //"股票代码"
 				String tmpstockname = rsfg.getString("股票名称"); //"股票名称"
-				tmpgnset.put(tmpstockcode,tmpstockname);
+				int stockweight = rsfg.getInt("股票权重");
+				
+				ASingleStockInfo tmpstock = new ASingleStockInfo (tmpstockcode);
+				tmpstock.setStockname(tmpstockname);
+				
+				HashMap<String, Integer> stockbkweight = new  HashMap<String, Integer>() ;
+				stockbkweight.put(currentbkcode, stockweight); //板块代码加权重
+				tmpstock.setSysBanKuaiWeight (  stockbkweight );
+				
+				gegumap.put(tmpstockcode, tmpstock);
 				rsfg.next();
 			}
 			rsfg.close();
@@ -1794,7 +1812,7 @@ public class BanKuaiDbOperation
 		}
 		
 
-		return tmpgnset;
+		return gegumap;
 	}
 	/*
 	 * 找出某通达信行业板块的所有个股
@@ -1822,7 +1840,7 @@ public class BanKuaiDbOperation
 				tmpgnset.put(tmpstockcode,tmpstockname);
 				rsfg.next();
 			}
-			rsfg.close();
+			
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -3239,9 +3257,22 @@ public class BanKuaiDbOperation
 		
 		return tmprecordfile;
 	}
-	
-	
-	
+	/*
+	 * 修改板块中某个个股的权重
+	 */
+	public void setStockWeightInBanKuai(String bkcode, String bkname, String stockcode, int weight) 
+	{
+		String sqlupdatestat1 = "update 股票通达信交易所指数对应表  set 股票权重 = " +  weight  + " where 指数板块 = '" + bkname + "' AND 股票代码 = '" + stockcode + "'";
+		String sqlupdatestat2 = "update 股票通达信概念板块对应表  set 股票权重 = " +  weight  + " where 概念板块 = '" + bkname + "' AND 股票代码 = '" + stockcode + "'";
+		String sqlupdatestat3 = "update 股票通达信行业板块对应表  set 股票权重 = " +  weight  + " where 行业板块 = '" + bkname + "' AND 股票代码 = '" + stockcode + "'";
+		String sqlupdatestat4 = "update 股票通达信风格板块对应表  set 股票权重 = " +  weight  + " where 风格板块 = '" + bkname + "' AND 股票代码 = '" + stockcode + "'";
+		//很傻的实现
+		
+		connectdb.sqlUpdateStatExecute(sqlupdatestat1);
+		connectdb.sqlUpdateStatExecute(sqlupdatestat2);
+		connectdb.sqlUpdateStatExecute(sqlupdatestat3);
+		connectdb.sqlUpdateStatExecute(sqlupdatestat4);
+	}    
 
 }
 

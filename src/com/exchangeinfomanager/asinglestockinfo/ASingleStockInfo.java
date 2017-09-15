@@ -34,6 +34,9 @@ public class ASingleStockInfo
 
 	private ArrayList<String> chiCangAccountNameList; //持有该股票的所有账户的名字
 	private HashMap<String,String> suoShuSysBanKuai; //所属通达信系统板块
+	private HashMap<String,Integer> sysBanKuaiWeight; //所属通达信系统板块权重
+	
+
 	private HashSet<String> suoShuZdyBanKuai; //所属自定义板块
 	
 	public boolean addNewChiCangAccountName (String tmpacntname)
@@ -209,6 +212,19 @@ public class ASingleStockInfo
 	public void setSuoShuTDXSysBanKuai(HashMap<String, String> tmpsysbk) {
 		this.suoShuSysBanKuai = tmpsysbk;
 	}
+	/**
+	 * @return the sysBanKuaiWeight
+	 */
+	public HashMap<String, Integer> getSysBanKuaiWeight() {
+		return sysBanKuaiWeight;
+	}
+	/**
+	 * @param sysBanKuaiWeight the sysBanKuaiWeight to set
+	 */
+	public void setSysBanKuaiWeight(HashMap<String, Integer> sysBanKuaiWeight) {
+		this.sysBanKuaiWeight = sysBanKuaiWeight;
+	}
+	
 	/**
 	 * @return the suoShuBanKuai
 	 */
