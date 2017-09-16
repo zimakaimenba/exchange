@@ -196,6 +196,7 @@ public class BanKuaiDbOperation2
 	   			    							+ "'"  + gupiaoheader + "'"
 	   			    							+ "AND ISNULL(移除时间)"
 	   			    							;
+	   			    	System.out.println(sqlquerystat);
 	   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	   			    	
 	   			        rs.last();  
@@ -235,7 +236,7 @@ public class BanKuaiDbOperation2
 //		   	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //		                Files.append("删除：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   	        	String sqlupdatestat = "UPDATE 股票通达信概念板块对应表   SET"
-		   	        			+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" + ","
+		   	        			+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" 
 	   			 				+ " WHERE 股票代码 = " + "'" + str.trim() + "'" 
 	   			 				+ " AND 概念板块=" + "'" + gupiaoheader + "'" 
 	   			 				+ " AND isnull(移除时间)"
@@ -706,7 +707,7 @@ public class BanKuaiDbOperation2
 //		   	        							+ " AND 风格板块=" + "'" + gupiaoheader + "'"
 //		   	        							;
 		   	        	String sqlupdatestat = "UPDATE 股票通达信风格板块对应表 SET"
-						   	        			+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" + ","
+						   	        			+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" 
 					   			 				+ " WHERE 股票代码 = " + "'" + str.trim() + "'" 
 					   			 				+ " AND 风格板块=" + "'" + gupiaoheader + "'" 
 					   			 				+ " AND isnull(移除时间)"
@@ -899,7 +900,7 @@ public class BanKuaiDbOperation2
 //		   	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //		                Files.append("删除：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   	        	String sqlupdatestat = "UPDATE 股票通达信交易所指数对应表   SET"
-		   	        			+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" + ","
+		   	        			+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" 
 	   			 				+ " WHERE 股票代码 = " + "'" + str.trim() + "'" 
 	   			 				+ " AND 指数板块=" + "'" + gupiaoheader + "'" 
 	   			 				+ " AND isnull(移除时间)"
