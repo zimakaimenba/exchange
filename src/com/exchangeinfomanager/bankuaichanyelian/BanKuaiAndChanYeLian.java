@@ -79,6 +79,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.BanKuaiDbOperation2;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
@@ -129,7 +130,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	public BanKuaiAndChanYeLian (StockInfoManager stockInfoManager2) 
 	{
 		this.stockInfoManager = stockInfoManager2;
-		this.bkdbopt = new BanKuaiDbOperation ();
+		this.bkdbopt = new BanKuaiDbOperation2 ();
 		this.stockdbopt = new StockDbOperations ();
 		this.cylxmhandler = new ChanYeLianXMLHandler2 ();
 		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
@@ -152,7 +153,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private ChanYeLianXMLHandler2 cylxmhandler;
     private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
     private BkChanYeLianTree treechanyelian;
-    private BanKuaiDbOperation bkdbopt;
+    private BanKuaiDbOperation2 bkdbopt;
 	private StockInfoManager stockInfoManager;
 	private StockDbOperations stockdbopt;
 	private boolean cylneedsave; //标记产业链树有更改
@@ -349,8 +350,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 //	  	       	Collator collator = Collator.getInstance(Locale.CHINESE); //用中文排序
 //	  	   		Collections.sort(tmpsubbk,collator);
 	  	       
-	  	       	//读出该板块所有的个股
-	  	       	HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode);
+	  	       	//读出该板块当前所有的个股
+	  	       	HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode,new Date(),new Date() );
 	  	      
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tdxbk,tdxbkcode,tmpallbkge,stockinparsefile);

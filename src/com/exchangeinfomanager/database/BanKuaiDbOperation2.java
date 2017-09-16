@@ -1254,13 +1254,11 @@ public class BanKuaiDbOperation2
 	    return  tmpsysbankuailiebiaoinfo;
    
 	}
-	
 	/*
 	 * 找出通达信定义的所有板块.不包括交易所的指数板块，用新的BkChanYeLianTreeNode存储
 	 */
 	public HashMap<String, BkChanYeLianTreeNode> getTDXBanKuaiList2()   
 	{
-
 		HashMap<String,BkChanYeLianTreeNode> tmpsysbankuailiebiaoinfo = new HashMap<String,BkChanYeLianTreeNode> ();
 
 		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信板块列表 	ORDER BY 板块名称 ,板块ID,创建时间 "
@@ -1395,12 +1393,13 @@ public class BanKuaiDbOperation2
 	/*
 	 * 找出某通达信风格板块的所有个股
 	 */
-	public HashMap<String,String> getTDXFengGeBanKuaiGeGu(String currentbk) 
+	private HashMap<String,String> getTDXFengGeBanKuaiGeGu(String currentbk) 
 	{
 		String sqlquerystat = "SELECT fg.股票代码, agu.股票名称" 
 				+ " FROM 股票通达信风格板块对应表  AS fg,  A股  AS agu"
 				+ " WHERE  fg.风格板块= " + "'" + currentbk + "'" 
-				+ " AND fg.股票代码  = agu.股票代码"
+				+ " AND fg.股票代码  = agu.股票代码" + "'"
+				+ " AND ISNULL(移除时间)"
 				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
 				;   
 		System.out.println(sqlquerystat);
@@ -1439,12 +1438,13 @@ public class BanKuaiDbOperation2
 	/*
 	 * 找出某通达信概念板块的所有个股
 	 */
-	public HashMap<String,String> getTDXGaiNianBanKuaiGeGu(String currentbk) 
+	private HashMap<String,String> getTDXGaiNianBanKuaiGeGu(String currentbk) 
 	{
 		String sqlquerystat = "SELECT gn.股票代码, agu.股票名称" 
 				+ " FROM 股票通达信概念板块对应表  AS gn, A股 AS agu"
 				+ " WHERE  gn.概念板块= " + "'" + currentbk + "'" 
-				+ " AND gn.股票代码  = agu.股票代码"
+				+ " AND gn.股票代码  = agu.股票代码" + "'"
+				+ " AND ISNULL(移除时间)"
 				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
 				;   
 		System.out.println(sqlquerystat);
@@ -1480,13 +1480,14 @@ public class BanKuaiDbOperation2
 		
 		return tmpgnset;
 	}
+
 	/*
-	 * 找出某通达信板块的所有行业/概念/风格个股及个股权重
+	 * 找出某个时间点 通达信板块的所有行业/概念/风格个股及个股权重
 	 */
-	public HashMap<String, ASingleStockInfo> getTDXBanKuaiGeGuOfHyGnFg(String currentbk,String currentbkcode)
+	public HashMap<String, ASingleStockInfo> getTDXBanKuaiGeGuOfHyGnFg(String currentbk,String currentbkcode, Date selecteddatestart , Date selecteddateend)
 	{
-		//如果传来的板块是地域板块，要到股票通达信基本面信息对应表查找
-				String diyusqlquerystat = "SELECT count(*)  FROM 通达信板块列表 WHERE 板块id = '" + currentbkcode +"' and CAST(对应TDXSWID AS signed) >0";
+				//如果传来的板块是地域板块，要到股票通达信基本面信息对应表查找
+				String diyusqlquerystat = "SELECT count(*)  FROM 通达信板块列表 WHERE 板块id = '" + currentbkcode +"' and CAST(对应TDXSWID AS signed) >0 ";
 				System.out.println(diyusqlquerystat);
 				CachedRowSetImpl rsdy = null;
 				int dy = -1;
@@ -1519,36 +1520,44 @@ public class BanKuaiDbOperation2
 								+ " FROM 股票通达信基本面信息对应表  AS tdxjbm, A股 AS agu, 通达信板块列表 AS tdxbk"
 								+ " WHERE  tdxbk.板块ID= " + "'" + currentbkcode + "'" 
 								+ " AND tdxbk.对应TDXSWID = tdxjbm.地域DY"
-								+ " AND tdxjbm.股票代码GPDM  = agu.股票代码"
+								+ " AND tdxjbm.股票代码GPDM  = agu.股票代码" 
 								;
 				 } else { //概念风格行业板块
 					 sqlquerystat = "SELECT hy.股票代码, agu.股票名称, hy.股票权重" 
 								+ " FROM 股票通达信行业板块对应表  AS hy, A股 AS agu"
 								+ " WHERE  hy.行业板块= " + "'" + currentbk + "'" 
-								+ " AND hy.股票代码  = agu.股票代码"
+								+ " AND hy.股票代码  = agu.股票代码" 
+								+ " AND unix_timestamp(Date('" + sysconfig.formatDate(selecteddateend) + "')) > unix_timestamp(Date(加入时间)) "
+								+ " AND (unix_timestamp(Date('" +sysconfig.formatDate(selecteddatestart) + "')) < unix_timestamp(Date(移除时间)) OR ISNULL(移除时间) ) "
 								
 								+ " UNION "
 								
 								+ "SELECT gn.股票代码, agu.股票名称, gn.股票权重" 
 								+ " FROM 股票通达信概念板块对应表  AS gn, A股 AS agu"
 								+ " WHERE  gn.概念板块= " + "'" + currentbk + "'" 
-								+ " AND gn.股票代码  = agu.股票代码"
+								+ " AND gn.股票代码  = agu.股票代码" 
+								+ " AND unix_timestamp(Date('" + sysconfig.formatDate(selecteddateend) + "')) > unix_timestamp(Date(加入时间)) "
+								+ " AND (unix_timestamp(Date('" +sysconfig.formatDate(selecteddatestart) + "')) < unix_timestamp(Date(移除时间)) OR ISNULL(移除时间) ) "
 								
 								+ " UNION "
 								
 								+ "SELECT fg.股票代码, agu.股票名称, fg.股票权重" 
 								+ " FROM 股票通达信风格板块对应表  AS fg,  A股  AS agu"
 								+ " WHERE  fg.风格板块= " + "'" + currentbk + "'" 
-								+ " AND fg.股票代码  = agu.股票代码"
+								+ " AND fg.股票代码  = agu.股票代码" 
+								+ " AND unix_timestamp(Date('" + sysconfig.formatDate(selecteddateend) + "')) > unix_timestamp(Date(加入时间)) "
+								+ " AND (unix_timestamp(Date('" +sysconfig.formatDate(selecteddatestart) + "')) < unix_timestamp(Date(移除时间)) OR ISNULL(移除时间) ) "
 								
 								+ " UNION "
 
 								+ "SELECT zs.股票代码, agu.股票名称, zs.股票权重" 
 								+ " FROM 股票通达信交易所指数对应表  AS zs,  A股  AS agu"
 								+ " WHERE  zs.指数板块= " + "'" + currentbk + "'" 
-								+ " AND zs.股票代码  = agu.股票代码"
+								+ " AND zs.股票代码  = agu.股票代码" 
+								+ " AND unix_timestamp(Date('" + sysconfig.formatDate(selecteddateend) + "')) > unix_timestamp(Date(加入时间)) "
+								+ " AND (unix_timestamp(Date('" +sysconfig.formatDate(selecteddatestart) + "')) < unix_timestamp(Date(移除时间)) OR ISNULL(移除时间) ) "
 								
-								+ " ORDER BY 股票代码,股票名称 "
+								+ "GROUP BY  股票代码  ORDER BY 股票代码,股票名称 "
 								;
 				 }
 				
@@ -1573,6 +1582,11 @@ public class BanKuaiDbOperation2
 				HashMap<String, Integer> stockbkweight = new  HashMap<String, Integer>() ;
 				stockbkweight.put(currentbkcode, stockweight); //板块代码加权重
 				tmpstock.setSysBanKuaiWeight (  stockbkweight );
+				
+				double stcokcje = setStockChenJiaoE (tmpstockcode,tmpstockname,currentbk, currentbkcode,  selecteddatestart ,  selecteddateend);
+				HashMap<String, Double> stockcjemap = new  HashMap<String, Double>() ;
+				stockcjemap.put(currentbkcode, stcokcje); //板块代码加权重
+				tmpstock.setSysBanKuaiChenJiaoE(  stockcjemap );
 				
 				gegumap.put(tmpstockcode, tmpstock);
 				rsfg.next();
@@ -1599,14 +1613,33 @@ public class BanKuaiDbOperation2
 		return gegumap;
 	}
 	/*
+	 * 计算某个股票在某个时间段内属于某个板块时候的成交量
+	 */
+	private double setStockChenJiaoE(String tmpstockcode, String tmpstockname, String currentbk, String currentbkcode,
+			Date selecteddatestart, Date selecteddateend) 
+	{
+//		select 通达信深交所股票每日交易信息.`代码`, 股票通达信风格板块对应表.风格板块, sum(通达信深交所股票每日交易信息.`成交额`)
+//		from 通达信深交所股票每日交易信息 join
+//		     股票通达信风格板块对应表
+//		     on 通达信深交所股票每日交易信息.`代码` = 股票通达信风格板块对应表.`股票代码` 
+//			  and 通达信深交所股票每日交易信息.`交易日期` >= 股票通达信风格板块对应表.`加入时间` and 
+//		        (通达信深交所股票每日交易信息.`交易日期` <= 股票通达信风格板块对应表.`移除时间` or 股票通达信风格板块对应表.`移除时间` is null)
+//		where Date(通达信深交所股票每日交易信息.`交易日期`) >= Date('2017-09-14') and Date(通达信深交所股票每日交易信息.`交易日期`) <= Date('2017-09-15')
+//				and 股票通达信风格板块对应表.`风格板块` = '已高送转' and 通达信深交所股票每日交易信息.`代码` = '002148'
+//		group by 通达信深交所股票每日交易信息.`代码`, 股票通达信风格板块对应表.`风格板块`;
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	/*
 	 * 找出某通达信行业板块的所有个股
 	 */
-	public HashMap<String,String> getTDXHangYeBanKuaiGeGu(String currentbk) 
+	private HashMap<String,String> getTDXHangYeBanKuaiGeGu(String currentbk) 
 	{
 		String sqlquerystat = "SELECT hy.股票代码, agu.股票名称" 
 				+ " FROM 股票通达信行业板块对应表  AS hy, A股 AS agu"
 				+ " WHERE  hy.行业板块= " + "'" + currentbk + "'" 
-				+ " AND hy.股票代码  = agu.股票代码"
+				+ " AND hy.股票代码  = agu.股票代码" + "'"
+				+ " AND ISNULL(移除时间)"
 				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
 				;   
 		System.out.println(sqlquerystat);
@@ -2261,7 +2294,8 @@ public class BanKuaiDbOperation2
 			
 		return lastesttdxtablesmdftime;
 	}
-	public boolean getTDXRelatedTablesStatus()
+	
+	private boolean getTDXRelatedTablesStatus()
 	{
 		boolean tableunderupdated = false;
 		// show OPEN TABLES where In_use > 0;
@@ -2310,6 +2344,9 @@ public class BanKuaiDbOperation2
 		
 		return tableunderupdated;
 	}
+	/*
+	 * 
+	 */
 	public String getTdxBanKuaiNameByCode(String tmpbkcode) 
 	{
 		String sqlquerystatfrombk     = "SELECT 板块名称  FROM 通达信板块列表             WHERE 板块ID = " + tmpbkcode;
@@ -2351,6 +2388,9 @@ public class BanKuaiDbOperation2
 		
 		return bkname;
 	}
+	/*
+	 * 增加板块新闻
+	 */
 	public boolean addBanKuaiNews (String bankuaiid,ChanYeLianNews newdetail)
 	{
 		int autoIncKeyFromApi = newdetail.getNewsId();
@@ -2639,7 +2679,7 @@ public class BanKuaiDbOperation2
 		return null;
 	}
 	/*
-	 * 板块一年内的占比
+	 * 板块一年内的每周占比
 	 */
 	public  CachedRowSetImpl getBanKuaiZhanBi (String bkcode)
 	{
@@ -2939,7 +2979,7 @@ public class BanKuaiDbOperation2
 		return barchart_dataset;
 	}
 	/*
-	 * 同步深圳个股成交量信息
+	 * 同步个股成交量信息，参数为交易所 SH/SZ
 	 */
 	public File refreshTDXGeGuVolAmoToDb(String jiaoyisuo) 
 	{
