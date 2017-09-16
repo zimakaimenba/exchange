@@ -185,7 +185,7 @@ public class StockInfoManager
 		accountschicangconfig = new AccountAndChiCangConfiguration ();
 		stockdbopt = new StockDbOperations ();
 		acntdbopt = new AccountDbOperation();
-		bkdbopt = new BanKuaiDbOperation ();
+		bkdbopt = new BanKuaiDbOperation2 ();
 		zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
 		cylxmlhandler = new ChanYeLianXMLHandler2 ();
 		
@@ -214,7 +214,7 @@ public class StockInfoManager
 			accountschicangconfig = new AccountAndChiCangConfiguration ();
 			stockdbopt = new StockDbOperations ();
 			acntdbopt = new AccountDbOperation();
-			bkdbopt = new BanKuaiDbOperation ();
+			bkdbopt = new BanKuaiDbOperation2 ();
 			zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
 			cylxmlhandler = new ChanYeLianXMLHandler2 ();
 			
@@ -233,7 +233,7 @@ public class StockInfoManager
 	private AccountAndChiCangConfiguration accountschicangconfig;
 	private ASingleStockInfo stockbasicinfo;
 	private BuyCheckListTreeDialog buychklstdialog;
-	private BanKuaiDbOperation bkdbopt;
+	private BanKuaiDbOperation2 bkdbopt;
 	private StockDbOperations stockdbopt;
 	private AccountDbOperation acntdbopt;
 	//private TongDaXinJiBenMianReport tongdaxinreport;
@@ -444,7 +444,7 @@ public class StockInfoManager
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				//BanKuaiDbOperation bkdbopt = new BanKuaiDbOperation ();
-				ImportTDXData importtdx= new ImportTDXData(bkdbopt,stockdbopt);
+				ImportTDXData importtdx= new ImportTDXData();
 				importtdx.setModal(true);
 				importtdx.setVisible(true);
 			}

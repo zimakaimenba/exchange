@@ -649,13 +649,13 @@ public class StockDbOperations
 //		WHERE 股票代码= '000001' AND gpgn.概念板块 = tdxbk.`板块名称`
 		String sqlquerystat =null;
 		sqlquerystat=  "SELECT gpgn.概念板块 板块, tdxbk.`板块ID` 板块代码 FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk"
-				+ "  WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gpgn.概念板块 = tdxbk.`板块名称`"
+				+ "  WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gpgn.概念板块 = tdxbk.`板块名称` AND ISNULL(移除时间)"
 				+ "UNION " 
 				+ " SELECT gphy.行业板块 板块, tdxbk.`板块ID` 板块代码 FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk "
-				+ " WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gphy.`行业板块` = tdxbk.`板块名称`"
+				+ " WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gphy.`行业板块` = tdxbk.`板块名称` AND ISNULL(移除时间)"
 				+ "UNION " 
 				+ " SELECT gpfg.`风格板块`板块, tdxbk.`板块ID` 板块代码  FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk"
-				+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`风格板块` = tdxbk.`板块名称`"
+				+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`风格板块` = tdxbk.`板块名称` AND ISNULL(移除时间)"
 				;
 		
 		System.out.println(sqlquerystat);
