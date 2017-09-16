@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.BanKuaiDbOperation2;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets.SetView;
@@ -56,7 +57,8 @@ public class ImportTDXData extends JDialog {
 	 */
 	public ImportTDXData(BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt2) 
 	{
-		this.bkdbopt = bkdbopt2;
+//		this.bkdbopt = bkdbopt2;
+		this.bkdbopt = new BanKuaiDbOperation2 ();
 		this.stockdbopt = stockdbopt2;
 		sysconfig = SystemConfigration.getInstance(); 
 		initializeGui ();
@@ -68,8 +70,9 @@ public class ImportTDXData extends JDialog {
 	JCheckBox[] zdybkckbxs;
 	private StockDbOperations stockdbopt;
 	HashMap<String, String> zdybkmap;
-	private BanKuaiDbOperation bkdbopt;
+//	private BanKuaiDbOperation bkdbopt;
 	private SystemConfigration sysconfig;
+	BanKuaiDbOperation2 bkdbopt;
 	
 	private void importPreCheckTDX()
 	{
@@ -180,31 +183,7 @@ public class ImportTDXData extends JDialog {
 			}
 		}
 		
-		if(cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled() ) {
-			try {
-				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sz");
-				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-			}
-			
-		}
-		if(cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled() ) {
-			try {
-				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sh");
-				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-			}
-		}
+
 		//同步通达信板块成交量成交额
 		if(chbxdaorutdxsysbkvol.isSelected() &&  chbxdaorutdxsysbkvol.isEnabled() ) {
 			try {
@@ -249,6 +228,32 @@ public class ImportTDXData extends JDialog {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
+			}
+			//同步个股成交量
+			if(cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled() ) {
+				try {
+					File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sz");
+					List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
+					for (String line : lines) {
+			        	tfldresult.append(line+"\n");
+			        }
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (java.lang.NullPointerException e) {
+				}
+				
+			}
+			if(cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled() ) {
+				try {
+					File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sh");
+					List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
+					for (String line : lines) {
+			        	tfldresult.append(line+"\n");
+			        }
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (java.lang.NullPointerException e) {
+				}
 			}
 			
 			chbxdaorutdxsysbkvol.setEnabled(false);

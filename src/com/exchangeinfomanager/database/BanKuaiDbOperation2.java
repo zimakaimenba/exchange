@@ -1212,7 +1212,6 @@ public class BanKuaiDbOperation2
 	{
 		//HashMap<String,BanKuai> sysbankuailiebiaoinfo;
 //		private  HashMap<String,BanKuai> zdybankuailiebiaoinfo;
-
 		HashMap<String,BanKuai> tmpsysbankuailiebiaoinfo = new HashMap<String,BanKuai> ();
 
 		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信自定义板块列表 	ORDER BY 板块ID,板块名称 ,创建时间 "
