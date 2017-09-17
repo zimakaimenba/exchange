@@ -35,8 +35,8 @@ public class ASingleStockInfo
 	private ArrayList<String> chiCangAccountNameList; //持有该股票的所有账户的名字
 	private HashMap<String,String> suoShuSysBanKuai; //所属通达信系统板块
 	private HashMap<String,Integer> sysBanKuaiWeight; //所属通达信系统板块权重
+	private HashMap<String,Double> sysBanKuaichenjiaoe;//所属通达信系统板块某阶段成交额
 	
-
 	private HashSet<String> suoShuZdyBanKuai; //所属自定义板块
 	
 	public boolean addNewChiCangAccountName (String tmpacntname)
@@ -247,6 +247,18 @@ public class ASingleStockInfo
 	public ArrayList<String> gettChanYeLianInfo() 
 	{
 		return this.chanyelian;
+	}
+	/**
+	 * @return the sysBanKuaichenjiaoe
+	 */
+	public HashMap<String, Double> getSysBanKuaiChenJiaoE() {
+		return sysBanKuaichenjiaoe;
+	}
+	/**
+	 * @param sysBanKuaichenjiaoe the sysBanKuaichenjiaoe to set
+	 */
+	public void setSysBanKuaiChenJiaoE(HashMap<String, Double> sysBanKuaichenjiaoe) {
+		this.sysBanKuaichenjiaoe = sysBanKuaichenjiaoe;
 	}
 
 

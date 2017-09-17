@@ -64,12 +64,14 @@ import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
@@ -78,6 +80,7 @@ import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation2;
 import com.exchangeinfomanager.database.StockDbOperations;
@@ -165,8 +168,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 	
 	private JFreeChart barchart;
-	private CategoryPlot plot;
+	private JFreeChart piechart;
+	private CategoryPlot barplot;
+	private PiePlot pieplot;
 	private DefaultCategoryDataset barchartdataset;
+	private DefaultPieDataset piechartdataset;
 
 	
 
@@ -351,7 +357,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 //	  	   		Collections.sort(tmpsubbk,collator);
 	  	       
 	  	       	//读出该板块当前所有的个股
-	  	       	HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode,new Date(),new Date() );
+	  	       	HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode,new Date(),new Date(),false );
 	  	      
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tdxbk,tdxbkcode,tmpallbkge,stockinparsefile);
@@ -367,6 +373,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	       	
 //	  	       	 读出该板块近一年的占比走势
 	  	       	displayBanKuaiZhanBi (tdxbkcode,tdxbk);
+	  	       	displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk);
 //	  		dialogbkfx.getContentPane().add(dialogbkfx.getChartPanel(), BorderLayout.CENTER);
 //	  		dialogbkfx.getContentPane().add(dialogbkfx.getControlPanel(), BorderLayout.SOUTH);
 	  	       	
@@ -378,14 +385,71 @@ public class BanKuaiAndChanYeLian extends JPanel
   	       	 ArrayList<ChanYeLianNews> curnewlist = bkdbopt.getBanKuaiRelatedNews (curselectedbknodecode);
   	       	 createChanYeLianNewsHtml (curselectedbknodecode,curnewlist);
 	    }
-	    
 	    /*
-	     * 显示板块占比
+	     * 显示板块内股票的周占比, 判断是周几，如果不是周六，就显示上周的，否则显示本周的
+	     */
+	    private void displayBanKuaiGeGuZhanBi (String tdxbkcode, String tdxbkname)
+	    {
+	    	Date monday = CommonUtility.getFirstDayOfWeek(new Date ());
+	    	HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbkname,tdxbkcode,monday,new Date(),true );
+	    	
+	    	piechartdataset = new DefaultPieDataset();
+	    	for(String ggcode: tmpallbkge.keySet()) {
+	    		ASingleStockInfo tmpstockinfo = tmpallbkge.get(ggcode);
+	    		String stockname = tmpstockinfo.getStockname();
+	    		HashMap<String, Double> stockchengjiaoe = tmpstockinfo.getSysBanKuaiChenJiaoE();
+	    		double cje = stockchengjiaoe.get(tdxbkcode);
+	    		piechartdataset.setValue(ggcode,cje);
+	    	}
+	    	pieplot.setDataset(piechartdataset);
+	    	
+	    }
+	    /*
+	     * 创建个股成交额占比panel
+	     */
+	    @SuppressWarnings("deprecation")
+		private void createPieChartPanel( ) 
+	    {
+//	    	BarRenderer renderer = new BarRenderer ();
+//	    	renderer.setToolTipGenerator(new CustomToolTipGenerator() );
+//	        renderer.setBaseItemLabelsVisible(true);
+//	        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+//	        renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+//	        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
+//	        renderer.setItemLabelsVisible(true);
+	        
+	    	pieplot = new PiePlot(); 
+//	        LegendTitle legend = new LegendTitle(pieplot); 
+//	        legend.setPosition(RectangleEdge.TOP); 
+	        pieplot.setDataset(piechartdataset); 
+	        pieplot.setLabelGenerator(null);
+	        
+	        piechart = new JFreeChart(pieplot);
+
+	        piechartPanel = new ChartPanel(piechart);
+	        
+	        sclpGeGuZhanBi.setViewportView(piechartPanel);
+	        //设置显示到图片最右边
+	        Rectangle bounds = sclpGeGuZhanBi.getViewport().getViewRect();
+	        Dimension size = sclpGeGuZhanBi.getViewport().getViewSize();
+	        int x = (size.width - bounds.width) ;
+	        int y = (size.height - bounds.height) ;
+	        sclpGeGuZhanBi.getViewport().setViewPosition(new Point(x, y));
+	    }
+	    /*
+	     * 显示板块周占比
 	     */
 	    private void displayBanKuaiZhanBi(String tdxbkcode, String tdxbkname) 
 	    {
+	    	Date date=new Date();//取时间
+	    	Calendar calendar =  Calendar.getInstance();
+	    	calendar.setTime(date);
+	    	calendar.add(calendar.MONTH,-6);//把日期往后增加一天.整数往后推,负数往前移动
+	    	date = calendar.getTime();
+	    	
+	    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (tdxbkcode,date,new Date()); //6个月的占比
+	    	
 	    	barchartdataset = new DefaultCategoryDataset();
-	    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (tdxbkcode);
 	    	int row =0;
 	    	try {
 	    		while (rs.next()) {
@@ -399,7 +463,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    		e.printStackTrace();
 	    	} finally {
 	    	}
-	    	plot.setDataset(barchartdataset);
+	    	barplot.setDataset(barchartdataset);
 	    	
 	    	
 	    	if(barchart !=null) {
@@ -436,12 +500,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    		}
 	    	}
 		}
-	    
+
+	   
 	    /*
 	     * 创建板块占比panel
 	     */
 	    @SuppressWarnings("deprecation")
-		private void createChartPanel( ) 
+		private void createBarChartPanel( ) 
 	    {
 	    	BarRenderer renderer = new BarRenderer ();
 	    	renderer.setToolTipGenerator(new CustomToolTipGenerator() );
@@ -451,19 +516,19 @@ public class BanKuaiAndChanYeLian extends JPanel
 	        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
 	        renderer.setItemLabelsVisible(true);
 	        
-	    	plot = new CategoryPlot(); 
-	        LegendTitle legend = new LegendTitle(plot); 
+	    	barplot = new CategoryPlot(); 
+	        LegendTitle legend = new LegendTitle(barplot); 
 	        legend.setPosition(RectangleEdge.TOP); 
-	        plot.setDataset(barchartdataset); 
-	        plot.setRenderer(renderer); 
-	        plot.setDomainAxis(new CategoryAxis("周数")); 
-	        plot.setRangeAxis(new NumberAxis("占比"));
+	        barplot.setDataset(barchartdataset); 
+	        barplot.setRenderer(renderer); 
+	        barplot.setDomainAxis(new CategoryAxis("周数")); 
+	        barplot.setRangeAxis(new NumberAxis("占比"));
 	        
-	        barchart = new JFreeChart(plot);
+	        barchart = new JFreeChart(barplot);
 
-	        chartPanel = new ChartPanel(barchart);
+	        barchartPanel = new ChartPanel(barchart);
 	        
-	        sclpBanKuaiZhanBi.setViewportView(chartPanel);
+	        sclpBanKuaiZhanBi.setViewportView(barchartPanel);
 	        //设置显示到图片最右边
 	        Rectangle bounds = sclpBanKuaiZhanBi.getViewport().getViewRect();
 	        Dimension size = sclpBanKuaiZhanBi.getViewport().getViewSize();
@@ -1337,9 +1402,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private JTable tablesubcyl;
 	private JEditorPane notesPane;
 	private JButton buttonCjlFx;
-	private ChartPanel chartPanel; //chart 
+	private ChartPanel barchartPanel; //chart 
+	private ChartPanel piechartPanel; //chart
 	private JScrollPane sclpBanKuaiZhanBi;
 	private JLabel lblcjlzbinfo;
+	private JScrollPane sclpGeGuZhanBi;
 
 	private void initializeGui() 
 	{
@@ -1354,14 +1421,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(panelcyltree, 0, 0, Short.MAX_VALUE)
-								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 893, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 610, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(panelzdgz, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 893, Short.MAX_VALUE)
+						.addComponent(panelcyltree, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+						.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 893, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 610, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -1371,11 +1436,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 					.addGap(2)
 					.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 296, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
-							.addContainerGap())
-						.addComponent(panelcyltree, GroupLayout.PREFERRED_SIZE, 488, Short.MAX_VALUE)))
+					.addComponent(panelcyltree, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, 834, Short.MAX_VALUE)
+					.addGap(10))
 		);
 		
 		sclpBanKuaiZhanBi = new JScrollPane();
@@ -1383,30 +1448,55 @@ public class BanKuaiAndChanYeLian extends JPanel
 		buttonCjlFx = new JButton("\u6210\u4EA4\u91CF\u5206\u6790");
 		
 		lblcjlzbinfo = new JLabel("New label");
+		
+		sclpGeGuZhanBi = new JScrollPane();
+		
+		JButton button = new JButton("\u4E0A\u4E00\u5468");
+		
+		JButton button_1 = new JButton("\u4E0B\u4E00\u5468");
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+							.addGroup(gl_panel_1.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(sclpBanKuaiZhanBi, GroupLayout.PREFERRED_SIZE, 597, GroupLayout.PREFERRED_SIZE))
+							.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+								.addGap(22)
+								.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 460, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(buttonCjlFx)))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addGap(96)
+							.addComponent(button)
+							.addGap(18)
+							.addComponent(button_1))
 						.addGroup(gl_panel_1.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(sclpBanKuaiZhanBi, GroupLayout.PREFERRED_SIZE, 597, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
-							.addGap(18)
-							.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 455, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
-							.addComponent(buttonCjlFx)))
-					.addContainerGap())
+							.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 594, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(buttonCjlFx)
-						.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
+						.addComponent(button)
+						.addComponent(button_1))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 311, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
+						.addComponent(buttonCjlFx))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(sclpBanKuaiZhanBi, GroupLayout.PREFERRED_SIZE, 450, GroupLayout.PREFERRED_SIZE))
 		);
+		
+		JPanel pnlGeGuZhanBi = new JPanel();
+		sclpGeGuZhanBi.setViewportView(pnlGeGuZhanBi);
 		
 //		chartPanel = new ChartPanel(barchart);
 //		panel_2 = new JPanel();
@@ -1662,46 +1752,48 @@ public class BanKuaiAndChanYeLian extends JPanel
 					.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelzdgz.createSequentialGroup()
 							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panelzdgz.createSequentialGroup()
-									.addComponent(scrollPaneDaLeiDetail, GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
-										.addComponent(buttonremoveoffical)
-										.addComponent(buttonaddofficial)))
+								.addComponent(scrollPaneDaLeiDetail, GroupLayout.PREFERRED_SIZE, 306, GroupLayout.PREFERRED_SIZE)
 								.addComponent(btnGenTDXCode))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
+								.addComponent(buttonremoveoffical)
+								.addComponent(buttonaddofficial))
 							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panelzdgz.createSequentialGroup()
+									.addGap(22)
 									.addComponent(btnadddalei)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(btndeldalei)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(btnopenzdgzxml))
-								.addComponent(scrollPaneDaLei, GroupLayout.PREFERRED_SIZE, 505, GroupLayout.PREFERRED_SIZE)))
-						.addComponent(separator_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 906, Short.MAX_VALUE))
+									.addComponent(btnopenzdgzxml)
+									.addGap(20))
+								.addGroup(gl_panelzdgz.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(scrollPaneDaLei, GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE))))
+						.addComponent(separator_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 884, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_panelzdgz.setVerticalGroup(
 			gl_panelzdgz.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panelzdgz.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelzdgz.createSequentialGroup()
-							.addGap(89)
-							.addComponent(buttonaddofficial)
-							.addGap(77)
-							.addComponent(buttonremoveoffical))
-						.addGroup(gl_panelzdgz.createSequentialGroup()
-							.addContainerGap()
 							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.BASELINE)
 								.addComponent(btnadddalei)
 								.addComponent(btndeldalei)
 								.addComponent(btnGenTDXCode)
 								.addComponent(btnopenzdgzxml))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING, false)
+							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
 								.addComponent(scrollPaneDaLei, 0, 0, Short.MAX_VALUE)
-								.addComponent(scrollPaneDaLeiDetail, GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE))))
-					.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(scrollPaneDaLeiDetail, GroupLayout.PREFERRED_SIZE, 242, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED))
+						.addGroup(Alignment.TRAILING, gl_panelzdgz.createSequentialGroup()
+							.addComponent(buttonaddofficial)
+							.addGap(77)
+							.addComponent(buttonremoveoffical)
+							.addGap(76)))
 					.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 2, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
@@ -1893,7 +1985,8 @@ public class BanKuaiAndChanYeLian extends JPanel
         addChildIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeChild24.png"));
 		
 //        displayBanKuaiZhanBi ("880201","黑龙江"); //为了正确显示占比panel，不得不在这里先允许一下这个函数
-        createChartPanel ();
+        createBarChartPanel ();
+        createPieChartPanel ();
 		
 	}
 

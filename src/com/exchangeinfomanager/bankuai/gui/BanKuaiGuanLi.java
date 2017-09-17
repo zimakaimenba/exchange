@@ -19,6 +19,7 @@ import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
 import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.BanKuaiDbOperation2;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
@@ -59,7 +60,7 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiDbOperation bkdbopt2,StockDbOperations stockdbopt2, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler2, ChanYeLianXMLHandler2 cylxmlhandler2) 
+	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiDbOperation2 bkdbopt2,StockDbOperations stockdbopt2, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler2, ChanYeLianXMLHandler2 cylxmlhandler2) 
 	{
 		
 
@@ -73,7 +74,7 @@ public class BanKuaiGuanLi extends JDialog
 	
 //	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
 	private StockInfoManager stockInfoManager;	
-	private BanKuaiDbOperation bkdbopt;
+	private BanKuaiDbOperation2 bkdbopt;
 //	private StockDbOperations stockdbopt;
 //	private ChanYeLianXMLHandler2 cylxmlhandler;
 
