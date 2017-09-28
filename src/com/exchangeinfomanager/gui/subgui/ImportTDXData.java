@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.BanKuaiDbOperation2;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets.SetView;
@@ -57,7 +56,7 @@ public class ImportTDXData extends JDialog {
 	 */
 	public ImportTDXData() 
 	{
-		this.bkdbopt = new BanKuaiDbOperation2 ();
+		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockdbopt = new StockDbOperations ();
 		sysconfig = SystemConfigration.getInstance(); 
 		initializeGui ();
@@ -71,7 +70,7 @@ public class ImportTDXData extends JDialog {
 	HashMap<String, String> zdybkmap;
 
 	private SystemConfigration sysconfig;
-	BanKuaiDbOperation2 bkdbopt;
+	BanKuaiDbOperation bkdbopt;
 	
 	private void importPreCheckTDX()
 	{

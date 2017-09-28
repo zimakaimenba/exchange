@@ -26,6 +26,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -34,7 +35,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
-public class TwelveZhongDianGuanZhuXmlHandler 
+class TwelveZhongDianGuanZhuXmlHandler 
 {
 	public  TwelveZhongDianGuanZhuXmlHandler() 
 	{
@@ -70,7 +71,7 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	
 	}
 	private HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkdetailmap;
-	private Multimap<String,String> gzbkdetailsimplemap;
+//	private Multimap<String,String> gzbkdetailsimplemap;
 	private static Element xmlroot = null;
 	private Document document;
 	private SystemConfigration sysconfig;
@@ -92,33 +93,33 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	/*
 	 * 简版的产业链重点关注信息。系统刚启动需要重点关注map，但还没有树，所以生成一个简版的用
 	 */
-	public Multimap<String,String> getSimpleZdgzBanKuaiFromXml ()
-	{
-		gzbkdetailsimplemap =  HashMultimap.create();
-		Iterator it = xmlroot.elementIterator();
-		 while (it.hasNext()) 
-		 {
-			   Element daleielement = (Element) it.next();
-			   ArrayList<BkChanYeLianTreeNode> tmpgzbksublist = new ArrayList<BkChanYeLianTreeNode> (); //重点关注的板块list
-			   String daleiname = daleielement.attributeValue("daleiname");
-			   
-			   Iterator daleiit = daleielement.elementIterator();
-			   while(daleiit.hasNext()) {
-				   Element iteele = (Element)daleiit.next();
-				   
-				   String suoshutdxbkcode = iteele.attributeValue("tdxbkcode");
-				   gzbkdetailsimplemap.put(daleiname, suoshutdxbkcode);
-			   }
-		 }
-
-		return gzbkdetailsimplemap;
-	}
+//	public Multimap<String,String> getSimpleZdgzBanKuaiFromXml ()
+//	{
+//		gzbkdetailsimplemap =  HashMultimap.create();
+//		Iterator it = xmlroot.elementIterator();
+//		 while (it.hasNext()) 
+//		 {
+//			   Element daleielement = (Element) it.next();
+//			   ArrayList<BkChanYeLianTreeNode> tmpgzbksublist = new ArrayList<BkChanYeLianTreeNode> (); //重点关注的板块list
+//			   String daleiname = daleielement.attributeValue("daleiname");
+//			   
+//			   Iterator daleiit = daleielement.elementIterator();
+//			   while(daleiit.hasNext()) {
+//				   Element iteele = (Element)daleiit.next();
+//				   
+//				   String suoshutdxbkcode = iteele.attributeValue("tdxbkcode");
+//				   gzbkdetailsimplemap.put(daleiname, suoshutdxbkcode);
+//			   }
+//		 }
+//
+//		return gzbkdetailsimplemap;
+//	}
 	/*
 	 * 读取重点关注XML,把每个关注的产业链包装成产业链XML TREE的节点
 	 */
 	public HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBanKuaiFromXmlAndUpatedToCylTree (BkChanYeLianTree cyltree)
 	{
-		gzbkdetailmap = new HashMap<String,ArrayList<BkChanYeLianTreeNode>>  (); //重点关注的板块
+//		gzbkdetailmap = new HashMap<String,ArrayList<BkChanYeLianTreeNode>>  (); //重点关注的板块
 		
 		Iterator it = xmlroot.elementIterator();
 		 while (it.hasNext()) 
@@ -237,9 +238,9 @@ public class TwelveZhongDianGuanZhuXmlHandler
         		if(tmpgzbkifno.shouldBeRemovedWhenSaveXml())
         			continue;
         		
-        		String tdxbk = tmpgzbkifno.getTdxBk();
-        		String tdxbkcode = tmpgzbkifno.getTongDaXingBanKuaiCode();
-        		String subcyl = tmpgzbkifno.getChanYeLian();
+        		String tdxbk = tmpgzbkifno.getChanYeLianSuoShuTdxBanKuaiName();
+        		String tdxbkcode = tmpgzbkifno.getChanYeLianSuoShuTdxBanKuaiName();
+        		String subcyl = tmpgzbkifno.getNodeCurLocatedChanYeLian();
         		String addedtime = tmpgzbkifno.getSelectedToZdgzTime();
         		String offselted = String.valueOf(tmpgzbkifno.isOfficallySelected() ).toLowerCase();
         		
@@ -278,16 +279,14 @@ public class TwelveZhongDianGuanZhuXmlHandler
 	 */
 	public Multimap<String,String> subBkSuoSuTwelveDaLei (Set<String> union)
 	{
-		if(gzbkdetailsimplemap == null)
-			this.getSimpleZdgzBanKuaiFromXml();
-		
 		Multimap<String,String> tmpsuoshudalei =  HashMultimap.create();
-		String[] bankuaidaleiname = gzbkdetailsimplemap.keySet().toArray(new String[gzbkdetailsimplemap.keySet().size()]);
+		String[] bankuaidaleiname = gzbkdetailmap.keySet().toArray(new String[gzbkdetailmap.keySet().size()]);
 		try {
 			for(String currentdalei:bankuaidaleiname) {
-				  Collection<String> daleibankuailist = gzbkdetailsimplemap.get(currentdalei); //大类有的板块ID
-				  Set<String> daleibankuaiset = new HashSet<String>(daleibankuailist);
-				  SetView<String> intersectionbk = Sets.intersection( daleibankuaiset,union  );
+				   
+				 Set<String> daleibankuaiset = this.getZdgzDaLeiBanKuaiSet(currentdalei);
+				 SetView<String> intersectionbk = Sets.intersection( daleibankuaiset,union  );
+				  
 				  if(intersectionbk.size()>0) {
 					  for(String intersectionbkname : intersectionbk)
 						  tmpsuoshudalei.put(intersectionbkname, currentdalei);
@@ -299,13 +298,27 @@ public class TwelveZhongDianGuanZhuXmlHandler
 
 		return tmpsuoshudalei;
 	}
+	/*
+	 * 获得某个大类的产业链的通达信板块
+	 */
+	private Set<String> getZdgzDaLeiBanKuaiSet (String daleiname) 
+	{
+		ArrayList<BkChanYeLianTreeNode> daleibankuailist = gzbkdetailmap.get(daleiname); //大类有的板块ID
+		  
+		  Set<String> daleibankuaiset = new HashSet<String>();
+		  for(BkChanYeLianTreeNode cylnode : daleibankuailist) {
+			  String tdxbk = cylnode.getChanYeLianSuoShuTdxBanKuaiName ();
+			  daleibankuaiset.add(tdxbk);
+		  }
+		  
+		  return daleibankuaiset;
+	}
 
 	/*
 	 * 
 	 */
 	public ArrayList<BkChanYeLianTreeNode> getASubDaiLeiDetail(String daleiname)
 	{
-		
 		return gzbkdetailmap.get(daleiname);
 	}
 	/*
