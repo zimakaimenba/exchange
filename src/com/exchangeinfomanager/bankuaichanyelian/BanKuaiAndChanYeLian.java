@@ -16,6 +16,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -75,22 +77,25 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
-import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.SubnodeButton;
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.BanKuaiDbOperation2;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiBarChartPnl;
+import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
-import com.exchangeinfomanager.gui.subgui.GeGuBanKuaiZhanBiFengXi;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
@@ -115,35 +120,29 @@ import javax.swing.JMenuItem;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
+import com.toedter.calendar.JDateChooser;
 
 public class BanKuaiAndChanYeLian extends JPanel 
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Create the panel.
-	 * @param stockInfoManager 
-	 * @param bkdbopt2 
-	 * @param zdgzbkxmlhandler 
-	 * @param cylxmlhandler 
-	 */
 	public BanKuaiAndChanYeLian (StockInfoManager stockInfoManager2) 
 	{
 		this.stockInfoManager = stockInfoManager2;
-		this.bkdbopt = new BanKuaiDbOperation2 ();
-		this.stockdbopt = new StockDbOperations ();
-		this.cylxmhandler = new ChanYeLianXMLHandler2 ();
+		this.bkdbopt = new BanKuaiDbOperation ();
+
+		this.cylxmhandler = new ChanYeLianXMLHandler ();
 		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
-		
-		initializeGui ();
+		treechanyelian = initializeBkChanYeLianXMLTree();
 		initializeSysConfig ();
 		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
+		startGui ();
+	}
+	public void startGui ()
+	{
+		initializeGui ();
 		initializeAllDaLeiZdgzTableFromXml ();
 		initializeBanKuaiParsedFile ();
-		
 		createEvents ();
 		if(cylxmhandler.hasXmlRevised())
 			btnSaveAll.setEnabled(true);
@@ -153,36 +152,55 @@ public class BanKuaiAndChanYeLian extends JPanel
 	
 	private SystemConfigration sysconfig;
 	HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap;
-	private ChanYeLianXMLHandler2 cylxmhandler;
+	private ChanYeLianXMLHandler cylxmhandler;
     private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
     private BkChanYeLianTree treechanyelian;
-    private BanKuaiDbOperation2 bkdbopt;
+    private BanKuaiDbOperation bkdbopt;
 	private StockInfoManager stockInfoManager;
-	private StockDbOperations stockdbopt;
-	private boolean cylneedsave; //标记产业链树有更改
-	private boolean zdgzxmlneedsave; //标记重点关注有更改
+//	private StockDbOperations stockdbopt;
+//	private boolean cylneedsave; //标记产业链树有更改
+//	private boolean zdgzxmlneedsave; //标记重点关注有更改
 
     
     boolean editingNodeText = false;
 	private String currentselectedtdxbk = "";
-
 	
-	private JFreeChart barchart;
-	private JFreeChart piechart;
-	private CategoryPlot barplot;
-	private PiePlot pieplot;
-	private DefaultCategoryDataset barchartdataset;
-	private DefaultPieDataset piechartdataset;
-
-	
-
+	private  BkChanYeLianTree initializeBkChanYeLianXMLTree()
+	{
+		BkChanYeLianTreeNode topNode = cylxmhandler.getBkChanYeLianXMLTree();
+		BkChanYeLianTree tmptreechanyelian = new BkChanYeLianTree(topNode);
+		return tmptreechanyelian;
+	}
+	public BkChanYeLianTree getBkChanYeLianTree () {
+		return treechanyelian;
+	}
+	/*
+	 * 判断是否属于重点关注板块
+	 */
+	public Multimap<String,String> checkBanKuaiSuoSuTwelveDaLei (Set<String> union)
+	{
+		return zdgzbkxmlhandler.subBkSuoSuTwelveDaLei (union);
+	}
+	/*
+	 * 股票所属产业链
+	 */
+	public Stock getStockChanYeLianInfo (Stock stockbasicinfo2)
+	{
+		cylxmhandler.getStockChanYeLianInfo(stockbasicinfo2);
+		return stockbasicinfo2;
+	}
+	/*
+	 * 获取个股产业链
+	 */
+	public ArrayList<String> getGeGuChanYeLian(String stockcode)
+	{
+		return cylxmhandler.getGeGuChanYeLian(stockcode);
+	}
 	
 	private void initializeSysConfig()
 	{
 		sysconfig = SystemConfigration.getInstance();
 	}
-
-	
 	/*
 	 * 
 	 */
@@ -336,6 +354,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 	            else if (evt.getX() < minX || evt.getX() > maxX) treechanyelian.clearSelection();
 	        }
 	        getReleatedInfoAndActionsForTreePathNode ( closestPath);
+	        bkfxpnl.resetDate ();
+	        pnlGeGuZhanBi.resetDate();
 	               
 	    }//GEN-LAST:event_treeMousePressed
 	    
@@ -345,19 +365,18 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    private void getReleatedInfoAndActionsForTreePathNode (TreePath closestPath)
 	    {
 	    	 BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getPathComponent(1);
-	    	 String tdxbk = bknode.getUserObject().toString(); 
-	    	 String tdxbkcode = bknode.getTongDaXingBanKuaiCode();
+	    	 String tdxbk = bknode.getMyOwnName(); 
+	    	 String tdxbkcode = bknode.getMyOwnCode();
+	    	 
 	    	 HashSet<String> stockinparsefile = bknode.getParseFileStockSet ();
 	         if(!tdxbk.equals(currentselectedtdxbk)) { //和当前的板块不一样，
 	        	 
 	  	       	//鼠标点击某个树，读出所属的通达信板块，在读出该板块的产业链子板块 
 	  	       	HashMap<String, String> tmpsubbk = bkdbopt.getSubBanKuai (tdxbkcode);
 	  	        ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).refresh(tmpsubbk);
-//	  	       	Collator collator = Collator.getInstance(Locale.CHINESE); //用中文排序
-//	  	   		Collections.sort(tmpsubbk,collator);
 	  	       
 	  	       	//读出该板块当前所有的个股
-	  	       	HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode,new Date(),new Date(),false );
+	  	       	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode,new Date(),new Date(),false );
 	  	      
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tdxbk,tdxbkcode,tmpallbkge,stockinparsefile);
@@ -371,17 +390,16 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	       	
 	  	       	currentselectedtdxbk = tdxbk;
 	  	       	
-//	  	       	 读出该板块近一年的占比走势
-	  	       	displayBanKuaiZhanBi (tdxbkcode,tdxbk);
-	  	       	displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk);
-//	  		dialogbkfx.getContentPane().add(dialogbkfx.getChartPanel(), BorderLayout.CENTER);
-//	  		dialogbkfx.getContentPane().add(dialogbkfx.getControlPanel(), BorderLayout.SOUTH);
-	  	       	
+////	  	       	 读出该板块近一年的占比走势
+//	  	       	displayBanKuaiZhanBi (tdxbkcode,tdxbk);
+//	  	       	displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk);
 	         }
 	         
 	       //读出该板块相关的新闻
   	       	 BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
-  	       	 String curselectedbknodecode = curselectedbknode.getNodeOwnCode();
+  	       	 String curselectedbknodename = curselectedbknode.getMyOwnName();
+  	       	 String curselectedbknodecode = curselectedbknode.getMyOwnCode();
+  	       	 System.out.println("my name:" + curselectedbknodename + "mycode" +  curselectedbknodecode);
   	       	 ArrayList<ChanYeLianNews> curnewlist = bkdbopt.getBanKuaiRelatedNews (curselectedbknodecode);
   	       	 createChanYeLianNewsHtml (curselectedbknodecode,curnewlist);
 	    }
@@ -390,154 +408,56 @@ public class BanKuaiAndChanYeLian extends JPanel
 	     */
 	    private void displayBanKuaiGeGuZhanBi (String tdxbkcode, String tdxbkname)
 	    {
-	    	Date monday = CommonUtility.getFirstDayOfWeek(new Date ());
-	    	HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbkname,tdxbkcode,monday,new Date(),true );
-	    	
-	    	piechartdataset = new DefaultPieDataset();
-	    	for(String ggcode: tmpallbkge.keySet()) {
-	    		ASingleStockInfo tmpstockinfo = tmpallbkge.get(ggcode);
-	    		String stockname = tmpstockinfo.getStockname();
-	    		HashMap<String, Double> stockchengjiaoe = tmpstockinfo.getSysBanKuaiChenJiaoE();
-	    		double cje = stockchengjiaoe.get(tdxbkcode);
-	    		piechartdataset.setValue(ggcode,cje);
-	    	}
-	    	pieplot.setDataset(piechartdataset);
-	    	
+	    	pnlGeGuZhanBi.setBanKuaiNeededDisplay(tdxbkname, tdxbkcode, new Date());
 	    }
-	    /*
-	     * 创建个股成交额占比panel
-	     */
-	    @SuppressWarnings("deprecation")
-		private void createPieChartPanel( ) 
-	    {
-//	    	BarRenderer renderer = new BarRenderer ();
-//	    	renderer.setToolTipGenerator(new CustomToolTipGenerator() );
-//	        renderer.setBaseItemLabelsVisible(true);
-//	        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-//	        renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-//	        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
-//	        renderer.setItemLabelsVisible(true);
-	        
-	    	pieplot = new PiePlot(); 
-//	        LegendTitle legend = new LegendTitle(pieplot); 
-//	        legend.setPosition(RectangleEdge.TOP); 
-	        pieplot.setDataset(piechartdataset); 
-	        pieplot.setLabelGenerator(null);
-	        
-	        piechart = new JFreeChart(pieplot);
+    
 
-	        piechartPanel = new ChartPanel(piechart);
-	        
-	        sclpGeGuZhanBi.setViewportView(piechartPanel);
-	        //设置显示到图片最右边
-	        Rectangle bounds = sclpGeGuZhanBi.getViewport().getViewRect();
-	        Dimension size = sclpGeGuZhanBi.getViewport().getViewSize();
-	        int x = (size.width - bounds.width) ;
-	        int y = (size.height - bounds.height) ;
-	        sclpGeGuZhanBi.getViewport().setViewPosition(new Point(x, y));
-	    }
-	    /*
-	     * 显示板块周占比
+	      /*
+	     * 显示板块周在整个市场的占比
 	     */
 	    private void displayBanKuaiZhanBi(String tdxbkcode, String tdxbkname) 
 	    {
 	    	Date date=new Date();//取时间
-	    	Calendar calendar =  Calendar.getInstance();
-	    	calendar.setTime(date);
-	    	calendar.add(calendar.MONTH,-6);//把日期往后增加一天.整数往后推,负数往前移动
-	    	date = calendar.getTime();
+//	    	Calendar calendar =  Calendar.getInstance();
+//	    	calendar.setTime(date);
+//	    	calendar.add(calendar.MONTH,-6);//把日期往后增加一天.整数往后推,负数往前移动
+//	    	date = calendar.getTime();
 	    	
-	    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (tdxbkcode,date,new Date()); //6个月的占比
-	    	
-	    	barchartdataset = new DefaultCategoryDataset();
-	    	int row =0;
-	    	try {
-	    		while (rs.next()) {
-	    			String weeknumber =rs.getString("CALWEEK");
-	    			Double zhanbi = rs.getDouble("占比");
-	    			barchartdataset.setValue(zhanbi,"板块占比",weeknumber);
-	    			row ++;
-	    		}
-	    	} catch (SQLException e) {
-	    		// TODO Auto-generated catch block
-	    		e.printStackTrace();
-	    	} finally {
-	    	}
-	    	barplot.setDataset(barchartdataset);
-	    	
-	    	
-	    	if(barchart !=null) {
-		        barchart.setTitle("'"+ tdxbkcode + tdxbkname +"'板块成交量占比");
-	    	}
+	    	HashMap<String,String> displaybk = new HashMap<String,String> ();
+	    	displaybk.put(tdxbkcode, tdxbkname);
+	    	bkfxpnl.setBanKuaiNeededDisplay(displaybk, tdxbkname,date,6);
 	    	
 	    	//显示本周和上周成交量占比的变化
-	    	try {
-		    	rs.absolute(row);
-		    	Double zhanbiweek = rs.getDouble("占比");
-		    	Double zhanbilastweek;
-		    	Double growthrate;
-		    	if(row >1) {
-		    		rs.absolute(row-1);
-			    	zhanbilastweek =rs.getDouble("占比");
-			    	growthrate = (zhanbiweek-zhanbilastweek)/zhanbilastweek;
-		    	} else {
-		    		zhanbilastweek = 0.0;
-		    		growthrate = 10000.0;
-		    	}
-		    	lblcjlzbinfo.setText("本周占比: " + new DecimalFormat("%#0.000").format(zhanbiweek) + " 上周占比: " + new DecimalFormat("%#0.000").format(zhanbilastweek) + " 占比增长率: " + new DecimalFormat("%#0.000").format((growthrate)) );
-	    	} catch (SQLException e) {
-	    		// TODO Auto-generated catch block
-	    		e.printStackTrace();
-	    	} finally {
-	    		if(rs != null) {
-	    			try {
-						rs.close();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	    			rs = null;
-	    		}
-	    	}
+//	    	try {
+//		    	rs.absolute(row);
+//		    	Double zhanbiweek = rs.getDouble("占比");
+//		    	Double zhanbilastweek;
+//		    	Double growthrate;
+//		    	if(row >1) {
+//		    		rs.absolute(row-1);
+//			    	zhanbilastweek =rs.getDouble("占比");
+//			    	growthrate = (zhanbiweek-zhanbilastweek)/zhanbilastweek;
+//		    	} else {
+//		    		zhanbilastweek = 0.0;
+//		    		growthrate = 10000.0;
+//		    	}
+//		    	lblcjlzbinfo.setText("本周占比: " + new DecimalFormat("%#0.000").format(zhanbiweek) + " 上周占比: " + new DecimalFormat("%#0.000").format(zhanbilastweek) + " 占比增长率: " + new DecimalFormat("%#0.000").format((growthrate)) );
+//	    	} catch (SQLException e) {
+//	    		// TODO Auto-generated catch block
+//	    		e.printStackTrace();
+//	    	} finally {
+//	    		if(rs != null) {
+//	    			try {
+//						rs.close();
+//					} catch (SQLException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//	    			rs = null;
+//	    		}
+//	    	}
 		}
-
 	   
-	    /*
-	     * 创建板块占比panel
-	     */
-	    @SuppressWarnings("deprecation")
-		private void createBarChartPanel( ) 
-	    {
-	    	BarRenderer renderer = new BarRenderer ();
-	    	renderer.setToolTipGenerator(new CustomToolTipGenerator() );
-	        renderer.setBaseItemLabelsVisible(true);
-	        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-	        renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-	        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
-	        renderer.setItemLabelsVisible(true);
-	        
-	    	barplot = new CategoryPlot(); 
-	        LegendTitle legend = new LegendTitle(barplot); 
-	        legend.setPosition(RectangleEdge.TOP); 
-	        barplot.setDataset(barchartdataset); 
-	        barplot.setRenderer(renderer); 
-	        barplot.setDomainAxis(new CategoryAxis("周数")); 
-	        barplot.setRangeAxis(new NumberAxis("占比"));
-	        
-	        barchart = new JFreeChart(barplot);
-
-	        barchartPanel = new ChartPanel(barchart);
-	        
-	        sclpBanKuaiZhanBi.setViewportView(barchartPanel);
-	        //设置显示到图片最右边
-	        Rectangle bounds = sclpBanKuaiZhanBi.getViewport().getViewRect();
-	        Dimension size = sclpBanKuaiZhanBi.getViewport().getViewSize();
-	        int x = (size.width - bounds.width) ;
-	        int y = (size.height - bounds.height) ;
-			sclpBanKuaiZhanBi.getViewport().setViewPosition(new Point(x, y));
-	    }
-
-
 	    /*
 	     * 设置该板块个股的权重
 	     */
@@ -799,6 +719,40 @@ public class BanKuaiAndChanYeLian extends JPanel
 	}	    
 	private void createEvents() 
 	{
+		btndisplaybkfx.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+//				 读出该板块近一年的占比走势
+				TreePath closestPath = treechanyelian.getSelectionPath();
+				BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getPathComponent(1);
+		    	 String tdxbk = bknode.getMyOwnName(); 
+		    	 String tdxbkcode = bknode.getMyOwnCode();
+		    	 
+		  	     displayBanKuaiZhanBi (tdxbkcode,tdxbk);
+		  	     displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk);
+			}
+		});
+		
+		dchgeguwkzhanbi.addPropertyChangeListener(new PropertyChangeListener() {
+		    @Override
+		    public void propertyChange(PropertyChangeEvent e) {
+		    	
+		    	TreePath closestPath = treechanyelian.getSelectionPath();
+		    	if(closestPath != null ) {
+		    		 BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getPathComponent(1);
+			    	 String tdxbk = bknode.getMyOwnName(); 
+			    	 String tdxbkcode = bknode.getMyOwnCode();
+			    	 
+			    	
+			    	if("date".equals(e.getPropertyName())) {
+			    		displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk);
+			    		displayBanKuaiZhanBi (tdxbkcode,tdxbk);
+			    	}
+		    	}
+		    }
+		});
+		
 		buttonCjlFx.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -1037,8 +991,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 					public void actionPerformed(ActionEvent arg0) {
 						String bkinputed = tfldfindgegu.getText();
 						int rowindex = ((BanKuaiGeGuTableModel)tablebkgegu.getModel()).getStockRowIndex(bkinputed);
-						tablebkgegu.setRowSelectionInterval(rowindex, rowindex);
-						tablebkgegu.scrollRectToVisible(new Rectangle(tablebkgegu.getCellRect(rowindex, 0, true)));
+						if(rowindex != -1) {
+							tablebkgegu.setRowSelectionInterval(rowindex, rowindex);
+							tablebkgegu.scrollRectToVisible(new Rectangle(tablebkgegu.getCellRect(rowindex, 0, true)));
+						}
 						
 					}
 				});
@@ -1111,7 +1067,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 						TreePath closestPath = treechanyelian.getSelectionPath();
 //				        System.out.println(closestPath);
 				         BkChanYeLianTreeNode tdxbk = (BkChanYeLianTreeNode)closestPath.getPathComponent(1);
-				         String tdxbkcode = tdxbk.getTongDaXingBanKuaiCode();
+				         String tdxbkcode = tdxbk.getMyOwnCode();
 				        
 						String newsubcylcode = bkdbopt.addNewSubBanKuai (tdxbkcode,newsubbk.trim() ); 
 						if(newsubcylcode != null)
@@ -1209,7 +1165,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		try {
 			TreePath closestPath = treechanyelian.getSelectionPath();
 			BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-			String selectnodecode = selectednode.getNodeOwnCode();
+			String selectnodecode = selectednode.getMyOwnCode();
 			ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (selectnodecode);
 			int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加产业链新闻", JOptionPane.OK_CANCEL_OPTION);
 			System.out.print(exchangeresult);
@@ -1346,7 +1302,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 } else 
 				 nodewilladded.setOfficallySelected(true);
 			 
-			 nodewilladded.setSelectedToZdgzTime( formatDate(new Date() ) );
+			 nodewilladded.setSelectedToZdgzTime( CommonUtility.formatDateYYMMDD(new Date() ) );
 			 
 			 treechanyelian.addZdgzBkCylInfoToTreeNode(nodewilladded,false);
 			 zdgzbkxmlhandler.addNewGuanZhuBanKuai(daleiname, nodewilladded);
@@ -1361,12 +1317,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 		 
 	}
 	
-	private String formatDate(Date tmpdate)
-	{
-		SimpleDateFormat formatterhwy=new SimpleDateFormat("yy-MM-dd");
-		return formatterhwy.format(tmpdate);
-		//return formatterhwy;
-	}
+
+
 
 
 	private JTextField tfldparsefilename;
@@ -1407,6 +1359,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private JScrollPane sclpBanKuaiZhanBi;
 	private JLabel lblcjlzbinfo;
 	private JScrollPane sclpGeGuZhanBi;
+	private JDateChooser dchgeguwkzhanbi;
+	private JButton btndisplaybkfx;
+	private BanKuaiFengXiBarChartPnl bkfxpnl ;
+	private BanKuaiFengXiPieChartPnl pnlGeGuZhanBi;
 
 	private void initializeGui() 
 	{
@@ -1445,58 +1401,68 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 		sclpBanKuaiZhanBi = new JScrollPane();
 		
-		buttonCjlFx = new JButton("\u6210\u4EA4\u91CF\u5206\u6790");
+		buttonCjlFx = new JButton("\u5468\u6210\u4EA4\u91CF\u5206\u6790");
 		
 		lblcjlzbinfo = new JLabel("New label");
 		
 		sclpGeGuZhanBi = new JScrollPane();
 		
-		JButton button = new JButton("\u4E0A\u4E00\u5468");
+		dchgeguwkzhanbi = new JDateChooser();
+		dchgeguwkzhanbi.setDate(new Date());
 		
-		JButton button_1 = new JButton("\u4E0B\u4E00\u5468");
+		btndisplaybkfx = new JButton("\u663E\u793A\u677F\u5757\u5206\u6790\u4FE1\u606F");
+		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
+			gl_panel_1.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
 							.addGroup(gl_panel_1.createSequentialGroup()
 								.addContainerGap()
 								.addComponent(sclpBanKuaiZhanBi, GroupLayout.PREFERRED_SIZE, 597, GroupLayout.PREFERRED_SIZE))
-							.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+							.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
 								.addGap(22)
-								.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 460, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(buttonCjlFx)))
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addGap(96)
-							.addComponent(button)
-							.addGap(18)
-							.addComponent(button_1))
+								.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 460, GroupLayout.PREFERRED_SIZE)))
 						.addGroup(gl_panel_1.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 594, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 594, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(btndisplaybkfx)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(dchgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, 157, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 189, Short.MAX_VALUE)
+							.addComponent(buttonCjlFx)))
+					.addContainerGap())
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_1.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(button)
-						.addComponent(button_1))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 311, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addComponent(btndisplaybkfx)
+						.addComponent(dchgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(buttonCjlFx))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 323, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(sclpBanKuaiZhanBi, GroupLayout.PREFERRED_SIZE, 450, GroupLayout.PREFERRED_SIZE))
 		);
 		
-		JPanel pnlGeGuZhanBi = new JPanel();
+		pnlGeGuZhanBi = new BanKuaiFengXiPieChartPnl();
+		//设置显示到图片最右边
+	    Rectangle bounds = sclpGeGuZhanBi.getViewport().getViewRect();
+	    Dimension size = sclpGeGuZhanBi.getViewport().getViewSize();
+	    int x = (size.width - bounds.width) ;
+	    int y = (size.height - bounds.height) ;
+	    sclpGeGuZhanBi.getViewport().setViewPosition(new Point(x, 0));
 		sclpGeGuZhanBi.setViewportView(pnlGeGuZhanBi);
+		
+      
+      
+      
 		
 //		chartPanel = new ChartPanel(barchart);
 //		panel_2 = new JPanel();
@@ -1639,7 +1605,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 		treeScrollPane = new JScrollPane();
 		jSplitPane.setLeftComponent(treeScrollPane);
 		
-		treechanyelian = initializeBkChanYeLianXMLTree();
 		treeScrollPane.setViewportView(treechanyelian);
 		treeScrollPane.grabFocus();
 		treeScrollPane.getVerticalScrollBar().setValue(0);
@@ -1983,29 +1948,28 @@ public class BanKuaiAndChanYeLian extends JPanel
         addAboveIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeAbove24.png"));
         addSubnodeIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnode24.png"));
         addChildIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeChild24.png"));
-		
-//        displayBanKuaiZhanBi ("880201","黑龙江"); //为了正确显示占比panel，不得不在这里先允许一下这个函数
-        createBarChartPanel ();
-        createPieChartPanel ();
-		
-	}
-
-	private  BkChanYeLianTree initializeBkChanYeLianXMLTree()
-	{
         
-		BkChanYeLianTreeNode topNode = cylxmhandler.getBkChanYeLianXMLTree();
-		
-		BkChanYeLianTree tmptreechanyelian = new BkChanYeLianTree(topNode);
-		
-		popupMenu = new JPopupMenu();
-		addPopup(tmptreechanyelian, popupMenu);
-		
+        //tree 的弹出菜单
+        popupMenu = new JPopupMenu();
+		addPopup(treechanyelian, popupMenu);
 		mntmNewMenuItem = new JMenuItem("\u6DFB\u52A0\u4EA7\u4E1A\u94FE\u65B0\u95FB");
-		
 		popupMenu.add(mntmNewMenuItem);
 		
-		return tmptreechanyelian;
+
+		bkfxpnl = new BanKuaiFengXiBarChartPnl ();
+		sclpBanKuaiZhanBi.setViewportView(bkfxpnl);
+        //设置显示到图片最右边
+        Rectangle bounds2 = sclpBanKuaiZhanBi.getViewport().getViewRect();
+        Dimension size2 = sclpBanKuaiZhanBi.getViewport().getViewSize();
+        int x2 = (size.width - bounds.width) ;
+        int y2 = (size.height - bounds.height) ;
+        sclpBanKuaiZhanBi.getViewport().setViewPosition(new Point(x, 0));	
+        
+
+	
 	}
+
+
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -2059,13 +2023,11 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 		String currentdalei = this.cbxDale;
 		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
 		
-//		boolean findexsitsamenode = false;
 		int findsimilarnode = -1;
 		
-		//for(BkChanYeLianTreeNode bkcylnode : tmpgzbkinfo) {
 		for(int i=0;i<tmpgzbkinfo.size();i++) {
-			String cylinmapnode = tmpgzbkinfo.get(i).getChanYeLian().trim();
-			String cylinverfiednode = parent.getChanYeLian().trim();
+			String cylinmapnode = tmpgzbkinfo.get(i).getNodeCurLocatedChanYeLian().trim();
+			String cylinverfiednode = parent.getNodeCurLocatedChanYeLian().trim();
 
 			if(cylinmapnode.equals(cylinverfiednode) ) 
 				return i;
@@ -2119,7 +2081,7 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 
 	    	switch (columnIndex) {
             case 0:
-                value = tmpgzbk.getChanYeLian();
+                value = tmpgzbk.getNodeCurLocatedChanYeLianByName();
                 break;
             case 1:
             	try {
@@ -2265,7 +2227,7 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
             		
             		for(BkChanYeLianTreeNode gznode : zdgzsub) {
             			if(gznode.isOfficallySelected()) {
-            				String chanyelian = gznode.getChanYeLian(); 
+            				String chanyelian = gznode.getNodeCurLocatedChanYeLianByName(); 
             				
             				String seltime = "";
             				if(gznode.getSelectedToZdgzTime() != null)
@@ -2328,7 +2290,7 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 
 class BanKuaiGeGuTableModel extends AbstractTableModel 
 {
-	private HashMap<String, ASingleStockInfo> bkgegumap; //包含股票代码和股票名称
+	private HashMap<String, Stock> bkgegumap; //包含股票代码和股票名称
 	String[] jtableTitleStrings = { "股票代码", "股票名称", "权重"};
 	private ArrayList<String> bkgeguname;
 	private HashSet<String> stockcodeinparsefile;
@@ -2339,7 +2301,7 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	{
 	}
 	
-	public void refresh  (String tdxbkname2, String tdxbkcode2, HashMap<String, ASingleStockInfo> tmpallbkge,HashSet<String> stockcodeinparsefile2)
+	public void refresh  (String tdxbkname2, String tdxbkcode2, HashMap<String, Stock> tmpallbkge,HashSet<String> stockcodeinparsefile2)
 	{
 		this.bkgegumap = tmpallbkge;
 		this.tdxbkname = tdxbkname2;
@@ -2396,10 +2358,10 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	    public void setStockCurWeight(int row, int newweight) 
 		{
 	    	String bkcode = bkgeguname.get(row);
-	    	ASingleStockInfo tmpstock = bkgegumap.get( bkcode ); 
-	    	HashMap<String, Integer> stockweightmap = tmpstock.getSysBanKuaiWeight();
+	    	Stock tmpstock = bkgegumap.get( bkcode ); 
+	    	HashMap<String, Integer> stockweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight();
 	    	stockweightmap.put(this.tdxbkcode,newweight);
-	    	tmpstock.setSysBanKuaiWeight(stockweightmap);
+	    	tmpstock.setGeGuSuoShuBanKuaiWeight(stockweightmap);
 	    	this.fireTableDataChanged();
 		}
 	    public Object getValueAt(int rowIndex, int columnIndex) 
@@ -2407,8 +2369,8 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	    	if(bkgegumap.isEmpty())
 	    		return null;
 	    	String bkcode = bkgeguname.get(rowIndex);
-	    	ASingleStockInfo tmpstock = bkgegumap.get( bkcode ); 
-	    	HashMap<String, Integer> stockweightmap = tmpstock.getSysBanKuaiWeight();
+	    	Stock tmpstock = bkgegumap.get( bkcode ); 
+	    	HashMap<String, Integer> stockweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight();
 	    	Object[] stockweight = stockweightmap.values().toArray();
 	    	
 	    	Object value = "??";
@@ -2417,7 +2379,7 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
                 value = bkcode;
                 break;
             case 1:
-            	value = tmpstock.getStockname();
+            	value = tmpstock.getMyOwnName();
                 break;
             case 2:
             	value = (Integer)stockweight[0];

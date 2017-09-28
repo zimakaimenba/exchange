@@ -5,12 +5,17 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+
+import org.bouncycastle.util.Arrays.Iterator;
 
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ZiJingHuaZhuan;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
@@ -20,11 +25,13 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
-import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.database.AccountDbOperation;
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
@@ -34,7 +41,8 @@ public class AccountAndChiCangConfiguration
 	AccountAndChiCangConfiguration() 
 	{
 		 acntdbop = new AccountDbOperation ();
-		 stockdbopt = new StockDbOperations ();
+		 bkdbopt = new BanKuaiDbOperation ();
+//		 stockdbopt = new StockDbOperations ();
 	
 		 cashaccountsdetailmap = new HashMap<String,CashAccountBasic>();
 		 putongaccountsdetailmap = new HashMap<String,AccountPuTong>();
@@ -44,31 +52,166 @@ public class AccountAndChiCangConfiguration
 
 		initializeAccounts ();
 		initiazlizeStockChiCang ();
-		//initiazlizeTodayOpt ();
+//		initiazlizeTodayOpt ();
 	}
 	
-	
-
 	SystemConfigration sysconfig ;
 
 	private AccountDbOperation acntdbop;
-	private StockDbOperations stockdbopt;
+//	private StockDbOperations stockdbopt;
+	private BanKuaiDbOperation bkdbopt;
 	private HashMap<String, CashAccountBasic> cashaccountsdetailmap;
 	private HashMap<String ,AccountPuTong> putongaccountsdetailmap;
 	private HashMap<String ,AccountXinYongPuTong> rzrqputongaccountsdetailmap; 
 	private HashMap<String ,AccountRongZi> rongziaccountsdetailmap;
 	private HashMap<String ,AccountRongQuan> rongquanaccountsdetailmap;
-	private HashMap<String ,ASingleStockInfo> stockChiCangdetailmap; //当前系统持仓
-	private HashMap<String ,BuyStockNumberPrice> todayoptmap; //当前系统持仓
 	
+	private Multimap<String, StockChiCangInfo>  acntChiCangdetailmap; //当前系统持仓 <账户名，持仓信息>
+//	private Multimap<String, AccountInfoBasic>  stockChiCangdetailmap; //当前系统持仓 <股票名，持仓账户>
+	private ArrayList<String> curChiCangStockCodeNamelist; //当前所有持仓股票的namelist
 
+
+	
+	
+	private void initializeAccounts ()
+	{
+		putongaccountsdetailmap = acntdbop.getPuTongSubAccounts ();
+		rzrqputongaccountsdetailmap = acntdbop.getXinYongPuTongSubAccounts ();
+		rongziaccountsdetailmap = acntdbop.getRongZiSubAccounts ();
+		rongquanaccountsdetailmap = acntdbop.getRongQuanSubAccounts ();
+		cashaccountsdetailmap = acntdbop.getCashSubAccounts ();
+	}
+	/*
+	 * 初始化持仓股票。 
+	 * acntChiCangdetailmap; //当前系统持仓 <账户名，持仓信息>
+	private Multimap<String, AccountInfoBasic>  stockChiCangdetailmap; //当前系统持仓 <股票名，持仓账户>
+	private ArrayList<String> curChiCangStockCodeNamelist; //当前所有持仓股票的namelist
+	 */
+	private void initiazlizeStockChiCang() 
+	{
+			acntChiCangdetailmap = acntdbop.getStockChiCang ();
+//			stockChiCangdetailmap =  ArrayListMultimap.create();
+			curChiCangStockCodeNamelist = new ArrayList<String> ();
+			for (Map.Entry<String,StockChiCangInfo> entry : acntChiCangdetailmap.entries()) {
+				String tmpstockacntname = (String) entry.getKey();
+				StockChiCangInfo tmpstockchicanginfo = (StockChiCangInfo)entry.getValue();
+				
+				AccountInfoBasic tmpacnt = this.getAccount(tmpstockacntname);
+				tmpacnt.addNewChiCangStock(tmpstockchicanginfo);
+				
+				String stockcode = tmpstockchicanginfo.getChicangcode();
+				String stockname = tmpstockchicanginfo.getChicangname();
+//				stockChiCangdetailmap.put(stockcode, tmpacnt);
+				if(!curChiCangStockCodeNamelist.contains(stockcode+stockname))
+					curChiCangStockCodeNamelist.add(stockcode+stockname);
+			} 
+		
+	}
+	public void refreshAccounts()
+	{
+		 cashaccountsdetailmap.clear();
+		 putongaccountsdetailmap.clear(); 
+		 rzrqputongaccountsdetailmap.clear(); 
+		 rongziaccountsdetailmap.clear(); 
+		 rongquanaccountsdetailmap.clear(); 
+		 
+		initializeAccounts ();
+	}
+	
 	public boolean isSystemChiCang(String stockcode) 
 	{
-
-		if(stockChiCangdetailmap.containsKey(stockcode) )
-			return true;
-		else return false;
+//		if(stockChiCangdetailmap.containsKey(stockcode))
+//			return true;
+//		else 
+//			return false;
+		for(String codename : curChiCangStockCodeNamelist)
+			if(codename.contains(stockcode))
+				return true;
+		
+		return false;
 	}
+	/*
+	 * 
+	 */
+	public ArrayList<String> getStockChiCangName ()
+	{
+		return curChiCangStockCodeNamelist;
+	}
+	public Stock setStockChiCangAccount (Stock stockneeded)
+	{
+		String stockcode = stockneeded.getMyOwnCode();
+//		if(stockChiCangdetailmap.containsKey(stockname)) {
+//			Collection<AccountInfoBasic> acntlists = stockChiCangdetailmap.get(stockname);
+//			for(AccountInfoBasic tmpacnt : acntlists)
+//				stockneeded.addNewChiCangAccount(tmpacnt);
+//		}
+		
+		for (Map.Entry<String,StockChiCangInfo> entry : acntChiCangdetailmap.entries()) {
+			String tmpstockacntname = (String) entry.getKey();
+						
+			AccountInfoBasic tmpacnt = this.getAccount(tmpstockacntname);
+			if(tmpacnt.isChiCang (stockcode) )
+				stockneeded.addNewChiCangAccount(tmpacnt);
+			
+		} 
+		
+		return stockneeded;
+	}
+	public ArrayList<AccountInfoBasic> getStockChiCangAccount (String stockneededcode)
+	{
+//		if(stockChiCangdetailmap.containsKey(stockname)) {
+//			Collection<AccountInfoBasic> acntlists = stockChiCangdetailmap.get(stockname);
+//			for(AccountInfoBasic tmpacnt : acntlists)
+//				stockneeded.addNewChiCangAccount(tmpacnt);
+//		}
+		
+		ArrayList<AccountInfoBasic> stockchicangacntlist = new ArrayList<AccountInfoBasic> (); 
+		for (Map.Entry<String,StockChiCangInfo> entry : acntChiCangdetailmap.entries()) {
+			String tmpstockacntname = (String) entry.getKey();
+						
+			AccountInfoBasic tmpacnt = this.getAccount(tmpstockacntname);
+			if(tmpacnt.isChiCang (stockneededcode) )
+				stockchicangacntlist.add(tmpacnt);
+			
+		} 
+		
+		
+		return stockchicangacntlist;
+	}
+	/*
+	 * 返回该股票的持仓账户的具体信息
+	 */
+//	public ArrayList<AccountInfoBasic>  getStockChicangAccountsList (String stockcode)
+//	{
+//		ArrayList<AccountInfoBasic> tmpacnt = null;
+//		
+//		if(stockChiCangdetailmap.containsKey(stockcode) ) 
+//		{
+//			tmpacnt = new ArrayList<AccountInfoBasic> ();
+//			Collection<AccountInfoBasic> tmpsglstock = this.stockChiCangdetailmap.get(stockcode); //从持仓列表中找到相应的该股票
+//			tmpacnt = new ArrayList<AccountInfoBasic> (tmpsglstock);
+//		}
+//		
+//		return tmpacnt;
+//	}
+
+	
+
+		public ArrayList<String> getPutongaccountsnamelist() {
+			return new ArrayList<String>(putongaccountsdetailmap.keySet());
+		}
+		public ArrayList<String> getRzrqputongaccountsnamelist() {
+			return new ArrayList<String>(rzrqputongaccountsdetailmap.keySet());
+		}
+		public ArrayList<String> getRzrqrongziaccountsnamelist() {
+			return new ArrayList<String>(rongziaccountsdetailmap.keySet());
+		}
+		public ArrayList<String> getRzrqrongqyanaccountsnamelist() {
+			return new ArrayList<String>(rongquanaccountsdetailmap.keySet());
+		} 
+
+
+	
 	public AccountInfoBasic getAccount (String tmpstockacntname)
 	{
 		
@@ -119,46 +262,16 @@ public class AccountAndChiCangConfiguration
 		
 		return null;
 	}
-//	public CashAccountBasic getCashAccount (String cashacntname)
+
+//	private boolean addNewChicangStock (Stock tmpnewstockinfo)
 //	{
-//		return cashaccountsdetailmap.get(cashacntname);
+//		String stockcode = tmpnewstockinfo.getMyOwnCode();
+//		if(!stockChiCangdetailmap.containsKey(stockcode) ) {
+//			this.stockChiCangdetailmap.put(stockcode, tmpnewstockinfo);
+//			return true;
+//		} else 
+//			return false;
 //	}
-	public ASingleStockInfo getChicangStock (String stockcode)
-	{
-		if(stockChiCangdetailmap.containsKey(stockcode) )
-			return this.stockChiCangdetailmap.get(stockcode);
-		else 
-			return null;
-	}
-	/*
-	 * 返回该股票的持仓账户的具体信息
-	 */
-	public ArrayList<AccountInfoBasic>  getStockChicangAccountsList (String stockcode)
-	{
-		ArrayList<AccountInfoBasic> tmpacnt = null;
-		
-		if(stockChiCangdetailmap.containsKey(stockcode) ) 
-		{
-			tmpacnt = new ArrayList<AccountInfoBasic> ();
-			ASingleStockInfo tmpsglstock = this.stockChiCangdetailmap.get(stockcode); //从持仓列表中找到相应的该股票
-			ArrayList<String> acntnamelist = tmpsglstock.getChiCangAccountNameList();
-			for(String tmpactname:acntnamelist){
-				tmpacnt.add(this.getAccount(tmpactname) );
-			}
-		}
-		
-		return tmpacnt;
-	}
-	public boolean addNewChicangStock (ASingleStockInfo tmpnewstockinfo)
-	{
-		String stockcode = tmpnewstockinfo.getStockcode();
-		if(!stockChiCangdetailmap.containsKey(stockcode) ) {
-			//this.stockChiCangnamelist.add(stockcode);
-			this.stockChiCangdetailmap.put(stockcode, tmpnewstockinfo);
-			return true;
-		} else 
-			return false;
-	}
 	
 	public  HashMap<String, CashAccountBasic>  getCashAccountListDetailMap() 
 	{
@@ -168,9 +281,9 @@ public class AccountAndChiCangConfiguration
 	/**
 	 * @param stockChiCangdetailmap the stockChiCangdetailmap to set
 	 */
-	public void setStockChiCangdetailmap(HashMap<String, ASingleStockInfo> stockChiCangdetailmap) {
-		this.stockChiCangdetailmap = stockChiCangdetailmap;
-	}
+//	public void setStockChiCangdetailmap(HashMap<String, Stock> stockChiCangdetailmap) {
+//		this.stockChiCangdetailmap = stockChiCangdetailmap;
+//	}
 
 
 
@@ -178,9 +291,8 @@ public class AccountAndChiCangConfiguration
 	/**
 	 * @return the putongaccountsnamelist
 	 */
-	public ArrayList<String> getPutongaccountsnamelist() {
-		return new ArrayList<String>(putongaccountsdetailmap.keySet());
-	}
+
+
 	/**
 	 * @param putongaccountsnamelist the putongaccountsnamelist to set
 	 */
@@ -190,81 +302,74 @@ public class AccountAndChiCangConfiguration
 	/**
 	 * @return the putongaccountsdetailmap
 	 */
-	public HashMap<String, AccountPuTong> getPutongaccountsdetailmap() {
-		return putongaccountsdetailmap;
-	}
+//	public HashMap<String, AccountPuTong> getPutongaccountsdetailmap() {
+//		return putongaccountsdetailmap;
+//	}
 	/**
 	 * @param putongaccountsdetailmap the putongaccountsdetailmap to set
 	 */
-	public void setPutongaccountsdetailmap(HashMap<String, AccountPuTong> putongaccountsdetailmap) {
-		this.putongaccountsdetailmap = putongaccountsdetailmap;
-	}
+//	public void setPutongaccountsdetailmap(HashMap<String, AccountPuTong> putongaccountsdetailmap) {
+//		this.putongaccountsdetailmap = putongaccountsdetailmap;
+//	}
 	/**
 	 * @return the rzrqputongaccountsnamelist
 	 */
-	public ArrayList<String> getRzrqputongaccountsnamelist() {
-		return new ArrayList<String>(rzrqputongaccountsdetailmap.keySet());
-	}
-	/**
-	 * @return the rzrqputongaccountsdetailmap
-	 */
-	public HashMap<String, AccountXinYongPuTong> getRzrqputongaccountsdetailmap() {
-		return rzrqputongaccountsdetailmap;
-	}
-	/**
-	 * @param rzrqputongaccountsdetailmap the rzrqputongaccountsdetailmap to set
-	 */
-	public void setRzrqputongaccountsdetailmap(HashMap<String, AccountXinYongPuTong> rzrqputongaccountsdetailmap) {
-		this.rzrqputongaccountsdetailmap = rzrqputongaccountsdetailmap;
-	}
-	/**
-	 * @return the rongziaccountsdetailmap
-	 */
-	public HashMap<String, AccountRongZi> getRongziaccountsdetailmap() {
-		return rongziaccountsdetailmap;
-	}
-	/**
-	 * @param rongziaccountsdetailmap the rongziaccountsdetailmap to set
-	 */
-	public void setRongziaccountsdetailmap(HashMap<String, AccountRongZi> rongziaccountsdetailmap) {
-		this.rongziaccountsdetailmap = rongziaccountsdetailmap;
-	}
+
+//	/**
+//	 * @return the rzrqputongaccountsdetailmap
+//	 */
+//	public HashMap<String, AccountXinYongPuTong> getRzrqputongaccountsdetailmap() {
+//		return rzrqputongaccountsdetailmap;
+//	}
+//	/**
+//	 * @param rzrqputongaccountsdetailmap the rzrqputongaccountsdetailmap to set
+//	 */
+//	public void setRzrqputongaccountsdetailmap(HashMap<String, AccountXinYongPuTong> rzrqputongaccountsdetailmap) {
+//		this.rzrqputongaccountsdetailmap = rzrqputongaccountsdetailmap;
+//	}
+//	/**
+//	 * @return the rongziaccountsdetailmap
+//	 */
+//	public HashMap<String, AccountRongZi> getRongziaccountsdetailmap() {
+//		return rongziaccountsdetailmap;
+//	}
+//	/**
+//	 * @param rongziaccountsdetailmap the rongziaccountsdetailmap to set
+//	 */
+//	public void setRongziaccountsdetailmap(HashMap<String, AccountRongZi> rongziaccountsdetailmap) {
+//		this.rongziaccountsdetailmap = rongziaccountsdetailmap;
+//	}
 	/**
 	 * @return the rzrqrongziaccountsnamelist
 	 */
-	public ArrayList<String> getRzrqrongziaccountsnamelist() {
-		return new ArrayList<String>(rongziaccountsdetailmap.keySet());
-	}
-	/**
-	 * @param rzrqrongziaccountsnamelist the rzrqrongziaccountsnamelist to set
-	 */
-//	public void setRzrqrongziaccountsnamelist(ArrayList<String> rzrqrongziaccountsnamelist) {
-//		this.rzrqrongziaccountsnamelist = rzrqrongziaccountsnamelist;
+
+//	/**
+//	 * @param rzrqrongziaccountsnamelist the rzrqrongziaccountsnamelist to set
+//	 */
+////	public void setRzrqrongziaccountsnamelist(ArrayList<String> rzrqrongziaccountsnamelist) {
+////		this.rzrqrongziaccountsnamelist = rzrqrongziaccountsnamelist;
+////	}
+//	/**
+//	 * @return the rongquanaccountsdetailmap
+//	 */
+//	public HashMap<String, AccountRongQuan> getRongquanaccountsdetailmap() {
+//		return rongquanaccountsdetailmap;
 //	}
-	/**
-	 * @return the rongquanaccountsdetailmap
-	 */
-	public HashMap<String, AccountRongQuan> getRongquanaccountsdetailmap() {
-		return rongquanaccountsdetailmap;
-	}
-	/**
-	 * @param rongquanaccountsdetailmap the rongquanaccountsdetailmap to set
-	 */
-	public void setRongquanaccountsdetailmap(HashMap<String, AccountRongQuan> rongquanaccountsdetailmap) {
-		this.rongquanaccountsdetailmap = rongquanaccountsdetailmap;
-	}
+//	/**
+//	 * @param rongquanaccountsdetailmap the rongquanaccountsdetailmap to set
+//	 */
+//	public void setRongquanaccountsdetailmap(HashMap<String, AccountRongQuan> rongquanaccountsdetailmap) {
+//		this.rongquanaccountsdetailmap = rongquanaccountsdetailmap;
+//	}
 	/**
 	 * @return the rzrqrongqyanaccountsnamelist
 	 */
-	public ArrayList<String> getRzrqrongqyanaccountsnamelist() {
-		return new ArrayList<String>(rongquanaccountsdetailmap.keySet());
-	}
-	/**
-	 * @return the stockChiCangdetailmap
-	 */
-	public HashMap<String, ASingleStockInfo> getStockChiCangdetailmap() {
-		return stockChiCangdetailmap;
-	}
+//	/**
+//	 * @return the stockChiCangdetailmap
+//	 */
+//	public HashMap<String, ASingleStockInfo> getStockChiCangdetailmap() {
+//		return stockChiCangdetailmap;
+//	}
 /*
  * 初始化今日操作
  */
@@ -273,54 +378,9 @@ public class AccountAndChiCangConfiguration
 //		todayoptmap = new  HashMap<String ,BuyStockNumberPrice> ();
 //		Object[][] ptacntsmap = stockdbopt.getTodaysOperations ();
 //	}
-/*
- * 初始化持仓股票。方法是
- */
-	private void initiazlizeStockChiCang() 
-	{
-		stockChiCangdetailmap = new HashMap<String ,ASingleStockInfo>();//保存所有系统持仓股票，结构是<持仓股票代码，持仓股票所有信息>
-		
-		Object[][] ptacntsmap = acntdbop.getStockChiCang ();
-		for (int i=0;i<ptacntsmap.length;i++) { 
-			//czjl.买卖账号, czjl.股票代码 ,agu.股票名称, SUM(买卖股数) , SUM(买卖金额)
-			Object[] data = ptacntsmap[i];
-			String tmpstockacntname = data[0].toString();
-			String tmpstockcode = data[1].toString();
-			String tmpstockname = data[2].toString();
-			int tmpstocknumber = Integer.parseInt( data[3].toString() );
-			double tmpstockchengben = Double.parseDouble( data[4].toString());
-			
+
 	
-			try {
-				//设置持仓的账户
-				AccountInfoBasic tmpacnt = null;
-				tmpacnt = this.getAccount(tmpstockacntname);
-			
-				StockChiCangInfo tmpstockchicanginfo = new StockChiCangInfo(tmpstockcode.trim(), tmpstockname,
-						tmpstocknumber, tmpstockchengben);
-				
-				tmpacnt.addNewChiCangStock(tmpstockchicanginfo);
-			} catch (java.lang.NullPointerException e) {
-				System.out.println("在账户列表中未能找到持有该股票的账户！" + tmpstockacntname);
-			}
-			
-			
-			//设置持仓的股票
-			if(stockChiCangdetailmap.containsKey(tmpstockcode)) { //
-				 this.getChicangStock(tmpstockcode).addNewChiCangAccountName(tmpstockacntname);//把账户名加入到该股票的持仓账户list里面
-			} else {
-				ASingleStockInfo tmpsiglestockinfo = new ASingleStockInfo(tmpstockcode.trim());
-				tmpsiglestockinfo.setStockname(tmpstockname.trim());
-				tmpsiglestockinfo.addNewChiCangAccountName (tmpstockacntname);
-				
-				//stockChiCangnamelist.add(tmpstockcode);  //持仓股票
-				stockChiCangdetailmap.put(tmpstockcode,tmpsiglestockinfo); //
-			}
-			
-		}
 	
-	}
-	 
 	
 	public void SaveAccountsInfo ()
 	{
@@ -342,72 +402,69 @@ public class AccountAndChiCangConfiguration
 
 
 
-	private void initializeAccounts ()
-	{
-		initializePutongSubAccounts();
-		initializeRzrqPutongSubAccounts ();
-		initializeRongziSubAccounts ();
-		initializeRongquanSubAccounts ();
-		initializeCashSubAccounts ();
-	}
-	public void refreshAccounts()
-	{
-		 cashaccountsdetailmap.clear();
-		 putongaccountsdetailmap.clear(); 
-		 rzrqputongaccountsdetailmap.clear(); 
-		 rongziaccountsdetailmap.clear(); 
-		 rongquanaccountsdetailmap.clear(); 
-		 
-		initializeAccounts ();
-	}
+
 	
-	private void initializeCashSubAccounts() 
-	{
-		cashaccountsdetailmap = acntdbop.getCashSubAccounts ();
-    }
+//	private void initializeCashSubAccounts() 
+//	{
+//		cashaccountsdetailmap = acntdbop.getCashSubAccounts ();
+//    }
 	
-	private void initializeRongquanSubAccounts ()
-	{
-		 rongquanaccountsdetailmap = acntdbop.getRongQuanSubAccounts ();
-	}
+//	private void initializeRongquanSubAccounts ()
+//	{
+//		 rongquanaccountsdetailmap = acntdbop.getRongQuanSubAccounts ();
+//	}
 	
-	private void initializeRongziSubAccounts ()
-	{
-		rongziaccountsdetailmap = acntdbop.getRongZiSubAccounts ();
-	}
+//	private void initializeRongziSubAccounts ()
+//	{
+//		rongziaccountsdetailmap = acntdbop.getRongZiSubAccounts ();
+//	}
 	
-	private void initializeRzrqPutongSubAccounts()
-	{
-		 rzrqputongaccountsdetailmap = acntdbop.getXinYongPuTongSubAccounts ();
-	}
-	private void initializePutongSubAccounts()
-	{
-		putongaccountsdetailmap = acntdbop.getPuTongSubAccounts ();
-	}
+//	private void initializeRzrqPutongSubAccounts()
+//	{
+//		 rzrqputongaccountsdetailmap = acntdbop.getXinYongPuTongSubAccounts ();
+//	}
+//	private void initializePutongSubAccounts()
+//	{
+//		putongaccountsdetailmap = acntdbop.getPuTongSubAccounts ();
+//	}
 
 	/*
 	 * 买入对持仓股票list进行处理
+	 * private Multimap<String, StockChiCangInfo>  acntChiCangdetailmap; //当前系统持仓 <账户名，持仓信息>
+		private ArrayList<String> curChiCangStockCodeNamelist; //当前所有持仓股票的namelist
 	 */
 	public void setBuyStockChiCangRelatedActions(BuyStockNumberPrice stocknumberpricepanel) 
 	{
+		boolean guadan = stocknumberpricepanel.getGuadan();
+		if(guadan) //挂单还不涉及持仓的变化
+			return;
+		
 		String stockcode = stocknumberpricepanel.getStockcode();
 		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu();
-		boolean guadan = stocknumberpricepanel.getGuadan();
-		
-		
-		if(guadan) //挂单还不涉及持仓的变化
-			return; 
+		int gushu = stocknumberpricepanel.getJiaoyiGushu();
+		Double chenben = stocknumberpricepanel.getJiaoyiJiage() * gushu;
 		
 		 //该股票对持仓账户的处理
-		 if(this.getChicangStock(stockcode) !=null) { //已经市持仓股票
-			  this.getChicangStock(stockcode).addNewChiCangAccountName(actionstockaccount);
+		 if(this.isSystemChiCang(stockcode) ) { //已经市持仓股票
+			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
+			 for(StockChiCangInfo tmpscc : stockchicanginfo) {
+				 if(tmpscc.getChicangcode().equals(stockcode)) {
+					 tmpscc.setChicanggushu(gushu);
+					 tmpscc.setChicangchenben(chenben);
+				 }
+			 }
+			  
+			  
 		 } else { //还不是持仓股票
 			 
-			 ASingleStockInfo tmpnewchicang = new ASingleStockInfo(stockcode); 
 			 
-			 tmpnewchicang.addNewChiCangAccountName(actionstockaccount);
+			 curChiCangStockCodeNamelist.add(stockcode); 
 			 
-			 this.addNewChicangStock(tmpnewchicang);
+//			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
+//			 
+//			 AccountInfoBasic newstockacnt = this.getAccount(actionstockaccount);
+			 StockChiCangInfo newstockchicang = new StockChiCangInfo(stockcode, "", gushu, chenben);
+			 acntChiCangdetailmap.put(actionstockaccount, newstockchicang);
 		 }
 		
 	}
@@ -418,30 +475,40 @@ public class AccountAndChiCangConfiguration
 	 */
 	public void setSellStockChiCangRelatedActions(BuyStockNumberPrice stocknumberpricepanel) 
 	{
-		String stockcode = stocknumberpricepanel.getStockcode();
-		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu();
 		boolean guadan = stocknumberpricepanel.getGuadan();
-
 		
 		if(guadan) //挂单还不涉及持仓的变化
 			return;
 		
-		//确认该股票还是某个账户的持仓
-		ASingleStockInfo tmpactstock =  stockChiCangdetailmap.get(stockcode); //找到该股票
-		if(actionstockaccount.contains("融券")) { //融券账户卖出，则该股票应该加入持仓
-			tmpactstock.addNewChiCangAccountName(actionstockaccount);
-		} else { // 卖出那肯定是从现有的持仓账户查找是否还有该股票,
-			
-			ArrayList<String> tmpchicangnamelist = tmpactstock.getChiCangAccountNameList(); //找到该股票所有的持仓账户的名字
-			if(!this.getAccount(actionstockaccount).isChiCang(stockcode))
-				tmpchicangnamelist.remove(actionstockaccount); //如果股票已经不是该账户的股票，从列表中移除账户
-			
-			if(tmpchicangnamelist.isEmpty()) { //账户列表空，说明已经不是系统持仓股票
-				stockChiCangdetailmap.remove(stockcode);
-				 System.out.println(stockcode + "已经不是系统持仓");
-			}
-			
-		}
+		String stockcode = stocknumberpricepanel.getStockcode();
+		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu();
+		int gushu = stocknumberpricepanel.getJiaoyiGushu();
+		Double chenben = stocknumberpricepanel.getJiaoyiJiage() * gushu;
+		
+		 //该股票对持仓账户的处理
+		 if(this.isSystemChiCang(stockcode) ) { //已经市持仓股票
+			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
+			 for(StockChiCangInfo tmpscc : stockchicanginfo) {
+				 if(tmpscc.getChicangcode().equals(stockcode)) {
+					 tmpscc.setChicanggushu(0-gushu);
+					 tmpscc.setChicangchenben(0-chenben);
+				 }
+			 }
+			  
+			  
+		 } else { //已经不是持仓股票
+			 
+			 for(String codename : curChiCangStockCodeNamelist) 
+				 if(codename.contains(stockcode))
+					 curChiCangStockCodeNamelist.remove(codename);
+			 
+			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
+			 for(StockChiCangInfo tmpst : stockchicanginfo) {
+				 if(tmpst.getChicangcode().equals(stockcode))
+					 acntChiCangdetailmap.remove(actionstockaccount, tmpst);
+			 }
+			 
+		 }
 	}
 
 	/*

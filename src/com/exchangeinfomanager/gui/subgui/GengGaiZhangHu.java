@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 
 import javax.swing.JComboBox;
@@ -62,15 +63,15 @@ public class GengGaiZhangHu extends JPanel
 		
 		if(!sellbuy){ //卖出，只能有持仓的和融券账户
 			ArrayList<String> rzrqrongquannamelist = accountschicangconfig.getRzrqrongqyanaccountsnamelist();
-			ArrayList<String> chichangacntlist = null;
-			if(accountschicangconfig.getChicangStock(this.stockcode) != null)
+			ArrayList<AccountInfoBasic> chichangacntlist = null;
+			if(accountschicangconfig.getStockChiCangAccount(this.stockcode) != null)
 			{
-				chichangacntlist = accountschicangconfig.getChicangStock(this.stockcode).getChiCangAccountNameList();
+				chichangacntlist = accountschicangconfig.getStockChiCangAccount(this.stockcode);
 			}
 			
 			try {
-				for(String str:chichangacntlist)
-					cbxZhanghu.addItem(str);
+				for(AccountInfoBasic tmpacnt : chichangacntlist)
+					cbxZhanghu.addItem(tmpacnt.getAccountName());
 //				for (int i = 0; i < chichangacntlist.size(); i++)
 //					cbxZhanghu.addItem(chichangacntlist.get(i));
 			} catch (Exception e) {

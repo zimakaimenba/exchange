@@ -1,5 +1,6 @@
-package com.exchangeinfomanager.bankuaichanyelian;
+package com.exchangeinfomanager.asinglestockinfo;
 
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 
 public class MoveButton extends javax.swing.JButton{
 

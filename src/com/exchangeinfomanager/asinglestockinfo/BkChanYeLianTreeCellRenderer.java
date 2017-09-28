@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian;
+package com.exchangeinfomanager.asinglestockinfo;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -35,12 +35,12 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 		 Component returnValue = null;
 		 if(value !=null && value instanceof DefaultMutableTreeNode) {
 			 
-	         int nodetype = ((BkChanYeLianTreeNode)value).getNodeType();
+	         int nodetype = ((BkChanYeLianTreeNode)value).getType();
 	         String bktreenodename;
 	         if(nodetype != BkChanYeLianTreeNode.BKGEGU)
-	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getUserObject().toString();
+	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnName();
 	         else
-	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getNodeOwnCode() + ((BkChanYeLianTreeNode)value).getUserObject().toString();
+	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnCode() + ((BkChanYeLianTreeNode)value).getMyOwnName();
 	         
 	         
 

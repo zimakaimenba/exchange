@@ -28,7 +28,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
-import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTreeNode;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
@@ -66,7 +66,7 @@ public class StockDbOperations
 	private SAXReader ggcylsaxreader;
 
 	//private Object[][] zdgzmrmcykRecords = null;
-	public ASingleStockInfo getZdgzMrmcZdgzYingKuiFromDB (ASingleStockInfo stockbasicinfo)
+	public Stock getZdgzMrmcZdgzYingKuiFromDB (Stock stockbasicinfo)
 	{
 		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 		String sqlquerystat = null;
@@ -91,9 +91,9 @@ public class StockDbOperations
 		 return stockbasicinfo;
 	}
 	
-	private String getZdgzMrmcYingKuiSQLForAccess(ASingleStockInfo stockbasicinfo) 
+	private String getZdgzMrmcYingKuiSQLForAccess(Stock stockbasicinfo) 
 	{
-		String stockcode = stockbasicinfo.getStockcode();
+		String stockcode = stockbasicinfo.getUserObject().toString();
 		String sqlquerystat1= "SELECT ggyk.日期, "
 							+ "IIF(ggyk.盈亏金额>0,'盈利','亏损') AS 盈亏情况,"
 							+ " ggyk.原因描述,"
@@ -161,9 +161,9 @@ public class StockDbOperations
 		
 	}
 
-	private String getZdgzMrmcYingKuiSQLForMysql(ASingleStockInfo stockbasicinfo) 
+	private String getZdgzMrmcYingKuiSQLForMysql(Stock stockbasicinfo) 
 	{
-		String stockcode = stockbasicinfo.getStockcode();
+		String stockcode = stockbasicinfo.getMyOwncode();
 		String sqlquerystat1= "SELECT ggyk.日期, "
 							+ "IF(ggyk.盈亏金额>0,'盈利','亏损') AS 盈亏情况,"
 							+ " ggyk.原因描述,"
@@ -319,9 +319,9 @@ public class StockDbOperations
 		return pmdresult;
 	}
 	
-	public ASingleStockInfo getSingleStockBasicInfo(ASingleStockInfo stockbasicinfo) 
+	public Stock getSingleStockBasicInfo(Stock stockbasicinfo) 
 	{
-		String stockcode = stockbasicinfo.getStockcode();
+		String stockcode = stockbasicinfo.getMyOwncode();
 		CachedRowSetImpl rsagu = null;
 		try {
 			 String sqlquerystat= "SELECT * FROM A股   WHERE 股票代码 =" +"'" + stockcode +"'" ;	
@@ -347,13 +347,13 @@ public class StockDbOperations
 		return stockbasicinfo;
 	}
 	
-	private void setSingleStockInfo(ASingleStockInfo stockbasicinfo, CachedRowSetImpl rs) 
+	private void setSingleStockInfo(Stock stockbasicinfo, CachedRowSetImpl rs) 
 	{
 		try {
 			String stockname = rs.getString("股票名称").trim();
-			stockbasicinfo.setStockname(stockname);
+			stockbasicinfo.setMyOwnName(stockname);
 		} catch(java.lang.NullPointerException ex1) {
-			stockbasicinfo.setStockname( " ");
+			stockbasicinfo.setMyOwnName( " ");
 		} catch (Exception ex) {
 			System.out.println(ex);
 		}
@@ -473,9 +473,9 @@ public class StockDbOperations
 		return newStockSign;
 	}
 
-	public ASingleStockInfo getCheckListsXMLInfo(ASingleStockInfo stockbasicinfo)
+	public Stock getCheckListsXMLInfo(Stock stockbasicinfo)
 	{
-		String stockcode = stockbasicinfo.getStockcode();
+		String stockcode = stockbasicinfo.getMyOwnCode();
 		String sqlquerystat= "SELECT checklistsitems FROM A股   WHERE 股票代码 =" +"'" + stockcode +"'" ;
 		//System.out.println(sqlquerystat);
 		CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -512,7 +512,7 @@ public class StockDbOperations
 			return null;
 		return null;
 	}
-	public boolean updateStockNewInfoToDb(ASingleStockInfo stockbasicinfo) 
+	public boolean updateStockNewInfoToDb(Stock stockbasicinfo) 
 	{
 		String dategainiants = null;
 		
@@ -522,8 +522,8 @@ public class StockDbOperations
 		String datefumianxx = null;
 		String txtfldinputfumianxx = null;
 		
-		String stockname = "'" +  stockbasicinfo.getStockname().trim() + "'" ;
-		String stockcode = "'" +  stockbasicinfo.getStockcode().trim() + "'" ;
+		String stockname = "'" +  stockbasicinfo.getMyOwnName().trim() + "'" ;
+		String stockcode = "'" +  stockbasicinfo.getMyOwncode().trim() + "'" ;
 		
 //		dategainiants = formateDateForDiffDatabase(  sysconfig.formatDate(stockbasicinfo.getGainiantishidate()) );
 //		datequanshangpj = formateDateForDiffDatabase( sysconfig.formatDate(stockbasicinfo.getQuanshangpingjidate() ) );
@@ -597,9 +597,9 @@ public class StockDbOperations
 	}
 
 
-	public boolean updateChecklistsitemsToDb (ASingleStockInfo stockbasicinfo)
+	public boolean updateChecklistsitemsToDb (Stock stockbasicinfo)
 	{
-		String stockcode = stockbasicinfo.getStockcode();
+		String stockcode = stockbasicinfo.getMyOwnCode();
 		String checklistsitems = stockbasicinfo.getChecklistXml();
 		String sqlupdatestat= "UPDATE A股  SET "
 				+ "checklistsitems=" + "'" + checklistsitems + "'"
@@ -639,23 +639,23 @@ public class StockDbOperations
 		
 	}
 	
-	public ASingleStockInfo getTDXBanKuaiInfo(ASingleStockInfo stockbasicinfo) 
+	public Stock getTDXBanKuaiInfo(Stock stockbasicinfo) 
 	{
-		String stockcode = stockbasicinfo.getStockcode();
+		String stockcode = stockbasicinfo.getMyOwnCode();
 		HashMap<String,String> tmpsysbk = new HashMap<String,String> ();
 		
 //		SELECT gpgn.概念板块, tdxbk.`板块ID`
 //		FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk
 //		WHERE 股票代码= '000001' AND gpgn.概念板块 = tdxbk.`板块名称`
 		String sqlquerystat =null;
-		sqlquerystat=  "SELECT gpgn.概念板块 板块, tdxbk.`板块ID` 板块代码 FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk"
-				+ "  WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gpgn.概念板块 = tdxbk.`板块名称` AND ISNULL(移除时间)"
+		sqlquerystat=  "SELECT gpgn.概念板块 板块代码, tdxbk.`板块名称` 板块名称 FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk"
+				+ "  WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gpgn.概念板块 = tdxbk.`板块ID` AND ISNULL(移除时间)"
 				+ "UNION " 
-				+ " SELECT gphy.行业板块 板块, tdxbk.`板块ID` 板块代码 FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk "
-				+ " WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gphy.`行业板块` = tdxbk.`板块名称` AND ISNULL(移除时间)"
+				+ " SELECT gphy.行业板块 板块代码, tdxbk.`板块名称` 板块名称 FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk "
+				+ " WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gphy.`行业板块` = tdxbk.`板块ID` AND ISNULL(移除时间)"
 				+ "UNION " 
-				+ " SELECT gpfg.`风格板块`板块, tdxbk.`板块ID` 板块代码  FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk"
-				+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`风格板块` = tdxbk.`板块名称` AND ISNULL(移除时间)"
+				+ " SELECT gpfg.`风格板块`板块代码, tdxbk.`板块名称` 板块名称  FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk"
+				+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`风格板块` = tdxbk.`板块ID` AND ISNULL(移除时间)"
 				;
 		
 		System.out.println(sqlquerystat);
@@ -663,7 +663,7 @@ public class StockDbOperations
 		try  {     
 	        while(rs_gn.next()) {
 	        	String bkcode = rs_gn.getString("板块代码");
-	        	String bkname = rs_gn.getString("板块");
+	        	String bkname = rs_gn.getString("板块名称");
 	        	tmpsysbk.put(bkcode,bkname);
 	        } 
 	        
@@ -684,7 +684,7 @@ public class StockDbOperations
 	    	}
 	    }
 		
-		stockbasicinfo.setSuoShuTDXSysBanKuai(tmpsysbk);
+		stockbasicinfo.setGeGuSuoShuTDXSysBanKuaiList(tmpsysbk);
 		
 //		sqlquerystat=  "SELECT 自定义板块 FROM 股票通达信自定义板块对应表  WHERE 股票代码= "
 //						+ "'" +  stockcode.trim() + "'"

@@ -22,7 +22,12 @@ public class HanYuPinYing {
 	        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
 	        format.setVCharType(HanyuPinyinVCharType.WITH_V);
 	 
-	        char[] input = chinese.trim().toCharArray();
+	        char[] input;
+	        try {
+	        	input = chinese.trim().toCharArray();
+	        } catch (java.lang.NullPointerException e ) {
+	        	input = "".toCharArray();
+	        }
 	        String output = "";
 	 
 	        try {

@@ -29,7 +29,7 @@ public class CashAccountBasic
 	protected static int TYPEPUTONG=1;
 	protected static int TYPEXYPUTONG=2;
 	protected static int TYPERONGZI=3;
-	public int TYPERONGQUAN=4;
+	protected static int TYPERONGQUAN=4;
 	
 	/**
 	 * @ÀúÊ·Ó¯¿÷

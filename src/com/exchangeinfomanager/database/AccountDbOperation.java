@@ -17,12 +17,13 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
-import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.sun.rowset.CachedRowSetImpl;
 
 public class AccountDbOperation 
@@ -47,55 +48,23 @@ public class AccountDbOperation
 		sysconfig = SystemConfigration.getInstance();
 	}
 	/*
-	 * 把数据库中持仓标识true的股票的买记录减去卖记录得到当前某股票的持仓情况，每一个账户对应一个股票
+	 * 股票持仓namelist
 	 */
-	public Object[][] getStockChiCang() 
+	public ArrayList<String> getStockChiCangList ()
 	{
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> (); 
-		String sqlquerystat = null;
-		sqlquerystat = " SELECT t1.买卖账号,t1.股票代码, t2.股票名称,  "
-				+ " SUM(SWITCH(t1.买入卖出标志 = true, t1.买卖股数, t1.买入卖出标志 = false, -t1.买卖股数)) as 买卖股数, "
-				+ " SUM(SWITCH(t1.买入卖出标志 = true, t1.买卖金额, t1.买入卖出标志 = false, -t1.买卖金额)) as 买卖金额  "
-				+ " FROM 操作记录买卖 t1, A股 t2 "
-				+ " WHERE t1.股票代码 = t2.股票代码  AND 持仓标志 = true "
-				+ " GROUP BY t1.股票代码, t2.股票名称, t1.买卖账号 "
-				;
-		sqlstatmap.put("access", sqlquerystat);
+		ArrayList<String> stockchicang = new ArrayList<String> ();
 		
-		sqlquerystat = " SELECT t1.买卖账号,t1.股票代码, t2.股票名称,  "
-				+ "	       SUM(CASE WHEN t1.买入卖出标志 = true then t1.买卖股数 ELSE -t1.买卖股数 END) AS 买卖股数,"
-				+ "	       SUM(CASE WHEN t1.买入卖出标志 = true then t1.买卖金额 ELSE -t1.买卖金额 END) AS 买卖金额 "
-				+ " FROM 操作记录买卖 t1, A股 t2 "
-				+ " WHERE t1.股票代码 = t2.股票代码  AND 持仓标志 = true "
-				+ " GROUP BY t1.股票代码, t2.股票名称, t1.买卖账号 "
-				; 
-		sqlstatmap.put("mysql", sqlquerystat);
+		String sqlquerystat ="select czjl.股票代码 , agu.`股票名称`  from 操作记录买卖 czjl, a股 agu\r\n" + 
+							" where  持仓标志 = '1' and czjl.`股票代码` = agu.`股票代码`\r\n" + 
+							"  group by 股票代码"
+							;
 		
-		
-		Object[][] data = null;  
 		CachedRowSetImpl rs = null; 
 	    try {  
-	    	 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
-	    	
-	        rs.last();  
-	        int rows = rs.getRow();  
-	        data = new Object[rows][];    
-	        int columnCount = 5;//列数  
-	        rs.first();  
-	        int k = 0;  
-	        //while(rs.next())
-	        for(int j=0;j<rows;j++) {  
-	            Object[] row = new Object[columnCount]; 
-	            row[0] = rs.getObject("买卖账号").toString();
-            	row[1] = rs.getObject("股票代码").toString();
-            	row[2] = rs.getObject("股票名称").toString();
-	            row[3] = rs.getObject("买卖股数").toString();
-	            row[4] = rs.getObject("买卖金额").toString();
-              
-	            data[k] = row;  
-	            //data2.add(row);
-	            k++; 
-	            rs.next();
+	    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	    	 while(rs.next()) {  
+	            String stockcode  = rs.getString("股票代码");
+	            stockchicang.add(stockcode);
 	        }
 	        
 	    }catch(java.lang.NullPointerException e){ 
@@ -114,7 +83,69 @@ public class AccountDbOperation
 				}
 	    }
 
-	    return data;
+		
+		return stockchicang;
+	}
+	/*
+	 * 把数据库中持仓标识true的股票的买记录减去卖记录得到当前某股票的持仓情况，每一个账户对应一个股票
+	 */
+	public Multimap<String, StockChiCangInfo> getStockChiCang() 
+	{
+		HashMap<String,String> sqlstatmap = new HashMap<String,String> (); 
+		
+		Multimap<String,StockChiCangInfo> acntchicangmap =  ArrayListMultimap.create();
+		String sqlquerystat = null;
+//		sqlquerystat = " SELECT t1.买卖账号,t1.股票代码, t2.股票名称,  "
+//				+ " SUM(SWITCH(t1.买入卖出标志 = true, t1.买卖股数, t1.买入卖出标志 = false, -t1.买卖股数)) as 买卖股数, "
+//				+ " SUM(SWITCH(t1.买入卖出标志 = true, t1.买卖金额, t1.买入卖出标志 = false, -t1.买卖金额)) as 买卖金额  "
+//				+ " FROM 操作记录买卖 t1, A股 t2 "
+//				+ " WHERE t1.股票代码 = t2.股票代码  AND 持仓标志 = true "
+//				+ " GROUP BY t1.股票代码, t2.股票名称, t1.买卖账号 "
+//				;
+//		sqlstatmap.put("access", sqlquerystat);
+		
+		sqlquerystat = " SELECT t1.买卖账号,t1.股票代码, t2.股票名称,  "
+				+ "	       SUM(CASE WHEN t1.买入卖出标志 = true then t1.买卖股数 ELSE -t1.买卖股数 END) AS 买卖股数,"
+				+ "	       SUM(CASE WHEN t1.买入卖出标志 = true then t1.买卖金额 ELSE -t1.买卖金额 END) AS 买卖金额 "
+				+ " FROM 操作记录买卖 t1, A股 t2 "
+				+ " WHERE t1.股票代码 = t2.股票代码  AND 持仓标志 = true "
+				+ " GROUP BY t1.股票代码, t2.股票名称, t1.买卖账号 "
+				; 
+		sqlstatmap.put("mysql", sqlquerystat);
+
+		CachedRowSetImpl rs = null; 
+	    try {  
+	    	System.out.println(sqlquerystat);
+	    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	    	
+	        while(rs.next()) {  
+	        	String acnt = rs.getString("买卖账号");
+	            String stockcode = rs.getString("股票代码");
+	            String stockname = rs.getString("股票名称");
+	            Integer gushu = rs.getInt("买卖股数");
+	            Double chenben = rs.getDouble("买卖金额");
+	            
+	            StockChiCangInfo tmpchicang = new StockChiCangInfo (stockcode,stockname,gushu,chenben); //(String chicangcode,String chicangname, int chicanggushu, double chicangchenben )
+	            acntchicangmap.put(acnt, tmpchicang);
+	        }
+	        
+	    }catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    }  finally {
+	    	if(rs != null)
+				try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+
+	    return acntchicangmap;
 	}
 	
 

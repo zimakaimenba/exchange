@@ -9,8 +9,8 @@ import java.util.Date;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 
-
-
+import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 
 
@@ -110,18 +110,20 @@ public class BuyStockNumberPrice extends JPanel
 		if(!sellbuy){ //卖出，只能有持仓的和融券账户
 			ArrayList<String> rzrqrongquannamelist = accountschicangconfig.getRzrqrongqyanaccountsnamelist();
 			ArrayList<String> chichangacntlist = null;
-			if(accountschicangconfig.getChicangStock(this.stockcode) != null)
+			if(accountschicangconfig.isSystemChiCang(this.stockcode) )
 			{
-				chichangacntlist = accountschicangconfig.getChicangStock(this.stockcode).getChiCangAccountNameList();
+				 ArrayList<AccountInfoBasic> stockchicangacnt = accountschicangconfig.getStockChiCangAccount(this.stockcode);
+				 for(AccountInfoBasic tmpacnt : stockchicangacnt)
+					 cbxZhanghu .addItem( tmpacnt.getAccountName() );
 			}
 			
-			try {
-				for(String str:chichangacntlist)
-					cbxZhanghu.addItem(str);
-
-			} catch (Exception e) {
-				
-			}
+//			try {
+//				for(String str:chichangacntlist)
+//					cbxZhanghu.addItem(str);
+//
+//			} catch (Exception e) {
+//				
+//			}
 			for(String str:rzrqrongquannamelist)
 				cbxZhanghu.addItem(str);
 

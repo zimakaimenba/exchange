@@ -1,7 +1,6 @@
-package com.exchangeinfomanager.bankuaichanyelian;
+package com.exchangeinfomanager.asinglestockinfo;
 
 import javax.swing.ImageIcon;
-
 import javax.swing.ImageIcon;
 
 public class BkChanYeLianTreeIconFactory {
@@ -31,20 +30,20 @@ public class BkChanYeLianTreeIconFactory {
 	    public ImageIcon getIcon(BkChanYeLianTreeNode node, boolean leaf, boolean expanded){
 	        
 	        if(leaf) {
-	            if (node.getNodeType() == BkChanYeLianTreeNode.BKGEGU) icon = activeLeafIcon;
-	            else if (node.getNodeType() == BkChanYeLianTreeNode.SUBBK) icon = completeLeafIcon;
-	            else if (node.getNodeType() == BkChanYeLianTreeNode.TDXBK) icon = nowLeafIcon;
+	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeLeafIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode.SUBBK) icon = completeLeafIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode.TDXBK) icon = nowLeafIcon;
 	            else icon = inactiveLeafIcon;
 	        }
 	        else if (expanded) {
-	            if (node.getNodeType() == BkChanYeLianTreeNode.BKGEGU) icon = activeOpenIcon;
-	            else if (node.getNodeType() == BkChanYeLianTreeNode.SUBBK) icon = completeOpenIcon;
-	            else if (node.getNodeType() == BkChanYeLianTreeNode.TDXBK) icon = nowOpenIcon;
+	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeOpenIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode.SUBBK) icon = completeOpenIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode.TDXBK) icon = nowOpenIcon;
 	            else icon = inactiveOpenIcon;
 	        } else {
-	            if (node.getNodeType() == BkChanYeLianTreeNode.BKGEGU) icon = activeClosedIcon;
-	            else if (node.getNodeType() == BkChanYeLianTreeNode.SUBBK) icon = completeClosedIcon;
-	            else if (node.getNodeType() == BkChanYeLianTreeNode .TDXBK) icon = nowClosedIcon;
+	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeClosedIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode.SUBBK) icon = completeClosedIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode .TDXBK) icon = nowClosedIcon;
 	            else icon = inactiveClosedIcon;            
 	        }
 	        return icon;

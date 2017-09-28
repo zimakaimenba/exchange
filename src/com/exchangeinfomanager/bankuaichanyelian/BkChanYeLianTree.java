@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +21,13 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
 
-import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeCellRenderer;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.SubBanKuai;
+import com.exchangeinfomanager.asinglestockinfo.TreeTransferHandler;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
@@ -121,7 +128,7 @@ public class BkChanYeLianTree extends JTree
     public void expandTreePathAllNode (TreePath closestPath)
     {
     		 this.currentselectedtdxbk = closestPath.getPathComponent(1).toString();
-    		 String tdxbkcode = ((BkChanYeLianTreeNode)closestPath.getPathComponent(1)).getTongDaXingBanKuaiCode();
+    		 String tdxbkcode = ((BkChanYeLianTreeNode)closestPath.getPathComponent(1)).getMyOwnCode();
         	 BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
         	 this.setSelectionPath(closestPath);
         	 this.scrollPathToVisible(closestPath);
@@ -160,12 +167,12 @@ public class BkChanYeLianTree extends JTree
 	    	BkChanYeLianTreeNode childNode = (BkChanYeLianTreeNode) node.getChildAt(i);
 	    	String bkname = childNode.getUserObject().toString();
 	    	
-	    	int childNodetype = childNode.getNodeType();
+	    	int childNodetype = childNode.getType();
 	    	childNode.clearCurParseFileStockSet ( );
 
-	    	if( childNodetype == BkChanYeLianTreeNode.TDXBK ) {
-	    		String bkcode = childNode.getTongDaXingBanKuaiCode();
-	    		HashMap<String, ASingleStockInfo> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bkname,bkcode);
+	    	if( childNodetype == BanKuaiAndStockBasic.TDXBK ) {
+	    		String bkcode = childNode.getMyOwnCode();
+	    		HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bkname,bkcode,new Date(),new Date(),false);
 	    		Set<String> curbkallbkset = tmpallbkge.keySet();
 				SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset );
 				
@@ -175,8 +182,8 @@ public class BkChanYeLianTree extends JTree
 				}
 	    	}
 	    	
-	    	if( childNodetype == BkChanYeLianTreeNode.BKGEGU ) {
-	    		String gegustockcode = childNode.getNodeOwnCode();
+	    	if( childNodetype == BanKuaiAndStockBasic.BKGEGU ) {
+	    		String gegustockcode = childNode.getMyOwnCode();
 	    		Set<String> curbkallbkset = new HashSet<String> ();
 	    		curbkallbkset.add(gegustockcode);
 	    		SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset);
@@ -190,7 +197,7 @@ public class BkChanYeLianTree extends JTree
 					 TreeNode[] tempath = model.getPathToRoot(childNode);
 					 for(int j=0;j<tempath.length-1;j++ ) {
 					    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
-					    	int nodeparentstype = parentnode.getNodeType();
+					    	int nodeparentstype = parentnode.getType();
 					    	if(nodeparentstype == BkChanYeLianTreeNode.SUBBK) { //如果是子产业链，
 					    			 parentnode.setParseFileStockSet(stockbkresult);
 					    	}
@@ -211,9 +218,13 @@ public class BkChanYeLianTree extends JTree
 	{
 		if (this.getSelectionCount() == 1) {
 
-			BkChanYeLianTreeNode newNode = new BkChanYeLianTreeNode(subname,subcode);
-            newNode.setNodeType(addnodetype);
-            
+			BkChanYeLianTreeNode newNode = null ;
+			if(addnodetype == 4)
+				 newNode = new BanKuai(subname,subcode);
+			else if(addnodetype == 5)
+				newNode = new SubBanKuai(subname,subcode);
+			else if(addnodetype == 6)
+				newNode = new Stock(subname,subcode);
             
             if (direction == BanKuaiAndChanYeLian.RIGHT){
             	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
@@ -224,7 +235,7 @@ public class BkChanYeLianTree extends JTree
                 		return;
                 }
                 
-                if( parent.getNodeType() != BkChanYeLianTreeNode.BKGEGU) { //父节点不是个股，可以加
+                if( parent.getType() != BkChanYeLianTreeNode.BKGEGU) { //父节点不是个股，可以加
                 	parent.add(newNode);
 	                parent.setExpansion(true);
                 } else { ////父节点是个股，不可以加
@@ -260,8 +271,8 @@ public class BkChanYeLianTree extends JTree
 	
     private void nodeDnaFromParentToChild(BkChanYeLianTreeNode parent, BkChanYeLianTreeNode child) 
     {
-    	String suoshubkcode = parent.getTongDaXingBanKuaiCode();
-    	child.setTongDaXingBanKuaiCode(suoshubkcode);
+//    	String suoshubkcode = parent.getTongDaXingBanKuaiCode();
+//    	child.setTongDaXingBanKuaiCode(suoshubkcode);
 	}
 
 	private boolean checkNodeDuplicate(BkChanYeLianTreeNode parent,  BkChanYeLianTreeNode newNode) 
@@ -306,7 +317,7 @@ public class BkChanYeLianTree extends JTree
         TreePath[] treePaths = this.getSelectionPaths();
         final BkChanYeLianTreeNode parentNode = (BkChanYeLianTreeNode) parentPath.getLastPathComponent();
         //String tmpstr = parentPath.toString();
-        if(parentNode.getNodeType() == BkChanYeLianTreeNode.TDXBK || parentPath.toString().equals("[JTree]"))
+        if(parentNode.getType() == BkChanYeLianTreeNode.TDXBK || parentPath.toString().equals("[JTree]"))
         	return;
         
         //unselect non-siblings
@@ -389,7 +400,7 @@ public class BkChanYeLianTree extends JTree
 	            for (TreePath path : treePaths){
 	            	BkChanYeLianTreeNode child = (BkChanYeLianTreeNode) path.getLastPathComponent();
 	            	
-	            	if(child.getNodeType() == BkChanYeLianTreeNode.TDXBK) {
+	            	if(child.getType() == BkChanYeLianTreeNode.TDXBK) {
 	            		JOptionPane.showMessageDialog(null,"所选为通达信板块，无法删除！","Warning",JOptionPane.WARNING_MESSAGE);
 	            		return false;
 	            	}
@@ -457,11 +468,11 @@ public class BkChanYeLianTree extends JTree
 				return expectedNode;
 
 	    	BkChanYeLianTreeNode childNode = (BkChanYeLianTreeNode) node.getChildAt(i);
-	    	String childnodename = childNode.getUserObject().toString(); 
-	    	if(childNode.getNodeType() == BkChanYeLianTreeNode.TDXBK && !childnodename.equals(cyltreepathlist.get(0))  )
+	    	String childnodecode = childNode.getMyOwnCode(); 
+	    	if(childNode.getType() == BkChanYeLianTreeNode.TDXBK && !childnodecode.equals(cyltreepathlist.get(0))  )
 	    		continue;
 	    	
-	    	if(childnodename.equals(cyltreepathlist.get(0)  ) ) {
+	    	if(childnodecode.equals(cyltreepathlist.get(0)  ) ) {
     			if(officallsltopt)
     				childNode.increaseZdgzOfficalCount();
 	    		

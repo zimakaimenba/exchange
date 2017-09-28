@@ -15,11 +15,9 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
-import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
-import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.BanKuaiDbOperation2;
 import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
@@ -50,6 +48,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+
 public class BanKuaiGuanLi extends JDialog 
 {
 	/**
@@ -60,33 +59,39 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiDbOperation2 bkdbopt2,StockDbOperations stockdbopt2, TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler2, ChanYeLianXMLHandler2 cylxmlhandler2) 
+	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiAndChanYeLian bkcyl) 
 	{
 		
 
-		this.bkdbopt = bkdbopt2;
+		this.bkdbopt = new BanKuaiDbOperation ();
 //		this.stockdbopt = stockdbopt2;
 //		this.cylxmlhandler = cylxmlhandler2;
 //		this.zdgzbkxmlhandler = zdgzbkxmlhandler2;
 		this.stockInfoManager = stockInfoManager2;
-		startDialog ();
-	}
-	
-//	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
-	private StockInfoManager stockInfoManager;	
-	private BanKuaiDbOperation2 bkdbopt;
-//	private StockDbOperations stockdbopt;
-//	private ChanYeLianXMLHandler2 cylxmlhandler;
-
-
-	public void startDialog ()
-	{
+		this.bkcylpnl = bkcyl;
 		initializeGui ();
 		createEvents ();
 		initializeTDXBanKuaiLists ();
 		initializeTDXZhiShuLists ();
 		initialzieZdyBanKuaList ();
+//		startDialog ();
 	}
+	
+//	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
+	private StockInfoManager stockInfoManager;	
+	private BanKuaiDbOperation bkdbopt;
+//	private StockDbOperations stockdbopt;
+//	private ChanYeLianXMLHandler2 cylxmlhandler;
+
+//
+//	public void startDialog ()
+//	{
+//		initializeGui ();
+//		createEvents ();
+//		initializeTDXBanKuaiLists ();
+//		initializeTDXZhiShuLists ();
+//		initialzieZdyBanKuaList ();
+//	}
 
 	private void initializeTDXZhiShuLists() 
 	{
@@ -223,7 +228,7 @@ public class BanKuaiGuanLi extends JDialog
 					.addGap(38))
 		);
 		
-		BanKuaiDetailTableModel zhishubankmodel = new BanKuaiDetailTableModel(null);
+		BanKuaiDetailTableModel zhishubankmodel = new BanKuaiDetailTableModel();
 		tablezhishu = new JTable(zhishubankmodel) {
 			private static final long serialVersionUID = 1L;
 
@@ -244,7 +249,7 @@ public class BanKuaiGuanLi extends JDialog
 		};
 		scrollPane_1.setViewportView(tablezhishu);
 		
-		BanKuaiDetailTableModel zidingyibankmodel = new BanKuaiDetailTableModel(null);
+		BanKuaiDetailTableModel zidingyibankmodel = new BanKuaiDetailTableModel();
 		tableZdy = new JTable(zidingyibankmodel){
 
 			private static final long serialVersionUID = 1L;
@@ -267,7 +272,7 @@ public class BanKuaiGuanLi extends JDialog
 		scrollPane.setViewportView(tableZdy);
 		
 		
-		BanKuaiDetailTableModel sysaccountsmodel = new BanKuaiDetailTableModel(null);
+		BanKuaiDetailTableModel sysaccountsmodel = new BanKuaiDetailTableModel();
 		tableSysBk = new JTable(sysaccountsmodel){
 
 			private static final long serialVersionUID = 1L;
@@ -291,10 +296,11 @@ public class BanKuaiGuanLi extends JDialog
 		panelSys.setLayout(gl_panelSys);
 		
 		
-		BanKuaiDetailTableModel zdyaccountsmodel = new BanKuaiDetailTableModel(null);
+		BanKuaiDetailTableModel zdyaccountsmodel = new BanKuaiDetailTableModel();
 		
 		//pnlGingo2 = new Ginkgo2(this.bkdbopt, this.stockdbopt,this.cylxmlhandler);
-		bkcylpnl = new BanKuaiAndChanYeLian(this.stockInfoManager) ;
+//		bkcylpnl = new BanKuaiAndChanYeLian(this.stockInfoManager) ;
+		bkcylpnl.startGui();
 		
 		//tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, pnlGingo2, null);
 		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, bkcylpnl, null);
@@ -346,16 +352,8 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 	List<BanKuai> valuesList; //存放板块对象列表
 	String[] jtableTitleStrings = { "板块名称", "板块代码","创建时间"};
 	
-	BanKuaiDetailTableModel (HashMap<String,BanKuai> bankuailist)
+	BanKuaiDetailTableModel ()
 	{
-		this.bankuailist =  bankuailist;
-		if(bankuailist != null) {
-			 valuesList = new ArrayList<BanKuai>(bankuailist.values());
-				
-				Ordering<BanKuai> sortedCopy = Ordering.from(byBkName);
-				 Collections.sort(valuesList,sortedCopy);
-		}
-			
 	}
 
 	public void refresh(HashMap<String,BanKuai> bankuailist)
@@ -372,7 +370,7 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 		Collator collator = Collator.getInstance(Locale.CHINESE);
 		//Collections.sort(rightnamelist,collator);
 	    public int compare(final BanKuai p1, final BanKuai p2) {
-	        return p1.getBankuainame().compareTo(p2.getBankuainame()  );
+	        return p1.getMyOwnName().compareTo(p2.getMyOwnName()  );
 	    }
 	};
 
@@ -400,15 +398,15 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 	    	
 	    	switch (columnIndex) {
             case 0:
-                value = valuesList.get(rowIndex).getBankuainame();
+                value = valuesList.get(rowIndex).getMyOwnCode();
             	//value = this.bankuailist.get(tmpc[rowIndex]).getBankuainame();
                 break;
             case 1:
-            	value = valuesList.get(rowIndex).getBankuaicode();
+            	value = valuesList.get(rowIndex).getMyOwnName();
             	//value = this.bankuailist.get(tmpc[rowIndex]).getBankuaicode();
                 break;
             case 2:
-            	value = valuesList.get(rowIndex).getBankuaicreatedtime();
+            	value = valuesList.get(rowIndex).getCreatedTime();
             	//value = this.bankuailist.get(tmpc[rowIndex]).getBankuaicreatedtime();
             	break;
 	    	}

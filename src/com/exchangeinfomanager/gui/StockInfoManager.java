@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import static org.junit.Assert.assertEquals;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTextField;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -11,19 +12,21 @@ import java.awt.datatransfer.DataFlavor;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import com.exchangeinfomanager.checkboxtree.CheckBoxTree;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.Search.SearchDialog;
 //import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeeting;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportQuanShangJiaoYiRecords;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
-import com.exchangeinfomanager.asinglestockinfo.ASingleStockInfo;
-
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
-import com.exchangeinfomanager.bankuaichanyelian.ChanYeLianXMLHandler2;
-import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 
@@ -62,6 +65,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -93,13 +97,16 @@ import com.sun.rowset.CachedRowSetImpl;
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.TableCellListener;
+import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiBarChartPnl;
+import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
-import com.exchangeinfomanager.gui.subgui.GeGuBanKuaiZhanBiFengXi;
+import com.exchangeinfomanager.gui.subgui.GeGuFengXiBarChartPnl;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
+import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 
@@ -157,6 +164,9 @@ import java.awt.FlowLayout;
 import javax.swing.JTextPane;
 import javax.swing.JTabbedPane;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.BoxLayout;
 
 
 public class StockInfoManager 
@@ -183,19 +193,17 @@ public class StockInfoManager
 		}
 		
 		accountschicangconfig = new AccountAndChiCangConfiguration ();
-		stockdbopt = new StockDbOperations ();
+
 		acntdbopt = new AccountDbOperation();
-		bkdbopt = new BanKuaiDbOperation2 ();
-		zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
-		cylxmlhandler = new ChanYeLianXMLHandler2 ();
+		bkdbopt = new BanKuaiDbOperation ();
+		bkcyl = new BanKuaiAndChanYeLian(this);
 		
 		initializeGui();
 		displayAccountAndChiCang ();
 		displayDbInfo();
-    	createEvents();
+		createEvents();
     	initializePaoMaDeng ();
  	}
-	
 	protected void refeshSystem() 
 	{
 		if(sysconfig.reconfigSystemSettings () ) {
@@ -212,11 +220,9 @@ public class StockInfoManager
 			}
 			
 			accountschicangconfig = new AccountAndChiCangConfiguration ();
-			stockdbopt = new StockDbOperations ();
 			acntdbopt = new AccountDbOperation();
-			bkdbopt = new BanKuaiDbOperation2 ();
-			zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
-			cylxmlhandler = new ChanYeLianXMLHandler2 ();
+			bkdbopt = new BanKuaiDbOperation ();
+
 			
 			displayAccountAndChiCang ();
 			clearGuiDispalyedInfo ();
@@ -228,102 +234,150 @@ public class StockInfoManager
 		}
 	}
 
+	
+	/*
+	 * 把持仓显示在相应的位置
+	 */
+	private void displayAccountAndChiCang()
+	{
+		//在checkbox添加现有持仓，方便启动后就可以查询现有持仓
+		ArrayList<String> tmpchicangname = accountschicangconfig.getStockChiCangName();
+		cBxstockcode.removeAllItems();
+		for(String tmpsgstockcodename:tmpchicangname) {
+
+			cBxstockcode.addItem(tmpsgstockcodename );
+		}
+		try {
+			kspanel.setStockcode(cBxstockcode.getSelectedItem().toString().substring(0, 6));
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+	}
+	private void initializePaoMaDeng() 
+	{
+		// TODO Auto-generated method stub
+		String title = "明日计划:";
+//		Calendar cal = Calendar.getInstance();
+//		cal.add(Calendar.DAY_OF_MONTH, -1);
+//		Date ystday = cal.getTime();
+		//asinglestockinfomation = new ASingleStockOperations("");
+		String paomad = bkdbopt.getMingRiJiHua();
+		
+		if(!paomad.isEmpty())
+			pnl_paomd.refreshMessage(title+paomad);
+		else pnl_paomd.refreshMessage(null);
+	}
+
+	/*
+	 * @数据库可以有2个数据库，一个存放基本数据，一个存放通达信同步数据，这样减轻基本数据库的负荷	
+	 */
+		private void displayDbInfo() 
+		{
+			boolean localconnect = false;
+			boolean rmtconnect = false;
+			if(connectdb.isRemoteDatabaseconnected()){
+				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
+				lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText()+ connectdb.getRemoteDatabaseName("full")+"数据库已连接");
+				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
+				rmtconnect = true;
+			}
+			
+			if(connectdb.isLocalDatabaseconnected()){
+				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
+				lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
+				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
+				localconnect = true;
+			}
+
+//			 if(localconnect == false && rmtconnect == true) {
+//				JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
+//			} else if(localconnect == true && rmtconnect == false) {
+//				JOptionPane.showMessageDialog(null,"仅基本数据可用！");
+//			} else{
+//				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201711_easyicon.net.png")));
+//				lblStatusBarOperationIndicatior.setText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
+//				btnDBStatus.setToolTipText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
+//				JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
+//				System.exit(0);
+//			}
+			
+			
+		}
+		
+		public void preUpdateSearchResultToGui(String stockcode) 
+		{
+				btngengxinxx.setEnabled(false);
+				clearGuiDispalyedInfo ();
+				
+				 ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (stockcode);
+				 if(nodeslist.size() == 0) {
+					 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
+					 return;
+				 }
+				 
+//				 BkChanYeLianTreeNode nodeshouldbedisplayed = null;
+				 if(nodeslist.size()>1) {
+					 //显示JLIST，让用户选择
+					 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
+					 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
+					 if(exchangeresult == JOptionPane.CANCEL_OPTION)
+							return;
+					 
+					 int userselected = userselection.getUserSelection();
+					 nodeshouldbedisplayed = nodeslist.get(userselected);
+				 } else
+					 nodeshouldbedisplayed = nodeslist.get(0);
+				
+				 displayStockJibenmianInfotoGui (); //显示板块或者股票的基本信息
+//					initializeNetWorkOperation (stockcode); //生成对应的网站网址
+				 
+				 if(nodeshouldbedisplayed.getType() == 6) {
+					if(accountschicangconfig.isSystemChiCang(stockcode)) {
+						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
+					} 
+					
+					nodeshouldbedisplayed = bkdbopt.getCheckListsXMLInfo ((Stock)nodeshouldbedisplayed);
+					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
+					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
+					
+					
+					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
+					
+					
+					displayAccountTableToGui ();
+					displaySellBuyZdgzInfoToGui ();
+					displayStockSuoShuBanKuai ();
+					displayStockNews ();
+					setKuaiSuGui (stockcode);
+					if(buychklstdialog!= null ) {
+						displayChecklistsItemsToGui ();
+					}
+
+				 } 
+				enableGuiEditable();
+		}
+	
+
 	private ConnectDataBase connectdb = null;
 	private SystemConfigration sysconfig = null;
 	private AccountAndChiCangConfiguration accountschicangconfig;
-	private ASingleStockInfo stockbasicinfo;
+	private BkChanYeLianTreeNode nodeshouldbedisplayed; 
 	private BuyCheckListTreeDialog buychklstdialog;
-	private BanKuaiDbOperation2 bkdbopt;
-	private StockDbOperations stockdbopt;
+	private BanKuaiDbOperation bkdbopt;
 	private AccountDbOperation acntdbopt;
-	//private TongDaXinJiBenMianReport tongdaxinreport;
+
 	
 	private BanKuaiGuanLi bkgldialog = null;
 	private SearchDialog searchdialog;
-	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
-	private ChanYeLianXMLHandler2 cylxmlhandler;
-	
+	private BanKuaiAndChanYeLian bkcyl;
 
-	public void preUpdateSearchResultToGui(String stockcode) 
-	{
-			btngengxinxx.setEnabled(false);
-			clearGuiDispalyedInfo ();
-			
-			if(accountschicangconfig.isSystemChiCang(stockcode)) {
-				//stockbasicinfo = accountschicangconfig.getStockChiCangdetailmap().get(stockcode);
-				stockbasicinfo = accountschicangconfig.getChicangStock(stockcode);
-			} else {
-				stockbasicinfo = new ASingleStockInfo(stockcode);
-			}
-			
-			stockbasicinfo = stockdbopt.getSingleStockBasicInfo(stockbasicinfo);
 
-			if(stockbasicinfo.isaNewDtockCodeIndicate()) {
-				lblStatusBarOperationIndicatior.setText("");
-				lblStatusBarOperationIndicatior.setText("股票代码不存在，可以在输入相关信息后点击 更新 按钮！");
-				JOptionPane.showMessageDialog(null,"股票代码不存在，可以在输入相关信息后点击 更新 按钮！");
-				initializeNetWorkOperation (stockcode); //生成对应的网站网址
-			} else {
-				stockbasicinfo = stockdbopt.getCheckListsXMLInfo (stockbasicinfo);
-				stockbasicinfo = stockdbopt.getZdgzMrmcZdgzYingKuiFromDB(stockbasicinfo);
-				stockbasicinfo = stockdbopt.getTDXBanKuaiInfo (stockbasicinfo); //通达信板块信息
-				stockbasicinfo = cylxmlhandler.getStockChanYeLianInfo (stockbasicinfo);
-			 
-				displayStockJibenmianInfotoGui ();
-				displayAccountTableToGui ();
-				displaySellBuyZdgzInfoToGui ();
-				displayStockSuoShuBanKuai ();
-				initializeNetWorkOperation (stockcode); //生成对应的网站网址
-				setKuaiSuGui (stockcode);
-				if(buychklstdialog!= null ) {
-					displayChecklistsItemsToGui ();
-				}
-			}
-			//initializeNetWorkOperation (stockcode); //生成对应的网站网址
-			enableGuiEditable();
-	}
-
-/*
- * @数据库可以有2个数据库，一个存放基本数据，一个存放通达信同步数据，这样减轻基本数据库的负荷	
- */
-	private void displayDbInfo() 
-	{
-		boolean localconnect = false;
-		boolean rmtconnect = false;
-		if(connectdb.isRemoteDatabaseconnected()){
-			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
-			lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText()+ connectdb.getRemoteDatabaseName("full")+"数据库已连接");
-			btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
-			rmtconnect = true;
-		}
-		
-		if(connectdb.isLocalDatabaseconnected()){
-			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
-			lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
-			btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
-			localconnect = true;
-		}
-
-//		 if(localconnect == false && rmtconnect == true) {
-//			JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
-//		} else if(localconnect == true && rmtconnect == false) {
-//			JOptionPane.showMessageDialog(null,"仅基本数据可用！");
-//		} else{
-//			btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201711_easyicon.net.png")));
-//			lblStatusBarOperationIndicatior.setText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
-//			btnDBStatus.setToolTipText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
-//			JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
-//			System.exit(0);
-//		}
-		
-		
-	}
 
 	private void initlizedBuyCheckListTreeDialog ()
 	{
 		if(buychklstdialog == null ) {
 			try {
-				buychklstdialog = new BuyCheckListTreeDialog (this,stockbasicinfo.getStockcode(),stockbasicinfo.getChecklistXml());
+				buychklstdialog = new BuyCheckListTreeDialog (this,nodeshouldbedisplayed.getMyOwnCode(),((Stock)nodeshouldbedisplayed).getChecklistXml());
 			} catch (java.lang.NullPointerException ex) {
 				buychklstdialog = new BuyCheckListTreeDialog (this,null,null);
 			}
@@ -336,40 +390,80 @@ public class StockInfoManager
 		buychklstdialog.toFront();
 	}
 
-
-	/*
-	 * 把持仓显示在相应的位置
-	 */
-	private void displayAccountAndChiCang()
-	{
-		//在checkbox添加现有持仓，方便启动后就可以查询现有持仓
-		ArrayList<ASingleStockInfo> tmpchicangname = new ArrayList<ASingleStockInfo>(accountschicangconfig.getStockChiCangdetailmap ().values());
-		cBxstockcode.removeAllItems();
-		for(ASingleStockInfo tmpsgstock:tmpchicangname) {
-			System.out.println(tmpsgstock.getStockcode());
-			System.out.println(tmpsgstock.getStockname());
-			cBxstockcode.addItem(tmpsgstock.getStockcode()+tmpsgstock.getStockname());
-		}
-		try {
-			kspanel.setStockcode(cBxstockcode.getSelectedItem().toString().substring(0, 6));
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-	}
-
-	
-
-//	private void initializeSysConfig()
-//	{
-//		
-//	}
-
 	private void createEvents()
 	{
+		cBxstockcode.getEditor().getEditorComponent().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				//System.out.println("this is the test");
+				
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				cBxstockcode.getEditor().setItem("");
+			}
+			
+		});
+		
+		cBxstockcode.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent  e)
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+				}
+			}
+			
+		});
+		
+		
+		cBxstockcode.addItemListener(new ItemListener()
+		{
+			@Override
+			public void itemStateChanged(ItemEvent e) 
+			{
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					String stockcode;
+					try	{
+						stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+						
+						if(!checkCodeInputFormat(stockcode)) {
+							JOptionPane.showMessageDialog(null,"股票/板块代码有误！");
+							return;
+						}
+						
+						preUpdateSearchResultToGui(stockcode);
+						updateStockCombox();
+					} catch(java.lang.NullPointerException ex)	{
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(frame, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
+						return;
+					} catch(java.lang.StringIndexOutOfBoundsException ex2) {
+						ex2.printStackTrace();
+						JOptionPane.showMessageDialog(null,"股票代码有误！");
+						return;
+					}
+				}
+				
+				if(e.getStateChange() == ItemEvent.DESELECTED) {
+					if(btngengxinxx.isEnabled() == true) {
+						int action = JOptionPane.showConfirmDialog(null, "更改后的信息未存！是否需要保存？","Warning", JOptionPane.YES_NO_OPTION);
+						if(0 == action) {
+							setGuiInfoToDatabase();
+						}
+					}
+				}
+			}
+			
+		});
+		
+		
+
+		
 		btnbankuaifengxi.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				computerSuoSuBanKuaiZhanbi ();
+//				computerSuoSuBanKuaiZhanbi ();
 				
 			}
 		});
@@ -379,13 +473,14 @@ public class StockInfoManager
 		 ActionMap actionMap = new ActionMap(); 
 	     actionMap.put("openBanKuaiAndChanYeLianDialog", new AbstractAction (){
 			public void actionPerformed(ActionEvent e) {
-				 	HyperlinkEvent hle = (HyperlinkEvent)e.getSource(); 
+				 	HyperlinkEvent hle = (HyperlinkEvent)e.getSource();
+				 	String link = null;
 			        try{
 			        	Element elem = hle.getSourceElement(); 
 			            Document doc = elem.getDocument(); 
 			            int start = elem.getStartOffset(); 
 			            int end = elem.getEndOffset(); 
-			            String link = doc.getText(start, end-start);
+			            link = doc.getText(start, end-start);
 			            System.out.println(link);
 //			            link = link.equals("contains people") ? "" : link.substring("contains ".length()); 
 			            StringTokenizer stok = new StringTokenizer(link, ", "); 
@@ -395,10 +490,11 @@ public class StockInfoManager
 			        } catch(BadLocationException ex){ 
 			            ex.printStackTrace(); 
 			        }
-				startBanKuaiGuanLiDlg ();
+			        displayStockBanKuaiZhanBiByWeek (link);
+			        displayStockBanKuaiZhanBiByStock (link);
 			}
 	     }); 
-	    txaBanKuai.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
+	     editorPaneBanKuai.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
 
 			/*
 			 * 导入交易记录
@@ -681,7 +777,7 @@ public class StockInfoManager
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 				
-				int autoIncKeyFromApi =	stockdbopt.setZdgzRelatedActions (jiarujihua);
+				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
 				
 				if(autoIncKeyFromApi >0) {
 					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
@@ -722,7 +818,7 @@ public class StockInfoManager
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 				
-				int autoIncKeyFromApi =	stockdbopt.setZdgzRelatedActions (jiarujihua);
+				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
 
 				if(autoIncKeyFromApi >0) {
 					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
@@ -979,82 +1075,7 @@ public class StockInfoManager
 			}
 		});
 		
-		cBxstockcode.getEditor().getEditorComponent().addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				//System.out.println("this is the test");
 				
-			}
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-				cBxstockcode.getEditor().setItem("");
-			}
-			
-		});
-		
-//		tfdksgupiaodaima.addMouseListener(new MouseAdapter() {
-//			public void mouseClicked(MouseEvent e) {
-//				tfdksgupiaodaima.setText("");
-//			}
-//			
-//		});
-		
-		cBxstockcode.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent  e)
-			{
-				if(e.getKeyCode() == KeyEvent.VK_ENTER)
-				{
-				}
-			}
-			
-		});
-		
-		
-		cBxstockcode.addItemListener(new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(ItemEvent e) 
-			{
-				if(e.getStateChange() == ItemEvent.SELECTED) {
-					String stockcode;
-					try	{
-						stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
-						
-						if(!checkCodeInputFormat(stockcode)) {
-							System.out.println("股票代码有误");
-							JOptionPane.showMessageDialog(null,"股票代码有误！");
-							return;
-						}else {
-							preUpdateSearchResultToGui(stockcode);
-							updateStockCombox();
-						}
-					} catch(java.lang.NullPointerException ex)	{
-						ex.printStackTrace();
-						JOptionPane.showMessageDialog(frame, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
-						return;
-					} catch(java.lang.StringIndexOutOfBoundsException ex2) {
-						ex2.printStackTrace();
-						JOptionPane.showMessageDialog(null,"股票代码有误！");
-						return;
-					}
-				}
-				
-				if(e.getStateChange() == ItemEvent.DESELECTED) {
-					if(btngengxinxx.isEnabled() == true) {
-						int action = JOptionPane.showConfirmDialog(null, "更改后的信息未存！是否需要保存？","Warning", JOptionPane.YES_NO_OPTION);
-						if(0 == action) {
-							setGuiInfoToDatabase();
-							//setZdgzMrmcInfoToDb();
-						}
-					}
-				}
-			}
-			
-		});
-		
-		
-		
 		
 		btnCaiwufengxi.addMouseListener(new MouseAdapter() 
 		{
@@ -1422,7 +1443,7 @@ public class StockInfoManager
 				if(!btngengxinxx.isEnabled())
 					return;
 				setGuiInfoToDatabase();
-				setTreeInfoToDatabase ();
+				setCkLstTreeInfoToDatabase ();
 				
 				//setZdgzMrmcInfoToDB();
 			}
@@ -1542,22 +1563,44 @@ public class StockInfoManager
 				JOptionPane.showMessageDialog(null,"报表生成成功，请在" + resultfiepath + "下查看！");
 			}
 		});
-		
-		
-				
 }
-protected void computerSuoSuBanKuaiZhanbi() 
-{
-		HashMap<String, String> suosubk = stockbasicinfo.getSuoShuTDXSysBanKuai();
-		GeGuBanKuaiZhanBiFengXi dialogbkfx = new GeGuBanKuaiZhanBiFengXi(suosubk);
-//		BoxAndWhiskerDemo demo = new BoxAndWhiskerDemo();
-		dialogbkfx.getContentPane().add(dialogbkfx.getChartPanel(), BorderLayout.CENTER);
-		dialogbkfx.getContentPane().add(dialogbkfx.getControlPanel(), BorderLayout.SOUTH);
-		dialogbkfx.pack();
-		dialogbkfx.setLocationRelativeTo(null);
-		dialogbkfx.setVisible(true);
-}
+	
+	
+//protected void computerSuoSuBanKuaiZhanbi() 
+//{
+//		HashMap<String, String> suosubk = nodeshouldbedisplayed.getSuoShuTDXSysBanKuai();
+//		GeGuBanKuaiZhanBiFengXi dialogbkfx = new GeGuBanKuaiZhanBiFengXi(suosubk);
+////		BoxAndWhiskerDemo demo = new BoxAndWhiskerDemo();
+//		dialogbkfx.getContentPane().add(dialogbkfx.getChartPanel(), BorderLayout.CENTER);
+//		dialogbkfx.getContentPane().add(dialogbkfx.getControlPanel(), BorderLayout.SOUTH);
+//		dialogbkfx.pack();
+//		dialogbkfx.setLocationRelativeTo(null);
+//		dialogbkfx.setVisible(true);
+//}
 
+	protected  void displayStockBanKuaiZhanBiByWeek(String firstshowbkcode) 
+	{
+		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
+		panelZhanBi.setBanKuaiNeededDisplay(suosusysbankuai, firstshowbkcode,dateChsBanKuaiZhanbi.getDate(),6);
+	}
+	
+	protected  void displayStockBanKuaiZhanBiByStock (String bkname)
+	{
+		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
+		
+		for(Map.Entry<String, String> entry : suosusysbankuai.entrySet()) {
+			String bkcode = entry.getKey();
+			String name = entry.getValue();
+			if(name.equals(bkname.trim() ) ) {
+				((GeGuFengXiBarChartPnl)pnlGeGuWkZhanBi).setGeGuNeededDisplay(bkcode, cBxstockcode.getSelectedItem().toString().substring(0, 6), dateChsBanKuaiZhanbi.getDate());
+				
+				int currentweek = CommonUtility.getWeekNumber(dateChsBanKuaiZhanbi.getDate() );
+				Date twoweeksago = CommonUtility.getDateFromYearAndWeek(currentweek-2);
+				pnlBkPieLastWkZhanBi.setBanKuaiNeededDisplay(name, bkcode, dateChsBanKuaiZhanbi.getDate() );
+			}
+			
+		}
+	}
 protected void saveKuaiSuJiLuJiaoYi() 
 {
 	try {
@@ -1599,9 +1642,9 @@ protected void saveKuaiSuJiLuJiaoYi()
 protected void startBanKuaiGuanLiDlg()
 {
 	if(bkgldialog == null ) {
-		bkgldialog = new BanKuaiGuanLi(this,bkdbopt,stockdbopt,zdgzbkxmlhandler,cylxmlhandler);
+		bkgldialog = new BanKuaiGuanLi(this,bkcyl);
 		bkgldialog.setModal(false);
-		bkgldialog.startDialog ();
+//		bkgldialog.startDialog ();
 		bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		bkgldialog.setVisible(true);
 	} 
@@ -1610,74 +1653,15 @@ protected void startBanKuaiGuanLiDlg()
 		bkgldialog.setVisible(true);
 	 } 
 	bkgldialog.toFront();
-	
-	
-	
 }
-
-//	protected void quickImportBuySellRecords() 
-//	{
-//		
-//		
-//	}
-
-	/*
-	 * 任何一笔买卖交易必然要涉及到的所有操作
-	 */
-//	protected int buySellYuanZiOpertion2(BuyStockNumberPrice stocknumberpricepanel) 
-//	{
-//		int autoIncKeyFromApi ;
-//		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu();
-//		AccountInfoBasic tmpactionacnt = accountschicangconfig.getAccount(actionstockaccount);
-//		if(stocknumberpricepanel.isBuySell()) { //买
-//			accountschicangconfig.setBuyAccountRelatedActions (stocknumberpricepanel); //处理账户变化
-//			accountschicangconfig.setBuyStockChiCangRelatedActions (stocknumberpricepanel); //处理持仓股票的变化
-//			
-//			 //修改说明，增加当前持有多少股
-//			int curallgushu = tmpactionacnt.getChiCangGuPiaoGuShu(stocknumberpricepanel.getStockcode());
-//			if(curallgushu >=0)
-//				stocknumberpricepanel.setFormatedShuoMing(curallgushu);
-//			
-//			autoIncKeyFromApi =	acntdbopt.setBuyExchangeRelatedActions(stocknumberpricepanel); //存数据库
-//		} else { //卖
-//			// 先让用户确认卖出账户，因为入如果完全卖出产生盈利，如果要更改账户非常麻烦
-//			int curchicanggushu = tmpactionacnt.getChiCangGuPiaoGuShu(stocknumberpricepanel.getStockcode() );
-//			if(curchicanggushu - stocknumberpricepanel.getJiaoyiGushu() == 0) {
-//				int result = JOptionPane.showConfirmDialog(frame, "账户 " + stocknumberpricepanel.getJiaoyiZhanghu() + " 卖出后持仓将为0，必须确认账户是否正确！是否继续？","Warning", JOptionPane.YES_NO_OPTION);
-//				if(1 == result)
-//					return -1;
-//			}
-//			
-//			accountschicangconfig.setSellAccountRelatedActions (stocknumberpricepanel);//处理账户变化
-//			accountschicangconfig.setSellStockChiCangRelatedActions (stocknumberpricepanel);//处理持仓股票的变化
-//			
-//			 //修改说明，增加当前持有多少股
-//			int curallgushu = tmpactionacnt.getChiCangGuPiaoGuShu(stocknumberpricepanel.getStockcode());
-//			if(curallgushu >=0)
-//				stocknumberpricepanel.setFormatedShuoMing(curallgushu);
-//			
-//			autoIncKeyFromApi =	acntdbopt.setSellExchangeRelatedActions(stocknumberpricepanel);
-//		}
-//		
-//		return autoIncKeyFromApi;
-//	}
-
-//	private BuyStockNumberPrice formateShuoMing(AccountInfoBasic tmpactionacnt, BuyStockNumberPrice stocknumberpricepanel) 
-//	{
-//		//在说明中加入当前又多少股
-//		int curallgushu = tmpactionacnt.getChiCangGuPiaoGuShu(stocknumberpricepanel.getStockcode());
-//		if(curallgushu >=0)
-//			stocknumberpricepanel.setJiaoYiShuoMing("|" + "共"+ curallgushu + "股"+ "|" +stocknumberpricepanel.getJiaoYiShuoMing());;
-//		
-//		return stocknumberpricepanel;
-//	}
-
 
 	protected void refreshChiCangAccountPanel ()
 	{
 		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem()); 
-		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountschicangconfig.getStockChicangAccountsList(stockcode),stockcode );
-		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).fireTableDataChanged();
+//		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountschicangconfig.getStockChicangAccountsList(stockcode),stockcode );
+		
+		HashMap<String, AccountInfoBasic> accountsnamelist = ((Stock)nodeshouldbedisplayed).getChiCangAccounts();
+		
 	}
 
 	protected void postSellAction(BuyStockNumberPrice stocknumberpricepanel)
@@ -1772,11 +1756,10 @@ protected void startBanKuaiGuanLiDlg()
  */
 	private void displayStockSuoShuBanKuai() 
 	{
-		 HashMap<String, String> suosusysbankuai = stockbasicinfo.getSuoShuTDXSysBanKuai(); //所属通达信系统板块
-//		HashSet<String> suosuzdybankuai = stockbasicinfo.getSuoShuTDXZdyBanKuai(); //所属通达信自定义板块
-//		 SetView union = Sets.union(suosusysbankuai, suosuzdybankuai);
+//		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList(); //所属通达信系统板块
+		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
 		 Set<String> union =  suosusysbankuai.keySet();
-		 Multimap<String,String> suoshudaleibank = zdgzbkxmlhandler.subBkSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
+		 Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
 		 
 		 String htmlstring = "<html> "
 		 		+ "<body>"
@@ -1792,7 +1775,7 @@ protected void startBanKuaiGuanLiDlg()
 	     		
 	     
 	     String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
-	     ArrayList<String> gegucyl = this.cylxmlhandler.getGeGuChanYeLian(stockcode);
+	     ArrayList<String> gegucyl = ((Stock)nodeshouldbedisplayed).getGeGuAllChanYeLianInfo();
 	     for(String cyl : gegucyl) {
 	    	 htmlstring += " <p>个股产业链:"
 	    	 		+ "<a  href=\"openBanKuaiAndChanYeLianDialog\">  " + cyl
@@ -1800,10 +1783,24 @@ protected void startBanKuaiGuanLiDlg()
 	     }
 	     if(gegucyl.size()>0)
 	    	 htmlstring += "</p>";
+	     
+	     htmlstring += "</body>"
+					+ "</html>";
 	    	 
-	     ArrayList<ChanYeLianNews> curnewlist = bkdbopt.getBanKuaiRelatedNews (stockcode);
+	     editorPaneBanKuai.setText(htmlstring);
+	     editorPaneBanKuai.setCaretPosition(0);
+	     
+	}
+	
+	private void displayStockNews()
+	{
+		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+		ArrayList<ChanYeLianNews> curnewlist = bkdbopt.getBanKuaiRelatedNews (stockcode);
+   	 	String htmlstring = null;
 	     if(curnewlist.size()>0)
-	    	 htmlstring += "<p>个股新闻</p>";
+	    	  htmlstring = "<html> "
+	 		 		+ "<body>"
+	 		 		+ " <p>个股新闻:";
 	     for(ChanYeLianNews cylnew : curnewlist ) {
 	    		String title = cylnew.getNewsTitle();
 	    		String newdate = sysconfig.formatDate(cylnew.getGenerateDate() ).substring(0,11); 
@@ -1816,29 +1813,16 @@ protected void startBanKuaiGuanLiDlg()
 	    		//notesPane.setText("<a href=\"http://www.google.com/finance?q=NYSE:C\">C</a>, <a href=\"http://www.google.com/finance?q=NASDAQ:MSFT\">MSFT</a>");
 	    	}
 	     
-	     htmlstring += "</body>"
-  						+ "</html>";
+	     if(curnewlist.size()>0)
+	    	 htmlstring += "</body>"
+ 						+ "</html>";
 	     
 	     txaBanKuai.setText(htmlstring);
 	     txaBanKuai.setCaretPosition(0);
 	}
 
 
-	private void initializePaoMaDeng() 
-	{
-		// TODO Auto-generated method stub
-		String title = "明日计划:";
-//		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.DAY_OF_MONTH, -1);
-//		Date ystday = cal.getTime();
-		//asinglestockinfomation = new ASingleStockOperations("");
-		String paomad = stockdbopt.getMingRiJiHua();
-		
-		if(!paomad.isEmpty())
-			pnl_paomd.refreshMessage(title+paomad);
-		else pnl_paomd.refreshMessage(null);
-	}
-
+	
 	private void setKuaiSuGui(String stockcode) 
 	{
 		kspanel.resetInput();
@@ -1848,26 +1832,22 @@ protected void startBanKuaiGuanLiDlg()
 	private void displayAccountTableToGui ()
 	{
 		ArrayList<AccountInfoBasic> chicangaccountslist = null;
-		String tmpstockcode = stockbasicinfo.getStockcode();
+		String tmpstockcode = nodeshouldbedisplayed.getMyOwnCode();
 		
 		if(accountschicangconfig.isSystemChiCang(tmpstockcode)) { //如果是系统持仓才要显示持仓信息，否则什么都不用做
-			ArrayList<String> accountsnamelist = stockbasicinfo.getChiCangAccountNameList();
-			chicangaccountslist = new ArrayList<AccountInfoBasic> ();
-			for(String tmpstockacntname: accountsnamelist ){
-				
-				AccountInfoBasic tmpacnt  = accountschicangconfig.getAccount(tmpstockacntname);
-				
-				chicangaccountslist.add(tmpacnt);
-			}
+			HashMap<String, AccountInfoBasic> accountsnamelist = ((Stock)nodeshouldbedisplayed).getChiCangAccounts();
+//			chicangaccountslist = new ArrayList<AccountInfoBasic> ();
+//			for(String tmpstockacntname: accountsnamelist ){
+//				
+//				AccountInfoBasic tmpacnt  = accountschicangconfig.getAccount(tmpstockacntname);
+//				
+//				chicangaccountslist.add(tmpacnt);
+//			}
 			
-			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(chicangaccountslist,tmpstockcode );
-			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).fireTableDataChanged();
+			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountsnamelist,tmpstockcode );
 			
-		} else {
 			
-		}
-		
-
+		} 
 	}
 
 
@@ -1886,7 +1866,7 @@ protected void startBanKuaiGuanLiDlg()
 //				 System.out.println("dialog v");
 //				 buychklstdialog.refreshTreeGui(stockchklst.getStockcode(), stockchklst.getChecklistsitems());
 //			}
-			 buychklstdialog.refreshTreeGui(stockbasicinfo.getStockcode(), stockbasicinfo.getChecklistXml());
+			 buychklstdialog.refreshTreeGui(nodeshouldbedisplayed.getMyOwnCode(), ((Stock)nodeshouldbedisplayed).getChecklistXml());
 			
 		}catch (java.lang.NullPointerException e) {
 			e.printStackTrace();
@@ -1894,7 +1874,7 @@ protected void startBanKuaiGuanLiDlg()
 		
 	}
 
-	protected void setTreeInfoToDatabase() 
+	protected void setCkLstTreeInfoToDatabase() 
 	{
     
 	    String tmpchecklist = buychklstdialog.getChkLstItemsTiCai() 
@@ -1905,8 +1885,8 @@ protected void startBanKuaiGuanLiDlg()
 	    					;
 	    String tmpupdatedate = buychklstdialog.getChkLstUpdatedDate();
 	    if(tmpchecklist != null) {
-	    	stockbasicinfo.setChecklistXml(tmpupdatedate + tmpchecklist);
-	    	stockdbopt.updateChecklistsitemsToDb(stockbasicinfo);
+	    	((Stock)nodeshouldbedisplayed).setChecklistXml(tmpupdatedate + tmpchecklist);
+	    	bkdbopt.updateChecklistsitemsToDb((Stock)nodeshouldbedisplayed);
 	    }
 	    	
 	    buychklstdialog.refreshTreeGui(cBxstockcode.getSelectedItem().toString(),tmpupdatedate + tmpchecklist);
@@ -1943,7 +1923,7 @@ protected void startBanKuaiGuanLiDlg()
 
 		try	{   
 				try {
-					txtFldStockName.setText(stockbasicinfo.getStockname().trim());
+					txtFldStockName.setText(nodeshouldbedisplayed.getMyOwnName().trim());
 				} catch (java.lang.NullPointerException e) {
 					txtFldStockName.setText("");
 				}
@@ -1955,36 +1935,36 @@ protected void startBanKuaiGuanLiDlg()
 				
 			
 				try {
-					txtareagainiants.setText(stockbasicinfo.getGainiantishi().trim());
+					txtareagainiants.setText(nodeshouldbedisplayed.getGainiantishi().trim());
 				} catch (java.lang.NullPointerException e) {
 					txtareagainiants.setText("");
 				}
 				
 				try {
-					dateChsgainian.setDate(stockbasicinfo.getGainiantishidate());
+					dateChsgainian.setDate(nodeshouldbedisplayed.getGainiantishidate());
 				} catch(java.lang.NullPointerException e) {
 					dateChsgainian.setDate(null);
 				}
 				
-				txtfldquanshangpj.setText(stockbasicinfo.getQuanshangpingji());
+				txtfldquanshangpj.setText(nodeshouldbedisplayed.getQuanshangpingji());
 				try {
-					dateChsquanshang.setDate(stockbasicinfo.getQuanshangpingjidate());
+					dateChsquanshang.setDate(nodeshouldbedisplayed.getQuanshangpingjidate());
 				} catch(java.lang.NullPointerException e) {
 					dateChsquanshang.setDate(null);
 				}
 				
-				txtareafumianxx.setText(stockbasicinfo.getFumianxiaoxi());
+				txtareafumianxx.setText(nodeshouldbedisplayed.getFumianxiaoxi());
 				try {
-					dateChsefumian.setDate(stockbasicinfo.getFumianxiaoxidate());
+					dateChsefumian.setDate(nodeshouldbedisplayed.getFumianxiaoxidate());
 				} catch(java.lang.NullPointerException e) {
 					dateChsefumian.setDate(null);
 				}
 				
 				
-				txtfldzhengxg.setText(stockbasicinfo.getZhengxiangguan());
-				txtfldfuxg.setText(stockbasicinfo.getFuxiangguan());
-				tfdJingZhengDuiShou.setText(stockbasicinfo.getJingZhengDuiShou());
-				tfdCustom.setText(stockbasicinfo.getKeHuCustom());
+				txtfldzhengxg.setText(nodeshouldbedisplayed.getZhengxiangguan());
+				txtfldfuxg.setText(nodeshouldbedisplayed.getFuxiangguan());
+				tfdJingZhengDuiShou.setText(nodeshouldbedisplayed.getJingZhengDuiShou());
+				tfdCustom.setText(nodeshouldbedisplayed.getKeHuCustom());
 			
 			lblStatusBarOperationIndicatior.setText("");
 			lblStatusBarOperationIndicatior.setText("相关信息查找成功");
@@ -2077,19 +2057,19 @@ protected void startBanKuaiGuanLiDlg()
 //			return;
 //		}
 	    
-		stockbasicinfo.setStockname(txtFldStockName.getText().trim().replaceAll("\\s*", "")); //去除股票名中间所有的空格
-		stockbasicinfo.setGainiantishidate(dateChsgainian.getDate());
-		stockbasicinfo.setGainiantishi(txtareagainiants.getText().trim());
-		stockbasicinfo.setQuanshangpingjidate(dateChsquanshang.getDate());
-		stockbasicinfo.setQuanshangpingji(txtfldquanshangpj.getText().trim());
-		stockbasicinfo.setFumianxiaoxidate(dateChsefumian.getDate());
-		stockbasicinfo.setFumianxiaoxi(txtareafumianxx.getText().trim());
-		stockbasicinfo.setZhengxiangguan( txtfldzhengxg.getText().trim());
-		stockbasicinfo.setFuxiangguan(txtfldfuxg.getText().trim());
-		stockbasicinfo.setKeHuCustom(tfdCustom.getText().trim());
-		stockbasicinfo.setJingZhengDuiShou(tfdJingZhengDuiShou.getText().trim());
+		nodeshouldbedisplayed.setMyOwnName(txtFldStockName.getText().trim().replaceAll("\\s*", "")); //去除股票名中间所有的空格
+		nodeshouldbedisplayed.setGainiantishidate(dateChsgainian.getDate());
+		nodeshouldbedisplayed.setGainiantishi(txtareagainiants.getText().trim());
+		nodeshouldbedisplayed.setQuanshangpingjidate(dateChsquanshang.getDate());
+		nodeshouldbedisplayed.setQuanshangpingji(txtfldquanshangpj.getText().trim());
+		nodeshouldbedisplayed.setFumianxiaoxidate(dateChsefumian.getDate());
+		nodeshouldbedisplayed.setFumianxiaoxi(txtareafumianxx.getText().trim());
+		nodeshouldbedisplayed.setZhengxiangguan( txtfldzhengxg.getText().trim());
+		nodeshouldbedisplayed.setFuxiangguan(txtfldfuxg.getText().trim());
+		nodeshouldbedisplayed.setKeHuCustom(tfdCustom.getText().trim());
+		nodeshouldbedisplayed.setJingZhengDuiShou(tfdJingZhengDuiShou.getText().trim());
 	    
-	    if( stockdbopt.updateStockNewInfoToDb(stockbasicinfo) ) {
+	    if( bkdbopt.updateStockNewInfoToDb(nodeshouldbedisplayed) ) {
 	    	lblStatusBarOperationIndicatior.setText("");
 			lblStatusBarOperationIndicatior.setText("股票信息更新成功！");
 			btngengxinxx.setEnabled(false); 
@@ -2120,10 +2100,7 @@ protected void startBanKuaiGuanLiDlg()
 	   	  	  
 	   	  	  
 	   	  	  if (isaddItem){
-	   	  		  if(stockbasicinfo.isaNewDtockCodeIndicate())
-	   	  			  tmp = stockbasicinfo.getStockcode().trim();
-	   	  		  else
-	   	  			  tmp = stockbasicinfo.getStockcode().trim() + stockbasicinfo.getStockname().trim();
+	  			  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
 
 	   	  		  cBxstockcode.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
 	   	  	  }
@@ -2155,7 +2132,7 @@ protected void startBanKuaiGuanLiDlg()
 	
 	private void displaySellBuyZdgzInfoToGui() 
 	{
-				Object[][] sellbuyObjects = stockbasicinfo.getZdgzMrmcZdgzYingKuiRecords();
+				Object[][] sellbuyObjects = ((Stock)nodeshouldbedisplayed).getZdgzMrmcZdgzYingKuiRecords();
 				for(int i=0;i<sellbuyObjects.length;i++) {
 					((DefaultTableModel)tblzhongdiangz.getModel()).addRow(sellbuyObjects[i]);
 				}
@@ -2263,6 +2240,14 @@ protected void startBanKuaiGuanLiDlg()
 	private JMenuItem menuItemimportrecords;
 	private JMenuItem mntmOpenRmtDb;
 	private JButton btnbankuaifengxi;
+	private JScrollPane scrollPane_3;
+	private JEditorPane editorPaneBanKuai;
+	private BkChanYeLianTree tree_1;
+	private BanKuaiFengXiBarChartPnl panelZhanBi;
+	private JDateChooser dateChsBanKuaiZhanbi;
+	private BanKuaiFengXiPieChartPnl pnlBkPieLastWkZhanBi;
+	private JPanel panel;
+	private GeGuFengXiBarChartPnl pnlGeGuWkZhanBi;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2276,7 +2261,7 @@ protected void startBanKuaiGuanLiDlg()
 		frame.getContentPane().setEnabled(false);
 				
 		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u7406");
-		frame.setBounds(100, 100, 879, 911);
+		frame.setBounds(100, 100, 1795, 911);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -2447,15 +2432,30 @@ protected void startBanKuaiGuanLiDlg()
 		btnRemvZdy.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/minus_red20.png")));
 		
 		
+		
+		scrollPane_3 = new JScrollPane();
+		
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setResizeWeight(0.6);
+		
+		panelZhanBi = new BanKuaiFengXiBarChartPnl();
+		pnlBkPieLastWkZhanBi = new BanKuaiFengXiPieChartPnl();
+		
+		
+		dateChsBanKuaiZhanbi = new JDateChooser(new Date());
+		
+		panel = new JPanel();
+		
+		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
+			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-							.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGroup(groupLayout.createSequentialGroup()
 								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 									.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE)
 									.addGroup(groupLayout.createSequentialGroup()
@@ -2473,7 +2473,24 @@ protected void startBanKuaiGuanLiDlg()
 							.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 242, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnDBStatus)))
-					.addContainerGap(447, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 446, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(pnlBkPieLastWkZhanBi, GroupLayout.PREFERRED_SIZE, 445, GroupLayout.PREFERRED_SIZE)
+							.addGap(10))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(splitPane, GroupLayout.PREFERRED_SIZE, 324, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(panelZhanBi, GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 705, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(dateChsBanKuaiZhanbi, GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)))
+							.addContainerGap())))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -2481,28 +2498,63 @@ protected void startBanKuaiGuanLiDlg()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(49)
-									.addComponent(btnRemvZdy))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
+									.addGap(29)
+									.addComponent(dateChsBanKuaiZhanbi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 745, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addComponent(panelStatusBar, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(splitPane, GroupLayout.PREFERRED_SIZE, 376, GroupLayout.PREFERRED_SIZE)
+								.addComponent(panelZhanBi, GroupLayout.PREFERRED_SIZE, 376, GroupLayout.PREFERRED_SIZE))
+							.addGap(8)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(pnlBkPieLastWkZhanBi, GroupLayout.PREFERRED_SIZE, 374, GroupLayout.PREFERRED_SIZE)
+								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED, 14, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addGap(49)
+											.addComponent(btnRemvZdy))
+										.addGroup(groupLayout.createSequentialGroup()
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)))
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))
+								.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 745, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+								.addComponent(panelStatusBar, GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+								.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))))
 					.addContainerGap())
 		);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		
+		pnlGeGuWkZhanBi = new GeGuFengXiBarChartPnl();
+		panel.add(pnlGeGuWkZhanBi);
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		splitPane.setLeftComponent(scrollPane_2);
+		
+//		tree_1 = bkcyl.getBkChanYeLianTree ();
+//		scrollPane_2.setViewportView(tree_1);
+		
+		JScrollPane scrollPane_4 = new JScrollPane();
+		splitPane.setRightComponent(scrollPane_4);
+		
+		editorPaneBanKuai = new JEditorPane();
+		editorPaneBanKuai.setEditable(false);
+		editorPaneBanKuai.setContentType("text/html");
+		scrollPane_3.setViewportView(editorPaneBanKuai);
 		panelStatusBar.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panelStatusBar.add(lblStatusBarOperationIndicatior);
 		GroupLayout gl_pnl_paomd = new GroupLayout(pnl_paomd);
@@ -2762,6 +2814,8 @@ protected void startBanKuaiGuanLiDlg()
 		panel_3.setLayout(gl_panel_3);
 		
 		cBxstockcode = new JComboBox<String>();
+
+//		for(String stockcode:accountschicangconfig.getStockChiCang())
 		//HashMap<String, ASingleStockInfo> tmpchicanginfo = accountschicangconfig.getStockChiCangdetailmap ();
 		
 		cBxstockcode.setForeground(Color.RED);
@@ -2993,8 +3047,7 @@ protected void startBanKuaiGuanLiDlg()
 		mntmNewMenuItem = new JMenuItem("V17.06.03.09.23");
 		menuConfigration.add(mntmNewMenuItem);
 		
-		//ArrayList<AccountInfoBasic> stockaccountchicanglist = stockaccountchicang.getAccountschicang();
-		AccountsInfoTableModel stockaccountmodel = new AccountsInfoTableModel(null,null);
+		AccountsInfoTableModel stockaccountmodel = new AccountsInfoTableModel();
 		tableStockAccountsInfo = new  JTable(stockaccountmodel)
 		{
 			private static final long serialVersionUID = 1L;
@@ -3060,7 +3113,7 @@ protected void startBanKuaiGuanLiDlg()
 			public void run() {
 				try {
 					StockInfoManager window = new StockInfoManager();
-					showOnScreen(2,window.frame);
+//					showOnScreen(2,window.frame);
 					window.frame.setVisible(true);
 			    	
 				} catch (Exception e) {
@@ -3074,22 +3127,22 @@ protected void startBanKuaiGuanLiDlg()
 
 class AccountsInfoTableModel extends AbstractTableModel 
 {
-	private ArrayList<AccountInfoBasic> accountslist;
+	private HashMap<String, AccountInfoBasic> accountslist;
+	private ArrayList<String> acntnamelist;
 	private String stockcode;
 	String[] jtableTitleStrings = { "账户名称", "持仓成本","持仓股数","持仓均价"};
 	
-	AccountsInfoTableModel (ArrayList<AccountInfoBasic> accountslist,String stockcode)
+	AccountsInfoTableModel ()
 	{
-
-		this.accountslist = accountslist;
-		this.stockcode = stockcode;
-		 
 	}
 
-	public void refresh  (ArrayList<AccountInfoBasic> accountslist,String stockcode)
+	public void refresh  (HashMap<String, AccountInfoBasic> accountsnamelist,String stockcode)
 	{
-		this.accountslist = accountslist;
+		this.accountslist = accountsnamelist;
+		this.acntnamelist = new ArrayList<String>(accountslist.keySet()); 
 		this.stockcode = stockcode.substring(0, 6);
+		
+		this.fireTableDataChanged();
 	}
 	 public int getRowCount() 
 	 {
@@ -3113,9 +3166,9 @@ class AccountsInfoTableModel extends AbstractTableModel
 	    		return null;
 	    	
 	    	Object value = "??";
-	    	AccountInfoBasic account = (AccountInfoBasic)accountslist.get(rowIndex); //该股票的持仓账户list中找到该账户
-	    	HashMap<String,StockChiCangInfo> chicang = account.getAllChiCangGuPiaoMap(); //找到该账户的该股票的持仓
-	    	StockChiCangInfo tmpstkcc = chicang.get(stockcode);
+	    	String acntname = this.acntnamelist.get(rowIndex);
+	    	AccountInfoBasic account = (AccountInfoBasic)accountslist.get(acntname); //该股票的持仓账户list中找到该账户
+	    	StockChiCangInfo tmpstkcc = account.getStockChiCangInfoIndexOf(stockcode); //找到该账户的该股票的持仓
 	    	
 	    	switch (columnIndex) {
             case 0:

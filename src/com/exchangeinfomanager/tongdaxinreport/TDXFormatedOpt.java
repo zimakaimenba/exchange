@@ -18,7 +18,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
@@ -81,7 +81,7 @@ public class TDXFormatedOpt {
 		   		try {
 			   		for(BkChanYeLianTreeNode tmpgz:tmpgzbklist) {
 			   			if(tmpgz.isOfficallySelected() ) {
-			   				String chanyelian =  tmpgz.getChanYeLian();
+			   				String chanyelian =  tmpgz.getNodeCurLocatedChanYeLianByName();
 			        		String seltime = tmpgz.getSelectedToZdgzTime();
 			        		result =  result + chanyelian + "(" + seltime +")" + "  |  ";
 			   			}
