@@ -45,8 +45,6 @@ public class GeGuFengXiBarChartPnl extends JPanel {
 	{
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-		initiazlizeGui ();
-		
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
 		standardChartTheme.setExtraLargeFont(new Font("隶书",Font.BOLD,20) );
 		standardChartTheme.setRegularFont(new Font("隶书",Font.BOLD,20) );
@@ -85,12 +83,6 @@ public class GeGuFengXiBarChartPnl extends JPanel {
 //        createControlPanel();
 		
 	}
-
-	private void initiazlizeGui ()
-	{
-		
-	}
-	
 
 	private void createDataset(String tdxbk, String stockcode, Date startdate, Date enddate) {
     	barchartdataset = new DefaultCategoryDataset();
@@ -138,15 +130,9 @@ public class GeGuFengXiBarChartPnl extends JPanel {
 
         barchart = new JFreeChart(plot);
         barchart.removeLegend();
-//        if(suosubkcodelist != null) {
-//	        String bkcode = suosubkcodelist.get(start);
-//	    	String bkname = suoshubkmap.get(bkcode);
-//	    	barchart.setTitle("'"+ bkcode + bkname +"'板块成交量占比");
-//        }
 
         chartPanel = new ChartPanel(barchart);
         this.add(chartPanel);
-        
     }
 
 //    private void createChartPanel2(int start) {

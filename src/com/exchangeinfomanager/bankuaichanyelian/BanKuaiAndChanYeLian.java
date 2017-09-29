@@ -121,6 +121,7 @@ import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
 import com.toedter.calendar.JDateChooser;
+import javax.swing.border.TitledBorder;
 
 public class BanKuaiAndChanYeLian extends JPanel 
 {
@@ -425,7 +426,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    	
 	    	HashMap<String,String> displaybk = new HashMap<String,String> ();
 	    	displaybk.put(tdxbkcode, tdxbkname);
-	    	bkfxpnl.setBanKuaiNeededDisplay(displaybk, tdxbkname,date,6);
+	    	bkfxpnl.setBanKuaiWithDaPanNeededDisplay(displaybk, tdxbkname,date,6);
 	    	
 	    	//显示本周和上周成交量占比的变化
 //	    	try {
@@ -860,11 +861,25 @@ public class BanKuaiAndChanYeLian extends JPanel
 		        	@Override
 		        	public void mouseClicked(MouseEvent arg0) 
 		        	{
+		        		int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
+						 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
+						 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
+						 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
+						 
+		        		if (arg0.getClickCount() == 1) {
+		        			int row = tablebkgegu.getSelectedRow();
+							 //int column = tblSearchResult.getSelectedColumn();
+							 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
+							 String stockcode = tablebkgegu.getModel().getValueAt(model_row, 0).toString().trim();
+							 System.out.println(stockcode);
+							 String stockname = tablebkgegu.getModel().getValueAt(model_row, 1).toString().trim();
+		        			pnlGeGuZhanBi.hightlightSpecificSector (stockcode+stockname);
+		        		}
 		        		 if (arg0.getClickCount() == 2) {
-							 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
-							 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
-							 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
-							 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
+//							 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
+//							 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
+//							 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
+//							 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
 							 
 							 
 							 int row = tablebkgegu.getSelectedRow();
@@ -1128,9 +1143,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 	
 	protected void chengJiaoLiangFengXi() 
 	{
-		
+		TreePath closestPath = treechanyelian.getSelectionPath();
+		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
+	    String curselectedbknodename = curselectedbknode.getMyOwnName();
+	    String curselectedbknodecode = curselectedbknode.getMyOwnCode();
 //		if(bkfx == null ) {
-			BanKuaiFengXi bkfx = new BanKuaiFengXi (treechanyelian,tfldparsefilename.getText());
+			BanKuaiFengXi bkfx = new BanKuaiFengXi (treechanyelian,curselectedbknodecode,"",dchgeguwkzhanbi.getDate());
 			bkfx.setModal(false);
 			bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			bkfx.setVisible(true);
@@ -1357,7 +1375,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private ChartPanel barchartPanel; //chart 
 	private ChartPanel piechartPanel; //chart
 	private JScrollPane sclpBanKuaiZhanBi;
-	private JLabel lblcjlzbinfo;
 	private JScrollPane sclpGeGuZhanBi;
 	private JDateChooser dchgeguwkzhanbi;
 	private JButton btndisplaybkfx;
@@ -1403,8 +1420,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 		buttonCjlFx = new JButton("\u5468\u6210\u4EA4\u91CF\u5206\u6790");
 		
-		lblcjlzbinfo = new JLabel("New label");
-		
 		sclpGeGuZhanBi = new JScrollPane();
 		
 		dchgeguwkzhanbi = new JDateChooser();
@@ -1417,41 +1432,36 @@ public class BanKuaiAndChanYeLian extends JPanel
 			gl_panel_1.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-							.addGroup(gl_panel_1.createSequentialGroup()
-								.addContainerGap()
-								.addComponent(sclpBanKuaiZhanBi, GroupLayout.PREFERRED_SIZE, 597, GroupLayout.PREFERRED_SIZE))
-							.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
-								.addGap(22)
-								.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 460, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 594, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panel_1.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(btndisplaybkfx)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(dchgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, 157, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 189, Short.MAX_VALUE)
-							.addComponent(buttonCjlFx)))
+							.addPreferredGap(ComponentPlacement.RELATED, 196, Short.MAX_VALUE)
+							.addComponent(buttonCjlFx))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 594, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(sclpBanKuaiZhanBi, GroupLayout.PREFERRED_SIZE, 597, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panel_1.createSequentialGroup()
+				.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 						.addComponent(btndisplaybkfx)
 						.addComponent(dchgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(buttonCjlFx))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 323, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(lblcjlzbinfo, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(sclpBanKuaiZhanBi, GroupLayout.PREFERRED_SIZE, 450, GroupLayout.PREFERRED_SIZE))
+					.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 353, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(sclpBanKuaiZhanBi, GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE))
 		);
 		
 		pnlGeGuZhanBi = new BanKuaiFengXiPieChartPnl();
+		pnlGeGuZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u5185\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		//设置显示到图片最右边
 	    Rectangle bounds = sclpGeGuZhanBi.getViewport().getViewRect();
 	    Dimension size = sclpGeGuZhanBi.getViewport().getViewSize();
@@ -1957,16 +1967,14 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 
 		bkfxpnl = new BanKuaiFengXiBarChartPnl ();
+		bkfxpnl.setBorder(new TitledBorder(null, "\u677F\u5757\u534A\u5E74\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		sclpBanKuaiZhanBi.setViewportView(bkfxpnl);
         //设置显示到图片最右边
         Rectangle bounds2 = sclpBanKuaiZhanBi.getViewport().getViewRect();
         Dimension size2 = sclpBanKuaiZhanBi.getViewport().getViewSize();
         int x2 = (size.width - bounds.width) ;
         int y2 = (size.height - bounds.height) ;
-        sclpBanKuaiZhanBi.getViewport().setViewPosition(new Point(x, 0));	
-        
-
-	
+        sclpBanKuaiZhanBi.getViewport().setViewPosition(new Point(x2, y2));	
 	}
 
 
@@ -2590,6 +2598,8 @@ class TableMouseListener extends MouseAdapter {
         Point point = event.getPoint();
         int currentRow = table.rowAtPoint(point);
         table.setRowSelectionInterval(currentRow, currentRow);
+        
+        
     }
 }
 

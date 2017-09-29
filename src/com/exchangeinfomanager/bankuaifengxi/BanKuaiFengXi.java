@@ -36,10 +36,12 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleEdge;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockDbOperations;
+import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiBarChartPnl;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -74,14 +76,15 @@ public class BanKuaiFengXi extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public BanKuaiFengXi(BkChanYeLianTree bkcyltree2,String parsedfilename2)
+	public BanKuaiFengXi(BkChanYeLianTree bkcyltree2,String fenxibk,String fenxistock,Date fxdate)
 	{
 		initializeGui ();
 		this.bkcyltree = bkcyltree2; 
-		if(parsedfilename2 != null)
-			this.tfldparsedfile.setText(parsedfilename2);
+//		if(parsedfilename2 != null)
+//			this.tfldparsedfile.setText(parsedfilename2);
 		this.bkdbopt = new BanKuaiDbOperation ();
-		this.stockdbopt = new StockDbOperations ();
+		dateChooser.setDate(fxdate);
+		tfldparsedfile.setText(fenxibk + "," + fenxistock);
 		
 		createEvents ();
 //		initializeBanKuaiZhanBiByGrowthRate ();
@@ -90,7 +93,6 @@ public class BanKuaiFengXi extends JDialog {
 	
 	private BkChanYeLianTree bkcyltree;
 	private BanKuaiDbOperation bkdbopt;
-	private StockDbOperations stockdbopt;
 	
 	private JFreeChart piechartwklast2;
 	private JFreeChart piechartwklast;
@@ -111,8 +113,8 @@ public class BanKuaiFengXi extends JDialog {
 		Date startdate = CommonUtility.getFirstDayOfWeek(bkfxdate);
 		Date enddate = CommonUtility.getLastDayOfWeek(bkfxdate);
 			
-		HashMap<String, Double> bkzbmap = bkdbopt.getAllTdxBanKuaiOfChenJiaoErWeekZhanBiOrderByZhanBiGrowthRate (startdate,enddate);
-		HashMap<String, Double> zszbmap = bkdbopt.getAllZhiShuBanKuaiOfChenJiaoErWeekZhanBiOrderByZhanBiGrowthRate(startdate,enddate);
+		HashMap<String, Double> bkzbmap = bkdbopt.getAllTdxBanKuaiOfChenJiaoErWeekZhanBiOrderByZhanBiGrowthRate (startdate,enddate); //880板块占比
+		HashMap<String, Double> zszbmap = bkdbopt.getAllZhiShuBanKuaiOfChenJiaoErWeekZhanBiOrderByZhanBiGrowthRate(startdate,enddate); //指数占比
 		
 		bkzbmap.putAll(zszbmap);
 		
@@ -127,101 +129,17 @@ public class BanKuaiFengXi extends JDialog {
 		}
 	}
 	
-	private void initializeBanKuaiZhanBiByGrowthRate (String bkcode, String bkname)
+	private void displayBanKuaiZhanBiBarChart (String bkcode, String bkname,Date bkfxdate2)
 	{
 		Date bkfxdate = dateChooser.getDate();
 		Date startdate = CommonUtility.getFirstDayOfWeek(bkfxdate);
 		Date enddate = CommonUtility.getLastDayOfWeek(bkfxdate);
 		
-		
+		HashMap<String, String> displaybk = new HashMap<String, String>();
+		displaybk.put(bkcode, bkname);
+		panelbkwkzhanbi.setBanKuaiWithDaPanNeededDisplay(displaybk, bkname,bkfxdate2,6);
 	}
 
-	
-	
-	
-	private void initializeBanKuaiZhanBiByZhanBi() 
-	{
-		Date bkfxdate = dateChooser.getDate();
-		DefaultCategoryDataset barchartdataset = bkdbopt.getBanKuaiFengXiBarInfoOfChenJiaoErZhanBiOrderByZhanBi (bkfxdate);
-		
-		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
-		standardChartTheme.setExtraLargeFont(new Font("隶书",Font.BOLD,20) );
-		standardChartTheme.setRegularFont(new Font("隶书",Font.BOLD,20) );
-		standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,20));
-		ChartFactory.setChartTheme(standardChartTheme);
-		JFreeChart barchart = ChartFactory.createBarChart("板块成交量占比", "板块名称", "占比", barchartdataset,PlotOrientation.HORIZONTAL, true,true,false);
-		CategoryPlot p = barchart.getCategoryPlot();
-		p.setRangeGridlinePaint(Color.blue);
-		ChartPanel chartPanel = new ChartPanel( barchart );
-				
-		sclpleft.setViewportView(chartPanel);
-		
-	}
-	
-
-	private JFreeChart setJFreeChartPlotPropety (JFreeChart piechart)
-	{
-		PiePlot plot = (PiePlot) piechart.getPlot();
-		 LegendTitle legend = new LegendTitle(pieplotwkcur); 
-	        legend.setPosition(RectangleEdge.TOP); 
-//	    	pieplotwkcur.setIgnoreZeroValues(true);
-//	    	pieplotwkcur.setCircular(false);
-//	    	pieplotwkcur.setOutlinePaint(null);
-//	    	pieplotwkcur.setLabelFont(new Font("SansSerif", Font.PLAIN, 8));
-//	    	pieplotwkcur.setLabelGap(0.02);
-//	    	pieplotwkcur.setLabelOutlinePaint(null);
-//	    	pieplotwkcur.setLabelShadowPaint(null);
-//	    	pieplotwkcur.setLabelBackgroundPaint(Color.WHITE);
-//	    	pieplotwkcur.setSectionOutlinePaint(key, Color.WHITE);
-//	    	pieplotwkcur.setSectionOutlineStroke(key ,new BasicStroke(0f));
-//	    	pieplotwkcur.setLabelGenerator(null);
-//	    	pieplotwkcur.setSectionOutlinesVisible(false);
-	        
-	        piechart.removeLegend();
-	        
-	        return piechart;
-	}
-  
-//    private void createPieChartPanel (JScrollPane scrollPane,ChartPanel piechartPanel,JFreeChart piechart,PiePlot pieplot,DefaultPieDataset piedataset)
-//    {
-////    	BarRenderer renderer = new BarRenderer ();
-////    	renderer.setToolTipGenerator(new CustomToolTipGenerator() );
-////        renderer.setBaseItemLabelsVisible(true);
-////        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-////        renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-////        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
-////        renderer.setItemLabelsVisible(true);
-//        
-//    	pieplot = new PiePlot(); 
-//        LegendTitle legend = new LegendTitle(pieplot); 
-//        legend.setPosition(RectangleEdge.TOP); 
-//        pieplot.setDataset(piedataset); 
-////    	pieplotwkcur.setIgnoreZeroValues(true);
-////    	pieplotwkcur.setCircular(false);
-////    	pieplotwkcur.setOutlinePaint(null);
-////    	pieplotwkcur.setLabelFont(new Font("SansSerif", Font.PLAIN, 8));
-////    	pieplotwkcur.setLabelGap(0.02);
-////    	pieplotwkcur.setLabelOutlinePaint(null);
-////    	pieplotwkcur.setLabelShadowPaint(null);
-////    	pieplotwkcur.setLabelBackgroundPaint(Color.WHITE);
-////    	pieplotwkcur.setSectionOutlinePaint(key, Color.WHITE);
-////    	pieplotwkcur.setSectionOutlineStroke(key ,new BasicStroke(0f));
-////    	pieplotwkcur.setLabelGenerator(null);
-////    	pieplotwkcur.setSectionOutlinesVisible(false);
-//        
-//        piechart = new JFreeChart(pieplot);
-//        piechart.removeLegend();
-//
-//        piechartPanel = new ChartPanel(piechart);
-//        
-//    	scrollPane.setViewportView(piechartPanelwkcur);
-//        //设置显示到图片最右边
-//        Rectangle bounds = scrollPane.getViewport().getViewRect();
-//        Dimension size = scrollPane.getViewport().getViewSize();
-//        int x = (size.width - bounds.width) ;
-//        int y = (size.height - bounds.height) ;
-//        scrollPane.getViewport().setViewPosition(new Point(x, 0));
-//    }
 	private void diaplyGeGuZhanBiWeekCur(String tdxbkname, String tdxbkcode, Date bkfxdate) 
 	{
 //		Date monday = CommonUtility.getFirstDayOfWeek(bkfxdate);
@@ -298,23 +216,24 @@ public class BanKuaiFengXi extends JDialog {
 			{
 				int row = tableBkZhanBi.getSelectedRow();
 				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个账户","Warning",JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
 				String bankcode = ((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).getBanKuaiCode(row);
 				String bankname = ((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).getBanKuaiName(row);
 				Date bkfxdate = dateChooser.getDate();
-//				displayGeGuWeekZhanBi (bankname,bankcode,bkfxdate);
-				
+				displayBanKuaiZhanBiBarChart(bankcode,bankname,bkfxdate);				
 			}
 		});
 		
 		dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
 		    @Override
 		    public void propertyChange(PropertyChangeEvent e) {
-		    	if("date".equals(e.getPropertyName()))
+		    	if("date".equals(e.getPropertyName())) {
+		    		
 		    		initializeBanKuaiZhanBiByGrowthRate ();
+		    	}
 //		        System.out.println(e.getPropertyName()+ ": " + e.getNewValue());
 		    }
 		});
@@ -445,6 +364,8 @@ public class BanKuaiFengXi extends JDialog {
 	private JScrollPane sclpleft;
 	private JTable tableBkZhanBi;
 	private JTable tableGuGuZhanBiInBk;
+	private BanKuaiFengXiBarChartPnl panelbkwkzhanbi;
+	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
 		setBounds(100, 100, 1870, 993);
@@ -456,8 +377,8 @@ public class BanKuaiFengXi extends JDialog {
 		
 		JPanel panel_1 = new JPanel();
 		
-		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panelbkwkzhanbi = new BanKuaiFengXiBarChartPnl();
+		panelbkwkzhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u534A\u5E74\u5185\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -479,7 +400,7 @@ public class BanKuaiFengXi extends JDialog {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
+									.addComponent(panelbkwkzhanbi, GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 805, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_contentPanel.createSequentialGroup()
@@ -498,7 +419,7 @@ public class BanKuaiFengXi extends JDialog {
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 410, GroupLayout.PREFERRED_SIZE)
-								.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 410, GroupLayout.PREFERRED_SIZE))
+								.addComponent(panelbkwkzhanbi, GroupLayout.PREFERRED_SIZE, 410, GroupLayout.PREFERRED_SIZE))
 							.addPreferredGap(ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, 409, GroupLayout.PREFERRED_SIZE)

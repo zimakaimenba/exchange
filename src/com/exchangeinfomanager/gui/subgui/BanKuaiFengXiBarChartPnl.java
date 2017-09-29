@@ -64,43 +64,38 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 	private CategoryPlot plot;
 	private ChartPanel chartPanel;
 	private JPanel controlPanel;
-	private int currentDisplayedBkIndex ;
+//	private int currentDisplayedBkIndex ;
 	private ArrayList<String> displaybkcodelist;
 	private DefaultCategoryDataset barchartdataset ;
 	private BanKuaiDbOperation bkdbopt;
 	private HashMap<String, String> displaybkmap;
 	private JFreeChart barchart;
 	private Date datedisplayed ;
+	private String curdisplayedbankcode;
+	
 	
 	/*
 	 * 板块大盘占比
 	 */
-	public void setBanKuaiNeededDisplay (HashMap<String,String> displaybkmap2,String firstshowbankuainame, Date daterange,int monthrange)
+	public void setBanKuaiWithDaPanNeededDisplay (HashMap<String,String> displaybkmap2,String firstshowbankuainame, Date daterange,int monthrange)
 	{
 		displaybkmap = displaybkmap2;
 		displaybkcodelist = new ArrayList<String>(displaybkmap.keySet());
 		ArrayList<String> displaybknamelist = new ArrayList<String>(displaybkmap.values());
-		currentDisplayedBkIndex = displaybknamelist.indexOf(firstshowbankuainame.trim());
+		int currentDisplayedBkIndex = displaybknamelist.indexOf(firstshowbankuainame.trim());
+		curdisplayedbankcode = displaybkcodelist.get(currentDisplayedBkIndex);
 
 		datedisplayed = daterange;
 		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,monthrange);
 		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
 
-        createDataset(currentDisplayedBkIndex,startdate,enddate);
+        createDatasetOfDisplayBKWithDaPan(curdisplayedbankcode,startdate,enddate);
+         
 //      createControlPanel();
 	}
-
-	public void resetDate ()
-	{
-		barchartdataset = new DefaultCategoryDataset();
-		plot.setDataset(barchartdataset);
-		if(barchart !=null) {
-	        barchart.setTitle("板块成交量占比");
-    	}
-	}
-    private void createDataset(int start, Date startdate, Date enddate) {
+	private void createDatasetOfDisplayBKWithDaPan(String bkcode, Date startdate, Date enddate) {
     	barchartdataset = new DefaultCategoryDataset();
-    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (displaybkcodelist.get(start),startdate,enddate );
+    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (bkcode,startdate,enddate );
 
     	try {
     		while (rs.next()) {
@@ -126,11 +121,62 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
     	plot.setDataset(barchartdataset);
     	
     	if(barchart !=null) {
-    		String bkcode = displaybkcodelist.get(start);
 	    	String bkname = displaybkmap.get(bkcode);
 	        barchart.setTitle("'"+ bkcode + bkname +"'板块成交量占比");
     	}
     }
+
+	/*
+	 * 设置个股在某板块的占比半年信息
+	 */
+	public void setStockWithBanKuaiNeededDisplay (String tdxbk, String stockcode,Date daterange)
+	{
+		datedisplayed = daterange;
+		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,6);
+		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
+
+        createDatasetOfStockWithBanKuai(tdxbk,stockcode,startdate,enddate);
+//        createChartPanel(currentDisplayedBkIndex);
+//        createControlPanel();
+	}
+	private void createDatasetOfStockWithBanKuai(String tdxbk, String stockcode, Date startdate, Date enddate) {
+		barchartdataset = new DefaultCategoryDataset();
+    	CachedRowSetImpl rs = bkdbopt.getGeGuZhanBi (tdxbk,stockcode,startdate,enddate );
+    	int row =0;
+    	try {
+    		while (rs.next()) {
+    			String weeknumber =rs.getString("CALWEEK");
+    			String weeklastday = rs.getString("EndOfWeekDate");
+    			Double zhanbi = rs.getDouble("占比");
+    			barchartdataset.setValue(zhanbi,"股票占比",weeklastday);
+    			row ++;
+    		}
+    		rs.close();
+    		rs = null;
+    	} catch (SQLException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
+    	plot.setDataset(barchartdataset);
+    	
+//    	if(barchart !=null) {
+//	        barchart.setTitle("'"+ stockcode + bkname +"'板块成交量占比");
+//    	}
+		
+	}
+	public String getCurDisplayedBanKuaiCode ()
+	{
+		return this.curdisplayedbankcode;
+	}
+	public void resetDate ()
+	{
+		barchartdataset = new DefaultCategoryDataset();
+		plot.setDataset(barchartdataset);
+		if(barchart !=null) {
+	        barchart.setTitle("板块成交量占比");
+    	}
+	}
+
     
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
@@ -184,65 +230,13 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
     	});
     }
 
-//    private void createChartPanel2(int start) {
-////        CategoryAxis xAxis = new CategoryAxis("Category");
-////        NumberAxis yAxis = new NumberAxis("Value");
-//    	String bkcode = suosubkcodelist.get(start);
-//    	String bkname = suoshubkmap.get(bkcode);
-//    	JFreeChart barchart = ChartFactory.createBarChart( "'"+ bkcode + bkname +"'板块成交量占比", "周数", "占比", barchartdataset,PlotOrientation.VERTICAL, true,true,false);
-//        BarRenderer renderer = new BarRenderer();
-//        plot = barchart.getCategoryPlot();
-//        plot.setRangeGridlinePaint(Color.BLACK);
-////        plot = new CategoryPlot(barchartdataset, xAxis, yAxis, renderer);
-////        JFreeChart chart = new JFreeChart("BoxAndWhiskerDemo", plot);
-//        chartPanel = new ChartPanel(barchart);
+//    public ChartPanel getChartPanel() {
+//        return chartPanel;
 //    }
-
-    private void createControlPanel() {
-        controlPanel = new JPanel();
-        controlPanel.add(new JButton(new AbstractAction("\u22b2Prev") {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	currentDisplayedBkIndex -= 1;
-                if (currentDisplayedBkIndex < 0) {
-                	currentDisplayedBkIndex = 0;
-                    return;
-                }
-                
-        		Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
-        		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
-                createDataset(currentDisplayedBkIndex,startdate,enddate);
-                plot.setDataset(barchartdataset);
-            }
-        }));
-        controlPanel.add(new JButton(new AbstractAction("Next\u22b3") {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	currentDisplayedBkIndex += 1;
-                if (currentDisplayedBkIndex >= displaybkcodelist.size()) {
-                	currentDisplayedBkIndex = displaybkcodelist.size();
-                    return;
-                }
-                Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
-        		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
-                createDataset(currentDisplayedBkIndex,startdate,enddate);
-                plot.setDataset(barchartdataset);
-            }
-        }));
-    }
-
-    public ChartPanel getChartPanel() {
-        return chartPanel;
-    }
-
-    public JPanel getControlPanel() {
-        return controlPanel;
-    }
-	
-	
-
+//
+//    public JPanel getControlPanel() {
+//        return controlPanel;
+//    }
 }
 
 

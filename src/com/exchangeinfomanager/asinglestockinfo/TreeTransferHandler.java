@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian;
+package com.exchangeinfomanager.asinglestockinfo;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
