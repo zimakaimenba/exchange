@@ -208,12 +208,16 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private void initializeAllDaLeiZdgzTableFromXml ()
 	{
 		((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).refresh(zdgzbkmap);
-				
-		tableCurZdgzbk.setRowSelectionInterval(0,0);
-		int row = tableCurZdgzbk.getSelectedRow();
-		String selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getZdgzDaLei (row);
+		try {
+			tableCurZdgzbk.setRowSelectionInterval(0,0);
+			int row = tableCurZdgzbk.getSelectedRow();
+			String selecteddalei = ((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).getZdgzDaLei (row);
+			
+			unifyDisplaysInDifferentCompOnGui (selecteddalei,0);
+		} catch (java.lang.IllegalArgumentException e) {
+			e.printStackTrace();
+		}
 		
-		unifyDisplaysInDifferentCompOnGui (selecteddalei,0);
 		
 	}
 //	

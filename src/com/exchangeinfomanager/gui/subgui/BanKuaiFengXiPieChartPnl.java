@@ -113,9 +113,9 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 	{
 		piechartdataset = new DefaultPieDataset();
 		pieplot.setDataset(piechartdataset);
-		if(piechart !=null) {
-			piechart.setTitle("板块成交量占比");
-    	}
+//		if(piechart !=null) {
+//			piechart.setTitle("板块成交量占比");
+//    	}
 	}
 	
 
