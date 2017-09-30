@@ -42,8 +42,7 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         else
 	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnCode() + ((BkChanYeLianTreeNode)value).getMyOwnName();
 	         
-	         
-
+	         // 每日板块信息
 	         HashSet<String> parsefilestockset = ((BkChanYeLianTreeNode)value).getParseFileStockSet ();
 	         if(parsefilestockset !=null && parsefilestockset.size() !=0) {
 	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + parsefilestockset.size() + ")"  ); 

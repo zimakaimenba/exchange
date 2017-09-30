@@ -172,9 +172,9 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 	{
 		barchartdataset = new DefaultCategoryDataset();
 		plot.setDataset(barchartdataset);
-		if(barchart !=null) {
-	        barchart.setTitle("板块成交量占比");
-    	}
+//		if(barchart !=null) {
+//	        barchart.setTitle("板块成交量占比");
+//    	}
 	}
 
     

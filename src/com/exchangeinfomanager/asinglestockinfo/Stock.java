@@ -52,9 +52,8 @@ public class Stock extends BkChanYeLianTreeNode {
 			e.printStackTrace();
 			
 		}
-		
-		
 	}
+	
 	public void removeChiCangAccount (AccountInfoBasic acnt)
 	{
 		String acntname = acnt.getAccountName();
@@ -97,80 +96,6 @@ public class Stock extends BkChanYeLianTreeNode {
 	public void setZdgzmrmcykRecords(Object[][] zdgzmrmcykRecords) {
 		this.zdgzmrmcykRecords = zdgzmrmcykRecords;
 	}
-
-//	/**
-//	 * @return the jingZhengDuiShou
-//	 */
-//	public String getJingZhengDuiShou() {
-//		return jingZhengDuiShou;
-//	}
-//	/**
-//	 * @param jingZhengDuiShou the jingZhengDuiShou to set
-//	 */
-//	public void setJingZhengDuiShou(String jingZhengDuiShou) {
-//		this.jingZhengDuiShou = jingZhengDuiShou;
-//	}
-//	/**
-//	 * @return the keHuCustom
-//	 */
-//	public String getKeHuCustom() {
-//		return keHuCustom;
-//	}
-//	/**
-//	 * @param keHuCustom the keHuCustom to set
-//	 */
-//	public void setKeHuCustom(String keHuCustom) {
-//		this.keHuCustom = keHuCustom;
-//	}
-//
-//	public Date getGainiantishidate() {
-//		return gainiantishidate;
-//	}
-//	public void setGainiantishidate(Date gainiantishidate) {
-//		this.gainiantishidate = gainiantishidate;
-//	}
-//	public String getGainiantishi() {
-//		return gainiantishi;
-//	}
-//	public void setGainiantishi(String gainiantishi) {
-//		this.gainiantishi = gainiantishi;
-//	}
-//	public Date getQuanshangpingjidate() {
-//		return quanshangpingjidate;
-//	}
-//	public void setQuanshangpingjidate(Date quanshangpingjidate) {
-//		this.quanshangpingjidate = quanshangpingjidate;
-//	}
-//	public String getQuanshangpingji() {
-//		return quanshangpingji;
-//	}
-//	public void setQuanshangpingji(String quanshangpingji) {
-//		this.quanshangpingji = quanshangpingji;
-//	}
-//	public Date getFumianxiaoxidate() {
-//		return fumianxiaoxidate;
-//	}
-//	public void setFumianxiaoxidate(Date fumianxiaoxidate) {
-//		this.fumianxiaoxidate = fumianxiaoxidate;
-//	}
-//	public String getFumianxiaoxi() {
-//		return fumianxiaoxi;
-//	}
-//	public void setFumianxiaoxi(String fumianxiaoxi) {
-//		this.fumianxiaoxi = fumianxiaoxi;
-//	}
-//	public String getZhengxiangguan() {
-//		return zhengxiangguan;
-//	}
-//	public void setZhengxiangguan(String zhengxiangguan) {
-//		this.zhengxiangguan = zhengxiangguan;
-//	}
-//	public String getFuxiangguan() {
-//		return fuxiangguan;
-//	}
-//	public void setFuxiangguan(String fuxiangguan) {
-//		this.fuxiangguan = fuxiangguan;
-//	}
 
 	public boolean isInTdxBanKuai (String tdxbk)
 	{
@@ -243,5 +168,16 @@ public class Stock extends BkChanYeLianTreeNode {
 	public void setSysBanKuaiChenJiaoE(HashMap<String, Double> sysBanKuaichenjiaoe) {
 		this.sysBanKuaichenjiaoe = sysBanKuaichenjiaoe;
 	}
+	
+	public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
+	 {
+	    	if(super.parsefilestockset == null) {
+	    		this.parsefilestockset = new HashSet<String> ();
+	    		this.parsefilestockset = parsefilestockset2;
+	    	}
+	    	else
+	    		this.parsefilestockset = parsefilestockset2;
+	 }
+	
 
 }

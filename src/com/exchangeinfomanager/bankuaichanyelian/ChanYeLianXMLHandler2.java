@@ -295,7 +295,7 @@ class ChanYeLianXMLHandler
 					   if( !tmpparentsleaf.isInTdxBanKuai(suoshubkcode))//如果该股已经不属于该板块，需要删除的，则标记好
 						   shouldremovedwhensavexml = true;
 					   else  //个股不被删除，那因为股票名字可能会改，所以更新一下股票名字
-						   tmpparentsleaf = bkopt.getNodesBasicInfo(tmpparentsleaf);
+						   tmpparentsleaf = bkopt.getStockBasicInfo(tmpparentsleaf);
 
 					   parentsleaf = tmpparentsleaf;
 				   }

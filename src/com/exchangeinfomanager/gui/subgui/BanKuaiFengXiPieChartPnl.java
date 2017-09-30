@@ -98,13 +98,16 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 
 	
 	
-	public void setBanKuaiNeededDisplay (String tdxbkname,String tdxbkcode, Date datedisplayed2)
+	public void setBanKuaiNeededDisplay (String tdxbkname,String tdxbkcode, Date datedisplayed2, int weightgate)
 	{
 		datedisplayed = datedisplayed2;
 		Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
 		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
 
-        createDataset(tdxbkname,tdxbkcode,startdate,enddate);
+		if (lasthightlightKey != null) {
+			pieplot.setExplodePercent(lasthightlightKey, 0);
+        }
+        createDataset(tdxbkname,tdxbkcode,startdate,enddate,weightgate);
 //        createControlPanel();
 
 		
@@ -119,7 +122,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 	}
 	
 
-    private void createDataset(String tdxbkname, String tdxbkcode,Date startdate, Date enddate) 
+    private void createDataset(String tdxbkname, String tdxbkcode,Date startdate, Date enddate, int weightgate) 
     {
     	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbkname,tdxbkcode,startdate,enddate,true );
     	
@@ -134,7 +137,14 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 //	                        (oldValue, newValue) -> oldValue, LinkedHashMap::new))
 //	                ;
     		double cje = stockchengjiaoe.get(tdxbkcode);
-    		piechartdataset.setValue(ggcode+stockname,cje);
+    		
+    		HashMap<String, Integer> geguweightmap = tmpstockinfo.getGeGuSuoShuBanKuaiWeight ();
+    		int geguweight = geguweightmap.get(tdxbkcode);
+    		if(geguweight > weightgate )
+    			if(stockname != null)
+    				piechartdataset.setValue(ggcode+stockname,cje);
+    			else 
+    				piechartdataset.setValue(ggcode,cje);
     	}
     	pieplot.setDataset(piechartdataset);
     }
@@ -167,7 +177,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 //        pieplot.setLabelPaint(Color.WHITE);
 //        pieplot.setLabelBackgroundPaint(null);
 //        pieplot.setLabelGenerator(null);
-    	PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator("{0} {1} ({2})"); //If you need the %, use in label format {0} = {2} instead of {0} = {1} and will be displayed California = 10%.
+    	PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator("{0}{1}({2})"); //If you need the %, use in label format {0} = {2} instead of {0} = {1} and will be displayed California = 10%.
     	pieplot.setLabelGenerator(labelGenerator);
         
     	pieplot.setDataset(piechartdataset);
@@ -193,7 +203,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
     private void createEvent ()
     {
     	piechartPanel.addChartMouseListener(new ChartMouseListener() {
-    		private Comparable lastKey;
+//    		private Comparable lastKey;
 
     	    public void chartMouseClicked(ChartMouseEvent e) {
     	        System.out.println("chart mouse click " + e.getEntity());
@@ -230,12 +240,12 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 	            if (entity instanceof PieSectionEntity) {
 	                PieSectionEntity section = (PieSectionEntity) entity;
 	                PiePlot plot = (PiePlot) piechart.getPlot();
-	                if (lastKey != null) {
-	                    plot.setExplodePercent(lastKey, 0);
+	                if (lasthightlightKey != null) {
+	        			pieplot.setExplodePercent(lasthightlightKey, 0);
 	                }
 	                Comparable key = section.getSectionKey();
 	                plot.setExplodePercent(key, 0.05);
-	                lastKey = key;
+	                lasthightlightKey = key;
 	            }
 				
 			}
@@ -249,6 +259,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 		if (lasthightlightKey != null) {
 			pieplot.setExplodePercent(lasthightlightKey, 0);
         }
+
     	pieplot.setExplodePercent(tdxnameandcode, 0.1);
     	
     	lasthightlightKey = tdxnameandcode;

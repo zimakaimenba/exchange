@@ -20,8 +20,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 	
 	 public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
 	 {
-	    	if(super.parsefilestockset == null)
+	    	if(super.parsefilestockset == null) {
 	    		this.parsefilestockset = new HashSet<String> ();
+	    		this.parsefilestockset = parsefilestockset2;
+	    	}
 	    	else
 	    		this.parsefilestockset = parsefilestockset2;
 	 }

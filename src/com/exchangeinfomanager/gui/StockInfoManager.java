@@ -330,7 +330,6 @@ public class StockInfoManager
 					if(buychklstdialog!= null ) {
 						displayChecklistsItemsToGui ();
 					}
-
 				 } 
 				enableGuiEditable();
 		}
@@ -1991,49 +1990,59 @@ protected void startBanKuaiGuanLiDlg()
 		tfdJingZhengDuiShou.setText("");
 		
 		txaBanKuai.setText("");
-		
-
-
+	
 		((DefaultTableModel)tblzhongdiangz.getModel()).setRowCount(0);
 		//tableStockAccountsInfo.setModel( new DefaultTableModel()  );
 		((AccountsInfoTableModel)(tableStockAccountsInfo.getModel())).deleteAllRows();
-		((AccountsInfoTableModel)(tableStockAccountsInfo.getModel())).fireTableDataChanged(); 
+				
+		editorPaneBanKuai.setText("");
+		panelZhanBi.resetDate();
+		pnlGeGuWkZhanBi.resetDate();
 //		//xml tree 应该也要刷新
 	}
 
 	private void enableGuiEditable () 
 	{
-		dateChsgainian.setEnabled(true);
-		txtareagainiants.setEnabled(true);
-		dateChsquanshang.setEnabled(true);
-		txtfldquanshangpj.setEnabled(true);
-		dateChsefumian.setEnabled(true);
-		txtareafumianxx.setEnabled(true);
-		txtfldzhengxg.setEnabled(true);
-		txtfldfuxg.setEnabled(true);
 		
-		btnCaiwufengxi.setEnabled(true);
-		btnDongcaiyanbao.setEnabled(true);
-		btnRongzirongquan.setEnabled(true);
-		btnXueqiu.setEnabled(true);
-		btnhudongyi.setEnabled(true);
-		btnSlack.setEnabled(true);
-		btnEnableChklsts.setEnabled(true);
-		btnXueQiu.setEnabled(true);
-		btnSearch.setEnabled(true);
-		tblzhongdiangz.setEnabled(true);
-		btnMai.setEnabled(true);
-		btnSell.setEnabled(true);
-		
-		btnjiaruzdgz.setEnabled(true);
-		btnyichuzdgz.setEnabled(true);
-		btnSongZhuanGu.setEnabled(true);
-		tfdCustom.setEnabled(true);
-		tfdJingZhengDuiShou.setEnabled(true);
-		
-		//btnAddZdy.setEnabled(true);
-		btnRemvZdy.setEnabled(true);
-		
+			dateChsgainian.setEnabled(true);
+			txtareagainiants.setEnabled(true);
+			dateChsquanshang.setEnabled(true);
+			txtfldquanshangpj.setEnabled(true);
+			dateChsefumian.setEnabled(true);
+			txtareafumianxx.setEnabled(true);
+			txtfldzhengxg.setEnabled(true);
+			txtfldfuxg.setEnabled(true);
+			
+			btnCaiwufengxi.setEnabled(true);
+			btnDongcaiyanbao.setEnabled(true);
+			btnRongzirongquan.setEnabled(true);
+			btnXueqiu.setEnabled(true);
+			btnhudongyi.setEnabled(true);
+			btnSlack.setEnabled(true);
+			btnEnableChklsts.setEnabled(true);
+			btnXueQiu.setEnabled(true);
+			btnSearch.setEnabled(true);
+			tblzhongdiangz.setEnabled(true);
+			btnMai.setEnabled(true);
+			btnSell.setEnabled(true);
+			
+			btnjiaruzdgz.setEnabled(true);
+			btnyichuzdgz.setEnabled(true);
+			btnSongZhuanGu.setEnabled(true);
+			tfdCustom.setEnabled(true);
+			tfdJingZhengDuiShou.setEnabled(true);
+			
+			//btnAddZdy.setEnabled(true);
+			btnRemvZdy.setEnabled(true);
+			
+			if(nodeshouldbedisplayed.getType() == 4) {
+				btnMai.setEnabled(false);
+				btnSell.setEnabled(false);
+				btnSongZhuanGu.setEnabled(false);
+				btnjiaruzdgz.setEnabled(false);
+				btnyichuzdgz.setEnabled(false);
+
+			}
 		
 	}
 	
@@ -3206,6 +3215,8 @@ class AccountsInfoTableModel extends AbstractTableModel
 				 return ;
 			 else 
 				 accountslist.clear();
+	    	
+	    	this.fireTableDataChanged();
 	    }	    
 }
 

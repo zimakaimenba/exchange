@@ -529,20 +529,14 @@ public class AccountSeeting extends JDialog
 		
 		
 		((AccountsPutongTableModel)tableputong.getModel()).refresh(acntstckconfig.getPutongaccountsdetailmap ());
-		((AccountsPutongTableModel)tableputong.getModel()).fireTableDataChanged();
 		
 		((AccountsXinYongPutongTableModel)tableRzrqPutong.getModel()).refresh(acntstckconfig.getRzrqputongaccountsdetailmap());
-		((AccountsXinYongPutongTableModel)tableRzrqPutong.getModel()).fireTableDataChanged();
-		
 		
 		((AccountsRongZiTableModel)tableRongzi.getModel()).refresh(acntstckconfig.getRongziaccountsdetailmap());
-		((AccountsRongZiTableModel)tableRongzi.getModel()).fireTableDataChanged();
 		
 		((AccountsRongQuanTableModel)tableRongquan.getModel()).refresh(acntstckconfig.getRongquanaccountsdetailmap());
-		((AccountsRongQuanTableModel)tableRongquan.getModel()).fireTableDataChanged();
 		
 		((CashAccountsTableModel)tableCashAccounts.getModel()).refresh(acntstckconfig.getCashAccountListDetailMap());
-		((CashAccountsTableModel)tableCashAccounts.getModel()).fireTableDataChanged();
 	}
 
 	protected void updateNewXianjingToDb(String tmpaccount, double newxianjin) 
@@ -982,7 +976,8 @@ class AccountsRongQuanTableModel extends AbstractTableModel
 		 for (java.util.Map.Entry<String, AccountRongQuan> entry : rongquanaccountslist.entrySet()) {
 				//cashaccountnamelist.add(entry.getKey() );
 				this.accountslist.add(entry.getValue());
-			}
+		 }
+		 this.fireTableDataChanged();
 	}
 	public int getAccountRowNumber (String acntname)
 	{
@@ -1105,7 +1100,9 @@ class AccountsRongZiTableModel extends AbstractTableModel
 		 for (java.util.Map.Entry<String, AccountRongZi> entry : rongziaccountslist.entrySet()) {
 				//cashaccountnamelist.add(entry.getKey() );
 				this.accountslist.add(entry.getValue());
-			}
+		 }
+		 this.fireTableDataChanged();
+		 
 	}
 	public int getAccountRowNumber (String acntname)
 	{
@@ -1231,6 +1228,7 @@ class AccountsPutongTableModel extends AbstractTableModel
 			//cashaccountnamelist.add(entry.getKey() );
 			this.accountslist.add(entry.getValue());
 		}
+		this.fireTableDataChanged();
 	}
 	 public int getRowCount() 
 	 {
@@ -1364,6 +1362,7 @@ class AccountsXinYongPutongTableModel extends AbstractTableModel
 			//cashaccountnamelist.add(entry.getKey() );
 			this.accountslist.add(entry.getValue());
 		}
+		this.fireTableDataChanged();
 	}
 	public int getAccountRowNumber (String acntname)
 	{
@@ -1491,6 +1490,7 @@ class CashAccountsTableModel extends AbstractTableModel
 //			//cashaccountnamelist.add(entry.getKey() );
 //			this.accountslist.add(entry.getValue());
 //		}
+		this.fireTableDataChanged();
 	}
 	public int getAccountRowNumber (String acntname)
 	{

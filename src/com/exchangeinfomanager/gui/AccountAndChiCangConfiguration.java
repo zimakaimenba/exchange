@@ -285,14 +285,6 @@ public class AccountAndChiCangConfiguration
 //		this.stockChiCangdetailmap = stockChiCangdetailmap;
 //	}
 
-
-
-
-	/**
-	 * @return the putongaccountsnamelist
-	 */
-
-
 	/**
 	 * @param putongaccountsnamelist the putongaccountsnamelist to set
 	 */
@@ -302,9 +294,9 @@ public class AccountAndChiCangConfiguration
 	/**
 	 * @return the putongaccountsdetailmap
 	 */
-//	public HashMap<String, AccountPuTong> getPutongaccountsdetailmap() {
-//		return putongaccountsdetailmap;
-//	}
+	public HashMap<String, AccountPuTong> getPutongaccountsdetailmap() {
+		return putongaccountsdetailmap;
+	}
 	/**
 	 * @param putongaccountsdetailmap the putongaccountsdetailmap to set
 	 */
@@ -318,9 +310,9 @@ public class AccountAndChiCangConfiguration
 //	/**
 //	 * @return the rzrqputongaccountsdetailmap
 //	 */
-//	public HashMap<String, AccountXinYongPuTong> getRzrqputongaccountsdetailmap() {
-//		return rzrqputongaccountsdetailmap;
-//	}
+	public HashMap<String, AccountXinYongPuTong> getRzrqputongaccountsdetailmap() {
+		return rzrqputongaccountsdetailmap;
+	}
 //	/**
 //	 * @param rzrqputongaccountsdetailmap the rzrqputongaccountsdetailmap to set
 //	 */
@@ -330,9 +322,9 @@ public class AccountAndChiCangConfiguration
 //	/**
 //	 * @return the rongziaccountsdetailmap
 //	 */
-//	public HashMap<String, AccountRongZi> getRongziaccountsdetailmap() {
-//		return rongziaccountsdetailmap;
-//	}
+	public HashMap<String, AccountRongZi> getRongziaccountsdetailmap() {
+		return rongziaccountsdetailmap;
+	}
 //	/**
 //	 * @param rongziaccountsdetailmap the rongziaccountsdetailmap to set
 //	 */
@@ -352,9 +344,9 @@ public class AccountAndChiCangConfiguration
 //	/**
 //	 * @return the rongquanaccountsdetailmap
 //	 */
-//	public HashMap<String, AccountRongQuan> getRongquanaccountsdetailmap() {
-//		return rongquanaccountsdetailmap;
-//	}
+	public HashMap<String, AccountRongQuan> getRongquanaccountsdetailmap() {
+		return rongquanaccountsdetailmap;
+	}
 //	/**
 //	 * @param rongquanaccountsdetailmap the rongquanaccountsdetailmap to set
 //	 */

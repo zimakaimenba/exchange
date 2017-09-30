@@ -165,8 +165,7 @@ public class BkChanYeLianTree extends JTree
 
 	    for (int i = 0; i < childCount; i++) {
 	    	BkChanYeLianTreeNode childNode = (BkChanYeLianTreeNode) node.getChildAt(i);
-	    	String bkname = childNode.getUserObject().toString();
-	    	
+	    	String bkname = childNode.getMyOwnName();
 	    	int childNodetype = childNode.getType();
 	    	childNode.clearCurParseFileStockSet ( );
 

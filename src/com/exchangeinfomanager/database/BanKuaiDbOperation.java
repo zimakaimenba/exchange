@@ -170,7 +170,7 @@ public class BanKuaiDbOperation
 //	}
 
 
-	public Stock getNodesBasicInfo(Stock stockbasicinfo) 
+	public Stock getStockBasicInfo(Stock stockbasicinfo) 
 	{
 		String stockcode = stockbasicinfo.getMyOwnCode();
 		CachedRowSetImpl rsagu = null;
@@ -193,6 +193,34 @@ public class BanKuaiDbOperation
 		}
 		
 		return stockbasicinfo;
+	}
+	public BanKuai getBanKuaiBasicInfo(BanKuai bkbasicinfo)
+	{
+		String bkcode = bkbasicinfo.getMyOwnCode();
+		CachedRowSetImpl rsagu = null;
+		try {
+			 String sqlquerystat= "select 概念时间,概念板块提醒,负面消息时间,负面消息,券商评级时间,券商评级提醒,正相关及客户,负相关及竞争对手,客户,竞争对手 from 通达信板块列表  where 板块ID = '" + bkcode +"' \r\n" + 
+			 		"union\r\n" + 
+			 		"select 概念时间,概念板块提醒,负面消息时间,负面消息,券商评级时间,券商评级提醒,正相关及客户,负相关及竞争对手,客户,竞争对手 from 通达信交易所指数列表  where 板块ID = '" + bkcode + "' " 
+					 			;	
+			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
+			while(rsagu.next())
+				setSingleNodeInfo (bkbasicinfo,rsagu);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				rsagu.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			rsagu = null;
+		}
+		
+		return bkbasicinfo;
+
 	}
 	
 	public ArrayList<BkChanYeLianTreeNode> getNodesBasicInfo(String stockcode) 
@@ -1871,7 +1899,7 @@ public class BanKuaiDbOperation
 	}
 
 	/*
-	 * 找出某个时间点 通达信板块的所有行业/概念/风格个股及个股权重和成交额
+	 * 找出某个时间点 行业/概念/风格/指数 通达信板块的所有个股及个股权重和成交额
 	 */
 	public HashMap<String, Stock> getTDXBanKuaiGeGuOfHyGnFg(String currentbk,String currentbkcode, Date selecteddatestart , Date selecteddateend, boolean needchengjiaoeinfo)
 	{
@@ -1889,7 +1917,8 @@ public class BanKuaiDbOperation
 				}catch(java.lang.NullPointerException e){ 
 					System.out.println( "数据库连接为NULL!");
 				} catch (SQLException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
+					System.out.println("java.sql.SQLException: 对列 1 中的值 (芯片) 执行 getInt 失败");
 				}catch(Exception e){
 					e.printStackTrace();
 				} finally {
@@ -3719,12 +3748,20 @@ public class BanKuaiDbOperation
 	 */
 	public void setStockWeightInBanKuai(String bkcode, String bkname, String stockcode, int weight) 
 	{
-		String sqlupdatestat1 = "update 股票通达信交易所指数对应表  set 股票权重 = " +  weight  + " where 指数板块 = '" + bkname + "' AND 股票代码 = '" + stockcode + "'";
-		String sqlupdatestat2 = "update 股票通达信概念板块对应表  set 股票权重 = " +  weight  + " where 概念板块 = '" + bkname + "' AND 股票代码 = '" + stockcode + "'";
-		String sqlupdatestat3 = "update 股票通达信行业板块对应表  set 股票权重 = " +  weight  + " where 行业板块 = '" + bkname + "' AND 股票代码 = '" + stockcode + "'";
-		String sqlupdatestat4 = "update 股票通达信风格板块对应表  set 股票权重 = " +  weight  + " where 风格板块 = '" + bkname + "' AND 股票代码 = '" + stockcode + "'";
+		//因为不知道bkcode在哪个表里面，
+		String sqlupdatestat1 = "update 股票通达信交易所指数对应表  set 股票权重 = " +  weight  + 
+							" where 指数板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)" 
+							;
+		String sqlupdatestat2 = "update 股票通达信概念板块对应表  set 股票权重 = " +  weight  + 
+							" where 概念板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
+							;
+		String sqlupdatestat3 = "update 股票通达信行业板块对应表  set 股票权重 = " +  weight  + 
+							" where 行业板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
+							;
+		String sqlupdatestat4 = "update 股票通达信风格板块对应表  set 股票权重 = " +  weight  + 
+							" where 风格板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
+							;
 		//很傻的实现
-		
 		connectdb.sqlUpdateStatExecute(sqlupdatestat1);
 		connectdb.sqlUpdateStatExecute(sqlupdatestat2);
 		connectdb.sqlUpdateStatExecute(sqlupdatestat3);
@@ -4365,7 +4402,7 @@ public class BanKuaiDbOperation
 				 else
 					 actiontable = "通达信交易所指数列表";
 				 
-				 String sqlinsertstat = "UPDATE " + actiontable + "SET"
+				 String sqlinsertstat = "UPDATE " + actiontable + " SET "
 						 	+ " 板块名称=" + stockname +","
 							+ " 概念时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(nodeshouldbedisplayed.getGainiantishidate()) ) +","
 							+ " 概念板块提醒=" + txtareainputgainiants +","
@@ -4383,7 +4420,7 @@ public class BanKuaiDbOperation
 					 
 				 //System.out.println(sqlinsertstat); 
 				 sqlstatmap.put("mysql", sqlinsertstat);
-				 if( connectdb.sqlInsertStatExecute(sqlinsertstat) >0 ) {
+				 if( connectdb.sqlUpdateStatExecute(sqlinsertstat) !=0 ) {
 					 return true;
 				 } else return false;
 			 }

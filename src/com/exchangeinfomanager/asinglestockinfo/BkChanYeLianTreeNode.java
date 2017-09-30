@@ -84,9 +84,10 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	}
 	
 
+	//子类里面有具体实现
     public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
     {
-
+//    	this.parsefilestockset = parsefilestockset2;
     }
     public HashSet<String> getParseFileStockSet ()
     {
