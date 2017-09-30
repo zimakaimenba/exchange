@@ -1087,7 +1087,7 @@ public class BanKuaiDbOperation
 		   	        							;
 		   	        	else
 		   	        		sqlupdatestat = "UPDATE 股票通达信风格板块对应表 SET 移除时间 = " + "'" +  sysconfig.formatDate(new Date() ) + "'"
-		   	        						+" WHRE 风格板块=" + "'" + gupiaoheader + "'"
+		   	        						+" WHERE 风格板块=" + "'" + gupiaoheader + "'"
 		   	        						+" AND 股票代码= " + "'" + str.trim() + "'"
 		   	        						+ "  AND isnull(移除时间)"
 		   	        						;
