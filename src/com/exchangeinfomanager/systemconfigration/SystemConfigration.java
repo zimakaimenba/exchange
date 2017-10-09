@@ -56,6 +56,7 @@ public class SystemConfigration
 	private String bkparsestoredpath;
 	private int setSoftWareMode; //设定系统模式，有2种，基本数据和通达信同步数据。
 	private String datatablesfromserver;
+	private String gephifileexportparth;
 	public static int MODELSERVER=0, MODELCLIENT=1, MODELSERVERCLIENT=2;
 	
 	private void getSystemInfoFromXML() 
@@ -130,6 +131,9 @@ public class SystemConfigration
 			
 			Element eletbkparsefile = xmlroot.element("bankuaiparsefilepah");
 			this.bkparsestoredpath = eletbkparsefile.getText();
+			
+			Element gephifilepath = xmlroot.element("gephifilepath");
+			this.gephifileexportparth = gephifilepath.getText();
 			
 //			Element eletdxvol = xmlroot.element("tdxvolpah");
 //			this.tdxvolpath = eletdxvol.getText(); 
@@ -549,6 +553,10 @@ public class SystemConfigration
 		public int getSoftWareMode() 
 		{
 			return this.setSoftWareMode;
+		}
+		public String getGephiFileExportPath() {
+			// TODO Auto-generated method stub
+			return this.gephifileexportparth;
 		}
 
 }

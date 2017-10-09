@@ -86,12 +86,11 @@ import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiBarChartPnl;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiBarChartPnl;
-import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
@@ -143,7 +142,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		treechanyelian = initializeBkChanYeLianXMLTree();
 		initializeSysConfig ();
 		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
-//		startGui ();
+		startGui ();
 	}
 	public void startGui ()
 	{
@@ -375,7 +374,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	     */
 	    private void getReleatedInfoAndActionsForTreePathNode (TreePath closestPath)
 	    {
-	    	 BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getPathComponent(1);
+	    	 BanKuai bknode = (BanKuai) closestPath.getPathComponent(1);
 	    	 String tdxbk = bknode.getMyOwnName(); 
 	    	 String tdxbkcode = bknode.getMyOwnCode();
 	    	 
@@ -386,9 +385,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 	  	       	HashMap<String, String> tmpsubbk = bkdbopt.getSubBanKuai (tdxbkcode);
 	  	        ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).refresh(tmpsubbk);
 	  	       
-	  	       	//读出该板块当前所有的个股
-	  	       	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbk,tdxbkcode,new Date(),new Date(),false );
-	  	      
+	  	       	//读出该板块当前所有的个股，读出的是本周在该板块内存在的所有个股，而不是当天在该板块存在的个股
+	  	        Date startdate = CommonUtility.getFirstDayOfWeek(dchgeguwkzhanbi.getDate() );
+	  	        Date lastdate = CommonUtility.getLastDayOfWeek(dchgeguwkzhanbi.getDate() );
+	  	       	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (tdxbk,tdxbkcode,startdate,lastdate);
+	  	        bknode.setBanKuaiGeGu(tmpallbkge);
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tdxbk,tdxbkcode,tmpallbkge,stockinparsefile);
 	  	       	
@@ -408,62 +409,53 @@ public class BanKuaiAndChanYeLian extends JPanel
   	       	 displayNodeBasicInfo(curselectedbknode);
 	    }
 	    /*
-	     * 显示板块内股票的周占比, 判断是周几，如果不是周六，就显示上周的，否则显示本周的
+	     * 显示板块内股票的周占比,
 	     */
-	    private void displayBanKuaiGeGuZhanBi (String tdxbkcode, String tdxbkname,Date actiondate)
+//	    private void displayBanKuaiGeGuZhanBi (String tdxbkcode, String tdxbkname,Date actiondate)
+//	    {
+//	    	if(cbxtichuquanzhong.isSelected())
+//	    		pnlGeGuZhanBi.setBanKuaiNeededDisplay(tdxbkname, tdxbkcode, actiondate,Integer.parseInt(tfldquanzhong.getText() ) );
+//	    	else
+//	    		pnlGeGuZhanBi.setBanKuaiNeededDisplay(tdxbkname, tdxbkcode, actiondate, -1 );
+//	    }
+	    /*
+	     * 显示板块内股票的周占比, 显示的都是本周的而不是当天的
+	     */
+	    protected void displayBanKuaiGeGuZhanBi(BanKuai bknode) 
 	    {
 	    	if(cbxtichuquanzhong.isSelected())
-	    		pnlGeGuZhanBi.setBanKuaiNeededDisplay(tdxbkname, tdxbkcode, actiondate,Integer.parseInt(tfldquanzhong.getText() ) );
+	    		pnlGeGuZhanBi.setBanKuaiNeededDisplay(bknode,Integer.parseInt(tfldquanzhong.getText() ),CommonUtility.getWeekNumber(dchgeguwkzhanbi.getDate()  ) );
 	    	else
-	    		pnlGeGuZhanBi.setBanKuaiNeededDisplay(tdxbkname, tdxbkcode, actiondate, -1 );
-	    }
-    
-
-	      /*
+	    		pnlGeGuZhanBi.setBanKuaiNeededDisplay(bknode, -1 ,CommonUtility.getWeekNumber(dchgeguwkzhanbi.getDate()  ) );
+			
+		}
+	    /*
 	     * 显示板块周在整个市场的占比
 	     */
-	    private void displayBanKuaiZhanBi(String tdxbkcode, String tdxbkname,Date actiondate) 
+	    private void displayBanKuaiZhanBi(BanKuai bankuai) 
 	    {
-//	    	Date date=new Date();//取时间
-//	    	Calendar calendar =  Calendar.getInstance();
-//	    	calendar.setTime(date);
-//	    	calendar.add(calendar.MONTH,-6);//把日期往后增加一天.整数往后推,负数往前移动
-//	    	date = calendar.getTime();
+	    	Date endday = CommonUtility.getLastDayOfWeek(dchgeguwkzhanbi.getDate() );
+	    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dchgeguwkzhanbi.getDate() ,6);
+	    	bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
 	    	
-	    	HashMap<String,String> displaybk = new HashMap<String,String> ();
-	    	displaybk.put(tdxbkcode, tdxbkname);
-	    	bkfxpnl.setBanKuaiWithDaPanNeededDisplay(displaybk, tdxbkname,actiondate,6);
-	    	
-	    	//显示本周和上周成交量占比的变化
-//	    	try {
-//		    	rs.absolute(row);
-//		    	Double zhanbiweek = rs.getDouble("占比");
-//		    	Double zhanbilastweek;
-//		    	Double growthrate;
-//		    	if(row >1) {
-//		    		rs.absolute(row-1);
-//			    	zhanbilastweek =rs.getDouble("占比");
-//			    	growthrate = (zhanbiweek-zhanbilastweek)/zhanbilastweek;
-//		    	} else {
-//		    		zhanbilastweek = 0.0;
-//		    		growthrate = 10000.0;
-//		    	}
-//		    	lblcjlzbinfo.setText("本周占比: " + new DecimalFormat("%#0.000").format(zhanbiweek) + " 上周占比: " + new DecimalFormat("%#0.000").format(zhanbilastweek) + " 占比增长率: " + new DecimalFormat("%#0.000").format((growthrate)) );
-//	    	} catch (SQLException e) {
-//	    		// TODO Auto-generated catch block
-//	    		e.printStackTrace();
-//	    	} finally {
-//	    		if(rs != null) {
-//	    			try {
-//						rs.close();
-//					} catch (SQLException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//	    			rs = null;
-//	    		}
-//	    	}
+	    	bkfxpnl.setBanKuaiWithDaPanNeededDisplay(bankuai);
+   	
+
 		}
+    
+
+//	      /*
+//	     * 显示板块周在整个市场的占比
+//	     */
+//	    private void displayBanKuaiZhanBi(String tdxbkcode, String tdxbkname,Date actiondate) 
+//	    {
+//
+//	    	HashMap<String,String> displaybk = new HashMap<String,String> ();
+//	    	displaybk.put(tdxbkcode, tdxbkname);
+//	    	bkfxpnl.setBanKuaiWithDaPanNeededDisplay(displaybk, tdxbkname,actiondate,6);
+//   	
+//
+//		}
 	   
 	    /*
 	     * 设置该板块个股的权重
@@ -780,6 +772,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 	}	    
 	private void createEvents() 
 	{
+		mntmgephi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		
 		cbxtichuquanzhong.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
 			{
@@ -793,13 +791,15 @@ public class BanKuaiAndChanYeLian extends JPanel
 			{
 //				 读出该板块近一年的占比走势
 				TreePath closestPath = treechanyelian.getSelectionPath();
-				BkChanYeLianTreeNode bknode = (BkChanYeLianTreeNode) closestPath.getPathComponent(1);
+				BanKuai bknode = (BanKuai) closestPath.getPathComponent(1);
 		    	 String tdxbk = bknode.getMyOwnName(); 
 		    	 String tdxbkcode = bknode.getMyOwnCode();
 		    	 
 		    	 Date actiondate = dchgeguwkzhanbi.getDate();
-		  	     displayBanKuaiZhanBi (tdxbkcode,tdxbk,actiondate);
-		  	     displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk,actiondate);
+//		  	     displayBanKuaiZhanBi (tdxbkcode,tdxbk,actiondate);
+//		  	     displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk,actiondate);
+		    	 displayBanKuaiZhanBi (bknode);
+		  	   	 displayBanKuaiGeGuZhanBi (bknode);
 			}
 		});
 		
@@ -814,9 +814,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 			    	 String tdxbkcode = bknode.getMyOwnCode();
 			    	 
 			    	if("date".equals(e.getPropertyName())) {
-			    		Date actiondate = dchgeguwkzhanbi.getDate(); 
-			    		displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk,actiondate);
-			    		displayBanKuaiZhanBi (tdxbkcode,tdxbk,actiondate);
+//			    		Date actiondate = dchgeguwkzhanbi.getDate(); 
+//			    		displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk,actiondate);
+//			    		displayBanKuaiZhanBi (tdxbkcode,tdxbk,actiondate);
 			    	}
 		    	}
 		    }
@@ -1214,6 +1214,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			}
 	    
 	
+	
 	protected void chengJiaoLiangFengXi() 
 	{
 		TreePath closestPath = treechanyelian.getSelectionPath();
@@ -1455,6 +1456,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private BanKuaiFengXiPieChartPnl pnlGeGuZhanBi;
 	private JTextField tfldquanzhong;
 	private JCheckBox cbxtichuquanzhong;
+	private JMenuItem mntmgephi;
 
 	private void initializeGui() 
 	{
@@ -2053,6 +2055,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 		addPopup(treechanyelian, popupMenu);
 		mntmNewMenuItem = new JMenuItem("\u6DFB\u52A0\u4EA7\u4E1A\u94FE\u65B0\u95FB");
 		popupMenu.add(mntmNewMenuItem);
+		
+		mntmgephi = new JMenuItem("\u52A0\u5165/\u79FB\u51FAGephi\u5BFC\u51FA\u6570\u636E");
+		
+		popupMenu.add(mntmgephi);
 		
 
 		bkfxpnl = new BanKuaiFengXiBarChartPnl ();

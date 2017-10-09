@@ -99,6 +99,8 @@ public class Stock extends BkChanYeLianTreeNode {
 
 	public boolean isInTdxBanKuai (String tdxbk)
 	{
+		if(this.suoShuSysBanKuai.size() == 0) //size为0，个股不可能完全没有板块，为0说明和数据库连接有问题，那都返回true
+			return true;
 		if(this.suoShuSysBanKuai.containsKey(tdxbk))
 			return true;
 		else 
@@ -158,16 +160,16 @@ public class Stock extends BkChanYeLianTreeNode {
 	/**
 	 * @return the sysBanKuaichenjiaoe
 	 */
-	private HashMap<String, Double> sysBanKuaichenjiaoe;
-	public HashMap<String, Double> getSysBanKuaiChenJiaoE() {
-		return sysBanKuaichenjiaoe;
-	}
-	/**
-	 * @param sysBanKuaichenjiaoe the sysBanKuaichenjiaoe to set
-	 */
-	public void setSysBanKuaiChenJiaoE(HashMap<String, Double> sysBanKuaichenjiaoe) {
-		this.sysBanKuaichenjiaoe = sysBanKuaichenjiaoe;
-	}
+//	private HashMap<String, Double> sysBanKuaichenjiaoe;
+//	public HashMap<String, Double> getSysBanKuaiChenJiaoE() {
+//		return sysBanKuaichenjiaoe;
+//	}
+//	/**
+//	 * @param sysBanKuaichenjiaoe the sysBanKuaichenjiaoe to set
+//	 */
+//	public void setSysBanKuaiChenJiaoE(HashMap<String, Double> sysBanKuaichenjiaoe) {
+//		this.sysBanKuaichenjiaoe = sysBanKuaichenjiaoe;
+//	}
 	
 	public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
 	 {

@@ -28,7 +28,6 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInf
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.ArrayListMultimap;

@@ -28,6 +28,7 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.SubBanKuai;
 import com.exchangeinfomanager.asinglestockinfo.TreeTransferHandler;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
@@ -171,7 +172,9 @@ public class BkChanYeLianTree extends JTree
 
 	    	if( childNodetype == BanKuaiAndStockBasic.TDXBK ) {
 	    		String bkcode = childNode.getMyOwnCode();
-	    		HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bkname,bkcode,new Date(),new Date(),false);
+	    		Date startdate = CommonUtility.getFirstDayOfWeek(new Date());
+	  	        Date lastdate = CommonUtility.getLastDayOfWeek(new Date());
+	    		HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (bkname,bkcode,startdate,lastdate);
 	    		Set<String> curbkallbkset = tmpallbkge.keySet();
 				SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset );
 				

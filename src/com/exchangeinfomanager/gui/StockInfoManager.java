@@ -19,6 +19,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeet
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportQuanShangJiaoYiRecords;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
@@ -27,6 +28,9 @@ import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiBarChartPnl;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiPieChartPnl;
+import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -91,8 +95,6 @@ import com.sun.rowset.CachedRowSetImpl;
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.TableCellListener;
-import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiBarChartPnl;
-import com.exchangeinfomanager.gui.subgui.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GeGuFengXiBarChartPnl;
@@ -131,6 +133,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
+import javax.swing.tree.TreePath;
+
 import java.beans.PropertyChangeListener;
 
 import java.beans.PropertyChangeEvent;
@@ -368,7 +372,24 @@ public class StockInfoManager
 	}
 
 	private void createEvents()
-	{
+	{	
+		menuItembkfx.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+//				if(bkfx == null ) {
+				BanKuaiFengXi bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),"","",dateChsBanKuaiZhanbi.getDate());
+				bkfx.setModal(false);
+				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				bkfx.setVisible(true);
+//			} 
+			
+//			if(!bkfx.isVisible() ) {
+//				bkfx.setVisible(true);
+//			 } 
+			bkfx.toFront();
+			}
+		});
+		
 		btndetailfx.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -481,7 +502,7 @@ public class StockInfoManager
 			        
 			        btndetailfx.setEnabled(true);
 //					dateChsBanKuaiZhanbi.setEnabled(true);
-			        displayStockBanKuaiZhanBiByWeek (link);
+			        displayBanKuaiOfStockZhanBiByWeek (link);
 			        displayStockBanKuaiZhanBiByStock (link);
 			}
 	     }); 
@@ -1569,83 +1590,114 @@ public class StockInfoManager
 //		dialogbkfx.setVisible(true);
 //}
 
-	protected  void displayStockBanKuaiZhanBiByWeek(String firstshowbkcode) 
+	protected  void displayBanKuaiOfStockZhanBiByWeek(String firstshowbkcode) 
 	{
-		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
-		panelZhanBi.setBanKuaiWithDaPanNeededDisplay(suosusysbankuai, firstshowbkcode,dateChsBanKuaiZhanbi.getDate(),6);
+		String bkcode = firstshowbkcode.trim().substring(1,7);
+		TreePath bankuaitreepath = bkcyl.getBkChanYeLianTree().locateNodeByNameOrHypyOrBkCode(bkcode);
+		BanKuai bankuai = (BanKuai) bankuaitreepath.getPathComponent(1);
+   	 	String tdxbk = bankuai.getMyOwnName(); 
+   	 	String tdxbkcode = bankuai.getMyOwnCode();
+   	 	
+		Date endday = CommonUtility.getLastDayOfWeek(dateChsBanKuaiZhanbi.getDate() );
+    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate() ,6);
+    	ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezb = bankuai.getChenJiaoErZhanBiInGivenPeriod();
+    	if(cjezb != null ) {
+    		ChenJiaoZhanBiInGivenPeriod cjezblatest = cjezb.get(cjezb.size()-1 );
+        	if(cjezblatest.getDayofEndofWeek().compareTo(endday) == 0)
+        		;
+        	else
+        		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
+    	} else
+    		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
+    	
+    	panelZhanBi.setBanKuaiWithDaPanNeededDisplay(bankuai);
 		
+//		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
+//		
+//		panelZhanBi.setBanKuaiWithDaPanNeededDisplay(suosusysbankuai, firstshowbkcode,dateChsBanKuaiZhanbi.getDate(),6);
 	}
-	
+	/*
+	 * 股票在板块的半年内的占比
+	 */
 	protected  void displayStockBanKuaiZhanBiByStock (String bkname)
 	{
-		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
+		String bkcode = bkname.trim().substring(1,7);
+		Date endday = CommonUtility.getLastDayOfWeek(dateChsBanKuaiZhanbi.getDate() );
+    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate() ,6);
 		
-		for(Map.Entry<String, String> entry : suosusysbankuai.entrySet()) {
-			String bkcode = entry.getKey();
-			String name = entry.getValue();
-			if(name.equals(bkname.trim() ) ) {
-				pnlGeGuWkZhanBi.setStockWithBanKuaiNeededDisplay(bkcode, cBxstockcode.getSelectedItem().toString().substring(0, 6), dateChsBanKuaiZhanbi.getDate());
+    	nodeshouldbedisplayed = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,(Stock)nodeshouldbedisplayed,startday,endday);
+    	pnlGeGuWkZhanBi.setBanKuaiWithDaPanNeededDisplay(nodeshouldbedisplayed);
+		
+//		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
+//		
+//		for(Map.Entry<String, String> entry : suosusysbankuai.entrySet()) {
+//			String bkcode = entry.getKey();
+//			String name = entry.getValue();
+//			if(name.equals(bkname.trim() ) ) {
+//				pnlGeGuWkZhanBi.setStockWithBanKuaiNeededDisplay(bkcode, cBxstockcode.getSelectedItem().toString().substring(0, 6), dateChsBanKuaiZhanbi.getDate());
+//				
+////				int currentweek = CommonUtility.getWeekNumber(dateChsBanKuaiZhanbi.getDate() );
+////				Date twoweeksago = CommonUtility.getDateFromYearAndWeek(currentweek-2);
+////				pnlBkPieLastWkZhanBi.setBanKuaiNeededDisplay(name, bkcode, dateChsBanKuaiZhanbi.getDate() );
+//			}
+//			
+//		}
+	}
+	
+	
+		protected void saveKuaiSuJiLuJiaoYi() 
+		{
+			try {
 				
-//				int currentweek = CommonUtility.getWeekNumber(dateChsBanKuaiZhanbi.getDate() );
-//				Date twoweeksago = CommonUtility.getDateFromYearAndWeek(currentweek-2);
-//				pnlBkPieLastWkZhanBi.setBanKuaiNeededDisplay(name, bkcode, dateChsBanKuaiZhanbi.getDate() );
+				@SuppressWarnings("unused")
+				int stocknumber = kspanel.getJiaoyiGushu();
+				@SuppressWarnings("unused")
+				double stockprice = kspanel.getJiaoyiJiage();
+			} catch (java.lang.NumberFormatException ex) {
+				JOptionPane.showMessageDialog(frame, "股价或股数输入有误，请重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
+				return;
 			}
 			
+			if(btngengxinxx.isEnabled() == true) {
+				int action = JOptionPane.showConfirmDialog(null, "更改后的信息未存！是否需要保存？","Warning", JOptionPane.YES_NO_OPTION);
+				if(0 == action) {
+					setGuiInfoToDatabase();
+				}
+			}
+			
+			kspanel.setActionDay(new Date());
+			int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
+			
+			if(autoIncKeyFromApi > 0) {
+				cBxstockcode.setSelectedItem(kspanel.getStockcode());
+				preUpdateSearchResultToGui(kspanel.getStockcode());
+				updateStockCombox();
+				
+				kspanel.resetInput(); 
+			} else {
+				JOptionPane.showMessageDialog(frame, "账户现金余额可能不足，无法买入！","Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			
+			refreshChiCangAccountPanel ();
+			
 		}
-	}
-protected void saveKuaiSuJiLuJiaoYi() 
-{
-	try {
 		
-		@SuppressWarnings("unused")
-		int stocknumber = kspanel.getJiaoyiGushu();
-		@SuppressWarnings("unused")
-		double stockprice = kspanel.getJiaoyiJiage();
-	} catch (java.lang.NumberFormatException ex) {
-		JOptionPane.showMessageDialog(frame, "股价或股数输入有误，请重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
-		return;
-	}
-	
-	if(btngengxinxx.isEnabled() == true) {
-		int action = JOptionPane.showConfirmDialog(null, "更改后的信息未存！是否需要保存？","Warning", JOptionPane.YES_NO_OPTION);
-		if(0 == action) {
-			setGuiInfoToDatabase();
+		protected void startBanKuaiGuanLiDlg()
+		{
+			if(bkgldialog == null ) {
+				bkgldialog = new BanKuaiGuanLi(this,bkcyl);
+				bkgldialog.setModal(false);
+		//		bkgldialog.startDialog ();
+				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				bkgldialog.setVisible(true);
+			} 
+			
+			if(!bkgldialog.isVisible() ) {
+				bkgldialog.setVisible(true);
+			 } 
+			bkgldialog.toFront();
 		}
-	}
-	
-	kspanel.setActionDay(new Date());
-	int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
-	
-	if(autoIncKeyFromApi > 0) {
-		cBxstockcode.setSelectedItem(kspanel.getStockcode());
-		preUpdateSearchResultToGui(kspanel.getStockcode());
-		updateStockCombox();
-		
-		kspanel.resetInput(); 
-	} else {
-		JOptionPane.showMessageDialog(frame, "账户现金余额可能不足，无法买入！","Warning", JOptionPane.WARNING_MESSAGE);
-		return;
-	}
-	
-	refreshChiCangAccountPanel ();
-	
-}
-
-protected void startBanKuaiGuanLiDlg()
-{
-	if(bkgldialog == null ) {
-		bkgldialog = new BanKuaiGuanLi(this,bkcyl);
-		bkgldialog.setModal(false);
-//		bkgldialog.startDialog ();
-		bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		bkgldialog.setVisible(true);
-	} 
-	
-	if(!bkgldialog.isVisible() ) {
-		bkgldialog.setVisible(true);
-	 } 
-	bkgldialog.toFront();
-}
 
 	protected void refreshChiCangAccountPanel ()
 	{
@@ -1758,10 +1810,11 @@ protected void startBanKuaiGuanLiDlg()
 		 		+ " <p>所属板块:";
 	     for(String suoshubankcode : union ) {
 	    	 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
+	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
 	    	 if(daleilist.size()>0)
-	    			htmlstring  +=   "<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + suosusysbankuai.get(suoshubankcode) + daleilist.toString()  + "</a> ";
+	    			htmlstring  +=   "<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> ";
 	    		else
-	    			htmlstring  += "<a href=\"openBanKuaiAndChanYeLianDialog\"> " + suosusysbankuai.get(suoshubankcode) + "</a> ";
+	    			htmlstring  += "<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ";
 	     } 
 	     htmlstring += "</p>";
 	     		
@@ -2249,6 +2302,7 @@ protected void startBanKuaiGuanLiDlg()
 	private JPanel panel;
 	private BanKuaiFengXiBarChartPnl pnlGeGuWkZhanBi;
 	private JButton btndetailfx;
+	private JMenuItem menuItembkfx;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2995,6 +3049,10 @@ protected void startBanKuaiGuanLiDlg()
 		menuItemChanYeLian = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u4E0E\u4EA7\u4E1A\u94FE");
 		
 		menuOperationList.add(menuItemChanYeLian);
+		
+		menuItembkfx = new JMenuItem("\u677F\u5757\u6210\u4EA4\u91CF\u5206\u6790");
+		
+		menuOperationList.add(menuItembkfx);
 		
 		menuItemimportrecords = new JMenuItem("\u5BFC\u5165\u4EA4\u6613\u8BB0\u5F55");
 		

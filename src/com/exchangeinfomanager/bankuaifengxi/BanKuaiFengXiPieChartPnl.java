@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.gui.subgui;
+package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
@@ -58,9 +59,11 @@ import org.jfree.ui.HorizontalAlignment;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.subgui.ShowLargePieChartPnl;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
 
@@ -97,21 +100,27 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 	private DefaultPieDataset piechartdataset;
 
 	
-	
-	public void setBanKuaiNeededDisplay (String tdxbkname,String tdxbkcode, Date datedisplayed2, int weightgate)
+	public void setBanKuaiNeededDisplay (BanKuai bankuai,int weightgate,int weeknumber)
 	{
-		datedisplayed = datedisplayed2;
-		Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
-		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
-
-		if (lasthightlightKey != null) {
-			pieplot.setExplodePercent(lasthightlightKey, 0);
-        }
-        createDataset(tdxbkname,tdxbkcode,startdate,enddate,weightgate);
-//        createControlPanel();
-
-		
+		HashMap<String, Stock> tmpallbkge = bankuai.getBanKuaiGeGu ();
+		createDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
 	}
+//	public void setBanKuaiNeededDisplay (String tdxbkname,String tdxbkcode, Date datedisplayed2, int weightgate)
+//	{
+//		datedisplayed = datedisplayed2;
+//		Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
+//		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
+//
+//		if (lasthightlightKey != null) {
+//			pieplot.setExplodePercent(lasthightlightKey, 0);
+//        }
+//       
+////    	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbkname,tdxbkcode,startdate,enddate,true );
+//    	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang(tdxbkname,tdxbkcode,startdate,enddate);
+//    	createDataset(tdxbkcode,tmpallbkge,weightgate);
+//
+////        createControlPanel();
+//	}
 	public void resetDate ()
 	{
 		piechartdataset = new DefaultPieDataset();
@@ -122,23 +131,29 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 	}
 	
 
-    private void createDataset(String tdxbkname, String tdxbkcode,Date startdate, Date enddate, int weightgate) 
+    private void createDataset(String tdxbkcode,HashMap<String, Stock> tmpallbkge,int weightgate,int weeknumber ) 
     {
-    	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbkname,tdxbkcode,startdate,enddate,true );
-    	
     	piechartdataset = new DefaultPieDataset();
-    	for(String ggcode: tmpallbkge.keySet()) {
-    		Stock tmpstockinfo = tmpallbkge.get(ggcode);
-    		String stockname = tmpstockinfo.getMyOwnName();
-    		HashMap<String, Double> stockchengjiaoe = tmpstockinfo.getSysBanKuaiChenJiaoE();
-//    		stockchengjiaoe = stockchengjiaoe.entrySet().stream()
-//	                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-//	                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-//	                        (oldValue, newValue) -> oldValue, LinkedHashMap::new))
-//	                ;
-    		double cje = stockchengjiaoe.get(tdxbkcode);
+    	
+    	for (Entry<String, Stock> entry : tmpallbkge.entrySet()) {
+			String ggcode = entry.getKey();
+			Stock tmpstock = entry.getValue();
+    		String stockname = tmpstock.getMyOwnName();
     		
-    		HashMap<String, Integer> geguweightmap = tmpstockinfo.getGeGuSuoShuBanKuaiWeight ();
+    		//找到对应周的数据
+    		ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezblist = tmpstock.getChenJiaoErZhanBiInGivenPeriod();
+    		ChenJiaoZhanBiInGivenPeriod tmpcjerecords = null;
+    		for(ChenJiaoZhanBiInGivenPeriod tmprecords : cjezblist) {
+    			int tmpwknum = CommonUtility.getWeekNumber(tmprecords.getDayofEndofWeek());
+    			System.out.println(tmpwknum);
+    			if(tmpwknum == weeknumber)
+    				tmpcjerecords = tmprecords;
+    		}
+    		
+//    		ChenJiaoZhanBiInGivenPeriod tmpcjerecords = cjezblist.get(cjezblist.size()-1);
+    		double cje = tmpcjerecords.getMyOwnChengJiaoEr();
+    		
+    		HashMap<String, Integer> geguweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight ();
     		int geguweight = geguweightmap.get(tdxbkcode);
     		if(geguweight > weightgate )
     			if(stockname != null)
@@ -207,6 +222,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 
     	    public void chartMouseClicked(ChartMouseEvent e) {
     	        System.out.println("chart mouse click " + e.getEntity());
+//    	        if (arg0.getClickCount() == 2) {
     	        try {
     	        	
     	        	pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 15)); //让图片上的label字大一些

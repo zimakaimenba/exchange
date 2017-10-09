@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.commonlib;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -14,6 +15,17 @@ public class CommonUtility {
 
 	public CommonUtility() 
 	{
+		
+	}
+
+	public static String formatDateYYYY_MM_DD(Date tmpdate)
+	{
+		try {
+			SimpleDateFormat formatterhwy=new SimpleDateFormat("yyyy-MM-dd");
+			return formatterhwy.format(tmpdate);
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		}
 		
 	}
 	
@@ -120,6 +132,7 @@ public class CommonUtility {
 		Calendar c = new GregorianCalendar();
 		c.setFirstDayOfWeek(Calendar.MONDAY);
 		c.setTime(date);
+//		c.add(Calendar.DAY_OF_YEAR,-10);
 		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek()); // Monday
 		return c.getTime ();
 	}
@@ -132,8 +145,33 @@ public class CommonUtility {
 		Calendar c = new GregorianCalendar();
 		c.setFirstDayOfWeek(Calendar.MONDAY);
 		c.setTime(date);
+//		c.add(Calendar.DAY_OF_YEAR,-10);
 		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek() + 5); // Saterday
 		return c.getTime();
+	}
+	
+	public static Date formateStringToDate(String tmpdate) 
+	{
+		DateFormat format = null;
+		System.out.println(tmpdate);
+		if(tmpdate.length() > 10)
+			 format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		else if(tmpdate.length() == 10)
+			format = new SimpleDateFormat("yyyy-MM-dd");
+		else if(tmpdate.length() == 8)
+			format = new SimpleDateFormat("yyyyMMdd");
+		
+		Date date = null;
+		try {
+			System.out.println("Data need to be parsed is" + tmpdate);
+			date = format.parse(tmpdate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return date;
 	}
 	/*
 	 * 

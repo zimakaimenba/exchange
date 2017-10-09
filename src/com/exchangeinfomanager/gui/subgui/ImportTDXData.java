@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
@@ -57,7 +56,7 @@ public class ImportTDXData extends JDialog {
 	public ImportTDXData() 
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
-		this.stockdbopt = new StockDbOperations ();
+//		this.stockdbopt = new StockDbOperations ();
 		sysconfig = SystemConfigration.getInstance(); 
 		initializeGui ();
 		importPreCheckTDX ();
@@ -66,7 +65,7 @@ public class ImportTDXData extends JDialog {
 	}
 	
 	JCheckBox[] zdybkckbxs;
-	private StockDbOperations stockdbopt;
+//	private StockDbOperations stockdbopt;
 	HashMap<String, String> zdybkmap;
 
 	private SystemConfigration sysconfig;
@@ -123,7 +122,7 @@ public class ImportTDXData extends JDialog {
 	{
 		//从通达信中导入股票曾用名的信息
 		if(chbximportcym.isSelected() && chbximportcym.isEnabled())	{
-			File resulttmpfilesys = stockdbopt.refreshEverUsedStorkName ();
+			File resulttmpfilesys = bkdbopt.refreshEverUsedStorkName ();
 			chbximportcym.setEnabled(false);
 			
 			try {
@@ -261,7 +260,7 @@ public class ImportTDXData extends JDialog {
 		//从通达信foxpro中导入股票的基本面信息
 		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
 			try {
-				File resultimporttdxgegutinfo = this.stockdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
+				File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
 				List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
@@ -288,8 +287,8 @@ public class ImportTDXData extends JDialog {
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
 					int hour = cal.get(Calendar.HOUR_OF_DAY);
 					int wk = cal.get(Calendar.DAY_OF_WEEK) - 1;
-					if( (wk<=5 && wk>=1) && (hour<15 && hour>= 9) ) {
-						JOptionPane.showMessageDialog(null,"涉及通达信大量数据同步，请在交易日15点收盘后至次日9点前从通达信导出数据后再导入本系统。");
+					if( (wk<=5 && wk>=1) && (hour<15 && hour>= 10) ) {
+						JOptionPane.showMessageDialog(null,"涉及通达信大量数据同步，请在交易日15点收盘后至次日10点前从通达信导出数据后再导入本系统。");
 						return;
 					}
 					
@@ -326,7 +325,7 @@ public class ImportTDXData extends JDialog {
 		setBounds(100, 100, 526, 736);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		getContentPane().add(contentPanel, BorderLayout.NORTH);
 		
 		pbarbankuai = new JProgressBar();
 		
@@ -340,7 +339,7 @@ public class ImportTDXData extends JDialog {
 		
 		chbxdaorutdxzdybk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757(\u9009\u62E9\u8981\u5BFC\u5165\u7684\u81EA\u5B9A\u4E49\u677F\u5757)");
 		
-		chbxdaorutdxsysbkvol = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u6210\u4EA4\u91CF\u6210\u4EA4\u989D\u4FE1\u606F(*)");
+		chbxdaorutdxsysbkvol = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u677F\u5757\u53CA\u6307\u6570\u6210\u4EA4\u989D\u4FE1\u606F(*)");
 		
 		chbximportcym = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u80A1\u7968\u66FE\u7528\u540D\u4FE1\u606F");
 		
@@ -361,81 +360,79 @@ public class ImportTDXData extends JDialog {
 		JProgressBar progressBar_5 = new JProgressBar();
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-							.addComponent(chbxdaorutdxsysbk)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(cbximporttdxgeguinfo)
+							.addGap(18)
+							.addComponent(progressBar_1, GroupLayout.PREFERRED_SIZE, 247, GroupLayout.PREFERRED_SIZE))
+						.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
+							.addComponent(chbxdaorutdxzdybk)
+							.addGap(291)
+							.addComponent(progressBar_5, GroupLayout.DEFAULT_SIZE, 10, Short.MAX_VALUE))
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
 							.addGroup(gl_contentPanel.createSequentialGroup()
-								.addComponent(cbximporttdxgeguinfo)
+								.addComponent(chbxdaorutdxsysbkvol)
+								.addGap(12)
+								.addComponent(progressBar_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+								.addComponent(cbxImportSzGeGuVol)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+								.addComponent(cbxImportShGeGuVol)
 								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(progressBar_1, GroupLayout.PREFERRED_SIZE, 247, GroupLayout.PREFERRED_SIZE))
-							.addComponent(pbarbankuai, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 226, GroupLayout.PREFERRED_SIZE)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-								.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-									.addComponent(cbxImportSzGeGuVol)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-									.addComponent(cbxImportShGeGuVol)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-									.addComponent(chbximportcym)
-									.addGap(11)
-									.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 262, GroupLayout.PREFERRED_SIZE)))
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(chbxdaorutdxzdybk)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(progressBar_5, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addComponent(scrollPane_1, Alignment.LEADING)
-								.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-									.addComponent(chbxdaorutdxsysbkvol)
-									.addGap(12)
-									.addComponent(progressBar_2, GroupLayout.PREFERRED_SIZE, 205, GroupLayout.PREFERRED_SIZE)))))
+								.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addComponent(scrollPane, Alignment.LEADING)
+							.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+								.addComponent(chbxdaorutdxsysbk)
+								.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addComponent(pbarbankuai, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addComponent(scrollPane_1, Alignment.LEADING)
+							.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+								.addComponent(chbximportcym)
+								.addGap(18)
+								.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 262, GroupLayout.PREFERRED_SIZE))))
 					.addContainerGap())
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(cbximporttdxgeguinfo)
+						.addComponent(progressBar_1, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(chbximportcym)
+						.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
+					.addGap(9)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(chbxdaorutdxsysbk)
 						.addComponent(pbarbankuai, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(chbxdaorutdxzdybk)
-						.addComponent(progressBar_5, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(progressBar_2, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
-						.addComponent(chbxdaorutdxsysbkvol))
-					.addPreferredGap(ComponentPlacement.UNRELATED, 10, GroupLayout.PREFERRED_SIZE)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE))
-						.addComponent(cbxImportSzGeGuVol))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(progressBar_3, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
-						.addComponent(cbxImportShGeGuVol, Alignment.TRAILING))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
-						.addComponent(chbximportcym))
+						.addComponent(progressBar_5, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+						.addComponent(chbxdaorutdxzdybk))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(chbxdaorutdxsysbkvol)
+						.addComponent(progressBar_2, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE))
+					.addGap(10)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(cbximporttdxgeguinfo)
-						.addComponent(progressBar_1, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE))
-					.addGap(36)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 252, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
+						.addComponent(cbxImportSzGeGuVol)
+						.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(cbxImportShGeGuVol)
+						.addComponent(progressBar_3, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE))
+					.addGap(72)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 214, GroupLayout.PREFERRED_SIZE)
+					.addGap(38))
 		);
 		
 		pnlZdy = new JPanel();

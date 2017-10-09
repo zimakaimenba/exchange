@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.swing.tree.*;
 
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
+import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -62,6 +63,9 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	private String jingZhengDuiShou;
 	private String keHuCustom;
 	private String suoshujiaoyisuo;
+	
+	private ArrayList<ChenJiaoZhanBiInGivenPeriod> cjeperiodlist;
+	
 	
 	
 	public String getSuoShuJiaoYiSuo ()
@@ -352,5 +356,66 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		this.fuxiangguan = fuxiangguan;
 	}
 
+	public ArrayList<ChenJiaoZhanBiInGivenPeriod> getChenJiaoErZhanBiInGivenPeriod ()
+	{
+		return this.cjeperiodlist;
+	}
+	public void setChenJiaoErZhanBiInGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> cjlperiodlist1)
+	{
+		this.cjeperiodlist = cjlperiodlist1;
+	}
+//	public Double getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod ()
+//	{
+//		if(cjeperiodlist != null && cjeperiodlist.size()>2) {
+//			ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(cjeperiodlist.size()-1);
+//			ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(cjeperiodlist.size()-2);
+//			Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
+//			Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+//			double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
+//			return zhanbigrowthrate;
+//		} else if(cjeperiodlist != null && cjeperiodlist.size() == 1) { //只有一个记录，说明是新的板块
+//			return 10000.0;
+//		}	else
+//			return -10000.0;
+//		
+//	}
+	
+	public Double getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (int weeknumber)
+	{
+//		ChenJiaoZhanBiInGivenPeriod foundedcje = null;
+		if(cjeperiodlist == null)
+			return null;
+		
+		int index = -1;
+		boolean foundwk = false;
+		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : cjeperiodlist) {
+			index ++;
+			int wknum = CommonUtility.getWeekNumber( tmpcjzb.getDayofEndofWeek() );
+			if(wknum == weeknumber) {
+				foundwk = true;
+				break;
+			}
+		}
+		
+		if(foundwk) {
+			if( cjeperiodlist.size()>=2) {
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
+				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
+				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+				double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
+				return zhanbigrowthrate;
+			} else if(cjeperiodlist.size() == 1) { //只有一个记录，说明是新的板块
+				return 10000.0;
+			}	
+		}
+		
+		return 0.0;
+		
+	}
+	
+	
     
 }
+
+

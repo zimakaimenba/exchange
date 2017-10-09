@@ -38,7 +38,6 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.SubBanKuai;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTreeNode;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.StockDbOperations;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -266,11 +265,12 @@ class ChanYeLianXMLHandler
 					   if(oldBanKuaiFromDb != null && oldBanKuaiFromDb.size()>0 && oldBanKuaiFromDb.contains(bkowncode) ) { //如果代码已经属于需要删除的，则标记好
 						   shouldremovedwhensavexml = true;
 						   bkname = element.attributeValue("bkname");
-					   } else { //板块名字可能会变，所有直接用数据库里的名字
+					   } else { //板块名字可能会变，所有直接用数据库里的名字，如果allbkandzs为空，说明和数据库断了，也还是用XML本身的名字
 						   try{
 							   bkname = allbkandzs.get(bkowncode).getMyOwnName();
 						   } catch (java.lang.NullPointerException ex) {
-							   ex.printStackTrace();
+//							   ex.printStackTrace(); 
+							   bkname = element.attributeValue("bkname");
 						   }
 					   }
 					   

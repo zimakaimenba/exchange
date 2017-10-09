@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.gui.subgui;
+package com.exchangeinfomanager.bankuaifengxi;
 
 import javax.swing.JPanel;
 
@@ -22,6 +22,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.sun.rowset.CachedRowSetImpl;
@@ -89,13 +90,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,monthrange);
 		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
 
-        createDatasetOfDisplayBKWithDaPan(curdisplayedbankcode,startdate,enddate);
-         
-//      createControlPanel();
-	}
-	private void createDatasetOfDisplayBKWithDaPan(String bkcode, Date startdate, Date enddate) {
-    	barchartdataset = new DefaultCategoryDataset();
-    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (bkcode,startdate,enddate );
+        barchartdataset = new DefaultCategoryDataset();
+    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (curdisplayedbankcode,startdate,enddate );
 
     	try {
     		while (rs.next()) {
@@ -119,12 +115,27 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
     	}
     	
     	plot.setDataset(barchartdataset);
-    	
-    	if(barchart !=null) {
-	    	String bkname = displaybkmap.get(bkcode);
-	        barchart.setTitle("'"+ bkcode + bkname +"'板块成交量占比");
-    	}
-    }
+         
+//      createControlPanel();
+	}
+	/*
+	 * 板块大盘占比
+	 */
+	public void setBanKuaiWithDaPanNeededDisplay (BkChanYeLianTreeNode node)
+	{
+		barchartdataset = new DefaultCategoryDataset();
+		
+		ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezb = node.getChenJiaoErZhanBiInGivenPeriod ();
+		if(cjezb == null )
+			return ;
+		for(ChenJiaoZhanBiInGivenPeriod tmpcjezb : cjezb) {
+			Date lastdayofweek = tmpcjezb.getDayofEndofWeek();
+			Double zhanbi = tmpcjezb.getCjlZhanBi();
+			barchartdataset.setValue(zhanbi,"板块占比",lastdayofweek);
+		}
+	
+		plot.setDataset(barchartdataset);
+	}
 
 	/*
 	 * 设置个股在某板块的占比半年信息
@@ -172,9 +183,6 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 	{
 		barchartdataset = new DefaultCategoryDataset();
 		plot.setDataset(barchartdataset);
-//		if(barchart !=null) {
-//	        barchart.setTitle("板块成交量占比");
-//    	}
 	}
 
     
