@@ -3448,7 +3448,7 @@ public class BanKuaiDbOperation
 						 		"FROM \r\n" + 
 						 		"       (select " +  bktypetable +  ".`股票代码` , " +  bktypetable +  ".`板块代码` , sum(通达信上交所股票每日交易信息.`成交额`) stock_amount," +  bktypetable +  ".`股票权重`\r\n" + 
 						 		"          from " +  bktypetable +  ", 通达信上交所股票每日交易信息\r\n" + 
-						 		"         where " +  bktypetable +  ".`股票代码`   = 通达信上交所股票每日交易信息.`股票代码`\r\n" + 
+						 		"         where " +  bktypetable +  ".`股票代码`   = 通达信上交所股票每日交易信息.`代码`\r\n" + 
 						 		"           and 通达信上交所股票每日交易信息.`交易日期` >= " +  bktypetable +  ".`加入时间`\r\n" + 
 						 		"           and 通达信上交所股票每日交易信息.`交易日期` <  ifnull(" +  bktypetable +  ".`移除时间`, '2099-12-31')\r\n" + 
 						 		"           and (通达信上交所股票每日交易信息.`交易日期` between '" +  formatedstartdate +  "' and '" +  formatedenddate +  "')\r\n" + 
@@ -3539,7 +3539,7 @@ public class BanKuaiDbOperation
 							 		"FROM \r\n" + 
 							 		"       (select " +  bktypetable +  ".`股票代码` , " +  bktypetable +  ".`板块代码` , sum(通达信深交所股票每日交易信息.`成交额`) stock_amount," +  bktypetable +  ".`股票权重`\r\n" + 
 							 		"          from " +  bktypetable +  ", 通达信深交所股票每日交易信息\r\n" + 
-							 		"         where " +  bktypetable +  ".`股票代码`   = 通达信深交所股票每日交易信息.`股票代码`\r\n" + 
+							 		"         where " +  bktypetable +  ".`股票代码`   = 通达信深交所股票每日交易信息.`代码`\r\n" + 
 							 		"           and 通达信深交所股票每日交易信息.`交易日期` >= " +  bktypetable +  ".`加入时间`\r\n" + 
 							 		"           and 通达信深交所股票每日交易信息.`交易日期` <  ifnull(" +  bktypetable +  ".`移除时间`, '2099-12-31')\r\n" + 
 							 		"           and (通达信深交所股票每日交易信息.`交易日期` between '" +  formatedstartdate +  "' and '" +  formatedenddate +  "')\r\n" + 
@@ -3637,7 +3637,7 @@ public class BanKuaiDbOperation
 				"" +  stockvsbktable + ".`股票代码` , " +  stockvsbktable + ".`板块代码` , \r\n" + 
 				"sum(" +  gegucjetable    + ".`成交额`) stock_amount," +  stockvsbktable + ".`股票权重`\r\n" + 
 				"from " +  stockvsbktable + ", " +  gegucjetable    + "\r\n" + 
-				"where " +  stockvsbktable + ".`股票代码`   = " +  gegucjetable    + ".`股票代码`\r\n" + 
+				"where " +  stockvsbktable + ".`股票代码`   = " +  gegucjetable    + ".`代码`\r\n" + 
 				"		and " +  gegucjetable    + ".`交易日期` >= " +  stockvsbktable + ".`加入时间`\r\n" + 
 				"		and " +  gegucjetable    + ".`交易日期` <  ifnull(" +  stockvsbktable + ".`移除时间`, '2099-12-31')\r\n" + 
 				"		and " +  gegucjetable    + ".`交易日期` BETWEEN  '" +  formatedstartdate + "' AND '" +  formatedenddate + "'\r\n" + 
@@ -3666,7 +3666,7 @@ public class BanKuaiDbOperation
 				"order by Y.year, Y.week"
 				;
 		
-//		System.out.println(sqlquerystat);
+		System.out.println(sqlquerystat);
 //		HashMap<String,Stock> gegumap = new HashMap<String,Stock> ();
 		CachedRowSetImpl rsfg = null;
 		try {  

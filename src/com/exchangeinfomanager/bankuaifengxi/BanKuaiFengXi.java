@@ -45,6 +45,7 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
+import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
@@ -77,8 +78,12 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
 import javax.swing.BoxLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class BanKuaiFengXi extends JDialog {
+
+	
 
 	/**
 	 * Create the dialog.
@@ -94,32 +99,24 @@ public class BanKuaiFengXi extends JDialog {
 		tfldparsedfile.setText(fenxibk + "," + fenxistock);
 		
 		createEvents ();
+		allbkandzs = bkdbopt.getTDXAllZhiShuAndBanKuai ();
 		initializeBanKuaiZhanBiByGrowthRate ();
 		
 	}
 	
 	private BkChanYeLianTree bkcyltree;
 	private BanKuaiDbOperation bkdbopt;
+	private HashMap<String, BanKuai> allbkandzs;
 	
-//	private JFreeChart piechartwklast2;
-//	private JFreeChart piechartwklast;
-//	private JFreeChart piechartwkcur;
-//	private PiePlot pieplotwklast;
-//	private PiePlot pieplotwkcur;
-//	private PiePlot pieplotwklast2;
-//	private DefaultPieDataset piechartdatasetwkcur;
-//	private DefaultPieDataset piechartdatasetwklast;
-//	private DefaultPieDataset piechartdatasetwklast2;
-
 	/*
 	 * 所有板块占比增长率的排名
 	 */
 	private void initializeBanKuaiZhanBiByGrowthRate ()
 	{
 		Date endday = CommonUtility.getLastDayOfWeek(dateChooser.getDate() );
-    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChooser.getDate() ,6);
+    	Date startday = CommonUtility.getFirstDayOfWeek( CommonUtility.getDateOfSpecificMonthAgo(dateChooser.getDate() ,6) );
     	
-    	HashMap<String, BanKuai> allbkandzs = bkdbopt.getTDXAllZhiShuAndBanKuai ();
+    	
     	HashMap<String, BanKuai> bkhascjl = new HashMap<String, BanKuai> ();
     	for (Entry<String, BanKuai> entry : allbkandzs.entrySet()) {
     		String bkcode = entry.getKey();
@@ -136,6 +133,22 @@ public class BanKuaiFengXi extends JDialog {
 
 	private void createEvents() 
 	{ 
+		tflddwbk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				int rowindex = ((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(tflddwbk.getText().trim());
+				if(rowindex != -1) {
+					tableBkZhanBi.setRowSelectionInterval(rowindex, rowindex);
+					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(rowindex, 0, true)));
+				}
+			}
+		});
+		tflddingweigegu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		
+		
 		tableGuGuZhanBiInBk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -147,6 +160,17 @@ public class BanKuaiFengXi extends JDialog {
 				
 				Stock selectstock = ((GeGuFengXiZhanBiPaiMingTableModel)tableGuGuZhanBiInBk.getModel()).getStock (row);
 				panelgeguwkzhanbi.setBanKuaiWithDaPanNeededDisplay(selectstock);
+				
+				 String stockcode = selectstock.getMyOwnCode(); 
+				 try {
+					 String stockname = selectstock.getMyOwnName(); 
+					 pnllastestggzhanbi.hightlightSpecificSector (stockcode+stockname);
+					 panelLastWkGeGuZhanBi.hightlightSpecificSector (stockcode+stockname);
+				 } catch ( java.lang.NullPointerException e) {
+					 pnllastestggzhanbi.hightlightSpecificSector (stockcode);
+					 panelLastWkGeGuZhanBi.hightlightSpecificSector (stockcode);
+				 }
+				
 			}
 		});
 		
@@ -171,22 +195,30 @@ public class BanKuaiFengXi extends JDialog {
 				panelbkwkzhanbi.setBanKuaiWithDaPanNeededDisplay(selectedbk);
 				
 				//更新板块所属个股
+				String tdxbk = selectedbk.getMyOwnName();
 				String bkcode = selectedbk.getMyOwnCode();
-				Date startdate = CommonUtility.getFirstDayOfWeek(dateChooser.getDate() );
-	  	        Date lastdate = CommonUtility.getLastDayOfWeek(dateChooser.getDate() );
-				HashMap<String, Stock> tmpallbkgg = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (selectedbk.getMyOwnName(),selectedbk.getMyOwnCode(),startdate,lastdate);
-				selectedbk.setBanKuaiGeGu(tmpallbkgg);
-				for (Entry<String, Stock> entry : tmpallbkgg.entrySet()) {
+				
+				HashMap<String, Stock> tmpallbkge = null;
+	  	        if( selectedbk.checkSavedStockListIsTheSame(dateChooser.getDate() ) )
+	  	        	tmpallbkge = selectedbk.getBanKuaiGeGu ();
+	  	        else {
+		  	        Date startdate = CommonUtility.getFirstDayOfWeek(dateChooser.getDate() );
+		  	        Date lastdate = CommonUtility.getLastDayOfWeek(dateChooser.getDate() );
+			  	  	tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (tdxbk,bkcode,startdate,lastdate);
+			  	  selectedbk.setBanKuaiGeGu(tmpallbkge);
+	  	        }
+				
+				for (Entry<String, Stock> entry : tmpallbkge.entrySet()) {
 		    		String stockcode = entry.getKey();
 		    		Stock stock = entry.getValue();
 		    		
 		    		Date endday = CommonUtility.getLastDayOfWeek(dateChooser.getDate() );
-		        	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChooser.getDate() ,6);
+		        	Date startday = CommonUtility.getFirstDayOfWeek( CommonUtility.getDateOfSpecificMonthAgo(dateChooser.getDate() ,6) );
 		    		
 		        	stock = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,stock,startday,endday);
 		    	}
 				
-				((GeGuFengXiZhanBiPaiMingTableModel)tableGuGuZhanBiInBk.getModel()).refresh(bkcode, tmpallbkgg, CommonUtility.getWeekNumber(dateChooser.getDate() ) );
+				((GeGuFengXiZhanBiPaiMingTableModel)tableGuGuZhanBiInBk.getModel()).refresh(bkcode, tmpallbkge, CommonUtility.getWeekNumber(dateChooser.getDate() ) );
 				
 				//显示2周的板块个股pie chart
 				pnllastestggzhanbi.setBanKuaiNeededDisplay(selectedbk,Integer.parseInt(tfldweight.getText() ),CommonUtility.getWeekNumber(dateChooser.getDate() ) );
@@ -203,7 +235,14 @@ public class BanKuaiFengXi extends JDialog {
 		    public void propertyChange(PropertyChangeEvent e) {
 		    	if("date".equals(e.getPropertyName())) {
 		    		
+		    		panelbkwkzhanbi.resetDate();
+		    		panelgeguwkzhanbi.resetDate();
+		    		pnllastestggzhanbi.resetDate();
+		    		panelLastWkGeGuZhanBi.resetDate();
+		    		((GeGuFengXiZhanBiPaiMingTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 		    		initializeBanKuaiZhanBiByGrowthRate ();
+		    		
+		    		
 		    	}
 //		        System.out.println(e.getPropertyName()+ ": " + e.getNewValue());
 		    }
@@ -243,6 +282,8 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiFengXiPieChartPnl pnllastestggzhanbi;
 	private JPanel panel_7;
 	private BanKuaiFengXiPieChartPnl panelLastWkGeGuZhanBi;
+	private JTextField tflddwbk;
+	private JTextField tflddingweigegu;
 	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -259,7 +300,7 @@ public class BanKuaiFengXi extends JDialog {
 		panelbkwkzhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u534A\u5E74\u5185\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		panel_3.setBorder(null);
 		
 		pnllastestggzhanbi = new BanKuaiFengXiPieChartPnl();
 		pnllastestggzhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u5F53\u524D\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -268,7 +309,7 @@ public class BanKuaiFengXi extends JDialog {
 		panel_5.setBorder(new TitledBorder(null, "Test", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		panel_7 = new JPanel();
-		panel_7.setBorder(UIManager.getBorder("Spinner.border"));
+		panel_7.setBorder(null);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
@@ -337,21 +378,25 @@ public class BanKuaiFengXi extends JDialog {
 		
 		sclpleft = new JScrollPane();
 		
-		JButton btnNewButton = new JButton("\u7BA1\u7406\u677F\u5757");
-		
 		JScrollPane scrollPane_6 = new JScrollPane();
 		
 		btnexportbk = new JButton("\u5BFC\u51FA\u677F\u5757");
 		
 		JButton button = new JButton("\u5BFC\u51FA\u4E2A\u80A1");
 		
-		JButton button_1 = new JButton("\u4E0A2\u5468\u671F");
-		
 		JCheckBox chckbxNewCheckBox = new JCheckBox("\u5254\u9664\u80A1\u7968\u6743\u91CD<=");
 		
 		tfldweight = new JTextField();
 		tfldweight.setText("0");
 		tfldweight.setColumns(10);
+		
+		tflddwbk = new JTextField();
+		
+		tflddwbk.setColumns(10);
+		
+		tflddingweigegu = new JTextField();
+		
+		tflddingweigegu.setColumns(10);
 		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
@@ -366,13 +411,13 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(scrollPane_6, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)
 						.addComponent(sclpleft, GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
 						.addGroup(gl_panel_1.createSequentialGroup()
-							.addComponent(btnNewButton)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(tflddwbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 87, Short.MAX_VALUE)
 							.addComponent(btnexportbk))
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addComponent(button)
-							.addGap(18)
-							.addComponent(button_1)))
+						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+							.addComponent(tflddingweigegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 87, Short.MAX_VALUE)
+							.addComponent(button)))
 					.addContainerGap())
 		);
 		gl_panel_1.setVerticalGroup(
@@ -380,7 +425,7 @@ public class BanKuaiFengXi extends JDialog {
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGap(6)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnNewButton)
+						.addComponent(tflddwbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnexportbk))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(sclpleft, GroupLayout.PREFERRED_SIZE, 374, GroupLayout.PREFERRED_SIZE)
@@ -393,8 +438,8 @@ public class BanKuaiFengXi extends JDialog {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(button)
-						.addComponent(button_1))
-					.addContainerGap(14, Short.MAX_VALUE))
+						.addComponent(tflddingweigegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(21, Short.MAX_VALUE))
 		);
 		
 		GeGuFengXiZhanBiPaiMingTableModel ggzb = new GeGuFengXiZhanBiPaiMingTableModel ();
@@ -649,6 +694,29 @@ class BanKuaiFengXiZhanBiPaiMingTableModel extends AbstractTableModel
 //	    	return bkmap.get(bkcode);
 	    	return this.entryList.get(entryList.size()-1-row).getValue();
 	    }
+	    public int getBanKuaiRowIndex (String neededfindstring) 
+	    {
+	    		int index = -1;
+	    		HanYuPinYing hypy = new HanYuPinYing ();
+	    		
+	    		for(int i=0;i<this.getRowCount();i++) {
+	    			String bkcode = (String)this.getValueAt(i, 0);
+	    			String bkname = (String)this.getValueAt(i,1); 
+	    			if(bkcode.trim().equals(neededfindstring) ) {
+	    				index = i;
+	    				break;
+	    			}
+
+	    			String namehypy = hypy.getBanKuaiNameOfPinYin(bkname );
+			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
+			   			index = i;
+			   			break;
+			   		}
+	    		}
+	    	
+	   		
+	   		return index;
+	    }
 	    
 }
 
@@ -806,6 +874,16 @@ class GeGuFengXiZhanBiPaiMingTableModel extends AbstractTableModel
 	    	String stockcode = this.getStockCode(row);
 	    	return this.entryList.get(entryList.size()-1-row).getValue();
 	    }
+	    public void deleteAllRows ()
+	    {	
+	    	if(this.entryList == null)
+				 return ;
+			 else 
+				 entryList.clear();
+	    	this.fireTableDataChanged();
+	    	
+	    }
+	    
 	    
 
 }
