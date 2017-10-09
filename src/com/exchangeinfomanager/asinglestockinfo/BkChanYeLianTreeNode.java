@@ -364,21 +364,6 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	{
 		this.cjeperiodlist = cjlperiodlist1;
 	}
-//	public Double getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod ()
-//	{
-//		if(cjeperiodlist != null && cjeperiodlist.size()>2) {
-//			ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(cjeperiodlist.size()-1);
-//			ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(cjeperiodlist.size()-2);
-//			Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
-//			Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
-//			double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-//			return zhanbigrowthrate;
-//		} else if(cjeperiodlist != null && cjeperiodlist.size() == 1) { //只有一个记录，说明是新的板块
-//			return 10000.0;
-//		}	else
-//			return -10000.0;
-//		
-//	}
 	
 	public Double getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (int weeknumber)
 	{

@@ -238,7 +238,7 @@ class ChanYeLianXMLHandler
 					} catch (java.lang.NullPointerException ex) {
 						ex.printStackTrace();
 					}
-					BkChanYeLianTreeNode parentsleaf  = new BanKuai( newbkcode,bkname);
+					BanKuai parentsleaf  = new BanKuai( newbkcode,bkname);
 
 					topNode.add(parentsleaf);
 	        }

@@ -142,24 +142,24 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
     		
     		//找到对应周的数据
     		ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezblist = tmpstock.getChenJiaoErZhanBiInGivenPeriod();
-    		ChenJiaoZhanBiInGivenPeriod tmpcjerecords = null;
     		for(ChenJiaoZhanBiInGivenPeriod tmprecords : cjezblist) {
     			int tmpwknum = CommonUtility.getWeekNumber(tmprecords.getDayofEndofWeek());
     			System.out.println(tmpwknum);
-    			if(tmpwknum == weeknumber)
-    				tmpcjerecords = tmprecords;
+    			
+    			if(tmpwknum == weeknumber) {
+    				HashMap<String, Integer> geguweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight ();
+    	    		int geguweight = geguweightmap.get(tdxbkcode);
+    	    		double cje = tmprecords.getMyOwnChengJiaoEr();
+    	    		if(geguweight > weightgate )
+    	    			if(stockname != null)
+    	    				piechartdataset.setValue(ggcode+stockname,cje);
+    	    			else 
+    	    				piechartdataset.setValue(ggcode,cje);
+    				break;
+    			}
+    			
     		}
-    		
-//    		ChenJiaoZhanBiInGivenPeriod tmpcjerecords = cjezblist.get(cjezblist.size()-1);
-    		double cje = tmpcjerecords.getMyOwnChengJiaoEr();
-    		
-    		HashMap<String, Integer> geguweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight ();
-    		int geguweight = geguweightmap.get(tdxbkcode);
-    		if(geguweight > weightgate )
-    			if(stockname != null)
-    				piechartdataset.setValue(ggcode+stockname,cje);
-    			else 
-    				piechartdataset.setValue(ggcode,cje);
+
     	}
     	pieplot.setDataset(piechartdataset);
     }

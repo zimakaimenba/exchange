@@ -35,7 +35,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.database.AccountDbOperation;
-import com.exchangeinfomanager.database.StockDbOperations;
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.TableCellListener;
@@ -78,14 +78,16 @@ public class AccountSeeting extends JDialog
 	private SystemConfigration sysconfig ;
 	private AccountAndChiCangConfiguration acntstckconfig;
 	private AccountDbOperation acntdbopt;
-	private StockDbOperations stockdbopt;
+	private BanKuaiDbOperation bkdbopt;
+	
 	
 
 	private void initializeAccountConfig(AccountAndChiCangConfiguration acntstckconfig) 
 	{
 		this.acntstckconfig = acntstckconfig;
 		acntdbopt = new AccountDbOperation ();
-		stockdbopt = new StockDbOperations ();
+		bkdbopt = new BanKuaiDbOperation ();
+	
 	}
 	
 	private void initializeSysConfig() 
@@ -108,7 +110,7 @@ public class AccountSeeting extends JDialog
 				}
 				
 				AccountPuTong actiozhuanrunaccount = (AccountPuTong) ((AccountsPutongTableModel)tableputong.getModel()).getAccountsAt(row);
-				ImportQuanShangJiaoYiRecords tmpimport = new ImportQuanShangJiaoYiRecords(actiozhuanrunaccount,acntstckconfig,acntdbopt,stockdbopt);
+				ImportQuanShangJiaoYiRecords tmpimport = new ImportQuanShangJiaoYiRecords(actiozhuanrunaccount,acntstckconfig,acntdbopt,bkdbopt);
 				tmpimport.setModal(true);
 				tmpimport.setVisible(true);
 				

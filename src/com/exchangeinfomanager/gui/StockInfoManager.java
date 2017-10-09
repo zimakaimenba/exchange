@@ -97,7 +97,6 @@ import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.TableCellListener;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
-import com.exchangeinfomanager.gui.subgui.GeGuFengXiBarChartPnl;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
@@ -395,7 +394,7 @@ public class StockInfoManager
 			public void mouseClicked(MouseEvent arg0) 
 			{
 //				if(bkfx == null ) {
-				BanKuaiFengXi bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),panelZhanBi.getCurDisplayedBanKuaiCode (),cBxstockcode.getSelectedItem().toString().substring(0, 6),dateChsBanKuaiZhanbi.getDate());
+				BanKuaiFengXi bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),"",cBxstockcode.getSelectedItem().toString().substring(0, 6),dateChsBanKuaiZhanbi.getDate());
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				bkfx.setVisible(true);
@@ -3162,7 +3161,7 @@ public class StockInfoManager
 }
 
 
-class AccountsInfoTableModel extends AbstractTableModel 
+class AccountsInfoTableModel extends DefaultTableModel 
 {
 	private HashMap<String, AccountInfoBasic> accountslist;
 	private ArrayList<String> acntnamelist;
@@ -3269,10 +3268,14 @@ class AccountsInfoTableModel extends AbstractTableModel
 	    
 	    public void deleteAllRows()
 	    {
-	    	if(this.accountslist == null)
-				 return ;
-			 else 
-				 accountslist.clear();
+//	    	if(this.accountslist == null)
+//				 return ;
+//			 else 
+//				 accountslist.clear();
+	    	int rowCount = this.getRowCount();
+	    	//Remove rows one by one from the end of the table
+//	    	for (int i = rowCount - 1; i >= 0; i--) {
+	    	    
 	    	
 	    	this.fireTableDataChanged();
 	    }	    

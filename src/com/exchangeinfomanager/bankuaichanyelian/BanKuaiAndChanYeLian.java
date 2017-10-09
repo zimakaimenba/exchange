@@ -383,14 +383,20 @@ public class BanKuaiAndChanYeLian extends JPanel
 	        	 
 	  	       	//鼠标点击某个树，读出所属的通达信板块，在读出该板块的产业链子板块 
 	  	       	HashMap<String, String> tmpsubbk = bkdbopt.getSubBanKuai (tdxbkcode);
+//	  	       	((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).setRowCount(0);
 	  	        ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).refresh(tmpsubbk);
 	  	       
 	  	       	//读出该板块当前所有的个股，读出的是本周在该板块内存在的所有个股，而不是当天在该板块存在的个股
-	  	        Date startdate = CommonUtility.getFirstDayOfWeek(dchgeguwkzhanbi.getDate() );
-	  	        Date lastdate = CommonUtility.getLastDayOfWeek(dchgeguwkzhanbi.getDate() );
-	  	       	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (tdxbk,tdxbkcode,startdate,lastdate);
-	  	        bknode.setBanKuaiGeGu(tmpallbkge);
-	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).deleteAllRows();
+	  	        HashMap<String, Stock> tmpallbkge = null;
+	  	        if( bknode.checkSavedStockListIsTheSame(dchgeguwkzhanbi.getDate() ) )
+	  	        	tmpallbkge = bknode.getBanKuaiGeGu ();
+	  	        else {
+		  	        Date startdate = CommonUtility.getFirstDayOfWeek(dchgeguwkzhanbi.getDate() );
+		  	        Date lastdate = CommonUtility.getLastDayOfWeek(dchgeguwkzhanbi.getDate() );
+			  	  	tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (tdxbk,tdxbkcode,startdate,lastdate);
+		  	        bknode.setBanKuaiGeGu(tmpallbkge);
+	  	        }
+	  	        ((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).setRowCount(0);
 	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(tdxbk,tdxbkcode,tmpallbkge,stockinparsefile);
 	  	       	
 	  	       	int row = tableCurZdgzbk.getSelectedRow();
@@ -408,16 +414,6 @@ public class BanKuaiAndChanYeLian extends JPanel
   	       	 createChanYeLianNewsHtml (curselectedbknode);
   	       	 displayNodeBasicInfo(curselectedbknode);
 	    }
-	    /*
-	     * 显示板块内股票的周占比,
-	     */
-//	    private void displayBanKuaiGeGuZhanBi (String tdxbkcode, String tdxbkname,Date actiondate)
-//	    {
-//	    	if(cbxtichuquanzhong.isSelected())
-//	    		pnlGeGuZhanBi.setBanKuaiNeededDisplay(tdxbkname, tdxbkcode, actiondate,Integer.parseInt(tfldquanzhong.getText() ) );
-//	    	else
-//	    		pnlGeGuZhanBi.setBanKuaiNeededDisplay(tdxbkname, tdxbkcode, actiondate, -1 );
-//	    }
 	    /*
 	     * 显示板块内股票的周占比, 显示的都是本周的而不是当天的
 	     */
@@ -442,21 +438,6 @@ public class BanKuaiAndChanYeLian extends JPanel
    	
 
 		}
-    
-
-//	      /*
-//	     * 显示板块周在整个市场的占比
-//	     */
-//	    private void displayBanKuaiZhanBi(String tdxbkcode, String tdxbkname,Date actiondate) 
-//	    {
-//
-//	    	HashMap<String,String> displaybk = new HashMap<String,String> ();
-//	    	displaybk.put(tdxbkcode, tdxbkname);
-//	    	bkfxpnl.setBanKuaiWithDaPanNeededDisplay(displaybk, tdxbkname,actiondate,6);
-//   	
-//
-//		}
-	   
 	    /*
 	     * 设置该板块个股的权重
 	     */
@@ -691,13 +672,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 				
 				HashSet<String> stockinfile = new HashSet<String> (readparsefileLines);
 				
-				treechanyelian.updateTreeParseFileInfo(stockinfile);
+				treechanyelian.updateTreeParseFileInfo(stockinfile,dchgeguwkzhanbi.getDate() );
 				
 				((BanKuaiGeGuTableModel)tablebkgegu.getModel()).deleteAllRows(); //个股列表删除光
 				//重点关注的2个表也要更新
 				((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 				((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).fireTableDataChanged();
-		    	
 		    }
 
 		    /*
@@ -924,6 +904,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 					}
 				});
 				
+				//个股列表事件
 				tablebkgegu.addMouseListener(new TableMouseListener(tablebkgegu));
 				tablebkgegu.addMouseListener(new MouseAdapter() {
 		        	@Override
@@ -938,9 +919,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		        			int row = tablebkgegu.getSelectedRow();
 							 //int column = tblSearchResult.getSelectedColumn();
 							 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
-							 String stockcode = tablebkgegu.getModel().getValueAt(model_row, 0).toString().trim();
+							 String stockcode = ((BanKuaiGeGuTableModel)tablebkgegu.getModel()).getValueAt(model_row, 0).toString().trim();
 							 try {
-								 String stockname = tablebkgegu.getModel().getValueAt(model_row, 1).toString().trim();
+								 String stockname = ((BanKuaiGeGuTableModel)tablebkgegu.getModel()).getValueAt(model_row, 1).toString().trim();
 								 pnlGeGuZhanBi.hightlightSpecificSector (stockcode+stockname);
 							 } catch ( java.lang.NullPointerException e) {
 								 pnlGeGuZhanBi.hightlightSpecificSector (stockcode);
@@ -1499,9 +1480,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 		sclpGeGuZhanBi = new JScrollPane();
 		
-		dchgeguwkzhanbi = new JDateChooser();
-		dchgeguwkzhanbi.setDate(new Date());
-		
 		btndisplaybkfx = new JButton("\u663E\u793A\u677F\u5757\u5206\u6790\u4FE1\u606F");
 		
 		cbxtichuquanzhong = new JCheckBox("\u5254\u9664\u80A1\u7968\u6743\u91CD<=");
@@ -1525,9 +1503,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 							.addContainerGap())
 						.addGroup(gl_panel_1.createSequentialGroup()
 							.addComponent(btndisplaybkfx)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(dchgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGap(122)
 							.addComponent(cbxtichuquanzhong)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(tfldquanzhong, GroupLayout.PREFERRED_SIZE, 38, GroupLayout.PREFERRED_SIZE)
@@ -1543,8 +1519,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 						.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 							.addComponent(cbxtichuquanzhong)
 							.addComponent(buttonCjlFx)
-							.addComponent(tfldquanzhong, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(dchgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addComponent(tfldquanzhong, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(sclpGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 353, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -2001,6 +1976,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		btnSaveAll = new JButton("\u4FDD\u5B58\u4FEE\u6539");
 		btnSaveAll.setEnabled(false);
 		
+		dchgeguwkzhanbi = new JDateChooser();
+		dchgeguwkzhanbi.setDate(new Date());
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.TRAILING)
@@ -2008,25 +1986,29 @@ public class BanKuaiAndChanYeLian extends JPanel
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
 							.addContainerGap()
+							.addComponent(dchgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
+							.addGap(86)
+							.addComponent(btnSaveAll)
+							.addGap(89)
 							.addComponent(label)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tfldparsefilename, GroupLayout.PREFERRED_SIZE, 565, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnChsParseFile)
-							.addGap(33)
-							.addComponent(btnSaveAll))
-						.addComponent(separator, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 905, Short.MAX_VALUE))
+							.addComponent(tfldparsefilename, GroupLayout.PREFERRED_SIZE, 320, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+							.addComponent(btnChsParseFile))
+						.addComponent(separator, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 892, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label)
-						.addComponent(tfldparsefilename, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnChsParseFile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSaveAll))
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(tfldparsefilename, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnChsParseFile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+							.addComponent(label)
+							.addComponent(btnSaveAll))
+						.addComponent(dchgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -2391,7 +2373,7 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 }
 
 
-class BanKuaiGeGuTableModel extends AbstractTableModel 
+class BanKuaiGeGuTableModel extends DefaultTableModel 
 {
 	private HashMap<String, Stock> bkgegumap; //包含股票代码和股票名称
 	String[] jtableTitleStrings = { "股票代码", "股票名称", "权重"};
@@ -2406,7 +2388,20 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	
 	public void refresh  (String tdxbkname2, String tdxbkcode2, HashMap<String, Stock> tmpallbkge,HashSet<String> stockcodeinparsefile2)
 	{
-		this.bkgegumap = tmpallbkge;
+//		if(tmpallbkge == null) {
+//			
+//			this.fireTableDataChanged();
+//			return;
+//		}
+//		if(tmpallbkge.isEmpty()) {
+//			
+//			this.fireTableDataChanged();
+//			return;
+//		}
+		if(tmpallbkge == null)
+			this.bkgegumap = new HashMap<String, Stock>();
+		else
+			this.bkgegumap = tmpallbkge;
 		this.tdxbkname = tdxbkname2;
 		this.tdxbkcode = tdxbkcode2;
  		this.stockcodeinparsefile = stockcodeinparsefile2;
@@ -2558,7 +2553,7 @@ class BanKuaiGeGuTableModel extends AbstractTableModel
 	    
 }
 
-class BanKuaiSubChanYeLianTableModel extends AbstractTableModel 
+class BanKuaiSubChanYeLianTableModel extends DefaultTableModel 
 {
 	private HashMap<String,String> bksubcylmap; //包含代码和名称
 	private ArrayList<String> bksubcylcodelist;

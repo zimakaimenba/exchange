@@ -78,46 +78,46 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 	/*
 	 * 板块大盘占比
 	 */
-	public void setBanKuaiWithDaPanNeededDisplay (HashMap<String,String> displaybkmap2,String firstshowbankuainame, Date daterange,int monthrange)
-	{
-		displaybkmap = displaybkmap2;
-		displaybkcodelist = new ArrayList<String>(displaybkmap.keySet());
-		ArrayList<String> displaybknamelist = new ArrayList<String>(displaybkmap.values());
-		int currentDisplayedBkIndex = displaybknamelist.indexOf(firstshowbankuainame.trim());
-		curdisplayedbankcode = displaybkcodelist.get(currentDisplayedBkIndex);
-
-		datedisplayed = daterange;
-		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,monthrange);
-		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
-
-        barchartdataset = new DefaultCategoryDataset();
-    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (curdisplayedbankcode,startdate,enddate );
-
-    	try {
-    		while (rs.next()) {
-    			String weeknumber =rs.getString("CALWEEK");
-    			String weeklastday = rs.getString("EndOfWeekDate");
-    			Double zhanbi = rs.getDouble("占比");
-    			barchartdataset.setValue(zhanbi,"板块占比",weeklastday);
-    		}
-    		
-    	} catch (SQLException e) {
-    		// TODO Auto-generated catch block
-    		e.printStackTrace();
-    	} finally {
-    		try {
-				rs.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		rs = null;
-    	}
-    	
-    	plot.setDataset(barchartdataset);
-         
-//      createControlPanel();
-	}
+//	public void setBanKuaiWithDaPanNeededDisplay (HashMap<String,String> displaybkmap2,String firstshowbankuainame, Date daterange,int monthrange)
+//	{
+//		displaybkmap = displaybkmap2;
+//		displaybkcodelist = new ArrayList<String>(displaybkmap.keySet());
+//		ArrayList<String> displaybknamelist = new ArrayList<String>(displaybkmap.values());
+//		int currentDisplayedBkIndex = displaybknamelist.indexOf(firstshowbankuainame.trim());
+//		curdisplayedbankcode = displaybkcodelist.get(currentDisplayedBkIndex);
+//
+//		datedisplayed = daterange;
+//		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,monthrange);
+//		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
+//
+//        barchartdataset = new DefaultCategoryDataset();
+//    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (curdisplayedbankcode,startdate,enddate );
+//
+//    	try {
+//    		while (rs.next()) {
+//    			String weeknumber =rs.getString("CALWEEK");
+//    			String weeklastday = rs.getString("EndOfWeekDate");
+//    			Double zhanbi = rs.getDouble("占比");
+//    			barchartdataset.setValue(zhanbi,"板块占比",weeklastday);
+//    		}
+//    		
+//    	} catch (SQLException e) {
+//    		// TODO Auto-generated catch block
+//    		e.printStackTrace();
+//    	} finally {
+//    		try {
+//				rs.close();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//    		rs = null;
+//    	}
+//    	
+//    	plot.setDataset(barchartdataset);
+//         
+////      createControlPanel();
+//	}
 	/*
 	 * 板块大盘占比
 	 */
@@ -140,45 +140,46 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 	/*
 	 * 设置个股在某板块的占比半年信息
 	 */
-	public void setStockWithBanKuaiNeededDisplay (String tdxbk, String stockcode,Date daterange)
-	{
-		datedisplayed = daterange;
-		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,6);
-		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
-
-        createDatasetOfStockWithBanKuai(tdxbk,stockcode,startdate,enddate);
-//        createChartPanel(currentDisplayedBkIndex);
-//        createControlPanel();
-	}
-	private void createDatasetOfStockWithBanKuai(String tdxbk, String stockcode, Date startdate, Date enddate) {
-		barchartdataset = new DefaultCategoryDataset();
-    	CachedRowSetImpl rs = bkdbopt.getGeGuZhanBi (tdxbk,stockcode,startdate,enddate );
-    	int row =0;
-    	try {
-    		while (rs.next()) {
-    			String weeknumber =rs.getString("CALWEEK");
-    			String weeklastday = rs.getString("EndOfWeekDate");
-    			Double zhanbi = rs.getDouble("占比");
-    			barchartdataset.setValue(zhanbi,"股票占比",weeklastday);
-    			row ++;
-    		}
-    		rs.close();
-    		rs = null;
-    	} catch (SQLException e) {
-    		// TODO Auto-generated catch block
-    		e.printStackTrace();
-    	}
-    	plot.setDataset(barchartdataset);
-    	
-//    	if(barchart !=null) {
-//	        barchart.setTitle("'"+ stockcode + bkname +"'板块成交量占比");
+//	public void setStockWithBanKuaiNeededDisplay (String tdxbk, String stockcode,Date daterange)
+//	{
+//		datedisplayed = daterange;
+//		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,6);
+//		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
+//
+//        createDatasetOfStockWithBanKuai(tdxbk,stockcode,startdate,enddate);
+////        createChartPanel(currentDisplayedBkIndex);
+////        createControlPanel();
+//	}
+//	
+//	private void createDatasetOfStockWithBanKuai(String tdxbk, String stockcode, Date startdate, Date enddate) {
+//		barchartdataset = new DefaultCategoryDataset();
+//    	CachedRowSetImpl rs = bkdbopt.getGeGuZhanBi (tdxbk,stockcode,startdate,enddate );
+//    	int row =0;
+//    	try {
+//    		while (rs.next()) {
+//    			String weeknumber =rs.getString("CALWEEK");
+//    			String weeklastday = rs.getString("EndOfWeekDate");
+//    			Double zhanbi = rs.getDouble("占比");
+//    			barchartdataset.setValue(zhanbi,"股票占比",weeklastday);
+//    			row ++;
+//    		}
+//    		rs.close();
+//    		rs = null;
+//    	} catch (SQLException e) {
+//    		// TODO Auto-generated catch block
+//    		e.printStackTrace();
 //    	}
-		
-	}
-	public String getCurDisplayedBanKuaiCode ()
-	{
-		return this.curdisplayedbankcode;
-	}
+//    	plot.setDataset(barchartdataset);
+//    	
+////    	if(barchart !=null) {
+////	        barchart.setTitle("'"+ stockcode + bkname +"'板块成交量占比");
+////    	}
+//		
+//	}
+//	public String getCurDisplayedBanKuaiCode ()
+//	{
+//		return this.curdisplayedbankcode;
+//	}
 	public void resetDate ()
 	{
 		barchartdataset = new DefaultCategoryDataset();

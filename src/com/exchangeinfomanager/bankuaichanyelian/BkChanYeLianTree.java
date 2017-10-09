@@ -39,6 +39,7 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
 
+
 public class BkChanYeLianTree extends JTree 
 {
 	public BkChanYeLianTree (BkChanYeLianTreeNode bkcylrootnode)
@@ -152,15 +153,15 @@ public class BkChanYeLianTree extends JTree
      } 
 
 	
-	public void updateTreeParseFileInfo (HashSet<String> stockinfile)
+	public void updateTreeParseFileInfo (HashSet<String> stockinfile,Date selectiondate)
 	{
 		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
 		BkChanYeLianTreeNode root = (BkChanYeLianTreeNode) model.getRoot();
-		updateParseFileInfoToTree (root,stockinfile);
+		updateParseFileInfoToTree (root,stockinfile,selectiondate);
 		
 		model.nodeStructureChanged(root);
 	}
-	private void updateParseFileInfoToTree(BkChanYeLianTreeNode node, HashSet<String> stockinfile) 
+	private void updateParseFileInfoToTree(BkChanYeLianTreeNode node, HashSet<String> stockinfile, Date selectiondate) 
 	{
 		int childCount = node.getChildCount();
 
@@ -172,10 +173,24 @@ public class BkChanYeLianTree extends JTree
 
 	    	if( childNodetype == BanKuaiAndStockBasic.TDXBK ) {
 	    		String bkcode = childNode.getMyOwnCode();
-	    		Date startdate = CommonUtility.getFirstDayOfWeek(new Date());
-	  	        Date lastdate = CommonUtility.getLastDayOfWeek(new Date());
-	    		HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (bkname,bkcode,startdate,lastdate);
-	    		Set<String> curbkallbkset = tmpallbkge.keySet();
+	    		
+	    		HashMap<String, Stock> tmpallbkge = null;
+	  	        if( ((BanKuai)childNode).checkSavedStockListIsTheSame(selectiondate ) )
+	  	        	tmpallbkge = ((BanKuai)childNode).getBanKuaiGeGu ();
+	  	        else {
+	  	        	Date startdate = CommonUtility.getFirstDayOfWeek(selectiondate );
+		  	        Date lastdate = CommonUtility.getLastDayOfWeek(selectiondate );
+			  	    tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (bkname,bkcode,startdate,lastdate);
+		  	        ((BanKuai)childNode).setBanKuaiGeGu(tmpallbkge);
+	  	        }
+	  	        
+	    		
+	    		Set<String> curbkallbkset = null;
+	    		try {
+	    			 curbkallbkset = tmpallbkge.keySet();
+	    		} catch (java.lang.NullPointerException e) {
+	    			 curbkallbkset = new HashSet<String> ();
+	    		}
 				SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset );
 				
 				if(intersectionbankuai.size() >0 ) { //ÓÐ½»¼¯
@@ -209,7 +224,7 @@ public class BkChanYeLianTree extends JTree
 	    	}
 	    	
 	        if (childNode.getChildCount() > 0) {
-	        	updateParseFileInfoToTree(childNode,stockinfile);
+	        	updateParseFileInfoToTree(childNode,stockinfile,selectiondate);
 	        } 
 	    }
 	}

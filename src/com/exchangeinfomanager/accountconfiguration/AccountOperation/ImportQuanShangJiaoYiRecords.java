@@ -17,7 +17,8 @@ import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountPuTong;
 import com.exchangeinfomanager.database.AccountDbOperation;
-import com.exchangeinfomanager.database.StockDbOperations;
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
+
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -60,7 +61,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ImportQuanShangJiaoYiRecords(AccountInfoBasic actiozaccount ,AccountAndChiCangConfiguration acntstckconfig2,AccountDbOperation acntdbopt2,StockDbOperations stockdbopt2)
+	public ImportQuanShangJiaoYiRecords(AccountInfoBasic actiozaccount ,AccountAndChiCangConfiguration acntstckconfig2,AccountDbOperation acntdbopt2,BanKuaiDbOperation stockdbopt2)
 	{
 		initializeGui ();
 		createEvents ();
@@ -77,7 +78,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 	private AccountInfoBasic actionacnt;
 	private AccountAndChiCangConfiguration acntstckconfig;
 	private AccountDbOperation acntdbopt;
-	private StockDbOperations stockdbopt;
+	private BanKuaiDbOperation stockdbopt;
 	private SystemConfigration sysconfig;
 	
 	private void initializeSysConfig() 

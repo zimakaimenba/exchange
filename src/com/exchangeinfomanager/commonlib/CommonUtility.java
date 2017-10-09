@@ -163,7 +163,7 @@ public class CommonUtility {
 		
 		Date date = null;
 		try {
-			System.out.println("Data need to be parsed is" + tmpdate);
+//			System.out.println("Data need to be parsed is" + tmpdate);
 			date = format.parse(tmpdate);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
