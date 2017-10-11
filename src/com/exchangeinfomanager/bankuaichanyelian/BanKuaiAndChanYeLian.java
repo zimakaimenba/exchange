@@ -82,7 +82,6 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.SubnodeButton;
-import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
@@ -132,7 +131,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	public BanKuaiAndChanYeLian (StockInfoManager stockInfoManager2) 
+	public BanKuaiAndChanYeLian (StockInfoManager stockInfoManager2 ) 
 	{
 		this.stockInfoManager = stockInfoManager2;
 		this.bkdbopt = new BanKuaiDbOperation ();
@@ -142,7 +141,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		treechanyelian = initializeBkChanYeLianXMLTree();
 		initializeSysConfig ();
 		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
-		startGui ();
+//		startGui ();
 	}
 	public void startGui ()
 	{
@@ -163,6 +162,7 @@ public class BanKuaiAndChanYeLian extends JPanel
     private BkChanYeLianTree treechanyelian;
     private BanKuaiDbOperation bkdbopt;
 	private StockInfoManager stockInfoManager;
+	private BanKuaiFengXi bkfx ;
 //	private StockDbOperations stockdbopt;
 //	private boolean cylneedsave; //标记产业链树有更改
 //	private boolean zdgzxmlneedsave; //标记重点关注有更改
@@ -364,8 +364,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 	            else if (evt.getX() < minX || evt.getX() > maxX) treechanyelian.clearSelection();
 	        }
 	        getReleatedInfoAndActionsForTreePathNode ( closestPath);
-	        bkfxpnl.resetDate ();
-	        pnlGeGuZhanBi.resetDate();
+	        
 	               
 	    }//GEN-LAST:event_treeMousePressed
 	    
@@ -374,6 +373,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 	     */
 	    private void getReleatedInfoAndActionsForTreePathNode (TreePath closestPath)
 	    {
+	    	bkfxpnl.resetDate ();
+	        pnlGeGuZhanBi.resetDate();
+	        
 	    	 BanKuai bknode = (BanKuai) closestPath.getPathComponent(1);
 	    	 String tdxbk = bknode.getMyOwnName(); 
 	    	 String tdxbkcode = bknode.getMyOwnCode();
@@ -1202,16 +1204,19 @@ public class BanKuaiAndChanYeLian extends JPanel
 		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
 	    String curselectedbknodename = curselectedbknode.getMyOwnName();
 	    String curselectedbknodecode = curselectedbknode.getMyOwnCode();
-//		if(bkfx == null ) {
-			BanKuaiFengXi bkfx = new BanKuaiFengXi (treechanyelian,curselectedbknodecode,"",dchgeguwkzhanbi.getDate());
-			bkfx.setModal(false);
-			bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			bkfx.setVisible(true);
-//		} 
+	    if(bkfx == null)
+			if(this.stockInfoManager.getBanKuaiFengXi() == null ) {
+				bkfx = new BanKuaiFengXi (treechanyelian,curselectedbknodecode,"",dchgeguwkzhanbi.getDate());
+				bkfx.setModal(false);
+				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				bkfx.setVisible(true);
+			} else {
+				bkfx = this.stockInfoManager.getBanKuaiFengXi();
+			}
 		
-//		if(!bkfx.isVisible() ) {
-//			bkfx.setVisible(true);
-//		 } 
+		if(!bkfx.isVisible() ) {
+			bkfx.setVisible(true);
+		 } 
 		bkfx.toFront();
 		
 		

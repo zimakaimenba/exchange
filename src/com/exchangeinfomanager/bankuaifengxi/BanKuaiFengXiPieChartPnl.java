@@ -82,26 +82,28 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 		standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,20));
 		ChartFactory.setChartTheme(standardChartTheme);
 		
-		bkdbopt = new BanKuaiDbOperation ();
+//		bkdbopt = new BanKuaiDbOperation ();
 		
 		createChartPanel();
 		createEvent ();
 		
 	}
 	
-	private final JPanel contentPanel = new JPanel();
+//	private final JPanel contentPanel = new JPanel();
 	private JPanel controlPanel;
 	private ChartPanel piechartPanel;
-	private BanKuaiDbOperation bkdbopt;
+//	private BanKuaiDbOperation bkdbopt;
 	private JFreeChart piechart;
-	private Date datedisplayed ;
+//	private Date datedisplayed ;
 	private PiePlot pieplot;
 	Comparable lasthightlightKey = null; //用于客户设置突出的section
 	private DefaultPieDataset piechartdataset;
+//	private BanKuai curdisplaybk;
 
 	
 	public void setBanKuaiNeededDisplay (BanKuai bankuai,int weightgate,int weeknumber)
 	{
+//		this.curdisplaybk = bankuai;
 		HashMap<String, Stock> tmpallbkge = bankuai.getBanKuaiGeGu ();
 		createDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
 	}
@@ -121,6 +123,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 //
 ////        createControlPanel();
 //	}
+	
 	public void resetDate ()
 	{
 		piechartdataset = new DefaultPieDataset();
@@ -330,14 +333,6 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
         }));
     }
 
-//    public ChartPanel getChartPanel() {
-//        return chartPanel;
-//    }
-//
-//    public JPanel getControlPanel() {
-//        return controlPanel;
-//    }
-
 }
 
 
@@ -348,7 +343,7 @@ class PieCustomToolTipGenerator implements  PieToolTipGenerator
 	public String generateToolTip(PieDataset piedataset, Comparable key) 
 	{
 		Number data = piedataset.getValue(key);  
-		return key.toString() + data;
+		return key.toString() +"<" + data + ">";
 	}
    
 }

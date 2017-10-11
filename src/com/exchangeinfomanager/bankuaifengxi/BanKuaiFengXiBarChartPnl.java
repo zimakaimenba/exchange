@@ -9,26 +9,42 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.CategoryItemEntity;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.entity.PlotEntity;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.sun.rowset.CachedRowSetImpl;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
+import java.awt.geom.Rectangle2D;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -55,74 +71,33 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 		standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,20));
 		ChartFactory.setChartTheme(standardChartTheme);
 		
-		bkdbopt = new BanKuaiDbOperation ();
+//		bkdbopt = new BanKuaiDbOperation ();
 		
 		createChartPanel();
 		createEvent ();
 	}
 	
-	private final JPanel contentPanel = new JPanel();
+//	private final JPanel contentPanel = new JPanel();
 	private CategoryPlot plot;
 	private ChartPanel chartPanel;
-	private JPanel controlPanel;
+//	private JPanel controlPanel;
 //	private int currentDisplayedBkIndex ;
-	private ArrayList<String> displaybkcodelist;
+//	private ArrayList<String> displaybkcodelist;
 	private DefaultCategoryDataset barchartdataset ;
-	private BanKuaiDbOperation bkdbopt;
-	private HashMap<String, String> displaybkmap;
+//	private BanKuaiDbOperation bkdbopt;
+//	private HashMap<String, String> displaybkmap;
 	private JFreeChart barchart;
-	private Date datedisplayed ;
-	private String curdisplayedbankcode;
+//	private Date datedisplayed ;
+	private String dateselected;
+	private BkChanYeLianTreeNode curdisplayednode;
 	
-	
-	/*
-	 * 板块大盘占比
-	 */
-//	public void setBanKuaiWithDaPanNeededDisplay (HashMap<String,String> displaybkmap2,String firstshowbankuainame, Date daterange,int monthrange)
-//	{
-//		displaybkmap = displaybkmap2;
-//		displaybkcodelist = new ArrayList<String>(displaybkmap.keySet());
-//		ArrayList<String> displaybknamelist = new ArrayList<String>(displaybkmap.values());
-//		int currentDisplayedBkIndex = displaybknamelist.indexOf(firstshowbankuainame.trim());
-//		curdisplayedbankcode = displaybkcodelist.get(currentDisplayedBkIndex);
-//
-//		datedisplayed = daterange;
-//		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,monthrange);
-//		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
-//
-//        barchartdataset = new DefaultCategoryDataset();
-//    	CachedRowSetImpl rs = bkdbopt.getBanKuaiZhanBi (curdisplayedbankcode,startdate,enddate );
-//
-//    	try {
-//    		while (rs.next()) {
-//    			String weeknumber =rs.getString("CALWEEK");
-//    			String weeklastday = rs.getString("EndOfWeekDate");
-//    			Double zhanbi = rs.getDouble("占比");
-//    			barchartdataset.setValue(zhanbi,"板块占比",weeklastday);
-//    		}
-//    		
-//    	} catch (SQLException e) {
-//    		// TODO Auto-generated catch block
-//    		e.printStackTrace();
-//    	} finally {
-//    		try {
-//				rs.close();
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//    		rs = null;
-//    	}
-//    	
-//    	plot.setDataset(barchartdataset);
-//         
-////      createControlPanel();
-//	}
+
 	/*
 	 * 板块大盘占比
 	 */
 	public void setBanKuaiWithDaPanNeededDisplay (BkChanYeLianTreeNode node)
 	{
+		this.curdisplayednode = node;
 		barchartdataset = new DefaultCategoryDataset();
 		
 		ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezb = node.getChenJiaoErZhanBiInGivenPeriod ();
@@ -136,62 +111,34 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 	
 		plot.setDataset(barchartdataset);
 	}
+	public BkChanYeLianTreeNode getCurDisplayedNode ()
+	{
+		return this.curdisplayednode;
+	}
 
-	/*
-	 * 设置个股在某板块的占比半年信息
-	 */
-//	public void setStockWithBanKuaiNeededDisplay (String tdxbk, String stockcode,Date daterange)
-//	{
-//		datedisplayed = daterange;
-//		Date startdate = CommonUtility.getDateOfSpecificMonthAgo(daterange,6);
-//		Date enddate = CommonUtility.getLastDayOfWeek(daterange);
-//
-//        createDatasetOfStockWithBanKuai(tdxbk,stockcode,startdate,enddate);
-////        createChartPanel(currentDisplayedBkIndex);
-////        createControlPanel();
-//	}
-//	
-//	private void createDatasetOfStockWithBanKuai(String tdxbk, String stockcode, Date startdate, Date enddate) {
-//		barchartdataset = new DefaultCategoryDataset();
-//    	CachedRowSetImpl rs = bkdbopt.getGeGuZhanBi (tdxbk,stockcode,startdate,enddate );
-//    	int row =0;
-//    	try {
-//    		while (rs.next()) {
-//    			String weeknumber =rs.getString("CALWEEK");
-//    			String weeklastday = rs.getString("EndOfWeekDate");
-//    			Double zhanbi = rs.getDouble("占比");
-//    			barchartdataset.setValue(zhanbi,"股票占比",weeklastday);
-//    			row ++;
-//    		}
-//    		rs.close();
-//    		rs = null;
-//    	} catch (SQLException e) {
-//    		// TODO Auto-generated catch block
-//    		e.printStackTrace();
-//    	}
-//    	plot.setDataset(barchartdataset);
-//    	
-////    	if(barchart !=null) {
-////	        barchart.setTitle("'"+ stockcode + bkname +"'板块成交量占比");
-////    	}
-//		
-//	}
-//	public String getCurDisplayedBanKuaiCode ()
-//	{
-//		return this.curdisplayedbankcode;
-//	}
 	public void resetDate ()
 	{
 		barchartdataset = new DefaultCategoryDataset();
 		plot.setDataset(barchartdataset);
+		((CustomRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(-1);
 	}
+	
+	public String getCurSelectedBarDate ()
+	{
+		return dateselected;
+	}
+//	public void setCurSelectedBarDate (String sltdate)
+//	{
+//		
+//	}
+	
 
-    
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
 //    	https://www.youtube.com/watch?v=YV80Titt9Q4
-    	BarRenderer renderer = new BarRenderer ();
+//    	BarRenderer renderer = new BarRenderer ();
+    	CustomRenderer renderer = new CustomRenderer ();
         DecimalFormat decimalformate = new DecimalFormat("%#0.000");
         renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
         renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
@@ -199,34 +146,54 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
         renderer.setBaseItemLabelsVisible(true);
         renderer.setSeriesToolTipGenerator(0,new CustomToolTipGenerator());
         renderer.setToolTipGenerator(new CustomToolTipGenerator());
+//        renderer.setSeriesPaint(0, Color.blue);
+//        renderer.setDefaultBarPainter(new StandardBarPainter());
         
         plot = new CategoryPlot(); 
         LegendTitle legend = new LegendTitle(plot); 
         legend.setPosition(RectangleEdge.TOP); 
         plot.setDataset(barchartdataset); 
         plot.setRenderer(renderer); 
-        plot.setDomainAxis(new CategoryAxis("周数")); 
+        plot.setDomainAxis(new CategoryAxis("")); 
         plot.setRangeAxis(new NumberAxis("占比"));
+        ((BarRenderer) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+        CategoryAxis axis = plot.getDomainAxis();
+        axis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
 
         barchart = new JFreeChart(plot);
         barchart.removeLegend();
+        
 //        if(displaybkcodelist != null) {
 //	        String bkcode = displaybkcodelist.get(start);
 //	    	String bkname = displaybkmap.get(bkcode);
 //	    	barchart.setTitle("'"+ bkcode + bkname +"'板块成交量占比");
 //        }
         
-
+        
         chartPanel = new ChartPanel(barchart);
         this.add(chartPanel);
         
     }
     private void createEvent ()
     {
+    	
     	chartPanel.addChartMouseListener(new ChartMouseListener() {
 
-    	    public void chartMouseClicked(ChartMouseEvent e) {
-    	        System.out.println("chart mouse click " + e.getEntity());
+    	    public void chartMouseClicked(ChartMouseEvent cme) {
+    	    	try {
+    	    		CategoryItemEntity xyitem=(CategoryItemEntity) cme.getEntity(); // get clicked entity
+//        	        System.out.println(xyitem);
+        	        CategoryDataset dataset = xyitem.getDataset(); // get data set
+        	        int cindex = dataset.getColumnIndex(xyitem.getColumnKey()) ;
+        	        ((CustomRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
+        	        
+        	         Comparable selecteddate = xyitem.getColumnKey();
+        	         dateselected = selecteddate.toString();
+    	    	} catch ( java.lang.ClassCastException e ) {
+    	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
+    	    		xyitem1.getPlot();
+    	    	}
+    	            	        
     	    }
 
 
@@ -239,15 +206,34 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
     	});
     }
 
-//    public ChartPanel getChartPanel() {
-//        return chartPanel;
-//    }
-//
-//    public JPanel getControlPanel() {
-//        return controlPanel;
-//    }
+    public ChartPanel getChartPanel() {
+        return chartPanel;
+    }
+
 }
 
+class CustomRenderer extends BarRenderer {
+
+    private Paint[] colors;
+    int shouldcolumn = -1;
+    public CustomRenderer() {
+        super();
+    }
+
+    public Paint getItemPaint(final int row, final int column) 
+    {
+        if(column == shouldcolumn)
+            return Color.blue;
+        else  
+            return Color.RED;
+            
+   }
+    public void setBarColumnShouldChangeColor (int column)
+    {
+    	this.shouldcolumn = column;
+    }
+    
+}
 
 class CustomToolTipGenerator implements CategoryToolTipGenerator  {
     public String generateToolTip(CategoryDataset dataset, int row, int column)  
@@ -263,9 +249,39 @@ class CustomToolTipGenerator implements CategoryToolTipGenerator  {
 //            List tst = dataset.getColumnKeys();
 //        	return "(" + String.valueOf(datecur) + ")" + "(" + String.valueOf(datelast) + ")" + "(" + decimalformate.format(ratio) + ")";
         	return test + "占比变化(" + decimalformate.format(ratio) + ")";
-    	} else
-    		return "";
+    	} else {
+    		Comparable test = dataset.getColumnKey(column);
+    		return test.toString();
+    	}
     	
     	
     }
 }
+
+
+class XYSelectionRenderer extends XYLineAndShapeRenderer {
+    private Shape selectedShape = new Rectangle2D.Double(-8, -8, 16, 16);
+    private int selectedSeries = -1;
+    private int selectedItem = -1;
+    private boolean selectionActive;
+
+    public boolean isSelectionActive(){
+        return (selectedSeries > -1 && selectedItem > -1);
+    }
+    
+    public Shape getItemShape(int series, int item){
+        if(series == selectedSeries && item == selectedItem){
+            return selectedShape;
+        }
+        return super.getItemShape(series, item);
+    }
+
+    public void setSelectedSeries(int series){
+        this.selectedSeries = series;
+    }
+
+    public void setSelectedItem(int item){
+        this.selectedItem = item;
+    }
+}
+

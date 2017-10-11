@@ -22,8 +22,8 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInf
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.bankuai.gui.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
@@ -62,6 +62,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,6 +134,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.tree.TreePath;
+
+import org.jsoup.Jsoup;
 
 import java.beans.PropertyChangeListener;
 
@@ -348,6 +351,7 @@ public class StockInfoManager
 
 	
 	private BanKuaiGuanLi bkgldialog = null;
+	private BanKuaiFengXi bkfx ;
 	private SearchDialog searchdialog;
 	private BanKuaiAndChanYeLian bkcyl;
 
@@ -375,17 +379,18 @@ public class StockInfoManager
 		menuItembkfx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-//				if(bkfx == null ) {
-				BanKuaiFengXi bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),"","",dateChsBanKuaiZhanbi.getDate());
-				bkfx.setModal(false);
-				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				bkfx.setVisible(true);
-//			} 
-			
-//			if(!bkfx.isVisible() ) {
+				startBanKuaiFengXi ();
+////				if(bkfx == null ) {
+//				BanKuaiFengXi bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),"","",dateChsBanKuaiZhanbi.getDate());
+//				bkfx.setModal(false);
+//				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 //				bkfx.setVisible(true);
-//			 } 
-			bkfx.toFront();
+////			} 
+//			
+////			if(!bkfx.isVisible() ) {
+////				bkfx.setVisible(true);
+////			 } 
+//			bkfx.toFront();
 			}
 		});
 		
@@ -393,18 +398,8 @@ public class StockInfoManager
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-//				if(bkfx == null ) {
-				BanKuaiFengXi bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),"",cBxstockcode.getSelectedItem().toString().substring(0, 6),dateChsBanKuaiZhanbi.getDate());
-				bkfx.setModal(false);
-				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				bkfx.setVisible(true);
-//			} 
-			
-//			if(!bkfx.isVisible() ) {
-//				bkfx.setVisible(true);
-//			 } 
-			bkfx.toFront();
-			
+				startBanKuaiFengXi ();
+
 
 				
 			}
@@ -1576,7 +1571,29 @@ public class StockInfoManager
 		});
 }
 	
+public BanKuaiFengXi getBanKuaiFengXi ()
+{
+	return bkfx;
+}
+protected void startBanKuaiFengXi() 
+{
+	if(bkfx == null ) {
+		String htmlstring = editorPaneBanKuai.getText();
+		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+		org.jsoup.select.Elements content = doc.select("p"); 
+		
+		       
+		bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),content.toString(),cBxstockcode.getSelectedItem().toString().substring(0, 6),dateChsBanKuaiZhanbi.getDate());
+		bkfx.setModal(false);
+		bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		bkfx.setVisible(true);
+	} 
 	
+	if(!bkfx.isVisible() ) {
+		bkfx.setVisible(true);
+	} 
+	bkfx.toFront();
+}
 //protected void computerSuoSuBanKuaiZhanbi() 
 //{
 //		HashMap<String, String> suosubk = nodeshouldbedisplayed.getSuoShuTDXSysBanKuai();
@@ -1608,8 +1625,9 @@ public class StockInfoManager
         		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
     	} else
     		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
-    	
+    	panelZhanBi.resetDate();
     	panelZhanBi.setBanKuaiWithDaPanNeededDisplay(bankuai);
+    	panelZhanBi.setToolTipText(bankuai.getMyOwnCode()+ bankuai.getMyOwnName());
 		
 //		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
 //		
@@ -1625,6 +1643,7 @@ public class StockInfoManager
     	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate() ,6);
 		
     	nodeshouldbedisplayed = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,(Stock)nodeshouldbedisplayed,startday,endday);
+    	pnlGeGuWkZhanBi.resetDate();
     	pnlGeGuWkZhanBi.setBanKuaiWithDaPanNeededDisplay(nodeshouldbedisplayed);
 		
 //		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
