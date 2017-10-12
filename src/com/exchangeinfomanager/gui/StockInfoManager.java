@@ -1571,40 +1571,32 @@ public class StockInfoManager
 		});
 }
 	
-public BanKuaiFengXi getBanKuaiFengXi ()
-{
-	return bkfx;
-}
-protected void startBanKuaiFengXi() 
-{
-	if(bkfx == null ) {
-		String htmlstring = editorPaneBanKuai.getText();
-		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-		org.jsoup.select.Elements content = doc.select("p"); 
+	public BanKuaiFengXi getBanKuaiFengXi ()
+	{
+			return bkfx;
+	}
 		
-		       
-		bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),content.toString(),cBxstockcode.getSelectedItem().toString().substring(0, 6),dateChsBanKuaiZhanbi.getDate());
-		bkfx.setModal(false);
-		bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		bkfx.setVisible(true);
-	} 
-	
-	if(!bkfx.isVisible() ) {
-		bkfx.setVisible(true);
-	} 
-	bkfx.toFront();
-}
-//protected void computerSuoSuBanKuaiZhanbi() 
-//{
-//		HashMap<String, String> suosubk = nodeshouldbedisplayed.getSuoShuTDXSysBanKuai();
-//		GeGuBanKuaiZhanBiFengXi dialogbkfx = new GeGuBanKuaiZhanBiFengXi(suosubk);
-////		BoxAndWhiskerDemo demo = new BoxAndWhiskerDemo();
-//		dialogbkfx.getContentPane().add(dialogbkfx.getChartPanel(), BorderLayout.CENTER);
-//		dialogbkfx.getContentPane().add(dialogbkfx.getControlPanel(), BorderLayout.SOUTH);
-//		dialogbkfx.pack();
-//		dialogbkfx.setLocationRelativeTo(null);
-//		dialogbkfx.setVisible(true);
-//}
+	protected void startBanKuaiFengXi() 
+	{
+			if(bkfx == null && bkcyl.getBanKuaiFengXi() == null) {
+				String htmlstring = editorPaneBanKuai.getText();
+				org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+				org.jsoup.select.Elements content = doc.select("p"); 
+				       
+				bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),content.toString(),cBxstockcode.getSelectedItem().toString().substring(0, 6),dateChsBanKuaiZhanbi.getDate());
+				bkfx.setModal(false);
+				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				bkfx.setVisible(true);
+			} else if(bkfx == null && bkcyl.getBanKuaiFengXi() != null) {
+				bkfx = bkcyl.getBanKuaiFengXi(); 
+			}
+			
+			if(!bkfx.isVisible() ) {
+				bkfx.setVisible(true);
+			} 
+			bkfx.toFront();
+	}
+
 
 	protected  void displayBanKuaiOfStockZhanBiByWeek(String firstshowbkcode) 
 	{
@@ -1615,7 +1607,7 @@ protected void startBanKuaiFengXi()
    	 	String tdxbkcode = bankuai.getMyOwnCode();
    	 	
 		Date endday = CommonUtility.getLastDayOfWeek(dateChsBanKuaiZhanbi.getDate() );
-    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate() ,6);
+    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate(),6);
     	ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezb = bankuai.getChenJiaoErZhanBiInGivenPeriod();
     	if(cjezb != null ) {
     		ChenJiaoZhanBiInGivenPeriod cjezblatest = cjezb.get(cjezb.size()-1 );
@@ -1645,21 +1637,6 @@ protected void startBanKuaiFengXi()
     	nodeshouldbedisplayed = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,(Stock)nodeshouldbedisplayed,startday,endday);
     	pnlGeGuWkZhanBi.resetDate();
     	pnlGeGuWkZhanBi.setBanKuaiWithDaPanNeededDisplay(nodeshouldbedisplayed);
-		
-//		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
-//		
-//		for(Map.Entry<String, String> entry : suosusysbankuai.entrySet()) {
-//			String bkcode = entry.getKey();
-//			String name = entry.getValue();
-//			if(name.equals(bkname.trim() ) ) {
-//				pnlGeGuWkZhanBi.setStockWithBanKuaiNeededDisplay(bkcode, cBxstockcode.getSelectedItem().toString().substring(0, 6), dateChsBanKuaiZhanbi.getDate());
-//				
-////				int currentweek = CommonUtility.getWeekNumber(dateChsBanKuaiZhanbi.getDate() );
-////				Date twoweeksago = CommonUtility.getDateFromYearAndWeek(currentweek-2);
-////				pnlBkPieLastWkZhanBi.setBanKuaiNeededDisplay(name, bkcode, dateChsBanKuaiZhanbi.getDate() );
-//			}
-//			
-//		}
 	}
 	
 	

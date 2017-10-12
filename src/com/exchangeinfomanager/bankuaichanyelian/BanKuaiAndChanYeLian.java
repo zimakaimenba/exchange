@@ -348,25 +348,26 @@ public class BanKuaiAndChanYeLian extends JPanel
 		}//GEN-LAST:event_addSubnodeButtonActionPerformed
 
 		    
-	  /*
-	     * 鼠标点击某个树，读出所属的通达信板块，在读出该板块的产业链子板块 和通信性板块的相关个股
-	     */
-	    private void chanYeLianTreeMousePressed(java.awt.event.MouseEvent evt) //GEN-FIRST:event_treeMousePressed 
-	    {System.out.println("get action notice at bkcyl");
-	        TreePath closestPath = treechanyelian.getClosestPathForLocation(evt.getX(), evt.getY());
-
-	        if(closestPath != null) {
-	            Rectangle pathBounds = treechanyelian.getPathBounds(closestPath);
-	            int maxY = (int) pathBounds.getMaxY();
-	            int minX = (int) pathBounds.getMinX();
-	            int maxX = (int) pathBounds.getMaxX();
-	            if (evt.getY() > maxY) treechanyelian.clearSelection();
-	            else if (evt.getX() < minX || evt.getX() > maxX) treechanyelian.clearSelection();
-	        }
-	        getReleatedInfoAndActionsForTreePathNode ( closestPath);
-	        
-	               
-	    }//GEN-LAST:event_treeMousePressed
+//	  /*
+//	     * 鼠标点击某个树，读出所属的通达信板块，在读出该板块的产业链子板块 和通信性板块的相关个股
+//	     */
+//	    private void chanYeLianTreeMousePressed(java.awt.event.MouseEvent evt) //GEN-FIRST:event_treeMousePressed 
+//	    {
+////	    	System.out.println("get action notice at bkcyl");
+//	        TreePath closestPath = treechanyelian.getClosestPathForLocation(evt.getX(), evt.getY());
+//
+//	        if(closestPath != null) {
+//	            Rectangle pathBounds = treechanyelian.getPathBounds(closestPath);
+//	            int maxY = (int) pathBounds.getMaxY();
+//	            int minX = (int) pathBounds.getMinX();
+//	            int maxX = (int) pathBounds.getMaxX();
+//	            if (evt.getY() > maxY) treechanyelian.clearSelection();
+//	            else if (evt.getX() < minX || evt.getX() > maxX) treechanyelian.clearSelection();
+//	        }
+//	        getReleatedInfoAndActionsForTreePathNode ( closestPath);
+//	        
+//	               
+//	    }//GEN-LAST:event_treeMousePressed
 	    
 	    /*
 	     * 和选择板块相关的子产业链，个股 
@@ -772,16 +773,21 @@ public class BanKuaiAndChanYeLian extends JPanel
 			public void mouseClicked(MouseEvent arg0) 
 			{
 //				 读出该板块近一年的占比走势
-				TreePath closestPath = treechanyelian.getSelectionPath();
-				BanKuai bknode = (BanKuai) closestPath.getPathComponent(1);
-		    	 String tdxbk = bknode.getMyOwnName(); 
-		    	 String tdxbkcode = bknode.getMyOwnCode();
-		    	 
-		    	 Date actiondate = dchgeguwkzhanbi.getDate();
-//		  	     displayBanKuaiZhanBi (tdxbkcode,tdxbk,actiondate);
-//		  	     displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk,actiondate);
-		    	 displayBanKuaiZhanBi (bknode);
-		  	   	 displayBanKuaiGeGuZhanBi (bknode);
+				try {
+					TreePath closestPath = treechanyelian.getSelectionPath();
+					BanKuai bknode = (BanKuai) closestPath.getPathComponent(1);
+			    	 String tdxbk = bknode.getMyOwnName(); 
+			    	 String tdxbkcode = bknode.getMyOwnCode();
+			    	 
+			    	 Date actiondate = dchgeguwkzhanbi.getDate();
+//			  	     displayBanKuaiZhanBi (tdxbkcode,tdxbk,actiondate);
+//			  	     displayBanKuaiGeGuZhanBi (tdxbkcode,tdxbk,actiondate);
+			    	 displayBanKuaiZhanBi (bknode);
+			  	   	 displayBanKuaiGeGuZhanBi (bknode);
+				} catch ( java.lang.NullPointerException e) {
+					System.out.println("没有板块被选择！");
+				}
+				
 			}
 		});
 		
@@ -1117,7 +1123,19 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 		        treechanyelian.addMouseListener(new java.awt.event.MouseAdapter() {
 		            public void mousePressed(java.awt.event.MouseEvent evt) {
-		            	chanYeLianTreeMousePressed(evt);
+//		            	chanYeLianTreeMousePressed(evt);
+		            	System.out.println("get action notice at bkcyl");
+		    	        TreePath closestPath = treechanyelian.getClosestPathForLocation(evt.getX(), evt.getY());
+
+		    	        if(closestPath != null) {
+		    	            Rectangle pathBounds = treechanyelian.getPathBounds(closestPath);
+		    	            int maxY = (int) pathBounds.getMaxY();
+		    	            int minX = (int) pathBounds.getMinX();
+		    	            int maxX = (int) pathBounds.getMaxX();
+		    	            if (evt.getY() > maxY) treechanyelian.clearSelection();
+		    	            else if (evt.getX() < minX || evt.getX() > maxX) treechanyelian.clearSelection();
+		    	        }
+		    	        getReleatedInfoAndActionsForTreePathNode ( closestPath);
 		            }
 		        });
 
@@ -1200,16 +1218,26 @@ public class BanKuaiAndChanYeLian extends JPanel
 	
 	protected void chengJiaoLiangFengXi() 
 	{
-		TreePath closestPath = treechanyelian.getSelectionPath();
-		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
-	    String curselectedbknodename = curselectedbknode.getMyOwnName();
-	    String curselectedbknodecode = curselectedbknode.getMyOwnCode();
-	    if(bkfx == null)
+		 String curselectedbknodecode = null;
+		try {
+			TreePath closestPath = treechanyelian.getSelectionPath();
+			BkChanYeLianTreeNode curselectedbknode;
+			curselectedbknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
+		    String curselectedbknodename = curselectedbknode.getMyOwnName();
+		    curselectedbknodecode = curselectedbknode.getMyOwnCode();
+		} catch (java.lang.NullPointerException e) {
+			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.treechanyelian.getModel().getRoot();
+			BkChanYeLianTreeNode curselectedbknode;
+			curselectedbknode = (BanKuai)this.treechanyelian.getModel().getChild(treeroot, 0);
+		}
+
+		if(bkfx == null)
 			if(this.stockInfoManager.getBanKuaiFengXi() == null ) {
 				bkfx = new BanKuaiFengXi (treechanyelian,curselectedbknodecode,"",dchgeguwkzhanbi.getDate());
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				bkfx.setVisible(true);
+//				stockInfoManager.setBanKuaiFengXi(bkfx);
 			} else {
 				bkfx = this.stockInfoManager.getBanKuaiFengXi();
 			}
@@ -1218,9 +1246,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 			bkfx.setVisible(true);
 		 } 
 		bkfx.toFront();
-		
-		
 	}
+	public BanKuaiFengXi getBanKuaiFengXi ()
+	{
+		return bkfx;
+	};
 
 	protected void addGeGuNews() 
 	{
@@ -1724,7 +1754,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			        }
 			        
 			        return comp;
-			    }
+			}
 				    
 
 			
@@ -2407,12 +2437,13 @@ class BanKuaiGeGuTableModel extends DefaultTableModel
 			this.bkgegumap = new HashMap<String, Stock>();
 		else
 			this.bkgegumap = tmpallbkge;
+		
 		this.tdxbkname = tdxbkname2;
 		this.tdxbkcode = tdxbkcode2;
  		this.stockcodeinparsefile = stockcodeinparsefile2;
  		
  		if(stockcodeinparsefile.size() >0 ) { //优先把parsefile里的个股显示在前面
- 			Set<String> bkgegucodelist = tmpallbkge.keySet() ;
+ 			Set<String> bkgegucodelist = bkgegumap.keySet() ;
  	 		SetView<String> commonbkcode = Sets.intersection(bkgegucodelist, this.stockcodeinparsefile);
  	 		SetView<String> diffbkcode = Sets.difference(bkgegucodelist, this.stockcodeinparsefile);
  	 		
@@ -2421,7 +2452,7 @@ class BanKuaiGeGuTableModel extends DefaultTableModel
  	 		
  	 		bkgeguname = tmpbkgeguname;
  		} else
- 			bkgeguname = new ArrayList<String> (tmpallbkge.keySet() );
+ 			bkgeguname = new ArrayList<String> (bkgegumap.keySet() );
  		
  		this.fireTableDataChanged();
 	}

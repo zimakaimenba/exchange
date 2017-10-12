@@ -153,7 +153,7 @@ public class CommonUtility {
 	public static Date formateStringToDate(String tmpdate) 
 	{
 		DateFormat format = null;
-		System.out.println(tmpdate);
+//		System.out.println(tmpdate);
 		if(tmpdate.length() > 10)
 			 format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		else if(tmpdate.length() == 10)

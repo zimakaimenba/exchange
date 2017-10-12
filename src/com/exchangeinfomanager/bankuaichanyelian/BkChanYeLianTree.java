@@ -152,7 +152,9 @@ public class BkChanYeLianTree extends JTree
         }  
      } 
 
-	
+	/*
+	 * 时间参数是 处理这个时间那一周的板块个股和file比
+	 */
 	public void updateTreeParseFileInfo (HashSet<String> stockinfile,Date selectiondate)
 	{
 		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
@@ -175,7 +177,7 @@ public class BkChanYeLianTree extends JTree
 	    		String bkcode = childNode.getMyOwnCode();
 	    		
 	    		HashMap<String, Stock> tmpallbkge = null;
-	  	        if( ((BanKuai)childNode).checkSavedStockListIsTheSame(selectiondate ) )
+	  	        if( ((BanKuai)childNode).checkSavedStockListIsTheSame(selectiondate ) ) //如果板块已经存有个股，那直接用
 	  	        	tmpallbkge = ((BanKuai)childNode).getBanKuaiGeGu ();
 	  	        else {
 	  	        	Date startdate = CommonUtility.getFirstDayOfWeek(selectiondate );

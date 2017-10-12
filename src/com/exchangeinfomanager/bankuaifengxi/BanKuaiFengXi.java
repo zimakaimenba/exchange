@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
 
 import org.jfree.chart.ChartFactory;
@@ -116,16 +119,27 @@ public class BanKuaiFengXi extends JDialog {
 		Date endday = CommonUtility.getLastDayOfWeek(dateChooser.getDate() );
     	Date startday = CommonUtility.getFirstDayOfWeek( CommonUtility.getDateOfSpecificMonthAgo(dateChooser.getDate() ,6) );
     	
-    	
     	HashMap<String, BanKuai> bkhascjl = new HashMap<String, BanKuai> ();
-    	for (Entry<String, BanKuai> entry : allbkandzs.entrySet()) {
-    		String bkcode = entry.getKey();
-    		BanKuai bankuai = entry.getValue();
-    		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
-    		if(bankuai.getChenJiaoErZhanBiInGivenPeriod() != null )
-    			bkhascjl.put(bkcode, bankuai);
-
-    	}
+    	
+    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.bkcyltree.getModel().getRoot();
+		int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
+		for(int i=0;i< bankuaicount; i++) {
+			BanKuai childnode = (BanKuai)this.bkcyltree.getModel().getChild(treeroot, i);
+			String bkcode = childnode.getMyOwnCode();
+			childnode = bkdbopt.getBanKuaiZhanBi (childnode,startday,endday);
+    		if(childnode.getChenJiaoErZhanBiInGivenPeriod() != null )
+    			bkhascjl.put(bkcode, childnode);
+		}
+		
+    	
+//    	for (Entry<String, BanKuai> entry : allbkandzs.entrySet()) {
+//    		String bkcode = entry.getKey();
+//    		BanKuai bankuai = entry.getValue();
+//    		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
+//    		if(bankuai.getChenJiaoErZhanBiInGivenPeriod() != null )
+//    			bkhascjl.put(bkcode, bankuai);
+//
+//    	}
     	((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).refresh(bkhascjl,CommonUtility.getWeekNumber(dateChooser.getDate() ));
 
 	}
@@ -246,8 +260,9 @@ public class BanKuaiFengXi extends JDialog {
 		        	stock = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,stock,startday,endday);
 		    	}
 				
-				((GeGuFengXiZhanBiPaiMingTableModel)tableGuGuZhanBiInBk.getModel()).refresh(bkcode, tmpallbkge, CommonUtility.getWeekNumber(dateChooser.getDate() ) );
-				
+				HashSet<String> stockinparsefile = selectedbk.getParseFileStockSet ();
+				((GeGuFengXiZhanBiPaiMingTableModel)tableGuGuZhanBiInBk.getModel()).refresh(bkcode, tmpallbkge, CommonUtility.getWeekNumber(dateChooser.getDate() ), stockinparsefile );
+		  	      
 				//显示2周的板块个股pie chart
 				pnllastestggzhanbi.setBanKuaiNeededDisplay(selectedbk,Integer.parseInt(tfldweight.getText() ),CommonUtility.getWeekNumber(dateChooser.getDate() ) );
 				panelLastWkGeGuZhanBi.setBanKuaiNeededDisplay(selectedbk,Integer.parseInt(tfldweight.getText() ),CommonUtility.getWeekNumber(dateChooser.getDate() ) -1 );
@@ -277,21 +292,14 @@ public class BanKuaiFengXi extends JDialog {
 		
 	}
 
-	  protected void diaplayGeGuOfBanKuai(String bankcode, String bankname, Date bkfxdate) 
-	  {
-		  TreePath bkpath = bkcyltree.locateNodeByNameOrHypyOrBkCode (bankcode);
-		  bkcyltree.setSelectionPath(bkpath);
-		  BkChanYeLianTreeNode knode = (BkChanYeLianTreeNode)bkcyltree.getLastSelectedPathComponent();
-		  
-		
-	  }
-
-
-
-
-	
-
-
+//	  protected void diaplayGeGuOfBanKuai(String bankcode, String bankname, Date bkfxdate) 
+//	  {
+//		  TreePath bkpath = bkcyltree.locateNodeByNameOrHypyOrBkCode (bankcode);
+//		  bkcyltree.setSelectionPath(bkpath);
+//		  BkChanYeLianTreeNode knode = (BkChanYeLianTreeNode)bkcyltree.getLastSelectedPathComponent();
+//		  
+//		
+//	  }
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField tfldparsedfile;
@@ -478,6 +486,29 @@ public class BanKuaiFengXi extends JDialog {
 		GeGuFengXiZhanBiPaiMingTableModel ggzb = new GeGuFengXiZhanBiPaiMingTableModel ();
 		tableGuGuZhanBiInBk = new JTable(ggzb){
 			private static final long serialVersionUID = 1L;
+			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				 
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        GeGuFengXiZhanBiPaiMingTableModel tablemodel = (GeGuFengXiZhanBiPaiMingTableModel)this.getModel(); 
+		        HashSet<String> stockinparsefile = tablemodel.getStockInParseFile();
+		        Object value = tablemodel.getValueAt(row, col);
+		        
+		        if (!isRowSelected(row)) {
+		        	comp.setBackground(getBackground());
+		        	comp.setForeground(getForeground());
+		        	int modelRow = convertRowIndexToModel(row);
+		        	String stockcode = (String)getModel().getValueAt(modelRow, 0);
+					if(stockinparsefile.contains(stockcode)) {
+						//comp.setBackground(Color.YELLOW);
+						comp.setForeground(Color.BLUE);
+					}
+		        }
+		        
+		        return comp;
+			}
+			
+			
 			public String getToolTipText(MouseEvent e) 
 			{
                 String tip = null;
@@ -501,6 +532,20 @@ public class BanKuaiFengXi extends JDialog {
 		BanKuaiFengXiZhanBiPaiMingTableModel bkzb = new BanKuaiFengXiZhanBiPaiMingTableModel ();
 		tableBkZhanBi = new JTable(bkzb){
 			private static final long serialVersionUID = 1L;
+			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				 
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        BanKuaiFengXiZhanBiPaiMingTableModel tablemodel = (BanKuaiFengXiZhanBiPaiMingTableModel)this.getModel(); 
+		        BanKuai bankuai = tablemodel.getBanKuai(row);
+		        if(bankuai.getParseFileStockSet().size()>0)
+		        	comp.setForeground(Color.BLUE);
+		        else
+		        	comp.setForeground(Color.black);
+		        
+		        return comp;
+			}
+			
 			public String getToolTipText(MouseEvent e) 
 			{
                 String tip = null;
@@ -774,16 +819,19 @@ class GeGuFengXiZhanBiPaiMingTableModel extends AbstractTableModel
 	String curbkcode;
 	private ArrayList<Entry<String, Stock>> entryList;
 	int showwknum;
+	private HashSet<String> stockcodeinparsefile;
+	
 	
 	GeGuFengXiZhanBiPaiMingTableModel ()
 	{
 		
 	}
 
-	public void refresh  (String bkcode, HashMap<String,Stock> stockmap1,int wknum)
+	public void refresh  (String bkcode, HashMap<String,Stock> stockmap1,int wknum, HashSet<String> stockinparsefile2)
 	{
 		this.curbkcode = bkcode;
 		this.showwknum = wknum;
+		this.stockcodeinparsefile = stockinparsefile2;
 		
 		entryList = new ArrayList<Map.Entry<String, Stock>>(stockmap1.entrySet());
 
@@ -954,7 +1002,10 @@ class GeGuFengXiZhanBiPaiMingTableModel extends AbstractTableModel
 	   		
 	   		return index;
 	    }
-
+	    public HashSet<String> getStockInParseFile ()
+		{
+			return this.stockcodeinparsefile;
+		}
 	    
 	    
 
