@@ -3328,8 +3328,10 @@ public class BanKuaiDbOperation
 							e.printStackTrace();
 						}
 						rsdy = null;
-						if(dy>=1 && dy <=32) 
+						if(dy>=1 && dy <=32) {
 							stockvsbktable =  "股票通达信基本面信息对应表";
+							actiontables.put("地域代码", String.valueOf(dy) );
+						}
 					}
 				} catch (java.lang.NullPointerException e1) {
 					
@@ -3437,15 +3439,30 @@ public class BanKuaiDbOperation
 			CachedRowSetImpl rs1 = null;
 			try { 
 				String sqlquerystat1 = "";
-				if(bktypetable.trim().equals("股票通达信基本面信息对应表") ) { //找地域板块.暂时不开发
-//					 sqlquerystat1 = "select 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`, sum(通达信上交所股票每日交易信息.`成交额`) 股票成交额\r\n" + 
-//					 		"from 股票通达信基本面信息对应表,通达信上交所股票每日交易信息\r\n" + 
-//					 		"where 股票通达信基本面信息对应表.`股票代码GPDM`  = 通达信上交所股票每日交易信息.`代码`\r\n" + 
-//					 		"  and (通达信上交所股票每日交易信息.`交易日期` between '2017-09-04' and '2017-09-08')\r\n" + 
-//					 		"group by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`\r\n" + 
-//					 		" order by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`" 
-//					 		; 
-//					 		
+				if(bktypetable.trim().equals("股票通达信基本面信息对应表") ) { //找地域板块
+					String dycode = actiontables.get("地域代码");
+					 sqlquerystat1 = "SELECT A.`板块代码`, A.`板块名称`,A.category_amount, B.`股票代码`, \"\" AS 股票名称, B.stock_amount,   10 AS 股票权重,\r\n" + 
+					 		"       B.stock_amount / A.category_amount ratio, '" + formatedenddate +"' as lastdayofweek  \r\n" + 
+					 		"from \r\n" + 
+					 		"( SELECT 股票通达信基本面信息对应表.`股票代码GPDM` AS 股票代码, 股票通达信基本面信息对应表.`地域DY`, sum(通达信上交所股票每日交易信息.`成交额`)  stock_amount\r\n" + 
+					 		"from 股票通达信基本面信息对应表 , 通达信上交所股票每日交易信息\r\n" + 
+					 		"where 股票通达信基本面信息对应表.`股票代码GPDM`  = 通达信上交所股票每日交易信息.`代码`\r\n" + 
+					 		"and 通达信上交所股票每日交易信息.`交易日期` between ' " + formatedstartdate + "' and '" + formatedenddate + "'\r\n" + 
+					 		"and 股票通达信基本面信息对应表.`地域DY` = '"+ dycode + "'\r\n" + 
+					 		"group by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`\r\n" + 
+					 		"order by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY` \r\n" + 
+					 		") B ,\r\n" + 
+					 		"( select 通达信板块每日交易信息.`代码` AS 板块代码  , 通达信板块列表.`板块名称`, 通达信板块列表.`对应TDXSWID` AS `地域DY`,  sum(通达信板块每日交易信息.`成交额`) category_amount\r\n" + 
+					 		"          from 通达信板块每日交易信息, 通达信板块列表\r\n" + 
+					 		"         where 通达信板块每日交易信息.`代码` =  通达信板块列表.`板块ID`\r\n" + 
+					 		"			  and 通达信板块每日交易信息.`交易日期` between ' " + formatedstartdate + "' and '" + formatedenddate + "'\r\n" + 
+					 		"           and 通达信板块每日交易信息.`代码` =  '" + currentbkcode + "'\r\n" + 
+					 		"         group by 通达信板块每日交易信息.`代码`\r\n" + 
+					 		"         order by 通达信板块每日交易信息.`代码`\r\n" + 
+					 		") A \r\n" + 
+					 		"WHERE B.`地域DY` = A.`地域DY`"
+					 		; 
+					 		
 				 } else { //概念风格行业指数板块
 					 //from WQW
 					 sqlquerystat1 =" select A.`板块代码`, B.`板块名称`,B.category_amount, A.`股票代码`,  A.`股票名称`,A.stock_amount,   A.`股票权重`,\r\n" + 
@@ -3486,7 +3503,13 @@ public class BanKuaiDbOperation
 
 				 while(rs1.next()) {  
 					String tmpstockcode = rs1.getString("股票代码");
-					String tmpstockname = rs1.getString("股票名称"); //"股票名称"
+					String tmpstockname;
+					try {
+						tmpstockname = rs1.getString("股票名称"); //"股票名称"
+					} catch (java.lang.NullPointerException e ) {
+						tmpstockname = "";
+					}
+					
 					Stock tmpstock = new Stock (tmpstockcode,tmpstockname);
 					
 					Integer weight = rs1.getInt("股票权重");
@@ -3529,13 +3552,29 @@ public class BanKuaiDbOperation
 			 CachedRowSetImpl rs2 = null;
 			 try {
 					String sqlquerystat2 = "";
-					if(bktypetable.trim().equals("股票通达信基本面信息对应表") ) { //找地域板块，.暂时不开发
-//						sqlquerystat2 = "select 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`, sum(通达信深交所股票每日交易信息.`成交额`) 股票成交额\r\n" + 
-//							 		"from 股票通达信基本面信息对应表,通达信深交所股票每日交易信息\r\n" + 
-//							 		"where 股票通达信基本面信息对应表.`股票代码GPDM`  = 通达信深交所股票每日交易信息.`代码`\r\n" + 
-//							 		"  and (通达信深交所股票每日交易信息.`交易日期` between '2017-09-04' and '2017-09-08')\r\n" + 
-//							 		"group by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`\r\n" + 
-//							 		" order by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`" 
+					if(bktypetable.trim().equals("股票通达信基本面信息对应表") ) { 
+						String dycode = actiontables.get("地域代码");
+						sqlquerystat2 = "SELECT A.`板块代码`, A.`板块名称`,A.category_amount, B.`股票代码`, \"\" AS 股票名称, B.stock_amount,   10 AS 股票权重,\r\n" + 
+						 		"       B.stock_amount / A.category_amount ratio, '" + formatedenddate +"' as lastdayofweek  \r\n" + 
+						 		"from \r\n" + 
+						 		"( SELECT 股票通达信基本面信息对应表.`股票代码GPDM` AS 股票代码, 股票通达信基本面信息对应表.`地域DY`, sum(通达信深交所股票每日交易信息.`成交额`)  stock_amount\r\n" + 
+						 		"from 股票通达信基本面信息对应表 , 通达信深交所股票每日交易信息\r\n" + 
+						 		"where 股票通达信基本面信息对应表.`股票代码GPDM`  = 通达信深交所股票每日交易信息.`代码`\r\n" + 
+						 		"and 通达信深交所股票每日交易信息.`交易日期` between ' " + formatedstartdate + "' and '" + formatedenddate + "'\r\n" + 
+						 		"and 股票通达信基本面信息对应表.`地域DY` = '"+ dycode + "'\r\n" + 
+						 		"group by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`\r\n" + 
+						 		"order by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY` \r\n" + 
+						 		") B ,\r\n" + 
+						 		"( select 通达信板块每日交易信息.`代码` AS 板块代码  , 通达信板块列表.`板块名称`, 通达信板块列表.`对应TDXSWID` AS `地域DY`,  sum(通达信板块每日交易信息.`成交额`) category_amount\r\n" + 
+						 		"          from 通达信板块每日交易信息, 通达信板块列表\r\n" + 
+						 		"         where 通达信板块每日交易信息.`代码` =  通达信板块列表.`板块ID`\r\n" + 
+						 		"			  and 通达信板块每日交易信息.`交易日期` between ' " + formatedstartdate + "' and '" + formatedenddate + "'\r\n" + 
+						 		"           and 通达信板块每日交易信息.`代码` =  '" + currentbkcode + "'\r\n" + 
+						 		"         group by 通达信板块每日交易信息.`代码`\r\n" + 
+						 		"         order by 通达信板块每日交易信息.`代码`\r\n" + 
+						 		") A \r\n" + 
+						 		"WHERE B.`地域DY` = A.`地域DY`"
+						 		;  
 //									;
 					 } else { //概念风格行业指数板块
 						 //from WQW
@@ -3575,7 +3614,12 @@ public class BanKuaiDbOperation
 					 rs2 = connectdb.sqlQueryStatExecute(sqlquerystat2);
 					 while(rs2.next()) {  
 						String tmpstockcode = rs2.getString("股票代码");
-						String tmpstockname = rs2.getString("股票名称"); //"股票名称"
+						String tmpstockname;
+						try {
+							tmpstockname = rs2.getString("股票名称"); //"股票名称"
+						} catch (java.lang.NullPointerException e ) {
+							tmpstockname = "";
+						}
 						Stock tmpstock = new Stock (tmpstockcode,tmpstockname);
 						
 						Integer weight = rs2.getInt("股票权重");
@@ -4483,24 +4527,34 @@ public class BanKuaiDbOperation
 	 */
 	public void setStockWeightInBanKuai(String bkcode, String bkname, String stockcode, int weight) 
 	{
+		HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode, stockcode);
+		String bktypetable = actiontables.get("股票板块对应表");
+		String bkorzsvoltable = actiontables.get("板块每日交易量表");
+		String bknametable = actiontables.get("板块指数名称表");
+		String sqlupdatestat = "update " + bktypetable  + " set 股票权重 = " +  weight  + 
+				" where 板块代码 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "'" 
+				;
+		System.out.println(sqlupdatestat);
+		connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		
 		//因为不知道bkcode在哪个表里面，
-		String sqlupdatestat1 = "update 股票通达信交易所指数对应表  set 股票权重 = " +  weight  + 
-							" where 指数板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)" 
-							;
-		String sqlupdatestat2 = "update 股票通达信概念板块对应表  set 股票权重 = " +  weight  + 
-							" where 概念板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
-							;
-		String sqlupdatestat3 = "update 股票通达信行业板块对应表  set 股票权重 = " +  weight  + 
-							" where 行业板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
-							;
-		String sqlupdatestat4 = "update 股票通达信风格板块对应表  set 股票权重 = " +  weight  + 
-							" where 风格板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
-							;
-		//很傻的实现
-		connectdb.sqlUpdateStatExecute(sqlupdatestat1);
-		connectdb.sqlUpdateStatExecute(sqlupdatestat2);
-		connectdb.sqlUpdateStatExecute(sqlupdatestat3);
-		connectdb.sqlUpdateStatExecute(sqlupdatestat4);
+//		String sqlupdatestat1 = "update 股票通达信交易所指数对应表  set 股票权重 = " +  weight  + 
+//							" where 指数板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)" 
+//							;
+//		String sqlupdatestat2 = "update 股票通达信概念板块对应表  set 股票权重 = " +  weight  + 
+//							" where 概念板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
+//							;
+//		String sqlupdatestat3 = "update 股票通达信行业板块对应表  set 股票权重 = " +  weight  + 
+//							" where 行业板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
+//							;
+//		String sqlupdatestat4 = "update 股票通达信风格板块对应表  set 股票权重 = " +  weight  + 
+//							" where 风格板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
+//							;
+//		//很傻的实现
+//		connectdb.sqlUpdateStatExecute(sqlupdatestat1);
+//		connectdb.sqlUpdateStatExecute(sqlupdatestat2);
+//		connectdb.sqlUpdateStatExecute(sqlupdatestat3);
+//		connectdb.sqlUpdateStatExecute(sqlupdatestat4);
 	}
 	
 	/*

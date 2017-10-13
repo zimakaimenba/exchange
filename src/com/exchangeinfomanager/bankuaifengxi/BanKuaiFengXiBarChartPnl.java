@@ -248,7 +248,7 @@ class CustomToolTipGenerator implements CategoryToolTipGenerator  {
             Comparable test = dataset.getColumnKey(column);
 //            List tst = dataset.getColumnKeys();
 //        	return "(" + String.valueOf(datecur) + ")" + "(" + String.valueOf(datelast) + ")" + "(" + decimalformate.format(ratio) + ")";
-        	return test + "占比变化(" + decimalformate.format(ratio) + ")";
+        	return test + "占比" + decimalformate.format(datelast) + "占比变化(" + decimalformate.format(ratio) + ")";
     	} else {
     		Comparable test = dataset.getColumnKey(column);
     		return test.toString();
@@ -259,29 +259,29 @@ class CustomToolTipGenerator implements CategoryToolTipGenerator  {
 }
 
 
-class XYSelectionRenderer extends XYLineAndShapeRenderer {
-    private Shape selectedShape = new Rectangle2D.Double(-8, -8, 16, 16);
-    private int selectedSeries = -1;
-    private int selectedItem = -1;
-    private boolean selectionActive;
-
-    public boolean isSelectionActive(){
-        return (selectedSeries > -1 && selectedItem > -1);
-    }
-    
-    public Shape getItemShape(int series, int item){
-        if(series == selectedSeries && item == selectedItem){
-            return selectedShape;
-        }
-        return super.getItemShape(series, item);
-    }
-
-    public void setSelectedSeries(int series){
-        this.selectedSeries = series;
-    }
-
-    public void setSelectedItem(int item){
-        this.selectedItem = item;
-    }
-}
+//class XYSelectionRenderer extends XYLineAndShapeRenderer {
+//    private Shape selectedShape = new Rectangle2D.Double(-8, -8, 16, 16);
+//    private int selectedSeries = -1;
+//    private int selectedItem = -1;
+//    private boolean selectionActive;
+//
+//    public boolean isSelectionActive(){
+//        return (selectedSeries > -1 && selectedItem > -1);
+//    }
+//    
+//    public Shape getItemShape(int series, int item){
+//        if(series == selectedSeries && item == selectedItem){
+//            return selectedShape;
+//        }
+//        return super.getItemShape(series, item);
+//    }
+//
+//    public void setSelectedSeries(int series){
+//        this.selectedSeries = series;
+//    }
+//
+//    public void setSelectedItem(int item){
+//        this.selectedItem = item;
+//    }
+//}
 
