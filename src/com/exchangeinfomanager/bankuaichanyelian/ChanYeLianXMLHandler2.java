@@ -234,7 +234,7 @@ class ChanYeLianXMLHandler
 	
 		        	String bkname = null;
 					try {
-						bkname = tdxbk.get(newbkcode).getUserObject().toString();
+						bkname = tdxbk.get(newbkcode).getMyOwnName();
 					} catch (java.lang.NullPointerException ex) {
 						ex.printStackTrace();
 					}

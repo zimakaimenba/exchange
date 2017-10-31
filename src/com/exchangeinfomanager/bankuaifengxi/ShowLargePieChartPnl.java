@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.gui.subgui;
+package com.exchangeinfomanager.bankuaifengxi;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;

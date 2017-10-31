@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -445,7 +446,7 @@ public class EverySearchOperation extends JPanel
 	{
 		// TODO Auto-generated method stub
 		Date currentdate = dchsSearchdate.getDate();
-		String searchdate = sysconfig.formatDate(currentdate);
+		String searchdate = CommonUtility.formatDateYYYY_MM_DD_HHMMSS(currentdate);
 		String searchstringformated = "'*" + searchdate  + "*'";
 		
 		String searchsqlstat = "SELECT * FROM 操作记录挂单  WHERE 日期  LIKE " + searchstringformated + "" + "ORDER BY 股票代码" ; 
@@ -519,7 +520,7 @@ public class EverySearchOperation extends JPanel
 	{
 		// TODO Auto-generated method stub
 		Date currentdate = dchsSearchdate.getDate();
-		String searchdate = sysconfig.formatDate(currentdate);
+		String searchdate =CommonUtility.formatDateYYYY_MM_DD_HHMMSS(currentdate);
 		String searchstringformated = "'*" + searchdate  + "*'";
 		
 		

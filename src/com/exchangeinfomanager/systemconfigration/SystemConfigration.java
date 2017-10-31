@@ -58,6 +58,9 @@ public class SystemConfigration
 	private String datatablesfromserver;
 	private String gephifileexportparth;
 	public static int MODELSERVER=0, MODELCLIENT=1, MODELSERVERCLIENT=2;
+	private int givenperiodofmonth;
+	private int zhanbifengxizhouqi; //成交量占比分析周期
+	private Boolean priavtemode;
 	
 	private void getSystemInfoFromXML() 
 	{
@@ -134,6 +137,15 @@ public class SystemConfigration
 			
 			Element gephifilepath = xmlroot.element("gephifilepath");
 			this.gephifileexportparth = gephifilepath.getText();
+			
+			
+			Element zhanbifengxizhouqi = xmlroot.element("zhanbifengxizhouqi");
+			this.zhanbifengxizhouqi = Integer.parseInt(zhanbifengxizhouqi.getText());
+			
+			Element priavtemodesetting = xmlroot.element("privatemode");
+			this.priavtemode = Boolean.parseBoolean(priavtemodesetting.getText());
+			
+			
 			
 //			Element eletdxvol = xmlroot.element("tdxvolpah");
 //			this.tdxvolpath = eletdxvol.getText(); 
@@ -514,37 +526,43 @@ public class SystemConfigration
 			return null;
 			
 		}
-		public String formatDate(Date tmpdate)
+//		public String formatDate(Date tmpdate)
+//		{
+//			try {
+//				SimpleDateFormat formatterhwy=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//				return formatterhwy.format(tmpdate);
+//			} catch (java.lang.NullPointerException e) {
+//				return null;
+//			}
+//			
+//		}
+//		public Date formateStringToDate(String tmpdate) 
+//		{
+//			DateFormat format = null;
+//			if(tmpdate.length()>8)
+//				 format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			else if(tmpdate.length() == 10)
+//				format = new SimpleDateFormat("yyyy-MM-dd");
+//			else if(tmpdate.length() == 8)
+//				format = new SimpleDateFormat("yyyyMMdd");
+//			
+//			Date date = null;
+//			try {
+//				System.out.println("Data need to be parsed is" + tmpdate);
+//				date = format.parse(tmpdate);
+//			} catch (ParseException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				return null;
+//			}
+//			
+//			return date;
+//		}
+		
+		public int banKuaiFengXiMonthRange () 
 		{
-			try {
-				SimpleDateFormat formatterhwy=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				return formatterhwy.format(tmpdate);
-			} catch (java.lang.NullPointerException e) {
-				return null;
-			}
-			
-		}
-		public Date formateStringToDate(String tmpdate) 
-		{
-			DateFormat format = null;
-			if(tmpdate.length()>8)
-				 format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			else if(tmpdate.length() == 10)
-				format = new SimpleDateFormat("yyyy-MM-dd");
-			else if(tmpdate.length() == 8)
-				format = new SimpleDateFormat("yyyyMMdd");
-			
-			Date date = null;
-			try {
-				System.out.println("Data need to be parsed is" + tmpdate);
-				date = format.parse(tmpdate);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
-			
-			return date;
+//			givenperiodofmonth = 8;
+			return this.zhanbifengxizhouqi;
 		}
 		public void setSoftWareMode(int model) 
 		{
@@ -557,6 +575,11 @@ public class SystemConfigration
 		public String getGephiFileExportPath() {
 			// TODO Auto-generated method stub
 			return this.gephifileexportparth;
+		}
+		
+		public boolean getPrivateModeSetting ()
+		{
+			return this.priavtemode;
 		}
 
 }

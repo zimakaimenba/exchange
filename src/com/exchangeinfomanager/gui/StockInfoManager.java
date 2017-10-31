@@ -25,6 +25,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
@@ -96,6 +97,7 @@ import com.sun.rowset.CachedRowSetImpl;
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.TableCellListener;
+import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
@@ -188,32 +190,48 @@ public class StockInfoManager
 		createEvents();
     	initializePaoMaDeng ();
  	}
+	
+	private ConnectDataBase connectdb = null;
+	private SystemConfigration sysconfig = null;
+	private AccountAndChiCangConfiguration accountschicangconfig;
+	private BkChanYeLianTreeNode nodeshouldbedisplayed; 
+	private BuyCheckListTreeDialog buychklstdialog;
+	private BanKuaiDbOperation bkdbopt;
+	private AccountDbOperation acntdbopt;
+	private BanKuaiGuanLi bkgldialog = null;
+	private BanKuaiFengXi bkfx ;
+	private SearchDialog searchdialog;
+	private BanKuaiAndChanYeLian bkcyl;
+
+	
+	
+	
 	protected void refeshSystem() 
 	{
-		if(sysconfig.reconfigSystemSettings () ) {
-			connectdb = ConnectDataBase.getInstance();
-			boolean localconnect = connectdb.isLocalDatabaseconnected();
-			boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
-			if(localconnect == false && rmtconnect == true) {
-					JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
-			} else if(localconnect == true && rmtconnect == false) {
-					JOptionPane.showMessageDialog(null,"仅基本数据可用！");
-			} else{
-					JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
-					System.exit(0);
-			}
-			
-			accountschicangconfig = new AccountAndChiCangConfiguration ();
-			acntdbopt = new AccountDbOperation();
-			bkdbopt = new BanKuaiDbOperation ();
-
-			
-			displayAccountAndChiCang ();
-			clearGuiDispalyedInfo ();
-			kspanel.resetInput();
-			displayDbInfo();
-	    	createEvents();
-	    	initializePaoMaDeng ();
+		if(sysconfig.reconfigSystemSettings () ) { //新的采用直接重启系统的方法，简单
+//			connectdb = ConnectDataBase.getInstance();
+//			boolean localconnect = connectdb.isLocalDatabaseconnected();
+//			boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
+//			if(localconnect == false && rmtconnect == true) {
+//					JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
+//			} else if(localconnect == true && rmtconnect == false) {
+//					JOptionPane.showMessageDialog(null,"仅基本数据可用！");
+//			} else{
+//					JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
+//					System.exit(0);
+//			}
+//			
+//			accountschicangconfig = new AccountAndChiCangConfiguration ();
+//			acntdbopt = new AccountDbOperation();
+//			bkdbopt = new BanKuaiDbOperation ();
+//
+//			
+//			displayAccountAndChiCang ();
+//			clearGuiDispalyedInfo ();
+//			kspanel.resetInput();
+//			displayDbInfo();
+//	    	createEvents();
+//	    	initializePaoMaDeng ();
 
 		}
 	}
@@ -327,9 +345,10 @@ public class StockInfoManager
 					
 					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
 					
-					
-					displayAccountTableToGui ();
-					displaySellBuyZdgzInfoToGui ();
+					if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
+						displayAccountTableToGui ();
+						displaySellBuyZdgzInfoToGui ();
+					}
 					displayStockSuoShuBanKuai ();
 					displayStockNews ();
 					setKuaiSuGui (stockcode);
@@ -340,23 +359,6 @@ public class StockInfoManager
 				enableGuiEditable();
 		}
 	
-
-	private ConnectDataBase connectdb = null;
-	private SystemConfigration sysconfig = null;
-	private AccountAndChiCangConfiguration accountschicangconfig;
-	private BkChanYeLianTreeNode nodeshouldbedisplayed; 
-	private BuyCheckListTreeDialog buychklstdialog;
-	private BanKuaiDbOperation bkdbopt;
-	private AccountDbOperation acntdbopt;
-
-	
-	private BanKuaiGuanLi bkgldialog = null;
-	private BanKuaiFengXi bkfx ;
-	private SearchDialog searchdialog;
-	private BanKuaiAndChanYeLian bkcyl;
-
-
-
 	private void initlizedBuyCheckListTreeDialog ()
 	{
 		if(buychklstdialog == null ) {
@@ -375,7 +377,79 @@ public class StockInfoManager
 	}
 
 	private void createEvents()
-	{	
+	{
+		btnsixmonthafter.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+		    	Date startday = CommonUtility.getDateOfSpecificMonthAfter(dateChsBanKuaiZhanbi.getDate(),6 );
+		    	dateChsBanKuaiZhanbi.setDate(startday);
+		    	panelZhanBi.resetDate();
+				pnlGeGuWkZhanBi.resetDate();
+			}
+		});
+		
+		btnsixmonthbefore.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+		    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate(),6 );
+		    	dateChsBanKuaiZhanbi.setDate(startday);
+		    	panelZhanBi.resetDate();
+				pnlGeGuWkZhanBi.resetDate();
+			}
+		});
+		
+		btnResetDate.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				dateChsBanKuaiZhanbi.setDate(new Date() );
+				panelZhanBi.resetDate();
+				pnlGeGuWkZhanBi.resetDate();
+			}
+		});
+		
+		dateChsBanKuaiZhanbi.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent e) {
+				if("date".equals(e.getPropertyName() ) ) {
+					panelZhanBi.resetDate();
+					pnlGeGuWkZhanBi.resetDate();
+					
+					JDateChooser wybieraczDat = (JDateChooser) e.getSource();
+		    		Date newdate = wybieraczDat.getDate();
+					if(CommonUtility.isSameDate(newdate, new Date() ) )
+						btnResetDate.setEnabled(false);
+		    		else
+		    			btnResetDate.setEnabled(true);
+					
+//		    		JDateChooser wybieraczDat = (JDateChooser) e.getSource();
+//		    		Date newdate = wybieraczDat.getDate();
+//		    		
+//		    		
+//		    		if( (olddate == null) || ( !CommonUtility.isSameDate(newdate, olddate) ) ) {
+//		    			panelbkwkzhanbi.resetDate();
+//			    		panelgeguwkzhanbi.resetDate();
+//			    		pnllastestggzhanbi.resetDate();
+//			    		panelLastWkGeGuZhanBi.resetDate();
+//			    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
+//			    		initializeBanKuaiZhanBiByGrowthRate ();
+//			    		
+//			    		olddate = newdate;
+//		    		}
+		    	}
+//		        System.out.println(e.getPropertyName()+ ": " + e.getNewValue());
+			}
+		});
+		
+		editorPaneBanKuai.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String bkstring = editorPaneBanKuai.getSelectedBanKuai();
+				btndetailfx.setEnabled(true);
+		        displayBanKuaiOfStockZhanBiByWeek (bkstring);
+		        displayStockBanKuaiZhanBiByStock (bkstring);
+			}
+		});
+		
+		
 		menuItembkfx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -472,35 +546,34 @@ public class StockInfoManager
 		
 		
 		//为个股板块信息的hyperlink注册时间  http://www.javalobby.org/java/forums/t19716.html
-		 ActionMap actionMap = new ActionMap(); 
-	     actionMap.put("openBanKuaiAndChanYeLianDialog", new AbstractAction (){
-			public void actionPerformed(ActionEvent e) {
-				 	HyperlinkEvent hle = (HyperlinkEvent)e.getSource();
-				 	String link = null;
-			        try{
-			        	Element elem = hle.getSourceElement(); 
-			            Document doc = elem.getDocument(); 
-			            int start = elem.getStartOffset(); 
-			            int end = elem.getEndOffset(); 
-			            link = doc.getText(start, end-start);
-			            System.out.println(link);
-//			            link = link.equals("contains people") ? "" : link.substring("contains ".length()); 
-			            StringTokenizer stok = new StringTokenizer(link, ", "); 
-			            while(stok.hasMoreTokens()){ 
-			                String token = stok.nextToken(); 
-			            }
-			        } catch(BadLocationException ex){ 
-			            ex.printStackTrace(); 
-			        }
-			        
-			        
-			        btndetailfx.setEnabled(true);
-//					dateChsBanKuaiZhanbi.setEnabled(true);
-			        displayBanKuaiOfStockZhanBiByWeek (link);
-			        displayStockBanKuaiZhanBiByStock (link);
-			}
-	     }); 
-	     editorPaneBanKuai.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
+//		 ActionMap actionMap = new ActionMap(); 
+//	     actionMap.put("openBanKuaiAndChanYeLianDialog", new AbstractAction (){
+//			public void actionPerformed(ActionEvent e) {
+//				 	HyperlinkEvent hle = (HyperlinkEvent)e.getSource();
+//				 	String link = null;
+//			        try{
+//			        	Element elem = hle.getSourceElement(); 
+//			            Document doc = elem.getDocument(); 
+//			            int start = elem.getStartOffset(); 
+//			            int end = elem.getEndOffset(); 
+//			            link = doc.getText(start, end-start);
+//			            System.out.println(link);
+////			            link = link.equals("contains people") ? "" : link.substring("contains ".length()); 
+//			            StringTokenizer stok = new StringTokenizer(link, ", "); 
+//			            while(stok.hasMoreTokens()){ 
+//			                String token = stok.nextToken(); 
+//			            }
+//			        } catch(BadLocationException ex){ 
+//			            ex.printStackTrace(); 
+//			        }
+//			        
+//			        
+//			        btndetailfx.setEnabled(true);
+//			        displayBanKuaiOfStockZhanBiByWeek (link);
+//			        displayStockBanKuaiZhanBiByStock (link);
+//			}
+//	     }); 
+//	     editorPaneBanKuai.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
 
 			/*
 			 * 导入交易记录
@@ -788,7 +861,7 @@ public class StockInfoManager
 				if(autoIncKeyFromApi >0) {
 					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
 					//String stockcode = jiarujihua.getStockCode();		
-					String addedday = sysconfig.formatDate(new Date() );
+					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() );
 					String zdgzsign = "移出关注";
 					String shuoming = "";
 					if(jiarujihua.isMingRiJiHua()) {
@@ -826,10 +899,10 @@ public class StockInfoManager
 				
 				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
 
-				if(autoIncKeyFromApi >0) {
+				if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
 					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
 					//String stockcode = jiarujihua.getStockCode();		
-					String addedday = sysconfig.formatDate(new Date() );
+					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() );
 					String zdgzsign = "加入关注";
 					String shuoming = "";
 					if(jiarujihua.isMingRiJiHua()) {
@@ -871,7 +944,7 @@ public class StockInfoManager
 				if( !actiontype.contains("买入") ) {
 					JOptionPane.showMessageDialog(null,"不是买入记录，无法更改操作账户，当前只支持买入记录更改账户！");
 					return ;
-				} else if ( !actiondate.contains(sysconfig.formatDate(new Date()).substring(0, 10) ) ) {
+				} else if ( !actiondate.contains(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()).substring(0, 10) ) ) {
 					JOptionPane.showMessageDialog(null,"只有当日买入记录才支持更改账户！");
 					return ;
 				} else if( actiontype.contains("买入") ) {
@@ -916,7 +989,7 @@ public class StockInfoManager
 				
 				String actiontype = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 1);
  				String actiondate = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
-				if(actiontype.contains("挂单") && !actiondate.contains(sysconfig.formatDate(new Date()).substring(0, 10) )  ) { 
+				if(actiontype.contains("挂单") && !actiondate.contains(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()).substring(0, 10) )  ) { 
 					JOptionPane.showMessageDialog(null,"只有今日挂单可以转为成交，历史挂单不可以转为成交！");
 					return ;
 				} else if( !actiontype.contains("挂单") ) {
@@ -1580,10 +1653,11 @@ public class StockInfoManager
 	{
 			if(bkfx == null && bkcyl.getBanKuaiFengXi() == null) {
 				String htmlstring = editorPaneBanKuai.getText();
-				org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-				org.jsoup.select.Elements content = doc.select("p"); 
+//				org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+//				org.jsoup.select.Elements content = doc.select("p"); 
 				       
-				bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),content.toString(),cBxstockcode.getSelectedItem().toString().substring(0, 6),dateChsBanKuaiZhanbi.getDate());
+				//bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),htmlstring,cBxstockcode.getSelectedItem().toString().substring(0, 6),dateChsBanKuaiZhanbi.getDate());
+				bkfx = new BanKuaiFengXi (this,bkcyl);
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				bkfx.setVisible(true);
@@ -1591,9 +1665,13 @@ public class StockInfoManager
 				bkfx = bkcyl.getBanKuaiFengXi(); 
 			}
 			
+			bkfx.setBanKuaiEndiorPaneContents ( editorPaneBanKuai.getText());
+			bkfx.setFenXiDate ( dateChsBanKuaiZhanbi.getDate() );
+			
 			if(!bkfx.isVisible() ) {
 				bkfx.setVisible(true);
 			} 
+			
 			bkfx.toFront();
 	}
 
@@ -1607,9 +1685,10 @@ public class StockInfoManager
    	 	String tdxbkcode = bankuai.getMyOwnCode();
    	 	
 		Date endday = CommonUtility.getLastDayOfWeek(dateChsBanKuaiZhanbi.getDate() );
-    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate(),6);
+    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate(),sysconfig.banKuaiFengXiMonthRange() );
+    	
     	ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezb = bankuai.getChenJiaoErZhanBiInGivenPeriod();
-    	if(cjezb != null ) {
+    	if(cjezb != null && !cjezb.isEmpty() ) {
     		ChenJiaoZhanBiInGivenPeriod cjezblatest = cjezb.get(cjezb.size()-1 );
         	if(cjezblatest.getDayofEndofWeek().compareTo(endday) == 0)
         		;
@@ -1617,9 +1696,14 @@ public class StockInfoManager
         		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
     	} else
     		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
+    	
     	panelZhanBi.resetDate();
     	panelZhanBi.setBanKuaiWithDaPanNeededDisplay(bankuai);
-    	panelZhanBi.setToolTipText(bankuai.getMyOwnCode()+ bankuai.getMyOwnName());
+    	((TitledBorder)panelZhanBi.getBorder()).setTitle(bankuai.getMyOwnCode()+ bankuai.getMyOwnName() 
+    											+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
+    											+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
+    	panelZhanBi.repaint();
+//    	panelZhanBi.setToolTipText(bankuai.getMyOwnCode()+ bankuai.getMyOwnName());
 		
 //		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
 //		
@@ -1632,11 +1716,15 @@ public class StockInfoManager
 	{
 		String bkcode = bkname.trim().substring(1,7);
 		Date endday = CommonUtility.getLastDayOfWeek(dateChsBanKuaiZhanbi.getDate() );
-    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate() ,6);
+    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate() ,sysconfig.banKuaiFengXiMonthRange());
 		
     	nodeshouldbedisplayed = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,(Stock)nodeshouldbedisplayed,startday,endday);
     	pnlGeGuWkZhanBi.resetDate();
     	pnlGeGuWkZhanBi.setBanKuaiWithDaPanNeededDisplay(nodeshouldbedisplayed);
+    	
+    	((TitledBorder)pnlGeGuWkZhanBi.getBorder()).setTitle("个股从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
+														+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
+    	pnlGeGuWkZhanBi.repaint();
 	}
 	
 	
@@ -1697,9 +1785,11 @@ public class StockInfoManager
 	protected void refreshChiCangAccountPanel ()
 	{
 		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem()); 
-//		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountschicangconfig.getStockChicangAccountsList(stockcode),stockcode );
+//		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountschicangconfig.getStockChiCangAccount(stockcode),stockcode );
+//		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).fireTableDataChanged();
+//		HashMap<String, AccountInfoBasic> accountsnamelist = ((Stock)nodeshouldbedisplayed).getChiCangAccounts();
+		displayAccountTableToGui ();
 		
-		HashMap<String, AccountInfoBasic> accountsnamelist = ((Stock)nodeshouldbedisplayed).getChiCangAccounts();
 		
 	}
 
@@ -1722,7 +1812,7 @@ public class StockInfoManager
 			java.util.Calendar Cal=java.util.Calendar.getInstance();
 			Cal.setTime(stocknumberpricepanel.getActionDay());
 			Cal.add(java.util.Calendar.SECOND,10);
-			String addedday = sysconfig.formatDate( Cal.getTime()  );
+			String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( Cal.getTime()  );
 			String buyresult = "(" + geguprofit + ")";
 			
 			String action =null;
@@ -1759,10 +1849,13 @@ public class StockInfoManager
 
 	private void updatActionResultToGui(BuyStockNumberPrice stocknumberpricepanel) 
 	{
+		if(sysconfig.getPrivateModeSetting()) //隐私模式不显示买卖信息
+			return;
+		
 		int stocknumber =  stocknumberpricepanel.getJiaoyiGushu();
 		double stockprice =  stocknumberpricepanel.getJiaoyiJiage();
 		
-		String addedday = sysconfig.formatDate( stocknumberpricepanel.getActionDay() );
+		String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( stocknumberpricepanel.getActionDay() );
 		String action =  stocknumberpricepanel.getActionType();
 		String shuoming = stocknumberpricepanel.getJiaoYiShuoMing();
 		
@@ -1843,7 +1936,7 @@ public class StockInfoManager
 	 		 		+ " <p>个股新闻:";
 	     for(ChanYeLianNews cylnew : curnewlist ) {
 	    		String title = cylnew.getNewsTitle();
-	    		String newdate = sysconfig.formatDate(cylnew.getGenerateDate() ).substring(0,11); 
+	    		String newdate = CommonUtility.formatDateYYYY_MM_DD_HHMMSS(cylnew.getGenerateDate() ).substring(0,11); 
 	    		String slackurl = cylnew.getNewsSlackUrl();
 	    		String keywords = cylnew.getKeyWords ();
 	    		if(slackurl != null && !slackurl.isEmpty() )	    		
@@ -1871,11 +1964,12 @@ public class StockInfoManager
 
 	private void displayAccountTableToGui ()
 	{
-		ArrayList<AccountInfoBasic> chicangaccountslist = null;
+//		ArrayList<AccountInfoBasic> chicangaccountslist = null;
 		String tmpstockcode = nodeshouldbedisplayed.getMyOwnCode();
 		
 		if(accountschicangconfig.isSystemChiCang(tmpstockcode)) { //如果是系统持仓才要显示持仓信息，否则什么都不用做
-			HashMap<String, AccountInfoBasic> accountsnamelist = ((Stock)nodeshouldbedisplayed).getChiCangAccounts();
+			nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
+			HashMap<String, AccountInfoBasic> accountsnamemap = ((Stock)nodeshouldbedisplayed).getChiCangAccounts();
 //			chicangaccountslist = new ArrayList<AccountInfoBasic> ();
 //			for(String tmpstockacntname: accountsnamelist ){
 //				
@@ -1884,10 +1978,11 @@ public class StockInfoManager
 //				chicangaccountslist.add(tmpacnt);
 //			}
 			
+			ArrayList<AccountInfoBasic> accountsnamelist = new ArrayList<AccountInfoBasic>(accountsnamemap.values());
 			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountsnamelist,tmpstockcode );
-			
-			
-		} 
+		} else
+			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).removeAllRows();
+		
 	}
 
 
@@ -2046,6 +2141,10 @@ public class StockInfoManager
 		editorPaneBanKuai.setText("");
 		panelZhanBi.resetDate();
 		pnlGeGuWkZhanBi.resetDate();
+		
+		dateChsBanKuaiZhanbi.setDate(new Date() );
+		btnResetDate.setEnabled(false);
+		
 //		//xml tree 应该也要刷新
 	}
 
@@ -2079,6 +2178,10 @@ public class StockInfoManager
 			btnSongZhuanGu.setEnabled(true);
 			tfdCustom.setEnabled(true);
 			tfdJingZhengDuiShou.setEnabled(true);
+			
+			dateChsBanKuaiZhanbi.setEnabled(true);
+			btnsixmonthbefore.setEnabled(true);
+			btnsixmonthafter.setEnabled(true);
 			
 			//btnAddZdy.setEnabled(true);
 			btnRemvZdy.setEnabled(true);
@@ -2290,7 +2393,7 @@ public class StockInfoManager
 	private JMenuItem menuItemimportrecords;
 	private JMenuItem mntmOpenRmtDb;
 	private JScrollPane scrollPane_3;
-	private JEditorPane editorPaneBanKuai;
+	private BanKuaiListEditorPane editorPaneBanKuai;
 	private BkChanYeLianTree tree_1;
 	private BanKuaiFengXiBarChartPnl panelZhanBi;
 	private JDateChooser dateChsBanKuaiZhanbi;
@@ -2298,6 +2401,9 @@ public class StockInfoManager
 	private BanKuaiFengXiBarChartPnl pnlGeGuWkZhanBi;
 	private JButton btndetailfx;
 	private JMenuItem menuItembkfx;
+	private JButton btnResetDate;
+	private JButton btnsixmonthbefore;
+	private JButton btnsixmonthafter;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2487,8 +2593,7 @@ public class StockInfoManager
 		
 		panelZhanBi = new BanKuaiFengXiBarChartPnl();
 		panelZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u534A\u5E74\u5185\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		
-		
+			
 		dateChsBanKuaiZhanbi = new JDateChooser(new Date());
 		dateChsBanKuaiZhanbi.setEnabled(false);
 		
@@ -2497,7 +2602,16 @@ public class StockInfoManager
 		btndetailfx = new JButton("\u677F\u5757\u8BE6\u7EC6\u5206\u6790");
 		btndetailfx.setEnabled(false);
 		
+		btnResetDate = new JButton("\u91CD\u7F6E\u65E5\u671F");
+		btnResetDate.setEnabled(false);
 		
+		btnsixmonthbefore = new JButton("<");
+		btnsixmonthbefore.setEnabled(false);
+		btnsixmonthbefore.setToolTipText("\u5411\u524D6\u4E2A\u6708");
+		
+		btnsixmonthafter = new JButton(">");
+		btnsixmonthafter.setEnabled(false);
+		btnsixmonthafter.setToolTipText("\u5411\u540E6\u4E2A\u6708");
 		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -2529,7 +2643,13 @@ public class StockInfoManager
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(dateChsBanKuaiZhanbi, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 436, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnsixmonthbefore)
+							.addGap(1)
+							.addComponent(btnsixmonthafter)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnResetDate)
+							.addPreferredGap(ComponentPlacement.RELATED, 252, Short.MAX_VALUE)
 							.addComponent(btndetailfx))
 						.addComponent(panelZhanBi, 0, 0, Short.MAX_VALUE)
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
@@ -2545,9 +2665,13 @@ public class StockInfoManager
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(dateChsBanKuaiZhanbi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btndetailfx))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(dateChsBanKuaiZhanbi, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+									.addComponent(btndetailfx, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addComponent(btnsixmonthbefore)
+									.addComponent(btnsixmonthafter)
+									.addComponent(btnResetDate, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(panelZhanBi, GroupLayout.PREFERRED_SIZE, 347, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -2573,8 +2697,8 @@ public class StockInfoManager
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-								.addComponent(panelStatusBar, GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-								.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))))
+								.addComponent(panelStatusBar, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+								.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))))
 					.addContainerGap())
 		);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -2583,7 +2707,9 @@ public class StockInfoManager
 		pnlGeGuWkZhanBi.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u80A1\u7968\u534A\u5E74\u5185\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel.add(pnlGeGuWkZhanBi);
 		
-		editorPaneBanKuai = new JEditorPane();
+		editorPaneBanKuai = new BanKuaiListEditorPane();
+
+
 		editorPaneBanKuai.setEditable(false);
 		editorPaneBanKuai.setContentType("text/html");
 		scrollPane_3.setViewportView(editorPaneBanKuai);
@@ -3154,13 +3280,20 @@ public class StockInfoManager
 			}
 		});
 	}
+
+
+	public void toFront() 
+	{
+		this.frame.toFront();
+		
+	}
 }
 
 
 class AccountsInfoTableModel extends DefaultTableModel 
 {
-	private HashMap<String, AccountInfoBasic> accountslist;
-	private ArrayList<String> acntnamelist;
+	private ArrayList<AccountInfoBasic> accountslist;
+//	private ArrayList<String> acntnamelist;
 	private String stockcode;
 	String[] jtableTitleStrings = { "账户名称", "持仓成本","持仓股数","持仓均价"};
 	
@@ -3168,10 +3301,10 @@ class AccountsInfoTableModel extends DefaultTableModel
 	{
 	}
 
-	public void refresh  (HashMap<String, AccountInfoBasic> accountsnamelist,String stockcode)
+	public void refresh  (ArrayList<AccountInfoBasic> arrayList,String stockcode)
 	{
-		this.accountslist = accountsnamelist;
-		this.acntnamelist = new ArrayList<String>(accountslist.keySet()); 
+		this.accountslist = arrayList;
+//		this.acntnamelist = new ArrayList<String>(accountslist.keySet()); 
 		this.stockcode = stockcode.substring(0, 6);
 		
 		this.fireTableDataChanged();
@@ -3198,17 +3331,17 @@ class AccountsInfoTableModel extends DefaultTableModel
 	    		return null;
 	    	
 	    	Object value = "??";
-	    	String acntname = this.acntnamelist.get(rowIndex);
-	    	AccountInfoBasic account = (AccountInfoBasic)accountslist.get(acntname); //该股票的持仓账户list中找到该账户
-	    	StockChiCangInfo tmpstkcc = account.getStockChiCangInfoIndexOf(stockcode); //找到该账户的该股票的持仓
-	    	
+	    	AccountInfoBasic account = accountslist.get(rowIndex);
+	    	StockChiCangInfo tmpstkcc = account.getStockChiCangInfoIndexOf (stockcode);
 	    	switch (columnIndex) {
             case 0:
                 value = account.getAccountName();
                 break;
             case 1:
             	NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(); 
+            	
                 value = currencyFormat.format(0-tmpstkcc.getChicangchenben()); //因为成本为负
+
                 break;
             case 2:
             	//NumberFormat currencyFormat1 = NumberFormat.getCurrencyInstance();
@@ -3274,58 +3407,15 @@ class AccountsInfoTableModel extends DefaultTableModel
 	    	    
 	    	
 	    	this.fireTableDataChanged();
-	    }	    
+	    }
+	    
+	    public void removeAllRows ()
+	    {
+	    	if(accountslist != null) {
+	    		this.accountslist.clear();
+		    	this.fireTableDataChanged();
+	    	}
+	    	
+	    }
 }
 
-
-/*
- * google guava files 类，可以直接处理读出的line
- */
-//class BuySellRecordsProcessor implements LineProcessor<List<String>> 
-//{
-//    private List<String> recoreslists = Lists.newArrayList();
-//    private String zhanghuid = null;
-//   
-//    @Override
-//    public boolean processLine(String line) throws IOException {
-//    	List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
-//    	System.out.println(tmplinelist);
-//    	if(tmplinelist.isEmpty())
-//    		return true;
-//    	if( tmplinelist.get(0).trim().contains("客户号") && zhanghuid == null) {
-//    		zhanghuid =  tmplinelist.get(0).replace("客户号:", "").trim();
-//    		recoreslists.add( zhanghuid ); //直接返回用户账号ID
-//    	}
-//    	
-//        if( Pattern.matches("\\d{8}",tmplinelist.get(0)) ) {
-//        	String tmpactiontype = tmplinelist.get(2).trim();
-//        	if( (tmpactiontype.contains("证券买入") || tmpactiontype.contains("证券卖出") || tmpactiontype.trim().contains("红股入帐") || tmpactiontype.contains("申购中签")) ) {
-//            	recoreslists.add(line);
-//        	}
-//        }
-//        
-//        return true;
-//    }
-//    @Override
-//    public List<String> getResult() {
-//        return recoreslists;
-//    }
-//}
-
-// http://www.javalobby.org/java/forums/t19716.html
-class ActionBasedBanKuaiAndChanYeLianHyperlinkListener implements HyperlinkListener{ 
-    ActionMap actionMap; 
- 
-    public ActionBasedBanKuaiAndChanYeLianHyperlinkListener(ActionMap actionMap){ 
-        this.actionMap = actionMap; 
-    } 
- 
-    public void hyperlinkUpdate(HyperlinkEvent e){ 
-        if(e.getEventType()!=HyperlinkEvent.EventType.ACTIVATED) 
-            return; 
-        String href = e.getDescription(); 
-        Action action = actionMap.get(href); 
-        if(action!=null) 
-            action.actionPerformed(new ActionEvent(e, ActionEvent.ACTION_PERFORMED, href)); 
-    } 
-}

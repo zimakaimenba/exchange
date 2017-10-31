@@ -24,6 +24,7 @@ import org.dom4j.DocumentException;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTreeNode;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
 
@@ -346,7 +347,7 @@ public class BuyCheckListTreeDialog extends JDialog
 	private void setLastestUpdatedDateToGui(String checklistslist)
 	{
 		try {
-			lastestUpdateDate = sysconfig.formateStringToDate(checklistslist.substring(0, 19));
+			lastestUpdateDate = CommonUtility.formateStringToDate(checklistslist.substring(0, 19));
 		} catch(java.lang.NullPointerException e) {
 			lastestUpdateDate = null;
 		} catch(java.lang.StringIndexOutOfBoundsException e) {
@@ -366,7 +367,7 @@ public class BuyCheckListTreeDialog extends JDialog
 	public String getChkLstUpdatedDate ()
 	{
 		if(checklistTreeTiCai.getChecklistsitems() != null) {
-			 return sysconfig.formatDate(lastestUpdateDate);
+			 return CommonUtility.formatDateYYYY_MM_DD_HHMMSS(lastestUpdateDate);
 		} else 
 			return null;
 	}
@@ -400,7 +401,7 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			tabbedPane.setForegroundAt(0, Color.red);
 			 			try {
 			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(sysconfig.formatDate(new Date()));
+			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
 				 				lastestUpdateDate = new Date();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
@@ -456,7 +457,7 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			
 			 			try {
 			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(sysconfig.formatDate(new Date()));
+			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
 				 				lastestUpdateDate = new Date();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
@@ -513,7 +514,7 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			tabbedPane.setForegroundAt(2, Color.red);
 			 			try {
 			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(sysconfig.formatDate(new Date()));
+			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
 				 				lastestUpdateDate = new Date();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
@@ -569,7 +570,7 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			tabbedPane.setForegroundAt(3, Color.red);
 			 			try {
 			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(sysconfig.formatDate(new Date()));
+			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
 				 				lastestUpdateDate = new Date();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
@@ -625,7 +626,7 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			tabbedPane.setForegroundAt(4, Color.red);
 			 			try {
 			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(sysconfig.formatDate(new Date()));
+			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
 				 				lastestUpdateDate = new Date();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {

@@ -47,7 +47,8 @@ public class Stock extends BkChanYeLianTreeNode {
 			chiCangAccounts = new HashMap<String,AccountInfoBasic>();
 		try {
 			String acntname = acnt.getAccountName();
-			chiCangAccounts.put(acntname, acnt);
+			if(!chiCangAccounts.containsKey(acntname))
+				chiCangAccounts.put(acntname, acnt);
 		} catch(java.lang.NullPointerException e) {
 			e.printStackTrace();
 			

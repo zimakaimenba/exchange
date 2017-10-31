@@ -63,7 +63,6 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.gui.subgui.ShowLargePieChartPnl;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
 

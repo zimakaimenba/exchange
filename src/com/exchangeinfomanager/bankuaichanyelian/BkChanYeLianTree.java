@@ -239,11 +239,11 @@ public class BkChanYeLianTree extends JTree
 
 			BkChanYeLianTreeNode newNode = null ;
 			if(addnodetype == 4)
-				 newNode = new BanKuai(subname,subcode);
+				 newNode = new BanKuai(subcode,subname);
 			else if(addnodetype == 5)
-				newNode = new SubBanKuai(subname,subcode);
+				newNode = new SubBanKuai(subcode,subname);
 			else if(addnodetype == 6)
-				newNode = new Stock(subname,subcode);
+				newNode = new Stock(subcode,subname);
             
             if (direction == BanKuaiAndChanYeLian.RIGHT){
             	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();

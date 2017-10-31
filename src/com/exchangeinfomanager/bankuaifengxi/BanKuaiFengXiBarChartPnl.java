@@ -77,17 +77,11 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 		createEvent ();
 	}
 	
-//	private final JPanel contentPanel = new JPanel();
+
 	private CategoryPlot plot;
 	private ChartPanel chartPanel;
-//	private JPanel controlPanel;
-//	private int currentDisplayedBkIndex ;
-//	private ArrayList<String> displaybkcodelist;
 	private DefaultCategoryDataset barchartdataset ;
-//	private BanKuaiDbOperation bkdbopt;
-//	private HashMap<String, String> displaybkmap;
 	private JFreeChart barchart;
-//	private Date datedisplayed ;
 	private String dateselected;
 	private BkChanYeLianTreeNode curdisplayednode;
 	
@@ -127,11 +121,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
 	{
 		return dateselected;
 	}
-//	public void setCurSelectedBarDate (String sltdate)
-//	{
-//		
-//	}
-	
+
 
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
@@ -142,6 +132,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel {
         DecimalFormat decimalformate = new DecimalFormat("%#0.000");
         renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
         renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
+        renderer.setItemLabelAnchorOffset(5);
         renderer.setItemLabelsVisible(true);
         renderer.setBaseItemLabelsVisible(true);
         renderer.setSeriesToolTipGenerator(0,new CustomToolTipGenerator());
@@ -244,44 +235,31 @@ class CustomToolTipGenerator implements CategoryToolTipGenerator  {
             Double ratio = (datecur - datelast)/datelast;
 
             DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+            int maxweek = getMaxWeekOfAGivenPeriod (dataset,row,column);
+            Comparable columndate = dataset.getColumnKey(column);
             
-            Comparable test = dataset.getColumnKey(column);
-//            List tst = dataset.getColumnKeys();
-//        	return "(" + String.valueOf(datecur) + ")" + "(" + String.valueOf(datelast) + ")" + "(" + decimalformate.format(ratio) + ")";
-        	return test + "占比" + decimalformate.format(datelast) + "占比变化(" + decimalformate.format(ratio) + ")";
+        	return columndate + "占比" + decimalformate.format(datecur) + "占比变化(" + decimalformate.format(ratio) + ")" + "MaxWeek=" + maxweek;
     	} else {
     		Comparable test = dataset.getColumnKey(column);
     		return test.toString();
     	}
+    }
+    /*
+     * 计算占比是几周来的最大值
+     */
+    private int getMaxWeekOfAGivenPeriod (CategoryDataset dataset, int row, int column)
+    {
+    	Double datecur = (Double)dataset.getValue(row, column);
+    	int maxweek =0;
+    	for(int i= column-1;i>=0;i--) {
+    		Double datelast = (Double)dataset.getValue(row, i);
+    		if(datecur > datelast)
+    			maxweek ++;
+    		else 
+    			break;
+    	}
     	
-    	
+    	return maxweek;
     }
 }
-
-
-//class XYSelectionRenderer extends XYLineAndShapeRenderer {
-//    private Shape selectedShape = new Rectangle2D.Double(-8, -8, 16, 16);
-//    private int selectedSeries = -1;
-//    private int selectedItem = -1;
-//    private boolean selectionActive;
-//
-//    public boolean isSelectionActive(){
-//        return (selectedSeries > -1 && selectedItem > -1);
-//    }
-//    
-//    public Shape getItemShape(int series, int item){
-//        if(series == selectedSeries && item == selectedItem){
-//            return selectedShape;
-//        }
-//        return super.getItemShape(series, item);
-//    }
-//
-//    public void setSelectedSeries(int series){
-//        this.selectedSeries = series;
-//    }
-//
-//    public void setSelectedItem(int item){
-//        this.selectedItem = item;
-//    }
-//}
 

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -27,24 +28,29 @@ import javax.swing.table.TableColumnModel;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.StockInfoManager;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuTable extends JTable 
 { 
 	private static final long serialVersionUID = 1L;
+	private StockInfoManager stockmanager;
 	
-	public BanKuaiGeGuTable (boolean parfilepriority)
+	public BanKuaiGeGuTable (StockInfoManager stockmanager1, boolean parfilepriority)
 	{
 		super ();
 		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel();
 		this.setModel(bkgegumapmdl);
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
-		((BanKuaiGeGuTableModel)this.getModel()).setYouXianPaiXuParsedFile(parfilepriority);
+		this.stockmanager = stockmanager1;
+		((BanKuaiGeGuTableModel)this.getModel()).setYouXianPaiXuParsedFile(parfilepriority); //是否优先排序板块成交量占比增长率
 		
 		createEvents ();
 	}
+	
+	
 	
 	private BanKuaiDbOperation bkdbopt;
 //	private boolean youxianxianshiparsefile;
@@ -75,6 +81,58 @@ public class BanKuaiGeGuTable extends JTable
 			
 		});
 		
+		
+		this.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent arg0) 
+        	{
+        		tableMouseClickActions (arg0);
+        	}
+        });
+
+		
+	}
+	
+	private void tableMouseClickActions (MouseEvent arg0)
+	{
+
+        		int  view_row = this.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
+				 int  view_col = this.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
+				 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
+				 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
+				 
+        		if (arg0.getClickCount() == 1) {
+//        			int row = this.getSelectedRow();
+//					 //int column = tblSearchResult.getSelectedColumn();
+//					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
+//					 String stockcode = ((BanKuaiGeGuTableModel)this.getModel()).getValueAt(model_row, 0).toString().trim();
+//					 try {
+//						 String stockname = ((BanKuaiGeGuTableModel)this.getModel()).getValueAt(model_row, 1).toString().trim();
+//						 pnlGeGuZhanBi.hightlightSpecificSector (stockcode+stockname);
+//					 } catch ( java.lang.NullPointerException e) {
+//						 pnlGeGuZhanBi.hightlightSpecificSector (stockcode);
+//					 }
+
+						 
+        		}
+        		 if (arg0.getClickCount() == 2) {
+//					 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
+//					 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
+//					 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
+//					 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
+					 
+					 
+					 int row = this.getSelectedRow();
+					 //int column = tblSearchResult.getSelectedColumn();
+					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
+					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
+					 System.out.println(stockcode);
+					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
+					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
+					 this.stockmanager.toFront();
+					 
+				 }
+
 	}
 
 //	public BanKuaiGeGuTableModel getModel ()
@@ -164,6 +222,7 @@ public class BanKuaiGeGuTable extends JTable
 	public void hideZhanBiColumn () 
 	{
 		TableColumnModel tcm = this.getColumnModel();
+		this.removeColumn(tcm.getColumn(3));
 		this.removeColumn(tcm.getColumn(3));
 	}
 	

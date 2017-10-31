@@ -19,7 +19,7 @@ import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuTableModel extends DefaultTableModel 
 {
-	String[] jtableTitleStrings = { "股票代码", "股票名称","权重","占比增长率"};
+	String[] jtableTitleStrings = { "股票代码", "股票名称","权重","占比增长率","MAX"};
 //	HashMap<String,Stock> stockmap;
 	String curbkcode;
 	private ArrayList<Entry<String, Stock>> entryList;
@@ -38,18 +38,14 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		this.showwknum = wknum;
 		this.stockcodeinparsefile = stockinparsefile2;
         
-        if(youxianpaixuparsefile) {
-        	entryList = new ArrayList<Map.Entry<String, Stock>>();
-        	if(stockcodeinparsefile.size() >0 ) { //优先把parsefile里的个股显示在前面
-    	 		
+        if(youxianpaixuparsefile && stockcodeinparsefile.size() >0 ) { //优先把parsefile里的个股显示在前面
+        		entryList = new ArrayList<Map.Entry<String, Stock>>();
      	 		for (Map.Entry<String,Stock> entry : stockmap1.entrySet()) {  
      	 			if(stockcodeinparsefile.contains(entry.getKey() ) ) {
      	 				entryList.add(entry);
      	 			} else 
      	 				entryList.add(0,entry);
      	 		} 
-     	 		
-        	}
         	
         } else {
         	entryList = new ArrayList<Map.Entry<String, Stock>>(stockmap1.entrySet()  );
@@ -113,28 +109,30 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    		return null;
 	    	Entry<String, Stock> thisbk = entryList.get(entryList.size()-1-rowIndex);
 	    	Stock stock = thisbk.getValue();
-	    	String bkcode = thisbk.getValue().getMyOwnCode();
-	    	String thisbkname = thisbk.getValue().getMyOwnName(); 
-	    	
-	    	HashMap<String, Integer> stockweightmap = stock.getGeGuSuoShuBanKuaiWeight();
-	    	Object[] stockweight = stockweightmap.values().toArray();
-	    	
-	    	Double zhanbigrowthrate = thisbk.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum);
-	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-	    	
+
 	    	Object value = "??";
 	    	switch (columnIndex) {
             case 0:
+            	String bkcode = thisbk.getValue().getMyOwnCode();
                 value = bkcode;
                 break;
             case 1: 
+            	String thisbkname = thisbk.getValue().getMyOwnName();
             	value = thisbkname;
             	break;
-            case 2: 
+            case 2:
+            	HashMap<String, Integer> stockweightmap = stock.getGeGuSuoShuBanKuaiWeight();
+    	    	Object[] stockweight = stockweightmap.values().toArray();
             	value = (Integer)stockweight[0];
             	break;
             case 3:
+            	Double zhanbigrowthrate = thisbk.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum);
+    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
             	value = percentFormat.format(zhanbigrowthrate);
+            	break;
+            case 4: 
+            	int maxweek = thisbk.getValue().getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showwknum);
+            	value = (Integer)maxweek;
             	break;
 	    	}
 
@@ -177,6 +175,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			          break;
 		        case 3:
 			          clazz = String.class;
+			          break;
+		        case 4:
+			          clazz = Integer.class;
 			          break;
 		      }
 		      

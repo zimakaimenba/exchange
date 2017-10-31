@@ -17,6 +17,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
@@ -158,7 +159,7 @@ public class AccountDbOperation
 		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 		String sqlinsertstat = null;
 		sqlinsertstat = "INSERT INTO 资金流水(操作日期,操作账户,操作类型,转入转出,资金金额,操作说明) values ("
-				+ "\"" +  sysconfig.formatDate(actiondate)  + "\"" + ","
+				+ "\"" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(actiondate)  + "\"" + ","
 				+ "'" + accountname.trim() + "'" + ","
 				+ "'" + actionqstype.trim() + "'" + ","
 				+ ischuru + ","
@@ -626,7 +627,7 @@ public class AccountDbOperation
 		String sqlinsertstat  = null;
 		sqlinsertstat = "INSERT INTO A股个股盈亏(股票代码,日期,原因描述,盈亏金额,操作账号) VALUES ("
 				+ "'" +  stockcode.trim() + "'" + "," 
-				+ "\"" + sysconfig.formatDate( Cal.getTime() )   + "\""   + "," 
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( Cal.getTime() )   + "\""   + "," 
 				+ "'" + "(" + geguprofit + ")" + "'" + ","
 				+ geguprofit + ","
 				+ "'" + subaccount + "'" 
@@ -714,7 +715,7 @@ public class AccountDbOperation
 		String sqliupdatestat = "UPDATE " + actiontable + " SET "
 				+ " 持仓标志=true "
 				+ "  ,挂单=false"
-				+ " ,原因描述=" + "'" + shuoming + "'"
+				+ " ,原因描述=" + "\"" + shuoming + "\""
 				+ " WHERE ID=" + databaseid
 				;
 		//System.out.println(sqliupdatestat);
@@ -784,9 +785,9 @@ public class AccountDbOperation
 		
 		String sqlinsertstat = "INSERT INTO " + actiontable + "(股票代码,日期,买入卖出标志,原因描述,买卖账号,持仓标志,买卖股数,买卖金额,挂单) VALUES ("
 				+ "'" +  stockcode.trim() + "'"  + ","
-				+ "\"" + sysconfig.formatDate( actionDay )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( actionDay )   + "\""   + ","
 				+ actiontype + ","
-				+ shuoming + "," 
+				+ "\"" + shuoming + "\"" +"," 
 				+ "'" + actionaccountname + "'" + ","  
 				+ false + ","
 				+ stocknumber + ","
@@ -813,9 +814,9 @@ public class AccountDbOperation
 
 		String sqlinsertstat = "INSERT INTO " + actiontable + "(股票代码,日期,买入卖出标志,原因描述,买卖账号,持仓标志,买卖股数,买卖金额,挂单) VALUES ("
 				+ "'" +  stockcode.trim() + "'"  + ","
-				+ "\"" + sysconfig.formatDate( actionday )   + "\""   + ","  
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( actionday )   + "\""   + ","  
 				+ actiontype + ","
-				+ shuoming + "," 
+				+ "\"" + shuoming + "\"" +"," 
 				+ "'" + actionaccountname + "'" + ","  
 				+ chicang + ","
 				+ stocknumber + ","
@@ -882,7 +883,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + sysconfig.formatDate( new Date() )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""   + ","
 				+ tmpselected  
 				+ "," + tmprzrq 
 				+ "," + "'" + tmpactquanshang + "'" 
@@ -899,7 +900,7 @@ public class AccountDbOperation
 					+ 0 + ","
 					+ tmpselected + ","
 					//+ "'" + tmpactname.trim() + "'" + ","
-					+ "\"" + sysconfig.formatDate( new Date() )   + "\""      
+					+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""      
 					+ ")"
 					;
 			System.out.println(sqlinsertstat);
@@ -925,7 +926,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + sysconfig.formatDate( new Date() )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""   + ","
 				+ tmpselected //+ ","
 				+ "," + "'" + tmpactquanshang + "'"
 				+ ")"
@@ -943,7 +944,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + sysconfig.formatDate( new Date() )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""   + ","
 				+ true //+ ","
 				+ "," + "'" + tmpactquanshang + "'" 
 				+ ")"
@@ -960,7 +961,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + sysconfig.formatDate( new Date() )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""   + ","
 				+ true + ","
 				+ true 
 				+ "," + "'" + tmpactquanshang + "'"

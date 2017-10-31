@@ -18,6 +18,16 @@ public class CommonUtility {
 		
 	}
 
+	public static String formatDateYYYY_MM_DD_HHMMSS(Date tmpdate)
+	{
+		try {
+			SimpleDateFormat formatterhwy=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			return formatterhwy.format(tmpdate);
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		}
+		
+	}
 	public static String formatDateYYYY_MM_DD(Date tmpdate)
 	{
 		try {
@@ -122,6 +132,14 @@ public class CommonUtility {
     	Calendar calendar =  Calendar.getInstance();
     	calendar.setTime(daylast);
     	calendar.add(calendar.MONTH,0-monthnumber);//把日期往后增加一天.整数往后推,负数往前移动
+    	return calendar.getTime();
+	}
+	public static Date getDateOfSpecificMonthAfter (Date daylast,int monthnumber)
+	{
+    	
+    	Calendar calendar =  Calendar.getInstance();
+    	calendar.setTime(daylast);
+    	calendar.add(calendar.MONTH,monthnumber);//把日期往后增加一天.整数往后推,负数往前移动
     	return calendar.getTime();
 	}
 	/** 

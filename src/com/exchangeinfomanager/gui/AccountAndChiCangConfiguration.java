@@ -124,7 +124,7 @@ public class AccountAndChiCangConfiguration
 //		else 
 //			return false;
 		for(String codename : curChiCangStockCodeNamelist)
-			if(codename.contains(stockcode))
+			if(codename.contains(stockcode.trim()))
 				return true;
 		
 		return false;
@@ -165,11 +165,11 @@ public class AccountAndChiCangConfiguration
 //		}
 		
 		ArrayList<AccountInfoBasic> stockchicangacntlist = new ArrayList<AccountInfoBasic> (); 
-		for (Map.Entry<String,StockChiCangInfo> entry : acntChiCangdetailmap.entries()) {
+		for (Map.Entry<String,StockChiCangInfo> entry : acntChiCangdetailmap.entries()) { //这段代码有错误
 			String tmpstockacntname = (String) entry.getKey();
 						
 			AccountInfoBasic tmpacnt = this.getAccount(tmpstockacntname);
-			if(tmpacnt.isChiCang (stockneededcode) )
+			if(tmpacnt.isChiCang (stockneededcode) && !stockchicangacntlist.contains(tmpacnt) )
 				stockchicangacntlist.add(tmpacnt);
 			
 		} 
@@ -437,13 +437,13 @@ public class AccountAndChiCangConfiguration
 		
 		 //该股票对持仓账户的处理
 		 if(this.isSystemChiCang(stockcode) ) { //已经市持仓股票
-			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
-			 for(StockChiCangInfo tmpscc : stockchicanginfo) {
-				 if(tmpscc.getChicangcode().equals(stockcode)) {
-					 tmpscc.setChicanggushu(gushu);
-					 tmpscc.setChicangchenben(chenben);
-				 }
-			 }
+//			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
+//			 for(StockChiCangInfo tmpscc : stockchicanginfo) {
+//				 if(tmpscc.getChicangcode().equals(stockcode)) {
+//					 tmpscc.setChicanggushu(gushu);
+//					 tmpscc.setChicangchenben(chenben);
+//				 }
+//			 }
 			  
 			  
 		 } else { //还不是持仓股票
@@ -452,10 +452,10 @@ public class AccountAndChiCangConfiguration
 			 curChiCangStockCodeNamelist.add(stockcode); 
 			 
 //			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
-//			 
+			 
 //			 AccountInfoBasic newstockacnt = this.getAccount(actionstockaccount);
-			 StockChiCangInfo newstockchicang = new StockChiCangInfo(stockcode, "", gushu, chenben);
-			 acntChiCangdetailmap.put(actionstockaccount, newstockchicang);
+//			 StockChiCangInfo newstockchicang = new StockChiCangInfo(stockcode, "", gushu, chenben);
+//			 acntChiCangdetailmap.put(actionstockaccount, newstockchicang);
 		 }
 		
 	}
@@ -477,27 +477,30 @@ public class AccountAndChiCangConfiguration
 		Double chenben = stocknumberpricepanel.getJiaoyiJiage() * gushu;
 		
 		 //该股票对持仓账户的处理
-		 if(this.isSystemChiCang(stockcode) ) { //已经市持仓股票
-			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
-			 for(StockChiCangInfo tmpscc : stockchicanginfo) {
-				 if(tmpscc.getChicangcode().equals(stockcode)) {
-					 tmpscc.setChicanggushu(0-gushu);
-					 tmpscc.setChicangchenben(0-chenben);
-				 }
-			 }
+		 if(!this.getStockChiCangAccount(stockcode).isEmpty() ) { //已经市持仓股票
+//			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
+//			 for(StockChiCangInfo tmpscc : stockchicanginfo) {
+//				 if(tmpscc.getChicangcode().equals(stockcode)) {
+//					 tmpscc.setChicanggushu(0-gushu);
+//					 tmpscc.setChicangchenben(0-chenben);
+//				 }
+//			 }
 			  
 			  
 		 } else { //已经不是持仓股票
-			 
+			 String shouldremove = null ;
 			 for(String codename : curChiCangStockCodeNamelist) 
 				 if(codename.contains(stockcode))
-					 curChiCangStockCodeNamelist.remove(codename);
+					 shouldremove = codename;
+					 
+			 curChiCangStockCodeNamelist.remove(shouldremove);
+
 			 
-			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
-			 for(StockChiCangInfo tmpst : stockchicanginfo) {
-				 if(tmpst.getChicangcode().equals(stockcode))
-					 acntChiCangdetailmap.remove(actionstockaccount, tmpst);
-			 }
+//			 Collection<StockChiCangInfo> stockchicanginfo = acntChiCangdetailmap.get(actionstockaccount);
+//			 for(StockChiCangInfo tmpst : stockchicanginfo) {
+//				 if(tmpst.getChicangcode().equals(stockcode))
+//					 acntChiCangdetailmap.remove(actionstockaccount, tmpst);
+//			 }
 			 
 		 }
 	}
@@ -608,6 +611,8 @@ public class AccountAndChiCangConfiguration
 				stocknumberpricepanel.setFormatedShuoMing(curallgushu);
 			
 			autoIncKeyFromApi =	 acntdbop.setBuyExchangeRelatedActions(stocknumberpricepanel); //存数据库
+			
+			
 		} else { //卖
 		
 			if(!tmpactionacnt.isChiCang(stocknumberpricepanel.getStockcode()) )

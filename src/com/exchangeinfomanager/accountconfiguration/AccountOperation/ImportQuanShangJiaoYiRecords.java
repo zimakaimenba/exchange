@@ -25,6 +25,7 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.io.Files;
+import com.opencsv.CSVReader;
 
 import javax.swing.JTextField;
 import javax.swing.DefaultListCellRenderer;
@@ -42,8 +43,11 @@ import javax.swing.JTextArea;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,9 +76,8 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		this.acntdbopt = acntdbopt2;
 		this.stockdbopt = stockdbopt2; 
 		txtarealogs.append("导入账户：" + actionacnt.getAccountName() + "\n");
-		
-		
 	}
+	
 	private AccountInfoBasic actionacnt;
 	private AccountAndChiCangConfiguration acntstckconfig;
 	private AccountDbOperation acntdbopt;
@@ -85,6 +88,25 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 	{
 		sysconfig = SystemConfigration.getInstance();
 	}
+	
+	
+//	/*
+//	 * 测试是不是CSV文件
+//	 */
+//	private void readAsCsvFile ()
+//	{
+//		try {
+//			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream("d:\\LW对帐单20171022.txt") ) );
+//			List<String[]> contentslist = reader.readAll();
+//			System.out.println(contentslist);
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	/*
 	 * @导入交易记录
@@ -137,24 +159,30 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		    	 	
 		    	 	Date lineactiondate = null;
 					try {
-						lineactiondate = new SimpleDateFormat( "yyyyMMdd" ).parse(tmplinelist.get(0));
+						lineactiondate = new SimpleDateFormat( "yyyyMMdd" ).parse(tmplinelist.get(0)); //万一券商记录将来改了格式就要出问题，这里应该用设置方式，还要加代码
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
 					
 					
-					String actionstockcode;
+					String actionstockcode = null;
 					boolean stockcodeisfromeverusedname = false;
 					if(tmplinelist.get(4).equals("XXXXXX"))
 						try{
 							actionstockcode = stockdbopt.getStockCodeByName (tmplinelist.get(3)).trim();
 							stockcodeisfromeverusedname = false;
 						} catch (java.lang.NullPointerException e) {
-							actionstockcode = stockdbopt.getStockCodeByEverUsedName (tmplinelist.get(3));
-							stockcodeisfromeverusedname = true;
+							try{
+								actionstockcode = stockdbopt.getStockCodeByEverUsedName (tmplinelist.get(3)).trim();
+								stockcodeisfromeverusedname = true;
+							} catch (java.lang.NullPointerException ex) { //两次都没有找到，说明数据库没有存股票名字，所以找不到股票代码，应该要求客户根据名称提供股票code
+//								actionstockcode = JOptionPane.showInputDialog(null,"数据库中无法找到" + tmplinelist.get(3) + "的代码，请提供该股票代码");
+//								stockdbopt.updateStockEverUsedName (actionstockcode,tmplinelist.get(3) );
+							}
 						}
 					else 
 						actionstockcode = tmplinelist.get(4); 
+					
 					boolean buysell = Boolean.parseBoolean(tmplinelist.get(2));
 					BuyStockNumberPrice stocknumberpricepanel = new BuyStockNumberPrice (actionstockcode,null,buysell);
 					stocknumberpricepanel.setStockcode(actionstockcode);
@@ -168,7 +196,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 					//小循环是让用户确认，以保证输入正确
 					int autoIncKeyFromApi = -65535;
 					do {
-						if( stocknumberpricepanel.getStockcode().isEmpty() || stockcodeisfromeverusedname == true ) { //如果是用曾用名，还是需要用户确认比较保险
+						if( stocknumberpricepanel.getStockcode().isEmpty() /*|| stockcodeisfromeverusedname == true*/ ) { //如果是用曾用名，还是需要用户确认比较保险,现在赶紧成熟了，只要code不是为空，就无需用户确认
 							int exchangeresult ;
 							do {
 								 exchangeresult = JOptionPane.showConfirmDialog(null, stocknumberpricepanel, tmplinelist.get(1).trim()+ "交易细节", JOptionPane.OK_CANCEL_OPTION);
@@ -179,8 +207,10 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 								autoIncKeyFromApi = 1; //跳出大循环
 								continue;
 							}
-						}
 							
+							stockdbopt.updateStockEverUsedName (stocknumberpricepanel.getStockcode(),tmplinelist.get(3) ); //把名字更新到曾用名，避免每次都要输入
+						}
+						
 						autoIncKeyFromApi = acntstckconfig.buySellYuanZiOpertion (stocknumberpricepanel); 
 						if(autoIncKeyFromApi > 0) {
 							if(!buysell) {
@@ -196,7 +226,8 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 									JOptionPane.showMessageDialog(null, "错误!" +"\n" 
 											+"如果是卖出可能该账户不持有该股票，注意是否是股票代码填写错误导致;" +"\n" 
 									,"警告！", JOptionPane.WARNING_MESSAGE);
-							if(JOptionPane.showConfirmDialog(null, "是否再次导入该条数据？","警告", JOptionPane.YES_NO_OPTION) == 1) {
+							
+							if(JOptionPane.showConfirmDialog(null, "是否再次导入数据？" + everyline,"警告", JOptionPane.YES_NO_OPTION) == 1) {
 								//return;
 								break;
 							}

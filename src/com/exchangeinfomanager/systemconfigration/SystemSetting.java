@@ -28,9 +28,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JLabel;
@@ -45,6 +47,7 @@ import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JCheckBox;
 
 public class SystemSetting extends JDialog 
 {
@@ -102,7 +105,39 @@ public class SystemSetting extends JDialog
 				String tdxpath = eletdx.getText();
 				tfldTDXInstalledPath.setText(eletdx.getText() );
 			}
-		
+			
+			Element elebkparsefile = xmlroot.element("bankuaiparsefilepah");
+			if(elebkparsefile != null ) {
+				String text = elebkparsefile.getText();
+				tfldparsefilepath.setText(text);
+			}
+			
+			Element elezbfxzq = xmlroot.element("zhanbifengxizhouqi");
+			if(elezbfxzq != null ) {
+				String text = elezbfxzq.getText();
+				tfldzhanbizhouqi.setText(text);
+			}
+			
+			
+			Element elegephi = xmlroot.element("gephifilepath");
+			if(elegephi != null) {
+				String text = elegephi.getText();
+				tfldgephi.setText(text);
+			}
+			
+			Element eleprivate = xmlroot.element("privatemode");
+			if(eleprivate != null ) {
+				String text = eleprivate.getText();
+				cbxprivatemode.setSelected(Boolean.parseBoolean(text));
+			}
+			
+			Element eletablefromserver = xmlroot.element("tablesfromserver");
+			if(eletablefromserver != null ) {
+				String text = eletablefromserver.getText();
+				tfldtablefromserver.setText(text);
+			}
+			
+			
 			
 			Element elesorce = xmlroot.element("databasesources");
 			Iterator it = elesorce.elementIterator();
@@ -175,6 +210,7 @@ public class SystemSetting extends JDialog
 			e.printStackTrace();
 		}
 	}
+	
 	public boolean isNewSystemSetting() 
 	{
 		return newsystemsetting;
@@ -456,8 +492,19 @@ public class SystemSetting extends JDialog
 				Element eletbkparsefile = rootele.addElement("bankuaiparsefilepah");
 				eletbkparsefile.setText( toUNIXpath(tfldparsefilepath.getText() ) );
 				
-				Element elesorce = rootele.addElement("databasesources");
+				Element elegephi = rootele.addElement("gephifilepath");
+				elegephi.setText(toUNIXpath(tfldgephi.getText()));
 				
+				Element zhanbifengxizhouqi = rootele.addElement("zhanbifengxizhouqi");
+				zhanbifengxizhouqi.setText(tfldzhanbizhouqi.getText());
+				
+				Element priavtemodesetting = rootele.addElement("privatemode");
+				priavtemodesetting.setText( String.valueOf(cbxprivatemode.isSelected() ) );
+				
+				Element eletablefromserver = rootele.addElement("tablesfromserver");
+				eletablefromserver.setText(tfldtablefromserver.getText());
+				
+				Element elesorce = rootele.addElement("databasesources");
 				Set<String> dbsnameset = curdbmap.keySet();
 				Iterator<String> dbsit = dbsnameset.iterator();
 				while(dbsit.hasNext()) {
@@ -516,7 +563,15 @@ public class SystemSetting extends JDialog
 						ex.printStackTrace();
 				}
 				newsystemsetting = true;
-				dispose ();
+				
+				try {
+					restartApplication (null);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+//				dispose ();
 			}
 		});
 	
@@ -529,6 +584,76 @@ public class SystemSetting extends JDialog
 //		});
 
 		
+	}
+	
+//	https://dzone.com/articles/programmatically-restart-java
+	/** 
+	 * Sun property pointing the main class and its arguments. 
+	 * Might not be defined on non Hotspot VM implementations.
+	 */
+	public static final String SUN_JAVA_COMMAND = "sun.java.command";
+
+	/**
+	 * Restart the current Java application
+	 * @param runBeforeRestart some custom code to be run before restarting
+	 * @throws IOException
+	 */
+	public static void restartApplication(Runnable runBeforeRestart) throws IOException 
+	{
+		try {
+				// java binary
+				String java = System.getProperty("java.home") + "/bin/java";
+				// vm arguments
+				List<String> vmArguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
+				StringBuffer vmArgsOneLine = new StringBuffer();
+				for (String arg : vmArguments) {
+					// if it's the agent argument : we ignore it otherwise the
+					// address of the old application and the new one will be in conflict
+					if (!arg.contains("-agentlib")) {
+						vmArgsOneLine.append(arg);
+						vmArgsOneLine.append(" ");
+					}
+				}
+			// init the command to execute, add the vm args
+			final StringBuffer cmd = new StringBuffer("\"" + java + "\" " + vmArgsOneLine);
+		
+			// program main and program arguments
+			String[] mainCommand = System.getProperty(SUN_JAVA_COMMAND).split(" ");
+			// program main is a jar
+			if (mainCommand[0].endsWith(".jar")) {
+				// if it's a jar, add -jar mainJar
+				cmd.append("-jar " + new File(mainCommand[0]).getPath());
+			} else {
+				// else it's a .class, add the classpath and mainClass
+				cmd.append("-cp \"" + System.getProperty("java.class.path") + "\" " + mainCommand[0]);
+			}
+			// finally add program arguments
+			for (int i = 1; i < mainCommand.length; i++) {
+				cmd.append(" ");
+				cmd.append(mainCommand[i]);
+			}
+			// execute the command in a shutdown hook, to be sure that all the
+			// resources have been disposed before restarting the application
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+				public void run() {
+					try {
+						Runtime.getRuntime().exec(cmd.toString());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			// execute some custom code before restarting
+			if (runBeforeRestart!= null) {
+				runBeforeRestart.run();
+			}
+			// exit
+			System.exit(0);
+		} catch (Exception e) {
+		// something went wrong
+			throw new IOException("Error while trying to restart the application", e);
+		}
 	}
 
 	protected void setBanKuaiParseFileInstalledPath()
@@ -623,14 +748,21 @@ public class SystemSetting extends JDialog
 	private JButton btndelrmtdbs;
 	private JTextField tfldparsefilepath;
 	private JButton btnchsparsefilepath;
+	private JTextField tfldzhanbizhouqi;
+	private JCheckBox cbxprivatemode;
+	private JLabel lblGephi;
+	private JTextField tfldgephi;
+	private JButton btngephi;
+	private JLabel label_3;
+	private JTextField tfldtablefromserver;
 	private void initializeGui() 
 	{
 		setTitle("\u7CFB\u7EDF\u8BBE\u7F6E");
 		
-		setBounds(100, 100, 603, 744);
+		setBounds(100, 100, 603, 842);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		getContentPane().add(contentPanel, BorderLayout.NORTH);
 		{
 			lblNewLabel = new JLabel("\u7CFB\u7EDF\u5B89\u88C5\u8DEF\u5F84");
 		}
@@ -691,76 +823,145 @@ public class SystemSetting extends JDialog
 		btnchsparsefilepath = new JButton("");
 		
 		btnchsparsefilepath.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		
+		JLabel label_2 = new JLabel("\u6210\u4EA4\u5360\u6BD4\u5206\u6790\u5468\u671F\u8DE8\u5EA6(\u6708)");
+		
+		tfldzhanbizhouqi = new JTextField();
+		tfldzhanbizhouqi.setText("8");
+		tfldzhanbizhouqi.setColumns(10);
+		
+		cbxprivatemode = new JCheckBox("\u9690\u79C1\u6A21\u5F0F");
+		
+		lblGephi = new JLabel("Gephi\u6587\u4EF6\u5B58\u653E\u8DEF\u5F84");
+		
+		tfldgephi = new JTextField();
+		tfldgephi.setEnabled(false);
+		tfldgephi.setColumns(10);
+		
+		btngephi = new JButton("");
+		btngephi.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		
+		label_3 = new JLabel("\u670D\u52A1\u5668\u8BFB\u53D6\u7684\u6570\u636E\u5E93\u8868");
+		
+		tfldtablefromserver = new JTextField();
+		tfldtablefromserver.setEnabled(false);
+		tfldtablefromserver.setEditable(false);
+		tfldtablefromserver.setColumns(10);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(26)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_contentPanel.createSequentialGroup()
+								.addComponent(cbxprivatemode)
+								.addContainerGap())
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel_1)
-								.addComponent(lblNewLabel)
 								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addGap(424)
-											.addComponent(saveButton))
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 439, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnChosTDXDict))
-										.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(label)
-											.addGap(106)
-											.addComponent(btnrmteditdb)
-											.addGap(18)
-											.addComponent(btnrmtadd)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btndelrmtdbs))
-										.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(lblNewLabel_2)
-											.addGap(120)
-											.addComponent(btnEditDb)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btmaddnewdb)
-											.addGap(18)
-											.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(label_1)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnchsparsefilepath))))
-								.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 539, GroupLayout.PREFERRED_SIZE))
-							.addGap(205)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(label_2)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
+									.addGap(323))
+								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+											.addGroup(gl_contentPanel.createSequentialGroup()
+												.addComponent(lblNewLabel_1)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(ComponentPlacement.UNRELATED)
+												.addComponent(btnChosTDXDict))
+											.addGroup(gl_contentPanel.createSequentialGroup()
+												.addComponent(lblNewLabel)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 453, GroupLayout.PREFERRED_SIZE))
+											.addGroup(gl_contentPanel.createSequentialGroup()
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+													.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)
+													.addGroup(gl_contentPanel.createSequentialGroup()
+														.addComponent(label)
+														.addGap(106)
+														.addComponent(btnrmteditdb)
+														.addGap(18)
+														.addComponent(btnrmtadd)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(btndelrmtdbs))
+													.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
+													.addGroup(gl_contentPanel.createSequentialGroup()
+														.addGap(500)
+														.addComponent(saveButton))
+													.addGroup(gl_contentPanel.createSequentialGroup()
+														.addComponent(lblNewLabel_2)
+														.addGap(120)
+														.addComponent(btnEditDb)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(btmaddnewdb)
+														.addGap(18)
+														.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
+													.addGroup(gl_contentPanel.createSequentialGroup()
+														.addComponent(label_3)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(tfldtablefromserver, GroupLayout.PREFERRED_SIZE, 361, GroupLayout.PREFERRED_SIZE))))
+											.addGroup(gl_contentPanel.createSequentialGroup()
+												.addComponent(lblGephi)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(tfldgephi, GroupLayout.PREFERRED_SIZE, 364, GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(ComponentPlacement.UNRELATED)
+												.addComponent(btngephi)))
+										.addContainerGap())
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addComponent(label_1)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+										.addComponent(btnchsparsefilepath)
+										.addGap(26)))))))
 		);
 		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(12)
-					.addComponent(lblNewLabel)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblNewLabel_1)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnChosTDXDict, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(tfldTDXInstalledPath, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-						.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel)
+						.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+										.addComponent(lblNewLabel_1)
+										.addComponent(tfldTDXInstalledPath, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+									.addGap(18))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(btnChosTDXDict)
+									.addGap(23)))
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)))
 						.addComponent(btnchsparsefilepath))
-					.addGap(9)
-					.addComponent(saveButton)
-					.addPreferredGap(ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+					.addGap(19)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblGephi, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+						.addComponent(tfldgephi, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btngephi))
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGap(42)
+							.addComponent(saveButton))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGap(18)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(9)
+							.addComponent(cbxprivatemode)))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblNewLabel_2)
 						.addComponent(btnEditDb)
@@ -769,17 +970,20 @@ public class SystemSetting extends JDialog
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-							.addComponent(label)
-							.addComponent(btnrmtadd)
-							.addComponent(btndelrmtdbs))
-						.addComponent(btnrmteditdb, Alignment.TRAILING))
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(label)
+						.addComponent(btnrmtadd)
+						.addComponent(btndelrmtdbs)
+						.addComponent(btnrmteditdb))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 122, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(label_3)
+						.addComponent(tfldtablefromserver, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
+					.addGap(35))
 		);
 		
 		DatabaseSourceTableModel rmttablemode = new DatabaseSourceTableModel( null );

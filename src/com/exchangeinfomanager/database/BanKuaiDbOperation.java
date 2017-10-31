@@ -567,7 +567,7 @@ public class BanKuaiDbOperation
        							+ "  AND isnull(移除时间)"
        							+ "  and  股票通达信概念板块对应表.`板块代码` = 通达信板块列表.`板块ID` "
        							+ "  and 通达信板块列表.`板块名称`=" + "'" + gupiaoheader + "'"
-       							+ "  SET 移除时间 = " + "'" +  sysconfig.formatDate(new Date() ) + "'"
+       							+ "  SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() ) + "'"
        							;
 				       	System.out.println(sqlupdatestat);
 				   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
@@ -583,7 +583,7 @@ public class BanKuaiDbOperation
 //		   						+ 10 
 //		   						+ ")"
 //		   						;
-		   		    	String sqlinsertstat = "insert into 股票通达信概念板块对应表(股票代码,概念板块,股票权重)"
+		   		    	String sqlinsertstat = "insert into 股票通达信概念板块对应表(股票代码,板块代码,股票权重)"
 								+ "	  SELECT '" + str + "', 通达信板块列表.`板块ID`, 10 "
 								+ " FROM 通达信板块列表  where 通达信板块列表.`板块名称` = '" + gupiaoheader + "'"   
 								;
@@ -678,7 +678,7 @@ public class BanKuaiDbOperation
         	String newbktdxswcode = tmpsysbkmap.get(newbkcode).get(5);
 			String sqlinsertstat = "INSERT INTO  通达信板块列表(板块名称,创建时间,板块ID,对应TDXSWID) values ("
 					+ "'" + newbk.trim() + "'" + ","
-					+ "\"" +  sysconfig.formatDate(new Date())   + "\"" + ","
+					+ "\"" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date())   + "\"" + ","
 					+ "'" + newbkcode + "'" + ","
 					+ "'" + newbktdxswcode + "'"
 					+ ")"
@@ -860,7 +860,7 @@ public class BanKuaiDbOperation
 //		   						+ 10
 //		   						+ ")"
 //		   						;
-   			        	String sqlinsertstat =  "insert into 股票通达信行业板块对应表(股票代码,行业板块,对应TDXSWID,股票权重)"
+   			        	String sqlinsertstat =  "insert into 股票通达信行业板块对应表(股票代码,板块代码,对应TDXSWID,股票权重)"
 												+ " SELECT '" + stockcode.trim() + "', 通达信板块列表.`板块ID`,'" + stockbkcode + "',10 "
 												+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stockbkcode + "'"
 												;
@@ -884,7 +884,7 @@ public class BanKuaiDbOperation
    	       							+ "  AND isnull(移除时间)"
    	       							+ "  and  股票通达信行业板块对应表.`板块代码` = 通达信板块列表.`板块ID` "
    	       							+ "  and 通达信板块列表.`对应TDXSWID` = " + "'" + stockbkanameindb + "'"
-   	       							+ "  SET 移除时间 = " + "'" +  sysconfig.formatDate(new Date() ) + "'"
+   	       							+ "  SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() ) + "'"
    	       							;
 		   			 		System.out.println(sqlupdatestat);
 		   			 		@SuppressWarnings("unused")
@@ -1115,10 +1115,10 @@ public class BanKuaiDbOperation
 		   	        							+ "  AND isnull(移除时间)"
 		   	        							+ "  and  股票通达信风格板块对应表.`板块代码` = 通达信板块列表.`板块ID` "
 		   	        							+ "  and 通达信板块列表.`板块名称` = " + "'" + gupiaoheader + "'"
-		   	        							+ "  SET 移除时间 = " + "'" +  sysconfig.formatDate(new Date() ) + "'"
+		   	        							+ "  SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() ) + "'"
 		   	        							;
 		   	        	else
-		   	        		sqlupdatestat = "UPDATE 股票通达信风格板块对应表 SET 移除时间 = " + "'" +  sysconfig.formatDate(new Date() ) + "'"
+		   	        		sqlupdatestat = "UPDATE 股票通达信风格板块对应表 SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() ) + "'"
 		   	        						+" WHERE 板块代码=" + "'" + gupiaoheader + "'"
 		   	        						+" AND 股票代码= " + "'" + str.trim() + "'"
 		   	        						+ "  AND isnull(移除时间)"
@@ -1330,7 +1330,7 @@ public class BanKuaiDbOperation
        							+ "  AND isnull(移除时间)"
        							+ "  and  股票通达信交易所指数对应表.`板块代码` = 通达信交易所指数列表.`板块ID` "
        							+ "  and 通达信交易所指数列表.`板块名称` = " + "'" + gupiaoheader + "'"
-       							+ "  SET 移除时间 = " + "'" +  sysconfig.formatDate(new Date() ) + "'"
+       							+ "  SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() ) + "'"
        							;	
 				       	System.out.println(sqlupdatestat);
 				   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
@@ -1674,8 +1674,6 @@ public class BanKuaiDbOperation
 	    } 
 	    
 	    return tmpsysbankuailiebiaoinfo;
-
-		
 	}
 	/*
 	 * 所有的指数，包括交易所指数和板块
@@ -1699,7 +1697,9 @@ public class BanKuaiDbOperation
 	        //int k = 0;  
 //	        while(rs.next()) {
 	        for(int j=0;j<rows;j++) {  
-	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"));
+	        	System.out.println(rs.getString("板块ID") );
+	        	System.out.println(rs.getString("板块名称"));
+	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称") );
 //	        	boolean notexporttogephi = rs.getBoolean("不导出到gephi");
 //	        	if(notexporttogephi)
 //	        		tmpbk.setNotExportToGephi();
@@ -2270,7 +2270,7 @@ public class BanKuaiDbOperation
 		String dbbkname =  "zdy"+bkname.trim();
 		String sqlinsertstat = "INSERT INTO  自定义板块列表(板块名称,创建时间,板块ID) values ("
 				+ "'" + dbbkname + "'" + ","
-				+  "#" + sysconfig.formatDate(new Date()) + "#" + ","
+				+  "#" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()) + "#" + ","
 				+ "'" + bkcode.trim() + "'" 
 				+ ")"
 				;
@@ -2638,7 +2638,7 @@ public class BanKuaiDbOperation
                     			if(curlinedate.after(lastestdbrecordsdate)) {
                         			String sqlinsertstat = "INSERT INTO " + inserttablename +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额) values ("
                     						+ "'" + tmpbkcode + "'" + ","
-                    						+ "'" +  sysconfig.formatDate(curlinedate) + "'" + ","
+                    						+ "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(curlinedate) + "'" + ","
                     						+ "'" +  tmplinelist.get(1) + "'" + "," 
                     						+ "'" +  tmplinelist.get(2) + "'" + "," 
                     						+ "'" +  tmplinelist.get(3) + "'" + "," 
@@ -2912,7 +2912,7 @@ public class BanKuaiDbOperation
 					+ "'" + title + "'" + ","
 					+ "'" + keywords + "'" + ","
 					+ "'" + slackurl  + "'" + ","
-					+ formateDateForDiffDatabase("mysql", sysconfig.formatDate( newdate) ) + ","
+					+ formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD_HHMMSS( newdate) ) + ","
 					+ "'" +  bankuaiid + "|" + "'"
 					+ ")"
 					;
@@ -3473,7 +3473,7 @@ public class BanKuaiDbOperation
 						 		"       (select " +  bktypetable +  ".`股票代码` , " +  bktypetable +  ".`板块代码` , sum(通达信上交所股票每日交易信息.`成交额`) stock_amount," +  bktypetable +  ".`股票权重`\r\n" + 
 						 		"          from " +  bktypetable +  ", 通达信上交所股票每日交易信息\r\n" + 
 						 		"         where " +  bktypetable +  ".`股票代码`   = 通达信上交所股票每日交易信息.`代码`\r\n" + 
-						 		"           and 通达信上交所股票每日交易信息.`交易日期` >= " +  bktypetable +  ".`加入时间`\r\n" + 
+						 		"           and Date(通达信上交所股票每日交易信息.`交易日期`) >= Date(" +  bktypetable +  ".`加入时间`)\r\n" + 
 						 		"           and 通达信上交所股票每日交易信息.`交易日期` <  ifnull(" +  bktypetable +  ".`移除时间`, '2099-12-31')\r\n" + 
 						 		"           and (通达信上交所股票每日交易信息.`交易日期` between '" +  formatedstartdate +  "' and '" +  formatedenddate +  "')\r\n" + 
 						 		"           and " +  bktypetable +  ".`板块代码` =  '" +  currentbkcode +  "'\r\n" + 
@@ -3586,7 +3586,7 @@ public class BanKuaiDbOperation
 							 		"       (select " +  bktypetable +  ".`股票代码` , " +  bktypetable +  ".`板块代码` , sum(通达信深交所股票每日交易信息.`成交额`) stock_amount," +  bktypetable +  ".`股票权重`\r\n" + 
 							 		"          from " +  bktypetable +  ", 通达信深交所股票每日交易信息\r\n" + 
 							 		"         where " +  bktypetable +  ".`股票代码`   = 通达信深交所股票每日交易信息.`代码`\r\n" + 
-							 		"           and 通达信深交所股票每日交易信息.`交易日期` >= " +  bktypetable +  ".`加入时间`\r\n" + 
+							 		"           and Date(通达信深交所股票每日交易信息.`交易日期`) >= Date(" +  bktypetable +  ".`加入时间`)\r\n" + 
 							 		"           and 通达信深交所股票每日交易信息.`交易日期` <  ifnull(" +  bktypetable +  ".`移除时间`, '2099-12-31')\r\n" + 
 							 		"           and (通达信深交所股票每日交易信息.`交易日期` between '" +  formatedstartdate +  "' and '" +  formatedenddate +  "')\r\n" + 
 							 		"           and " +  bktypetable +  ".`板块代码` =  '" +  currentbkcode +  "'\r\n" + 
@@ -3746,8 +3746,8 @@ public class BanKuaiDbOperation
 	public Stock getGeGuZhanBiOfBanKuai(String bkcode, Stock stock,Date selecteddatestart,Date selecteddateend)
 	{
 		String stockcode = stock.getMyOwnCode();
-		if(stockcode.equals("000959"))
-				System.out.println("000959 arrived");
+//		if(stockcode.equals("000959"))
+//				System.out.println("000959 arrived");
 		
 		HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode,stockcode);
 //		System.out.println(actiontables);
@@ -3769,7 +3769,7 @@ public class BanKuaiDbOperation
 				"sum(" +  gegucjetable    + ".`成交额`) stock_amount," +  stockvsbktable + ".`股票权重`\r\n" + 
 				"from " +  stockvsbktable + ", " +  gegucjetable    + "\r\n" + 
 				"where " +  stockvsbktable + ".`股票代码`   = " +  gegucjetable    + ".`代码`\r\n" + 
-				"		and " +  gegucjetable    + ".`交易日期` >= " +  stockvsbktable + ".`加入时间`\r\n" + 
+				"		and Date(" +  gegucjetable    + ".`交易日期`) >= Date(" +  stockvsbktable + ".`加入时间`)\r\n" + 
 				"		and " +  gegucjetable    + ".`交易日期` <  ifnull(" +  stockvsbktable + ".`移除时间`, '2099-12-31')\r\n" + 
 				"		and " +  gegucjetable    + ".`交易日期` BETWEEN  '" +  formatedstartdate + "' AND '" +  formatedenddate + "'\r\n" + 
 				"		and " +  stockvsbktable + ".`板块代码` =  '"  + bkcode +"'\r\n" + 
@@ -4371,7 +4371,7 @@ public class BanKuaiDbOperation
 	{
 		HashMap<String, BanKuai> curdaleidetaillistmap = this.getTDXBanKuaiList();
 		Set<String> curdaleidetaillistset = curdaleidetaillistmap.keySet();
-		String fengxidate = formateDateForDiffDatabase("mysql",sysconfig.formatDate(bkfxdate).substring(0,10)); 
+		String fengxidate = formateDateForDiffDatabase("mysql",CommonUtility.formatDateYYYY_MM_DD_HHMMSS(bkfxdate).substring(0,10)); 
 		
 		String sqlquerystat = "	SELECT  CALYEAR ,  CALWEEK,  BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称` "
 				+ "FROM  ("
@@ -4648,7 +4648,7 @@ public class BanKuaiDbOperation
 		    for (String str : differencebankuainew) {
 				String sqlinsertstat = "INSERT INTO  通达信自定义板块列表(板块名称,创建时间) values ("
 						+ "'" + str.trim() + "'" + ","
-						+ "\"" +  sysconfig.formatDate(new Date())   + "\""  
+						+ "\"" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date())   + "\""  
 						+ ")"
 						;
 				//System.out.println(sqlinsertstat);
@@ -5164,11 +5164,11 @@ public class BanKuaiDbOperation
 				 HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 				 String sqlupdatestat= "UPDATE A股  SET "
 							+ " 股票名称=" + stockname +","
-							+ " 概念时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(nodeshouldbedisplayed.getGainiantishidate()) ) +","
+							+ " 概念时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD_HHMMSS(nodeshouldbedisplayed.getGainiantishidate()) ) +","
 							+ " 概念板块提醒=" + txtareainputgainiants +","
-							+ " 券商评级时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(nodeshouldbedisplayed.getQuanshangpingjidate() ) ) +","
+							+ " 券商评级时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD_HHMMSS(nodeshouldbedisplayed.getQuanshangpingjidate() ) ) +","
 							+ " 券商评级提醒=" + txtfldinputquanshangpj +","
-							+ " 负面消息时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(nodeshouldbedisplayed.getFumianxiaoxidate()  ) ) +","
+							+ " 负面消息时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD_HHMMSS(nodeshouldbedisplayed.getFumianxiaoxidate()  ) ) +","
 							+ " 负面消息=" + txtfldinputfumianxx +","
 							+ " 正相关及客户=" + txtfldinputzhengxiangguan +","
 							+ " 负相关及竞争对手=" + txtfldinputfuxiangguan +","
@@ -5193,11 +5193,11 @@ public class BanKuaiDbOperation
 				 
 				 String sqlinsertstat = "UPDATE " + actiontable + " SET "
 						 	+ " 板块名称=" + stockname +","
-							+ " 概念时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(nodeshouldbedisplayed.getGainiantishidate()) ) +","
+							+ " 概念时间=" + formateDateForDiffDatabase("mysql",CommonUtility.formatDateYYYY_MM_DD_HHMMSS(nodeshouldbedisplayed.getGainiantishidate()) ) +","
 							+ " 概念板块提醒=" + txtareainputgainiants +","
-							+ " 券商评级时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(nodeshouldbedisplayed.getQuanshangpingjidate() ) ) +","
+							+ " 券商评级时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD_HHMMSS(nodeshouldbedisplayed.getQuanshangpingjidate() ) ) +","
 							+ " 券商评级提醒=" + txtfldinputquanshangpj +","
-							+ " 负面消息时间=" + formateDateForDiffDatabase("mysql", sysconfig.formatDate(nodeshouldbedisplayed.getFumianxiaoxidate()  ) ) +","
+							+ " 负面消息时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD_HHMMSS(nodeshouldbedisplayed.getFumianxiaoxidate()  ) ) +","
 							+ " 负面消息=" + txtfldinputfumianxx +","
 							+ " 正相关及客户=" + txtfldinputzhengxiangguan +","
 							+ " 负相关及竞争对手=" + txtfldinputfuxiangguan +","
@@ -5248,7 +5248,7 @@ public class BanKuaiDbOperation
 			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 			String sqlinsertstat = "INSERT INTO 操作记录重点关注(股票代码,日期,加入移出标志,原因描述) values ("
 					+ "'" +  stockcode.trim() + "'" + "," 
-					+ formateDateForDiffDatabase("mysql",sysconfig.formatDate(new Date() )) + ","
+					+ formateDateForDiffDatabase("mysql",CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() )) + ","
 					+  "'" + zdgzsign + "'" + ","
 					+ "'" + shuoming + "'"  
 					+ ")"
@@ -5368,10 +5368,10 @@ public class BanKuaiDbOperation
 			String sqlquerystat = null;
 			sqlquerystat= "SELECT 股票代码 FROM A股   WHERE 曾用名  LIKE" +"'%" + stockname +"%'" ;
 			sqlstatmap.put("mysql", sqlquerystat);
-			sqlquerystat= "SELECT 股票代码 FROM A股   WHERE 曾用名  LIKE" +"'*" + stockname +"*%'" ;
-			sqlstatmap.put("access", sqlquerystat);
+//			sqlquerystat= "SELECT 股票代码 FROM A股   WHERE 曾用名  LIKE" +"'*" + stockname +"*%'" ;
+//			sqlstatmap.put("access", sqlquerystat);
 
-			CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlstatmap);
+			CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
 
 			String stockcode = "";
 			try {
@@ -5459,22 +5459,33 @@ public class BanKuaiDbOperation
 			 for(String stockcode:cymmap.keySet()) {
 				 String cymstr = cymmap.get(stockcode);
 				 
-				 String sqlupdatestat= "UPDATE A股  SET "
-							+ " 曾用名=" + "'" + cymstr + "'"
-							+ " WHERE 股票代码=" + stockcode
-							;
-				 System.out.println(sqlupdatestat);
-				 connectdb.sqlUpdateStatExecute(sqlupdatestat);
+				 updateStockEverUsedName (stockcode,cymstr);
+				 
+//				 String sqlupdatestat= "UPDATE A股  SET "
+//							+ " 曾用名=" + "'" + cymstr + "'"
+//							+ " WHERE 股票代码=" + stockcode
+//							;
+//				 System.out.println(sqlupdatestat);
+//				 connectdb.sqlUpdateStatExecute(sqlupdatestat);
 			 }
-			
-			 
 			 
 			return tmprecordfile;
+		}
+		
+		public void updateStockEverUsedName (String stockcode, String everusedname)
+		{
+			 String sqlupdatestat= "UPDATE A股  SET "
+						+ " 曾用名=" + "'" + everusedname + "'"
+						+ " WHERE 股票代码=" + stockcode
+						;
+			 System.out.println(sqlupdatestat);
+			 connectdb.sqlUpdateStatExecute(sqlupdatestat);
+			
 		}
 
 		public Object[][] getTodaysOperations() 
 		{
-			 String searchdate = sysconfig.formatDate( new Date () );
+			 String searchdate = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date () );
 			 searchdate = searchdate.replaceAll("\\d{2}:\\d{2}:\\d{2}", "");
 			 String sqlquerystat2=" SELECT czjl.股票代码, " 
 						+ " IF( czjl.买卖金额=0.0,'送转股',IF(czjl.挂单 = true,IF(czjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(czjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
@@ -5564,7 +5575,7 @@ public class BanKuaiDbOperation
 		public File refreshStockJiBenMianInfoFromTdxFoxProFile ()
 		{
 			File tmpreportfolder = Files.createTempDir();
-			File tmprecordfile = new File(tmpreportfolder + "同步通达信指数基本面报告.tmp");
+			File tmprecordfile = new File(tmpreportfolder + "同步通达信个股基本面报告.tmp");
 			
 			Charset stringCharset = Charset.forName("Cp866");
 			String dbffile = sysconfig.getTdxFoxProFileSource();
@@ -5601,7 +5612,7 @@ public class BanKuaiDbOperation
 	                		|| datavalueindb.equals("0") )
 	                	continue;
 
-	                String lastupdatedate = formateDateForDiffDatabase("mysql", sysconfig.formatDate(  sysconfig.formateStringToDate(datavalueindb) ) );
+	                String lastupdatedate = formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD_HHMMSS( CommonUtility.formateStringToDate(datavalueindb) ) );
 	                double zgb = Double.parseDouble(jbminfomap.get("ZGB").toString());
 	                double gjg  = Double.parseDouble(jbminfomap.get("GJG").toString());
 	                double fqrfrg  = Double.parseDouble(jbminfomap.get("FQRFRG").toString());

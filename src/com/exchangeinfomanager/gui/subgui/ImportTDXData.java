@@ -159,11 +159,23 @@ public class ImportTDXData extends JDialog {
 	}
 	private void partThatHasBeImportAfterWsork () 
 	{
-//<<<<<<< HEAD
-//=======
-//		//注意代码的顺序，必须先同步板块信息，再同步成交量信息
-//		
-//>>>>>>> refs/remotes/exchange/master
+		
+		//从通达信foxpro中导入股票的基本面信息
+		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
+					try {
+						File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
+						List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
+						for (String line : lines) {
+				        	tfldresult.append(line+"\n");
+				        }
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (java.lang.NullPointerException e) {
+					}
+					
+					cbximporttdxgeguinfo.setEnabled(false);
+		 }
+				
 		 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
 		if(chbxdaorutdxsysbk.isSelected() && chbxdaorutdxsysbk.isEnabled()) {
 			File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();
@@ -243,6 +255,8 @@ public class ImportTDXData extends JDialog {
 			} catch (java.lang.NullPointerException e) {
 			}
 			
+			cbxImportSzGeGuVol.setEnabled(false);
+			
 		}                                     
 		if(cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled() ) {
 			try {
@@ -255,22 +269,10 @@ public class ImportTDXData extends JDialog {
 				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
 			}
+			
+			cbxImportShGeGuVol.setEnabled(false);
 		}
 		
-		//从通达信foxpro中导入股票的基本面信息
-		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
-			try {
-				File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
-				List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-			}
-			
-		}
 		
 
 		
@@ -322,7 +324,7 @@ public class ImportTDXData extends JDialog {
 	private void initializeGui() 
 	{
 		setTitle("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
-		setBounds(100, 100, 526, 736);
+		setBounds(100, 100, 526, 802);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.NORTH);

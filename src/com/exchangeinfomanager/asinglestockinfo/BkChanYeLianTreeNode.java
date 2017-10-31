@@ -269,7 +269,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	@Override
 	public String getMyOwnCode() {
 		// TODO Auto-generated method stub
-		return this.getUserObject().toString();
+		return this.getUserObject().toString().trim();
 	}
 	@Override
 	public String getCreatedTime() {
@@ -365,6 +365,9 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		this.cjeperiodlist = cjlperiodlist1;
 	}
 	
+	/*
+	 * 计算给定周的成交额占比增速
+	 */
 	public Double getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (int weeknumber)
 	{
 //		ChenJiaoZhanBiInGivenPeriod foundedcje = null;
@@ -398,7 +401,45 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		return 0.0;
 		
 	}
-	
+	/*
+	 * 计算给定周的成交额占比是多少周期内的最大占比
+	 */
+	public Integer getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (int weeknumber)
+	{
+//		ChenJiaoZhanBiInGivenPeriod foundedcje = null;
+		if(cjeperiodlist == null)
+			return null;
+		
+		int index = -1;
+		boolean foundwk = false;
+		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : cjeperiodlist) {
+			index ++;
+			int wknum = CommonUtility.getWeekNumber( tmpcjzb.getDayofEndofWeek() );
+			if(wknum == weeknumber) {
+				foundwk = true;
+				break;
+			}
+		}
+		
+		int maxweek = 0;
+		if(foundwk) {
+			
+			ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+			Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
+			
+			for(int i = index -1;i>=0;i--) {
+				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(i );
+				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+				if(curzhanbiratio > lastzhanbiratio)
+					maxweek ++;
+				else
+					break;
+			}
+		}
+		
+		return maxweek;
+		
+	}
 	
     
 }
