@@ -220,8 +220,9 @@ public class BanKuaiGeGuTable extends JTable
 	}
 	
 	public void hideZhanBiColumn () 
-	{
+	{//在板块分析界面不需要3个column
 		TableColumnModel tcm = this.getColumnModel();
+		this.removeColumn(tcm.getColumn(3));
 		this.removeColumn(tcm.getColumn(3));
 		this.removeColumn(tcm.getColumn(3));
 	}

@@ -1,0 +1,233 @@
+package com.exchangeinfomanager.gui.subgui;
+
+import java.awt.Color;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
+
+public class JStockComboBox extends  JComboBox<String>
+{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public JStockComboBox() 
+	{
+		super();
+		this.setEditable(true);
+		this.setForeground(Color.RED);
+		bkdbopt = new BanKuaiDbOperation ();
+		createEvents ();
+	}
+
+	private BanKuaiDbOperation bkdbopt;
+	private BkChanYeLianTreeNode nodeshouldbedisplayed;
+	
+	public BkChanYeLianTreeNode getUserInputNode ()
+	{
+		statChangeActions ();
+		return nodeshouldbedisplayed;
+	}
+	public BkChanYeLianTreeNode updateUserSelectedNode (Stock stock)
+	{
+		String stockcode = stock.getMyOwnCode();
+		String stocname = stock.getMyOwnName();
+		this.addItem(stockcode+stocname);
+		this.setSelectedItem(stockcode+stocname);
+		preSearch(stockcode);
+		updateStockCombox();
+		return nodeshouldbedisplayed;
+	}
+	public BkChanYeLianTreeNode updateUserSelectedNode (String stockcode)
+	{
+//		this.addItem(stockcode+stocname);
+		this.setSelectedItem(stockcode);
+		preSearch(stockcode);
+		updateStockCombox();
+		return nodeshouldbedisplayed;
+	}
+	
+	private void createEvents() 
+	{
+		this.getEditor().getEditorComponent().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				//System.out.println("this is the test");
+				
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				setEditorToNull ();
+			}
+			
+		});
+		
+		this.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent  e)
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+				}
+			}
+			
+		});
+		
+		this.addItemListener(new ItemListener() 
+		{
+			public void itemStateChanged(ItemEvent e)
+			{
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					
+//					statChangeActions ();
+					
+				}
+				
+				if(e.getStateChange() == ItemEvent.DESELECTED) {
+				
+				}
+			}
+						
+		});
+		
+	}
+	
+	protected void setEditorToNull() 
+	{
+		this.getEditor().setItem("");
+	}
+
+	protected void statChangeActions()
+	{
+		String stockcode;
+		try	{
+			stockcode = formatStockCode((String)this.getSelectedItem());
+			if(!checkCodeInputFormat(stockcode)) {
+				JOptionPane.showMessageDialog(null,"股票/板块代码有误！","Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			
+			preSearch(stockcode);
+			updateStockCombox();
+		} catch(java.lang.NullPointerException ex)	{
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
+			return;
+		} catch(java.lang.StringIndexOutOfBoundsException ex2) {
+			ex2.printStackTrace();
+			JOptionPane.showMessageDialog(null,"股票代码有误！");
+			return;
+		}
+		
+	}
+	
+	private void preSearch(String stockcode) 
+	{
+		 ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (stockcode);
+		 if(nodeslist.size() == 0) {
+			 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
+			 return;
+		 }
+		 
+		 if(nodeslist.size()>1) {
+			 //显示JLIST，让用户选择
+			 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
+			 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
+			 if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
+			 
+			 int userselected = userselection.getUserSelection();
+			 nodeshouldbedisplayed = nodeslist.get(userselected);
+		 } else
+			 nodeshouldbedisplayed = nodeslist.get(0);
+		 
+		 if(nodeshouldbedisplayed.getType() == 6) { //是个股
+//					if(accountschicangconfig.isSystemChiCang(stockcode)) {
+//						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
+//					} 
+					
+//					nodeshouldbedisplayed = bkdbopt.getCheckListsXMLInfo ((Stock)nodeshouldbedisplayed);
+//					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
+					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
+					
+					
+//					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
+					
+//					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
+		 }				
+	}
+
+	private boolean checkCodeInputFormat(String stockcode) 
+	{
+		// TODO Auto-generated method stub
+//		System.out.println(Pattern.matches("\\d{6}$","2223") );
+//		System.out.println(Pattern.matches("^\\d{6}","600138zhong") );
+//		System.out.println(Pattern.matches("\\d{6}$","000123") );
+//		System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123abccc") );
+//		System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123") );
+//		System.out.println(Pattern.matches("^\\d{6}{6,100}$","000123中青旅理论") );
+//		System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]$","ccccc000123abccc") );
+		
+		//或者是6位全数字，或者是前面6位是数字
+			if( Pattern.matches("\\d{6}$",stockcode)  || Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$",stockcode) )
+				return true;
+			else return false;
+	}
+
+	private String formatStockCode (String stockcode)
+	{
+		return stockcode.substring(0,6).trim(); 
+	}
+	
+	private void updateStockCombox() 
+	{
+		boolean isaddItem=true;
+		int updateItem = -1;
+		String tmp= formatStockCode((String)this.getSelectedItem());//有可能是原来输入过的，要把代码选择出来。
+		
+
+	   	  //判断用户所输入的项目是否有重复，若有重复则不增加到JComboBox中。
+	   	  try{
+	   			  for(int i=0;i< this.getItemCount();i++) {
+	   				  String curitem = this.getItemAt(i).toString(); 
+		   	  	  	  if (curitem.substring(0, 6).equals(tmp) && curitem.length()>6 ){
+		   	  	  	  	 isaddItem = false;
+		   	  	  	  	 break;
+		   	  	  	  }
+			   	  	 if (curitem.substring(0, 6).equals(tmp) && curitem.length()>6 ){
+			   	  		 updateItem = i;
+		   	  	  	  	 break;
+		   	  	  	  }
+		   	  	  }
+	   	  	  
+	   	  	  
+	   	  	  if (isaddItem){
+	  			  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
+	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
+	   	  	  }
+	   	  	  if(updateItem >= 0) {
+	   	  		  this.removeItemAt(updateItem);
+	   	  		  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
+	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
+	   	  	  }
+	   	  }catch(NumberFormatException ne){
+	   		
+	   	  }
+		
+	}
+
+
+}

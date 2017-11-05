@@ -27,6 +27,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
@@ -60,14 +61,16 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
 
-public class BanKuaiFengXiPieChartPnl extends JPanel {
-
+public class BanKuaiFengXiPieChartPnl extends JPanel 
+{
 	/**
 	 * Create the panel.
 	 */
@@ -81,14 +84,15 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 		standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,20));
 		ChartFactory.setChartTheme(standardChartTheme);
 		
-//		bkdbopt = new BanKuaiDbOperation ();
-		
 		createChartPanel();
 		createEvent ();
 		
+		sysconfig = SystemConfigration.getInstance();
 	}
 	
-//	private final JPanel contentPanel = new JPanel();
+	private BkChanYeLianTreeNode curdisplaynode;
+//	private Date displayedenddate;
+	private int displayedweeknumber;
 	private JPanel controlPanel;
 	private ChartPanel piechartPanel;
 //	private BanKuaiDbOperation bkdbopt;
@@ -97,31 +101,33 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 	private PiePlot pieplot;
 	Comparable lasthightlightKey = null; //用于客户设置突出的section
 	private DefaultPieDataset piechartdataset;
-//	private BanKuai curdisplaybk;
+	private BanKuai curdisplaybk;
+	private SystemConfigration sysconfig;
 
 	
 	public void setBanKuaiNeededDisplay (BanKuai bankuai,int weightgate,int weeknumber)
 	{
-//		this.curdisplaybk = bankuai;
+		this.curdisplaybk = bankuai;
+		this.displayedweeknumber = weeknumber;
+		
 		HashMap<String, Stock> tmpallbkge = bankuai.getBanKuaiGeGu ();
 		createDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
+		
+		setPanelTitle ();
 	}
-//	public void setBanKuaiNeededDisplay (String tdxbkname,String tdxbkcode, Date datedisplayed2, int weightgate)
-//	{
-//		datedisplayed = datedisplayed2;
-//		Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
-//		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
-//
-//		if (lasthightlightKey != null) {
-//			pieplot.setExplodePercent(lasthightlightKey, 0);
-//        }
-//       
-////    	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (tdxbkname,tdxbkcode,startdate,enddate,true );
-//    	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang(tdxbkname,tdxbkcode,startdate,enddate);
-//    	createDataset(tdxbkcode,tmpallbkge,weightgate);
-//
-////        createControlPanel();
-//	}
+	private void setPanelTitle ()
+	{
+		String nodecode = curdisplaybk.getMyOwnCode();
+		String nodename = curdisplaybk.getMyOwnName();
+		
+//		Date endday = CommonUtility.getLastDayOfWeek(displayedenddate );
+//    	Date startday = CommonUtility.getFirstDayOfWeek( CommonUtility.getDateOfSpecificMonthAgo(displayedenddate ,sysconfig.banKuaiFengXiMonthRange() ) );
+    	((TitledBorder)this.getBorder()).setTitle(nodecode+ nodename + "周" + displayedweeknumber );
+//															+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
+//															+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
+    	this.repaint();
+    	this.setToolTipText(nodecode+ nodename );
+	}
 	
 	public void resetDate ()
 	{
@@ -131,7 +137,10 @@ public class BanKuaiFengXiPieChartPnl extends JPanel {
 //			piechart.setTitle("板块成交量占比");
 //    	}
 	}
-	
+	public void setPanelTitle (String title) 
+	{
+		
+	}
 
     private void createDataset(String tdxbkcode,HashMap<String, Stock> tmpallbkge,int weightgate,int weeknumber ) 
     {

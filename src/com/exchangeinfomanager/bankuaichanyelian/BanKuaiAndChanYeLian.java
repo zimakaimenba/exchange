@@ -144,7 +144,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		treechanyelian = initializeBkChanYeLianXMLTree();
 		initializeSysConfig ();
 		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
-//		startGui ();
+		startGui ();
 	}
 	public void startGui ()
 	{
@@ -442,12 +442,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 	    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dchgeguwkzhanbi.getDate() ,sysconfig.banKuaiFengXiMonthRange() );
 	    	bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
 	    	
-	    	bkfxpnl.setBanKuaiWithDaPanNeededDisplay(bankuai);
+	    	bkfxpnl.setNodeZhanBiByWeek(bankuai,endday);
 	    	
-	    	((TitledBorder)bkfxpnl.getBorder()).setTitle(bankuai.getMyOwnCode()+ bankuai.getMyOwnName() 
-			+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
-			+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
-	    	bkfxpnl.repaint();
+//	    	((TitledBorder)bkfxpnl.getBorder()).setTitle(bankuai.getMyOwnCode()+ bankuai.getMyOwnName() 
+//			+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
+//			+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
+//	    	bkfxpnl.repaint();
    	
 
 		}

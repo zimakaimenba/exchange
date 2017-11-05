@@ -364,6 +364,85 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	{
 		this.cjeperiodlist = cjlperiodlist1;
 	}
+	/*
+	 * 计算成交额变化百分比
+	 */
+	public Double getChenJiaoErGrowthRateForAGivenPeriod (int weeknumber)
+	{
+		if(cjeperiodlist == null)
+			return null;
+		
+		int index = -1;
+		boolean foundwk = false;
+		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : cjeperiodlist) {
+			index ++;
+			int wknum = CommonUtility.getWeekNumber( tmpcjzb.getDayofEndofWeek() );
+			if(wknum == weeknumber) {
+				foundwk = true;
+				break;
+			}
+		}
+		
+		if(foundwk) {
+			if( cjeperiodlist.size()>=2) {
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
+				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+				Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
+				double cjegrowthrate = (curcje - lastcje)/lastcje;
+				return cjegrowthrate;
+			} else if(cjeperiodlist.size() == 1) { //只有一个记录，说明是新的板块
+				return 10000.0;
+			}	
+		}
+		
+		return 0.0;
+		
+	}
+	/*
+	 * 计算成交额变化贡献率
+	 */
+	public Double getChenJiaoErChangeGrowthRateForAGivenPeriod (int weeknumber)
+	{
+		if(cjeperiodlist == null)
+			return null;
+		
+		int index = -1;
+		boolean foundwk = false;
+		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : cjeperiodlist) {
+			index ++;
+			int wknum = CommonUtility.getWeekNumber( tmpcjzb.getDayofEndofWeek() );
+			if(wknum == weeknumber) {
+				foundwk = true;
+				break;
+			}
+		}
+		
+		if(foundwk) {
+			if( cjeperiodlist.size()>=2) {
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
+				
+				Double curupbkcje = curcjlrecord.getUpLevelChengJiaoEr ();
+				Double lastupbkcje = lastcjlrecord.getUpLevelChengJiaoEr ();
+				if(curupbkcje < lastupbkcje)
+					return -100.0;
+				
+				Double curggcje = curcjlrecord.getMyOwnChengJiaoEr();
+				Double lastggcje = lastcjlrecord.getMyOwnChengJiaoEr();
+				
+				Double bkcjechange = curupbkcje - lastupbkcje;
+				Double gegucjechange = curggcje - lastggcje;
+				
+				return gegucjechange/bkcjechange;
+			} else if(cjeperiodlist.size() == 1) { //只有一个记录，说明是新的板块
+				return 10000.0;
+			}	
+		}
+		
+		return 0.0;
+		
+	}
 	
 	/*
 	 * 计算给定周的成交额占比增速

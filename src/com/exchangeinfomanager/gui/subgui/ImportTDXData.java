@@ -280,6 +280,30 @@ public class ImportTDXData extends JDialog {
 
 	private void createEvents() 
 	{
+		chbxselectall.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				if(chbxselectall.isSelected()) { 
+					cbximporttdxgeguinfo.setSelected(true);
+					chbximportcym.setSelected(true);
+					chbxdaorutdxsysbk.setSelected(true);
+					chbxdaorutdxsysbkvol.setSelected(true);
+					cbxImportSzGeGuVol.setSelected(true);
+					cbxImportShGeGuVol.setSelected(true);
+				}
+				if(!chbxselectall.isSelected()) { 
+					cbximporttdxgeguinfo.setSelected(false);
+					chbximportcym.setSelected(false);
+					chbxdaorutdxsysbk.setSelected(false);
+					chbxdaorutdxsysbkvol.setSelected(false);
+					cbxImportSzGeGuVol.setSelected(false);
+					cbxImportShGeGuVol.setSelected(false);
+				}
+			}
+		});
+		
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -320,11 +344,12 @@ public class ImportTDXData extends JDialog {
 	private JProgressBar progressBar_1;
 	private JCheckBox cbxImportSzGeGuVol;
 	private JCheckBox cbxImportShGeGuVol;
+	private JCheckBox chbxselectall;
 	
 	private void initializeGui() 
 	{
 		setTitle("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
-		setBounds(100, 100, 526, 802);
+		setBounds(100, 100, 548, 802);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.NORTH);
@@ -464,13 +489,17 @@ public class ImportTDXData extends JDialog {
 			lblstatus = new JLabel("* \u5B58\u653E\u5728\u901A\u8FBE\u4FE1\u540C\u6B65\u6570\u636E\u5E93\u4E2D");
 			
 			btnStart = new JButton("\u5F00\u59CB\u5BFC\u5165");
+			
+			chbxselectall = new JCheckBox("\u5168\u9009");
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
-						.addGap(18)
+						.addComponent(chbxselectall)
+						.addGap(22)
 						.addComponent(lblstatus)
-						.addGap(136)
+						.addGap(29)
 						.addComponent(btnStart)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addComponent(okButton)
@@ -481,9 +510,10 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addGap(5)
 						.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-							.addComponent(lblstatus)
 							.addComponent(btnStart)
-							.addComponent(okButton)))
+							.addComponent(okButton)
+							.addComponent(lblstatus)
+							.addComponent(chbxselectall)))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}

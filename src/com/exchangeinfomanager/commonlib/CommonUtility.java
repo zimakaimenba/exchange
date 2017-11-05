@@ -116,16 +116,9 @@ public class CommonUtility {
 
 	    return date;
 	}
-//	public static LocalDate getMondayOfGivenWeekAndYear(int week, int year) {
-//
-//	    LocalDate firstMonOfFirstWeek = LocalDate.now()
-//	            .with(IsoFields.WEEK_BASED_YEAR, year) // year
-//	            .with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, 1) // First week of the year
-//	            .with(ChronoField.DAY_OF_WEEK, 1); // Monday
-//
-//	    // Plus multi of 7
-//	    return firstMonOfFirstWeek.plusDays( (week - 1) * 7);
-//	}
+	/*
+	 * 
+	 */
 	public static Date getDateOfSpecificMonthAgo (Date daylast,int monthnumber)
 	{
     	
@@ -134,6 +127,9 @@ public class CommonUtility {
     	calendar.add(calendar.MONTH,0-monthnumber);//把日期往后增加一天.整数往后推,负数往前移动
     	return calendar.getTime();
 	}
+	/*
+	 * 
+	 */
 	public static Date getDateOfSpecificMonthAfter (Date daylast,int monthnumber)
 	{
     	
@@ -150,7 +146,6 @@ public class CommonUtility {
 		Calendar c = new GregorianCalendar();
 		c.setFirstDayOfWeek(Calendar.MONDAY);
 		c.setTime(date);
-//		c.add(Calendar.DAY_OF_YEAR,-10);
 		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek()); // Monday
 		return c.getTime ();
 	}
@@ -163,7 +158,6 @@ public class CommonUtility {
 		Calendar c = new GregorianCalendar();
 		c.setFirstDayOfWeek(Calendar.MONDAY);
 		c.setTime(date);
-//		c.add(Calendar.DAY_OF_YEAR,-10);
 		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek() + 5); // Saterday
 		return c.getTime();
 	}

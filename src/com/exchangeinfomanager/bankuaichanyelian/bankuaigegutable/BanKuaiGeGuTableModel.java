@@ -19,7 +19,7 @@ import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuTableModel extends DefaultTableModel 
 {
-	String[] jtableTitleStrings = { "股票代码", "股票名称","权重","占比增长率","MAX"};
+	String[] jtableTitleStrings = { "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
 //	HashMap<String,Stock> stockmap;
 	String curbkcode;
 	private ArrayList<Entry<String, Stock>> entryList;
@@ -134,6 +134,11 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	int maxweek = thisbk.getValue().getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showwknum);
             	value = (Integer)maxweek;
             	break;
+            case 5:
+            	Double cjechangegrowthrate = thisbk.getValue().getChenJiaoErChangeGrowthRateForAGivenPeriod (showwknum);
+    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
+            	value = percentFormat2.format(cjechangegrowthrate);
+            	break;	
 	    	}
 
 	    	return value;
@@ -178,6 +183,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			          break;
 		        case 4:
 			          clazz = Integer.class;
+			          break;
+		        case 5:
+			          clazz = String.class;
 			          break;
 		      }
 		      
