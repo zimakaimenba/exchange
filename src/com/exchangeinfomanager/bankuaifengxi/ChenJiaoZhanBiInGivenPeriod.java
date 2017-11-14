@@ -1,6 +1,14 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.WeekFields;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+
+import com.exchangeinfomanager.commonlib.CommonUtility;
 
 public class ChenJiaoZhanBiInGivenPeriod {
 
@@ -10,12 +18,16 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	}
 	
 	private String myuplevelcode;
-	private int year;
-	private int week;
-	private Date dayofendoftheweek;
+//	private int year;
+//	private int week;
+	private Double openprice;
+	private Double closeprice;
+	private LocalDate  dayofendoftheweek;
 	private Double myownchengjiaoer;
+	private Double myownchengjiaoliang;
 	private Double uplevelchengjiaoer;
 	private Double cjlratio;
+	
 	
 	private String myowncode;
 	/**
@@ -30,53 +42,52 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	public void setMyOwnCode(String myowncode) {
 		this.myowncode = myowncode;
 	}
-	/**
-	 * @return the myuplevelcode
-	 */
-	public String getMyUpLevelCode() {
-		return myuplevelcode;
-	}
-	/**
-	 * @param myuplevelcode the myuplevelcode to set
-	 */
-	public void setMyUpLevelCode(String myuplevelcode) {
-		this.myuplevelcode = myuplevelcode;
-	}
+//	/**
+//	 * @return the myuplevelcode
+//	 */
+//	public String getMyUpLevelCode() {
+//		return myuplevelcode;
+//	}
+//	/**
+//	 * @param myuplevelcode the myuplevelcode to set
+//	 */
+//	public void setMyUpLevelCode(String myuplevelcode) {
+//		this.myuplevelcode = myuplevelcode;
+//	}
 	/**
 	 * @return the year
 	 */
-	public int getYear() {
-		return year;
-	}
-	/**
-	 * @param year the year to set
-	 */
-	public void setYear(int year) {
-		this.year = year;
+	public int getRecordsYear() 
+	{
+		return this.dayofendoftheweek.getYear();
 	}
 	/**
 	 * @return the week
 	 */
-	public int getWeek() {
-		return week;
-	}
-	/**
-	 * @param week the week to set
-	 */
-	public void setWeek(int week) {
-		this.week = week;
+	public int getRecordsWeek() 
+	{
+		WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
+		int weekNumber = this.dayofendoftheweek.get(weekFields.weekOfWeekBasedYear());
+		return weekNumber;
 	}
 	/**
 	 * @return the dayofendoftheweek
 	 */
-	public Date getDayofEndofWeek() {
+	public LocalDate getRecordsDayofEndofWeek() {
+		
 		return dayofendoftheweek;
 	}
 	/**
 	 * @param dayofendoftheweek the dayofendoftheweek to set
 	 */
-	public void setDayofEndofWeek(Date dayofendoftheweek) {
-		this.dayofendoftheweek = dayofendoftheweek;
+	public void setRecordsDayofEndofWeek(java.sql.Date dayofendoftheweek) 
+	{
+		try {
+			this.dayofendoftheweek = dayofendoftheweek.toLocalDate();
+//			this.dayofendoftheweek = dayofendoftheweek.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		} catch (java.lang.UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * @return the myownchengjiaoliang

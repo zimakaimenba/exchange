@@ -37,6 +37,8 @@ import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.DaPan;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -50,6 +52,9 @@ import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,10 +83,11 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		createEvent ();
 		
 		sysconfig = SystemConfigration.getInstance();
+		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
 	}
 	
 	private BkChanYeLianTreeNode curdisplayednode;	
-	private Date displayedenddate;
+	private LocalDate displayedenddate;
 	private String pnltitle;
 	private CategoryPlot plot;
 	private ChartPanel chartPanel;
@@ -89,79 +95,101 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 	private JFreeChart barchart;
 	private Comparable dateselected;
 	private SystemConfigration sysconfig;
+	private int shoulddisplayedmonthnum;
 	
 
 	
 	/*
 	 * 板块/股票按周交易额
 	 */
-	public void setNodeJiaoYiErByWeek (BkChanYeLianTreeNode node,Date displayedenddate1)
+	public void setNodeJiaoYiErByWeek (BkChanYeLianTreeNode node,LocalDate displayedenddate1,DaPan dapan)
 	{
 		this.curdisplayednode = node;
-		this.displayedenddate = displayedenddate1;
+
+		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+//		this.displayedenddate = requireend; 
 		
 		barchartdataset = new DefaultCategoryDataset();
 		
-		ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezb = node.getChenJiaoErZhanBiInGivenPeriod ();
-		if(cjezb == null )
-			return ;
-		for(ChenJiaoZhanBiInGivenPeriod tmpcjezb : cjezb) {
-			Date lastdayofweek = tmpcjezb.getDayofEndofWeek();
-			Double zhanbi = tmpcjezb.getMyOwnChengJiaoEr();
-			barchartdataset.setValue(zhanbi,"成交额",lastdayofweek);
+		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
+			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
+			if(tmprecord != null) {
+				Double chenjiaoer = tmprecord.getMyOwnChengJiaoEr();
+				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
+				barchartdataset.setValue(chenjiaoer,"成交额",lastdayofweek);
+			} else {
+				if( !dapan.isThisWeekXiuShi(tmpdate) )
+					barchartdataset.setValue(0.0,"成交额",tmpdate);
+				else //为空说明该周市场没有交易
+					continue;
+			}
 		}
-	
+
 		DecimalFormat decimalformate = new DecimalFormat("#0.000");
 		((CustomRenderer) plot.getRenderer()).setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-		((CustomRenderer) plot.getRenderer()).setSeriesToolTipGenerator(0,new CustomToolTipGeneratorForChenJiaoEr());
+		CustomToolTipGeneratorForChenJiaoEr custotooltip = new CustomToolTipGeneratorForChenJiaoEr();
+		custotooltip.setDisplayNode(curdisplayednode);
+		((CustomRenderer) plot.getRenderer()).setSeriesToolTipGenerator(0,custotooltip);
 		((CustomRenderer) plot.getRenderer()).setToolTipGenerator(new CustomToolTipGeneratorForChenJiaoEr());
-		
+		((CustomRenderer)plot.getRenderer()).setBarCharType("成交额");
 		plot.setDataset(barchartdataset);
 		
-		setPanelTitle ("成绩额");
+		setPanelTitle ("成交额",displayedenddate1);
 		
+//		((CustomToolTipGeneratorForChenJiaoEr)((CustomRenderer) plot.getRenderer()).getSeriesToolTipGenerator (0)).s.;
 	}
 	/*
 	 * 板块大盘/个股板块 占比
 	 */
-	public void setNodeZhanBiByWeek (BkChanYeLianTreeNode node, Date displayedenddate1)
+	public void setNodeZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
 	{
 		this.curdisplayednode = node;
-		this.displayedenddate = displayedenddate1;
+//		this.displayedenddate = displayedenddate1;
+		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
 		
-		ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezb = node.getChenJiaoErZhanBiInGivenPeriod ();
-		if(cjezb == null )
-			return ;
-		for(ChenJiaoZhanBiInGivenPeriod tmpcjezb : cjezb) {
-			Date lastdayofweek = tmpcjezb.getDayofEndofWeek();
-			Double zhanbi = tmpcjezb.getCjlZhanBi();
-			barchartdataset.setValue(zhanbi,"占比",lastdayofweek);
+		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
+			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
+			if(tmprecord != null) {
+				Double chenjiaoer = tmprecord.getCjlZhanBi();
+				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
+				barchartdataset.setValue(chenjiaoer,"占比",lastdayofweek);
+			} else {
+				if( !dapan.isThisWeekXiuShi(tmpdate) )
+					barchartdataset.setValue(0.0,"占比",tmpdate);
+				else //为空说明该周市场没有交易
+					continue;
+			}
 		}
-	
 		
 		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 		((CustomRenderer) plot.getRenderer()).setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
 		((CustomRenderer) plot.getRenderer()).setSeriesToolTipGenerator(0,new CustomToolTipGeneratorForZhanBi());
-		((CustomRenderer) plot.getRenderer()).setToolTipGenerator(new CustomToolTipGeneratorForZhanBi());
+		CustomToolTipGeneratorForZhanBi custotooltip = new CustomToolTipGeneratorForZhanBi();
+		custotooltip.setDisplayNode(curdisplayednode);
+		((CustomRenderer) plot.getRenderer()).setToolTipGenerator(custotooltip);
         
-				
+		((CustomRenderer)plot.getRenderer()).setBarCharType("占比");
 		plot.setDataset(barchartdataset);
 		
-		setPanelTitle ("占比");
+		setPanelTitle ("占比",displayedenddate1);
 	}
 	
-	private void setPanelTitle (String type)
+	private void setPanelTitle (String type, LocalDate displayedenddate1)
 	{
 		String nodecode = curdisplayednode.getMyOwnCode();
 		String nodename = curdisplayednode.getMyOwnName();
 		
-		Date endday = CommonUtility.getLastDayOfWeek(displayedenddate );
-    	Date startday = CommonUtility.getFirstDayOfWeek( CommonUtility.getDateOfSpecificMonthAgo(displayedenddate ,sysconfig.banKuaiFengXiMonthRange() ) );
+		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS);
+		
     	((TitledBorder)this.getBorder()).setTitle( "\"" + nodecode+ nodename + "\"" + type 
-															+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
-															+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
+															+ "从" + CommonUtility.formatDateYYYY_MM_DD(requirestart) 
+															+ "到" + CommonUtility.formatDateYYYY_MM_DD(requireend) );
     	this.repaint();
     	this.setToolTipText(nodecode+ nodename );
 	}
@@ -181,6 +209,55 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		plot.setDataset(barchartdataset);
 		((CustomRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(-1);
 	}
+   
+    private void createEvent ()
+    {
+    	chartPanel.addChartMouseListener(new ChartMouseListener() {
+
+    	    public void chartMouseClicked(ChartMouseEvent cme) {
+    	    	try {
+    	    		CategoryItemEntity xyitem=(CategoryItemEntity) cme.getEntity(); // get clicked entity
+        	        CategoryDataset dataset = xyitem.getDataset(); // get data set
+        	        Comparable columnkey = xyitem.getColumnKey();
+        	        highLightSpecificBarColumn (columnkey);
+        	         dateselected = columnkey;
+        	         
+    	    	} catch ( java.lang.ClassCastException e ) {
+    	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
+    	    		xyitem1.getPlot();
+    	    	}
+    	    }
+
+			@Override
+			public void chartMouseMoved(ChartMouseEvent arg0) {
+			}
+
+    	});
+    }
+    /*
+     * 设置要突出显示的bar
+     */
+    public void highLightSpecificBarColumn (Comparable selecteddate)
+    {
+    	int cindex = barchartdataset.getColumnIndex(selecteddate) ;
+    	((CustomRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
+    	
+        dateselected = selecteddate;
+        barchart.fireChartChanged();//必须有这句
+    }
+    /*
+     * 
+     */
+	public Comparable getCurSelectedBarDate ()
+	{
+		return dateselected;
+	}
+	/*
+	 * 
+	 */
+    public ChartPanel getChartPanel() {
+        return chartPanel;
+    }
 	/*
 	 * 
 	 */
@@ -214,66 +291,11 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 
         barchart = new JFreeChart(plot);
         barchart.removeLegend();
+        barchart.setNotify(true);
 
         chartPanel = new ChartPanel(barchart);
         this.add(chartPanel);
         
-    }
-    
-    private void createEvent ()
-    {
-    	chartPanel.addChartMouseListener(new ChartMouseListener() {
-
-    	    public void chartMouseClicked(ChartMouseEvent cme) {
-    	    	try {
-    	    		CategoryItemEntity xyitem=(CategoryItemEntity) cme.getEntity(); // get clicked entity
-//        	        System.out.println(xyitem);
-        	        CategoryDataset dataset = xyitem.getDataset(); // get data set
-        	        Comparable columnkey = xyitem.getColumnKey();
-        	        highLightSpecificBarColumn (columnkey);
-//        	        int cindex = dataset.getColumnIndex(columnkey) ;
-//        	        ((CustomRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
-        	        
-//        	         Comparable selecteddate = xyitem.getColumnKey();
-        	         dateselected = columnkey;
-        	         
-    	    	} catch ( java.lang.ClassCastException e ) {
-    	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
-    	    		xyitem1.getPlot();
-    	    	}
-    	    }
-
-			@Override
-			public void chartMouseMoved(ChartMouseEvent arg0) {
-			}
-
-    	});
-    }
-    /*
-     * 设置要突出显示的bar
-     */
-    public void highLightSpecificBarColumn (Comparable selecteddate)
-    {
-    	int cindex = barchartdataset.getColumnIndex(selecteddate) ;
-    	((CustomRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
-    	
-//    	((CustomRenderer)plot.getRenderer()).addChangeListener(new RendererChangeListener () );
-        dateselected = selecteddate;
-        
-//        this.getChartPanel().repaint();
-    }
-    /*
-     * 
-     */
-	public Comparable getCurSelectedBarDate ()
-	{
-		return dateselected;
-	}
-	/*
-	 * 
-	 */
-    public ChartPanel getChartPanel() {
-        return chartPanel;
     }
 
 }
@@ -282,7 +304,8 @@ class CustomRenderer extends BarRenderer
 {
 	private static final long serialVersionUID = 1L;
 //	private Paint[] colors;
-    int shouldcolumn = -1;
+    private int shouldcolumn = -1;
+    private String barCharType;
    
     public CustomRenderer() {
         super();
@@ -292,64 +315,75 @@ class CustomRenderer extends BarRenderer
     {
         if(column == shouldcolumn)
             return Color.blue;
-        else   
+        else   if(this.barCharType.equals("占比"))
             return Color.RED;
-//        	return super.getItemPaint(row, column);
+        else 
+        	return Color.orange;
    }
     public void setBarColumnShouldChangeColor (int column)
     {
     	this.shouldcolumn = column;
+    }
+    public void setBarCharType(String type) 
+    {
+    	this.barCharType = type;
     }
     
     
 }
 
 class CustomToolTipGeneratorForZhanBi implements CategoryToolTipGenerator  {
-    public String generateToolTip(CategoryDataset dataset, int row, int column)  
-    {
-    	Double datecur = (Double)dataset.getValue(row, column);
-    	if(column >=1) {
-    		Double datelast = (Double)dataset.getValue(row, column-1);
-            Double ratio = (datecur - datelast)/datelast;
+    private BkChanYeLianTreeNode node;
 
-            DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-            int maxweek = getMaxWeekOfAGivenPeriod (dataset,row,column);
-            Comparable columndate = dataset.getColumnKey(column);
-            
-        	return columndate + "占比" + decimalformate.format(datecur) + "占比变化(" + decimalformate.format(ratio) + ")" + "MaxWeek=" + maxweek;
-    	} else {
-    		Comparable test = dataset.getColumnKey(column);
-    		return test.toString();
-    	}
-    }
-    /*
-     * 计算占比是几周来的最大值
-     */
-    private int getMaxWeekOfAGivenPeriod (CategoryDataset dataset, int row, int column)
+	public String generateToolTip(CategoryDataset dataset, int row, int column)  
     {
-    	Double datecur = (Double)dataset.getValue(row, column);
-    	int maxweek =0;
-    	for(int i= column-1;i>=0;i--) {
-    		Double datelast = (Double)dataset.getValue(row, i);
-    		if(datecur > datelast)
-    			maxweek ++;
-    		else 
-    			break;
+		String selected = dataset.getColumnKey(column).toString();
+    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+    	
+    	Double curzhanbidata = (Double)dataset.getValue(row, column);  //占比
+    	Double zhanbigrowthrate = null;
+    	if(node.getType() == 4 ) { //板块
+    		zhanbigrowthrate = ((BanKuai)this.node).getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (selecteddate); //占比增长率
+    	} else if(node.getType() == 6 ) { //个股
+    		zhanbigrowthrate = ((Stock)this.node).getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (selecteddate); //占比增长率
     	}
     	
-    	return maxweek;
+    	Integer maxweek = null;
+    	if(node.getType() == 4 ) { //板块
+    		maxweek = ((BanKuai)this.node).getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (selecteddate); //占比增长率
+    	} else if(node.getType() == 6 ) { //个股
+    		maxweek = ((Stock)this.node).getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (selecteddate); //占比增长率
+    	}
+    	    	
+        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+        return selected.toString() + "占比" + decimalformate.format(curzhanbidata) + "占比变化(" + decimalformate.format(zhanbigrowthrate) + ")" + "MaxWeek=" + maxweek.toString();
+        
+
+    }
+    
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
     }
 }
 
 class CustomToolTipGeneratorForChenJiaoEr implements CategoryToolTipGenerator  {
-    public String generateToolTip(CategoryDataset dataset, int row, int column)  
+    private BkChanYeLianTreeNode node;
+
+	public String generateToolTip(CategoryDataset dataset, int row, int column)  
     {
-    	Double datecur = (Double)dataset.getValue(row, column);
+		String selected = dataset.getColumnKey(column).toString();
+    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+    	
+    	Double curcje = (Double)dataset.getValue(row, column);
     	
     	DecimalFormat decimalformate = new DecimalFormat("#0.000");
-    	Comparable columndate = dataset.getColumnKey(column);
-        
-    	return columndate + "成交额" + decimalformate.format(datecur) ;
+    	return selecteddate + "成交额" + decimalformate.format(curcje) ;
+    }
+    
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
     }
 
 }

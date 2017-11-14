@@ -5,6 +5,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -79,7 +80,6 @@ public class BkChanYeLianTree extends JTree
             public void mouseClicked(MouseEvent evt) 
             {
             	treeMousePressed( evt);
-            	
             }
 
 			
@@ -111,7 +111,7 @@ public class BkChanYeLianTree extends JTree
      * 
      */
 	private void treeMousePressed(MouseEvent evt) 
-	{System.out.println("get action notice at bkcyltree");
+	{
 		TreePath closestPath = this.getClosestPathForLocation(evt.getX(), evt.getY());
 
         if(closestPath != null) {
@@ -135,8 +135,6 @@ public class BkChanYeLianTree extends JTree
         	 this.setSelectionPath(closestPath);
         	 this.scrollPathToVisible(closestPath);
          	 expandTreeNode (this,parent);
-//         }
-         
     }
     /*
      * 展开所选取的节点
@@ -155,7 +153,7 @@ public class BkChanYeLianTree extends JTree
 	/*
 	 * 时间参数是 处理这个时间那一周的板块个股和file比
 	 */
-	public void updateTreeParseFileInfo (HashSet<String> stockinfile,Date selectiondate)
+	public void updateTreeParseFileInfo (HashSet<String> stockinfile,LocalDate selectiondate)
 	{
 		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
 		BkChanYeLianTreeNode root = (BkChanYeLianTreeNode) model.getRoot();
@@ -163,7 +161,7 @@ public class BkChanYeLianTree extends JTree
 		
 		model.nodeStructureChanged(root);
 	}
-	private void updateParseFileInfoToTree(BkChanYeLianTreeNode node, HashSet<String> stockinfile, Date selectiondate) 
+	private void updateParseFileInfoToTree(BkChanYeLianTreeNode node, HashSet<String> stockinfile, LocalDate selectiondate) 
 	{
 		int childCount = node.getChildCount();
 
@@ -176,17 +174,16 @@ public class BkChanYeLianTree extends JTree
 	    	if( childNodetype == BanKuaiAndStockBasic.TDXBK ) {
 	    		String bkcode = childNode.getMyOwnCode();
 	    		
-	    		HashMap<String, Stock> tmpallbkge = null;
-	  	        if( ((BanKuai)childNode).checkSavedStockListIsTheSame(selectiondate ) ) //如果板块已经存有个股，那直接用
-	  	        	tmpallbkge = ((BanKuai)childNode).getBanKuaiGeGu ();
-	  	        else {
-	  	        	Date startdate = CommonUtility.getFirstDayOfWeek(selectiondate );
-		  	        Date lastdate = CommonUtility.getLastDayOfWeek(selectiondate );
-			  	    tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (bkname,bkcode,startdate,lastdate);
-		  	        ((BanKuai)childNode).setBanKuaiGeGu(tmpallbkge);
-	  	        }
-	  	        
-	    		
+	    		HashMap<String, Stock> tmpallbkge = ((BanKuai)childNode).getSpecificPeriodBanKuaiGeGu(selectiondate);
+//	  	        if( ((BanKuai)childNode).checkSavedStockListIsTheSame(selectiondate ) ) //如果板块已经存有个股，那直接用
+//	  	        	tmpallbkge = ((BanKuai)childNode).getBanKuaiGeGu ();
+//	  	        else {
+//	  	        	Date startdate = CommonUtility.getFirstDayOfWeek(selectiondate );
+//		  	        Date lastdate = CommonUtility.getLastDayOfWeek(selectiondate );
+//			  	    tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (bkname,bkcode,startdate,lastdate);
+//		  	        ((BanKuai)childNode).setBanKuaiGeGu(tmpallbkge);
+//	  	        }
+
 	    		Set<String> curbkallbkset = null;
 	    		try {
 	    			 curbkallbkset = tmpallbkge.keySet();
@@ -559,8 +556,10 @@ public class BkChanYeLianTree extends JTree
 		 }
 		
 	}
-
-	public TreePath locateNodeByNameOrHypyOrBkCode(String bkinputed) 
+	/*
+	 * 找到指定节点的位置
+	 */
+	public TreePath locateNodeByNameOrHypyOrBkCode(String bkinputed,boolean showatonce) 
 	{
 		TreePath bkpath = null ;
     	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
@@ -571,14 +570,40 @@ public class BkChanYeLianTree extends JTree
 	    	Boolean found = node.checktHanYuPingYin(bkinputed);
 	        if (found) {
 	             bkpath = new TreePath(node.getPath());
-	             this.setSelectionPath(bkpath);
-	     	     this.scrollPathToVisible(bkpath);
-	     	     this.expandTreePathAllNode(bkpath);
-
+	             if(showatonce) { //定位后同时也跳转到该个股
+		             this.setSelectionPath(bkpath);
+		     	     this.scrollPathToVisible(bkpath);
+		     	     this.expandTreePathAllNode(bkpath);
+	             }
 	     	     return bkpath;
 	        }
 	    }
 		return null;
+	}
+	/*
+	 * 找到指定的节点
+	 */
+	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String bkinputed)
+	{
+		TreePath bkpath = null ;
+    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+    	if(bkinputed.equals("000000"))
+    		return treeroot;
+    	
+	    @SuppressWarnings("unchecked")
+		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
+	    while (e.hasMoreElements() ) {
+	    	BkChanYeLianTreeNode node = e.nextElement();
+	    	Boolean found = node.checktHanYuPingYin(bkinputed);
+	        if (found) {
+	             bkpath = new TreePath(node.getPath());
+	        }
+	    }
+		if(bkpath != null) {
+			return (BkChanYeLianTreeNode) bkpath.getPathComponent(1);
+			
+		} else
+			return null;
 	}
 	
 	

@@ -24,6 +24,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import java.awt.event.ItemListener;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
 
@@ -258,9 +261,13 @@ public class BuyStockNumberPrice extends JPanel
 	{
 		return tfdShuoMing.getText().trim();
 	}
-	public Date getActionDay ()
+	public LocalDateTime getActionDay  ()
 	{
-		return this.dChsActionDay.getDate();
+		return this.dChsActionDay.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+	public void setActionDay (LocalDateTime datetime) 
+	{
+		this.dChsActionDay.setDate(Date.from(datetime.atZone(ZoneId.systemDefault()).toInstant()));
 	}
 	public void setActionDay (Date date) 
 	{

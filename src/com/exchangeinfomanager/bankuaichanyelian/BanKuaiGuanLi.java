@@ -140,7 +140,9 @@ public class BanKuaiGuanLi extends JDialog
 		tfldfilepath.setText(parsedpath);
 		
 	}
-	
+	/*
+	 * 
+	 */
 	private void writeBanKuaiAndGeGuNodeFile (HashMap<String,BanKuai> allbkandzs, HashMap<String,BanKuai> sysbankuailist)
 	{
 		String parsedpath = sysconfig.getGephiFileExportPath ();

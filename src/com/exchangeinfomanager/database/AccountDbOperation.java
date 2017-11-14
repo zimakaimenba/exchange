@@ -2,6 +2,8 @@ package com.exchangeinfomanager.database;
 
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -154,7 +156,7 @@ public class AccountDbOperation
 	
 
 
-	public int setZijingLiuShui(Date actiondate,String accountname, String actionqstype, boolean ischuru, double zhuanruxianjing,String actionshuoming) 
+	public int setZijingLiuShui(LocalDateTime actiondate,String accountname, String actionqstype, boolean ischuru, double zhuanruxianjing,String actionshuoming) 
 	{
 		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 		String sqlinsertstat = null;
@@ -619,15 +621,14 @@ public class AccountDbOperation
 		double geguprofit = stocknumberpricepanel.getProfit();
 		
 		//盈亏时间如果和交易时间相同会导致显示时候排序混乱，所以把盈利时间加2分钟，保住按时间排序
-		java.util.Calendar Cal=java.util.Calendar.getInstance();
-		Cal.setTime(stocknumberpricepanel.getActionDay());
-		Cal.add(java.util.Calendar.SECOND,10);
+		LocalDateTime actiondate = stocknumberpricepanel.getActionDay();
+		actiondate = actiondate.plusMinutes(3);
 		
 		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 		String sqlinsertstat  = null;
 		sqlinsertstat = "INSERT INTO A股个股盈亏(股票代码,日期,原因描述,盈亏金额,操作账号) VALUES ("
 				+ "'" +  stockcode.trim() + "'" + "," 
-				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( Cal.getTime() )   + "\""   + "," 
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( actiondate )   + "\""   + "," 
 				+ "'" + "(" + geguprofit + ")" + "'" + ","
 				+ geguprofit + ","
 				+ "'" + subaccount + "'" 
@@ -731,7 +732,7 @@ public class AccountDbOperation
 	{
 		int stocknumber = stocknumberpricepanel.getJiaoyiGushu();
 		double stockprice = stocknumberpricepanel.getJiaoyiJiage();
-		Date actionday = stocknumberpricepanel.getActionDay();
+		LocalDateTime actionday = stocknumberpricepanel.getActionDay();
 		String stockcode = stocknumberpricepanel.getStockcode();
 		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu();
 		boolean guadan = stocknumberpricepanel.getGuadan();
@@ -754,7 +755,7 @@ public class AccountDbOperation
 		
 		int stocknumber = stocknumberpricepanel.getJiaoyiGushu();
 		double stockprice = stocknumberpricepanel.getJiaoyiJiage();
-		Date actionday = stocknumberpricepanel.getActionDay();
+		LocalDateTime actionday = stocknumberpricepanel.getActionDay();
 		String stockcode = stocknumberpricepanel.getStockcode();
 		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu().trim();
 		boolean guadan = stocknumberpricepanel.getGuadan();
@@ -774,7 +775,7 @@ public class AccountDbOperation
 		
 	}
 	
-	private int setActionSellBuyToDbGuaDan(String actionaccountname, Date actionDay,String stockcode, int stocknumber, double actionprice, String shuoming,boolean actiontype)  
+	private int setActionSellBuyToDbGuaDan(String actionaccountname, LocalDateTime actionday,String stockcode, int stocknumber, double actionprice, String shuoming,boolean actiontype)  
 	{
 		int autoIncKeyFromApi =-1;
 		double tmpchengben = stocknumber*actionprice;
@@ -785,7 +786,7 @@ public class AccountDbOperation
 		
 		String sqlinsertstat = "INSERT INTO " + actiontable + "(股票代码,日期,买入卖出标志,原因描述,买卖账号,持仓标志,买卖股数,买卖金额,挂单) VALUES ("
 				+ "'" +  stockcode.trim() + "'"  + ","
-				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( actionDay )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( actionday )   + "\""   + ","
 				+ actiontype + ","
 				+ "\"" + shuoming + "\"" +"," 
 				+ "'" + actionaccountname + "'" + ","  
@@ -801,7 +802,7 @@ public class AccountDbOperation
 		return autoIncKeyFromApi;
 	}
 	
-	private int setActionSellBuyToDb (String actionaccountname, Date actionday,String stockcode, int stocknumber, double actionprice,String shuoming,boolean actiontype) 
+	private int setActionSellBuyToDb (String actionaccountname, LocalDateTime actionday,String stockcode, int stocknumber, double actionprice,String shuoming,boolean actiontype) 
 	{
 		int autoIncKeyFromApi =-1;
 		double tmpchengben = stocknumber*actionprice;
@@ -883,7 +884,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() )   + "\""   + ","
 				+ tmpselected  
 				+ "," + tmprzrq 
 				+ "," + "'" + tmpactquanshang + "'" 
@@ -900,7 +901,7 @@ public class AccountDbOperation
 					+ 0 + ","
 					+ tmpselected + ","
 					//+ "'" + tmpactname.trim() + "'" + ","
-					+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""      
+					+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() )   + "\""      
 					+ ")"
 					;
 			System.out.println(sqlinsertstat);
@@ -926,7 +927,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() )   + "\""   + ","
 				+ tmpselected //+ ","
 				+ "," + "'" + tmpactquanshang + "'"
 				+ ")"
@@ -944,7 +945,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() )   + "\""   + ","
 				+ true //+ ","
 				+ "," + "'" + tmpactquanshang + "'" 
 				+ ")"
@@ -961,7 +962,7 @@ public class AccountDbOperation
 				+ 0 + ","
 				+ 0 + ","
 				+ 0 + ","
-				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( new Date() )   + "\""   + ","
+				+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() )   + "\""   + ","
 				+ true + ","
 				+ true 
 				+ "," + "'" + tmpactquanshang + "'"

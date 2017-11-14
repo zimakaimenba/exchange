@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.accountconfiguration.AccountsInfo;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -89,7 +90,7 @@ public class CashAccountBasic
 	{
 		return this.cash;
 	}
-	public void ZiJingZhuanRu (Date actiondate, String quanshangleixing, double zijing)
+	public void ZiJingZhuanRu (LocalDateTime actiondate, String quanshangleixing, double zijing)
 	{
 		if(isallowedzhuanruxianjing == true)
 			this.cash = this.cash + zijing ;
@@ -123,7 +124,7 @@ public class CashAccountBasic
 			return -1;
 		} 
 	}
-	public int ZiJingZhuanChu (Date actiondate, String quanshangleixing, double zijing)
+	public int ZiJingZhuanChu (LocalDateTime actiondate, String quanshangleixing, double zijing)
 	{
 //		if(checkIfSameDay(actiondate) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
 //			if( actionBuyPreCheck ( actiondate, zijing) <0 )

@@ -2,6 +2,7 @@ package com.exchangeinfomanager.accountconfiguration.AccountsInfo;
 
 
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -49,7 +50,7 @@ public class AccountXinYongPuTong  extends AccountInfoBasic
 			System.out.println("该账户未持有该股票");
 		}
 		
-		this.actionSell(new Date(),stockcode, guquanshu, guquandanjia,shuoming);
+		this.actionSell(LocalDateTime.now(),stockcode, guquanshu, guquandanjia,shuoming);
 	}
 
 	

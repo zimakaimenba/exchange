@@ -34,6 +34,7 @@ import org.dom4j.io.XMLWriter;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.SubBanKuai;
 import com.exchangeinfomanager.checkboxtree.CheckBoxTreeNode;
@@ -139,12 +140,11 @@ class ChanYeLianXMLHandler
 			}
 		}
 		
-		BkChanYeLianTreeNode topNode = new BkChanYeLianTreeNode("TongDaXinBanKuaiAndZhiShu","000000");
+		DaPan topNode = new DaPan("两交易所","000000");
 		if(cylxmlroot != null) {
 			generateChanYeLianTreeFromXML(topNode,cylxmlroot,allbkandzs); //生成产业链树
 			
 			if(newBanKuaiFromDb!= null && newBanKuaiFromDb.size()>0) {//把新的加进来
-//				addNewTdxBanKuaiFromDbToChanYeLianTree (topNode,newBanKuaiFromDb,tdxbk,tdxzhishu);
 				addNewTdxBanKuaiFromDbToChanYeLianTree (topNode,newBanKuaiFromDb,allbkandzs);
 			}				
 		} else {
@@ -224,9 +224,9 @@ class ChanYeLianXMLHandler
 		 
 		 return bkcylxmlset;
 	}
-	
-		
-	
+	/*
+	 * 
+	 */
 	private void addNewTdxBanKuaiFromDbToChanYeLianTree(BkChanYeLianTreeNode topNode, SetView<String> newBanKuaiFromDb, HashMap<String, BanKuai> tdxbk) 
 	{
 		for(String newbkcode:newBanKuaiFromDb) {
@@ -243,6 +243,9 @@ class ChanYeLianXMLHandler
 					topNode.add(parentsleaf);
 	        }
 	}
+	/*
+	 * 
+	 */
 	 private void generateChanYeLianTreeFromXML(BkChanYeLianTreeNode topNode, Element xmlelement, HashMap<String,BanKuai> allbkandzs ) 
 	 {//SetView<String> newBanKuaiFromDb, SetView<String> oldBanKuaiFromDb
 	    	 Iterator it = xmlelement.elementIterator();
@@ -269,12 +272,13 @@ class ChanYeLianXMLHandler
 						   try{
 							   bkname = allbkandzs.get(bkowncode).getMyOwnName();
 						   } catch (java.lang.NullPointerException ex) {
-//							   ex.printStackTrace(); 
+							   ex.printStackTrace(); 
 							   bkname = element.attributeValue("bkname");
 						   }
 					   }
 					   
 					   parentsleaf = new BanKuai ( bkowncode,bkname);
+					   ((BanKuai)parentsleaf).setDaPan((DaPan)topNode); //把大盘配给每个板块
 					   
 					   
 				   } else if(nodetype.equals("5") ) {//是自定义子板块
@@ -305,10 +309,11 @@ class ChanYeLianXMLHandler
 				   
 				   try {
 					   String addedTime =  element.attributeValue("addedTime"); //板块或个股加入到产业链树的时间
-					   parentsleaf.setAddedToCylTreeTime(addedTime);
+					   if(addedTime != null)
+						   parentsleaf.setAddedToCylTreeTime(addedTime);
 					   
 				   } catch (java.lang.NullPointerException ex) {
-					   
+					   ex.printStackTrace();
 				   }
 
 				   topNode.add(parentsleaf);

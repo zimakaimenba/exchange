@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.asinglestockinfo;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -51,16 +52,16 @@ public interface BanKuaiAndStockBasic
 	 */
 	public void setKeHuCustom(String keHuCustom) ;
 
-	public Date getGainiantishidate() ;
-	public void setGainiantishidate(Date gainiantishidate);
+	public LocalDate getGainiantishidate() ;
+	public void setGainiantishidate(LocalDate gainiantishidate);
 	public String getGainiantishi();
 	public void setGainiantishi(String gainiantishi) ;
-	public Date getQuanshangpingjidate() ;
-	public void setQuanshangpingjidate(Date quanshangpingjidate);
+	public LocalDate getQuanshangpingjidate() ;
+	public void setQuanshangpingjidate(LocalDate quanshangpingjidate);
 	public String getQuanshangpingji() ;
 	public void setQuanshangpingji(String quanshangpingji) ;
-	public Date getFumianxiaoxidate() ;
-	public void setFumianxiaoxidate(Date fumianxiaoxidate) ;
+	public LocalDate getFumianxiaoxidate() ;
+	public void setFumianxiaoxidate(LocalDate fumianxiaoxidate) ;
 	public String getFumianxiaoxi() ;
 	public void setFumianxiaoxi(String fumianxiaoxi) ;
 	public String getZhengxiangguan() ;

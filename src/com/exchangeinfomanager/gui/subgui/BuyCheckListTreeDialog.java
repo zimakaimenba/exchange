@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.swing.JButton;
@@ -93,7 +94,7 @@ public class BuyCheckListTreeDialog extends JDialog
 	private CheckBoxTree checklistTreeCaiWu;
 	private CheckBoxTree checklistTreeJiShu; 
 	private CheckBoxTree checklistTreeZhenChe;
-	private Date lastestUpdateDate;
+	private LocalDate lastestUpdateDate;
 	
 
 

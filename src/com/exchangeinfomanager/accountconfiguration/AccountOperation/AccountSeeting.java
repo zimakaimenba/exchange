@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -343,7 +345,8 @@ public class AccountSeeting extends JDialog
 
 				 AccountPuTong zhuanrunacnt = (AccountPuTong) ((AccountsPutongTableModel)tableputong.getModel()).getAccountsAt(row);
 				 ZiJingHuaZhuan zijinginput = new ZiJingHuaZhuan (zhuanrunacnt);
-				 zijinginput.setActionDate(new Date() );
+				 zijinginput.setActionDate( LocalDateTime.ofInstant( (new Date()).toInstant(), ZoneId.systemDefault()) );
+				 
 
 				 int exchangeresult = JOptionPane.showConfirmDialog(null, zijinginput, "账户" + "\"" + zhuanrunacnt.getAccountName() + "\"" + "资金划转操作", JOptionPane.OK_CANCEL_OPTION);
 				 if(exchangeresult == JOptionPane.CANCEL_OPTION)
@@ -357,8 +360,6 @@ public class AccountSeeting extends JDialog
 				String actionaccountname = zhuanrunacnt.getAccountName();
 				int rowindex = ((AccountsPutongTableModel)tableputong.getModel() ).getAccountRowNumber(actionaccountname);
 				tableputong.setRowSelectionInterval(rowindex, rowindex);
-				
-				
 			}
 		});
 		

@@ -4,12 +4,15 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.time.temporal.WeekFields;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class CommonUtility {
 
@@ -18,173 +21,180 @@ public class CommonUtility {
 		
 	}
 
-	public static String formatDateYYYY_MM_DD_HHMMSS(Date tmpdate)
+	public static String formatDateYYYY_MM_DD_HHMMSS(LocalDateTime tmpdate)
 	{
 		try {
-			SimpleDateFormat formatterhwy=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			return formatterhwy.format(tmpdate);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			return tmpdate.format(formatter);
 		} catch (java.lang.NullPointerException e) {
 			return null;
 		}
 		
 	}
-	public static String formatDateYYYY_MM_DD(Date tmpdate)
+	public static String formatDateYYYY_MM_DD(LocalDate tmpdate)
 	{
 		try {
-			SimpleDateFormat formatterhwy=new SimpleDateFormat("yyyy-MM-dd");
-			return formatterhwy.format(tmpdate);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			return tmpdate.format(formatter);
 		} catch (java.lang.NullPointerException e) {
 			return null;
 		}
 		
 	}
 	
-	public static String formatDateYYMMDD(Date tmpdate)
+	public static String formatDateYYMMDD(LocalDate tmpdate)
 	{
 		SimpleDateFormat formatterhwy=new SimpleDateFormat("yy-MM-dd");
 		return formatterhwy.format(tmpdate);
 	}
-	public static Date formateDateYYMMDD(String datestring) 
+//	public static Date formateDateYYMMDD(String datestring) 
+//	{
+//		SimpleDateFormat formatterhwy=new SimpleDateFormat("yy-MM-dd");
+//		Date date = null ;
+//		try {
+//			date = formatterhwy.parse(datestring);
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		return date;
+//	}
+	public static LocalDate formateStringToDate(String date) 
 	{
-		SimpleDateFormat formatterhwy=new SimpleDateFormat("yy-MM-dd");
-		Date date = null ;
+		DateTimeFormatter formatter = null;
+		if(date.length() > 10)
+			formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		else if(date.length() == 10)
+			formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		else if(date.length() == 8 && !date.contains("-") )
+			formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		else if(date.length() == 8 && date.contains("-") )
+			formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+		
+		LocalDate localdate = null;
 		try {
-			date = formatterhwy.parse(datestring);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			localdate = LocalDate.parse(date, formatter);
+		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 		
-		return date;
+		return localdate;
 	}
 	/*
 	 * 此方法返回结果是1(2011年第1周)。如果加上一句calendar.setMinimalDaysInFirstWeek(7);返回结果是52（2010年第52周）
 	 * 
 	 *  */
-	public static int getWeekNumber(Date testdate)
+//	public static int getWeekNumber(Date testdate)
+//	{
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setFirstDayOfWeek(Calendar.MONDAY);
+//
+//		calendar.setTime(testdate);
+//		return calendar.get(Calendar.WEEK_OF_YEAR);
+//	}
+//	public static int getYearNumber(Date testdate)
+//	{
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setFirstDayOfWeek(Calendar.MONDAY);
+//
+//		calendar.setTime(testdate);
+//		return calendar.get(Calendar.YEAR);
+//	} 
+	public static Boolean isInSameWeek (LocalDate date1,LocalDate date2)
 	{
-		Calendar calendar = Calendar.getInstance();
-		calendar.setFirstDayOfWeek(Calendar.MONDAY);
-
-		calendar.setTime(testdate);
-		return calendar.get(Calendar.WEEK_OF_YEAR);
-	}
-	public static int getYearNumber(Date testdate)
-	{
-		Calendar calendar = Calendar.getInstance();
-		calendar.setFirstDayOfWeek(Calendar.MONDAY);
-
-		calendar.setTime(testdate);
-		return calendar.get(Calendar.YEAR);
-	} 
-	public static boolean isSameDate(Date date1, Date date2) {
-        Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(date1);
-
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(date2);
-
-        boolean isSameYear = cal1.get(Calendar.YEAR) == cal2
-                .get(Calendar.YEAR);
-        boolean isSameMonth = isSameYear
-                && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
-        boolean isSameDate = isSameMonth
-                && cal1.get(Calendar.DAY_OF_MONTH) == cal2
-                        .get(Calendar.DAY_OF_MONTH);
-
-        return isSameDate;
-    }
-	
-	public static Date getDateFromYearAndWeek (int weeknum)
-	{
-		SimpleDateFormat sdf = new SimpleDateFormat("MM dd yyyy");
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.WEEK_OF_YEAR, weeknum);        
-		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		return cal.getTime(); 
+		int year1 = date1.getYear();
+		WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
+		int weeknumber1 = date1.get(weekFields.weekOfWeekBasedYear());
+		
+		int year2 = date2.getYear();
+		int weeknumber2 = date2.get(weekFields.weekOfWeekBasedYear());
+		
+		if(year1 == year2 && weeknumber1 == weeknumber2)
+			return true;
+		else 
+			return false;
+//		else if(year1 == year2 && weeknumber1 > weeknumber2)
+//			return 1;
+//		else if(year1 == year2 && weeknumber1 < weeknumber2)
+//			return -1;
+//		else if(year1 > year2 )
+//			return 1;
+//		else if(year1 < year2 )
+//			return -1;
+//		
+//		return null;
 	}
 	
+//	public static Date getDateFromYearAndWeek (int weeknum)
+//	{
+//		SimpleDateFormat sdf = new SimpleDateFormat("MM dd yyyy");
+//		Calendar cal = Calendar.getInstance();
+//		cal.set(Calendar.WEEK_OF_YEAR, weeknum);        
+//		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+//		return cal.getTime(); 
+//	}
+//	
+//	/*
+//	 * 
+//	 */
+//	public static LocalDate getDateFromWeekAndYear(final int day,final int year,final int weekday) {
+////	    int y = Integer.parseInt(j);
+//	    LocalDate date = LocalDate.of(year, 7, 1); // safer than choosing current date
+//	    // date = date.with(WeekFields.ISO.weekBasedYear(), y); // no longer necessary
+//	    date = date.with(WeekFields.ISO.weekOfWeekBasedYear(), day);
+//	    date = date.with(WeekFields.ISO.dayOfWeek(), weekday);
+//
+//	    return date;
+//	}
 	/*
 	 * 
 	 */
-	public static LocalDate getDateFromWeekAndYear(final int day,final int year,final int weekday) {
-//	    int y = Integer.parseInt(j);
-	    LocalDate date = LocalDate.of(year, 7, 1); // safer than choosing current date
-	    // date = date.with(WeekFields.ISO.weekBasedYear(), y); // no longer necessary
-	    date = date.with(WeekFields.ISO.weekOfWeekBasedYear(), day);
-	    date = date.with(WeekFields.ISO.dayOfWeek(), weekday);
-
-	    return date;
-	}
+//	public static Calendar getDateOfSpecificMonthAgo (Date daylast,int monthnumber)
+//	{
+//    	
+//    	Calendar calendar =  Calendar.getInstance();
+//    	calendar.setTime(daylast);
+//    	calendar.add(calendar.MONTH,0-monthnumber);//把日期往后增加一天.整数往后推,负数往前移动
+//    	return calendar;
+//	}
 	/*
 	 * 
-	 */
-	public static Date getDateOfSpecificMonthAgo (Date daylast,int monthnumber)
-	{
-    	
-    	Calendar calendar =  Calendar.getInstance();
-    	calendar.setTime(daylast);
-    	calendar.add(calendar.MONTH,0-monthnumber);//把日期往后增加一天.整数往后推,负数往前移动
-    	return calendar.getTime();
-	}
-	/*
-	 * 
-	 */
-	public static Date getDateOfSpecificMonthAfter (Date daylast,int monthnumber)
-	{
-    	
-    	Calendar calendar =  Calendar.getInstance();
-    	calendar.setTime(daylast);
-    	calendar.add(calendar.MONTH,monthnumber);//把日期往后增加一天.整数往后推,负数往前移动
-    	return calendar.getTime();
-	}
+//	 */
+//	public static Date getDateOfSpecificMonthAfter (Date daylast,int monthnumber)
+//	{
+//    	
+//    	Calendar calendar =  Calendar.getInstance();
+//    	calendar.setTime(daylast);
+//    	calendar.add(calendar.MONTH,monthnumber);//把日期往后增加一天.整数往后推,负数往前移动
+//    	return calendar.getTime();
+//	}
 	/** 
 	* 取得指定日期所在周的第一天
 	* */ 
-	public static Date getFirstDayOfWeek(Date date)
-	{
-		Calendar c = new GregorianCalendar();
-		c.setFirstDayOfWeek(Calendar.MONDAY);
-		c.setTime(date);
-		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek()); // Monday
-		return c.getTime ();
-	}
+//	public static Calendar getFirstDayOfWeek(Date date)
+//	{
+//		Calendar c = new GregorianCalendar();
+//		c.setFirstDayOfWeek(Calendar.MONDAY);
+//		c.setTime(date);
+//		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek()); // Monday
+//		return c;
+//	}
 
 	/** 
 	* 取得指定日期所在周的最后一天,目前最后一天设置为星期六
 	* 	*/ 
-	public static Date getLastDayOfWeek(Date date) 
-	{
-		Calendar c = new GregorianCalendar();
-		c.setFirstDayOfWeek(Calendar.MONDAY);
-		c.setTime(date);
-		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek() + 5); // Saterday
-		return c.getTime();
-	}
+//	public static Calendar getLastDayOfWeek(Date date) 
+//	{
+//		Calendar c = new GregorianCalendar();
+//		c.setFirstDayOfWeek(Calendar.MONDAY);
+//		c.setTime(date);
+//		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek() + 5); // Saterday
+//		return c;
+//	}
 	
-	public static Date formateStringToDate(String tmpdate) 
-	{
-		DateFormat format = null;
-//		System.out.println(tmpdate);
-		if(tmpdate.length() > 10)
-			 format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		else if(tmpdate.length() == 10)
-			format = new SimpleDateFormat("yyyy-MM-dd");
-		else if(tmpdate.length() == 8)
-			format = new SimpleDateFormat("yyyyMMdd");
-		
-		Date date = null;
-		try {
-//			System.out.println("Data need to be parsed is" + tmpdate);
-			date = format.parse(tmpdate);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		
-		return date;
-	}
+
 	/*
 	 * 
 	 */

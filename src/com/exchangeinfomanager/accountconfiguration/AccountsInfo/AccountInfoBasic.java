@@ -1,6 +1,8 @@
 package com.exchangeinfomanager.accountconfiguration.AccountsInfo;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -109,7 +111,7 @@ public class AccountInfoBasic extends CashAccountBasic
 	/*
 	 *  * 如果金额不足，直接返回-1，否则返回买入后还剩余多少现金
 	 */
-	public int actionBuyPreCheck (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public int actionBuyPreCheck (LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		int cashisenough;
 		 System.out.println("需要做资金合法性检查");
@@ -140,11 +142,12 @@ public class AccountInfoBasic extends CashAccountBasic
 	/*
 	 * 如果金额不足，直接返回-1，否则返回买入后还剩余多少现金
 	 */
-	public Double actionBuy(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public Double actionBuy(LocalDateTime actionday,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		//System.out.println(this.getAccountName() + "买入前有现金" + this.getCurrentAvailableXianJin() );
-		if(checkIfSameDay(actionDay) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
-			if( actionBuyPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
+		
+		if( actionday.toLocalDate().isEqual( LocalDate.now() ) ) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
+			if( actionBuyPreCheck ( actionday, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
 				System.out.println("未通过买入合法性检查");
 				return null;
 			}
@@ -167,7 +170,7 @@ public class AccountInfoBasic extends CashAccountBasic
 	/*
 	 * 卖单持仓检查 
 	 */
-	public int actionSellPreCheck (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public int actionSellPreCheck (LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		if( !this.isChiCang(stockcode) ) { 
 			System.out.println("错误，账户没有该股票！");
@@ -184,9 +187,9 @@ public class AccountInfoBasic extends CashAccountBasic
 	 * 如果持仓卖完，直接返回卖出后的利润额，还有股票就返回null 
 	 */
 	
-	public String actionSell(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public String actionSell(LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
-		if(checkIfSameDay(actionDay) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
+		if(actionDay.toLocalDate().isEqual(LocalDate.now())) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
 			if( actionSellPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
 				System.out.println("未通过卖出合法性检查");
 				return "FAIL";
@@ -233,9 +236,9 @@ public class AccountInfoBasic extends CashAccountBasic
 	/*
 	 * 如果金额不足，就返回null，否则返回挂单后还有多少现金
 	 */
-	public Double  actionBuyGuaDan(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public Double  actionBuyGuaDan(LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
-		if(checkIfSameDay(actionDay) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
+		if( actionDay.toLocalDate().isEqual(LocalDate.now())) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
 			if( actionBuyPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
 				System.out.println("未通过买入挂单合法性检查");
 				return null;
@@ -246,7 +249,7 @@ public class AccountInfoBasic extends CashAccountBasic
 		
 		return this.getCurrentAvailableXianJin();
 	}
-	private void actionBuyGuaDanCannelled (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	private void actionBuyGuaDanCannelled (LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		//记录的挂单金额相应减少
 		this.setTotoalBuyGuaDanJinEr ( this.getTotoalBuyGuaDanJinEr() -guquanshu * guquandanjia);
@@ -254,9 +257,9 @@ public class AccountInfoBasic extends CashAccountBasic
 	/*
 	 * 如果金额不足，就返回-1，否则返回挂单后还有多少现金
 	 */
-	public String actionSellGuaDan(Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public String actionSellGuaDan(LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
-		if(checkIfSameDay(actionDay) == true) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
+		if(actionDay.toLocalDate().isEqual(LocalDate.now())) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
 			if( actionSellPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
 				System.out.println("未通过卖出挂单合法性检查");
 				return "FAIL";
@@ -266,14 +269,14 @@ public class AccountInfoBasic extends CashAccountBasic
 		this.setTotoalSellGuaDanJinEr ( this.getTotoalSellGuaDanJinEr() + guquanshu * guquandanjia);
 		return String.valueOf( this.getCurrentAvailableXianJin()  );
 	}
-	private void actionSellGuaDanCannelled (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	private void actionSellGuaDanCannelled (LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		this.setTotoalSellGuaDanJinEr ( this.getTotoalSellGuaDanJinEr() - guquanshu * guquandanjia);
 	}
 	/*
 	 * 挂单结束的2个动作，一个是把挂单锁定的资金解锁，另一个是完成买入或卖出操作
 	 */
-	public Double actionBuyGuadanDone (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public Double actionBuyGuadanDone (LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		actionBuyGuaDanCannelled(actionDay, stockcode, guquanshu, guquandanjia, shuoming);
 		return actionBuy(actionDay, stockcode, guquanshu, guquandanjia, shuoming);
@@ -281,7 +284,7 @@ public class AccountInfoBasic extends CashAccountBasic
 	/*
 	 * 挂单结束的2个动作，一个是把挂单锁定的资金解锁，另一个是完成买入或卖出操作
 	 */
-	public String actionSellGuadanDone (Date actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
+	public String actionSellGuadanDone (LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		actionSellGuaDanCannelled(actionDay, stockcode, guquanshu, guquandanjia, shuoming);
 		return  actionSell(actionDay, stockcode, guquanshu, guquandanjia, shuoming);

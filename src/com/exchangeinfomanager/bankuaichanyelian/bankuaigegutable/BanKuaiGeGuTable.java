@@ -37,7 +37,7 @@ public class BanKuaiGeGuTable extends JTable
 	private static final long serialVersionUID = 1L;
 	private StockInfoManager stockmanager;
 	
-	public BanKuaiGeGuTable (StockInfoManager stockmanager1, boolean parfilepriority)
+	public BanKuaiGeGuTable (StockInfoManager stockmanager1)
 	{
 		super ();
 		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel();
@@ -45,8 +45,7 @@ public class BanKuaiGeGuTable extends JTable
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockmanager = stockmanager1;
-		((BanKuaiGeGuTableModel)this.getModel()).setYouXianPaiXuParsedFile(parfilepriority); //是否优先排序板块成交量占比增长率
-		
+
 		createEvents ();
 	}
 	
@@ -126,7 +125,7 @@ public class BanKuaiGeGuTable extends JTable
 					 //int column = tblSearchResult.getSelectedColumn();
 					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
 					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
-					 System.out.println(stockcode);
+//					 System.out.println(stockcode);
 					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
 					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
 					 this.stockmanager.toFront();
@@ -135,10 +134,6 @@ public class BanKuaiGeGuTable extends JTable
 
 	}
 
-//	public BanKuaiGeGuTableModel getModel ()
-//	{
-//		return (BanKuaiGeGuTableModel)this.getModel();
-//	}
 	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
 	{
 		        Component comp = super.prepareRenderer(renderer, row, col);
@@ -146,13 +141,15 @@ public class BanKuaiGeGuTable extends JTable
 		        HashSet<String> stockinparsefile = tablemodel.getStockInParseFile();
 		        Object value = tablemodel.getValueAt(row, col);
 		        
+		        if(stockinparsefile == null)
+		        	return comp;
+		        
 		        if (!isRowSelected(row)) {
 		        	comp.setBackground(getBackground());
 		        	comp.setForeground(getForeground());
 		        	int modelRow = convertRowIndexToModel(row);
 		        	String stockcode = (String)getModel().getValueAt(modelRow, 0);
 					if(stockinparsefile.contains(stockcode)) {
-						//comp.setBackground(Color.YELLOW);
 						comp.setForeground(Color.BLUE);
 					}
 		        }
@@ -171,6 +168,8 @@ public class BanKuaiGeGuTable extends JTable
 
         try {
             tip = getValueAt(rowIndex, colIndex).toString();
+        } catch (java.lang.NullPointerException e2) {
+        	tip = "";
         } catch (RuntimeException e1) {
         	e1.printStackTrace();
         }

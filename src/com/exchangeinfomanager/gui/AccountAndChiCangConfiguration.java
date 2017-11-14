@@ -4,7 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,7 +31,9 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
@@ -48,6 +56,9 @@ public class AccountAndChiCangConfiguration
 		 rzrqputongaccountsdetailmap = new HashMap<String,AccountXinYongPuTong>();
 		 rongziaccountsdetailmap = new HashMap<String,AccountRongZi>();
 		 rongquanaccountsdetailmap = new HashMap<String,AccountRongQuan> () ;
+		 
+//		 tdxstockdetailmap = new HashMap<String, Stock> ();
+		 tdxbankuaidetailmap = new HashMap<String, BanKuai> ();  
 
 		initializeAccounts ();
 		initiazlizeStockChiCang ();
@@ -66,7 +77,8 @@ public class AccountAndChiCangConfiguration
 	private HashMap<String ,AccountRongQuan> rongquanaccountsdetailmap;
 	
 	private Multimap<String, StockChiCangInfo>  acntChiCangdetailmap; //当前系统持仓 <账户名，持仓信息>
-//	private Multimap<String, AccountInfoBasic>  stockChiCangdetailmap; //当前系统持仓 <股票名，持仓账户>
+//	private HashMap<String, Stock>  tdxstockdetailmap; // <股票code，持仓账户>
+	private HashMap<String, BanKuai>  tdxbankuaidetailmap; // <板块code，持仓账户>
 	private ArrayList<String> curChiCangStockCodeNamelist; //当前所有持仓股票的namelist
 
 
@@ -136,6 +148,9 @@ public class AccountAndChiCangConfiguration
 	{
 		return curChiCangStockCodeNamelist;
 	}
+	/*
+	 * 
+	 */
 	public Stock setStockChiCangAccount (Stock stockneeded)
 	{
 		String stockcode = stockneeded.getMyOwnCode();
@@ -156,6 +171,9 @@ public class AccountAndChiCangConfiguration
 		
 		return stockneeded;
 	}
+	/*
+	 * 
+	 */
 	public ArrayList<AccountInfoBasic> getStockChiCangAccount (String stockneededcode)
 	{
 //		if(stockChiCangdetailmap.containsKey(stockname)) {
@@ -177,6 +195,22 @@ public class AccountAndChiCangConfiguration
 		
 		return stockchicangacntlist;
 	}
+//	private Multimap<String, Stock>  tdxstockdetailmap; // <股票名，持仓账户>
+//	private Multimap<String, BanKuai>  tdxbankuaidetailmap; // <股票名，持仓账户>
+	/*
+	 * 
+	 */
+//	public void addNewStock (Stock newstock)
+//	{
+//		String stockcode = newstock.getMyOwnCode();
+//		tdxstockdetailmap.put(stockcode, newstock);
+//	}
+//	public Stock getStock (String stockcode) 
+//	{
+//		return tdxstockdetailmap.get(stockcode);
+//	}
+
+
 	/*
 	 * 返回该股票的持仓账户的具体信息
 	 */
@@ -513,7 +547,7 @@ public class AccountAndChiCangConfiguration
 		
 		int stocknumber = stocknumberpricepanel.getJiaoyiGushu();
 		double stockprice = stocknumberpricepanel.getJiaoyiJiage();
-		Date actionday = stocknumberpricepanel.getActionDay();
+		LocalDateTime actionday = stocknumberpricepanel.getActionDay();
 		String stockcode = stocknumberpricepanel.getStockcode();
 		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu();
 		boolean guadan = stocknumberpricepanel.getGuadan();
@@ -538,7 +572,7 @@ public class AccountAndChiCangConfiguration
 	{
 		int stocknumber = stocknumberpricepanel.getJiaoyiGushu();
 		double stockprice = stocknumberpricepanel.getJiaoyiJiage();
-		Date actionday = stocknumberpricepanel.getActionDay();
+		LocalDateTime actionday = stocknumberpricepanel.getActionDay();
 		String stockcode = stocknumberpricepanel.getStockcode();
 		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu();
 		boolean guadan = stocknumberpricepanel.getGuadan();
@@ -566,7 +600,7 @@ public class AccountAndChiCangConfiguration
 	{
 		int gushu = stocknumberpricepanel.getJiaoyiGushu();
 		double stockprice = stocknumberpricepanel.getJiaoyiJiage();
-		Date actionday = stocknumberpricepanel.getActionDay();
+		LocalDateTime actionday = stocknumberpricepanel.getActionDay();
 		String stockcode = stocknumberpricepanel.getStockcode();
 		String actionstockaccount = stocknumberpricepanel.getJiaoyiZhanghu();
 		//boolean guadan = stocknumberpricepanel.getGuadan();
@@ -639,10 +673,12 @@ public class AccountAndChiCangConfiguration
 		return autoIncKeyFromApi;
 	}
 
-	
+	/*
+	 * 
+	 */
 	private void acntZiJingZhuanRuChu(CashAccountBasic actionacnt, CashAccountBasic mapacnt, ZiJingHuaZhuan zjhz) 
 	{
-		Date actiondate = zjhz.getActionDate();
+		LocalDateTime actiondate = zjhz.getActionDate();
 		double actionmoney = zjhz.getZijing(); 
 		String quanshangleixing = zjhz.getQuanShangZhuanRuOrChuLeiXing ();
 		

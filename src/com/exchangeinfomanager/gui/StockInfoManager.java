@@ -10,6 +10,12 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.text.NumberFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import com.exchangeinfomanager.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -21,6 +27,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
@@ -59,6 +66,7 @@ import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -379,6 +387,7 @@ public class StockInfoManager
 
 	private void createEvents()
 	{
+		//保住几个chart同步
 		panelbkcje.getChartPanel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -391,12 +400,48 @@ public class StockInfoManager
 			}
 		});
 		
+		panelZhanBi.getChartPanel().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				Comparable datekey = panelZhanBi.getCurSelectedBarDate ();
+				panelbkcje.highLightSpecificBarColumn (datekey);
+				panelgegucje.highLightSpecificBarColumn (datekey);
+				pnlGeGuWkZhanBi.highLightSpecificBarColumn (datekey);
+//				panelZhanBi.getChartPanel().repaint();
+			}
+		});
+		panelgegucje.getChartPanel().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				Comparable datekey = panelgegucje.getCurSelectedBarDate ();
+				panelbkcje.highLightSpecificBarColumn (datekey);
+				panelZhanBi.highLightSpecificBarColumn (datekey);
+				pnlGeGuWkZhanBi.highLightSpecificBarColumn (datekey);
+//				panelZhanBi.getChartPanel().repaint();
+			}
+		});
+		pnlGeGuWkZhanBi.getChartPanel().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				Comparable datekey = pnlGeGuWkZhanBi.getCurSelectedBarDate ();
+				panelbkcje.highLightSpecificBarColumn (datekey);
+				panelZhanBi.highLightSpecificBarColumn (datekey);
+				panelgegucje.highLightSpecificBarColumn (datekey);
+//				panelZhanBi.getChartPanel().repaint();
+			}
+		});
+		
 		btnsixmonthafter.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-		    	Date startday = CommonUtility.getDateOfSpecificMonthAfter(dateChsBanKuaiZhanbi.getDate(),6 );
-		    	dateChsBanKuaiZhanbi.setDate(startday);
-		    	panelZhanBi.resetDate();
+				LocalDate startday = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate requirestart = startday.with(DayOfWeek.MONDAY).plus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+				dateChsBanKuaiZhanbi.setDate(Date.from(requirestart.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
+
+				panelZhanBi.resetDate();
 				pnlGeGuWkZhanBi.resetDate();
 				panelbkcje.resetDate();
 				panelgegucje.resetDate();
@@ -406,8 +451,10 @@ public class StockInfoManager
 		btnsixmonthbefore.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-		    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate(),6 );
-		    	dateChsBanKuaiZhanbi.setDate(startday);
+				LocalDate startday = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate requirestart = startday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+				dateChsBanKuaiZhanbi.setDate(Date.from(requirestart.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
+				
 		    	panelZhanBi.resetDate();
 				pnlGeGuWkZhanBi.resetDate();
 				panelbkcje.resetDate();
@@ -433,8 +480,9 @@ public class StockInfoManager
 					pnlGeGuWkZhanBi.resetDate();
 					
 					JDateChooser wybieraczDat = (JDateChooser) e.getSource();
-		    		Date newdate = wybieraczDat.getDate();
-					if(CommonUtility.isSameDate(newdate, new Date() ) )
+		    		LocalDate newdate = wybieraczDat.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		    		
+		    		if( newdate.isEqual( LocalDate.now() ) )
 						btnResetDate.setEnabled(false);
 		    		else
 		    			btnResetDate.setEnabled(true);
@@ -888,7 +936,7 @@ public class StockInfoManager
 				if(autoIncKeyFromApi >0) {
 					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
 					//String stockcode = jiarujihua.getStockCode();		
-					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() );
+					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now());
 					String zdgzsign = "移出关注";
 					String shuoming = "";
 					if(jiarujihua.isMingRiJiHua()) {
@@ -901,14 +949,6 @@ public class StockInfoManager
 					tableModel.insertRow(0, tableData);
 					tblzhongdiangz.setEditingColumn(3);
 				}
-				
-//				if(updateZdgzActionToGuiDB("移出关注",jiarujihua)) {
-//					btngengxinxx.setEnabled(true);
-//					sclpaneJtable.getVerticalScrollBar().setValue(0);
-//					//添加或移出后应该在股票信息里面加入当天，以防用户2次点击，这里是简单的做法，之间吧按钮禁止，以后有时间在拓展。
-//					btnyichuzdgz.setEnabled(false);
-//					updateSearchDialog ();
-//				}
 			}
 		});
 		
@@ -929,7 +969,7 @@ public class StockInfoManager
 				if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
 					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
 					//String stockcode = jiarujihua.getStockCode();		
-					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date() );
+					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() );
 					String zdgzsign = "加入关注";
 					String shuoming = "";
 					if(jiarujihua.isMingRiJiHua()) {
@@ -965,21 +1005,19 @@ public class StockInfoManager
 				
 				String actiontype = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 1);
 				String actiondate = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
+				LocalDate ldactiondate = CommonUtility.formateStringToDate(actiondate); 
 				boolean sellbuy = false;
 				
 				//if( !actiontype.contains("买入") &&  !actiontype.contains("卖出")) {
 				if( !actiontype.contains("买入") ) {
 					JOptionPane.showMessageDialog(null,"不是买入记录，无法更改操作账户，当前只支持买入记录更改账户！");
 					return ;
-				} else if ( !actiondate.contains(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()).substring(0, 10) ) ) {
+				} else if (  ldactiondate.isEqual(LocalDate.now() ) ) {
 					JOptionPane.showMessageDialog(null,"只有当日买入记录才支持更改账户！");
 					return ;
 				} else if( actiontype.contains("买入") ) {
 					sellbuy = true;
 				}
-				
-				
-				
 				Object dabataseidstr =  ((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 3);
 				Integer dabataseid = Integer.parseInt(dabataseidstr.toString() );
 				//String actiondate = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
@@ -1015,8 +1053,12 @@ public class StockInfoManager
 				int rowIndex = tblzhongdiangz.getSelectedRow();
 				
 				String actiontype = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 1);
+				
  				String actiondate = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
-				if(actiontype.contains("挂单") && !actiondate.contains(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()).substring(0, 10) )  ) { 
+ 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+ 				LocalDateTime ldactiondate = LocalDateTime.parse(actiondate, formatter);
+ 				
+				if(actiontype.contains("挂单") && !ldactiondate.toLocalDate().isEqual(LocalDate.now() )  ) {    
 					JOptionPane.showMessageDialog(null,"只有今日挂单可以转为成交，历史挂单不可以转为成交！");
 					return ;
 				} else if( !actiontype.contains("挂单") ) {
@@ -1708,44 +1750,22 @@ public class StockInfoManager
 	protected  void displayBanKuaiOfStockZhanBiByWeek(String firstshowbkcode) 
 	{
 		String bkcode = firstshowbkcode.trim().substring(1,7);
-		TreePath bankuaitreepath = bkcyl.getBkChanYeLianTree().locateNodeByNameOrHypyOrBkCode(bkcode);
-		BanKuai bankuai = (BanKuai) bankuaitreepath.getPathComponent(1);
-   	 	String tdxbk = bankuai.getMyOwnName(); 
-   	 	String tdxbkcode = bankuai.getMyOwnCode();
-   	 	
-		Date endday = CommonUtility.getLastDayOfWeek(dateChsBanKuaiZhanbi.getDate() );
-    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate(),sysconfig.banKuaiFengXiMonthRange() );
+//		TreePath bankuaitreepath = bkcyl.getBkChanYeLianTree().locateNodeByNameOrHypyOrBkCode(bkcode);
+//		BanKuai bankuai = (BanKuai) bankuaitreepath.getPathComponent(1);
+//   	 	String tdxbk = bankuai.getMyOwnName(); 
+//   	 	String tdxbkcode = bankuai.getMyOwnCode();
     	
-    	ArrayList<ChenJiaoZhanBiInGivenPeriod> cjezb = bankuai.getChenJiaoErZhanBiInGivenPeriod();
-    	if(cjezb != null && !cjezb.isEmpty() ) {
-    		ChenJiaoZhanBiInGivenPeriod cjezblatest = cjezb.get(cjezb.size()-1 );
-        	if(cjezblatest.getDayofEndofWeek().compareTo(endday) == 0)
-        		;
-        	else
-        		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
-    	} else
-    		bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,startday,endday);
+		LocalDate curselectdate = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		BanKuai bankuai = bkcyl.getBanKuai(bkcode,curselectdate);
+		DaPan dapan =  (DaPan) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode("000000");
     	
     	//板块成交额
     	panelbkcje.resetDate();
-    	panelbkcje.setNodeJiaoYiErByWeek (bankuai,endday);
-//    	((TitledBorder)panelbkcje.getBorder()).setTitle(bankuai.getMyOwnCode()+ bankuai.getMyOwnName() 
-//													+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
-//													+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
-//    	panelbkcje.repaint();
+    	panelbkcje.setNodeJiaoYiErByWeek (bankuai,curselectdate,dapan);
     	
     	//板块成交额占比
     	panelZhanBi.resetDate();
-    	panelZhanBi.setNodeZhanBiByWeek(bankuai,endday);
-//    	((TitledBorder)panelZhanBi.getBorder()).setTitle(bankuai.getMyOwnCode()+ bankuai.getMyOwnName() 
-//    											+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
-//    											+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
-//    	panelZhanBi.repaint();
-//    	panelZhanBi.setToolTipText(bankuai.getMyOwnCode()+ bankuai.getMyOwnName());
-		
-//		HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
-//		
-//		panelZhanBi.setBanKuaiWithDaPanNeededDisplay(suosusysbankuai, firstshowbkcode,dateChsBanKuaiZhanbi.getDate(),6);
+    	panelZhanBi.setNodeZhanBiByWeek(bankuai,curselectdate,dapan);
 	}
 	/*
 	 * 股票在板块的半年内的占比
@@ -1753,20 +1773,21 @@ public class StockInfoManager
 	protected  void displayStockBanKuaiZhanBiByStock (String bkname)
 	{
 		String bkcode = bkname.trim().substring(1,7);
-		Date endday = CommonUtility.getLastDayOfWeek(dateChsBanKuaiZhanbi.getDate() );
-    	Date startday = CommonUtility.getDateOfSpecificMonthAgo(dateChsBanKuaiZhanbi.getDate() ,sysconfig.banKuaiFengXiMonthRange());
 		
-    	nodeshouldbedisplayed = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,(Stock)nodeshouldbedisplayed,startday,endday);
-    	
+		LocalDate curselectdate = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    	Stock stockofbankuai = bkcyl.getGeGuOfBanKuai (bkcode,nodeshouldbedisplayed .getMyOwnCode());
+    	stockofbankuai.setMyOwnName(txtFldStockName.getText());
+    	DaPan dapan =  (DaPan) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode("000000");
+
     	//个股成交额
     	panelgegucje.resetDate();
-    	panelgegucje.setNodeJiaoYiErByWeek (nodeshouldbedisplayed,endday);
+    	panelgegucje.setNodeJiaoYiErByWeek (stockofbankuai,curselectdate,dapan);
 //    	((TitledBorder)panelgegucje.getBorder()).setTitle("个股从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
 //													+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
 //    	panelgegucje.repaint();
     	//个股成交额占比
     	pnlGeGuWkZhanBi.resetDate();
-    	pnlGeGuWkZhanBi.setNodeZhanBiByWeek(nodeshouldbedisplayed,endday);
+    	pnlGeGuWkZhanBi.setNodeZhanBiByWeek(stockofbankuai,curselectdate,dapan);
     	
 //    	((TitledBorder)pnlGeGuWkZhanBi.getBorder()).setTitle("个股从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
 //														+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
@@ -1855,10 +1876,10 @@ public class StockInfoManager
 			 
 			int autoIncKeyFromApi = accountschicangconfig.afterSellCheckAndSetProfitYuanZiOperation (accountInfoBasic,stocknumberpricepanel);
 			
-			java.util.Calendar Cal=java.util.Calendar.getInstance();
-			Cal.setTime(stocknumberpricepanel.getActionDay());
-			Cal.add(java.util.Calendar.SECOND,10);
-			String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( Cal.getTime()  );
+//			java.util.Calendar Cal=java.util.Calendar.getInstance();
+//			Cal.setTime();
+//			Cal.add(java.util.Calendar.SECOND,10);
+			String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( stocknumberpricepanel.getActionDay()  );
 			String buyresult = "(" + geguprofit + ")";
 			
 			String action =null;
@@ -1878,6 +1899,10 @@ public class StockInfoManager
 	}
 
 
+//	LocalDate startday = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//	LocalDate requirestart = startday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+//	dateChsBanKuaiZhanbi.setDate(Date.from(requirestart.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
+	
 
 	protected void initializeSearchDialog() 
 	{
@@ -1982,7 +2007,7 @@ public class StockInfoManager
 	 		 		+ " <p>个股新闻:";
 	     for(ChanYeLianNews cylnew : curnewlist ) {
 	    		String title = cylnew.getNewsTitle();
-	    		String newdate = CommonUtility.formatDateYYYY_MM_DD_HHMMSS(cylnew.getGenerateDate() ).substring(0,11); 
+	    		String newdate = CommonUtility.formatDateYYYY_MM_DD( cylnew.getGenerateDate()    ).substring(0,11); 
 	    		String slackurl = cylnew.getNewsSlackUrl();
 	    		String keywords = cylnew.getKeyWords ();
 	    		if(slackurl != null && !slackurl.isEmpty() )	    		
@@ -2057,6 +2082,8 @@ public class StockInfoManager
 
 	protected void setCkLstTreeInfoToDatabase() 
 	{
+		if(buychklstdialog == null)
+			return;
     
 	    String tmpchecklist = buychklstdialog.getChkLstItemsTiCai() 
 	    					+ buychklstdialog.getChkLstItemsGuDong()
@@ -2122,21 +2149,21 @@ public class StockInfoManager
 				}
 				
 				try {
-					dateChsgainian.setDate(nodeshouldbedisplayed.getGainiantishidate());
+					dateChsgainian.setDate( Date.from(nodeshouldbedisplayed.getGainiantishidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));    
 				} catch(java.lang.NullPointerException e) {
 					dateChsgainian.setDate(null);
 				}
 				
 				txtfldquanshangpj.setText(nodeshouldbedisplayed.getQuanshangpingji());
 				try {
-					dateChsquanshang.setDate(nodeshouldbedisplayed.getQuanshangpingjidate());
+					dateChsquanshang.setDate(Date.from(nodeshouldbedisplayed.getQuanshangpingjidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 				} catch(java.lang.NullPointerException e) {
 					dateChsquanshang.setDate(null);
 				}
 				
 				txtareafumianxx.setText(nodeshouldbedisplayed.getFumianxiaoxi());
 				try {
-					dateChsefumian.setDate(nodeshouldbedisplayed.getFumianxiaoxidate());
+					dateChsefumian.setDate( Date.from(nodeshouldbedisplayed.getFumianxiaoxidate().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
 				} catch(java.lang.NullPointerException e) {
 					dateChsefumian.setDate(null);
 				}
@@ -2259,11 +2286,14 @@ public class StockInfoManager
 //		}
 	    
 		nodeshouldbedisplayed.setMyOwnName(txtFldStockName.getText().trim().replaceAll("\\s*", "")); //去除股票名中间所有的空格
-		nodeshouldbedisplayed.setGainiantishidate(dateChsgainian.getDate());
+		if(dateChsgainian.getDate() != null)
+			nodeshouldbedisplayed.setGainiantishidate(dateChsgainian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 		nodeshouldbedisplayed.setGainiantishi(txtareagainiants.getText().trim());
-		nodeshouldbedisplayed.setQuanshangpingjidate(dateChsquanshang.getDate());
+		if(dateChsquanshang.getDate() != null)
+			nodeshouldbedisplayed.setQuanshangpingjidate(dateChsquanshang.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 		nodeshouldbedisplayed.setQuanshangpingji(txtfldquanshangpj.getText().trim());
-		nodeshouldbedisplayed.setFumianxiaoxidate(dateChsefumian.getDate());
+		if(dateChsefumian.getDate() != null)
+		nodeshouldbedisplayed.setFumianxiaoxidate(dateChsefumian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 		nodeshouldbedisplayed.setFumianxiaoxi(txtareafumianxx.getText().trim());
 		nodeshouldbedisplayed.setZhengxiangguan( txtfldzhengxg.getText().trim());
 		nodeshouldbedisplayed.setFuxiangguan(txtfldfuxg.getText().trim());
@@ -2729,9 +2759,10 @@ public class StockInfoManager
 								.addComponent(panelZhanBi, GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE))))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(panelStatusBar, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE))
+						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(panelStatusBar, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+							.addComponent(pnl_paomd, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
 		

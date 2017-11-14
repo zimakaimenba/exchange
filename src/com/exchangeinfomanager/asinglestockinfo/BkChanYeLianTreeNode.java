@@ -2,10 +2,18 @@ package com.exchangeinfomanager.asinglestockinfo;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.swing.tree.*;
@@ -13,6 +21,7 @@ import javax.swing.tree.*;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
@@ -37,6 +46,8 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
    		String namehypy = hypy.getBanKuaiNameOfPinYin(name );
    		hanyupingyin.add(codehypy);
    		hanyupingyin.add(namehypy);
+   		
+//   		bkdbopt = new  BanKuaiDbOperation ();
 	}
 	
 	private String suoshutdxbkzscode; //所属通达信板块指数代码
@@ -48,15 +59,15 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	private boolean isofficallyselected ;
 	private int inzdgzofficalcount =0;
 	private int inzdgzcandidatecount =0;
-	private Date selectedToZdgzTime;
-	private Date addedtocyltreetime;
+	private LocalDate selectedToZdgzTime;
+	private LocalDate addedtocyltreetime;
 	private boolean shouldberemovedwhensavexml;
 	
-	private Date gainiantishidate;
+	private LocalDate gainiantishidate;
 	private String gainiantishi;
-	private Date quanshangpingjidate;
+	private LocalDate quanshangpingjidate;
 	private String quanshangpingji;
-	private Date fumianxiaoxidate;
+	private LocalDate fumianxiaoxidate;
 	private String fumianxiaoxi;
 	private String zhengxiangguan;
 	private String fuxiangguan;
@@ -64,10 +75,10 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	private String keHuCustom;
 	private String suoshujiaoyisuo;
 	
-	private ArrayList<ChenJiaoZhanBiInGivenPeriod> cjeperiodlist;
+	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> cjeperiodlist; //板块自己的成交记录
+//	private BanKuaiDbOperation bkdbopt;
 	
-	
-	
+
 	public String getSuoShuJiaoYiSuo ()
 	{
 		return this.suoshujiaoyisuo;
@@ -205,37 +216,35 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 
 		
 	}
-
-
 	/**
 	 * @return the selectedtime
 	 */
 	public String getSelectedToZdgzTime() {
-		SimpleDateFormat formatterhwy=new SimpleDateFormat("yy-MM-dd");
-		return formatterhwy.format(selectedToZdgzTime);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+		return selectedToZdgzTime.format(formatter);
 	}
 	/**
 	 * @param selectedtime the selectedtime to set
 	 */
-	public void setSelectedToZdgzTime(Date selectedtime) {
+	public void setSelectedToZdgzTime(LocalDate selectedtime) {
 		this.selectedToZdgzTime = selectedtime;
 	}
 	public void setSelectedToZdgzTime(String selectedtime2) 
 	{
-		SimpleDateFormat formatterhwy=new SimpleDateFormat("yy-MM-dd");
-		Date date = new Date() ;
-		try {
-			date = formatterhwy.parse(selectedtime2);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		SimpleDateFormat formatterhwy=new SimpleDateFormat("yy-MM-dd");
+//		Date date = new Date() ;
+//		try {
+//			date = formatterhwy.parse(selectedtime2);
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		this.selectedToZdgzTime = date;
+		this.selectedToZdgzTime = CommonUtility.formateStringToDate(selectedtime2);
 	}
 	public void setAddedToCylTreeTime (String addedtime2)
 	{
-		this.addedtocyltreetime	 = CommonUtility.formateDateYYMMDD(addedtime2);
+		this.addedtocyltreetime	 = CommonUtility.formateStringToDate(addedtime2);
 		
 	}
 
@@ -248,14 +257,6 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		return this.nodetype;
 	}
 	
-//	public void setSuoSuTdxBanKuai(String tdxbkcode) {
-//		this.suoshutdxbkzscode = tdxbkcode;
-//	}
-//	@Override
-//	public String getChanYeLianSuoSuTdxBanKuai() {
-//		// TODO Auto-generated method stub
-//		return this.suoshutdxbkzscode;
-//	}
 	@Override
 	public String getMyOwnName() {
 		// TODO Auto-generated method stub
@@ -307,10 +308,10 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		this.keHuCustom = keHuCustom;
 	}
 
-	public Date getGainiantishidate() {
+	public LocalDate getGainiantishidate() {
 		return gainiantishidate;
 	}
-	public void setGainiantishidate(Date gainiantishidate) {
+	public void setGainiantishidate(LocalDate gainiantishidate) {
 		this.gainiantishidate = gainiantishidate;
 	}
 	public String getGainiantishi() {
@@ -319,10 +320,10 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	public void setGainiantishi(String gainiantishi) {
 		this.gainiantishi = gainiantishi;
 	}
-	public Date getQuanshangpingjidate() {
+	public LocalDate getQuanshangpingjidate() {
 		return quanshangpingjidate;
 	}
-	public void setQuanshangpingjidate(Date quanshangpingjidate) {
+	public void setQuanshangpingjidate(LocalDate quanshangpingjidate) {
 		this.quanshangpingjidate = quanshangpingjidate;
 	}
 	public String getQuanshangpingji() {
@@ -331,10 +332,10 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	public void setQuanshangpingji(String quanshangpingji) {
 		this.quanshangpingji = quanshangpingji;
 	}
-	public Date getFumianxiaoxidate() {
+	public LocalDate getFumianxiaoxidate() {
 		return fumianxiaoxidate;
 	}
-	public void setFumianxiaoxidate(Date fumianxiaoxidate) {
+	public void setFumianxiaoxidate(LocalDate fumianxiaoxidate) {
 		this.fumianxiaoxidate = fumianxiaoxidate;
 	}
 	public String getFumianxiaoxi() {
@@ -355,172 +356,149 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	public void setFuxiangguan(String fuxiangguan) {
 		this.fuxiangguan = fuxiangguan;
 	}
+	
 
+ 	//和成交量相关的函数
+	/*
+	 * 
+	 */
 	public ArrayList<ChenJiaoZhanBiInGivenPeriod> getChenJiaoErZhanBiInGivenPeriod ()
 	{
 		return this.cjeperiodlist;
 	}
-	public void setChenJiaoErZhanBiInGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> cjlperiodlist1)
-	{
-		this.cjeperiodlist = cjlperiodlist1;
-	}
 	/*
-	 * 计算成交额变化百分比
+	 * 只能在头尾加，不允许在中间加 
 	 */
-	public Double getChenJiaoErGrowthRateForAGivenPeriod (int weeknumber)
+	public boolean addChenJiaoErZhanBiInGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> cjlperiodlist1,LocalDate position)
 	{
-		if(cjeperiodlist == null)
-			return null;
+		if(cjlperiodlist1.isEmpty())
+			return false;
 		
-		int index = -1;
-		boolean foundwk = false;
-		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : cjeperiodlist) {
-			index ++;
-			int wknum = CommonUtility.getWeekNumber( tmpcjzb.getDayofEndofWeek() );
-			if(wknum == weeknumber) {
-				foundwk = true;
-				break;
+		if(this.cjeperiodlist == null || this.cjeperiodlist.isEmpty() ) {
+			this.cjeperiodlist = cjlperiodlist1;
+			return true;
+		}
+		else {
+			ChenJiaoZhanBiInGivenPeriod firstrecord = this.cjeperiodlist.get(0);
+			LocalDate firstday = firstrecord.getRecordsDayofEndofWeek();
+			if(position.isBefore(firstday) || position.isEqual(firstday)) {
+				System.out.println("add before" + this.cjeperiodlist.size());
+				this.cjeperiodlist.addAll(0, cjlperiodlist1);
+				System.out.println("add after" + this.cjeperiodlist.size());
+				return true;
 			}
-		}
-		
-		if(foundwk) {
-			if( cjeperiodlist.size()>=2) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
-				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
-				Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
-				double cjegrowthrate = (curcje - lastcje)/lastcje;
-				return cjegrowthrate;
-			} else if(cjeperiodlist.size() == 1) { //只有一个记录，说明是新的板块
-				return 10000.0;
-			}	
-		}
-		
-		return 0.0;
-		
-	}
-	/*
-	 * 计算成交额变化贡献率
-	 */
-	public Double getChenJiaoErChangeGrowthRateForAGivenPeriod (int weeknumber)
-	{
-		if(cjeperiodlist == null)
-			return null;
-		
-		int index = -1;
-		boolean foundwk = false;
-		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : cjeperiodlist) {
-			index ++;
-			int wknum = CommonUtility.getWeekNumber( tmpcjzb.getDayofEndofWeek() );
-			if(wknum == weeknumber) {
-				foundwk = true;
-				break;
-			}
-		}
-		
-		if(foundwk) {
-			if( cjeperiodlist.size()>=2) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
-				
-				Double curupbkcje = curcjlrecord.getUpLevelChengJiaoEr ();
-				Double lastupbkcje = lastcjlrecord.getUpLevelChengJiaoEr ();
-				if(curupbkcje < lastupbkcje)
-					return -100.0;
-				
-				Double curggcje = curcjlrecord.getMyOwnChengJiaoEr();
-				Double lastggcje = lastcjlrecord.getMyOwnChengJiaoEr();
-				
-				Double bkcjechange = curupbkcje - lastupbkcje;
-				Double gegucjechange = curggcje - lastggcje;
-				
-				return gegucjechange/bkcjechange;
-			} else if(cjeperiodlist.size() == 1) { //只有一个记录，说明是新的板块
-				return 10000.0;
-			}	
-		}
-		
-		return 0.0;
-		
-	}
-	
-	/*
-	 * 计算给定周的成交额占比增速
-	 */
-	public Double getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (int weeknumber)
-	{
-//		ChenJiaoZhanBiInGivenPeriod foundedcje = null;
-		if(cjeperiodlist == null)
-			return null;
-		
-		int index = -1;
-		boolean foundwk = false;
-		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : cjeperiodlist) {
-			index ++;
-			int wknum = CommonUtility.getWeekNumber( tmpcjzb.getDayofEndofWeek() );
-			if(wknum == weeknumber) {
-				foundwk = true;
-				break;
-			}
-		}
-		
-		if(foundwk) {
-			if( cjeperiodlist.size()>=2) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
-				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
-				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
-				double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-				return zhanbigrowthrate;
-			} else if(cjeperiodlist.size() == 1) { //只有一个记录，说明是新的板块
-				return 10000.0;
-			}	
-		}
-		
-		return 0.0;
-		
-	}
-	/*
-	 * 计算给定周的成交额占比是多少周期内的最大占比
-	 */
-	public Integer getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (int weeknumber)
-	{
-//		ChenJiaoZhanBiInGivenPeriod foundedcje = null;
-		if(cjeperiodlist == null)
-			return null;
-		
-		int index = -1;
-		boolean foundwk = false;
-		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : cjeperiodlist) {
-			index ++;
-			int wknum = CommonUtility.getWeekNumber( tmpcjzb.getDayofEndofWeek() );
-			if(wknum == weeknumber) {
-				foundwk = true;
-				break;
-			}
-		}
-		
-		int maxweek = 0;
-		if(foundwk) {
 			
+			ChenJiaoZhanBiInGivenPeriod lastrecord = this.cjeperiodlist.get(this.cjeperiodlist.size()-1);
+			LocalDate lastday = lastrecord.getRecordsDayofEndofWeek();
+			if(position.isAfter(lastday) || position.isEqual(lastday)) {
+				this.cjeperiodlist.addAll(this.cjeperiodlist.size()-1, cjlperiodlist1);
+				return true;
+			}
+			
+		}
+		
+		return false;
+	}
+	/*
+	 * 
+	 */
+	public LocalDate getRecordsStartDate ()
+	{
+		ChenJiaoZhanBiInGivenPeriod tmprecords;
+		try {
+			tmprecords = this.cjeperiodlist.get(0);
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			return null;
+		}
+		
+		LocalDate startdate = tmprecords.getRecordsDayofEndofWeek();
+		LocalDate mondayday = startdate.with(DayOfWeek.MONDAY);
+		
+		return mondayday;
+	}
+	/*
+	 * 
+	 */
+	public LocalDate getRecordsEndDate ()
+	{
+		ChenJiaoZhanBiInGivenPeriod tmprecords;
+		try {
+			tmprecords = this.cjeperiodlist.get(this.cjeperiodlist.size()-1);
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			return null;
+		}
+		
+		LocalDate enddate = tmprecords.getRecordsDayofEndofWeek().with(DayOfWeek.SATURDAY);
+		return enddate;
+	}
+	/*
+	 * 在交易记录中找到对应周的位置
+	 */
+	protected Integer getRequiredRecordsPostion (LocalDate requireddate)
+	{
+		int year = requireddate.getYear();
+		WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
+		int weeknumber = requireddate.get(weekFields.weekOfWeekBasedYear());
+		
+		Integer index = -1;
+		Boolean found = false;
+		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : this.cjeperiodlist) {
+			index ++;
+			int yearnum = tmpcjzb.getRecordsYear();
+			int wknum = tmpcjzb.getRecordsWeek();
+			if(wknum == weeknumber && yearnum == year) {
+				found = true;
+				break;
+			}
+		}
+		if(!found)
+			return null;
+		else
+			return index;
+	}
+	/*
+	 * 获得指定周的记录
+	 */
+	public ChenJiaoZhanBiInGivenPeriod getSpecficChenJiaoErRecord (LocalDate requireddate)
+	{
+		if(cjeperiodlist == null)
+			return null;
+		
+		Integer index = this.getRequiredRecordsPostion (requireddate);
+		if( index != null) {
 			ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
-			Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
-			
-			for(int i = index -1;i>=0;i--) {
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(i );
-				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
-				if(curzhanbiratio > lastzhanbiratio)
-					maxweek ++;
-				else
-					break;
-			}
+			return curcjlrecord;
+		} else
+			return null;
+	}
+	/*
+	 * 计算指定周和上周的成交量差额，适合stock/bankuai，dapan有自己的计算方法
+	 */
+	public Double getChengJiaoErDifferenceOfLastWeek (LocalDate requireddate)
+	{
+		Integer index = this.getRequiredRecordsPostion (requireddate);
+		if( index != null) {
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = null;
+				try {
+					 lastcjlrecord = cjeperiodlist.get(index -1 );
+					 
+					 Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+					 Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
+					 
+					 return curcje - lastcje; 
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) { 		//新的板块或个股//只有一个记录，说明是新的板块
+//						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+						return null;
+				}
 		}
-		
-		return maxweek;
-		
+		return null;
 	}
 	
-    
 }
 
 
