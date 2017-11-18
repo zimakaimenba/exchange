@@ -2930,7 +2930,7 @@ public class BanKuaiDbOperation
 					+ "'" + title + "'" + ","
 					+ "'" + keywords + "'" + ","
 					+ "'" + slackurl  + "'" + ","
-					+ formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYMMDD(newdate) ) + ","
+					+ "'" +  newdate + "'" + ","
 					+ "'" +  bankuaiid + "|" + "'"
 					+ ")"
 					;
@@ -3052,7 +3052,7 @@ public class BanKuaiDbOperation
 	{
 		ArrayList<ChanYeLianNews> newslist = new ArrayList<ChanYeLianNews>();
 		if("ALL".equals(bankuaiid.toUpperCase()) ) {
-			String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 7 DAY ORDER BY  录入日期 DESC"
+			String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 40 DAY ORDER BY  录入日期 DESC"
 									;
 			CachedRowSetImpl rs = null; 
 		    try {  
@@ -3062,14 +3062,14 @@ public class BanKuaiDbOperation
 		    	 while(rs.next()) {
 		    		 ChanYeLianNews cylnew = new ChanYeLianNews ();
 		    		 int newsid = rs.getInt("id");
-		    		 Date selectednew = rs.getDate("录入日期");
+		    		 java.util.Date selectednew = rs.getDate("录入日期");
 		    		 String newtitle = rs.getString("新闻标题");
 		    		 String keywords = rs.getString("关键词");
 		    		 String slack = rs.getString("SLACK链接");
 		    		 String relatedbk = rs.getString("关联板块");
 
 		    		 cylnew.setNewsId(newsid);
-		    		 cylnew.setGenerateDate (selectednew.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+		    		 cylnew.setGenerateDate (Instant.ofEpochMilli(selectednew.getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
 		    		 cylnew.setNewsTitle(newtitle);
 		    		 cylnew.setNewsSlackUrl(slack);
 		    		 cylnew.setKeyWords (keywords);
@@ -3097,7 +3097,7 @@ public class BanKuaiDbOperation
 			return newslist;
 		}
 		
-		//个股新闻part
+		//单个板块/个股新闻
 		String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 关联板块 like '%" + bankuaiid.trim()+"|"  + "%' ORDER BY  录入日期 DESC";
 		CachedRowSetImpl rs = null;
 		try {
@@ -3111,7 +3111,7 @@ public class BanKuaiDbOperation
 		    	 String slack = rs.getString("SLACK链接");
 		    		 
 		    	 cylnew.setNewsId(newsid);
-		    	 cylnew.setGenerateDate ( LocalDate.from(Instant.ofEpochMilli(selectednew.getTime())) );
+		    	 cylnew.setGenerateDate ( Instant.ofEpochMilli(selectednew.getTime()).atZone(ZoneId.systemDefault()).toLocalDate() );
 		    	 cylnew.setNewsTitle(newtitle);
 		    	 cylnew.setNewsSlackUrl(slack);
 		    	 cylnew.setKeyWords (keywords);

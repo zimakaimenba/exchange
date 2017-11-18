@@ -2,6 +2,8 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import javax.swing.JPanel;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import javax.swing.GroupLayout;
@@ -116,14 +118,19 @@ public class ChanYeLianNews extends JPanel implements Cloneable{
 	/**
 	 * @return the generatedate
 	 */
-	public Date getGenerateDate() {
-		return dateChooser.getDate();
+	public LocalDate getGenerateDate() {
+		try {
+			return dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	/**
 	 * @param generatedate the generatedate to set
 	 */
-	public void setGenerateDate(Date generatedate) {
-		dateChooser.setDate(generatedate);
+	public void setGenerateDate(LocalDate generatedate) {
+		dateChooser.setDate(Date.from(generatedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 	}
 	/**
 	 * @return the newstitle

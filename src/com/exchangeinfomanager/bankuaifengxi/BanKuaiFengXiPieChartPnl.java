@@ -147,6 +147,9 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
     {
     	piechartdataset = new DefaultPieDataset();
     	
+    	if(tmpallbkge == null || tmpallbkge.isEmpty())
+    		return;
+    	
     	for (Entry<String, Stock> entry : tmpallbkge.entrySet()) {
 			String ggcode = entry.getKey();
 			Stock tmpstock = entry.getValue();

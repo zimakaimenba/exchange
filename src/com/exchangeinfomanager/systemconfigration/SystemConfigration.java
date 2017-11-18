@@ -295,27 +295,34 @@ public class SystemConfigration
 	 {
 		 return this.bkparsestoredpath;
 	 }
+	 /*
+	  * 
+	  */
+	 public String getTdxZdgzReportFile ()
+	 {
+		return this.getSystemInstalledPath() + "TDX重点关注历史报告.txt";
+	 }
 		/**
 		 * @return the tdxbbfilenamegainiantishi
 		 */
 		public String getTdxBbFileGaiNianTiShi() {
-			return this.getSystemInstalledPath() + "TDX概念提示.txt";
+			return this.getSystemInstalledPath() + "TDX概念提示报告.txt";
 		}
 		/**
 		 * @return the tdxbbfilenamefumianxiaoxi
 		 */
 		public String getTdxBbfileFuMianXiaoXi() {
-			return this.getSystemInstalledPath()  + "TDX负面消息.txt";
+			return this.getSystemInstalledPath()  + "TDX负面消息报告.txt";
 		}
 		/**
 		 * @return the tdxbbfilenamezfxgkhzd
 		 */
 		public String getTdxBbFileZzfxgkhzd() {
-			return this.getSystemInstalledPath() + "TDX正负相关客户竞对.txt";
+			return this.getSystemInstalledPath() + "TDX正负相关客户竞对报告.txt";
 		}
 		public String getTDXChanYeLianReportFile() 
 		{
-			return this.getSystemInstalledPath() + "TDX个股产业链报告.txt";
+			return this.getSystemInstalledPath() + "TDX个股产业链报告报告.txt";
 		}
 		
 	 public String getSysSettingFile () 

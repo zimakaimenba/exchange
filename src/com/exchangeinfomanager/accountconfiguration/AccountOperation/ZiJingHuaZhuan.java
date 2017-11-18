@@ -7,6 +7,8 @@ import net.miginfocom.swing.MigLayout;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -157,13 +159,13 @@ public class ZiJingHuaZhuan extends JPanel {
 		zhuanruchu = Boolean.parseBoolean( gjcbuysellmaps.get(actionacnt) );
 
 	}
-	public void setActionDate (Date actiondate)
+	public void setActionDate (LocalDateTime actiondate)
 	{
-		dateChooser.setDate(actiondate);
+		dateChooser.setDate(Date.from(actiondate.atZone(ZoneId.systemDefault()).toInstant()));
 	}
-	public Date getActionDate ()
+	public LocalDateTime getActionDate ()
 	{
-		return dateChooser.getDate();
+		return LocalDateTime.ofInstant(dateChooser.getDate().toInstant(), ZoneId.systemDefault());
 	}
 
 	private void quanShangZiJingGuanJianCi (AccountInfoBasic actionzhanghu)

@@ -187,56 +187,6 @@ public class Stock extends BkChanYeLianTreeNode {
 	}
 
 	/*
-	 * 计算板块本周和上周成交额增长率百分比
-	 */
-//	public Double getChenJiaoErGrowthRateForAGivenPeriod (LocalDate requireddate)
-//	{
-//		if(cjeperiodlist == null)
-//			return null;
-//		
-//		Integer index = this.getRequiredRecordsPostion (this.cjeperiodlist,requireddate);
-//		if( index != null) {
-//			ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index); //自己当前周成交量
-//			Double curupbkcje = curcjlrecord.getUpLevelChengJiaoEr ();
-//			LocalDate curweeknum = curcjlrecord.getRecordsDayofEndofWeek();
-//			
-//			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
-//			LocalDate tplastdate = curweeknum.minus(1,ChronoUnit.WEEKS);
-//			ChenJiaoZhanBiInGivenPeriod myuplevelrecord = myupbankuai.getSpecficChenJiaoErRecord(tplastdate); //从上级板块中找出上周的成交量
-//			Double tingpailastupbkcje;
-//			if(myuplevelrecord != null) {
-//				tingpailastupbkcje = myuplevelrecord.getMyOwnChengJiaoEr(); //板块或大盘上周的成交量，而不是停牌那周的成交量
-//			} else
-//				return -100.0;
-//			
-//			if(curupbkcje < tingpailastupbkcje) //大盘缩量，
-//				return -100.0;
-//			
-//			ChenJiaoZhanBiInGivenPeriod lastcjlrecord = null;
-//			try {
-//				 lastcjlrecord = cjeperiodlist.get(index -1 );
-//			} catch ( java.lang.ArrayIndexOutOfBoundsException e) {
-//				return 10000.0;
-//			}
-//
-//			LocalDate lastweeknum = lastcjlrecord.getRecordsDayofEndofWeek() ;
-//			long dayss = Math.abs(java.time.temporal.ChronoUnit.DAYS.between (curweeknum,lastweeknum));
-//			if(dayss > 7) { //说明是停牌的复牌  
-//				return 10000.0;
-//			} else { //上周没有停牌
-//				Double curggcje = curcjlrecord.getMyOwnChengJiaoEr();
-//				Double lastggcje = lastcjlrecord.getMyOwnChengJiaoEr();
-//				
-//				double cjegrowthrate = (curggcje - lastggcje)/lastggcje;
-//				return cjegrowthrate;
-//			}
-//
-//		}
-//		
-//		return 0.0;
-//		
-//	}
-	/*
 	 * 判断本周是停牌后复牌
 	 */
 	protected Boolean checkIsFuPaiAfterTingPai (LocalDate requireddate )
@@ -248,18 +198,23 @@ public class Stock extends BkChanYeLianTreeNode {
 			LocalDate curweeknum = curcjlrecord.getRecordsDayofEndofWeek();
 			LocalDate lastweeknum = lastcjlrecord.getRecordsDayofEndofWeek();
 			
-			long diffwknum = ChronoUnit.WEEKS.between (curweeknum,lastweeknum);
+			long diffwknum = Math.abs(ChronoUnit.WEEKS.between (curweeknum,lastweeknum));
+			
+			if(diffwknum == 1) //差一周，正常交易
+				return false;
+			
 			int alldapanxiushi = 0;
 			for(int i=1;i<diffwknum;i++) {
 				LocalDate dapanlastweekdate = curweeknum.with(DayOfWeek.MONDAY).minus(i,ChronoUnit.WEEKS);
 				if( this.myupbankuai.isThisWeekDaPanXiuShi(dapanlastweekdate) )
 					alldapanxiushi ++;
 			}
-			if(alldapanxiushi == diffwknum)
-				return true;
-			else 
+			if(alldapanxiushi == diffwknum-1)
 				return false;
+			else 
+				return true;
 			
+			 
 //			if(diffwknum > 2 ) { //说明是停牌的复牌  ，大盘休市不可能超过1周
 //				return true;	
 //			} else if(diffwknum == 2) { //可能是大盘休市造成的，
@@ -283,27 +238,35 @@ public class Stock extends BkChanYeLianTreeNode {
 	{
 		if(cjeperiodlist == null)
 			return null;
-		
+//		if(super.getMyOwnCode().equals("601989"))
+//			System.out.println("中国重工到了！");
 		Integer index = super.getRequiredRecordsPostion (requireddate);
 		if( index != null) {
 				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "可能是一个新个股或板块");
 						return 100.0;
 				}
-			
-				if(this.checkIsFuPaiAfterTingPai (requireddate)) { //说明是停牌的复牌
-					return 100.0;
-				} else {
-					ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
-					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
-						
-					Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
-					Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
-					double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-					return zhanbigrowthrate;
+				
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
+				LocalDate curweeknum = curcjlrecord.getRecordsDayofEndofWeek();
+				LocalDate lastweeknum = lastcjlrecord.getRecordsDayofEndofWeek();
+				
+				long diffwknum = Math.abs(ChronoUnit.WEEKS.between (curweeknum,lastweeknum));
+				if(diffwknum >1) {
+					if(this.checkIsFuPaiAfterTingPai (requireddate)) { //说明是停牌的复牌
+						return 100.0;
+					} 
 				}
+				
+				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
+				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
+//				System.out.println(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为" + zhanbigrowthrate.toString());
+				return zhanbigrowthrate;
 		}
 		
+		System.out.println(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为null");
 		return null;
 	}
 	/*
@@ -318,7 +281,7 @@ public class Stock extends BkChanYeLianTreeNode {
 		Integer index = super.getRequiredRecordsPostion (requireddate);
 		if( index != null) {
 			if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-				System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//				System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 				return 0;
 			}
 			

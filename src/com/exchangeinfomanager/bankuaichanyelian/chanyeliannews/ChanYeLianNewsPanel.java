@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,6 +61,10 @@ public class ChanYeLianNewsPanel extends JPanel {
 
 		curnewlist = bkopt.getBanKuaiRelatedNews (this.myowncode);
 		((NewsTableModel)tableCurCylNews.getModel()).refresh(curnewlist);
+	}
+	public ChanYeLianNews getInputedNews ()
+	{
+		return this.panelNewNews;
 	}
 
 	private void createEvents() 
@@ -428,7 +433,7 @@ class NewsTableModel extends AbstractTableModel
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = Date.class;
+			          clazz = LocalDate.class;
 			          break;
 		      }
 		      

@@ -438,7 +438,7 @@ public class StockInfoManager
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				LocalDate startday = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				LocalDate requirestart = startday.with(DayOfWeek.MONDAY).plus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+				LocalDate requirestart = startday.with(DayOfWeek.MONDAY).plus(sysconfig.banKuaiFengXiMonthRange()-4,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 				dateChsBanKuaiZhanbi.setDate(Date.from(requirestart.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
 
 				panelZhanBi.resetDate();
@@ -452,7 +452,7 @@ public class StockInfoManager
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				LocalDate startday = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				LocalDate requirestart = startday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+				LocalDate requirestart = startday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange()-4,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 				dateChsBanKuaiZhanbi.setDate(Date.from(requirestart.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
 				
 		    	panelZhanBi.resetDate();

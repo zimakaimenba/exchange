@@ -235,6 +235,10 @@ public class BanKuaiAndChanYeLian extends JPanel
 		LocalDate bkstartday = bankuai.getRecordsStartDate();
 		LocalDate bkendday = bankuai.getRecordsEndDate();
 		
+		if(bkstartday == null || bkendday == null) {
+			bkendday = dchgeguwkzhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+			bkstartday = bkendday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		}
 		//同步板块的个股
 		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday);
 		HashMap<String, Stock> allbkgg = bankuai.getAllBanKuaiGeGu();
@@ -1384,21 +1388,22 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 	protected void addChanYeLianNews() 
 	{
+		String selectnodecode = null;
 		try {
 			TreePath closestPath = treechanyelian.getSelectionPath();
 			BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-			String selectnodecode = selectednode.getMyOwnCode();
-			ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (selectnodecode);
-			int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加产业链新闻", JOptionPane.OK_CANCEL_OPTION);
-			System.out.print(exchangeresult);
-			if(exchangeresult == JOptionPane.CANCEL_OPTION)
-				return;
+			 selectnodecode = selectednode.getMyOwnCode();
 		} catch (java.lang.NullPointerException ex) {
 			JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
 		}
 		
+		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (selectnodecode);
+		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加产业链新闻", JOptionPane.OK_CANCEL_OPTION);
+		System.out.print(exchangeresult);
+		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+			return;
 		
-		
+		bkdbopt.addBanKuaiNews(selectnodecode, cylnews.getInputedNews());
 	}
 
 	private void deleteDaLeiGuPiaoChi () 
@@ -2540,7 +2545,6 @@ class BanKuaiSubChanYeLianTableModel extends DefaultTableModel
 	
 	BanKuaiSubChanYeLianTableModel ()
 	{
-		
 	}
 
 	public void addRow(String newsubcylcode, String newsubbk)

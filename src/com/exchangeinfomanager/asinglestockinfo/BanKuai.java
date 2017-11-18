@@ -42,9 +42,12 @@ public class BanKuai extends BkChanYeLianTreeNode
 		return allbkge;
 	}
 	/*
-	 * 只返回制定日期当周有成交量的个股
+	 * 只返回制定日期当周有成交量的个股,有成交量才说明可能是该板块的个股
 	 */
 	public HashMap<String, Stock> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate) {
+		if(this.allbkge == null || this.allbkge.isEmpty())
+			return null;
+		
 		LocalDate bkstart = this.getRecordsStartDate();
 		LocalDate bkend = this.getRecordsEndDate();
 		if(requireddate.isBefore(bkstart) || requireddate.isAfter(bkend) ) //当前没有该日期的记录
@@ -199,8 +202,8 @@ public class BanKuai extends BkChanYeLianTreeNode
 			Integer index = super.getRequiredRecordsPostion (requireddate);
 			if( index != null) {
 					if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-						if(index != 0)
-							System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+						
+//							System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 						return 100.0;
 					}
 				
@@ -210,9 +213,11 @@ public class BanKuai extends BkChanYeLianTreeNode
 					Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
 					Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
 					double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
+//					System.out.println(super.getMyOwnCode() + super.getMyOwnName() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
 					return zhanbigrowthrate;
 			}
 			
+			System.out.println(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为null");
 			return null;
 		}
 		/*
@@ -228,7 +233,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 			if( index != null) {
 				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
 					if(index != 0)
-						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 					return 0;
 				}
 

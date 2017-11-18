@@ -9,9 +9,16 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -20,9 +27,12 @@ import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.database.ConnectDataBase;
+import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.TreeMultimap;
 import com.google.common.io.Files;
 
 public class TDXFormatedOpt {
@@ -49,7 +59,7 @@ public class TDXFormatedOpt {
 		return TDXFormatedOpt.formateStockCodeForTDX(stockcode) + "  |  " + geguchanyelian +  " | " + "1.000" + System.getProperty("line.separator");
 	}
 	/*
-	 * 
+	 *生成重点关注的通达信代码 
 	 */
 	public static boolean parseZdgzBkToTDXCode(HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap)
 	{
@@ -194,8 +204,101 @@ public class TDXFormatedOpt {
 		
 		return cylreport.getParent();
 	}
+	/*
+	 * 重点关注记录信息
+	 */
+	public static String stockZdgzReports ()
+	{
+		ConnectDataBase connectdb = ConnectDataBase.getInstance();
+		SystemConfigration sysconfig = SystemConfigration.getInstance();
+		
+		 File filezdgz = new File( sysconfig.getTdxZdgzReportFile() );
+		 try {
+				if (filezdgz.exists()) {
+					filezdgz.delete();
+					filezdgz.createNewFile();
+				} else
+					filezdgz.createNewFile();
+		} catch (Exception e) {
+				return null;
+		}
+		 
+		String sqlquerystat = "SELECT * FROM 操作记录重点关注 WHERE 日期 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) +50 ) DAY )  ";
+//			System.out.println(sqlquerystat);
+		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+		if(rs == null)
+		{   
+				System.out.println("读取数据库失败");
+				return null;
+		}
+		
+		ArrayListMultimap<String ,JiaRuJiHua> treemap = ArrayListMultimap.create();
+		try {
+			while(rs.next()) {
+				String formatedstockcode = rs.getString("股票代码");
+				String zdgztype = rs.getString("加入移出标志");
+				java.util.Date date = rs.getDate("日期");
+				String addreason = rs.getString("原因描述");
+				
+				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatedstockcode,zdgztype);
+				jiarujihua.setJiaRuDate(Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
+				jiarujihua.setiHuaShuoMing (addreason);
+				
+				treemap.put(formatedstockcode, jiarujihua);
+			}
+				
+		} catch (SQLException e) {
+				e.printStackTrace();
+		}  finally {
+			    	if(rs != null)
+						try {
+							rs.close();
+							rs = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+		}
+		
+		//遍历treemap
+		Set<String> stockcodeset = treemap.keySet();
+		for(String stockcode : stockcodeset) {
+			if(stockcode.equals("002717"))
+				System.out.println("002717");
+			List<JiaRuJiHua> keyvalues = treemap.get(stockcode);
+			Collections.sort(keyvalues, new Comparator<JiaRuJiHua>() { //先排序
+				@Override
+				public int compare(JiaRuJiHua o1, JiaRuJiHua o2) {
+					if (o1.getJiaRuDate() == null || o2.getJiaRuDate() == null)
+				        return 0;
+					return o2.getJiaRuDate().compareTo(o1.getJiaRuDate());
+				}
+			});
+			
+			String result = "";
+//			LocalDate latestdate = keyvalues.get(0).getJiaRuDate();
+			for(JiaRuJiHua sigle : keyvalues) {
+				LocalDate curdate = sigle.getJiaRuDate();
+				String curtype = sigle.getGuanZhuType();
+				String jrreason = sigle.getJiHuaShuoMing ();
+				
+				result = result + curdate + curtype +  jrreason;
+			}
+			
+			if(!Strings.isNullOrEmpty(result)  ) {
+				String lineformatedgainiantx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(stockcode, result );
+				try {
+					Files.append(lineformatedgainiantx,filezdgz, charset);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+			
+		return filezdgz.getAbsolutePath();
+	}
 /*
- * 
+ * 所有个股的基本信息
  */
 	public static String stockJiBenMianToReports ()
 	{
@@ -235,7 +338,7 @@ public class TDXFormatedOpt {
 		}
 		
 		String sqlquerystat = "SELECT * FROM A股 ";
-		System.out.println(sqlquerystat);
+//		System.out.println(sqlquerystat);
 		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		if(rs == null)
 		{   
@@ -308,9 +411,17 @@ public class TDXFormatedOpt {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}  finally {
+		    	if(rs != null)
+					try {
+						rs.close();
+						rs = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 		}
 		
+		stockZdgzReports ();
 		return filegnts.getAbsolutePath();
-		
 	}
 }

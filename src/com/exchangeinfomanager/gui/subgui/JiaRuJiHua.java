@@ -8,6 +8,9 @@ import javax.swing.JCheckBox;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+
+import java.time.LocalDate;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -22,16 +25,15 @@ public class JiaRuJiHua extends JPanel
 		this.guanzhutype = guanzhutype;
 		initializeGui ();
 		createEvents ();
-		
-
 	}
 	
 	private String stockcode;
 	private JTextField tfdJihuaJiage;
 	private JTextField tfdShuoming;
-	private JComboBox cbxJihuaLeixing;
+	private JComboBox<?> cbxJihuaLeixing;
 	private JCheckBox jbxMingRiJIhua;
 	private String guanzhutype;
+	private LocalDate jrdate;
 	
 	public String getGuanZhuType ()
 	{
@@ -62,6 +64,18 @@ public class JiaRuJiHua extends JPanel
 	public String getJiHuaShuoMing ()
 	{
 		return  tfdShuoming.getText();
+	}
+	public void setiHuaShuoMing (String shuoming)
+	{
+		this.tfdShuoming.setText(shuoming); 
+	}
+	public void setJiaRuDate (LocalDate date)
+	{
+		this.jrdate = date;
+	}
+	public LocalDate getJiaRuDate ()
+	{
+		return this.jrdate;
 	}
 	
 	
@@ -143,9 +157,5 @@ public class JiaRuJiHua extends JPanel
 					.addGap(16))
 		);
 		setLayout(groupLayout);
-
-		
 	}
-	
-	
 }

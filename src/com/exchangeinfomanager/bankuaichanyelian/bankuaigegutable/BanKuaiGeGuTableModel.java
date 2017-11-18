@@ -22,7 +22,7 @@ import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuTableModel extends DefaultTableModel 
 {
-	String[] jtableTitleStrings = { "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
+	String[] jtableTitleStrings = { "代码", "名称","权重","占比增长率","MAX","成交额贡献"};
 	BanKuai curbk;
 	private ArrayList<Entry<String, Stock>> entryList;
 	LocalDate showwknum;
@@ -74,15 +74,15 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			return ;
 		}
     	
-    	Collections.sort(entryList, new Comparator<Map.Entry<String, Stock>>() {
-            @Override
-            public int compare(Map.Entry<String, Stock> integerEmployeeEntry,
-                               Map.Entry<String, Stock> integerEmployeeEntry2) {
-                return integerEmployeeEntry.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum)
-                        .compareTo(integerEmployeeEntry2.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum));
-            }
-            }
-        );
+//    	Collections.sort(entryList, new Comparator<Map.Entry<String, Stock>>() {
+//            @Override
+//            public int compare(Map.Entry<String, Stock> integerEmployeeEntry,
+//                               Map.Entry<String, Stock> integerEmployeeEntry2) {
+//                return integerEmployeeEntry.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum)
+//                        .compareTo(integerEmployeeEntry2.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum));
+//            }
+//            }
+//        );
     	this.fireTableDataChanged();
 	}
 
@@ -141,12 +141,12 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	} catch (java.lang.NullPointerException e) {
             		value = 0;
             	}
-            	
             	break;
             case 3: //{ "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
             	Double zhanbigrowthrate = curdisplaystock.getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum);
-    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-            	value = percentFormat.format(zhanbigrowthrate);
+//    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
+//            	value = percentFormat.format(zhanbigrowthrate);
+            	value = zhanbigrowthrate;
             	break;
             case 4: //{ "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
             	int maxweek = curdisplaystock.getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showwknum);
@@ -154,8 +154,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	break;
             case 5: //{ "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
             	Double cjechangegrowthrate = curdisplaystock.getChenJiaoErChangeGrowthRateForAGivenPeriod (showwknum);
-    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
-            	value = percentFormat2.format(cjechangegrowthrate);
+//    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
+//            	value = percentFormat2.format(cjechangegrowthrate);
+            	value = cjechangegrowthrate;
             	break;	
 	    	}
 
@@ -183,8 +184,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	  /*
 	   * (non-Javadoc)
 	   * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+	   * //for sorting http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 	   */
-      public Class<?> getColumnClass(int columnIndex) {
+      public Class<?> getColumnClass(int columnIndex) { //{ "代码", "名称","权重","占比增长率","MAX","成交额贡献"};
 		      Class clazz = String.class;
 		      switch (columnIndex) {
 		      case 0:
@@ -194,16 +196,16 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = Integer.class;
+			          clazz = String.class;
 			          break;
 		        case 3:
-			          clazz = String.class;
+			          clazz = Double.class;
 			          break;
 		        case 4:
 			          clazz = Integer.class;
 			          break;
 		        case 5:
-			          clazz = String.class;
+			          clazz = Double.class;
 			          break;
 		      }
 		      
@@ -232,7 +234,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    } 
 	    public Stock getStock (int row)
 	    {
-	    	String stockcode = this.getStockCode(row);
+//	    	String stockcode = this.getStockCode(row);
 	    	return this.entryList.get(entryList.size()-1-row).getValue();
 	    }
 	    public void deleteAllRows ()
@@ -281,9 +283,6 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		{
 			return curbk.getParseFileStockSet();
 		}
-
-	    
-	    
 
 }
 

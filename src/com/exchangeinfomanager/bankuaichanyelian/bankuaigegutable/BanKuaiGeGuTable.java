@@ -12,18 +12,24 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
@@ -42,6 +48,16 @@ public class BanKuaiGeGuTable extends JTable
 		super ();
 		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel();
 		this.setModel(bkgegumapmdl);
+		
+		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
+		this.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		 
+		int columnIndexToSort = 3; //优先排序占比增长
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockmanager = stockmanager1;
@@ -139,16 +155,24 @@ public class BanKuaiGeGuTable extends JTable
 		        Component comp = super.prepareRenderer(renderer, row, col);
 		        BanKuaiGeGuTableModel tablemodel = (BanKuaiGeGuTableModel)this.getModel(); 
 		        HashSet<String> stockinparsefile = tablemodel.getStockInParseFile();
-		        Object value = tablemodel.getValueAt(row, col);
 		        
 		        if(stockinparsefile == null)
 		        	return comp;
+		        
+		        if (comp instanceof JLabel && (col == 3 ||  col == 5)) {
+		        	
+	    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
+	            	String value =  ((JLabel)comp).getText();
+	            	String valuepect = percentFormat.format ( Double.parseDouble(value) );
+	            	System.out.println( valuepect );
+	            	((JLabel)comp).setText(valuepect);
+		        }
 		        
 		        if (!isRowSelected(row)) {
 		        	comp.setBackground(getBackground());
 		        	comp.setForeground(getForeground());
 		        	int modelRow = convertRowIndexToModel(row);
-		        	String stockcode = (String)getModel().getValueAt(modelRow, 0);
+		        	String stockcode = (String)tablemodel.getValueAt(modelRow, 0);
 					if(stockinparsefile.contains(stockcode)) {
 						comp.setForeground(Color.BLUE);
 					}
@@ -159,22 +183,22 @@ public class BanKuaiGeGuTable extends JTable
 			    
 
 	
-	public String getToolTipText(MouseEvent e) 
-	{
-        String tip = null;
-        java.awt.Point p = e.getPoint();
-        int rowIndex = rowAtPoint(p);
-        int colIndex = columnAtPoint(p);
-
-        try {
-            tip = getValueAt(rowIndex, colIndex).toString();
-        } catch (java.lang.NullPointerException e2) {
-        	tip = "";
-        } catch (RuntimeException e1) {
-        	e1.printStackTrace();
-        }
-        return tip;
-    } 
+//	public String getToolTipText(MouseEvent e) 
+//	{
+//        String tip = null;
+//        java.awt.Point p = e.getPoint();
+//        int rowIndex = rowAtPoint(p);
+//        int colIndex = columnAtPoint(p);
+//
+//        try {
+//            tip = getValueAt(rowIndex, colIndex).toString();
+//        } catch (java.lang.NullPointerException e2) {
+//        	tip = "";
+//        } catch (RuntimeException e1) {
+//        	e1.printStackTrace();
+//        }
+//        return tip;
+//    } 
 
 	protected void addGeGuNews() 
 	{
@@ -190,6 +214,8 @@ public class BanKuaiGeGuTable extends JTable
 		System.out.print(exchangeresult);
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 			return;
+		
+		
 	}
 	
 	/*

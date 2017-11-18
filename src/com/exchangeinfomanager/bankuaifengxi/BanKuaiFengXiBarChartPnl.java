@@ -285,6 +285,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
         plot.setRenderer(renderer); 
         plot.setDomainAxis(new CategoryAxis("")); 
         plot.setRangeAxis(new NumberAxis(""));
+        plot.setRangePannable(true);
+//        plot.setDomainPannable(true);
         ((CustomRenderer) plot.getRenderer()).setBarPainter(new StandardBarPainter());
         CategoryAxis axis = plot.getDomainAxis();
         axis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
@@ -341,6 +343,9 @@ class CustomToolTipGeneratorForZhanBi implements CategoryToolTipGenerator  {
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	
     	Double curzhanbidata = (Double)dataset.getValue(row, column);  //占比
+    	if(curzhanbidata == null) //有些停牌或者还没有加入该板块，该周没有数据会为NULL
+    		return "";
+    	
     	Double zhanbigrowthrate = null;
     	if(node.getType() == 4 ) { //板块
     		zhanbigrowthrate = ((BanKuai)this.node).getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (selecteddate); //占比增长率
@@ -356,9 +361,23 @@ class CustomToolTipGeneratorForZhanBi implements CategoryToolTipGenerator  {
     	}
     	    	
         DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-        return selected.toString() + "占比" + decimalformate.format(curzhanbidata) + "占比变化(" + decimalformate.format(zhanbigrowthrate) + ")" + "MaxWeek=" + maxweek.toString();
-        
-
+        String tooltip = selected.toString();
+        try {
+        	tooltip = tooltip + "占比" + decimalformate.format(curzhanbidata);
+        } catch (java.lang.IllegalArgumentException e ) {
+//        	e.printStackTrace();
+        	System.out.println(curzhanbidata);
+        	tooltip = tooltip + "占比" + "NULL";
+        }
+        try {
+        	tooltip = tooltip + "占比变化(" + decimalformate.format(zhanbigrowthrate);
+        } catch (java.lang.IllegalArgumentException e ) {
+//        	e.printStackTrace();
+        	System.out.println(zhanbigrowthrate);
+        	tooltip = tooltip + "占比变化(" + "NULL";
+        }
+        tooltip = tooltip +  ")" + "MaxWeek=" + maxweek.toString();
+        return tooltip;
     }
     
     public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
