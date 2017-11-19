@@ -162,9 +162,10 @@ public class BanKuaiGeGuTable extends JTable
 		        if (comp instanceof JLabel && (col == 3 ||  col == 5)) {
 		        	
 	    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
+	    	    	percentFormat.setMinimumFractionDigits(1);
 	            	String value =  ((JLabel)comp).getText();
 	            	String valuepect = percentFormat.format ( Double.parseDouble(value) );
-	            	System.out.println( valuepect );
+//	            	System.out.println( valuepect );
 	            	((JLabel)comp).setText(valuepect);
 		        }
 		        

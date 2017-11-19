@@ -1298,6 +1298,7 @@ class BanKuaiFengXiZhanBiPaiMingTableModel extends AbstractTableModel
             case 2:
             	Double zhanbigrowthrate = thisbk.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
     	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
+    	    	percentFormat.setMinimumFractionDigits(1);
             	value = percentFormat.format(zhanbigrowthrate);
             	break;
             case 3:
@@ -1307,6 +1308,7 @@ class BanKuaiFengXiZhanBiPaiMingTableModel extends AbstractTableModel
             case 4:
             	Double cjegrowthrate = thisbk.getValue().getChenJiaoErChangeGrowthRateForAGivenPeriod (showzhbiwknum);
     	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
+    	    	percentFormat2.setMinimumFractionDigits(1);
             	value = percentFormat2.format(cjegrowthrate);
 	    	}
 

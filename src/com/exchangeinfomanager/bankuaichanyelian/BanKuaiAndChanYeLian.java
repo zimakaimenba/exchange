@@ -212,8 +212,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 		if(!bkcode.equals("399001") && !bkcode.equals("999999") ) { //2个大盘指数
 			sysncDaPanChenJiaoEr (requiredrecordsday);
 			//给板块配大盘指数
-			BanKuai shdpbankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode("999999");
-			BanKuai szdpbankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode("399001");
+//			BanKuai shdpbankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode("999999");
+//			BanKuai szdpbankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode("399001");
 			
 //			//同步板块的个股
 //			bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,requirestart,requireend);
