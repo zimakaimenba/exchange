@@ -56,6 +56,8 @@ import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -106,12 +108,6 @@ import java.awt.SystemColor;
 
 public class BanKuaiFengXi extends JDialog {
 
-	
-
-	private StockInfoManager stockmanager;
-
-
-
 	/**
 	 * Create the dialog.
 	 */
@@ -123,18 +119,19 @@ public class BanKuaiFengXi extends JDialog {
 //		this.bkcyltree = bkcyl.getBkChanYeLianTree();
 //		if(parsedfilename2 != null)
 //			this.tfldparsedfile.setText(parsedfilename2);
-		this.bkdbopt = new BanKuaiDbOperation ();
+//		this.bkdbopt = new BanKuaiDbOperation ();
 		this.sysconfig = SystemConfigration.getInstance();
 
 		createEvents ();
 	}
 	
 //	private BkChanYeLianTree bkcyltree;
-	private BanKuaiDbOperation bkdbopt;
+//	private BanKuaiDbOperation bkdbopt;
 //	private HashMap<String, BanKuai> allbkandzs;
 	private LocalDate lastselecteddate;
 	private BanKuaiAndChanYeLian bkcyl;
 	private SystemConfigration sysconfig;
+	private StockInfoManager stockmanager;
 	
 	/*
 	 * 所有板块占比增长率的排名
@@ -150,14 +147,15 @@ public class BanKuaiFengXi extends JDialog {
 		for(int i=0;i< bankuaicount; i++) {
 			BanKuai childnode = (BanKuai)this.bkcyl.getBkChanYeLianTree().getModel().getChild(treeroot, i);
 			String bkcode = childnode.getMyOwnCode();
-			childnode = this.bkcyl.getBanKuai(childnode.getMyOwnCode(), curselectdate); 
+
+			childnode = this.bkcyl.getBanKuai(childnode, curselectdate); 
     		if(childnode.getChenJiaoErZhanBiInGivenPeriod() != null 
     				&& !childnode.getChenJiaoErZhanBiInGivenPeriod().isEmpty()  //有些指数是没有个股和成交量的，不列入比较范围
     				&& childnode.getSpecficChenJiaoErRecord(curselectdate) != null) //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
     			bkhascjl.put(bkcode, childnode);
 		}
 
-    	((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).refresh(bkhascjl,curselectdate);
+    	((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(bkhascjl,curselectdate);
 	}
 	/*
 	 * 显示板块的占比和个股
@@ -171,6 +169,7 @@ public class BanKuaiFengXi extends JDialog {
 		panelgeguwkzhanbi.resetDate();
 		panelselectwkgeguzhanbi.resetDate();
 		panelLastWkGeGuZhanBi.resetDate();
+		panelGeguDapanZhanBi.resetDate();
 		panelgegucje.resetDate();
 		tabbedPane.setTitleAt(1, "选定周");
 		
@@ -189,7 +188,7 @@ public class BanKuaiFengXi extends JDialog {
 		
 		//更新板块所属个股
 		selectedbk = bkcyl.getAllGeGuOfBanKuai (selectedbk);
-		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refreshByZhanBiGrowthRate(selectedbk, curselectdate);
+		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate);
 		//更改显示日期
 		tabbedPane.setTitleAt(0, "当前周" + curselectdate);
 	  	      
@@ -216,37 +215,40 @@ public class BanKuaiFengXi extends JDialog {
 		HashSet<String> stockinparsefile = selectedbk.getParseFileStockSet ();
 		
 		//显示选定周股票排名情况
-		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).refreshByZhanBiGrowthRate(selectedbk, selecteddate);
+		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).refresh(selectedbk, selecteddate);
 		tabbedPane.setTitleAt(1, "选定周" + selecteddate);
 		
 		//显示选定周-1股票排名情况
 		LocalDate selectdate2 = selecteddate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		if( checkDateBetweenBanKuaiDate (selectedbk,selectdate2) ) //板块要有该周数据
-			((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).refreshByZhanBiGrowthRate(selectedbk, selectdate2);
+			((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).refresh(selectedbk, selectdate2);
 		else
 			((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).deleteAllRows();
 		
 		//显示选定周-2股票排名情况
 		LocalDate selectdate3 = selecteddate.minus(2,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		if( checkDateBetweenBanKuaiDate (selectedbk,selectdate3) )
-			((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).refreshByZhanBiGrowthRate(selectedbk, selectdate3);
+			((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).refresh(selectedbk, selectdate3);
 		else 
 			((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).deleteAllRows();
 		
 		//显示选定周+1股票排名情况
 		LocalDate selectdate4 = selecteddate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		if( checkDateBetweenBanKuaiDate (selectedbk,selectdate4) )
-			((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).refreshByZhanBiGrowthRate(selectedbk, selectdate4);
+			((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).refresh(selectedbk, selectdate4);
 		else
 			((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).deleteAllRows();
 		
 		//显示选定周+2股票排名情况
 		LocalDate selectdate5 = selecteddate.plus(2,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		if( checkDateBetweenBanKuaiDate (selectedbk,selectdate5) )
-			((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).refreshByZhanBiGrowthRate(selectedbk, selectdate5);
+			((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).refresh(selectedbk, selectdate5);
 		else
 			((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).deleteAllRows();
 	}
+	/*
+	 * 
+	 */
 	private boolean checkDateBetweenBanKuaiDate(BanKuai selectedbk, LocalDate selectdate) 
 	{
 		LocalDate bkend = selectedbk.getRecordsEndDate();
@@ -267,18 +269,20 @@ public class BanKuaiFengXi extends JDialog {
 			DaPan dapan =  (DaPan) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode("000000");
 			
 			panelgeguwkzhanbi.resetDate();
-			panelgeguwkzhanbi.setNodeZhanBiByWeek(stock,curselectdate,dapan);
-			
+			panelGeguDapanZhanBi.resetDate();
 			panelgegucje.resetDate();
+			tabbedPanegeguzhanbi.setSelectedIndex(0);
+			
+			panelgeguwkzhanbi.setNodeZhanBiByWeek(stock,curselectdate,dapan);
+			panelGeguDapanZhanBi.setNodeAndDaPanZhanBiByWeek(stock,curselectdate,dapan);
 			panelgegucje.setNodeJiaoYiErByWeek(stock,curselectdate,dapan);
 			
 			Comparable datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
 			if(datekey != null) {
 				panelgegucje.highLightSpecificBarColumn (datekey);
 				panelgeguwkzhanbi.highLightSpecificBarColumn (datekey);
+				panelGeguDapanZhanBi.highLightSpecificBarColumn (datekey);
 			}
-			
-			tflddingweigegu.setText(stock.getMyOwnCode());
 	}
 
 	
@@ -339,6 +343,9 @@ public class BanKuaiFengXi extends JDialog {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = panelbkwkzhanbi.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
 				//显示选择周的成交额占比
 				String selectdate = panelbkwkzhanbi.getCurSelectedBarDate().toString();
 				LocalDate selectdate1 = CommonUtility.formateStringToDate(selectdate);
@@ -352,44 +359,79 @@ public class BanKuaiFengXi extends JDialog {
 		});
 		
 		//同步几个panel
+		panelGeguDapanZhanBi.getChartPanel().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				//显示选择的tooltip
+				String tooltip = panelGeguDapanZhanBi.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
+				Comparable datekey = panelGeguDapanZhanBi.getCurSelectedBarDate ();
+				panelbkwkzhanbi.highLightSpecificBarColumn (datekey);
+				panelgegucje.highLightSpecificBarColumn (datekey);
+				panelgeguwkzhanbi.highLightSpecificBarColumn (datekey);
+				panelbkcje.highLightSpecificBarColumn (datekey);
+			}
+		});
 		panelbkcje.getChartPanel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = panelbkcje.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
 				Comparable datekey = panelbkcje.getCurSelectedBarDate ();
 				panelbkwkzhanbi.highLightSpecificBarColumn (datekey);
 				panelgegucje.highLightSpecificBarColumn (datekey);
 				panelgeguwkzhanbi.highLightSpecificBarColumn (datekey);
+				panelGeguDapanZhanBi.highLightSpecificBarColumn (datekey);
 			}
 		});
 		panelbkwkzhanbi.getChartPanel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = panelbkwkzhanbi.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
 				Comparable datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
 				panelbkcje.highLightSpecificBarColumn (datekey);
 				panelgegucje.highLightSpecificBarColumn (datekey);
 				panelgeguwkzhanbi.highLightSpecificBarColumn (datekey);
+				panelGeguDapanZhanBi.highLightSpecificBarColumn (datekey);
 			}
 		});
 		panelgegucje.getChartPanel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = panelgegucje.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
 				Comparable datekey = panelgegucje.getCurSelectedBarDate ();
 				panelbkcje.highLightSpecificBarColumn (datekey);
 				panelbkwkzhanbi.highLightSpecificBarColumn (datekey);
 				panelgeguwkzhanbi.highLightSpecificBarColumn (datekey);
+				panelGeguDapanZhanBi.highLightSpecificBarColumn (datekey);
 			}
 		});
 		panelgeguwkzhanbi.getChartPanel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = panelgeguwkzhanbi.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
 				Comparable datekey = panelgeguwkzhanbi.getCurSelectedBarDate ();
 				panelbkcje.highLightSpecificBarColumn (datekey);
 				panelbkwkzhanbi.highLightSpecificBarColumn (datekey);
 				panelgegucje.highLightSpecificBarColumn (datekey);
+				panelGeguDapanZhanBi.highLightSpecificBarColumn (datekey);
 			}
 		});
 		
@@ -401,6 +443,7 @@ public class BanKuaiFengXi extends JDialog {
 					BkChanYeLianTreeNode userinputnode = cbxstockcode.getUserInputNode();
 					if(userinputnode.getType() == 6 ) {
 						displayStockSuoShuBanKuai((Stock)userinputnode);
+						findInputedNodeInTable (userinputnode.getMyOwnCode());
 					}
 //					statChangeActions ();
 					
@@ -423,6 +466,7 @@ public class BanKuaiFengXi extends JDialog {
 	    		panelgeguwkzhanbi.resetDate();
 	    		pnllastestggzhanbi.resetDate();
 	    		panelLastWkGeGuZhanBi.resetDate();
+	    		panelGeguDapanZhanBi.resetDate();
 	    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 	    		initializeBanKuaiZhanBiByGrowthRate ();
 	    		
@@ -442,6 +486,7 @@ public class BanKuaiFengXi extends JDialog {
 	    		panelgeguwkzhanbi.resetDate();
 	    		pnllastestggzhanbi.resetDate();
 	    		panelLastWkGeGuZhanBi.resetDate();
+	    		panelGeguDapanZhanBi.resetDate();
 	    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 	    		initializeBanKuaiZhanBiByGrowthRate ();
 	    		
@@ -458,15 +503,15 @@ public class BanKuaiFengXi extends JDialog {
 				String selbk = editorPanebankuai.getSelectedBanKuai(); 
 				String selbkcode = selbk.trim().substring(1, 7);
 				tflddwbk.setText(selbkcode);
-				int rowindex = ((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
+				int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
 				if(rowindex != -1) {
 					tableBkZhanBi.setRowSelectionInterval(rowindex, rowindex);
 					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(rowindex, 0, true)));
 				}
 				
-				BanKuai selectedbk = ((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
+				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
 				refreshCurentBanKuaiFengXiResult (selectedbk);
-				
+				findInputedNodeInTable (cbxstockcode.getUserInputNode().getMyOwnCode());
 			}
 		});
 		
@@ -475,62 +520,15 @@ public class BanKuaiFengXi extends JDialog {
 		tflddwbk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				int rowindex = ((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(tflddwbk.getText().trim());
+				int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(tflddwbk.getText().trim());
 				if(rowindex != -1) {
 					tableBkZhanBi.setRowSelectionInterval(rowindex, rowindex);
 					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(rowindex, 0, true)));
 				}
 				
-				BanKuai selectedbk = ((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
+				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
 				refreshCurentBanKuaiFengXiResult (selectedbk);
-				
-				
-			}
-		});
-		tflddingweigegu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//
-				int rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tflddingweigegu.getText().trim());
-				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
-				if(rowindex != -1) {
-					tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
-					tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
-				}
-				
-				rowindex = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(tflddingweigegu.getText().trim());
-				modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
-				if(rowindex != -1) {
-					tablexuandingzhou.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingzhou.scrollRectToVisible(new Rectangle(tablexuandingzhou.getCellRect(modelRow, 0, true)));
-				}
-				
-				rowindex = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(tflddingweigegu.getText().trim());
-				modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
-				if(rowindex != -1) {
-					tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingminusone.scrollRectToVisible(new Rectangle(tablexuandingminusone.getCellRect(modelRow, 0, true)));
-				}
-				
-				rowindex = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(tflddingweigegu.getText().trim());
-				modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
-				if(rowindex != -1) {
-					tablexuandingminustwo.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingminustwo.scrollRectToVisible(new Rectangle(tablexuandingminustwo.getCellRect(modelRow, 0, true)));
-				}
-				
-				rowindex = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(tflddingweigegu.getText().trim());
-				modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
-				if(rowindex != -1) {
-					tablexuandingplusone.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingplusone.scrollRectToVisible(new Rectangle(tablexuandingplusone.getCellRect(modelRow, 0, true)));
-				}
-				
-				rowindex = ((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel() ).getStockRowIndex(tflddingweigegu.getText().trim());
-				modelRow = tablexuandingplustwo.convertRowIndexToView(rowindex);
-				if(rowindex != -1) {
-					tablexuandingplustwo.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingplustwo.scrollRectToVisible(new Rectangle(tablexuandingplustwo.getCellRect(modelRow, 0, true)));
-				}
+				displayNodeInfo(selectedbk);
 			}
 		});
 		
@@ -550,13 +548,12 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					cbxstockcode.updateUserSelectedNode (selectstock); 
 				}
 				if (arg0.getClickCount() == 2) {
-					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
-					 displayStockSuoShuBanKuai (selectstock);
+//					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+//					 displayStockSuoShuBanKuai (selectstock);
 				}
-				
-				
 			}
 		});
 		
@@ -694,8 +691,9 @@ public class BanKuaiFengXi extends JDialog {
 				}
 				
 				
-				BanKuai selectedbk = ((BanKuaiFengXiZhanBiPaiMingTableModel)tableBkZhanBi.getModel()).getBanKuai(row);
+				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(row);
 				refreshCurentBanKuaiFengXiResult (selectedbk);
+				displayNodeInfo(selectedbk);
 			}
 		});
 		
@@ -720,6 +718,7 @@ public class BanKuaiFengXi extends JDialog {
 			    		pnllastestggzhanbi.resetDate();
 			    		panelLastWkGeGuZhanBi.resetDate();
 			    		panelselectwkgeguzhanbi.resetDate();
+			    		panelGeguDapanZhanBi.resetDate();
 			    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 			    		tabbedPane.setTitleAt(0, "当前周");
 			    		tabbedPane.setTitleAt(1, "选定周");
@@ -745,6 +744,7 @@ public class BanKuaiFengXi extends JDialog {
 			    		panelgeguwkzhanbi.resetDate();
 			    		pnllastestggzhanbi.resetDate();
 			    		panelLastWkGeGuZhanBi.resetDate();
+			    		panelGeguDapanZhanBi.resetDate();
 			    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 			    		initializeBanKuaiZhanBiByGrowthRate ();
 			    		
@@ -758,10 +758,89 @@ public class BanKuaiFengXi extends JDialog {
 		});
 		
 	}
-	
+	/*
+	 * 在个股表中发现输入的个股
+	 */
+	protected void findInputedNodeInTable(String nodecode) 
+	{
+		int rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
+		if(rowindex <0) {
+			tableGuGuZhanBiInBk.getSelectionModel().clearSelection();
+		} else {
+			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+			if(rowindex != -1) {
+				tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
+				tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
+			}
+		}
+		
+		
+		rowindex = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
+		if(rowindex <0) {
+			tablexuandingzhou.getSelectionModel().clearSelection();
+		} else {
+			int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
+			if(rowindex != -1) {
+				tablexuandingzhou.setRowSelectionInterval(modelRow, modelRow);
+				tablexuandingzhou.scrollRectToVisible(new Rectangle(tablexuandingzhou.getCellRect(modelRow, 0, true)));
+			}
+		}
+		
+		rowindex = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
+		if(rowindex <0) {
+			tablexuandingminusone.getSelectionModel().clearSelection();
+		} else {
+			int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
+			if(rowindex != -1) {
+				tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);
+				tablexuandingminusone.scrollRectToVisible(new Rectangle(tablexuandingminusone.getCellRect(modelRow, 0, true)));
+			}
+		}
 
+		rowindex = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
+		if(rowindex <0) {
+			tablexuandingminustwo.getSelectionModel().clearSelection();
+		} else {
+			int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
+			if(rowindex != -1) {
+				tablexuandingminustwo.setRowSelectionInterval(modelRow, modelRow);
+				tablexuandingminustwo.scrollRectToVisible(new Rectangle(tablexuandingminustwo.getCellRect(modelRow, 0, true)));
+			}
+		}
 
-	
+		rowindex = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
+		if(rowindex <0) {
+			tablexuandingplusone.getSelectionModel().clearSelection();
+		} else {
+			int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
+			if(rowindex != -1) {
+				tablexuandingplusone.setRowSelectionInterval(modelRow, modelRow);
+				tablexuandingplusone.scrollRectToVisible(new Rectangle(tablexuandingplusone.getCellRect(modelRow, 0, true)));
+			}
+		}
+		
+		rowindex = ((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel() ).getStockRowIndex(nodecode);
+		if(rowindex <0) {
+			tablexuandingplusone.getSelectionModel().clearSelection();
+		} else {
+			int modelRow = tablexuandingplustwo.convertRowIndexToView(rowindex);
+			if(rowindex != -1) {
+				tablexuandingplustwo.setRowSelectionInterval(modelRow, modelRow);
+				tablexuandingplustwo.scrollRectToVisible(new Rectangle(tablexuandingplustwo.getCellRect(modelRow, 0, true)));
+			}
+		}
+	}
+	/*
+	 * 
+	 */
+	protected void displayNodeInfo(BanKuai selectedbk) 
+	{
+		editorPanebkinfo.displayNodeInfo(selectedbk);
+		
+	}
+	/*
+	 * 
+	 */
 	protected void hightlightSpecificSector(Stock selectstock) 
 	{
 		String stockcode = selectstock.getMyOwnCode(); 
@@ -793,7 +872,6 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiFengXiPieChartPnl pnllastestggzhanbi;
 	private BanKuaiFengXiPieChartPnl panelLastWkGeGuZhanBi;
 	private JTextField tflddwbk;
-	private JTextField tflddingweigegu;
 	private BanKuaiFengXiPieChartPnl panelselectwkgeguzhanbi;
 	private BanKuaiListEditorPane editorPanebankuai;
 	private JButton btnresetdate;
@@ -808,16 +886,21 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiGeGuTable tablexuandingplusone;
 	private BanKuaiGeGuTable tablexuandingplustwo;
 	private JTabbedPane tabbedPane;
+	private BanKuaiFengXiBarChartPnl panelGeguDapanZhanBi;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTabbedPane tabbedPanegeguzhanbi;
+	private JTextField tfldselectedmsg;
+	private DisplayBkGgInfoEditorPane editorPanebkinfo;
 	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
-		setBounds(100, 100, 1912, 1002);
+		setBounds(100, 100, 1912, 1016);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		getContentPane().add(contentPanel, BorderLayout.EAST);
 		
 		JPanel panel = new JPanel();
-		
 		JPanel panel_1 = new JPanel();
 		
 		panelbkwkzhanbi = new BanKuaiFengXiBarChartPnl();
@@ -826,9 +909,6 @@ public class BanKuaiFengXi extends JDialog {
 		
 		pnllastestggzhanbi = new BanKuaiFengXiPieChartPnl();
 		pnllastestggzhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u5F53\u524D\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		
-		panelgeguwkzhanbi = new BanKuaiFengXiBarChartPnl();
-		panelgeguwkzhanbi.setBorder(new TitledBorder(null, "\u4E2A\u80A1\u534A\u5E74\u5185\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		panelLastWkGeGuZhanBi = new BanKuaiFengXiPieChartPnl();
 		panelLastWkGeGuZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -841,29 +921,46 @@ public class BanKuaiFengXi extends JDialog {
 		
 		panelgegucje = new BanKuaiFengXiBarChartPnl();
 		panelgegucje.setBorder(new TitledBorder(null, "\u4E2A\u80A1\u6210\u4EA4\u989D", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
+		
+		tfldselectedmsg = new JTextField();
+		
+		
+		tfldselectedmsg.setEditable(false);
+		tfldselectedmsg.setColumns(10);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		
+		editorPanebankuai = new BanKuaiListEditorPane();
+		scrollPane.setViewportView(editorPanebankuai);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+						.addComponent(panel, 0, 0, Short.MAX_VALUE)
+						.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 331, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+								.addComponent(tfldselectedmsg)
+								.addComponent(panelbkcje, 0, 0, Short.MAX_VALUE)
+								.addComponent(panelbkwkzhanbi, GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE))
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(panelbkwkzhanbi, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 581, GroupLayout.PREFERRED_SIZE)
-								.addComponent(panelbkcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(panelgeguwkzhanbi, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(panelgegucje, GroupLayout.PREFERRED_SIZE, 562, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 1469, GroupLayout.PREFERRED_SIZE)
-							.addGap(23)))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addGap(12)
+									.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 556, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(panelgegucje, GroupLayout.PREFERRED_SIZE, 562, GroupLayout.PREFERRED_SIZE))))
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 1112, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(pnllastestggzhanbi, GroupLayout.PREFERRED_SIZE, 372, Short.MAX_VALUE)
-						.addComponent(panelLastWkGeGuZhanBi, 0, 0, Short.MAX_VALUE)
+						.addComponent(panelLastWkGeGuZhanBi, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
 						.addComponent(panelselectwkgeguzhanbi, GroupLayout.PREFERRED_SIZE, 372, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
@@ -874,113 +971,154 @@ public class BanKuaiFengXi extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(pnllastestggzhanbi, GroupLayout.PREFERRED_SIZE, 311, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(panelLastWkGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGap(613)
+							.addComponent(panelselectwkgeguzhanbi, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(tfldselectedmsg, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(panelbkcje, GroupLayout.PREFERRED_SIZE, 434, GroupLayout.PREFERRED_SIZE)
+								.addComponent(panelgegucje, GroupLayout.PREFERRED_SIZE, 434, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(tabbedPanegeguzhanbi, GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+								.addComponent(panelbkwkzhanbi, GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 54, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-										.addComponent(panelbkcje, GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
-										.addComponent(panelgegucje, GroupLayout.PREFERRED_SIZE, 420, GroupLayout.PREFERRED_SIZE))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-										.addComponent(panelbkwkzhanbi, GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
-										.addComponent(panelgeguwkzhanbi, GroupLayout.PREFERRED_SIZE, 424, GroupLayout.PREFERRED_SIZE))
-									.addContainerGap())
-								.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 860, Short.MAX_VALUE)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addGap(261)
-									.addComponent(panelLastWkGeGuZhanBi, GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(panelselectwkgeguzhanbi, GroupLayout.PREFERRED_SIZE, 281, GroupLayout.PREFERRED_SIZE)
-									.addGap(12))))))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 850, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
 		);
 		
-		BanKuaiFengXiZhanBiPaiMingTableModel tablelast2 = new BanKuaiFengXiZhanBiPaiMingTableModel ();
+		panelGeguDapanZhanBi = new BanKuaiFengXiBarChartPnl();
+		panelGeguDapanZhanBi.setBorder(new TitledBorder(null, "\u4E2A\u80A1\u5927\u76D8\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u5927\u76D8\u5360\u6BD4", null, panelGeguDapanZhanBi, null);
 		
-		BanKuaiFengXiZhanBiPaiMingTableModel tablelast2gr = new BanKuaiFengXiZhanBiPaiMingTableModel ();
+		panelgeguwkzhanbi = new BanKuaiFengXiBarChartPnl();
+		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u677F\u5757\u5360\u6BD4", null, panelgeguwkzhanbi, null);
+		panelgeguwkzhanbi.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u4E2A\u80A1\u677F\u5757\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		
-		BanKuaiFengXiZhanBiPaiMingTableModel tablelast = new BanKuaiFengXiZhanBiPaiMingTableModel ();
-		
-		BanKuaiFengXiZhanBiPaiMingTableModel tablelastgr = new BanKuaiFengXiZhanBiPaiMingTableModel ();
-		
-		BanKuaiFengXiZhanBiPaiMingTableModel tablecurwk = new BanKuaiFengXiZhanBiPaiMingTableModel ();
-		
-		BanKuaiFengXiZhanBiPaiMingTableModel tablecurwkgr = new BanKuaiFengXiZhanBiPaiMingTableModel ();
-		
-		sclpleft = new JScrollPane();
+//		BanKuaiFengXiZhanBiPaiMingTableModel tablelast2 = new BanKuaiFengXiZhanBiPaiMingTableModel ();
+//		
+//		BanKuaiFengXiZhanBiPaiMingTableModel tablelast2gr = new BanKuaiFengXiZhanBiPaiMingTableModel ();
+//		
+//		BanKuaiFengXiZhanBiPaiMingTableModel tablelast = new BanKuaiFengXiZhanBiPaiMingTableModel ();
+//		
+//		BanKuaiFengXiZhanBiPaiMingTableModel tablelastgr = new BanKuaiFengXiZhanBiPaiMingTableModel ();
+//		
+//		BanKuaiFengXiZhanBiPaiMingTableModel tablecurwk = new BanKuaiFengXiZhanBiPaiMingTableModel ();
+//		
+//		BanKuaiFengXiZhanBiPaiMingTableModel tablecurwkgr = new BanKuaiFengXiZhanBiPaiMingTableModel ();
 		
 		btnexportbk = new JButton("\u5BFC\u51FA\u677F\u5757");
-		
-		JButton button = new JButton("\u5BFC\u51FA\u4E2A\u80A1");
-		
-		JCheckBox chckbxNewCheckBox = new JCheckBox("\u5254\u9664\u80A1\u7968\u6743\u91CD<=");
-		
-		tfldweight = new JTextField();
-		tfldweight.setText("0");
-		tfldweight.setColumns(10);
+		btnexportbk.setEnabled(false);
 		
 		tflddwbk = new JTextField();
 		
 		tflddwbk.setColumns(10);
 		
-		tflddingweigegu = new JTextField();
-		
-		tflddingweigegu.setColumns(10);
-		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		
+		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
+		cbxstockcode = new JStockComboBox();
+		
+		JButton button = new JButton("\u5BFC\u51FA\u4E2A\u80A1");
 		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
+			gl_panel_1.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)
-						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
-							.addComponent(chckbxNewCheckBox)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, 54, GroupLayout.PREFERRED_SIZE))
-						.addComponent(sclpleft, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
-						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+						.addComponent(tabbedPane_1, GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+						.addComponent(tabbedPane)
+						.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
 							.addComponent(tflddwbk, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnexportbk))
-						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
-							.addComponent(tflddingweigegu, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
-							.addComponent(button)))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addComponent(button)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
+		
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGap(6)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(tflddwbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnexportbk))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(sclpleft, GroupLayout.PREFERRED_SIZE, 374, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(chckbxNewCheckBox)
-						.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(btnexportbk)
+						.addComponent(tflddwbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
+					.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(button)
-						.addComponent(tflddingweigegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 25, Short.MAX_VALUE))
 					.addContainerGap())
 		);
+		
+		sclpleft = new JScrollPane();
+		tabbedPane_1.addTab("\u677F\u5757\u5360\u6BD4", null, sclpleft, null);
+		
+		BanKuaiInfoTableModel bkzb = new BanKuaiInfoTableModel ();
+		tableBkZhanBi = new JTable(bkzb){
+			private static final long serialVersionUID = 1L;
+			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				 
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
+		        BanKuai bankuai = tablemodel.getBanKuai(row);
+		        if(bankuai.getParseFileStockSet().size()>0)
+		        	comp.setForeground(Color.BLUE);
+		        else
+		        	comp.setForeground(Color.black);
+		        
+		        return comp;
+			}
+			
+//			public String getToolTipText(MouseEvent e) 
+//			{
+//                String tip = null;
+//                java.awt.Point p = e.getPoint();
+//                int rowIndex = rowAtPoint(p);
+//                int colIndex = columnAtPoint(p);
+//
+//                try {
+//                    tip = getValueAt(rowIndex, colIndex).toString();
+//                } catch (RuntimeException e1) {
+//                	e1.printStackTrace();
+//                }
+//                return tip;
+//            } 
+		};
+		
+		
+		sclpleft.setViewportView(tableBkZhanBi);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		tabbedPane_1.addTab("\u677F\u5757\u4FE1\u606F", null, scrollPane_1, null);
+		
+		editorPanebkinfo = new DisplayBkGgInfoEditorPane();
+		scrollPane_1.setViewportView(editorPanebkinfo);
 		
 		JScrollPane scrollPanedangqian = new JScrollPane();
 		tabbedPane.addTab("当前周", null, scrollPanedangqian, null);
 		tabbedPane.setBackgroundAt(0, Color.ORANGE);
 		
 		
-		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager); 
+		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager);
+		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
+		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 //		GeGuFengXiZhanBiPaiMingTableModel ggzb = new GeGuFengXiZhanBiPaiMingTableModel ();
 //		tableGuGuZhanBiInBk = new JTable(ggzb){
 //			private static final long serialVersionUID = 1L;
@@ -1032,6 +1170,7 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPane.setBackgroundAt(1, UIManager.getColor("MenuItem.selectionBackground"));
 		
 		tablexuandingzhou = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingzhou.hideZhanBiColumn(1);
 
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
@@ -1040,69 +1179,37 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPane.setBackgroundAt(2, Color.LIGHT_GRAY);
 		
 		tablexuandingminusone = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingminusone.hideZhanBiColumn(1);
 		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
 		
 		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
 		tabbedPane.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
 		
 		tablexuandingminustwo = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingminustwo.hideZhanBiColumn(1);
 		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
 		
 		JScrollPane scrollPanexuandingplusone = new JScrollPane();
 		tabbedPane.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
 		
 		tablexuandingplusone = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingplusone.hideZhanBiColumn(1);
 		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
 		
 		JScrollPane scrollPanexuandingplustwo = new JScrollPane();
 		tabbedPane.addTab("\u9009\u5B9A\u5468+2", null, scrollPanexuandingplustwo, null);
 		
 		tablexuandingplustwo = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingplustwo.hideZhanBiColumn(1);
 		scrollPanexuandingplustwo.setViewportView(tablexuandingplustwo);
 		
 //		tableBkZhanBi = new BanKuaiGeGuTable (this.stockmanager);
 		
-		BanKuaiFengXiZhanBiPaiMingTableModel bkzb = new BanKuaiFengXiZhanBiPaiMingTableModel ();
-		tableBkZhanBi = new JTable(bkzb){
-			private static final long serialVersionUID = 1L;
-			
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-				 
-		        Component comp = super.prepareRenderer(renderer, row, col);
-		        BanKuaiFengXiZhanBiPaiMingTableModel tablemodel = (BanKuaiFengXiZhanBiPaiMingTableModel)this.getModel(); 
-		        BanKuai bankuai = tablemodel.getBanKuai(row);
-		        if(bankuai.getParseFileStockSet().size()>0)
-		        	comp.setForeground(Color.BLUE);
-		        else
-		        	comp.setForeground(Color.black);
-		        
-		        return comp;
-			}
-			
-//			public String getToolTipText(MouseEvent e) 
-//			{
-//                String tip = null;
-//                java.awt.Point p = e.getPoint();
-//                int rowIndex = rowAtPoint(p);
-//                int colIndex = columnAtPoint(p);
-//
-//                try {
-//                    tip = getValueAt(rowIndex, colIndex).toString();
-//                } catch (RuntimeException e1) {
-//                	e1.printStackTrace();
-//                }
-//                return tip;
-//            } 
-		};
 		
-		
-		sclpleft.setViewportView(tableBkZhanBi);
 		panel_1.setLayout(gl_panel_1);
 		
 		dateChooser = new JDateChooser();
 		dateChooser.setDateFormatString("yyyy-MM-dd");
-		
-		JScrollPane scrollPane = new JScrollPane();
 		
 		btnresetdate = new JButton("\u91CD\u7F6E");
 		btnresetdate.setEnabled(false);
@@ -1114,49 +1221,32 @@ public class BanKuaiFengXi extends JDialog {
 		btnsixmonthafter = new JButton(">");
 		btnsixmonthafter.setToolTipText("\u5411\u540E6\u4E2A\u6708");
 		
-		cbxstockcode = new JStockComboBox();
-		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
-					.addGap(6)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnsixmonthbefore)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnsixmonthafter)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnresetdate)
-					.addGap(27)
-					.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 937, GroupLayout.PREFERRED_SIZE)
-					.addGap(653))
+					.addGap(876))
 		);
 		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-					.addGroup(gl_panel.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-							.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnsixmonthbefore)
-								.addComponent(btnsixmonthafter)
-								.addComponent(btnresetdate, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-						.addGap(34))
-					.addGroup(gl_panel.createSequentialGroup()
-						.addGap(7)
-						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-							.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-						.addContainerGap(25, Short.MAX_VALUE)))
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(btnsixmonthbefore, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+							.addComponent(btnsixmonthafter, GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
+					.addGap(34))
 		);
-		
-		editorPanebankuai = new BanKuaiListEditorPane();
-		
-		scrollPane.setViewportView(editorPanebankuai);
 		panel.setLayout(gl_panel);
 		contentPanel.setLayout(gl_contentPanel);
 		{
@@ -1171,11 +1261,44 @@ public class BanKuaiFengXi extends JDialog {
 				cancelButton = new JButton("Cancel");
 				cancelButton.setActionCommand("Cancel");
 			}
+			
+			JCheckBox chckbxNewCheckBox = new JCheckBox("\u5254\u9664\u80A1\u7968\u6743\u91CD<=");
+			
+			tfldweight = new JTextField();
+			tfldweight.setText("0");
+			tfldweight.setColumns(10);
+			
+			JCheckBox checkBox = new JCheckBox("\u7A81\u51FA\u663E\u793A\u6210\u4EA4\u989D\u5927\u4E8E()\u4EBF");
+			
+			textField = new JTextField();
+			textField.setColumns(10);
+			
+			JCheckBox checkBox_1 = new JCheckBox("\u6BCF\u65E5\u5206\u6790\u6587\u4EF6");
+			
+			textField_1 = new JTextField();
+			textField_1.setEnabled(false);
+			textField_1.setColumns(10);
+			
+			JButton btnNewButton = new JButton("\u9009\u62E9\u6587\u4EF6");
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
-						.addGap(1659)
+						.addGap(15)
+						.addComponent(chckbxNewCheckBox)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+						.addGap(18)
+						.addComponent(checkBox)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(textField, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)
+						.addGap(18)
+						.addComponent(checkBox_1)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnNewButton)
+						.addGap(940)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
 						.addGap(30)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
@@ -1185,7 +1308,14 @@ public class BanKuaiFengXi extends JDialog {
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(cancelButton)
-						.addComponent(okButton))
+						.addComponent(okButton)
+						.addComponent(chckbxNewCheckBox)
+						.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(checkBox)
+						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(checkBox_1)
+						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnNewButton))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}
@@ -1195,195 +1325,4 @@ public class BanKuaiFengXi extends JDialog {
 }
 
 
-class BanKuaiFengXiZhanBiPaiMingTableModel extends AbstractTableModel 
-{
-	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","max","成交额增长贡献率"};
-//	HashMap<String,BanKuai> bkmap;
-	List<Map.Entry<String, BanKuai>> entryList;
-	LocalDate showzhbiwknum;
-	
-	BanKuaiFengXiZhanBiPaiMingTableModel ()
-	{
-	}
-
-	public void refresh  (HashMap<String,BanKuai> curbkzslist, LocalDate curselectdate)
-	{
-		showzhbiwknum = curselectdate;
-		entryList = new ArrayList<Map.Entry<String, BanKuai>>(curbkzslist.entrySet());
-
-        Collections.sort(entryList, new Comparator<Map.Entry<String, BanKuai>>() {
-            @Override
-            public int compare(Map.Entry<String, BanKuai> bk1,
-                               Map.Entry<String, BanKuai> bk2) {
-            	
-            	Double bk1zhanbi = bk1.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
-            	Double bk2zhanbi = bk2.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
-            	try {
-            		return bk1zhanbi.compareTo(bk2zhanbi);
-            	} catch (java.lang.NullPointerException e) {
-            		if(bk2zhanbi == null && bk1zhanbi != null)
-            			return bk1zhanbi.compareTo(-10000000.0);
-            		else if(bk1zhanbi == null && bk2zhanbi != null)
-            			return bk2zhanbi.compareTo(-10000000.0);
-            		else 
-            			return 0;
-            	}
-            }
-            }
-        );
-
-        this.fireTableDataChanged();
-	}
-	
-	 
-	
-	 public int getRowCount() 
-	 {
-//		 if(this.bkmap == null)
-//			 return 0;
-//		 else 
-//			 return this.bkmap.size();
-		 if(entryList == null)
-			 return 0;
-		 else
-			 return entryList.size();
-	 }
-
-	    @Override
-	    public int getColumnCount() 
-	    {
-	        return jtableTitleStrings.length;
-	    } 
-	    
-	    public Object getValueAt(int rowIndex, int columnIndex) 
-	    {
-//	    	if(bkmap.isEmpty())
-//	    		return null;
-//	    	
-//	    	String[] bkcodeArray = bkmap.keySet().toArray(new String[bkmap.keySet().size()]);
-//	    	String bkcode = bkcodeArray[rowIndex];
-//	    	BanKuai thisbk = bkmap.get(bkcode);
-//	    	String thisbkname = thisbk.getMyOwnName(); 
-//	    	Double zhanbigrowthrate = thisbk.getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod ();
-//	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-//	    	
-//	    	Object value = "??";
-//	    	switch (columnIndex) {
-//            case 0:
-//                value = bkcode;
-//                break;
-//            case 1: 
-//            	value = thisbkname;
-//            	break;
-//            case 2:
-//            	value = percentFormat.format(zhanbigrowthrate);
-//            	break;
-//	    	}
-	    	
-	    	if(entryList.isEmpty() )
-	    		return null;
-	    	
-	    	Entry<String, BanKuai> thisbk = entryList.get( entryList.size()-1-rowIndex );
-	    	
-	    	Object value = "??";
-	    	switch (columnIndex) {
-            case 0:
-            	String bkcode = thisbk.getValue().getMyOwnCode();
-                value = bkcode;
-                break;
-            case 1:
-            	String thisbkname = thisbk.getValue().getMyOwnName();
-            	value = thisbkname;
-            	break;
-            case 2:
-            	Double zhanbigrowthrate = thisbk.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
-    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-    	    	percentFormat.setMinimumFractionDigits(1);
-            	value = percentFormat.format(zhanbigrowthrate);
-            	break;
-            case 3:
-            	int maxweek = thisbk.getValue().getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showzhbiwknum);
-            	value = maxweek;
-            	break;
-            case 4:
-            	Double cjegrowthrate = thisbk.getValue().getChenJiaoErChangeGrowthRateForAGivenPeriod (showzhbiwknum);
-    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
-    	    	percentFormat2.setMinimumFractionDigits(1);
-            	value = percentFormat2.format(cjegrowthrate);
-	    	}
-
-	    	return value;
-	  }
-
-     public Class<?> getColumnClass(int columnIndex) {
-		      Class clazz = String.class;
-		      switch (columnIndex) {
-		      case 0:
-		    	  clazz = String.class;
-		    	  break;
-		        case 1:
-			          clazz = String.class;
-			          break;
-		        case 2:
-			          clazz = String.class;
-			          break;
-		        case 3:
-			          clazz = Integer.class;
-			          break;
-		        case 4:
-			          clazz = String.class;
-			          break;
-		      }
-		      
-		      return clazz;
-	 }
-	    
-	    public String getColumnName(int column) { 
-	    	return jtableTitleStrings[column];
-	    }//设置表格列名 
-		
-
-	    public boolean isCellEditable(int row,int column) {
-	    	return false;
-		}
-	    public String getBanKuaiCode (int row) 
-	    {
-	    	return (String)this.getValueAt(row,0);
-	    }
-	    public String getBanKuaiName (int row) 
-	    {
-	    	return (String)this.getValueAt(row,1);
-	    } 
-	    public BanKuai getBanKuai (int row)
-	    {
-	    	String bkcode = this.getBanKuaiCode(entryList.size()-1-row);
-//	    	return bkmap.get(bkcode);
-	    	return this.entryList.get(entryList.size()-1-row).getValue();
-	    }
-
-	    public int getBanKuaiRowIndex (String neededfindstring) 
-	    {
-	    		int index = -1;
-	    		HanYuPinYing hypy = new HanYuPinYing ();
-	    		
-	    		for(int i=0;i<this.getRowCount();i++) {
-	    			String bkcode = (String)this.getValueAt(i, 0);
-	    			String bkname = (String)this.getValueAt(i,1); 
-	    			if(bkcode.trim().equals(neededfindstring) ) {
-	    				index = i;
-	    				break;
-	    			}
-
-	    			String namehypy = hypy.getBanKuaiNameOfPinYin(bkname );
-			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
-			   			index = i;
-			   			break;
-			   		}
-	    		}
-	    	
-	   		
-	   		return index;
-	    }
-	    
-}
 

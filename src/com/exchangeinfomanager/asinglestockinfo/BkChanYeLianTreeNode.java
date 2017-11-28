@@ -461,7 +461,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 			return index;
 	}
 	/*
-	 * 获得指定周的记录
+	 * 获得指定周的记录,适合stock/bankuai，dapan有自己的计算方法
 	 */
 	public ChenJiaoZhanBiInGivenPeriod getSpecficChenJiaoErRecord (LocalDate requireddate)
 	{

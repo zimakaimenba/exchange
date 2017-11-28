@@ -22,50 +22,52 @@ import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuTableModel extends DefaultTableModel 
 {
-	String[] jtableTitleStrings = { "代码", "名称","权重","占比增长率","MAX","成交额贡献"};
+	String[] jtableTitleStrings = { "代码", "名称","权重","占比增长率","MAX","成交额贡献","发现"};
 	BanKuai curbk;
 	private ArrayList<Entry<String, Stock>> entryList;
 	LocalDate showwknum;
 	private int curdisplayrow = -1;
 	private Stock curdisplaystock;
+	private HashSet<String> stockcodeinparsefile;
 	
 	
 	BanKuaiGeGuTableModel ()
 	{
 	}
 
-	public void refreshByParsedFile (BanKuai bankuai,LocalDate wknum)
-	{
-		curbk = bankuai;
-		showwknum = wknum;
-		 HashSet<String> stockcodeinparsefile = bankuai.getParseFileStockSet();
-		 HashMap<String, Stock> stockmap = bankuai.getSpecificPeriodBanKuaiGeGu(wknum);
-		 
-		 if(stockmap == null) {
-			 entryList = new ArrayList<Map.Entry<String, Stock>>();
-		 } else if(stockcodeinparsefile != null  && stockcodeinparsefile.size() >0 ) { //优先把parsefile里的个股显示在前面
-	        		entryList = new ArrayList<Map.Entry<String, Stock>>();
-	     	 		for (Map.Entry<String,Stock> entry : stockmap.entrySet()) {  
-	     	 			if(stockcodeinparsefile.contains(entry.getKey() ) ) {
-	     	 				entryList.add(entry);
-	     	 			} else 
-	     	 				entryList.add(0,entry);
-	     	 		} 
-	        	
-	     } else {
-	    	 entryList = new ArrayList<Map.Entry<String, Stock>>();
-	    	 for (Map.Entry<String,Stock> entry : stockmap.entrySet()) {
-	    		 entryList.add(entry);
-	    	 }
-	     }
-	     this.fireTableDataChanged();
-		
-	}
-	public void refreshByZhanBiGrowthRate (BanKuai bankuai,LocalDate wknum)
+//	public void refreshByParsedFile (BanKuai bankuai,LocalDate wknum)
+//	{
+//		curbk = bankuai;
+//		showwknum = wknum;
+//		 HashSet<String> stockcodeinparsefile = bankuai.getParseFileStockSet();
+//		 HashMap<String, Stock> stockmap = bankuai.getSpecificPeriodBanKuaiGeGu(wknum);
+//		 
+//		 if(stockmap == null) {
+//			 entryList = new ArrayList<Map.Entry<String, Stock>>();
+//		 } else if(stockcodeinparsefile != null  && stockcodeinparsefile.size() >0 ) { //优先把parsefile里的个股显示在前面
+//	        		entryList = new ArrayList<Map.Entry<String, Stock>>();
+//	     	 		for (Map.Entry<String,Stock> entry : stockmap.entrySet()) {  
+//	     	 			if(stockcodeinparsefile.contains(entry.getKey() ) ) {
+//	     	 				entryList.add(entry);
+//	     	 			} else 
+//	     	 				entryList.add(0,entry);
+//	     	 		} 
+//	        	
+//	     } else {
+//	    	 entryList = new ArrayList<Map.Entry<String, Stock>>();
+//	    	 for (Map.Entry<String,Stock> entry : stockmap.entrySet()) {
+//	    		 entryList.add(entry);
+//	    	 }
+//	     }
+//	     this.fireTableDataChanged();
+//		
+//	}
+	public void refresh (BanKuai bankuai,LocalDate wknum)
 	{
 		curbk = bankuai;
 		showwknum = wknum;
 		HashMap<String, Stock> stockmap = bankuai.getSpecificPeriodBanKuaiGeGu(wknum);	
+		stockcodeinparsefile = bankuai.getParseFileStockSet();
 		try {
 			entryList = new ArrayList<Map.Entry<String, Stock>>(stockmap.entrySet()  );
 		} catch ( java.lang.NullPointerException e) {
@@ -115,17 +117,21 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    	if(entryList.isEmpty())
 	    		return null;
 	    	
+	    	String bkcode = null;
 	    	if( rowIndex != this.curdisplayrow) {
 	    		this.curdisplayrow = rowIndex;
 	    		
-		    	Entry<String, Stock> thisbk = entryList.get(entryList.size()-1-rowIndex);
+//		    	Entry<String, Stock> thisbk = entryList.get(entryList.size()-1-rowIndex);
+	    		Entry<String, Stock> thisbk = entryList.get(rowIndex);
 		    	curdisplaystock = thisbk.getValue();
+		    	bkcode = curdisplaystock.getMyOwnCode();
 	    	}
-
+	    	
+	    	
 	    	Object value = "??";
 	    	switch (columnIndex) {
             case 0:
-            	String bkcode = curdisplaystock.getMyOwnCode();
+            	bkcode = curdisplaystock.getMyOwnCode();
                 value = bkcode;
                 break;
             case 1: 
@@ -143,6 +149,8 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	}
             	break;
             case 3: //{ "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
+            	if(curdisplaystock.getMyOwnCode().equals("603605"))
+            		System.out.println("拉芳");
             	Double zhanbigrowthrate = curdisplaystock.getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum);
 //    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
 //            	value = percentFormat.format(zhanbigrowthrate);
@@ -158,8 +166,14 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	value = percentFormat2.format(cjechangegrowthrate);
             	value = cjechangegrowthrate;
             	break;	
+            case 6:
+            	if(stockcodeinparsefile == null || !stockcodeinparsefile.contains(bkcode))
+            		value = new Boolean(false);
+            	else 
+            		value = new Boolean(true);
+                break;
 	    	}
-
+	    	
 	    	return value;
 	  }
 	  /*
@@ -170,7 +184,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		  if(entryList.isEmpty())
 	    		return ;
 		  
-		  Entry<String, Stock> thisstock = entryList.get(entryList.size()-1-row);
+		  Entry<String, Stock> thisstock = entryList.get(row);
 		  Stock stock = thisstock.getValue();
 	      String bkcode = thisstock.getValue().getMyOwnCode();
 	      String thisbkname = thisstock.getValue().getMyOwnName();
@@ -207,6 +221,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		        case 5:
 			          clazz = Double.class;
 			          break;
+		        case 6:
+		        	  clazz = Boolean.class;
+			          break;
 		      }
 		      
 		      return clazz;
@@ -234,8 +251,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    } 
 	    public Stock getStock (int row)
 	    {
-//	    	String stockcode = this.getStockCode(row);
-	    	return this.entryList.get(entryList.size()-1-row).getValue();
+	    	return this.entryList.get(row).getValue();
 	    }
 	    public void deleteAllRows ()
 	    {	

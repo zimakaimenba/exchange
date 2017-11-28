@@ -180,7 +180,9 @@ public class BanKuaiDbOperation
 //		return stockbasicinfo;
 //	}
 
-	
+	/*
+	 * 
+	 */
 	public Stock getStockBasicInfo(Stock stockbasicinfo) 
 	{
 		String stockcode = stockbasicinfo.getMyOwnCode();
@@ -205,6 +207,9 @@ public class BanKuaiDbOperation
 		
 		return stockbasicinfo;
 	}
+	/*
+	 * 
+	 */
 	public BanKuai getBanKuaiBasicInfo(BanKuai bkbasicinfo)
 	{
 		String bkcode = bkbasicinfo.getMyOwnCode();
@@ -234,18 +239,20 @@ public class BanKuaiDbOperation
 		return bkbasicinfo;
 
 	}
-	
-	public ArrayList<BkChanYeLianTreeNode> getNodesBasicInfo(String stockcode) 
+	/*
+	 * 获取用户输入的node的基本信息，node可能是板块也可能是个股
+	 */
+	public ArrayList<BkChanYeLianTreeNode> getNodesBasicInfo(String nodecode) 
 	{
 		ArrayList<BkChanYeLianTreeNode> nodenamelist = new ArrayList<BkChanYeLianTreeNode> ();
 		CachedRowSetImpl rs = null;
 		
 		try {
-			String sqlquerystat = "select 股票名称, 'a股' as tablename, 'gegu' as type from a股 where  股票代码 = '" + stockcode + "'" + 
+			String sqlquerystat = "select 股票名称, 'a股' as tablename, 'gegu' as type from a股 where  股票代码 = '" + nodecode + "'" + 
 					" union \r\n" + 
-					" select 板块名称, '通达信板块列表' as tablename , 'bankuai' as type from 通达信板块列表 where 板块ID = '" + stockcode + "'" + 
+					" select 板块名称, '通达信板块列表' as tablename , 'bankuai' as type from 通达信板块列表 where 板块ID = '" + nodecode + "'" + 
 					" union\r\n" + 
-					" select 板块名称, '通达信交易所指数列表' as tablename, 'zhishu' as type from 通达信交易所指数列表 where 板块ID = '" + stockcode + "'"
+					" select 板块名称, '通达信交易所指数列表' as tablename, 'zhishu' as type from 通达信交易所指数列表 where 板块ID = '" + nodecode + "'"
 					;
 				System.out.println(sqlquerystat);
 		    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -255,9 +262,9 @@ public class BanKuaiDbOperation
 		        	BkChanYeLianTreeNode tmpnode = null;
 		        	
 		        	if(rs.getString("type").equals("gegu")) {
-		        		tmpnode = new Stock(stockcode,stockname);
+		        		tmpnode = new Stock(nodecode,stockname);
 		        		
-		        		sqlquerystat= "SELECT * FROM A股   WHERE 股票代码 =" +"'" + stockcode +"'" ;
+		        		sqlquerystat= "SELECT * FROM A股   WHERE 股票代码 =" +"'" + nodecode +"'" ;
 		        		CachedRowSetImpl rsagu = null;
 		    			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    			
@@ -268,10 +275,10 @@ public class BanKuaiDbOperation
 		    			rsagu = null;
 		        	}
 		        	else {
-		        		tmpnode = new BanKuai(stockcode,stockname);
+		        		tmpnode = new BanKuai(nodecode,stockname);
 		        		String searchtable = rs.getString("tablename");
 		        		
-		        		sqlquerystat= "SELECT * FROM " +  searchtable  + "  WHERE 板块ID =" +"'" + stockcode +"'" ;
+		        		sqlquerystat= "SELECT * FROM " +  searchtable  + "  WHERE 板块ID =" +"'" + nodecode +"'" ;
 		        		CachedRowSetImpl rsagu = null;
 		    			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    			
@@ -3464,15 +3471,31 @@ public class BanKuaiDbOperation
 				 		;
 			 } else { //概念风格行业指数板块
 				 //from WQW
+//				 sqlquerystat1 = "select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , "+ bktypetable + ".`股票权重`\r\n" + 
+//				 		"          from "+ bktypetable + ", a股\r\n" + 
+//				 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`\r\n" + 
+//				 		"           and '" +  formatedstartdate + "' >= Date("+ bktypetable + ".`加入时间`)\r\n" + 
+//				 		"           and '" +  formatedenddate + "' <  ifnull("+ bktypetable + ".`移除时间`, '2099-12-31')\r\n" + 
+//				 		"           and "+ bktypetable + ".`板块代码` =  '" + currentbkcode + "'\r\n" + 
+//				 		"         \r\n" + 
+//				 		"         group by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码`\r\n" + 
+//				 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` ";
 				 sqlquerystat1 = "select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , "+ bktypetable + ".`股票权重`\r\n" + 
-				 		"          from "+ bktypetable + ", a股\r\n" + 
-				 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`\r\n" + 
-				 		"           and '" +  formatedstartdate + "' >= Date("+ bktypetable + ".`加入时间`)\r\n" + 
-				 		"           and '" +  formatedenddate + "' <  ifnull("+ bktypetable + ".`移除时间`, '2099-12-31')\r\n" + 
-				 		"           and "+ bktypetable + ".`板块代码` =  '" + currentbkcode + "'\r\n" + 
-				 		"         \r\n" + 
-				 		"         group by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码`\r\n" + 
-				 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` ";
+					 		"          from "+ bktypetable + ", a股\r\n" + 
+					 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`\r\n" + 
+					 		
+					 		"and (  (  Date("+ bktypetable + ".`加入时间`) between '" +  formatedstartdate + "'  and '" +  formatedenddate + "')\r\n" + 
+					 		"           		 or( ifnull("+ bktypetable + ".`移除时间`, '2099-12-31') between '" +  formatedstartdate + "'  and '" +  formatedenddate + "')\r\n" + 
+					 		"           		 or( Date("+ bktypetable + ".`加入时间`) <= '" +  formatedstartdate + "' and ifnull(" + bktypetable + ".`移除时间`, '2099-12-31') >= '" +  formatedenddate + "' )\r\n" + 
+					 		"			  )" +
+//					 		"           and '" +  formatedstartdate + "' >= Date("+ bktypetable + ".`加入时间`)\r\n" + 
+//					 		"           and '" +  formatedenddate + "' <  ifnull("+ bktypetable + ".`移除时间`, '2099-12-31')\r\n" + 
+					 		
+					 		
+					 		"           and "+ bktypetable + ".`板块代码` =  '" + currentbkcode + "'\r\n" + 
+					 		"         \r\n" + 
+					 		"         group by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码`\r\n" + 
+					 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` ";
 			 }
 			 System.out.println(sqlquerystat1);
 			 rs1 = connectdb.sqlQueryStatExecute(sqlquerystat1);

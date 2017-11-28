@@ -7,12 +7,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -52,12 +54,11 @@ public class BanKuaiGeGuTable extends JTable
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		 
-		int columnIndexToSort = 3; //优先排序占比增长
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
+//		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+//		int columnIndexToSort = 3; //优先排序占比增长
+//		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
+//		sorter.setSortKeys(sortKeys);
+//		sorter.sort();
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockmanager = stockmanager1;
@@ -65,7 +66,24 @@ public class BanKuaiGeGuTable extends JTable
 		createEvents ();
 	}
 	
-	
+	public void sortByParsedFile ()
+	{
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 6; //优先排序占比增长
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+	}
+	public void sortByZhanBiGrowthRate ()
+	{
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 3; //优先排序占比增长
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+	}
 	
 	private BanKuaiDbOperation bkdbopt;
 //	private boolean youxianxianshiparsefile;
@@ -159,13 +177,21 @@ public class BanKuaiGeGuTable extends JTable
 		        if(stockinparsefile == null)
 		        	return comp;
 		        
+		        //更改显示
 		        if (comp instanceof JLabel && (col == 3 ||  col == 5)) {
-		        	
-	    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-	    	    	percentFormat.setMinimumFractionDigits(1);
 	            	String value =  ((JLabel)comp).getText();
-	            	String valuepect = percentFormat.format ( Double.parseDouble(value) );
-//	            	System.out.println( valuepect );
+	            	String valuepect = null;
+	            	try {
+	            		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value).doubleValue();
+	            		 
+	            		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+	 	    	    	 percentFormat.setMinimumFractionDigits(1);
+		            	 valuepect = percentFormat.format (formatevalue );
+	            	} catch (java.lang.NumberFormatException e)   	{
+	            		e.printStackTrace();
+	            	} catch (ParseException e) {
+						e.printStackTrace();
+					}
 	            	((JLabel)comp).setText(valuepect);
 		        }
 		        
@@ -245,12 +271,19 @@ public class BanKuaiGeGuTable extends JTable
 		}
 	}
 	
-	public void hideZhanBiColumn () 
-	{//在板块分析界面不需要3个column
+	public void hideZhanBiColumn (int hidecolumn) 
+	{
 		TableColumnModel tcm = this.getColumnModel();
-		this.removeColumn(tcm.getColumn(3));
-		this.removeColumn(tcm.getColumn(3));
-		this.removeColumn(tcm.getColumn(3));
+		if(hidecolumn >1) {
+			//在板块分析界面不需要3个column
+			this.removeColumn(tcm.getColumn(3));
+			this.removeColumn(tcm.getColumn(3));
+			this.removeColumn(tcm.getColumn(3));
+			this.removeColumn(tcm.getColumn(3));
+
+		} else if (hidecolumn == 1) {
+			this.removeColumn(tcm.getColumn(6));
+		}
 	}
 	
 	public void removeRows () 

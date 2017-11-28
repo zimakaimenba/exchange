@@ -37,21 +37,30 @@ public class JStockComboBox extends  JComboBox<String>
 	private BanKuaiDbOperation bkdbopt;
 	private BkChanYeLianTreeNode nodeshouldbedisplayed;
 	
+	/*
+	 * 
+	 */
 	public BkChanYeLianTreeNode getUserInputNode ()
 	{
 		statChangeActions ();
 		return nodeshouldbedisplayed;
 	}
+	/*
+	 * 
+	 */
 	public BkChanYeLianTreeNode updateUserSelectedNode (Stock stock)
 	{
 		String stockcode = stock.getMyOwnCode();
 		String stocname = stock.getMyOwnName();
 		this.addItem(stockcode+stocname);
 		this.setSelectedItem(stockcode+stocname);
-		preSearch(stockcode);
+		preSearch(stock);
 		updateStockCombox();
 		return nodeshouldbedisplayed;
 	}
+	/*
+	 * 
+	 */
 	public BkChanYeLianTreeNode updateUserSelectedNode (String stockcode)
 	{
 //		this.addItem(stockcode+stocname);
@@ -59,6 +68,52 @@ public class JStockComboBox extends  JComboBox<String>
 		preSearch(stockcode);
 		updateStockCombox();
 		return nodeshouldbedisplayed;
+	}
+	/*
+	 * 获取用户输入的个股的基本信息 
+	 */
+	private void preSearch(Stock stock) 
+	{
+		nodeshouldbedisplayed = bkdbopt.getStockBasicInfo (stock);
+		nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
+	}
+	/*
+	 * 获取用户code的板块或个股的基本信息 
+	 */
+	private void preSearch(String nodecode) 
+	{
+		 ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (nodecode);
+		 if(nodeslist.size() == 0) {
+			 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
+			 return;
+		 }
+		 
+		 if(nodeslist.size()>1) { 
+			 //显示JLIST，让用户选择
+			 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
+			 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
+			 if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
+			 
+			 int userselected = userselection.getUserSelection();
+			 nodeshouldbedisplayed = nodeslist.get(userselected);
+		 } else
+			 nodeshouldbedisplayed = nodeslist.get(0);
+		 
+		 if(nodeshouldbedisplayed.getType() == 6) { //是个股
+//					if(accountschicangconfig.isSystemChiCang(stockcode)) {
+//						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
+//					} 
+					
+//					nodeshouldbedisplayed = bkdbopt.getCheckListsXMLInfo ((Stock)nodeshouldbedisplayed);
+//					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
+					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
+					
+					
+//					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
+					
+//					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
+		 }				
 	}
 	
 	private void createEvents() 
@@ -105,22 +160,22 @@ public class JStockComboBox extends  JComboBox<String>
 		
 	}
 	
-	protected void setEditorToNull() 
+	private void setEditorToNull() 
 	{
 		this.getEditor().setItem("");
 	}
 
-	protected void statChangeActions()
+	private void statChangeActions()
 	{
-		String stockcode;
+		String nodecode;
 		try	{
-			stockcode = formatStockCode((String)this.getSelectedItem());
-			if(!checkCodeInputFormat(stockcode)) {
+			nodecode = formatStockCode((String)this.getSelectedItem());
+			if(!checkCodeInputFormat(nodecode)) {
 				JOptionPane.showMessageDialog(null,"股票/板块代码有误！","Warning", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			
-			preSearch(stockcode);
+			preSearch(nodecode);
 			updateStockCombox();
 		} catch(java.lang.NullPointerException ex)	{
 			ex.printStackTrace();
@@ -134,41 +189,6 @@ public class JStockComboBox extends  JComboBox<String>
 		
 	}
 	
-	private void preSearch(String stockcode) 
-	{
-		 ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (stockcode);
-		 if(nodeslist.size() == 0) {
-			 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
-			 return;
-		 }
-		 
-		 if(nodeslist.size()>1) {
-			 //显示JLIST，让用户选择
-			 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
-			 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
-			 if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-			 
-			 int userselected = userselection.getUserSelection();
-			 nodeshouldbedisplayed = nodeslist.get(userselected);
-		 } else
-			 nodeshouldbedisplayed = nodeslist.get(0);
-		 
-		 if(nodeshouldbedisplayed.getType() == 6) { //是个股
-//					if(accountschicangconfig.isSystemChiCang(stockcode)) {
-//						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
-//					} 
-					
-//					nodeshouldbedisplayed = bkdbopt.getCheckListsXMLInfo ((Stock)nodeshouldbedisplayed);
-//					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
-					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
-					
-					
-//					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
-					
-//					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
-		 }				
-	}
 
 	private boolean checkCodeInputFormat(String stockcode) 
 	{

@@ -115,9 +115,10 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	}
 
 	/**
-	 * @return the cjlration
+	 * @板块或个股和他上级的大盘或板块的成交额的比值
 	 */
-	public Double getCjlZhanBi() {
+	public Double getCjlZhanBi()  
+	{
 		return this.myownchengjiaoer/this.uplevelchengjiaoer;
 	}
 

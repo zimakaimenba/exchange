@@ -388,15 +388,34 @@ public class StockInfoManager
 	private void createEvents()
 	{
 		//保住几个chart同步
+		panelGeguWkDpZhanBi.getChartPanel().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				//显示选择的tooltip
+				String tooltip = panelGeguWkDpZhanBi.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
+				Comparable datekey = panelGeguWkDpZhanBi.getCurSelectedBarDate ();
+				panelZhanBi.highLightSpecificBarColumn (datekey);
+				panelgegucje.highLightSpecificBarColumn (datekey);
+				pnlGeGuWkZhanBi.highLightSpecificBarColumn (datekey);
+				panelbkcje.highLightSpecificBarColumn (datekey);
+			}
+		});
 		panelbkcje.getChartPanel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = panelbkcje.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
 				Comparable datekey = panelbkcje.getCurSelectedBarDate ();
 				panelZhanBi.highLightSpecificBarColumn (datekey);
 				panelgegucje.highLightSpecificBarColumn (datekey);
 				pnlGeGuWkZhanBi.highLightSpecificBarColumn (datekey);
-//				panelZhanBi.getChartPanel().repaint();
+				panelGeguWkDpZhanBi.highLightSpecificBarColumn (datekey);
 			}
 		});
 		
@@ -404,33 +423,45 @@ public class StockInfoManager
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = panelZhanBi.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
 				Comparable datekey = panelZhanBi.getCurSelectedBarDate ();
 				panelbkcje.highLightSpecificBarColumn (datekey);
 				panelgegucje.highLightSpecificBarColumn (datekey);
 				pnlGeGuWkZhanBi.highLightSpecificBarColumn (datekey);
-//				panelZhanBi.getChartPanel().repaint();
+				panelGeguWkDpZhanBi.highLightSpecificBarColumn (datekey);
 			}
 		});
 		panelgegucje.getChartPanel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = panelgegucje.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
 				Comparable datekey = panelgegucje.getCurSelectedBarDate ();
 				panelbkcje.highLightSpecificBarColumn (datekey);
 				panelZhanBi.highLightSpecificBarColumn (datekey);
 				pnlGeGuWkZhanBi.highLightSpecificBarColumn (datekey);
-//				panelZhanBi.getChartPanel().repaint();
+				panelGeguWkDpZhanBi.highLightSpecificBarColumn (datekey);
 			}
 		});
 		pnlGeGuWkZhanBi.getChartPanel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				//显示选择的tooltip
+				String tooltip = pnlGeGuWkZhanBi.getToolTipSelected ();
+				tfldselectedmsg.setText(tooltip);
+				//
 				Comparable datekey = pnlGeGuWkZhanBi.getCurSelectedBarDate ();
 				panelbkcje.highLightSpecificBarColumn (datekey);
 				panelZhanBi.highLightSpecificBarColumn (datekey);
 				panelgegucje.highLightSpecificBarColumn (datekey);
-//				panelZhanBi.getChartPanel().repaint();
+				panelGeguWkDpZhanBi.highLightSpecificBarColumn (datekey);
 			}
 		});
 		
@@ -445,6 +476,7 @@ public class StockInfoManager
 				pnlGeGuWkZhanBi.resetDate();
 				panelbkcje.resetDate();
 				panelgegucje.resetDate();
+				panelGeguWkDpZhanBi.resetDate();
 			}
 		});
 		
@@ -459,6 +491,7 @@ public class StockInfoManager
 				pnlGeGuWkZhanBi.resetDate();
 				panelbkcje.resetDate();
 				panelgegucje.resetDate();
+				panelGeguWkDpZhanBi.resetDate();
 			}
 		});
 		
@@ -470,6 +503,7 @@ public class StockInfoManager
 				pnlGeGuWkZhanBi.resetDate();
 				panelbkcje.resetDate();
 				panelgegucje.resetDate();
+				panelGeguWkDpZhanBi.resetDate();
 			}
 		});
 		
@@ -478,6 +512,9 @@ public class StockInfoManager
 				if("date".equals(e.getPropertyName() ) ) {
 					panelZhanBi.resetDate();
 					pnlGeGuWkZhanBi.resetDate();
+					panelbkcje.resetDate();
+					panelgegucje.resetDate();
+					panelGeguWkDpZhanBi.resetDate();
 					
 					JDateChooser wybieraczDat = (JDateChooser) e.getSource();
 		    		LocalDate newdate = wybieraczDat.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -1782,16 +1819,15 @@ public class StockInfoManager
     	//个股成交额
     	panelgegucje.resetDate();
     	panelgegucje.setNodeJiaoYiErByWeek (stockofbankuai,curselectdate,dapan);
-//    	((TitledBorder)panelgegucje.getBorder()).setTitle("个股从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
-//													+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
-//    	panelgegucje.repaint();
-    	//个股成交额占比
+
+    	//个股板块成交额占比
     	pnlGeGuWkZhanBi.resetDate();
     	pnlGeGuWkZhanBi.setNodeZhanBiByWeek(stockofbankuai,curselectdate,dapan);
     	
-//    	((TitledBorder)pnlGeGuWkZhanBi.getBorder()).setTitle("个股从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
-//														+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
-//    	pnlGeGuWkZhanBi.repaint();
+    	//个股大盘成交额占比
+    	panelGeguWkDpZhanBi.resetDate();
+    	tabbedPanegeguzhanbi.setSelectedIndex(0);
+    	panelGeguWkDpZhanBi.setNodeAndDaPanZhanBiByWeek (stockofbankuai,curselectdate,dapan);
 	}
 	
 	
@@ -2483,6 +2519,9 @@ public class StockInfoManager
 	private JButton btnsixmonthafter;
 	private BanKuaiFengXiBarChartPnl panelbkcje;
 	private BanKuaiFengXiBarChartPnl panelgegucje;
+	private BanKuaiFengXiBarChartPnl panelGeguWkDpZhanBi;
+	private JTabbedPane tabbedPanegeguzhanbi;
+	private JTextField tfldselectedmsg;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2496,7 +2535,7 @@ public class StockInfoManager
 		frame.getContentPane().setEnabled(false);
 				
 		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u7406");
-		frame.setBounds(100, 100, 1909, 911);
+		frame.setBounds(100, 100, 1909, 921);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -2669,9 +2708,6 @@ public class StockInfoManager
 		panelZhanBi = new BanKuaiFengXiBarChartPnl();
 		panelZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u534A\u5E74\u5185\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
-		pnlGeGuWkZhanBi = new BanKuaiFengXiBarChartPnl();
-		pnlGeGuWkZhanBi.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u80A1\u7968\u534A\u5E74\u5185\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		
 		JPanel panel_4 = new JPanel();
 		
 		panelbkcje = new BanKuaiFengXiBarChartPnl();
@@ -2680,6 +2716,12 @@ public class StockInfoManager
 		
 		panelgegucje = new BanKuaiFengXiBarChartPnl();
 		panelgegucje.setBorder(new TitledBorder(null, "\u80A1\u7968\u6210\u4EA4\u989D", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
+		
+		tfldselectedmsg = new JTextField();
+		tfldselectedmsg.setEditable(false);
+		tfldselectedmsg.setColumns(10);
 		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -2705,17 +2747,17 @@ public class StockInfoManager
 					.addGap(15)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(panelZhanBi, GroupLayout.PREFERRED_SIZE, 526, GroupLayout.PREFERRED_SIZE)
-								.addComponent(panelbkcje, GroupLayout.PREFERRED_SIZE, 523, GroupLayout.PREFERRED_SIZE))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(panelZhanBi, GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
+								.addComponent(panelbkcje, GroupLayout.PREFERRED_SIZE, 523, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tfldselectedmsg))
 							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(1)
 									.addComponent(panelgegucje, GroupLayout.PREFERRED_SIZE, 564, GroupLayout.PREFERRED_SIZE)
 									.addGap(530)
 									.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
-								.addComponent(pnlGeGuWkZhanBi, GroupLayout.PREFERRED_SIZE, 562, GroupLayout.PREFERRED_SIZE))
+								.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 560, GroupLayout.PREFERRED_SIZE))
 							.addGap(13))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, 1089, GroupLayout.PREFERRED_SIZE)
@@ -2725,7 +2767,7 @@ public class StockInfoManager
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 								.addGroup(groupLayout.createSequentialGroup()
@@ -2754,17 +2796,26 @@ public class StockInfoManager
 							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(452)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(pnlGeGuWkZhanBi, GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 341, GroupLayout.PREFERRED_SIZE)
 								.addComponent(panelZhanBi, GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE))))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
 						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
 							.addComponent(panelStatusBar, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-							.addComponent(pnl_paomd, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)))
+							.addComponent(pnl_paomd, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE))
+						.addComponent(tfldselectedmsg, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
+		
+		pnlGeGuWkZhanBi = new BanKuaiFengXiBarChartPnl();
+		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u677F\u5757\u5360\u6BD4", null, pnlGeGuWkZhanBi, null);
+		pnlGeGuWkZhanBi.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u80A1\u7968\u534A\u5E74\u5185\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		panelGeguWkDpZhanBi = new BanKuaiFengXiBarChartPnl();
+		panelGeguWkDpZhanBi.setBorder(new TitledBorder(null, "\u4E2A\u80A1\u5927\u76D8\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u5927\u76D8\u5360\u6BD4", null, panelGeguWkDpZhanBi, null);
 		
 		
 		

@@ -153,14 +153,18 @@ public class BkChanYeLianTree extends JTree
 	/*
 	 * 时间参数是 处理这个时间那一周的板块个股和file比
 	 */
-	public void updateTreeParseFileInfo (HashSet<String> stockinfile,LocalDate selectiondate)
+	private void updateTreeParseFileInfo (HashSet<String> stockinfile,LocalDate selectiondate)
 	{
 		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
 		BkChanYeLianTreeNode root = (BkChanYeLianTreeNode) model.getRoot();
-		updateParseFileInfoToTree (root,stockinfile,selectiondate);
 		
+		updateParseFileInfoToTree (root,stockinfile,selectiondate);
+
 		model.nodeStructureChanged(root);
 	}
+	/*
+	 * 从根目录开始遍历树，安装每日板块文件
+	 */
 	private void updateParseFileInfoToTree(BkChanYeLianTreeNode node, HashSet<String> stockinfile, LocalDate selectiondate) 
 	{
 		int childCount = node.getChildCount();
@@ -175,27 +179,21 @@ public class BkChanYeLianTree extends JTree
 	    		String bkcode = childNode.getMyOwnCode();
 	    		
 	    		HashMap<String, Stock> tmpallbkge = ((BanKuai)childNode).getSpecificPeriodBanKuaiGeGu(selectiondate);
-//	  	        if( ((BanKuai)childNode).checkSavedStockListIsTheSame(selectiondate ) ) //如果板块已经存有个股，那直接用
-//	  	        	tmpallbkge = ((BanKuai)childNode).getBanKuaiGeGu ();
-//	  	        else {
-//	  	        	Date startdate = CommonUtility.getFirstDayOfWeek(selectiondate );
-//		  	        Date lastdate = CommonUtility.getLastDayOfWeek(selectiondate );
-//			  	    tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (bkname,bkcode,startdate,lastdate);
-//		  	        ((BanKuai)childNode).setBanKuaiGeGu(tmpallbkge);
-//	  	        }
-
-	    		Set<String> curbkallbkset = null;
-	    		try {
-	    			 curbkallbkset = tmpallbkge.keySet();
-	    		} catch (java.lang.NullPointerException e) {
-	    			 curbkallbkset = new HashSet<String> ();
+	    		if(tmpallbkge != null) {
+	    			Set<String> curbkallbkset = null;
+		    		try {
+		    			 curbkallbkset = tmpallbkge.keySet();
+		    		} catch (java.lang.NullPointerException e) {
+		    			 curbkallbkset = new HashSet<String> ();
+		    		}
+					SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset );
+					
+					if(intersectionbankuai.size() >0 ) { //有交集
+						HashSet<String> stockbkresult = new HashSet<String> (intersectionbankuai);
+						childNode.setParseFileStockSet (stockbkresult); // 把交集保存
+					}
+	    			
 	    		}
-				SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset );
-				
-				if(intersectionbankuai.size() >0 ) { //有交集
-					HashSet<String> stockbkresult = new HashSet<String> (intersectionbankuai);
-					childNode.setParseFileStockSet (stockbkresult); // 把交集保存
-				}
 	    	}
 	    	
 	    	if( childNodetype == BanKuaiAndStockBasic.BKGEGU ) {
@@ -211,7 +209,7 @@ public class BkChanYeLianTree extends JTree
 				    //如果是个股节点，则要把上面所有父节点(子产业链也标记这个个股)
 				     DefaultTreeModel model = (DefaultTreeModel) this.getModel();
 					 TreeNode[] tempath = model.getPathToRoot(childNode);
-					 for(int j=0;j<tempath.length-1;j++ ) {
+					 for(int j=1;j<tempath.length-1;j++ ) {
 					    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
 					    	int nodeparentstype = parentnode.getType();
 					    	if(nodeparentstype == BkChanYeLianTreeNode.SUBBK) { //如果是子产业链，
@@ -227,6 +225,68 @@ public class BkChanYeLianTree extends JTree
 	        } 
 	    }
 	}
+	/*
+	 * 从指定node开始，安装每日板块文件到该node下所有节点
+	 */
+	public void updateParseFileInfoToTreeFromSpecificNode(BkChanYeLianTreeNode node, HashSet<String> stockinfile, LocalDate selectiondate) 
+	{
+		node.clearCurParseFileStockSet ( );
+		int nodetype = node.getType();
+		
+		if( nodetype == BanKuaiAndStockBasic.TDXBK ) {
+    		String bkcode = node.getMyOwnCode();
+    		
+    		HashMap<String, Stock> tmpallbkge = ((BanKuai)node).getSpecificPeriodBanKuaiGeGu(selectiondate);
+    		if(tmpallbkge != null) {
+    			Set<String> curbkallbkset = null;
+	    		try {
+	    			 curbkallbkset = tmpallbkge.keySet();
+	    		} catch (java.lang.NullPointerException e) {
+	    			 curbkallbkset = new HashSet<String> ();
+	    		}
+				SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset );
+				
+				if(intersectionbankuai.size() >0 ) { //有交集
+					HashSet<String> stockbkresult = new HashSet<String> (intersectionbankuai);
+					node.setParseFileStockSet (stockbkresult); // 把交集保存
+				}
+    			
+    		}
+    	}
+    	
+    	if( nodetype == BanKuaiAndStockBasic.BKGEGU ) {
+    		String gegustockcode = node.getMyOwnCode();
+    		Set<String> curbkallbkset = new HashSet<String> ();
+    		curbkallbkset.add(gegustockcode);
+    		SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, curbkallbkset);
+    		
+ 		    if(intersectionbankuai.size() >0 ) { //有交集
+ 		    	HashSet<String> stockbkresult = new HashSet<String> (intersectionbankuai);
+				node.setParseFileStockSet (stockbkresult); // 把交集保存
+				
+			    //如果是个股节点，则要把上面所有父节点(子产业链也标记这个个股)
+			     DefaultTreeModel model = (DefaultTreeModel) this.getModel();
+				 TreeNode[] tempath = model.getPathToRoot(node);
+				 for(int j=1;j<tempath.length-1;j++ ) {
+				    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
+				    	int nodeparentstype = parentnode.getType();
+				    	if(nodeparentstype == BkChanYeLianTreeNode.SUBBK) { //如果是子产业链，
+				    			 ((SubBanKuai)parentnode).setParseFileStockSet(stockbkresult);
+				    	}
+				 }
+			      
+		      }
+    	}
+    	DefaultTreeModel model = (DefaultTreeModel) this.getModel();
+    	model.nodeStructureChanged (node);
+    	
+		int childCount = node.getChildCount();
+	    for (int i = 0; i < childCount; i++) {
+	    	BkChanYeLianTreeNode childNode = (BkChanYeLianTreeNode) node.getChildAt(i);
+	    	updateParseFileInfoToTreeFromSpecificNode (childNode,stockinfile,selectiondate);
+	    }
+	}
+
 
 	
 
