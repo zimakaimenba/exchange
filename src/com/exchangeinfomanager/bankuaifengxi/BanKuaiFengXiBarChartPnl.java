@@ -21,6 +21,7 @@ import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
@@ -222,8 +223,24 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		plot.setDataset(barchartdataset);
 		
 		setPanelTitle ("占比",displayedenddate1);
+		
+		this.setDaZiJinValueMarker(0.001); //大于0.1说明个股强势，资金占的多
+		this.setDaZiJinValueMarker(0.0005); //大于0.1说明个股强势，资金占的多
 	}
-	
+	/*
+	 * 
+	 */
+	public void setDaZiJinValueMarker (double d)
+	{
+		ValueMarker marker = new ValueMarker (d);
+//		marker.setLabel("热点占比警戒线");
+		marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
+		marker.setPaint(Color.BLACK);
+		plot.addRangeMarker(marker);
+	}
+	/*
+	 * 
+	 */
 	private void setPanelTitle (String type, LocalDate displayedenddate1)
 	{
 		String nodecode = curdisplayednode.getMyOwnCode();
@@ -397,7 +414,7 @@ class CustomToolTipGeneratorForZhanBi implements CategoryToolTipGenerator  {
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	String tooltip = selected.toString();
     	 
-		NodeFengXiData nodefx = null;
+    	ChenJiaoZhanBiInGivenPeriod nodefx = null;
 		if(node.getType() == 4 )
 			nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
 		else if(node.getType() == 6 ) 
@@ -436,7 +453,7 @@ class CustomToolTipGeneratorForZhanBi implements CategoryToolTipGenerator  {
 			
 			return tooltip;
 		} else if(node.getType() == 6 ) { //个股
-			Double curzhanbidata = (Double)dataset.getValue(row, column);  //占比
+			Double curzhanbidata = nodefx.getCjlZhanBi();  //占比
 			Double zhanbigrowthrate = nodefx.getGgbkzhanbigrowthrate();
 			Double cjezhanbi = nodefx.getGgbkcjegrowthzhanbi();
 			Integer maxweek = nodefx.getGgbkzhanbimaxweek();

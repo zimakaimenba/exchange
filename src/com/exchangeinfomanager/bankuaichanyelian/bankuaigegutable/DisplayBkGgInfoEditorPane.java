@@ -31,41 +31,47 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		creatEvents ();
 	}
 	
-	public void displayNodeInfo (BkChanYeLianTreeNode curselectedbknodecode)
+	public void displayNodeAllInfo (BkChanYeLianTreeNode curselectedbknodecode)
 	{
-		this.createChanYeLianNewsHtml(curselectedbknodecode);
+		this.displayChanYeLianNewsHtml(curselectedbknodecode);
 		this.displayNodeBasicInfo(curselectedbknodecode);
 	}
 	
 	 /*
      * 显示板块新闻连接
      */
-    private void createChanYeLianNewsHtml(BkChanYeLianTreeNode curselectedbknodecode)
+    public void displayChanYeLianNewsHtml(BkChanYeLianTreeNode curselectedbknodecode)
     {
     	String curselectedbknodename = curselectedbknodecode.getMyOwnName();
 	       	String curbknodecode = curselectedbknodecode.getMyOwnCode();
 	       	ArrayList<ChanYeLianNews> curnewlist = bkdbopt.getBanKuaiRelatedNews (curbknodecode);
 	       	 
-    	String htmlstring = "";
-    	htmlstring  += "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>";
+	     String htmlstring = this.getText();
+		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+		 System.out.println(doc.toString());
+		 org.jsoup.select.Elements content = doc.select("body");
+		       
+		 content.append( "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>");
     	for(ChanYeLianNews cylnew : curnewlist ) {
     		String title = cylnew.getNewsTitle();
     		String newdate = cylnew.getGenerateDate().toString(); 
     		String slackurl = cylnew.getNewsSlackUrl();
     		String keywords = cylnew.getKeyWords ();
     		if(slackurl != null && !slackurl.isEmpty() )	    		
-    			htmlstring  += "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ";
+    			content.append( "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
     		else
-    			htmlstring  += "<p>" + newdate  + title + "</p> ";
+    			content.append( "<p>" + newdate  + title + "</p> ");
     		//notesPane.setText("<a href=\"http://www.google.com/finance?q=NYSE:C\">C</a>, <a href=\"http://www.google.com/finance?q=NASDAQ:MSFT\">MSFT</a>");
     	}
+    	
+    	htmlstring = doc.toString();
     	this.setText(htmlstring);
     	this.setCaretPosition(0);
 	}
     /*
      * 显示节点的基本信息
      */
-    private void  displayNodeBasicInfo(BkChanYeLianTreeNode curselectedbknode)
+    public void  displayNodeBasicInfo(BkChanYeLianTreeNode curselectedbknode)
     {
     	String curselectedbknodename = curselectedbknode.getMyOwnName();
 	       	String curbknodecode = curselectedbknode.getMyOwnCode();

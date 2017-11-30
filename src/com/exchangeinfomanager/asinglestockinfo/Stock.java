@@ -13,7 +13,6 @@ import java.util.Locale;
 
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
-import com.exchangeinfomanager.bankuaifengxi.NodeFengXiData;
 import com.google.common.base.Strings;
 
 public class Stock extends BkChanYeLianTreeNode {
@@ -411,12 +410,12 @@ public class Stock extends BkChanYeLianTreeNode {
 	/*
 	 * 计算个股和大盘/板块成交量的各个数据
 	 */
-	public NodeFengXiData getNodeFengXiResultForSpecificDate (LocalDate requireddate)
+	public ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate)
 	{
 		if(cjeperiodlist == null)
 			return null;
 		
-		NodeFengXiData nodefx = new NodeFengXiData (super.getMyOwnCode(),requireddate);
+//		NodeFengXiData nodefx = new NodeFengXiData (super.getMyOwnCode(),requireddate);
 		
 		//计算成交额变化贡献率，个体增量占板块增量的百分比
 		//检查板块的成交量是增加，缩量没有比较意义则直接返回
@@ -431,34 +430,34 @@ public class Stock extends BkChanYeLianTreeNode {
 //				System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 				//计算成交额变化贡献率，个体增量占板块增量的百分比
 				if( bkcjediff == null || bkcjediff <0)
-					nodefx.setGgbkcjegrowthzhanbi(-100.0);
+					curcjlrecord.setGgbkcjegrowthzhanbi(-100.0);
 				else {
 					Double curggcje = curcjlrecord.getMyOwnChengJiaoEr(); //停牌后所有成交量都应该计算入
-					nodefx.setGgbkcjegrowthzhanbi( curggcje/bkcjediff );
+					curcjlrecord.setGgbkcjegrowthzhanbi( curggcje/bkcjediff );
 				}
 				//计算给定周的成交额和板块的占比是多少周期内的最大占比
-				nodefx.setGgbkzhanbimaxweek(0);
+				curcjlrecord.setGgbkzhanbimaxweek(0);
 				// 计算给定周的成交额和板块占比增速
-				nodefx.setGgbkzhanbigrowthrate(100.0);
+				curcjlrecord.setGgbkzhanbigrowthrate(100.0);
 				//计算给定轴的成交额和大盘的占比是多少周期内的最大占比
-				nodefx.setGgdpzhanbimaxweek(0);
+				curcjlrecord.setGgdpzhanbimaxweek(0);
 				
-				return nodefx;
+				return curcjlrecord;
 			} else if(this.checkIsFuPaiAfterTingPai (requireddate)) { //说明是停牌的复牌
 				//计算成交额变化贡献率，个体增量占板块增量的百分比
 				Double curggcje = curcjlrecord.getMyOwnChengJiaoEr();//停牌后所有成交量都应该计算入
 				if( bkcjediff <0 || bkcjediff == null)
-					nodefx.setGgbkcjegrowthzhanbi(-100.0);
+					curcjlrecord.setGgbkcjegrowthzhanbi(-100.0);
 				else
-					nodefx.setGgbkcjegrowthzhanbi(curggcje/bkcjediff);
+					curcjlrecord.setGgbkcjegrowthzhanbi(curggcje/bkcjediff);
 				//计算给定周的成交额和板块的占比是多少周期内的最大占比
-				nodefx.setGgbkzhanbimaxweek(0);
+				curcjlrecord.setGgbkzhanbimaxweek(0);
 				// 计算给定周的成交额和板块占比增速
-				nodefx.setGgbkzhanbigrowthrate(100.0);
+				curcjlrecord.setGgbkzhanbigrowthrate(100.0);
 				//计算给定轴的成交额和大盘的占比是多少周期内的最大占比
-				nodefx.setGgdpzhanbimaxweek(0);
+				curcjlrecord.setGgdpzhanbimaxweek(0);
 				
-				return nodefx;
+				return curcjlrecord;
 			} else {
 				//计算成交额变化贡献率，个体增量占板块增量的百分比
 //				Double curggcje = curcjlrecord.getMyOwnChengJiaoEr();
@@ -468,9 +467,9 @@ public class Stock extends BkChanYeLianTreeNode {
 				
 				Double gegucjechange = super.getChengJiaoErDifferenceOfLastWeek(requireddate);
 				if( bkcjediff <0 || bkcjediff == null)
-					nodefx.setGgbkcjegrowthzhanbi(-100.0);
+					curcjlrecord.setGgbkcjegrowthzhanbi(-100.0);
 				else
-					nodefx.setGgbkcjegrowthzhanbi( gegucjechange/bkcjediff );
+					curcjlrecord.setGgbkcjegrowthzhanbi( gegucjechange/bkcjediff );
 				
 				//计算给定周的成交额和板块的占比是多少周期内的最大占比
 				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
@@ -488,14 +487,14 @@ public class Stock extends BkChanYeLianTreeNode {
 					if( this.checkIsFuPaiAfterTingPai (lastdate) )
 						break;
 				}
-				nodefx.setGgbkzhanbimaxweek(maxweek);
+				curcjlrecord.setGgbkzhanbimaxweek(maxweek);
 				
 				// 计算给定周的成交额和板块占比增速
 				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );				
 				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
 				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
 
-				nodefx.setGgbkzhanbigrowthrate( zhanbigrowthrate);
+				curcjlrecord.setGgbkzhanbigrowthrate( zhanbigrowthrate);
 				//计算给定轴的成交额和大盘的占比是多少周期内的最大占比
 				ChenJiaoZhanBiInGivenPeriod bkcjlrecord = this.myupbankuai.getSpecficChenJiaoErRecord(requireddate);//通过所属板块来得到大盘成交量
 				Double curdpzhanbiratio = curcjlrecord.getMyOwnChengJiaoEr() /  bkcjlrecord.getUpLevelChengJiaoEr(); //个股成交量和大盘成交量当周占比
@@ -515,12 +514,12 @@ public class Stock extends BkChanYeLianTreeNode {
 					if(this.checkIsFuPaiAfterTingPai (lastdate) ) //查到连续周到头为止
 						break;
 				}
-				nodefx.setGgdpzhanbimaxweek(dpmaxweek);
+				curcjlrecord.setGgdpzhanbimaxweek(dpmaxweek);
 				
 				//计算给定轴的成交额和大盘的占比
-				nodefx.setGgdpzhanbi(curdpzhanbiratio);
+				curcjlrecord.setGgdpzhanbi(curdpzhanbiratio);
 				
-				return nodefx;
+				return curcjlrecord;
 				
 			}
 		}

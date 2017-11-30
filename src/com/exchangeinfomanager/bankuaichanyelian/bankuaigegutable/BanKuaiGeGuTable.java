@@ -96,6 +96,7 @@ public class BanKuaiGeGuTable extends JTable
 		JMenuItem menuItemMakeLongTou = new JMenuItem("设置股票权重");
 		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemMakeLongTou);
+		
 		this.setComponentPopupMenu(popupMenuGeguNews);
 		menuItemAddNews.addActionListener(new ActionListener() {
 			@Override
@@ -106,7 +107,8 @@ public class BanKuaiGeGuTable extends JTable
 			}
 			
 		});
-		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
+		
+//		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
 		menuItemMakeLongTou.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				setGeGuWeightInBanKuai ();
@@ -163,7 +165,6 @@ public class BanKuaiGeGuTable extends JTable
 					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
 					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
 					 this.stockmanager.toFront();
-					 
 				 }
 
 	}
@@ -242,7 +243,7 @@ public class BanKuaiGeGuTable extends JTable
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 			return;
 		
-		
+		bkdbopt.addBanKuaiNews(stockcode, cylnews.getInputedNews());
 	}
 	
 	/*

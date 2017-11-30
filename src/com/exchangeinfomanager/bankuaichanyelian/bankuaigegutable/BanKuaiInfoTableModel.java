@@ -19,7 +19,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 {
 
 	public BanKuaiInfoTableModel() {
-		// TODO Auto-generated constructor stub
+		super ();
 	}
 	
 	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","max","成交额增长贡献率"};
@@ -32,26 +32,26 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		showzhbiwknum = curselectdate;
 		entryList = new ArrayList<Map.Entry<String, BanKuai>>(curbkzslist.entrySet());
 
-        Collections.sort(entryList, new Comparator<Map.Entry<String, BanKuai>>() {
-            @Override
-            public int compare(Map.Entry<String, BanKuai> bk1,
-                               Map.Entry<String, BanKuai> bk2) {
-            	
-            	Double bk1zhanbi = bk1.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
-            	Double bk2zhanbi = bk2.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
-            	try {
-            		return bk1zhanbi.compareTo(bk2zhanbi);
-            	} catch (java.lang.NullPointerException e) {
-            		if(bk2zhanbi == null && bk1zhanbi != null)
-            			return bk1zhanbi.compareTo(-10000000.0);
-            		else if(bk1zhanbi == null && bk2zhanbi != null)
-            			return bk2zhanbi.compareTo(-10000000.0);
-            		else 
-            			return 0;
-            	}
-            }
-            }
-        );
+//        Collections.sort(entryList, new Comparator<Map.Entry<String, BanKuai>>() {
+//            @Override
+//            public int compare(Map.Entry<String, BanKuai> bk1,
+//                               Map.Entry<String, BanKuai> bk2) {
+//            	
+//            	Double bk1zhanbi = bk1.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
+//            	Double bk2zhanbi = bk2.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
+//            	try {
+//            		return bk1zhanbi.compareTo(bk2zhanbi);
+//            	} catch (java.lang.NullPointerException e) {
+//            		if(bk2zhanbi == null && bk1zhanbi != null)
+//            			return bk1zhanbi.compareTo(-10000000.0);
+//            		else if(bk1zhanbi == null && bk2zhanbi != null)
+//            			return bk2zhanbi.compareTo(-10000000.0);
+//            		else 
+//            			return 0;
+//            	}
+//            }
+//            }
+//        );
 
         this.fireTableDataChanged();
 	}
@@ -104,7 +104,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    	if(entryList.isEmpty() )
 	    		return null;
 	    	
-	    	Entry<String, BanKuai> thisbk = entryList.get( entryList.size()-1-rowIndex );
+	    	Entry<String, BanKuai> thisbk = entryList.get( rowIndex );
 	    	
 	    	Object value = "??";
 	    	switch (columnIndex) {
@@ -118,9 +118,9 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	break;
             case 2:
             	Double zhanbigrowthrate = thisbk.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
-    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-    	    	percentFormat.setMinimumFractionDigits(1);
-            	value = percentFormat.format(zhanbigrowthrate);
+//    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
+//    	    	percentFormat.setMinimumFractionDigits(1);
+            	value = zhanbigrowthrate;
             	break;
             case 3:
             	int maxweek = thisbk.getValue().getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showzhbiwknum);
@@ -128,9 +128,9 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	break;
             case 4:
             	Double cjegrowthrate = thisbk.getValue().getChenJiaoErChangeGrowthRateForAGivenPeriod (showzhbiwknum);
-    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
-    	    	percentFormat2.setMinimumFractionDigits(1);
-            	value = percentFormat2.format(cjegrowthrate);
+//    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
+//    	    	percentFormat2.setMinimumFractionDigits(1);
+            	value = cjegrowthrate;
 	    	}
 
 	    	return value;
@@ -146,13 +146,13 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = String.class;
+			          clazz = Double.class;
 			          break;
 		        case 3:
 			          clazz = Integer.class;
 			          break;
 		        case 4:
-			          clazz = String.class;
+			          clazz = Double.class;
 			          break;
 		      }
 		      
@@ -177,9 +177,9 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    } 
 	    public BanKuai getBanKuai (int row)
 	    {
-	    	String bkcode = this.getBanKuaiCode(entryList.size()-1-row);
+	    	String bkcode = this.getBanKuaiCode(row);
 //	    	return bkmap.get(bkcode);
-	    	return this.entryList.get(entryList.size()-1-row).getValue();
+	    	return this.entryList.get(row).getValue();
 	    }
 
 	    public int getBanKuaiRowIndex (String neededfindstring) 
@@ -201,7 +201,6 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			   			break;
 			   		}
 	    		}
-	    	
 	   		
 	   		return index;
 	    }

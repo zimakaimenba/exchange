@@ -245,12 +245,11 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
     	        	
     	        	ShowLargePieChartPnl slc = new ShowLargePieChartPnl (chartfile.getAbsolutePath());
     	        	int exchangeresult = JOptionPane.showConfirmDialog(null, slc, "°å¿é¹ÉÆ±Õ¼±È", JOptionPane.OK_CANCEL_OPTION);
-    				System.out.print(exchangeresult);
+
     				if(exchangeresult == JOptionPane.CANCEL_OPTION)
     					return;
-    	        	
-    	        	
-    	        	pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 10));
+
+    				pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 10));
     	        	
     	        } catch (Exception ex) {
     	        	ex.printStackTrace();

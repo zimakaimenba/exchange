@@ -28,10 +28,11 @@ public class JStockComboBox extends  JComboBox<String>
 	public JStockComboBox() 
 	{
 		super();
+		createEvents ();
 		this.setEditable(true);
 		this.setForeground(Color.RED);
 		bkdbopt = new BanKuaiDbOperation ();
-		createEvents ();
+		
 	}
 
 	private BanKuaiDbOperation bkdbopt;
@@ -52,10 +53,10 @@ public class JStockComboBox extends  JComboBox<String>
 	{
 		String stockcode = stock.getMyOwnCode();
 		String stocname = stock.getMyOwnName();
-		this.addItem(stockcode+stocname);
-		this.setSelectedItem(stockcode+stocname);
+//		this.addItem(stockcode+stocname);
+//		this.setSelectedItem(stockcode+stocname);
 		preSearch(stock);
-		updateStockCombox();
+		updateStockCombox(stockcode+stocname);
 		return nodeshouldbedisplayed;
 	}
 	/*
@@ -212,22 +213,24 @@ public class JStockComboBox extends  JComboBox<String>
 		return stockcode.substring(0,6).trim(); 
 	}
 	
-	private void updateStockCombox() 
+	private void updateStockCombox (String tmp)
 	{
-		boolean isaddItem=true;
+		boolean isaddItem = true;
 		int updateItem = -1;
-		String tmp= formatStockCode((String)this.getSelectedItem());//有可能是原来输入过的，要把代码选择出来。
-		
 
 	   	  //判断用户所输入的项目是否有重复，若有重复则不增加到JComboBox中。
 	   	  try{
 	   			  for(int i=0;i< this.getItemCount();i++) {
-	   				  String curitem = this.getItemAt(i).toString(); 
-		   	  	  	  if (curitem.substring(0, 6).equals(tmp) && curitem.length()>6 ){
-		   	  	  	  	 isaddItem = false;
-		   	  	  	  	 break;
-		   	  	  	  }
-			   	  	 if (curitem.substring(0, 6).equals(tmp) && curitem.length()>6 ){
+	   				  	String curitem = this.getItemAt(i).toString();
+		   				if(curitem.equals(tmp)  ) { // 已经有了，不用有任何操作
+		   					isaddItem = false;
+		   					break;
+		   				}
+//		   	  	  	  if(curitem.substring(0, 6).equals(tmp) && curitem.length()>6 ) { //
+//		   	  	  	  	 isaddItem = false;
+//		   	  	  	  	 break;
+//		   	  	  	  }
+			   	  	  if(curitem.substring(0, 6).equals(tmp) && curitem.length() == 6 ) { // 有了，但只有code,没有名字
 			   	  		 updateItem = i;
 		   	  	  	  	 break;
 		   	  	  	  }
@@ -246,7 +249,11 @@ public class JStockComboBox extends  JComboBox<String>
 	   	  }catch(NumberFormatException ne){
 	   		
 	   	  }
-		
+	}
+	private void updateStockCombox() 
+	{
+		String tmp = formatStockCode((String)this.getSelectedItem());//有可能是原来输入过的，要把代码选择出来。
+		updateStockCombox (tmp);
 	}
 
 

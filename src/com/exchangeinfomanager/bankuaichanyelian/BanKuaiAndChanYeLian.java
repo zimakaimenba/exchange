@@ -520,7 +520,7 @@ public class BanKuaiAndChanYeLian extends JPanel
   	       	
 //	  	     读出该板块相关的新闻
 	  	    BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
-	  	    notesPane.displayNodeInfo(curselectedbknode);
+	  	    notesPane.displayNodeAllInfo(curselectedbknode);
 //	  	    createChanYeLianNewsHtml (curselectedbknode);
 //	  	    displayNodeBasicInfo(curselectedbknode);
   	       	
@@ -1394,8 +1394,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 			} else {
 				bkfx = this.stockInfoManager.getBanKuaiFengXi();
 			}
-		bkfx.setBanKuaiEndiorPaneContents ( curselectedbknodecode );
-		bkfx.setFenXiDate ( dchgeguwkzhanbi.getDate() );
+//		bkfx.setBanKuaiEndiorPaneContents ( curselectedbknodecode );
+//		bkfx.setFenXiDate ( dchgeguwkzhanbi.getDate() );
 		
 		if(!bkfx.isVisible() ) {
 			bkfx.setVisible(true);

@@ -64,6 +64,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 //import com.exchangeinfomanager.bankuaifengxi.ChenJiaoLangZhanBiInGivenPeriod;
 import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.gui.subgui.BanKuaiReDian;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
@@ -5897,6 +5898,24 @@ public class BanKuaiDbOperation
 	        
 	        return tmprecordfile;
 			
+		}
+		/*
+		 * 存储板块为某一周的热点，用来回溯热点，否则过段时间就忘了前期是什么热点
+		 */
+		public int setBanKuaiAsReDian(String bkcode, BanKuaiReDian bkrd) 
+		{
+			LocalDate rediandate = bkrd.getReDianDate();
+			String miaoshu = bkrd.getReDianMiaoShu ();
+			
+			String sqlinsertstat = "INSERT INTO 板块个股热点记录(代码,热点日期,描述) values ("
+					+ "'" + bkcode + "'" + ","
+					+ "'" + rediandate + "'" + ","
+					+ "'" + miaoshu  + "'" 
+					+ ")"
+					;
+			System.out.println(sqlinsertstat);
+			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
+			return autoIncKeyFromApi;
 		}
 		
 

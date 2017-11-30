@@ -33,6 +33,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	
 	BanKuaiGeGuTableModel ()
 	{
+		super ();
 	}
 
 //	public void refreshByParsedFile (BanKuai bankuai,LocalDate wknum)
@@ -149,8 +150,6 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	}
             	break;
             case 3: //{ "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
-            	if(curdisplaystock.getMyOwnCode().equals("603605"))
-            		System.out.println("拉芳");
             	Double zhanbigrowthrate = curdisplaystock.getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum);
 //    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
 //            	value = percentFormat.format(zhanbigrowthrate);

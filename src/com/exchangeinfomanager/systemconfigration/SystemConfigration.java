@@ -60,6 +60,8 @@ public class SystemConfigration
 	public static int MODELSERVER=0, MODELCLIENT=1, MODELSERVERCLIENT=2;
 	private int givenperiodofmonth;
 	private int zhanbifengxizhouqi; //成交量占比分析周期
+	private double bkdpzhanbimarker;
+	private double ggdpzhanbimarker;
 	private Boolean priavtemode;
 	
 	private void getSystemInfoFromXML() 
@@ -145,7 +147,11 @@ public class SystemConfigration
 			Element priavtemodesetting = xmlroot.element("privatemode");
 			this.priavtemode = Boolean.parseBoolean(priavtemodesetting.getText());
 			
+			Element bkdpzhanbimarker = xmlroot.element("fengxibankuaidapanzhanbiyuzhi");
+			this.bkdpzhanbimarker = Double.parseDouble(bkdpzhanbimarker.getText());
 			
+			Element ggdpzhanbimarker = xmlroot.element("fengxigegudapanzhanbiyuzhi");
+			this.ggdpzhanbimarker = Double.parseDouble(ggdpzhanbimarker.getText());
 			
 //			Element eletdxvol = xmlroot.element("tdxvolpah");
 //			this.tdxvolpath = eletdxvol.getText(); 
@@ -587,6 +593,18 @@ public class SystemConfigration
 		public boolean getPrivateModeSetting ()
 		{
 			return this.priavtemode;
+		}
+		/**
+		 * @return the bkdpzhanbimarker
+		 */
+		public double getBkdpzhanbimarker() {
+			return bkdpzhanbimarker;
+		}
+		/**
+		 * @return the ggdpzhanbimarker
+		 */
+		public double getGgdpzhanbimarker() {
+			return ggdpzhanbimarker;
 		}
 
 }

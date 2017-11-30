@@ -56,6 +56,7 @@ import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -120,9 +121,11 @@ public class BanKuaiFengXi extends JDialog {
 //		if(parsedfilename2 != null)
 //			this.tfldparsedfile.setText(parsedfilename2);
 //		this.bkdbopt = new BanKuaiDbOperation ();
+		
 		this.sysconfig = SystemConfigration.getInstance();
 
 		createEvents ();
+		dateChooser.setDate(new Date ());
 	}
 	
 //	private BkChanYeLianTree bkcyltree;
@@ -162,6 +165,7 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	protected void refreshCurentBanKuaiFengXiResult(BanKuai selectedbk) 
 	{
+		tabbedPane.setSelectedIndex(0);
 		panelbkcje.resetDate();
 		panelbkwkzhanbi.resetDate();
 		pnllastestggzhanbi.resetDate();
@@ -183,8 +187,9 @@ public class BanKuaiFengXi extends JDialog {
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		//板块自身占比
 		DaPan dapan =  (DaPan) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode("000000");
-    	panelbkcje.setNodeJiaoYiErByWeek((BkChanYeLianTreeNode)selectedbk,curselectdate,dapan);
-		panelbkwkzhanbi.setNodeZhanBiByWeek((BkChanYeLianTreeNode)selectedbk,curselectdate,dapan);
+    	panelbkcje.setNodeJiaoYiErByWeek((BkChanYeLianTreeNode)selectedbk,curselectdate,dapan); //交易额
+		panelbkwkzhanbi.setNodeZhanBiByWeek((BkChanYeLianTreeNode)selectedbk,curselectdate,dapan); //占比
+		panelbkwkzhanbi.setDaZiJinValueMarker (0.01); //大于1%是板块强势的表现
 		
 		//更新板块所属个股
 		selectedbk = bkcyl.getAllGeGuOfBanKuai (selectedbk);
@@ -261,7 +266,7 @@ public class BanKuaiFengXi extends JDialog {
 			return false;
 	}
 	/*
-	 * 显示个股在板块内的占比
+	 * 显示个股在板块和大盘的占比的chart
 	 */
 	private void refreshGeGuFengXiResult (Stock stock)
 	{
@@ -273,9 +278,9 @@ public class BanKuaiFengXi extends JDialog {
 			panelgegucje.resetDate();
 			tabbedPanegeguzhanbi.setSelectedIndex(0);
 			
-			panelgeguwkzhanbi.setNodeZhanBiByWeek(stock,curselectdate,dapan);
-			panelGeguDapanZhanBi.setNodeAndDaPanZhanBiByWeek(stock,curselectdate,dapan);
-			panelgegucje.setNodeJiaoYiErByWeek(stock,curselectdate,dapan);
+			panelgeguwkzhanbi.setNodeZhanBiByWeek(stock,curselectdate,dapan); //个股板块占比
+			panelGeguDapanZhanBi.setNodeAndDaPanZhanBiByWeek(stock,curselectdate,dapan); //个股大盘占比
+			panelgegucje.setNodeJiaoYiErByWeek(stock,curselectdate,dapan); //个股对于板块交易额
 			
 			Comparable datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
 			if(datekey != null) {
@@ -286,14 +291,14 @@ public class BanKuaiFengXi extends JDialog {
 	}
 
 	
-	public void setBanKuaiEndiorPaneContents (String fenxibkxml)
-	{
-		editorPanebankuai.setText(fenxibkxml);
-	}
-	public void setFenXiDate (Date fxdate)
-	{
-		dateChooser.setDate(fxdate);
-	}
+//	public void setBanKuaiEndiorPaneContents (String fenxibkxml)
+//	{
+//		editorPanebankuai.setText(fenxibkxml);
+//	}
+//	public void setFenXiDate (Date fxdate)
+//	{
+//		dateChooser.setDate(fxdate);
+//	}
 
 	
 	private void displayStockSuoShuBanKuai(Stock selectstock) 
@@ -334,6 +339,13 @@ public class BanKuaiFengXi extends JDialog {
 	     editorPanebankuai.setCaretPosition(0);
 	     
 	}
+	/*
+	 * 
+	 */
+//	public void setNodeShouldBeFenxi (BkChanYeLianTreeNode nodeshouldbefenxied)
+//	{kk
+//		
+//	}
 	
 
 	private void createEvents() 
@@ -442,14 +454,16 @@ public class BanKuaiFengXi extends JDialog {
 				if(arg0.getStateChange() == ItemEvent.SELECTED) {
 					BkChanYeLianTreeNode userinputnode = cbxstockcode.getUserInputNode();
 					if(userinputnode.getType() == 6 ) {
-						displayStockSuoShuBanKuai((Stock)userinputnode);
 						findInputedNodeInTable (userinputnode.getMyOwnCode());
+						displayStockSuoShuBanKuai((Stock)userinputnode);
+//						hightlightSpecificSector ((Stock)userinputnode);
+//						refreshGeGuFengXiResult ((Stock)userinputnode);
 					}
-//					statChangeActions ();
-					
 				}
 				
 				if(arg0.getStateChange() == ItemEvent.DESELECTED) {
+//					BkChanYeLianTreeNode userinputnode = cbxstockcode.getUserInputNode();
+//					System.out.println("test");
 				
 				}
 			}
@@ -503,15 +517,20 @@ public class BanKuaiFengXi extends JDialog {
 				String selbk = editorPanebankuai.getSelectedBanKuai(); 
 				String selbkcode = selbk.trim().substring(1, 7);
 				tflddwbk.setText(selbkcode);
+
 				int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
 				if(rowindex != -1) {
-					tableBkZhanBi.setRowSelectionInterval(rowindex, rowindex);
-					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(rowindex, 0, true)));
+					int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+					tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+					
+					BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
+					refreshCurentBanKuaiFengXiResult (selectedbk);
+					String stockcode = cbxstockcode.getSelectedItem().toString().substring(0, 6);
+					findInputedNodeInTable (stockcode);
 				}
 				
-				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
-				refreshCurentBanKuaiFengXiResult (selectedbk);
-				findInputedNodeInTable (cbxstockcode.getUserInputNode().getMyOwnCode());
+				
 			}
 		});
 		
@@ -522,13 +541,13 @@ public class BanKuaiFengXi extends JDialog {
 			{
 				int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(tflddwbk.getText().trim());
 				if(rowindex != -1) {
-					tableBkZhanBi.setRowSelectionInterval(rowindex, rowindex);
-					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(rowindex, 0, true)));
+					int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+					tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+					BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
+					refreshCurentBanKuaiFengXiResult (selectedbk);
+					displayNodeInfo(selectedbk);
 				}
-				
-				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
-				refreshCurentBanKuaiFengXiResult (selectedbk);
-				displayNodeInfo(selectedbk);
 			}
 		});
 		
@@ -549,6 +568,7 @@ public class BanKuaiFengXi extends JDialog {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
 					cbxstockcode.updateUserSelectedNode (selectstock); 
+					displayStockSuoShuBanKuai(selectstock);
 				}
 				if (arg0.getClickCount() == 2) {
 //					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
@@ -572,10 +592,12 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+					displayStockSuoShuBanKuai(selectstock);
 				}
 				if (arg0.getClickCount() == 2) {
-					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
-					 displayStockSuoShuBanKuai (selectstock);
+//					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+//					 displayStockSuoShuBanKuai (selectstock);
 				}
 				
 				
@@ -596,10 +618,12 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+					displayStockSuoShuBanKuai(selectstock);
 				}
 				 if (arg0.getClickCount() == 2) {
-					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
-					 displayStockSuoShuBanKuai (selectstock);
+//					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+//					 displayStockSuoShuBanKuai (selectstock);
 				 }
 			}
 		}); 
@@ -618,10 +642,12 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					 refreshGeGuFengXiResult (selectstock);
+					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+					 displayStockSuoShuBanKuai(selectstock);
 				}
 				 if (arg0.getClickCount() == 2) {
-					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
-					 displayStockSuoShuBanKuai (selectstock);
+//					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+//					 displayStockSuoShuBanKuai (selectstock);
 				 }
 			}
 		});
@@ -640,10 +666,12 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+					displayStockSuoShuBanKuai(selectstock);
 				}
 				 if (arg0.getClickCount() == 2) {
-					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
-					 displayStockSuoShuBanKuai (selectstock);
+//					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+//					 displayStockSuoShuBanKuai (selectstock);
 				 }
 			}
 		});
@@ -662,10 +690,12 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+					displayStockSuoShuBanKuai(selectstock);
 				}
 				 if (arg0.getClickCount() == 2) {
-					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
-					 displayStockSuoShuBanKuai (selectstock);
+//					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
+//					 displayStockSuoShuBanKuai (selectstock);
 				 }
 				
 				 
@@ -690,8 +720,8 @@ public class BanKuaiFengXi extends JDialog {
 					return;
 				}
 				
-				
-				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(row);
+				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
 				refreshCurentBanKuaiFengXiResult (selectedbk);
 				displayNodeInfo(selectedbk);
 			}
@@ -755,6 +785,12 @@ public class BanKuaiFengXi extends JDialog {
 					
 				}
 			
+		});
+		
+		btnchangezhanbiyuzhi.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+			}
 		});
 		
 	}
@@ -835,8 +871,8 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	protected void displayNodeInfo(BanKuai selectedbk) 
 	{
-		editorPanebkinfo.displayNodeInfo(selectedbk);
-		
+		editorPanebkinfo.setText("");
+		editorPanebkinfo.displayNodeAllInfo(selectedbk);
 	}
 	/*
 	 * 
@@ -862,7 +898,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JButton cancelButton;
 	private JDateChooser dateChooser;
 	private JScrollPane sclpleft;
-	private JTable tableBkZhanBi;
+	private BanKuaiInfoTable tableBkZhanBi;
 //	private JTable tableGuGuZhanBiInBk;
 	private BanKuaiGeGuTable tableGuGuZhanBiInBk;
 	private BanKuaiFengXiBarChartPnl panelbkwkzhanbi;
@@ -892,6 +928,11 @@ public class BanKuaiFengXi extends JDialog {
 	private JTabbedPane tabbedPanegeguzhanbi;
 	private JTextField tfldselectedmsg;
 	private DisplayBkGgInfoEditorPane editorPanebkinfo;
+	private JLabel label;
+	private JTextField textField_2;
+	private JLabel label_1;
+	private JTextField textField_3;
+	private JButton btnchangezhanbiyuzhi;
 	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -934,6 +975,24 @@ public class BanKuaiFengXi extends JDialog {
 		
 		editorPanebankuai = new BanKuaiListEditorPane();
 		scrollPane.setViewportView(editorPanebankuai);
+		
+		label = new JLabel("\u677F\u5757\u5927\u76D8\u5360\u6BD4\u70ED\u70B9\u9608\u503C");
+		label.setEnabled(false);
+		
+		textField_2 = new JTextField();
+		textField_2.setEnabled(false);
+		textField_2.setColumns(10);
+		
+		label_1 = new JLabel("\u4E2A\u80A1\u5927\u76D8\u5360\u6BD4\u70ED\u70B9\u9608\u503C");
+		label_1.setEnabled(false);
+		
+		textField_3 = new JTextField();
+		textField_3.setEnabled(false);
+		textField_3.setColumns(10);
+		
+		btnchangezhanbiyuzhi = new JButton("\u66F4\u6539\u9608\u503C");
+		btnchangezhanbiyuzhi.setEnabled(false);
+		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -955,7 +1014,18 @@ public class BanKuaiFengXi extends JDialog {
 									.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 556, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(panelgegucje, GroupLayout.PREFERRED_SIZE, 562, GroupLayout.PREFERRED_SIZE))))
+									.addComponent(panelgegucje, GroupLayout.PREFERRED_SIZE, 562, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(label)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(label_1)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnchangezhanbiyuzhi))))
 						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 1112, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -977,7 +1047,13 @@ public class BanKuaiFengXi extends JDialog {
 							.addGap(613)
 							.addComponent(panelselectwkgeguzhanbi, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(tfldselectedmsg, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(tfldselectedmsg, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
+								.addComponent(label)
+								.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(label_1)
+								.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnchangezhanbiyuzhi))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(panelbkcje, GroupLayout.PREFERRED_SIZE, 434, GroupLayout.PREFERRED_SIZE)
@@ -1028,6 +1104,7 @@ public class BanKuaiFengXi extends JDialog {
 		cbxstockcode = new JStockComboBox();
 		
 		JButton button = new JButton("\u5BFC\u51FA\u4E2A\u80A1");
+		button.setEnabled(false);
 		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
@@ -1069,39 +1146,7 @@ public class BanKuaiFengXi extends JDialog {
 		sclpleft = new JScrollPane();
 		tabbedPane_1.addTab("\u677F\u5757\u5360\u6BD4", null, sclpleft, null);
 		
-		BanKuaiInfoTableModel bkzb = new BanKuaiInfoTableModel ();
-		tableBkZhanBi = new JTable(bkzb){
-			private static final long serialVersionUID = 1L;
-			
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-				 
-		        Component comp = super.prepareRenderer(renderer, row, col);
-		        BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
-		        BanKuai bankuai = tablemodel.getBanKuai(row);
-		        if(bankuai.getParseFileStockSet().size()>0)
-		        	comp.setForeground(Color.BLUE);
-		        else
-		        	comp.setForeground(Color.black);
-		        
-		        return comp;
-			}
-			
-//			public String getToolTipText(MouseEvent e) 
-//			{
-//                String tip = null;
-//                java.awt.Point p = e.getPoint();
-//                int rowIndex = rowAtPoint(p);
-//                int colIndex = columnAtPoint(p);
-//
-//                try {
-//                    tip = getValueAt(rowIndex, colIndex).toString();
-//                } catch (RuntimeException e1) {
-//                	e1.printStackTrace();
-//                }
-//                return tip;
-//            } 
-		};
-		
+		tableBkZhanBi = new BanKuaiInfoTable();	
 		
 		sclpleft.setViewportView(tableBkZhanBi);
 		

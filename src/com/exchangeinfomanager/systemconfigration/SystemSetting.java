@@ -501,8 +501,14 @@ public class SystemSetting extends JDialog
 				Element priavtemodesetting = rootele.addElement("privatemode");
 				priavtemodesetting.setText( String.valueOf(cbxprivatemode.isSelected() ) );
 				
+				Element elebkdpzhanbi = rootele.addElement("fengxibankuaidapanzhanbiyuzhi");
+				elebkdpzhanbi.setText(tfldbkdpmarker.getText().trim());
+				
+				Element eleggdpzhanbi = rootele.addElement("fengxigegudapanzhanbiyuzhi");
+				eleggdpzhanbi.setText(tfldggdpmarker.getText().trim());
+				
 				Element eletablefromserver = rootele.addElement("tablesfromserver");
-				eletablefromserver.setText(tfldtablefromserver.getText());
+				eletablefromserver.setText(tfldtablefromserver.getText().trim());
 				
 				Element elesorce = rootele.addElement("databasesources");
 				Set<String> dbsnameset = curdbmap.keySet();
@@ -755,6 +761,8 @@ public class SystemSetting extends JDialog
 	private JButton btngephi;
 	private JLabel label_3;
 	private JTextField tfldtablefromserver;
+	private JTextField tfldbkdpmarker;
+	private JTextField tfldggdpmarker;
 	private void initializeGui() 
 	{
 		setTitle("\u7CFB\u7EDF\u8BBE\u7F6E");
@@ -847,6 +855,18 @@ public class SystemSetting extends JDialog
 		tfldtablefromserver.setEnabled(false);
 		tfldtablefromserver.setEditable(false);
 		tfldtablefromserver.setColumns(10);
+		
+		JLabel label_4 = new JLabel("\u677F\u5757/\u5927\u76D8\u5360\u6BD4\u9608\u503C");
+		
+		tfldbkdpmarker = new JTextField();
+		tfldbkdpmarker.setText("0.01");
+		tfldbkdpmarker.setColumns(10);
+		
+		JLabel label_5 = new JLabel("\u4E2A\u80A1/\u5927\u76D8\u5360\u6BD4\u9608\u503C");
+		
+		tfldggdpmarker = new JTextField();
+		tfldggdpmarker.setText("0.001");
+		tfldggdpmarker.setColumns(10);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -864,8 +884,16 @@ public class SystemSetting extends JDialog
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(label_2)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
-									.addGap(323))
+									.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(label_4)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfldbkdpmarker, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(label_5)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfldggdpmarker, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+									.addContainerGap())
 								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_contentPanel.createSequentialGroup()
 										.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -958,7 +986,11 @@ public class SystemSetting extends JDialog
 							.addGap(18)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 								.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-								.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(label_4)
+								.addComponent(tfldbkdpmarker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(label_5)
+								.addComponent(tfldggdpmarker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 							.addGap(9)
 							.addComponent(cbxprivatemode)))
 					.addPreferredGap(ComponentPlacement.RELATED)
