@@ -72,20 +72,11 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		try {
 			entryList = new ArrayList<Map.Entry<String, Stock>>(stockmap.entrySet()  );
 		} catch ( java.lang.NullPointerException e) {
-			e.printStackTrace();
-			System.out.println(curbk.getMyOwnCode()+curbk.getMyOwnName());
-			return ;
+//			e.printStackTrace();
+			System.out.println(curbk.getMyOwnCode()+curbk.getMyOwnName() + "没有个股，请检查！");
+//			return ;
 		}
     	
-//    	Collections.sort(entryList, new Comparator<Map.Entry<String, Stock>>() {
-//            @Override
-//            public int compare(Map.Entry<String, Stock> integerEmployeeEntry,
-//                               Map.Entry<String, Stock> integerEmployeeEntry2) {
-//                return integerEmployeeEntry.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum)
-//                        .compareTo(integerEmployeeEntry2.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum));
-//            }
-//            }
-//        );
     	this.fireTableDataChanged();
 	}
 

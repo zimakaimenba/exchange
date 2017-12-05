@@ -126,15 +126,14 @@ public class BanKuai extends BkChanYeLianTreeNode
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode#setParseFileStockSet(java.util.HashSet)
 	 */
-	public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
-	 {
-	    	if(super.parsefilestockset == null) {
-	    		this.parsefilestockset = new HashSet<String> ();
-	    		this.parsefilestockset = parsefilestockset2;
-	    	}
-	    	else
-	    		this.parsefilestockset = parsefilestockset2;
-	 }
+//	public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
+//	 {
+//	    	if(super.parsefilestockset == null) {
+//	    		this.parsefilestockset = new HashSet<String> ();
+//	    		this.parsefilestockset = parsefilestockset2;
+//	    	} else
+//	    		this.parsefilestockset = parsefilestockset2;
+//	 }
 	/*
 	 * GEPHI part
 	 */

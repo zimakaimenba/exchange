@@ -316,6 +316,10 @@ public class StockInfoManager
 //					 nodeshouldbedisplayed = nodeslist.get(0);
 				
 				 displayStockJibenmianInfotoGui (); //显示板块或者股票的基本信息
+				 if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
+					 nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB(nodeshouldbedisplayed);
+					 displaySellBuyZdgzInfoToGui ();
+				 }
 //					initializeNetWorkOperation (stockcode); //生成对应的网站网址
 				 
 				 if(nodeshouldbedisplayed.getType() == 6) { //是个股
@@ -324,7 +328,7 @@ public class StockInfoManager
 					} 
 					
 					nodeshouldbedisplayed = bkdbopt.getCheckListsXMLInfo ((Stock)nodeshouldbedisplayed);
-					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
+//					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
 //					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
 					
 					
@@ -332,7 +336,7 @@ public class StockInfoManager
 					
 					if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 						displayAccountTableToGui ();
-						displaySellBuyZdgzInfoToGui ();
+//						displaySellBuyZdgzInfoToGui ();
 					}
 					displayStockNews ();
 					displayStockSuoShuBanKuai ();
@@ -1823,7 +1827,7 @@ public class StockInfoManager
 	     content.append( "</p>");
 	     		
 	     
-	     String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+//	     String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
 	     ArrayList<String> gegucyl = ((Stock)nodeshouldbedisplayed).getGeGuAllChanYeLianInfo();
 	     for(String cyl : gegucyl) {
 	    	 content.append( " <p>个股产业链:"
@@ -2108,9 +2112,7 @@ public class StockInfoManager
 				btnMai.setEnabled(false);
 				btnSell.setEnabled(false);
 				btnSongZhuanGu.setEnabled(false);
-				btnjiaruzdgz.setEnabled(false);
 				btnyichuzdgz.setEnabled(false);
-
 			}
 		
 	}
@@ -2206,7 +2208,7 @@ public class StockInfoManager
 	
 	private void displaySellBuyZdgzInfoToGui() 
 	{
-				Object[][] sellbuyObjects = ((Stock)nodeshouldbedisplayed).getZdgzMrmcZdgzYingKuiRecords();
+				Object[][] sellbuyObjects = (nodeshouldbedisplayed).getZdgzMrmcZdgzYingKuiRecords();
 				for(int i=0;i<sellbuyObjects.length;i++) {
 					((DefaultTableModel)tblzhongdiangz.getModel()).addRow(sellbuyObjects[i]);
 				}

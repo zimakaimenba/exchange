@@ -15,6 +15,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class JiaRuJiHua extends JPanel 
 {
@@ -29,11 +31,12 @@ public class JiaRuJiHua extends JPanel
 	
 	private String stockcode;
 	private JTextField tfdJihuaJiage;
-	private JTextField tfdShuoming;
 	private JComboBox<?> cbxJihuaLeixing;
 	private JCheckBox jbxMingRiJIhua;
 	private String guanzhutype;
 	private LocalDate jrdate;
+	private JScrollPane scrollPane;
+	private JTextArea tfdShuoming;
 	
 	public String getGuanZhuType ()
 	{
@@ -106,9 +109,6 @@ public class JiaRuJiHua extends JPanel
 	{
 		JLabel label = new JLabel("\u8BF4\u660E");
 		
-		tfdShuoming = new JTextField();
-		tfdShuoming.setColumns(10);
-		
 		jbxMingRiJIhua = new JCheckBox("\u660E\u65E5\u8BA1\u5212");
 		
 		cbxJihuaLeixing = new JComboBox();
@@ -121,41 +121,45 @@ public class JiaRuJiHua extends JPanel
 		tfdJihuaJiage = new JTextField();
 		tfdJihuaJiage.setEnabled(false);
 		tfdJihuaJiage.setColumns(10);
+		
+		scrollPane = new JScrollPane();
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addGap(17)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(lblNewLabel)
-							.addGap(18)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(label)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addComponent(jbxMingRiJIhua, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
-							.addComponent(tfdShuoming)))
-					.addContainerGap(29, Short.MAX_VALUE))
+						.addComponent(jbxMingRiJIhua, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
+						.addComponent(label, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(16, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(label)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tfdShuoming, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
+					.addGap(7)
 					.addComponent(jbxMingRiJIhua)
-					.addGap(3)
+					.addGap(18)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(lblNewLabel))
-						.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(16))
+							.addComponent(lblNewLabel)
+							.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addGap(93))
 		);
+		
+		tfdShuoming = new JTextArea();
+		scrollPane.setViewportView(tfdShuoming);
 		setLayout(groupLayout);
 	}
 }

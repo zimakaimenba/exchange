@@ -43,14 +43,24 @@ public class DaPan extends BkChanYeLianTreeNode
 	 */
 	public ChenJiaoZhanBiInGivenPeriod getSpecficChenJiaoErRecord (LocalDate requireddate)
 	{
-//		this
-//		
-//		Integer index = this.getRequiredRecordsPostion (this.cjeperiodlist,requireddate);
-//		if( index != null) {
-//			ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
-//			return curcjlrecord;
-//		} else
-			return null;
+		Double dapanchaer = 0.0;
+		Integer shindex = this.sheperiodlist.getRequiredRecordsPostion(requireddate);
+		if( shindex != null) {
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.sheperiodlist.getChenJiaoErZhanBiInGivenPeriod().get(shindex);
+				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+				Double upcje = curcjlrecord.getUpLevelChengJiaoEr();
+				dapanchaer = dapanchaer + curcje; 
+				return curcjlrecord;
+		}
+		
+//		Integer szindex = this.szeperiodlist.getRequiredRecordsPostion(requireddate);
+//		if( shindex != null) {
+//				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.szeperiodlist.getChenJiaoErZhanBiInGivenPeriod().get(szindex);
+//				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+//				dapanchaer = dapanchaer + curcje;
+//		}
+
+		return null;
 	}
 	/*
 	 * 计算指定周和上周的成交量差额

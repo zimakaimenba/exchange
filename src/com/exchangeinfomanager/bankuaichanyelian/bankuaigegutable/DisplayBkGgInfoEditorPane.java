@@ -33,6 +33,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	
 	public void displayNodeAllInfo (BkChanYeLianTreeNode curselectedbknodecode)
 	{
+		this.setText("");
 		this.displayChanYeLianNewsHtml(curselectedbknodecode);
 		this.displayNodeBasicInfo(curselectedbknodecode);
 	}
@@ -48,7 +49,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	       	 
 	     String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-		 System.out.println(doc.toString());
+//		 System.out.println(doc.toString());
 		 org.jsoup.select.Elements content = doc.select("body");
 		       
 		 content.append( "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>");
@@ -85,7 +86,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	       	
 	       String htmlstring = this.getText();
 	       org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-	       System.out.println(doc.toString());
+//	       System.out.println(doc.toString());
 	       org.jsoup.select.Elements content = doc.select("body"); 
 	       
 	       content.append("<h4>板块基本信息</h4>");

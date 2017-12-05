@@ -3498,7 +3498,8 @@ public class BanKuaiDbOperation
 					 		"         group by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码`\r\n" + 
 					 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` ";
 			 }
-			 System.out.println(sqlquerystat1);
+//			 System.out.println(sqlquerystat1);
+			 System.out.println("给板块" + currentbk.getMyOwnCode() + currentbk.getMyOwnName() + "寻找从" + formatedstartdate.toString() + "到" + formatedenddate.toString() + "时间段内的个股！");
 			 rs1 = connectdb.sqlQueryStatExecute(sqlquerystat1);
 //			  ResultSetMetaData rsmd = rs1.getMetaData();
 //			 String name = rsmd.getColumnName(3);
@@ -3835,7 +3836,8 @@ public class BanKuaiDbOperation
 					; 
 		}
 		
-		System.out.println(sqlquerystat);
+//		System.out.println(sqlquerystat);
+		System.out.println("为板块" + bankuai.getMyOwnCode() + bankuai.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
 		CachedRowSetImpl rs = null;
 		ArrayList<ChenJiaoZhanBiInGivenPeriod > tmpcjelist = new ArrayList<ChenJiaoZhanBiInGivenPeriod > ();
 		try {
@@ -3936,7 +3938,8 @@ public class BanKuaiDbOperation
 				"order by Y.year, Y.week"
 				;
 		 }
-		System.out.println(sqlquerystat);
+//		System.out.println(sqlquerystat);
+		System.out.println("为个股" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
 //		HashMap<String,Stock> gegumap = new HashMap<String,Stock> ();
 		CachedRowSetImpl rsfg = null;
 		try {  
@@ -4956,15 +4959,15 @@ public class BanKuaiDbOperation
 	}
 		
 	//private Object[][] zdgzmrmcykRecords = null;
-		public Stock getZdgzMrmcZdgzYingKuiFromDB (Stock stockbasicinfo)
+		public BkChanYeLianTreeNode getZdgzMrmcZdgzYingKuiFromDB (BkChanYeLianTreeNode stockbasicinfo)
 		{
 			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 			String sqlquerystat = null;
 			sqlquerystat = getZdgzMrmcYingKuiSQLForMysql (stockbasicinfo);
 			sqlstatmap.put("mysql", sqlquerystat);
 			
-			sqlquerystat = getZdgzMrmcYingKuiSQLForAccess (stockbasicinfo);
-			sqlstatmap.put("access", sqlquerystat);
+//			sqlquerystat = getZdgzMrmcYingKuiSQLForAccess (stockbasicinfo);
+//			sqlstatmap.put("access", sqlquerystat);
 	     
 			 CachedRowSetImpl rs = null;
 			 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
@@ -5051,7 +5054,7 @@ public class BanKuaiDbOperation
 			
 		}
 
-		private String getZdgzMrmcYingKuiSQLForMysql(Stock stockbasicinfo) 
+		private String getZdgzMrmcYingKuiSQLForMysql(BkChanYeLianTreeNode stockbasicinfo) 
 		{
 			String stockcode = stockbasicinfo.getMyOwnCode();
 			String sqlquerystat1= "SELECT ggyk.日期, "

@@ -44,12 +44,14 @@ public class BanKuaiGeGuTable extends JTable
 { 
 	private static final long serialVersionUID = 1L;
 	private StockInfoManager stockmanager;
+	private BanKuaiGeGuTableRenderer renderer;
 	
 	public BanKuaiGeGuTable (StockInfoManager stockmanager1)
 	{
 		super ();
 		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel();
 		this.setModel(bkgegumapmdl);
+		this.renderer =  new BanKuaiGeGuTableRenderer (); 
 		
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
@@ -66,6 +68,10 @@ public class BanKuaiGeGuTable extends JTable
 		createEvents ();
 	}
 	
+	public TableCellRenderer getCellRenderer(int row, int column) 
+	{
+		return renderer;
+	}
 	public void sortByParsedFile ()
 	{
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
@@ -169,45 +175,45 @@ public class BanKuaiGeGuTable extends JTable
 
 	}
 
-	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
-	{
-		        Component comp = super.prepareRenderer(renderer, row, col);
-		        BanKuaiGeGuTableModel tablemodel = (BanKuaiGeGuTableModel)this.getModel(); 
-		        HashSet<String> stockinparsefile = tablemodel.getStockInParseFile();
-		        
-		        if(stockinparsefile == null)
-		        	return comp;
-		        
-		        //更改显示
-		        if (comp instanceof JLabel && (col == 3 ||  col == 5)) {
-	            	String value =  ((JLabel)comp).getText();
-	            	String valuepect = null;
-	            	try {
-	            		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value).doubleValue();
-	            		 
-	            		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-	 	    	    	 percentFormat.setMinimumFractionDigits(1);
-		            	 valuepect = percentFormat.format (formatevalue );
-	            	} catch (java.lang.NumberFormatException e)   	{
-	            		e.printStackTrace();
-	            	} catch (ParseException e) {
-						e.printStackTrace();
-					}
-	            	((JLabel)comp).setText(valuepect);
-		        }
-		        
-		        if (!isRowSelected(row)) {
-		        	comp.setBackground(getBackground());
-		        	comp.setForeground(getForeground());
-		        	int modelRow = convertRowIndexToModel(row);
-		        	String stockcode = (String)tablemodel.getValueAt(modelRow, 0);
-					if(stockinparsefile.contains(stockcode)) {
-						comp.setForeground(Color.BLUE);
-					}
-		        }
-		        
-		        return comp;
-	}
+//	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
+//	{
+//		        Component comp = super.prepareRenderer(renderer, row, col);
+//		        BanKuaiGeGuTableModel tablemodel = (BanKuaiGeGuTableModel)this.getModel(); 
+//		        HashSet<String> stockinparsefile = tablemodel.getStockInParseFile();
+//		        
+//		        if(stockinparsefile == null)
+//		        	return comp;
+//		        
+//		        //更改显示，显示为%
+//		        if (comp instanceof JLabel && (col == 3 ||  col == 5)) {
+//	            	String value =  ((JLabel)comp).getText();
+//	            	String valuepect = null;
+//	            	try {
+//	            		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value).doubleValue();
+//	            		 
+//	            		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+//	 	    	    	 percentFormat.setMinimumFractionDigits(1);
+//		            	 valuepect = percentFormat.format (formatevalue );
+//	            	} catch (java.lang.NumberFormatException e)   	{
+//	            		e.printStackTrace();
+//	            	} catch (ParseException e) {
+//						e.printStackTrace();
+//					}
+//	            	((JLabel)comp).setText(valuepect);
+//		        }
+//		        
+//		        if (!isRowSelected(row)) {
+//		        	comp.setBackground(getBackground());
+//		        	comp.setForeground(getForeground());
+//		        	int modelRow = convertRowIndexToModel(row);
+//		        	String stockcode = (String)tablemodel.getValueAt(modelRow, 0);
+//					if(stockinparsefile.contains(stockcode)) {
+//						comp.setForeground(Color.BLUE);
+//					}
+//		        }
+//		        
+//		        return comp;
+//	}
 			    
 
 	
@@ -244,6 +250,7 @@ public class BanKuaiGeGuTable extends JTable
 			return;
 		
 		bkdbopt.addBanKuaiNews(stockcode, cylnews.getInputedNews());
+		
 	}
 	
 	/*
@@ -254,12 +261,13 @@ public class BanKuaiGeGuTable extends JTable
 		int row = this.getSelectedRow();
 		if(row < 0)
 			return;
+		int modelRow = this.convertRowIndexToModel(row);
 		
 //		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
 		String bkcode = ((BanKuaiGeGuTableModel)(this.getModel())).getTdxBkCode();
 //		String bkname = ((BanKuaiGeGuTableModel)(this.getModel())).getTdxBkName();
-		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(row);
-		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (row);
+		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(modelRow);
+		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (modelRow);
 		
 		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重，注意权重不能大于10！",weight);
 		int newweight = Integer.parseInt(weightresult);
@@ -268,7 +276,7 @@ public class BanKuaiGeGuTable extends JTable
 		
 		if(weight != newweight) {
 			bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
-			( (BanKuaiGeGuTableModel)this.getModel() ).setStockCurWeight (row,newweight);
+			( (BanKuaiGeGuTableModel)this.getModel() ).setStockCurWeight (modelRow,newweight);
 		}
 	}
 	

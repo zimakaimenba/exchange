@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,14 +18,17 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.gui.subgui.BanKuaiReDian;
+import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
+import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiInfoTable extends JTable 
 {
@@ -34,6 +38,7 @@ public class BanKuaiInfoTable extends JTable
 	 */
 	private static final long serialVersionUID = 1L;
 	private BanKuaiDbOperation bkdbopt;
+	private SystemConfigration sysconfig;
 
 	public BanKuaiInfoTable() {
 		super ();
@@ -44,6 +49,7 @@ public class BanKuaiInfoTable extends JTable
 		this.setRowSorter(sorter);
 		this.sortByZhanBiGrowthRate ();
 		this.bkdbopt = new BanKuaiDbOperation ();
+		this.sysconfig = SystemConfigration.getInstance();
 	}
 	/*
 	 * 
@@ -62,10 +68,12 @@ public class BanKuaiInfoTable extends JTable
 	{
 		JPopupMenu popupMenuGeguNews = new JPopupMenu();
 		JMenuItem menuItemAddNews = new JMenuItem("添加板块新闻");
+		JMenuItem menuItemAddToGz = new JMenuItem("加入关注");
 		JMenuItem menuItemMakeLongTou = new JMenuItem("设置为当周热点");
 		
 		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemMakeLongTou);
+		popupMenuGeguNews.add(menuItemAddToGz);
 		
 		this.setComponentPopupMenu(popupMenuGeguNews);
 		
@@ -88,11 +96,22 @@ public class BanKuaiInfoTable extends JTable
 			}
 			
 		});
+		
+		menuItemAddToGz.addActionListener(new ActionListener() {
+			@Override
+
+			public void actionPerformed(ActionEvent evt) {
+
+				addZdgz ();
+			}
+			
+		});
+
 
 
 	}
 
-	protected void addBanKuaiReDian()
+	protected void addZdgz() 
 	{
 		int row = this.getSelectedRow();
 		if(row <0) {
@@ -103,14 +122,31 @@ public class BanKuaiInfoTable extends JTable
 		String bkcode = ((BanKuaiInfoTableModel) this.getModel()).getBanKuaiCode(modelRow);
 		String bkname = ((BanKuaiInfoTableModel) this.getModel()).getBanKuaiName(modelRow);
 		
-		BanKuaiReDian bkrd = new BanKuaiReDian (bkcode,bkname);
-		int exchangeresult = JOptionPane.showConfirmDialog(null, bkrd, "设置为当周热点", JOptionPane.OK_CANCEL_OPTION);
-		
+		JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"加入关注" ); 
+		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 			return;
 		
-		this.bkdbopt.setBanKuaiAsReDian (bkcode,bkrd);
+		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
 		
+	}
+	protected void addBanKuaiReDian()
+	{
+		int row = this.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		int modelRow = this.convertRowIndexToModel(row); 
+		String bkcode = ((BanKuaiInfoTableModel) this.getModel()).getBanKuaiCode(modelRow);
+		String bkname = ((BanKuaiInfoTableModel) this.getModel()).getBanKuaiName(modelRow);
+
+		JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"本周热点" ); 
+		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "本周热点", JOptionPane.OK_CANCEL_OPTION);
+		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+			return;
+		
+		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
 	}
 	protected void addBanKuaiNews() 
 	{

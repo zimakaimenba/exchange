@@ -74,6 +74,8 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	private String jingZhengDuiShou;
 	private String keHuCustom;
 	private String suoshujiaoyisuo;
+	private Object[][] zdgzmrmcykRecords ;
+	
 	
 	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> cjeperiodlist; //板块自己的成交记录
 //	private BanKuaiDbOperation bkdbopt;
@@ -102,7 +104,11 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	//子类里面有具体实现
     public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
     {
-//    	this.parsefilestockset = parsefilestockset2;
+    	if(this.parsefilestockset == null) {
+    		this.parsefilestockset = new HashSet<String> ();
+    		this.parsefilestockset = parsefilestockset2;
+    	} else
+    		this.parsefilestockset = parsefilestockset2;
     }
     public HashSet<String> getParseFileStockSet ()
     {
@@ -356,7 +362,18 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	public void setFuxiangguan(String fuxiangguan) {
 		this.fuxiangguan = fuxiangguan;
 	}
-	
+	/**
+	 * @param zdgzmrmcykRecords the zdgzmrmcykRecords to set
+	 */
+	public void setZdgzmrmcykRecords(Object[][] zdgzmrmcykRecords) {
+		this.zdgzmrmcykRecords = zdgzmrmcykRecords;
+	}
+	/**
+	 * @return the zdgzmrmcykRecords
+	 */
+	public Object[][] getZdgzMrmcZdgzYingKuiRecords() {
+		return zdgzmrmcykRecords;
+	}
 
  	//和成交量相关的函数
 	/*

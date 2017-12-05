@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -32,7 +33,6 @@ public class JStockComboBox extends  JComboBox<String>
 		this.setEditable(true);
 		this.setForeground(Color.RED);
 		bkdbopt = new BanKuaiDbOperation ();
-		
 	}
 
 	private BanKuaiDbOperation bkdbopt;
@@ -58,6 +58,14 @@ public class JStockComboBox extends  JComboBox<String>
 		preSearch(stock);
 		updateStockCombox(stockcode+stocname);
 		return nodeshouldbedisplayed;
+	}
+	public BkChanYeLianTreeNode updateUserSelectedNode (BanKuai bk)
+	{
+		this.nodeshouldbedisplayed = bk;
+		String bkcode = bk.getMyOwnCode();
+		String bkname = bk.getMyOwnName();
+		updateStockCombox(bkcode+bkname);
+		return this.nodeshouldbedisplayed;
 	}
 	/*
 	 * 
@@ -172,9 +180,12 @@ public class JStockComboBox extends  JComboBox<String>
 		try	{
 			nodecode = formatStockCode((String)this.getSelectedItem());
 			if(!checkCodeInputFormat(nodecode)) {
-				JOptionPane.showMessageDialog(null,"股票/板块代码有误！","Warning", JOptionPane.WARNING_MESSAGE);
+//				JOptionPane.showMessageDialog(null,"股票/板块代码有误！","Warning", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
+			
+			if(this.nodeshouldbedisplayed != null && nodecode.equals( this.nodeshouldbedisplayed.getMyOwnCode() ) )
+				return;
 			
 			preSearch(nodecode);
 			updateStockCombox();
@@ -183,8 +194,9 @@ public class JStockComboBox extends  JComboBox<String>
 			JOptionPane.showMessageDialog(null, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
 			return;
 		} catch(java.lang.StringIndexOutOfBoundsException ex2) {
-			ex2.printStackTrace();
-			JOptionPane.showMessageDialog(null,"股票代码有误！");
+//			ex2.printStackTrace();
+			this.nodeshouldbedisplayed = null;
+//			JOptionPane.showMessageDialog(null,"股票代码有误！");
 			return;
 		}
 		
@@ -230,8 +242,11 @@ public class JStockComboBox extends  JComboBox<String>
 //		   	  	  	  	 isaddItem = false;
 //		   	  	  	  	 break;
 //		   	  	  	  }
-			   	  	  if(curitem.substring(0, 6).equals(tmp) && curitem.length() == 6 ) { // 有了，但只有code,没有名字
-			   	  		 updateItem = i;
+		   				String curstring = curitem.substring(0, 6);
+			   	  	  if(curitem.substring(0, 6).equals(tmp)  ) { // 有了，但只有code,没有名字
+			   	  		  
+			   	  		isaddItem = false;
+//			   	  		 updateItem = i;
 		   	  	  	  	 break;
 		   	  	  	  }
 		   	  	  }
@@ -240,6 +255,7 @@ public class JStockComboBox extends  JComboBox<String>
 	   	  	  if (isaddItem){
 	  			  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
 	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
+	  			  this.setSelectedIndex(0);
 	   	  	  }
 	   	  	  if(updateItem >= 0) {
 	   	  		  this.removeItemAt(updateItem);
