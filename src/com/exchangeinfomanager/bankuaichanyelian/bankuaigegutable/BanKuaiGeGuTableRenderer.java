@@ -19,15 +19,10 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 
 	public BanKuaiGeGuTableRenderer() 
 	{
-		
+		super ();
 	}
 	
 	private static final long serialVersionUID = 1L;
-	private Boolean showparsedfile = true;
-	private Boolean showcjeup;
-	private Double showcje;
-	private LocalDate requireddate;
-	
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
 	{
@@ -51,37 +46,37 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 			}
         	((JLabel)comp).setText(valuepect);
         }
-
-	    HashSet<String> parsefiel =  ( (BanKuaiGeGuTableModel)table.getModel() ).getStockInParseFile();
-	    Stock stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(row);
-	    if(!table.isRowSelected(row) && parsefiel!= null && this.showparsedfile  ) {
-	    	int modelRow = table.convertRowIndexToModel(row);
-	    	String stockcode = (String)table.getValueAt(modelRow, 0);
-	    	
-	    	if(parsefiel != null && parsefiel.contains(stockcode) )
-	    		comp.setForeground(Color.BLUE);
-	    	else
-	    		comp.setForeground(Color.BLACK);
-	    }
 	    
-	    if(this.showcje >0 && stock.getSpecficChenJiaoErRecord(requireddate).getMyOwnChengJiaoEr() > this.showcje) 
-	    	comp.setForeground(Color.BLUE);
-	    else
+	    BanKuaiGeGuTableModel tablemodel =  (BanKuaiGeGuTableModel)table.getModel() ;
+	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
+	    
+	    int modelRow = table.convertRowIndexToModel(row);
+	    Stock stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
+
+	    if(col == 0 || col == 1 || col == 2) {
+	    	if(!table.isRowSelected(row) && parsefiel != null && tablemodel.showParsedFile()  ) {
+		    	String stockcode = stock.getMyOwnCode();
+		    	
+		    	if(parsefiel != null && parsefiel.contains(stockcode)  )
+		    		comp.setForeground(Color.RED);
+		    	else
+		    		comp.setForeground(Color.BLACK);
+		    } else
 	    		comp.setForeground(Color.BLACK);
+	    } 
+	    
+	    if(col == 3 || col == 4 || col == 5) {
+		    Double cje = tablemodel.getDisplayChenJiaoEr ();
+		    LocalDate requireddate = tablemodel.getShowCurDate();
+		    Double curcje = stock.getSpecficChenJiaoErRecord(requireddate).getMyOwnChengJiaoEr();
+		    if(cje != null && cje >0 && curcje > cje ) 
+		    	comp.setForeground(Color.BLUE);
+		    else
+		    	comp.setForeground(Color.BLACK);
+	    } 
+	    	
 	    
 	    return comp;
 	}
 	
-	public void setDisplayChenJiaoEr (Double cje)
-	{
-		this.showcje = cje;
-	}
-	public void setShowParsedFile (Boolean onoff)
-	{
-		this.showparsedfile = onoff;
-	}
-	public void setCurrentRecordDate (LocalDate curdate) 
-	{
-		this.requireddate = curdate;
-	}
 }

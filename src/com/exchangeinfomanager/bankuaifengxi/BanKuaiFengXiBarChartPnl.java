@@ -41,8 +41,10 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.sun.rowset.CachedRowSetImpl;
 
@@ -51,6 +53,7 @@ import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -66,6 +69,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 public class BanKuaiFengXiBarChartPnl extends JPanel 
 {
@@ -87,6 +91,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		
 		sysconfig = SystemConfigration.getInstance();
 		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
+		bkdbopt = new BanKuaiDbOperation ();
 	}
 	
 	protected BkChanYeLianTreeNode curdisplayednode;	
@@ -100,6 +105,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 	private String tooltipselected;
 	private SystemConfigration sysconfig;
 	protected int shoulddisplayedmonthnum;
+	private BanKuaiDbOperation bkdbopt;
 
 	/*
 	 * 
@@ -174,6 +180,27 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 			}
 
     	});
+    	
+    	mntmFenXiJiLu.addActionListener(new ActionListener() {
+			@Override
+
+			public void actionPerformed(ActionEvent evt) 
+			{
+				if(curdisplayednode == null)
+					return;
+				
+				String bkcode = curdisplayednode.getMyOwnCode();
+				JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"分析结果" ); 
+				LocalDate curselectdate = CommonUtility.formateStringToDate( getCurSelectedBarDate ().toString() );
+				jiarujihua.setJiaRuDate (curselectdate);
+				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "输入分析结果", JOptionPane.OK_CANCEL_OPTION);
+				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
+				
+				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+			}
+			
+		});
     }
     /*
      * 设置要突出显示的bar
@@ -203,10 +230,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
     public ChartPanel getChartPanel() {
         return chartPanel;
     }
-	/*
-	 * 
-	 */
-    JMenuItem mntmNewMenuItem;
+    
+	private JMenuItem mntmFenXiJiLu;
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
@@ -246,9 +271,9 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
         
         
         JPopupMenu popupMenu = new JPopupMenu();
-		mntmNewMenuItem = new JMenuItem("分析记录");
+		mntmFenXiJiLu = new JMenuItem("分析记录");
 //		popupMenu.add(mntmNewMenuItem);
-		chartPanel.getPopupMenu().add(mntmNewMenuItem);
+		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
         
     }
 

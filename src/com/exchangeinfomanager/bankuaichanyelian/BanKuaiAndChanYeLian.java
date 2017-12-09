@@ -99,6 +99,7 @@ import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.gui.subgui.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -845,28 +846,28 @@ public class BanKuaiAndChanYeLian extends JPanel
 	}	    
 	private void createEvents() 
 	{
-		menuItemredian.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				String selectnodecode = null;
-				try {
-					TreePath closestPath = treechanyelian.getSelectionPath();
-					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-					 selectnodecode = selectednode.getMyOwnCode();
-				} catch (java.lang.NullPointerException ex) {
-					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
-				}
-				
-				JiaRuJiHua jiarujihua = new JiaRuJiHua ( selectnodecode,"本周热点" ); 
-				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "本周热点", JOptionPane.OK_CANCEL_OPTION);
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-				
-				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-				
-			}
-		});
+//		menuItemredian.addActionListener(new ActionListener() 
+//		{
+//			public void actionPerformed(ActionEvent e) 
+//			{
+//				String selectnodecode = null;
+//				try {
+//					TreePath closestPath = treechanyelian.getSelectionPath();
+//					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
+//					 selectnodecode = selectednode.getMyOwnCode();
+//				} catch (java.lang.NullPointerException ex) {
+//					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
+//				}
+//				
+//				JiaRuJiHua jiarujihua = new JiaRuJiHua ( selectnodecode,"本周热点" ); 
+//				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "本周热点", JOptionPane.OK_CANCEL_OPTION);
+//				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//					return;
+//				
+//				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+//				
+//			}
+//		});
 		
 		tfldparsefilename.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -876,11 +877,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 			}
 		});
 		
-		mntmgephi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-			}
-		});
+//		mntmgephi.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				
+//			}
+//		});
 		
 		cbxtichuquanzhong.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
@@ -955,15 +956,15 @@ public class BanKuaiAndChanYeLian extends JPanel
 //			}
 //		});
 		
-		mntmNewMenuItem.addActionListener(new ActionListener() {
-			@Override
-
-			public void actionPerformed(ActionEvent evt) {
-
-				addChanYeLianNews ();
-			}
-			
-		});
+//		mntmNewMenuItem.addActionListener(new ActionListener() {
+//			@Override
+//
+//			public void actionPerformed(ActionEvent evt) {
+//
+//				addChanYeLianNews ();
+//			}
+//			
+//		});
 		
 		btnopencylxml.addMouseListener(new MouseAdapter() {
 			@Override
@@ -1006,27 +1007,27 @@ public class BanKuaiAndChanYeLian extends JPanel
 			}
 		});
 		
-		menuItemaddgz.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				String selectnodecode = null;
-				try {
-					TreePath closestPath = treechanyelian.getSelectionPath();
-					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-					 selectnodecode = selectednode.getMyOwnCode();
-				} catch (java.lang.NullPointerException ex) {
-					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
-				}
-				
-				JiaRuJiHua jiarujihua = new JiaRuJiHua ( selectnodecode,"加入关注" ); 
-				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "计划细节", JOptionPane.OK_CANCEL_OPTION);
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-				
-				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-			}
-		});
+//		menuItemaddgz.addActionListener(new ActionListener() 
+//		{
+//			public void actionPerformed(ActionEvent e) 
+//			{
+//				String selectnodecode = null;
+//				try {
+//					TreePath closestPath = treechanyelian.getSelectionPath();
+//					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
+//					 selectnodecode = selectednode.getMyOwnCode();
+//				} catch (java.lang.NullPointerException ex) {
+//					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
+//				}
+//				
+//				JiaRuJiHua jiarujihua = new JiaRuJiHua ( selectnodecode,"加入关注" ); 
+//				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "计划细节", JOptionPane.OK_CANCEL_OPTION);
+//				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//					return;
+//				
+//				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+//			}
+//		});
 		
 		btnadddalei.addMouseListener(new MouseAdapter() {
 
@@ -2219,23 +2220,8 @@ public class BanKuaiAndChanYeLian extends JPanel
         addChildIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeChild24.png"));
         
         //tree 的弹出菜单
-        popupMenu = new JPopupMenu();
+        popupMenu = new BanKuaiPopUpMenu(treechanyelian);
 		addPopup(treechanyelian, popupMenu);
-		mntmNewMenuItem = new JMenuItem("\u6DFB\u52A0\u4EA7\u4E1A\u94FE\u65B0\u95FB");
-		popupMenu.add(mntmNewMenuItem);
-		
-		menuItemaddgz = new JMenuItem("\u52A0\u5165\u5173\u6CE8");
-		
-		popupMenu.add(menuItemaddgz);
-		
-		menuItemredian = new JMenuItem("\u8BBE\u4E3A\u672C\u5468\u70ED\u70B9");
-		
-		popupMenu.add(menuItemredian);
-		
-		mntmgephi = new JMenuItem("\u52A0\u5165/\u79FB\u51FAGephi\u5BFC\u51FA\u6570\u636E");
-		
-		popupMenu.add(mntmgephi);
-		
 
 		bkfxpnl = new BanKuaiFengXiBarChartPnl ();
 		bkfxpnl.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u677F\u5757\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));

@@ -64,7 +64,6 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 //import com.exchangeinfomanager.bankuaifengxi.ChenJiaoLangZhanBiInGivenPeriod;
 import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.gui.subgui.BanKuaiReDian;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
@@ -5377,9 +5376,10 @@ public class BanKuaiDbOperation
 		public int setZdgzRelatedActions(JiaRuJiHua jiarujihua) 
 		{
 			String stockcode = jiarujihua.getStockCode();		
-			//String addedday = formateDateForDiffDatabase(sysconfig.formatDate(new Date() ));
 			String zdgzsign = jiarujihua.getGuanZhuType();
 			String shuoming = "";
+			LocalDate actiondate = jiarujihua.getJiaRuDate();
+			
 			if(jiarujihua.isMingRiJiHua()) {
 				zdgzsign = "明日计划";
 				shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
@@ -5389,7 +5389,7 @@ public class BanKuaiDbOperation
 			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 			String sqlinsertstat = "INSERT INTO 操作记录重点关注(股票代码,日期,加入移出标志,原因描述) values ("
 					+ "'" +  stockcode.trim() + "'" + "," 
-					+ formateDateForDiffDatabase("mysql",CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() )) + ","
+					+ "'" + actiondate + "'" + ","
 					+  "'" + zdgzsign + "'" + ","
 					+ "'" + shuoming + "'"  
 					+ ")"
@@ -5902,24 +5902,24 @@ public class BanKuaiDbOperation
 	        return tmprecordfile;
 			
 		}
-		/*
-		 * 存储板块为某一周的热点，用来回溯热点，否则过段时间就忘了前期是什么热点
-		 */
-		public int setBanKuaiAsReDian(String bkcode, BanKuaiReDian bkrd) 
-		{
-			LocalDate rediandate = bkrd.getReDianDate();
-			String miaoshu = bkrd.getReDianMiaoShu ();
-			
-			String sqlinsertstat = "INSERT INTO 板块个股热点记录(代码,热点日期,描述) values ("
-					+ "'" + bkcode + "'" + ","
-					+ "'" + rediandate + "'" + ","
-					+ "'" + miaoshu  + "'" 
-					+ ")"
-					;
-			System.out.println(sqlinsertstat);
-			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
-			return autoIncKeyFromApi;
-		}
+//		/*
+//		 * 存储板块为某一周的热点，用来回溯热点，否则过段时间就忘了前期是什么热点
+//		 */
+//		public int setBanKuaiAsReDian(String bkcode, BanKuaiReDian bkrd) 
+//		{
+//			LocalDate rediandate = bkrd.getReDianDate();
+//			String miaoshu = bkrd.getReDianMiaoShu ();
+//			
+//			String sqlinsertstat = "INSERT INTO 板块个股热点记录(代码,热点日期,描述) values ("
+//					+ "'" + bkcode + "'" + ","
+//					+ "'" + rediandate + "'" + ","
+//					+ "'" + miaoshu  + "'" 
+//					+ ")"
+//					;
+//			System.out.println(sqlinsertstat);
+//			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
+//			return autoIncKeyFromApi;
+//		}
 		
 
 }

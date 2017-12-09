@@ -37,6 +37,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -45,6 +46,10 @@ public class BanKuaiGeGuTable extends JTable
 	private static final long serialVersionUID = 1L;
 	private StockInfoManager stockmanager;
 	private BanKuaiGeGuTableRenderer renderer;
+	private JMenuItem menuItemAddNews;
+	private JMenuItem menuItemAddGz;
+	private JMenuItem menuItemReDian;
+	private JMenuItem menuItemMakeLongTou;
 	
 	public BanKuaiGeGuTable (StockInfoManager stockmanager1)
 	{
@@ -52,6 +57,7 @@ public class BanKuaiGeGuTable extends JTable
 		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel();
 		this.setModel(bkgegumapmdl);
 		this.renderer =  new BanKuaiGeGuTableRenderer (); 
+//		this.setDefaultRenderer(Object.class, this.renderer );
 		
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
@@ -64,10 +70,26 @@ public class BanKuaiGeGuTable extends JTable
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockmanager = stockmanager1;
-
+		
+		createMenu ();
 		createEvents ();
 	}
 	
+	private void createMenu() 
+	{
+		JPopupMenu popupMenuGeguNews = new JPopupMenu();
+		menuItemAddNews = new JMenuItem("添加个股新闻");
+		menuItemAddGz = new JMenuItem("加入关注");
+		menuItemReDian = new JMenuItem("标记本周热点");
+		menuItemMakeLongTou = new JMenuItem("设置股票权重");
+		popupMenuGeguNews.add(menuItemAddNews);
+		popupMenuGeguNews.add(menuItemMakeLongTou);
+		popupMenuGeguNews.add(menuItemAddGz);
+		popupMenuGeguNews.add(menuItemReDian);
+				
+		this.setComponentPopupMenu(popupMenuGeguNews);
+	}
+
 	public TableCellRenderer getCellRenderer(int row, int column) 
 	{
 		return renderer;
@@ -96,14 +118,7 @@ public class BanKuaiGeGuTable extends JTable
 	
 	private void createEvents() 
 	{
-//		个股table也可以加个股新闻
-		JPopupMenu popupMenuGeguNews = new JPopupMenu();
-		JMenuItem menuItemAddNews = new JMenuItem("添加个股新闻");
-		JMenuItem menuItemMakeLongTou = new JMenuItem("设置股票权重");
-		popupMenuGeguNews.add(menuItemAddNews);
-		popupMenuGeguNews.add(menuItemMakeLongTou);
-		
-		this.setComponentPopupMenu(popupMenuGeguNews);
+
 		menuItemAddNews.addActionListener(new ActionListener() {
 			@Override
 
@@ -122,6 +137,20 @@ public class BanKuaiGeGuTable extends JTable
 			
 		});
 		
+		menuItemAddGz.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				addGuanZhu ();
+			}
+			
+		});
+		
+		menuItemReDian.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				addReDian();
+			}
+			
+		});
+		
 		
 		this.addMouseListener(new MouseAdapter() {
         	@Override
@@ -133,6 +162,7 @@ public class BanKuaiGeGuTable extends JTable
 
 		
 	}
+	
 	
 	private void tableMouseClickActions (MouseEvent arg0)
 	{
@@ -234,6 +264,44 @@ public class BanKuaiGeGuTable extends JTable
 //        return tip;
 //    } 
 
+	protected void addReDian() 
+	{
+		int row = this.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (row);
+		
+		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"当周热点" ); 
+		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "设置为本周热点", JOptionPane.OK_CANCEL_OPTION);
+		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+			return;
+		
+		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+		
+	}
+	
+	protected void addGuanZhu() 
+	{
+		int row = this.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (row);
+		
+		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"加入关注" ); 
+		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "计划细节", JOptionPane.OK_CANCEL_OPTION);
+		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+			return;
+		
+		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+	
+	}
+	
 	protected void addGeGuNews() 
 	{
 		int row = this.getSelectedRow();

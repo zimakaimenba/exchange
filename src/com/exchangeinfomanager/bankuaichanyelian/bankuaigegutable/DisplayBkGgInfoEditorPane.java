@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.table.DefaultTableModel;
 
 import org.jsoup.Jsoup;
 
@@ -36,6 +37,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		this.setText("");
 		this.displayChanYeLianNewsHtml(curselectedbknodecode);
 		this.displayNodeBasicInfo(curselectedbknodecode);
+		this.displayNodeZdgzMrMcZdgzYingKuiInfo (curselectedbknodecode);
 	}
 	
 	 /*
@@ -120,6 +122,40 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	     htmlstring = doc.toString();
 	     this.setText(htmlstring);
 	     this.setCaretPosition(0);   
+    }
+    /*
+     * 显示买卖关注等信息
+     * 
+     */
+    public void displayNodeZdgzMrMcZdgzYingKuiInfo(BkChanYeLianTreeNode curselectedbknode)
+    {
+    	String curselectedbknodename = curselectedbknode.getMyOwnName();
+       	String curbknodecode = curselectedbknode.getMyOwnCode();
+       	int type = curselectedbknode.getType();
+
+  		curselectedbknode =  bkdbopt.getZdgzMrmcZdgzYingKuiFromDB(curselectedbknode);
+  		
+	       String htmlstring = this.getText();
+	       org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+//	       System.out.println(doc.toString());
+	       org.jsoup.select.Elements content = doc.select("body"); 
+	       
+	       content.append("<h4>板块关注分析信息</h4>");
+	       Object[][] sellbuyObjects = (curselectedbknode).getZdgzMrmcZdgzYingKuiRecords();
+	       for(int i=0;i<sellbuyObjects.length;i++) {
+	    	   String output = "";
+	    	   try {
+	    		   output = sellbuyObjects[i][0].toString() + " " + sellbuyObjects[i][1].toString() + " " + sellbuyObjects[i][2].toString();
+	    	   } catch (java.lang.NullPointerException e) {
+    			   e.printStackTrace();
+    		   }
+	    	   
+	    	   content.append( "<p>"+ output + "</p>" );
+	       }
+	       
+	       htmlstring = doc.toString();
+		   this.setText(htmlstring);
+		   this.setCaretPosition(0); 
     }
     
     private void creatEvents()

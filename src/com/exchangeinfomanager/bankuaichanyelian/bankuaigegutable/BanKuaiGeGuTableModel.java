@@ -25,44 +25,18 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	String[] jtableTitleStrings = { "代码", "名称","权重","占比增长率","MAX","成交额贡献","发现"};
 	BanKuai curbk;
 	private ArrayList<Entry<String, Stock>> entryList;
-	LocalDate showwknum;
+	private LocalDate showwknum;
 	private int curdisplayrow = -1;
 	private Stock curdisplaystock;
 	private HashSet<String> stockcodeinparsefile;
-	
+	private Double showcje;
+	private Boolean showparsedfile = false;
 	
 	BanKuaiGeGuTableModel ()
 	{
 		super ();
 	}
 
-//	public void refreshByParsedFile (BanKuai bankuai,LocalDate wknum)
-//	{
-//		curbk = bankuai;
-//		showwknum = wknum;
-//		 HashSet<String> stockcodeinparsefile = bankuai.getParseFileStockSet();
-//		 HashMap<String, Stock> stockmap = bankuai.getSpecificPeriodBanKuaiGeGu(wknum);
-//		 
-//		 if(stockmap == null) {
-//			 entryList = new ArrayList<Map.Entry<String, Stock>>();
-//		 } else if(stockcodeinparsefile != null  && stockcodeinparsefile.size() >0 ) { //优先把parsefile里的个股显示在前面
-//	        		entryList = new ArrayList<Map.Entry<String, Stock>>();
-//	     	 		for (Map.Entry<String,Stock> entry : stockmap.entrySet()) {  
-//	     	 			if(stockcodeinparsefile.contains(entry.getKey() ) ) {
-//	     	 				entryList.add(entry);
-//	     	 			} else 
-//	     	 				entryList.add(0,entry);
-//	     	 		} 
-//	        	
-//	     } else {
-//	    	 entryList = new ArrayList<Map.Entry<String, Stock>>();
-//	    	 for (Map.Entry<String,Stock> entry : stockmap.entrySet()) {
-//	    		 entryList.add(entry);
-//	    	 }
-//	     }
-//	     this.fireTableDataChanged();
-//		
-//	}
 	public void refresh (BanKuai bankuai,LocalDate wknum)
 	{
 		curbk = bankuai;
@@ -288,6 +262,28 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		public HashSet<String> getStockInParseFile() 
 		{
 			return curbk.getParseFileStockSet();
+		}
+		
+		
+		public void setDisplayChenJiaoEr (Double cje)
+		{
+			this.showcje = cje;
+		}
+		public Double getDisplayChenJiaoEr ()
+		{
+			return this.showcje ;
+		}
+		public void setShowParsedFile (Boolean onoff)
+		{
+			this.showparsedfile = onoff;
+		}
+		public Boolean showParsedFile ()
+		{
+			return this.showparsedfile ;
+		}
+		public LocalDate getShowCurDate ()
+		{
+			return this.showwknum;
 		}
 
 }
