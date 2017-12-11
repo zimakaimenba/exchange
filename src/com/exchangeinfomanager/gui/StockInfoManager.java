@@ -3053,7 +3053,7 @@ public class StockInfoManager
 		
 		menuConfigration.add(menuItemSysSet);
 		
-		mntmNewMenuItem = new JMenuItem("V17.06.03.09.23");
+		mntmNewMenuItem = new JMenuItem("V17.12.11.12.06");
 		menuConfigration.add(mntmNewMenuItem);
 		
 		AccountsInfoTableModel stockaccountmodel = new AccountsInfoTableModel();

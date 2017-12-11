@@ -49,8 +49,11 @@ import org.jfree.chart.labels.PieToolTipGenerator;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
@@ -142,6 +145,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 	{
 		
 	}
+	
 
     private void createDataset(String tdxbkcode,HashMap<String, Stock> tmpallbkge,int weightgate,LocalDate weeknumber ) 
     {

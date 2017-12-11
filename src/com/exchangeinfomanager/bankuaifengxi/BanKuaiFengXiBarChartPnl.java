@@ -22,9 +22,12 @@ import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -100,6 +103,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
 	protected DefaultCategoryDataset barchartdataset ;
+	protected DefaultCategoryDataset datafx ;
 	protected JFreeChart barchart;
 	private Comparable dateselected;
 	private ArrayList<JiaRuJiHua> selectedfxjg;
@@ -118,6 +122,16 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
 		marker.setPaint(Color.BLACK);
 		plot.addRangeMarker(marker);
+	}
+	
+	protected void setBarFenXiSingle ()
+	{
+		if(datafx.getColumnCount()>0) {
+			plot.setDataset(2, datafx);
+			final CategoryItemRenderer renderer3 = new LineAndShapeRenderer();
+	        plot.setRenderer(2, renderer3);
+	        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+		}
 	}
 	/*
 	 * 

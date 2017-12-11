@@ -53,7 +53,7 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 //		this.displayedenddate = requireend; 
 		
 		barchartdataset = new DefaultCategoryDataset();
-		DefaultCategoryDataset datafx = new DefaultCategoryDataset();
+//		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
 			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
@@ -62,14 +62,14 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
 				barchartdataset.setValue(chenjiaoer,"成交额",lastdayofweek);
 				
-				if(tmprecord.hasFengXiJieGuo ())
-					datafx.addValue(chenjiaoer/10, "分析结果", lastdayofweek);
-				else
-					datafx.addValue(0, "分析结果", lastdayofweek);
+//				if(tmprecord.hasFengXiJieGuo ())
+//					datafx.addValue(chenjiaoer/10, "分析结果", lastdayofweek);
+//				else
+//					datafx.addValue(0, "分析结果", lastdayofweek);
 			} else {
 				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
 					barchartdataset.setValue(0.0,"成交额",tmpdate);
-					datafx.addValue(0, "分析结果", tmpdate);
+//					datafx.addValue(0, "分析结果", tmpdate);
 				} else //为空说明该周市场没有交易
 					continue;
 			}
@@ -86,12 +86,7 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 
 		super.plot.setDataset(barchartdataset);
 		
-		if(datafx.getColumnCount()>0) {
-			super.plot.setDataset(2, datafx);
-			final CategoryItemRenderer renderer3 = new LineAndShapeRenderer();
-	        super.plot.setRenderer(2, renderer3);
-	        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
-		}
+//		super.setBarFenXiSingle();
 		
 		setPanelTitle ("成交额",displayedenddate1);
 	}

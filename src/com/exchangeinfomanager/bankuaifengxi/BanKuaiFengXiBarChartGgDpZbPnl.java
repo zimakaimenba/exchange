@@ -45,6 +45,7 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
+		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
 			ChenJiaoZhanBiInGivenPeriod tmpggrecord = node.getSpecficChenJiaoErRecord(tmpdate);
@@ -57,10 +58,16 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 				LocalDate lastdayofweek = tmpggrecord.getRecordsDayofEndofWeek();
 				
 				barchartdataset.setValue(ggdpratio,"占比",lastdayofweek);
+				
+				if(tmpggrecord.hasFengXiJieGuo ())
+					datafx.addValue(ggdpratio/10, "分析结果", lastdayofweek);
+				else
+					datafx.addValue(0, "分析结果", lastdayofweek);
 			} else {
-				if( !dapan.isThisWeekXiuShi(tmpdate) )
+				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
 					barchartdataset.setValue(0.0,"占比",tmpdate);
-				else //为空说明该周市场没有交易
+					datafx.addValue(0, "分析结果", tmpdate);
+				} else //为空说明该周市场没有交易
 					continue;
 			}
 		}
@@ -82,6 +89,8 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 		super.plot.setDataset(barchartdataset);
 		
 		setPanelTitle ("占比",displayedenddate1);
+		
+		super.setBarFenXiSingle();
 		
 		super.setDaZiJinValueMarker(0.001); //大于0.1说明个股强势，资金占的多
 		super.setDaZiJinValueMarker(0.0005); //大于0.1说明个股强势，资金占的多
