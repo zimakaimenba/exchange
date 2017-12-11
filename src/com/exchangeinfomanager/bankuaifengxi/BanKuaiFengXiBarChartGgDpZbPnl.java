@@ -60,7 +60,7 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 				barchartdataset.setValue(ggdpratio,"占比",lastdayofweek);
 				
 				if(tmpggrecord.hasFengXiJieGuo ())
-					datafx.addValue(ggdpratio/10, "分析结果", lastdayofweek);
+					datafx.addValue(ggdpratio/5, "分析结果", lastdayofweek);
 				else
 					datafx.addValue(0, "分析结果", lastdayofweek);
 			} else {
