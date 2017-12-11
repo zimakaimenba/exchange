@@ -34,6 +34,7 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	private Double ggdpcjegrowthzhanbi;  //个股大盘成交量贡献率
 	private Integer ggdpzhanbimaxweek;
 	private Double ggdpzhanbigrowthrate; //个股大盘占比增速
+	private Boolean hasfengxijieguo; //有加入关注，分析结果等等
 	
 	
 	private String myowncode;
@@ -213,6 +214,19 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	 */
 	public void setGgdpzhanbigrowthrate(Double ggdpzhanbigrowthrate) {
 		this.ggdpzhanbigrowthrate = ggdpzhanbigrowthrate;
+	}
+	
+	public void setFengXiJIeGuo (Boolean fxjg)
+	{
+		this.hasfengxijieguo =  fxjg;
+		
+	}
+	public Boolean hasFengXiJieGuo ()
+	{
+		if(this.hasfengxijieguo != null)
+			return this.hasfengxijieguo;
+		else
+			return false;
 	}
 
 	

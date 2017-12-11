@@ -3837,11 +3837,24 @@ public class BanKuaiDbOperation
 		
 //		System.out.println(sqlquerystat);
 		System.out.println("为板块" + bankuai.getMyOwnCode() + bankuai.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
+		
+		String sqlquerystatfx = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
+				"WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
+				"AND 操作记录重点关注.`日期` between '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"
+				;
+		
 		CachedRowSetImpl rs = null;
+		CachedRowSetImpl rsfx = null;
+		Boolean hasfengxiresult = false;
 		ArrayList<ChenJiaoZhanBiInGivenPeriod > tmpcjelist = new ArrayList<ChenJiaoZhanBiInGivenPeriod > ();
 		try {
 			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-			
+			rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
+			while(rsfx.next()) {
+				Integer recnum = rsfx.getInt("RESULT");
+				if(recnum >0)
+					hasfengxiresult = true;
+			}
 			
 			while(rs.next()) {
 				ChenJiaoZhanBiInGivenPeriod cjlrecords = new ChenJiaoZhanBiInGivenPeriod ();
@@ -3857,6 +3870,22 @@ public class BanKuaiDbOperation
 //				cjlrecords.setWeek(week);
 				
 				tmpcjelist.add(cjlrecords);
+				
+				//找出分析表里面对应时间段的分析结果
+				if(hasfengxiresult) {
+					sqlquerystat = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
+							"WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
+							"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + lastdayofweek + "')" 
+							;
+					System.out.println(sqlquerystat);
+					rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
+					while(rsfx.next()) {
+						Integer recnum = rsfx.getInt("RESULT");
+						if(recnum >0)
+							cjlrecords.setFengXiJIeGuo(true);
+					}
+				}
+				
 			}
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -3865,7 +3894,9 @@ public class BanKuaiDbOperation
 	    }  finally {
 	    	try {
 				rs.close();
+				rsfx.close();
 				rs = null;
+				rsfx.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -3939,10 +3970,25 @@ public class BanKuaiDbOperation
 		 }
 //		System.out.println(sqlquerystat);
 		System.out.println("为个股" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
+		
+		String sqlquerystatfx = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
+				"WHERE 股票代码='" + stockcode + "'" + "\r\n" + 
+				"AND 操作记录重点关注.`日期` between '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"
+				;
+
 //		HashMap<String,Stock> gegumap = new HashMap<String,Stock> ();
 		CachedRowSetImpl rsfg = null;
+		CachedRowSetImpl rsfx = null;
+		Boolean hasfengxiresult = false;
 		try {  
 			 rsfg = connectdb.sqlQueryStatExecute(sqlquerystat);
+			 
+			 rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
+				while(rsfx.next()) {
+					Integer recnum = rsfx.getInt("RESULT");
+					if(recnum >0)
+						hasfengxiresult = true;
+				}
 
 			 ArrayList<ChenJiaoZhanBiInGivenPeriod > tmpcjelist = new ArrayList<ChenJiaoZhanBiInGivenPeriod > ();
 			 while(rsfg.next()) {
@@ -3973,6 +4019,20 @@ public class BanKuaiDbOperation
 //				tmpstock.setChenJiaoErZhanBiInGivenPeriod (tmpcjelist);
 //
 //				gegumap.put(tmpstockcode, tmpstock);
+				//找出分析表里面对应时间段的分析结果
+				if(hasfengxiresult) {
+					sqlquerystat = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
+							"WHERE 股票代码='" + stockcode + "'" + "\r\n" + 
+							"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + lastdayofweek + "')" 
+							;
+					System.out.println(sqlquerystat);
+					rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
+					while(rsfx.next()) {
+						Integer recnum = rsfx.getInt("RESULT");
+						if(recnum >0)
+							cjlrecords.setFengXiJIeGuo(true);
+					}
+				}
 			}
 			 
 			 stock.addChenJiaoErZhanBiInGivenPeriod (tmpcjelist,addposition); 
@@ -3988,15 +4048,60 @@ public class BanKuaiDbOperation
 			try {
 				if(rsfg != null)
 					rsfg.close();
+				rsfx.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			rsfg = null;
+			rsfx = null;
 		}
 		
 
 		return stock;
 
+	}
+	/*
+	 * 获取某个节点在指定周的所有关注分析等结果
+	 */
+	public ArrayList<JiaRuJiHua> getZdgzFxjgForANodeOfGivenPeriod (String nodecode, LocalDate givenwk)
+	{
+		String sqlquerystat = "SELECT *  FROM 操作记录重点关注 \r\n" + 
+				"WHERE 股票代码='" + nodecode + "'" + "\r\n" + 
+				"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + givenwk + "')" 
+				;
+		System.out.println(sqlquerystat);
+		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
+		
+		ArrayList<JiaRuJiHua> jrjh = new ArrayList<JiaRuJiHua> ();
+		try {
+			while(rsfx.next()) {
+				String acttype = rsfx.getString("加入移出标志");
+				JiaRuJiHua guanzhu = new JiaRuJiHua(nodecode,acttype); 
+				
+				java.sql.Date  lastdayofweek = rsfx.getDate("日期");
+				LocalDate actiondate = lastdayofweek.toLocalDate(); 
+				guanzhu.setJiaRuDate (actiondate );
+				String shuoming = rsfx.getString("原因描述");
+				guanzhu.setiHuaShuoMing(shuoming);
+				jrjh.add(guanzhu);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  finally {
+			try {
+				if(rsfx != null)
+					rsfx.close();
+				rsfx.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rsfx = null;
+		}
+		
+		if(jrjh.size() == 0)
+			jrjh = null;
+		return jrjh;
 	}
 	/*
 	 * 某个股票在某个板块的某个时间段内的按周占比，给bar chart用

@@ -102,6 +102,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 	protected DefaultCategoryDataset barchartdataset ;
 	protected JFreeChart barchart;
 	private Comparable dateselected;
+	private ArrayList<JiaRuJiHua> selectedfxjg;
 	private String tooltipselected;
 	private SystemConfigration sysconfig;
 	protected int shoulddisplayedmonthnum;
@@ -168,6 +169,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
         	        highLightSpecificBarColumn (columnkey);
         	        dateselected = columnkey;
         	        tooltipselected = xyitem.getToolTipText();
+        	        
+        	        getZdgzFx (CommonUtility.formateStringToDate(columnkey.toString()));
         	         
     	    	} catch ( java.lang.ClassCastException e ) {
     	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
@@ -202,7 +205,13 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 			
 		});
     }
-    /*
+    protected void getZdgzFx(LocalDate localDate) 
+    {
+    	ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
+    	this.selectedfxjg = fxresult;
+		
+	}
+	/*
      * 设置要突出显示的bar
      */
     public void highLightSpecificBarColumn (Comparable selecteddate)
@@ -223,6 +232,10 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 	public String getToolTipSelected ()
 	{
 		return tooltipselected;
+	}
+	public ArrayList<JiaRuJiHua> getCurSelectedFengXiJieGuo ()
+	{
+		return this.selectedfxjg;
 	}
 	/*
 	 * 

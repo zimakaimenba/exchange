@@ -10,6 +10,8 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.event.ChangeListener;
@@ -17,6 +19,10 @@ import javax.swing.event.ChangeEvent;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import com.toedter.calendar.JDateChooser;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 public class JiaRuJiHua extends JPanel 
 {
@@ -34,9 +40,10 @@ public class JiaRuJiHua extends JPanel
 	private JComboBox<?> cbxJihuaLeixing;
 	private JCheckBox jbxMingRiJIhua;
 	private String guanzhutype;
-	private LocalDate jrdate;
+//	private LocalDate jrdate;
 	private JScrollPane scrollPane;
 	private JTextArea tfdShuoming;
+	private JDateChooser dateChooser;
 	
 	public String getGuanZhuType ()
 	{
@@ -74,11 +81,11 @@ public class JiaRuJiHua extends JPanel
 	}
 	public void setJiaRuDate (LocalDate date)
 	{
-		this.jrdate = date;
+		dateChooser.setDate( Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
 	}
 	public LocalDate getJiaRuDate ()
 	{
-		return this.jrdate;
+		return dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 	
 	
@@ -109,6 +116,15 @@ public class JiaRuJiHua extends JPanel
 	{
 		JLabel label = new JLabel("\u8BF4\u660E");
 		
+		dateChooser = new JDateChooser();
+		dateChooser.setDate(new Date ());
+		
+		scrollPane = new JScrollPane();
+		
+		tfdShuoming = new JTextArea();
+		tfdShuoming.setLineWrap(true);
+		scrollPane.setViewportView(tfdShuoming);
+		
 		jbxMingRiJIhua = new JCheckBox("\u660E\u65E5\u8BA1\u5212");
 		
 		cbxJihuaLeixing = new JComboBox();
@@ -122,44 +138,73 @@ public class JiaRuJiHua extends JPanel
 		tfdJihuaJiage.setEnabled(false);
 		tfdJihuaJiage.setColumns(10);
 		
-		scrollPane = new JScrollPane();
+		JCheckBox checkBox = new JCheckBox("\u653E\u91CF");
+		
+		JCheckBox checkBox_1 = new JCheckBox("\u7F29\u91CF");
+		
+		JCheckBox checkBox_2 = new JCheckBox("\u7A7A\u5934");
+		
+		JCheckBox checkBox_3 = new JCheckBox("\u591A\u5934");
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
+					.addGap(7)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(lblNewLabel)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(jbxMingRiJIhua, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
-						.addComponent(label, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(16, Short.MAX_VALUE))
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+							.addContainerGap())
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(label)
+							.addGap(86)
+							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE))))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblNewLabel)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(15, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(jbxMingRiJIhua, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(115, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(checkBox)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(checkBox_1)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(checkBox_2)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(checkBox_3)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(label)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
 					.addGap(7)
-					.addComponent(jbxMingRiJIhua)
-					.addGap(18)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(label)
+						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(4)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(checkBox)
+						.addComponent(checkBox_1)
+						.addComponent(checkBox_2)
+						.addComponent(checkBox_3))
+					.addGap(41)
+					.addComponent(jbxMingRiJIhua)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(lblNewLabel)
-							.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addGap(93))
+						.addComponent(lblNewLabel)
+						.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(111, Short.MAX_VALUE))
 		);
-		
-		tfdShuoming = new JTextArea();
-		scrollPane.setViewportView(tfdShuoming);
 		setLayout(groupLayout);
 	}
 }
