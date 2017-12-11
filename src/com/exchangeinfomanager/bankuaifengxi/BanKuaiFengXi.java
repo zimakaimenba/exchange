@@ -1114,8 +1114,10 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	protected void displayNodeInfo(BanKuai selectedbk) 
 	{
-		editorPanebkinfo.setText("");
-		editorPanebkinfo.displayNodeAllInfo(selectedbk);
+//		editorPanebkinfo.setText("");
+//		editorPanebkinfo.displayNodeAllInfo(selectedbk);
+		editorPanenodeinfo.setText("");
+		editorPanenodeinfo.displayNodeAllInfo(selectedbk);
 	}
 	/*
 	 * 
@@ -1174,6 +1176,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JButton btnChosPasFile;
 	private JCheckBox ckboxshowcje;
 	private JCheckBox ckboxparsefile;
+	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -1211,10 +1214,9 @@ public class BanKuaiFengXi extends JDialog {
 		editorPanebankuai = new BanKuaiListEditorPane();
 		scrollPane.setViewportView(editorPanebankuai);
 		
-		JEditorPane editorPane = new JEditorPane();
-		editorPane.setEditable(false);
-		
 		JScrollPane scrollPane_2 = new JScrollPane();
+		
+		JScrollPane scrollPane_3 = new JScrollPane();
 		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
@@ -1228,18 +1230,18 @@ public class BanKuaiFengXi extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(panelbkwkzhanbi, GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+								.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
 								.addComponent(panelbkcje, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
-								.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE))
+								.addComponent(panelbkwkzhanbi, GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE))
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addGap(12)
-									.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 556, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(editorPane)
-										.addComponent(panelgegucje, GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)))))
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addComponent(panelgegucje, GroupLayout.PREFERRED_SIZE, 562, GroupLayout.PREFERRED_SIZE)
+										.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 560, GroupLayout.PREFERRED_SIZE)))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addGap(12)
+									.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 556, GroupLayout.PREFERRED_SIZE))))
 						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 1112, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -1258,12 +1260,12 @@ public class BanKuaiFengXi extends JDialog {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(panelLastWkGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(613)
+							.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
+							.addGap(557)
 							.addComponent(panelselectwkgeguzhanbi, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 54, Short.MAX_VALUE)
-								.addComponent(editorPane, Alignment.LEADING)
 								.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE))
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPanel.createSequentialGroup()
@@ -1271,17 +1273,21 @@ public class BanKuaiFengXi extends JDialog {
 									.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 850, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addGap(8)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-										.addComponent(panelgegucje, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
-										.addComponent(panelbkcje, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(panelgegucje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(panelbkcje, GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE))
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(tabbedPanegeguzhanbi, GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
-										.addComponent(panelbkwkzhanbi, GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE))
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+										.addComponent(tabbedPanegeguzhanbi)
+										.addComponent(panelbkwkzhanbi, GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)))))
 					.addContainerGap())
 		);
+		
+		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();
+		scrollPane_3.setViewportView(editorPanenodeinfo);
+		editorPanenodeinfo.setEditable(false);
 		
 		tfldselectedmsg = new JTextArea();
 		tfldselectedmsg.setLineWrap(true);

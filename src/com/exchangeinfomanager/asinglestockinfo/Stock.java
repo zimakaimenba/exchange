@@ -37,8 +37,7 @@ public class Stock extends BkChanYeLianTreeNode {
 //	private String keHuCustom;
 	private String checklistXml;
 	
-	private Object[][] zdgzmrmcykRecords ;
-
+	
 //	private Multimap<String> chiCangAccountNameList; //持有该股票的所有账户的名字
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; //持有该股票的所有账户<账户，账户信息>
 	private HashMap<String,String> suoShuSysBanKuai; //所属通达信系统板块 <板块code,板块名字>
@@ -93,18 +92,7 @@ public class Stock extends BkChanYeLianTreeNode {
 	public void setChecklistXml(String checklistXml) {
 		this.checklistXml = checklistXml;
 	}
-	/**
-	 * @return the zdgzmrmcykRecords
-	 */
-	public Object[][] getZdgzMrmcZdgzYingKuiRecords() {
-		return zdgzmrmcykRecords;
-	}
-	/**
-	 * @param zdgzmrmcykRecords the zdgzmrmcykRecords to set
-	 */
-	public void setZdgzmrmcykRecords(Object[][] zdgzmrmcykRecords) {
-		this.zdgzmrmcykRecords = zdgzmrmcykRecords;
-	}
+
 
 	public boolean isInTdxBanKuai (String tdxbk)
 	{
@@ -169,15 +157,14 @@ public class Stock extends BkChanYeLianTreeNode {
  * (non-Javadoc)
  * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode#setParseFileStockSet(java.util.HashSet)
  */
-	public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
-	 {
-	    	if(super.parsefilestockset == null) {
-	    		this.parsefilestockset = new HashSet<String> ();
-	    		this.parsefilestockset = parsefilestockset2;
-	    	}
-	    	else
-	    		this.parsefilestockset = parsefilestockset2;
-	 }
+//	public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
+//	 {
+//	    	if(super.parsefilestockset == null) {
+//	    		this.parsefilestockset = new HashSet<String> ();
+//	    		this.parsefilestockset = parsefilestockset2;
+//	    	} else
+//	    		this.parsefilestockset = parsefilestockset2;
+//	 }
 	/*
 	 * 
 	 */
