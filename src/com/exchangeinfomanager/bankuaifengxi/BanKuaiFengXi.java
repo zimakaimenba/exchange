@@ -1326,7 +1326,7 @@ public class BanKuaiFengXi extends JDialog {
 
 		cbxsearchbk.setEditable(true);
 		
-		JLabel label = new JLabel("1.12.11.13.55");
+		JLabel label = new JLabel("17.12.12.13.24");
 		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(

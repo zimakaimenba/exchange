@@ -11,6 +11,8 @@ import javax.swing.border.TitledBorder;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.LegendItem;
+import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -83,7 +85,10 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 		
 		CustomToolTipGeneratorForChenJiaoEr custotooltip = new CustomToolTipGeneratorForChenJiaoEr();
 		cjerender.setSeriesToolTipGenerator(0,custotooltip);
-
+			
+		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
+		axis.setDisplayNode(node);
+		
 		super.plot.setDataset(barchartdataset);
 		
 //		super.setBarFenXiSingle();
@@ -107,11 +112,19 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
 
     public Paint getItemPaint(final int row, final int column) 
     {
-        if(column == shouldcolumn)
-            return Color.blue;
+        if(column == shouldcolumn) {
+          return Color.blue;
+        }
         else 
         	return Color.orange;
    }
+    @Override
+    public LegendItem getLegendItem(int dataset, int series) {
+        LegendItem legendItem = super.getLegendItem(dataset, series);
+        System.out.println(dataset + " " + series + " " + legendItem.getShape());
+        // modify legendItem here
+        return legendItem;
+    }
 
 //    public void setBarColumnShouldChangeColor (int column)
 //    {

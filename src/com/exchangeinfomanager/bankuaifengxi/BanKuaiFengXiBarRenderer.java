@@ -1,5 +1,8 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
+import java.awt.Color;
+import java.awt.Paint;
+
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 
@@ -11,7 +14,6 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
 	public BanKuaiFengXiBarRenderer() 
 	{
 		super ();
-		
 	}
 	
 	private static final long serialVersionUID = 1L;
@@ -24,7 +26,11 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
 	public void setBarColumnShouldChangeColor (int column)
     {
     	this.shouldcolumn = column;
+    	
     }
+
+	
+	
     /*
      * 设置bar是占比还是成交量，显示不同的barcolor
      */
@@ -32,7 +38,7 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
 //    {
 //    	this.barCharType = type;
 //    }
-    
+	
     public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
     {
     	this.node = curdisplayednode;

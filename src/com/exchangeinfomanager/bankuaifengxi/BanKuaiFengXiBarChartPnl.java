@@ -12,7 +12,9 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.CategoryItemEntity;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.PlotEntity;
@@ -103,7 +105,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
 	protected DefaultCategoryDataset barchartdataset ;
-	protected DefaultCategoryDataset datafx ;
+//	protected DefaultCategoryDataset datafx ;
 	protected JFreeChart barchart;
 	private Comparable dateselected;
 	private ArrayList<JiaRuJiHua> selectedfxjg;
@@ -124,15 +126,15 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		plot.addRangeMarker(marker);
 	}
 	
-	protected void setBarFenXiSingle ()
-	{
-		if(datafx.getColumnCount()>0) {
-			plot.setDataset(2, datafx);
-			final CategoryItemRenderer renderer3 = new LineAndShapeRenderer();
-	        plot.setRenderer(2, renderer3);
-	        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
-		}
-	}
+//	protected void setBarFenXiSingle ()
+//	{
+//		if(datafx.getColumnCount()>0) {
+//			plot.setDataset(2, datafx);
+//			final CategoryItemRenderer renderer3 = new LineAndShapeRenderer();
+//	        plot.setRenderer(2, renderer3);
+//	        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+//		}
+//	}
 	/*
 	 * 
 	 */
@@ -221,9 +223,13 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
     }
     protected void getZdgzFx(LocalDate localDate) 
     {
-    	ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
-    	this.selectedfxjg = fxresult;
+//    	LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
+		ChenJiaoZhanBiInGivenPeriod tmprecord = curdisplayednode.getSpecficChenJiaoErRecord(localDate);
 		
+    	if(tmprecord.hasFengXiJieGuo ()) {
+    		ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
+        	this.selectedfxjg = fxresult;
+    	} 
 	}
 	/*
      * 设置要突出显示的bar
@@ -281,13 +287,17 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
         legend.setPosition(RectangleEdge.TOP); 
         plot.setDataset(barchartdataset); 
         plot.setRenderer(renderer); 
-        plot.setDomainAxis(new CategoryAxis("")); 
+//        plot.setDomainAxis(new CategoryAxis(""));
+        plot.setDomainAxis(new CategoryLabelCustomizableCategoryAxis(""));
         plot.setRangeAxis(new NumberAxis(""));
         plot.setRangePannable(true);
 //        plot.setDomainPannable(true);
 //        ((BanKuaiFengXiBarRenderer) plot.getRenderer()).setBarPainter(new StandardBarPainter());
         CategoryAxis axis = plot.getDomainAxis();
         axis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
+//	    axis.setTickLabelPaint(Color.RED); 
+
+	   
 
         barchart = new JFreeChart(plot);
         barchart.removeLegend();
@@ -301,8 +311,39 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		mntmFenXiJiLu = new JMenuItem("分析记录");
 //		popupMenu.add(mntmNewMenuItem);
 		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
-        
-    }
-
+   }
 }
 
+class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
+
+    private static final long serialVersionUID = 1L;
+    protected BkChanYeLianTreeNode node;
+
+    public CategoryLabelCustomizableCategoryAxis(String label) {
+        super(label);
+    }
+    
+    public Paint getTickLabelPaint(Comparable category)
+    {
+    	if(this.node == null)
+    		return Color.black;
+    	else {
+    		LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
+    		ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(selecteddate);
+    		
+    		if(tmprecord == null)
+    			return Color.black;
+    		else if(tmprecord.hasFengXiJieGuo ()) 
+        		return Color.red;
+        	else 
+        		return Color.black;
+    	}
+//    		return Color.ORANGE;
+    }
+    
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
+    }
+   
+}

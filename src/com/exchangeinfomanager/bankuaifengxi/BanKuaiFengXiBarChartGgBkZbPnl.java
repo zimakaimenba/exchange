@@ -47,7 +47,7 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
-		datafx = new DefaultCategoryDataset();
+//		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
 			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
@@ -56,14 +56,14 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
 				barchartdataset.setValue(chenjiaoer,"占比",lastdayofweek);
 				
-				if(tmprecord.hasFengXiJieGuo ())
-					datafx.addValue(chenjiaoer/5, "分析结果", lastdayofweek);
-				else
-					datafx.addValue(0, "分析结果", lastdayofweek);
+//				if(tmprecord.hasFengXiJieGuo ())
+//					datafx.addValue(chenjiaoer/5, "分析结果", lastdayofweek);
+//				else
+//					datafx.addValue(0, "分析结果", lastdayofweek);
 			} else {
 				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
 					barchartdataset.setValue(0.0,"占比",tmpdate);
-					datafx.addValue(0, "分析结果", tmpdate);
+//					datafx.addValue(0, "分析结果", tmpdate);
 				} else //为空说明该周市场没有交易
 					continue;
 			}
@@ -78,6 +78,7 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 		render.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
 		render.setItemLabelsVisible(true);
 
+		//
 		if(node.getType() == 4) { //板块
 			CustomToolTipGeneratorForBkZhanBi custotooltip = new CustomToolTipGeneratorForBkZhanBi();
 			custotooltip.setDisplayNode(curdisplayednode);
@@ -87,10 +88,14 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 			custotooltip.setDisplayNode(curdisplayednode);
 			render.setSeriesToolTipGenerator(0,custotooltip);
 		}
-        
+		
+		//如有分析结果，ticklable显示红色
+		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
+		axis.setDisplayNode(node);
+		
 		super.plot.setDataset(barchartdataset);
 		
-		super.setBarFenXiSingle();
+//		super.setBarFenXiSingle();
 		
 		setPanelTitle ("占比",displayedenddate1);
 	}
@@ -103,7 +108,6 @@ class CustomRendererForGgBkZhanBi extends BanKuaiFengXiBarRenderer
    
     public CustomRendererForGgBkZhanBi() {
         super();
-        
     }
 
     public Paint getItemPaint(final int row, final int column) 
@@ -135,13 +139,6 @@ class CustomRendererForGgBkZhanBi extends BanKuaiFengXiBarRenderer
 		else 
 			return Color.black;
     }
-//    public Paint getItemLabelPaint(final int row, final int column)
-//    {
-//    	if(column == 3)
-//    		return Color.RED;
-//    	else
-//    		return Color.black; 
-//    }
     
 }
 

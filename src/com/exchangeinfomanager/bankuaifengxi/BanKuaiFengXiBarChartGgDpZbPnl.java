@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Paint;
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
@@ -12,10 +13,14 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.Layer;
+import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
@@ -45,7 +50,7 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
-		datafx = new DefaultCategoryDataset();
+//		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
 			ChenJiaoZhanBiInGivenPeriod tmpggrecord = node.getSpecficChenJiaoErRecord(tmpdate);
@@ -59,14 +64,14 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 				
 				barchartdataset.setValue(ggdpratio,"占比",lastdayofweek);
 				
-				if(tmpggrecord.hasFengXiJieGuo ())
-					datafx.addValue(ggdpratio/5, "分析结果", lastdayofweek);
-				else
-					datafx.addValue(0, "分析结果", lastdayofweek);
+//				if(tmpggrecord.hasFengXiJieGuo ())
+//					datafx.addValue(ggdpratio/5, "分析结果", lastdayofweek);
+//				else
+//					datafx.addValue(0, "分析结果", lastdayofweek);
 			} else {
 				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
 					barchartdataset.setValue(0.0,"占比",tmpdate);
-					datafx.addValue(0, "分析结果", tmpdate);
+//					datafx.addValue(0, "分析结果", tmpdate);
 				} else //为空说明该周市场没有交易
 					continue;
 			}
@@ -84,16 +89,27 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 		custotooltip.setDisplayNode(curdisplayednode);
 		render.setSeriesToolTipGenerator(0,custotooltip);
         
+		//如有分析结果，ticklable显示红色
+		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
+		axis.setDisplayNode(node);
 //		render.setBarCharType("个股大盘占比");
 		
 		super.plot.setDataset(barchartdataset);
 		
 		setPanelTitle ("占比",displayedenddate1);
 		
-		super.setBarFenXiSingle();
+//		super.setBarFenXiSingle();
 		
-		super.setDaZiJinValueMarker(0.001); //大于0.1说明个股强势，资金占的多
-		super.setDaZiJinValueMarker(0.0005); //大于0.1说明个股强势，资金占的多
+//		super.setDaZiJinValueMarker(0.001); //大于0.1说明个股强势，资金占的多
+//		super.setDaZiJinValueMarker(0.0005); //大于0.1说明个股强势，资金占的多
+		
+		final IntervalMarker target = new IntervalMarker(0.0004, 0.001);
+        target.setLabel("强势区域");
+        target.setLabelFont(new Font("SansSerif", Font.ITALIC, 11));
+        target.setLabelAnchor(RectangleAnchor.LEFT);
+        target.setLabelTextAnchor(TextAnchor.CENTER_LEFT);
+        target.setPaint(new Color(222, 222, 255, 128));
+        plot.addRangeMarker(target, Layer.BACKGROUND);
 	}
 
 }
