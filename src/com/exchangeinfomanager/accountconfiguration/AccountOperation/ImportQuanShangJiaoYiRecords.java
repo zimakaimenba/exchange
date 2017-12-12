@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -305,7 +306,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 					
 					ZiJingHuaZhuan zjhz = new ZiJingHuaZhuan(actionacnt);
 					zjhz.setQuanShangZhuanRuOrChuLeiXing(quanshangactiontype);
-					zjhz.setActionDate(lineactiondate);
+					zjhz.setActionDate(lineactiondate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() );
 					zjhz.setZiJing(zhuanruchumoney);
 					zjhz.setShuoMing(everyline);
 					

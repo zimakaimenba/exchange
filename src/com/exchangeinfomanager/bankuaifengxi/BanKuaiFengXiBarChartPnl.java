@@ -229,7 +229,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
     	if(tmprecord.hasFengXiJieGuo ()) {
     		ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
         	this.selectedfxjg = fxresult;
-    	} 
+    	} else
+    		this.selectedfxjg = null;
 	}
 	/*
      * 设置要突出显示的bar
@@ -314,6 +315,9 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
    }
 }
 
+/*
+ * 设置X轴，如果有分析结果就显示为橙色
+ */
 class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
 
     private static final long serialVersionUID = 1L;
@@ -334,7 +338,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
     		if(tmprecord == null)
     			return Color.black;
     		else if(tmprecord.hasFengXiJieGuo ()) 
-        		return Color.red;
+        		return Color.ORANGE;
         	else 
         		return Color.black;
     	}

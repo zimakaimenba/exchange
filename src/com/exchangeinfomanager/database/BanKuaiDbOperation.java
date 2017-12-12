@@ -3798,10 +3798,15 @@ public class BanKuaiDbOperation
 	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,LocalDate addposition)
 	{
 		String bkcode = bankuai.getMyOwnCode();
-		HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode,null);
-		String bkcjltable = actiontables.get("板块每日交易量表");
-		if(bkcjltable == null) //说明该板块没有成交量记录，不需要记录占比
-			return bankuai;
+		String bkcjltable;
+		if(bkcode.equals("399001") || bkcode.equals("999999") ) { //大盘指数的表是确定的，可以直接赋值
+			bkcjltable = "通达信交易所指数每日交易信息";
+		} else {
+			HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode,null);
+			bkcjltable = actiontables.get("板块每日交易量表");
+			if(bkcjltable == null) //说明该板块没有成交量记录，不需要记录占比
+				return bankuai;
+		}
 		
 		String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart);
 		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend);

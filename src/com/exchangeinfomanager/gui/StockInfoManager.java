@@ -135,6 +135,7 @@ import javax.swing.border.BevelBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 
 import javax.swing.border.SoftBevelBorder;
@@ -150,7 +151,8 @@ import javax.swing.tree.TreePath;
 import org.jsoup.Jsoup;
 
 import java.beans.PropertyChangeListener;
-
+import java.io.File;
+import java.io.IOException;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EtchedBorder;
@@ -1560,7 +1562,20 @@ public class StockInfoManager
 			{			
 				TDXFormatedOpt.stockJiBenMianToReports();
 				String resultfiepath = TDXFormatedOpt.parseChanYeLianXmlToTDXReport();
-				JOptionPane.showMessageDialog(null,"报表生成成功，请在" + resultfiepath + "下查看！");
+//				JOptionPane.showMessageDialog(null,"报表生成成功，请在" + resultfiepath + "下查看！");
+				
+				int exchangeresult = JOptionPane.showConfirmDialog(null, "报表生成成功，请在" + resultfiepath + "下查看！是否打开该目录？","报表完毕", JOptionPane.OK_CANCEL_OPTION);
+			
+				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
+				
+				try {
+					Desktop.getDesktop().open(new File(resultfiepath));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 		});
 }

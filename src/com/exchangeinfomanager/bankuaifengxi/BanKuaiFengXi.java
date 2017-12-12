@@ -160,6 +160,16 @@ public class BanKuaiFengXi extends JDialog {
     				&& !childnode.getChenJiaoErZhanBiInGivenPeriod().isEmpty()  //有些指数是没有个股和成交量的，不列入比较范围
     				&& childnode.getSpecficChenJiaoErRecord(curselectdate) != null) //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
     			bkhascjl.put(bkcode, childnode);
+    		
+    		//显示大盘成交量
+    		if(bkcode.equals("399001") ) {
+    			ChenJiaoZhanBiInGivenPeriod cjerec = childnode.getSpecficChenJiaoErRecord(curselectdate);
+    			lblszcje.setText( cjerec.getMyOwnChengJiaoEr().toString() );
+    		} else if(bkcode.equals("999999") ) {
+    			ChenJiaoZhanBiInGivenPeriod cjerec = childnode.getSpecficChenJiaoErRecord(curselectdate);
+    			lblshcje.setText( cjerec.getMyOwnChengJiaoEr().toString() );
+    		} 
+    			
 		}
 
     	((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(bkhascjl,curselectdate);
@@ -454,6 +464,7 @@ public class BanKuaiFengXi extends JDialog {
 						allstring = tooltip +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]";
 					}
 				}
+				tfldselectedmsg.setText( "" );
 				tfldselectedmsg.setText( allstring );
 				
 				//显示选择周的成交额占比
@@ -491,6 +502,7 @@ public class BanKuaiFengXi extends JDialog {
 						allstring = tooltip +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]";
 					}
 				}
+				tfldselectedmsg.setText( "" );
 				tfldselectedmsg.setText( allstring );
 				//
 				Comparable datekey = panelGeguDapanZhanBi.getCurSelectedBarDate ();
@@ -519,6 +531,7 @@ public class BanKuaiFengXi extends JDialog {
 						allstring = tooltip +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]";
 					}
 				}
+				tfldselectedmsg.setText( "" );
 				tfldselectedmsg.setText( allstring );
 				
 				//
@@ -553,6 +566,7 @@ public class BanKuaiFengXi extends JDialog {
 						allstring = tooltip +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]";
 					}
 				}
+				tfldselectedmsg.setText( "" );
 				tfldselectedmsg.setText( allstring );
 				//
 				Comparable datekey = panelgegucje.getCurSelectedBarDate ();
@@ -581,6 +595,7 @@ public class BanKuaiFengXi extends JDialog {
 						allstring = tooltip +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]";
 					}
 				}
+				tfldselectedmsg.setText( "" );
 				tfldselectedmsg.setText( allstring );
 				//
 				Comparable datekey = panelgeguwkzhanbi.getCurSelectedBarDate ();
@@ -728,6 +743,10 @@ public class BanKuaiFengXi extends JDialog {
 					
 					BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
 					refreshCurentBanKuaiFengXiResult (selectedbk);
+					displayNodeInfo(selectedbk);
+					patchParsedFile (selectedbk);
+					
+					//
 					String stockcode = cbxstockcode.getSelectedItem().toString().substring(0, 6);
 					findInputedNodeInTable (stockcode);
 				}
@@ -1169,6 +1188,8 @@ public class BanKuaiFengXi extends JDialog {
 	private JCheckBox ckboxshowcje;
 	private JCheckBox ckboxparsefile;
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
+	private JLabel lblshcje;
+	private JLabel lblszcje;
 	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -1326,7 +1347,13 @@ public class BanKuaiFengXi extends JDialog {
 
 		cbxsearchbk.setEditable(true);
 		
-		JLabel label = new JLabel("17.12.12.13.24");
+		JLabel lblszzhoucjl = new JLabel("\u6DF1\u8BC1\u5468\u6210\u4EA4\u91CF");
+		
+		JLabel lblshzhoucjl = new JLabel("\u4E0A\u8BC1\u5468\u6210\u4EA4\u91CF");
+		
+		lblszcje = new JLabel("New label");
+		
+		lblshcje = new JLabel("New label");
 		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
@@ -1335,20 +1362,22 @@ public class BanKuaiFengXi extends JDialog {
 					.addContainerGap()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel_1.createSequentialGroup()
-							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 336, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
-						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-							.addGroup(gl_panel_1.createSequentialGroup()
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 								.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
-								.addContainerGap(226, Short.MAX_VALUE))
-							.addGroup(gl_panel_1.createSequentialGroup()
-								.addComponent(label, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addGap(29))
-							.addGroup(gl_panel_1.createSequentialGroup()
-								.addComponent(tabbedPane_1, GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
-								.addContainerGap()))))
+								.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 336, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 327, GroupLayout.PREFERRED_SIZE))
+							.addContainerGap(10, Short.MAX_VALUE))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblszzhoucjl)
+								.addComponent(lblshzhoucjl))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(lblshcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(lblszcje, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+							.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGap(20))))
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -1358,12 +1387,23 @@ public class BanKuaiFengXi extends JDialog {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-						.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
-						.addComponent(label))
-					.addGap(14))
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addGap(10)
+							.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+									.addComponent(lblszzhoucjl)
+									.addComponent(lblszcje))
+								.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE))
+							.addGap(14))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED, 400, Short.MAX_VALUE)
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblshzhoucjl)
+								.addComponent(lblshcje))
+							.addContainerGap())))
 		);
 		
 		sclpleft = new JScrollPane();
@@ -1551,6 +1591,8 @@ public class BanKuaiFengXi extends JDialog {
 			btnChosPasFile = new JButton("\u9009\u62E9\u6587\u4EF6");
 			btnChosPasFile.setForeground(Color.RED);
 			
+			JLabel label = new JLabel("17.12.12.15.00");
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -1569,7 +1611,9 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnChosPasFile)
-						.addGap(883)
+						.addGap(18)
+						.addComponent(label, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE)
+						.addGap(762)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
 						.addGap(18)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
@@ -1586,7 +1630,8 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(chckbxNewCheckBox)
 						.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(okButton)
-						.addComponent(cancelButton))
+						.addComponent(cancelButton)
+						.addComponent(label))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}

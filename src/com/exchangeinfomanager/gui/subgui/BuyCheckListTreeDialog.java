@@ -368,7 +368,7 @@ public class BuyCheckListTreeDialog extends JDialog
 	public String getChkLstUpdatedDate ()
 	{
 		if(checklistTreeTiCai.getChecklistsitems() != null) {
-			 return CommonUtility.formatDateYYYY_MM_DD_HHMMSS(lastestUpdateDate);
+			 return lastestUpdateDate.toString();
 		} else 
 			return null;
 	}
@@ -401,12 +401,12 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			sotckinfomanager.setBtngengxinxx();
 			 			tabbedPane.setForegroundAt(0, Color.red);
 			 			try {
-			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
-				 				lastestUpdateDate = new Date();
+			 				if(lastestUpdateDate.isBefore(LocalDate.now()) ) {
+			 					lblLastestDate.setText(LocalDate.now().toString());
+				 				lastestUpdateDate = LocalDate.now() ;
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
-			 				lastestUpdateDate = new Date();
+			 				lastestUpdateDate = LocalDate.now() ;
 			 			}
 			 		}
 			 	}
@@ -457,12 +457,12 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			tabbedPane.setForegroundAt(1, Color.red);
 			 			
 			 			try {
-			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
-				 				lastestUpdateDate = new Date();
+			 				if(lastestUpdateDate.isBefore(LocalDate.now()) ) {
+			 					lblLastestDate.setText(LocalDate.now().toString() );
+				 				lastestUpdateDate = LocalDate.now();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
-			 				lastestUpdateDate = new Date();
+			 				lastestUpdateDate = LocalDate.now();
 			 			}
 			 		}
 			 			
@@ -513,13 +513,14 @@ public class BuyCheckListTreeDialog extends JDialog
 			 		if( checklistTreeCaiWu.getRowForLocation(arg0.getX(),arg0.getY()) >0 ){
 			 			sotckinfomanager.setBtngengxinxx();
 			 			tabbedPane.setForegroundAt(2, Color.red);
+			 	
 			 			try {
-			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
-				 				lastestUpdateDate = new Date();
+			 				if(lastestUpdateDate.isBefore(LocalDate.now()) ) {
+			 					lblLastestDate.setText(LocalDate.now().toString() );
+				 				lastestUpdateDate = LocalDate.now();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
-			 				lastestUpdateDate = new Date();
+			 				lastestUpdateDate = LocalDate.now();
 			 			}
 			 		}
 			 	}
@@ -570,12 +571,12 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			sotckinfomanager.setBtngengxinxx();
 			 			tabbedPane.setForegroundAt(3, Color.red);
 			 			try {
-			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
-				 				lastestUpdateDate = new Date();
+			 				if(lastestUpdateDate.isBefore(LocalDate.now()) ) {
+			 					lblLastestDate.setText(LocalDate.now().toString() );
+				 				lastestUpdateDate = LocalDate.now();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
-			 				lastestUpdateDate = new Date();
+			 				lastestUpdateDate = LocalDate.now();
 			 			}
 			 		}
 			 		
@@ -626,12 +627,12 @@ public class BuyCheckListTreeDialog extends JDialog
 			 			sotckinfomanager.setBtngengxinxx();
 			 			tabbedPane.setForegroundAt(4, Color.red);
 			 			try {
-			 				if(lastestUpdateDate.before(new Date())) {
-			 					lblLastestDate.setText(CommonUtility.formatDateYYYY_MM_DD_HHMMSS(new Date()));
-				 				lastestUpdateDate = new Date();
+			 				if(lastestUpdateDate.isBefore(LocalDate.now()) ) {
+			 					lblLastestDate.setText(LocalDate.now().toString() );
+				 				lastestUpdateDate = LocalDate.now();
 				 			}
 			 			} catch(java.lang.NullPointerException e) {
-			 				lastestUpdateDate = new Date();
+			 				lastestUpdateDate = LocalDate.now();
 			 			}
 			 		}
 			 		

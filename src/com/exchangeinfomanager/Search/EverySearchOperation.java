@@ -29,6 +29,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.awt.event.ItemListener;
@@ -445,8 +447,8 @@ public class EverySearchOperation extends JPanel
 	protected boolean updateGuadanActionSearchResultToGui(String searchaction)
 	{
 		// TODO Auto-generated method stub
-		Date currentdate = dchsSearchdate.getDate();
-		String searchdate = CommonUtility.formatDateYYYY_MM_DD_HHMMSS(currentdate);
+		LocalDate currentdate = dchsSearchdate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		String searchdate = currentdate.toString();
 		String searchstringformated = "'*" + searchdate  + "*'";
 		
 		String searchsqlstat = "SELECT * FROM 操作记录挂单  WHERE 日期  LIKE " + searchstringformated + "" + "ORDER BY 股票代码" ; 

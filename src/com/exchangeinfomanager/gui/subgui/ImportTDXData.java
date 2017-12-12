@@ -79,7 +79,8 @@ public class ImportTDXData extends JDialog {
 		if(!file.exists() ) {
 			 System.out.println("通达信目录不正确:" + tdxpath ); 
 			 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前目录:" + tdxpath);
-			 dispose();
+			 this.dispose();
+			 return;
 		 }
 		
 		tfldresult.append("当前通达信目录:" + tdxpath + "\n");
