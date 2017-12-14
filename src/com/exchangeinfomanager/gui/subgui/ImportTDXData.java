@@ -314,7 +314,7 @@ public class ImportTDXData extends JDialog {
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
 					int hour = cal.get(Calendar.HOUR_OF_DAY);
 					int wk = cal.get(Calendar.DAY_OF_WEEK) - 1;
-					if( (wk<=5 && wk>=1) && (hour<15 && hour>= 10) ) {
+					if( (wk<=5 && wk>=1) && (hour<15 && hour>= 12) ) {
 						JOptionPane.showMessageDialog(null,"涉及通达信大量数据同步，请在交易日15点收盘后至次日10点前从通达信导出数据后再导入本系统。");
 						return;
 					}

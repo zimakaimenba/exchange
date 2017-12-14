@@ -338,7 +338,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
     		if(tmprecord == null)
     			return Color.black;
     		else if(tmprecord.hasFengXiJieGuo ()) 
-        		return Color.ORANGE;
+        		return Color.magenta.darker();
         	else 
         		return Color.black;
     	}

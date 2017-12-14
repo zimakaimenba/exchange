@@ -657,7 +657,10 @@ public class BuyCheckListTreeDialog extends JDialog
 	    else return null;
 	}
 	
-	
+	public JPanel getCheckListPanel ()
+	{
+		return this.contentPanel;
+	}
 	private final JPanel contentPanel = new JPanel();
 	private JScrollPane scrlpnTiCai;
 	private JScrollPane scrlpnGuDong;

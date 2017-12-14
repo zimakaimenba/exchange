@@ -195,7 +195,8 @@ public class StockInfoManager
 		acntdbopt = new AccountDbOperation();
 		bkdbopt = new BanKuaiDbOperation ();
 		bkcyl = new BanKuaiAndChanYeLian(this);
-		
+//		chklstdialog = new BuyCheckListTreeDialog (this,"","");
+//		panelcklt = chklstdialog.getCheckListPanel();
 		initializeGui();
 		displayAccountAndChiCang ();
 		displayDbInfo();
@@ -214,6 +215,8 @@ public class StockInfoManager
 	private BanKuaiFengXi bkfx ;
 	private SearchDialog searchdialog;
 	private BanKuaiAndChanYeLian bkcyl;
+//	private BuyCheckListTreeDialog chklstdialog;
+//	private JPanel panelcklt;
 
 	
 	
@@ -2333,6 +2336,7 @@ public class StockInfoManager
 	private BkChanYeLianTree tree_1;
 	private JButton btndetailfx;
 	private JMenuItem menuItembkfx;
+	private JPanel panelcklt;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2346,7 +2350,7 @@ public class StockInfoManager
 		frame.getContentPane().setEnabled(false);
 				
 		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u7406");
-		frame.setBounds(100, 100, 814, 921);
+		frame.setBounds(100, 100, 1389, 921);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -2516,12 +2520,17 @@ public class StockInfoManager
 		btnRemvZdy.setToolTipText("\u79FB\u9664\u81EA\u5B9A\u4E49\u677F\u5757");
 		btnRemvZdy.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/minus_red20.png")));
 		
+		panelcklt = new JPanel(); //chklstdialog.getCheckListPanel(); //
+		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 763, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())
 						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
@@ -2531,19 +2540,18 @@ public class StockInfoManager
 										.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
 										.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE))
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(panelcklt, GroupLayout.PREFERRED_SIZE, 572, GroupLayout.PREFERRED_SIZE)
+									.addGap(515)
+									.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
 								.addGroup(groupLayout.createSequentialGroup()
 									.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 474, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(btnDBStatus)))
-							.addGap(1093)
-							.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE)
-							.addGap(13))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 782, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())))
+							.addGap(13))))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
@@ -2562,10 +2570,12 @@ public class StockInfoManager
 							.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 745, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+							.addComponent(panelcklt, GroupLayout.PREFERRED_SIZE, 596, GroupLayout.PREFERRED_SIZE)
+							.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 745, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
 						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
@@ -3068,7 +3078,7 @@ public class StockInfoManager
 		
 		menuConfigration.add(menuItemSysSet);
 		
-		mntmNewMenuItem = new JMenuItem("V17.12.11.12.06");
+		mntmNewMenuItem = new JMenuItem("V17.12.14.18.26");
 		menuConfigration.add(mntmNewMenuItem);
 		
 		AccountsInfoTableModel stockaccountmodel = new AccountsInfoTableModel();

@@ -857,7 +857,7 @@ public class BanKuaiDbOperation
 			while((line = bufr.readLine()) != null) {
 				List<String> tmpbkinfo = Splitter.on("|").omitEmptyStrings().splitToList(line); //0|000001|T1001|440101
 				String stockcode = tmpbkinfo.get(1).trim();
-				String stockbkcode = tmpbkinfo.get(2).trim();
+				String stockbkcode = tmpbkinfo.get(2).trim(); //T开头的代码,不是880开头的
 				String stockbkname = null;
 				 
 				try {
@@ -872,14 +872,14 @@ public class BanKuaiDbOperation
 				try {
    			    	String sqlquerystat = "SELECT *  FROM 股票通达信行业板块对应表  WHERE  股票代码 = " 
    			    							+ "'"  + stockcode + "'"
-   			    							+ " AND 对应TDXSWID=" +  "'" + stockbkcode + "'"
+//   			    							+ " AND 对应TDXSWID=" +  "'" + stockbkcode + "'"
    			    							+ " AND isnull(移除时间)"
    			    							;
    			    	System.out.println(sqlquerystat);
    			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	
-   			        rs.last();  
-   			        int rows = rs.getRow();  
+   			        rs.last(); 
+   			        int rows = rs.getRow();  //个股和行业是一对一的，如果有大于1的行数，说明有问题,可能是过去同步发生的问题，现在要纠正
    			        rs.first();  
    			        if(rows == 0) { //该股票还不存在于数据库中，要添加
 //   			        	String sqlinsertstat = "INSERT INTO  股票通达信行业板块对应表(股票代码,行业板块,对应TDXSWID,股票权重) values ("
@@ -898,9 +898,10 @@ public class BanKuaiDbOperation
 		   	            Files.append("加入：" + stockcode.trim() + " " + stockbkname.trim()  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   				
 		   				allupdatednum++;
-   			        } else { //存在
+   			        } else if(rows == 1) { //存在
    			        	String stockbkanameindb = rs.getString("对应TDXSWID");
    			        	if( !stockbkanameindb.equals(stockbkcode) ) { //不一样说明板块有变化，老的板块更新移除时间，同时加入一条新信息，反应新的板块
+   			        		checkStockHangYeNewInfo (stockcode,stockbkanameindb,stockbkcode);
    			        		//先把老记录 移除时间更新
 //	   			     		String sqlupdatestat = "UPDATE  股票通达信行业板块对应表  SET " 
 //	   			 				+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" + ","
@@ -908,17 +909,17 @@ public class BanKuaiDbOperation
 //	   			 				+ " AND 对应TDXSWID=" + stockbkanameindb 
 //	   			 				+ " AND isnull(移除时间)"
 //	   			 				;
-   			        		String sqlupdatestat = "UPDATE 股票通达信行业板块对应表 JOIN 通达信板块列表"
-   	       							+ "  ON  股票通达信行业板块对应表.`股票代码` = " + "'" + stockcode.trim() + "'"
-   	       							+ "  AND isnull(移除时间)"
-   	       							+ "  and  股票通达信行业板块对应表.`板块代码` = 通达信板块列表.`板块ID` "
-   	       							+ "  and 通达信板块列表.`对应TDXSWID` = " + "'" + stockbkanameindb + "'"
-   	       							+ "  SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() ) + "'"
-   	       							;
-		   			 		System.out.println(sqlupdatestat);
-		   			 		@SuppressWarnings("unused")
-		   			 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
-		   			 		allupdatednum ++;
+   			        		allupdatednum ++;
+//   			        		String sqlupdatestat = "UPDATE 股票通达信行业板块对应表 "
+//   	       										+ "  SET 移除时间 = " + "'" +  LocalDate.now().toString()  + "'"
+//   	       										+ "  WHERE  股票通达信行业板块对应表.`股票代码` = " + "'" + stockcode.trim() + "'"
+//   	       										+ "  AND isnull(移除时间)"
+//   	       										+ "  AND 股票通达信行业板块对应表.`对应TDXSWID` = " + "'" + stockbkanameindb + "'"
+//   	       							;
+//		   			 		System.out.println(sqlupdatestat);
+//		   			 		@SuppressWarnings("unused")
+//		   			 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		   			 		
 		   			 		
 		   			 		//再增加一条记录
 //			   			 	String sqlinsertstat = "INSERT INTO  股票通达信行业板块对应表(股票代码,行业板块,对应TDXSWID,股票权重) values ("
@@ -928,16 +929,39 @@ public class BanKuaiDbOperation
 //			   						+ 10
 //			   						+ ")"
 //			   						;
-		   			 		String sqlinsertstat =  "insert into 股票通达信行业板块对应表(股票代码,板块代码,对应TDXSWID,股票权重)"
-								+ " SELECT '" + stockcode.trim() + "', 通达信板块列表.`板块ID`,'" + stockbkcode + "',10 "
-								+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stockbkcode + "'"
-								;
-			   				System.out.println(sqlinsertstat);
-			   				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+//		   			 		String sqlinsertstat =  "insert into 股票通达信行业板块对应表(股票代码,板块代码,对应TDXSWID,股票权重)"
+//								+ " SELECT '" + stockcode.trim() + "', 通达信板块列表.`板块ID`,'" + stockbkcode + "',10 "
+//								+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stockbkcode + "'"
+//								;
+//			   				System.out.println(sqlinsertstat);
+//			   				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 //		   	            Files.append("加入：" + stockcode.trim() + " " + stockbkname.trim()  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 //			   	        Files.append("更新：" + stockcode.trim() + " " + stockbkname.trim()  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
    			        	}
+   			        } else if(rows > 1) { //通达信中个股和行业是一对一的，如果有大于1的行数，说明有问题,可能是过去同步发生的问题，现在要纠正
+   			        	JOptionPane.showMessageDialog(null,"错误！"+ stockcode + "有"+ rows + "个行业板块！请检查数据一致性！");
+//   			        	do {
+//   			        		//如果有错误行的同时板块有更新，判断哪个是错误行，哪个是需要更新的板块？怎么搞？ 2017.12.14
+//   			        		//最好是出一个对话框，让用户选择，现在出一个通知，后面慢慢想其他办法,最后觉得还是手动在数据库里面改，因为费时间涉及一个机制，可能修改完就不再出现了，投入产出不合算
+//   			        		String bkcode = rs.getString("板块代码");
+//   			        		String stockbkanameindb = rs.getString("对应TDXSWID");
+//   			        		int action = JOptionPane.showConfirmDialog(null, stockcode + "的" + bkcode + "信息是否需要删除？","错误！"+ stockcode + "有"+ rows + "个行业板块！请检查数据一致性！", JOptionPane.YES_NO_OPTION);
+//   							if(0 == action) {//用户同意则删除
+//   								String sqldeletestat = "DELETE  FROM 股票通达信行业板块对应表"
+//   													+ " WHERE 股票通达信行业板块对应表.`股票代码` = " + "'" + stockcode.trim() + "'"
+//   													+ " AND 股票通达信行业板块对应表.`对应TDXSWID` = " + "'" + stockbkanameindb + "'" 
+//   													+ " AND 股票通达信行业板块对应表.`板块代码` = " + "'" + bkcode + "'"
+//   													;
+//   								System.out.println(sqldeletestat);
+//   			   			 		@SuppressWarnings("unused")
+//   			   			 		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletestat);
+//   							} else { //不删除的话，就更新和rows =1一样的情况
+//   		   			        	if( !stockbkanameindb.equals(stockbkcode) )  //不一样说明板块有变化，老的板块更新移除时间，同时加入一条新信息，反应新的板块
+//   		   			        		checkStockHangYeNewInfo (stockcode,stockbkanameindb,stockbkcode);
+//   							}
+//   			        	} while(rs.next() );
    			        }
+   			      
    			    }catch(java.lang.NullPointerException e){ 
    			    	e.printStackTrace();
    			    } catch (SQLException e) {
@@ -965,12 +989,14 @@ public class BanKuaiDbOperation
 		} finally {
 			try {
 				fr.close();
+				fr = null;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			try {
 				bufr.close();
+				bufr = null;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -979,6 +1005,43 @@ public class BanKuaiDbOperation
 		 
 		 return allupdatednum;
 	}
+	private void checkStockHangYeNewInfo(String stockcode, String stockoldTDXSWID, String stocknewTDXSWID)
+	{
+		//先把老记录 移除时间更新
+//    		String sqlupdatestat = "UPDATE  股票通达信行业板块对应表  SET " 
+//				+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" + ","
+//				+ " WHERE 股票代码 = " + "'" + stockcode.trim() + "'" 
+//				+ " AND 对应TDXSWID=" + stockbkanameindb 
+//				+ " AND isnull(移除时间)"
+//				;
+			
+   			String sqlupdatestat = "UPDATE 股票通达信行业板块对应表 "
+									+ "  SET 移除时间 = " + "'" +  LocalDate.now().toString()  + "'"
+									+ "  WHERE  股票通达信行业板块对应表.`股票代码` = " + "'" + stockcode.trim() + "'"
+									+ "  AND isnull(移除时间)"
+									+ "  AND 股票通达信行业板块对应表.`对应TDXSWID` = " + "'" + stockoldTDXSWID + "'"
+						;
+	 		System.out.println(sqlupdatestat);
+	 		@SuppressWarnings("unused")
+	 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+	 		
+	 		//再增加一条记录
+//		 	String sqlinsertstat = "INSERT INTO  股票通达信行业板块对应表(股票代码,行业板块,对应TDXSWID,股票权重) values ("
+//					+ "'" + stockcode.trim() + "'" + ","
+//					+ "'" + stockbkname.trim() + "'"  + ","
+//					+ "'" + stockbkcode.trim() + "'" + ","
+//					+ 10
+//					+ ")"
+//					;
+	 		String sqlinsertstat =  "insert into 股票通达信行业板块对应表(股票代码,板块代码,对应TDXSWID,股票权重)"
+			+ " SELECT '" + stockcode.trim() + "', 通达信板块列表.`板块ID`,'" + stocknewTDXSWID + "',10 "
+			+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stocknewTDXSWID + "'"
+			;
+			System.out.println(sqlinsertstat);
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		
+	}
+	
 	/*
 	 * 通达信的风格与个股代码对应文件
 	 */
