@@ -817,7 +817,7 @@ public class StockInfoManager
 			public void mousePressed(MouseEvent arg0) 
 			{
 				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
-				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "计划细节", JOptionPane.OK_CANCEL_OPTION);
+				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 				
@@ -2529,29 +2529,28 @@ public class StockInfoManager
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 763, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(panel_2, 0, 0, Short.MAX_VALUE)
-										.addComponent(scrollPane, 0, 0, Short.MAX_VALUE)
-										.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
-										.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE))
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(panelcklt, GroupLayout.PREFERRED_SIZE, 572, GroupLayout.PREFERRED_SIZE)
-									.addGap(515)
-									.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 474, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnDBStatus)))
-							.addGap(13))))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(panel_2, 0, 0, Short.MAX_VALUE)
+								.addComponent(scrollPane, 0, 0, Short.MAX_VALUE)
+								.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
+								.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(panelcklt, GroupLayout.PREFERRED_SIZE, 572, GroupLayout.PREFERRED_SIZE)
+							.addGap(515)
+							.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 474, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnDBStatus)))
+					.addGap(13))
+				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 762, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(1120, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
@@ -2579,8 +2578,8 @@ public class StockInfoManager
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
 						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-							.addComponent(panelStatusBar, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-							.addComponent(pnl_paomd, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)))
+							.addComponent(pnl_paomd, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+							.addComponent(panelStatusBar, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
 		panelStatusBar.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -2994,7 +2993,7 @@ public class StockInfoManager
 		JButton btnzengjiadingzeng = new JButton("\u589E\u52A0\u5B9A\u589E");
 		btnzengjiadingzeng.setEnabled(false);
 		
-		btnjiaruzdgz = new JButton("\u52A0\u5165/\u8BA1\u5212");
+		btnjiaruzdgz = new JButton("\u5173\u6CE8/\u8BA1\u5212");
 		btnjiaruzdgz.setEnabled(false);
 		
 		btnyichuzdgz = new JButton("\u79FB\u51FA");
@@ -3078,7 +3077,7 @@ public class StockInfoManager
 		
 		menuConfigration.add(menuItemSysSet);
 		
-		mntmNewMenuItem = new JMenuItem("V17.12.14.18.26");
+		mntmNewMenuItem = new JMenuItem("V17.12.15.13.02");
 		menuConfigration.add(mntmNewMenuItem);
 		
 		AccountsInfoTableModel stockaccountmodel = new AccountsInfoTableModel();

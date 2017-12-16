@@ -192,8 +192,8 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 
 	private void createMenuItems() 
 	{
-		menuItemAddNews = new JMenuItem("添加板块新闻");
-		menuItemAddToGz = new JMenuItem("加入关注");
+		menuItemAddNews = new JMenuItem("添加新闻");
+		menuItemAddToGz = new JMenuItem("开始关注");
 		menuItemMakeLongTou = new JMenuItem("标记为当周热点");
 		
 		this.add(menuItemAddNews);

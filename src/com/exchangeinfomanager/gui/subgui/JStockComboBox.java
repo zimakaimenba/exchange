@@ -34,9 +34,20 @@ public class JStockComboBox extends  JComboBox<String>
 		this.setForeground(Color.RED);
 		bkdbopt = new BanKuaiDbOperation ();
 	}
+	
+	public JStockComboBox(int onlyselecttype) //用户可以指定只选择某种类型的node
+	{
+		super();
+		createEvents ();
+		this.setEditable(true);
+		this.setForeground(Color.RED);
+		this.bkdbopt = new BanKuaiDbOperation ();
+		this.onlyselectnodetype = onlyselecttype;
+	}
 
 	private BanKuaiDbOperation bkdbopt;
 	private BkChanYeLianTreeNode nodeshouldbedisplayed;
+	private Integer onlyselectnodetype;
 	
 	/*
 	 * 
@@ -98,14 +109,22 @@ public class JStockComboBox extends  JComboBox<String>
 		 }
 		 
 		 if(nodeslist.size()>1) { 
-			 //显示JLIST，让用户选择
-			 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
-			 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
-			 if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-			 
-			 int userselected = userselection.getUserSelection();
-			 nodeshouldbedisplayed = nodeslist.get(userselected);
+			 if(this.onlyselectnodetype != null) { //用户指定了只要什么类型的node
+				 for( BkChanYeLianTreeNode tmpnode : nodeslist) 
+					 if(tmpnode.getType() == this.onlyselectnodetype) {
+						 nodeshouldbedisplayed = tmpnode;
+						 break;
+					 }
+				 
+			 } else { //没有指定，就显示JLIST，让用户选择
+				 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
+				 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
+				 if(exchangeresult == JOptionPane.CANCEL_OPTION)
+						return;
+				 
+				 int userselected = userselection.getUserSelection();
+				 nodeshouldbedisplayed = nodeslist.get(userselected);
+			 }
 		 } else
 			 nodeshouldbedisplayed = nodeslist.get(0);
 		 

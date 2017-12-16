@@ -1341,9 +1341,9 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
 		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
-		cbxstockcode = new JStockComboBox();
+		cbxstockcode = new JStockComboBox(6);
 		
-		cbxsearchbk = new JStockComboBox();
+		cbxsearchbk = new JStockComboBox(4);
 
 		cbxsearchbk.setEditable(true);
 		

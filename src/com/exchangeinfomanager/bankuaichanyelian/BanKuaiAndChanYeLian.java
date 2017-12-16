@@ -846,28 +846,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 	}	    
 	private void createEvents() 
 	{
-//		menuItemredian.addActionListener(new ActionListener() 
-//		{
-//			public void actionPerformed(ActionEvent e) 
-//			{
-//				String selectnodecode = null;
-//				try {
-//					TreePath closestPath = treechanyelian.getSelectionPath();
-//					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-//					 selectnodecode = selectednode.getMyOwnCode();
-//				} catch (java.lang.NullPointerException ex) {
-//					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
-//				}
-//				
-//				JiaRuJiHua jiarujihua = new JiaRuJiHua ( selectnodecode,"本周热点" ); 
-//				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "本周热点", JOptionPane.OK_CANCEL_OPTION);
-//				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//					return;
-//				
-//				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-//				
-//			}
-//		});
 		
 		tfldparsefilename.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -889,7 +867,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 				tfldquanzhong.setEnabled(!tfldquanzhong.isEnabled());
 			}
 		});
-		
+		/*
+		 * 
+		 */
 		btndisplaybkfx.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -912,7 +892,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 				
 			}
 		});
-		
+		/*
+		 * 
+		 */
 		dchgeguwkzhanbi.addPropertyChangeListener(new PropertyChangeListener() {
 		    @Override
 		    public void propertyChange(PropertyChangeEvent e) {
@@ -940,31 +922,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 			}
 		});
 		
-		
-//		notesPane.addHyperlinkListener(new HyperlinkListener() {
-//			public void hyperlinkUpdate(HyperlinkEvent e) {
-//				if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-//					if(Desktop.isDesktopSupported()) {
-//					    try {
-//							Desktop.getDesktop().browse(e.getURL().toURI());
-//						} catch (IOException | URISyntaxException e1) {
-//							// TODO Auto-generated catch block
-//							e1.printStackTrace();
-//						}
-//					}
-//			        }
-//			}
-//		});
-		
-//		mntmNewMenuItem.addActionListener(new ActionListener() {
-//			@Override
-//
-//			public void actionPerformed(ActionEvent evt) {
-//
-//				addChanYeLianNews ();
-//			}
-//			
-//		});
 		
 		btnopencylxml.addMouseListener(new MouseAdapter() {
 			@Override
@@ -1006,29 +963,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 				deleteDaLeiGuPiaoChi ();
 			}
 		});
-		
-//		menuItemaddgz.addActionListener(new ActionListener() 
-//		{
-//			public void actionPerformed(ActionEvent e) 
-//			{
-//				String selectnodecode = null;
-//				try {
-//					TreePath closestPath = treechanyelian.getSelectionPath();
-//					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-//					 selectnodecode = selectednode.getMyOwnCode();
-//				} catch (java.lang.NullPointerException ex) {
-//					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
-//				}
-//				
-//				JiaRuJiHua jiarujihua = new JiaRuJiHua ( selectnodecode,"加入关注" ); 
-//				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "计划细节", JOptionPane.OK_CANCEL_OPTION);
-//				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//					return;
-//				
-//				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-//			}
-//		});
-		
+		/*
+		 * 增加大类
+		 */
 		btnadddalei.addMouseListener(new MouseAdapter() {
 
 			public void mouseClicked(MouseEvent arg0) 
@@ -1056,49 +993,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 					}
 				});
 				
-				//个股列表事件
-//				tablebkgegu.addMouseListener(new TableMouseListener(tablebkgegu));
-//				tablebkgegu.addMouseListener(new MouseAdapter() {
-//		        	@Override
-//		        	public void mouseClicked(MouseEvent arg0) 
-//		        	{
-//		        		int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
-//						 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
-//						 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
-//						 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-//						 
-//		        		if (arg0.getClickCount() == 1) {
-//		        			int row = tablebkgegu.getSelectedRow();
-//							 //int column = tblSearchResult.getSelectedColumn();
-//							 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
-//							 String stockcode = ((BanKuaiGeGuTableModel)tablebkgegu.getModel()).getValueAt(model_row, 0).toString().trim();
-//							 try {
-//								 String stockname = ((BanKuaiGeGuTableModel)tablebkgegu.getModel()).getValueAt(model_row, 1).toString().trim();
-//								 pnlGeGuZhanBi.hightlightSpecificSector (stockcode+stockname);
-//							 } catch ( java.lang.NullPointerException e) {
-//								 pnlGeGuZhanBi.hightlightSpecificSector (stockcode);
-//							 }
-//
-//								 
-//		        		}
-//		        		 if (arg0.getClickCount() == 2) {
-////							 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
-////							 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
-////							 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
-////							 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-//							 
-//							 
-//							 int row = tablebkgegu.getSelectedRow();
-//							 //int column = tblSearchResult.getSelectedColumn();
-//							 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
-//							 String stockcode = tablebkgegu.getModel().getValueAt(model_row, 0).toString().trim();
-//							 System.out.println(stockcode);
-//							 stockInfoManager.getcBxstockcode().setSelectedItem(stockcode);
-//							 stockInfoManager.preUpdateSearchResultToGui(stockcode);
-//						 }
-//		        	}
-//		        });
-				
+				/*
+				 * 
+				 */
 				tableZdgzBankDetails.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) 
@@ -1119,7 +1016,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 
 				});
-				
+				/*
+				 * 
+				 */
 				btnCylRemoveFromZdgz.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent arg0) 
@@ -1129,7 +1028,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 				});
 
 				
-			
+				/*
+				 * 把产业链加入到重点关注
+				 */
 				btnCylAddToZdgz.addMouseListener(new MouseAdapter() {
 					 @Override
 					public void mouseClicked(MouseEvent arg0) 
@@ -1456,7 +1357,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 	}
 	
-    
+	/*
+	 * 移除重点关注
+	 */
 	private void removeTreeChanYeLianNodeFromZdgz(MouseEvent arg0) 
 	{
 		int row = tableZdgzBankDetails.getSelectedRow();
@@ -1468,6 +1371,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 		String daleiname = getCurSelectedDaLei();
 		 if( daleiname != null) {
 			  BkChanYeLianTreeNode gzcyl = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfo(row);
+			  
+			  JiaRuJiHua jiarujihua = new JiaRuJiHua ( gzcyl.getMyOwnCode(), "移除重点" ); 
+			  int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "移除重点关注", JOptionPane.OK_CANCEL_OPTION);
+			  if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
+					
+			  int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
 			 
 			 treechanyelian.removeZdgzBkCylInfoFromTreeNode (gzcyl,false);
 			 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzcyl);
@@ -1475,9 +1385,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 
 //			 zdgzxmlneedsave = true;
 			 btnSaveAll.setEnabled(true);
-			 
-		 }
-		 else
+		 } else
 			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
 		
 	}
@@ -1503,6 +1411,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 		} else
 			 JOptionPane.showMessageDialog(null,"请选择一个大类","Warning",JOptionPane.WARNING_MESSAGE);
 	}
+	/*
+	 * 从offical移除重点关注
+	 */
 	private void removeChanYeLianFromOffical ()
 	{
 		int row = tableZdgzBankDetails.getSelectedRow();
@@ -1536,13 +1447,22 @@ public class BanKuaiAndChanYeLian extends JPanel
 		
 	}
 		
-	
+	/*
+	 * 加入重点关注
+	 */
 	private void adddTreeChanYeLianNodeToZdgz(MouseEvent arg0) 
 	{
 		 String daleiname = getCurSelectedDaLei();
 		 if( daleiname != null) {
 			 TreePath path = treechanyelian.getSelectionPath();
 			 BkChanYeLianTreeNode nodewilladded = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
+			 
+			 JiaRuJiHua jiarujihua = new JiaRuJiHua ( nodewilladded.getMyOwnCode(), "加入重点" ); 
+			 int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入重点关注", JOptionPane.OK_CANCEL_OPTION);
+			 if(exchangeresult == JOptionPane.CANCEL_OPTION)
+				return;
+				
+			 int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
 
 			 boolean isofficallyselected = false;
 			 if(JOptionPane.showConfirmDialog(null, "是否直接加入重点关注？","Warning", JOptionPane.YES_NO_OPTION) == 1) {
@@ -1557,6 +1477,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 int addedrow = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(nodewilladded);
 			 unifyDisplaysInDifferentCompOnGui (daleiname,addedrow);
 			
+			 
 //			 zdgzxmlneedsave = true;
 			 btnSaveAll.setEnabled(true);
 		 }
