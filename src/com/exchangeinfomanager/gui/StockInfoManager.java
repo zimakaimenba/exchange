@@ -3010,6 +3010,7 @@ public class StockInfoManager
 		
 		JButton btnGudongzjc = new JButton("\u80A1\u4E1C\u589E\u51CF\u6301");
 		btnGudongzjc.setEnabled(false);
+		
 		panel_1.setLayout(new MigLayout("", "[45px][45px][87px][57px][69px][81px][81px][93px][105px]", "[26px]"));
 		panel_1.add(btnMai, "cell 0 0,alignx left,aligny center");
 		panel_1.add(btnSell, "cell 1 0,alignx left,aligny center");

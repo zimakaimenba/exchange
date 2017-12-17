@@ -79,9 +79,9 @@ public class BanKuaiGeGuTable extends JTable
 	{
 		JPopupMenu popupMenuGeguNews = new JPopupMenu();
 		menuItemAddNews = new JMenuItem("添加个股新闻");
-		menuItemAddGz = new JMenuItem("加入关注");
-		menuItemReDian = new JMenuItem("标记本周热点");
-		menuItemMakeLongTou = new JMenuItem("设置股票权重");
+		menuItemAddGz = new JMenuItem("开始关注");
+		menuItemReDian = new JMenuItem("标记为板块热点");
+		menuItemMakeLongTou = new JMenuItem("设置股票板块权重");
 		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemMakeLongTou);
 		popupMenuGeguNews.add(menuItemAddGz);

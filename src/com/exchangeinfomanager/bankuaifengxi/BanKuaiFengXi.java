@@ -1190,6 +1190,7 @@ public class BanKuaiFengXi extends JDialog {
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JLabel lblshcje;
 	private JLabel lblszcje;
+	private JLabel lblNewLabel;
 	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -1230,15 +1231,15 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(panel, 0, 0, Short.MAX_VALUE)
 						.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 356, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(scrollPanestockbk, GroupLayout.PREFERRED_SIZE, 1091, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED))
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)
+							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
 							.addGap(15)
 							.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 545, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 1091, GroupLayout.PREFERRED_SIZE)
 							.addGap(4)))
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -1259,14 +1260,14 @@ public class BanKuaiFengXi extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 64, Short.MAX_VALUE)
-								.addComponent(scrollPane_3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
-								.addComponent(scrollPane_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE))
+								.addComponent(scrollPane_3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+								.addComponent(scrollPane_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+								.addComponent(panel, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 850, GroupLayout.PREFERRED_SIZE)
 								.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 784, GroupLayout.PREFERRED_SIZE))
-							.addGap(241))
+							.addGap(226))
 						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 							.addComponent(scrollPanestockbk, GroupLayout.PREFERRED_SIZE, 49, GroupLayout.PREFERRED_SIZE)
 							.addGroup(gl_contentPanel.createSequentialGroup()
@@ -1347,14 +1348,6 @@ public class BanKuaiFengXi extends JDialog {
 
 		cbxsearchbk.setEditable(true);
 		
-		JLabel lblszzhoucjl = new JLabel("\u6DF1\u8BC1\u5468\u6210\u4EA4\u91CF");
-		
-		JLabel lblshzhoucjl = new JLabel("\u4E0A\u8BC1\u5468\u6210\u4EA4\u91CF");
-		
-		lblszcje = new JLabel("New label");
-		
-		lblshcje = new JLabel("New label");
-		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -1367,15 +1360,7 @@ public class BanKuaiFengXi extends JDialog {
 								.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 336, GroupLayout.PREFERRED_SIZE)
 								.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 327, GroupLayout.PREFERRED_SIZE))
 							.addContainerGap(10, Short.MAX_VALUE))
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblszzhoucjl)
-								.addComponent(lblshzhoucjl))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(lblshcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(lblszcje, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
 							.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addGap(20))))
 		);
@@ -1386,24 +1371,11 @@ public class BanKuaiFengXi extends JDialog {
 					.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
+					.addGap(10)
+					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addGap(10)
-							.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-									.addComponent(lblszzhoucjl)
-									.addComponent(lblszcje))
-								.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE))
-							.addGap(14))
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED, 400, Short.MAX_VALUE)
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblshzhoucjl)
-								.addComponent(lblshcje))
-							.addContainerGap())))
+					.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
+					.addGap(14))
 		);
 		
 		sclpleft = new JScrollPane();
@@ -1523,31 +1495,55 @@ public class BanKuaiFengXi extends JDialog {
 		btnsixmonthafter = new JButton(">");
 		btnsixmonthafter.setToolTipText("\u5411\u540E6\u4E2A\u6708");
 		
+		lblNewLabel = new JLabel("\u4E0A\u8BC1");
+		
+		JLabel lblNewLabel_1 = new JLabel("\u6DF1\u8BC1");
+		
+		lblszcje = new JLabel("New label");
+		
+		lblshcje = new JLabel("New label");
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnsixmonthbefore)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnsixmonthafter)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnresetdate)
-					.addGap(876))
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnsixmonthbefore)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnsixmonthafter)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnresetdate))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addComponent(lblNewLabel)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblszcje, GroupLayout.PREFERRED_SIZE, 124, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblNewLabel_1)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblshcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addContainerGap(60, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 							.addComponent(btnsixmonthbefore, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
 							.addComponent(btnsixmonthafter, GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-					.addGap(34))
+							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel)
+						.addComponent(lblszcje)
+						.addComponent(lblNewLabel_1)
+						.addComponent(lblshcje))
+					.addGap(8))
 		);
 		panel.setLayout(gl_panel);
 		contentPanel.setLayout(gl_contentPanel);
