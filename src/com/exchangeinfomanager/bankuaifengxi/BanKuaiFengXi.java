@@ -164,10 +164,20 @@ public class BanKuaiFengXi extends JDialog {
     		//显示大盘成交量
     		if(bkcode.equals("399001") ) {
     			ChenJiaoZhanBiInGivenPeriod cjerec = childnode.getSpecficChenJiaoErRecord(curselectdate);
-    			lblszcje.setText( cjerec.getMyOwnChengJiaoEr().toString() );
+    			try {
+    				String szcje = cjerec.getMyOwnChengJiaoEr().toString();
+    				lblszcje.setText( szcje );
+    			} catch (java.lang.NullPointerException e) {
+    				lblszcje.setText( "本周没有成交额" );
+    			}
+    			
     		} else if(bkcode.equals("999999") ) {
     			ChenJiaoZhanBiInGivenPeriod cjerec = childnode.getSpecficChenJiaoErRecord(curselectdate);
-    			lblshcje.setText( cjerec.getMyOwnChengJiaoEr().toString() );
+    			try {
+    				lblshcje.setText( cjerec.getMyOwnChengJiaoEr().toString() );
+    			} catch (java.lang.NullPointerException e) {
+    				lblshcje.setText( "本周没有成交额" );
+    			}
     		} 
     			
 		}
