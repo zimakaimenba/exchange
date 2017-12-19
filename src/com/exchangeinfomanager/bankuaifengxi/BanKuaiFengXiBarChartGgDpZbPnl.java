@@ -179,6 +179,16 @@ class CustomToolTipGeneratorForGgZhanBi implements CategoryToolTipGenerator
 			
 			DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 			try {
+				tooltip = tooltip + "大盘占比" + decimalformate.format(dpzhanbi);
+			} catch (java.lang.IllegalArgumentException e ) {
+				tooltip = tooltip + "大盘占比NULL" ;
+			}
+			try {
+				tooltip = tooltip + "大盘MaxWk=" + dpzhanbimaxweek.toString();
+			} catch (java.lang.IllegalArgumentException e ) {
+				tooltip = tooltip + "大盘MaxWk=NULL";
+			}
+			try {
 				tooltip = tooltip + "板块占比" + decimalformate.format(curzhanbidata);
 			} catch (java.lang.IllegalArgumentException e ) {
 				tooltip = tooltip + "板块占比NULL" ;
@@ -189,21 +199,12 @@ class CustomToolTipGeneratorForGgZhanBi implements CategoryToolTipGenerator
 				tooltip = tooltip +  "占比变化(NULL)";
 			}
 			try {
-				tooltip = tooltip + "MaxWeek=" + maxweek.toString();
+				tooltip = tooltip + "板块MaxWk=" + maxweek.toString();
 			} catch (java.lang.IllegalArgumentException e ) {
 				e.printStackTrace();
 //				tooltip = tooltip +
 			}
-			try {
-				tooltip = tooltip + "大盘占比" + decimalformate.format(dpzhanbi);
-			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "大盘占比NULL" ;
-			}
-			try {
-				tooltip = tooltip + "DpMaxWk=" + dpzhanbimaxweek.toString();
-			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "DpMaxWk=NULL";
-			}
+			
 			
 			return tooltip;
 		}

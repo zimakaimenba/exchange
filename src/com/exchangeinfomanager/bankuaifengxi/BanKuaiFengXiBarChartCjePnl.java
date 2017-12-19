@@ -79,11 +79,13 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 		
 		CustomRendererForCje cjerender = (CustomRendererForCje) super.plot.getRenderer(); 
 		cjerender.setDisplayNode(node);
+		cjerender.setDateSet (barchartdataset);
 		DecimalFormat decimalformate = new DecimalFormat("#0.000");
 		((CustomRendererForCje) plot.getRenderer()).setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
 		cjerender.setItemLabelsVisible(true);
 		
 		CustomToolTipGeneratorForChenJiaoEr custotooltip = new CustomToolTipGeneratorForChenJiaoEr();
+		custotooltip.setDisplayNode(node);
 		cjerender.setSeriesToolTipGenerator(0,custotooltip);
 			
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
@@ -118,6 +120,29 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
         else 
         	return Color.orange;
    }
+    public Paint getItemLabelPaint(final int row, final int column)
+    {
+		String selected = super.chartdataset.getColumnKey(column).toString();
+    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+    	 
+    	ChenJiaoZhanBiInGivenPeriod nodefx = null;
+    	if(node.getType() == 4)
+    		nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
+    	else if(node.getType() == 6)
+    		nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
+    		
+		Integer maxweek;
+		if(nodefx != null)
+			 maxweek = nodefx.getGgbkcjemaxweek();
+		else 
+			maxweek = 0;
+		
+		if(maxweek >=7)
+			return Color.red;
+		else 
+			return Color.black;
+    }
+    
     @Override
     public LegendItem getLegendItem(int dataset, int series) {
         LegendItem legendItem = super.getLegendItem(dataset, series);
@@ -125,23 +150,13 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
         // modify legendItem here
         return legendItem;
     }
-
-//    public void setBarColumnShouldChangeColor (int column)
-//    {
-//    	this.shouldcolumn = column;
-//    }
-
-//    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
-//    {
-//    	this.node = curdisplayednode;
-//    }
     
 }
 
 
 class CustomToolTipGeneratorForChenJiaoEr implements CategoryToolTipGenerator  
 {
-//    private BkChanYeLianTreeNode node;
+    private BkChanYeLianTreeNode node;
 
 	public String generateToolTip(CategoryDataset dataset, int row, int column)  
     {
@@ -151,12 +166,31 @@ class CustomToolTipGeneratorForChenJiaoEr implements CategoryToolTipGenerator
     	Double curcje = (Double)dataset.getValue(row, column);
     	
     	DecimalFormat decimalformate = new DecimalFormat("#0.000");
-    	return selecteddate + "成交额" + decimalformate.format(curcje) ;
+//    	return selecteddate + "成交额" + decimalformate.format(curcje) ;
+		
+		//显示成交额是多少周最大
+//		String selected = dataset.getColumnKey(column).toString();
+//    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+    	 
+    	ChenJiaoZhanBiInGivenPeriod nodefx = null;
+		if(node.getType() == 4 )
+			nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
+		else if(node.getType() == 6 ) 
+			nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
+		
+		if(nodefx == null)
+			return "";
+		
+//		String tooltip = selected.toString();
+		Integer maxwk = nodefx.getGgbkcjemaxweek();
+		
+		return selecteddate + "成交额" + decimalformate.format(curcje) +  "CjeMaxWk=" + maxwk;
+		
     }
     
-//    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
-//    {
-//    	this.node = curdisplayednode;
-//    }
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
+    }
 
 }

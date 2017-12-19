@@ -318,6 +318,8 @@ public class BanKuai extends BkChanYeLianTreeNode
 					curcjlrecord.setGgbkzhanbimaxweek(0);
 					//计算给定周的成交额占比增速
 					curcjlrecord.setGgbkzhanbigrowthrate(0.0);
+					//成交额是多少周期内的最大
+					curcjlrecord.setGgbkcjemaxweek(0);
 					
 					return curcjlrecord;
 				} else {
@@ -351,6 +353,19 @@ public class BanKuai extends BkChanYeLianTreeNode
 								break;
 					}
 					curcjlrecord.setGgbkzhanbimaxweek(maxweek);
+					
+					//成交额是多少周期内的最大
+					maxweek = 0;
+					Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+					for(int i = index -1;i>=0;i--) {
+						lastcjlrecord = cjeperiodlist.get(i );
+						Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
+						if(curcje > lastcje)
+							maxweek ++;
+						else
+							break;
+					}
+					curcjlrecord.setGgbkcjemaxweek(maxweek);
 					
 					return curcjlrecord;
 				}

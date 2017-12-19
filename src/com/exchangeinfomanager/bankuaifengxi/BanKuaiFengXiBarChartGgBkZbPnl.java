@@ -108,6 +108,7 @@ class CustomRendererForGgBkZhanBi extends BanKuaiFengXiBarRenderer
    
     public CustomRendererForGgBkZhanBi() {
         super();
+//        getItemLabelGenerator
     }
 
     public Paint getItemPaint(final int row, final int column) 
@@ -117,6 +118,7 @@ class CustomRendererForGgBkZhanBi extends BanKuaiFengXiBarRenderer
         else   
             return Color.RED;
    }
+    
     public Paint getItemLabelPaint(final int row, final int column)
     {
 		String selected = super.chartdataset.getColumnKey(column).toString();
@@ -179,9 +181,9 @@ class CustomToolTipGeneratorForBkZhanBi implements CategoryToolTipGenerator
 				tooltip = tooltip  +  "占比变化(NULL)";
 			}
 			try {
-				tooltip = tooltip +  "MaxWeek=" + maxweek.toString() ;
+				tooltip = tooltip +  "板块MaxWk=" + maxweek.toString() ;
 			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "MaxWeek=NULL";
+				tooltip = tooltip + "板块MaxWk=NULL";
 			}
 			
 			return tooltip;

@@ -26,13 +26,13 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	private Double myownchengjiaoer;
 	private Double myownchengjiaoliang;
 	private Double uplevelchengjiaoer; //上级板块的成交额
-//	private Double cjlratio;
 	private Double ggbkzhanbigrowthrate;  //个股板块占比增速
 	private Integer ggbkzhanbimaxweek;  //个股板块占比最大周
+	private Integer ggbkcjemaxweek; //个股板块成交额最大周
 	private Double ggbkcjegrowthzhanbi;  //个股板块成交量贡献率
 	private Double ggdpzhanbi;  //个股大盘占比
 	private Double ggdpcjegrowthzhanbi;  //个股大盘成交量贡献率
-	private Integer ggdpzhanbimaxweek;
+	private Integer ggdpzhanbimaxweek;//个股大盘占比最大周
 	private Double ggdpzhanbigrowthrate; //个股大盘占比增速
 	private Boolean hasfengxijieguo; //有加入关注，分析结果等等
 	
@@ -215,7 +215,18 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	public void setGgdpzhanbigrowthrate(Double ggdpzhanbigrowthrate) {
 		this.ggdpzhanbigrowthrate = ggdpzhanbigrowthrate;
 	}
-	
+	/**
+	 * @return the ggbkcjemaxweek
+	 */
+	public Integer getGgbkcjemaxweek() {
+		return ggbkcjemaxweek;
+	}
+	/**
+	 * @param ggbkcjemaxweek the ggbkcjemaxweek to set
+	 */
+	public void setGgbkcjemaxweek(Integer ggbkcjemaxweek) {
+		this.ggbkcjemaxweek = ggbkcjemaxweek;
+	}
 	public void setFengXiJIeGuo (Boolean fxjg)
 	{
 		this.hasfengxijieguo =  fxjg;
