@@ -80,6 +80,7 @@ class ChanYeLianXMLHandler
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		
 		try {
 			SAXReader ggcylsaxreader = new SAXReader();
 			ggcylxmldocument = ggcylsaxreader.read(xmlfileinput );
@@ -239,7 +240,7 @@ class ChanYeLianXMLHandler
 						ex.printStackTrace();
 					}
 					BanKuai parentsleaf  = new BanKuai( newbkcode,bkname);
-
+					((BanKuai)parentsleaf).setDaPan((DaPan)topNode); 
 					topNode.add(parentsleaf);
 	        }
 	}

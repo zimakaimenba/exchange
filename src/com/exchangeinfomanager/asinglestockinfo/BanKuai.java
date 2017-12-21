@@ -262,6 +262,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 			
 			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 //			LocalDate tplastdate = curweeknum.minus(1,ChronoUnit.WEEKS);
+
 			Double dpcjediff = this.dapan.getChengJiaoErDifferenceOfLastWeek(requireddate);
 			if( dpcjediff<0 || dpcjediff == null ) //大盘缩量，
 				return -100.0;
