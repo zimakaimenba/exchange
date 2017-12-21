@@ -428,6 +428,8 @@ public class Stock extends BkChanYeLianTreeNode {
 				curcjlrecord.setGgbkzhanbigrowthrate(100.0);
 				//计算给定轴的成交额和大盘的占比是多少周期内的最大占比
 				curcjlrecord.setGgdpzhanbimaxweek(0);
+				//成交额是多少周最大
+				curcjlrecord.setGgbkcjemaxweek(0);
 				
 				return curcjlrecord;
 			} else if(this.checkIsFuPaiAfterTingPai (requireddate)) { //说明是停牌的复牌
@@ -443,6 +445,9 @@ public class Stock extends BkChanYeLianTreeNode {
 				curcjlrecord.setGgbkzhanbigrowthrate(100.0);
 				//计算给定轴的成交额和大盘的占比是多少周期内的最大占比
 				curcjlrecord.setGgdpzhanbimaxweek(0);
+				//成交额是多少周最大
+				curcjlrecord.setGgbkcjemaxweek(0);
+
 				
 				return curcjlrecord;
 			} else {
@@ -471,17 +476,36 @@ public class Stock extends BkChanYeLianTreeNode {
 					else
 						break;
 					
-					if( this.checkIsFuPaiAfterTingPai (lastdate) )
+					if( this.checkIsFuPaiAfterTingPai (lastdate) ) //
 						break;
 				}
 				curcjlrecord.setGgbkzhanbimaxweek(maxweek);
 				
+				//成交额是多少周最大
+				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+				maxweek = 0;
+				for(int i = index -1;i>=0;i--) {
+					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(i );
+					Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
+					LocalDate lastdate = lastcjlrecord.getRecordsDayofEndofWeek();
+
+					if(curcje > lastcje)
+							maxweek ++;
+					else
+						break;
+						
+					if( this.checkIsFuPaiAfterTingPai (lastdate) ) //
+							break;
+				}
+				curcjlrecord.setGgbkcjemaxweek(maxweek);
+
 				// 计算给定周的成交额和板块占比增速
 				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );				
 				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
 				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
 
 				curcjlrecord.setGgbkzhanbigrowthrate( zhanbigrowthrate);
+				
 				//计算给定轴的成交额和大盘的占比是多少周期内的最大占比
 				ChenJiaoZhanBiInGivenPeriod bkcjlrecord = this.myupbankuai.getSpecficChenJiaoErRecord(requireddate);//通过所属板块来得到大盘成交量
 				Double curdpzhanbiratio = curcjlrecord.getMyOwnChengJiaoEr() /  bkcjlrecord.getUpLevelChengJiaoEr(); //个股成交量和大盘成交量当周占比

@@ -131,11 +131,9 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
     	else if(node.getType() == 6)
     		nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
     		
-		Integer maxweek;
+		Integer maxweek =0;
 		if(nodefx != null)
 			 maxweek = nodefx.getGgbkcjemaxweek();
-		else 
-			maxweek = 0;
 		
 		if(maxweek >=7)
 			return Color.red;

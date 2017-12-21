@@ -19,6 +19,8 @@ import javax.swing.event.ChangeEvent;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.toedter.calendar.JDateChooser;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -26,10 +28,10 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 
 public class JiaRuJiHua extends JPanel 
 {
-	
 	public JiaRuJiHua(String stockcode,String guanzhutype) 
 	{
 		this.stockcode = stockcode;
@@ -38,6 +40,16 @@ public class JiaRuJiHua extends JPanel
 		createEvents ();
 	}
 	
+//	public JiaRuJiHua(String stockcode,String guanzhutype,BanKuaiAndChanYeLian bkcyl2) 
+//	{
+//		this.stockcode = stockcode;
+//		this.guanzhutype = guanzhutype;
+//		this.bkcyl = bkcyl2;
+//		initializeGui ();
+//		initializeTable ();
+//		createEvents ();
+//	}
+	private Integer dbrecordsid;
 	private String stockcode;
 	private JTextField tfdJihuaJiage;
 	private JComboBox<?> cbxJihuaLeixing;
@@ -52,7 +64,16 @@ public class JiaRuJiHua extends JPanel
 	private JCheckBox chckbxmacd;
 	private JCheckBox checkBox_2;
 	private JCheckBox chckbxma;
+//	private BanKuaiAndChanYeLian bkcyl;
 	
+	public void setDbRecordsId (Integer id)
+	{
+		this.dbrecordsid = id;
+	}
+	public Integer getDbRecordsId ()
+	{
+		return this.dbrecordsid;
+	}
 	public String getGuanZhuType ()
 	{
 		return this.guanzhutype;
@@ -202,12 +223,14 @@ public class JiaRuJiHua extends JPanel
 		
 		
 		JSeparator separator = new JSeparator();
+		
+		JSeparator separator_1 = new JSeparator();
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(7)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 248, GroupLayout.PREFERRED_SIZE)
@@ -215,35 +238,37 @@ public class JiaRuJiHua extends JPanel
 									.addComponent(label)
 									.addGap(86)
 									.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE))))
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(checkBox_1))
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(chckbxmacd))
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(checkBox_2))
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(lblNewLabel)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(jbxMingRiJIhua, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(checkBox)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(chckbxma)))
-					.addContainerGap(28, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(separator)
-					.addGap(28))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(checkBox)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(chckbxma)))))
+					.addContainerGap(7, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -264,8 +289,10 @@ public class JiaRuJiHua extends JPanel
 					.addComponent(chckbxmacd)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(checkBox_2)
-					.addGap(15)
-					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 5, GroupLayout.PREFERRED_SIZE)
+					.addGap(20)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 3, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(jbxMingRiJIhua)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -273,7 +300,7 @@ public class JiaRuJiHua extends JPanel
 						.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblNewLabel)
 						.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(26, Short.MAX_VALUE))
+					.addContainerGap(24, Short.MAX_VALUE))
 		);
 		setLayout(groupLayout);
 	}

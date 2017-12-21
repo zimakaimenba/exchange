@@ -160,16 +160,16 @@ public class BanKuaiAndChanYeLian extends JPanel
 		treerootdapan.setShenZhen(sz);
 		
 		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
-//		startGui ();
+		startGui ();
 	}
 	public void startGui ()
 	{
-		initializeGui ();
-		initializeAllDaLeiZdgzTableFromXml ();
-		initializeBanKuaiParsedFile ();
-		createEvents ();
-		if(cylxmhandler.hasXmlRevised())
-			btnSaveAll.setEnabled(true);
+			initializeGui ();
+			initializeAllDaLeiZdgzTableFromXml ();
+			initializeBanKuaiParsedFile ();
+			createEvents ();
+			if(cylxmhandler.hasXmlRevised())
+				btnSaveAll.setEnabled(true);
 	}
 
 	public static final int UP=0, LEFT=1, RIGHT=2, DOWN=3, NONE=4;
@@ -184,7 +184,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 	private BanKuaiFengXi bkfx ;
 
 	private String currentselectedtdxbk = "";
-
 	private HashSet<String> stockinfile;
 
 	
@@ -687,7 +686,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		   /*
 		    * 产业链树上定位用户选择的板块，只选择到板块一级，子板块不找
 		    */
-		   protected TreePath findBanKuaiInTree(String bkinputed) 
+		   public TreePath findBanKuaiInTree(String bkinputed) 
 		   {
 		    	@SuppressWarnings("unchecked")
 		    	TreePath bkpath = treechanyelian.locateNodeByNameOrHypyOrBkCode (bkinputed,true);
@@ -1094,7 +1093,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 						tfldfindgegu.setText("");
 					}
 				});
-				
+				/*
+				 * 查找个股
+				 */
 				tfldfindgegu.addActionListener(new AbstractAction() {
 					public void actionPerformed(ActionEvent arg0) {
 						String bkinputed = tfldfindgegu.getText();
@@ -1114,7 +1115,9 @@ public class BanKuaiAndChanYeLian extends JPanel
 						tfldfindbk.setText("");
 					}
 				});
-				
+				/*
+				 * 查找板块
+				 */
 				tfldfindbk.addActionListener(new AbstractAction() {
 					public void actionPerformed(ActionEvent arg0) {
 						String bkinputed = tfldfindbk.getText();
@@ -1378,10 +1381,13 @@ public class BanKuaiAndChanYeLian extends JPanel
 					return;
 					
 			  int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-			 
+			  jiarujihua.setDbRecordsId(autoIncKeyFromApi);
+			  
 			 treechanyelian.removeZdgzBkCylInfoFromTreeNode (gzcyl,false);
 			 zdgzbkxmlhandler.removeGuanZhuBanKuai(daleiname, gzcyl);
 			 unifyDisplaysInDifferentCompOnGui (daleiname,0);
+			 
+			 this.stockInfoManager.updateTableAfterZdgz (jiarujihua);
 			 
 //			 zdgzxmlneedsave = true;
 			 btnSaveAll.setEnabled(true);
@@ -1463,6 +1469,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 				return;
 				
 			 int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+			 jiarujihua.setDbRecordsId(autoIncKeyFromApi);
+			  
 
 			 boolean isofficallyselected = false;
 			 if(JOptionPane.showConfirmDialog(null, "是否直接加入重点关注？","Warning", JOptionPane.YES_NO_OPTION) == 1) {
@@ -1477,7 +1485,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			 int addedrow = ((CurZdgzBanKuaiTableModel)tableZdgzBankDetails.getModel()).getGuanZhuBanKuaiInfoIndex(nodewilladded);
 			 unifyDisplaysInDifferentCompOnGui (daleiname,addedrow);
 			
-			 
+			 this.stockInfoManager.updateTableAfterZdgz (jiarujihua);
 //			 zdgzxmlneedsave = true;
 			 btnSaveAll.setEnabled(true);
 		 }

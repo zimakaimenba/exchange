@@ -816,29 +816,47 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
-				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-				
-				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-
-				if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
-					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
-					//String stockcode = jiarujihua.getStockCode();		
-					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() );
-					String zdgzsign = "加入关注";
-					String shuoming = "";
-					if(jiarujihua.isMingRiJiHua()) {
-						zdgzsign = "明日计划";
-						shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
-					} else
-						shuoming =  jiarujihua.getJiHuaShuoMing();
+				if(nodeshouldbedisplayed.getType() == 6) {
+					JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
+					int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
+					if(exchangeresult == JOptionPane.CANCEL_OPTION)
+						return;
 					
-					Object[] tableData = new Object[] { addedday, zdgzsign,  shuoming,autoIncKeyFromApi," ","操作记录重点关注"};
-					tableModel.insertRow(0, tableData);
-					tblzhongdiangz.setEditingColumn(3);
+					 int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+					 jiarujihua.setDbRecordsId(autoIncKeyFromApi);
+					 
+					 updateTableAfterZdgz (jiarujihua);
+					
+				} else if(nodeshouldbedisplayed.getType() == 4) {
+					bkcyl.findBanKuaiInTree(nodeshouldbedisplayed.getMyOwnCode() );
+					startBanKuaiGuanLiDlg ();
+					
 				}
+				
+				
+//				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
+//				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
+//				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//					return;
+//				
+//				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+				
+//				if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
+//					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
+//					//String stockcode = jiarujihua.getStockCode();		
+//					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() );
+//					String zdgzsign = "加入关注";
+//					String shuoming = "";
+//					if(jiarujihua.isMingRiJiHua()) {
+//						zdgzsign = "明日计划";
+//						shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
+//					} else
+//						shuoming =  jiarujihua.getJiHuaShuoMing();
+//					
+//					Object[] tableData = new Object[] { addedday, zdgzsign,  shuoming,autoIncKeyFromApi," ","操作记录重点关注"};
+//					tableModel.insertRow(0, tableData);
+//					tblzhongdiangz.setEditingColumn(3);
+//				}
 
 //				if(updateZdgzActionToGuiDB("加入关注",jiarujihua)) {
 //					btngengxinxx.setEnabled(true);
@@ -1583,6 +1601,33 @@ public class StockInfoManager
 		});
 }
 	
+	public void updateTableAfterZdgz(JiaRuJiHua jiarujihua) 
+	{
+		String stockcode = jiarujihua.getStockCode().trim();
+		if(  !stockcode.equals(formatStockCode((String)cBxstockcode.getSelectedItem()))  )
+			return;
+		
+		Integer autoIncKeyFromApi = jiarujihua.getDbRecordsId();
+		
+		if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
+			DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
+			//String stockcode = jiarujihua.getStockCode();		
+			String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() );
+			String zdgzsign = "加入关注";
+			String shuoming = "";
+			if(jiarujihua.isMingRiJiHua()) {
+				zdgzsign = "明日计划";
+				shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
+			} else
+				shuoming =  jiarujihua.getJiHuaShuoMing();
+			
+			Object[] tableData = new Object[] { addedday, zdgzsign,  shuoming,autoIncKeyFromApi," ","操作记录重点关注"};
+			tableModel.insertRow(0, tableData);
+			tblzhongdiangz.setEditingColumn(3);
+		}
+	}
+
+
 	public BanKuaiFengXi getBanKuaiFengXi ()
 	{
 			return bkfx;

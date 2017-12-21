@@ -42,9 +42,9 @@ public class BanKuaiFengXiGanttChartPnl extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
-		standardChartTheme.setExtraLargeFont(new Font("隶书",Font.BOLD,20) );
-		standardChartTheme.setRegularFont(new Font("隶书",Font.BOLD,20) );
-		standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,20));
+		standardChartTheme.setExtraLargeFont(new Font("宋体",Font.BOLD,10) );
+		standardChartTheme.setRegularFont(new Font("宋体",Font.BOLD,10) );
+		standardChartTheme.setLargeFont(new Font("宋体",Font.BOLD,0));
 		ChartFactory.setChartTheme(standardChartTheme);
 
 		createChartPanel();
@@ -55,6 +55,10 @@ public class BanKuaiFengXiGanttChartPnl extends JPanel {
 //		bkdbopt = new BanKuaiDbOperation ();
 
 	}
+	
+	private  ChartPanel chartPanel;
+	private  CategoryPlot plot;
+    private  CategoryItemRenderer renderer;
 	
 	private void createChartPanel() 
     {
@@ -70,29 +74,27 @@ public class BanKuaiFengXiGanttChartPnl extends JPanel {
 	            true,                // tooltips
 	            false                // urls
 	        );
-	        final CategoryPlot plot = (CategoryPlot) chart.getPlot();
-	  //      plot.getDomainAxis().setMaxCategoryLabelWidthRatio(10.0f);
-	        final CategoryItemRenderer renderer = plot.getRenderer();
+	        
+	        plot = (CategoryPlot) chart.getPlot();
+
+	        renderer = plot.getRenderer();
 	        renderer.setSeriesPaint(0, Color.blue);
 
 	        // add the chart to a panel...
-	        final ChartPanel chartPanel = new ChartPanel(chart);
+	        chartPanel = new ChartPanel(chart);
 	        this.add(chartPanel);
     }
 	
-	 private IntervalCategoryDataset createSampleDataset() {
+	 private IntervalCategoryDataset createSampleDataset() 
+	 {
 
 	        final TaskSeries s1 = new TaskSeries("Scheduled");
 	        
-	        final Task t1 = new Task(
-	            "开始关注", date(1, Calendar.APRIL, 2001), date(5, Calendar.APRIL, 2001)
-	        );
+	        final Task t1 = new Task("开始关注", date(1, Calendar.APRIL, 2001), date(5, Calendar.APRIL, 2001)  );
 	        t1.setPercentComplete(1.00);
 	        s1.add(t1);
 	        
-	        final Task t2 = new Task(
-	            "正式关注", date(9, Calendar.APRIL, 2001), date(9, Calendar.APRIL, 2001)
-	        );
+	        final Task t2 = new Task("正式关注", date(9, Calendar.APRIL, 2001), date(9, Calendar.APRIL, 2001)     );
 	        t2.setPercentComplete(1.00);
 	        s1.add(t2);
 
