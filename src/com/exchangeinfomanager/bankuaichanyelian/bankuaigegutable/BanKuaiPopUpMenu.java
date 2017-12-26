@@ -1,8 +1,9 @@
-package com.exchangeinfomanager.gui.subgui;
+package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -10,11 +11,13 @@ import javax.swing.tree.TreePath;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTable;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 
 public class BanKuaiPopUpMenu extends JPopupMenu
 {
@@ -25,19 +28,27 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 	private JMenuItem menuItemAddToGz;
 	private JMenuItem menuItemMakeLongTou;
 	private BanKuaiDbOperation bkdbopt;
+//	private BanKuaiAndChanYeLian bkcyl;
+	private BanKuaiGuanLi bkgldialog = null;
+	private StockInfoManager stockmanager;
 
-	public BanKuaiPopUpMenu(BkChanYeLianTree treechanyelian) 
+	public BanKuaiPopUpMenu(StockInfoManager stockmanager1,BkChanYeLianTree bkcyltree2) 
 	{
-		this.cyltree = treechanyelian;
+		this.cyltree = bkcyltree2;
+//		this.bkcyl = bkcyl2;
+		this.stockmanager = stockmanager1;
 		this.bkdbopt = new BanKuaiDbOperation ();
 		createMenuItems ();
+		menuItemAddToGz.setEnabled(false);
 		createEventsForTree ();
 	}
 	
 
-	public BanKuaiPopUpMenu(BanKuaiInfoTable bktable) 
+	public BanKuaiPopUpMenu(BanKuaiInfoTable bktable,StockInfoManager stockmanager1) 
 	{
 		this.bankuaitable = bktable;
+		this.stockmanager = stockmanager1;
+//		this.bkcyl = bkcyl2;
 		this.bkdbopt = new BanKuaiDbOperation ();
 		createMenuItems ();
 		createEventsForTable ();
@@ -85,16 +96,16 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 			@Override
 
 			public void actionPerformed(ActionEvent evt) {
-				String bkcode = null;
-				try {
-					TreePath closestPath = cyltree.getSelectionPath();
-					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-					 bkcode = selectednode.getMyOwnCode();
-				} catch (java.lang.NullPointerException ex) {
-					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
-				}
-
-				addZdgz (bkcode);
+//				String bkcode = null;
+//				try {
+//					TreePath closestPath = cyltree.getSelectionPath();
+//					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
+//					 bkcode = selectednode.getMyOwnCode();
+//				} catch (java.lang.NullPointerException ex) {
+//					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
+//				}
+//
+//				addZdgz (bkcode);
 			}
 			
 		});
@@ -160,14 +171,22 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 	
 	protected void addZdgz(String bkcode) 
 	{
-		JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"加入关注" ); 
-		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
-		
-		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-		
+//		JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"加入关注" ); 
+//		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
+//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//			return;
+//		
+//		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+		BanKuaiAndChanYeLian bkcyltst = new BanKuaiAndChanYeLian (this.stockmanager);
+		bkcyltst.findBanKuaiInTree(bkcode );
+		int exchangeresult = JOptionPane.showConfirmDialog(null, bkcyltst, "加入关注", JOptionPane.OK_CANCEL_OPTION);
 	}
+
+
+
+		
+
+
 
 	protected void addBanKuaiReDian(String bkcode)
 	{

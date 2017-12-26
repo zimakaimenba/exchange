@@ -26,11 +26,11 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.subgui.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
@@ -44,12 +44,14 @@ public class BanKuaiInfoTable extends JTable
 	private BanKuaiDbOperation bkdbopt;
 	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
+	private BanKuaiAndChanYeLian bkcyl;
 
-	public BanKuaiInfoTable(StockInfoManager stockmanager1) 
+	public BanKuaiInfoTable(StockInfoManager stockmanager1,BanKuaiAndChanYeLian bkcyl2) 
 	{
 		super ();
 		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel ();
 		this.setModel(bkmodel);
+		this.bkcyl = bkcyl2;
 		this.createEvents ();
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
@@ -57,6 +59,7 @@ public class BanKuaiInfoTable extends JTable
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.stockmanager = stockmanager1;
+		
 	}
 	/*
 	 * 
@@ -81,7 +84,7 @@ public class BanKuaiInfoTable extends JTable
         	}
         });
 		
-		JPopupMenu popupMenuGeguNews = new BanKuaiPopUpMenu(this);
+		JPopupMenu popupMenuGeguNews = new BanKuaiPopUpMenu(this,this.stockmanager);
 		
 //		JPopupMenu popupMenuGeguNews = new JPopupMenu();
 //		JMenuItem menuItemAddNews = new JMenuItem("Ìí¼Ó°å¿éÐÂÎÅ");
@@ -254,7 +257,7 @@ public class BanKuaiInfoTable extends JTable
 	        }
 	        
 	        if(bankuai.getParseFileStockSet().size()>0)
-	        	comp.setForeground(Color.RED);
+	        	comp.setForeground(Color.ORANGE);
 	        else
 	        	comp.setForeground(Color.black);
 	        

@@ -26,12 +26,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
 	{
-
+//		System.out.println("row" + row +"column" + col);
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    
-	    if (comp instanceof JLabel && (col == 3 ||  col == 5)) {
-//        	String value =  ((JLabel)comp).getText();
+	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) {
+
         	String valuepect = null;
         	try {
         		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
@@ -48,33 +48,53 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         }
 	    
 	    BanKuaiGeGuTableModel tablemodel =  (BanKuaiGeGuTableModel)table.getModel() ;
-	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
 	    
+	    Color foreground, background = Color.white;
+	    
+	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
 	    int modelRow = table.convertRowIndexToModel(row);
 	    Stock stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
-
-	    if(col == 0 || col == 1 || col == 2) {
+	    if(col == 0 || col == 1 ) {
 	    	if(!table.isRowSelected(row) && parsefiel != null && tablemodel.showParsedFile()  ) {
 		    	String stockcode = stock.getMyOwnCode();
 		    	
 		    	if(parsefiel != null && parsefiel.contains(stockcode)  )
-		    		comp.setForeground(Color.RED);
+		    		background = Color.ORANGE  ;
 		    	else
-		    		comp.setForeground(Color.BLACK);
-		    } else
-	    		comp.setForeground(Color.BLACK);
+		    		background = Color.white;
+		    } 
+	    	else
+	    		background = Color.white;
 	    } 
-	    
-	    if(col == 3 || col == 4 || col == 5) {
+	    //突出权重，目前没有特别设置
+	    if(col == 2) {
+	    	background = Color.white;
+	    }
+	    //突出显示成交额达到标准的股票
+	    if( col == 3) {
 		    Double cje = tablemodel.getDisplayChenJiaoEr ();
 		    LocalDate requireddate = tablemodel.getShowCurDate();
 		    Double curcje = stock.getSpecficChenJiaoErRecord(requireddate).getMyOwnChengJiaoEr();
 		    if(cje != null && cje >0 && curcje > cje ) 
-		    	comp.setForeground(Color.BLUE);
+		    	background = Color.yellow ;
 		    else
-		    	comp.setForeground(Color.BLACK);
+		    	background = Color.white;
 	    } 
+	    
+	    //突出显示MAXWK>=4的个股
+	    if(col == 5 || col == 7 || col == 4 || col == 6 ) {
+	    	int bkmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
+	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
 	    	
+	    	int fazhi = tablemodel.getDisplayBkMaxWk();
+	    	 if(bkmaxwk >= fazhi || dpmaxwk >=fazhi )
+	    		 background = Color.red ;
+	    	 else 
+	    		 background = Color.white ;
+	    }
+	    
+	    if (!table.isRowSelected(row)) 
+	    	comp.setBackground(background);
 	    
 	    return comp;
 	}

@@ -76,6 +76,7 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param cylxmlhandler 
 	 */
 	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiAndChanYeLian bkcyl) 
+//	public BanKuaiGuanLi( BanKuaiAndChanYeLian bkcyl)
 	{
 		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();

@@ -64,6 +64,17 @@ public class JiaRuJiHua extends JPanel
 	private JCheckBox chckbxmacd;
 	private JCheckBox checkBox_2;
 	private JCheckBox chckbxma;
+	private JCheckBox checkBox_5;
+	private JCheckBox checkBox_6;
+	private JCheckBox checkBox_4;
+	private JCheckBox checkBox_7;
+	private JCheckBox checkBox_8;
+	private JCheckBox checkBox_9;
+	private JCheckBox checkBox_10;
+	private JCheckBox checkBox_11;
+	private JCheckBox checkBox_3;
+	private JCheckBox checkBox_12;
+	private JCheckBox checkBox_13;
 //	private BanKuaiAndChanYeLian bkcyl;
 	
 	public void setDbRecordsId (Integer id)
@@ -207,13 +218,13 @@ public class JiaRuJiHua extends JPanel
 		tfdJihuaJiage.setEnabled(false);
 		tfdJihuaJiage.setColumns(10);
 		
-		checkBox = new JCheckBox("\u653E\u91CF\u6EE1\u8DB3\u6A21\u578B");
+		checkBox = new JCheckBox("\u6EE1\u8DB3\u653E\u91CF\u5747\u7EBF\u6A21\u578B");
 		
 		
-		checkBox_2 = new JCheckBox("\u7A7A\u5934\u6392\u5217");
+		checkBox_2 = new JCheckBox("\u8D85\u8DCC\u53CD\u5F39");
 		
 		
-		chckbxma = new JCheckBox("\u90E8\u5206\u591A\u5934\u51FA\u73B0\uFF0CMA20\u62D0\u5934");
+		chckbxma = new JCheckBox("\u91CD\u7EC4\u6536\u8D2D");
 		
 		
 		checkBox_1 = new JCheckBox("\u5927\u6DA8\u540E\u53F3\u4FA7\u4E0B\u5C71\u8D70\u52BF\uFF0C\u53CD\u5F39\u8D8A\u6765\u8D8A\u5F31");
@@ -225,6 +236,94 @@ public class JiaRuJiHua extends JPanel
 		JSeparator separator = new JSeparator();
 		
 		JSeparator separator_1 = new JSeparator();
+		
+		checkBox_3 = new JCheckBox("\u7A33\u5B9A\u767D\u9A6C");
+		checkBox_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_3.isSelected()) 
+					updatedRecords (checkBox_3);
+			}
+		});
+		
+		checkBox_4 = new JCheckBox("\u9ED1\u5929\u9E45\u6536\u76CA");
+		checkBox_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_4.isSelected()) 
+					updatedRecords (checkBox_4);
+			}
+		});
+		
+		checkBox_5 = new JCheckBox("\u524D\u70ED\u70B9\u4F59\u70ED");
+		checkBox_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(checkBox_5.isSelected()) 
+					updatedRecords (checkBox_5);
+			}
+		});
+		
+		checkBox_6 = new JCheckBox("\u6DA8\u4EF7\u548C\u4E1A\u7EE9");
+		checkBox_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_6.isSelected()) 
+					updatedRecords (checkBox_6);
+			}
+		});
+		
+		checkBox_7 = new JCheckBox("\u6B21\u65B0\u80A1");
+		checkBox_7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_7.isSelected()) 
+					updatedRecords (checkBox_7);
+			}
+		});
+		
+		checkBox_8 = new JCheckBox("\u6E2F\u7F8E\u8054\u52A8");
+		checkBox_8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_8.isSelected()) 
+					updatedRecords (checkBox_8);
+			}
+		});
+		
+		checkBox_9 = new JCheckBox("\u5238\u5546\u53C2\u5238");
+		checkBox_9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_9.isSelected()) 
+					updatedRecords (checkBox_9);
+			}
+		});
+		
+		checkBox_10 = new JCheckBox("\u9898\u6750\u8F6C\u4E1A\u7EE9");
+		checkBox_10.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_10.isSelected()) 
+					updatedRecords (checkBox_10);
+			}
+		});
+		
+		checkBox_11 = new JCheckBox("\u6210\u957F\u548C\u6982\u5FF5");
+		checkBox_11.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_11.isSelected()) 
+					updatedRecords (checkBox_11);
+			}
+		});
+		
+		checkBox_12 = new JCheckBox("\u7279\u5B9A\u65F6\u95F4\u91CD\u5927\u4E8B\u4EF6");
+		checkBox_12.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_12.isSelected()) 
+					updatedRecords (checkBox_12);
+			}
+		});
+		
+		checkBox_13 = new JCheckBox("\u56FD\u65B0\u653F\u7B56");
+		checkBox_13.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(checkBox_13.isSelected()) 
+					updatedRecords (checkBox_13);
+			}
+		});
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -246,29 +345,56 @@ public class JiaRuJiHua extends JPanel
 							.addComponent(chckbxmacd))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(checkBox_2))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addComponent(checkBox_2)
+											.addPreferredGap(ComponentPlacement.UNRELATED)
+											.addComponent(checkBox_5)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(checkBox_6))
+										.addGroup(groupLayout.createSequentialGroup()
+											.addComponent(checkBox_9)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(checkBox_10)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(checkBox_11)))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(checkBox_4)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(checkBox_7)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(checkBox_8))))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(lblNewLabel)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addComponent(checkBox))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(jbxMingRiJIhua, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(checkBox)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(chckbxma)))))
-					.addContainerGap(7, Short.MAX_VALUE))
+							.addComponent(checkBox_12)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(checkBox_13))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblNewLabel)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(chckbxma)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(checkBox_3)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -280,27 +406,46 @@ public class JiaRuJiHua extends JPanel
 					.addGap(4)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(checkBox)
-						.addComponent(chckbxma))
+					.addComponent(checkBox)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(checkBox_1)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chckbxmacd)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(checkBox_2)
-					.addGap(20)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(checkBox_2)
+						.addComponent(checkBox_5)
+						.addComponent(checkBox_6))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(checkBox_4)
+						.addComponent(checkBox_7)
+						.addComponent(checkBox_8))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 3, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+							.addComponent(checkBox_9)
+							.addComponent(checkBox_10)
+							.addComponent(checkBox_11)))
+					.addPreferredGap(ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(chckbxma)
+						.addComponent(checkBox_3))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(checkBox_12)
+						.addComponent(checkBox_13))
+					.addGap(18)
+					.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 3, GroupLayout.PREFERRED_SIZE)
+					.addGap(14)
 					.addComponent(jbxMingRiJIhua)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(5)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblNewLabel)
 						.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(24, Short.MAX_VALUE))
+					.addGap(20))
 		);
 		setLayout(groupLayout);
 	}

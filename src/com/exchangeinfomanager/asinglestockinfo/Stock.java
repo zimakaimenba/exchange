@@ -428,6 +428,7 @@ public class Stock extends BkChanYeLianTreeNode {
 				curcjlrecord.setGgbkzhanbigrowthrate(100.0);
 				//计算给定轴的成交额和大盘的占比是多少周期内的最大占比
 				curcjlrecord.setGgdpzhanbimaxweek(0);
+				curcjlrecord.setGgdpzhanbigrowthrate (100.0); //和大盘占比的增速
 				//成交额是多少周最大
 				curcjlrecord.setGgbkcjemaxweek(0);
 				
@@ -445,6 +446,7 @@ public class Stock extends BkChanYeLianTreeNode {
 				curcjlrecord.setGgbkzhanbigrowthrate(100.0);
 				//计算给定轴的成交额和大盘的占比是多少周期内的最大占比
 				curcjlrecord.setGgdpzhanbimaxweek(0);
+				curcjlrecord.setGgdpzhanbigrowthrate (100.0); //和大盘占比的增速
 				//成交额是多少周最大
 				curcjlrecord.setGgbkcjemaxweek(0);
 
@@ -516,6 +518,11 @@ public class Stock extends BkChanYeLianTreeNode {
 					
 					ChenJiaoZhanBiInGivenPeriod lastbkcjlrecord = this.myupbankuai.getSpecficChenJiaoErRecord(lastdate);
 					Double lastratio = lastcjlrecord.getMyOwnChengJiaoEr() / lastbkcjlrecord.getUpLevelChengJiaoEr();
+					
+					if(i == (index -1) ) { //在这里顺便计算一下和大盘占比的增速
+						Double dpzhanbigrowthrate = (curdpzhanbiratio - lastratio)/lastratio;
+						curcjlrecord.setGgdpzhanbigrowthrate(dpzhanbigrowthrate);
+					}
 					
 					if(curdpzhanbiratio > lastratio)
 						dpmaxweek ++;

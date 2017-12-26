@@ -90,6 +90,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.SubnodeButton;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
@@ -99,7 +100,6 @@ import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.subgui.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -2149,7 +2149,7 @@ public class BanKuaiAndChanYeLian extends JPanel
         addChildIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeChild24.png"));
         
         //tree µÄµ¯³ö²Ëµ¥
-        popupMenu = new BanKuaiPopUpMenu(treechanyelian);
+        popupMenu = new BanKuaiPopUpMenu(this.stockInfoManager,treechanyelian);
 		addPopup(treechanyelian, popupMenu);
 
 		bkfxpnl = new BanKuaiFengXiBarChartPnl ();

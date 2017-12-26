@@ -28,6 +28,7 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -54,10 +55,17 @@ public class BanKuaiGeGuTable extends JTable
 	public BanKuaiGeGuTable (StockInfoManager stockmanager1)
 	{
 		super ();
+		
 		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel();
 		this.setModel(bkgegumapmdl);
 		this.renderer =  new BanKuaiGeGuTableRenderer (); 
 //		this.setDefaultRenderer(Object.class, this.renderer );
+		
+		//http://esus.com/creating-a-jtable-with-headers-with-jtooltips/
+		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
+	    header.setToolTipStrings(bkgegumapmdl.getTableHeader());
+	    header.setToolTipText("Default ToolTip TEXT");
+	    this.setTableHeader(header);
 		
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
@@ -244,7 +252,8 @@ public class BanKuaiGeGuTable extends JTable
 //		        
 //		        return comp;
 //	}
-			    
+		
+
 
 	
 //	public String getToolTipText(MouseEvent e) 
@@ -358,9 +367,10 @@ public class BanKuaiGeGuTable extends JTable
 			this.removeColumn(tcm.getColumn(3));
 			this.removeColumn(tcm.getColumn(3));
 
-		} else if (hidecolumn == 1) {
-			this.removeColumn(tcm.getColumn(6));
-		}
+		} 
+//		else if (hidecolumn == 1) {
+//			this.removeColumn(tcm.getColumn(6));
+//		}
 	}
 	
 	public void removeRows () 
@@ -376,4 +386,32 @@ public class BanKuaiGeGuTable extends JTable
 }
 
 
+class ToolTipHeader extends JTableHeader {
+    String[] toolTips;
+   
+    public ToolTipHeader(TableColumnModel model) {
+      super(model);
+    }
+     
+    public String getToolTipText(MouseEvent e) {
+      int col  = columnAtPoint(e.getPoint());
+      int modelCol = getTable().convertColumnIndexToModel(col);
+      String retStr;
+      try {
+        retStr = toolTips[modelCol];
+      } catch (NullPointerException ex) {
+        retStr = "";
+      } catch (ArrayIndexOutOfBoundsException ex) {
+        retStr = "";
+      }
+      if (retStr.length() < 1) {
+        retStr = super.getToolTipText(e);
+      }
+      return retStr;
+    }  
+     
+    public void setToolTipStrings(String[] toolTips) {
+      this.toolTips = toolTips;
+    }
+}
 

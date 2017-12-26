@@ -63,6 +63,7 @@ import org.jfree.data.general.PieDataset;
 import org.jfree.ui.HorizontalAlignment;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
+import org.w3c.dom.events.MouseEvent;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
@@ -91,13 +92,13 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 		createChartPanel();
 		createEvent ();
 		
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 	}
 	
 	private BkChanYeLianTreeNode curdisplaynode;
 //	private Date displayedenddate;
 	private LocalDate displayedweeknumber;
-	private JPanel controlPanel;
+//	private JPanel controlPanel;
 	private ChartPanel piechartPanel;
 //	private BanKuaiDbOperation bkdbopt;
 	private JFreeChart piechart;
@@ -106,7 +107,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 	Comparable lasthightlightKey = null; //用于客户设置突出的section
 	private DefaultPieDataset piechartdataset;
 	private BanKuai curdisplaybk;
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 
 	
 	public void setBanKuaiNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber)
@@ -144,6 +145,14 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 	public void setPanelTitle (String title) 
 	{
 		
+	}
+	public Comparable getCurHightLightStock ()
+	{
+		return this.lasthightlightKey; 
+	}
+	public JPanel getPiePanel ()
+	{
+		return this.piechartPanel;
 	}
 	
 
@@ -233,31 +242,50 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 //    		private Comparable lastKey;
 
     	    public void chartMouseClicked(ChartMouseEvent e) {
-    	        System.out.println("chart mouse click " + e.getEntity());
-//    	        if (arg0.getClickCount() == 2) {
-    	        try {
-    	        	
-    	        	pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 15)); //让图片上的label字大一些
-//    	        	pieplot.setSimpleLabels(true);
-//    	        	File chartfile = new File("D:\\chart.png");
-    	        	File tmpreportfolder = Files.createTempDir(); 
-    	    		File chartfile = new File(tmpreportfolder + "chart.png");
-    	    		
-    	        	if(chartfile.exists())
-    	        		chartfile.delete();
-    	        	ChartUtilities.saveChartAsPNG(chartfile, piechart, 1200, 1200);
-    	        	
-    	        	ShowLargePieChartPnl slc = new ShowLargePieChartPnl (chartfile.getAbsolutePath());
-    	        	int exchangeresult = JOptionPane.showConfirmDialog(null, slc, "板块股票占比", JOptionPane.OK_CANCEL_OPTION);
+    	        java.awt.event.MouseEvent me = e.getTrigger();
+    	        if (me.getClickCount() == 2) {
+    	        	System.out.println("chart mouse click " + e.getEntity());
+    	        	 try {
+    	    	        	
+    	    	        	pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 15)); //让图片上的label字大一些
+//    	    	        	pieplot.setSimpleLabels(true);
+//    	    	        	File chartfile = new File("D:\\chart.png");
+    	    	        	File tmpreportfolder = Files.createTempDir(); 
+    	    	    		File chartfile = new File(tmpreportfolder + "chart.png");
+    	    	    		
+    	    	        	if(chartfile.exists())
+    	    	        		chartfile.delete();
+    	    	        	ChartUtilities.saveChartAsPNG(chartfile, piechart, 1200, 1200);
+    	    	        	
+    	    	        	ShowLargePieChartPnl slc = new ShowLargePieChartPnl (chartfile.getAbsolutePath());
+    	    	        	int exchangeresult = JOptionPane.showConfirmDialog(null, slc, "板块股票占比", JOptionPane.OK_CANCEL_OPTION);
 
-    				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-    					return;
+    	    				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+    	    					return;
 
-    				pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 10));
-    	        	
-    	        } catch (Exception ex) {
-    	        	ex.printStackTrace();
+    	    				pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 10));
+    	    	        	
+    	    	        } catch (Exception ex) {
+    	    	        	ex.printStackTrace();
+    	    	        }
     	        }
+    	        
+    	        if (me.getClickCount() == 1) {
+    	        	ChartEntity entity = e.getEntity();
+    	            if (entity instanceof PieSectionEntity) {
+    	                PieSectionEntity section = (PieSectionEntity) entity;
+//    	                PiePlot plot = (PiePlot) piechart.getPlot();
+//    	                if (lasthightlightKey != null) {
+//    	        			pieplot.setExplodePercent(lasthightlightKey, 0);
+//    	                }
+    	                Comparable key = section.getSectionKey();
+//    	                plot.setExplodePercent(key, 0.05);
+    	                lasthightlightKey = key;
+//    	                System.out.println(lasthightlightKey.toString());
+    	            }
+    	        	
+    	        }
+    	       
     	    }
 
 
@@ -306,40 +334,40 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 //        chartPanel = new ChartPanel(barchart);
 //    }
 
-    private void createControlPanel() {
-        controlPanel = new JPanel();
-        controlPanel.add(new JButton(new AbstractAction("\u22b2Prev") {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//            	currentDisplayedBkIndex -= 1;
-//                if (currentDisplayedBkIndex < 0) {
-//                	currentDisplayedBkIndex = 0;
-//                    return;
-//                }
-//                
-//        		Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
-//        		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
-//                createDataset(currentDisplayedBkIndex,startdate,enddate);
-//                plot.setDataset(barchartdataset);
-            }
-        }));
-        controlPanel.add(new JButton(new AbstractAction("Next\u22b3") {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//            	currentDisplayedBkIndex += 1;
-//                if (currentDisplayedBkIndex >= suosubkcodelist.size()) {
-//                	currentDisplayedBkIndex = suosubkcodelist.size();
-//                    return;
-//                }
-//                Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
-//        		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
-//                createDataset(currentDisplayedBkIndex,startdate,enddate);
-//                plot.setDataset(barchartdataset);
-            }
-        }));
-    }
+//    private void createControlPanel() {
+//        controlPanel = new JPanel();
+//        controlPanel.add(new JButton(new AbstractAction("\u22b2Prev") {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+////            	currentDisplayedBkIndex -= 1;
+////                if (currentDisplayedBkIndex < 0) {
+////                	currentDisplayedBkIndex = 0;
+////                    return;
+////                }
+////                
+////        		Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
+////        		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
+////                createDataset(currentDisplayedBkIndex,startdate,enddate);
+////                plot.setDataset(barchartdataset);
+//            }
+//        }));
+//        controlPanel.add(new JButton(new AbstractAction("Next\u22b3") {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+////            	currentDisplayedBkIndex += 1;
+////                if (currentDisplayedBkIndex >= suosubkcodelist.size()) {
+////                	currentDisplayedBkIndex = suosubkcodelist.size();
+////                    return;
+////                }
+////                Date startdate = CommonUtility.getFirstDayOfWeek(datedisplayed);
+////        		Date enddate = CommonUtility.getLastDayOfWeek(datedisplayed);
+////                createDataset(currentDisplayedBkIndex,startdate,enddate);
+////                plot.setDataset(barchartdataset);
+//            }
+//        }));
+//    }
 
 }
 

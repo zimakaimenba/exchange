@@ -22,7 +22,7 @@ import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuTableModel extends DefaultTableModel 
 {
-	String[] jtableTitleStrings = { "代码", "名称","权重","占比增长率","MAX","成交额贡献","发现"};
+	String[] jtableTitleStrings = { "代码", "名称","板块权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk"};
 	BanKuai curbk;
 	private ArrayList<Entry<String, Stock>> entryList;
 	private LocalDate showwknum;
@@ -31,6 +31,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private HashSet<String> stockcodeinparsefile;
 	private Double showcje;
 	private Boolean showparsedfile = false;
+	private Integer bkmaxwk = 10000000;
 	
 	BanKuaiGeGuTableModel ()
 	{
@@ -54,7 +55,10 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
     	this.fireTableDataChanged();
 	}
 
-
+	public String[] getTableHeader ()
+	{
+		return this.jtableTitleStrings;
+	}
 	public String getTdxBkCode ()
 	{
 		return this.curbk.getMyOwnCode();
@@ -80,18 +84,18 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
+//	    	System.out.println(rowIndex + "col" + columnIndex  + "  ");
 	    	if(entryList.isEmpty())
 	    		return null;
 	    	
 	    	String bkcode = null;
-	    	if( rowIndex != this.curdisplayrow) {
-	    		this.curdisplayrow = rowIndex;
-	    		
-//		    	Entry<String, Stock> thisbk = entryList.get(entryList.size()-1-rowIndex);
-	    		Entry<String, Stock> thisbk = entryList.get(rowIndex);
-		    	curdisplaystock = thisbk.getValue();
-		    	bkcode = curdisplaystock.getMyOwnCode();
-	    	}
+	    	ChenJiaoZhanBiInGivenPeriod fxrecord = null;
+
+	    	Entry<String, Stock> thisbk = entryList.get(rowIndex);
+		    curdisplaystock = thisbk.getValue();
+		    bkcode = curdisplaystock.getMyOwnCode();
+
+		    fxrecord = curdisplaystock.getNodeFengXiResultForSpecificDate(showwknum);
 	    	
 	    	
 	    	Object value = "??";
@@ -114,27 +118,28 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             		value = 0;
             	}
             	break;
-            case 3: //{ "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
-            	Double zhanbigrowthrate = curdisplaystock.getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum);
-//    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-//            	value = percentFormat.format(zhanbigrowthrate);
+            case 3: //{ "代码", "名称","板块权重","板块占比增长率","BkMaxWk","板块成交额贡献","大盘占比增长率","DpMaxWk"};
+//            	Double cjechangegrowthrate = curdisplaystock.getChenJiaoErChangeGrowthRateForAGivenPeriod (showwknum);
+            	Double cjechangegrowthrate = fxrecord.getGgbkcjegrowthzhanbi();
+            	value = cjechangegrowthrate;
+            	break;
+            case 4: //{ "代码", "名称","板块权重","板块占比增长率","BkMaxWk","板块成交额贡献","大盘占比增长率","DpMaxWk"};
+//            	Double zhanbigrowthrate = curdisplaystock.getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum);
+            	Double zhanbigrowthrate = fxrecord.getGgbkzhanbigrowthrate(); 
             	value = zhanbigrowthrate;
             	break;
-            case 4: //{ "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
-            	int maxweek = curdisplaystock.getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showwknum);
+            case 5: //{ "代码", "名称","板块权重","板块占比增长率","BkMaxWk","板块成交额贡献","大盘占比增长率","DpMaxWk"};
+//            	int maxweek = curdisplaystock.getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showwknum);
+            	int maxweek = fxrecord.getGgbkzhanbimaxweek();
             	value = (Integer)maxweek;
             	break;
-            case 5: //{ "股票代码", "股票名称","权重","占比增长率","MAX","成交额贡献"};
-            	Double cjechangegrowthrate = curdisplaystock.getChenJiaoErChangeGrowthRateForAGivenPeriod (showwknum);
-//    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
-//            	value = percentFormat2.format(cjechangegrowthrate);
-            	value = cjechangegrowthrate;
-            	break;	
             case 6:
-            	if(stockcodeinparsefile == null || !stockcodeinparsefile.contains(bkcode))
-            		value = new Boolean(false);
-            	else 
-            		value = new Boolean(true);
+            	Double cjedpgrowthrate = fxrecord.getGgdpzhanbigrowthrate();
+            	value = cjedpgrowthrate;
+                break;
+            case 7:
+            	Integer dpmaxwk = fxrecord.getGgdpzhanbimaxweek(); 
+            	value = dpmaxwk;
                 break;
 	    	}
 	    	
@@ -180,13 +185,16 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			          clazz = Double.class;
 			          break;
 		        case 4:
-			          clazz = Integer.class;
-			          break;
-		        case 5:
 			          clazz = Double.class;
 			          break;
+		        case 5:
+			          clazz = Integer.class;
+			          break;
 		        case 6:
-		        	  clazz = Boolean.class;
+		        	  clazz = Double.class;
+			          break;
+		        case 7:
+			          clazz = Integer.class;
 			          break;
 		      }
 		      
@@ -264,7 +272,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			return curbk.getParseFileStockSet();
 		}
 		
-		
+		//设置突出显示成交额阀值
 		public void setDisplayChenJiaoEr (Double cje)
 		{
 			this.showcje = cje;
@@ -273,6 +281,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		{
 			return this.showcje ;
 		}
+		//设置显示每日板块文件
 		public void setShowParsedFile (Boolean onoff)
 		{
 			this.showparsedfile = onoff;
@@ -281,10 +290,21 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		{
 			return this.showparsedfile ;
 		}
+		//设置成交额MAXWK阀值
+		public void setDisplayBkMaxWk (Integer bkmax)
+		{
+			this.bkmaxwk = bkmax;
+		}
+		public Integer getDisplayBkMaxWk ()
+		{
+			return this.bkmaxwk;
+		}
+		
 		public LocalDate getShowCurDate ()
 		{
 			return this.showwknum;
 		}
+		
 
 }
 
