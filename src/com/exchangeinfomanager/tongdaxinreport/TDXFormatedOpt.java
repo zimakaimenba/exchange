@@ -58,6 +58,14 @@ public class TDXFormatedOpt {
 	{
 		return TDXFormatedOpt.formateStockCodeForTDX(stockcode) + "  |  " + geguchanyelian +  " | " + "1.000" + System.getProperty("line.separator");
 	}
+	
+	public static String formateToTDXWaiBuShuJuLine(String bkcode, String geguchanyelian,String cysid)
+	{
+		if(cysid.toLowerCase().equals("sh"))
+			return "1|"  +  bkcode.trim() + "  |  " + geguchanyelian +  " | " + "1.000" + System.getProperty("line.separator");
+		else 
+			return "0|"  +  bkcode.trim() + "  |  " + geguchanyelian +  " | " + "1.000" + System.getProperty("line.separator");
+	}
 	/*
 	 *生成重点关注的通达信代码 
 	 */
@@ -140,7 +148,7 @@ public class TDXFormatedOpt {
 		
 	}
 	/*
-	 * 
+	 * 产业链 to 通达信报告
 	 */
 	public static String parseChanYeLianXmlToTDXReport () 
 	{
@@ -337,32 +345,32 @@ public class TDXFormatedOpt {
 			return null;
 		}
 		
+		//个股基本面
 		String sqlquerystat = "SELECT * FROM A股 ";
 //		System.out.println(sqlquerystat);
-		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-		if(rs == null)
-		{   
+		ResultSet rsgg = connectdb.sqlQueryStatExecute(sqlquerystat);
+		if(rsgg == null)	{   
 			System.out.println("读取数据库失败");
 			return null;
 		}
 		
 		try {
-			while(rs.next()) {
-				String formatedstockcode = rs.getString("股票代码");
+			while(rsgg.next()) {
+				String formatedstockcode = rsgg.getString("股票代码");
 
 				String result = "";
-				if(!Strings.isNullOrEmpty(rs.getString("概念板块提醒"))) 
+				if(!Strings.isNullOrEmpty(rsgg.getString("概念板块提醒"))) 
 					try {
-						result = result + Strings.nullToEmpty( rs.getDate("概念时间").toString()) + rs.getString("概念板块提醒");
+						result = result + Strings.nullToEmpty( rsgg.getDate("概念时间").toString()) + rsgg.getString("概念板块提醒");
 					} catch (java.lang.NullPointerException e) {
-						result = result + Strings.nullToEmpty("") + rs.getString("概念板块提醒");
+						result = result + Strings.nullToEmpty("") + rsgg.getString("概念板块提醒");
 					}
 				
-				if(!Strings.isNullOrEmpty(rs.getString("券商评级提醒") ) ) 
+				if(!Strings.isNullOrEmpty(rsgg.getString("券商评级提醒") ) ) 
 					try {
-						result = result + Strings.nullToEmpty(rs.getDate("券商评级时间").toString()) + " " + rs.getString("券商评级提醒");
+						result = result + Strings.nullToEmpty(rsgg.getDate("券商评级时间").toString()) + " " + rsgg.getString("券商评级提醒");
 					} catch (java.lang.NullPointerException e) {
-						result = result + Strings.nullToEmpty("") + " " + rs.getString("券商评级提醒");
+						result = result + Strings.nullToEmpty("") + " " + rsgg.getString("券商评级提醒");
 					}
 				if(!Strings.isNullOrEmpty(result)  ) {
 					String lineformatedgainiantx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode, result );
@@ -373,12 +381,12 @@ public class TDXFormatedOpt {
 					}
 				}
 				
-				if(!Strings.isNullOrEmpty(rs.getString("负面消息")) && !"null".equals(rs.getString("负面消息")) ) { //null是历史遗留
+				if(!Strings.isNullOrEmpty(rsgg.getString("负面消息")) && !"null".equals(rsgg.getString("负面消息")) ) { //null是历史遗留
 					CharSequence lineformatedfumianxx;
 					try {
-						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(rs.getDate("负面消息时间").toString()) + " " + rs.getString("负面消息"));
+						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(rsgg.getDate("负面消息时间").toString()) + " " + rsgg.getString("负面消息"));
 					} catch (java.lang.NullPointerException e) {
-						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty("") + " " + rs.getString("负面消息"));
+						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty("") + " " + rsgg.getString("负面消息"));
 					}
 					try {
 						Files.append(lineformatedfumianxx,filefmxx, charset);
@@ -388,15 +396,15 @@ public class TDXFormatedOpt {
 				}
 				
 				String formatedzhengxiangguan = null;
-				if( !Strings.isNullOrEmpty(rs.getString("正相关及客户") ) || !Strings.isNullOrEmpty(rs.getString("客户")) ) {
-					formatedzhengxiangguan = "正相关及客户(#" + Strings.nullToEmpty(rs.getString("正相关及客户"))
-											 + " " + Strings.nullToEmpty(rs.getString("客户") ) + "#) " ;
+				if( !Strings.isNullOrEmpty(rsgg.getString("正相关及客户") ) || !Strings.isNullOrEmpty(rsgg.getString("客户")) ) {
+					formatedzhengxiangguan = "正相关及客户(#" + Strings.nullToEmpty(rsgg.getString("正相关及客户"))
+											 + " " + Strings.nullToEmpty(rsgg.getString("客户") ) + "#) " ;
 				}
 				
 				String formatedfuxiangguan = null;
-				if( !Strings.isNullOrEmpty(rs.getString("负相关及竞争对手") ) || !Strings.isNullOrEmpty(rs.getString("竞争对手") ) ) {
-					formatedfuxiangguan = "负相关及竞争对手(#" + Strings.nullToEmpty(rs.getString("负相关及竞争对手") )
-											 + " " + Strings.nullToEmpty(rs.getString("竞争对手") ) + "#) " ;
+				if( !Strings.isNullOrEmpty(rsgg.getString("负相关及竞争对手") ) || !Strings.isNullOrEmpty(rsgg.getString("竞争对手") ) ) {
+					formatedfuxiangguan = "负相关及竞争对手(#" + Strings.nullToEmpty(rsgg.getString("负相关及竞争对手") )
+											 + " " + Strings.nullToEmpty(rsgg.getString("竞争对手") ) + "#) " ;
 				}
 				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
 					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan) );
@@ -412,16 +420,103 @@ public class TDXFormatedOpt {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}  finally {
-		    	if(rs != null)
+		    	if(rsgg != null)
 					try {
-						rs.close();
-						rs = null;
+						rsgg.close();
+						rsgg = null;
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
 		}
 		
-		stockZdgzReports ();
+		
+		//板块基本面
+		sqlquerystat = "SELECT * FROM 通达信板块列表 ";
+//		System.out.println(sqlquerystat);
+		ResultSet rsbk = connectdb.sqlQueryStatExecute(sqlquerystat);
+		if(rsbk == null)	{   
+			System.out.println("读取数据库失败");
+			return null;
+		}
+		
+		try {
+			while(rsbk.next()) {
+				String formatedbkcode = rsbk.getString("板块ID");
+
+				String result = "";
+				if(!Strings.isNullOrEmpty(rsbk.getString("概念板块提醒"))) 
+					try {
+						result = result + Strings.nullToEmpty( rsbk.getDate("概念时间").toString()) + rsbk.getString("概念板块提醒");
+					} catch (java.lang.NullPointerException e) {
+						result = result + Strings.nullToEmpty("") + rsbk.getString("概念板块提醒");
+					}
+				
+				if(!Strings.isNullOrEmpty(rsbk.getString("券商评级提醒") ) ) 
+					try {
+						result = result + Strings.nullToEmpty(rsbk.getDate("券商评级时间").toString()) + " " + rsbk.getString("券商评级提醒");
+					} catch (java.lang.NullPointerException e) {
+						result = result + Strings.nullToEmpty("") + " " + rsbk.getString("券商评级提醒");
+					}
+				if(!Strings.isNullOrEmpty(result)  ) {
+					String lineformatedgainiantx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, result, "sh" );
+					try {
+						Files.append(lineformatedgainiantx,filegnts, charset);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				if(!Strings.isNullOrEmpty(rsbk.getString("负面消息")) && !"null".equals(rsbk.getString("负面消息")) ) { //null是历史遗留
+					CharSequence lineformatedfumianxx;
+					try {
+						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty(rsbk.getDate("负面消息时间").toString()) + " " + rsbk.getString("负面消息"), "sh");
+					} catch (java.lang.NullPointerException e) {
+						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty("") + " " + rsbk.getString("负面消息"), "sh");
+					}
+					try {
+						Files.append(lineformatedfumianxx,filefmxx, charset);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				String formatedzhengxiangguan = null;
+				if( !Strings.isNullOrEmpty(rsbk.getString("正相关及客户") ) || !Strings.isNullOrEmpty(rsbk.getString("客户")) ) {
+					formatedzhengxiangguan = "正相关及客户(#" + Strings.nullToEmpty(rsbk.getString("正相关及客户"))
+											 + " " + Strings.nullToEmpty(rsbk.getString("客户") ) + "#) " ;
+				}
+				
+				String formatedfuxiangguan = null;
+				if( !Strings.isNullOrEmpty(rsbk.getString("负相关及竞争对手") ) || !Strings.isNullOrEmpty(rsbk.getString("竞争对手") ) ) {
+					formatedfuxiangguan = "负相关及竞争对手(#" + Strings.nullToEmpty(rsbk.getString("负相关及竞争对手") )
+											 + " " + Strings.nullToEmpty(rsbk.getString("竞争对手") ) + "#) " ;
+				}
+				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
+					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan), "sh" );
+					 try {
+						Files.append(lineformatedresult,filezzfxgkzd, charset);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}  finally {
+		    	if(rsbk != null)
+					try {
+						rsbk.close();
+						rsbk = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+		}
+
+		
+		
+//		stockZdgzReports ();
 		return filegnts.getAbsolutePath();
 	}
 }
