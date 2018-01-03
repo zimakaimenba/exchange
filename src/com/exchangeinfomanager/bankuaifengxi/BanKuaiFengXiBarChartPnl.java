@@ -179,7 +179,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 
     	    public void chartMouseClicked(ChartMouseEvent cme) {
     	    	try {
-    	    		CategoryItemEntity xyitem=(CategoryItemEntity) cme.getEntity(); // get clicked entity
+    	    		CategoryItemEntity xyitem = (CategoryItemEntity) cme.getEntity(); // get clicked entity
         	        CategoryDataset dataset = xyitem.getDataset(); // get data set
         	        Comparable columnkey = xyitem.getColumnKey();
         	        highLightSpecificBarColumn (columnkey);
@@ -191,6 +191,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
     	    	} catch ( java.lang.ClassCastException e ) {
     	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
     	    		xyitem1.getPlot();
+    	    		dateselected = null;
+        	        tooltipselected = null;
     	    	}
     	    }
 
@@ -252,7 +254,10 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 	}
 	public String getToolTipSelected ()
 	{
-		return tooltipselected;
+		if(tooltipselected != null)
+			return this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + tooltipselected;
+		else
+			return null;
 	}
 	public ArrayList<JiaRuJiHua> getCurSelectedFengXiJieGuo ()
 	{

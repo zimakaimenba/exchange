@@ -705,11 +705,12 @@ public class BanKuaiDbOperation
         for (String newbkcode : differencebankuainew) {
         	String newbk = tmpsysbkmap.get(newbkcode).get(0);
         	String newbktdxswcode = tmpsysbkmap.get(newbkcode).get(5);
-			String sqlinsertstat = "INSERT INTO  通达信板块列表(板块名称,创建时间,板块ID,对应TDXSWID) values ("
+			String sqlinsertstat = "INSERT INTO  通达信板块列表(板块名称,创建时间,板块ID,对应TDXSWID,指数所属交易所) values ("
 					+ "'" + newbk.trim() + "'" + ","
 					+ "\"" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() )   + "\"" + ","
 					+ "'" + newbkcode + "'" + ","
-					+ "'" + newbktdxswcode + "'"
+					+ "'" + newbktdxswcode + "'" + ","
+					+ " '" + "sh" + "'"
 					+ ")"
 					;
 			System.out.println(sqlinsertstat);
@@ -5346,17 +5347,21 @@ public class BanKuaiDbOperation
 		public String getMingRiJiHua() 
 		{
 			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
-			String sqlquerystat =null;
-			sqlquerystat= "SELECT * FROM 操作记录重点关注   WHERE 日期= date_sub(curdate(),interval 1 day) AND 加入移出标志 = '明日计划' " ;
+			String sqlquerystat = null;
+			sqlquerystat= 	" SELECT * FROM 操作记录重点关注   \r\n" + 
+							" WHERE 日期 >= date_sub(curdate(),interval 30 day) \r\n" + 
+							"		and 日期 <= curdate()\r\n" + 
+							" AND 加入移出标志 = '明日计划' " 
+							;
 			sqlstatmap.put("mysql", sqlquerystat);
 			
-			sqlquerystat=  "SELECT * FROM 操作记录重点关注 "
-					+ " WHERE 日期 <  DATE() AND  日期 > IIF( Weekday( date() ) =  2,date()-3,date()-1)  "
-					+ "AND 加入移出标志 = '明日计划'"
-					;
-			sqlstatmap.put("access", sqlquerystat);
+//			sqlquerystat=  "SELECT * FROM 操作记录重点关注 "
+//					+ " WHERE 日期 <  DATE() AND  日期 > IIF( Weekday( date() ) =  2,date()-3,date()-1)  "
+//					+ "AND 加入移出标志 = '明日计划'"
+//					;
+//			sqlstatmap.put("access", sqlquerystat);
 			
-			CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlstatmap);
+			CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			
 			String pmdresult = "";
 			try  {     
@@ -5366,7 +5371,7 @@ public class BanKuaiDbOperation
 		        int k = 0;  
 		        //while(rs.next())
 		        for(int j=0;j<rows;j++) { 
-		        	pmdresult = pmdresult + rs.getString("股票代码") + "  " + rs.getString("原因描述") + " ";
+		        	pmdresult = pmdresult + "--*(" + rs.getString("股票代码") + ")  " + rs.getString("原因描述") + " ";
 		            rs.next();
 		        } 
 		        

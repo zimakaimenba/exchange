@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -18,11 +19,13 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	}
 	
 	private String myuplevelcode;
-//	private int year;
-//	private int week;
+
 	private Double openprice;
 	private Double closeprice;
+	private Double highprice;
+	private Double lowprice;
 	private LocalDate  dayofendoftheweek;
+	
 	private Double myownchengjiaoer;
 	private Double myownchengjiaoliang;
 	private Double uplevelchengjiaoer; //上级板块的成交额
@@ -35,7 +38,6 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	private Integer ggdpzhanbimaxweek;//个股大盘占比最大周
 	private Double ggdpzhanbigrowthrate; //个股大盘占比增速
 	private Boolean hasfengxijieguo; //有加入关注，分析结果等等
-	
 	
 	private String myowncode;
 	/**

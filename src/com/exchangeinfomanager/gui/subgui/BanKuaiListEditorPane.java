@@ -55,7 +55,7 @@ public class BanKuaiListEditorPane extends JEditorPane
 			            ex.printStackTrace(); 
 			        }
 			        selectstring = link;
-			        System.out.println(selectstring);
+//			        System.out.println(selectstring);
 //			        
 //			        btndetailfx.setEnabled(true);
 //			        displayBanKuaiOfStockZhanBiByWeek (link);
@@ -68,19 +68,22 @@ public class BanKuaiListEditorPane extends JEditorPane
 }
 
 //http://www.javalobby.org/java/forums/t19716.html
-class ActionBasedBanKuaiAndChanYeLianHyperlinkListener implements HyperlinkListener{ 
- ActionMap actionMap; 
-
- public ActionBasedBanKuaiAndChanYeLianHyperlinkListener(ActionMap actionMap){ 
-     this.actionMap = actionMap; 
- } 
-
- public void hyperlinkUpdate(HyperlinkEvent e){ 
-     if(e.getEventType()!=HyperlinkEvent.EventType.ACTIVATED) 
-         return; 
-     String href = e.getDescription(); 
-     Action action = actionMap.get(href); 
-     if(action!=null) 
-         action.actionPerformed(new ActionEvent(e, ActionEvent.ACTION_PERFORMED, href)); 
- } 
+class ActionBasedBanKuaiAndChanYeLianHyperlinkListener implements HyperlinkListener
+{ 
+	 ActionMap actionMap; 
+	
+	 public ActionBasedBanKuaiAndChanYeLianHyperlinkListener(ActionMap actionMap)
+	 { 
+	     this.actionMap = actionMap; 
+	 } 
+	
+	 public void hyperlinkUpdate(HyperlinkEvent e)
+	 { 
+	     if(e.getEventType()!=HyperlinkEvent.EventType.ACTIVATED) 
+	         return; 
+	     String href = e.getDescription(); 
+	     Action action = actionMap.get(href); 
+	     if(action!=null) 
+	         action.actionPerformed(new ActionEvent(e, ActionEvent.ACTION_PERFORMED, href)); 
+	 } 
 }

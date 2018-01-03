@@ -1583,6 +1583,7 @@ public class StockInfoManager
 			public void actionPerformed(ActionEvent e) 
 			{			
 				TDXFormatedOpt.stockJiBenMianToReports();
+				TDXFormatedOpt.stockZdgzReports ();
 				String resultfiepath = TDXFormatedOpt.parseChanYeLianXmlToTDXReport();
 //				JOptionPane.showMessageDialog(null,"报表生成成功，请在" + resultfiepath + "下查看！");
 				
@@ -3182,6 +3183,7 @@ public class StockInfoManager
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					JFrame.setDefaultLookAndFeelDecorated(true);
 					StockInfoManager window = new StockInfoManager();
 //					showOnScreen(2,window.frame);
 					window.frame.setVisible(true);

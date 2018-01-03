@@ -182,7 +182,7 @@ class CustomToolTipGeneratorForChenJiaoEr implements CategoryToolTipGenerator
 //		String tooltip = selected.toString();
 		Integer maxwk = nodefx.getGgbkcjemaxweek();
 		
-		return selecteddate + "成交额" + decimalformate.format(curcje) +  "CjeMaxWk=" + maxwk;
+		return selecteddate + " " + "成交额" + decimalformate.format(curcje) +  "成交额MaxWk=" + maxwk;
 		
     }
     

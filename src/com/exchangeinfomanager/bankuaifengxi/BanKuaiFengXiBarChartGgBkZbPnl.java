@@ -162,7 +162,7 @@ class CustomToolTipGeneratorForBkZhanBi implements CategoryToolTipGenerator
 		if(nodefx == null)
 			return "";
 		
-		String tooltip = selected.toString();
+		String tooltip = selected.toString() + " ";
 		if(node.getType() == 4 ) { //板块
 			Double curzhanbidata = (Double)dataset.getValue(row, column);  //占比
 			Double zhanbigrowthrate = nodefx.getGgbkzhanbigrowthrate();
@@ -175,11 +175,11 @@ class CustomToolTipGeneratorForBkZhanBi implements CategoryToolTipGenerator
 			} catch (java.lang.IllegalArgumentException e ) {
 				tooltip = tooltip  +  "占比NULL";
 			}
-			try {
-				tooltip = tooltip +   "占比变化("	+ decimalformate.format(zhanbigrowthrate) +  ")";
-			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip  +  "占比变化(NULL)";
-			}
+//			try {
+//				tooltip = tooltip +   "占比变化("	+ decimalformate.format(zhanbigrowthrate) +  ")";
+//			} catch (java.lang.IllegalArgumentException e ) {
+//				tooltip = tooltip  +  "占比变化(NULL)";
+//			}
 			try {
 				tooltip = tooltip +  "板块MaxWk=" + maxweek.toString() ;
 			} catch (java.lang.IllegalArgumentException e ) {

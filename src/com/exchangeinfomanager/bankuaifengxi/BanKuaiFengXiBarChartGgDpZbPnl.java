@@ -167,7 +167,7 @@ class CustomToolTipGeneratorForGgZhanBi implements CategoryToolTipGenerator
 		if(nodefx == null)
 			return "";
 		
-		String tooltip = selected.toString();
+		String tooltip = selected.toString() + " ";
 		if(node.getType() == 6 ) { //个股,个股大盘比只有个股，不会有板块
 			Double curzhanbidata = nodefx.getCjlZhanBi();  //占比
 			Double zhanbigrowthrate = nodefx.getGgbkzhanbigrowthrate();
@@ -193,11 +193,11 @@ class CustomToolTipGeneratorForGgZhanBi implements CategoryToolTipGenerator
 			} catch (java.lang.IllegalArgumentException e ) {
 				tooltip = tooltip + "板块占比NULL" ;
 			}
-			try {
-				tooltip = tooltip +  "占比变化("+ decimalformate.format(zhanbigrowthrate) +  ")";
-			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip +  "占比变化(NULL)";
-			}
+//			try {
+//				tooltip = tooltip +  "占比变化("+ decimalformate.format(zhanbigrowthrate) +  ")";
+//			} catch (java.lang.IllegalArgumentException e ) {
+//				tooltip = tooltip +  "占比变化(NULL)";
+//			}
 			try {
 				tooltip = tooltip + "板块MaxWk=" + maxweek.toString();
 			} catch (java.lang.IllegalArgumentException e ) {

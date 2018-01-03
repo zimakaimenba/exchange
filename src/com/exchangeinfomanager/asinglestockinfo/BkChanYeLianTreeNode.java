@@ -77,7 +77,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	private Object[][] zdgzmrmcykRecords ;
 	
 	
-	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> cjeperiodlist; //板块自己的成交记录
+	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> cjeperiodlist; //板块自己的周成交记录以及一些分析结果
 //	private BanKuaiDbOperation bkdbopt;
 	
 

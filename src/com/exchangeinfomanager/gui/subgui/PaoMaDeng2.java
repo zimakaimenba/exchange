@@ -16,12 +16,26 @@ public class PaoMaDeng2 extends JPanel
 	  private String message = "";
 	  private int xCoordinate = 50;
 	  private int yCoordinate = 20;
+	  private Timer timer;
+	  private Boolean rollingstatus = false;
 
 	/**
 	 * Create the panel.
 	 */
 	public PaoMaDeng2() 
 	{
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(rollingstatus) {
+					rollingstatus = false;
+					timer.stop();
+				} else {
+					rollingstatus = true;
+					timer.start();
+				}
+			}
+		});
 		 //this.message = message;
 
 //		 Timer timer = new Timer(100, new TimerListener());
@@ -33,9 +47,9 @@ public class PaoMaDeng2 extends JPanel
 			this.message = message;
 		else message = "";
 		
-		Timer timer = new Timer(100, new TimerListener());
-		 timer.start();
-		
+		this.rollingstatus = true;
+		timer = new Timer(100, new TimerListener());
+		timer.start();
 	}
 	
 	 public void paintComponent(Graphics g) 
@@ -56,33 +70,33 @@ public class PaoMaDeng2 extends JPanel
 		   //System.out.println(xCoordinate);
 	  }
 	 
-	 public void paintComponent1(Graphics g) 
-	 {
-		 String[] msg = {"test 1","test 2","test 3                     test3"};
-		   super.paintComponent(g);
-
-//		   if (xCoordinate > getWidth()) {
-//		    xCoordinate = -100;
+//	 public void paintComponent1(Graphics g) 
+//	 {
+//		 String[] msg = {"test 1","test 2","test 3                     test3"};
+//		   super.paintComponent(g);
+//
+////		   if (xCoordinate > getWidth()) {
+////		    xCoordinate = -100;
+////		   }
+////		   if (xCoordinate < 0) {
+////			    xCoordinate = +getWidth();
+////		   }
+//
+//		   //xCoordinate -= 5;
+//		   for(int i=0;i<msg.length;i++) {
+//		    g.drawString(msg[i], xCoordinate, yCoordinate);
+//		    System.out.println("1x"+xCoordinate);
+//		    try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} 
+//		    g.drawString("                             ", xCoordinate, yCoordinate);
+//		    
+//		    System.out.println("2x"+xCoordinate);
 //		   }
-//		   if (xCoordinate < 0) {
-//			    xCoordinate = +getWidth();
-//		   }
-
-		   //xCoordinate -= 5;
-		   for(int i=0;i<msg.length;i++) {
-		    g.drawString(msg[i], xCoordinate, yCoordinate);
-		    System.out.println("1x"+xCoordinate);
-		    try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-		    g.drawString("                             ", xCoordinate, yCoordinate);
-		    
-		    System.out.println("2x"+xCoordinate);
-		   }
-	  }
+//	  }
 	 
 	 class TimerListener implements ActionListener {
 		   public void actionPerformed(ActionEvent e) {
