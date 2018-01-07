@@ -74,11 +74,16 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    if( col == 3) {
 		    Double cje = tablemodel.getDisplayChenJiaoEr ();
 		    LocalDate requireddate = tablemodel.getShowCurDate();
-		    Double curcje = stock.getSpecficChenJiaoErRecord(requireddate).getMyOwnChengJiaoEr();
-		    if(cje != null && cje >0 && curcje > cje ) 
-		    	background = Color.yellow ;
-		    else
+		    try {
+		    	Double curcje = stock.getSpecficChenJiaoErRecord(requireddate).getMyOwnChengJiaoEr();
+		    	
+		    	 if(cje != null && cje >0 && curcje > cje ) 
+				    	background = Color.yellow ;
+				    else
+				    	background = Color.white;
+		    } catch (java.lang.NullPointerException ex) {
 		    	background = Color.white;
+		    }
 	    } 
 	    
 	    //突出显示MAXWK>=4的个股

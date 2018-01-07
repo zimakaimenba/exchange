@@ -261,6 +261,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 		LocalDate bkstartday = bankuai.getRecordsStartDate();
 		LocalDate bkendday = bankuai.getRecordsEndDate();
 		
+		//880890的情况，板块有个股，但是本身没有成交量等数据，也是奇葩
+		if(bkstartday == null || bkendday == null) {
+			bkendday = dchgeguwkzhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+			bkstartday = bkendday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		}
+		
 		LocalDate stockstartday = stock.getRecordsStartDate();
 		LocalDate stockendday = stock.getRecordsEndDate();
 		
@@ -426,7 +432,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			
 			unifyDisplaysInDifferentCompOnGui (selecteddalei,0);
 		} catch (java.lang.IllegalArgumentException e) {
-			e.printStackTrace();
+			System.out.println("Exception: java.lang.IllegalArgumentException,BanKuaiAndChanYeLian.java:423 ");
 		}
 		
 		
@@ -515,8 +521,14 @@ public class BanKuaiAndChanYeLian extends JPanel
   	       	((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
   	       	if(row >= 0)
   	       		tableCurZdgzbk.setRowSelectionInterval(row,row);
-  	       	else
-  	       		tableCurZdgzbk.setRowSelectionInterval(0,0);
+  	       	else {
+  	       		try{
+  	       			tableCurZdgzbk.setRowSelectionInterval(0,0);
+  	       		} catch(java.lang.IllegalArgumentException e) {
+  	       			System.out.println("Exception:BanKuaiAndChanYeLian.java:522");
+  	       		}
+  	       		
+  	       	}
   	       	
 //	  	     读出该板块相关的新闻
 	  	    BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();

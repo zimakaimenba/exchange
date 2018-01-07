@@ -85,7 +85,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
 //	    	System.out.println(rowIndex + "col" + columnIndex  + "  ");
-	    	if(entryList.isEmpty())
+    	if(entryList.isEmpty())
 	    		return null;
 	    	
 	    	String bkcode = null;
@@ -130,17 +130,33 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	break;
             case 5: //{ "代码", "名称","板块权重","板块占比增长率","BkMaxWk","板块成交额贡献","大盘占比增长率","DpMaxWk"};
 //            	int maxweek = curdisplaystock.getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showwknum);
-            	int maxweek = fxrecord.getGgbkzhanbimaxweek();
-            	value = (Integer)maxweek;
+            	try {
+            		int maxweek = fxrecord.getGgbkzhanbimaxweek();
+                	value = (Integer)maxweek;
+            	} catch (java.lang.NullPointerException ex) {
+            		value = -10000;
+            	}
+            	
             	break;
             case 6:
-            	Double cjedpgrowthrate = fxrecord.getGgdpzhanbigrowthrate();
-            	value = cjedpgrowthrate;
+            	try {
+            		Double cjedpgrowthrate = fxrecord.getGgdpzhanbigrowthrate();
+                	value = cjedpgrowthrate;
+            	} catch (java.lang.NullPointerException ex) {
+            		value = -10000;
+            	}
+            	
                 break;
             case 7:
-            	Integer dpmaxwk = fxrecord.getGgdpzhanbimaxweek(); 
-            	value = dpmaxwk;
+            	try {
+            		Integer dpmaxwk = fxrecord.getGgdpzhanbimaxweek(); 
+                	value = dpmaxwk;
+            	} catch (java.lang.NullPointerException ex) {
+            		value = -10000;
+            	}
+            	
                 break;
+
 	    	}
 	    	
 	    	return value;

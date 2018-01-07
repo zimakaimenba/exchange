@@ -3982,13 +3982,15 @@ public class BanKuaiDbOperation
 	public Stock getGeGuZhanBiOfBanKuai(String bkcode, Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,LocalDate addposition)
 	{
 		String stockcode = stock.getMyOwnCode();
-		
 		HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode,stockcode);
 
 		String stockvsbktable = actiontables.get("股票板块对应表");
-		String bkcjetable = actiontables.get("板块每日交易量表");
 		String gegucjetable = actiontables.get("股票每日交易量表");
+		
+		String bkcjetable = actiontables.get("板块每日交易量表");
 		String bknametable = actiontables.get("板块指数名称表");
+		if(bkcjetable == null || bknametable == null) //说明板块没有成交量数据，只是一个有个股的板块，没有指数，例如880890
+			return stock;
 		
 		String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart);
 		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend);
@@ -4038,7 +4040,14 @@ public class BanKuaiDbOperation
 				;
 		 }
 //		System.out.println(sqlquerystat);
-		System.out.println("为个股" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
+		try{
+			System.out.println("为个股" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
+		} catch (java.lang.NullPointerException e) {
+			System.out.println(stock.getMyOwnCode() );
+			System.out.println( stock.getMyOwnName() );
+			System.out.println( selecteddatestart.toString() );
+			System.out.println( selecteddateend.toString() );
+		}
 		
 		String sqlquerystatfx = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
 				"WHERE 股票代码='" + stockcode + "'" + "\r\n" + 
