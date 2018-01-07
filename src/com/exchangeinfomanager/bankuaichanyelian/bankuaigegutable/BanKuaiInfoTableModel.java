@@ -22,7 +22,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		super ();
 	}
 	
-	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","max","成交额增长贡献率"};
+	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","MaxWeek","成交额增长贡献率"};
 //	HashMap<String,BanKuai> bkmap;
 	List<Map.Entry<String, BanKuai>> entryList;
 	LocalDate showzhbiwknum;

@@ -196,7 +196,7 @@ public class BanKuaiFengXi extends JDialog {
 	protected void refreshCurentBanKuaiFengXiResult(BanKuai selectedbk) 
 	{
 		tfldselectedmsg.setText("");
-		tabbedPane.setSelectedIndex(0);
+		tabbedPanegegu.setSelectedIndex(0);
 		panelbkcje.resetDate();
 		panelbkwkzhanbi.resetDate();
 		pnllastestggzhanbi.resetDate();
@@ -206,8 +206,9 @@ public class BanKuaiFengXi extends JDialog {
 		panelLastWkGeGuZhanBi.resetDate();
 		panelGeguDapanZhanBi.resetDate();
 		panelgegucje.resetDate();
-		tabbedPane.setTitleAt(1, "选定周");
+		tabbedPanegegu.setTitleAt(1, "选定周");
 		tfldselectedmsg.setText("");
+		tabbedPanebk.setSelectedIndex(0);
 		
 		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).deleteAllRows();
@@ -228,7 +229,7 @@ public class BanKuaiFengXi extends JDialog {
 		selectedbk = bkcyl.getAllGeGuOfBanKuai (selectedbk);
 		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate);
 		//更改显示日期
-		tabbedPane.setTitleAt(0, "当前周" + curselectdate);
+		tabbedPanegegu.setTitleAt(0, "当前周" + curselectdate);
 	  	      
 		//显示2周的板块个股pie chart
 		pnllastestggzhanbi.setBanKuaiNeededDisplay(selectedbk,Integer.parseInt(tfldweight.getText() ), curselectdate );
@@ -254,7 +255,7 @@ public class BanKuaiFengXi extends JDialog {
 		
 		//显示选定周股票排名情况
 		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).refresh(selectedbk, selecteddate);
-		tabbedPane.setTitleAt(1, "选定周" + selecteddate);
+		tabbedPanegegu.setTitleAt(1, "选定周" + selecteddate);
 		
 		//显示选定周-1股票排名情况
 		LocalDate selectdate2 = selecteddate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
@@ -311,6 +312,7 @@ public class BanKuaiFengXi extends JDialog {
 			panelgegucje.resetDate();
 			tabbedPanegeguzhanbi.setSelectedIndex(0);
 			tfldselectedmsg.setText("");
+			tabbedPanebk.setSelectedIndex(1);
 			
 			panelgeguwkzhanbi.setNodeZhanBiByWeek(stock,curselectdate,dapan); //个股板块占比
 			panelGeguDapanZhanBi.setNodeAndDaPanZhanBiByWeek(stock,curselectdate,dapan); //个股大盘占比
@@ -466,7 +468,7 @@ public class BanKuaiFengXi extends JDialog {
 				if(ckboxshowcje.isSelected()) {
 					Double showcje = Double.parseDouble( tfldshowcje.getText() ) * 100000000;
 					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setDisplayChenJiaoEr(showcje);
-
+					tableGuGuZhanBiInBk.repaint();
 
 					((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).setDisplayChenJiaoEr(showcje);
 					tablexuandingzhou.repaint();
@@ -899,12 +901,14 @@ public class BanKuaiFengXi extends JDialog {
 					tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
 					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
 					
+					//找到用户选择的板块
 					BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
 					refreshCurentBanKuaiFengXiResult (selectedbk);
 					displayNodeInfo(selectedbk);
 					patchParsedFile (selectedbk);
+					cbxsearchbk.updateUserSelectedNode(selectedbk);
 					
-					//
+					//找到该股票
 					String stockcode = cbxstockcode.getSelectedItem().toString().substring(0, 6);
 					findInputedNodeInTable (stockcode);
 				}
@@ -1116,8 +1120,8 @@ public class BanKuaiFengXi extends JDialog {
 			    		panelselectwkgeguzhanbi.resetDate();
 			    		panelGeguDapanZhanBi.resetDate();
 			    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
-			    		tabbedPane.setTitleAt(0, "当前周");
-			    		tabbedPane.setTitleAt(1, "选定周");
+			    		tabbedPanegegu.setTitleAt(0, "当前周");
+			    		tabbedPanegegu.setTitleAt(1, "选定周");
 			    		
 			    		initializeBanKuaiZhanBiByGrowthRate ();
 			    		
@@ -1352,7 +1356,7 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiGeGuTable tablexuandingminusone;
 	private BanKuaiGeGuTable tablexuandingplusone;
 	private BanKuaiGeGuTable tablexuandingplustwo;
-	private JTabbedPane tabbedPane;
+	private JTabbedPane tabbedPanegegu;
 	private BanKuaiFengXiBarChartGgDpZbPnl panelGeguDapanZhanBi;
 	private JTextField tfldshowcje;
 	private JTextField tfldparsedfile;
@@ -1371,6 +1375,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JTextField tflddisplaymaxwk;
 	private JScrollPane scrollPaneuserselctmsg;
 	private PaoMaDeng2 pnl_paomd;
+	private JTabbedPane tabbedPanebk;
 	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -1525,9 +1530,9 @@ public class BanKuaiFengXi extends JDialog {
 		);
 		panel_2.setLayout(gl_panel_2);
 		
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPanegegu = new JTabbedPane(JTabbedPane.TOP);
 		
-		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPanebk = new JTabbedPane(JTabbedPane.TOP);
 		cbxstockcode = new JStockComboBox(6);
 		
 		cbxsearchbk = new JStockComboBox(4);
@@ -1537,33 +1542,40 @@ public class BanKuaiFengXi extends JDialog {
 		pnl_paomd = new PaoMaDeng2();
 		pnl_paomd.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		
+		JButton btnexportmodelgegu = new JButton("\u5BFC\u51FA\u6240\u6709\u4E2A\u80A1");
+		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_panel_1.createSequentialGroup()
 							.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
 							.addGap(20))
 						.addGroup(gl_panel_1.createSequentialGroup()
 							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-								.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
-								.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
-								.addComponent(tabbedPane_1, GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
+								.addComponent(tabbedPanegegu)
+								.addGroup(gl_panel_1.createSequentialGroup()
+									.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnexportmodelgegu))
+								.addComponent(tabbedPanebk))
 							.addContainerGap())))
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnexportmodelgegu, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 29, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
+					.addComponent(tabbedPanebk, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
+					.addComponent(tabbedPanegegu, GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 						.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
@@ -1572,22 +1584,23 @@ public class BanKuaiFengXi extends JDialog {
 		);
 		
 		sclpleft = new JScrollPane();
-		tabbedPane_1.addTab("\u677F\u5757\u5360\u6BD4", null, sclpleft, null);
+		tabbedPanebk.addTab("\u677F\u5757\u5360\u6BD4", null, sclpleft, null);
 		
 		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager,this.bkcyl);	
 		
 		sclpleft.setViewportView(tableBkZhanBi);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		tabbedPane_1.addTab("\u677F\u5757\u4FE1\u606F", null, scrollPane_2, null);
+		tabbedPanebk.addTab("\u677F\u5757\u4FE1\u606F", null, scrollPane_2, null);
 		
 		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();
+		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo(true);
 		scrollPane_2.setViewportView(editorPanenodeinfo);
 		editorPanenodeinfo.setEditable(false);
 		
 		JScrollPane scrollPanedangqian = new JScrollPane();
-		tabbedPane.addTab("当前周", null, scrollPanedangqian, null);
-		tabbedPane.setBackgroundAt(0, Color.ORANGE);
+		tabbedPanegegu.addTab("当前周", null, scrollPanedangqian, null);
+		tabbedPanegegu.setBackgroundAt(0, Color.ORANGE);
 		
 		
 		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager);
@@ -1640,8 +1653,8 @@ public class BanKuaiFengXi extends JDialog {
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
 		
 		JScrollPane scrollPanexuanding = new JScrollPane();
-		tabbedPane.addTab("选定周", null, scrollPanexuanding, null);
-		tabbedPane.setBackgroundAt(1, UIManager.getColor("MenuItem.selectionBackground"));
+		tabbedPanegegu.addTab("选定周", null, scrollPanexuanding, null);
+		tabbedPanegegu.setBackgroundAt(1, UIManager.getColor("MenuItem.selectionBackground"));
 		
 		tablexuandingzhou = new BanKuaiGeGuTable (this.stockmanager);
 		tablexuandingzhou.hideZhanBiColumn(1);
@@ -1649,29 +1662,29 @@ public class BanKuaiFengXi extends JDialog {
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
 		JScrollPane scrollPanexuandingminusone = new JScrollPane();
-		tabbedPane.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
-		tabbedPane.setBackgroundAt(2, Color.LIGHT_GRAY);
+		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
+		tabbedPanegegu.setBackgroundAt(2, Color.LIGHT_GRAY);
 		
 		tablexuandingminusone = new BanKuaiGeGuTable (this.stockmanager);
 		tablexuandingminusone.hideZhanBiColumn(1);
 		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
 		
 		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
-		tabbedPane.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
+		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
 		
 		tablexuandingminustwo = new BanKuaiGeGuTable (this.stockmanager);
 		tablexuandingminustwo.hideZhanBiColumn(1);
 		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
 		
 		JScrollPane scrollPanexuandingplusone = new JScrollPane();
-		tabbedPane.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
+		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
 		
 		tablexuandingplusone = new BanKuaiGeGuTable (this.stockmanager);
 		tablexuandingplusone.hideZhanBiColumn(1);
 		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
 		
 		JScrollPane scrollPanexuandingplustwo = new JScrollPane();
-		tabbedPane.addTab("\u9009\u5B9A\u5468+2", null, scrollPanexuandingplustwo, null);
+		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+2", null, scrollPanexuandingplustwo, null);
 		
 		tablexuandingplustwo = new BanKuaiGeGuTable (this.stockmanager);
 		tablexuandingplustwo.hideZhanBiColumn(1);

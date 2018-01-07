@@ -59,7 +59,6 @@ public class BanKuaiInfoTable extends JTable
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.stockmanager = stockmanager1;
-		
 	}
 	/*
 	 * 
@@ -86,49 +85,8 @@ public class BanKuaiInfoTable extends JTable
 		
 		JPopupMenu popupMenuGeguNews = new BanKuaiPopUpMenu(this,this.stockmanager);
 		
-//		JPopupMenu popupMenuGeguNews = new JPopupMenu();
-//		JMenuItem menuItemAddNews = new JMenuItem("添加板块新闻");
-//		JMenuItem menuItemAddToGz = new JMenuItem("加入关注");
-//		JMenuItem menuItemMakeLongTou = new JMenuItem("设置为当周热点");
-//		
-//		popupMenuGeguNews.add(menuItemAddNews);
-//		popupMenuGeguNews.add(menuItemMakeLongTou);
-//		popupMenuGeguNews.add(menuItemAddToGz);
-		
+
 		this.setComponentPopupMenu(popupMenuGeguNews);
-		
-//		menuItemAddNews.addActionListener(new ActionListener() {
-//			@Override
-//
-//			public void actionPerformed(ActionEvent evt) {
-//
-//				addBanKuaiNews ();
-//			}
-//			
-//		});
-//		
-//		menuItemMakeLongTou.addActionListener(new ActionListener() {
-//			@Override
-//
-//			public void actionPerformed(ActionEvent evt) {
-//
-//				addBanKuaiReDian ();
-//			}
-//			
-//		});
-//		
-//		menuItemAddToGz.addActionListener(new ActionListener() {
-//			@Override
-//
-//			public void actionPerformed(ActionEvent evt) {
-//
-//				addZdgz ();
-//			}
-//			
-//		});
-
-
-
 	}
 	
 	private void tableMouseClickActions (MouseEvent arg0)
@@ -172,61 +130,7 @@ public class BanKuaiInfoTable extends JTable
 
 	}
 
-//	protected void addZdgz() 
-//	{
-//		int row = this.getSelectedRow();
-//		if(row <0) {
-//			JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
-//		int modelRow = this.convertRowIndexToModel(row); 
-//		String bkcode = ((BanKuaiInfoTableModel) this.getModel()).getBanKuaiCode(modelRow);
-//		String bkname = ((BanKuaiInfoTableModel) this.getModel()).getBanKuaiName(modelRow);
-//		
-//		JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"加入关注" ); 
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-//		
-//		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-//		
-//	}
-//	protected void addBanKuaiReDian()
-//	{
-//		int row = this.getSelectedRow();
-//		if(row <0) {
-//			JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
-//		int modelRow = this.convertRowIndexToModel(row); 
-//		String bkcode = ((BanKuaiInfoTableModel) this.getModel()).getBanKuaiCode(modelRow);
-//		String bkname = ((BanKuaiInfoTableModel) this.getModel()).getBanKuaiName(modelRow);
-//
-//		JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"本周热点" ); 
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "本周热点", JOptionPane.OK_CANCEL_OPTION);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-//		
-//		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-//	}
-//	protected void addBanKuaiNews() 
-//	{
-//		int row = this.getSelectedRow();
-//		if(row <0) {
-//			JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
-//		int modelRow = this.convertRowIndexToModel(row); 
-//		BanKuai bankuai = ((BanKuaiInfoTableModel) this.getModel()).getBanKuai(modelRow);
-//		String bkcode = bankuai.getMyOwnCode();
-//		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (bkcode);
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加板块新闻", JOptionPane.OK_CANCEL_OPTION);
-//
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-//		
-//		bkdbopt.addBanKuaiNews(bkcode, cylnews.getInputedNews());
-//	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#prepareRenderer(javax.swing.table.TableCellRenderer, int, int)
@@ -256,10 +160,25 @@ public class BanKuaiInfoTable extends JTable
             	((JLabel)comp).setText(valuepect);
 	        }
 	        
-	        if(bankuai.getParseFileStockSet().size()>0)
-	        	comp.setForeground(Color.ORANGE);
-	        else
-	        	comp.setForeground(Color.black);
+	        //为不同情况突出显示不同的颜色
+	        Color foreground, background = Color.white;
+	        
+	        if(col == 0 || col == 1 ) {
+	        	if(bankuai.getParseFileStockSet().size()>0)
+		        	background = Color.ORANGE;
+		        else
+		        	background = Color.white;
+	        }
+	        
+	        if(col == 2 || col == 3 || col == 4 ) {
+	        	if(bankuai.getInZdgzCandidateCount() >0 || bankuai.getInZdgzOfficalCount() >0)
+	        		background = Color.RED;
+		        else
+		        	background = Color.white;
+	        }
+	        
+	        if (!this.isRowSelected(row)) 
+		    	comp.setBackground(background);
 	        
 	        return comp;
 	}

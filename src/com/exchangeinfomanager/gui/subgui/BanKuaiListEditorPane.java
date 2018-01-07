@@ -1,3 +1,6 @@
+/*
+ * 为板块列表专门设计的类，
+ */
 package com.exchangeinfomanager.gui.subgui;
 
 import java.awt.event.ActionEvent;

@@ -51,6 +51,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    
 	    Color foreground, background = Color.white;
 	    
+	    //Õª≥ˆœ‘ æparse file
 	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
 	    int modelRow = table.convertRowIndexToModel(row);
 	    Stock stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);

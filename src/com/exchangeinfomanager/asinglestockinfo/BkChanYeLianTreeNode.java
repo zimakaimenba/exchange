@@ -147,25 +147,25 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
     public void increaseZdgzOfficalCount ()
     {
     	inzdgzofficalcount ++;
-    	System.out.println(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
+//    	System.out.println(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
     }
     public void decreaseZdgzOfficalCount ()
     {
     	inzdgzofficalcount --;
     	if(inzdgzofficalcount == 0 )
     		isofficallyselected = false;
-    	System.out.println(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
+//    	System.out.println(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
     }
     
     public void increaseZdgzCandidateCount ()
     {
     	inzdgzcandidatecount ++;
-    	System.out.println(this.getUserObject().toString() +"node cand count = " + inzdgzcandidatecount);
+//    	System.out.println(this.getUserObject().toString() +"node cand count = " + inzdgzcandidatecount);
     }
     public void decreasedgzCandidateCount ()
     {
     	inzdgzcandidatecount --;
-    	System.out.println(this.getUserObject().toString() + "node cand count = " + inzdgzcandidatecount);
+//    	System.out.println(this.getUserObject().toString() + "node cand count = " + inzdgzcandidatecount);
     }
     public int getInZdgzOfficalCount ()
     {

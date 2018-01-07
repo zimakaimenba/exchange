@@ -255,6 +255,7 @@ public class JStockComboBox extends  JComboBox<String>
 	   				  	String curitem = this.getItemAt(i).toString();
 		   				if(curitem.equals(tmp)  ) { // 已经有了，不用有任何操作
 		   					isaddItem = false;
+		   					this.setSelectedIndex(i);
 		   					break;
 		   				}
 //		   	  	  	  if(curitem.substring(0, 6).equals(tmp) && curitem.length()>6 ) { //
@@ -280,6 +281,7 @@ public class JStockComboBox extends  JComboBox<String>
 	   	  		  this.removeItemAt(updateItem);
 	   	  		  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
 	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
+	  			this.setSelectedIndex(0);
 	   	  	  }
 	   	  }catch(NumberFormatException ne){
 	   		

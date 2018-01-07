@@ -5711,7 +5711,156 @@ public class BanKuaiDbOperation
 			return stockcode;
 		}
 
+		/*
+		 *同步股票现用名字信息 
+		 */
+		public Integer refreshCurrentUsedStorkNameOfShenZhen()
+		{
+			File file = new File(sysconfig.getTDXShenZhenShuNameFile() );
+			
+			if(!file.exists() ) {
+				 System.out.println("File not exist");
+				 return -1;
+			 }
+			
+			 int addednumber =0;
+			 BufferedInputStream dis = null;
+			 FileInputStream in = null;
+			 try {
+				    in = new FileInputStream(file);  
+				    dis = new BufferedInputStream(in);
+	               
+	               int fileheadbytenumber = 50;
+	               byte[] itemBuf = new byte[fileheadbytenumber];
+	               dis.read(itemBuf, 0, fileheadbytenumber); 
+	               String fileHead =new String(itemBuf,0,fileheadbytenumber);  
+	               System.out.println(fileHead);
+	               
+	               int sigbk = 18*16+12+14;
+	               byte[] itemBuf2 = new byte[sigbk];
+	               int i=0;
+//	               Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+	               while (dis.read(itemBuf2, 0, sigbk) != -1) {
+	            	   String zhishuline =new String(itemBuf2,0,sigbk);
+//	            	   System.out.println(zhishuline);
+	            	   String zhishucode = zhishuline.trim().substring(0, 6);
+	            	   System.out.println(zhishucode);
+	            	   
+	            	   if(  !zhishucode.startsWith("000") && !zhishucode.startsWith("001") && !zhishucode.startsWith("002") && !zhishucode.startsWith("300"))
+	            		   continue;
+	            	   
+	            	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
+	            	   String zhishuname = null;
+	            	   try {
+		            	    zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
+	            	   } catch (java.lang.StringIndexOutOfBoundsException ex) {
+	            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
+	            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
+	            	   }
+//	            	   System.out.println(zhishuname);
+	            	   
+	            	   String sqlinsertstat = "Update a股 set 股票名称 = '" + zhishuname.trim() + "'\r\n" + 
+	   						   					"where 股票代码 = '" + zhishucode.trim() + "' "
+	   						   ;
+	            	   System.out.println(sqlinsertstat);
+		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+//		                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+	               }
+	               
+			 } catch (Exception e) {
+				 e.printStackTrace();
+				 return -1;
+			 } finally {
+				 try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	             try {
+					dis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}     
+			 }
+			
+			return -1;
+		}
 
+		/*
+		 * 同步股票现用名字信息
+		 */
+		public Integer refreshCurrentUsedStorkNameOfShangHai()
+		{
+			File file = new File(sysconfig.getTDXShangHaiZhiShuNameFile() );
+			
+			if(!file.exists() ) {
+				 System.out.println("File not exist");
+				 return -1;
+			 }
+			
+			 int addednumber =0;
+			 BufferedInputStream dis = null;
+			 FileInputStream in = null;
+			 try {
+				    in = new FileInputStream(file);  
+				    dis = new BufferedInputStream(in);
+	               
+	               int fileheadbytenumber = 50;
+	               byte[] itemBuf = new byte[fileheadbytenumber];
+	               dis.read(itemBuf, 0, fileheadbytenumber); 
+	               String fileHead =new String(itemBuf,0,fileheadbytenumber);  
+//	               System.out.println(fileHead);
+	               
+	               int sigbk = 18*16+12+14;
+	               byte[] itemBuf2 = new byte[sigbk];
+	               int i=0;
+//	               Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+	               while (dis.read(itemBuf2, 0, sigbk) != -1) {
+	            	   String zhishuline =new String(itemBuf2,0,sigbk);
+//	            	   System.out.println(zhishuline);
+	            	   String zhishucode = zhishuline.trim().substring(0, 6);
+//	            	   System.out.println(zhishucode);
+	            	   
+	            	   if(  !(zhishucode.startsWith("60") ) )
+	            		   continue;
+	            	   
+	            	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
+	            	   String zhishuname = null;
+	            	   try {
+		            	    zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
+	            	   } catch (java.lang.StringIndexOutOfBoundsException ex) {
+	            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
+	            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
+	            	   }
+//	            	   System.out.println(zhishuname);
+	            	   
+	            	   String sqlinsertstat = "Update a股 set 股票名称 = '" + zhishuname.trim() + "'\r\n" + 
+	            	   						   "where 股票代码 = '" + zhishucode.trim() + "' "
+		   						;
+//	            	   System.out.println(sqlinsertstat);
+		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+//		                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+	               }
+	               
+			 } catch (Exception e) {
+				 e.printStackTrace();
+				 return -1;
+			 } finally {
+				 try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	             try {
+					dis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}     
+			 }
+			
+			return 1;
+			
+		}
 		/*
 		 * 从通达信中导入股票曾用名的信息
 		 */
