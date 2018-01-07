@@ -1471,7 +1471,7 @@ public class BanKuaiDbOperation
 	}
 	/*
 	 * 从通达信更新所有的交易所指数，上海part
-	 */
+	 */ 
 	private int refreshTDXZhiShuShangHaiLists(File tmprecordfile)
 	{
 		File file = new File(sysconfig.getTDXShangHaiZhiShuNameFile() );
