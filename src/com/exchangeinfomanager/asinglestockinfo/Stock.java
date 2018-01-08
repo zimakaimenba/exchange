@@ -23,7 +23,7 @@ public class Stock extends BkChanYeLianTreeNode {
 		nodetype = BanKuaiAndStockBasic.BKGEGU;
 	}
 	
-	private String suoshujiaoyisuo;
+//	private String suoshujiaoyisuo;
 //	private boolean aNewDtockCodeIndicate = false;
 //	private Date gainiantishidate;
 //	private String gainiantishi;

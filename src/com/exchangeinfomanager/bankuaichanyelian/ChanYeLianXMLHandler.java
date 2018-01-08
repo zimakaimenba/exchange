@@ -116,9 +116,7 @@ class ChanYeLianXMLHandler
 	public  BkChanYeLianTreeNode getBkChanYeLianXMLTree()
 	{
 		 SetView<String> newBanKuaiFromDb = null;
-//		 tdxbk = bkopt.getTDXBanKuaiList ();
-//		 tdxzhishu = bkopt.getTDXAllZhiShuList ();
-		 HashMap<String, BanKuai> allbkandzs = bkopt.getTDXAllZhiShuAndBanKuai ();
+		 HashMap<String, BanKuai> allbkandzs = bkopt.getTDXBanKuaiList ("all");
 		
 		if(this.isXmlShouldUpdated() ) {
 			hasXmlRevised = true;
@@ -127,9 +125,9 @@ class ChanYeLianXMLHandler
 //			Set<String> tdxzhishuset = tdxzhishu.keySet();
 //			SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
 			
-			Set<String> uniontdxbkindb = allbkandzs.keySet();
+			Set<String> uniontdxbkindb = allbkandzs.keySet(); //数据库中存储的板块
 
-			Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
+			Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml (); //xml中存储的板块
 
 			if(uniontdxbkindb.size() != 0) { //个股不可能完全没有板块信息，如果为0，说明和数据库连接断了，要考虑
 				//XML没有，数据库有，要添加如XML
@@ -260,12 +258,11 @@ class ChanYeLianXMLHandler
 				   
 				   String bkname = null, bkowncode = null; String suoshubkcode = null;
 				   String nodetype = element.attributeValue("Type").trim();
+				   
 				   if(nodetype.equals("4") ) { //是通达信板块  
-					   
 					   bkowncode = element.attributeValue("bkcode");
 					   suoshubkcode = bkowncode;
 
-//					   System.out.println("通达信代码：" + bkowncode);
 					   if(oldBanKuaiFromDb != null && oldBanKuaiFromDb.size()>0 && oldBanKuaiFromDb.contains(bkowncode) ) { //如果代码已经属于需要删除的，则标记好
 						   shouldremovedwhensavexml = true;
 						   bkname = element.attributeValue("bkname");
@@ -273,12 +270,13 @@ class ChanYeLianXMLHandler
 						   try{
 							   bkname = allbkandzs.get(bkowncode).getMyOwnName();
 						   } catch (java.lang.NullPointerException ex) {
-							   ex.printStackTrace(); 
+//							   ex.printStackTrace(); 
 							   bkname = element.attributeValue("bkname");
 						   }
 					   }
 					   
-					   parentsleaf = new BanKuai ( bkowncode,bkname);
+//					   parentsleaf = new BanKuai ( bkowncode,bkname);
+					   parentsleaf = allbkandzs.get(bkowncode);
 					   ((BanKuai)parentsleaf).setDaPan((DaPan)topNode); //把大盘配给每个板块
 					   
 					   
@@ -515,11 +513,11 @@ class ChanYeLianXMLHandler
 		{
 			
 //			HashMap<String, BkChanYeLianTreeNode> tdxbk = bkopt.getTDXBanKuaiList2 ();
-			HashMap<String, BanKuai> tdxbk = bkopt.getTDXBanKuaiList ();
-			HashMap<String, BanKuai> tdxzhishu = bkopt.getTDXAllZhiShuList ();
-			Set<String> tdxbkset = tdxbk.keySet();
-			Set<String> tdxzhishuset = tdxzhishu.keySet();
-			SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
+			HashMap<String, BanKuai> tdxbk = bkopt.getTDXBanKuaiList ("all");
+			
+			Set<String> uniontdxbkindb = tdxbk.keySet();
+			
+//			SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
 			 
 			Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
 			
@@ -535,7 +533,7 @@ class ChanYeLianXMLHandler
 					try {
 						bkname = tdxbk.get(newbkcode).getUserObject().toString();
 					} catch (java.lang.NullPointerException ex) {
-						bkname = tdxzhishu.get(newbkcode).getUserObject().toString();
+//						bkname = tdxzhishu.get(newbkcode).getUserObject().toString();
 					}
 					newele.addAttribute("bkname", bkname);
 					newele.addAttribute("bkcode", newbkcode);
@@ -583,7 +581,7 @@ class ChanYeLianXMLHandler
 					try {
 						bknameindb = tdxbk.get(intsbkcode).getUserObject().toString();
 					} catch (java.lang.NullPointerException ex) {
-						bknameindb = tdxzhishu.get(intsbkcode).getUserObject().toString();
+//						bknameindb = tdxzhishu.get(intsbkcode).getUserObject().toString();
 					}
 					
 					if(!bknameindb.equals(curnameinxml ) ) 

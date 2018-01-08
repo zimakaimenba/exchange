@@ -209,7 +209,7 @@ public class ImportTDXData extends JDialog {
 		//同步通达信板块成交量成交额
 		if(chbxdaorutdxsysbkvol.isSelected() &&  chbxdaorutdxsysbkvol.isEnabled() ) {
 			try {
-				File resulttmpfilebkamppreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ();
+				File resulttmpfilebkamppreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ("sh");
 				List<String> lines = Files.readLines(resulttmpfilebkamppreck, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
@@ -220,7 +220,7 @@ public class ImportTDXData extends JDialog {
 			}
 			
 			try {
-				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb();
+				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb("sh");
 				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
@@ -231,7 +231,7 @@ public class ImportTDXData extends JDialog {
 			}
 			
 			try {
-				File resulttmpfilezhishupreck = bkdbopt.preCheckTDXZhiShuVolAmoToDb ();
+				File resulttmpfilezhishupreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ("sz");
 				List<String> lines = Files.readLines(resulttmpfilezhishupreck, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
@@ -242,7 +242,7 @@ public class ImportTDXData extends JDialog {
 			}
 			
 			try {
-				File resulttmpfilezsamo = bkdbopt.refreshTDXZhiShuVolAmoToDb (); 
+				File resulttmpfilezsamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb ("sz"); 
 				List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
@@ -251,6 +251,7 @@ public class ImportTDXData extends JDialog {
 				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
 			}
+			
 			
 			chbxdaorutdxsysbkvol.setEnabled(false);
 		}
@@ -286,8 +287,12 @@ public class ImportTDXData extends JDialog {
 			cbxImportShGeGuVol.setEnabled(false);
 		}
 		
-		
-
+		//用户同步完个股和板块成交量后，要update一下板块的类型，以便后用
+		if(chbxdaorutdxsysbkvol.isSelected() &&  chbxdaorutdxsysbkvol.isEnabled() 
+			&& cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled()
+			&& cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled() ) {
+			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
+		}
 		
 	}
 
@@ -331,7 +336,7 @@ public class ImportTDXData extends JDialog {
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
 					int hour = cal.get(Calendar.HOUR_OF_DAY);
 					int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;
-					if( (wkday<=5 && wkday>=1) && (hour<15 && hour>= 9) ) {
+					if( (wkday<=5 && wkday>=1) && (hour<15 && hour>= 10) ) {
 						JOptionPane.showMessageDialog(null,"涉及通达信大量数据同步，请在交易日15点收盘后至次日10点前从通达信导出数据后再导入本系统。");
 						return;
 					}

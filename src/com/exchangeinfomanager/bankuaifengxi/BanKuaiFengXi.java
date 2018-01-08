@@ -161,10 +161,12 @@ public class BanKuaiFengXi extends JDialog {
 			BanKuai childnode = (BanKuai)this.bkcyl.getBkChanYeLianTree().getModel().getChild(treeroot, i);
 			String bkcode = childnode.getMyOwnCode();
 
+			if(childnode.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) ||  childnode.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
+				continue;
+			
 			childnode = this.bkcyl.getBanKuai(childnode, curselectdate); 
     		if(childnode.getChenJiaoErZhanBiInGivenPeriod() != null 
-    				&& !childnode.getChenJiaoErZhanBiInGivenPeriod().isEmpty()  //有些指数是没有个股和成交量的，不列入比较范围
-    				&& childnode.getSpecficChenJiaoErRecord(curselectdate) != null) //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+    			&& childnode.getSpecficChenJiaoErRecord(curselectdate) != null) //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
     			bkhascjl.put(bkcode, childnode);
     		
     		//显示大盘成交量

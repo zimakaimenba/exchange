@@ -23,6 +23,9 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 public class BanKuai extends BkChanYeLianTreeNode
 {
 
+	public static String  HASGGWITHSELFCJL = "HASGGWITHSELFCJL" , HASGGNOSELFCJL = "HASGGNOSELFCJL"
+						, NOGGWITHSELFCJL = "NOGGWITHSELFCJL" , NOGGNOSELFCJL = "NOGGNOSELFCJL"; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据
+	
 	public BanKuai(String bkcode,String name ) 
 	{
 		super(bkcode,name);
@@ -32,7 +35,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 	private DaPan dapan;
 	private HashMap<String, Stock> allbkge;
 	
-	private String suoshujiaoyisuo;
+	private String bankuaileixing; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据 
 	private boolean notexporttogehpi = false;
 
 	 /**
@@ -40,6 +43,20 @@ public class BanKuai extends BkChanYeLianTreeNode
 	 */
 	public HashMap<String, Stock> getAllBanKuaiGeGu() {
 		return allbkge;
+	}
+	/*
+	 * 
+	 */
+	public void setBanKuaiLeiXing (String leixing)
+	{
+		if(leixing == null)
+			this.bankuaileixing = this.NOGGNOSELFCJL;
+		else if(leixing.equals(this.HASGGNOSELFCJL) || leixing.equals(this.HASGGWITHSELFCJL) || leixing.equals(this.NOGGWITHSELFCJL) || leixing.equals(this.NOGGNOSELFCJL) )
+			this.bankuaileixing = leixing;
+	}
+	public String getBanKuaiLeiXing ()
+	{
+		return this.bankuaileixing;
 	}
 	/*
 	 * 只返回制定日期当周有成交量的个股,有成交量才说明可能是该板块的个股

@@ -87,12 +87,12 @@ public class BanKuaiGuanLi extends JDialog
 		this.bkcylpnl = bkcyl;
 		initializeGui ();
 		createEvents ();
-		zhishulist = bkdbopt.getTDXAllZhiShuList ();
-		sysbankuailist = bkdbopt.getTDXBanKuaiList (); 
-		initializeTDXBanKuaiLists ();
-		initializeTDXZhiShuLists ();
-		initialzieZdyBanKuaList ();
-		initializeGephi ();
+//		zhishulist = bkdbopt.getTDXAllZhiShuList ("all");
+		sysbankuailist = bkdbopt.getTDXBanKuaiList ("all"); 
+//		initializeTDXBanKuaiLists ();
+//		initializeTDXZhiShuLists ();
+//		initialzieZdyBanKuaList ();
+//		initializeGephi ();
 		
 //		startDialog ();
 	}
@@ -121,7 +121,6 @@ public class BanKuaiGuanLi extends JDialog
 	private void initializeTDXZhiShuLists() 
 	{		
 		((BanKuaiDetailTableModel)tablezhishu.getModel()).refresh(zhishulist);
-		
 	}
 
 	private void initialzieZdyBanKuaList() 
@@ -688,7 +687,7 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 	HashMap<String,BanKuai> bankuailist;
 
 	List<BanKuai> valuesList; //存放板块对象列表
-	String[] jtableTitleStrings = { "板块名称", "板块代码","创建时间","选择"};
+	String[] jtableTitleStrings = { "板块名称", "板块代码","更新时间","选择"};
 	Boolean[] status;
 	
 	BanKuaiDetailTableModel ()
@@ -715,7 +714,12 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 		Collator collator = Collator.getInstance(Locale.CHINESE);
 		//Collections.sort(rightnamelist,collator);
 	    public int compare(final BanKuai p1, final BanKuai p2) {
-	        return p1.getMyOwnName().compareTo(p2.getMyOwnName()  );
+	    	try {
+	    		return p1.getMyOwnCode().compareTo(p2.getMyOwnCode()  );
+	    	} catch (java.lang.NullPointerException e) {
+	    		return 1;
+	    	}
+	        
 	    }
 	};
 

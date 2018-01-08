@@ -23,6 +23,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 {
 
 	private BanKuaiDbOperation bkdbopt;
+	private Boolean clearContentsBeforeDisplayNewInfo = false;
 
 	public DisplayBkGgInfoEditorPane()
 	{
@@ -34,7 +35,8 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	
 	public void displayNodeAllInfo (BkChanYeLianTreeNode curselectedbknodecode)
 	{
-		this.setText("");
+		if(this.clearContentsBeforeDisplayNewInfo)
+			this.setText("");
 		this.displayChanYeLianNewsHtml(curselectedbknodecode);
 		this.displayNodeBasicInfo(curselectedbknodecode);
 		this.displayNodeZdgzMrMcZdgzYingKuiInfo (curselectedbknodecode);
@@ -158,6 +160,10 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		   this.setCaretPosition(0); 
     }
     
+    public void setClearContentsBeforeDisplayNewInfo (Boolean onoff)
+    {
+    	this.clearContentsBeforeDisplayNewInfo = onoff;
+    }
     private void creatEvents()
 	{
 		this.addHyperlinkListener(new HyperlinkListener() {
