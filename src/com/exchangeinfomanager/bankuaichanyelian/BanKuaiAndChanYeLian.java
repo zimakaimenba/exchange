@@ -265,7 +265,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		LocalDate stockendday = stock.getRecordsEndDate();
 		
 		if(stockstartday == null || stockendday == null ) { //还没有数据，直接找
-			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai.getMyOwnCode(),stock, bkstartday, bkendday,bkstartday);
+			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock, bkstartday, bkendday,bkstartday);
 		} else {
 			HashMap<String,LocalDate> startend = nodeTimePeriodRelation (stockstartday,stockendday,bkstartday,bkendday);
 			if(!startend.isEmpty()) {
@@ -273,7 +273,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 				searchstart = startend.get("searchstart"); 
 				searchend = startend.get("searchend");
 				position = 	startend.get("position");	
-				stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai.getMyOwnCode(),stock,searchstart,searchend,position);
+				stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock,searchstart,searchend,position);
 			}
 		}
 		
@@ -295,7 +295,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		LocalDate stockendday = stock.getRecordsEndDate();
 		
 		if(stockstartday == null || stockendday == null ) { //还没有数据，直接找
-			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,stock, bkstartday, bkendday,bkstartday);
+			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock, bkstartday, bkendday,bkstartday);
 		} else {
 			HashMap<String,LocalDate> startend = nodeTimePeriodRelation (stockstartday,stockendday,bkstartday,bkendday);
 			if(!startend.isEmpty()) {
@@ -303,7 +303,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 				searchstart = startend.get("searchstart"); 
 				searchend = startend.get("searchend");
 				position = 	startend.get("position");	
-				stock = bkdbopt.getGeGuZhanBiOfBanKuai (bkcode,stock,searchstart,searchend,position);
+				stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock,searchstart,searchend,position);
 			}
 		}
 
@@ -498,25 +498,27 @@ public class BanKuaiAndChanYeLian extends JPanel
 //  	       	((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).setRowCount(0);
   	        ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).refresh(tmpsubbk);
   	       
-	  	     //读出该板块当前所有的个股，读出的是本周在该板块内存在的所有个股，而不是当天在该板块存在的个股
-	  	     LocalDate curselectdate = dchgeguwkzhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-	  	     bknode = this.getBanKuai(bknode, curselectdate);
-	  	     bknode = this.getAllGeGuOfBanKuai (bknode);
-	  	     //装配上每日板块文件
-	  	     if( stockinfile != null &&  stockinfile.size()>0)
-	  	    	 treechanyelian.updateParseFileInfoToTreeFromSpecificNode (bknode,stockinfile,dchgeguwkzhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() );
-//			model.nodeStructureChanged(bknode);
-	  	     
-	  	     HashMap<String, Stock> allbkge = bknode.getAllBanKuaiGeGu();
-  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(bknode, curselectdate);
-  	       	tablebkgegu.sortByParsedFile();
-  	       	
-  	       	int row = tableCurZdgzbk.getSelectedRow();
-  	       	((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
-  	       	if(row >= 0)
-  	       		tableCurZdgzbk.setRowSelectionInterval(row,row);
-  	       	else
-  	       		tableCurZdgzbk.setRowSelectionInterval(0,0);
+  	        if( bknode.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) || bknode.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {
+  	        //读出该板块当前所有的个股，读出的是本周在该板块内存在的所有个股，而不是当天在该板块存在的个股
+  		  	     LocalDate curselectdate = dchgeguwkzhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+  		  	     bknode = this.getBanKuai(bknode, curselectdate);
+  		  	     bknode = this.getAllGeGuOfBanKuai (bknode);
+  		  	     //装配上每日板块文件
+  		  	     if( stockinfile != null &&  stockinfile.size()>0)
+  		  	    	 treechanyelian.updateParseFileInfoToTreeFromSpecificNode (bknode,stockinfile,dchgeguwkzhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() );
+//  				model.nodeStructureChanged(bknode);
+  		  	     
+  		  	     HashMap<String, Stock> allbkge = bknode.getAllBanKuaiGeGu();
+  	  	       	((BanKuaiGeGuTableModel)(tablebkgegu.getModel())).refresh(bknode, curselectdate);
+  	  	       	tablebkgegu.sortByParsedFile();
+  	  	       	
+  	  	       	int row = tableCurZdgzbk.getSelectedRow();
+  	  	       	((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
+  	  	       	if(row >= 0)
+  	  	       		tableCurZdgzbk.setRowSelectionInterval(row,row);
+  	  	       	else
+  	  	       		tableCurZdgzbk.setRowSelectionInterval(0,0);
+  	        }
   	       	
 //	  	     读出该板块相关的新闻
 	  	    BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
@@ -1799,6 +1801,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		jSplitPane.setRightComponent(notesScrollPane);
 		
 		notesPane = new DisplayBkGgInfoEditorPane();
+		notesPane.setClearContentsBeforeDisplayNewInfo(true);
 		
 //		notesPane.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
 //		notesPane.setEditable(false);
