@@ -187,7 +187,7 @@ class ChanYeLianXMLHandler
 		long cyllastmodifiedtime = tmpfl.lastModified();
 		Calendar  calfilemdf =  Calendar.getInstance();
 		calfilemdf.setTimeInMillis(cyllastmodifiedtime);
-		System.out.println(calfilemdf.getTime() );
+//		System.out.println(calfilemdf.getTime() );
 		
 		Date bklastmodifiedtimeindb = bkopt.getTDXRelatedTableLastModfiedTime ();
 		if(bklastmodifiedtimeindb == null)
@@ -265,7 +265,7 @@ class ChanYeLianXMLHandler
 					 
 					   try{
 						   parentsleaf = allbkandzs.get(bkowncode);
-						   System.out.println(bkowncode);
+//						   System.out.println(bkowncode);
 						   ((BanKuai)parentsleaf).setDaPan((DaPan)topNode); //把大盘配给每个板块
 					   } catch (java.lang.NullPointerException e) { //可能出现数据库中已经删除的板块，XML里面还有的板块，是要删除的板块
 						   bkname = element.attributeValue("bkname");
@@ -490,7 +490,7 @@ class ChanYeLianXMLHandler
 			    	 {
 			    		Element element = (Element) it.next();
 					    String chanyelian = element.getText().trim();
-					    System.out.println(chanyelian);
+//					    System.out.println(chanyelian);
 					    gegucyllist.add(chanyelian); 
 			    	 }
 					

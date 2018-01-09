@@ -330,6 +330,10 @@ public class SystemConfigration
 		{
 			return this.getSystemInstalledPath() + "TDX个股产业链报告报告.txt";
 		}
+		public String getTDXModelMatchExportFile ()
+		{
+			return this.getSystemInstalledPath() + "TDX模型个股";
+		}
 		
 	 public String getSysSettingFile () 
 	 {

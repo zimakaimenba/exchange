@@ -250,9 +250,9 @@ public class BanKuaiDbOperation
 		try {
 			String sqlquerystat = "select 股票名称, 'a股' as tablename, 'gegu' as type from a股 where  股票代码 = '" + nodecode + "'" + 
 					" union \r\n" + 
-					" select 板块名称, '通达信板块列表' as tablename , 'bankuai' as type from 通达信板块列表 where 板块ID = '" + nodecode + "'" + 
-					" union\r\n" + 
-					" select 板块名称, '通达信交易所指数列表' as tablename, 'zhishu' as type from 通达信交易所指数列表 where 板块ID = '" + nodecode + "'"
+					" select 板块名称, '通达信板块列表' as tablename , 'bankuai' as type from 通达信板块列表 where 板块ID = '" + nodecode + "'" 
+//					+" union\r\n" + 
+//					" select 板块名称, '通达信交易所指数列表' as tablename, 'zhishu' as type from 通达信交易所指数列表 where 板块ID = '" + nodecode + "'"
 					;
 				System.out.println(sqlquerystat);
 		    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -3116,7 +3116,7 @@ public class BanKuaiDbOperation
 //		ArrayList<String> rmtservertable = new ArrayList<String>();
 //		rmtservertable.add("通达信交易所指数列表");
 //		rmtservertable.add("通达信板块列表");
-		List<String> rmtservertable = Lists.newArrayList("通达信板块列表", "通达信交易所指数列表");
+		List<String> rmtservertable = Lists.newArrayList("通达信板块列表");
 		
 		
 			String sqlquerystat =  " show OPEN TABLES where In_use > 0" ;
@@ -3159,47 +3159,47 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	private String getTdxBanKuaiNameByCode(String tmpbkcode) 
-	{
-		String sqlquerystatfrombk     = "SELECT 板块名称  FROM 通达信板块列表             WHERE 板块ID = " + tmpbkcode;
-		String sqlquerystatfromzhishu = "SELECT 板块名称  FROM 通达信交易所指数列表   WHERE 板块ID = " + tmpbkcode;
-		
-		System.out.println(sqlquerystatfrombk);
-		String bkname = null ;
-		CachedRowSetImpl rs = null;
-	    try {  
-	    	rs = connectdb.sqlQueryStatExecute(sqlquerystatfrombk);
-	    	
-	        rs.last();  
-	        int rows = rs.getRow(); 
-	        if(rows  == 0) {
-	        	rs = connectdb.sqlQueryStatExecute(sqlquerystatfromzhishu);
-	        	rs.last();
-	        	rows = rs.getRow();
-	        }
-	        rs.first();
-	        if(rows>0)
-	        	bkname = rs.getString(1);
-	        
-	    }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
-	    } finally {
-	    	if(rs != null)
-				try {
-					rs.close();
-					rs = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-	    } 
-	
-		
-		return bkname;
-	}
+//	private String getTdxBanKuaiNameByCode(String tmpbkcode) 
+//	{
+//		String sqlquerystatfrombk     = "SELECT 板块名称  FROM 通达信板块列表             WHERE 板块ID = " + tmpbkcode;
+//		String sqlquerystatfromzhishu = "SELECT 板块名称  FROM 通达信交易所指数列表   WHERE 板块ID = " + tmpbkcode;
+//		
+//		System.out.println(sqlquerystatfrombk);
+//		String bkname = null ;
+//		CachedRowSetImpl rs = null;
+//	    try {  
+//	    	rs = connectdb.sqlQueryStatExecute(sqlquerystatfrombk);
+//	    	
+//	        rs.last();  
+//	        int rows = rs.getRow(); 
+//	        if(rows  == 0) {
+//	        	rs = connectdb.sqlQueryStatExecute(sqlquerystatfromzhishu);
+//	        	rs.last();
+//	        	rows = rs.getRow();
+//	        }
+//	        rs.first();
+//	        if(rows>0)
+//	        	bkname = rs.getString(1);
+//	        
+//	    }catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    } catch (SQLException e) {
+//	    	e.printStackTrace();
+//	    }catch(Exception e){
+//	    	e.printStackTrace();
+//	    } finally {
+//	    	if(rs != null)
+//				try {
+//					rs.close();
+//					rs = null;
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//	    } 
+//	
+//		
+//		return bkname;
+//	}
 	/*
 	 * 增加板块新闻
 	 */
@@ -4149,7 +4149,7 @@ public class BanKuaiDbOperation
 							"WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
 							"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + lastdayofweek + "')" 
 							;
-					System.out.println(sqlquerystat);
+//					System.out.println(sqlquerystat);
 					rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
 					while(rsfx.next()) {
 						Integer recnum = rsfx.getInt("RESULT");
@@ -5658,6 +5658,9 @@ public class BanKuaiDbOperation
 				return null;
 			return null;
 		}
+		/*
+		 * 
+		 */
 		public boolean updateStockNewInfoToDb(BkChanYeLianTreeNode nodeshouldbedisplayed) 
 		{
 			String dategainiants = null;
@@ -5686,8 +5689,7 @@ public class BanKuaiDbOperation
 		    String keHuCustom = nodeshouldbedisplayed.getKeHuCustom();
 		    String jingZhengDuiShou = nodeshouldbedisplayed.getJingZhengDuiShou();
 	    
-			 if(nodeshouldbedisplayed.getType() == 6) //是股票
-			 {
+			 if(nodeshouldbedisplayed.getType() == 6) {//是股票{
 				 HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 				 String sqlupdatestat= "UPDATE A股  SET "
 							+ " 股票名称=" + stockname +","
@@ -5709,14 +5711,9 @@ public class BanKuaiDbOperation
 				 if( connectdb.sqlUpdateStatExecute(sqlupdatestat) !=0)
 					 return true;
 				 else return false;
-			 }
-			 else { //是板块
+			 } else { //是板块
 				 HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
-				 String actiontable = null;
-				 if(nodeshouldbedisplayed.getMyOwnCode().trim().startsWith("880")) 
-					 actiontable = "通达信板块列表";
-				 else
-					 actiontable = "通达信交易所指数列表";
+				 String actiontable =  "通达信板块列表";
 				 
 				 String sqlinsertstat = "UPDATE " + actiontable + " SET "
 						 	+ " 板块名称=" + stockname +","

@@ -81,7 +81,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 		return result;
 	}
 	/*
-	 * 
+	 * 获得某一个个股
 	 */
 	public Stock getBanKuaiGeGu (String stockcode)
 	{

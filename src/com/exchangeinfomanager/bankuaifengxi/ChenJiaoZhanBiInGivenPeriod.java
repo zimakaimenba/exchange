@@ -15,7 +15,6 @@ public class ChenJiaoZhanBiInGivenPeriod {
 
 	public ChenJiaoZhanBiInGivenPeriod() 
 	{
-		// TODO Auto-generated constructor stub
 	}
 	
 	private String myuplevelcode;
@@ -26,8 +25,8 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	private Double lowprice;
 	private LocalDate  dayofendoftheweek;
 	
-	private Double myownchengjiaoer;
-	private Double myownchengjiaoliang;
+	private Double myownchengjiaoer; //成交额
+	private Double myownchengjiaoliang; //成交量
 	private Double uplevelchengjiaoer; //上级板块的成交额
 	private Double ggbkzhanbigrowthrate;  //个股板块占比增速
 	private Integer ggbkzhanbimaxweek;  //个股板块占比最大周
