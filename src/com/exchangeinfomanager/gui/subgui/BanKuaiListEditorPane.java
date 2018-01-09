@@ -58,11 +58,6 @@ public class BanKuaiListEditorPane extends JEditorPane
 			            ex.printStackTrace(); 
 			        }
 			        selectstring = link;
-//			        System.out.println(selectstring);
-//			        
-//			        btndetailfx.setEnabled(true);
-//			        displayBanKuaiOfStockZhanBiByWeek (link);
-//			        displayStockBanKuaiZhanBiByStock (link);
 			}
 	     }); 
 	     this.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 

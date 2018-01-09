@@ -228,8 +228,11 @@ public class BanKuaiFengXi extends JDialog {
 		panelbkwkzhanbi.setDaZiJinValueMarker (0.01); //大于1%是板块强势的表现
 		
 		//更新板块所属个股
-		selectedbk = bkcyl.getAllGeGuOfBanKuai (selectedbk);
-		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate);
+		if(selectedbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
+			selectedbk = bkcyl.getAllGeGuOfBanKuai (selectedbk);
+			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate);
+		}
+		
 		//更改显示日期
 		tabbedPanegegu.setTitleAt(0, "当前周" + curselectdate);
 	  	      
@@ -894,8 +897,12 @@ public class BanKuaiFengXi extends JDialog {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				String selbk = editorPanebankuai.getSelectedBanKuai(); 
-				String selbkcode = selbk.trim().substring(1, 7);
+				String selbk = editorPanebankuai.getSelectedBanKuai();
+				String selbkcode;
+				if(selbk != null)
+					 selbkcode = selbk.trim().substring(1, 7);
+				else 
+					return;
 
 				int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
 				if(rowindex != -1) {

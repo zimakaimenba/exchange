@@ -34,6 +34,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -115,7 +116,7 @@ public class BanKuaiGeGuTable extends JTable
 	{
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
 		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 3; //优先排序占比增长
+		int columnIndexToSort = 4; //优先排序占比增长
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
@@ -341,7 +342,7 @@ public class BanKuaiGeGuTable extends JTable
 		int modelRow = this.convertRowIndexToModel(row);
 		
 //		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
-		String bkcode = ((BanKuaiGeGuTableModel)(this.getModel())).getTdxBkCode();
+		BanKuai bkcode = ((BanKuaiGeGuTableModel)(this.getModel())).getTdxBkCode();
 //		String bkname = ((BanKuaiGeGuTableModel)(this.getModel())).getTdxBkName();
 		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(modelRow);
 		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (modelRow);

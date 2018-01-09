@@ -376,9 +376,12 @@ public class StockInfoManager
 		editorpansuosubk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String selbk = editorpansuosubk.getSelectedBanKuai(); 
-				String selbkcode = selbk.trim().substring(1, 7);
-				System.out.println(selbkcode);
+				String selbk = editorpansuosubk.getSelectedBanKuai();
+				String selbkcode;
+				if(selbk != null)
+					selbkcode = selbk.trim().substring(1, 7);
+				else
+					return;
 				
 				BanKuai bankuai = bkcyl.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()  );
 				editorPanenodeinfo.displayNodeAllInfo(bankuai);

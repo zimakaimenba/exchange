@@ -2035,7 +2035,9 @@ public class BanKuaiDbOperation
 	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称") );
 	        	tmpbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
 	        	tmpbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
+	        	
 	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块ID"), tmpbk);
+	        	
 	            rs.next();
 	        }
 	        
@@ -2923,9 +2925,9 @@ public class BanKuaiDbOperation
             int c = -1;  
             boolean finalneededsavelinefound = false;
             int lineimportcount =0;
-            while (nextend > start && finalneededsavelinefound == false) {  
-                c = rf.read();  
-                if (c == '\n' || c == '\r') {  
+            while (nextend > start && finalneededsavelinefound == false) {
+                c = rf.read();
+            	if (c == '\n' || c == '\r') {  
                     line = rf.readLine();  
                     if (line != null) {  
                         @SuppressWarnings("deprecation")
@@ -3580,7 +3582,7 @@ public class BanKuaiDbOperation
 					int dy = -1;
 					try {
 						String sqlquerystat = "SELECT COUNT(*) AS RESULT FROM 股票通达信交易所指数对应表  WHERE 板块代码='" + bkcode + "'";
-						System.out.println(sqlquerystat);
+//						System.out.println(sqlquerystat);
 						 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 						 while(rs.next()) {
 							 dy = rs.getInt("RESULT");
@@ -3612,7 +3614,7 @@ public class BanKuaiDbOperation
 					int dy = -1;
 					try {
 						String diyusqlquerystat = "SELECT 对应TDXSWID  FROM 通达信板块列表 WHERE 板块id = '" + bkcode + "'" ;
-						System.out.println(diyusqlquerystat);
+//						System.out.println(diyusqlquerystat);
 						 rsdy = connectdb.sqlQueryStatExecute(diyusqlquerystat);
 						 while(rsdy.next()) {
 							 dy = rsdy.getInt("对应TDXSWID");
@@ -4026,55 +4028,73 @@ public class BanKuaiDbOperation
 	{
 		String bkcode = bankuai.getMyOwnCode();
 		String bkcjltable;
-		if(bkcode.equals("399001") || bkcode.equals("999999") ) { //大盘指数的表是确定的，可以直接赋值
+		String bkcys = bankuai.getSuoShuJiaoYiSuo();
+		if(bkcys.toLowerCase().equals("sh"))
+			bkcjltable = "通达信板块每日交易信息";
+		else
 			bkcjltable = "通达信交易所指数每日交易信息";
-		} else {
-			if(bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) ) //说明该板块没有成交量记录，不需要记录占比
-				return bankuai;
-			
-			String bkcys = bankuai.getSuoShuJiaoYiSuo();
-			if(bkcys.toLowerCase().equals("sh"))
-				bkcjltable = "通达信板块每日交易信息";
-			else
-				bkcjltable = "通达信交易所指数每日交易信息";
-			
-//			HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode,null);
-//			bkcjltable = actiontables.get("板块每日交易量表");
-//			if(bkcjltable == null) //说明该板块没有成交量记录，不需要记录占比
-//				return bankuai;
-		}
 		
 		String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart);
 		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend);
 			
-		String sqlquerystat = null;
-		if(!bkcjltable.equals("通达信交易所指数每日交易信息")) { 
-			sqlquerystat = "SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , BKJYE.交易日期, DATE(BKJYE.交易日期 + INTERVAL (6 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate,\r\n"
-					+ "	       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比 \r\n"
-					+ "	FROM  通达信板块每日交易信息 BKJYE \r\n"
-					+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE \r\n"
-					+ "	ON ZSJYE.代码 in ('999999','399001' ) \r\n"
-					+ "	       AND BKJYE.`交易日期` = ZSJYE.`交易日期` \r\n"
-					+ "	       AND BKJYE.`交易日期` BETWEEN '" + formatedstartdate + "' AND'" + formatedenddate + "' \r\n"
-					+ "	       AND BKJYE.`代码` = '" + bkcode + "' \r\n"
-					+ "			GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码` \r\n"
-					;
-			
-		} else { //板块是指数板块,变成了在同表内的查询
-			sqlquerystat = "SELECT Year(通达信交易所指数每日交易信息.交易日期) AS CALYEAR , WEEK(通达信交易所指数每日交易信息.交易日期) AS CALWEEK, 通达信交易所指数每日交易信息.`代码` AS BKCODE , \r\n"
-					+ "通达信交易所指数每日交易信息.交易日期, DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) EndOfWeekDate, \r\n"
-					+ "	sum(通达信交易所指数每日交易信息.成交额) AS 板块周交易额,	sum(sum_dapan) AS 大盘周交易额, sum(通达信交易所指数每日交易信息.成交额) / sum(sum_dapan) AS 占比 \r\n"
-					+ " FROM 通达信交易所指数每日交易信息 , ( \r\n"
-					+ "    SELECT 通达信交易所指数每日交易信息.交易日期 dapanjyrq,  SUM(通达信交易所指数每日交易信息.成交额) sum_dapan \r\n"
-					+ "    FROM 通达信交易所指数每日交易信息   \r\n"
-					+ "    where  通达信交易所指数每日交易信息.`代码` IN  ('999999','399001' )  \r\n"
-					+ "    group by dapanjyrq \r\n"
-					+ ") sq \r\n"
-					+ " where  通达信交易所指数每日交易信息.交易日期 = dapanjyrq AND 通达信交易所指数每日交易信息.`代码` = '"  + bkcode + "' \r\n" 
-					+ "	       AND 通达信交易所指数每日交易信息.`交易日期` between'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"
-					+ " GROUP BY Year(通达信交易所指数每日交易信息.交易日期)  , WEEK(通达信交易所指数每日交易信息.交易日期), 通达信交易所指数每日交易信息.`代码` \r\n"
-					; 
-		}
+		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
+				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比 \r\n" + 
+				"FROM\r\n" + 
+				"(\r\n" + 
+				"select  通达信板块每日交易信息.`交易日期` as workday, DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO \r\n" + 
+				"from 通达信板块每日交易信息\r\n" + 
+				"where 代码 = '999999'\r\n" + 
+				"group by year(通达信板块每日交易信息.`交易日期`),week(通达信板块每日交易信息.`交易日期`)\r\n" + 
+				"\r\n" + 
+				"UNION ALL\r\n" + 
+				"\r\n" + 
+				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO \r\n" + 
+				"from 通达信交易所指数每日交易信息\r\n" + 
+				"where 代码 = '399001'\r\n" + 
+				"group by year(通达信交易所指数每日交易信息.`交易日期`),week(通达信交易所指数每日交易信息.`交易日期`)\r\n" + 
+				") T,\r\n" + 
+				"\r\n" + 
+				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 from " + bkcjltable + "\r\n" + 
+				"where 代码 = '" + bkcode + "'\r\n" + 
+				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
+				") M\r\n" + 
+				"WHERE YEAR(T.WORKDAY) = YEAR(M.WORKDAY) AND  WEEK(T.WORKDAY) = WEEK(M.WORKDAY)\r\n" + 
+				"		AND T.WORKDAY BETWEEN'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
+				" GROUP BY year(t.workday),week(t.workday)"
+				;
+							
+
+		
+		
+//		if(!bkcjltable.equals("通达信交易所指数每日交易信息")) { 
+//			sqlquerystat = "SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , BKJYE.交易日期, DATE(BKJYE.交易日期 + INTERVAL (6 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate,\r\n"
+//					+ "	       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比 \r\n"
+//					+ "	FROM  通达信板块每日交易信息 BKJYE \r\n"
+//					+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE \r\n"
+//					+ "	ON ZSJYE.代码 in ('999999','399001' ) \r\n"
+//					+ "	       AND BKJYE.`交易日期` = ZSJYE.`交易日期` \r\n"
+//					+ "	       AND BKJYE.`交易日期` BETWEEN '" + formatedstartdate + "' AND'" + formatedenddate + "' \r\n"
+//					+ "	       AND BKJYE.`代码` = '" + bkcode + "' \r\n"
+//					+ "			GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码` \r\n"
+//					;
+//			
+//		} else { //板块是指数板块,变成了在同表内的查询
+//			sqlquerystat = "SELECT Year(通达信交易所指数每日交易信息.交易日期) AS CALYEAR , WEEK(通达信交易所指数每日交易信息.交易日期) AS CALWEEK, 通达信交易所指数每日交易信息.`代码` AS BKCODE , \r\n"
+//					+ "通达信交易所指数每日交易信息.交易日期, DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) EndOfWeekDate, \r\n"
+//					+ "	sum(通达信交易所指数每日交易信息.成交额) AS 板块周交易额,	sum(sum_dapan) AS 大盘周交易额, sum(通达信交易所指数每日交易信息.成交额) / sum(sum_dapan) AS 占比 \r\n"
+//					+ " FROM 通达信交易所指数每日交易信息 , ( \r\n"
+//					+ "    SELECT 通达信交易所指数每日交易信息.交易日期 dapanjyrq,  SUM(通达信交易所指数每日交易信息.成交额) sum_dapan \r\n"
+//					+ "    FROM 通达信交易所指数每日交易信息   \r\n"
+//					+ "    where  通达信交易所指数每日交易信息.`代码` IN  ('999999','399001' )  \r\n"
+//					+ "    group by dapanjyrq \r\n"
+//					+ ") sq \r\n"
+//					+ " where  通达信交易所指数每日交易信息.交易日期 = dapanjyrq AND 通达信交易所指数每日交易信息.`代码` = '"  + bkcode + "' \r\n" 
+//					+ "	       AND 通达信交易所指数每日交易信息.`交易日期` between'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"
+//					+ " GROUP BY Year(通达信交易所指数每日交易信息.交易日期)  , WEEK(通达信交易所指数每日交易信息.交易日期), 通达信交易所指数每日交易信息.`代码` \r\n"
+//					; 
+//		}
 		
 //		System.out.println(sqlquerystat);
 		System.out.println("为板块" + bankuai.getMyOwnCode() + bankuai.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
@@ -4090,6 +4110,7 @@ public class BanKuaiDbOperation
 		ArrayList<ChenJiaoZhanBiInGivenPeriod > tmpcjelist = new ArrayList<ChenJiaoZhanBiInGivenPeriod > ();
 		try {
 			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+			
 			rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
 			while(rsfx.next()) {
 				Integer recnum = rsfx.getInt("RESULT");
@@ -4097,7 +4118,17 @@ public class BanKuaiDbOperation
 					hasfengxiresult = true;
 			}
 			
+//			 ResultSetMetaData rsmd = rs.getMetaData();
+//			 String name1 = rsmd.getColumnName(1);
+//			 String name2 = rsmd.getColumnName(2);
+//			 String name3 = rsmd.getColumnName(3);
+//			 String name4 = rsmd.getColumnName(4);
+//			 String name5 = rsmd.getColumnName(5);
+//			 String name6 = rsmd.getColumnName(6);
+			 
+			 
 			while(rs.next()) {
+				
 				ChenJiaoZhanBiInGivenPeriod cjlrecords = new ChenJiaoZhanBiInGivenPeriod ();
 				double bankuaicje = rs.getDouble("板块周交易额");
 				double dapancje = rs.getDouble("大盘周交易额");

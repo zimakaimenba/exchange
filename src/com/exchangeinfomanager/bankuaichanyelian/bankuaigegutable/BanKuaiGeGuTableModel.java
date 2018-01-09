@@ -59,9 +59,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	{
 		return this.jtableTitleStrings;
 	}
-	public String getTdxBkCode ()
+	public BanKuai getTdxBkCode ()
 	{
-		return this.curbk.getMyOwnCode();
+		return this.curbk;
 	}
 	public int getStockCurWeight(int rowIndex) 
 	{

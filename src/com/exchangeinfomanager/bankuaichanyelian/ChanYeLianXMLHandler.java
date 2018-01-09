@@ -262,22 +262,18 @@ class ChanYeLianXMLHandler
 				   if(nodetype.equals("4") ) { //是通达信板块  
 					   bkowncode = element.attributeValue("bkcode");
 					   suoshubkcode = bkowncode;
-
-					   if(oldBanKuaiFromDb != null && oldBanKuaiFromDb.size()>0 && oldBanKuaiFromDb.contains(bkowncode) ) { //如果代码已经属于需要删除的，则标记好
-						   shouldremovedwhensavexml = true;
+					 
+					   try{
+						   parentsleaf = allbkandzs.get(bkowncode);
+						   System.out.println(bkowncode);
+						   ((BanKuai)parentsleaf).setDaPan((DaPan)topNode); //把大盘配给每个板块
+					   } catch (java.lang.NullPointerException e) { //可能出现数据库中已经删除的板块，XML里面还有的板块，是要删除的板块
 						   bkname = element.attributeValue("bkname");
-					   } else { //板块名字可能会变，所有直接用数据库里的名字，如果allbkandzs为空，说明和数据库断了，也还是用XML本身的名字
-						   try{
-							   bkname = allbkandzs.get(bkowncode).getMyOwnName();
-						   } catch (java.lang.NullPointerException ex) {
-//							   ex.printStackTrace(); 
-							   bkname = element.attributeValue("bkname");
-						   }
+						   shouldremovedwhensavexml = true;
+						   
+						   parentsleaf = new BanKuai ( bkowncode,bkname);
+						   ((BanKuai)parentsleaf).setDaPan((DaPan)topNode); //把大盘配给每个板块
 					   }
-					   
-//					   parentsleaf = new BanKuai ( bkowncode,bkname);
-					   parentsleaf = allbkandzs.get(bkowncode);
-					   ((BanKuai)parentsleaf).setDaPan((DaPan)topNode); //把大盘配给每个板块
 					   
 					   
 				   } else if(nodetype.equals("5") ) {//是自定义子板块
