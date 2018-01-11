@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -27,6 +28,7 @@ import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.database.ConnectDataBase;
+import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
@@ -38,6 +40,7 @@ import com.google.common.io.Files;
 public class TDXFormatedOpt {
 	
 	private static  Charset charset = Charset.forName("GBK") ;
+	private static Logger logger = Logger.getLogger(TDXFormatedOpt.class);
 
 	public TDXFormatedOpt() {
 		// TODO Auto-generated constructor stub
@@ -206,7 +209,7 @@ public class TDXFormatedOpt {
 				
 			}
 		} catch (DocumentException e) {
-			System.out.println(cylxml+ "存在错误");
+			logger.debug(cylxml+ "存在错误");
 			return null;
 		}
 		
@@ -232,11 +235,11 @@ public class TDXFormatedOpt {
 		}
 		 
 		String sqlquerystat = "SELECT * FROM 操作记录重点关注 WHERE 日期 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) +50 ) DAY )  ";
-//			System.out.println(sqlquerystat);
+//			logger.debug(sqlquerystat);
 		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		if(rs == null)
 		{   
-				System.out.println("读取数据库失败");
+				logger.debug("读取数据库失败");
 				return null;
 		}
 		
@@ -271,7 +274,7 @@ public class TDXFormatedOpt {
 		Set<String> stockcodeset = treemap.keySet();
 		for(String stockcode : stockcodeset) {
 			if(stockcode.equals("002717"))
-				System.out.println("002717");
+				logger.debug("002717");
 			List<JiaRuJiHua> keyvalues = treemap.get(stockcode);
 			Collections.sort(keyvalues, new Comparator<JiaRuJiHua>() { //先排序
 				@Override
@@ -347,10 +350,10 @@ public class TDXFormatedOpt {
 		
 		//个股基本面
 		String sqlquerystat = "SELECT * FROM A股 ";
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 		ResultSet rsgg = connectdb.sqlQueryStatExecute(sqlquerystat);
 		if(rsgg == null)	{   
-			System.out.println("读取数据库失败");
+			logger.debug("读取数据库失败");
 			return null;
 		}
 		
@@ -432,10 +435,10 @@ public class TDXFormatedOpt {
 		
 		//板块基本面
 		sqlquerystat = "SELECT * FROM 通达信板块列表 ";
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 		ResultSet rsbk = connectdb.sqlQueryStatExecute(sqlquerystat);
 		if(rsbk == null)	{   
-			System.out.println("读取数据库失败");
+			logger.debug("读取数据库失败");
 			return null;
 		}
 		

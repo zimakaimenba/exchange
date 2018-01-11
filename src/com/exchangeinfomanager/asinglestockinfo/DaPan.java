@@ -4,6 +4,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 
 public class DaPan extends BkChanYeLianTreeNode
@@ -13,7 +15,7 @@ public class DaPan extends BkChanYeLianTreeNode
 	{
 		super(dpcode,dpname);
 	}
-	
+	private static Logger logger = Logger.getLogger(DaPan.class);
 	private BanKuai sheperiodlist; //上证成交记录
 	private BanKuai szeperiodlist; //深证成交记录
 	
@@ -80,7 +82,7 @@ public class DaPan extends BkChanYeLianTreeNode
 					 
 					 dapanchaer = curcje - lastcje; 
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) { 		//到了记录的第一个记录了
-//						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//						logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 					 dapanchaer = 0.0;
 				}
 		}
@@ -96,7 +98,7 @@ public class DaPan extends BkChanYeLianTreeNode
 					 
 					 dapanchaer = dapanchaer + curcje - lastcje; 
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) { 		//到了记录的第一个记录了
-//						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//						logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 					 dapanchaer = dapanchaer + 0.0;
 				}
 		}

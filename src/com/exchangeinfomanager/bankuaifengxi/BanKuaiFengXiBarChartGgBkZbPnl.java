@@ -7,6 +7,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
@@ -34,6 +35,7 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 		((CustomRendererForGgBkZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
 	}
 	
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartGgBkZbPnl.class);
 
 	
 	/*

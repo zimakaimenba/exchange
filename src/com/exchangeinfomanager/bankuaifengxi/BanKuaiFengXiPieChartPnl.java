@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -95,6 +96,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 //		sysconfig = SystemConfigration.getInstance();
 	}
 	
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiPieChartPnl.class);
 	private BkChanYeLianTreeNode curdisplaynode;
 //	private Date displayedenddate;
 	private LocalDate displayedweeknumber;
@@ -244,7 +246,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
     	    public void chartMouseClicked(ChartMouseEvent e) {
     	        java.awt.event.MouseEvent me = e.getTrigger();
     	        if (me.getClickCount() == 2) {
-    	        	System.out.println("chart mouse click " + e.getEntity());
+    	        	logger.debug("chart mouse click " + e.getEntity());
     	        	 try {
     	    	        	
     	    	        	pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 15)); //让图片上的label字大一些
@@ -281,7 +283,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
     	                Comparable key = section.getSectionKey();
 //    	                plot.setExplodePercent(key, 0.05);
     	                lasthightlightKey = key;
-//    	                System.out.println(lasthightlightKey.toString());
+//    	                logger.dubug(lasthightlightKey.toString());
     	            }
     	        	
     	        }

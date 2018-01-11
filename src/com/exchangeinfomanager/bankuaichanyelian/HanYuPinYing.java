@@ -1,5 +1,7 @@
 package com.exchangeinfomanager.bankuaichanyelian;
 
+import org.apache.log4j.Logger;
+
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
@@ -12,10 +14,11 @@ public class HanYuPinYing {
 	public HanYuPinYing() {
 		// TODO Auto-generated constructor stub
 	}
+	private static Logger logger = Logger.getLogger(HanYuPinYing.class);
 	
 	public String getBanKuaiNameOfPinYin (String chinese)
 	 {
-		 //System.out.println(chinese);
+		 //logger.debug(chinese);
 		 //这部分获得全部拼音
 		 HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
 	        format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
@@ -41,7 +44,7 @@ public class HanYuPinYing {
 	        } catch (BadHanyuPinyinOutputFormatCombination e) {
 	            e.printStackTrace();
 	        }
-	       //System.out.println(output);
+	       //logger.debug(output);
 	       
 	       //这部分获得首字母拼音
 	        StringBuffer pybf = new StringBuffer();  
@@ -63,7 +66,7 @@ public class HanYuPinYing {
                            pybf.append(arr[i]);  
                    }  
            }  
-           //System.out.println( pybf.toString().replaceAll("\\W", "").trim() ); 
+           //logger.debug( pybf.toString().replaceAll("\\W", "").trim() ); 
            
            return pybf.toString().replaceAll("\\W", "").trim(); //返回首字母拼音
 	 } 

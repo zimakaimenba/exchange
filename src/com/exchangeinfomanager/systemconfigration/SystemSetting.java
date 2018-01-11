@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -17,6 +18,8 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+
+import com.exchangeinfomanager.database.ConnectDataBase;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -68,14 +71,15 @@ public class SystemSetting extends JDialog
 	private HashMap<String, CurDataBase> curdbmap;
 	private HashMap<String, CurDataBase> rmtcurdbmap;
 	private boolean  newsystemsetting = false;
+	private static Logger logger = Logger.getLogger(SystemSetting.class);
 	
 	private void parseSystemSettingXML()  
 	{
 		File directory = new File(this.systemxmlfile);//设定为当前文件夹
 		try{
-		    System.out.println(directory.getCanonicalPath());//获取标准的路径
-		    System.out.println(directory.getAbsolutePath());//获取绝对路径
-		    System.out.println(directory.getParent() );
+		    logger.debug(directory.getCanonicalPath());//获取标准的路径
+		    logger.debug(directory.getAbsolutePath());//获取绝对路径
+		    logger.debug(directory.getParent() );
 
 		    tfldSysInstallPath.setText( toUNIXpath(directory.getParent()+ "\\")  );
 		}catch(Exception e)
@@ -145,16 +149,16 @@ public class SystemSetting extends JDialog
 			 {
 				 Element elementdbs = (Element) it.next();
 
-				 System.out.println( elementdbs.attributeValue("dbsname") ) ;
+				 logger.debug( elementdbs.attributeValue("dbsname") ) ;
 				 CurDataBase tmpdb = new CurDataBase (elementdbs.attributeValue("dbsname"));
-				 System.out.println( elementdbs.attributeValue("user") ) ;
+				 logger.debug( elementdbs.attributeValue("user") ) ;
 				 tmpdb.setUser(elementdbs.attributeValue("user"));
-				 System.out.println( elementdbs.attributeValue("password") ) ;
+				 logger.debug( elementdbs.attributeValue("password") ) ;
 				 tmpdb.setPassWord(elementdbs.attributeValue("password"));
-				 System.out.println( elementdbs.getText() ) ;
+				 logger.debug( elementdbs.getText() ) ;
 				 tmpdb.setDataBaseConStr(elementdbs.getText());
 				 tmpdb.setCurDatabaseType( elementdbs.attributeValue("databasetype") );
-				 System.out.println( elementdbs.attributeValue("curselecteddbs") ) ;
+				 logger.debug( elementdbs.attributeValue("curselecteddbs") ) ;
 				 if(elementdbs.attributeValue("curselecteddbs").equals("yes")){
 					 tmpdb.setCurrentSelectedDbs(true);
 					 //curselecteddbs = elementdbs.attributeValue("dbsname");
@@ -175,16 +179,16 @@ public class SystemSetting extends JDialog
 			 {
 				 Element elementdbs = (Element) itrmt.next();
 
-				 System.out.println( elementdbs.attributeValue("dbsname") ) ;
+				 logger.debug( elementdbs.attributeValue("dbsname") ) ;
 				 CurDataBase tmpdb = new CurDataBase (elementdbs.attributeValue("dbsname"));
-				 System.out.println( elementdbs.attributeValue("user") ) ;
+				 logger.debug( elementdbs.attributeValue("user") ) ;
 				 tmpdb.setUser(elementdbs.attributeValue("user"));
-				 System.out.println( elementdbs.attributeValue("password") ) ;
+				 logger.debug( elementdbs.attributeValue("password") ) ;
 				 tmpdb.setPassWord(elementdbs.attributeValue("password"));
-				 System.out.println( elementdbs.getText() ) ;
+				 logger.debug( elementdbs.getText() ) ;
 				 tmpdb.setDataBaseConStr(elementdbs.getText());
 				 tmpdb.setCurDatabaseType( elementdbs.attributeValue("databasetype") );
-				 System.out.println( elementdbs.attributeValue("curselecteddbs") ) ;
+				 logger.debug( elementdbs.attributeValue("curselecteddbs") ) ;
 				 if(elementdbs.attributeValue("curselecteddbs").equals("yes")){
 					 tmpdb.setCurrentSelectedDbs(true);
 					 //curselecteddbs = elementdbs.attributeValue("dbsname");
@@ -201,7 +205,7 @@ public class SystemSetting extends JDialog
 			 
 		} catch (DocumentException e) {
 			e.printStackTrace();
-			System.out.println("SystemSetting2 parse xml error");
+			logger.debug("SystemSetting2 parse xml error");
 		}
 		
 		try {
@@ -236,9 +240,9 @@ public class SystemSetting extends JDialog
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-		    System.out.println(chooser.getSelectedFile());
+		    logger.debug(chooser.getSelectedFile());
 		    String linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-		    System.out.println(linuxpath);
+		    logger.debug(linuxpath);
 		    tfldTDXInstalledPath.setText(linuxpath);
 		}
 	}
@@ -298,7 +302,7 @@ public class SystemSetting extends JDialog
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 				
-				System.out.println(addnewsr.getCurDataBaseName());
+				logger.debug(addnewsr.getCurDataBaseName());
 				rmtcurdbmap.put( dbnewname, addnewsr );
 				
 				((DatabaseSourceTableModel)tablermt.getModel()).refresh(rmtcurdbmap );
@@ -391,7 +395,7 @@ public class SystemSetting extends JDialog
 					return;
 				
 				Object tmp = ((DatabaseSourceTableModel)tablermt.getModel()).getValueAt(row, column);
-				System.out.println(tmp);
+				logger.debug(tmp);
 				 ((DatabaseSourceTableModel)tablermt.getModel()).setValueAt(row, column);
 //				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
 //				String dbsdeleted = tmpcur.getCurDataBaseName ();
@@ -410,7 +414,7 @@ public class SystemSetting extends JDialog
 					return;
 				
 				Object tmp = ((DatabaseSourceTableModel)tablelocal.getModel()).getValueAt(row, column);
-				System.out.println(tmp);
+				logger.debug(tmp);
 				 ((DatabaseSourceTableModel)tablelocal.getModel()).setValueAt(row, column);
 //				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
 //				String dbsdeleted = tmpcur.getCurDataBaseName ();
@@ -461,7 +465,7 @@ public class SystemSetting extends JDialog
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 				
-				System.out.println(addnewsr.getCurDataBaseName());
+				logger.debug(addnewsr.getCurDataBaseName());
 				curdbmap.put( dbnewname, addnewsr );
 				
 				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(curdbmap );
@@ -667,9 +671,9 @@ public class SystemSetting extends JDialog
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-		    System.out.println(chooser.getSelectedFile());
+		    logger.debug(chooser.getSelectedFile());
 		    String linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-		    System.out.println(linuxpath);
+		    logger.debug(linuxpath);
 		    tfldparsefilepath.setText(linuxpath);
 		}
 		
@@ -1154,7 +1158,7 @@ class DatabaseSourceTableModel extends AbstractTableModel
             	 value = new Boolean(tmpcub.getCurrentSelectedDbs() );
             	 if((Boolean)value == true) {
             		 selecteddbs = dbname;
-//            		 System.out.println("cur dbs = " + dbname);
+//            		 logger.debug("cur dbs = " + dbname);
             	 }
             	 
                 break;

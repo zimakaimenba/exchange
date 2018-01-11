@@ -1,4 +1,5 @@
 package com.exchangeinfomanager.database;
+import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.*;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.sql.rowset.CachedRowSet;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.bouncycastle.util.Strings;
 
 
@@ -32,6 +34,7 @@ public class ConnectDataBase
 		        private static ConnectDataBase instance =  new ConnectDataBase ();  
 		 }
 		 
+		 private static Logger logger = Logger.getLogger(ConnectDataBase.class);
 		 DataBaseConnection localcon;
 		 DataBaseConnection remotcon;
 		 SystemConfigration sysconfig = null;
@@ -95,7 +98,7 @@ public class ConnectDataBase
 					if(remotcon != null)
 						remotcon.closeConnectedDb();
 				}catch(Exception ex) {
-					System.out.println(ex);
+					ex.printStackTrace();
 				}
         } 
 		
@@ -302,6 +305,7 @@ class DataBaseConnection
 		}
 	}
 	
+	private static Logger logger = Logger.getLogger(DataBaseConnection.class.getName());
 	private Connection con;
 	private boolean databaseconnected = false;
 	private String databasetype;
@@ -327,20 +331,24 @@ class DataBaseConnection
 						try	{
 								Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
 						} catch(ClassNotFoundException e)	{
-							System.out.println("找不到驱动程序类 ，加载驱动失败！");
+//							System.out.println("找不到驱动程序类 ，加载驱动失败！");
+							logger.error("找不到驱动程序类 ，加载驱动失败！");
 							e.printStackTrace();
 						}
 
 //jdbc:ucanaccess://C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/exchange info manager test.accdb;jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener
 						urlToDababasecrypt = "jdbc:ucanaccess://" + dbconnectstr + ";jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener";
-						System.out.println(urlToDababasecrypt);
+						logger.debug(urlToDababasecrypt);
+//						System.out.println(urlToDababasecrypt);
 						break;
 			case "mysql":
 						try	{
 								Class.forName("com.mysql.jdbc.Driver");
-								 System.out.println("成功加载MySQL驱动 for" + dbconnectstr);
+								logger.info("成功加载MySQL驱动 for" + dbconnectstr);
+//								 System.out.println("成功加载MySQL驱动 for" + dbconnectstr);
 							} catch(ClassNotFoundException e)	{
-								System.out.println("找不到驱动程序类 ，加载驱动失败！");
+								logger.error("找不到驱动程序类 ，加载驱动失败！");
+//								System.out.println("找不到驱动程序类 ，加载驱动失败！");
 								e.printStackTrace();
 							}
 						urlToDababasecrypt = "jdbc:mysql://" +  dbconnectstr;  						// "jdbc:mysql://localhost:3306/stockinfomanagementtest" ;
@@ -351,15 +359,18 @@ class DataBaseConnection
 			}
 			
 			try	{	// 方式二 通过数据源与数据库建立连接
-				System.out.println("begin to connect database");
+//				System.out.println("begin to connect database");
+				logger.info("begin to connect database");
 				tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,password);
 				if(tmpcon != null)	{
-					System.out.println( "Sucessed connect database:" + dbconnectstr );
+//					System.out.println( "Sucessed connect database:" + dbconnectstr );
+					logger.info("Sucessed connect database:" + dbconnectstr );
 					this.databaseconnected = true;
 				}
 			} catch(SQLException se) {   
 			    //se.printStackTrace();
-			    System.out.println( "Failed connect database:" + dbconnectstr );
+				logger.error("Failed connect database:" + dbconnectstr );
+//			    System.out.println( "Failed connect database:" + dbconnectstr );
 			}
 						
 			return tmpcon;
@@ -420,17 +431,20 @@ class DataBaseConnection
 		}  catch(net.ucanaccess.jdbc.UcanaccessSQLException ex) {
 			ex.printStackTrace();
 		} catch(java.lang.NullPointerException e) {
-			System.out.println("数据库连接为NULL");
+			logger.info("数据库连接为NULL");
+//			System.out.println("数据库连接为NULL");
 			e.printStackTrace();
 		} catch(com.mysql.jdbc.exceptions.jdbc4.CommunicationsException e1) {
-			System.out.println("与数据库的连接断开，需要重新连接");
+			logger.info("与数据库的连接断开，需要重新连接");
+//			System.out.println("与数据库的连接断开，需要重新连接");
 			e1.printStackTrace();
 		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException e1) {
-			System.out.println("与数据库的连接断开，需要重新连接");
+//			System.out.println("与数据库的连接断开，需要重新连接");
+			logger.info("与数据库的连接断开，需要重新连接");
 			e1.printStackTrace();
 		}catch(Exception e) {
-			System.out.println("数据库SQL执行失败");
-			System.out.println("出错SQL是:" + sqlstatement );
+//			System.out.println("数据库SQL执行失败");
+//			System.out.println("出错SQL是:" + sqlstatement );
 			e.printStackTrace();
 		}finally {
 			if(rsquery != null)
@@ -468,11 +482,12 @@ class DataBaseConnection
 			      autoIncKeyFromApi = rs.getInt(1);
 			    }
 			 if (autoIncKeyFromApi>0) {  
-                System.out.println("更新数据库成功");  
+				 logger.debug("更新数据库成功");
+//                System.out.println("更新数据库成功");  
             }
 		} catch(SQLException e)	{	
-			autoIncKeyFromApi = 0;
-			System.out.println("出错SQL是:" + sqlstatement );
+//			autoIncKeyFromApi = 0;
+//			System.out.println("出错SQL是:" + sqlstatement );
 			e.printStackTrace();  
 		} finally {
 			if(rs!=null)

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongQuan;
@@ -19,6 +21,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
@@ -39,7 +42,7 @@ public class AccountDbOperation
 	}
 	private SystemConfigration sysconfig ;
 	private ConnectDataBase connectdb;
-	
+	private static Logger logger = Logger.getLogger(AccountDbOperation.class);
 	
 	
 	private void initializeDb() 
@@ -118,7 +121,7 @@ public class AccountDbOperation
 
 		CachedRowSetImpl rs = null; 
 	    try {  
-	    	System.out.println(sqlquerystat);
+	    	logger.debug(sqlquerystat);
 	    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	    	
 	        while(rs.next()) {  
@@ -184,7 +187,7 @@ public class AccountDbOperation
 				+ "可用现金=" + currentxianjing
 				+ " WHERE 账户名称=" + "'" + accountname.trim() + "'" 
 				;
-		//System.out.println(sqlupdatestat);
+		//logger.dubug(sqlupdatestat);
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		
 	}
@@ -196,7 +199,7 @@ public class AccountDbOperation
 				+ "融资债务余额=" + rongzizhaiwu
 				+ " WHERE 账户名称=" + "'" + accountname.trim() + "'" 
 				;
-		//System.out.println(sqlupdatestat);
+		//logger.dubug(sqlupdatestat);
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 	}
 
@@ -208,7 +211,7 @@ public class AccountDbOperation
 				+ "已用现金=" + totoalusedxianjing
 				+ " WHERE 账户名称=" + "'" + accountname.trim() + "'" 
 				;
-		//System.out.println(sqlupdatestat);
+		//logger.dubug(sqlupdatestat);
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		
 	}
@@ -221,7 +224,7 @@ public class AccountDbOperation
 				+ "历史盈亏=" + historyprofit
 				+ " WHERE 账户名称=" + "'" + accountname.trim() + "'" 
 				;
-		//System.out.println(sqlupdatestat);
+		//logger.dubug(sqlupdatestat);
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		
 	}
@@ -236,7 +239,7 @@ public class AccountDbOperation
 				+ " AND 股票代码=" + stockcode
 				+ " AND 买卖账号=" + "'" + stockaccount + "'"
 				;
-		//System.out.println(sqliupdatestat);
+		//logger.dubug(sqliupdatestat);
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
 		return autoIncKeyFromApi;
 	}
@@ -644,7 +647,7 @@ public class AccountDbOperation
 						+ " 盈利标识="	+ autoIncKeyFromApi 
 						+ " WHERE ID=" + maimaidatabaseid
 						;
-		//System.out.println(sqliupdatestat);
+		//logger.dubug(sqliupdatestat);
 		connectdb.sqlUpdateStatExecute(sqliupdatestat);
 		
 		return autoIncKeyFromApi;
@@ -660,7 +663,7 @@ public class AccountDbOperation
 		String sqlquerystat = "SELECT *  FROM " + actiontable 
 				+ " WHERE ID=" + databaseid 
 				;
-		//System.out.println(sqlquerystat);
+		//logger.dubug(sqlquerystat);
 		
 		BuyStockNumberPrice stocknumberpricepanel = null;
 		String shuoming = null;
@@ -719,7 +722,7 @@ public class AccountDbOperation
 				+ " ,原因描述=" + "\"" + shuoming + "\""
 				+ " WHERE ID=" + databaseid
 				;
-		//System.out.println(sqliupdatestat);
+		//logger.dubug(sqliupdatestat);
 		@SuppressWarnings("unused")
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
 
@@ -796,7 +799,7 @@ public class AccountDbOperation
 				+ true
 				+ ")"
 				;
-		//System.out.println(sqlinsertstat);  
+		//logger.dubug(sqlinsertstat);  
 		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
 		return autoIncKeyFromApi;
@@ -825,7 +828,7 @@ public class AccountDbOperation
 				+ false
 				+ ")"
 				;
-		//System.out.println(sqlinsertstat);  
+		//logger.dubug(sqlinsertstat);  
 		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
 		return autoIncKeyFromApi;
@@ -867,7 +870,7 @@ public class AccountDbOperation
 						+ " 有信用账户=true"     
 						+ " WHERE 账户名称=" + "'" + tmpactname.trim() + "'" 
 						;
-				System.out.println(sqlupdatestat);
+				logger.debug(sqlupdatestat);
 				int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 				
 				this.setNewRzrqAccountsToDb (tmpactid,  tmpactname,  tmpselected, tmprzrq, tmprzrqid,tmpsuoshuquanshang);
@@ -890,7 +893,7 @@ public class AccountDbOperation
 				+ "," + "'" + tmpactquanshang + "'" 
 				+ ")"
 				;
-		System.out.println(sqlinsertstat);
+		logger.debug(sqlinsertstat);
 			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 			if(autoIncKeyFromApi <0) return -1;
 			
@@ -904,7 +907,7 @@ public class AccountDbOperation
 					+ "\"" + CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() )   + "\""      
 					+ ")"
 					;
-			System.out.println(sqlinsertstat);
+			logger.debug(sqlinsertstat);
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 			if(autoIncKeyFromApi <0) return -1;
 		
@@ -932,7 +935,7 @@ public class AccountDbOperation
 				+ "," + "'" + tmpactquanshang + "'"
 				+ ")"
 				;
-		//System.out.println(sqlinsertstat);
+		//logger.dubug(sqlinsertstat);
 		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		if(autoIncKeyFromApi <0) return -1;
 		
@@ -950,7 +953,7 @@ public class AccountDbOperation
 				+ "," + "'" + tmpactquanshang + "'" 
 				+ ")"
 				;
-		//System.out.println(sqlinsertstat);
+		//logger.dubug(sqlinsertstat);
 		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		if(autoIncKeyFromApi <0) return -1;
 		
@@ -968,7 +971,7 @@ public class AccountDbOperation
 				+ "," + "'" + tmpactquanshang + "'"
 				+ ")"
 				;
-		//System.out.println(sqlinsertstat);
+		//logger.dubug(sqlinsertstat);
 		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		if(autoIncKeyFromApi <0) return -1;
 		
@@ -995,7 +998,7 @@ public class AccountDbOperation
 				+ " 历史盈亏=" + "'" + currentprofit    + "'"
 				+ " WHERE 账户名称=" + "'" + acntname.trim() + "'" 
 				;
-		System.out.println(sqlupdatestat);
+		logger.debug(sqlupdatestat);
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 	}
 	/*
@@ -1012,7 +1015,7 @@ public class AccountDbOperation
 				+" 已用现金=" + curusedcash 
 				+ " WHERE 账户名称=" + "'" + actionaccountname + "'"
 				;
-		System.out.println(sqliupdatestat);
+		logger.debug(sqliupdatestat);
 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
 		
 		return autoIncKeyFromApi;
@@ -1030,7 +1033,7 @@ public class AccountDbOperation
 		String sqlquerystat = "SELECT *  FROM " + actionoldtable 
 				+ " WHERE ID=" + databaseid 
 				;
-		//System.out.println(sqlquerystat);
+		//logger.dubug(sqlquerystat);
 
 		BuyStockNumberPrice stocknumberpricepanel = null; 
 		int gushu = 0;
@@ -1080,7 +1083,7 @@ public class AccountDbOperation
 					+ " 买卖账号=" + "'" + tmpnewaccount + "' "
 					+ " WHERE ID=" + databaseid
 					;
-			//System.out.println(sqliupdatestat);
+			//logger.dubug(sqliupdatestat);
 			@SuppressWarnings("unused")
 			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
 			

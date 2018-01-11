@@ -13,6 +13,8 @@ import java.util.Set;
 
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
@@ -32,6 +34,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private Double showcje;
 	private Boolean showparsedfile = false;
 	private Integer bkmaxwk = 10000000;
+	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
 	
 	BanKuaiGeGuTableModel ()
 	{
@@ -48,7 +51,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			entryList = new ArrayList<Map.Entry<String, Stock>>(stockmap.entrySet()  );
 		} catch ( java.lang.NullPointerException e) {
 //			e.printStackTrace();
-			System.out.println(curbk.getMyOwnCode()+curbk.getMyOwnName() + "没有个股，请检查！");
+			logger.debug(curbk.getMyOwnCode()+curbk.getMyOwnName() + "没有个股，请检查！");
 //			return ;
 		}
     	
@@ -84,7 +87,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
-//	    	System.out.println(rowIndex + "col" + columnIndex  + "  ");
+//	    	logger.debug(rowIndex + "col" + columnIndex  + "  ");
 	    	if(entryList.isEmpty())
 	    		return null;
 	    	

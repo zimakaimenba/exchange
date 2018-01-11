@@ -46,6 +46,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.tree.TreeNode;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -97,6 +98,7 @@ public class BanKuaiDbOperation
 	
 	private  ConnectDataBase connectdb;
 	private  SystemConfigration sysconfig;
+	private static Logger logger = Logger.getLogger(BanKuaiDbOperation.class);
 
 	private void initializeDb() 
 	{
@@ -124,7 +126,7 @@ public class BanKuaiDbOperation
 //				+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`风格板块` = tdxbk.`板块ID` AND ISNULL(移除时间)"
 //				;
 //		
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
 //		try  {     
 //	        while(rs_gn.next()) {
@@ -155,7 +157,7 @@ public class BanKuaiDbOperation
 ////		sqlquerystat=  "SELECT 自定义板块 FROM 股票通达信自定义板块对应表  WHERE 股票代码= "
 ////						+ "'" +  stockcode.trim() + "'"
 ////						;
-////		//System.out.println(sqlquerystat);
+////		//logger.debug(sqlquerystat);
 ////		CachedRowSetImpl rs_zdy = connectdb.sqlQueryStatExecute(sqlquerystat);
 ////		HashSet<String> tmpzdybk = new HashSet<String> ();
 ////		try  {     
@@ -219,7 +221,7 @@ public class BanKuaiDbOperation
 //			 		"union\r\n" + 
 //			 		"select 板块名称,概念时间,概念板块提醒,负面消息时间,负面消息,券商评级时间,券商评级提醒,正相关及客户,负相关及竞争对手,客户,竞争对手 from 通达信交易所指数列表  where 板块ID = '" + bkcode + "' " 
 					 			;
-			 System.out.println(sqlquerystat);
+			 logger.debug(sqlquerystat);
 			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rsagu.next())
 				setSingleNodeInfo (bkbasicinfo,rsagu);
@@ -254,7 +256,7 @@ public class BanKuaiDbOperation
 //					+" union\r\n" + 
 //					" select 板块名称, '通达信交易所指数列表' as tablename, 'zhishu' as type from 通达信交易所指数列表 where 板块ID = '" + nodecode + "'"
 					;
-				System.out.println(sqlquerystat);
+				logger.debug(sqlquerystat);
 		    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	
 		        while(rs.next()) {  
@@ -493,12 +495,12 @@ public class BanKuaiDbOperation
                byte[] itemBuf = new byte[fileheadbytenumber];
                dis.read(itemBuf, 0, fileheadbytenumber); 
                String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-               System.out.println(fileHead);
+               logger.debug(fileHead);
                
                //板块个数：2字节
                dis.read(itemBuf, 0, 2); 
                String bknumber =new String(itemBuf,0,2);  
-               System.out.println(bknumber);
+               logger.debug(bknumber);
 			 
                //各板块数据存储结构（紧跟板块数目依次存放）
 //               第一个版块的起始位置为0x182h。
@@ -522,16 +524,16 @@ public class BanKuaiDbOperation
                while (dis.read(itemBuf2, 0, sigbk) != -1) {
             	   //板块名称
             	   String gupiaoheader = (new String(itemBuf2,0,9)).trim();
-            	   System.out.println(gupiaoheader);
+            	   logger.debug(gupiaoheader);
             	   
             	   //板块个股
                    String gupiaolist =new String(itemBuf2,12,sigbk-12);
                   
                    List<String> tmpstockcodestr = Splitter.fixedLength(7).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(gupiaolist); 
-                   System.out.println(tmpstockcodestr);
+                   logger.debug(tmpstockcodestr);
                    System.out.print(tmpstockcodestr.size());
                    Set<String> tmpstockcodesetnew = new HashSet(tmpstockcodestr);
-                   System.out.println(tmpstockcodesetnew);
+                   logger.debug(tmpstockcodesetnew);
                    
                    //从数据库中读出当前该板块的个股
                    Set<String> tmpstockcodesetold = new HashSet();
@@ -547,7 +549,7 @@ public class BanKuaiDbOperation
 //	   			    							+ "'"  + gupiaoheader + "'"
 //	   			    							+ "AND ISNULL(移除时间)"
 //	   			    							;
-	   			    	System.out.println(sqlquerystat);
+	   			    	logger.debug(sqlquerystat);
 	   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	   			    	
 	   			        rs.last();  
@@ -583,7 +585,7 @@ public class BanKuaiDbOperation
 //		   	        							+ " WHERE 股票代码=" + "'" + str + "'" 
 //		   	        							+ " AND 概念板块=" + "'" + gupiaoheader + "'" 
 //		   	        							;
-//		   	        	System.out.println(sqldeletetstat);
+//		   	        	logger.debug(sqldeletetstat);
 //		   	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //		                Files.append("删除：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 //		   	        	String sqlupdatestat = "UPDATE 股票通达信概念板块对应表   SET"
@@ -599,7 +601,7 @@ public class BanKuaiDbOperation
        							+ "  and 通达信板块列表.`板块名称`=" + "'" + gupiaoheader + "'"
        							+ "  SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() ) + "'"
        							;
-				       	System.out.println(sqlupdatestat);
+				       	logger.debug(sqlupdatestat);
 				   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		   	        }
 	   			   
@@ -617,7 +619,7 @@ public class BanKuaiDbOperation
 								+ "	  SELECT '" + str + "', 通达信板块列表.`板块ID`, 10 "
 								+ " FROM 通达信板块列表  where 通达信板块列表.`板块名称` = '" + gupiaoheader + "'"   
 								;
-		   				System.out.println(sqlinsertstat);
+		   				logger.debug(sqlinsertstat);
 		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		   				addednumber ++;
 		                Files.append("加入：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
@@ -662,9 +664,9 @@ public class BanKuaiDbOperation
 			while((line = bufr.readLine()) != null) {
 				
 				List<String> tmpbkinfo = Splitter.on("|").omitEmptyStrings().splitToList(line); //内蒙板块|880232|3|1|0|32
-				System.out.println(tmpbkinfo);
+				logger.debug(tmpbkinfo);
 //				if(tmpbkinfo.get(1).toString().trim().equals("880601"))
-//					System.out.println("880601 arrived");
+//					logger.debug("880601 arrived");
 //				if( !Pattern.matches("\\d{4}00",tmpbkinfo.get(5) ) ) { //如果是申万板块，不导入
 //					tmpsysbkmap.put(tmpbkinfo.get(1), tmpbkinfo );
 					
@@ -684,7 +686,7 @@ public class BanKuaiDbOperation
 	   						+ " 板块名称=" + " '" + newbkname.trim() + "'" + ","
 	   						+ " 指数所属交易所 = " + " '" + bkcjs.trim() + "'" 
 	   						;
-	        	   System.out.println(sqlinsertstat);
+	        	   logger.debug(sqlinsertstat);
 	   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 //				}
 			}
@@ -740,7 +742,7 @@ public class BanKuaiDbOperation
 //					+ " '" + "sh" + "'"
 //					+ ")"
 //					;
-//			System.out.println(sqlinsertstat);
+//			logger.debug(sqlinsertstat);
 //			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 //
 //			try {
@@ -765,7 +767,7 @@ public class BanKuaiDbOperation
 //        	String sqldeletetstat = "DELETE  FROM 通达信板块列表 "
 //        							+ " WHERE 板块名称=" + "'"  + oldbk + "'"
 //        							;
-//        	System.out.println(sqldeletetstat);
+//        	logger.debug(sqldeletetstat);
 //    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //    		
 //    		try {
@@ -779,25 +781,25 @@ public class BanKuaiDbOperation
 //    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
 //					+ " WHERE 概念板块=" + "'"  + oldbk + "'"
 //					;
-//			System.out.println(sqldeletetstat);
+//			logger.debug(sqldeletetstat);
 //			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //			
 //			sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
 //					+ " WHERE 行业板块=" + "'"  + oldbk + "'"
 //					;
-//			System.out.println(sqldeletetstat);
+//			logger.debug(sqldeletetstat);
 //			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //			
 //			sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
 //					+ " WHERE 风格板块=" + "'"  + oldbk + "'"
 //					;
-//			System.out.println(sqldeletetstat);
+//			logger.debug(sqldeletetstat);
 //			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //			
 //			sqldeletetstat = "DELETE  FROM 产业链子板块列表"
 //					+ " WHERE 所属通达信板块=" + "'"  + oldbk + "'"
 //					;
-//			System.out.println(sqldeletetstat);
+//			logger.debug(sqldeletetstat);
 //			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //        }
 //        
@@ -813,7 +815,7 @@ public class BanKuaiDbOperation
 //        						+ " 对应TDXSWID= '" + tdxswidintdxfile + "'"
 //        						+ " where 板块名称 != '" + bknameintdxfile + "' and 板块ID = '" + interbkcode + "'"
 //        						;
-//        	System.out.println(updatesqlstat);
+//        	logger.debug(updatesqlstat);
 //        	connectdb.sqlUpdateStatExecute(updatesqlstat);
 //        }
         
@@ -849,12 +851,12 @@ public class BanKuaiDbOperation
 	{
 		File fileHyTDm = new File(sysconfig.getTDXHangYeToDaiMaFile() );  //"incon.dat";
 		 if(!fileHyTDm.exists() ) {
-			 System.out.println("File not exist");
+			 logger.debug("File not exist");
 			 return -1;
 		 }
 		 File fileHyTGg = new File(sysconfig.getTDXHangYeBanKuaiToGeGuFile() );  //"T0002/hq_cache/" + "tdxhy.cfg";
 		 if(!fileHyTGg.exists() ) {
-			 System.out.println("File not exist");
+			 logger.debug("File not exist");
 			 return -1;
 		 }
 		 
@@ -873,9 +875,9 @@ public class BanKuaiDbOperation
 			} while ( !(line = bufr.readLine() ).equals("#TDXNHY") );
 			
 			while ( !(line = bufr.readLine() ).equals("######") ) {  //行业名称和T开头代码对应关系
-				System.out.println(line);
+				logger.debug(line);
 				List<String> tmpbkinfo = Splitter.on("|").omitEmptyStrings().splitToList(line); //T01|能源  T010101|煤炭开采
-				System.out.println(tmpbkinfo);
+				logger.debug(tmpbkinfo);
 				hydmmap.put(tmpbkinfo.get(0).trim(), tmpbkinfo.get(1).trim());
 			}
 			
@@ -903,7 +905,7 @@ public class BanKuaiDbOperation
 //   			    							+ " AND 对应TDXSWID=" +  "'" + stockbkcode + "'"
    			    							+ " AND isnull(移除时间)"
    			    							;
-   			    	System.out.println(sqlquerystat);
+   			    	logger.debug(sqlquerystat);
    			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	
    			        rs.last(); 
@@ -921,7 +923,7 @@ public class BanKuaiDbOperation
 												+ " SELECT '" + stockcode.trim() + "', 通达信板块列表.`板块ID`,'" + stockbkcode + "',10 "
 												+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stockbkcode + "'"
 												;
-		   				System.out.println(sqlinsertstat);
+		   				logger.debug(sqlinsertstat);
 		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		   	            Files.append("加入：" + stockcode.trim() + " " + stockbkname.trim()  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   				
@@ -944,7 +946,7 @@ public class BanKuaiDbOperation
 //   	       										+ "  AND isnull(移除时间)"
 //   	       										+ "  AND 股票通达信行业板块对应表.`对应TDXSWID` = " + "'" + stockbkanameindb + "'"
 //   	       							;
-//		   			 		System.out.println(sqlupdatestat);
+//		   			 		logger.debug(sqlupdatestat);
 //		   			 		@SuppressWarnings("unused")
 //		   			 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		   			 		
@@ -961,7 +963,7 @@ public class BanKuaiDbOperation
 //								+ " SELECT '" + stockcode.trim() + "', 通达信板块列表.`板块ID`,'" + stockbkcode + "',10 "
 //								+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stockbkcode + "'"
 //								;
-//			   				System.out.println(sqlinsertstat);
+//			   				logger.debug(sqlinsertstat);
 //			   				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 //		   	            Files.append("加入：" + stockcode.trim() + " " + stockbkname.trim()  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 //			   	        Files.append("更新：" + stockcode.trim() + " " + stockbkname.trim()  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
@@ -980,7 +982,7 @@ public class BanKuaiDbOperation
 //   													+ " AND 股票通达信行业板块对应表.`对应TDXSWID` = " + "'" + stockbkanameindb + "'" 
 //   													+ " AND 股票通达信行业板块对应表.`板块代码` = " + "'" + bkcode + "'"
 //   													;
-//   								System.out.println(sqldeletestat);
+//   								logger.debug(sqldeletestat);
 //   			   			 		@SuppressWarnings("unused")
 //   			   			 		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletestat);
 //   							} else { //不删除的话，就更新和rows =1一样的情况
@@ -1049,7 +1051,7 @@ public class BanKuaiDbOperation
 									+ "  AND isnull(移除时间)"
 									+ "  AND 股票通达信行业板块对应表.`对应TDXSWID` = " + "'" + stockoldTDXSWID + "'"
 						;
-	 		System.out.println(sqlupdatestat);
+	 		logger.debug(sqlupdatestat);
 	 		@SuppressWarnings("unused")
 	 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 	 		
@@ -1065,7 +1067,7 @@ public class BanKuaiDbOperation
 			+ " SELECT '" + stockcode.trim() + "', 通达信板块列表.`板块ID`,'" + stocknewTDXSWID + "',10 "
 			+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stocknewTDXSWID + "'"
 			;
-			System.out.println(sqlinsertstat);
+			logger.debug(sqlinsertstat);
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
 	}
@@ -1078,7 +1080,7 @@ public class BanKuaiDbOperation
 		File file = new File(sysconfig.getTDXFengGeBanKuaiToGeGuFile() );
 		 
 		 if(!file.exists() ) {
-			 System.out.println("File not exist");
+			 logger.debug("File not exist");
 			 return;
 		 }
 		 
@@ -1103,12 +1105,12 @@ public class BanKuaiDbOperation
                byte[] itemBuf = new byte[fileheadbytenumber];
                dis.read(itemBuf, 0, fileheadbytenumber); 
                String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-               System.out.println(fileHead);
+               logger.debug(fileHead);
                
                //板块个数：2字节
                dis.read(itemBuf, 0, 2); 
                String bknumber =new String(itemBuf,0,2);  
-               System.out.println(bknumber);
+               logger.debug(bknumber);
 			 
                //各板块数据存储结构（紧跟板块数目依次存放）
 //               第一个版块的起始位置为0x182h。
@@ -1132,22 +1134,22 @@ public class BanKuaiDbOperation
                while (dis.read(itemBuf2, 0, sigbk) != -1) {
             	   //板块名称
             	   String gupiaoheader = (new String(itemBuf2,0,9)).trim();
-            	   System.out.println(gupiaoheader);
+            	   logger.debug(gupiaoheader);
             	   
             	   //板块个股
                    String gupiaolist =new String(itemBuf2,12,sigbk-12);
                    List<String> tmpstockcodestr = Splitter.fixedLength(7).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(gupiaolist); 
-                   System.out.println(tmpstockcodestr);
+                   logger.debug(tmpstockcodestr);
                    System.out.print(tmpstockcodestr.size());
                    Set<String> tmpstockcodesetnew = new HashSet(tmpstockcodestr);
-                   System.out.println(tmpstockcodesetnew);
+                   logger.debug(tmpstockcodesetnew);
                    
                    //比如 融资融券， 是个板块，但没有ID，在通达信板块列表里面没有，要先判断这种情形，以便用不同的SQL
                    boolean hasbkcode = true;
                    CachedRowSetImpl rspd = null; 
 	   			   try {
 	   			    	String sqlquerystat = "SELECT count(*) as result FROM 通达信板块列表 WHERE 板块名称='"  + gupiaoheader + "'";
-	   			    	System.out.println(sqlquerystat);
+	   			    	logger.debug(sqlquerystat);
 	   			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
 	   			    	
 	   			    	int result = 0;
@@ -1191,7 +1193,7 @@ public class BanKuaiDbOperation
 	   									+ " AND ISNULL(移除时间)"
 	   									;  
 
-	   			    	System.out.println(sqlquerystat);
+	   			    	logger.debug(sqlquerystat);
 	   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	   			    	
 	   			        rs.last();  
@@ -1242,7 +1244,7 @@ public class BanKuaiDbOperation
 		   	        						+" AND 股票代码= " + "'" + str.trim() + "'"
 		   	        						+ "  AND isnull(移除时间)"
 		   	        						;
-		   	        	System.out.println(sqlupdatestat);
+		   	        	logger.debug(sqlupdatestat);
 		   	    		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 //		   	    		Files.append("删除："  + str.trim() + " " + gupiaoheader + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   	        }
@@ -1261,7 +1263,7 @@ public class BanKuaiDbOperation
 		   	        		sqlinsertstat = "insert into 股票通达信风格板块对应表(股票代码,板块代码,股票权重) VALUES "
 		   	        						+ "('" + str + "','" +  gupiaoheader + "',10)"
 		   	        						;
-		   				System.out.println(sqlinsertstat);
+		   				logger.debug(sqlinsertstat);
 		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		   				
 //		   				Files.append("加入："  + str.trim() + " " + gupiaoheader + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
@@ -1271,7 +1273,7 @@ public class BanKuaiDbOperation
 //		   	        	String sqlupdatestat = "UPDATE 通达信板块列表 SET 数据最新更新时间 = "
 //		   	        			+  formateDateForDiffDatabase("mysql", sysconfig.formatDate( LocalDateTime.now() ) ) + ","
 //		   	        			;
-//		   	        	System.out.println(sqlupdatestat);
+//		   	        	logger.debug(sqlupdatestat);
 //		   				connectdb.sqlUpdateStatExecute (sqlupdatestat);
 //		   	        }
                }
@@ -1320,7 +1322,7 @@ public class BanKuaiDbOperation
 	{
 		File file = new File(sysconfig.getTDXZhiShuBanKuaiToGeGuFile() );
 		if(!file.exists() ) {
-			 System.out.println("File not exist");
+			 logger.debug("File not exist");
 			 return -1;
 		 }
 		 
@@ -1346,12 +1348,12 @@ public class BanKuaiDbOperation
               byte[] itemBuf = new byte[fileheadbytenumber];
               dis.read(itemBuf, 0, fileheadbytenumber); 
               String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-              System.out.println(fileHead);
+              logger.debug(fileHead);
               
               //板块个数：2字节
               dis.read(itemBuf, 0, 2); 
               String bknumber =new String(itemBuf,0,2);  
-              System.out.println(bknumber);
+              logger.debug(bknumber);
 			 
               //各板块数据存储结构（紧跟板块数目依次存放）
 //              第一个版块的起始位置为0x182h。
@@ -1375,16 +1377,16 @@ public class BanKuaiDbOperation
               while (dis.read(itemBuf2, 0, sigbk) != -1) {
            	   //板块名称
            	   String gupiaoheader = (new String(itemBuf2,0,9)).trim();
-           	   System.out.println(gupiaoheader);
+           	   logger.debug(gupiaoheader);
            	   
            	   //板块个股
                   String gupiaolist =new String(itemBuf2,12,sigbk-12);
                  
                   List<String> tmpstockcodestr = Splitter.fixedLength(7).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(gupiaolist); 
-                  System.out.println(tmpstockcodestr);
+                  logger.debug(tmpstockcodestr);
                   System.out.print(tmpstockcodestr.size());
                   Set<String> tmpstockcodesetnew = new HashSet(tmpstockcodestr);
-                  System.out.println(tmpstockcodesetnew);
+                  logger.debug(tmpstockcodesetnew);
                   
                   //从数据库中读出当前该板块的个股
                   Set<String> tmpstockcodesetold = new HashSet();
@@ -1399,7 +1401,7 @@ public class BanKuaiDbOperation
 	    						+ " AND zslb.`板块名称` = '"  + gupiaoheader + "'"
 	    						+ " AND ISNULL(zsbk.移除时间)"
 	    						;
-	   			    	System.out.println(sqlquerystat);
+	   			    	logger.debug(sqlquerystat);
 	   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	   			    	
 	   			        rs.last();  
@@ -1439,7 +1441,7 @@ public class BanKuaiDbOperation
        							+ "  and 通达信板块列表.`板块名称` = " + "'" + gupiaoheader + "'"
        							+ "  SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() ) + "'"
        							;	
-				       	System.out.println(sqlupdatestat);
+				       	logger.debug(sqlupdatestat);
 				   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		   	        }
 	   			   
@@ -1457,7 +1459,7 @@ public class BanKuaiDbOperation
 								+ "	  SELECT '" + str.trim() + "', 通达信板块列表.`板块ID`, 10 "
 								+ " FROM 通达信板块列表  where 通达信板块列表.`板块名称` = '" + gupiaoheader + "'"   
 								;
-		   				System.out.println(sqlinsertstat);
+		   				logger.debug(sqlinsertstat);
 		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		   				addednumber ++;
 		                Files.append("加入：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
@@ -1497,7 +1499,7 @@ public class BanKuaiDbOperation
 		File file = new File(sysconfig.getTDXShangHaiZhiShuNameFile() );
 		
 		if(!file.exists() ) {
-			 System.out.println("File not exist");
+			 logger.debug("File not exist");
 			 return -1;
 		 }
 		
@@ -1512,7 +1514,7 @@ public class BanKuaiDbOperation
                byte[] itemBuf = new byte[fileheadbytenumber];
                dis.read(itemBuf, 0, fileheadbytenumber); 
                String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-//               System.out.println(fileHead);
+//               logger.debug(fileHead);
                
                int sigbk = 18*16+12+14;
                byte[] itemBuf2 = new byte[sigbk];
@@ -1520,9 +1522,9 @@ public class BanKuaiDbOperation
                Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
                while (dis.read(itemBuf2, 0, sigbk) != -1) {
             	   String zhishuline =new String(itemBuf2,0,sigbk);
-            	   System.out.println(zhishuline);
+            	   logger.debug(zhishuline);
             	   String zhishucode = zhishuline.trim().substring(0, 6);
-//            	   System.out.println(zhishucode);
+//            	   logger.debug(zhishucode);
             	   
 //            	   if(  zhishucode.startsWith("600") || zhishucode.startsWith("601") || zhishucode.startsWith("602") || zhishucode.startsWith("603") 
 //            			   || zhishucode.startsWith("10") || zhishucode.startsWith("11") || zhishucode.startsWith("01") || zhishucode.startsWith("02") || zhishucode.startsWith("09") 
@@ -1534,7 +1536,7 @@ public class BanKuaiDbOperation
             		   continue;
             	   
 //            	   if(zhishucode.equals("880890"))
-//            		   System.out.println("880890 arrived");
+//            		   logger.debug("880890 arrived");
             	   
             	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
             	   String zhishuname = null;
@@ -1544,7 +1546,7 @@ public class BanKuaiDbOperation
             		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
             		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
             	   }
-//            	   System.out.println(zhishuname);
+//            	   logger.debug(zhishuname);
             	   
 //            	   String sqlinsertstat = "INSERT INTO  通达信交易所指数列表(板块名称,板块ID,指数所属交易所) values ("
 //	   						+ " '" + zhishuname.trim() + "'" + ","
@@ -1564,7 +1566,7 @@ public class BanKuaiDbOperation
 	   						+ "板块名称 =" + " '" + zhishuname.trim() + "'" + ","
 	   						+ "指数所属交易所= " + " '" + "sh" + "'"
 	   						;
-            	   System.out.println(sqlinsertstat);
+            	   logger.debug(sqlinsertstat);
 	   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 //	                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	   				allinsertbk.add(zhishucode);
@@ -1592,32 +1594,32 @@ public class BanKuaiDbOperation
 				 String sqldeletetstat = "DELETE  FROM  通达信板块列表 WHERE "
 						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
 						 				;
-         	   System.out.println(sqldeletetstat);
+         	   logger.debug(sqldeletetstat);
 	   			int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 	   			
 //	   			//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
 //	    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
 //						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 //						;
-//				System.out.println(sqldeletetstat);
+//				logger.debug(sqldeletetstat);
 //				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //				
 //				sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
 //						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 //						;
-//				System.out.println(sqldeletetstat);
+//				logger.debug(sqldeletetstat);
 //				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //				
 //				sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
 //						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 //						;
-//				System.out.println(sqldeletetstat);
+//				logger.debug(sqldeletetstat);
 //				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 //				
 //				sqldeletetstat = "DELETE  FROM 产业链子板块列表"
 //						+ " WHERE 所属通达信板块=" + "'"  + oldbkcode.trim() + "'"
 //						;
-//				System.out.println(sqldeletetstat);
+//				logger.debug(sqldeletetstat);
 //				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 			 }
 		 }
@@ -1640,7 +1642,7 @@ public class BanKuaiDbOperation
 		File file = new File(sysconfig.getTDXShenZhenShuNameFile() );
 		
 		if(!file.exists() ) {
-			 System.out.println("File not exist");
+			 logger.debug("File not exist");
 			 return -1;
 		 }
 		
@@ -1655,7 +1657,7 @@ public class BanKuaiDbOperation
                byte[] itemBuf = new byte[fileheadbytenumber];
                dis.read(itemBuf, 0, fileheadbytenumber); 
                String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-               System.out.println(fileHead);
+               logger.debug(fileHead);
                
                int sigbk = 18*16+12+14;
                byte[] itemBuf2 = new byte[sigbk];
@@ -1663,9 +1665,9 @@ public class BanKuaiDbOperation
                Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
                while (dis.read(itemBuf2, 0, sigbk) != -1) {
             	   String zhishuline =new String(itemBuf2,0,sigbk);
-            	   System.out.println(zhishuline);
+            	   logger.debug(zhishuline);
             	   String zhishucode = zhishuline.trim().substring(0, 6);
-//            	   System.out.println(zhishucode);
+//            	   logger.debug(zhishucode);
             	   
 //            	   if(  zhishucode.startsWith("000") || zhishucode.startsWith("001") || zhishucode.startsWith("002") || zhishucode.startsWith("300")  
 //            			   ||zhishucode.startsWith("100") ||zhishucode.startsWith("101") ||zhishucode.startsWith("106") ||zhishucode.startsWith("107") ||zhishucode.startsWith("108") ||zhishucode.startsWith("109")
@@ -1689,7 +1691,7 @@ public class BanKuaiDbOperation
             		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
             		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
             	   }
-//            	   System.out.println(zhishuname);
+//            	   logger.debug(zhishuname);
             	   
 //            	   String sqlinsertstat = "INSERT INTO  通达信交易所指数列表(板块名称,板块ID,指数所属交易所) values ("
 //	   						+ " '" + zhishuname.trim() + "'" + ","
@@ -1709,7 +1711,7 @@ public class BanKuaiDbOperation
 	   						+ "板块名称 =" + " '" + zhishuname.trim() + "'" + ","
 	   						+ "指数所属交易所= " + " '" + "sz" + "'" 
 	   						;
-            	   System.out.println(sqlinsertstat);
+            	   logger.debug(sqlinsertstat);
 	   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 //	                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	   				allinsertbk.add(zhishucode);
@@ -1737,32 +1739,32 @@ public class BanKuaiDbOperation
 				 String sqldeletetstat = "DELETE  FROM  通达信板块列表 WHERE "
 						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
 						 				;
-         	   System.out.println(sqldeletetstat);
+         	   logger.debug(sqldeletetstat);
 	   			int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 	   			
 	   			//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
 	    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
 						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 						;
-				System.out.println(sqldeletetstat);
+				logger.debug(sqldeletetstat);
 				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 				
 				sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
 						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 						;
-				System.out.println(sqldeletetstat);
+				logger.debug(sqldeletetstat);
 				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 				
 				sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
 						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 						;
-				System.out.println(sqldeletetstat);
+				logger.debug(sqldeletetstat);
 				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 				
 				sqldeletetstat = "DELETE  FROM 产业链子板块列表"
 						+ " WHERE 所属通达信板块=" + "'"  + oldbkcode.trim() + "'"
 						;
-				System.out.println(sqldeletetstat);
+				logger.debug(sqldeletetstat);
 				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 			 }
 		 }
@@ -1783,7 +1785,7 @@ public class BanKuaiDbOperation
 
 		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信自定义板块列表 	ORDER BY 板块ID,板块名称 ,创建时间 "
 							   ;   
-		System.out.println(sqlquerystat);
+		logger.debug(sqlquerystat);
 		CachedRowSetImpl  rs = null;
 	    try {  
 	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -1828,7 +1830,7 @@ public class BanKuaiDbOperation
 //
 //		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信板块列表 	ORDER BY 板块名称 ,板块ID,创建时间 "
 //							   ;   
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs = null;
 //	    try {  
 //	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -1874,7 +1876,7 @@ public class BanKuaiDbOperation
 
 		String sqlquerystat = "SELECT 股票代码,股票名称 FROM A股"									
 							   ;   
-		System.out.println(sqlquerystat);
+		logger.debug(sqlquerystat);
 		CachedRowSetImpl rs = null;
 	    try {  
 	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -1919,7 +1921,7 @@ public class BanKuaiDbOperation
 //								" UNION" +
 //								" SELECT 板块ID,板块名称,创建时间  FROM 通达信板块列表  "  ;	
 //							   ;   
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs = null;
 //	    try {  
 //	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -1930,8 +1932,8 @@ public class BanKuaiDbOperation
 //	        //int k = 0;  
 ////	        while(rs.next()) {
 //	        for(int j=0;j<rows;j++) {  
-//	        	System.out.println(rs.getString("板块ID") );
-//	        	System.out.println(rs.getString("板块名称"));
+//	        	logger.debug(rs.getString("板块ID") );
+//	        	logger.debug(rs.getString("板块名称"));
 //	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称") );
 ////	        	boolean notexporttogephi = rs.getBoolean("不导出到gephi");
 ////	        	if(notexporttogephi)
@@ -1969,7 +1971,7 @@ public class BanKuaiDbOperation
 //
 //		String sqlquerystat = "SELECT *  FROM 通达信交易所指数列表 "
 //							   ;   
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs = null;
 //	    try {  
 //	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -1980,7 +1982,7 @@ public class BanKuaiDbOperation
 //	        //int k = 0;  
 ////	        while(rs.next()) {
 //	        for(int j=0;j<rows;j++) {  
-////	        	System.out.println(rs.getString("板块ID"));
+////	        	logger.debug(rs.getString("板块ID"));
 //	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"));
 //	        	tmpbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
 //	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块ID"), tmpbk);
@@ -2019,7 +2021,7 @@ public class BanKuaiDbOperation
 			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述  FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
 		else
 			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述 FROM 通达信板块列表 	"  ;
-		System.out.println(sqlquerystat);
+		logger.debug(sqlquerystat);
 		CachedRowSetImpl rs = null;
 	    try {  
 	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -2068,7 +2070,7 @@ public class BanKuaiDbOperation
 								+" WHERE 所属通达信板块 =" + "'" + tdxbk + "'" 
 								+ "ORDER BY 子板块名称"
 				   			   ;   
-		System.out.println(sqlquerystat);
+		logger.debug(sqlquerystat);
 		HashMap<String,String> tmpsubbklist = new HashMap<String,String> ();
 		CachedRowSetImpl rs = null;
 		try {  
@@ -2113,7 +2115,7 @@ public class BanKuaiDbOperation
 //				+ " AND ISNULL(移除时间)"
 //				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
 //				;   
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		HashMap<String,String> tmpfgset = new HashMap<String,String>();
 //		CachedRowSetImpl rsfg = null;
 //		try {  
@@ -2158,7 +2160,7 @@ public class BanKuaiDbOperation
 //				+ " AND ISNULL(移除时间)"
 //				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
 //				;   
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		HashMap<String,String> tmpgnset = new HashMap<String,String>();
 //		CachedRowSetImpl rsfg = null;
 //		try {  
@@ -2249,7 +2251,7 @@ public class BanKuaiDbOperation
 //								;
 //				 }
 //				
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 ////		HashMap<String,String> tmpgnset = new HashMap<String,String>();
 //		HashMap<String,Stock> gegumap = new HashMap<String,Stock> ();
 //		CachedRowSetImpl rsfg = null;
@@ -2261,7 +2263,7 @@ public class BanKuaiDbOperation
 //				String tmpstockname = rsfg.getString("股票名称"); //"股票名称"
 //				int stockweight = rsfg.getInt("股票权重");
 //				
-//				System.out.println(tmpstockname+tmpstockcode);
+//				logger.debug(tmpstockname+tmpstockcode);
 //				Stock tmpstock = new Stock (tmpstockcode,tmpstockname);
 //				
 //				HashMap<String, Integer> stockbkweight = new  HashMap<String, Integer>() ;
@@ -2274,7 +2276,7 @@ public class BanKuaiDbOperation
 //			
 //		}catch(java.lang.NullPointerException e){ 
 //			e.printStackTrace();
-////			System.out.println( "数据库连接为NULL!");
+////			logger.debug( "数据库连接为NULL!");
 //		} catch (SQLException e) {
 //			e.printStackTrace();
 //		}catch(Exception e){
@@ -2409,17 +2411,17 @@ public class BanKuaiDbOperation
 //					
 //					;
 //		}
-//		System.out.println(diyusqlquerystat);
+//		logger.debug(diyusqlquerystat);
 //		CachedRowSetImpl rsdy = null;
 //		double dy = 0.0;
 //		try {  
 //			 rsdy = connectdb.sqlQueryStatExecute(diyusqlquerystat);
 //			 while(rsdy.next()) {
 //				 dy = rsdy.getDouble("成交额");
-//				 System.out.println(dy);
+//				 logger.debug(dy);
 //			 }
 //		}catch(java.lang.NullPointerException e){ 
-//			System.out.println( "数据库连接为NULL!");
+//			logger.debug( "数据库连接为NULL!");
 //		} catch (SQLException e) {
 //			e.printStackTrace();
 //		}catch(Exception e){
@@ -2448,7 +2450,7 @@ public class BanKuaiDbOperation
 //				+ " AND ISNULL(移除时间)"
 //				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
 //				;   
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		HashMap<String,String> tmpgnset = new HashMap<String,String>();
 //		CachedRowSetImpl rsfg = null;
 //		try {  
@@ -2498,7 +2500,7 @@ public class BanKuaiDbOperation
 								+ "'" + subcylcode.trim() + "'"
 								+ ")"
 								;
-		System.out.println(sqlinsertstat);
+		logger.debug(sqlinsertstat);
 		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
 		return subcylcode;
@@ -2515,7 +2517,7 @@ public class BanKuaiDbOperation
 				+ "'" + bkcode.trim() + "'" 
 				+ ")"
 				;
-		System.out.println(sqlinsertstat);
+		logger.debug(sqlinsertstat);
 		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
 //		BanKuai tmpbkai = new BanKuai (dbbkname);
@@ -2531,7 +2533,7 @@ public class BanKuaiDbOperation
 				//Multimap<String,String> tmpsysbkmap =   ArrayListMultimap.create();
 				
 				String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信自定义板块列表 	ORDER BY 板块名称, 板块ID, 创建时间";   
-				System.out.println(sqlquerystat);
+				logger.debug(sqlquerystat);
 				CachedRowSetImpl  rs = null;  
 			    try {  
 			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -2633,7 +2635,7 @@ public class BanKuaiDbOperation
 		for (Map.Entry<String, BanKuai> entry : curallbk.entrySet()) {
 
 		    String bkcode = entry.getKey().trim();
-		    System.out.println(bkcode);
+		    logger.debug(bkcode);
 		    BanKuai bankuai = entry.getValue();
 		    String bkcys = bankuai.getSuoShuJiaoYiSuo();
 		    
@@ -2646,7 +2648,7 @@ public class BanKuaiDbOperation
 		    String sqlquerystat = "SELECT COUNT(*) AS RESULT FROM " + cjltablename + " WHERE  代码 = " 
 								+ "'"  + bkcode + "'" 
 								;
-		    System.out.println(sqlquerystat);
+		    logger.debug(sqlquerystat);
 		    CachedRowSetImpl  rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    int dy = 0;
 		    try {
@@ -2680,7 +2682,7 @@ public class BanKuaiDbOperation
 			
 			if(bktype != null) {
 				String sqlupdatequery = "UPDATE 通达信板块列表 SET 板块类型描述 = " + "'" + bktype +"'" + " WHERE 板块ID = " + bkcode;
-				System.out.println(sqlupdatequery);
+				logger.debug(sqlupdatequery);
 			    connectdb.sqlUpdateStatExecute(sqlupdatequery);
 			}
 				
@@ -2723,10 +2725,10 @@ public class BanKuaiDbOperation
 							+ " FROM " + cjltablename + "  WHERE  代码 = " 
    							+ "'"  + tmpbkcode + "'" 
    							;
-					System.out.println(sqlquerystat);
+					logger.debug(sqlquerystat);
    			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	while(rs.next()) {
-//   			    		System.out.println(rs.getMetaData().getColumnCount());
+//   			    		logger.debug(rs.getMetaData().getColumnCount());
    			    		java.util.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME
 	   			    	Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
 	   			    	ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()) .toLocalDate();
@@ -2734,7 +2736,7 @@ public class BanKuaiDbOperation
    			    	}
    			    } catch(java.lang.NullPointerException e) { 
 //   			    	e.printStackTrace();
-   			    		System.out.println("Exception: (BanKuaiDbOperation.java:2711)");
+   			    		logger.debug("Exception: (BanKuaiDbOperation.java:2711)");
    			    } catch (SQLException e) {
    			    	e.printStackTrace();
    			    }catch(Exception e){
@@ -2829,19 +2831,19 @@ public class BanKuaiDbOperation
 //							+ " FROM 通达信交易所指数每日交易信息  WHERE  代码 = " 
 //   							+ "'"  + tmpbkcode + "'" 
 //   							;
-//					System.out.println(sqlquerystat1);
+//					logger.debug(sqlquerystat1);
 //   			    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat1);
 //   			    	//rs.first();
 //   			    	while(rs.next()) {
 //   			    		java.util.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME");
 //   			    		Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
 //   			    		ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
-//   			    		System.out.println(lastestdbrecordsdate);
+//   			    		logger.debug(lastestdbrecordsdate);
 //   			    	}
 //   			    	
 //   			    }catch(java.lang.NullPointerException e){ 
 ////   			    	e.printStackTrace();
-//   			    	System.out.println(e.getMessage());
+//   			    	logger.debug(e.getMessage());
 //   			    } catch (SQLException e) {
 //   			    	e.printStackTrace();
 //   			    }catch(Exception e){
@@ -2952,7 +2954,7 @@ public class BanKuaiDbOperation
                     						+ "'" +  tmplinelist.get(6) + "'"  
                     						+ ")"
                     						;
-                        			System.out.println(sqlinsertstat);
+                        			logger.debug(sqlinsertstat);
                     				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
                     				lineimportcount ++;
                         		} else if(curlinedate.compareTo(lastestdbrecordsdate) == 0) {
@@ -2962,18 +2964,18 @@ public class BanKuaiDbOperation
                         		}
                     		} catch (Exception e) {
 //                    			e.printStackTrace();
-                    			System.out.println("不是有日期的数据行");
+                    			logger.debug("不是有日期的数据行");
                     		}
                         }
                     } //else {  
-//                        System.out.println(line);  
+//                        logger.debug(line);  
 //                  }  
                     nextend--;  
                 }  
                 nextend--;  
                 rf.seek(nextend);  
                 if (nextend == 0) {// 当文件指针退至文件开始处，输出第一行   文件第一行是文件抬头，不需要处理
-                    //System.out.println(new String(rf.readLine().getBytes("ISO-8859-1"), charset ));  
+                    //logger.debug(new String(rf.readLine().getBytes("ISO-8859-1"), charset ));  
                 }  
             }  
         } catch (FileNotFoundException e) {  
@@ -2999,7 +3001,7 @@ public class BanKuaiDbOperation
 //
 //		String sqlquerystat = "SELECT *  FROM 通达信交易所指数列表 WHERE 板块ID IS NOT NULL"
 //							   ;   
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs = null;
 //	    try {  
 //	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -3050,14 +3052,14 @@ public class BanKuaiDbOperation
 		    	 java.sql.Timestamp tmplastmdftime = null;
 		    	 while(rs.next())
 		    		  tmplastmdftime = rs.getTimestamp("MAX(创建时间)");
-		    	 System.out.println(tmplastmdftime);
+		    	 logger.debug(tmplastmdftime);
 		    	 lastesttdxtablesmdftime = tmplastmdftime;
 
 		    }catch(java.lang.NullPointerException e){
 		    	lastesttdxtablesmdftime = null;
 		    	e.printStackTrace();
 		    } catch (SQLException e) {
-		    	System.out.println(sqlquerystat);
+		    	logger.debug(sqlquerystat);
 		    	lastesttdxtablesmdftime = null;
 		    	e.printStackTrace();
 		    }catch(Exception e){
@@ -3081,14 +3083,14 @@ public class BanKuaiDbOperation
 //	    	 java.sql.Timestamp tmplastmdftime = null;
 //	    	 while(rszs.next())
 //	    		  tmplastmdftime = rszs.getTimestamp("MAX(数据最新更新时间)");
-//	    	 System.out.println(tmplastmdftime);
+//	    	 logger.debug(tmplastmdftime);
 //	    	 if(tmplastmdftime.after(lastesttdxtablesmdftime))
 //	    		 lastesttdxtablesmdftime = tmplastmdftime;
 //	    }catch(java.lang.NullPointerException e){
 //	    	lastesttdxtablesmdftime = null;
 //	    	e.printStackTrace();
 //	    } catch (SQLException e) {
-//	    	System.out.println(sqlquerystat);
+//	    	logger.debug(sqlquerystat);
 //	    	lastesttdxtablesmdftime = null;
 //	    	e.printStackTrace();
 //	    }catch(Exception e){
@@ -3121,7 +3123,7 @@ public class BanKuaiDbOperation
 		
 			String sqlquerystat =  " show OPEN TABLES where In_use > 0" ;
 			//sqlquerystat = "SHOW OPEN TABLES WHERE `Table` LIKE '%[a股]%' AND `Database` LIKE '[stockinfomanagementtest]' AND In_use > 0";		   
-			System.out.println(sqlquerystat);
+			logger.debug(sqlquerystat);
 			sqlstatmap.put("mysql", sqlquerystat);
 			
 			CachedRowSetImpl rs = null; 
@@ -3164,7 +3166,7 @@ public class BanKuaiDbOperation
 //		String sqlquerystatfrombk     = "SELECT 板块名称  FROM 通达信板块列表             WHERE 板块ID = " + tmpbkcode;
 //		String sqlquerystatfromzhishu = "SELECT 板块名称  FROM 通达信交易所指数列表   WHERE 板块ID = " + tmpbkcode;
 //		
-//		System.out.println(sqlquerystatfrombk);
+//		logger.debug(sqlquerystatfrombk);
 //		String bkname = null ;
 //		CachedRowSetImpl rs = null;
 //	    try {  
@@ -3221,7 +3223,7 @@ public class BanKuaiDbOperation
 					+ "'" +  bankuaiid + "|" + "'"
 					+ ")"
 					;
-			System.out.println(sqlinsertstat);
+			logger.debug(sqlinsertstat);
 			 autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
 		} else {
 			//如果板块id是不是已经在新闻的板块list里面了，已经加过了。
@@ -3234,7 +3236,7 @@ public class BanKuaiDbOperation
 								  +	" END" 
 								  + " WHERE ID=" +  autoIncKeyFromApi
 								  ;
-			System.out.println(updatestat);
+			logger.debug(updatestat);
 			connectdb.sqlUpdateStatExecute (updatestat);
 		}
 		
@@ -3289,7 +3291,7 @@ public class BanKuaiDbOperation
 //	    				+ " WHERE 板块ID='" +  bankuaiid.trim() + "'"
 //	    				;
 //	    
-//		System.out.println(updatestat);
+//		logger.debug(updatestat);
 //		connectdb.sqlUpdateStatExecute (updatestat);
 		
 		return true;
@@ -3302,19 +3304,19 @@ public class BanKuaiDbOperation
 		if("ALL".equals(myowncode.toUpperCase())) { //删除该新闻
 			String deletestat = "DELETE  FROM 商业新闻 WHERE ID=" + newsid;
 			
-			System.out.println(deletestat);
+			logger.debug(deletestat);
 			connectdb.sqlUpdateStatExecute (deletestat);
 			
 //			updatestat = "UPDATE 通达信板块列表  SET 相关新闻 = REPLACE (相关新闻, '" + String.valueOf(newsid).trim() + "|', ' ' ) WHERE 板块ID='" + myowncode + "'";
-//			System.out.println(updatestat);
+//			logger.debug(updatestat);
 //			connectdb.sqlUpdateStatExecute (updatestat);
 //			
 //			updatestat = "UPDATE 通达信交易所指数列表  SET 相关新闻 = REPLACE (相关新闻, '" + String.valueOf(newsid).trim() + "|', ' ' ) WHERE 板块ID='" + myowncode + "'";
-//			System.out.println(updatestat);
+//			logger.debug(updatestat);
 //			connectdb.sqlUpdateStatExecute (updatestat);
 		} else { //删除在所有板块里的新闻
 			String updatestat = "UPDATE 商业新闻  SET 关联板块 = REPLACE (关联板块, '" + myowncode.trim() + "|', ' ' ) WHERE ID=" + newsid;
-			System.out.println(updatestat);
+			logger.debug(updatestat);
 			connectdb.sqlDeleteStatExecute(updatestat);
 			
 //			String  updatestat = "UPDATE 通达信板块列表 "
@@ -3326,7 +3328,7 @@ public class BanKuaiDbOperation
 //					  +	" END" 
 //					  + " WHERE ID=" +  autoIncKeyFromApi
 //					  ;
-//			System.out.println(updatestat);
+//			logger.debug(updatestat);
 //			connectdb.sqlUpdateStatExecute (updatestat);
 			
 		}
@@ -3343,7 +3345,7 @@ public class BanKuaiDbOperation
 									;
 			CachedRowSetImpl rs = null; 
 		    try {  
-		    	System.out.println(sqlquerystat);
+		    	logger.debug(sqlquerystat);
 		    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	 
 		    	 while(rs.next()) {
@@ -3430,7 +3432,7 @@ public class BanKuaiDbOperation
 //		CachedRowSetImpl rs = null; 
 //	    try {
 //	    	List<String> tmpbknewslist = null;
-//	    	System.out.println(sqlquerystat);
+//	    	logger.debug(sqlquerystat);
 //	    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 //	    	 while(rs.next()) {
 //	    		 String tmpnewids = rs.getString("相关新闻");
@@ -3490,14 +3492,14 @@ public class BanKuaiDbOperation
 					int dy = -1;
 					try {  
 						String sqlquerystat = "SELECT COUNT(*)  RESULT FROM 股票通达信概念板块对应表  WHERE 板块代码='" + bkcode + "'";
-//						System.out.println(sqlquerystat);
+//						logger.debug(sqlquerystat);
 						 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 						 while(rs.next()) {
 							 dy = rs.getInt("RESULT");
-	//						 System.out.println(dy);
+	//						 logger.debug(dy);
 						 }
 					}catch(java.lang.NullPointerException e){ 
-						System.out.println( "数据库连接为NULL!");
+						logger.debug( "数据库连接为NULL!");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}catch(Exception e){
@@ -3520,14 +3522,14 @@ public class BanKuaiDbOperation
 					int dy = -1;
 					try {
 						String sqlquerystat = "SELECT COUNT(*)  RESULT FROM 股票通达信风格板块对应表 WHERE 板块代码='" + bkcode + "'";
-//						System.out.println(sqlquerystat);
+//						logger.debug(sqlquerystat);
 						 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 						 while(rs.next()) {
 							  dy = rs.getInt("RESULT");
-//							 System.out.println(dy1);
+//							 logger.debug(dy1);
 						 }
 					}catch(java.lang.NullPointerException e){ 
-						System.out.println( "数据库连接为NULL!");
+						logger.debug( "数据库连接为NULL!");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}catch(Exception e){
@@ -3551,14 +3553,14 @@ public class BanKuaiDbOperation
 					int dy = -1;
 					try {
 						String sqlquerystat = "SELECT COUNT(*)  RESULT FROM 股票通达信行业板块对应表  WHERE 板块代码='" + bkcode + "'";
-//						System.out.println(sqlquerystat);
+//						logger.debug(sqlquerystat);
 						 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 						 while(rs.next()) {
 							 dy = rs.getInt("RESULT");
-//							 System.out.println(dy);
+//							 logger.debug(dy);
 						 }
 					}catch(java.lang.NullPointerException e){ 
-						System.out.println( "数据库连接为NULL!");
+						logger.debug( "数据库连接为NULL!");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}catch(Exception e){
@@ -3582,15 +3584,15 @@ public class BanKuaiDbOperation
 					int dy = -1;
 					try {
 						String sqlquerystat = "SELECT COUNT(*) AS RESULT FROM 股票通达信交易所指数对应表  WHERE 板块代码='" + bkcode + "'";
-//						System.out.println(sqlquerystat);
+//						logger.debug(sqlquerystat);
 						 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 						 while(rs.next()) {
 							 dy = rs.getInt("RESULT");
-//							 System.out.println(dy);
+//							 logger.debug(dy);
 						 }
 					}catch(java.lang.NullPointerException e) {
 						e.printStackTrace();
-						System.out.println( "数据库连接为NULL!");
+						logger.debug( "数据库连接为NULL!");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}catch(Exception e){
@@ -3608,41 +3610,43 @@ public class BanKuaiDbOperation
 							stockvsbktable = "股票通达信交易所指数对应表";
 					}
 				}
-				
-				try {
-					CachedRowSetImpl rsdy = null;
-					int dy = -1;
+				if(stockvsbktable == null) {
 					try {
-						String diyusqlquerystat = "SELECT 对应TDXSWID  FROM 通达信板块列表 WHERE 板块id = '" + bkcode + "'" ;
-//						System.out.println(diyusqlquerystat);
-						 rsdy = connectdb.sqlQueryStatExecute(diyusqlquerystat);
-						 while(rsdy.next()) {
-							 dy = rsdy.getInt("对应TDXSWID");
-//							 System.out.println(dy);
-						 }
-					}catch(java.lang.NullPointerException e){ 
-						System.out.println( "数据库连接为NULL!");
-					} catch (SQLException e) {
-//						e.printStackTrace();
-						System.out.println("java.sql.SQLException: 对列 1 中的值 (芯片) 执行 getInt 失败，不是地域板块。");
-					}catch(Exception e){
-						e.printStackTrace();
-					} finally {
+						CachedRowSetImpl rsdy = null;
+						int dy = -1;
 						try {
-							if(rsdy != null)
-								rsdy.close();
+							String diyusqlquerystat = "SELECT 对应TDXSWID  FROM 通达信板块列表 WHERE 板块id = '" + bkcode + "'" ;
+//							logger.debug(diyusqlquerystat);
+							 rsdy = connectdb.sqlQueryStatExecute(diyusqlquerystat);
+							 while(rsdy.next()) {
+								 dy = rsdy.getInt("对应TDXSWID");
+//								 logger.debug(dy);
+							 }
+						}catch(java.lang.NullPointerException e){ 
+							logger.debug( "数据库连接为NULL!");
 						} catch (SQLException e) {
+//							e.printStackTrace();
+							logger.debug("java.sql.SQLException: 对列 1 中的值 (芯片) 执行 getInt 失败，不是地域板块。");
+						}catch(Exception e){
 							e.printStackTrace();
+						} finally {
+							try {
+								if(rsdy != null)
+									rsdy.close();
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+							rsdy = null;
+							if(dy>=1 && dy <=32) {
+								stockvsbktable =  "股票通达信基本面信息对应表";
+								actiontables.put("地域代码", String.valueOf(dy) );
+							}
 						}
-						rsdy = null;
-						if(dy>=1 && dy <=32) {
-							stockvsbktable =  "股票通达信基本面信息对应表";
-							actiontables.put("地域代码", String.valueOf(dy) );
-						}
+					} catch (java.lang.NullPointerException e1) {
+						
 					}
-				} catch (java.lang.NullPointerException e1) {
-					
 				}
+				
 				if(stockvsbktable != null)
 					actiontables.put("股票板块对应表", stockvsbktable);
 				
@@ -3675,7 +3679,7 @@ public class BanKuaiDbOperation
 		String currentbkcode = currentbk.getMyOwnCode();
 		
 		HashMap<String, String> actiontables = this.getActionRelatedTables(currentbk,null);
-//		System.out.println(actiontables);
+//		logger.debug(actiontables);
 		String bktypetable = actiontables.get("股票板块对应表");
 		String bknametable = actiontables.get("板块指数名称表");
 		if(bktypetable == null) {
@@ -3725,8 +3729,8 @@ public class BanKuaiDbOperation
 					 		"         group by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码`\r\n" + 
 					 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` ";
 			 }
-//			 System.out.println(sqlquerystat1);
-			 System.out.println("给板块" + currentbk.getMyOwnCode() + currentbk.getMyOwnName() + "寻找从" + formatedstartdate.toString() + "到" + formatedenddate.toString() + "时间段内的个股！");
+//			 logger.debug(sqlquerystat1);
+			 logger.debug("给板块" + currentbk.getMyOwnCode() + currentbk.getMyOwnName() + "寻找从" + formatedstartdate.toString() + "到" + formatedenddate.toString() + "时间段内的个股！");
 			 rs1 = connectdb.sqlQueryStatExecute(sqlquerystat1);
 //			  ResultSetMetaData rsmd = rs1.getMetaData();
 //			 String name = rsmd.getColumnName(3);
@@ -3756,7 +3760,7 @@ public class BanKuaiDbOperation
 				
 			}catch(java.lang.NullPointerException e){ 
 				e.printStackTrace();
-//				System.out.println( "数据库连接为NULL!");
+//				logger.debug( "数据库连接为NULL!");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}catch(Exception e){
@@ -3779,11 +3783,11 @@ public class BanKuaiDbOperation
 	public HashMap<String, Stock> getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang(BanKuai bankuai, LocalDate selecteddatestart , LocalDate selecteddateend)
 	{
 //		if(currentbkcode.equals("000959"))
-//			System.out.println("000959 arrived");
+//			logger.debug("000959 arrived");
 		
 		String currentbkcode = bankuai.getMyOwnCode();
 			HashMap<String, String> actiontables = this.getActionRelatedTables(bankuai,null);
-//			System.out.println(actiontables);
+//			logger.debug(actiontables);
 			String bktypetable = actiontables.get("股票板块对应表");
 			String bkorzsvoltable = actiontables.get("板块每日交易量表");
 			String bknametable = actiontables.get("板块指数名称表");
@@ -3858,7 +3862,7 @@ public class BanKuaiDbOperation
 								;
 					 
 				 }
-				 System.out.println(sqlquerystat1);
+				 logger.debug(sqlquerystat1);
 				 rs1 = connectdb.sqlQueryStatExecute(sqlquerystat1);
 
 				 while(rs1.next()) {  
@@ -3894,7 +3898,7 @@ public class BanKuaiDbOperation
 					
 				}catch(java.lang.NullPointerException e){ 
 					e.printStackTrace();
-//					System.out.println( "数据库连接为NULL!");
+//					logger.debug( "数据库连接为NULL!");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}catch(Exception e){
@@ -3970,7 +3974,7 @@ public class BanKuaiDbOperation
 							 		"  order by A.`板块代码`,  A.`股票代码`;"
 									;
 					 }
-					 System.out.println(sqlquerystat2);
+					 logger.debug(sqlquerystat2);
 					 rs2 = connectdb.sqlQueryStatExecute(sqlquerystat2);
 					 while(rs2.next()) {  
 						String tmpstockcode = rs2.getString("股票代码");
@@ -4004,7 +4008,7 @@ public class BanKuaiDbOperation
 						
 					}catch(java.lang.NullPointerException e){ 
 						e.printStackTrace();
-	//					System.out.println( "数据库连接为NULL!");
+	//					logger.debug( "数据库连接为NULL!");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}catch(Exception e){
@@ -4096,8 +4100,8 @@ public class BanKuaiDbOperation
 //					; 
 //		}
 		
-//		System.out.println(sqlquerystat);
-		System.out.println("为板块" + bankuai.getMyOwnCode() + bankuai.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
+//		logger.debug(sqlquerystat);
+		logger.debug("为板块" + bankuai.getMyOwnCode() + bankuai.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
 		
 		String sqlquerystatfx = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
 				"WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
@@ -4149,7 +4153,7 @@ public class BanKuaiDbOperation
 							"WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
 							"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + lastdayofweek + "')" 
 							;
-//					System.out.println(sqlquerystat);
+//					logger.debug(sqlquerystat);
 					rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
 					while(rsfx.next()) {
 						Integer recnum = rsfx.getInt("RESULT");
@@ -4240,8 +4244,8 @@ public class BanKuaiDbOperation
 				"order by Y.year, Y.week"
 				;
 		 }
-//		System.out.println(sqlquerystat);
-		System.out.println("为个股" + stock.getMyOwnCode()  + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
+//		logger.debug(sqlquerystat);
+		logger.debug("为个股" + stock.getMyOwnCode()  + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
 		
 		String sqlquerystatfx = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
 				"WHERE 股票代码='" + stockcode + "'" + "\r\n" + 
@@ -4297,7 +4301,7 @@ public class BanKuaiDbOperation
 							"WHERE 股票代码='" + stockcode + "'" + "\r\n" + 
 							"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + lastdayofweek + "')" 
 							;
-					System.out.println(sqlquerystat);
+					logger.debug(sqlquerystat);
 					rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
 					while(rsfx.next()) {
 						Integer recnum = rsfx.getInt("RESULT");
@@ -4311,7 +4315,7 @@ public class BanKuaiDbOperation
 			
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();
-//			System.out.println( "数据库连接为NULL!");
+//			logger.debug( "数据库连接为NULL!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}catch(Exception e){
@@ -4341,7 +4345,7 @@ public class BanKuaiDbOperation
 				"WHERE 股票代码='" + nodecode + "'" + "\r\n" + 
 				"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + givenwk + "')" 
 				;
-		System.out.println(sqlquerystat);
+		logger.debug(sqlquerystat);
 		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
 		
 		ArrayList<JiaRuJiHua> jrjh = new ArrayList<JiaRuJiHua> ();
@@ -4400,7 +4404,7 @@ public class BanKuaiDbOperation
 //				"		  AND WEEK(BKJYE.`交易日期`) <=WEEK('" + formatedenddate + "')\r\n" + 
 //				" GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`;"
 //				;
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs = null;
 //		try {
 //			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -4449,7 +4453,7 @@ public class BanKuaiDbOperation
 //				"	 where A.`板块代码`   = B.`板块代码`\r\n" + 
 //				"	  order by A.`板块代码`,  A.`股票代码`"
 //				;
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		HashMap<String,Double> bkfxzhanbimap = new HashMap<String,Double> ();
 //		CachedRowSetImpl rs = null;
 //		try {
@@ -4499,7 +4503,7 @@ public class BanKuaiDbOperation
 //				"	 where A.`板块代码`   = B.`板块代码`\r\n" + 
 //				"	  order by A.`板块代码`,  A.`股票代码`"
 //				;
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs2 = null;
 //		try {
 //			rs2 = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -4563,7 +4567,7 @@ public class BanKuaiDbOperation
 //					+ "	       AND BKJYE.`代码` = '" + bkcode + "'"
 //					+ "			GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
 //					;
-//			System.out.println(sqlquerystat);
+//			logger.debug(sqlquerystat);
 //			CachedRowSetImpl rs = null;
 //			try {
 //				rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -4588,7 +4592,7 @@ public class BanKuaiDbOperation
 //					+ " where  通达信交易所指数每日交易信息.交易日期 = dapanjyrq AND 通达信交易所指数每日交易信息.`代码` = '"  + bkcode + "'" + " AND Year(通达信交易所指数每日交易信息.交易日期)  = YEAR(now()) "
 //					+ " GROUP BY Year(通达信交易所指数每日交易信息.交易日期)  , WEEK(通达信交易所指数每日交易信息.交易日期), 通达信交易所指数每日交易信息.`代码`"
 //					; 
-//			System.out.println(sqlquerystat);
+//			logger.debug(sqlquerystat);
 //			CachedRowSetImpl rs = null;
 //			try {
 //				rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -4641,7 +4645,7 @@ public class BanKuaiDbOperation
 //				"				,通达信交易所指数列表 BKLB\r\n" + 
 //				"				WHERE BKCODE = BKLB.`板块ID`"
 //				;
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs = null;
 //		try {
 //			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -4685,7 +4689,7 @@ public class BanKuaiDbOperation
 //				"				WHERE BKCODE = BKLB.`板块ID`"
 //				;
 //		
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rssz = null; 
 //		try {  
 //		 	 rssz = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -4707,7 +4711,7 @@ public class BanKuaiDbOperation
 //		} catch(java.lang.NullPointerException e){ 
 //		 	e.printStackTrace();
 //		} catch (SQLException e) {
-//		 	System.out.println(sqlquerystat);
+//		 	logger.debug(sqlquerystat);
 //		 	e.printStackTrace();
 //		} catch(Exception e){
 //		 	e.printStackTrace();
@@ -4749,7 +4753,7 @@ public class BanKuaiDbOperation
 //				+ "	WHERE BKCODE = BKLB.`板块ID`"
 //				;
 //				
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs = null;
 //		try {
 //			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -4792,7 +4796,7 @@ public class BanKuaiDbOperation
 //				+ "	,通达信板块列表 BKLB"
 //				+ "	WHERE BKCODE = BKLB.`板块ID`"
 //				;
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rssz = null; 
 //		try {  
 //		 	 rssz = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -4814,7 +4818,7 @@ public class BanKuaiDbOperation
 //		} catch(java.lang.NullPointerException e){ 
 //		 	e.printStackTrace();
 //		} catch (SQLException e) {
-//		 	System.out.println(sqlquerystat);
+//		 	logger.debug(sqlquerystat);
 //		 	e.printStackTrace();
 //		} catch(Exception e){
 //		 	e.printStackTrace();
@@ -4846,7 +4850,7 @@ public class BanKuaiDbOperation
 //			 	 java.sql.Timestamp tmplastmdftime = null;
 //			 	 while(rs.next())
 //			 		  tmplastmdftime = rs.getTimestamp("MAX(交易日期)");
-//			 	 System.out.println(tmplastmdftime);
+//			 	 logger.debug(tmplastmdftime);
 //			 	 
 //			 	 if(CommonUtility.getWeekNumber(bkfxdate) == CommonUtility.getWeekNumber(tmplastmdftime) ){
 //			 		 
@@ -4862,7 +4866,7 @@ public class BanKuaiDbOperation
 //			 }catch(java.lang.NullPointerException e){ 
 //			 	e.printStackTrace();
 //			 } catch (SQLException e) {
-//			 	System.out.println(sqlquerystat);
+//			 	logger.debug(sqlquerystat);
 //			 	e.printStackTrace();
 //			 }catch(Exception e){
 //			 	e.printStackTrace();
@@ -4907,7 +4911,7 @@ public class BanKuaiDbOperation
 //				+ "	WHERE BKCODE = BKLB.`板块ID`"
 //				+ "	ORDER BY 占比 desc"
 //				;
-//		System.out.println(sqlquerystat);
+//		logger.debug(sqlquerystat);
 //		CachedRowSetImpl rs = null;
 //		DefaultCategoryDataset barchart_dataset = new DefaultCategoryDataset();
 //		try {
@@ -4961,7 +4965,7 @@ public class BanKuaiDbOperation
 			
 			String sqlquerystat = "SELECT  股票代码  FROM A股  WHERE      ifnull(已退市,1 )  or 已退市 = false "
 						;
-			System.out.println(sqlquerystat);
+			logger.debug(sqlquerystat);
 		    	rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	while(rsdm.next()) {
 		    		 String ggcode = rsdm.getString("股票代码"); //mOST_RECENT_TIME
@@ -5000,7 +5004,7 @@ public class BanKuaiDbOperation
 				bkfilename = (filenamerule.replaceAll("YY","SH")).replaceAll("XXXXXX", tmpbkcode);
 			File tmpbkfile = new File(exportath + "/" + bkfilename);
 			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
-				System.out.println("读取" + bkfilename + "发生错误！");
+				logger.debug("读取" + bkfilename + "发生错误！");
 			    continue; 
 			} 
 
@@ -5011,10 +5015,10 @@ public class BanKuaiDbOperation
 							+ " FROM "+ optTable +  " WHERE  代码 = " 
    							+ "'"  + tmpbkcode + "'" 
    							;
-					System.out.println(sqlquerystat);
+					logger.debug(sqlquerystat);
    			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	while(rs.next()) {
-//   			    		System.out.println(rs.getMetaData().getColumnCount());
+//   			    		logger.debug(rs.getMetaData().getColumnCount());
    			    		 Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
    			    		 Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
    			    		ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
@@ -5054,7 +5058,7 @@ public class BanKuaiDbOperation
 		String sqlupdatestat = "update " + bktypetable  + " set 股票权重 = " +  weight  + 
 				" where 板块代码 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "'" 
 				;
-		System.out.println(sqlupdatestat);
+		logger.debug(sqlupdatestat);
 		connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		
 		//因为不知道bkcode在哪个表里面，
@@ -5090,9 +5094,9 @@ public class BanKuaiDbOperation
 //		if(!sysconfigfile.exists()) { //不存在，创建该文件	
 //			try {
 //				sysconfigfile.createNewFile();
-//				System.out.println(bankuaichanyelianxml + "不存在，已经创建");
+//				logger.debug(bankuaichanyelianxml + "不存在，已经创建");
 //			} catch (IOException e) {
-//				System.out.println(bankuaichanyelianxml + "不存在，创建失败！");
+//				logger.debug(bankuaichanyelianxml + "不存在，创建失败！");
 //			}
 //		}
 		
@@ -5171,7 +5175,7 @@ public class BanKuaiDbOperation
 						+ "\"" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now())   + "\""  
 						+ ")"
 						;
-				//System.out.println(sqlinsertstat);
+				//logger.debug(sqlinsertstat);
 				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 				//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
 			}
@@ -5182,14 +5186,14 @@ public class BanKuaiDbOperation
 	        	String sqldeletetstat = "DELETE  FROM 通达信自定义板块列表 "
 	        							+ " WHERE 板块名称=" + "'" + str.trim() + "'" 
 	        							;
-	        	//System.out.println(sqldeletetstat);
+	        	//logger.debug(sqldeletetstat);
 	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 	    		//tfldresult.append("删除：" + str.trim() + " " + gupiaoheader + "\n");
 	    		
 	    		sqldeletetstat = "DELETE  FROM 股票通达信自定义板块对应表 "
 						+ " WHERE 自定义板块=" + "'" + str.trim() + "'" 
 						;
-				//System.out.println(sqldeletetstat);
+				//logger.debug(sqldeletetstat);
 				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 	        }
 	        
@@ -5256,7 +5260,7 @@ public class BanKuaiDbOperation
    						+ "'" + newzdybk.trim() + "'" 
    						+ ")"
    						;
-   				//System.out.println(sqlinsertstat);
+   				//logger.debug(sqlinsertstat);
    				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
    				//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
    			}
@@ -5268,7 +5272,7 @@ public class BanKuaiDbOperation
    	        							+ " WHERE 股票代码=" +  "'" + oldstock.trim() + "'"
    	        							+ " AND 风格板块=" + "'" + newzdybk.trim() + "'"
    	        							;
-   	        	//System.out.println(sqldeletetstat);
+   	        	//logger.debug(sqldeletetstat);
    	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
    	    		//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
    	        }
@@ -5285,7 +5289,7 @@ public class BanKuaiDbOperation
 		File file = new File(sysconfig.getTDXSysZDYBanKuaiFile () );
 		 
 		 if(!file.exists() ) {
-			 System.out.println("Zdy BanKuai File not exist");
+			 logger.debug("Zdy BanKuai File not exist");
 			 return null;
 		 }
 		 
@@ -5304,11 +5308,11 @@ public class BanKuaiDbOperation
               while (dis.read(itemBuf2, 0, eachbankuaibytenumber) != -1) {
            	   //板块名称
            	   String zdybankuainame = (new String(itemBuf2,0,48)).trim();
-           	   System.out.println(zdybankuainame);
+           	   logger.debug(zdybankuainame);
            	   
            	   //板块对应file
                String bkfilename = sysconfig.toUNIXpath(file.getParent()) + "/" + new String(itemBuf2,49,eachbankuaibytenumber-51).trim() +".blk";
-               System.out.println(bkfilename);
+               logger.debug(bkfilename);
                
                zdybkmap.put(zdybankuainame, bkfilename );
                
@@ -5375,7 +5379,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION ALL " 
 								;
-			//System.out.println(sqlquerystat1);
+			//logger.debug(sqlquerystat1);
 	       String sqlquerystat2="SELECT czjl.日期, " +		""
 								+ "IIF( czjl.买卖金额=0.0,'送转股',IIF(czjl.挂单 = true,IIF(czjl.买入卖出标志, '挂单买入', '挂单卖出'),IIF(czjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
 								+ " czjl.原因描述,"
@@ -5387,7 +5391,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION ALL " 
 								;
-	       //System.out.println(sqlquerystat2);
+	       //logger.debug(sqlquerystat2);
 	      String sqlquerystat3="SELECT rqczjl.日期,"
 								+ "IIF( rqczjl.买卖金额=0.0,'送转股',IIF(rqczjl.挂单 = true,IIF(rqczjl.买入卖出标志, '挂单买入', '挂单卖出'),IIF(rqczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
 								+ "rqczjl.原因描述,"
@@ -5399,7 +5403,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION  ALL "
 								;
-	      //System.out.println(sqlquerystat3);
+	      //logger.debug(sqlquerystat3);
 		 String sqlquerystat4="SELECT rzczjl.日期,"
 								+ "IIF( rzczjl.买卖金额=0.0,'送转股',IIF(rzczjl.挂单 = true,IIF(rzczjl.买入卖出标志, '挂单买入', '挂单卖出'),IIF(rzczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
 								+ "rzczjl.原因描述,"
@@ -5411,7 +5415,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION ALL "
 								;
-		 //System.out.println(sqlquerystat4);
+		 //logger.debug(sqlquerystat4);
 	     String sqlquerystat5="SELECT zdgz.日期,"
 								+ "zdgz.加入移出标志,"
 								+ "zdgz.原因描述,"
@@ -5422,10 +5426,10 @@ public class BanKuaiDbOperation
 								+ " WHERE zdgz.股票代码 =" + "'" + stockcode + "'"
 								+ " ORDER BY 1 DESC,5,3 " //desc
 								;
-	     //System.out.println(sqlquerystat5);
+	     //logger.debug(sqlquerystat5);
 		
 	     String sqlquerystat = sqlquerystat1 + sqlquerystat2 + sqlquerystat3 + sqlquerystat4 + sqlquerystat5;
-	     //System.out.println(sqlquerystat);
+	     //logger.debug(sqlquerystat);
 	     
 	     return sqlquerystat;
 			
@@ -5445,7 +5449,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION ALL " 
 								;
-			//System.out.println(sqlquerystat1);
+			//logger.debug(sqlquerystat1);
 	       String sqlquerystat2="SELECT czjl.日期, " +		""
 								+ "IF( czjl.买卖金额=0,'送转股',IF(czjl.挂单 = true,IF(czjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(czjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
 								+ " czjl.原因描述,"
@@ -5457,7 +5461,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION ALL " 
 								;
-	       //System.out.println(sqlquerystat2);
+	       //logger.debug(sqlquerystat2);
 	      String sqlquerystat3="SELECT rqczjl.日期,"
 								+ "IF( rqczjl.买卖金额=0,'送转股',IF(rqczjl.挂单 = true,IF(rqczjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(rqczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
 								+ "rqczjl.原因描述,"
@@ -5469,7 +5473,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION  ALL "
 								;
-	      //System.out.println(sqlquerystat3);
+	      //logger.debug(sqlquerystat3);
 		 String sqlquerystat4="SELECT rzczjl.日期,"
 								+ "IF( rzczjl.买卖金额=0,'送转股',IF(rzczjl.挂单 = true,IF(rzczjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(rzczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
 								+ "rzczjl.原因描述,"
@@ -5481,7 +5485,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION ALL "
 								;
-		 //System.out.println(sqlquerystat4);
+		 //logger.debug(sqlquerystat4);
 	     String sqlquerystat5="SELECT zdgz.日期,"
 								+ "zdgz.加入移出标志,"
 								+ "zdgz.原因描述,"
@@ -5492,10 +5496,10 @@ public class BanKuaiDbOperation
 								+ " WHERE zdgz.股票代码 =" + "'" + stockcode + "'"
 								+ " ORDER BY 1 DESC,5,3 " //desc
 								;
-	     //System.out.println(sqlquerystat5);
+	     //logger.debug(sqlquerystat5);
 		
 	     String sqlquerystat = sqlquerystat1 + sqlquerystat2 + sqlquerystat3 + sqlquerystat4 + sqlquerystat5;
-	     //System.out.println(sqlquerystat);
+	     //logger.debug(sqlquerystat);
 	     
 	     return sqlquerystat;
 		}
@@ -5613,7 +5617,7 @@ public class BanKuaiDbOperation
 //				rs.first();
 //			} catch(Exception e) {
 //				JOptionPane.showMessageDialog(null,"ConnectDatabase -> setANewDtockCodeIndicate 不可预知的错误");
-//				System.out.println(""+e);
+//				logger.debug(""+e);
 //			} 		
 //			
 //			return newStockSign;
@@ -5623,7 +5627,7 @@ public class BanKuaiDbOperation
 		{
 			String stockcode = stockbasicinfo.getMyOwnCode();
 			String sqlquerystat= "SELECT checklistsitems FROM A股   WHERE 股票代码 =" +"'" + stockcode +"'" ;
-			//System.out.println(sqlquerystat);
+			//logger.debug(sqlquerystat);
 			CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
 
 			try {
@@ -5706,7 +5710,7 @@ public class BanKuaiDbOperation
 							+ " WHERE 股票代码=" + stockcode
 							;
 				 sqlstatmap.put("mysql", sqlupdatestat);
-				 //System.out.println(sqlupdatestat);
+				 //logger.debug(sqlupdatestat);
 				 
 				 if( connectdb.sqlUpdateStatExecute(sqlupdatestat) !=0)
 					 return true;
@@ -5729,7 +5733,7 @@ public class BanKuaiDbOperation
 							+ " 竞争对手=" + "'" + jingZhengDuiShou + "'"  
 							+ " WHERE 板块ID=" + stockcode
 							;
-				 //System.out.println(sqlinsertstat); 
+				 //logger.debug(sqlinsertstat); 
 				 sqlstatmap.put("mysql", sqlinsertstat);
 				 if( connectdb.sqlUpdateStatExecute(sqlinsertstat) !=0 ) {
 					 return true;
@@ -5747,7 +5751,7 @@ public class BanKuaiDbOperation
 					+ "WHERE 股票代码=" + stockcode
 					
 					;
-		// System.out.println(sqlupdatestat);
+		// logger.debug(sqlupdatestat);
 		 connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		 return true;
 		}
@@ -5773,7 +5777,7 @@ public class BanKuaiDbOperation
 					+ "'" + shuoming + "'"  
 					+ ")"
 					;
-			//System.out.println(sqlinsertstat);
+			//logger.debug(sqlinsertstat);
 			sqlstatmap.put("mysql", sqlinsertstat);
 			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
 			return autoIncKeyFromApi;
@@ -5800,7 +5804,7 @@ public class BanKuaiDbOperation
 					+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)"
 					;
 			
-			System.out.println(sqlquerystat);
+			logger.debug(sqlquerystat);
 			CachedRowSetImpl rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
 			try  {     
 		        while(rs_gn.next()) {
@@ -5831,7 +5835,7 @@ public class BanKuaiDbOperation
 //			sqlquerystat=  "SELECT 自定义板块 FROM 股票通达信自定义板块对应表  WHERE 股票代码= "
 //							+ "'" +  stockcode.trim() + "'"
 //							;
-//			//System.out.println(sqlquerystat);
+//			//logger.debug(sqlquerystat);
 //			CachedRowSetImpl rs_zdy = connectdb.sqlQueryStatExecute(sqlquerystat);
 //			HashSet<String> tmpzdybk = new HashSet<String> ();
 //			try  {     
@@ -5859,7 +5863,7 @@ public class BanKuaiDbOperation
 		public String getStockCodeByName(String stockname) 
 		{
 			String sqlquerystat= "SELECT 股票代码 FROM A股   WHERE 股票名称 =" +"'" + stockname +"'" ;
-			//System.out.println(sqlquerystat);
+			//logger.debug(sqlquerystat);
 			CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
 
 			String stockcode = null;
@@ -5920,7 +5924,7 @@ public class BanKuaiDbOperation
 			File file = new File(sysconfig.getTDXShenZhenShuNameFile() );
 			
 			if(!file.exists() ) {
-				 System.out.println("File not exist");
+				 logger.debug("File not exist");
 				 return -1;
 			 }
 			
@@ -5935,7 +5939,7 @@ public class BanKuaiDbOperation
 	               byte[] itemBuf = new byte[fileheadbytenumber];
 	               dis.read(itemBuf, 0, fileheadbytenumber); 
 	               String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-	               System.out.println(fileHead);
+	               logger.debug(fileHead);
 	               
 	               int sigbk = 18*16+12+14;
 	               byte[] itemBuf2 = new byte[sigbk];
@@ -5943,9 +5947,9 @@ public class BanKuaiDbOperation
 //	               Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	               while (dis.read(itemBuf2, 0, sigbk) != -1) {
 	            	   String zhishuline =new String(itemBuf2,0,sigbk);
-//	            	   System.out.println(zhishuline);
+//	            	   logger.debug(zhishuline);
 	            	   String zhishucode = zhishuline.trim().substring(0, 6);
-	            	   System.out.println(zhishucode);
+	            	   logger.debug(zhishucode);
 	            	   
 	            	   if(  !zhishucode.startsWith("000") && !zhishucode.startsWith("001") && !zhishucode.startsWith("002") && !zhishucode.startsWith("300"))
 	            		   continue;
@@ -5958,12 +5962,12 @@ public class BanKuaiDbOperation
 	            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
 	            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
 	            	   }
-//	            	   System.out.println(zhishuname);
+//	            	   logger.debug(zhishuname);
 	            	   
 	            	   String sqlinsertstat = "Update a股 set 股票名称 = '" + zhishuname.trim() + "'\r\n" + 
 	   						   					"where 股票代码 = '" + zhishucode.trim() + "' "
 	   						   ;
-	            	   System.out.println(sqlinsertstat);
+	            	   logger.debug(sqlinsertstat);
 		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 //		                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	               }
@@ -5995,7 +5999,7 @@ public class BanKuaiDbOperation
 			File file = new File(sysconfig.getTDXShangHaiZhiShuNameFile() );
 			
 			if(!file.exists() ) {
-				 System.out.println("File not exist");
+				 logger.debug("File not exist");
 				 return -1;
 			 }
 			
@@ -6010,7 +6014,7 @@ public class BanKuaiDbOperation
 	               byte[] itemBuf = new byte[fileheadbytenumber];
 	               dis.read(itemBuf, 0, fileheadbytenumber); 
 	               String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-//	               System.out.println(fileHead);
+//	               logger.debug(fileHead);
 	               
 	               int sigbk = 18*16+12+14;
 	               byte[] itemBuf2 = new byte[sigbk];
@@ -6018,9 +6022,9 @@ public class BanKuaiDbOperation
 //	               Files.append("开始导入通达信股票指数板块对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	               while (dis.read(itemBuf2, 0, sigbk) != -1) {
 	            	   String zhishuline =new String(itemBuf2,0,sigbk);
-//	            	   System.out.println(zhishuline);
+//	            	   logger.debug(zhishuline);
 	            	   String zhishucode = zhishuline.trim().substring(0, 6);
-//	            	   System.out.println(zhishucode);
+//	            	   logger.debug(zhishucode);
 	            	   
 	            	   if(  !(zhishucode.startsWith("60") ) )
 	            		   continue;
@@ -6033,12 +6037,12 @@ public class BanKuaiDbOperation
 	            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
 	            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
 	            	   }
-//	            	   System.out.println(zhishuname);
+//	            	   logger.debug(zhishuname);
 	            	   
 	            	   String sqlinsertstat = "Update a股 set 股票名称 = '" + zhishuname.trim() + "'\r\n" + 
 	            	   						   "where 股票代码 = '" + zhishucode.trim() + "' "
 		   						;
-//	            	   System.out.println(sqlinsertstat);
+//	            	   logger.debug(sqlinsertstat);
 		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 //		                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	               }
@@ -6072,7 +6076,7 @@ public class BanKuaiDbOperation
 		
 			File file = new File(sysconfig.getTDXStockEverUsedNameFile() );
 			if(!file.exists() ) {
-				 System.out.println("File not exist");
+				 logger.debug("File not exist");
 				 return null;
 			 }
 			
@@ -6092,7 +6096,7 @@ public class BanKuaiDbOperation
 		              while (dis.read(itemBuf2, 0, eachcymbytenumber) != -1) {
 		            	String cymline = (new String(itemBuf2,0,63)).trim();
 			           	List<String> tmplinelist = Splitter.fixedLength(6).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(cymline);
-			           	System.out.println(tmplinelist);
+			           	logger.debug(tmplinelist);
 			           	
 			           	String stockcode = tmplinelist.get(0).trim();
 			           	String stockcym = tmplinelist.get(1).replaceAll("\\s*", "");
@@ -6134,7 +6138,7 @@ public class BanKuaiDbOperation
 //							+ " 曾用名=" + "'" + cymstr + "'"
 //							+ " WHERE 股票代码=" + stockcode
 //							;
-//				 System.out.println(sqlupdatestat);
+//				 logger.debug(sqlupdatestat);
 //				 connectdb.sqlUpdateStatExecute(sqlupdatestat);
 			 }
 			 
@@ -6147,7 +6151,7 @@ public class BanKuaiDbOperation
 						+ " 曾用名=" + "'" + everusedname + "'"
 						+ " WHERE 股票代码=" + stockcode
 						;
-			 System.out.println(sqlupdatestat);
+			 logger.debug(sqlupdatestat);
 			 connectdb.sqlUpdateStatExecute(sqlupdatestat);
 			
 		}
@@ -6167,7 +6171,7 @@ public class BanKuaiDbOperation
 						
 						+ " UNION ALL " 
 						;
-			System.out.println(sqlquerystat2);
+			logger.debug(sqlquerystat2);
 			String sqlquerystat3=" SELECT rqczjl.股票代码, "
 								+ "IF( rqczjl.买卖金额=0.0,'送转股',IF(rqczjl.挂单 = true,IF(rqczjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(rqczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
 								+ "rqczjl.原因描述,"
@@ -6179,7 +6183,7 @@ public class BanKuaiDbOperation
 								
 								+ " UNION  ALL "
 								;
-			System.out.println(sqlquerystat3);
+			logger.debug(sqlquerystat3);
 			String sqlquerystat4=" SELECT rzczjl.股票代码,"
 								+ "IF( rzczjl.买卖金额=0.0,'送转股',IF(rzczjl.挂单 = true,IF(rzczjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(rzczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
 								+ "rzczjl.原因描述,"
@@ -6191,7 +6195,7 @@ public class BanKuaiDbOperation
 								
 								
 								;
-			System.out.println(sqlquerystat4);
+			logger.debug(sqlquerystat4);
 			String sqlquerystat =  sqlquerystat2 + sqlquerystat3 + sqlquerystat4 ;
 			
 			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
@@ -6261,13 +6265,13 @@ public class BanKuaiDbOperation
 	        try (DbfReader reader = new DbfReader(dbf)) {
 	            DbfMetadata meta = reader.getMetadata();
 
-	            System.out.println("Read DBF Metadata: " + meta);
+	            logger.debug("Read DBF Metadata: " + meta);
 	            int recCounter = 0;
 	            while ( (rec = reader.read() ) != null) {
 	                rec.setStringCharset(stringCharset);
-//	                System.out.println("Record is DELETED: " + rec.isDeleted());
-//	                System.out.println(rec.getRecordNumber());
-//	                System.out.println(rec.toMap());
+//	                logger.debug("Record is DELETED: " + rec.isDeleted());
+//	                logger.debug(rec.getRecordNumber());
+//	                logger.debug(rec.toMap());
 //	        		{SC=0, GPDM=000001, GXRQ=20170811, ZGB=1717041.12, GJG=180199.00, FQRFRG=12292000.00, FRG=54769000.00, BG=0.00, HG=0.00, LTAG=1691799.00, ZGG=0.68, 
 //	        		ZPG=null, ZZC=3092142080.0, LDZC=0.0, GDZC=7961000.0, WXZC=4636000.0, CQTZ=379179.0, LDFZ=0.0, CQFZ=0.0, ZBGJJ=56465000.0, JZC=211454000.0, 
 //	        		ZYSY=54073000.0, ZYLY=0.0, QTLY=0.0, YYLY=40184000.0, TZSY=739000.0, BTSY=-128180000.0, YYWSZ=-107760000.0, SNSYTZ=0.0, LYZE=16432000.0, 
@@ -6402,7 +6406,7 @@ public class BanKuaiDbOperation
 	                        					+ " 行业HY=" + hy +","
 	                        					+ " ZBNB=" + zbnb
 	                        					; 
-	              System.out.println(sqlinsetstat);
+	              logger.debug(sqlinsetstat);
 	              connectdb.sqlUpdateStatExecute(sqlinsetstat);
 	                recCounter++;
 
@@ -6416,14 +6420,14 @@ public class BanKuaiDbOperation
 	                connectdb.sqlInsertStatExecute(sqlinsetstat);
 	            }
 	        } catch (IOException e1) {
-	        	System.out.println("出错SQL是:" + sqlinsetstat);
+	        	logger.debug("出错SQL是:" + sqlinsetstat);
 				e1.printStackTrace();
 			} catch (ParseException e2) {
-				System.out.println("出错SQL是:" + sqlinsetstat);
+				logger.debug("出错SQL是:" + sqlinsetstat);
 				
 				e2.printStackTrace();
 			} catch (Exception e3) {
-				System.out.println("出错SQL是:" + sqlinsetstat);
+				logger.debug("出错SQL是:" + sqlinsetstat);
 				e3.printStackTrace();
 			}
 	        
@@ -6444,7 +6448,7 @@ public class BanKuaiDbOperation
 //					+ "'" + miaoshu  + "'" 
 //					+ ")"
 //					;
-//			System.out.println(sqlinsertstat);
+//			logger.debug(sqlinsertstat);
 //			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
 //			return autoIncKeyFromApi;
 //		}

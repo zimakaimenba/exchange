@@ -34,9 +34,12 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
@@ -46,6 +49,7 @@ import com.google.common.collect.Sets.SetView;
 public class BanKuaiGeGuTable extends JTable 
 { 
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);
 	private StockInfoManager stockmanager;
 	private BanKuaiGeGuTableRenderer renderer;
 	private JMenuItem menuItemAddNews;
@@ -206,7 +210,7 @@ public class BanKuaiGeGuTable extends JTable
 					 //int column = tblSearchResult.getSelectedColumn();
 					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
 					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
-//					 System.out.println(stockcode);
+//					 logger.debug(stockcode);
 					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
 					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
 					 this.stockmanager.toFront();

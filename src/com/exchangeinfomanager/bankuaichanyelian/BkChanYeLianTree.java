@@ -20,6 +20,9 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
+import org.apache.log4j.Logger;
+
 import javax.swing.tree.TreeNode;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
@@ -67,6 +70,7 @@ public class BkChanYeLianTree extends JTree
 		 this.createEvents(this);
 //      
 	}
+	private static Logger logger = Logger.getLogger(BkChanYeLianTree.class);
 	
 	private String currentselectedtdxbk;
 	private boolean ignoreExpansion = false;
@@ -315,7 +319,7 @@ public class BkChanYeLianTree extends JTree
                 	parent.add(newNode);
 	                parent.setExpansion(true);
                 } else { ////父节点是个股，不可以加
-                	System.out.println("父节点是个股，不能加板块");
+                	logger.debug("父节点是个股，不能加板块");
                 	direction = BanKuaiAndChanYeLian.DOWN;
                 }
                 
@@ -363,7 +367,7 @@ public class BkChanYeLianTree extends JTree
         for(int i=0;i<childnum;i++) {
         	BkChanYeLianTreeNode tmpnode = (BkChanYeLianTreeNode)parent.getChildAt(i);
         	String tmpnodename = tmpnode.getUserObject().toString();
-        	System.out.println(tmpnodename);
+        	logger.debug(tmpnodename);
         	if(tmpnodename.equals(gegucodename)) {
         		return true;
         	}
@@ -510,10 +514,10 @@ public class BkChanYeLianTree extends JTree
 	private ArrayList<String> getFormatedBanKuaiChanYeLian (String bkcyl)
 	{
 		List<String> tmpcyltreepathlist =  Splitter.on("->").trimResults().omitEmptyStrings().splitToList(bkcyl);  
-		System.out.println(tmpcyltreepathlist);
+		logger.debug(tmpcyltreepathlist);
 		
 		ArrayList<String> cyltreepathlist = new ArrayList<String>(tmpcyltreepathlist);
-		System.out.println(cyltreepathlist);
+		logger.debug(cyltreepathlist);
 
 		return cyltreepathlist;
 	}

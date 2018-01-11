@@ -288,9 +288,9 @@ public class ImportTDXData extends JDialog {
 		}
 		
 		//用户同步完个股和板块成交量后，要update一下板块的类型，以便后用
-		if(chbxdaorutdxsysbkvol.isSelected() &&  chbxdaorutdxsysbkvol.isEnabled() 
-			&& cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled()
-			&& cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled() ) {
+		if(chbxdaorutdxsysbkvol.isSelected()  
+			&& cbxImportSzGeGuVol.isSelected() 
+			&& cbxImportShGeGuVol.isSelected()  ) {
 			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
 		}
 		

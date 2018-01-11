@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 import java.awt.Color;
 import java.awt.Paint;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 
@@ -16,6 +17,7 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
 		super ();
 	}
 	
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarRenderer.class);
 	private static final long serialVersionUID = 1L;
 //	private Paint[] colors;
     protected int shouldcolumn = -1;

@@ -25,6 +25,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
@@ -45,6 +47,7 @@ public class BanKuaiInfoTable extends JTable
 	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
 	private BanKuaiAndChanYeLian bkcyl;
+	private static Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 
 	public BanKuaiInfoTable(StockInfoManager stockmanager1,BanKuaiAndChanYeLian bkcyl2) 
 	{
@@ -122,7 +125,7 @@ public class BanKuaiInfoTable extends JTable
 					 //int column = tblSearchResult.getSelectedColumn();
 					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
 					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
-//					 System.out.println(stockcode);
+//					 logger.debug(stockcode);
 					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
 					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
 					 this.stockmanager.toFront();

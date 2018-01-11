@@ -4,6 +4,9 @@ import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 import javax.swing.JTree;
 import javax.swing.tree.*;
+
+import org.apache.log4j.Logger;
+
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -11,7 +14,8 @@ import java.io.IOException;
 
 public class TreeTransferHandler extends TransferHandler {
     
-    DataFlavor nodeFlavor;
+    private DataFlavor nodeFlavor;
+    private static Logger logger = Logger.getLogger(TreeTransferHandler.class);
     
     public TreeTransferHandler(){
         
@@ -20,7 +24,7 @@ public class TreeTransferHandler extends TransferHandler {
                     javax.swing.tree.DefaultMutableTreeNode[].class.getName() + "\"";
             nodeFlavor = new DataFlavor(mimeType);
         } catch (ClassNotFoundException ex) {
-            System.out.printf("ClassNotFound:%s\n",ex.getLocalizedMessage());
+            logger.error("ClassNotFound:%s\n"+ ex.getLocalizedMessage());
         }
                 
     }

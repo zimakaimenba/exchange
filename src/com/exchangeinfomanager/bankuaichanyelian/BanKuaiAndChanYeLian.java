@@ -62,6 +62,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -172,6 +173,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 				btnSaveAll.setEnabled(true);
 	}
 
+	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian.class);
+	
 	public static final int UP=0, LEFT=1, RIGHT=2, DOWN=3, NONE=4;
 	
 	private SystemConfigration sysconfig;
@@ -373,7 +376,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			return startend;
 		}
 		else if( requiredstart.isBefore(curstart) && requiredend.isAfter(curend)  ) {//部分完整3， 前后双缺失，这种情况目前似乎不可能发生，暂时不写
-			System.out.println("当前似乎不可能，");
+			logger.debug("当前似乎不可能，");
 			return startend;
 		}
 
@@ -464,7 +467,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 //			((ZdgzBanKuaiDetailXmlTableModel)tableCurZdgzbk.getModel()).fireTableDataChanged();
 //			tableCurZdgzbk.setRowSelectionInterval(selecteddaleirow,selecteddaleirow);
 //		}
-		//System.out.println("current node is  " + currentselectedtdxbk );
+		//logger.debug("current node is  " + currentselectedtdxbk );
 
 		//for tree
 		if(curselectnode != null) {
@@ -722,7 +725,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 				date=calendar.getTime(); //这个时间就是日期往后推一天的结果 
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 				String dateString = formatter.format(date);
-//				System.out.println(dateString);
+//				logger.debug(dateString);
 				
 				String parsefilename = parsedpath + dateString + ".ebk";
 //				tfldparsefilename.setText(parsefilename);
@@ -807,7 +810,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 				    else
 				    	linuxpath = (chooser.getSelectedFile()).toString().replace('\\', '/');
 				    
-//				    System.out.println(linuxpath);
+//				    logger.debug(linuxpath);
 				    tfldparsefilename.setText(linuxpath);
 				    
 				    parseSelectedBanKuaiFile (linuxpath);
@@ -888,7 +891,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 			    	 displayBanKuaiZhanBi (bknode);
 			  	   	 displayBanKuaiGeGuZhanBi (bknode);
 				} catch ( java.lang.NullPointerException e) {
-					System.out.println("没有板块被选择！");
+					logger.debug("没有板块被选择！");
 				}
 				
 			}
@@ -1145,7 +1148,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 					        if (id == KeyEvent.KEY_TYPED) {
 					            char c = e.getKeyChar();
 					            keyString = "key character = '" + c + "'";
-					            System.out.println(keyString);
+					            logger.debug(keyString);
 					        } else {
 					        	int keyCode = e.getKeyCode();
 					            keyString = "key code = " + keyCode
@@ -1161,7 +1164,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		        treechanyelian.addMouseListener(new java.awt.event.MouseAdapter() {
 		            public void mousePressed(java.awt.event.MouseEvent evt) {
 //		            	chanYeLianTreeMousePressed(evt);
-//		            	System.out.println("get action notice at bkcyl");
+//		            	logger.debug("get action notice at bkcyl");
 		    	        TreePath closestPath = treechanyelian.getClosestPathForLocation(evt.getX(), evt.getY());
 
 		    	        if(closestPath != null) {
@@ -1193,7 +1196,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 //						}
 						
 						TreePath closestPath = treechanyelian.getSelectionPath();
-//				        System.out.println(closestPath);
+//				        logger.debug(closestPath);
 				         BkChanYeLianTreeNode tdxbk = (BkChanYeLianTreeNode)closestPath.getPathComponent(1);
 				         String tdxbkcode = tdxbk.getMyOwnCode();
 				        

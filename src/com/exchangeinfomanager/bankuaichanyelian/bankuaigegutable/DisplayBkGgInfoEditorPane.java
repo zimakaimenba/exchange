@@ -10,6 +10,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
@@ -24,6 +25,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 
 	private BanKuaiDbOperation bkdbopt;
 	private Boolean clearContentsBeforeDisplayNewInfo = false;
+	private static Logger logger = Logger.getLogger(DisplayBkGgInfoEditorPane.class);
 
 	public DisplayBkGgInfoEditorPane()
 	{
@@ -53,7 +55,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	       	 
 	     String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//		 System.out.println(doc.toString());
+//		 logger.debug(doc.toString());
 		 org.jsoup.select.Elements content = doc.select("body");
 		       
 		 content.append( "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>");
@@ -90,7 +92,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	       	
 	       String htmlstring = this.getText();
 	       org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//	       System.out.println(doc.toString());
+//	       logger.debug(doc.toString());
 	       org.jsoup.select.Elements content = doc.select("body"); 
 	       
 	       content.append("<h4>板块基本信息</h4>");
@@ -139,7 +141,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
   		
 	       String htmlstring = this.getText();
 	       org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//	       System.out.println(doc.toString());
+//	       logger.debug(doc.toString());
 	       org.jsoup.select.Elements content = doc.select("body"); 
 	       
 	       content.append("<h4>板块关注分析信息</h4>");

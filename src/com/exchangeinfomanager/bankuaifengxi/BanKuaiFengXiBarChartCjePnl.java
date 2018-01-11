@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
@@ -29,6 +30,7 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl 
@@ -41,7 +43,7 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 		((CustomRendererForCje) plot.getRenderer()).setBarPainter(new StandardBarPainter());
 	}
 	
-
+	 private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjePnl.class);
 	/*
 	 * 板块/股票按周交易额
 	 */
@@ -144,7 +146,7 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
     @Override
     public LegendItem getLegendItem(int dataset, int series) {
         LegendItem legendItem = super.getLegendItem(dataset, series);
-        System.out.println(dataset + " " + series + " " + legendItem.getShape());
+        logger.debug(dataset + " " + series + " " + legendItem.getShape());
         // modify legendItem here
         return legendItem;
     }

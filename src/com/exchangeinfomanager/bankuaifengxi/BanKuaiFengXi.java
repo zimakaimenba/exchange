@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -36,6 +37,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -68,6 +70,7 @@ import com.exchangeinfomanager.gui.subgui.JStockComboBox;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -110,6 +113,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
+import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -146,7 +150,7 @@ public class BanKuaiFengXi extends JDialog {
 	private StockInfoManager stockmanager;
 	private HashSet<String> stockinfile;
 	private BanKuaiDbOperation bkdbopt;
-	
+	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
 	/*
 	 * 所有板块占比增长率的排名
 	 */
@@ -198,12 +202,13 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void exportBanKuaiWithGeGuOnCondition ()
 	{
-		if(!ckboxshowcje.isSelected() 	&& !chckbxmaxwk.isSelected() )
+		if(!ckboxshowcje.isSelected() 	&& !chckbxmaxwk.isSelected() ) {
 			JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-		else {
+			return;
+		} else {
 			String exportcjelevel = tfldshowcje.getText();
 			String exportmakwklevel = tflddisplaymaxwk.getText();
-			String msg = "将导出成交量大于" + exportcjelevel + "亿，并且MAXWK大于" + exportmakwklevel + "周的个股。导出耗时较长，请先确认条件。是否导出？" ;
+			String msg = "将导出成交量大于" + exportcjelevel + "亿，并且MAXWK大于" + exportmakwklevel + "周的个股。导出耗时较长，请先确认条件是否正确。\n是否导出？" ;
 			int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
 			if(exchangeresult == JOptionPane.CANCEL_OPTION)
 				return;
@@ -212,7 +217,8 @@ public class BanKuaiFengXi extends JDialog {
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		
 		Charset charset = Charset.forName("GBK") ;
-		File filefmxx = new File( sysconfig.getTDXModelMatchExportFile ()+ curselectdate.toString() + ".TXT" );
+		String exportfilename = sysconfig.getTDXModelMatchExportFile ()+ curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","") + ".EBK";
+		File filefmxx = new File( exportfilename );
 		try {
 			if (filefmxx.exists()) {
 				filefmxx.delete();
@@ -224,6 +230,7 @@ public class BanKuaiFengXi extends JDialog {
 		}
 			
 		 int rows = tableBkZhanBi.getRowCount();
+		 HashSet<String> outputresultset = new HashSet<String> (); 
 		 for(int i=0;i<rows;i++) {
 			 BanKuai rowbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(i);
 			 
@@ -232,28 +239,52 @@ public class BanKuaiFengXi extends JDialog {
 			 
 			 rowbk = bkcyl.getAllGeGuOfBanKuai (rowbk);
 			 
-			 HashMap<String, Stock> rowbkallgg = rowbk.getAllBanKuaiGeGu();
+			 HashMap<String, Stock> rowbkallgg = rowbk.getSpecificPeriodBanKuaiGeGu(curselectdate);
 			 for (Map.Entry<String, Stock> entry : rowbkallgg.entrySet()) {
 				   String stockcode = entry.getKey();
 				   Stock stock = entry.getValue();
+//				   logger.info(stockcode);
 				   
 				   ChenJiaoZhanBiInGivenPeriod record = stock.getNodeFengXiResultForSpecificDate(curselectdate);
-				   if( record.getMyOwnChengJiaoEr() >= Double.parseDouble(tfldshowcje.getText() )
-						   && ( record.getGgbkzhanbimaxweek() >= Integer.parseInt(tflddisplaymaxwk.getText() )  || record.getGgdpzhanbimaxweek() >= Integer.parseInt(tflddisplaymaxwk.getText() )  ) ) 
+				   Double recordcje = record.getMyOwnChengJiaoEr();
+				   double settingcje = Double.parseDouble(tfldshowcje.getText() ) * 100000000;
+				   Integer recordmaxbkwk = record.getGgbkzhanbimaxweek() ;
+				   Integer recordmaxdpwk = record.getGgdpzhanbimaxweek() ;
+				   int settingmaxwk = Integer.parseInt(tflddisplaymaxwk.getText() );
+				   if( recordcje >= settingcje && ( recordmaxbkwk >= settingmaxwk   || recordmaxdpwk >= settingmaxwk )   ) 
 					{ //满足条件，导出 ; 
 					   String outputresult; 
 					   if(stockcode.startsWith("60") )
-						   outputresult = "1" + stockcode.trim();
+						   outputresultset.add("1" + stockcode.trim());
 					   else
-						   outputresult = "0" + stockcode.trim();
-					   try {
-							Files.append(outputresult,filefmxx, charset);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						   outputresultset.add("0" + stockcode.trim());
+					   
+					   logger.debug(rowbk + "个股：" + stockcode + "满足导出条件， 成交额=" + String.valueOf(recordcje)  
+					   				+ "BKMAXWK=" + String.valueOf(recordmaxbkwk) + "DPMAXWK=" + String.valueOf(recordmaxdpwk));
 				   }
+				   
+				   
 			 }
 		 }
+		 
+		 for(String outputstock : outputresultset ) {
+			 String outputresult = outputstock +  System.getProperty("line.separator");
+			 try {
+					Files.append(outputresult,filefmxx, charset);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		 }
+		int exchangeresult = JOptionPane.showConfirmDialog(null, "个股导出成功，请在" + filefmxx.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
+		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+				return;
+		try {
+			String path = filefmxx.getParent();
+			Desktop.getDesktop().open(new File( path ));
+		} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+		}
 		
 	}
 	/*
@@ -314,7 +345,7 @@ public class BanKuaiFengXi extends JDialog {
 //	    	Component comp = tabbedPane.getComponent(i);
 //	   
 //	    	String label = tabbedPane.getTitleAt(i);
-//	    	System.out.println(i + label);
+//	    	logger.info(i + label);
 //	    	
 //	    }
 	    
@@ -380,7 +411,7 @@ public class BanKuaiFengXi extends JDialog {
 			panelGeguDapanZhanBi.resetDate();
 			panelgegucje.resetDate();
 			tabbedPanegeguzhanbi.setSelectedIndex(0);
-			tfldselectedmsg.setText("");
+//			tfldselectedmsg.setText("");
 			tabbedPanebk.setSelectedIndex(1);
 			
 			panelgeguwkzhanbi.setNodeZhanBiByWeek(stock,curselectdate,dapan); //个股板块占比
@@ -488,6 +519,16 @@ public class BanKuaiFengXi extends JDialog {
 			}
 		});
 		
+		tflddisplaymaxwk.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(chckbxmaxwk.isSelected() ) {
+					Integer maxwk = Integer.parseInt(tflddisplaymaxwk.getText() );
+					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setDisplayBkMaxWk(maxwk);
+					tableGuGuZhanBiInBk.repaint();
+				}
+			}
+		});
+		
 		chckbxmaxwk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if( Strings.isNullOrEmpty(tflddisplaymaxwk.getText() )) {
@@ -528,6 +569,31 @@ public class BanKuaiFengXi extends JDialog {
 				if(!ckboxparsefile.isSelected()) {
 					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(false);
 					tableGuGuZhanBiInBk.repaint();
+				}
+			}
+		});
+		
+		tfldshowcje.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(ckboxshowcje.isSelected()) {
+					Double showcje = Double.parseDouble( tfldshowcje.getText() ) * 100000000;
+					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setDisplayChenJiaoEr(showcje);
+					tableGuGuZhanBiInBk.repaint();
+
+					((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).setDisplayChenJiaoEr(showcje);
+					tablexuandingzhou.repaint();
+					
+					((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).setDisplayChenJiaoEr(showcje);
+					tablexuandingminusone.repaint();
+					
+					((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).setDisplayChenJiaoEr(showcje);
+					tablexuandingminustwo.repaint();
+					
+					((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).setDisplayChenJiaoEr(showcje);
+					tablexuandingplusone.repaint();
+					
+					((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).setDisplayChenJiaoEr(showcje);
+					tablexuandingplustwo.repaint();
 				}
 			}
 		});
@@ -882,13 +948,13 @@ public class BanKuaiFengXi extends JDialog {
 //			private boolean checkCodeInputFormat(String stockcode) 
 //			{
 //				// TODO Auto-generated method stub
-////				System.out.println(Pattern.matches("\\d{6}$","2223") );
-////				System.out.println(Pattern.matches("^\\d{6}","600138zhong") );
-////				System.out.println(Pattern.matches("\\d{6}$","000123") );
-////				System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123abccc") );
-////				System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123") );
-////				System.out.println(Pattern.matches("^\\d{6}{6,100}$","000123中青旅理论") );
-////				System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]$","ccccc000123abccc") );
+////				logger.info(Pattern.matches("\\d{6}$","2223") );
+////				logger.info(Pattern.matches("^\\d{6}","600138zhong") );
+////				logger.info(Pattern.matches("\\d{6}$","000123") );
+////				logger.info(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123abccc") );
+////				logger.info(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123") );
+////				logger.info(Pattern.matches("^\\d{6}{6,100}$","000123中青旅理论") );
+////				logger.info(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]$","ccccc000123abccc") );
 //				
 //				//或者是6位全数字，或者是前面6位是数字
 //					if( Pattern.matches("\\d{6}$",stockcode)  || Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$",stockcode) )
@@ -918,7 +984,7 @@ public class BanKuaiFengXi extends JDialog {
 				
 				if(arg0.getStateChange() == ItemEvent.DESELECTED) {
 //					BkChanYeLianTreeNode userinputnode = cbxstockcode.getUserInputNode();
-//					System.out.println("test");
+//					logger.info("test");
 				
 				}
 			}
@@ -937,6 +1003,7 @@ public class BanKuaiFengXi extends JDialog {
 	    		panelLastWkGeGuZhanBi.resetDate();
 	    		panelGeguDapanZhanBi.resetDate();
 	    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
+	    		tfldselectedmsg.setText("");
 //	    		initializeBanKuaiZhanBiByGrowthRate ();
 	    		
 	    		lastselecteddate = requirestart;
@@ -956,6 +1023,7 @@ public class BanKuaiFengXi extends JDialog {
 	    		pnllastestggzhanbi.resetDate();
 	    		panelLastWkGeGuZhanBi.resetDate();
 	    		panelGeguDapanZhanBi.resetDate();
+	    		tfldselectedmsg.setText("");
 	    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 //	    		initializeBanKuaiZhanBiByGrowthRate ();
 	    		
@@ -1209,7 +1277,7 @@ public class BanKuaiFengXi extends JDialog {
 			    		lastselecteddate = newdate;
 		    		}
 		    	}
-//		        System.out.println(e.getPropertyName()+ ": " + e.getNewValue());
+//		        logger.info(e.getPropertyName()+ ": " + e.getNewValue());
 		    }
 		});
 		
@@ -1227,6 +1295,7 @@ public class BanKuaiFengXi extends JDialog {
 			    		panelLastWkGeGuZhanBi.resetDate();
 			    		panelGeguDapanZhanBi.resetDate();
 			    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
+			    		tfldselectedmsg.setText("");
 //			    		initializeBanKuaiZhanBiByGrowthRate ();
 			    		
 			    		lastselecteddate = newdate;
@@ -1262,7 +1331,7 @@ public class BanKuaiFengXi extends JDialog {
 		    else
 		    	linuxpath = (chooser.getSelectedFile()).toString().replace('\\', '/');
 		    
-//		    System.out.println(linuxpath);
+//		    logger.info(linuxpath);
 		    tfldparsedfile.setText(linuxpath);
 		    
 //		    parseSelectedBanKuaiFile (linuxpath);

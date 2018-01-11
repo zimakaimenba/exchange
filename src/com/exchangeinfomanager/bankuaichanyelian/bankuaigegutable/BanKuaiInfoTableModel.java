@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 
@@ -26,6 +28,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 //	HashMap<String,BanKuai> bkmap;
 	List<Map.Entry<String, BanKuai>> entryList;
 	LocalDate showzhbiwknum;
+	private static Logger logger = Logger.getLogger(BanKuaiInfoTableModel.class);
 	
 	public void refresh  (HashMap<String,BanKuai> curbkzslist, LocalDate curselectdate)
 	{

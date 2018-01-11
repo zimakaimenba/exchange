@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.swing.tree.TreeNode;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -92,7 +93,7 @@ class ChanYeLianXMLHandler
 	            e.printStackTrace();  
 	     }  
 	}
-	
+	private static Logger logger = Logger.getLogger(ChanYeLianXMLHandler.class);
 	private String bankuaichanyelianxml;
 	private String geguchanyelianxml;
 	private SystemConfigration sysconfig;
@@ -147,7 +148,7 @@ class ChanYeLianXMLHandler
 				addNewTdxBanKuaiFromDbToChanYeLianTree (topNode,newBanKuaiFromDb,allbkandzs);
 			}				
 		} else {
-			System.out.println(bankuaichanyelianxml+ "存在错误");
+			logger.debug(bankuaichanyelianxml+ "存在错误");
 		}
 		return topNode;
 	}
@@ -187,7 +188,7 @@ class ChanYeLianXMLHandler
 		long cyllastmodifiedtime = tmpfl.lastModified();
 		Calendar  calfilemdf =  Calendar.getInstance();
 		calfilemdf.setTimeInMillis(cyllastmodifiedtime);
-//		System.out.println(calfilemdf.getTime() );
+//		logger.debug(calfilemdf.getTime() );
 		
 		Date bklastmodifiedtimeindb = bkopt.getTDXRelatedTableLastModfiedTime ();
 		if(bklastmodifiedtimeindb == null)
@@ -195,11 +196,11 @@ class ChanYeLianXMLHandler
 		
 		Calendar  caldbmdf =  Calendar.getInstance();
 		caldbmdf.setTime(bklastmodifiedtimeindb);
-		//System.out.println(caldbmdf.getTime() );
+		//logger.debug(caldbmdf.getTime() );
 		
 //		return true;//测试用
 		if(caldbmdf.after(calfilemdf)) {
-			System.out.println("数据库已经更新，开始更新XML");
+			logger.debug("数据库已经更新，开始更新XML");
 			return true;
 		}
 		else
@@ -229,7 +230,7 @@ class ChanYeLianXMLHandler
 	private void addNewTdxBanKuaiFromDbToChanYeLianTree(BkChanYeLianTreeNode topNode, SetView<String> newBanKuaiFromDb, HashMap<String, BanKuai> tdxbk) 
 	{
 		for(String newbkcode:newBanKuaiFromDb) {
-		        	System.out.println("XML将要中加入" + newbkcode);
+		        	logger.debug("XML将要中加入" + newbkcode);
 	
 		        	String bkname = null;
 					try {
@@ -265,7 +266,7 @@ class ChanYeLianXMLHandler
 					 
 					   try{
 						   parentsleaf = allbkandzs.get(bkowncode);
-//						   System.out.println(bkowncode);
+//						   logger.debug(bkowncode);
 						   ((BanKuai)parentsleaf).setDaPan((DaPan)topNode); //把大盘配给每个板块
 					   } catch (java.lang.NullPointerException e) { //可能出现数据库中已经删除的板块，XML里面还有的板块，是要删除的板块
 						   bkname = element.attributeValue("bkname");
@@ -467,7 +468,7 @@ class ChanYeLianXMLHandler
 				while (eleIt.hasNext()) 
 				{
 					   Element e = (Element) eleIt.next();
-					   //System.out.println(e.getName() + ": " + e.getText());
+					   //logger.debug(e.getName() + ": " + e.getText());
 					   ggcyl.add(e.getText());
 				 }
 			 }catch (java.lang.NullPointerException e) {
@@ -490,7 +491,7 @@ class ChanYeLianXMLHandler
 			    	 {
 			    		Element element = (Element) it.next();
 					    String chanyelian = element.getText().trim();
-//					    System.out.println(chanyelian);
+//					    logger.debug(chanyelian);
 					    gegucyllist.add(chanyelian); 
 			    	 }
 					
@@ -520,7 +521,7 @@ class ChanYeLianXMLHandler
 			//XML没有，数据库有，要添加如XML
 			SetView<String> differencebankuainew = Sets.difference(uniontdxbkindb, bkcylxmlset );
 	        for (String newbkcode : differencebankuainew) {
-	        	System.out.println("XML将要中加入" + newbkcode);
+	        	logger.debug("XML将要中加入" + newbkcode);
 				//在XML 中加入新的板块 //<BanKuai bkname="高速公路" Status="4">
 //				String xpathnew = ".//BanKuai[@bkname=\"" + newbk + "\"]";
 //				Node tmpnode = cylxmldoc.selectSingleNode(xpathnew);
@@ -534,7 +535,7 @@ class ChanYeLianXMLHandler
 					newele.addAttribute("bkname", bkname);
 					newele.addAttribute("bkcode", newbkcode);
 					newele.addAttribute("Type", String.valueOf(BkChanYeLianTreeNode.TDXBK) );
-					System.out.println("XML中加入" + newbkcode + bkname);
+					logger.debug("XML中加入" + newbkcode + bkname);
 	        }
 	        
 	        //XML里面有，数据库中没有了，应该删除，要从几个XML都删除
@@ -545,7 +546,7 @@ class ChanYeLianXMLHandler
 					String xpath = ".//BanKuai[@bkcode=\"" + oldbkcode + "\"]";
 					Node tmpnode = cylxmldoc.selectSingleNode(xpath);
 					cylxmlroot.remove(tmpnode);
-					System.out.println("产业链XML中删除" + oldbkcode);
+					logger.debug("产业链XML中删除" + oldbkcode);
 				} catch (java.lang.NullPointerException ex) {
 					
 				}
@@ -558,7 +559,7 @@ class ChanYeLianXMLHandler
 					for(Node singlenode:tmpnodegg)
 						ggcylxmlroot.remove(singlenode);
 					//xmldoc.remove(tmpnode);
-					System.out.println("个股产业链XML中删除" + oldbkcode);
+					logger.debug("个股产业链XML中删除" + oldbkcode);
 				} catch (java.lang.NullPointerException ex) {
 				}
 				

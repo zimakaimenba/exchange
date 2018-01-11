@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -99,6 +100,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		bkdbopt = new BanKuaiDbOperation ();
 	}
 	
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartPnl.class);
 	protected BkChanYeLianTreeNode curdisplayednode;	
 //	private LocalDate displayedenddate;
 //	private String pnltitle;

@@ -12,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 
 public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer 
@@ -23,10 +25,11 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	}
 	
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableRenderer.class);
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
 	{
-//		System.out.println("row" + row +"column" + col);
+//		logger.debug("row" + row +"column" + col);
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    

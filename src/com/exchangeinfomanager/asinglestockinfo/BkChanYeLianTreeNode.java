@@ -18,6 +18,8 @@ import java.util.Set;
 
 import javax.swing.tree.*;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -50,6 +52,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 //   		bkdbopt = new  BanKuaiDbOperation ();
 	}
 	
+    private static Logger logger = Logger.getLogger(BkChanYeLianTreeNode.class);
 	private String suoshutdxbkzscode; //所属通达信板块指数代码
 	private ArrayList<String> hanyupingyin; //汉语拼音
     protected int nodetype;
@@ -138,7 +141,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
         			return found;
         		}
     	} catch (java.lang.NullPointerException ex) {
-        	System.out.println(this.getUserObject().toString()+ "拼音是NULL" );
+        	logger.debug(this.getUserObject().toString()+ "拼音是NULL" );
     	}
     	
     	return found;
@@ -147,25 +150,25 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
     public void increaseZdgzOfficalCount ()
     {
     	inzdgzofficalcount ++;
-//    	System.out.println(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
+//    	logger.debug(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
     }
     public void decreaseZdgzOfficalCount ()
     {
     	inzdgzofficalcount --;
     	if(inzdgzofficalcount == 0 )
     		isofficallyselected = false;
-//    	System.out.println(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
+//    	logger.debug(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
     }
     
     public void increaseZdgzCandidateCount ()
     {
     	inzdgzcandidatecount ++;
-//    	System.out.println(this.getUserObject().toString() +"node cand count = " + inzdgzcandidatecount);
+//    	logger.debug(this.getUserObject().toString() +"node cand count = " + inzdgzcandidatecount);
     }
     public void decreasedgzCandidateCount ()
     {
     	inzdgzcandidatecount --;
-//    	System.out.println(this.getUserObject().toString() + "node cand count = " + inzdgzcandidatecount);
+//    	logger.debug(this.getUserObject().toString() + "node cand count = " + inzdgzcandidatecount);
     }
     public int getInZdgzOfficalCount ()
     {
@@ -399,9 +402,9 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 			ChenJiaoZhanBiInGivenPeriod firstrecord = this.cjeperiodlist.get(0);
 			LocalDate firstday = firstrecord.getRecordsDayofEndofWeek();
 			if(position.isBefore(firstday) || position.isEqual(firstday)) {
-				System.out.println("add before" + this.cjeperiodlist.size());
+//				logger.debug("add before" + this.cjeperiodlist.size());
 				this.cjeperiodlist.addAll(0, cjlperiodlist1);
-				System.out.println("add after" + this.cjeperiodlist.size());
+//				logger.debug("add after" + this.cjeperiodlist.size());
 				return true;
 			}
 			
@@ -509,7 +512,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 					 
 					 return curcje - lastcje; 
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) { 		//新的板块或个股//只有一个记录，说明是新的板块
-//						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//						logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 						return null;
 				}
 		}

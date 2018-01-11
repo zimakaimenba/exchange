@@ -19,6 +19,7 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -47,6 +48,7 @@ public class SystemConfigration
 		    return filePath.replace('\\', '/');
 	}
 	
+	private static Logger logger = Logger.getLogger(SystemConfigration.class);
 	private String systeminstalledpath;
 	private String tdxinstalledpath;
 	private String curdatabasetype;
@@ -68,12 +70,12 @@ public class SystemConfigration
 	{
 		File directory = new File("");//设定为当前文件夹
 		try{
-//		    System.out.println(directory.getCanonicalPath());//获取标准的路径
-//		    System.out.println(directory.getAbsolutePath());//获取绝对路径
+//		    logger.debug(directory.getCanonicalPath());//获取标准的路径
+//		    logger.debug(directory.getAbsolutePath());//获取绝对路径
 //		    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
 		    Properties properties = System.getProperties();
 		    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-		    System.out.println(this.systeminstalledpath );
+		    logger.debug(this.systeminstalledpath );
 		}catch(Exception e)
 		{
 			System.exit(0);
@@ -165,10 +167,10 @@ public class SystemConfigration
 				String cursel = tmpelement.attributeValue("curselecteddbs");
 				if(tmpelement.attributeValue("curselecteddbs").equals("yes")) {
 					curdbs = new CurDataBase (tmpelement.attributeValue("dbsname") );
-//					System.out.println( tmpelement.getText() );
-//					System.out.println(tmpelement.attributeValue("user") );
-//					System.out.println( tmpelement.attributeValue("password") );
-//					System.out.println( tmpelement.attributeValue("databasetype").trim()  ) ;
+//					logger.debug( tmpelement.getText() );
+//					logger.debug(tmpelement.attributeValue("user") );
+//					logger.debug( tmpelement.attributeValue("password") );
+//					logger.debug( tmpelement.attributeValue("databasetype").trim()  ) ;
 					
 					curdbs.setDataBaseConStr (tmpelement.getText() );
 					curdbs.setUser (tmpelement.attributeValue("user").trim() );
@@ -185,10 +187,10 @@ public class SystemConfigration
 				String cursel = tmpelement.attributeValue("curselecteddbs");
 				if(tmpelement.attributeValue("curselecteddbs").equals("yes")) {
 					rmtcurdb = new CurDataBase (tmpelement.attributeValue("dbsname") );
-					System.out.println( tmpelement.getText() );
-					System.out.println(tmpelement.attributeValue("user") );
-					System.out.println( tmpelement.attributeValue("password") );
-					System.out.println( tmpelement.attributeValue("databasetype").trim()  ) ;
+					logger.debug( tmpelement.getText() );
+					logger.debug(tmpelement.attributeValue("user") );
+					logger.debug( tmpelement.attributeValue("password") );
+					logger.debug( tmpelement.attributeValue("databasetype").trim()  ) ;
 					
 					if(tmpelement.getText().trim().equals(curdbs.getCurDatabaseType() ) )
 						rmtcurdb = curdbs;
@@ -213,7 +215,7 @@ public class SystemConfigration
 			}
 			
 		} catch (DocumentException e) {
-			System.out.println(this.getSysSettingFile() + "存在错误，请修改");
+			logger.debug(this.getSysSettingFile() + "存在错误，请修改");
 			//e.printStackTrace();
 			
 			tryingcount ++;
@@ -222,7 +224,7 @@ public class SystemConfigration
 				System.exit(0);
 			}
 			else {
-				System.out.println(this.getSysSettingFile());
+				logger.debug(this.getSysSettingFile());
 				SystemSetting systemset = new SystemSetting ( this.getSysSettingFile() );
 				systemset.setModal(true);
 				systemset.setVisible(true);
@@ -349,7 +351,7 @@ public class SystemConfigration
 		 String  settingfilename = this.tdxinstalledpath + "T0002/user.ini";
 		 File settingfile = new File(settingfilename);
 		 if(!settingfile.exists()) { //不存在,退出
-			 System.out.println(settingfilename + "不存在");
+			 logger.debug(settingfilename + "不存在");
 			return null;
 		 }		
 		
@@ -357,7 +359,7 @@ public class SystemConfigration
 		try {
 			TDXExportLineProcessor tdxef = new TDXExportLineProcessor ();
 			readLines = Files.readLines(settingfile, this.charSet (),tdxef);
-			System.out.println(readLines);
+			logger.debug(readLines);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -565,7 +567,7 @@ public class SystemConfigration
 //			
 //			Date date = null;
 //			try {
-//				System.out.println("Data need to be parsed is" + tmpdate);
+//				logger.debug("Data need to be parsed is" + tmpdate);
 //				date = format.parse(tmpdate);
 //			} catch (ParseException e) {
 //				// TODO Auto-generated catch block

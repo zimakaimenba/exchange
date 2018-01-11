@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
@@ -38,6 +39,8 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 		super.plot.setRenderer(new CustomRendererForGgDpZhanBi() );
 		((CustomRendererForGgDpZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
 	}
+	
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartGgDpZbPnl.class);
 	
 	/*
 	 * 个股和大盘的占比

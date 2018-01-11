@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
+
+import org.apache.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -48,7 +50,7 @@ class TwelveZhongDianGuanZhuXmlHandler
 			try {
 				zdgzxml.createNewFile();
 			} catch (IOException e) {
-				//System.out.println(this.xmlfile + "不存在，已经创建");
+				//logger.debug(this.xmlfile + "不存在，已经创建");
 				e.printStackTrace();
 			}
 		}
@@ -65,11 +67,12 @@ class TwelveZhongDianGuanZhuXmlHandler
 			document = reader.read(xmlfileinput);
 			xmlroot = document.getRootElement();
 		} catch (DocumentException e) {
-			System.out.println(this.xmlfile + "存在错误");
+			logger.debug(this.xmlfile + "存在错误");
 			return;
 		}
 	
 	}
+	private static Logger logger = Logger.getLogger(TwelveZhongDianGuanZhuXmlHandler.class);
 	private HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkdetailmap;
 //	private Multimap<String,String> gzbkdetailsimplemap;
 	private static Element xmlroot = null;
@@ -173,7 +176,7 @@ class TwelveZhongDianGuanZhuXmlHandler
 				if(chanyelian.equals(nodecyl))
 					xmlroot.remove(singlenode);
 			}
-			System.out.println("重点关注XML中删除" + chanyelian);
+			logger.debug("重点关注XML中删除" + chanyelian);
 		} catch (java.lang.NullPointerException ex) {
 		}
 		
