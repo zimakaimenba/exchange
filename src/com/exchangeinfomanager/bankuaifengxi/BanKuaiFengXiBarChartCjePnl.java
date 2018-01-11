@@ -43,7 +43,7 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 		((CustomRendererForCje) plot.getRenderer()).setBarPainter(new StandardBarPainter());
 	}
 	
-	 private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjePnl.class);
+//	 private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjePnl.class);
 	/*
 	 * 板块/股票按周交易额
 	 */
@@ -104,6 +104,7 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 class CustomRendererForCje extends BanKuaiFengXiBarRenderer 
 {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(CustomRendererForCje.class);
 //	private Paint[] colors;
 //    private int shouldcolumn = -1;
 //    private String barCharType;
@@ -144,7 +145,8 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
     }
     
     @Override
-    public LegendItem getLegendItem(int dataset, int series) {
+    public LegendItem getLegendItem(int dataset, int series) 
+    {
         LegendItem legendItem = super.getLegendItem(dataset, series);
         logger.debug(dataset + " " + series + " " + legendItem.getShape());
         // modify legendItem here
@@ -157,6 +159,7 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
 class CustomToolTipGeneratorForChenJiaoEr implements CategoryToolTipGenerator  
 {
     private BkChanYeLianTreeNode node;
+//    private static Logger logger = Logger.getLogger(CustomToolTipGeneratorForChenJiaoEr.class);
 
 	public String generateToolTip(CategoryDataset dataset, int row, int column)  
     {

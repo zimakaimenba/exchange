@@ -202,20 +202,19 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void exportBanKuaiWithGeGuOnCondition ()
 	{
+		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		if(!ckboxshowcje.isSelected() 	&& !chckbxmaxwk.isSelected() ) {
 			JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
 			return;
 		} else {
 			String exportcjelevel = tfldshowcje.getText();
 			String exportmakwklevel = tflddisplaymaxwk.getText();
-			String msg = "将导出成交量大于" + exportcjelevel + "亿，并且MAXWK大于" + exportmakwklevel + "周的个股。导出耗时较长，请先确认条件是否正确。\n是否导出？" ;
+			String msg = "将导出位于" + curselectdate.with(DayOfWeek.FRIDAY).toString()  + "周成交量大于" + exportcjelevel + "亿，并且MAXWK大于" + exportmakwklevel + "周的个股。导出耗时较长，请先确认条件是否正确。\n是否导出？" ;
 			int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
 			if(exchangeresult == JOptionPane.CANCEL_OPTION)
 				return;
 		}
-		
-		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		
+
 		Charset charset = Charset.forName("GBK") ;
 		String exportfilename = sysconfig.getTDXModelMatchExportFile ()+ curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","") + ".EBK";
 		File filefmxx = new File( exportfilename );

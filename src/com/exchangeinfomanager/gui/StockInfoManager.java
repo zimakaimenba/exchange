@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.gui;
 
+
 import java.awt.EventQueue;
 import static org.junit.Assert.assertEquals;
 import javax.swing.JFrame;
@@ -202,6 +203,8 @@ public class StockInfoManager
 		displayDbInfo();
 		createEvents();
     	initializePaoMaDeng ();
+    	
+    	
  	}
 	
 	private ConnectDataBase connectdb = null;

@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.Search;
 
+
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -13,6 +14,7 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.google.common.base.Strings;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;

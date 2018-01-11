@@ -8,13 +8,19 @@ import java.util.Date;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import org.apache.log4j.Logger;
+
 import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
 public class ChanYeLianNews extends JPanel implements Cloneable{  
+	
 	private JTextField tfldtitle;
 	private JTextField tfldKeyWords;
 	private JTextField tfldslack;
@@ -22,6 +28,7 @@ public class ChanYeLianNews extends JPanel implements Cloneable{
 	private int newsid = -1;
 	private boolean selectedinnewtable = false;
 	private String newrelatedbankuai;
+//	private static Logger logger = Logger.getLogger(ChanYeLianNews.class);
 
 	/**
 	 * Create the panel.

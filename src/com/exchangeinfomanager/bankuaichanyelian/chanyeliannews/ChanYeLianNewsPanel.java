@@ -23,6 +23,8 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JScrollPane;
@@ -53,6 +55,7 @@ public class ChanYeLianNewsPanel extends JPanel {
 	private BanKuaiDbOperation bkopt;
 	private ArrayList<ChanYeLianNews> allnewlist;
 	private ArrayList<ChanYeLianNews> curnewlist;
+//	private static Logger logger = Logger.getLogger(ChanYeLianNewsPanel.class);
 	
 	private void initializeNews() 
 	{
