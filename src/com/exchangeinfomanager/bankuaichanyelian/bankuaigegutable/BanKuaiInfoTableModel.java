@@ -35,38 +35,13 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		showzhbiwknum = curselectdate;
 		entryList = new ArrayList<Map.Entry<String, BanKuai>>(curbkzslist.entrySet());
 
-//        Collections.sort(entryList, new Comparator<Map.Entry<String, BanKuai>>() {
-//            @Override
-//            public int compare(Map.Entry<String, BanKuai> bk1,
-//                               Map.Entry<String, BanKuai> bk2) {
-//            	
-//            	Double bk1zhanbi = bk1.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
-//            	Double bk2zhanbi = bk2.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
-//            	try {
-//            		return bk1zhanbi.compareTo(bk2zhanbi);
-//            	} catch (java.lang.NullPointerException e) {
-//            		if(bk2zhanbi == null && bk1zhanbi != null)
-//            			return bk1zhanbi.compareTo(-10000000.0);
-//            		else if(bk1zhanbi == null && bk2zhanbi != null)
-//            			return bk2zhanbi.compareTo(-10000000.0);
-//            		else 
-//            			return 0;
-//            	}
-//            }
-//            }
-//        );
-
-        this.fireTableDataChanged();
+		this.fireTableDataChanged();
 	}
 	
 	 
 	
 	 public int getRowCount() 
 	 {
-//		 if(this.bkmap == null)
-//			 return 0;
-//		 else 
-//			 return this.bkmap.size();
 		 if(entryList == null)
 			 return 0;
 		 else
@@ -81,29 +56,6 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
-//	    	if(bkmap.isEmpty())
-//	    		return null;
-//	    	
-//	    	String[] bkcodeArray = bkmap.keySet().toArray(new String[bkmap.keySet().size()]);
-//	    	String bkcode = bkcodeArray[rowIndex];
-//	    	BanKuai thisbk = bkmap.get(bkcode);
-//	    	String thisbkname = thisbk.getMyOwnName(); 
-//	    	Double zhanbigrowthrate = thisbk.getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod ();
-//	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-//	    	
-//	    	Object value = "??";
-//	    	switch (columnIndex) {
-//            case 0:
-//                value = bkcode;
-//                break;
-//            case 1: 
-//            	value = thisbkname;
-//            	break;
-//            case 2:
-//            	value = percentFormat.format(zhanbigrowthrate);
-//            	break;
-//	    	}
-	    	
 	    	if(entryList.isEmpty() )
 	    		return null;
 	    	

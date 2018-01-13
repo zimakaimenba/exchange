@@ -14,9 +14,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
+//import com.exchangeinfomanager.bankuaichanyelian.TwelveZhongDianGuanZhuXmlHandler;
 import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
@@ -32,6 +34,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 		nodetype = BanKuaiAndStockBasic.TDXBK;
 	}
 	
+	private static Logger logger = Logger.getLogger(BanKuai.class);
 	private DaPan dapan;
 	private HashMap<String, Stock> allbkge;
 	
@@ -219,7 +222,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 			if( index != null) {
 					if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
 						
-//							System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//							logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 						return 100.0;
 					}
 				
@@ -229,11 +232,11 @@ public class BanKuai extends BkChanYeLianTreeNode
 					Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
 					Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
 					double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-//					System.out.println(super.getMyOwnCode() + super.getMyOwnName() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
+//					logger.debug(super.getMyOwnCode() + super.getMyOwnName() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
 					return zhanbigrowthrate;
 			}
 			
-			System.out.println(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为null");
+			logger.debug(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为null");
 			return null;
 		}
 		/*
@@ -249,7 +252,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 			if( index != null) {
 				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
 					if(index != 0)
-//						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//						logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 					return 0;
 				}
 
@@ -292,7 +295,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 				try {
 					 lastcjlrecord = cjeperiodlist.get(index -1 );
 				} catch ( java.lang.ArrayIndexOutOfBoundsException e) {
-					System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是个新板块" );
+					logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是个新板块" );
 				
 					Double curggcje = curcjlrecord.getMyOwnChengJiaoEr(); //停牌后所有成交量都应该计算入
 					return curggcje/dpcjediff;
@@ -324,7 +327,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index); //自己当前周成交量
 				
 				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-//					System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//					logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 					//计算成交额变化贡献率
 					if( dpcjediff<0 || dpcjediff == null ) {//大盘缩量，
 						curcjlrecord.setGgbkcjegrowthzhanbi(-100.0);

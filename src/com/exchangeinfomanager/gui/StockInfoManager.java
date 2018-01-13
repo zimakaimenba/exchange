@@ -149,6 +149,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 
 import java.beans.PropertyChangeListener;
@@ -207,6 +208,7 @@ public class StockInfoManager
     	
  	}
 	
+	private static Logger logger = Logger.getLogger(StockInfoManager.class);
 	private ConnectDataBase connectdb = null;
 	private SystemConfigration sysconfig = null;
 	private AccountAndChiCangConfiguration accountschicangconfig;
@@ -423,7 +425,7 @@ public class StockInfoManager
 //		cBxstockcode.getEditor().getEditorComponent().addMouseListener(new MouseAdapter() {
 //			@Override
 //			public void mousePressed(MouseEvent arg0) {
-//				//System.out.println("this is the test");
+//				//logger.debug("this is the test");
 //				
 //			}
 //			@Override
@@ -506,7 +508,7 @@ public class StockInfoManager
 //			            int start = elem.getStartOffset(); 
 //			            int end = elem.getEndOffset(); 
 //			            link = doc.getText(start, end-start);
-//			            System.out.println(link);
+//			            logger.debug(link);
 ////			            link = link.equals("contains people") ? "" : link.substring("contains ".length()); 
 //			            StringTokenizer stok = new StringTokenizer(link, ", "); 
 //			            while(stok.hasMoreTokens()){ 
@@ -671,7 +673,7 @@ public class StockInfoManager
 				 if(kevt.getKeyChar()=='c') {
 				 
 				  if(kevt.isControlDown()) {
-					  System.out.println("ctrl c");
+					  logger.debug("ctrl c");
 				  }
 				 
 				}
@@ -724,10 +726,10 @@ public class StockInfoManager
 				public void actionPerformed(ActionEvent e)
 		        {
 		            TableCellListener tcl = (TableCellListener)e.getSource();
-//		            System.out.println("Row   : " + tcl.getRow());
-//		            System.out.println("Column: " + tcl.getColumn());
-		            System.out.println("Old   : " + tcl.getOldValue());
-		            System.out.println("New   : " + tcl.getNewValue());
+//		            logger.debug("Row   : " + tcl.getRow());
+//		            logger.debug("Column: " + tcl.getColumn());
+		            logger.debug("Old   : " + tcl.getOldValue());
+		            logger.debug("New   : " + tcl.getNewValue());
 		            
 		            Object[] tabledata= new Object [6] ;
 		            tabledata[0] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),0);
@@ -749,9 +751,9 @@ public class StockInfoManager
 				if ("tableCellEditor".equals(e.getPropertyName()))
 				{
 					if (tblzhongdiangz.isEditing())
-						System.out.println("edit");
+						logger.debug("edit");
 					else
-						System.out.println("unedit");
+						logger.debug("unedit");
 				}
 			}
 		});
@@ -761,12 +763,12 @@ public class StockInfoManager
             @Override  
             public void tableChanged(TableModelEvent e)  
             {  
-                 //System.out.println("action");     
+                 //logger.debug("action");     
                 //int col = e.getColumn();  
                 //int row = e.getFirstRow();  
 //                System.out.print(row);
 //                System.out.print(col);
-//                System.out.println("/////");
+//                logger.debug("/////");
   
             }  
         });
@@ -785,7 +787,7 @@ public class StockInfoManager
 						txtFldStockName.setText(txtFldStockName.getText() + result);
 						btngengxinxx.setEnabled(true);
 					}catch(Exception ex)	{
-						System.out.println(ex);
+						logger.debug(ex);
 					}
 				}
 			}
@@ -942,7 +944,7 @@ public class StockInfoManager
 
 			public void mousePressed(MouseEvent arg0)
 			{
-				//System.out.println("popup");
+				//logger.debug("popup");
 				int rowIndex = tblzhongdiangz.getSelectedRow();
 				
 				String actiontype = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 1);
@@ -1200,7 +1202,7 @@ public class StockInfoManager
 				}
 				try {
 					String cmd = "rundll32 url.dll,FileProtocolHandler " + dbfile;
-					System.out.println(cmd);
+					logger.debug(cmd);
 					Process p  = Runtime.getRuntime().exec(cmd);
 					p.waitFor();
 				}catch (Exception e1){
@@ -1221,7 +1223,7 @@ public class StockInfoManager
 				}
 				try {
 					String cmd = "rundll32 url.dll,FileProtocolHandler " + dbfile;
-					System.out.println(cmd);
+					logger.debug(cmd);
 					Process p  = Runtime.getRuntime().exec(cmd);
 					p.waitFor();
 				}catch (Exception e1){
@@ -1259,13 +1261,13 @@ public class StockInfoManager
 			    	Clipboard clipboard = toolkit.getSystemClipboard();
 			    	try 	{
 			    		String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			    		System.out.println(result);
+			    		logger.debug(result);
 			    		txtfldfuxg.setText(txtfldfuxg.getText() + result);
 			    		btngengxinxx.setEnabled(true);
 			    		dateChsgainian.setDate(new Date());
 			    	} catch(Exception e)  	{
 			    		e.printStackTrace();
-			    		System.out.println(e);
+			    		logger.debug(e);
 			    	}
 			    }
 			 }
@@ -1284,13 +1286,13 @@ public class StockInfoManager
 			    	Clipboard clipboard = toolkit.getSystemClipboard();
 			    	try	{
 			    		String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			    		System.out.println(result);
+			    		logger.debug(result);
 			    		txtfldzhengxg.setText(txtfldzhengxg.getText() + result);
 			    		//txtareafumianxx.insert(result, txtareafumianxx.getCaretPosition());
 			    		btngengxinxx.setEnabled(true);
 			    		dateChsgainian.setDate(new Date());
 			    	} catch(Exception e)	{
-			    		System.out.println(e);
+			    		logger.debug(e);
 			    	}
 			    }
 			 }
@@ -1310,13 +1312,13 @@ public class StockInfoManager
 			     Clipboard clipboard = toolkit.getSystemClipboard();
 			     try {
 			      String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			      //System.out.println(result);
+			      //logger.debug(result);
 			      txtareafumianxx.insert(result, txtareafumianxx.getCaretPosition());
 			      txtareafumianxx.insert("  ", txtareafumianxx.getCaretPosition());
 			      btngengxinxx.setEnabled(true);
 			      dateChsefumian.setDate(new Date());
 			     } catch(Exception e) {
-			      System.out.println(e);
+			      logger.debug(e);
 			     }
 			     
 			    }
@@ -1336,13 +1338,13 @@ public class StockInfoManager
 					Clipboard clipboard = toolkit.getSystemClipboard();
 					try	{
 						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-						System.out.println(result);
+						logger.debug(result);
 						txtfldquanshangpj.setText(txtfldquanshangpj.getText() + result);
 						
 						btngengxinxx.setEnabled(true);
 						dateChsquanshang.setDate(new Date());
 					}catch(Exception e)	{
-						System.out.println(e);
+						logger.debug(e);
 					}
 					
 				}
@@ -1388,7 +1390,7 @@ public class StockInfoManager
 						btngengxinxx.setEnabled(true);
 						dateChsgainian.setDate(new Date());
 					}catch(Exception e)	{
-						System.out.println(e);
+						logger.debug(e);
 					}
 					
 				}
@@ -1408,13 +1410,13 @@ public class StockInfoManager
 			    	Clipboard clipboard = toolkit.getSystemClipboard();
 			    	try 	{
 			    		String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			    		System.out.println(result);
+			    		logger.debug(result);
 			    		tfdCustom.setText(tfdCustom.getText() + result);
 			    		btngengxinxx.setEnabled(true);
 			    		
 			    	} catch(Exception e)  	{
 			    		e.printStackTrace();
-			    		System.out.println(e);
+			    		logger.debug(e);
 			    	}
 			    }
 			 }
@@ -1432,12 +1434,12 @@ public class StockInfoManager
 			    	Clipboard clipboard = toolkit.getSystemClipboard();
 			    	try 	{
 			    		String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			    		System.out.println(result);
+			    		logger.debug(result);
 			    		tfdJingZhengDuiShou.setText(tfdJingZhengDuiShou.getText() + result);
 			    		btngengxinxx.setEnabled(true);
 			    	} catch(Exception e)  	{
 			    		e.printStackTrace();
-			    		System.out.println(e);
+			    		logger.debug(e);
 			    	}
 			    }
 			 }
@@ -1454,7 +1456,7 @@ public class StockInfoManager
 					preUpdateSearchResultToGui(stockcode);
 					
 //					if(!checkCodeInputFormat(stockcode)) {
-//						System.out.println("股票代码有误");
+//						logger.debug("股票代码有误");
 //						JOptionPane.showMessageDialog(null,"股票代码有误！");
 //						return;
 //					}else {
@@ -1891,7 +1893,7 @@ public class StockInfoManager
 		 
 		 String htmlstring = editorpansuosubk.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-		 System.out.println(doc.toString());
+		 logger.debug(doc.toString());
 		 org.jsoup.select.Elements content = doc.select("body");
 		 
 		 content.append( "<html> "
@@ -1978,7 +1980,7 @@ public class StockInfoManager
 //		checklisttree.updateUI();
 		try {
 //			if(buychklstdialog.isVisible() ) {
-//				 System.out.println("dialog v");
+//				 logger.debug("dialog v");
 //				 buychklstdialog.refreshTreeGui(stockchklst.getStockcode(), stockchklst.getChecklistsitems());
 //			}
 			 buychklstdialog.refreshTreeGui(nodeshouldbedisplayed.getMyOwnCode(), ((Stock)nodeshouldbedisplayed).getChecklistXml());
@@ -2020,13 +2022,13 @@ public class StockInfoManager
 	private boolean checkCodeInputFormat(String stockcode) 
 	{
 		// TODO Auto-generated method stub
-//		System.out.println(Pattern.matches("\\d{6}$","2223") );
-//		System.out.println(Pattern.matches("^\\d{6}","600138zhong") );
-//		System.out.println(Pattern.matches("\\d{6}$","000123") );
-//		System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123abccc") );
-//		System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123") );
-//		System.out.println(Pattern.matches("^\\d{6}{6,100}$","000123中青旅理论") );
-//		System.out.println(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]$","ccccc000123abccc") );
+//		logger.debug(Pattern.matches("\\d{6}$","2223") );
+//		logger.debug(Pattern.matches("^\\d{6}","600138zhong") );
+//		logger.debug(Pattern.matches("\\d{6}$","000123") );
+//		logger.debug(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123abccc") );
+//		logger.debug(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$","000123") );
+//		logger.debug(Pattern.matches("^\\d{6}{6,100}$","000123中青旅理论") );
+//		logger.debug(Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]$","ccccc000123abccc") );
 		
 		//或者是6位全数字，或者是前面6位是数字
 			if( Pattern.matches("\\d{6}$",stockcode)  || Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$",stockcode) )
@@ -2287,7 +2289,7 @@ public class StockInfoManager
 	{
 		//把修改的信息更新到数据，需要对买卖操作的3个表以及重点关注一共4个表进行可能的更新
 		
-//		//System.out.println("popup");
+//		//logger.debug("popup");
 //		int rowIndex = tblzhongdiangz.getSelectedRow();
 //		
 //		Object dabataseidstr =  ((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 3);

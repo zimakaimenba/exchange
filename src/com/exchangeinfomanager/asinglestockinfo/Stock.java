@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 import com.google.common.base.Strings;
@@ -36,7 +38,7 @@ public class Stock extends BkChanYeLianTreeNode {
 //	private String jingZhengDuiShou;
 //	private String keHuCustom;
 	private String checklistXml;
-	
+	private static Logger logger = Logger.getLogger(Stock.class);
 	
 //	private Multimap<String> chiCangAccountNameList; //持有该股票的所有账户的名字
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; //持有该股票的所有账户<账户，账户信息>
@@ -235,7 +237,7 @@ public class Stock extends BkChanYeLianTreeNode {
 		Integer index = super.getRequiredRecordsPostion (requireddate);
 		if( index != null) {
 				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-//						System.out.println(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "可能是一个新个股或板块");
+//						logger.debug(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "可能是一个新个股或板块");
 						return 100.0;
 				}
 				
@@ -259,11 +261,11 @@ public class Stock extends BkChanYeLianTreeNode {
 				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
 				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
 				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-//				System.out.println(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为" + zhanbigrowthrate.toString());
+//				logger.debug(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为" + zhanbigrowthrate.toString());
 				return zhanbigrowthrate;
 		}
 		
-		System.out.println(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为null");
+		logger.debug(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为null");
 		return null;
 	}
 	/*
@@ -278,7 +280,7 @@ public class Stock extends BkChanYeLianTreeNode {
 		Integer index = super.getRequiredRecordsPostion (requireddate);
 		if( index != null) {
 			if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-//				System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//				logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 				return 0;
 			}
 			
@@ -320,7 +322,7 @@ public class Stock extends BkChanYeLianTreeNode {
 		Integer index = super.getRequiredRecordsPostion (requireddate);
 		if( index != null) {
 			if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-//				System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//				logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 				return 0;
 			}
 			
@@ -370,7 +372,7 @@ public class Stock extends BkChanYeLianTreeNode {
 				ChenJiaoZhanBiInGivenPeriod curcjlrecord = super.cjeperiodlist.get(index); //自己当前周成交量
 				
 				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-//					System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是个新板块" );
+//					logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是个新板块" );
 					Double curggcje = curcjlrecord.getMyOwnChengJiaoEr(); //停牌后所有成交量都应该计算入
 
 					return curggcje/bkcjediff;
@@ -414,7 +416,7 @@ public class Stock extends BkChanYeLianTreeNode {
 			ChenJiaoZhanBiInGivenPeriod curcjlrecord = super.cjeperiodlist.get(index); //自己当前周成交量
 			
 			if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
-//				System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
+//				logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 				//计算成交额变化贡献率，个体增量占板块增量的百分比
 				if( bkcjediff == null || bkcjediff <0)
 					curcjlrecord.setGgbkcjegrowthzhanbi(-100.0);
