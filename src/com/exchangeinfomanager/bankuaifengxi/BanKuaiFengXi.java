@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.CancellationException;
 import java.util.stream.Collectors;
 
 import javax.swing.JButton;
@@ -115,6 +116,7 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BoxLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -129,6 +131,7 @@ import java.awt.Toolkit;
 
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import javax.swing.SwingWorker.StateValue;
 import javax.swing.JProgressBar;
 
 public class BanKuaiFengXi extends JDialog {
@@ -142,8 +145,8 @@ public class BanKuaiFengXi extends JDialog {
 		this.bkcyl = bkcyl2;
 		initializeGui ();
 		this.sysconfig = SystemConfigration.getInstance();
-//		dateChooser.setDate(new Date ());
 		createEvents ();
+		dateChooser.setDate(new Date ());
 		bkdbopt = new BanKuaiDbOperation ();
 		initializePaoMaDeng ();
 	}
@@ -155,7 +158,7 @@ public class BanKuaiFengXi extends JDialog {
 	private HashSet<String> stockinfile;
 	private BanKuaiDbOperation bkdbopt;
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
-	private Task task;
+	private ExportTask task;
 	/*
 	 * 所有板块占比增长率的排名
 	 */
@@ -206,7 +209,114 @@ public class BanKuaiFengXi extends JDialog {
 	/*
 	 * 把当前的板块当周符合条件的导出
 	 */
-	private void exportBanKuaiWithGeGuOnCondition ()
+//	private void exportBanKuaiWithGeGuOnCondition ()
+//	{
+//		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//		
+//		if(!ckboxshowcje.isSelected() 	&& !chckbxmaxwk.isSelected() ) {
+//			JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
+//			return;
+//		} else {
+//			String exportcjelevel = tfldshowcje.getText();
+//			String exportmakwklevel = tflddisplaymaxwk.getText();
+//			String msg = "将导出位于" + curselectdate.with(DayOfWeek.FRIDAY).toString()  + "周成交量大于" + exportcjelevel + "亿，并且MAXWK大于" + exportmakwklevel + "周的个股。导出耗时较长，请先确认条件是否正确。\n是否导出？" ;
+//			int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
+//			if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//				return;
+//		}
+//
+//		Charset charset = Charset.forName("GBK") ;
+//		String exportfilename = sysconfig.getTDXModelMatchExportFile ()+ curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","") + ".EBK";
+//		File filefmxx = new File( exportfilename );
+//		try {
+//			if (filefmxx.exists()) {
+//				filefmxx.delete();
+//				filefmxx.createNewFile();
+//			} else
+//				filefmxx.createNewFile();
+//		} catch (Exception e) {
+//			return ;
+//		}
+//			
+//		 int rows = tableBkZhanBi.getRowCount();
+//		 HashSet<String> outputresultset = new HashSet<String> (); 
+//		 for(int i=0;i<rows;i++) {
+//			 BanKuai rowbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(i);
+//			 
+//			 if(rowbk.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)) //仅导出有个股的板块
+//				 continue;
+//			 
+//			 double settingcje = Double.parseDouble(tfldshowcje.getText() ) * 100000000;
+//			 int settingmaxwk = Integer.parseInt(tflddisplaymaxwk.getText() );
+//			 
+//			 //导出板块
+//			 logger.debug("导出模型板块个股" + rowbk.getMyOwnCode() + rowbk.getMyOwnName()  );
+//			 ChenJiaoZhanBiInGivenPeriod bkrecord = rowbk.getNodeFengXiResultForSpecificDate(curselectdate);
+//			 Double recordcje = bkrecord.getMyOwnChengJiaoEr();
+//			 Integer recordmaxbkwk = bkrecord.getGgbkzhanbimaxweek() ;
+////			 logger.debug(rowbk.getMyOwnCode() + rowbk.getMyOwnName()  + recordmaxdpwk);
+//			 if( recordcje >= settingcje &&  recordmaxbkwk >= settingmaxwk  ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
+//				 String cjs = rowbk.getSuoShuJiaoYiSuo();
+//				 if(cjs.trim().toLowerCase().equals("sh"))
+//					 outputresultset.add("1" + rowbk.getMyOwnCode().trim());
+//				 else
+//					 outputresultset.add("0" + rowbk.getMyOwnCode().trim());
+//			 }
+//			 
+//			 //导出板块个股
+//			 rowbk = bkcyl.getAllGeGuOfBanKuai (rowbk);
+//			 HashMap<String, Stock> rowbkallgg = rowbk.getSpecificPeriodBanKuaiGeGu(curselectdate);
+//			 for (Map.Entry<String, Stock> entry : rowbkallgg.entrySet()) {
+//				   String stockcode = entry.getKey();
+//				   Stock stock = entry.getValue();
+////				   logger.info(stockcode);
+//				   
+//				   ChenJiaoZhanBiInGivenPeriod record = stock.getNodeFengXiResultForSpecificDate(curselectdate);
+//				   recordcje = record.getMyOwnChengJiaoEr();
+//				   recordmaxbkwk = record.getGgbkzhanbimaxweek() ;
+//				   Integer recordmaxdpwk = record.getGgdpzhanbimaxweek() ;
+//				   
+//				   if( recordcje >= settingcje && ( recordmaxbkwk >= settingmaxwk   || recordmaxdpwk >= settingmaxwk )   ) 
+//					{ //满足条件，导出 ; 
+//					   String outputresult; 
+//					   if(stockcode.startsWith("60") )
+//						   outputresultset.add("1" + stockcode.trim());
+//					   else
+//						   outputresultset.add("0" + stockcode.trim());
+//					   
+//					   logger.debug(rowbk + "个股：" + stockcode + "满足导出条件， 成交额=" + String.valueOf(recordcje)  
+//					   				+ "BKMAXWK=" + String.valueOf(recordmaxbkwk) + "DPMAXWK=" + String.valueOf(recordmaxdpwk));
+//				   }
+//				   
+//				   
+//			 }
+//		 }
+//		 
+//		 for(String outputstock : outputresultset ) {
+//			 String outputresult = outputstock +  System.getProperty("line.separator");
+//			 try {
+//					Files.append(outputresult,filefmxx, charset);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//		 }
+//		int exchangeresult = JOptionPane.showConfirmDialog(null, "个股导出成功，请在" + filefmxx.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
+//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//				return;
+//		try {
+//			String path = filefmxx.getParent();
+//			Desktop.getDesktop().open(new File( path ));
+//		} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//		}
+//		
+//	}
+	
+	/*
+	 * 把当前的板块当周符合条件的导出
+	 */
+	private void exportBanKuaiWithGeGuOnCondition2 ()
 	{
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		
@@ -221,94 +331,79 @@ public class BanKuaiFengXi extends JDialog {
 			if(exchangeresult == JOptionPane.CANCEL_OPTION)
 				return;
 		}
-
-		Charset charset = Charset.forName("GBK") ;
+		
 		String exportfilename = sysconfig.getTDXModelMatchExportFile ()+ curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","") + ".EBK";
 		File filefmxx = new File( exportfilename );
 		try {
-			if (filefmxx.exists()) {
-				filefmxx.delete();
-				filefmxx.createNewFile();
-			} else
-				filefmxx.createNewFile();
+				if (filefmxx.exists()) {
+					filefmxx.delete();
+					filefmxx.createNewFile();
+				} else
+					filefmxx.createNewFile();
 		} catch (Exception e) {
-			return ;
-		}
-			
-		 int rows = tableBkZhanBi.getRowCount();
-		 HashSet<String> outputresultset = new HashSet<String> (); 
-		 for(int i=0;i<rows;i++) {
-			 BanKuai rowbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(i);
-			 
-			 if(rowbk.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)) //仅导出有个股的板块
-				 continue;
-			 
-			 double settingcje = Double.parseDouble(tfldshowcje.getText() ) * 100000000;
-			 int settingmaxwk = Integer.parseInt(tflddisplaymaxwk.getText() );
-			 
-			 //导出板块
-			 logger.debug("导出模型板块个股" + rowbk.getMyOwnCode() + rowbk.getMyOwnName()  );
-			 ChenJiaoZhanBiInGivenPeriod bkrecord = rowbk.getNodeFengXiResultForSpecificDate(curselectdate);
-			 Double recordcje = bkrecord.getMyOwnChengJiaoEr();
-			 Integer recordmaxbkwk = bkrecord.getGgbkzhanbimaxweek() ;
-//			 logger.debug(rowbk.getMyOwnCode() + rowbk.getMyOwnName()  + recordmaxdpwk);
-			 if( recordcje >= settingcje &&  recordmaxbkwk >= settingmaxwk  ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
-				 String cjs = rowbk.getSuoShuJiaoYiSuo();
-				 if(cjs.trim().toLowerCase().equals("sh"))
-					 outputresultset.add("1" + rowbk.getMyOwnCode().trim());
-				 else
-					 outputresultset.add("0" + rowbk.getMyOwnCode().trim());
-			 }
-			 
-			 //导出板块个股
-			 rowbk = bkcyl.getAllGeGuOfBanKuai (rowbk);
-			 HashMap<String, Stock> rowbkallgg = rowbk.getSpecificPeriodBanKuaiGeGu(curselectdate);
-			 for (Map.Entry<String, Stock> entry : rowbkallgg.entrySet()) {
-				   String stockcode = entry.getKey();
-				   Stock stock = entry.getValue();
-//				   logger.info(stockcode);
-				   
-				   ChenJiaoZhanBiInGivenPeriod record = stock.getNodeFengXiResultForSpecificDate(curselectdate);
-				   recordcje = record.getMyOwnChengJiaoEr();
-				   recordmaxbkwk = record.getGgbkzhanbimaxweek() ;
-				   Integer recordmaxdpwk = record.getGgdpzhanbimaxweek() ;
-				   
-				   if( recordcje >= settingcje && ( recordmaxbkwk >= settingmaxwk   || recordmaxdpwk >= settingmaxwk )   ) 
-					{ //满足条件，导出 ; 
-					   String outputresult; 
-					   if(stockcode.startsWith("60") )
-						   outputresultset.add("1" + stockcode.trim());
-					   else
-						   outputresultset.add("0" + stockcode.trim());
-					   
-					   logger.debug(rowbk + "个股：" + stockcode + "满足导出条件， 成交额=" + String.valueOf(recordcje)  
-					   				+ "BKMAXWK=" + String.valueOf(recordmaxbkwk) + "DPMAXWK=" + String.valueOf(recordmaxdpwk));
-				   }
-				   
-				   
-			 }
-		 }
-		 
-		 for(String outputstock : outputresultset ) {
-			 String outputresult = outputstock +  System.getProperty("line.separator");
-			 try {
-					Files.append(outputresult,filefmxx, charset);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		 }
-		int exchangeresult = JOptionPane.showConfirmDialog(null, "个股导出成功，请在" + filefmxx.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-				return;
-		try {
-			String path = filefmxx.getParent();
-			Desktop.getDesktop().open(new File( path ));
-		} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
+				return ;
 		}
 		
+		task = new ExportTask(curselectdate,filefmxx);
+		task.addPropertyChangeListener(new PropertyChangeListener() {
+		      @Override
+		      public void propertyChange(final PropertyChangeEvent event) {
+		        switch (event.getPropertyName()) {
+		        case "progress":
+		        	progressBarExport.setIndeterminate(false);
+		        	progressBarExport.setValue((Integer) event.getNewValue());
+		          break;
+		        case "state":
+		          switch ((StateValue) event.getNewValue()) {
+		        case DONE:
+		        	exportCancelAction.putValue(Action.NAME, "导出条件个股");
+		            try {
+		              final int count = task.get();
+		              
+		              int exchangeresult = JOptionPane.showConfirmDialog(null, "个股导出成功，请在" + filefmxx.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
+		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
+		      				return;
+		      		  try {
+		      			String path = filefmxx.getParent();
+		      			Desktop.getDesktop().open(new File( path ));
+		      		  } catch (IOException e1) {
+		      				e1.printStackTrace();
+		      		  }
+		            } catch (final CancellationException e) {
+		            	progressBarExport.setValue(0);
+		              JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",
+		                  JOptionPane.WARNING_MESSAGE);
+		            } catch (final Exception e) {
+//		              JOptionPane.showMessageDialog(Application.this, "The search process failed", "Search Words",
+//		                  JOptionPane.ERROR_MESSAGE);
+		            }
+
+		            task = null;
+		            break;
+		          case STARTED:
+		          case PENDING:
+		        	  exportCancelAction.putValue(Action.NAME, "取消导出个股");
+		        	  progressBarExport.setVisible(true);
+		        	  progressBarExport.setIndeterminate(true);
+		            break;
+		          }
+		          break;
+		        }
+		      }
+		    });
+		
+		    task.execute();
 	}
+
+	private void cancel() 
+	{
+	    task.cancel(true);
+	}
+		
+	
+	
+	
 	/*
 	 * 显示板块的占比和个股
 	 */
@@ -547,6 +642,7 @@ public class BanKuaiFengXi extends JDialog {
 		
 	}
 
+
 	private void createEvents() 
 	{
 		
@@ -563,25 +659,107 @@ public class BanKuaiFengXi extends JDialog {
 //		        } 
 //		    }
 //		});
-		btnexportmodelgegu.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) 
-			{
-				btnexportmodelgegu.setEnabled(false);
-				exportBanKuaiWithGeGuOnCondition();
-				btnexportmodelgegu.setEnabled(true);
-			}
-		});
-		
-		tflddisplaymaxwk.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(chckbxmaxwk.isSelected() ) {
-					Integer maxwk = Integer.parseInt(tflddisplaymaxwk.getText() );
-					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setDisplayBkMaxWk(maxwk);
-					tableGuGuZhanBiInBk.repaint();
-				}
-			}
-		});
+//		btnexportmodelgegu.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) 
+//			{
+////				btnexportmodelgegu.setEnabled(false);
+////				exportBanKuaiWithGeGuOnCondition();
+////				btnexportmodelgegu.setEnabled(true);
+//				
+//				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//				
+//				if(!ckboxshowcje.isSelected() 	&& !chckbxmaxwk.isSelected() ) {
+//					JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
+//					return;
+//				} else {
+//					String exportcjelevel = tfldshowcje.getText();
+//					String exportmakwklevel = tflddisplaymaxwk.getText();
+//					String msg = "将导出位于" + curselectdate.with(DayOfWeek.FRIDAY).toString()  + "周成交量大于" + exportcjelevel + "亿，并且MAXWK大于" + exportmakwklevel + "周的个股。导出耗时较长，请先确认条件是否正确。\n是否导出？" ;
+//					int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
+//					if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//						return;
+//				}
+//				
+//				String exportfilename = sysconfig.getTDXModelMatchExportFile ()+ curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","") + ".EBK";
+//				File filefmxx = new File( exportfilename );
+//				try {
+//						if (filefmxx.exists()) {
+//							filefmxx.delete();
+//							filefmxx.createNewFile();
+//						} else
+//							filefmxx.createNewFile();
+//				} catch (Exception e) {
+//						e.printStackTrace();
+//								return ;
+//				}
+//				
+//				btnexportmodelgegu.setEnabled(false);
+//				
+//				task = new Task(curselectdate,filefmxx);
+//				task.addPropertyChangeListener(new PropertyChangeListener() {
+//				      @Override
+//				      public void propertyChange(final PropertyChangeEvent event) {
+//				        switch (event.getPropertyName()) {
+//				        case "progress":
+////				        	progressBar.setIndeterminate(false);
+//				        	progressBar.setValue((Integer) event.getNewValue());
+//				          break;
+//				        case "state":
+//				          switch ((StateValue) event.getNewValue()) {
+//				          case DONE:
+////				            searchProgressBar.setVisible(false);
+////				        	  searchCancelAction.putValue(Action.NAME, "Search");
+//				            try {
+//				              final int count = task.get();
+//				              
+//				              int exchangeresult = JOptionPane.showConfirmDialog(null, "个股导出成功，请在" + filefmxx.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
+//				      		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//				      				return;
+//				      		  try {
+//				      			String path = filefmxx.getParent();
+//				      			Desktop.getDesktop().open(new File( path ));
+//				      		  } catch (IOException e1) {
+//				      				e1.printStackTrace();
+//				      		  }
+//				      		  
+//				              btnexportmodelgegu.setEnabled(true);
+//
+//				            } catch (final CancellationException e) {
+////				              JOptionPane.showMessageDialog(Application.this, "The search process was cancelled", "Search Words",
+////				                  JOptionPane.WARNING_MESSAGE);
+//				            } catch (final Exception e) {
+////				              JOptionPane.showMessageDialog(Application.this, "The search process failed", "Search Words",
+////				                  JOptionPane.ERROR_MESSAGE);
+//				            }
+//
+//				            task = null;
+//				            break;
+//				          case STARTED:
+//				          case PENDING:
+////				            searchCancelAction.putValue(Action.NAME, "Cancel");
+//				        	  progressBar.setVisible(true);
+//				        	  progressBar.setIndeterminate(true);
+//				            break;
+//				          }
+//				          break;
+//				        }
+//				      }
+//				    });
+//				
+//				    task.execute();
+//			}
+//		});
+//		
+//		tflddisplaymaxwk.addActionListener(new AbstractAction() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				if(chckbxmaxwk.isSelected() ) {
+//					Integer maxwk = Integer.parseInt(tflddisplaymaxwk.getText() );
+//					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setDisplayBkMaxWk(maxwk);
+//					tableGuGuZhanBiInBk.repaint();
+//				}
+//			}
+//		});
 		
 		chckbxmaxwk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1569,7 +1747,9 @@ public class BanKuaiFengXi extends JDialog {
 	private PaoMaDeng2 pnl_paomd;
 	private JTabbedPane tabbedPanebk;
 	private JButton btnexportmodelgegu;
-	private JProgressBar progressBar;
+	private JProgressBar progressBar1;
+	private Action exportCancelAction;
+	private JProgressBar progressBarExport;
 	
 	private void initializeGui() {
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -1736,46 +1916,69 @@ public class BanKuaiFengXi extends JDialog {
 		pnl_paomd = new PaoMaDeng2();
 		pnl_paomd.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		
-		btnexportmodelgegu = new JButton("\u5BFC\u51FA\u4E2A\u80A1");
 		
+		exportCancelAction = new AbstractAction("导出条件个股") {
+
+		      private static final long serialVersionUID = 4669650683189592364L;
+
+		      @Override
+		      public void actionPerformed(final ActionEvent e) {
+		        if (task == null) {
+		        	exportBanKuaiWithGeGuOnCondition2();
+		        } else {
+		          cancel();
+		        }
+		      }
+		 };
+		 btnexportmodelgegu = new JButton(exportCancelAction);
+		
+		progressBarExport = new JProgressBar();
+		progressBarExport.setValue(0);
+        progressBarExport.setStringPainted(true);
 		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
-							.addGap(20))
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-								.addComponent(tabbedPanegegu)
-								.addGroup(gl_panel_1.createSequentialGroup()
-									.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnexportmodelgegu))
-								.addComponent(tabbedPanebk))
-							.addContainerGap())))
+				.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_panel_1.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnexportmodelgegu)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(progressBarExport, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
+						.addGap(17))
+					.addGroup(gl_panel_1.createSequentialGroup()
+						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+							.addComponent(tabbedPanebk, GroupLayout.PREFERRED_SIZE, 352, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_panel_1.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+									.addComponent(tabbedPanegegu, GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
+									.addGroup(gl_panel_1.createSequentialGroup()
+										.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)))))
+						.addGap(20)))
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnexportmodelgegu, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 29, Short.MAX_VALUE))
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+						.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(btnexportmodelgegu, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 29, Short.MAX_VALUE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(tabbedPanebk, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(tabbedPanegegu, GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(tabbedPanegegu, GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 						.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
 						.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
-					.addGap(12))
+					.addGap(14))
 		);
 		
 		sclpleft = new JScrollPane();
@@ -2008,9 +2211,9 @@ public class BanKuaiFengXi extends JDialog {
 			tflddisplaymaxwk.setText("4");
 			tflddisplaymaxwk.setColumns(10);
 			
-			progressBar = new JProgressBar();
-			progressBar.setValue(0);
-	        progressBar.setStringPainted(true);
+			progressBar1 = new JProgressBar();
+			progressBar1.setValue(0);
+	        progressBar1.setStringPainted(true);
 			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
@@ -2037,8 +2240,8 @@ public class BanKuaiFengXi extends JDialog {
 						.addGap(29)
 						.addComponent(label, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 316, GroupLayout.PREFERRED_SIZE)
-						.addGap(216)
+						.addComponent(progressBar1, GroupLayout.PREFERRED_SIZE, 316, GroupLayout.PREFERRED_SIZE)
+						.addGap(180)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
@@ -2048,7 +2251,7 @@ public class BanKuaiFengXi extends JDialog {
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addContainerGap()
-						.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_buttonPane.createParallelGroup(Alignment.TRAILING)
 							.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(ckboxshowcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(tfldshowcje, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -2062,7 +2265,7 @@ public class BanKuaiFengXi extends JDialog {
 								.addComponent(okButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(label))
-							.addComponent(progressBar, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+							.addComponent(progressBar1, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}
@@ -2092,50 +2295,120 @@ public class BanKuaiFengXi extends JDialog {
 		
 	}
 	
-	class Task extends SwingWorker<Void, Void> 
+	/*
+	 * 导出个股耗时太长，用另外一个线程专门处理，避免主GUI无法使用
+	 * http://www.javacreed.com/swing-worker-example/
+	 * https://github.com/javacreed/swing-worker-example/blob/master/src/main/java/com/javacreed/examples/swing/worker/part3/Application.java
+	 */
+	class ExportTask extends SwingWorker<Integer, String>  
 	{
-		private Integer maxprogress;
-		private JProgressBar progressbar;
+		private LocalDate selectiondate;
+		private File outputfile;
 
-		public Task (JProgressBar pg, Integer maxprogress1)
+//		private Integer maxprogress;
+//		private JProgressBar progressbar;
+
+//		public Task (JProgressBar pg, Integer maxprogress1)
+		public ExportTask (LocalDate selectiondate,File outputfile)
 		{
-			super ();
-			this.maxprogress = maxprogress1;
-			this.progressbar = pg;
-			
-			this.addPropertyChangeListener( new PropertyChangeListener() { 
-				/**
-			     * Invoked when task's progress property changes.
-			     */
-			    public void propertyChange(PropertyChangeEvent evt) {
-			        if ("progress" == evt.getPropertyName()) {
-			            int progress = (Integer) evt.getNewValue();
-			            progressBar.setValue(progress);
-//			            taskOutput.append(String.format(
-//			                    "Completed %d%% of task.\n", task.getProgress()));
-			        } 
-			    }
-			});
+//			super ();
+			this.selectiondate = selectiondate;
+			this.outputfile = outputfile;
 		}
+		
+//		private  void failIfInterrupted() throws InterruptedException {
+//		    if (Thread.currentThread().isInterrupted()) {
+//		      throw new InterruptedException("Interrupted while searching files");
+//		    }
+//		  }
+		
 	    /*
 	     * Main task. Executed in background thread.
 	     */
 	    @Override
-	    public Void doInBackground() {
-	        Random random = new Random();
-	        int progress = 0;
-	        //Initialize progress property.
-	        setProgress(0);
-	        while (progress < maxprogress) {
-	            //Sleep for up to one second.
-	            try {
-	                Thread.sleep(random.nextInt(1000));
-	            } catch (InterruptedException ignore) {}
-	            //Make random progress.
-	            progress += random.nextInt(10);
-	            setProgress(Math.min(progress, maxprogress));
-	        }
-	        return null;
+	    public Integer doInBackground() {
+	    	Charset charset = Charset.forName("GBK") ;
+				
+			 int rows = tableBkZhanBi.getRowCount();
+			 
+			 publish("共有: " + rows + "个板块需要导出！");
+			 HashSet<String> outputresultset = new HashSet<String> (); 
+//			 try {
+//				this.failIfInterrupted();
+//			} catch (InterruptedException e1) {
+//				e1.printStackTrace();
+//			}
+
+			 for(int i=0;i<rows;i++) {
+				 if (isCancelled())
+					 return null;
+				 
+				 BanKuai rowbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(i);
+				 
+				 if(rowbk.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)) //仅导出有个股的板块
+					 continue;
+				 
+				 double settingcje = Double.parseDouble(tfldshowcje.getText() ) * 100000000;
+				 int settingmaxwk = Integer.parseInt(tflddisplaymaxwk.getText() );
+				 
+				 //导出板块
+				 logger.debug("导出模型板块个股" + rowbk.getMyOwnCode() + rowbk.getMyOwnName()  );
+				 publish("导出模型板块个股" + rowbk.getMyOwnCode() + rowbk.getMyOwnName()  );
+				 ChenJiaoZhanBiInGivenPeriod bkrecord = rowbk.getNodeFengXiResultForSpecificDate(selectiondate);
+				 Double recordcje = bkrecord.getMyOwnChengJiaoEr();
+				 Integer recordmaxbkwk = bkrecord.getGgbkzhanbimaxweek() ;
+//				 logger.debug(rowbk.getMyOwnCode() + rowbk.getMyOwnName()  + recordmaxdpwk);
+				 if( recordcje >= settingcje &&  recordmaxbkwk >= settingmaxwk  ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
+					 String cjs = rowbk.getSuoShuJiaoYiSuo();
+					 if(cjs.trim().toLowerCase().equals("sh"))
+						 outputresultset.add("1" + rowbk.getMyOwnCode().trim());
+					 else
+						 outputresultset.add("0" + rowbk.getMyOwnCode().trim());
+				 }
+				 
+				 //导出板块个股
+				 rowbk = bkcyl.getAllGeGuOfBanKuai (rowbk);
+				 HashMap<String, Stock> rowbkallgg = rowbk.getSpecificPeriodBanKuaiGeGu(selectiondate);
+				 for (Map.Entry<String, Stock> entry : rowbkallgg.entrySet()) {
+					 if (isCancelled()) 
+						 return null;
+					   String stockcode = entry.getKey();
+					   Stock stock = entry.getValue();
+//					   logger.info(stockcode);
+					   
+					   ChenJiaoZhanBiInGivenPeriod record = stock.getNodeFengXiResultForSpecificDate(selectiondate);
+					   recordcje = record.getMyOwnChengJiaoEr();
+					   recordmaxbkwk = record.getGgbkzhanbimaxweek() ;
+					   Integer recordmaxdpwk = record.getGgdpzhanbimaxweek() ;
+					   
+					   if( recordcje >= settingcje && ( recordmaxbkwk >= settingmaxwk   || recordmaxdpwk >= settingmaxwk )   ) 
+						{ //满足条件，导出 ; 
+						   String outputresult; 
+						   if(stockcode.startsWith("60") )
+							   outputresultset.add("1" + stockcode.trim());
+						   else
+							   outputresultset.add("0" + stockcode.trim());
+						   
+						   logger.debug(rowbk + "个股：" + stockcode + "满足导出条件， 成交额=" + String.valueOf(recordcje)  
+						   				+ "BKMAXWK=" + String.valueOf(recordmaxbkwk) + "DPMAXWK=" + String.valueOf(recordmaxdpwk));
+					   }
+				 }
+
+				 setProgress(i*80/rows );
+			 }
+			 
+			 for(String outputstock : outputresultset ) {
+				 String outputresult = outputstock +  System.getProperty("line.separator");
+				 try {
+						Files.append(outputresult,outputfile, charset);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			 }
+			 
+			 setProgress( 100);
+			 
+			 return 100;
 	    }
 
 	    /*
@@ -2146,7 +2419,7 @@ public class BanKuaiFengXi extends JDialog {
 	        Toolkit.getDefaultToolkit().beep();
 	    }
 	    
-
+	   
 
 	}
 }
