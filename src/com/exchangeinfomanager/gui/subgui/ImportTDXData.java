@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.gui.subgui;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
@@ -298,6 +299,27 @@ public class ImportTDXData extends JDialog {
 
 	private void createEvents() 
 	{
+		btnchecksync.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				File synccheckresult = bkdbopt.checkImportTDXDataSync ();
+				if(synccheckresult != null) {
+					int exchangeresult = JOptionPane.showConfirmDialog(null, "同步通达信数据一致性检查完成，请在" + synccheckresult.getAbsolutePath() + "下查看！是否打开该目录？","检查完毕", JOptionPane.OK_CANCEL_OPTION);
+		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
+		      				return;
+		      		  try {
+		      			String path = synccheckresult.getParent();
+//		      			Desktop.getDesktop().open(new File( path ));
+		      			Runtime.getRuntime().exec("explorer.exe /select," + synccheckresult.getAbsolutePath() );
+		      		  } catch (IOException e1) {
+		      				e1.printStackTrace();
+		      		  }
+				} else
+					JOptionPane.showMessageDialog(null, "通达信数据完整！","Warning", JOptionPane.WARNING_MESSAGE);
+			}
+		});
+		
 		chbxselectall.addMouseListener(new MouseAdapter() 
 		{
 			@Override
@@ -371,6 +393,7 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox cbxImportSzGeGuVol;
 	private JCheckBox cbxImportShGeGuVol;
 	private JCheckBox chbxselectall;
+	private JButton btnchecksync;
 	
 	private void initializeGui() 
 	{
@@ -520,6 +543,9 @@ public class ImportTDXData extends JDialog {
 			
 			chbxselectall = new JCheckBox("\u5168\u9009");
 			
+			btnchecksync = new JButton("\u4E00\u81F4\u6027\u68C0\u67E5");
+			
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -529,9 +555,11 @@ public class ImportTDXData extends JDialog {
 						.addComponent(lblstatus)
 						.addGap(29)
 						.addComponent(btnStart)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnchecksync)
+						.addGap(57)
 						.addComponent(okButton)
-						.addGap(120))
+						.addContainerGap())
 			);
 			gl_buttonPane.setVerticalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -539,9 +567,10 @@ public class ImportTDXData extends JDialog {
 						.addGap(5)
 						.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 							.addComponent(btnStart)
-							.addComponent(okButton)
 							.addComponent(lblstatus)
-							.addComponent(chbxselectall)))
+							.addComponent(chbxselectall)
+							.addComponent(okButton)
+							.addComponent(btnchecksync)))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}

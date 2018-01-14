@@ -206,112 +206,6 @@ public class BanKuaiFengXi extends JDialog {
 
     	((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(bkhascjl,curselectdate);
 	}
-	/*
-	 * 把当前的板块当周符合条件的导出
-	 */
-//	private void exportBanKuaiWithGeGuOnCondition ()
-//	{
-//		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		
-//		if(!ckboxshowcje.isSelected() 	&& !chckbxmaxwk.isSelected() ) {
-//			JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-//			return;
-//		} else {
-//			String exportcjelevel = tfldshowcje.getText();
-//			String exportmakwklevel = tflddisplaymaxwk.getText();
-//			String msg = "将导出位于" + curselectdate.with(DayOfWeek.FRIDAY).toString()  + "周成交量大于" + exportcjelevel + "亿，并且MAXWK大于" + exportmakwklevel + "周的个股。导出耗时较长，请先确认条件是否正确。\n是否导出？" ;
-//			int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
-//			if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//				return;
-//		}
-//
-//		Charset charset = Charset.forName("GBK") ;
-//		String exportfilename = sysconfig.getTDXModelMatchExportFile ()+ curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","") + ".EBK";
-//		File filefmxx = new File( exportfilename );
-//		try {
-//			if (filefmxx.exists()) {
-//				filefmxx.delete();
-//				filefmxx.createNewFile();
-//			} else
-//				filefmxx.createNewFile();
-//		} catch (Exception e) {
-//			return ;
-//		}
-//			
-//		 int rows = tableBkZhanBi.getRowCount();
-//		 HashSet<String> outputresultset = new HashSet<String> (); 
-//		 for(int i=0;i<rows;i++) {
-//			 BanKuai rowbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(i);
-//			 
-//			 if(rowbk.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)) //仅导出有个股的板块
-//				 continue;
-//			 
-//			 double settingcje = Double.parseDouble(tfldshowcje.getText() ) * 100000000;
-//			 int settingmaxwk = Integer.parseInt(tflddisplaymaxwk.getText() );
-//			 
-//			 //导出板块
-//			 logger.debug("导出模型板块个股" + rowbk.getMyOwnCode() + rowbk.getMyOwnName()  );
-//			 ChenJiaoZhanBiInGivenPeriod bkrecord = rowbk.getNodeFengXiResultForSpecificDate(curselectdate);
-//			 Double recordcje = bkrecord.getMyOwnChengJiaoEr();
-//			 Integer recordmaxbkwk = bkrecord.getGgbkzhanbimaxweek() ;
-////			 logger.debug(rowbk.getMyOwnCode() + rowbk.getMyOwnName()  + recordmaxdpwk);
-//			 if( recordcje >= settingcje &&  recordmaxbkwk >= settingmaxwk  ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
-//				 String cjs = rowbk.getSuoShuJiaoYiSuo();
-//				 if(cjs.trim().toLowerCase().equals("sh"))
-//					 outputresultset.add("1" + rowbk.getMyOwnCode().trim());
-//				 else
-//					 outputresultset.add("0" + rowbk.getMyOwnCode().trim());
-//			 }
-//			 
-//			 //导出板块个股
-//			 rowbk = bkcyl.getAllGeGuOfBanKuai (rowbk);
-//			 HashMap<String, Stock> rowbkallgg = rowbk.getSpecificPeriodBanKuaiGeGu(curselectdate);
-//			 for (Map.Entry<String, Stock> entry : rowbkallgg.entrySet()) {
-//				   String stockcode = entry.getKey();
-//				   Stock stock = entry.getValue();
-////				   logger.info(stockcode);
-//				   
-//				   ChenJiaoZhanBiInGivenPeriod record = stock.getNodeFengXiResultForSpecificDate(curselectdate);
-//				   recordcje = record.getMyOwnChengJiaoEr();
-//				   recordmaxbkwk = record.getGgbkzhanbimaxweek() ;
-//				   Integer recordmaxdpwk = record.getGgdpzhanbimaxweek() ;
-//				   
-//				   if( recordcje >= settingcje && ( recordmaxbkwk >= settingmaxwk   || recordmaxdpwk >= settingmaxwk )   ) 
-//					{ //满足条件，导出 ; 
-//					   String outputresult; 
-//					   if(stockcode.startsWith("60") )
-//						   outputresultset.add("1" + stockcode.trim());
-//					   else
-//						   outputresultset.add("0" + stockcode.trim());
-//					   
-//					   logger.debug(rowbk + "个股：" + stockcode + "满足导出条件， 成交额=" + String.valueOf(recordcje)  
-//					   				+ "BKMAXWK=" + String.valueOf(recordmaxbkwk) + "DPMAXWK=" + String.valueOf(recordmaxdpwk));
-//				   }
-//				   
-//				   
-//			 }
-//		 }
-//		 
-//		 for(String outputstock : outputresultset ) {
-//			 String outputresult = outputstock +  System.getProperty("line.separator");
-//			 try {
-//					Files.append(outputresult,filefmxx, charset);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//		 }
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, "个股导出成功，请在" + filefmxx.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//				return;
-//		try {
-//			String path = filefmxx.getParent();
-//			Desktop.getDesktop().open(new File( path ));
-//		} catch (IOException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//		}
-//		
-//	}
 	
 	/*
 	 * 把当前的板块当周符合条件的导出
@@ -352,11 +246,12 @@ public class BanKuaiFengXi extends JDialog {
 		        switch (event.getPropertyName()) {
 		        case "progress":
 		        	progressBarExport.setIndeterminate(false);
-		        	progressBarExport.setValue((Integer) event.getNewValue());
+//		        	progressBarExport.setValue((Integer) event.getNewValue());
+		        	progressBarExport.setString("正在导出..." + (Integer) event.getNewValue() + "%");
 		          break;
 		        case "state":
 		          switch ((StateValue) event.getNewValue()) {
-		        case DONE:
+		          case DONE:
 		        	exportCancelAction.putValue(Action.NAME, "导出条件个股");
 		            try {
 		              final int count = task.get();
@@ -365,8 +260,8 @@ public class BanKuaiFengXi extends JDialog {
 		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
 		      				return;
 		      		  try {
-		      			String path = filefmxx.getParent();
-		      			Desktop.getDesktop().open(new File( path ));
+		      			String path = filefmxx.getAbsolutePath();
+		      			Runtime.getRuntime().exec("explorer.exe /select," + path);
 		      		  } catch (IOException e1) {
 		      				e1.printStackTrace();
 		      		  }
@@ -2286,7 +2181,7 @@ public class BanKuaiFengXi extends JDialog {
 				tfldshowcje.setText("3.7");
 			else if(curselectdate.getDayOfWeek() == DayOfWeek.FRIDAY )
 				tfldshowcje.setText("4.9");
-			else if(curselectdate.getDayOfWeek() == DayOfWeek.SATURDAY )
+			else if(curselectdate.getDayOfWeek() == DayOfWeek.SATURDAY || curselectdate.getDayOfWeek() == DayOfWeek.SUNDAY)
 				tfldshowcje.setText("5.8");
 			
 		} else {
@@ -2381,17 +2276,18 @@ public class BanKuaiFengXi extends JDialog {
 					   recordmaxbkwk = record.getGgbkzhanbimaxweek() ;
 					   Integer recordmaxdpwk = record.getGgdpzhanbimaxweek() ;
 					   
-					   if( recordcje >= settingcje && ( recordmaxbkwk >= settingmaxwk   || recordmaxdpwk >= settingmaxwk )   ) 
-						{ //满足条件，导出 ; 
-						   String outputresult; 
-						   if(stockcode.startsWith("60") )
-							   outputresultset.add("1" + stockcode.trim());
-						   else
-							   outputresultset.add("0" + stockcode.trim());
-						   
-						   logger.debug(rowbk + "个股：" + stockcode + "满足导出条件， 成交额=" + String.valueOf(recordcje)  
-						   				+ "BKMAXWK=" + String.valueOf(recordmaxbkwk) + "DPMAXWK=" + String.valueOf(recordmaxdpwk));
-					   }
+					   if( recordcje >= settingcje )
+						   if( recordmaxbkwk >= settingmaxwk   || recordmaxdpwk >= settingmaxwk    ) 
+							{ //满足条件，导出 ; 
+							   String outputresult; 
+							   if(stockcode.startsWith("60") )
+								   outputresultset.add("1" + stockcode.trim());
+							   else
+								   outputresultset.add("0" + stockcode.trim());
+							   
+							   logger.debug(rowbk + "个股：" + stockcode + "满足导出条件， 成交额=" + String.valueOf(recordcje)  
+							   				+ "BKMAXWK=" + String.valueOf(recordmaxbkwk) + "DPMAXWK=" + String.valueOf(recordmaxdpwk));
+						   }
 				 }
 
 				 setProgress(i*80/rows );

@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.text.Collator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -1071,6 +1072,102 @@ public class BanKuaiDbOperation
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
 	}
+	/*
+	 *早期代码有错误，导致板块和个股的对应关系中可能出现重复， 
+	 */
+	public File checkImportTDXDataSync()
+	{
+		String checkfilename = sysconfig.getSystemInstalledPath ()+  "通达信数据一致性检查结果.txt";
+		File filefmxx = new File( checkfilename );
+		try {
+				if (filefmxx.exists()) {
+					filefmxx.delete();
+					filefmxx.createNewFile();
+				} else
+					filefmxx.createNewFile();
+		} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+		}
+		
+		CachedRowSetImpl rspd = null;
+		String tablename[] = {"股票通达信风格板块对应表","股票通达信概念板块对应表","股票通达信行业板块对应表","股票通达信交易所指数对应表"};
+		Charset charset = Charset.forName("GBK") ;
+		int countaddline =0;
+		for(int i=0;i<tablename.length;i++) {
+			String sqlquerystat = "SELECT 板块代码, 股票代码, 移除时间, COUNT(*) " +
+					" FROM  " + tablename[i] + 
+					" where isnull(移除时间)" +
+					" GROUP BY  板块代码,股票代码,isnull(移除时间)" +
+					" HAVING   COUNT(*) > 1"
+					;
+			rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			try {
+				while(rspd.next())  {
+					String bkcode = rspd.getString("板块代码");
+					String stockcode = rspd.getString("股票代码");
+				     
+					 Integer duplinecount = rspd.getInt("COUNT(*)");
+					 if(duplinecount == 2) { //只有2行，那就直接修补
+						 CachedRowSetImpl rsdup = null;
+						 sqlquerystat = "SELECT MAX(加入时间), MIN(id)\n" + 
+									"FROM  股票通达信风格板块对应表\n" + 
+									"where 板块代码 = '" + bkcode + "' and 股票代码 = '" + stockcode + "' and isnull(移除时间) "
+									;
+						 rsdup = connectdb.sqlQueryStatExecute(sqlquerystat);
+						 while(rsdup.next()) {
+							 java.util.Date maxdupdate = rsdup.getDate("MAX(加入时间)");
+							 Integer minid = rsdup.getInt("MIN(id)");
+							 String sqlupdatequery = "UPDATE 股票通达信风格板块对应表 SET 移除时间 = '" + maxdupdate + "' \n" + 
+													  "where id = '" + minid + "'"
+														;
+							 int result = connectdb.sqlUpdateStatExecute(sqlupdatequery);
+							 
+							 String updateresult = tablename[i] + "  " + bkcode + "  的个股  "  + stockcode  + "  存在数据重复，已经更新，把日期" + maxdupdate.toString() + "更新到ID=" + minid.toString() + System.getProperty("line.separator");
+							 logger.debug(updateresult);
+							 try {
+									Files.append(updateresult,filefmxx, charset);
+									countaddline ++;
+							 } catch (IOException e) {
+									e.printStackTrace();
+							 }
+							 
+						 }
+						 rsdup.close();
+						 rsdup = null;
+					 } else {
+						 String stock = "重要：" + tablename[i] + "  " + bkcode + "  的个股  "  + stockcode  + "  存在数据重复,未更新，请手动更新！"+ System.getProperty("line.separator");
+						 logger.debug(stock);
+						 try {
+								Files.append(stock,filefmxx, charset);
+								countaddline ++;
+						 } catch (IOException e) {
+								e.printStackTrace();
+						 }
+					 }
+					 
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+					try {
+						rspd.close();
+						rspd = null;
+						
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+			}
+		}
+		
+		if(countaddline >0)
+			return filefmxx;
+		else
+			return null;
+	}
 	
 	/*
 	 * 通达信的风格与个股代码对应文件
@@ -1140,7 +1237,7 @@ public class BanKuaiDbOperation
                    String gupiaolist =new String(itemBuf2,12,sigbk-12);
                    List<String> tmpstockcodestr = Splitter.fixedLength(7).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(gupiaolist); 
                    logger.debug(tmpstockcodestr);
-                   System.out.print(tmpstockcodestr.size());
+                   logger.debug(tmpstockcodestr.size());
                    Set<String> tmpstockcodesetnew = new HashSet(tmpstockcodestr);
                    logger.debug(tmpstockcodesetnew);
                    
@@ -1199,7 +1296,7 @@ public class BanKuaiDbOperation
 	   			        rs.last();  
 	   			        int rows = rs.getRow();  
 	   			        rs.first();  
-	   			        for(int j=0;j<rows;j++) {  
+	   			        for(int j=0;j<rows;j++) {  //把数据库中现有的个股代码保存
 	   			        	String stockcode = rs.getString("股票代码");
 	   			        	tmpstockcodesetold.add(stockcode);
 	   			        	
@@ -6452,6 +6549,7 @@ public class BanKuaiDbOperation
 //			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
 //			return autoIncKeyFromApi;
 //		}
+		
 		
 
 }
