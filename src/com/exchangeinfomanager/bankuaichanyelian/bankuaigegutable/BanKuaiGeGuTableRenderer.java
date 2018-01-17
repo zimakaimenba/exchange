@@ -85,13 +85,23 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	background = Color.white;
 	    } 
 	    
-	    //突出显示MAXWK>=4的个股
-	    if(col == 5 || col == 7 || col == 4 || col == 6 ) {
+	    //突出显示bkMAXWK>=4的个股
+	    if(col == 5 || col == 4  ) {
 	    	int bkmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
+	    	
+	    	
+	    	int fazhi = tablemodel.getDisplayBKMaxWk();
+	    	 if(bkmaxwk >= fazhi )
+	    		 background = Color.magenta ;
+	    	 else 
+	    		 background = Color.white ;
+	    }
+	    //突出显示dpMAXWK>=4的个股
+	    if( col == 7 || col == 6 ) {
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
 	    	
-	    	int fazhi = tablemodel.getDisplayBkMaxWk();
-	    	 if(bkmaxwk >= fazhi || dpmaxwk >=fazhi )
+	    	int fazhi = tablemodel.getDisplayDPMaxWk();
+	    	 if( dpmaxwk >=fazhi )
 	    		 background = Color.red ;
 	    	 else 
 	    		 background = Color.white ;

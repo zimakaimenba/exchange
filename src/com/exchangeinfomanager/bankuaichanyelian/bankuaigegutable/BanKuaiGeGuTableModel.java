@@ -33,6 +33,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private HashSet<String> stockcodeinparsefile;
 	private Double showcje;
 	private Boolean showparsedfile = false;
+	private Integer dpmaxwk = 10000000;
 	private Integer bkmaxwk = 10000000;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
 	
@@ -293,16 +294,24 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		{
 			return this.showparsedfile ;
 		}
+		//设置成交额dpMAXWK阀值
+		public void setDisplayDPMaxWk (Integer bkmax)
+		{
+			this.dpmaxwk = bkmax;
+		}
+		public Integer getDisplayDPMaxWk ()
+		{
+			return this.dpmaxwk;
+		}
 		//设置成交额MAXWK阀值
-		public void setDisplayBkMaxWk (Integer bkmax)
+		public void setDisplayBKMaxWk (Integer bkmax)
 		{
 			this.bkmaxwk = bkmax;
 		}
-		public Integer getDisplayBkMaxWk ()
+		public Integer getDisplayBKMaxWk ()
 		{
 			return this.bkmaxwk;
 		}
-		
 		public LocalDate getShowCurDate ()
 		{
 			return this.showwknum;

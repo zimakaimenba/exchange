@@ -532,7 +532,7 @@ public class BanKuaiDbOperation
                   
                    List<String> tmpstockcodestr = Splitter.fixedLength(7).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(gupiaolist); 
                    logger.debug(tmpstockcodestr);
-                   System.out.print(tmpstockcodestr.size());
+//                   System.out.print(tmpstockcodestr.size());
                    Set<String> tmpstockcodesetnew = new HashSet(tmpstockcodestr);
                    logger.debug(tmpstockcodesetnew);
                    
@@ -1481,7 +1481,7 @@ public class BanKuaiDbOperation
                  
                   List<String> tmpstockcodestr = Splitter.fixedLength(7).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(gupiaolist); 
                   logger.debug(tmpstockcodestr);
-                  System.out.print(tmpstockcodestr.size());
+//                  System.out.print(tmpstockcodestr.size());
                   Set<String> tmpstockcodesetnew = new HashSet(tmpstockcodestr);
                   logger.debug(tmpstockcodesetnew);
                   

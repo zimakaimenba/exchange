@@ -71,11 +71,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -149,6 +151,8 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 
@@ -176,6 +180,14 @@ public class StockInfoManager
 	 */
 	public StockInfoManager() 
 	{
+		Enumeration e = Logger.getRootLogger().getAllAppenders();
+	    while ( e.hasMoreElements() ) {
+	      Appender app = (Appender)e.nextElement();
+	      if ( app instanceof FileAppender ){
+	        System.out.println("File: " + ((FileAppender)app).getFile());
+	      }
+	    }
+	    
 		sysconfig = SystemConfigration.getInstance();
 		connectdb = ConnectDataBase.getInstance();
 		boolean localconnect = connectdb.isLocalDatabaseconnected();
@@ -3193,6 +3205,10 @@ public class StockInfoManager
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					Properties properties = System.getProperties();
+				    String rootPath = properties.getProperty("user.dir").replace('\\', '/');
+					System.setProperty("logfile.name",rootPath);
+					
 					JFrame.setDefaultLookAndFeelDecorated(true);
 					StockInfoManager window = new StockInfoManager();
 //					showOnScreen(2,window.frame);

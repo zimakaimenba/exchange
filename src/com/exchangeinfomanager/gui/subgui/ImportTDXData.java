@@ -303,20 +303,7 @@ public class ImportTDXData extends JDialog {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				File synccheckresult = bkdbopt.checkImportTDXDataSync ();
-				if(synccheckresult != null) {
-					int exchangeresult = JOptionPane.showConfirmDialog(null, "同步通达信数据一致性检查完成，请在" + synccheckresult.getAbsolutePath() + "下查看！是否打开该目录？","检查完毕", JOptionPane.OK_CANCEL_OPTION);
-		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
-		      				return;
-		      		  try {
-		      			String path = synccheckresult.getParent();
-//		      			Desktop.getDesktop().open(new File( path ));
-		      			Runtime.getRuntime().exec("explorer.exe /select," + synccheckresult.getAbsolutePath() );
-		      		  } catch (IOException e1) {
-		      				e1.printStackTrace();
-		      		  }
-				} else
-					JOptionPane.showMessageDialog(null, "通达信数据完整！","Warning", JOptionPane.WARNING_MESSAGE);
+				checkDataSyncResult ();
 			}
 		});
 		
@@ -369,8 +356,34 @@ public class ImportTDXData extends JDialog {
 				partThatCanImportDuringWork ();
 				
 				lblstatus.setText("同步结束");
+				
+				int exchangeresult = JOptionPane.showConfirmDialog(null, "数据导入完成！是否检查数据一致性？","导入完成", JOptionPane.OK_CANCEL_OPTION);
+	      		if(exchangeresult == JOptionPane.CANCEL_OPTION) 
+	      			return;
+	      		else
+	      			checkDataSyncResult ();
+	      		
 			}
 		});
+		
+	}
+
+	protected void checkDataSyncResult() 
+	{
+		File synccheckresult = bkdbopt.checkImportTDXDataSync ();
+		if(synccheckresult != null) {
+			int exchangeresult = JOptionPane.showConfirmDialog(null, "同步通达信数据一致性检查完成，请在" + synccheckresult.getAbsolutePath() + "下查看！是否打开该目录？","检查完毕", JOptionPane.OK_CANCEL_OPTION);
+      		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
+      				return;
+      		  try {
+      			String path = synccheckresult.getParent();
+//      			Desktop.getDesktop().open(new File( path ));
+      			Runtime.getRuntime().exec("explorer.exe /select," + synccheckresult.getAbsolutePath() );
+      		  } catch (IOException e1) {
+      				e1.printStackTrace();
+      		  }
+		} else
+			JOptionPane.showMessageDialog(null, "通达信数据完整！","Warning", JOptionPane.WARNING_MESSAGE);
 		
 	}
 
