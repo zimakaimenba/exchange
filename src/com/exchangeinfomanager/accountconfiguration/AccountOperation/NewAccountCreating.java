@@ -6,6 +6,9 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import org.apache.log4j.Logger;
+
 import javax.swing.JTextField;
 import javax.swing.JRadioButton;
 import net.miginfocom.swing.MigLayout;
@@ -31,6 +34,7 @@ public class NewAccountCreating extends JPanel
 		createEvents ();
 	}
 	
+//	private static Logger logger = Logger.getLogger(ImportQuanShangJiaoYiRecords.class);
 	private String accountid;
 	private String accountname;
 	private Boolean rongzirongquan;

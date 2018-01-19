@@ -15,6 +15,7 @@ public class AccountPuTong extends AccountInfoBasic
 		this.hasxinyongacnt = false;
 	}
 	
+//	private static Logger logger = Logger.getLogger(AccountInfoBasic.class);
 	private boolean hasxinyongacnt; //如果用信用账户，关联账户设置为true;
 	
 	/**

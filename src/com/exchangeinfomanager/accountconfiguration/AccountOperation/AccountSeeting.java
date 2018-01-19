@@ -170,7 +170,7 @@ public class AccountSeeting extends JDialog
 						allTablesDispalyRelatedAcnt(tmpactname);
 //						//把炒作账户保持高亮
 //						int rowindex = ((AccountsPutongTableModel)tableputong.getModel() ).getAccountRowNumber(tmpactname); kkk
-//						System.out.println(tmpactname + "at" + rowindex + "be selected");
+//						logger.debug(tmpactname + "at" + rowindex + "be selected");
 //						tableputong.setRowSelectionInterval(rowindex, rowindex);
 						
 					} else {
@@ -217,7 +217,7 @@ public class AccountSeeting extends JDialog
 				
 				//把炒作账户保持高亮
 				int rowindex = ((AccountsRongZiTableModel)tableRongzi.getModel()).getAccountRowNumber(actionaccountname);
-				//System.out.println(actionaccountname + "at" + rowindex + "be selected");
+				//logger.debug(actionaccountname + "at" + rowindex + "be selected");
 				tableRongzi.setRowSelectionInterval(rowindex, rowindex);
 
 			}
@@ -247,7 +247,7 @@ public class AccountSeeting extends JDialog
 				
 				//把炒作账户保持高亮
 				int rowindex = ((AccountsRongZiTableModel)tableRongzi.getModel()).getAccountRowNumber(actionaccountname);
-				System.out.println(actionaccountname + "at" + rowindex + "be selected");
+				logger.debug(actionaccountname + "at" + rowindex + "be selected");
 				tableRongzi.setRowSelectionInterval(rowindex, rowindex);
 			}
 		});
@@ -290,7 +290,7 @@ public class AccountSeeting extends JDialog
 //				
 //				//把炒作账户保持高亮
 //				int rowindex = ((AccountsXinYongPutongTableModel)tableRzrqPutong.getModel()).getAccountRowNumber(actionaccountname);
-//				System.out.println(actionaccountname + "at" + rowindex + "be selected");
+//				logger.debug(actionaccountname + "at" + rowindex + "be selected");
 //				tableRzrqPutong.setRowSelectionInterval(rowindex, rowindex);
 			}
 		});
@@ -322,7 +322,7 @@ public class AccountSeeting extends JDialog
 					
 					//把炒作账户保持高亮
 					int rowindex = ((AccountsPutongTableModel)tableputong.getModel() ).getAccountRowNumber(tmpactname);
-					System.out.println(tmpactname + "at" + rowindex + "be selected");
+					logger.debug(tmpactname + "at" + rowindex + "be selected");
 					tableputong.setRowSelectionInterval(rowindex, rowindex);
 					
 				} else 
@@ -489,35 +489,35 @@ public class AccountSeeting extends JDialog
 		int rowindex;
 		try {
 			rowindex = ((AccountsPutongTableModel) tableputong.getModel()).getAccountRowNumber(basicname);
-			//System.out.println(basicname + "at" + rowindex + "be selected");
+			//logger.debug(basicname + "at" + rowindex + "be selected");
 			tableputong.setRowSelectionInterval(rowindex, rowindex);
 		} catch (Exception e) {
 			//e.printStackTrace();
 		}
 		try {
 			rowindex = ((AccountsXinYongPutongTableModel) tableRzrqPutong.getModel()).getAccountRowNumber(rzrqxyptname);
-			//System.out.println(rzrqxyptname + "at" + rowindex + "be selected");
+			//logger.debug(rzrqxyptname + "at" + rowindex + "be selected");
 			tableRzrqPutong.setRowSelectionInterval(rowindex, rowindex);
 		} catch (Exception e) {
 			//e.printStackTrace();
 		}
 		try {
 			rowindex = ((AccountsRongZiTableModel) tableRongzi.getModel()).getAccountRowNumber(rzrqrzname);
-			//System.out.println(rzrqxyptname + "at" + rowindex + "be selected");
+			//logger.debug(rzrqxyptname + "at" + rowindex + "be selected");
 			tableRongzi.setRowSelectionInterval(rowindex, rowindex);
 		} catch (Exception e) {
 			//e.printStackTrace();
 		}
 		try {
 			rowindex = ((AccountsRongQuanTableModel) tableRongquan.getModel()).getAccountRowNumber(rzrqrqname);
-			//System.out.println(rzrqrqname + "at" + rowindex + "be selected");
+			//logger.debug(rzrqrqname + "at" + rowindex + "be selected");
 			tableRongquan.setRowSelectionInterval(rowindex, rowindex);
 		} catch (Exception e) {
 			//e.printStackTrace();
 		}
 		try {
 			rowindex = ((CashAccountsTableModel) tableCashAccounts.getModel()).getAccountRowNumber(cashname);
-			// System.out.println(cashname + "at" + rowindex + "be selected");
+			// logger.debug(cashname + "at" + rowindex + "be selected");
 			tableCashAccounts.setRowSelectionInterval(rowindex, rowindex);
 		} catch (Exception e) {
 			//e.printStackTrace();

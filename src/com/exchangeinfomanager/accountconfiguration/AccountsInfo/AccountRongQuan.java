@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class AccountRongQuan extends AccountInfoBasic 
 {
 	int rongquanyuer;
-
+//	private static Logger logger = Logger.getLogger(AccountInfoBasic.class);
 	public AccountRongQuan(String accountname) 
 	{
 		super(accountname);

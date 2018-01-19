@@ -8,6 +8,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
+import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportQuanShangJiaoYiRecords;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.google.common.collect.Maps;
 
@@ -25,6 +28,7 @@ public class AccountInfoBasic extends CashAccountBasic
 		chicanggupiaodetailsmap = Maps.newHashMap();
 	}
 
+	private static Logger logger = Logger.getLogger(AccountInfoBasic.class);
 	private Double totoalbuyguadanjiner; //当日买入挂单金额
 	private Double totoalsellguadanjiner; //当日卖出挂单金额
 	private HashMap<String,StockChiCangInfo> chicanggupiaodetailsmap;
@@ -114,7 +118,7 @@ public class AccountInfoBasic extends CashAccountBasic
 	public int actionBuyPreCheck (LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		int cashisenough;
-		 System.out.println("需要做资金合法性检查");
+		 logger.debug("需要做资金合法性检查");
 		if( (this.getCurrentAvailableXianJin() - guquanshu * guquandanjia) >=0 ) { //判断是否有足够的现金
 			cashisenough = 1;
 		} else {
@@ -144,11 +148,11 @@ public class AccountInfoBasic extends CashAccountBasic
 	 */
 	public Double actionBuy(LocalDateTime actionday,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
-		//System.out.println(this.getAccountName() + "买入前有现金" + this.getCurrentAvailableXianJin() );
+		//logger.debug(this.getAccountName() + "买入前有现金" + this.getCurrentAvailableXianJin() );
 		
 		if( actionday.toLocalDate().isEqual( LocalDate.now() ) ) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
 			if( actionBuyPreCheck ( actionday, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
-				System.out.println("未通过买入合法性检查");
+				logger.debug("未通过买入合法性检查");
 				return null;
 			}
 		}
@@ -164,7 +168,7 @@ public class AccountInfoBasic extends CashAccountBasic
 				((StockChiCangInfo)chicanggupiaodetailsmap.get(stockcode)).setChicanggushu(guquanshu);
 				((StockChiCangInfo)chicanggupiaodetailsmap.get(stockcode)).setChicangchenben(chengben);
 			}
-			System.out.println(this.getAccountName() + "买入后持有" + this.chicanggupiaodetailsmap.get(stockcode).getChicanggushu() );
+			logger.debug(this.getAccountName() + "买入后持有" + this.chicanggupiaodetailsmap.get(stockcode).getChicanggushu() );
 			return this.getCurrentAvailableXianJin();
 	}
 	/*
@@ -173,10 +177,10 @@ public class AccountInfoBasic extends CashAccountBasic
 	public int actionSellPreCheck (LocalDateTime actionDay,String stockcode, int guquanshu, double guquandanjia,String shuoming)
 	{
 		if( !this.isChiCang(stockcode) ) { 
-			System.out.println("错误，账户没有该股票！");
+			logger.debug("错误，账户没有该股票！");
 			return -1;
 		} else if(guquanshu > this.getChiCangGuPiaoGuShu(stockcode) && this.getAccountType() != super.TYPERONGQUAN  ) { //融券账户例外，可以先卖
-			System.out.println("下单错误，账户不持有这么多数量该股票！");
+			logger.debug("下单错误，账户不持有这么多数量该股票！");
 			return -1;
 		} 
 		
@@ -191,7 +195,7 @@ public class AccountInfoBasic extends CashAccountBasic
 	{
 		if(actionDay.toLocalDate().isEqual(LocalDate.now())) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
 			if( actionSellPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
-				System.out.println("未通过卖出合法性检查");
+				logger.debug("未通过卖出合法性检查");
 				return "FAIL";
 			}
 		}
@@ -209,17 +213,17 @@ public class AccountInfoBasic extends CashAccountBasic
 								
 				this.chicanggupiaodetailsmap.remove(stockcode);
 				
-				System.out.println(super.getAccountName() + "卖出后利润是：" + finalprofit);
+				logger.debug(super.getAccountName() + "卖出后利润是：" + finalprofit);
 			} else {
 				((StockChiCangInfo)this.getStockChiCangInfoIndexOf(stockcode)).setChicanggushu(0 - guquanshu); //卖出股票，股数应该相应减少
 				((StockChiCangInfo)this.getStockChiCangInfoIndexOf(stockcode)).setChicangchenben(0-guquandanjia * guquanshu);
 				
-				System.out.println(super.getAccountName() + "卖出" + stockcode + " " + guquanshu + ",共持有" + ((StockChiCangInfo)chicanggupiaodetailsmap.get(stockcode)).getChicanggushu());
+				logger.debug(super.getAccountName() + "卖出" + stockcode + " " + guquanshu + ",共持有" + ((StockChiCangInfo)chicanggupiaodetailsmap.get(stockcode)).getChicanggushu());
 			}
 			
 			//对本账户情况进行更改
 			super.setCash(super.getCurrentCash() + guquanshu * guquandanjia);  //可用现金
-			System.out.println(this.getAccountName() + "卖出后有现金" + this.getCurrentAvailableXianJin() );
+			logger.debug(this.getAccountName() + "卖出后有现金" + this.getCurrentAvailableXianJin() );
 			
 			//卖出后账户当前成本的计算方法还没想好，现在采取把所有持仓成本加一遍的笨办法。
 			double tmpchenben =0;
@@ -240,7 +244,7 @@ public class AccountInfoBasic extends CashAccountBasic
 	{
 		if( actionDay.toLocalDate().isEqual(LocalDate.now())) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
 			if( actionBuyPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
-				System.out.println("未通过买入挂单合法性检查");
+				logger.debug("未通过买入挂单合法性检查");
 				return null;
 			}
 		}
@@ -261,7 +265,7 @@ public class AccountInfoBasic extends CashAccountBasic
 	{
 		if(actionDay.toLocalDate().isEqual(LocalDate.now())) { //判断记录的日期是否是当天，如果是当天，则是当日记录，要判断资金的合法性，否则是过去记录导入，无需判断资金的合法性
 			if( actionSellPreCheck ( actionDay, stockcode,  guquanshu,  guquandanjia, shuoming) <0 ) {
-				System.out.println("未通过卖出挂单合法性检查");
+				logger.debug("未通过卖出挂单合法性检查");
 				return "FAIL";
 			}
 		}

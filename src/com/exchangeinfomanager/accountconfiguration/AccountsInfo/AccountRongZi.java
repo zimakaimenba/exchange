@@ -13,7 +13,7 @@ public class AccountRongZi extends AccountInfoBasic
 		super.setAccounttype(super.TYPERONGZI);
 	}
 	private double rongzizhaiwu;
-	
+//	private static Logger logger = Logger.getLogger(AccountInfoBasic.class);
 	public double getRongZiZhaiWu ()
 	{
 		return this.rongzizhaiwu;

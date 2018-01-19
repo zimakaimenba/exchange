@@ -49,7 +49,6 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
    		hanyupingyin.add(codehypy);
    		hanyupingyin.add(namehypy);
    		
-//   		bkdbopt = new  BanKuaiDbOperation ();
 	}
 	
     private static Logger logger = Logger.getLogger(BkChanYeLianTreeNode.class);
@@ -80,7 +79,8 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	private Object[][] zdgzmrmcykRecords ;
 	
 	
-	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> cjeperiodlist; //板块自己的周成交记录以及一些分析结果
+	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> wkcjeperiodlist; //板块自己的周成交记录以及一些分析结果
+	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> daycjeperiodlist; //板块自己日成交记录以及一些分析结果
 //	private BanKuaiDbOperation bkdbopt;
 	
 
@@ -378,13 +378,24 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		return zdgzmrmcykRecords;
 	}
 
+	/*
+	 * 获取日线数据
+	 */
+	public ArrayList<ChenJiaoZhanBiInGivenPeriod> getDayChenJiaoErZhanBiInGivenPeriod ()
+	{
+		return this.daycjeperiodlist;
+	}
+	public void setDayChenJiaoErZhanBiInGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> daylist)
+	{
+		this.daycjeperiodlist = daylist;
+	}
  	//和成交量相关的函数
 	/*
-	 * 
+	 * 获取周线数据
 	 */
-	public ArrayList<ChenJiaoZhanBiInGivenPeriod> getChenJiaoErZhanBiInGivenPeriod ()
+	public ArrayList<ChenJiaoZhanBiInGivenPeriod> getWkChenJiaoErZhanBiInGivenPeriod ()
 	{
-		return this.cjeperiodlist;
+		return this.wkcjeperiodlist;
 	}
 	/*
 	 * 只能在头尾加，不允许在中间加 
@@ -394,24 +405,24 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		if(cjlperiodlist1.isEmpty())
 			return false;
 		
-		if(this.cjeperiodlist == null || this.cjeperiodlist.isEmpty() ) {
-			this.cjeperiodlist = cjlperiodlist1;
+		if(this.wkcjeperiodlist == null || this.wkcjeperiodlist.isEmpty() ) {
+			this.wkcjeperiodlist = cjlperiodlist1;
 			return true;
 		}
 		else {
-			ChenJiaoZhanBiInGivenPeriod firstrecord = this.cjeperiodlist.get(0);
+			ChenJiaoZhanBiInGivenPeriod firstrecord = this.wkcjeperiodlist.get(0);
 			LocalDate firstday = firstrecord.getRecordsDayofEndofWeek();
 			if(position.isBefore(firstday) || position.isEqual(firstday)) {
-//				logger.debug("add before" + this.cjeperiodlist.size());
-				this.cjeperiodlist.addAll(0, cjlperiodlist1);
-//				logger.debug("add after" + this.cjeperiodlist.size());
+//				logger.debug("add before" + this.wkcjeperiodlist.size());
+				this.wkcjeperiodlist.addAll(0, cjlperiodlist1);
+//				logger.debug("add after" + this.wkcjeperiodlist.size());
 				return true;
 			}
 			
-			ChenJiaoZhanBiInGivenPeriod lastrecord = this.cjeperiodlist.get(this.cjeperiodlist.size()-1);
+			ChenJiaoZhanBiInGivenPeriod lastrecord = this.wkcjeperiodlist.get(this.wkcjeperiodlist.size()-1);
 			LocalDate lastday = lastrecord.getRecordsDayofEndofWeek();
 			if(position.isAfter(lastday) || position.isEqual(lastday)) {
-				this.cjeperiodlist.addAll(this.cjeperiodlist.size()-1, cjlperiodlist1);
+				this.wkcjeperiodlist.addAll(this.wkcjeperiodlist.size()-1, cjlperiodlist1);
 				return true;
 			}
 			
@@ -426,7 +437,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	{
 		ChenJiaoZhanBiInGivenPeriod tmprecords;
 		try {
-			tmprecords = this.cjeperiodlist.get(0);
+			tmprecords = this.wkcjeperiodlist.get(0);
 		} catch (java.lang.NullPointerException e) {
 			return null;
 		} catch (java.lang.IndexOutOfBoundsException e) {
@@ -445,7 +456,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	{
 		ChenJiaoZhanBiInGivenPeriod tmprecords;
 		try {
-			tmprecords = this.cjeperiodlist.get(this.cjeperiodlist.size()-1);
+			tmprecords = this.wkcjeperiodlist.get(this.wkcjeperiodlist.size()-1);
 		} catch (java.lang.NullPointerException e) {
 			return null;
 		} catch (java.lang.IndexOutOfBoundsException e) {
@@ -466,7 +477,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		
 		Integer index = -1;
 		Boolean found = false;
-		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : this.cjeperiodlist) {
+		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : this.wkcjeperiodlist) {
 			index ++;
 			int yearnum = tmpcjzb.getRecordsYear();
 			int wknum = tmpcjzb.getRecordsWeek();
@@ -485,12 +496,12 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	 */
 	public ChenJiaoZhanBiInGivenPeriod getSpecficChenJiaoErRecord (LocalDate requireddate)
 	{
-		if(cjeperiodlist == null)
+		if(wkcjeperiodlist == null)
 			return null;
 		
 		Integer index = this.getRequiredRecordsPostion (requireddate);
 		if( index != null) {
-			ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+			ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
 			return curcjlrecord;
 		} else
 			return null;
@@ -502,10 +513,10 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	{
 		Integer index = this.getRequiredRecordsPostion (requireddate);
 		if( index != null) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
 				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = null;
 				try {
-					 lastcjlrecord = cjeperiodlist.get(index -1 );
+					 lastcjlrecord = wkcjeperiodlist.get(index -1 );
 					 
 					 Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
 					 Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();

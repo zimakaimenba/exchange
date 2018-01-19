@@ -11,7 +11,7 @@ public class StockChiCangInfo
 			this.chicangchenben = chicangchenben;
 	}
 	
-	
+//	private static Logger logger = Logger.getLogger(AccountInfoBasic.class);
 	public int getChicanggushu() {
 		return chicanggushu;
 	}

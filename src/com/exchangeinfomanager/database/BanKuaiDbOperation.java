@@ -3851,7 +3851,7 @@ public class BanKuaiDbOperation
 				HashMap<String,Integer>  tmpweight = new HashMap<String,Integer> () ;
 				tmpweight.put(currentbkcode, weight);
 				tmpstock.setGeGuSuoShuBanKuaiWeight(tmpweight);
-
+				
 				currentbk.addNewBanKuaiGeGu(tmpstock);
 			}
 				
@@ -4433,6 +4433,71 @@ public class BanKuaiDbOperation
 		return stock;
 
 	}
+	
+	/*
+	 * 获取个股或板块某段使劲按的日线走势
+	 */
+	public Stock getNodeKXianZouShi(Stock selectstock, LocalDate nodestartday, LocalDate nodeendday) 
+	{
+		String nodecode = selectstock.getMyOwnCode();
+		String jys = selectstock.getSuoShuJiaoYiSuo();
+		String searchtable;
+		if(jys.equals("sh"))
+			searchtable = "通达信上交所股票每日交易信息";
+		else
+			searchtable = "通达信深交所股票每日交易信息";
+		
+		String sqlquerystat = "SELECT *  FROM " + searchtable + " \r\n" + 
+				"WHERE 代码='" + nodecode + "'" + "\r\n" + 
+				"AND 交易日期  between'" + nodestartday + "' AND '" + nodeendday + "'"
+				;
+		
+		
+		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
+		try {  
+			 rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
+			
+			 ArrayList<ChenJiaoZhanBiInGivenPeriod > tmpklist = new ArrayList<ChenJiaoZhanBiInGivenPeriod > ();
+			 while(rsfx.next()) {
+				 double open = rsfx.getDouble("开盘价");
+				 double high = rsfx.getDouble("最高价");
+				 double low = rsfx.getDouble("最低价");
+				 double close = rsfx.getDouble("收盘价");
+				 java.sql.Date actiondate = rsfx.getDate("交易日期");
+				 
+				 ChenJiaoZhanBiInGivenPeriod tmprecord = new ChenJiaoZhanBiInGivenPeriod ();
+				 tmprecord.setOpenPrice(open);
+				 tmprecord.setHighPrice(high);
+				 tmprecord.setLowPrice(low);
+				 tmprecord.setClosePrice(close);
+				 tmprecord.setRecordsDayofEndofWeek(actiondate);
+				 
+				 tmpklist.add(tmprecord);
+			 }
+			 
+			 selectstock.setDayChenJiaoErZhanBiInGivenPeriod(tmpklist);
+		}catch(java.lang.NullPointerException e){ 
+			e.printStackTrace();
+//			logger.debug( "数据库连接为NULL!");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rsfx != null)
+					rsfx.close();
+				rsfx.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rsfx = null;
+		}
+		
+		
+		return selectstock;
+	}
+	
 	/*
 	 * 获取某个节点在指定周的所有关注分析等结果
 	 */
@@ -6549,6 +6614,7 @@ public class BanKuaiDbOperation
 //			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
 //			return autoIncKeyFromApi;
 //		}
+		
 		
 		
 

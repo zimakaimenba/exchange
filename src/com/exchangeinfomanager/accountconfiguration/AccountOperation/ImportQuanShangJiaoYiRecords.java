@@ -11,11 +11,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.log4j.Logger;
+
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.BuySellRecordsProcessorXiangCai;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.BuySellRecordsProcessorZhaoShang;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.MoneyFlowRecordsProcessorZhaoShang;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountPuTong;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
@@ -79,6 +82,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		txtarealogs.append("导入账户：" + actionacnt.getAccountName() + "\n");
 	}
 	
+	private static Logger logger = Logger.getLogger(ImportQuanShangJiaoYiRecords.class);
 	private AccountInfoBasic actionacnt;
 	private AccountAndChiCangConfiguration acntstckconfig;
 	private AccountDbOperation acntdbopt;
@@ -99,7 +103,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 //		try {
 //			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream("d:\\LW对帐单20171022.txt") ) );
 //			List<String[]> contentslist = reader.readAll();
-//			System.out.println(contentslist);
+//			logger.debug(contentslist);
 //		} catch (FileNotFoundException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
@@ -122,7 +126,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		for(String str:filenamelist) {
 			listRight.setSelectedIndex(listindex);
 			listRight.ensureIndexIsVisible(listindex);
-			//System.out.println(tfldrecordspath.getText() + str);
+			//logger.debug(tfldrecordspath.getText() + str);
 			
 			 File recordsfile = new File(tfldrecordspath.getText() + str);
 			 //这里后面要插入判断是哪个券商，以便调用不同的类的代码
@@ -156,7 +160,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		     for(String everyline:readLines) {
 		    	 	List<String> tmplinelist = null;
 		    	 	tmplinelist = Splitter.on("|").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(everyline);
-		    	 	System.out.println(tmplinelist);
+		    	 	logger.debug(tmplinelist);
 		    	 	
 		    	 	Date lineactiondate = null;
 					try {
@@ -218,7 +222,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 								acntstckconfig.afterSellCheckAndSetProfitYuanZiOperation (actionacnt,stocknumberpricepanel); 	//判断该账户里面是否还有该股票，没有就说明已经卖完了
 							}
 						} else {
-							System.out.println(stockcodeisfromeverusedname);
+							logger.debug(stockcodeisfromeverusedname);
 							if(autoIncKeyFromApi == -1 )
 									JOptionPane.showMessageDialog(null, "错误!" +"\n" 
 																		+"如果买入可能账户现金余额不足！"
@@ -267,7 +271,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		for(String str:filenamelist) {
 			listRight.setSelectedIndex(listindex);
 			listRight.ensureIndexIsVisible(listindex);
-			//System.out.println(tfldrecordspath.getText() + str);
+			//logger.debug(tfldrecordspath.getText() + str);
 			
 			File recordsfile = new File(tfldrecordspath.getText() + str);
 		     List<String> readLines = null;
@@ -291,7 +295,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		     for(String everyline:readLines) {
 		    	 	List<String> tmplinelist = null;
 		    	 	tmplinelist = Splitter.on("|").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(everyline);
-		    	 	System.out.println(tmplinelist); //[20070613, 银行转存, true, 10000.00, 20070613            银行转存                      0.00    0.000      0.00      0.00    10000.00       43583.85]
+		    	 	logger.debug(tmplinelist); //[20070613, 银行转存, true, 10000.00, 20070613            银行转存                      0.00    0.000      0.00      0.00    10000.00       43583.85]
 		    	 	
 		    	 	Date lineactiondate = null;
 					try {
@@ -332,14 +336,14 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		    	 linuxpath = (chooser.getSelectedFile().toString()).replace('\\', '/');
 		    else 
 		    	linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-		    System.out.println(linuxpath);
+		    logger.debug(linuxpath);
 		    tfldrecordspath.setText(linuxpath);
 		    
 		    File recordspath = chooser.getSelectedFile();
 		    File[] filesList = recordspath.listFiles();
 	        for(File f : filesList){
 //	            if(f.isDirectory())
-//	                System.out.println(f.getName());
+//	                logger.debug(f.getName());
 	            if(f.isFile() && f.getName().endsWith("txt")){
 	                ((DefaultListModel)listLeft.getModel()).addElement(f.getName());
 	            }

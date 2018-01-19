@@ -35,7 +35,7 @@ public class JStockComboBox extends  JComboBox<String>
 		bkdbopt = new BanKuaiDbOperation ();
 	}
 	
-	public JStockComboBox(int onlyselecttype) //用户可以指定只选择某种类型的node
+	public JStockComboBox(int onlyselecttype) //用户可以指定只选择从数据库中读出某种类型的node
 	{
 		super();
 		createEvents ();

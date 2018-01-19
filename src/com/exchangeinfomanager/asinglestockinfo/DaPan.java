@@ -48,7 +48,7 @@ public class DaPan extends BkChanYeLianTreeNode
 		Double dapanchaer = 0.0;
 		Integer shindex = this.sheperiodlist.getRequiredRecordsPostion(requireddate);
 		if( shindex != null) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.sheperiodlist.getChenJiaoErZhanBiInGivenPeriod().get(shindex);
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.sheperiodlist.getWkChenJiaoErZhanBiInGivenPeriod().get(shindex);
 				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
 				Double upcje = curcjlrecord.getUpLevelChengJiaoEr();
 				dapanchaer = dapanchaer + curcje; 
@@ -73,9 +73,9 @@ public class DaPan extends BkChanYeLianTreeNode
 		Double dapanchaer = null;
 		Integer shindex = this.sheperiodlist.getRequiredRecordsPostion(requireddate);
 		if( shindex != null) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.sheperiodlist.getChenJiaoErZhanBiInGivenPeriod().get(shindex);
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.sheperiodlist.getWkChenJiaoErZhanBiInGivenPeriod().get(shindex);
 				try {
-					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.sheperiodlist.getChenJiaoErZhanBiInGivenPeriod().get(shindex-1);
+					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.sheperiodlist.getWkChenJiaoErZhanBiInGivenPeriod().get(shindex-1);
 					 
 					 Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
 					 Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
@@ -89,9 +89,9 @@ public class DaPan extends BkChanYeLianTreeNode
 		
 		Integer szindex = this.szeperiodlist.getRequiredRecordsPostion(requireddate);
 		if( shindex != null) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.szeperiodlist.getChenJiaoErZhanBiInGivenPeriod().get(szindex);
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.szeperiodlist.getWkChenJiaoErZhanBiInGivenPeriod().get(szindex);
 				try {
-					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.szeperiodlist.getChenJiaoErZhanBiInGivenPeriod().get(szindex-1);
+					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.szeperiodlist.getWkChenJiaoErZhanBiInGivenPeriod().get(szindex-1);
 					 
 					 Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
 					 Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();

@@ -82,7 +82,7 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 		CustomRendererForCje cjerender = (CustomRendererForCje) super.plot.getRenderer(); 
 		cjerender.setDisplayNode(node);
 		cjerender.setDateSet (barchartdataset);
-		DecimalFormat decimalformate = new DecimalFormat("#0.000");
+		DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
 		((CustomRendererForCje) plot.getRenderer()).setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
 		cjerender.setItemLabelsVisible(true);
 		
@@ -168,7 +168,7 @@ class CustomToolTipGeneratorForChenJiaoEr implements CategoryToolTipGenerator
     	
     	Double curcje = (Double)dataset.getValue(row, column);
     	
-    	DecimalFormat decimalformate = new DecimalFormat("#0.000");
+    	DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
 //    	return selecteddate + "成交额" + decimalformate.format(curcje) ;
 		
 		//显示成交额是多少周最大

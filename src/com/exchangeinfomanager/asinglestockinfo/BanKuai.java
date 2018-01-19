@@ -157,20 +157,20 @@ public class BanKuai extends BkChanYeLianTreeNode
 	/*
 	 * GEPHI part
 	 */
-	public void setNotExportToGephi ()
-	 {
-		 this.notexporttogehpi = true;
-	 }
-	 public boolean shouldNotExportToGephi ()
-	 {
-		 return this.notexporttogehpi;
-	 }
+//	public void setNotExportToGephi ()
+//	 {
+//		 this.notexporttogehpi = true;
+//	 }
+//	 public boolean shouldNotExportToGephi ()
+//	 {
+//		 return this.notexporttogehpi;
+//	 }
 	 /*
 	  * 
 	  */
 	 public void setDaPan (DaPan dp)
 	 {
-		 this.dapan = dp; //上证成交记录
+		 this.dapan = dp; //大盘成交记录
 	 }
 	 /*
 	  * 
@@ -187,10 +187,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 //		 */
 //		protected Boolean checkIsFuPaiAfterTingPai (LocalDate requireddate )
 //		{
-//			Integer index = this.getRequiredRecordsPostion (this.cjeperiodlist,requireddate);
+//			Integer index = this.getRequiredRecordsPostion (this.wkcjeperiodlist,requireddate);
 //			if( index != null) {
-//				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
-//				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
+//				ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
+//				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = wkcjeperiodlist.get(index -1 );
 //				LocalDate curweeknum = curcjlrecord.getRecordsDayofEndofWeek();
 //				LocalDate lastweeknum = lastcjlrecord.getRecordsDayofEndofWeek() ;
 //				long diffwknum = ChronoUnit.WEEKS.between (curweeknum,lastweeknum);
@@ -215,19 +215,19 @@ public class BanKuai extends BkChanYeLianTreeNode
 		 */
 		public Double getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (LocalDate requireddate)
 		{
-			if(cjeperiodlist == null)
+			if(wkcjeperiodlist == null)
 				return null;
 			
 			Integer index = super.getRequiredRecordsPostion (requireddate);
 			if( index != null) {
-					if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
+					if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.wkcjeperiodlist.get(index) != null ) {
 						
 //							logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 						return 100.0;
 					}
 				
-					ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
-					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
+					ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
+					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = wkcjeperiodlist.get(index -1 );
 						
 					Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
 					Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
@@ -244,24 +244,24 @@ public class BanKuai extends BkChanYeLianTreeNode
 		 */
 		public Integer getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (LocalDate requireddate)
 		{
-			if(cjeperiodlist == null)
+			if(wkcjeperiodlist == null)
 				return null;
 
 			int maxweek = 0;
 			Integer index = super.getRequiredRecordsPostion (requireddate);
 			if( index != null) {
-				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
+				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.wkcjeperiodlist.get(index) != null ) {
 					if(index != 0)
 //						logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 					return 0;
 				}
 
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index);
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
 				ChenJiaoZhanBiInGivenPeriod lastcjlrecord =  null;
 					
 				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
 				for(int i = index -1;i>=0;i--) {
-						lastcjlrecord = cjeperiodlist.get(i );
+						lastcjlrecord = wkcjeperiodlist.get(i );
 						Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
 						if(curzhanbiratio > lastzhanbiratio)
 							maxweek ++;
@@ -277,7 +277,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 		 */
 		public Double getChenJiaoErChangeGrowthRateForAGivenPeriod (LocalDate requireddate)
 		{
-			if(cjeperiodlist == null)
+			if(wkcjeperiodlist == null)
 				return null;
 			
 			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
@@ -289,11 +289,11 @@ public class BanKuai extends BkChanYeLianTreeNode
 			
 			Integer index = super.getRequiredRecordsPostion (requireddate);
 			if( index != null) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index); //自己当前周成交量
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index); //自己当前周成交量
 
 				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = null;
 				try {
-					 lastcjlrecord = cjeperiodlist.get(index -1 );
+					 lastcjlrecord = wkcjeperiodlist.get(index -1 );
 				} catch ( java.lang.ArrayIndexOutOfBoundsException e) {
 					logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是个新板块" );
 				
@@ -316,7 +316,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 		 */
 		public ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate)
 		{
-			if(cjeperiodlist == null)
+			if(wkcjeperiodlist == null)
 				return null;
 			
 //			NodeFengXiData nodefx = new NodeFengXiData (super.getMyOwnCode(),requireddate);
@@ -324,9 +324,9 @@ public class BanKuai extends BkChanYeLianTreeNode
 			
 			Integer index = super.getRequiredRecordsPostion (requireddate);
 			if( index != null) {
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = cjeperiodlist.get(index); //自己当前周成交量
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index); //自己当前周成交量
 				
-				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.cjeperiodlist.get(index) != null ) {
+				if( super.getChengJiaoErDifferenceOfLastWeek(requireddate) == null && super.wkcjeperiodlist.get(index) != null ) {
 //					logger.debug(this.getMyOwnCode() + this.getMyOwnName() + "可能是一个新个股或板块");
 					//计算成交额变化贡献率
 					if( dpcjediff<0 || dpcjediff == null ) {//大盘缩量，
@@ -344,7 +344,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 					
 					return curcjlrecord;
 				} else {
-					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = cjeperiodlist.get(index -1 );
+					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = wkcjeperiodlist.get(index -1 );
 					////计算成交额变化贡献率 
 					if( dpcjediff<0 ) {//大盘缩量，
 						curcjlrecord.setGgbkcjegrowthzhanbi(-100.0);
@@ -366,7 +366,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 					//计算给定周的成交额占比是多少周期内的最大占比
 					Integer maxweek = 0;
 					for(int i = index -1;i>=0;i--) {
-							lastcjlrecord = cjeperiodlist.get(i );
+							lastcjlrecord = wkcjeperiodlist.get(i );
 							lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
 							if(curzhanbiratio > lastzhanbiratio)
 								maxweek ++;
@@ -379,7 +379,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 					maxweek = 0;
 					Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
 					for(int i = index -1;i>=0;i--) {
-						lastcjlrecord = cjeperiodlist.get(i );
+						lastcjlrecord = wkcjeperiodlist.get(i );
 						Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
 						if(curcje > lastcje)
 							maxweek ++;

@@ -14,6 +14,7 @@ public class AccountXinYongPuTong  extends AccountInfoBasic
 		super.setAccounttype(super.TYPEXYPUTONG);
 	}
 	
+//	private static Logger logger = Logger.getLogger(AccountInfoBasic.class);
 	
 	public void zhuanruguquan (StockChiCangInfo stockchicanginfo, int guquanshu, double guquandanjia,String shuoming)
 	{

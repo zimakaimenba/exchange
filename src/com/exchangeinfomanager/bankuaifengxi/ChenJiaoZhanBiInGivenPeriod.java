@@ -240,6 +240,31 @@ public class ChenJiaoZhanBiInGivenPeriod {
 		else
 			return false;
 	}
+	
+	public Double getOpenPrice() {
+		return openprice;
+	}
+	public void setOpenPrice(Double openprice) {
+		this.openprice = openprice;
+	}
+	public Double getClosePrice() {
+		return closeprice;
+	}
+	public void setClosePrice(Double closeprice) {
+		this.closeprice = closeprice;
+	}
+	public Double getHighPrice() {
+		return highprice;
+	}
+	public void setHighPrice(Double highprice) {
+		this.highprice = highprice;
+	}
+	public Double getLowPrice() {
+		return lowprice;
+	}
+	public void setLowPrice(Double lowprice) {
+		this.lowprice = lowprice;
+	}
 
 	
 

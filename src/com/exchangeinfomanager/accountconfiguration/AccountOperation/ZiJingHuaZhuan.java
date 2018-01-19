@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -53,6 +54,7 @@ public class ZiJingHuaZhuan extends JPanel {
 		createEvents();
 	}
 
+//	private static Logger logger = Logger.getLogger(ImportQuanShangJiaoYiRecords.class);
 	private SystemConfigration sysconfig;
 	private HashMap<String,String> gjcbuysellmaps ;
 	private HashMap<String,String> gjctosystemmaps;

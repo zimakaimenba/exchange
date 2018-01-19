@@ -16,7 +16,7 @@ public class CashAccountBasic
 		this.totalxianjingchenben = 0.0;
 		isallowedzhuanruxianjing = true;
 	}
-	
+//	private static Logger logger = Logger.getLogger(AccountInfoBasic.class);
 	private Double cash;
 	private Double totalxianjingchenben; //账户总的现金成本
 	private Double historyprofit; //历史上总的盈亏
