@@ -146,7 +146,7 @@ public class BanKuaiFengXi extends JDialog {
 		initializeGui ();
 		this.sysconfig = SystemConfigration.getInstance();
 		createEvents ();
-//		dateChooser.setDate(new Date ());
+		dateChooser.setDate(new Date ());
 		bkdbopt = new BanKuaiDbOperation ();
 		initializePaoMaDeng ();
 	}
@@ -587,7 +587,7 @@ public class BanKuaiFengXi extends JDialog {
 			}
 		}
 		
-		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() );
+		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
 //		 JScrollBar verticalScrollBar = scrollPaneuserselctmsg.getVerticalScrollBar();
 //		 JScrollBar horizontalScrollBar = scrollPaneuserselctmsg.getHorizontalScrollBar();
 ////		 verticalScrollBar.setValue(verticalScrollBar.getMaximum() );
@@ -1673,11 +1673,11 @@ public class BanKuaiFengXi extends JDialog {
 							.addComponent(panel, 0, 0, Short.MAX_VALUE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 							.addGroup(gl_contentPanel.createSequentialGroup()
-								.addComponent(paneldayCandle, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(paneldayCandle, GroupLayout.DEFAULT_SIZE, 911, Short.MAX_VALUE)
 								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(scrollPaneuserselctmsg, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE))
+								.addComponent(scrollPaneuserselctmsg, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))
 							.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 1107, GroupLayout.PREFERRED_SIZE))
 						.addComponent(scrollPanestockbk, GroupLayout.PREFERRED_SIZE, 1091, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -1711,9 +1711,8 @@ public class BanKuaiFengXi extends JDialog {
 							.addComponent(panelLastWkGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(panelselectwkgeguzhanbi, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-							.addComponent(scrollPaneuserselctmsg, Alignment.LEADING)
-							.addComponent(paneldayCandle, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE))))
+						.addComponent(paneldayCandle, GroupLayout.PREFERRED_SIZE, 260, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPaneuserselctmsg, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)))
 		);
 		
 		tfldselectedmsg = new JTextArea();
