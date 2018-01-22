@@ -115,33 +115,57 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 	
 	 
 	
-	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate displayedenddate)
+	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday)
 	{
 		this.curdisplayednode = node;
-		LocalDate requireend = displayedenddate.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = displayedenddate.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+//		LocalDate requireend = displayedenddate.with(DayOfWeek.SATURDAY);
+//		LocalDate requirestart = displayedenddate.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		ohlcSeries = new OHLCSeries("KPrice");
-		ArrayList<ChenJiaoZhanBiInGivenPeriod> daydata = node.getDayChenJiaoErZhanBiInGivenPeriod();
+//		ArrayList<ChenJiaoZhanBiInGivenPeriod> daydata = node.getWkChenJiaoErZhanBiInGivenPeriod();
 		double lowestLow =10000.0;  double highestHigh =0.0; 
-		for(ChenJiaoZhanBiInGivenPeriod dayrecord : daydata) {
-			Double open = dayrecord.getOpenPrice();
-			Double low = dayrecord.getLowPrice();
-			Double close = dayrecord.getClosePrice();
-			Double high = dayrecord.getHighPrice();
+		for(LocalDate tmpdate = nodestartday;tmpdate.isBefore( nodeendday) || tmpdate.isEqual(nodeendday); tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ){
+			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
+			if(tmprecord != null) {
+				Double open = tmprecord.getOpenPrice();
+				Double low = tmprecord.getLowPrice();
+				Double close = tmprecord.getClosePrice();
+				Double high = tmprecord.getHighPrice();
+				logger.debug(tmpdate.toString() + open + "," + high.toString() + "," + low + "," + close);
+				
+				int year = tmpdate.getYear();
+				int month = tmpdate.getMonthValue();
+				int day = tmpdate.getDayOfMonth();
+				ohlcSeries.add(new Day(day,month,year), open, high, low, close);
+				
+				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
+					lowestLow = low;
+				if(high > highestHigh && high !=0)
+					highestHigh = high;
+			}
 			
-			logger.debug(open + "," + high.toString() + "," + low + "," + close);
-			LocalDate actionday = dayrecord.getRecordsDayofEndofWeek ();
-			int year = actionday.getYear();
-			int month = actionday.getMonthValue();
-			int day = actionday.getDayOfMonth();
-			ohlcSeries.add(new Day(day,month,year), open, high, low, close);
 			
-			if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
-				lowestLow = low;
-			if(high > highestHigh && high !=0)
-				highestHigh = high;
 		}
+//		for(ChenJiaoZhanBiInGivenPeriod dayrecord : daydata) {
+//			LocalDate actionday = dayrecord.getRecordsDayofEndofWeek ();
+//			if(actionday.isAfter(nodestartday) && (actionday.isBefore(nodeendday) || actionday.equals(nodeendday) ) ) {
+//				Double open = dayrecord.getOpenPrice();
+//				Double low = dayrecord.getLowPrice();
+//				Double close = dayrecord.getClosePrice();
+//				Double high = dayrecord.getHighPrice();
+//				logger.debug(open + "," + high.toString() + "," + low + "," + close);
+//				
+//				int year = actionday.getYear();
+//				int month = actionday.getMonthValue();
+//				int day = actionday.getDayOfMonth();
+//				ohlcSeries.add(new Day(day,month,year), open, high, low, close);
+//				
+//				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
+//					lowestLow = low;
+//				if(high > highestHigh && high !=0)
+//					highestHigh = high;
+//			}
+//		}
 
 		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.95, highestHigh*1.05);
 		
@@ -149,8 +173,14 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		
 		chartPanel.setHorizontalAxisTrace(true); //十字显示
         chartPanel.setVerticalAxisTrace(true);
+        
 
-        setPanelTitle ( node,  displayedenddate);
+        setPanelTitle ( node,  nodeendday);
+	}
+	
+	private void highlightKOfGivenPeriod(LocalDate period, String markerTyp)
+	{//https://stackoverflow.com/questions/6603450/drawing-shapes-in-jfreechart
+		
 	}
 	
 	private void createChartPanel() 
@@ -173,7 +203,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		priceAxis.setLowerMargin(0.0);  
 		
 		dayAxis = new DateAxis (); 
-		
         
 		// Create candlestick chart renderer
 		BanKuaiFengXiCandlestickRenderer candlestickRenderer = new BanKuaiFengXiCandlestickRenderer ();//new CandlestickRenderer();
@@ -267,13 +296,7 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
          LocalDate ldate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
          LocalDate tmpdate = datebeselectedinweek.with(DayOfWeek.FRIDAY) ;
         
-        	 
-         
-         
-//         ComparableObjectItem dataitem = ser.getDataItem(item);
-//         Number kekxx = highLowData.getX(series, item);
-//         logger.debug(kekxx);
-        
+       
         Number curClose = highLowData.getClose(series, item);
         Number prevClose = highLowData.getClose(series, item>0 ? item-1 : 0);
         if(  ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) )

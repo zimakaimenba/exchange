@@ -68,8 +68,8 @@ public class BanKuai extends BkChanYeLianTreeNode
 		if(this.allbkge == null || this.allbkge.isEmpty())
 			return null;
 		
-		LocalDate bkstart = this.getRecordsStartDate();
-		LocalDate bkend = this.getRecordsEndDate();
+		LocalDate bkstart = this.getWkRecordsStartDate();
+		LocalDate bkend = this.getWkRecordsEndDate();
 		if(requireddate.isBefore(bkstart) || requireddate.isAfter(bkend) ) //当前没有该日期的记录
 			return null;
 

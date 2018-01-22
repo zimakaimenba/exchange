@@ -80,7 +80,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	
 	
 	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> wkcjeperiodlist; //板块自己的周成交记录以及一些分析结果
-	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> daycjeperiodlist; //板块自己日成交记录以及一些分析结果
+//	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> daycjeperiodlist; //板块自己日成交记录以及一些分析结果
 //	private BanKuaiDbOperation bkdbopt;
 	
 
@@ -381,14 +381,14 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	/*
 	 * 获取日线数据
 	 */
-	public ArrayList<ChenJiaoZhanBiInGivenPeriod> getDayChenJiaoErZhanBiInGivenPeriod ()
-	{
-		return this.daycjeperiodlist;
-	}
-	public void setDayChenJiaoErZhanBiInGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> daylist)
-	{
-		this.daycjeperiodlist = daylist;
-	}
+//	public ArrayList<ChenJiaoZhanBiInGivenPeriod> getDayChenJiaoErZhanBiInGivenPeriod ()
+//	{
+//		return this.daycjeperiodlist;
+//	}
+//	public void setDayChenJiaoErZhanBiInGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> daylist)
+//	{
+//		this.daycjeperiodlist = daylist;
+//	}
  	//和成交量相关的函数
 	/*
 	 * 获取周线数据
@@ -433,7 +433,11 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	/*
 	 * 
 	 */
-	public LocalDate getRecordsStartDate ()
+//	public 
+	/*
+	 * 
+	 */
+	public LocalDate getWkRecordsStartDate ()
 	{
 		ChenJiaoZhanBiInGivenPeriod tmprecords;
 		try {
@@ -452,7 +456,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 	/*
 	 * 
 	 */
-	public LocalDate getRecordsEndDate ()
+	public LocalDate getWkRecordsEndDate ()
 	{
 		ChenJiaoZhanBiInGivenPeriod tmprecords;
 		try {

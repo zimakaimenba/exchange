@@ -4437,10 +4437,10 @@ public class BanKuaiDbOperation
 	/*
 	 * 获取个股或板块某段使劲按的日线走势
 	 */
-	public Stock getNodeKXianZouShi(Stock selectstock, LocalDate nodestartday, LocalDate nodeendday) 
+	public BkChanYeLianTreeNode getNodeKXianZouShi(BkChanYeLianTreeNode stock, LocalDate nodestartday, LocalDate nodeendday, LocalDate position) 
 	{
-		String nodecode = selectstock.getMyOwnCode();
-		String jys = selectstock.getSuoShuJiaoYiSuo();
+		String nodecode = stock.getMyOwnCode();
+		String jys = stock.getSuoShuJiaoYiSuo();
 		String searchtable;
 		if(jys.equals("sh"))
 			searchtable = "通达信上交所股票每日交易信息";
@@ -4475,7 +4475,7 @@ public class BanKuaiDbOperation
 				 tmpklist.add(tmprecord);
 			 }
 			 
-			 selectstock.setDayChenJiaoErZhanBiInGivenPeriod(tmpklist);
+			 stock.addChenJiaoErZhanBiInGivenPeriod (tmpklist,position);
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();
 //			logger.debug( "数据库连接为NULL!");
@@ -4493,9 +4493,8 @@ public class BanKuaiDbOperation
 			}
 			rsfx = null;
 		}
-		
-		
-		return selectstock;
+
+		return stock;
 	}
 	
 	/*

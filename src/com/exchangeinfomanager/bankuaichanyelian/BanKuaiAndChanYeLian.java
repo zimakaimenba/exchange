@@ -159,6 +159,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 		BanKuai sz = this.getBanKuai("399001", LocalDate.now());
 		treerootdapan.setShangHai(sh);
 		treerootdapan.setShenZhen(sz);
+		this.jyssuoyoustock = new HashMap<String,BkChanYeLianTreeNode> ();
 		
 		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
 		startGui ();
@@ -188,7 +189,7 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 	private String currentselectedtdxbk = "";
 	private HashSet<String> stockinfile;
-
+	private HashMap<String,BkChanYeLianTreeNode> jyssuoyoustock;
 	
 	
 	/*
@@ -196,8 +197,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 	 */
 	public BanKuai getBanKuai (BanKuai bankuai,LocalDate requiredrecordsday)
 	{
-		LocalDate bkstartday = bankuai.getRecordsStartDate();
-		LocalDate bkendday = bankuai.getRecordsEndDate();
+		LocalDate bkstartday = bankuai.getWkRecordsStartDate();
+		LocalDate bkendday = bankuai.getWkRecordsEndDate();
 		
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
@@ -222,7 +223,6 @@ public class BanKuaiAndChanYeLian extends JPanel
 		}
 		
 		return bankuai;
-		
 	}
 	public BanKuai getBanKuai (String bkcode,LocalDate requiredrecordsday) 
 	{
@@ -235,8 +235,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 	 */
 	public BanKuai getAllGeGuOfBanKuai (BanKuai bankuai) 
 	{
-		LocalDate bkstartday = bankuai.getRecordsStartDate();
-		LocalDate bkendday = bankuai.getRecordsEndDate();
+		LocalDate bkstartday = bankuai.getWkRecordsStartDate();
+		LocalDate bkendday = bankuai.getWkRecordsEndDate();
 		
 		if(bkstartday == null || bkendday == null) {
 			bkendday = dchgeguwkzhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
@@ -261,11 +261,11 @@ public class BanKuaiAndChanYeLian extends JPanel
 	}
 	private Stock getGeGuOfBanKuai(BanKuai bankuai, Stock stock)
 	{
-		LocalDate bkstartday = bankuai.getRecordsStartDate();
-		LocalDate bkendday = bankuai.getRecordsEndDate();
+		LocalDate bkstartday = bankuai.getWkRecordsStartDate();
+		LocalDate bkendday = bankuai.getWkRecordsEndDate();
 		
-		LocalDate stockstartday = stock.getRecordsStartDate();
-		LocalDate stockendday = stock.getRecordsEndDate();
+		LocalDate stockstartday = stock.getWkRecordsStartDate();
+		LocalDate stockendday = stock.getWkRecordsEndDate();
 		
 		if(stockstartday == null || stockendday == null ) { //还没有数据，直接找
 			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock, bkstartday, bkendday,bkstartday);
@@ -290,12 +290,12 @@ public class BanKuaiAndChanYeLian extends JPanel
 	{
 		BanKuai bankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode(bkcode);
 		
-		LocalDate bkstartday = bankuai.getRecordsStartDate();
-		LocalDate bkendday = bankuai.getRecordsEndDate();
+		LocalDate bkstartday = bankuai.getWkRecordsStartDate();
+		LocalDate bkendday = bankuai.getWkRecordsEndDate();
 		
 		Stock stock = bankuai.getBanKuaiGeGu(stockcode);
-		LocalDate stockstartday = stock.getRecordsStartDate();
-		LocalDate stockendday = stock.getRecordsEndDate();
+		LocalDate stockstartday = stock.getWkRecordsStartDate();
+		LocalDate stockendday = stock.getWkRecordsEndDate();
 		
 		if(stockstartday == null || stockendday == null ) { //还没有数据，直接找
 			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock, bkstartday, bkendday,bkstartday);
@@ -320,8 +320,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 		BanKuai shdpbankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode("999999");
 		BanKuai szdpbankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode("399001");
 		
-		LocalDate bkstartday = shdpbankuai.getRecordsStartDate();
-		LocalDate bkendday = shdpbankuai.getRecordsEndDate();
+		LocalDate bkstartday = shdpbankuai.getWkRecordsStartDate();
+		LocalDate bkendday = shdpbankuai.getWkRecordsEndDate();
 		
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
@@ -382,7 +382,41 @@ public class BanKuaiAndChanYeLian extends JPanel
 
 		return null;
 	}
+	/*
+	 *该函数为每一个个股设置制定周期的日线数据 
+	 */
+	public BkChanYeLianTreeNode getAStock (String stockcode,LocalDate requiredrecordsday)
+	{
+		BkChanYeLianTreeNode stock = null;
+		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		try{
+			stock = this.jyssuoyoustock.get(stockcode);
+			LocalDate nodestartday = stock.getWkRecordsStartDate();
+			LocalDate nodeendday = stock.getWkRecordsEndDate();
+			
+			HashMap<String,LocalDate> startend = nodeTimePeriodRelation (nodestartday,nodeendday,requirestart,requireend);
+			LocalDate searchstart,searchend,position;
+			if(!startend.isEmpty()) {
+				searchstart = startend.get("searchstart"); 
+				searchend = startend.get("searchend");
+				position = 	startend.get("position");
+				
+				stock = bkdbopt.getNodeKXianZouShi (stock,searchstart,searchend,position);
+			}
+		} catch (java.lang.NullPointerException e) {
+			stock = new Stock(stockcode,"");
+			stock = bkdbopt.getNodeKXianZouShi (stock,requirestart,requireend,requireend);
+			
+			this.jyssuoyoustock.put(stockcode, stock);
+		}
+		
+		return stock;
+	}
 	
+	/*
+	 * 
+	 */
 	private  BkChanYeLianTree initializeBkChanYeLianXMLTree()
 	{
 		BkChanYeLianTreeNode topNode = cylxmhandler.getBkChanYeLianXMLTree();

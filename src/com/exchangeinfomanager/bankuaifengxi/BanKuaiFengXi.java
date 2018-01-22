@@ -459,8 +459,8 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private boolean checkDateBetweenBanKuaiDate(BanKuai selectedbk, LocalDate selectdate) 
 	{
-		LocalDate bkend = selectedbk.getRecordsEndDate();
-		LocalDate bkstart = selectedbk.getRecordsStartDate();
+		LocalDate bkend = selectedbk.getWkRecordsEndDate();
+		LocalDate bkstart = selectedbk.getWkRecordsStartDate();
 		
 		if(  CommonUtility.isInSameWeek(bkstart,selectdate) ||  CommonUtility.isInSameWeek(bkend,selectdate)     
 				|| (selectdate.isAfter(bkstart) && selectdate.isBefore(bkend)) ) 
@@ -495,21 +495,27 @@ public class BanKuaiFengXi extends JDialog {
 			}
 	}
 	/*
-	 * 显示个股K线走势
+	 * 用户选择个股后，显示个股K线走势
 	 */
-	private void refreshGeGuKXianZouShi (Stock selectstock)
+	private void refreshGeGuKXianZouShi (String selectstockcode)
 	{
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		
-		LocalDate nodestartday = selectstock.getRecordsStartDate();
-		LocalDate nodeendday = selectstock.getRecordsEndDate();
+		LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		paneldayCandle.resetDate();
 		
-		selectstock = bkdbopt.getNodeKXianZouShi (selectstock,nodestartday,nodeendday);
-		paneldayCandle.setNodeCandleStickDate(selectstock,curselectdate);
-		
-		
+		BkChanYeLianTreeNode selectstock = bkcyl.getAStock(selectstockcode,curselectdate);
+//		LocalDate nodestartday = selectstock.getWkRecordsStartDate();
+//		LocalDate nodeendday = selectstock.getWkRecordsEndDate();
+		paneldayCandle.setNodeCandleStickDate(selectstock,requirestart,requireend);
+	}
+	/*
+	 * 用户选择个股周成交量某个数据后，显示该数据前后50个交易日的日线K线走势
+	 */
+	private void refreshGeGuKXianZouShiOfFiftyDays (String selectstockcode,LocalDate selectedday)
+	{
+		kkkkk
 	}
 
 	
@@ -870,30 +876,15 @@ public class BanKuaiFengXi extends JDialog {
 				//显示选择周的分析记录等
 				ArrayList<JiaRuJiHua> fxjg = panelGeguDapanZhanBi.getCurSelectedFengXiJieGuo ();
 				setUserSelectedColumnMessage(tooltip,fxjg);
-				
-//				String allstring = tooltip + "\n";
-//				if(fxjg !=null) {
-//					for(JiaRuJiHua jrjh : fxjg) {
-//						LocalDate actiondate = jrjh.getJiaRuDate();
-//						String actiontype = jrjh.getGuanZhuType();
-//						String shuoming = jrjh.getJiHuaShuoMing();
-//						
-//						allstring = allstring +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]" + "\n";
-//					}
-//				}
-////				tfldselectedmsg.setText( "" );
-//				tfldselectedmsg.setText( allstring + tfldselectedmsg.getText());
-//				 JScrollBar verticalScrollBar = scrollPaneuserselctmsg.getVerticalScrollBar();
-//				 JScrollBar horizontalScrollBar = scrollPaneuserselctmsg.getHorizontalScrollBar();
-//				 verticalScrollBar.setValue(verticalScrollBar.getMinimum());
-////				  horizontalScrollBar.setValue(horizontalScrollBar.getMinimum());
-
 				//
 				Comparable datekey = panelGeguDapanZhanBi.getCurSelectedBarDate ();
 				panelbkwkzhanbi.highLightSpecificBarColumn (datekey);
 				panelgegucje.highLightSpecificBarColumn (datekey);
 				panelgeguwkzhanbi.highLightSpecificBarColumn (datekey);
 				panelbkcje.highLightSpecificBarColumn (datekey);
+				
+				//显示个股在选择的日期前后50个交易日的走势
+				
 			}
 		});
 		panelbkcje.getChartPanel().addMouseListener(new MouseAdapter() {
@@ -1234,7 +1225,7 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
-					refreshGeGuKXianZouShi (selectstock);
+					refreshGeGuKXianZouShi (selectstock.getMyOwnCode()); //K线
 					cbxstockcode.updateUserSelectedNode (selectstock); 
 					displayStockSuoShuBanKuai(selectstock);
 					
