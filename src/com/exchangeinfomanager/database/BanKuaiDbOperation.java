@@ -4230,7 +4230,7 @@ public class BanKuaiDbOperation
 			 
 			while(rs.next()) {
 				
-				ChenJiaoZhanBiInGivenPeriod cjlrecords = new ChenJiaoZhanBiInGivenPeriod ();
+				ChenJiaoZhanBiInGivenPeriod cjlrecords = new ChenJiaoZhanBiInGivenPeriod (bankuai.getMyOwnCode(),ChenJiaoZhanBiInGivenPeriod.WEEK);
 				double bankuaicje = rs.getDouble("板块周交易额");
 				double dapancje = rs.getDouble("大盘周交易额");
 				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
@@ -4374,7 +4374,7 @@ public class BanKuaiDbOperation
 //				tmpweight.put(bkcode, weight);
 //				tmpstock.setGeGuSuoShuBanKuaiWeight(tmpweight  );
 				
-				ChenJiaoZhanBiInGivenPeriod cjlrecords = new ChenJiaoZhanBiInGivenPeriod ();
+				ChenJiaoZhanBiInGivenPeriod cjlrecords = new ChenJiaoZhanBiInGivenPeriod (stock.getMyOwnCode(),ChenJiaoZhanBiInGivenPeriod.WEEK);
 //				int year = rsfg.getInt("year");
 //				int week = rsfg.getInt("week");
 				double stcokcje = rsfg.getDouble("stock_amount");
@@ -4465,7 +4465,7 @@ public class BanKuaiDbOperation
 				 double close = rsfx.getDouble("收盘价");
 				 java.sql.Date actiondate = rsfx.getDate("交易日期");
 				 
-				 ChenJiaoZhanBiInGivenPeriod tmprecord = new ChenJiaoZhanBiInGivenPeriod ();
+				 ChenJiaoZhanBiInGivenPeriod tmprecord = new ChenJiaoZhanBiInGivenPeriod (nodecode,ChenJiaoZhanBiInGivenPeriod.DAY);
 				 tmprecord.setOpenPrice(open);
 				 tmprecord.setHighPrice(high);
 				 tmprecord.setLowPrice(low);
