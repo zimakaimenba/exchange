@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.annotations.XYPointerAnnotation;
+import org.jfree.chart.annotations.XYShapeAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.LogAxis;
@@ -58,6 +61,7 @@ import org.jfree.data.time.ohlc.OHLCSeries;
 import org.jfree.data.time.ohlc.OHLCSeriesCollection;
 import org.jfree.data.xy.OHLCDataset;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
@@ -78,8 +82,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 {
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickPnl.class);
 	protected BkChanYeLianTreeNode curdisplayednode;
-	
-	private static final DateFormat READABLE_TIME_FORMAT = new SimpleDateFormat("kk:mm:ss");
 
 	private OHLCSeries ohlcSeries;
 //	private TimeSeries volumeSeries;
@@ -113,8 +115,93 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		 bkdbopt = new BanKuaiDbOperation ();
 	}
 	
-	 
-	
+	/*
+	 * 显示K线的同时突出显示指定周的K线，并计算后期指定周期内的最大值最小值
+	 */
+	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday,LocalDate highlightweekdate)
+	{
+		this.curdisplayednode = node;
+//		LocalDate requireend = displayedenddate.with(DayOfWeek.SATURDAY);
+//		LocalDate requirestart = displayedenddate.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		ohlcSeries = new OHLCSeries("KPrice");
+//		ArrayList<ChenJiaoZhanBiInGivenPeriod> daydata = node.getWkChenJiaoErZhanBiInGivenPeriod();
+		double lowestLow =10000.0;  double highestHigh =0.0; 
+		
+		Day onemonthhighdate = null, twomonthhighdate=null;
+		double onemonthhigh = 0.0, onemonthlessclose = 0.0; //指定周期后1个月的最大值最小值
+		double twomonthhigh = 0.0, towmonthlessclose = 0.0; //指定周期后2个月的最大值最小值
+		for(LocalDate tmpdate = nodestartday;tmpdate.isBefore( nodeendday) || tmpdate.isEqual(nodeendday); tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ){
+			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
+			if(tmprecord != null) {
+				Double open = tmprecord.getOpenPrice();
+				Double low = tmprecord.getLowPrice();
+				Double close = tmprecord.getClosePrice();
+				Double high = tmprecord.getHighPrice();
+				logger.debug(tmpdate.toString()  + " :" + open + "," + high.toString() + "," + low + "," + close);
+				
+				int year = tmpdate.getYear();
+				int month = tmpdate.getMonthValue();
+				int day = tmpdate.getDayOfMonth();
+				ohlcSeries.add(new Day(day,month,year), open, high, low, close);
+				
+				//为显示寻找最大最小值，以便Y轴做合适调整
+				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
+					lowestLow = low;
+				if(high > highestHigh && high !=0)
+					highestHigh = high;
+				
+				//高亮显示选中的那一周，本来要划一个长方形，觉得实现太麻烦，改在renderer里面高亮
+				
+				//寻找1月/2月最大值
+				Period intervalPeriod = Period.between(highlightweekdate, tmpdate);
+				if(tmpdate.isAfter(highlightweekdate) && intervalPeriod.getDays() <= 30) {
+					if(high > onemonthhigh) {
+						onemonthhigh = high;	
+						onemonthhighdate = new Day(day,month,year);
+					}
+				} 
+				if(tmpdate.isAfter(highlightweekdate) && intervalPeriod.getDays() <= 60  ) {
+					if(high > twomonthhigh) {
+						twomonthhigh = high;
+						twomonthhighdate = new Day(day,month,year);
+					}
+				}
+				
+			}
+		}
+
+
+		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.95, highestHigh*1.05);
+		
+		candlestickDataset.addSeries(ohlcSeries);
+		
+		chartPanel.setHorizontalAxisTrace(true); //十字显示
+        chartPanel.setVerticalAxisTrace(true);
+        
+      //高亮显示选中的那一周，本来要划一个长方形，觉得实现太麻烦，改在renderer里面高亮
+//         XYShapeAnnotation shapeAnnotation = new XYShapeAnnotation(
+//                new Rectangle2D.Double( fromX - xFactor, fromY - yFactor, xFactor+xFactor, yFactor+yFactor ),
+//                20, Color.BLUE );
+////        shapeAnnotation.setToolTipText( toolTip );
+//        candlestickChart.getXYPlot().addAnnotation( shapeAnnotation );
+        
+        //draw annotation
+        double millis = onemonthhighdate.getFirstMillisecond();
+        final XYPointerAnnotation pointer = new XYPointerAnnotation("1月内最高", millis, onemonthhigh, 3.0 * Math.PI / 4.0);
+		pointer.setBaseRadius(35.0);
+		pointer.setTipRadius(10.0);
+		pointer.setFont(new Font("SansSerif", Font.PLAIN, 9));
+		pointer.setPaint(Color.blue);
+		pointer.setTextAnchor(TextAnchor.HALF_ASCENT_RIGHT);
+		candlestickChart.getXYPlot().addAnnotation(pointer);
+
+        setPanelTitle ( node,  nodeendday);
+		
+	}
+	/*
+	 * 显示指定周期的K线
+	 */
 	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday)
 	{
 		this.curdisplayednode = node;
@@ -131,7 +218,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 				Double low = tmprecord.getLowPrice();
 				Double close = tmprecord.getClosePrice();
 				Double high = tmprecord.getHighPrice();
-				logger.debug(tmpdate.toString() + open + "," + high.toString() + "," + low + "," + close);
+				logger.debug(tmpdate.toString()  + " :" + open + "," + high.toString() + "," + low + "," + close);
 				
 				int year = tmpdate.getYear();
 				int month = tmpdate.getMonthValue();
@@ -143,29 +230,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 				if(high > highestHigh && high !=0)
 					highestHigh = high;
 			}
-			
-			
 		}
-//		for(ChenJiaoZhanBiInGivenPeriod dayrecord : daydata) {
-//			LocalDate actionday = dayrecord.getRecordsDayofEndofWeek ();
-//			if(actionday.isAfter(nodestartday) && (actionday.isBefore(nodeendday) || actionday.equals(nodeendday) ) ) {
-//				Double open = dayrecord.getOpenPrice();
-//				Double low = dayrecord.getLowPrice();
-//				Double close = dayrecord.getClosePrice();
-//				Double high = dayrecord.getHighPrice();
-//				logger.debug(open + "," + high.toString() + "," + low + "," + close);
-//				
-//				int year = actionday.getYear();
-//				int month = actionday.getMonthValue();
-//				int day = actionday.getDayOfMonth();
-//				ohlcSeries.add(new Day(day,month,year), open, high, low, close);
-//				
-//				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
-//					lowestLow = low;
-//				if(high > highestHigh && high !=0)
-//					highestHigh = high;
-//			}
-//		}
 
 		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.95, highestHigh*1.05);
 		
@@ -279,7 +344,7 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
 	private final Paint colorRaising = Color.RED;
 	private final Paint colorFalling = Color.GREEN;
 	private final Paint colorUnknown = Color.GRAY;
-	private final Paint colorTransparent = Color.BLACK;
+	private final Paint colorTransparent = Color.YELLOW;
 	
 	private LocalDate datebeselectedinweek = LocalDate.of(2017,8,16 );
 
@@ -300,7 +365,7 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
         Number curClose = highLowData.getClose(series, item);
         Number prevClose = highLowData.getClose(series, item>0 ? item-1 : 0);
         if(  ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) )
-       	 return Color.BLUE;
+       	 return Color.YELLOW;
         else if (prevClose.doubleValue() <=  curClose.doubleValue()) {
             return Color.red;
         } else {
@@ -324,9 +389,7 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
         Date date = per.getEnd();
         LocalDate ldate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
         LocalDate tmpdate = datebeselectedinweek.with(DayOfWeek.FRIDAY) ;
-        
-       	 
-        
+   
         double yOpen = highLowData.getOpenValue(series, item);
         double yClose = highLowData.getCloseValue(series, item);        
 

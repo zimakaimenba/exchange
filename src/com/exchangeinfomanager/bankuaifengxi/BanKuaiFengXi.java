@@ -506,8 +506,6 @@ public class BanKuaiFengXi extends JDialog {
 		paneldayCandle.resetDate();
 		
 		BkChanYeLianTreeNode selectstock = bkcyl.getAStock(selectstockcode,curselectdate);
-//		LocalDate nodestartday = selectstock.getWkRecordsStartDate();
-//		LocalDate nodeendday = selectstock.getWkRecordsEndDate();
 		paneldayCandle.setNodeCandleStickDate(selectstock,requirestart,requireend);
 	}
 	/*
@@ -515,7 +513,13 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void refreshGeGuKXianZouShiOfFiftyDays (String selectstockcode,LocalDate selectedday)
 	{
-		kkkkk
+		LocalDate requirestart = selectedday.with(DayOfWeek.MONDAY).minus(2,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		LocalDate requireend = selectedday.with(DayOfWeek.MONDAY).plus(3,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
+		
+		paneldayCandle.resetDate();
+
+		BkChanYeLianTreeNode selectstock = bkcyl.getAStock(selectstockcode,requireend);
+		paneldayCandle.setNodeCandleStickDate(selectstock,requirestart,requireend,selectedday);
 	}
 
 	
@@ -884,7 +888,16 @@ public class BanKuaiFengXi extends JDialog {
 				panelbkcje.highLightSpecificBarColumn (datekey);
 				
 				//显示个股在选择的日期前后50个交易日的走势
+				int row = tableGuGuZhanBiInBk.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个股票！","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
 				
+				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
+				Stock selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+				LocalDate selecteddate = CommonUtility.formateStringToDate(datekey.toString());
+				refreshGeGuKXianZouShiOfFiftyDays (selectstock.getMyOwnCode(),selecteddate);
 			}
 		});
 		panelbkcje.getChartPanel().addMouseListener(new MouseAdapter() {
@@ -900,25 +913,7 @@ public class BanKuaiFengXi extends JDialog {
 				ArrayList<JiaRuJiHua> fxjg = panelbkcje.getCurSelectedFengXiJieGuo ();
 				setUserSelectedColumnMessage(tooltip,fxjg);
 				
-//				String allstring = tooltip + "\n";
-//				if(fxjg !=null) {
-//					for(JiaRuJiHua jrjh : fxjg) {
-//						LocalDate actiondate = jrjh.getJiaRuDate();
-//						String actiontype = jrjh.getGuanZhuType();
-//						String shuoming = jrjh.getJiHuaShuoMing();
-//						
-//						allstring = allstring +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]" + "\n";
-//					}
-//				}
-////				tfldselectedmsg.setText( "" );
-//				tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() );
-//				 JScrollBar verticalScrollBar = scrollPaneuserselctmsg.getVerticalScrollBar();
-//				 JScrollBar horizontalScrollBar = scrollPaneuserselctmsg.getHorizontalScrollBar();
-//				 verticalScrollBar.setValue(verticalScrollBar.getMinimum());
-////				  horizontalScrollBar.setValue(horizontalScrollBar.getMinimum());
-
-				
-				//
+     			//
 				Comparable datekey = panelbkcje.getCurSelectedBarDate ();
 				panelbkwkzhanbi.highLightSpecificBarColumn (datekey);
 				panelgegucje.highLightSpecificBarColumn (datekey);

@@ -471,24 +471,38 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 		return enddate;
 	}
 	/*
-	 * 在交易记录中找到对应周的位置
+	 * 在交易记录中找到对应周/日的位置
 	 */
 	protected Integer getRequiredRecordsPostion (LocalDate requireddate)
 	{
-		int year = requireddate.getYear();
-		WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
-		int weeknumber = requireddate.get(weekFields.weekOfWeekBasedYear());
+		
 		
 		Integer index = -1;
 		Boolean found = false;
 		for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : this.wkcjeperiodlist) {
-			index ++;
-			int yearnum = tmpcjzb.getRecordsYear();
-			int wknum = tmpcjzb.getRecordsWeek();
-			if(wknum == weeknumber && yearnum == year) {
-				found = true;
-				break;
+			if(tmpcjzb.getRecordsType().toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.WEEK)) { //如果是周线数据，只要数据周相同，即可返回
+				index ++;
+				
+				int year = requireddate.getYear();
+				WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
+				int weeknumber = requireddate.get(weekFields.weekOfWeekBasedYear());
+				
+				int yearnum = tmpcjzb.getRecordsYear();
+				int wknum = tmpcjzb.getRecordsWeek();
+				
+				if(wknum == weeknumber && yearnum == year) {
+					found = true;
+					break;
+				}
+			} else if(tmpcjzb.getRecordsType().toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.DAY)) { //如果是日线数据，必须相同才可返回
+				index ++;
+				LocalDate recordsday = tmpcjzb.getRecordsDayofEndofWeek();
+				if(recordsday.isEqual(recordsday)) {
+					found = true;
+					break;
+				}
 			}
+			
 		}
 		if(!found)
 			return null;

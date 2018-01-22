@@ -13,10 +13,18 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 
 public class ChenJiaoZhanBiInGivenPeriod {
 
-	public ChenJiaoZhanBiInGivenPeriod() 
+	public ChenJiaoZhanBiInGivenPeriod(String nodecode,String datatype) 
 	{
+		this.myowncode = nodecode;
+		if( datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.DAY)
+				|| datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.WEEK)
+				|| datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.SIXTYMINUTES))
+			this.dataperiodtype = datatype;
+		else
+			this.dataperiodtype = null;
+		
 	}
-	
+	public static String  DAY = "DAY", WEEK = "WEEK", SIXTYMINUTES = "SIXTYMINUTES";
 	private String myuplevelcode;
 
 	private Double openprice;
@@ -24,6 +32,7 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	private Double highprice;
 	private Double lowprice;
 	private LocalDate  dayofendoftheweek;
+	private String dataperiodtype; //日线，周线，月线，年线
 	
 	private Double myownchengjiaoer; //成交额
 	private Double myownchengjiaoliang; //成交量
@@ -48,8 +57,11 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	/**
 	 * @param myowncode the myowncode to set
 	 */
-	public void setMyOwnCode(String myowncode) {
-		this.myowncode = myowncode;
+//	public void setMyOwnCode(String myowncode) {
+//		this.myowncode = myowncode;
+//	}
+	public String getRecordsType () {
+		return this.dataperiodtype;
 	}
 //	/**
 //	 * @return the myuplevelcode
