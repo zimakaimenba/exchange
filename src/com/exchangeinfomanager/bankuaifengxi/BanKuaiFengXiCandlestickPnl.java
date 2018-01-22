@@ -185,6 +185,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 //                20, Color.BLUE );
 ////        shapeAnnotation.setToolTipText( toolTip );
 //        candlestickChart.getXYPlot().addAnnotation( shapeAnnotation );
+        ((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (highlightweekdate);
         
         //draw annotation
         double millis = onemonthhighdate.getFirstMillisecond();
@@ -197,6 +198,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		candlestickChart.getXYPlot().addAnnotation(pointer);
 
         setPanelTitle ( node,  nodeendday);
+        
+        candlestickChart.fireChartChanged ();
 		
 	}
 	/*
@@ -241,11 +244,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
         
 
         setPanelTitle ( node,  nodeendday);
-	}
-	
-	private void highlightKOfGivenPeriod(LocalDate period, String markerTyp)
-	{//https://stackoverflow.com/questions/6603450/drawing-shapes-in-jfreechart
-		
+        
+        
 	}
 	
 	private void createChartPanel() 
@@ -339,14 +339,14 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickRenderer.class);
 	private static final long serialVersionUID = 1L;
-	private Comparable hightime;
+//	private Comparable hightime;
 	
 	private final Paint colorRaising = Color.RED;
 	private final Paint colorFalling = Color.GREEN;
 	private final Paint colorUnknown = Color.GRAY;
 	private final Paint colorTransparent = Color.YELLOW;
 	
-	private LocalDate datebeselectedinweek = LocalDate.of(2017,8,16 );
+	private LocalDate datebeselectedinweek ;
 
 	@Override
     public Paint getItemPaint(int series, int item) 
@@ -393,7 +393,7 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
         double yOpen = highLowData.getOpenValue(series, item);
         double yClose = highLowData.getCloseValue(series, item);        
 
-        if(  ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) ) {
+        if(  tmpdate != null && ldate.equals(tmpdate ) ) {
         	setUpPaint(colorTransparent);
             setDownPaint(colorTransparent);
         }
@@ -414,9 +414,9 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
     }   
 
 	
-	public void setHighLightKTimeRange (Comparable selecteddate)
+	public void setHighLightKTimeRange (LocalDate selecteddate)
 	{
-		this.hightime = selecteddate;
+		this.datebeselectedinweek = selecteddate;
 	}
 }
 
