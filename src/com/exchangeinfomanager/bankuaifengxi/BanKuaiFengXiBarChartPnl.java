@@ -312,6 +312,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
         barchart.setNotify(true);
 
         chartPanel = new ChartPanel(barchart);
+//        chartPanel.setHorizontalAxisTrace(true); // Æ◊÷œ‘ æ
+        chartPanel.setVerticalAxisTrace(true);
         this.add(chartPanel);
         
         

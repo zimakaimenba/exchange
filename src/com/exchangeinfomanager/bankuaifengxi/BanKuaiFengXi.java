@@ -346,6 +346,7 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPanegegu.setTitleAt(1, "选定周");
 		tfldselectedmsg.setText("");
 		tabbedPanebk.setSelectedIndex(0);
+		paneldayCandle.resetDate();
 		
 		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).deleteAllRows();
@@ -497,7 +498,7 @@ public class BanKuaiFengXi extends JDialog {
 	/*
 	 * 用户选择个股后，显示个股K线走势
 	 */
-	private void refreshGeGuKXianZouShi (String selectstockcode)
+	private void refreshGeGuKXianZouShi (BkChanYeLianTreeNode selectstock2)
 	{
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
@@ -505,20 +506,22 @@ public class BanKuaiFengXi extends JDialog {
 		
 		paneldayCandle.resetDate();
 		
-		BkChanYeLianTreeNode selectstock = bkcyl.getAStock(selectstockcode,curselectdate);
+		BkChanYeLianTreeNode selectstock = bkcyl.getAStock(selectstock2.getMyOwnCode(),curselectdate);
+		selectstock.setMyOwnName(selectstock2.getMyOwnName());
 		paneldayCandle.setNodeCandleStickDate(selectstock,requirestart,requireend);
 	}
 	/*
 	 * 用户选择个股周成交量某个数据后，显示该数据前后50个交易日的日线K线走势
 	 */
-	private void refreshGeGuKXianZouShiOfFiftyDays (String selectstockcode,LocalDate selectedday)
+	private void refreshGeGuKXianZouShiOfFiftyDays (BkChanYeLianTreeNode selectstock2,LocalDate selectedday)
 	{
 		LocalDate requirestart = selectedday.with(DayOfWeek.MONDAY).minus(2,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		LocalDate requireend = selectedday.with(DayOfWeek.MONDAY).plus(3,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
 		
 		paneldayCandle.resetDate();
 
-		BkChanYeLianTreeNode selectstock = bkcyl.getAStock(selectstockcode,requireend);
+		BkChanYeLianTreeNode selectstock = bkcyl.getAStock(selectstock2.getMyOwnCode(),requireend);
+		selectstock.setMyOwnName(selectstock2.getMyOwnName());
 		paneldayCandle.setNodeCandleStickDate(selectstock,requirestart,requireend,selectedday);
 	}
 
@@ -897,7 +900,7 @@ public class BanKuaiFengXi extends JDialog {
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
 				Stock selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
 				LocalDate selecteddate = CommonUtility.formateStringToDate(datekey.toString());
-				refreshGeGuKXianZouShiOfFiftyDays (selectstock.getMyOwnCode(),selecteddate);
+				refreshGeGuKXianZouShiOfFiftyDays (selectstock,selecteddate);
 			}
 		});
 		panelbkcje.getChartPanel().addMouseListener(new MouseAdapter() {
@@ -1220,7 +1223,7 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
-					refreshGeGuKXianZouShi (selectstock.getMyOwnCode()); //K线
+					refreshGeGuKXianZouShi (selectstock); //K线
 					cbxstockcode.updateUserSelectedNode (selectstock); 
 					displayStockSuoShuBanKuai(selectstock);
 					

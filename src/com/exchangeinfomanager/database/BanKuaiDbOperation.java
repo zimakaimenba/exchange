@@ -5740,7 +5740,7 @@ public class BanKuaiDbOperation
 		        int k = 0;  
 		        //while(rs.next())
 		        for(int j=0;j<rows;j++) { 
-		        	pmdresult = pmdresult + "--*(" + rs.getString("股票代码") + ")  " + rs.getString("原因描述") + " ";
+		        	pmdresult = pmdresult + "--*(" + rs.getDate("日期") + ")(" + rs.getString("股票代码") + ")  " + rs.getString("原因描述") + " ";
 		            rs.next();
 		        } 
 		        

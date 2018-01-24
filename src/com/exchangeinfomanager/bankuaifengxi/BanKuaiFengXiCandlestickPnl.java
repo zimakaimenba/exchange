@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -32,12 +33,15 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.annotations.XYShapeAnnotation;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.CrosshairState;
 import org.jfree.chart.plot.PlotOrientation;
@@ -154,14 +158,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 				//高亮显示选中的那一周，本来要划一个长方形，觉得实现太麻烦，改在renderer里面高亮
 				
 				//寻找1月/2月最大值
-				Period intervalPeriod = Period.between(highlightweekdate, tmpdate);
-				if(tmpdate.isAfter(highlightweekdate) && intervalPeriod.getDays() <= 30) {
+				long betweendays = Math.abs(tmpdate.toEpochDay() - highlightweekdate.toEpochDay() );
+//				logger.debug(intervalPeriod.getDays());
+				if(tmpdate.isAfter(highlightweekdate) && betweendays <= 30) {
 					if(high > onemonthhigh) {
 						onemonthhigh = high;	
 						onemonthhighdate = new Day(day,month,year);
 					}
 				} 
-				if(tmpdate.isAfter(highlightweekdate) && intervalPeriod.getDays() <= 60  ) {
+				if(tmpdate.isAfter(highlightweekdate) && betweendays <= 60  ) {
 					if(high > twomonthhigh) {
 						twomonthhigh = high;
 						twomonthhighdate = new Day(day,month,year);
@@ -172,10 +177,10 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		}
 
 
-		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.95, highestHigh*1.05);
+		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.05);
 		
 		candlestickDataset.addSeries(ohlcSeries);
-		
+
 		chartPanel.setHorizontalAxisTrace(true); //十字显示
         chartPanel.setVerticalAxisTrace(true);
         
@@ -188,20 +193,36 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
         ((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (highlightweekdate);
         
         //draw annotation
-        double millis = onemonthhighdate.getFirstMillisecond();
-        final XYPointerAnnotation pointer = new XYPointerAnnotation("1月内最高", millis, onemonthhigh, 3.0 * Math.PI / 4.0);
-		pointer.setBaseRadius(35.0);
-		pointer.setTipRadius(10.0);
-		pointer.setFont(new Font("SansSerif", Font.PLAIN, 9));
-		pointer.setPaint(Color.blue);
-		pointer.setTextAnchor(TextAnchor.HALF_ASCENT_RIGHT);
-		candlestickChart.getXYPlot().addAnnotation(pointer);
+        double millisonemonth = onemonthhighdate.getFirstMillisecond();
+        final XYPointerAnnotation pointeronemonth = new XYPointerAnnotation(String.valueOf(onemonthhigh), millisonemonth, onemonthhigh, 0 );
+        pointeronemonth.setBaseRadius(0.0);
+        pointeronemonth.setTipRadius(25.0);
+        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
+        pointeronemonth.setPaint(Color.YELLOW);
+        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
+		candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
+		
+		double millistwomonth = twomonthhighdate.getFirstMillisecond();
+        final XYPointerAnnotation pointertwomonth = new XYPointerAnnotation(String.valueOf(twomonthhigh) , millistwomonth, twomonthhigh, 0);
+        pointertwomonth.setBaseRadius(0.0);
+        pointertwomonth.setTipRadius(25.0);
+        pointertwomonth.setFont(new Font("SansSerif", Font.BOLD, 9));
+        pointertwomonth.setPaint(Color.YELLOW);
+        pointertwomonth.setTextAnchor(TextAnchor.CENTER);
+		candlestickChart.getXYPlot().addAnnotation(pointertwomonth);
 
-        setPanelTitle ( node,  nodeendday);
+        setPanelTitle ( node,  nodestartday,nodeendday);
         
         candlestickChart.fireChartChanged ();
 		
 	}
+//	private void someCommonSettingAfterDisplay ()
+//	{
+//		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.02);
+//		chartPanel.setHorizontalAxisTrace(true); //十字显示
+//        chartPanel.setVerticalAxisTrace(true);
+//		
+//	}
 	/*
 	 * 显示指定周期的K线
 	 */
@@ -235,7 +256,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 			}
 		}
 
-		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.95, highestHigh*1.05);
+		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.02);
 		
 		candlestickDataset.addSeries(ohlcSeries);
 		
@@ -243,9 +264,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
         chartPanel.setVerticalAxisTrace(true);
         
 
-        setPanelTitle ( node,  nodeendday);
-        
-        
+        setPanelTitle ( node, nodestartday, nodeendday);
 	}
 	
 	private void createChartPanel() 
@@ -277,10 +296,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		candlestickChart.getXYPlot().setRangeAxis(priceAxis);
 		candlestickChart.getXYPlot().setDomainAxis(dayAxis);
 		candlestickChart.getXYPlot().setDomainGridlinesVisible(true);
+		candlestickChart.getXYPlot().setBackgroundPaint(Color.BLACK);
 //		candlestickChart.getXYPlot().setDomainGridlinePaint(Color.lightGray);
 //		candlestickChart.getXYPlot().setRangeGridlinePaint(Color.lightGray);
-//		axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-		
 		candlestickChart.removeLegend();
 		candlestickChart.setNotify(true);
 		
@@ -288,8 +306,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		chartPanel = new ChartPanel(candlestickChart);
 //		chartPanel.setPreferredSize(new java.awt.Dimension(1200, 500));
 		// Enable zooming
-		chartPanel.setMouseZoomable(true);
-		chartPanel.setMouseWheelEnabled(true);
+		chartPanel.setMouseZoomable(false);
+		chartPanel.setMouseWheelEnabled(false);
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
@@ -300,16 +318,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		this.add(chartPanel);
 	}
 	
-	private void setPanelTitle (BkChanYeLianTreeNode node, LocalDate displayedenddate)
+	private void setPanelTitle (BkChanYeLianTreeNode node, LocalDate requirestart,LocalDate requireend)
 	{
 		String nodecode = node.getMyOwnCode();
 		String nodename = node.getMyOwnName();
 		
-		LocalDate requireend = displayedenddate.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = displayedenddate.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-
 		((TitledBorder)this.getBorder()).setTitle(nodecode+ nodename
-    												+ "从" + requireend.toString() + "到" + requirestart
+    												+ "从" + requirestart.toString() + "到" + requireend
     												+ "日线K线");
     	this.repaint();
     	this.setToolTipText(nodecode+ nodename );
@@ -321,6 +336,10 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 //		ohlcSeries = new OHLCSeries("Price");
 //		candlestickDataset.addSeries(ohlcSeries);
 		candlestickDataset.removeAllSeries();
+		((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (null);
+		List<XYPointerAnnotation> pointerlist = candlestickChart.getXYPlot().getAnnotations();
+		for(XYPointerAnnotation pointer : pointerlist) 
+			candlestickChart.getXYPlot().removeAnnotation(pointer);
 		
 	}
 }
@@ -334,17 +353,26 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
         setUpPaint(colorUnknown); // use unknown color if error
         setDownPaint(colorUnknown); // use unknown color if error
         super.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_AVERAGE); //CandlestickRenderer.WIDTHMETHOD_AVERAGE,
-        super.setUseOutlinePaint(true);
+//        super.setUseOutlinePaint(true);
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickRenderer.class);
 	private static final long serialVersionUID = 1L;
-//	private Comparable hightime;
 	
+	//不同的涨跌用不同的K线颜色标记，和TDX一样
+	private final Paint colorZhangTing = Color.RED;
+	private final Paint colorDaDaZhang = Color.YELLOW;
+	private final Paint colorDaZhang = Color.YELLOW.brighter();
 	private final Paint colorRaising = Color.RED;
-	private final Paint colorFalling = Color.GREEN;
+	
+	private final Paint colorDieTing = Color.GREEN.darker();
+	private final Paint colorDaDaDie = Color.GREEN;
+	private final Paint colorDaDie = Color.GREEN.brighter();
+	
+	private final Paint colorFalling = Color.CYAN.brighter();
 	private final Paint colorUnknown = Color.GRAY;
-	private final Paint colorTransparent = Color.YELLOW;
+	private final Paint colorTransparent = Color.BLACK;
+	private final Paint colorSelected = Color.BLUE;
 	
 	private LocalDate datebeselectedinweek ;
 
@@ -355,24 +383,49 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
 		
          int tempcount = highLowData.getSeriesCount();
          OHLCSeries ser = highLowData.getSeries(series);
-//         RegularTimePeriod per = (Day)ser.getPeriod(item);
+
          Day per = (Day)ser.getPeriod(item);
          Date date = per.getEnd();
          LocalDate ldate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
-         LocalDate tmpdate = datebeselectedinweek.with(DayOfWeek.FRIDAY) ;
-        
-       
-        Number curClose = highLowData.getClose(series, item);
-        Number prevClose = highLowData.getClose(series, item>0 ? item-1 : 0);
-        if(  ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) )
-       	 return Color.YELLOW;
-        else if (prevClose.doubleValue() <=  curClose.doubleValue()) {
-            return Color.red;
-        } else {
-            return Color.green;
-        }
+         try {
+//        	 LocalDate tmpdate = datebeselectedinweek.with(DayOfWeek.FRIDAY) ;
+        	 
+        	 Number curClose = highLowData.getClose(series, item);
+             Number prevClose = highLowData.getClose(series, item>0 ? item-1 : 0);
+             double closepercent = (curClose.doubleValue() - prevClose.doubleValue())/prevClose.doubleValue();
+             
+             if(  datebeselectedinweek !=null && ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) )
+            	 return colorSelected;
+             else if(prevClose.doubleValue() <=  curClose.doubleValue() && closepercent>=0.095 )
+            	 return this.colorZhangTing;
+             else if (prevClose.doubleValue() <=  curClose.doubleValue() && closepercent<0.095 && closepercent >=0.075) {
+                 return colorDaDaZhang;
+             } else if (prevClose.doubleValue() <=  curClose.doubleValue() && closepercent<0.075 && closepercent >=0.05) {
+                 return colorDaZhang;
+             } else if (prevClose.doubleValue() <=  curClose.doubleValue() && closepercent<0.05) {
+                 return colorRaising;
+                 
+             } else if (prevClose.doubleValue() >  curClose.doubleValue() && closepercent <= -0.090) {
+                 return colorDieTing;
+             } else if (prevClose.doubleValue() >  curClose.doubleValue() && closepercent > -0.090 && closepercent <= -0.07) {
+                 return colorDaDaDie;
+             } else if (prevClose.doubleValue() >  curClose.doubleValue() && closepercent > -0.070 && closepercent <= -0.05) {
+                 return colorDaDie;
+             } else {
+            	 return colorFalling;
+             }
+         } catch (java.lang.NullPointerException e) {
+        	 e.printStackTrace();
+//        	 Number curClose = highLowData.getClose(series, item);
+//             Number prevClose = highLowData.getClose(series, item>0 ? item-1 : 0);
+//             if (prevClose.doubleValue() <=  curClose.doubleValue()) 
+//                 return colorRaising;
+//             else 
+//                 return colorFalling;
+         }
+		return null;
+         
     }
-
 
     @Override
     public void drawItem(Graphics2D g2, XYItemRendererState state,
@@ -388,24 +441,45 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
         Day per = (Day)ser.getPeriod(item);
         Date date = per.getEnd();
         LocalDate ldate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
-        LocalDate tmpdate = datebeselectedinweek.with(DayOfWeek.FRIDAY) ;
    
         double yOpen = highLowData.getOpenValue(series, item);
-        double yClose = highLowData.getCloseValue(series, item);        
+        double yClose = highLowData.getCloseValue(series, item);  
+        Number prevClose = highLowData.getClose(series, item>0 ? item-1 : 0);
+        double closepercent = (yClose - prevClose.doubleValue())/prevClose.doubleValue();
 
-        if(  tmpdate != null && ldate.equals(tmpdate ) ) {
+        if(  datebeselectedinweek != null && ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) ) {
+        	LocalDate tmpdate = datebeselectedinweek.with(DayOfWeek.FRIDAY) ;
+        	setUpPaint(colorSelected);
+            setDownPaint(colorSelected);
+        }
+        // set color for filled candle
+        else if (yClose >= yOpen && closepercent >= 0.095 ) {
+        	setUpPaint(colorZhangTing);
+            setDownPaint(colorZhangTing);
+            
+        } else if (yClose >= yOpen && closepercent < 0.095 && closepercent>=0.075 ) {
+        	setUpPaint(colorDaDaZhang);
+            setDownPaint(colorDaDaZhang);
+        } else if (yClose >= yOpen && closepercent < 0.075 && closepercent >= 0.05) {
+        	setUpPaint(colorDaZhang);
+            setDownPaint(colorDaZhang);
+        } else if (yClose >= yOpen && closepercent < 0.05 ) {
         	setUpPaint(colorTransparent);
             setDownPaint(colorTransparent);
         }
-        // set color for filled candle
-        else if (yClose >= yOpen) {
-            setUpPaint(colorRaising);
-            setDownPaint(colorFalling);
-        }
 
         // set color for hollow (not filled) candle
-        else {
-            setUpPaint(colorFalling);
+        else if (yClose < yOpen && closepercent <= -0.090 ) {
+        	setUpPaint(colorDieTing);
+            setDownPaint(colorDieTing);
+        } else if (yClose < yOpen && closepercent > -0.090 && closepercent <= -0.070 ) {
+        	setUpPaint(colorDaDaDie);
+            setDownPaint(colorDaDaDie);
+        } else if (yClose < yOpen && closepercent > -0.070 && closepercent <= -0.050 ) {
+        	setUpPaint(colorDaDie);
+            setDownPaint(colorDaDie);
+        } else {
+        	setUpPaint(colorRaising);
             setDownPaint(colorFalling);
         }
 

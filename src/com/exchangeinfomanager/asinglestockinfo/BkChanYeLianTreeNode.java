@@ -497,7 +497,7 @@ public class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  Ba
 			} else if(tmpcjzb.getRecordsType().toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.DAY)) { //如果是日线数据，必须相同才可返回
 				index ++;
 				LocalDate recordsday = tmpcjzb.getRecordsDayofEndofWeek();
-				if(recordsday.isEqual(recordsday)) {
+				if(recordsday.isEqual(requireddate)) {
 					found = true;
 					break;
 				}
