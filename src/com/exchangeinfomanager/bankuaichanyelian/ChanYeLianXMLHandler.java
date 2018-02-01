@@ -274,6 +274,7 @@ class ChanYeLianXMLHandler
 						   
 						   parentsleaf = new BanKuai ( bkowncode,bkname);
 						   ((BanKuai)parentsleaf).setDaPan((DaPan)topNode); //把大盘配给每个板块
+						   ((BanKuai)parentsleaf).setBanKuaiLeiXing(BanKuai.NOGGNOSELFCJL); //后面显示的时候还需要这属性，对于删除的板块设置为nogegu no cje
 					   }
 					   
 					   

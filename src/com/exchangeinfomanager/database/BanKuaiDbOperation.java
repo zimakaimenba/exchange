@@ -6118,12 +6118,21 @@ public class BanKuaiDbOperation
 	            	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
 	            	   String zhishuname = null;
 	            	   try {
+	            		   logger.debug(tmplinelist.get(0));
 		            	    zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
 	            	   } catch (java.lang.StringIndexOutOfBoundsException ex) {
 	            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
 	            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
+	            		   if(zhishuname.trim().length() ==2 ) {
+	            			   List<String> tmplinepartnamelist2 = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(2).trim());
+	            			   zhishuname = zhishuname + tmplinepartnamelist2.get(0).trim();
+	            		   }
+	            			   
 	            	   }
-//	            	   logger.debug(zhishuname);
+	            	   if(zhishuname.trim().length() <4)
+	            		   logger.debug(zhishuname);
+	            	   if(zhishuname.trim().length() ==2 )
+	            		   logger.debug(zhishuname);
 	            	   
 	            	   String sqlinsertstat = "Update a股 set 股票名称 = '" + zhishuname.trim() + "'\r\n" + 
 	   						   					"where 股票代码 = '" + zhishucode.trim() + "' "
@@ -6198,7 +6207,10 @@ public class BanKuaiDbOperation
 	            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
 	            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
 	            	   }
-//	            	   logger.debug(zhishuname);
+	            	   if(zhishuname.trim().length() <4)
+	            		   logger.debug(zhishuname);
+	            	   if(zhishuname.trim().length() == 2)
+	            		   logger.debug(zhishuname);
 	            	   
 	            	   String sqlinsertstat = "Update a股 set 股票名称 = '" + zhishuname.trim() + "'\r\n" + 
 	            	   						   "where 股票代码 = '" + zhishucode.trim() + "' "

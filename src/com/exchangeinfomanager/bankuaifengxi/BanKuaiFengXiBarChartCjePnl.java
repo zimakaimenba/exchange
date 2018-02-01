@@ -167,8 +167,19 @@ class CustomToolTipGeneratorForChenJiaoEr implements CategoryToolTipGenerator
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	
     	Double curcje = (Double)dataset.getValue(row, column);
-    	
-    	DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
+    	String danwei = "";
+    	if(curcje >= 100000000) {
+    		curcje = curcje / 100000000;
+    		danwei = "亿";
+    	}  	else if(curcje >= 10000000 && curcje <100000000) {
+    		curcje = curcje / 10000000;
+    		danwei = "千万";
+    	}  	else if(curcje >= 1000000 && curcje <10000000) {
+    		curcje = curcje / 1000000;
+    		danwei = "百万";
+    	}
+    		
+    	DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
 //    	return selecteddate + "成交额" + decimalformate.format(curcje) ;
 		
 		//显示成交额是多少周最大
@@ -187,7 +198,7 @@ class CustomToolTipGeneratorForChenJiaoEr implements CategoryToolTipGenerator
 //		String tooltip = selected.toString();
 		Integer maxwk = nodefx.getGgbkcjemaxweek();
 		
-		return selecteddate + " " + "成交额" + decimalformate.format(curcje) +  "成交额MaxWk=" + maxwk;
+		return selecteddate + " " + "成交额" + decimalformate.format(curcje) + danwei +  "成交额MaxWk=" + maxwk;
 		
     }
     
