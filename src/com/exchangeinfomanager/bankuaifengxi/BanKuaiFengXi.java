@@ -1972,50 +1972,6 @@ public class BanKuaiFengXi extends JDialog {
 		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager);
 		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
 		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
-//		GeGuFengXiZhanBiPaiMingTableModel ggzb = new GeGuFengXiZhanBiPaiMingTableModel ();
-//		tableGuGuZhanBiInBk = new JTable(ggzb){
-//			private static final long serialVersionUID = 1L;
-//			
-//			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-//				 
-//		        Component comp = super.prepareRenderer(renderer, row, col);
-//		        GeGuFengXiZhanBiPaiMingTableModel tablemodel = (GeGuFengXiZhanBiPaiMingTableModel)this.getModel(); 
-//		        HashSet<String> stockinparsefile = tablemodel.getStockInParseFile();
-//		        Object value = tablemodel.getValueAt(row, col);
-//		        
-//		        if (!isRowSelected(row)) {
-//		        	comp.setBackground(getBackground());
-//		        	comp.setForeground(getForeground());
-//		        	int modelRow = convertRowIndexToModel(row);
-//		        	String stockcode = (String)getModel().getValueAt(modelRow, 0);
-//					if(stockinparsefile.contains(stockcode)) {
-//						//comp.setBackground(Color.YELLOW);
-//						comp.setForeground(Color.BLUE);
-//					}
-//		        }
-//		        
-//		        return comp;
-//			}
-//			
-//			
-//			public String getToolTipText(MouseEvent e) 
-//			{
-//                String tip = null;
-//                java.awt.Point p = e.getPoint();
-//                int rowIndex = rowAtPoint(p);
-//                int colIndex = columnAtPoint(p);
-//
-//                try {
-//                    tip = getValueAt(rowIndex, colIndex).toString();
-//                } catch(java.lang.NullPointerException e1) {
-//                	tip = "";
-//				}catch (RuntimeException e1) {
-//                	e1.printStackTrace();
-//                }
-//                return tip;
-//            } 
-//		};
-		
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
 		
 		JScrollPane scrollPanexuanding = new JScrollPane();

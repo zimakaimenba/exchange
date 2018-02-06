@@ -57,6 +57,7 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 //		this.displayedenddate = requireend; 
 		
 		barchartdataset = new DefaultCategoryDataset();
+		double highestHigh =0.0; //设置显示范围
 //		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
@@ -66,10 +67,8 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
 				barchartdataset.setValue(chenjiaoer,"成交额",lastdayofweek);
 				
-//				if(tmprecord.hasFengXiJieGuo ())
-//					datafx.addValue(chenjiaoer/10, "分析结果", lastdayofweek);
-//				else
-//					datafx.addValue(0, "分析结果", lastdayofweek);
+				if(chenjiaoer > highestHigh)
+					highestHigh = chenjiaoer;
 			} else {
 				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
 					barchartdataset.setValue(0.0,"成交额",tmpdate);
@@ -92,6 +91,8 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 			
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
 		axis.setDisplayNode(node);
+		
+		super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
 		
 		super.plot.setDataset(barchartdataset);
 		

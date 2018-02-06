@@ -46,6 +46,7 @@ import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 import javax.swing.ScrollPaneConstants;
 import java.awt.GridBagLayout;
+import java.awt.Color;
 
 public class ImportTDXData extends JDialog {
 	
@@ -341,6 +342,13 @@ public class ImportTDXData extends JDialog {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
+				if(!chbxdaorutdxsysbk.isSelected() && !cbximporttdxgeguinfo.isSelected() 
+						&& !chbxdaorutdxsysbkvol.isSelected() && !cbxImportShGeGuVol.isSelected() 
+						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()) {
+					JOptionPane.showMessageDialog(null,"请选择需要导入的项目！");
+					return;
+					
+				}
 				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() ||cbxImportShGeGuVol.isSelected() || cbxImportSzGeGuVol.isSelected()) {
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
 					int hour = cal.get(Calendar.HOUR_OF_DAY);
@@ -555,6 +563,7 @@ public class ImportTDXData extends JDialog {
 			btnStart = new JButton("\u5F00\u59CB\u5BFC\u5165");
 			
 			chbxselectall = new JCheckBox("\u5168\u9009");
+			chbxselectall.setForeground(Color.RED);
 			
 			btnchecksync = new JButton("\u4E00\u81F4\u6027\u68C0\u67E5");
 			

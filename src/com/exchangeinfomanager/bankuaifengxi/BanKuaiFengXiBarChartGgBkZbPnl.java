@@ -49,19 +49,18 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
+		double highestHigh =0.0; //设置显示范围
 //		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
 			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
 			if(tmprecord != null) {
-				Double chenjiaoer = tmprecord.getCjlZhanBi();
+				Double ggbkratio = tmprecord.getCjlZhanBi();
 				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
-				barchartdataset.setValue(chenjiaoer,"占比",lastdayofweek);
+				barchartdataset.setValue(ggbkratio,"占比",lastdayofweek);
 				
-//				if(tmprecord.hasFengXiJieGuo ())
-//					datafx.addValue(chenjiaoer/5, "分析结果", lastdayofweek);
-//				else
-//					datafx.addValue(0, "分析结果", lastdayofweek);
+				if(ggbkratio > highestHigh)
+					highestHigh = ggbkratio;
 			} else {
 				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
 					barchartdataset.setValue(0.0,"占比",tmpdate);
@@ -94,6 +93,8 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 		//如有分析结果，ticklable显示红色
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
 		axis.setDisplayNode(node);
+		
+		super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
 		
 		super.plot.setDataset(barchartdataset);
 		

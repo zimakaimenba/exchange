@@ -176,7 +176,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 			}
 		}
 
-
+		//设置显示范围，避免某些情况下太小
 		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.05);
 		
 		candlestickDataset.addSeries(ohlcSeries);

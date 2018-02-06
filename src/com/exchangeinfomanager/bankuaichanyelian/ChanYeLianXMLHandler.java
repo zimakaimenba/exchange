@@ -231,16 +231,26 @@ class ChanYeLianXMLHandler
 	{
 		for(String newbkcode:newBanKuaiFromDb) {
 		        	logger.debug("XML将要中加入" + newbkcode);
-	
-		        	String bkname = null;
-					try {
-						bkname = tdxbk.get(newbkcode).getMyOwnName();
+		        	try {
+		        		BanKuai parentsleaf = tdxbk.get(newbkcode);
+		        		((BanKuai)parentsleaf).setDaPan((DaPan)topNode);
+						topNode.add(parentsleaf);
+						
 					} catch (java.lang.NullPointerException ex) {
 						ex.printStackTrace();
 					}
-					BanKuai parentsleaf  = new BanKuai( newbkcode,bkname);
-					((BanKuai)parentsleaf).setDaPan((DaPan)topNode); 
-					topNode.add(parentsleaf);
+	
+//		        	String bkname = null;
+//					try {
+//						bkname = tdxbk.get(newbkcode).getMyOwnName();
+//						
+//					} catch (java.lang.NullPointerException ex) {
+//						ex.printStackTrace();
+//					}
+//					BanKuai parentsleaf  = new BanKuai( newbkcode,bkname);
+////					((BanKuai)parentsleaf).setDaPan((DaPan)topNode);
+////					((BanKuai)parentsleaf).setBanKuaiLeiXing(tdxbk.get(newbkcode).getBanKuaiLeiXing());
+//					topNode.add(parentsleaf);
 	        }
 	}
 	/*

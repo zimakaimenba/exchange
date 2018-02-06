@@ -47,12 +47,14 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 	 */
 	public void setNodeAndDaPanZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
 	{
+		
 		this.curdisplayednode = node;
 //		this.displayedenddate = displayedenddate1;
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
+		double highestHigh =0.0; //设置显示范围
 //		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
@@ -67,10 +69,9 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 				
 				barchartdataset.setValue(ggdpratio,"占比",lastdayofweek);
 				
-//				if(tmpggrecord.hasFengXiJieGuo ())
-//					datafx.addValue(ggdpratio/5, "分析结果", lastdayofweek);
-//				else
-//					datafx.addValue(0, "分析结果", lastdayofweek);
+				if(ggdpratio > highestHigh)
+					highestHigh = ggdpratio;
+
 			} else {
 				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
 					barchartdataset.setValue(0.0,"占比",tmpdate);
@@ -96,6 +97,8 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
 		axis.setDisplayNode(node);
 //		render.setBarCharType("个股大盘占比");
+		
+		super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
 		
 		super.plot.setDataset(barchartdataset);
 		
