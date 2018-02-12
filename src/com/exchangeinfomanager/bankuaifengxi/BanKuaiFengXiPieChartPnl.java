@@ -112,55 +112,51 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 //	private SystemConfigration sysconfig;
 
 	
-	public void setBanKuaiNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber)
+	public void setBanKuaiCjlNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber) 
 	{
 		this.curdisplaybk = bankuai;
 		this.displayedweeknumber = weeknumber;
 		
 		HashMap<String, Stock> tmpallbkge = bankuai.getAllBanKuaiGeGu();
-		createDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
 		
-		setPanelTitle ();
-	}
-	private void setPanelTitle ()
-	{
-		String nodecode = curdisplaybk.getMyOwnCode();
-		String nodename = curdisplaybk.getMyOwnName();
-		
-//		Date endday = CommonUtility.getLastDayOfWeek(displayedenddate );
-//    	Date startday = CommonUtility.getFirstDayOfWeek( CommonUtility.getDateOfSpecificMonthAgo(displayedenddate ,sysconfig.banKuaiFengXiMonthRange() ) );
-    	((TitledBorder)this.getBorder()).setTitle(nodecode+ nodename + "周" + displayedweeknumber );
-//															+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
-//															+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
-    	this.repaint();
-    	this.setToolTipText(nodecode+ nodename );
-	}
-	
-	public void resetDate ()
-	{
 		piechartdataset = new DefaultPieDataset();
-		pieplot.setDataset(piechartdataset);
-//		if(piechart !=null) {
-//			piechart.setTitle("板块成交量占比");
-//    	}
-	}
-	public void setPanelTitle (String title) 
-	{
+    	
+    	if(tmpallbkge == null || tmpallbkge.isEmpty())
+    		return;
+    	
+    	for (Entry<String, Stock> entry : tmpallbkge.entrySet()) {
+			String ggcode = entry.getKey();
+			Stock tmpstock = entry.getValue();
+    		String stockname = tmpstock.getMyOwnName();
+    		
+    		//找到对应周的数据
+    		ChenJiaoZhanBiInGivenPeriod tmprecord = tmpstock.getSpecficChenJiaoErRecord(weeknumber);
+    		if(tmprecord != null) {
+//    			HashMap<String, Integer> geguweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight ();
+//        	    int geguweight = geguweightmap.get(tdxbkcode);
+        	    double cje = tmprecord.getMyownchengjiaoliang();
+//        	    if(geguweight > weightgate )
+        	    	if(stockname != null)
+        	    		piechartdataset.setValue(ggcode+stockname,cje);
+        	    	else 
+        	    		piechartdataset.setValue(ggcode,cje);
+    		}
+    	}
+    	
+    	pieplot.setDataset(piechartdataset);
+//		createCjeDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
+		setPanelTitle ("成交量占比");
 		
 	}
-	public Comparable getCurHightLightStock ()
-	{
-		return this.lasthightlightKey; 
-	}
-	public JPanel getPiePanel ()
-	{
-		return this.piechartPanel;
-	}
 	
-
-    private void createDataset(String tdxbkcode,HashMap<String, Stock> tmpallbkge,int weightgate,LocalDate weeknumber ) 
-    {
-    	piechartdataset = new DefaultPieDataset();
+	public void setBanKuaiCjeNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber)
+	{
+		this.curdisplaybk = bankuai;
+		this.displayedweeknumber = weeknumber;
+		
+		HashMap<String, Stock> tmpallbkge = bankuai.getAllBanKuaiGeGu();
+		
+		piechartdataset = new DefaultPieDataset();
     	
     	if(tmpallbkge == null || tmpallbkge.isEmpty())
     		return;
@@ -185,7 +181,71 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
     	}
     	
     	pieplot.setDataset(piechartdataset);
-    }
+//		createCjeDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
+		setPanelTitle ("成交额占比");
+	}
+	private void setPanelTitle (String type)
+	{
+		String nodecode = curdisplaybk.getMyOwnCode();
+		String nodename = curdisplaybk.getMyOwnName();
+		
+//		Date endday = CommonUtility.getLastDayOfWeek(displayedenddate );
+//    	Date startday = CommonUtility.getFirstDayOfWeek( CommonUtility.getDateOfSpecificMonthAgo(displayedenddate ,sysconfig.banKuaiFengXiMonthRange() ) );
+    	((TitledBorder)this.getBorder()).setTitle(nodecode+ nodename + type + "周" + displayedweeknumber );
+//															+ "从" + CommonUtility.formatDateYYYY_MM_DD(startday) 
+//															+ "到" + CommonUtility.formatDateYYYY_MM_DD(endday) );
+    	this.repaint();
+    	this.setToolTipText(nodecode+ nodename );
+	}
+	
+	public void resetDate ()
+	{
+		piechartdataset = new DefaultPieDataset();
+		pieplot.setDataset(piechartdataset);
+//		if(piechart !=null) {
+//			piechart.setTitle("板块成交量占比");
+//    	}
+	}
+
+	public Comparable getCurHightLightStock ()
+	{
+		return this.lasthightlightKey; 
+	}
+	public JPanel getPiePanel ()
+	{
+		return this.piechartPanel;
+	}
+	
+
+
+//    private void createCjeDataset(String tdxbkcode,HashMap<String, Stock> tmpallbkge,int weightgate,LocalDate weeknumber ) 
+//    {
+//    	piechartdataset = new DefaultPieDataset();
+//    	
+//    	if(tmpallbkge == null || tmpallbkge.isEmpty())
+//    		return;
+//    	
+//    	for (Entry<String, Stock> entry : tmpallbkge.entrySet()) {
+//			String ggcode = entry.getKey();
+//			Stock tmpstock = entry.getValue();
+//    		String stockname = tmpstock.getMyOwnName();
+//    		
+//    		//找到对应周的数据
+//    		ChenJiaoZhanBiInGivenPeriod tmprecord = tmpstock.getSpecficChenJiaoErRecord(weeknumber);
+//    		if(tmprecord != null) {
+////    			HashMap<String, Integer> geguweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight ();
+////        	    int geguweight = geguweightmap.get(tdxbkcode);
+//        	    double cje = tmprecord.getMyOwnChengJiaoEr();
+////        	    if(geguweight > weightgate )
+//        	    	if(stockname != null)
+//        	    		piechartdataset.setValue(ggcode+stockname,cje);
+//        	    	else 
+//        	    		piechartdataset.setValue(ggcode,cje);
+//    		}
+//    	}
+//    	
+//    	pieplot.setDataset(piechartdataset);
+//    }
     
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
@@ -321,6 +381,7 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
     	
     	lasthightlightKey = tdxnameandcode;
     }
+	
 
 //    private void createChartPanel2(int start) {
 ////        CategoryAxis xAxis = new CategoryAxis("Category");

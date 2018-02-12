@@ -113,7 +113,7 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
    
     public CustomRendererForCje() {
         super();
-        
+        super.displayedmaxwklevel = 7;
     }
 
     public Paint getItemPaint(final int row, final int column) 
@@ -139,8 +139,8 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
 		if(nodefx != null)
 			 maxweek = nodefx.getGgbkcjemaxweek();
 		
-		if(maxweek >=7)
-			return Color.red;
+		if(maxweek >= super.displayedmaxwklevel)
+			return Color.CYAN;
 		else 
 			return Color.black;
     }

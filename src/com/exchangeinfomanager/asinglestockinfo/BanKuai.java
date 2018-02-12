@@ -229,8 +229,8 @@ public class BanKuai extends BkChanYeLianTreeNode
 					ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
 					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = wkcjeperiodlist.get(index -1 );
 						
-					Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
-					Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+					Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
+					Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
 					double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
 //					logger.debug(super.getMyOwnCode() + super.getMyOwnName() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
 					return zhanbigrowthrate;
@@ -259,10 +259,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 				ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
 				ChenJiaoZhanBiInGivenPeriod lastcjlrecord =  null;
 					
-				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
+				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
 				for(int i = index -1;i>=0;i--) {
 						lastcjlrecord = wkcjeperiodlist.get(i );
-						Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+						Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
 						if(curzhanbiratio > lastzhanbiratio)
 							maxweek ++;
 						else
@@ -358,8 +358,8 @@ public class BanKuai extends BkChanYeLianTreeNode
 					}
 					
 					//计算给定周的成交额占比增速
-					Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
-					Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+					Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
+					Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
 					double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
 					curcjlrecord.setGgbkzhanbigrowthrate(zhanbigrowthrate);
 					
@@ -367,7 +367,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 					Integer maxweek = 0;
 					for(int i = index -1;i>=0;i--) {
 							lastcjlrecord = wkcjeperiodlist.get(i );
-							lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+							lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
 							if(curzhanbiratio > lastzhanbiratio)
 								maxweek ++;
 							else

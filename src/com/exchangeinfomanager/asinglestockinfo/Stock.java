@@ -263,8 +263,8 @@ public class Stock extends BkChanYeLianTreeNode {
 				
 				ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
 				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = wkcjeperiodlist.get(index -1 );				
-				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
-				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
+				Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
 				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
 //				logger.debug(this.getMyOwnCode() + this.getMyOwnName() + requireddate.toString() + "占比增速为" + zhanbigrowthrate.toString());
 				return zhanbigrowthrate;
@@ -296,10 +296,10 @@ public class Stock extends BkChanYeLianTreeNode {
 				ChenJiaoZhanBiInGivenPeriod curcjlrecord = wkcjeperiodlist.get(index);
 //				ChenJiaoZhanBiInGivenPeriod lastcjlrecord =  null;
 					
-				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
+				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
 				for(int i = index -1;i>=0;i--) {
 					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = wkcjeperiodlist.get(i );
-					Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+					Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
 					LocalDate lastdate = lastcjlrecord.getRecordsDayofEndofWeek();
 					
 					if(curzhanbiratio > lastzhanbiratio)
@@ -473,11 +473,11 @@ public class Stock extends BkChanYeLianTreeNode {
 					curcjlrecord.setGgbkcjegrowthzhanbi( gegucjechange/bkcjediff );
 				
 				//计算给定周的成交额和板块的占比是多少周期内的最大占比
-				Double curzhanbiratio = curcjlrecord.getCjlZhanBi();
+				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
 				Integer maxweek = 0;
 				for(int i = index -1;i>=0;i--) {
 					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = wkcjeperiodlist.get(i );
-					Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+					Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
 					LocalDate lastdate = lastcjlrecord.getRecordsDayofEndofWeek();
 
 					if(curzhanbiratio > lastzhanbiratio)
@@ -510,7 +510,7 @@ public class Stock extends BkChanYeLianTreeNode {
 
 				// 计算给定周的成交额和板块占比增速
 				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = wkcjeperiodlist.get(index -1 );				
-				Double lastzhanbiratio = lastcjlrecord.getCjlZhanBi();
+				Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
 				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
 
 				curcjlrecord.setGgbkzhanbigrowthrate( zhanbigrowthrate);

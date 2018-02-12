@@ -4137,13 +4137,17 @@ public class BanKuaiDbOperation
 		
 		String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart);
 		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend);
-			
+		
+		//包含成交量和成交额的SQL
 		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
-				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比 \r\n" + 
+				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比, \r\n" +
+
+				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比 \r\n" + 
+				 
 				"FROM\r\n" + 
 				"(\r\n" + 
 				"select  通达信板块每日交易信息.`交易日期` as workday, DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
-				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO \r\n" + 
+				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
 				"from 通达信板块每日交易信息\r\n" + 
 				"where 代码 = '999999'\r\n" + 
 				"group by year(通达信板块每日交易信息.`交易日期`),week(通达信板块每日交易信息.`交易日期`)\r\n" + 
@@ -4151,13 +4155,14 @@ public class BanKuaiDbOperation
 				"UNION ALL\r\n" + 
 				"\r\n" + 
 				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
-				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO \r\n" + 
+				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
 				"from 通达信交易所指数每日交易信息\r\n" + 
 				"where 代码 = '399001'\r\n" + 
 				"group by year(通达信交易所指数每日交易信息.`交易日期`),week(通达信交易所指数每日交易信息.`交易日期`)\r\n" + 
 				") T,\r\n" + 
 				"\r\n" + 
-				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 from " + bkcjltable + "\r\n" + 
+				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
+						+ "sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , sum( " + bkcjltable + ".`成交量`) AS 板块周交易量 from " + bkcjltable + "\r\n" +  
 				"where 代码 = '" + bkcode + "'\r\n" + 
 				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
 				") M\r\n" + 
@@ -4234,11 +4239,15 @@ public class BanKuaiDbOperation
 				double bankuaicje = rs.getDouble("板块周交易额");
 				double dapancje = rs.getDouble("大盘周交易额");
 				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
+				double bankuaicjl = rs.getDouble("板块周交易量");
+				double dapancjl = rs.getDouble("大盘周交易量");
 //				int year = rs.getInt("CALYEAR");
 //				int week = rs.getInt("CALWEEK");
 				cjlrecords.setRecordsDayofEndofWeek(lastdayofweek);
 				cjlrecords.setMyOwnChengJiaoEr(bankuaicje);
 				cjlrecords.setUpLevelChengJiaoEr(dapancje);
+				cjlrecords.setMyownchengjiaoliang(bankuaicjl);
+				cjlrecords.setUplevelchengjiaoliang(dapancjl);
 //				cjlrecords.setYear(year);
 //				cjlrecords.setWeek(week);
 				
@@ -4303,14 +4312,15 @@ public class BanKuaiDbOperation
 			sqlquerystat = "";
 			return stock;
 		 } else { //概念风格行业指数板块
-		 sqlquerystat = "SELECT Y.year, Y.week,Y.EndOfWeekDate, Y.股票代码, Y.板块代码, Y.stock_amount, Y.`股票权重` ,Y.`股票名称`,\r\n" + 
-				"Z.代码 , Z.板块名称,  z.category_amount, Y.stock_amount/ z.category_amount ratio \r\n" + 
+			 //包括成交额和 成交量的SQL
+		 sqlquerystat = "SELECT Y.year, Y.week,Y.EndOfWeekDate, Y.股票代码, Y.板块代码, Y.stock_amount, Y.stock_vol, Y.`股票权重` ,Y.`股票名称`,\r\n" + 
+				"Z.代码 , Z.板块名称,  z.category_amount, Y.stock_amount/ z.category_amount ratio, z.category_vol, Y.stock_vol/z.category_vol volratio \r\n" + 
 				"FROM \r\n" + 
-				"(select X.year, X.week, X.EndOfWeekDate, X.股票代码, X.板块代码, X.stock_amount, X.`股票权重` ,a股.`股票名称`\r\n" + 
+				"(select X.year, X.week, X.EndOfWeekDate, X.股票代码, X.板块代码, X.stock_amount,X.stock_vol, X.`股票权重` ,a股.`股票名称`\r\n" + 
 				"from (select year(" +  gegucjetable    + ".`交易日期`) as year,week(" +  gegucjetable    + ".`交易日期`) as week, \r\n" + 
 				"DATE(" +  gegucjetable    + ".交易日期 + INTERVAL (6 - DAYOFWEEK(" +  gegucjetable    + ".交易日期)) DAY) EndOfWeekDate, \r\n" + 
 				"" +  stockvsbktable + ".`股票代码` , " +  stockvsbktable + ".`板块代码` , \r\n" + 
-				"sum(" +  gegucjetable    + ".`成交额`) stock_amount," +  stockvsbktable + ".`股票权重`\r\n" + 
+				"sum(" +  gegucjetable    + ".`成交额`) stock_amount, sum(" +  gegucjetable    + ".`成交量`) stock_vol," +  stockvsbktable + ".`股票权重`\r\n" + 
 				"from " +  stockvsbktable + ", " +  gegucjetable    + "\r\n" + 
 				"where " +  stockvsbktable + ".`股票代码`   = " +  gegucjetable    + ".`代码`\r\n" + 
 				"		and Date(" +  gegucjetable    + ".`交易日期`) >= Date(" +  stockvsbktable + ".`加入时间`)\r\n" + 
@@ -4328,7 +4338,7 @@ public class BanKuaiDbOperation
 				"						\r\n" + 
 				"(select year(" +  bkcjetable + ".`交易日期`) as year, week(" +  bkcjetable + ".`交易日期`) as week,\r\n" + 
 				"DATE(" +  bkcjetable + ".交易日期 + INTERVAL (6 - DAYOFWEEK(" +  bkcjetable + ".交易日期)) DAY) EndOfWeekDate, \r\n" + 
-				"" +  bkcjetable + ".`代码` , " + bknametable + ".`板块名称`,   sum(" +  bkcjetable + ".`成交额`) category_amount\r\n" + 
+				"" +  bkcjetable + ".`代码` , " + bknametable + ".`板块名称`,   sum(" +  bkcjetable + ".`成交额`) category_amount, sum(" +  bkcjetable + ".`成交量`) category_vol\r\n" + 
 				"from " +  bkcjetable + ", " + bknametable + "\r\n" + 
 				"where " +  bkcjetable + ".`代码` = " + bknametable  + ".`板块ID`\r\n" + 
 				"		and " +  bkcjetable + ".`交易日期` BETWEEN '" +  formatedstartdate + "' AND '" +  formatedenddate + "'\r\n" + 
@@ -4379,12 +4389,16 @@ public class BanKuaiDbOperation
 //				int week = rsfg.getInt("week");
 				double stcokcje = rsfg.getDouble("stock_amount");
 				double bkcje = rsfg.getDouble("category_amount");
+				double stcokcjl = rsfg.getDouble("stock_vol");
+				double bkcjl = rsfg.getDouble("category_vol");
 //				Date lastdayofweek1 = rsfg.getString("EndOfWeekDate");
 				java.sql.Date  lastdayofweek = rsfg.getDate("EndOfWeekDate");
 				cjlrecords.setRecordsDayofEndofWeek(lastdayofweek);
 //				cjlrecords.setDayofEndofWeek(CommonUtility.formateStringToDate(lastdayofweek1) );
 				cjlrecords.setMyOwnChengJiaoEr(stcokcje);
 				cjlrecords.setUpLevelChengJiaoEr(bkcje);
+				cjlrecords.setMyownchengjiaoliang(stcokcjl);
+				cjlrecords.setUplevelchengjiaoliang(bkcjl);
 //				cjlrecords.setYear(year);
 //				cjlrecords.setWeek(week);
 				

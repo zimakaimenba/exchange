@@ -248,6 +248,14 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
         barchart.fireChartChanged();//必须有这句
     }
     /*
+     * 设置要突出显示成交量或者占比MAXWK的阀值
+     */
+    public void setDisplayMaxwkLevel  (int maxl) 
+    {
+    	((BanKuaiFengXiBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel(maxl);
+    	 barchart.fireChartChanged();//必须有这句
+    }
+    /*
      * 
      */
 	public Comparable getCurSelectedBarDate ()

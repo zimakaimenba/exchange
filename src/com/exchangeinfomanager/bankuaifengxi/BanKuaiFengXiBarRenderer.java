@@ -21,9 +21,11 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
 	private static final long serialVersionUID = 1L;
 //	private Paint[] colors;
     protected int shouldcolumn = -1;
+    protected int displayedmaxwklevel = 4;
     private String barCharType;
 	protected BkChanYeLianTreeNode node;
 	protected CategoryDataset chartdataset;
+	
 	
 	public void setBarColumnShouldChangeColor (int column)
     {
@@ -49,6 +51,10 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
     public void setDateSet (CategoryDataset dataset)
     {
     	this.chartdataset = dataset;
+    }
+    public void setDisplayMaxwkLevel (int maxl) 
+    {
+    	this.displayedmaxwklevel = maxl;
     }
  
 
