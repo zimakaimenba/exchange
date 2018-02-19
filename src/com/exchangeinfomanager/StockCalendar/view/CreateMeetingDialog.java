@@ -1,0 +1,52 @@
+package com.exchangeinfomanager.StockCalendar.view;
+
+
+import javax.swing.*;
+
+import com.exchangeinfomanager.StockCalendar.Cache;
+import com.exchangeinfomanager.StockCalendar.Meeting;
+import com.exchangeinfomanager.StockCalendar.MeetingService;
+
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+
+@SuppressWarnings("all")
+public class CreateMeetingDialog extends MeetingDialog<Meeting> {
+
+    private Meeting meeting;
+
+    public CreateMeetingDialog(MeetingService meetingService, Cache cache) {
+        super(meetingService, cache);
+        super.setTitle("Create");
+
+        // lets create button and add controller to it
+        JLabel createButton = JLabelFactory.createOrangeButton("Create");
+        createButton.addMouseListener(new CreateController());
+
+        // add button to the main panel
+        JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new FlowLayout(FlowLayout.RIGHT), 35);
+        layoutPanel.add(createButton);
+        this.centerPanel.add(layoutPanel);
+        this.centerPanel.add(Box.createVerticalStrut(PADDING));
+    }
+
+    private class CreateController extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            super.mouseClicked(e);
+
+            try {
+                meetingService.createMeeting(getMeeting());
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            
+            setVisible(false);
+        }
+    }
+
+}

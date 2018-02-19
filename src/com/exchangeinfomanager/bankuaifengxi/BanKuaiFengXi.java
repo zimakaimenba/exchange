@@ -52,6 +52,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleEdge;
 
+import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
+import com.exchangeinfomanager.StockCalendar.StockCalendar;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
@@ -88,6 +90,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
 import net.miginfocom.swing.MigLayout;
+
 import javax.swing.JScrollPane;
 import com.toedter.components.JLocaleChooser;
 import com.toedter.calendar.JDateChooser;
@@ -1783,7 +1786,7 @@ public class BanKuaiFengXi extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JButton okButton;
 	private JButton cancelButton;
-	private JDateChooser dateChooser; //https://toedter.com/jcalendar/
+	private JStockCalendarDateChooser dateChooser; //https://toedter.com/jcalendar/
 	private JScrollPane sclpleft;
 	private BanKuaiInfoTable tableBkZhanBi;
 //	private JTable tableGuGuZhanBiInBk;
@@ -2147,7 +2150,8 @@ public class BanKuaiFengXi extends JDialog {
 		
 		panel_1.setLayout(gl_panel_1);
 		
-		dateChooser = new JDateChooser();
+//		dateChooser = new JDateChooser();
+		dateChooser = new JStockCalendarDateChooser(new StockCalendar());
 		dateChooser.setDateFormatString("yyyy-MM-dd");
 		dateChooser.setDate(new Date() );
 		

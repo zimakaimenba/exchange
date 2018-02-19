@@ -36,6 +36,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongQuan
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
@@ -59,6 +60,9 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+
+import org.apache.log4j.Logger;
+
 import javax.swing.JLabel;
 
 public class AccountSeeting extends JDialog 
@@ -81,6 +85,7 @@ public class AccountSeeting extends JDialog
 	private AccountAndChiCangConfiguration acntstckconfig;
 	private AccountDbOperation acntdbopt;
 	private BanKuaiDbOperation bkdbopt;
+	private static Logger logger = Logger.getLogger(AccountSeeting.class);
 	
 	
 
