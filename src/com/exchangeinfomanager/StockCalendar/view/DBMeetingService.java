@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar;
+package com.exchangeinfomanager.StockCalendar.view;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -28,20 +28,24 @@ public class DBMeetingService  implements MeetingService {
     	this.cache = cache;
     }
     @Override
-    public Collection<InsertedMeeting> getMeetings() throws SQLException {
-        return this.database.getMeetings();
+    public Collection<InsertedMeeting> getMeetings(String nodeid) throws SQLException {
+//        return this.database.getMeetings();
+        return this.database.getBanKuaiRelatedNews (nodeid);
     }
 
     @Override
     public void createMeeting(Meeting meeting) throws SQLException {
-        InsertedMeeting m  = this.database.createMeeting(meeting);
+//        InsertedMeeting m  = this.database.createMeeting(meeting);
+    	 InsertedMeeting m  = this.database.addBanKuaiNews (meeting);
         
           cache.addMeeting(m);
     }
 
     @Override
     public void deleteMeeting(InsertedMeeting meeting) throws SQLException {
-        InsertedMeeting m = this.database.deleteMeeting(meeting);
+//        InsertedMeeting m = this.database.deleteMeeting(meeting);
+        
+        InsertedMeeting m = this.database.deleteBanKuaiNews(meeting);
         
         cache.removeMeeting(m);
     }
@@ -50,7 +54,7 @@ public class DBMeetingService  implements MeetingService {
     public void updateMeeting(InsertedMeeting meeting) throws SQLException {
         InsertedMeeting m = this.database.updateMeeting(meeting);
         
-        	cache.updateMeeting(m);
+        cache.updateMeeting(m);
     }
 
 

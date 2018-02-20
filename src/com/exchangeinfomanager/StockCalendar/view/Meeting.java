@@ -1,29 +1,35 @@
-package com.exchangeinfomanager.StockCalendar;
+package com.exchangeinfomanager.StockCalendar.view;
 
 import java.awt.*;
-import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting.Label;
+
 
 @SuppressWarnings("all")
-public class Meeting   {
+public class Meeting {
 
     private LocalDate start;
     private String title;
     private String description;
     private String brief;
+    private String slackUrl;
+    protected String newsownercodes;
+    private String currentownercode;
 
     private Collection<InsertedMeeting.Label> labels;
 
-    public Meeting(String title, LocalDate start, String description, String brief2, Collection<InsertedMeeting.Label> labels) {
+    public Meeting(String title, LocalDate start, String description, String brief2, Collection<InsertedMeeting.Label> labels,String slackUrl,String ownercodes) {
         this.setStart(start);
         this.setTitle(title);
         this.setDescription(description);
         this.setLocation(brief2);
         this.labels = new HashSet<>(labels);
+        this.setSlackUrl(slackUrl);
+        this.setNewsownercodes(ownercodes);
     }
 
     public Collection<InsertedMeeting.Label> getLabels() {
@@ -38,9 +44,33 @@ public class Meeting   {
         this.start = start;
     }
 
+    public void setSlackUrl (String url)
+    {
+    	this.slackUrl = url;
+    }
+    public String getSlackUrl ()
+    {
+    	return this.slackUrl;
+    }
 
-
-
+    public void setCurrentownercode (String curcodes)
+    {
+    	this.currentownercode = curcodes;
+    }
+    public String getCurrentownercode ()
+    {
+    	return this.currentownercode;
+    }
+    public void setNewsownercodes (String ownercodes)
+    {
+  		this.newsownercodes = ownercodes;
+    }
+    
+    public String getNewsownercodes ()
+    {
+    	return this.newsownercodes;
+    }
+    
     public String getTitle() {
         return title;
     }
@@ -101,7 +131,7 @@ public class Meeting   {
         return result;
     }
 
-    public static class Label implements Serializable {
+    public static class Label  {
 
         private Color color;
         private String name;

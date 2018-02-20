@@ -1,15 +1,12 @@
 package com.exchangeinfomanager.StockCalendar.view;
 
 
-import com.exchangeinfomanager.StockCalendar.Cache;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
-import com.exchangeinfomanager.StockCalendar.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.Meeting;
-import com.exchangeinfomanager.StockCalendar.MeetingService;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Dialog.ModalityType;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -21,7 +18,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @SuppressWarnings("all")
-public abstract class MeetingDialog<T extends Meeting> extends JDialog {
+public  class MeetingDialog<T extends Meeting> extends JDialog {
 
     protected static final int WIDTH = 400;
     protected static final int HEIGHT = 600;
@@ -32,7 +29,8 @@ public abstract class MeetingDialog<T extends Meeting> extends JDialog {
     protected static final DateTimeFormatter LABEL_DATE = DateTimeFormatter.ofPattern("dd MMM uuuu");
 
     protected JTextField titleField;
-    protected JTextField locationField;
+    protected JTextField locationField; 
+    protected JTextField slackurlField;
     protected JTextArea descriptionArea;
     protected JDateChooser startTimeChooser;
     protected JPanel centerPanel;
@@ -52,9 +50,14 @@ public abstract class MeetingDialog<T extends Meeting> extends JDialog {
 
     }
 
+    public JPanel getNewsPanel ()
+    {
+    	return this.centerPanel;
+    }
     private void createUI() {
         this.titleField = JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
         this.locationField = JTextFactory.createTextField();
+        this.slackurlField = JTextFactory.createTextField();
         this.descriptionArea = JTextFactory.createTextArea();
         this.startTimeChooser = new JDateChooser();
 //        startTimeChooser.setDate(new Date() );
@@ -92,6 +95,8 @@ public abstract class MeetingDialog<T extends Meeting> extends JDialog {
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
         this.centerPanel.add(this.locationField);
         this.centerPanel.add(Box.createVerticalStrut(10));
+        this.centerPanel.add(this.slackurlField);
+        this.centerPanel.add(Box.createVerticalStrut(10));
         this.centerPanel.add(this.descriptionArea);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
 
@@ -117,13 +122,18 @@ public abstract class MeetingDialog<T extends Meeting> extends JDialog {
         locationField.setText(meeting.getLocation());
         descriptionArea.setText(meeting.getDescription());
         startTimeChooser.setDate(Date.from(meeting.getStart().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+        slackurlField.setText(meeting.getSlackUrl());
+        
+        System.out.println(meeting.getNewsownercodes());
     }
 
     public T getMeeting() {
         meeting.setTitle(titleField.getText());
-        meeting.setStart(meeting.getStart() );
+        meeting.setStart(startTimeChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() );
         meeting.setLocation(locationField.getText());
         meeting.setDescription(descriptionArea.getText());
+        meeting.setSlackUrl(slackurlField.getText());
+        System.out.println(meeting.getNewsownercodes());
         return meeting;
     }
 

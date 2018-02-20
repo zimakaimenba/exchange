@@ -1,10 +1,11 @@
-package com.exchangeinfomanager.StockCalendar;
+package com.exchangeinfomanager.StockCalendar.view;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
 
 @SuppressWarnings("all")
 public class Cache {
@@ -14,8 +15,10 @@ public class Cache {
     private Set<InsertedMeeting.Label> meetingLabels;
     private MeetingService meetingService;
     private LabelService labelService;
+	private String nodecode;
 
-    public Cache(MeetingService meetingService, LabelService labelService) {
+    public Cache(String nodecode,MeetingService meetingService, LabelService labelService) {
+    	this.nodecode = nodecode;
         this.meetingService = meetingService;
         this.meetingService.setCache(this);
         this.labelService = labelService;
@@ -23,8 +26,13 @@ public class Cache {
         this.listeners = new HashSet<>();
         this.meetings = new HashSet<>();
         this.meetingLabels = new HashSet<>();
-        this.refreshMeetings();
+        this.refreshMeetings(nodecode);
         this.refreshLabels();
+    }
+    
+    public String getNodeCode ()
+    {
+    	return this.nodecode;
     }
 
     public void addCacheListener(CacheListener listener) {
@@ -40,43 +48,43 @@ public class Cache {
     }
 
     public void updateMeeting(InsertedMeeting meeting) {
-        this.refreshMeetings();
+        this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void removeMeeting(InsertedMeeting meeting) {
-        this.refreshMeetings();
+        this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void addMeeting(InsertedMeeting meeting) {
-        this.refreshMeetings();
+        this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void updateMeetingLabel(InsertedMeeting.Label label) {
         this.refreshLabels();
-        this.refreshMeetings();
+        this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
     public void removeMeetingLabel(InsertedMeeting.Label label) {
         this.refreshLabels();
-        this.refreshMeetings();
+        this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
     public void addMeetingLabel(InsertedMeeting.Label label) {
         this.refreshLabels();
-        this.refreshMeetings();
+        this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
-    private void refreshMeetings() {
+    private void refreshMeetings(String nodecode) {
         this.meetings.clear();
 
         try {
-            this.meetings.addAll(meetingService.getMeetings());
+            this.meetings.addAll(meetingService.getMeetings(nodecode));
         } catch (SQLException e) {
             e.printStackTrace();
         } 

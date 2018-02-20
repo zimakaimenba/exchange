@@ -41,6 +41,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.google.common.collect.Sets;
@@ -56,6 +57,7 @@ public class BanKuaiGeGuTable extends JTable
 	private JMenuItem menuItemAddGz;
 	private JMenuItem menuItemReDian;
 	private JMenuItem menuItemMakeLongTou;
+	private StockCalendarAndNewDbOperation newsdbopt;
 	
 	public BanKuaiGeGuTable (StockInfoManager stockmanager1)
 	{
@@ -82,6 +84,7 @@ public class BanKuaiGeGuTable extends JTable
 //		sorter.sort();
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
+		this.newsdbopt = new StockCalendarAndNewDbOperation ();
 		this.stockmanager = stockmanager1;
 		
 		createMenu ();
@@ -331,7 +334,7 @@ public class BanKuaiGeGuTable extends JTable
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 			return;
 		
-		bkdbopt.addBanKuaiNews(stockcode, cylnews.getInputedNews());
+//		bkdbopt.newsdbopt(stockcode, cylnews.getInputedNews());
 		
 	}
 	

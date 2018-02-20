@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar;
+package com.exchangeinfomanager.StockCalendar.view;
 
 @SuppressWarnings("all")
 public interface CacheListener {

@@ -1,12 +1,14 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.StockCalendar.Cache;
-import com.exchangeinfomanager.StockCalendar.ColorScheme;
-import com.exchangeinfomanager.StockCalendar.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.Meeting;
-import com.exchangeinfomanager.StockCalendar.MeetingService;
+import com.exchangeinfomanager.StockCalendar.view.Cache;
+import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
+import com.exchangeinfomanager.StockCalendar.view.JLabelFactory;
+import com.exchangeinfomanager.StockCalendar.view.JPanelFactory;
+import com.exchangeinfomanager.StockCalendar.view.Meeting;
+import com.exchangeinfomanager.StockCalendar.view.MeetingService;
+import com.exchangeinfomanager.StockCalendar.view.Meeting.Label;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -175,9 +177,8 @@ public class YearView extends View {
             }
             
             if (e.getClickCount() == 2) { //获取选择的日期
-            	Meeting meeting = new Meeting("Untitled Meeting", mDate,
-                         "Enter description",
-                        "Enter location", new HashSet<>());
+            	Meeting meeting = new Meeting("新闻标题",mDate,
+                        "描述", "关键词", new HashSet<>(),"SlackURL","000000");
                     getCreateDialog().setMeeting(meeting);
                     getCreateDialog().setVisible(true);
             }

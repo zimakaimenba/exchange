@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar;
+package com.exchangeinfomanager.StockCalendar.view;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -9,7 +9,7 @@ import java.util.Collection;
 @SuppressWarnings("all")
 public interface MeetingService  {
 
-    Collection<InsertedMeeting> getMeetings() throws SQLException;
+    Collection<InsertedMeeting> getMeetings(String nodeid) throws SQLException;
 
     void createMeeting(Meeting meeting) throws SQLException;
 

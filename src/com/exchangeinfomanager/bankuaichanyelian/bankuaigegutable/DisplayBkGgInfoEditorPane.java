@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
@@ -13,11 +14,12 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.google.common.base.Strings;
 
 public class DisplayBkGgInfoEditorPane extends JEditorPane
@@ -25,11 +27,13 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 
 	private BanKuaiDbOperation bkdbopt;
 	private Boolean clearContentsBeforeDisplayNewInfo = false;
+	private StockCalendarAndNewDbOperation newsdbopt;
 	private static Logger logger = Logger.getLogger(DisplayBkGgInfoEditorPane.class);
 
 	public DisplayBkGgInfoEditorPane()
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
+		this.newsdbopt = new StockCalendarAndNewDbOperation ();
 		this.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
 		this.setEditable(false);
 		creatEvents ();
@@ -51,7 +55,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
     {
     	String curselectedbknodename = curselectedbknodecode.getMyOwnName();
 	       	String curbknodecode = curselectedbknodecode.getMyOwnCode();
-	       	ArrayList<ChanYeLianNews> curnewlist = bkdbopt.getBanKuaiRelatedNews (curbknodecode);
+	       	Collection<InsertedMeeting> curnewlist = newsdbopt.getBanKuaiRelatedNews(curbknodecode);
 	       	 
 	     String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
@@ -59,11 +63,11 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		 org.jsoup.select.Elements content = doc.select("body");
 		       
 		 content.append( "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>");
-    	for(ChanYeLianNews cylnew : curnewlist ) {
-    		String title = cylnew.getNewsTitle();
-    		String newdate = cylnew.getGenerateDate().toString(); 
-    		String slackurl = cylnew.getNewsSlackUrl();
-    		String keywords = cylnew.getKeyWords ();
+    	for(InsertedMeeting cylnew : curnewlist ) {
+    		String title = cylnew.getTitle();
+    		String newdate = cylnew.getStart().toString(); 
+    		String slackurl = cylnew.getSlackUrl();
+    		String keywords = cylnew.getLocation();
     		if(slackurl != null && !slackurl.isEmpty() )	    		
     			content.append( "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
     		else

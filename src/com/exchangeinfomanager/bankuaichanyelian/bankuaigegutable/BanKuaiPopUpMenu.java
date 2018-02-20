@@ -71,7 +71,6 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 				
 				addBanKuaiNews (bkcode);
 			}
-		
 		});
 		
 		menuItemMakeLongTou.addActionListener(new ActionListener() {
@@ -201,12 +200,13 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 	protected void addBanKuaiNews(String bkcode) 
 	{
 		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (bkcode);
-		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加板块新闻", JOptionPane.OK_CANCEL_OPTION);
-
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
+		cylnews.setVisible(true);
+//		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加板块新闻", JOptionPane.OK_CANCEL_OPTION);
+//
+//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//			return;
 		
-		bkdbopt.addBanKuaiNews(bkcode, cylnews.getInputedNews());
+//		bkdbopt.addBanKuaiNews(bkcode, cylnews.getInputedNews());
 	}
 
 	private void createMenuItems() 

@@ -1,10 +1,13 @@
 package com.exchangeinfomanager.StockCalendar;
 
 
+import com.exchangeinfomanager.StockCalendar.view.Cache;
+import com.exchangeinfomanager.StockCalendar.view.DBLabelService;
+import com.exchangeinfomanager.StockCalendar.view.DBMeetingService;
 import com.exchangeinfomanager.StockCalendar.view.JLabelFactory;
 import com.exchangeinfomanager.StockCalendar.view.JPanelFactory;
-import com.exchangeinfomanager.StockCalendar.view.MonthView;
-import com.exchangeinfomanager.StockCalendar.view.YearView;
+import com.exchangeinfomanager.StockCalendar.view.LabelService;
+import com.exchangeinfomanager.StockCalendar.view.MeetingService;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
@@ -49,7 +52,7 @@ public class StockCalendar extends JCalendar {
     	
     	MeetingService meetingService = new DBMeetingService ( );
     	LabelService labelService = new DBLabelService ();
-        Cache cache = new Cache(meetingService, labelService);
+        Cache cache = new Cache("000000",meetingService, labelService);
         
         this.monthView = new MonthView(meetingService, cache);
         this.yearView = new YearView(meetingService, cache);

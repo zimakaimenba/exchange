@@ -1,7 +1,9 @@
-package com.exchangeinfomanager.StockCalendar;
+package com.exchangeinfomanager.StockCalendar.view;
 
 import java.sql.SQLException;
 import java.util.Collection;
+
+import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting.Label;
 
 
 

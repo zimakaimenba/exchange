@@ -1,10 +1,10 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.StockCalendar;
 
 
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.StockCalendar.ColorScheme;
+import com.exchangeinfomanager.StockCalendar.view.JLabelFactory;
 
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;

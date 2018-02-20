@@ -3,10 +3,6 @@ package com.exchangeinfomanager.StockCalendar.view;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.StockCalendar.Cache;
-import com.exchangeinfomanager.StockCalendar.Meeting;
-import com.exchangeinfomanager.StockCalendar.MeetingService;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -48,5 +44,4 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
             setVisible(false);
         }
     }
-
 }

@@ -1,9 +1,5 @@
 package com.exchangeinfomanager.StockCalendar.view;
 
-import com.exchangeinfomanager.StockCalendar.Cache;
-import com.exchangeinfomanager.StockCalendar.LabelService;
-import com.exchangeinfomanager.StockCalendar.MeetingService;
-
 @SuppressWarnings("all")
 public class DialogFactory {
 

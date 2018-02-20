@@ -2,9 +2,6 @@ package com.exchangeinfomanager.StockCalendar.view;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.StockCalendar.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.LabelService;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;

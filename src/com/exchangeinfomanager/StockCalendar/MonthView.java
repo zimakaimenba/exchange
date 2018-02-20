@@ -1,12 +1,13 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.StockCalendar.Cache;
-import com.exchangeinfomanager.StockCalendar.ColorScheme;
-import com.exchangeinfomanager.StockCalendar.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.Meeting;
-import com.exchangeinfomanager.StockCalendar.MeetingService;
+import com.exchangeinfomanager.StockCalendar.view.Cache;
+import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
+import com.exchangeinfomanager.StockCalendar.view.JPanelFactory;
+import com.exchangeinfomanager.StockCalendar.view.Meeting;
+import com.exchangeinfomanager.StockCalendar.view.MeetingService;
+import com.exchangeinfomanager.StockCalendar.view.Meeting.Label;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -27,7 +28,8 @@ public class MonthView extends View
     private JPanel calendar = new JPanel();
     private JLabel dateLabel = new JLabel();
 
-    public MonthView(MeetingService meetingService, Cache cache) {
+    public MonthView(MeetingService meetingService, Cache cache) 
+    {
         super(meetingService, cache);
 
         cache.addCacheListener(this);
@@ -35,7 +37,8 @@ public class MonthView extends View
         this.initMonthView();
     }
 
-    private void initMonthView() {
+    private void initMonthView() 
+    {
         super.setBackground(ColorScheme.BACKGROUND);
         super.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         super.add(this.getWeekdaysPanel());
@@ -50,7 +53,7 @@ public class MonthView extends View
     private JPanel getWeekdaysPanel() {
 
         JPanel weekdays = JPanelFactory.createFixedSizePanel(new GridLayout(1, 7));
-        weekdays.add(new JLabel("Monday"));
+        weekdays.add(new JLabel("星期一"));
         weekdays.add(new JLabel("Tuesday"));
         weekdays.add(new JLabel("Wednesday"));
         weekdays.add(new JLabel("Thursday"));
@@ -87,7 +90,6 @@ public class MonthView extends View
                 dayLabel.setBackground(ColorScheme.BACKGROUND);
                 dayLabel.setOpaque(true);
                 panel.add(dayLabel, BorderLayout.PAGE_START);
-//              panel.add(JPanelFactory.createPanel(new FlowLayout(FlowLayout.LEFT, 2, 2)), BorderLayout.CENTER);
                 panel.add(JPanelFactory.createPanel(new WrapLayout(WrapLayout.LEFT, 5, 5)), BorderLayout.CENTER);
                 
             } else {
@@ -97,7 +99,6 @@ public class MonthView extends View
             
             scrollpane.setViewportView (panel);
 
-//            this.calendar.add(panel);
             this.calendar.add(scrollpane);
         }
     }
@@ -114,8 +115,8 @@ public class MonthView extends View
     }
 
     @Override
-    public void onMeetingChange(Cache cache) {
-
+    public void onMeetingChange(Cache cache) 
+    {
         Collection<InsertedMeeting> meetings = cache.produceMeetings();
         Collection<InsertedMeeting.Label> labels = cache.produceLabels();
 
@@ -159,8 +160,8 @@ public class MonthView extends View
         this.onMeetingChange(cache);
     }
 
-    private class DayController extends MouseAdapter { 
-
+    private class DayController extends MouseAdapter 
+    { 
         @Override
         public void mouseClicked(MouseEvent e) {
         	
@@ -175,9 +176,8 @@ public class MonthView extends View
         	}
         	
         	if (e.getClickCount() == 2) { //增加一个新的meeting
-        		
                 Meeting meeting = new Meeting("新闻标题",mDate,
-                     "描述", "关键词/URL", new HashSet<>());
+                     "描述", "关键词", new HashSet<>(),"SlackURL","000000");
                 getCreateDialog().setMeeting(meeting);
                 getCreateDialog().setVisible(true);
         	}
@@ -186,8 +186,8 @@ public class MonthView extends View
     }
 
 	
-    private class MeetingController extends MouseAdapter {
-
+    private class MeetingController extends MouseAdapter 
+    {
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);

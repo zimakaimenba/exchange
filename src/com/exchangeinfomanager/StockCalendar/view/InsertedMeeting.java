@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar;
+package com.exchangeinfomanager.StockCalendar.view;
 
 @SuppressWarnings("all")
 public class InsertedMeeting extends Meeting {
@@ -7,7 +7,7 @@ public class InsertedMeeting extends Meeting {
 
     public InsertedMeeting(Meeting meeting, int id) {
         super(meeting.getTitle(), meeting.getStart(),  meeting.getDescription(), meeting.getLocation(),
-            meeting.getLabels());
+            meeting.getLabels(),meeting.getSlackUrl(),meeting.getNewsownercodes());
         this.setID(id);
     }
 
@@ -20,18 +20,25 @@ public class InsertedMeeting extends Meeting {
     }
 
     public Meeting getMeeting() {
-        return new Meeting(getTitle(), getStart(),  getDescription(), getLocation(), getLabels());
+        return new Meeting(getTitle(), getStart(),  getDescription(), getLocation(), getLabels(),getSlackUrl(),getNewsownercodes());
     }
 
     public void setMeeting(Meeting meeting) {
         setTitle(meeting.getTitle());
         setStart(meeting.getStart());
-         setDescription(meeting.getDescription());
+        setDescription(meeting.getDescription());
         setLocation(meeting.getLocation());
+        setSlackUrl(meeting.getSlackUrl());
         getLabels().clear();
         getLabels().addAll(meeting.getLabels());
     }
 
+    public void removeMeetingSpecficOwner (String removedowner) 
+    {
+    	if(newsownercodes.contains(removedowner)) {
+    		newsownercodes = newsownercodes.replace(removedowner + "|", "");
+    	}
+    }
     @Override
     public String toString() {
         return String.format("id: %d, %s", getID(), getMeeting());

@@ -1,10 +1,11 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.StockCalendar;
 
 
-import com.exchangeinfomanager.StockCalendar.Cache;
-import com.exchangeinfomanager.StockCalendar.CacheListener;
-import com.exchangeinfomanager.StockCalendar.ColorScheme;
-import com.exchangeinfomanager.StockCalendar.MeetingService;
+import com.exchangeinfomanager.StockCalendar.view.Cache;
+import com.exchangeinfomanager.StockCalendar.view.CacheListener;
+import com.exchangeinfomanager.StockCalendar.view.DialogFactory;
+import com.exchangeinfomanager.StockCalendar.view.MeetingDialog;
+import com.exchangeinfomanager.StockCalendar.view.MeetingService;
 import com.toedter.calendar.JDayChooser;
 
 

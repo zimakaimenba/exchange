@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.StockCalendar;
 
 import java.awt.*;
 import javax.swing.JScrollPane;

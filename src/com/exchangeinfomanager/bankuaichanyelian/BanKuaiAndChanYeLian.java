@@ -93,7 +93,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNews;
+
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiBarChartPnl;
@@ -1350,25 +1350,26 @@ public class BanKuaiAndChanYeLian extends JPanel
 //			return;
 //	}
 
-	protected void addChanYeLianNews() 
-	{
-		String selectnodecode = null;
-		try {
-			TreePath closestPath = treechanyelian.getSelectionPath();
-			BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-			 selectnodecode = selectednode.getMyOwnCode();
-		} catch (java.lang.NullPointerException ex) {
-			JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
-		}
+//	protected void addChanYeLianNews() 
+//	{
+//		String selectnodecode = null;
+//		try {
+//			TreePath closestPath = treechanyelian.getSelectionPath();
+//			BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
+//			 selectnodecode = selectednode.getMyOwnCode();
+//		} catch (java.lang.NullPointerException ex) {
+//			JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
+//		}
+//		
+//		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (selectnodecode);
+//		cylnews.setVisible(true);
+//		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加产业链新闻", JOptionPane.OK_CANCEL_OPTION);
+//		System.out.print(exchangeresult);
+//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//			return;
 		
-		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (selectnodecode);
-		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加产业链新闻", JOptionPane.OK_CANCEL_OPTION);
-		System.out.print(exchangeresult);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
-		
-		bkdbopt.addBanKuaiNews(selectnodecode, cylnews.getInputedNews());
-	}
+//		bkdbopt.addBanKuaiNews(selectnodecode, cylnews.getInputedNews());
+//	}
 
 	private void deleteDaLeiGuPiaoChi () 
 	{

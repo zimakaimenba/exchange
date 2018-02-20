@@ -3,9 +3,6 @@ package com.exchangeinfomanager.StockCalendar.view;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.StockCalendar.LabelService;
-import com.exchangeinfomanager.StockCalendar.Meeting;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
