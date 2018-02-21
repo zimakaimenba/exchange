@@ -51,7 +51,7 @@ public final class StockCalendarAndNewDbOperation {
 		
 		String sqlquerystat;
 		if("ALL".equals(bankuaiid.toUpperCase()) ) 
-			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 40 DAY ORDER BY  录入日期 DESC"
+			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 180 DAY ORDER BY  录入日期 DESC"
 									;
 		else
 			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 关联板块 like '%" + bankuaiid.trim() +  "%' ORDER BY  录入日期 DESC";
@@ -510,7 +510,19 @@ public final class StockCalendarAndNewDbOperation {
     		
     		connectdb.sqlUpdateStatExecute(sqlupatestatement);
     		
-    		updatedMeeting = meeting;
+    		sqlupatestatement = "DELETE FROM meetingLabel WHERE news_ID = " + newsid ;
+
+          for (InsertedMeeting.Label l : meeting.getLabels()) {
+              int labelid = l.getID();
+              sqlupatestatement = "INSERT INTO meetingLabel (news_id, LABEL_ID ) VALUES ("
+			            		    +  newsid + ","
+									+  labelid  
+									+ ")"
+            		  				;
+            	connectdb.sqlUpdateStatExecute(sqlupatestatement);
+          }
+    		
+          updatedMeeting = meeting;
 
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();

@@ -39,6 +39,12 @@ public class InsertedMeeting extends Meeting {
     		newsownercodes = newsownercodes.replace(removedowner + "|", "");
     	}
     }
+    public void addMeetingToSpecificOwner (String newowner)
+    {
+    	if(!newsownercodes.contains(newowner)) {
+    		newsownercodes = newsownercodes + newowner + "|";
+    	}
+    }
     @Override
     public String toString() {
         return String.format("id: %d, %s", getID(), getMeeting());

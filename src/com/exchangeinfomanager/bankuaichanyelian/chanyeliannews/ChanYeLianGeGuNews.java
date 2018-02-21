@@ -15,6 +15,7 @@ import java.util.Optional;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
@@ -73,6 +74,32 @@ public class ChanYeLianGeGuNews extends View
 		
 	}
 	
+	public void updateNewsToABkGeGu (InsertedMeeting news,String bkggcode)
+	{
+		news.addMeetingToSpecificOwner(bkggcode);
+		
+		try {
+			meetingService.updateMeeting(news);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public InsertedMeeting getCurSelectedNews ()
+	{
+		int row = tableCurCylNews.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一条新闻！","Warning",JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		
+		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
+		
+		return selectednews;
+		
+	}
+	
 	private void tableMouseClickActions (MouseEvent arg0)
 	{
         		int  view_row = tableCurCylNews.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
@@ -87,7 +114,7 @@ public class ChanYeLianGeGuNews extends View
 				 
 					 int row = tableCurCylNews.getSelectedRow();
 
-					  InsertedMeeting stocknews = ((NewsTableModel)tableCurCylNews.getModel()).getMeeting(row);
+					  InsertedMeeting stocknews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
 					  Optional<InsertedMeeting> meeting = getCache().produceMeetings()
                               .stream()
                               .filter(m -> m.getID() == Integer.valueOf(stocknews.getID()))

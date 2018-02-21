@@ -41,7 +41,7 @@ class NewsTableModel extends AbstractTableModel
 	        return jtableTitleStrings.length;
 	} 
 	
-	public InsertedMeeting getMeeting (int row) 
+	public InsertedMeeting getNews (int row) 
 	{
 		return this.cylnewslists.get(row);
 	}

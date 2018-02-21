@@ -427,9 +427,6 @@ public class StockInfoManager
 			public void mouseClicked(MouseEvent arg0) 
 			{
 				startBanKuaiFengXi ();
-
-
-				
 			}
 		});
 		

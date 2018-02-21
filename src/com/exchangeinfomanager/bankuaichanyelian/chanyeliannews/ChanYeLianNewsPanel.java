@@ -76,6 +76,7 @@ public class ChanYeLianNewsPanel extends JDialog
 	 */
 	public ChanYeLianNewsPanel(String curnodecode)
 	{
+		this.myowncode = curnodecode;
 		MeetingService allmeetingService = new DBMeetingService ();
     	LabelService alllabelService = new DBLabelService ();
         Cache cacheAll = new Cache("ALL",allmeetingService, alllabelService);
@@ -91,7 +92,7 @@ public class ChanYeLianNewsPanel extends JDialog
 	}
 
 	private String myowncode;
-	private StockCalendarAndNewDbOperation newsdbopt;
+//	private StockCalendarAndNewDbOperation newsdbopt;
 	private ChanYeLianGeGuNews panelgegunews;
 	private ChanYeLianGeGuNews panelallnews;
 	private JButton addnewstogegu;
@@ -104,7 +105,11 @@ public class ChanYeLianNewsPanel extends JDialog
 		addnewstogegu.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) {
-        		kkkk
+        		InsertedMeeting selectnewsall = panelallnews.getCurSelectedNews ();
+        		if(selectnewsall == null)
+        			return;
+        		
+        		panelgegunews.updateNewsToABkGeGu(selectnewsall,myowncode);
         	}
         });
 	}
