@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -16,6 +16,7 @@ public class Cache {
     private MeetingService meetingService;
     private LabelService labelService;
 	private String nodecode;
+	private boolean datachanged = false;
 
     public Cache(String nodecode,MeetingService meetingService, LabelService labelService) {
     	this.nodecode = nodecode;
@@ -29,7 +30,14 @@ public class Cache {
         this.refreshMeetings(nodecode);
         this.refreshLabels();
     }
-    
+    public void refreshNews ()
+    {
+//    	if(datachanged) {
+    	if(true) {
+    		this.refreshMeetings(nodecode);
+        	this.listeners.forEach(l -> l.onMeetingChange(this));
+    	}
+    }
     public String getNodeCode ()
     {
     	return this.nodecode;
@@ -48,33 +56,39 @@ public class Cache {
     }
 
     public void updateMeeting(InsertedMeeting meeting) {
+    	datachanged = true;
         this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void removeMeeting(InsertedMeeting meeting) {
+    	datachanged = true;
         this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void addMeeting(InsertedMeeting meeting) {
+    	datachanged = true;
         this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void updateMeetingLabel(InsertedMeeting.Label label) {
+    	datachanged = true;
         this.refreshLabels();
         this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
     public void removeMeetingLabel(InsertedMeeting.Label label) {
+    	datachanged = true;
         this.refreshLabels();
         this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
     public void addMeetingLabel(InsertedMeeting.Label label) {
+    	datachanged = true;
         this.refreshLabels();
         this.refreshMeetings(nodecode);
         this.listeners.forEach(l -> l.onLabelChange(this));

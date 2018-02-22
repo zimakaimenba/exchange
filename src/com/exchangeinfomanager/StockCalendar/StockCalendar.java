@@ -1,13 +1,12 @@
 package com.exchangeinfomanager.StockCalendar;
 
-
-import com.exchangeinfomanager.StockCalendar.view.Cache;
-import com.exchangeinfomanager.StockCalendar.view.DBLabelService;
-import com.exchangeinfomanager.StockCalendar.view.DBMeetingService;
-import com.exchangeinfomanager.StockCalendar.view.JLabelFactory;
-import com.exchangeinfomanager.StockCalendar.view.JPanelFactory;
-import com.exchangeinfomanager.StockCalendar.view.LabelService;
-import com.exchangeinfomanager.StockCalendar.view.MeetingService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
@@ -44,6 +43,7 @@ public class StockCalendar extends JCalendar {
 //    private LocalDate date = super.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     private JLabel dateLabel = new JLabel();
     private JPanel currentView;
+	private Cache cache;
 //    private View currentView;
     
     public StockCalendar ()
@@ -52,7 +52,7 @@ public class StockCalendar extends JCalendar {
     	
     	MeetingService meetingService = new DBMeetingService ( );
     	LabelService labelService = new DBLabelService ();
-        Cache cache = new Cache("000000",meetingService, labelService);
+        cache = new Cache("ALL",meetingService, labelService);
         
         this.monthView = new MonthView(meetingService, cache);
         this.yearView = new YearView(meetingService, cache);
@@ -61,6 +61,8 @@ public class StockCalendar extends JCalendar {
 	    this.initHeaderPanel();
 	    this.initViewDeck();
 	    this.initJFrame();
+	    
+	    
     }
 
     public StockCalendar(MeetingService meetingService, Cache cache, LabelService labelService) {
@@ -68,10 +70,16 @@ public class StockCalendar extends JCalendar {
         this.monthView = new MonthView(meetingService, cache);
         this.yearView = new YearView(meetingService, cache);
         this.sidebar = new Sidebar(labelService, cache);
+        this.cache = cache;
 
         this.initHeaderPanel();
         this.initViewDeck();
         this.initJFrame();
+    }
+    
+    public void refreshNews ()
+    {
+    	cache.refreshNews ();
     }
     
 

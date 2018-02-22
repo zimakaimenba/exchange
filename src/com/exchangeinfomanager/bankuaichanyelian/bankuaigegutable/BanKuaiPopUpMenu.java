@@ -15,7 +15,9 @@ import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 
@@ -31,6 +33,7 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 //	private BanKuaiAndChanYeLian bkcyl;
 	private BanKuaiGuanLi bkgldialog = null;
 	private StockInfoManager stockmanager;
+	private StockCalendarAndNewDbOperation newsdbopt;
 
 	public BanKuaiPopUpMenu(StockInfoManager stockmanager1,BkChanYeLianTree bkcyltree2) 
 	{
@@ -38,6 +41,7 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 //		this.bkcyl = bkcyl2;
 		this.stockmanager = stockmanager1;
 		this.bkdbopt = new BanKuaiDbOperation ();
+		this.newsdbopt = new StockCalendarAndNewDbOperation ();
 		createMenuItems ();
 		menuItemAddToGz.setEnabled(false);
 		createEventsForTree ();
@@ -189,12 +193,13 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 
 	protected void addBanKuaiReDian(String bkcode)
 	{
-		JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"本周热点" ); 
-		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "本周热点", JOptionPane.OK_CANCEL_OPTION);
+		JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"热点板块" ); 
+		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "热点板块", JOptionPane.OK_CANCEL_OPTION);
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 			return;
 		
-		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+//		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+		InsertedMeeting insetmeeting = newsdbopt.setReDianBanKuaiLongTouGeGuToShangYeXinWen(jiarujihua);
 	}
 
 	protected void addBanKuaiNews(String bkcode) 
@@ -213,7 +218,7 @@ public class BanKuaiPopUpMenu extends JPopupMenu
 	{
 		menuItemAddNews = new JMenuItem("添加新闻");
 		menuItemAddToGz = new JMenuItem("开始关注");
-		menuItemMakeLongTou = new JMenuItem("标记为当周热点");
+		menuItemMakeLongTou = new JMenuItem("标记热点板块");
 		
 		this.add(menuItemAddNews);
 		this.add(menuItemMakeLongTou);

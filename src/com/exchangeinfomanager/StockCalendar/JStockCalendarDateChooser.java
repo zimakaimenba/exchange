@@ -20,21 +20,24 @@ import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import com.toedter.calendar.IDateEditor;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
-public class JStockCalendarDateChooser extends JDateChooser 
+public class JStockCalendarDateChooser extends JDateChooser implements PopupMenuListener
 {
 
 	
+	private StockCalendar stockcal;
+
 	public JStockCalendarDateChooser (StockCalendar jcal)
 	{
         
        this(jcal,null,null,null);
-	    
-	    
+       this.stockcal = jcal;
 	}
 	StockCalendar stockcalendar;
 	private ChangeListener changeListener;
@@ -56,6 +59,8 @@ public class JStockCalendarDateChooser extends JDateChooser
 	private JStockCalendarDateChooser(StockCalendar jcal, Date date, String dateFormatString,
 			IDateEditor dateEditor) {
 		super(jcal,date,dateFormatString,dateEditor);
+		
+		popup.addPopupMenuListener(this);
 //		setName("JDateChooserExtend");
 		
 
@@ -171,6 +176,25 @@ public class JStockCalendarDateChooser extends JDateChooser
 		// end of code provided by forum user podiatanapraia
 
 //		isInitialized = true;
+	}
+
+	@Override
+	public void popupMenuCanceled(PopupMenuEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {
+		System.out.println("popup menu is showing");
+		stockcal.refreshNews ();
+		
 	}
 	
 	/**

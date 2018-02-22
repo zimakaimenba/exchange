@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import javax.swing.*;
 import javax.swing.colorchooser.ColorSelectionModel;

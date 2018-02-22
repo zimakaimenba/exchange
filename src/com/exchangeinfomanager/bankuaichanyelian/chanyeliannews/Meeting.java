@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import java.awt.*;
 import java.time.Instant;
@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting.Label;
 
 
 @SuppressWarnings("all")

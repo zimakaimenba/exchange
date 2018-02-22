@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.gui.subgui;
+package com.exchangeinfomanager.commonlib;
 
 import java.awt.*;
 import javax.swing.JScrollPane;

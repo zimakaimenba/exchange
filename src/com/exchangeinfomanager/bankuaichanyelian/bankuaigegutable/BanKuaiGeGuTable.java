@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -96,7 +97,7 @@ public class BanKuaiGeGuTable extends JTable
 		JPopupMenu popupMenuGeguNews = new JPopupMenu();
 		menuItemAddNews = new JMenuItem("添加个股新闻");
 		menuItemAddGz = new JMenuItem("开始关注");
-		menuItemReDian = new JMenuItem("标记为板块热点");
+		menuItemReDian = new JMenuItem("标记龙头个股");
 		menuItemMakeLongTou = new JMenuItem("设置股票板块权重");
 		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemMakeLongTou);
@@ -291,12 +292,13 @@ public class BanKuaiGeGuTable extends JTable
 		
 		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (row);
 		
-		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"当周热点" ); 
-		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "设置为本周热点", JOptionPane.OK_CANCEL_OPTION);
+		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"龙头个股" ); 
+		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "龙头个股", JOptionPane.OK_CANCEL_OPTION);
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 			return;
 		
-		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+//		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+		InsertedMeeting insetmeeting = newsdbopt.setReDianBanKuaiLongTouGeGuToShangYeXinWen(jiarujihua);
 		
 	}
 	
@@ -329,10 +331,12 @@ public class BanKuaiGeGuTable extends JTable
 		
 		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (row);
 		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加个股新闻", JOptionPane.OK_CANCEL_OPTION);
-		System.out.print(exchangeresult);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
+		cylnews.setVisible(true);
+//		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
+//		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加个股新闻", JOptionPane.OK_CANCEL_OPTION);
+//		System.out.print(exchangeresult);
+//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//			return;
 		
 //		bkdbopt.newsdbopt(stockcode, cylnews.getInputedNews());
 		

@@ -1,7 +1,8 @@
 package com.exchangeinfomanager.database;
 
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.view.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
 import com.sun.rowset.CachedRowSetImpl;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -123,214 +125,6 @@ public final class StockCalendarAndNewDbOperation {
         return meetings;
 	}
 
-//    public Collection<InsertedMeeting> getMeetings()  {
-//
-//        Collection<InsertedMeeting> meetings = new HashSet<>();
-////        Connection connection = DriverManager.getConnection(this.url);
-////        PreparedStatement statement = null;
-//
-//        String sqlstatement = "SELECT MEETING.* FROM MEETING  WHERE ISDELETED = 0 "
-//                ;
-//        
-//        
-//        CachedRowSetImpl result = null;
-//		try {
-//			result = connectdb.sqlQueryStatExecute(sqlstatement);
-//			 
-//			while(result.next()) {
-//		        int meetingID = result.getInt("MEETING_ID");
-//		        java.sql.Date startdate = result.getDate("START_TIME"); 
-//                LocalDate start = startdate.toLocalDate();
-//                String title = result.getString("TITLE");
-//                String description = result.getString("DESCRIPTION");
-//                String location = result.getString("LOCATION");
-//                String slackurl = result.getString("SLACK链接");
-//                meetings.add(new InsertedMeeting(
-//                    new Meeting(title, start,  description, location, new HashSet<InsertedMeeting.Label>(),slackurl), meetingID));
-//			}
-//			
-//            for (InsertedMeeting m : meetings) {
-//            	int meetingid = m.getID();
-//            	sqlstatement = "SELECT label.* FROM label INNER JOIN meetingLabel ON label.LABEL_ID = meetingLabel.LABEL_ID " +
-//                        "WHERE meetingLabel.NEWS_ID = " + meetingid; 
-//            			;
-//            	
-//            	CachedRowSetImpl set = connectdb.sqlQueryStatExecute(sqlstatement);
-//            	
-////                statement = connection.prepareStatement(
-////                    "SELECT label.* FROM label INNER JOIN meetingLabel ON label.LABEL_ID = meetingLabel.LABEL_ID " +
-////                        "WHERE meetingLabel.MEETING_ID = ? AND label.USER_ID = ?");
-////                statement.setInt(1, m.getID());
-////                statement.setInt(2, userID);
-////
-////                ResultSet set = statement.executeQuery();
-//                while (set.next()) {
-//                    int labelID = set.getInt("LABEL_ID");
-//                    String name = set.getString("NAME");
-//                    Color colour = Color.decode(set.getString("COLOUR"));
-//                    boolean active = set.getBoolean("ACTIVE");
-//                    InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
-//                    m.getLabels().add(label);
-//                }
-//            }
-//            
-//            
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	try {
-//	    		result.close();
-//	    		result = null;
-//	    		
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//	    }
-
-        
-//        try {
-//            statement = connection.prepareStatement(
-//                "SELECT MEETING.* FROM MEETING INNER JOIN userMeeting ON MEETING.MEETING_ID = userMeeting" + "" + ""
-//                    + ".MEETING_ID INNER JOIN USER ON userMeeting.USER_ID = USER.USER_ID WHERE (ISDELETED = 0 AND" +
-//                    " " + "" + "" + "" + "USER.USER_ID = ? )");
-//
-//            statement.setInt(1, userID);
-//            ResultSet result = statement.executeQuery();
-//
-//            while (result.next()) {
-//                int meetingID = result.getInt("MEETING_ID");
-//                Instant start = result.getTimestamp("START_TIME").toInstant();
-//                Instant end = result.getTimestamp("FINISH_TIME").toInstant();
-//                String title = result.getString("TITLE");
-//                String description = result.getString("DESCRIPTION");
-//                String location = result.getString("LOCATION");
-//                meetings.add(new InsertedMeeting(
-//                    new Meeting(title, start, end, description, location, new HashSet<InsertedMeeting.Label>()), meetingID));
-//            }
-//
-//            for (InsertedMeeting m : meetings) {
-//                statement = connection.prepareStatement(
-//                    "SELECT label.* FROM label INNER JOIN meetingLabel ON label.LABEL_ID = meetingLabel.LABEL_ID " +
-//                        "WHERE meetingLabel.MEETING_ID = ? AND label.USER_ID = ?");
-//                statement.setInt(1, m.getID());
-//                statement.setInt(2, userID);
-//
-//                ResultSet set = statement.executeQuery();
-//                while (set.next()) {
-//                    int labelID = set.getInt("LABEL_ID");
-//                    String name = set.getString("NAME");
-//                    Color colour = Color.decode(set.getString("COLOUR"));
-//                    boolean active = set.getInt("ACTIVE") == 1 ? true : false;
-//                    InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
-//                    m.getLabels().add(label);
-//                }
-//            }
-//
-//
-//        } finally {
-//            this.closeResources(statement, connection);
-//        }
-//
-//        LOGGER.log(Level.INFO, "Database: query was successful [SELECT * FROM MEETING]");
-//
-//        return meetings;
-//    }
-
-
-    /**
-     * Helper method which closes resources. Should be called in finally clause.
-     *
-     * @param stmt to be closed
-     * @param con  connection to be closed
-     * @throws SQLException
-     */
-//    private void closeResources(Statement stmt, Connection con) throws SQLException {
-//
-//        if (stmt != null)
-//            stmt.close();
-//        if (con != null)
-//            con.close();
-//    }
-
-
-//    public InsertedMeeting createMeeting(Meeting meeting) throws SQLException 
-//    {
-//    	LocalDate startdate = meeting.getStart();
-//    	String meetingtitle = meeting.getTitle();
-//    	String description = meeting.getDescription();
-//    	String keywordsurl = meeting.getDescription();
-//    	
-//    	String sqlstatementmeeting = "INSERT INTO meeting (START_TIME, TITLE, DESCRIPTION, LOCATION, ISDELETED) VALUES " 
-//                + "('" + startdate + "'"
-//                + "'" + meetingtitle + "'"
-//                + "'" + description + "'"
-//                + "'" + keywordsurl + "'"
-//                + ", 0)"
-//                ;
-//
-//    	InsertedMeeting insertedMeeting = null;
-//		try {
-//			int meetingID = connectdb.sqlInsertStatExecute(sqlstatementmeeting);
-//
-//			 int labelid = 0;
-//			 for (InsertedMeeting.Label label : meeting.getLabels()) {
-//	                labelid = label.getID();
-//	                String sqlstatementlabel = "INSERT INTO meetingLabel (MEETING_ID, LABEL_ID) VALUES( " + meetingID + "," + labelid + ")";
-//	   			 	
-//	                connectdb.sqlInsertStatExecute(sqlstatementlabel);
-//			 }
-//			 
-//	         insertedMeeting = new InsertedMeeting(meeting, meetingID);
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	
-//	    }
-
-//        Connection connection = DriverManager.getConnection(this.url);
-//
-//        PreparedStatement statement = null;
-//        InsertedMeeting insertedMeeting = null;
-//
-//        try {
-//            statement = connection.prepareStatement(
-//                "INSERT INTO meeting (START_TIME, FINISH_TIME, TITLE, DESCRIPTION, LOCATION, ISDELETED) VALUES " + ""
-//                    + "(?, ?, ?, ?, ?, 0)");
-//
-//            statement.setTimestamp(1, Timestamp.from(meeting.getStart()));
-//            statement.setTimestamp(2, Timestamp.from(meeting.getEnd()));
-//            statement.setString(3, meeting.getTitle());
-//            statement.setString(4, meeting.getDescription());
-//            statement.setString(5, meeting.getLocation());
-//            statement.executeUpdate();
-//            int meetingID = statement.getGeneratedKeys().getInt(1);
-
-//            statement = connection.prepareStatement("INSERT INTO userMeeting ( MEETING_ID,  USER_ID ) VALUES(?, ?)");
-//            statement.setInt(1, meetingID);
-//            statement.setInt(2, userID);
-//            statement.execute();
-
-//            statement = connection.prepareStatement("INSERT INTO meetingLabel (MEETING_ID, LABEL_ID) VALUES(?, ?)");
-//            for (InsertedMeeting.Label label : meeting.getLabels()) {
-//                statement.setInt(1, meetingID);
-//                statement.setInt(2, label.getID());
-//                statement.execute();
-//            }
-//
-//            insertedMeeting = new InsertedMeeting(meeting, meetingID);
-//
-//        } finally {
-//            this.closeResources(statement, connection);
-//        }
-
-//        LOGGER.log(Level.INFO, "Database: query was successful [INSERT INTO MEETING] " + meeting.getStart());
-//        return insertedMeeting;
-//    }
-    
     /*
 	 * 增加板块新闻
 	 */
@@ -347,12 +141,13 @@ public final class StockCalendarAndNewDbOperation {
 //		if( newsownercode.length() == 6) { //只有一个code,说明是新的NEWS 
 			
 			try {
-				String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,SLACK链接,录入日期,关联板块) values ("
+				String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,SLACK链接,录入日期,关联板块,具体描述) values ("
 						+ "'" + title + "'" + ","
 						+ "'" + keywords + "'" + ","
 						+ "'" + slackurl  + "'" + ","
 						+ "'" +  newdate + "'" + ","
-						+ "'" +  newsownercode +  "'"
+						+ "'" +  newsownercode +  "|'" + ","
+						+ "'" +  description + "'"
 						+ ")"
 						;
 				logger.debug(sqlinsertstat);
@@ -365,6 +160,7 @@ public final class StockCalendarAndNewDbOperation {
 		                connectdb.sqlInsertStatExecute(sqlstatementlabel);
 				 }
 				 
+				
 		         insertedMeeting = new InsertedMeeting(meeting, meetingID);
 				
 			}catch(java.lang.NullPointerException e){ 
@@ -374,24 +170,6 @@ public final class StockCalendarAndNewDbOperation {
 		    }  finally {
 		    	
 		    }
-//		} 
-//		else {
-//			//如果板块id是不是已经在新闻的板块list里面了，已经加过了。
-//			
-//			String  updatestat = "UPDATE 商业新闻 "
-//								  + " SET 关联板块 = "
-//								  + " CASE WHEN 关联板块 like '%" + bankuaiid + "%' THEN"
-//								  + " CONCAT(关联板块,  ' ') " 
-//								  + " ELSE " 
-//								  + " CONCAT(关联板块,  '"+ bankuaiid + "|' )"
-//								  +	" END" 
-//								  + " WHERE ID=" +  autoIncKeyFromApi
-//								  ;
-//			logger.debug(updatestat);
-//			connectdb.sqlUpdateStatExecute (updatestat);
-//			
-//			insertedMeeting = new InsertedMeeting(meeting, autoIncKeyFromApi);
-//		}
 		
 		return insertedMeeting;
 	}
@@ -422,72 +200,12 @@ public final class StockCalendarAndNewDbOperation {
 		    }
 			
 		} 
-//		else { //删除在所有板块里的新闻
-//			String updatestat = "UPDATE 商业新闻  SET 关联板块 = REPLACE (关联板块, '" + myowncode.trim() + "|', ' ' ) WHERE news_id=" + newsid;
-//			logger.debug(updatestat);
-//			connectdb.sqlDeleteStatExecute(updatestat);
-//			
-//			deletedMeeting = meeting;
-//		}
-		
+	
 		return deletedMeeting;
 	}
 
-//    public InsertedMeeting deleteMeeting(InsertedMeeting meeting) throws SQLException 
-//    {
-//    	 InsertedMeeting deletedMeeting = null;
-//        
-//    	int meetingid = meeting.getID();
-//        
-//		try {
-//			String sqlstatement = "DELETE FROM meetingLabel WHERE MEETING_ID = " + meetingid
-//	                ;
-//			int key = connectdb.sqlDeleteStatExecute(sqlstatement);
-//			
-//			sqlstatement = "UPDATE MEETING SET ISDELETED = 1 WHERE MEETING_ID = " + meetingid
-//	                ;
-//			key = connectdb.sqlUpdateStatExecute(sqlstatement);
-//			
-//			deletedMeeting = meeting;
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    
-//	    }
-    	
-//        Connection connection = DriverManager.getConnection(this.url);
-//
-//        PreparedStatement statement = null;
-//        InsertedMeeting deletedMeeting = null;
-//
-//        try {
-//            statement = connection.prepareStatement("DELETE FROM userMeeting WHERE MEETING_ID = ?");
-//            statement.setInt(1, meeting.getID());
-//            statement.execute();
-//
-//            statement = connection.prepareStatement("DELETE FROM meetingLabel WHERE MEETING_ID = ?");
-//            statement.setInt(1, meeting.getID());
-//            statement.execute();
-//
-//            statement = connection.prepareStatement("UPDATE MEETING SET ISDELETED = 1 WHERE MEETING_ID = ? ");
-//            statement.setInt(1, meeting.getID());
-//            statement.execute();
-//
-//            deletedMeeting = meeting;
-//
-//        } finally {
-//            this.closeResources(statement, connection);
-//        }
-
-//        LOGGER.log(Level.INFO, "Database: query was successful [DELETE MEETING WHERE ID=ID]");
-//
-//        return deletedMeeting;
-//
-//    }
-
-    public InsertedMeeting updateMeeting(InsertedMeeting meeting) throws SQLException {
+	public InsertedMeeting updateMeeting(InsertedMeeting meeting) throws SQLException 
+	{
     	
     	InsertedMeeting updatedMeeting = null;
     	
@@ -531,43 +249,7 @@ public final class StockCalendarAndNewDbOperation {
 	    }  finally {
 	    
 	    }
-    	
 
-//        Connection connection = DriverManager.getConnection(this.url);
-//
-//        PreparedStatement statement = null;
-//        InsertedMeeting updatedMeeting = null;
-//
-//        try {
-//            statement = connection.prepareStatement(
-//                "UPDATE MEETING SET START_TIME = ?, FINISH_TIME = ?, TITLE = ?, DESCRIPTION = ?, LOCATION = ? " +
-//                    "WHERE MEETING_ID = ? ");
-//            statement.setTimestamp(1, Timestamp.from(meeting.getStart()));
-//            
-//            statement.setString(3, meeting.getTitle());
-//            statement.setString(4, meeting.getDescription());
-//            statement.setString(5, meeting.getLocation());
-//            statement.setInt(6, meeting.getID());
-//            statement.execute();
-//
-//            statement = connection.prepareStatement("DELETE FROM meetingLabel WHERE MEETING_ID = ?");
-//            statement.setInt(1, meeting.getID());
-//            statement.execute();
-//
-//            statement = connection.prepareStatement("INSERT INTO meetingLabel (MEETING_ID, LABEL_ID ) VALUES (?, ?)");
-//            for (InsertedMeeting.Label l : meeting.getLabels()) {
-//                statement.setInt(1, meeting.getID());
-//                statement.setInt(2, l.getID());
-//                statement.execute();
-//            }
-//
-//            updatedMeeting = meeting;
-//
-//        } finally {
-//            this.closeResources(statement, connection);
-//
-//            LOGGER.log(Level.INFO, "Database: query was successful [UPDATE MEETING WHERE ID=ID]");
-//        }
         return updatedMeeting;
     }
 
@@ -576,8 +258,7 @@ public final class StockCalendarAndNewDbOperation {
         Collection<InsertedMeeting.Label> labels = new ArrayList<>();
         String sqlstatement = "SELECT * FROM label "
                 ;
-        
-        
+ 
         CachedRowSetImpl result = null;
 		try {
 			result = connectdb.sqlQueryStatExecute(sqlstatement);
@@ -605,28 +286,6 @@ public final class StockCalendarAndNewDbOperation {
 				e.printStackTrace();
 			}
 	    }
-        
-        
-//        Connection connection = DriverManager.getConnection(this.url);
-//        PreparedStatement statement = null;
-//
-//        try {
-//            statement = connection.prepareStatement("SELECT * FROM label WHERE USER_ID = ?");
-//            statement.setInt(1, userID);
-//            ResultSet result = statement.executeQuery();
-//
-//            while (result.next()) {
-//                int id = result.getInt("LABEL_ID");
-//                String name = result.getString("NAME");
-//                Color colour = Color.decode(result.getString("COLOUR"));
-//                boolean active = result.getInt("ACTIVE") == 1 ? true : false;
-//                InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), id);
-//                labels.add(label);
-//            }
-//
-//        } finally {
-//            this.closeResources(statement, connection);
-//        }
 
         logger.info("Database: query was successful [SELECT * FROM LABEL]");
 
@@ -654,23 +313,6 @@ public final class StockCalendarAndNewDbOperation {
 	    
 	    }
         
-        
-        
-//        Connection connection = DriverManager.getConnection(this.url);
-//        PreparedStatement statement = null;
-//
-//        try {
-//            statement = connection.prepareStatement(
-//                "INSERT INTO label (NAME, COLOUR, ACTIVE) VALUES (?, ?, 1)");
-//            statement.setString(1, label.getName());
-//            statement.setString(2, "#" + Integer.toHexString(label.getColor().getRGB()).substring(2));
-//            statement.executeUpdate();
-//            insertedLabel = new InsertedMeeting.Label(label, statement.getGeneratedKeys().getInt(1));
-//
-//        } finally {
-//            this.closeResources(statement, connection);
-//        }
-
         logger.info("Database: query was successful [INSERT INTO label] ");
         return insertedLabel;
     }
@@ -697,28 +339,6 @@ public final class StockCalendarAndNewDbOperation {
 	    }  finally {
 	    
 	    }
-    	
-    	
-    	
-//        Connection connection = DriverManager.getConnection(this.url);
-//        PreparedStatement statement = null;
-//        InsertedMeeting.Label deletedLabel = null;
-//
-//        try {
-//
-//            statement = connection.prepareStatement("DELETE FROM meetingLabel WHERE LABEL_ID = ?");
-//            statement.setInt(1, label.getID());
-//            statement.execute();
-//
-//            statement = connection.prepareStatement("DELETE FROM label WHERE LABEL_ID = ? ");
-//            statement.setInt(1, label.getID());
-//            statement.execute();
-//
-//            deletedLabel = label;
-//
-//        } finally {
-//            this.closeResources(statement, connection);
-//        }
 
     	logger.info("Database: query was successful [DELETE label WHERE ID= " + label.getID() + "]");
 
@@ -769,4 +389,128 @@ public final class StockCalendarAndNewDbOperation {
         logger.info("Database: query was successful [UPDATE label WHERE ID= " + label.getID() + "]");
         return updatedLabel;
     }
+    
+    /*
+	 * 原来热点板块和龙头个股都是保存在重点关注表里面，后面功能增加，这2个需要保存到商业新闻里面，前端界面暂时不变，后台改用这个函数
+	 */
+	public InsertedMeeting setReDianBanKuaiLongTouGeGuToShangYeXinWen (JiaRuJiHua jiarujihua)
+	{
+		String newsownercode = jiarujihua.getStockCode();		
+		String zdgzsign = jiarujihua.getGuanZhuType().trim();
+		String description = jiarujihua.getJiHuaShuoMing();
+		LocalDate newdate = jiarujihua.getJiaRuDate();
+		
+		
+    	String title = zdgzsign +  newsownercode; //热点板块880623
+    	String keywords = zdgzsign + " " + newsownercode + " "; //热点板块
+    	
+    	InsertedMeeting insertedMeeting = null;
+ 
+    	//获取板块个股name
+    	CachedRowSetImpl rs_gn = null;
+		try  { 
+			String sqlquerystat = null	;
+			if(zdgzsign.contains("板块" )) {
+				sqlquerystat = "Select 板块名称 AS '名称' FROM  通达信板块列表 WHERE 板块ID = '" + newsownercode + "'"
+								;
+			} else if(zdgzsign.contains("个股") ) {
+				sqlquerystat = "Select 股票名称 AS '名称' FROM  A股  WHERE 股票代码 = '" + newsownercode + "'"
+								;
+			}
+			
+			rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
+			
+	        while(rs_gn.next()) {
+	        	String bkname = rs_gn.getString(1);
+	        	title = title +  bkname ; //热点板块880623黑龙江
+	        	keywords = keywords + " " + bkname + " ";
+	        } 
+	        
+	    }catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    	
+	    }catch(Exception e) {
+	    	e.printStackTrace();
+	    } finally {
+	    	if(rs_gn != null) {
+	    		try {
+					rs_gn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    		rs_gn = null;
+	    	}
+	    }
+		//获取相应的label
+		int bkgglableid = 0;
+		InsertedMeeting.Label label = null;
+		try  { 
+			HashMap<String,String> labelmap = new HashMap<String,String> (); 
+			String sqlquerystat = "Select * FROM  label" 
+								;
+			rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
+			
+	        while(rs_gn.next()) {
+	        	String labelname = rs_gn.getString("NAME");
+	        	if(labelname.equals(zdgzsign)) {
+	        		int labelid = rs_gn.getInt("LABEL_ID");
+	        		bkgglableid = labelid;
+	        		Color colour = Color.decode(rs_gn.getString("COLOUR"));
+	                boolean active = rs_gn.getBoolean("ACTIVE");
+	                label = new InsertedMeeting.Label(new Meeting.Label(labelname, colour, active), labelid);
+	                
+	        		break;
+	        	}
+	        } 
+	    }catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    	
+	    }catch(Exception e) {
+	    	e.printStackTrace();
+	    } finally {
+	    	if(rs_gn != null) {
+	    		try {
+					rs_gn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    		rs_gn = null;
+	    	}
+	    }
+		
+		
+			
+		try {
+			String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,录入日期,关联板块,具体描述) values ("
+						+ "'" + title + "'" + ","
+						+ "'" + keywords + "'" + ","
+						+ "'" +  newdate + "'" + ","
+						+ "'" +  newsownercode +  "|'" + ","
+						+ "'" +  description + "'"
+						+ ")"
+						;
+				logger.debug(sqlinsertstat);
+				int meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
+				if(bkgglableid != 0) {
+		                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID) VALUES( " + meetingID + "," + bkgglableid + ")";
+		   			 	
+		                connectdb.sqlInsertStatExecute(sqlstatementlabel);
+				 }
+				 
+				 Meeting meeting = new Meeting(title,newdate,
+						 description, keywords, new HashSet<>(),"SlackURL",newsownercode);
+		         insertedMeeting = new InsertedMeeting(meeting, meetingID);
+		         insertedMeeting.getLabels().add(label);
+				
+			}catch(java.lang.NullPointerException e){ 
+		    	e.printStackTrace();
+		    } catch(Exception e){
+		    	e.printStackTrace();
+		    }  finally {
+		    	
+		    }
+		return insertedMeeting;
+	}
 }

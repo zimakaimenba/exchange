@@ -2,12 +2,12 @@ package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.StockCalendar.view.Cache;
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.view.JPanelFactory;
-import com.exchangeinfomanager.StockCalendar.view.Meeting;
-import com.exchangeinfomanager.StockCalendar.view.MeetingService;
-import com.exchangeinfomanager.StockCalendar.view.Meeting.Label;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
+import com.exchangeinfomanager.commonlib.WrapLayout;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -123,7 +123,7 @@ public class MonthView extends View
         this.initView();
         for (InsertedMeeting m : meetings) {
             LocalDate mDate = m.getStart();
-            if (mDate.getMonth().equals(super.getDate().getMonth())) {
+            if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
                 if (m.getLabels().isEmpty()) {
                     JLabel label = new JLabel(m.getTitle());
                     label.setOpaque(true);
@@ -141,7 +141,8 @@ public class MonthView extends View
                         label.setOpaque(true);
                         label.setName(String.valueOf(m.getID()));
                         label.addMouseListener(new MeetingController());
-                        label.setForeground(ColorScheme.BACKGROUND);
+//                        label.setForeground(ColorScheme.BACKGROUND);
+                        label.setForeground(Color.BLACK);
                         label.setBackground(l.getColor());
                         label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
                         this.getMonthDay(mDate).add(label);

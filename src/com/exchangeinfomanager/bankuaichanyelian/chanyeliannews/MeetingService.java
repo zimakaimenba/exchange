@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

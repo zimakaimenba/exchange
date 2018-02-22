@@ -2,13 +2,12 @@ package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.StockCalendar.view.Cache;
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.view.JLabelFactory;
-import com.exchangeinfomanager.StockCalendar.view.JPanelFactory;
-import com.exchangeinfomanager.StockCalendar.view.Meeting;
-import com.exchangeinfomanager.StockCalendar.view.MeetingService;
-import com.exchangeinfomanager.StockCalendar.view.Meeting.Label;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -63,7 +62,8 @@ public class YearView extends View {
                                 }
                                 for (Meeting.Label l : labels) {
                                     if (l.isActive() && m.getLabels().contains(l)) {
-                                        day.setForeground(ColorScheme.BACKGROUND);
+//                                        day.setForeground(ColorScheme.BACKGROUND);
+                                    	day.setForeground(Color.BLACK);
                                         day.setBackground(l.getColor());
                                         for (MouseListener li : day.getMouseListeners())
                                             day.removeMouseListener(li);
@@ -147,8 +147,10 @@ public class YearView extends View {
             dayLabel.addMouseListener(new DayController());
             if (d.getMonth().equals(date.getMonth())) {
                 color = ColorScheme.BLACK_FONT;
+//            	color = Color.BLACK;
             } else {
                 color = ColorScheme.GREY_LINE;
+//            	color = Color.BLACK;
             }
             dayLabel.setForeground(color);
             days.add(dayLabel);

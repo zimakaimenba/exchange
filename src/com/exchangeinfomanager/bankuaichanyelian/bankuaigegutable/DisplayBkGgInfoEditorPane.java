@@ -14,10 +14,10 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.google.common.base.Strings;

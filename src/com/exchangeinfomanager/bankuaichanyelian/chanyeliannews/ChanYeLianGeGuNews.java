@@ -1,11 +1,6 @@
 package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import com.exchangeinfomanager.StockCalendar.View;
-import com.exchangeinfomanager.StockCalendar.view.Cache;
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.view.Meeting;
-import com.exchangeinfomanager.StockCalendar.view.MeetingDialog;
-import com.exchangeinfomanager.StockCalendar.view.MeetingService;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 
 import java.util.Collection;

@@ -1,11 +1,12 @@
 package com.exchangeinfomanager.StockCalendar;
 
 
-import com.exchangeinfomanager.StockCalendar.view.Cache;
-import com.exchangeinfomanager.StockCalendar.view.CacheListener;
-import com.exchangeinfomanager.StockCalendar.view.DialogFactory;
-import com.exchangeinfomanager.StockCalendar.view.MeetingDialog;
-import com.exchangeinfomanager.StockCalendar.view.MeetingService;
+
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DialogFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.toedter.calendar.JDayChooser;
 
 
@@ -105,20 +106,21 @@ public abstract class View extends JPanel implements CacheListener {
      * @return color of the meeting
      */
     protected Color getMeetingColor(int id) {
-        Color color = null;
-        if (Integer.valueOf(id) % 6 == 0)
-            color = ColorScheme.ORANGE_LIGHT;
-        else if (Integer.valueOf(id) % 5 == 0)
-            color = ColorScheme.VIOLET_LIGHT;
-        else if (Integer.valueOf(id) % 4 == 0)
-            color = ColorScheme.PINK_LIGHT;
-        else if (Integer.valueOf(id) % 3 == 0)
-            color = ColorScheme.GREEN_LIGHT;
-        else if (Integer.valueOf(id) % 2 == 0)
-            color = ColorScheme.ORANGE_DARK;
-        else
-            color = ColorScheme.PINK_DARK;
-        return color;
+//        Color color = null;
+//        if (Integer.valueOf(id) % 6 == 0)
+//            color = ColorScheme.ORANGE_LIGHT;
+//        else if (Integer.valueOf(id) % 5 == 0)
+//            color = ColorScheme.VIOLET_LIGHT;
+//        else if (Integer.valueOf(id) % 4 == 0)
+//            color = ColorScheme.PINK_LIGHT;
+//        else if (Integer.valueOf(id) % 3 == 0)
+//            color = ColorScheme.GREEN_LIGHT;
+//        else if (Integer.valueOf(id) % 2 == 0)
+//            color = ColorScheme.ORANGE_DARK;
+//        else
+//            color = ColorScheme.PINK_DARK;
+//        return color;
+    	return Color.BLACK;
     }
 
 

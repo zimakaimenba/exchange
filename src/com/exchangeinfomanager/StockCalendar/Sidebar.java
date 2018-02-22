@@ -1,16 +1,15 @@
 package com.exchangeinfomanager.StockCalendar;
 
-
-import com.exchangeinfomanager.StockCalendar.view.Cache;
-import com.exchangeinfomanager.StockCalendar.view.CacheListener;
-import com.exchangeinfomanager.StockCalendar.view.DialogFactory;
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.view.JLabelFactory;
-import com.exchangeinfomanager.StockCalendar.view.JPanelFactory;
-import com.exchangeinfomanager.StockCalendar.view.JTextFactory;
-import com.exchangeinfomanager.StockCalendar.view.LabelDialog;
-import com.exchangeinfomanager.StockCalendar.view.LabelService;
-import com.exchangeinfomanager.StockCalendar.view.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DialogFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JTextFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelDialog;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.toedter.calendar.JCalendar;
 
 

@@ -1,9 +1,9 @@
-package com.exchangeinfomanager.StockCalendar.view;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting.Label;
+
 
 
 

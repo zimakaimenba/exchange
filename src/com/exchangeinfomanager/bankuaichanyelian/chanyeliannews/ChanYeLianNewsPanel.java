@@ -35,17 +35,6 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.StockCalendar.View;
-import com.exchangeinfomanager.StockCalendar.view.Cache;
-import com.exchangeinfomanager.StockCalendar.view.DBLabelService;
-import com.exchangeinfomanager.StockCalendar.view.DBMeetingService;
-import com.exchangeinfomanager.StockCalendar.view.DialogFactory;
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
-import com.exchangeinfomanager.StockCalendar.view.JLabelFactory;
-import com.exchangeinfomanager.StockCalendar.view.JPanelFactory;
-import com.exchangeinfomanager.StockCalendar.view.LabelService;
-import com.exchangeinfomanager.StockCalendar.view.Meeting;
-import com.exchangeinfomanager.StockCalendar.view.MeetingDialog;
-import com.exchangeinfomanager.StockCalendar.view.MeetingService;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;

@@ -8,7 +8,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.StockCalendar.view.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 
 class NewsTableModel extends AbstractTableModel 

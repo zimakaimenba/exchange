@@ -5954,8 +5954,6 @@ public class BanKuaiDbOperation
 			sqlstatmap.put("mysql", sqlinsertstat);
 			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
 			return autoIncKeyFromApi;
-			
-			
 		}
 		
 		public Stock getTDXBanKuaiForAStock(Stock stockbasicinfo) 
