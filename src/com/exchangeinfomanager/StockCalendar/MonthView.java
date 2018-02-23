@@ -126,6 +126,7 @@ public class MonthView extends View
             if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
                 if (m.getLabels().isEmpty()) {
                     JLabel label = new JLabel(m.getTitle());
+                    label.setToolTipText(m.getTitle() );
                     label.setOpaque(true);
                     label.setName(String.valueOf(m.getID()));
                     label.addMouseListener(new MeetingController());
@@ -138,6 +139,7 @@ public class MonthView extends View
                 for (Meeting.Label l : labels) {
                     if (l.isActive() && m.getLabels().contains(l)) {
                         JLabel label = new JLabel(m.getTitle());
+                        label.setToolTipText(m.getTitle() );
                         label.setOpaque(true);
                         label.setName(String.valueOf(m.getID()));
                         label.addMouseListener(new MeetingController());
