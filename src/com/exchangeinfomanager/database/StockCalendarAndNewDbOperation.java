@@ -287,8 +287,7 @@ public final class StockCalendarAndNewDbOperation {
 			}
 	    }
 
-        logger.info("Database: query was successful [SELECT * FROM LABEL]");
-
+        logger.debug("Database: query was successful [SELECT * FROM LABEL]");
         return labels;
     }
 
@@ -313,7 +312,7 @@ public final class StockCalendarAndNewDbOperation {
 	    
 	    }
         
-        logger.info("Database: query was successful [INSERT INTO label] ");
+        logger.debug("Database: query was successful [INSERT INTO label] ");
         return insertedLabel;
     }
 
@@ -340,7 +339,7 @@ public final class StockCalendarAndNewDbOperation {
 	    
 	    }
 
-    	logger.info("Database: query was successful [DELETE label WHERE ID= " + label.getID() + "]");
+    	logger.debug("Database: query was successful [DELETE label WHERE ID= " + label.getID() + "]");
 
        return deletedLabel;
     }
