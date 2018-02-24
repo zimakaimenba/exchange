@@ -26,14 +26,16 @@ import java.util.GregorianCalendar;
 @SuppressWarnings("all")
 public class StockCalendar extends JCalendar {
 
-    private static final Dimension SIZE = new Dimension(1150, 750);
-    private static final Dimension MIN_SIZE = new Dimension(1150, 750);
+    private static final Dimension SIZE = new Dimension(1150, 900);
+    private static final Dimension MIN_SIZE = new Dimension(1150, 900);
 
     private static final String MONTH = "month";
     private static final String YEAR = "year";
+    private static final String WHOLEMONTH = "wholemonth";
 
     private MonthView monthView;
     private YearView yearView;
+    private WholeMonthNewsView wholemonthview;
 
     private CardLayout layout = new CardLayout();
     private JPanel headerPanel = JPanelFactory.createPanel();
@@ -45,6 +47,7 @@ public class StockCalendar extends JCalendar {
     private JPanel currentView;
 	private Cache cache;
 //    private View currentView;
+	private Cache cachewholemonth;
     
     public StockCalendar ()
     {
@@ -53,29 +56,34 @@ public class StockCalendar extends JCalendar {
     	MeetingService meetingService = new DBMeetingService ( );
     	LabelService labelService = new DBLabelService ();
         cache = new Cache("ALL",meetingService, labelService);
-        
         this.monthView = new MonthView(meetingService, cache);
         this.yearView = new YearView(meetingService, cache);
         this.sidebar = new Sidebar(labelService, cache);
+        
+        //每月固定信息，用于记录长期月度重复信息
+        MeetingService meetingServicewholemonth = new DBMeetingService ( );
+    	LabelService labelServicewholemonth = new DBLabelService ();
+        cachewholemonth = new Cache("000000",meetingServicewholemonth, labelServicewholemonth);
+        this.wholemonthview = new WholeMonthNewsView (meetingServicewholemonth, cachewholemonth);
 
 	    this.initHeaderPanel();
 	    this.initViewDeck();
 	    this.initJFrame();
-	    
-	    
+
     }
 
-    public StockCalendar(MeetingService meetingService, Cache cache, LabelService labelService) {
-    	super ();
-        this.monthView = new MonthView(meetingService, cache);
-        this.yearView = new YearView(meetingService, cache);
-        this.sidebar = new Sidebar(labelService, cache);
-        this.cache = cache;
-
-        this.initHeaderPanel();
-        this.initViewDeck();
-        this.initJFrame();
-    }
+//    public StockCalendar(MeetingService meetingService, Cache cache, LabelService labelService) {
+//    	super ();
+//        this.monthView = new MonthView(meetingService, cache);
+//        this.yearView = new YearView(meetingService, cache);
+//        this.wholemonthview = new WholeMonthNewsView (meetingService, cache);
+//        this.sidebar = new Sidebar(labelService, cache);
+//        this.cache = cache;
+//
+//        this.initHeaderPanel();
+//        this.initViewDeck();
+//        this.initJFrame();
+//    }
     
     public void refreshNews ()
     {
@@ -100,16 +108,31 @@ public class StockCalendar extends JCalendar {
 //                setFill(GBC.BOTH).setIpad(0, 0).setWeight(0, 0)); 
 //        this.add(viewDeck,new GBC(1,2,4,4).setFill(GBC.BOTH).setWeight(0, 0).setIpad(0,0));  
         //方案2
+//        this.add(monthChooser.getParent(),new GBC(0,0,1,1).  
+//                setFill(GBC.BOTH).setIpad(50,50).setWeight(0, 0));
+//        this.add(headerPanel, new GBC(1,0,6,1).  
+//                setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0));
+//        this.add(dayChooser,new GBC(0,1,1,1).  
+//                setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0)); 
+//        this.add(viewDeck,new GBC(1,1,6,2).setFill(GBC.BOTH).setWeight(0, 0).setIpad(0,0));
+//     
+//        this.add(sidebar,new GBC(0,2,1,2).  
+//                setFill(GBC.BOTH).setIpad(0, 0).setWeight(0, 0)); 
+//
+//        this.setPreferredSize(SIZE);
+//        this.setMinimumSize(MIN_SIZE);
+        //方案3
         this.add(monthChooser.getParent(),new GBC(0,0,1,1).  
                 setFill(GBC.BOTH).setIpad(50,50).setWeight(0, 0));
         this.add(headerPanel, new GBC(1,0,6,1).  
                 setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0));
         this.add(dayChooser,new GBC(0,1,1,1).  
                 setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0)); 
-        this.add(viewDeck,new GBC(1,1,6,2).setFill(GBC.BOTH).setWeight(0, 0).setIpad(0,0));
-     
+        this.add(wholemonthview,new GBC(1,1,6,1).  
+                setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0)); 
         this.add(sidebar,new GBC(0,2,1,2).  
                 setFill(GBC.BOTH).setIpad(0, 0).setWeight(0, 0)); 
+        this.add(viewDeck,new GBC(1,2,6,2).setFill(GBC.BOTH).setWeight(0, 0).setIpad(0,0));
 
         this.setPreferredSize(SIZE);
         this.setMinimumSize(MIN_SIZE);
@@ -118,8 +141,7 @@ public class StockCalendar extends JCalendar {
     private void initViewDeck() {
         viewDeck.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
         monthView.setName(MONTH);
-        yearView.setName(YEAR);
-        
+        yearView.setName(YEAR);       
 
         viewDeck.add(monthView, MONTH);
         viewDeck.add(yearView, YEAR);
@@ -193,8 +215,6 @@ public class StockCalendar extends JCalendar {
                 dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             else if (currentView == yearView)
                 dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
-            
-    		
         }
     }
 
@@ -230,43 +250,35 @@ public class StockCalendar extends JCalendar {
                 yearView.setDate(date);
                 dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             }
+            wholemonthview.setDate(date);
+            
         }
 
         private void minusDate(int action) {
             if (currentView == monthView) {
                 date = date.minusMonths(Math.abs(action));
                 monthView.setDate(date);
+                wholemonthview.setDate(date);
                 dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
-                
-              //jcalendar part
-//                Date oldDate = getCalendar().getTime();
-//                int year = date.getYear();
-//        		int month = date.getMonthValue();
-//        		int day = date.getDayOfMonth();
-//        		GregorianCalendar gc = GregorianCalendar.from(date.atStartOfDay(ZoneId.systemDefault()));
-//        		yearChooser.setYear(year);
-//        		monthChooser.setMonth(month);
-//        		dayChooser.setCalendar(gc);
-//        		dayChooser.setDay(day);
-//        		firePropertyChange("date", oldDate, date);
         		
             } else if (currentView == yearView) {
                 date = date.minusYears(1);
                 yearView.setDate(date);
+                wholemonthview.setDate(date);
                 dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             }
-            
-
         }
 
         private void plusDate(int action) {
             if (currentView == monthView) {
                 date = date.plusMonths(action);
                 monthView.setDate(date);
+                wholemonthview.setDate(date);
                 dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             } else if (currentView == yearView) {
                 date = date.plusYears(1);
                 yearView.setDate(date);
+                wholemonthview.setDate(date);
                 dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             }
             

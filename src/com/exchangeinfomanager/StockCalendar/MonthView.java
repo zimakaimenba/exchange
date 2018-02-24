@@ -180,7 +180,7 @@ public class MonthView extends View
         	
         	if (e.getClickCount() == 2) { //增加一个新的meeting
                 Meeting meeting = new Meeting("新闻标题",mDate,
-                     "描述", "关键词", new HashSet<>(),"SlackURL","000000");
+                     "描述", "关键词", new HashSet<>(),"SlackURL","999999");
                 getCreateDialog().setMeeting(meeting);
                 getCreateDialog().setVisible(true);
         	}
