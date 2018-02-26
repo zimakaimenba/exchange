@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -144,6 +145,14 @@ public class BanKuaiInfoTable extends JTable
 	        BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
 	        int modelRow = convertRowIndexToModel(row);
 	        BanKuai bankuai = tablemodel.getBanKuai(modelRow);
+	        
+	        String bktype = bankuai.getBanKuaiLeiXing();
+	        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
+	        	Font defaultFont = this.getFont();
+	        	
+	        	Font font=new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+	        	comp.setFont(font);
+	        }
 	        
 	        //¸ü¸ÄÏÔÊ¾
 	        if (comp instanceof JLabel && (col == 2 ||  col == 4)) {

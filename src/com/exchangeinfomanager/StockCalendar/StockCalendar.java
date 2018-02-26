@@ -95,32 +95,6 @@ public class StockCalendar extends JCalendar {
     	GridBagLayout gbl = new GridBagLayout(); 
         this.setLayout(gbl);
 //        所有布局必须按从上到下，从左到右顺序
-        //方案1
-//        this.add(monthChooser.getParent(),new GBC(0,0,1,1).  
-//                setFill(GBC.HORIZONTAL).setIpad(50,50).setWeight(0, 0));
-//        this.add(headerPanel, new GBC(1,0,4,1).  
-//                setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0));
-//        this.add(dayChooser,new GBC(0,1,1,1).  
-//                setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0)); 
-//        
-//     
-//        this.add(sidebar,new GBC(0,2,1,2).  
-//                setFill(GBC.BOTH).setIpad(0, 0).setWeight(0, 0)); 
-//        this.add(viewDeck,new GBC(1,2,4,4).setFill(GBC.BOTH).setWeight(0, 0).setIpad(0,0));  
-        //方案2
-//        this.add(monthChooser.getParent(),new GBC(0,0,1,1).  
-//                setFill(GBC.BOTH).setIpad(50,50).setWeight(0, 0));
-//        this.add(headerPanel, new GBC(1,0,6,1).  
-//                setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0));
-//        this.add(dayChooser,new GBC(0,1,1,1).  
-//                setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0)); 
-//        this.add(viewDeck,new GBC(1,1,6,2).setFill(GBC.BOTH).setWeight(0, 0).setIpad(0,0));
-//     
-//        this.add(sidebar,new GBC(0,2,1,2).  
-//                setFill(GBC.BOTH).setIpad(0, 0).setWeight(0, 0)); 
-//
-//        this.setPreferredSize(SIZE);
-//        this.setMinimumSize(MIN_SIZE);
         //方案3
         this.add(monthChooser.getParent(),new GBC(0,0,1,1).  
                 setFill(GBC.BOTH).setIpad(50,50).setWeight(0, 0));

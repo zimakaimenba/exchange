@@ -59,6 +59,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
         this.locationField = JTextFactory.createTextField();
         this.slackurlField = JTextFactory.createTextField();
         this.descriptionArea = JTextFactory.createTextArea();
+        this.descriptionArea.setLineWrap(true);
         this.startTimeChooser = new JDateChooser();
 //        startTimeChooser.setDate(new Date() );
         this.centerPanel = new JPanel();
@@ -97,7 +98,10 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
         this.centerPanel.add(Box.createVerticalStrut(10));
         this.centerPanel.add(this.slackurlField);
         this.centerPanel.add(Box.createVerticalStrut(10));
-        this.centerPanel.add(this.descriptionArea);
+        JScrollPane despane = new JScrollPane ();
+        despane.setAutoscrolls(true);
+        despane.setViewportView(this.descriptionArea);
+        this.centerPanel.add(despane);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
 
         // add main panel to the dialog

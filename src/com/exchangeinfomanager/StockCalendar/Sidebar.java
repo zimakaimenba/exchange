@@ -96,7 +96,8 @@ public class Sidebar extends JPanel implements CacheListener {
             name.setOpaque(true);
             name.addMouseListener(new NameController());
             name.setBackground(label.isActive()? label.getColor(): ColorScheme.BACKGROUND);
-            name.setForeground(label.isActive()? ColorScheme.BACKGROUND: ColorScheme.BLACK_FONT);
+//            name.setForeground(label.isActive()? ColorScheme.BACKGROUND: ColorScheme.BLACK_FONT);
+            name.setForeground( ColorScheme.BLACK_FONT);
             name.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, ColorScheme.GREY_LINE));
 
             JLabel option = JLabelFactory.createButton("*", 20);

@@ -3,8 +3,10 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 import com.exchangeinfomanager.StockCalendar.View;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import javax.swing.GroupLayout;
@@ -13,11 +15,16 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -157,6 +164,8 @@ public class ChanYeLianGeGuNews extends View
 		
 		NewsTableModel newsmodel = new NewsTableModel ();
 		tableCurCylNews = new JTable(newsmodel);
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tableCurCylNews.getModel());
+		tableCurCylNews.setRowSorter(sorter);
 		
 		scrollPane.setViewportView(tableCurCylNews);
 		setLayout(groupLayout);
@@ -169,6 +178,15 @@ public class ChanYeLianGeGuNews extends View
 		Collection<InsertedMeeting> meetings = cache.produceMeetings();
 		logger.debug(meetings.size());
 		((NewsTableModel)tableCurCylNews.getModel()).refresh(meetings);
+		
+
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)tableCurCylNews.getRowSorter();
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 1; //优先排序占比增长
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+	
 	}
 
 	@Override

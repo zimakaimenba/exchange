@@ -49,11 +49,11 @@ public final class StockCalendarAndNewDbOperation {
 	
 	public Collection<InsertedMeeting> getBanKuaiRelatedNews(String bankuaiid) 
 	{
-		Collection<InsertedMeeting> meetings = new HashSet<>();
+		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
 		
 		String sqlquerystat;
 		if("ALL".equals(bankuaiid.toUpperCase()) ) 
-			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 180 DAY ORDER BY  录入日期 DESC"
+			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 360 DAY ORDER BY 录入日期 DESC"
 									;
 		else
 			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 关联板块 like '%" + bankuaiid.trim() +  "%' ORDER BY  录入日期 DESC";
