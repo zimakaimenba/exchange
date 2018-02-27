@@ -24,7 +24,7 @@ import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuTableModel extends DefaultTableModel 
 {
-	String[] jtableTitleStrings = { "代码", "名称","板块权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk"};
+	String[] jtableTitleStrings = { "代码", "名称","板块权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
 	BanKuai curbk;
 	private ArrayList<Entry<String, Stock>> entryList;
 	private LocalDate showwknum;
@@ -32,6 +32,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private Stock curdisplaystock;
 	private HashSet<String> stockcodeinparsefile;
 	private Double showcje;
+	private Integer cjemaxwk = 10000000;
 	private Boolean showparsedfile = false;
 	private Integer dpmaxwk = 10000000;
 	private Integer bkmaxwk = 10000000;
@@ -123,17 +124,14 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	}
             	break;
             case 3: //{ "代码", "名称","板块权重","板块占比增长率","BkMaxWk","板块成交额贡献","大盘占比增长率","DpMaxWk"};
-//            	Double cjechangegrowthrate = curdisplaystock.getChenJiaoErChangeGrowthRateForAGivenPeriod (showwknum);
             	Double cjechangegrowthrate = fxrecord.getGgbkcjegrowthzhanbi();
             	value = cjechangegrowthrate;
             	break;
             case 4: //{ "代码", "名称","板块权重","板块占比增长率","BkMaxWk","板块成交额贡献","大盘占比增长率","DpMaxWk"};
-//            	Double zhanbigrowthrate = curdisplaystock.getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showwknum);
             	Double zhanbigrowthrate = fxrecord.getGgbkzhanbigrowthrate(); 
             	value = zhanbigrowthrate;
             	break;
             case 5: //{ "代码", "名称","板块权重","板块占比增长率","BkMaxWk","板块成交额贡献","大盘占比增长率","DpMaxWk"};
-//            	int maxweek = curdisplaystock.getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showwknum);
             	int maxweek = fxrecord.getGgbkzhanbimaxweek();
             	value = (Integer)maxweek;
             	break;
@@ -144,6 +142,10 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             case 7:
             	Integer dpmaxwk = fxrecord.getGgdpzhanbimaxweek(); 
             	value = dpmaxwk;
+                break;
+           case 8:
+            	Integer cjemaxwk = fxrecord.getGgbkcjemaxweek(); 
+            	value = cjemaxwk;
                 break;
 	    	}
 	    	
@@ -198,6 +200,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		        	  clazz = Double.class;
 			          break;
 		        case 7:
+			          clazz = Integer.class;
+			          break;
+		        case 8:
 			          clazz = Integer.class;
 			          break;
 		      }
@@ -285,6 +290,15 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		{
 			return this.showcje ;
 		}
+		//设置bkMAXWK阀值
+		public void setDisplayCjeMaxWk (Integer cjemax)
+		{
+			this.cjemaxwk = cjemax;
+		}
+		public Integer getDisplayCjeMaxWk ()
+		{
+			return this.cjemaxwk;
+		}
 		//设置显示每日板块文件
 		public void setShowParsedFile (Boolean onoff)
 		{
@@ -303,7 +317,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		{
 			return this.dpmaxwk;
 		}
-		//设置成交额MAXWK阀值
+		//设置bkMAXWK阀值
 		public void setDisplayBKMaxWk (Integer bkmax)
 		{
 			this.bkmaxwk = bkmax;

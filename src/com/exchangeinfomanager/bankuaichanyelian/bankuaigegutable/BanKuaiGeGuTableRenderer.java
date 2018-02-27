@@ -33,7 +33,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    
-	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) {
+	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { 
 
         	String valuepect = null;
         	try {
@@ -58,7 +58,10 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
 	    int modelRow = table.convertRowIndexToModel(row);
 	    Stock stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
-	    if(col == 0 || col == 1 ) {
+	    if(col == 0  ) {
+	    	
+	    }
+	    if( col == 1 ) {
 	    	if(!table.isRowSelected(row) && parsefiel != null && tablemodel.showParsedFile()  ) {
 		    	String stockcode = stock.getMyOwnCode();
 		    	
@@ -103,6 +106,16 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	int fazhi = tablemodel.getDisplayDPMaxWk();
 	    	 if( dpmaxwk >=fazhi )
 	    		 background = Color.red ;
+	    	 else 
+	    		 background = Color.white ;
+	    }
+	  //突出显示CjeMAXWK>=的个股
+	    if( col ==  8 ) {
+	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 8).toString() );
+	    	
+	    	int fazhi = tablemodel.getDisplayCjeMaxWk();
+	    	 if( dpmaxwk >=fazhi )
+	    		 background = Color.CYAN ;
 	    	 else 
 	    		 background = Color.white ;
 	    }
