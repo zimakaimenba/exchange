@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollBar;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
@@ -54,12 +55,15 @@ import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.sun.rowset.CachedRowSetImpl;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.geom.Rectangle2D;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -128,15 +132,6 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		plot.addRangeMarker(marker);
 	}
 	
-//	protected void setBarFenXiSingle ()
-//	{
-//		if(datafx.getColumnCount()>0) {
-//			plot.setDataset(2, datafx);
-//			final CategoryItemRenderer renderer3 = new LineAndShapeRenderer();
-//	        plot.setRenderer(2, renderer3);
-//	        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
-//		}
-//	}
 	/*
 	 * 
 	 */
@@ -244,8 +239,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
     	int cindex = barchartdataset.getColumnIndex(selecteddate) ;
     	((BanKuaiFengXiBarRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
     	
-        dateselected = selecteddate;
-        barchart.fireChartChanged();//必须有这句
+        this.dateselected = selecteddate;
+        this.barchart.fireChartChanged();//必须有这句
     }
     /*
      * 设置要突出显示成交量或者占比MAXWK的阀值
@@ -318,11 +313,14 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
         barchart = new JFreeChart(plot);
         barchart.removeLegend();
         barchart.setNotify(true);
+//        barchart.setDomainZoomable(true);
 
         chartPanel = new ChartPanel(barchart);
 //        chartPanel.setHorizontalAxisTrace(true); //十字显示
         chartPanel.setVerticalAxisTrace(true);
+        chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
+//        this.add(getScrollBar(axis));
         
         
         JPopupMenu popupMenu = new JPopupMenu();
@@ -330,6 +328,20 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 //		popupMenu.add(mntmNewMenuItem);
 		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
    }
+    
+//    private JScrollBar getScrollBar(final CategoryAxis domainAxis)
+//    {
+//        final double r1 = domainAxis.getLowerMargin();
+//        final double r2 = domainAxis.getUpperMargin();
+//        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 100, 0, 400);
+//        scrollBar.addAdjustmentListener( new AdjustmentListener() {
+//            public void adjustmentValueChanged(AdjustmentEvent e) {
+//                double x = e.getValue() *60 *60 * 1000;
+//                domainAxis.set(r1+x, r2+x);
+//            }
+//        });
+//        return scrollBar;
+//    }
 }
 
 /*

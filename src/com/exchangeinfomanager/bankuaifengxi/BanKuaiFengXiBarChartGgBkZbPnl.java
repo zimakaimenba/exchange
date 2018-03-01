@@ -42,10 +42,45 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 	 */
 	public void setNodeCjlZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
 	{
-		this.curdisplayednode = node;
+//		this.curdisplayednode = node;
 //		this.displayedenddate = displayedenddate1;
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		this.setNodeCjlZhanBiByWeek (node,requirestart,requireend,dapan);
+//		barchartdataset = new DefaultCategoryDataset();
+//		double highestHigh =0.0; //设置显示范围
+////		datafx = new DefaultCategoryDataset();
+//		
+//		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
+//			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
+//			if(tmprecord != null) {
+//				Double ggbkratio = tmprecord.getCjlZhanBi();
+//				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
+//				barchartdataset.setValue(ggbkratio,"占比",lastdayofweek);
+//				
+//				if(ggbkratio > highestHigh)
+//					highestHigh = ggbkratio;
+//			} else {
+//				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
+//					barchartdataset.setValue(0.0,"占比",tmpdate);
+////					datafx.addValue(0, "分析结果", tmpdate);
+//				} else //为空说明该周市场没有交易
+//					continue;
+//			}
+//			
+//		}
+//		
+//		setPanelTitle ("成交量占比",displayedenddate1);
+//		
+//		operationAfterDataSetup (node,highestHigh);
+	}
+	public void setNodeCjlZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate, DaPan dapan)
+	{
+		this.curdisplayednode = node;
+//		this.displayedenddate = displayedenddate1;
+		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
 		double highestHigh =0.0; //设置显示范围
@@ -70,25 +105,61 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 			
 		}
 		
-		setPanelTitle ("成交量占比",displayedenddate1);
+		setPanelTitle ("成交量占比",requireend);
 		
 		operationAfterDataSetup (node,highestHigh);
 	}
 
 	
 	/*
-	 * 板块大盘/个股板块 占比
+	 * 板块大盘/个股板块成交额 占比
 	 */
 	public void setNodeCjeZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
 	{
-		this.curdisplayednode = node;
+//		this.curdisplayednode = node;
 //		this.displayedenddate = displayedenddate1;
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
+		this.setNodeCjeZhanBiByWeek(node,requirestart,requireend,dapan);
+//		barchartdataset = new DefaultCategoryDataset();
+//		double highestHigh =0.0; //设置显示范围
+////		datafx = new DefaultCategoryDataset();
+//		
+//		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
+//			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
+//			if(tmprecord != null) {
+//				Double ggbkratio = tmprecord.getCjeZhanBi();
+//				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
+//				barchartdataset.setValue(ggbkratio,"占比",lastdayofweek);
+//				
+//				if(ggbkratio > highestHigh)
+//					highestHigh = ggbkratio;
+//			} else {
+//				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
+//					barchartdataset.setValue(0.0,"占比",tmpdate);
+////					datafx.addValue(0, "分析结果", tmpdate);
+//				} else //为空说明该周市场没有交易
+//					continue;
+//			}
+//			
+//		}
+//		
+//		setPanelTitle ("成交额占比",displayedenddate1);
+//		
+//		operationAfterDataSetup (node,highestHigh);
+	}
+	/*
+	 * 显示制定时间周期的数据
+	 */
+	public void setNodeCjeZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate, DaPan dapan)
+	{
+		this.curdisplayednode = node;
+		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);;
+		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);;
+		
 		barchartdataset = new DefaultCategoryDataset();
 		double highestHigh =0.0; //设置显示范围
-//		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
 			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
@@ -109,12 +180,14 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 			
 		}
 		
-		setPanelTitle ("成交额占比",displayedenddate1);
+		setPanelTitle ("成交额占比",enddate);
 		
 		operationAfterDataSetup (node,highestHigh);
 	}
 
-
+	/*
+	 * 突出显示一些预先设置
+	 */
 	private void operationAfterDataSetup(BkChanYeLianTreeNode node, double highestHigh) 
 	{
 		CustomRendererForGgBkZhanBi render = (CustomRendererForGgBkZhanBi)super.plot.getRenderer();

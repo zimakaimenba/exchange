@@ -161,4 +161,11 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    }
 
 
+
+		public String[] getTableHeader() 
+		{
+			return this.jtableTitleStrings;
+		}
+
+
 }

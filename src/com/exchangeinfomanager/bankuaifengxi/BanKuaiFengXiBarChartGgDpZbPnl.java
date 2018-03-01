@@ -48,10 +48,52 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 	public void setNodeAndDaPanCjlZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
 	{
 		
-		this.curdisplayednode = node;
+//		this.curdisplayednode = node;
 //		this.displayedenddate = displayedenddate1;
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		this.setNodeAndDaPanCjlZhanBiByWeek(node,requirestart,requireend,dapan);
+		
+//		barchartdataset = new DefaultCategoryDataset();
+//		double highestHigh =0.0; //设置显示范围
+////		datafx = new DefaultCategoryDataset();
+//		
+//		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
+//			ChenJiaoZhanBiInGivenPeriod tmpggrecord = node.getSpecficChenJiaoErRecord(tmpdate);
+//			ChenJiaoZhanBiInGivenPeriod tmpdprecord = dapan.getSpecficChenJiaoErRecord(tmpdate); //返回的是上证或深圳的某个记录，里面uplevel记录的是整个大盘的成交额
+//			
+//			if(tmpggrecord != null) {
+//				Double ggchenjiaol = tmpggrecord.getMyownchengjiaoliang();
+//				Double dpchenjiaol = tmpdprecord.getUplevelchengjiaoliang() * 100; //通达信在输出板块成交量的时候，只输出手数，所以要*100，而输出个股的成交量是包含手数的，也是奇怪。返回的是上证或深圳的某个记录，里面uplevel记录的是整个大盘的成交量
+//				Double ggdpratio = ggchenjiaol/dpchenjiaol; 
+//				LocalDate lastdayofweek = tmpggrecord.getRecordsDayofEndofWeek();
+//				
+//				barchartdataset.setValue(ggdpratio,"占比",lastdayofweek);
+//				
+//				if(ggdpratio > highestHigh)
+//					highestHigh = ggdpratio;
+//
+//			} else {
+//				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
+//					barchartdataset.setValue(0.0,"占比",tmpdate);
+////					datafx.addValue(0, "分析结果", tmpdate);
+//				} else //为空说明该周市场没有交易
+//					continue;
+//			}
+//		}
+//		
+//		setPanelTitle ("成交量占比",displayedenddate1);
+//		
+//		operationAfterDataSetup (node,highestHigh);
+	}
+	public void setNodeAndDaPanCjlZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate, DaPan dapan)
+	{
+		
+		this.curdisplayednode = node;
+//		this.displayedenddate = displayedenddate1;
+		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
 		double highestHigh =0.0; //设置显示范围
@@ -81,7 +123,7 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 			}
 		}
 		
-		setPanelTitle ("成交量占比",displayedenddate1);
+		setPanelTitle ("成交量占比",requireend);
 		
 		operationAfterDataSetup (node,highestHigh);
 	}
@@ -92,10 +134,51 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 	public void setNodeAndDaPanCjeZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
 	{
 		
-		this.curdisplayednode = node;
+//		this.curdisplayednode = node;
 //		this.displayedenddate = displayedenddate1;
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		this.setNodeAndDaPanCjeZhanBiByWeek(node,requirestart,requireend,dapan);
+//		barchartdataset = new DefaultCategoryDataset();
+//		double highestHigh =0.0; //设置显示范围
+////		datafx = new DefaultCategoryDataset();
+//		
+//		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
+//			ChenJiaoZhanBiInGivenPeriod tmpggrecord = node.getSpecficChenJiaoErRecord(tmpdate);
+//			ChenJiaoZhanBiInGivenPeriod tmpdprecord = dapan.getSpecficChenJiaoErRecord(tmpdate); //返回的是上证或深圳的某个记录，里面uplevel记录的是整个大盘的成交额
+//			
+//			if(tmpggrecord != null) {
+//				Double ggchenjiaoer = tmpggrecord.getMyOwnChengJiaoEr();
+//				Double dpchenjiaoer = tmpdprecord.getUpLevelChengJiaoEr(); //返回的是上证或深圳的某个记录，里面uplevel记录的是整个大盘的成交额
+//				Double ggdpratio = ggchenjiaoer/dpchenjiaoer; 
+//				LocalDate lastdayofweek = tmpggrecord.getRecordsDayofEndofWeek();
+//				
+//				barchartdataset.setValue(ggdpratio,"占比",lastdayofweek);
+//				
+//				if(ggdpratio > highestHigh)
+//					highestHigh = ggdpratio;
+//
+//			} else {
+//				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
+//					barchartdataset.setValue(0.0,"占比",tmpdate);
+////					datafx.addValue(0, "分析结果", tmpdate);
+//				} else //为空说明该周市场没有交易
+//					continue;
+//			}
+//		}
+//		
+//		setPanelTitle ("成交额占比",displayedenddate1);
+//		
+//		operationAfterDataSetup (node,highestHigh);
+	}
+	public void setNodeAndDaPanCjeZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate, DaPan dapan)
+	{
+		
+		this.curdisplayednode = node;
+//		this.displayedenddate = displayedenddate1;
+		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
 		double highestHigh =0.0; //设置显示范围
@@ -125,11 +208,14 @@ public class BanKuaiFengXiBarChartGgDpZbPnl extends BanKuaiFengXiBarChartPnl
 			}
 		}
 		
-		setPanelTitle ("成交额占比",displayedenddate1);
+		setPanelTitle ("成交额占比",requireend);
 		
 		operationAfterDataSetup (node,highestHigh);
 	}
-
+	
+	/*
+	 * 
+	 */
 	private void operationAfterDataSetup(BkChanYeLianTreeNode node, double highestHigh) 
 	{
 		

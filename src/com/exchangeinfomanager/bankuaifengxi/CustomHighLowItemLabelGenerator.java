@@ -71,16 +71,16 @@ public class CustomHighLowItemLabelGenerator extends HighLowItemLabelGenerator {
 				Date date = new Date(x.longValue());
 				result = result + "--> Time=" + this.dateFormatter.format(date);
 				if (high != null) {
-					result = result + " High=" + this.numberFormatter.format(high.doubleValue());
+					result = result + " H=" + this.numberFormatter.format(high.doubleValue());
 				}
 				if (low != null) {
-					result = result + " Low=" + this.numberFormatter.format(low.doubleValue());
+					result = result + " L=" + this.numberFormatter.format(low.doubleValue());
 				}
 				if (open != null) {
-					result = result + " Open=" + this.numberFormatter.format(open.doubleValue());
+					result = result + " O=" + this.numberFormatter.format(open.doubleValue());
 				}
 				if (close != null) {
-					result = result + " Close=" + this.numberFormatter.format(close.doubleValue());
+					result = result + " C=" + this.numberFormatter.format(close.doubleValue());
 				}
 			}
 

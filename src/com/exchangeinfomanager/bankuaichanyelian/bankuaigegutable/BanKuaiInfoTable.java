@@ -60,7 +60,13 @@ public class BanKuaiInfoTable extends JTable
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
 		this.sortByZhanBiGrowthRate ();
-		this.bkdbopt = new BanKuaiDbOperation ();
+		
+		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
+	    header.setToolTipStrings(bkmodel.getTableHeader());
+	    header.setToolTipText("Default ToolTip TEXT");
+	    this.setTableHeader(header);
+	    
+//		this.bkdbopt = new BanKuaiDbOperation ();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.stockmanager = stockmanager1;
 	}

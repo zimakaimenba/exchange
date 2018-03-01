@@ -44,21 +44,26 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 	}
 	
 //	 private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjePnl.class);
+	
 	/*
 	 * 板块/股票按周交易额
 	 */
 	public void setNodeJiaoYiErByWeek (BkChanYeLianTreeNode node,LocalDate displayedenddate1,DaPan dapan)
 	{
-		this.curdisplayednode = node;
-
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
-//		this.displayedenddate = requireend; 
+		this.setNodeJiaoYiErByWeek (node,requirestart,requireend,dapan);
+	}
+	public void setNodeJiaoYiErByWeek (BkChanYeLianTreeNode node,LocalDate startdate,LocalDate enddate,DaPan dapan)
+	{
+		this.curdisplayednode = node;
+
+		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
 		double highestHigh =0.0; //设置显示范围
-//		datafx = new DefaultCategoryDataset();
 		
 		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
 			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
@@ -98,7 +103,7 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 		
 //		super.setBarFenXiSingle();
 		
-		setPanelTitle ("成交额",displayedenddate1);
+		setPanelTitle ("成交额",requireend);
 	}
 }
 

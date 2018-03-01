@@ -170,6 +170,8 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JSplitPane;
 import javax.swing.BoxLayout;
 import javax.swing.border.TitledBorder;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseWheelEvent;
 
 
 public class StockInfoManager 
@@ -2906,6 +2908,7 @@ public class StockInfoManager
 		
 		btnSearchCode = new JButton("\u67E5\u627E");
 		
+		
 		btngengxinxx = new JButton("\u4FDD\u5B58");
 		btngengxinxx.setForeground(Color.RED);
 		btngengxinxx.setEnabled(false);
@@ -3092,34 +3095,42 @@ public class StockInfoManager
 		menuBar.add(menuOperationList);
 		
 		menuItemTongdaxinbb = new JMenuItem("\u751F\u6210\u901A\u8FBE\u4FE1\u62A5\u8868");
+		menuItemTongdaxinbb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_reports_49615 (1).png")));
 		menuOperationList.add(menuItemTongdaxinbb);
 		
 		menuItemRfshBk = new JMenuItem("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
+		menuItemRfshBk.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/synchronization.png")));
 		
 		menuOperationList.add(menuItemRfshBk);
 		
 		menuItemChanYeLian = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u4E0E\u4EA7\u4E1A\u94FE");
+		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
 		
 		menuOperationList.add(menuItemChanYeLian);
 		
 		menuItembkfx = new JMenuItem("\u677F\u5757\u6210\u4EA4\u91CF\u5206\u6790");
+		menuItembkfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
 		
 		menuOperationList.add(menuItembkfx);
 		
 		menuItemimportrecords = new JMenuItem("\u5BFC\u5165\u4EA4\u6613\u8BB0\u5F55");
+		menuItemimportrecords.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/import.png")));
 		
 		menuOperationList.add(menuItemimportrecords);
 		
+		mntmNewMenuItem_1 = new JMenuItem("\u67E5\u8BE2");
+		mntmNewMenuItem_1.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/search_results_30.918276374443px_1194419_easyicon.net.png")));
+		
+		menuOperationList.add(mntmNewMenuItem_1);
+		
 		mntmopenlcldbfile = new JMenuItem("\u6253\u5F00\u57FA\u672C\u6570\u636E\u6570\u636E\u5E93");
+		mntmopenlcldbfile.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/open24.png")));
 		menuOperationList.add(mntmopenlcldbfile);
 		
 		mntmOpenRmtDb = new JMenuItem("\u6253\u5F00\u901A\u8FBE\u4FE1\u540C\u6B65\u6570\u636E\u6570\u636E\u5E93");
+		mntmOpenRmtDb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/open24.png")));
 		
 		menuOperationList.add(mntmOpenRmtDb);
-		
-		mntmNewMenuItem_1 = new JMenuItem("\u67E5\u8BE2");
-		
-		menuOperationList.add(mntmNewMenuItem_1);
 		
 		JMenu menuConfigration = new JMenu("\u76F8\u5173\u8BBE\u7F6E");
 		menuBar.add(menuConfigration);

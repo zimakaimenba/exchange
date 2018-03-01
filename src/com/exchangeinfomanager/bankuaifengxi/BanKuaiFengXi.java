@@ -695,8 +695,8 @@ public class BanKuaiFengXi extends JDialog {
 					((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).setDisplayCjeMaxWk(maxwk);
 					tablexuandingplustwo.repaint();
 					
-					panelgeguwkzhanbi.setDisplayMaxwkLevel(maxwk);
-					panelbkwkzhanbi.setDisplayMaxwkLevel(maxwk);
+//					panelgeguwkzhanbi.setDisplayMaxwkLevel(maxwk);
+//					panelbkwkzhanbi.setDisplayMaxwkLevel(maxwk);
 					
 					panelgegucje.setDisplayMaxwkLevel(maxwk);
 					panelbkcje.setDisplayMaxwkLevel(maxwk);

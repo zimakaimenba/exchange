@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.Rectangle2D;
 import java.text.AttributedString;
 import java.text.DateFormat;
@@ -90,12 +92,12 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 	private OHLCSeries ohlcSeries;
 //	private TimeSeries volumeSeries;
 
-	private ChenJiaoZhanBiInGivenPeriod candelChartIntervalFirstPrint = null;
-
-	private Integer shoulddisplayedmonthnum;
-
-	private BanKuaiDbOperation bkdbopt;
-	private SystemConfigration sysconfig;
+//	private ChenJiaoZhanBiInGivenPeriod candelChartIntervalFirstPrint = null;
+//
+//	private Integer shoulddisplayedmonthnum;
+//
+//	private BanKuaiDbOperation bkdbopt;
+//	private SystemConfigration sysconfig;
 	private OHLCSeriesCollection candlestickDataset;
 
 //	private XYPlot candlestickSubplot;
@@ -114,9 +116,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		// Create new chart
 		 createChartPanel();
 
-		 sysconfig = SystemConfigration.getInstance();
-		 this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
-		 bkdbopt = new BanKuaiDbOperation ();
+//		 sysconfig = SystemConfigration.getInstance();
+//		 this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
+//		 bkdbopt = new BanKuaiDbOperation ();
 	}
 	
 	/*
@@ -306,8 +308,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 		chartPanel = new ChartPanel(candlestickChart);
 //		chartPanel.setPreferredSize(new java.awt.Dimension(1200, 500));
 		// Enable zooming
-		chartPanel.setMouseZoomable(false);
-		chartPanel.setMouseWheelEnabled(false);
+		chartPanel.setMouseZoomable(true);
+		chartPanel.setMouseWheelEnabled(true);
+		chartPanel.setHorizontalAxisTrace(false);
+	    chartPanel.setVerticalAxisTrace(false);
+	    chartPanel.addMouseWheelListener(new MouseWheelListener() {
+			public void mouseWheelMoved(MouseWheelEvent arg0) {
+				
+			}
+		});
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
@@ -431,8 +440,8 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
     public void drawItem(Graphics2D g2, XYItemRendererState state,
             Rectangle2D dataArea, PlotRenderingInfo info, XYPlot plot,
             ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataset,
-            int series, int item, CrosshairState crosshairState, int pass) {
-
+            int series, int item, CrosshairState crosshairState, int pass)
+    {
     	OHLCSeriesCollection highLowData = (OHLCSeriesCollection) dataset;
     	
     	int tempcount = highLowData.getSeriesCount();
