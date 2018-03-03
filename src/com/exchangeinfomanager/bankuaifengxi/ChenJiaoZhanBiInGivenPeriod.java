@@ -158,6 +158,9 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	public void setUplevelchengjiaoliang(Double uplevelchengjiaoliang) {
 		this.uplevelchengjiaoliang = uplevelchengjiaoliang;
 	}
+	/*
+	 * 个股/板块的成交量占比
+	 */
 	public Double getCjlZhanBi()  
 	{
 		return this.myownchengjiaoliang/this.uplevelchengjiaoliang;

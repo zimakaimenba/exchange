@@ -375,8 +375,8 @@ public class BanKuaiAndChanYeLian extends JPanel
 			startend.put("position",curend);
 			return startend;
 		}
-		else if( requiredstart.isBefore(curstart) && requiredend.isAfter(curend)  ) {//部分完整3， 前后双缺失，这种情况目前似乎不可能发生，暂时不写
-			logger.debug("当前似乎不可能，");
+		else if( requiredstart.isBefore(curstart) && requiredend.isAfter(curend)  ) {//部分完整3， 前后双缺失，这种情况目前的设置似乎不可能发生，暂时不写
+			logger.debug("部分完整3， 前后双缺失，这种情况目前的设置似乎不可能发生");
 			return startend;
 		}
 
@@ -2193,9 +2193,9 @@ public class BanKuaiAndChanYeLian extends JPanel
         popupMenu = new BanKuaiPopUpMenu(this.stockInfoManager,treechanyelian);
 		addPopup(treechanyelian, popupMenu);
 
-		bkfxpnl = new BanKuaiFengXiBarChartPnl ();
-		bkfxpnl.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u677F\u5757\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		sclpBanKuaiZhanBi.setViewportView(bkfxpnl);
+//		bkfxpnl = new BanKuaiFengXiBarChartPnl ();
+//		bkfxpnl.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u677F\u5757\u5468\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+//		sclpBanKuaiZhanBi.setViewportView(bkfxpnl);
         //设置显示到图片最右边
         Rectangle bounds2 = sclpBanKuaiZhanBi.getViewport().getViewRect();
         Dimension size2 = sclpBanKuaiZhanBi.getViewport().getViewSize();

@@ -57,6 +57,7 @@ import com.sun.rowset.CachedRowSetImpl;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Shape;
@@ -81,14 +82,14 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-public class BanKuaiFengXiBarChartPnl extends JPanel 
+public abstract class BanKuaiFengXiBarChartPnl extends JPanel 
 {
 	/**
 	 * Create the panel.
 	 */
 	public BanKuaiFengXiBarChartPnl() 
 	{
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
 		standardChartTheme.setExtraLargeFont(new Font("¡• È",Font.BOLD,20) );
@@ -294,8 +295,8 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 //        renderer.setDefaultBarPainter(new StandardBarPainter());
         
         plot = new CategoryPlot(); 
-        LegendTitle legend = new LegendTitle(plot); 
-        legend.setPosition(RectangleEdge.TOP); 
+//        LegendTitle legend = new LegendTitle(plot); 
+//        legend.setPosition(RectangleEdge.TOP); 
         plot.setDataset(barchartdataset); 
         plot.setRenderer(renderer); 
 //        plot.setDomainAxis(new CategoryAxis(""));
@@ -317,6 +318,7 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 
         chartPanel = new ChartPanel(barchart);
 //        chartPanel.setHorizontalAxisTrace(true); // Æ◊÷œ‘ æ
+//        chartPanel.setPreferredSize(new Dimension(400, 400));
         chartPanel.setVerticalAxisTrace(true);
         chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
@@ -329,19 +331,20 @@ public class BanKuaiFengXiBarChartPnl extends JPanel
 		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
    }
     
-//    private JScrollBar getScrollBar(final CategoryAxis domainAxis)
-//    {
-//        final double r1 = domainAxis.getLowerMargin();
-//        final double r2 = domainAxis.getUpperMargin();
-//        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 100, 0, 400);
-//        scrollBar.addAdjustmentListener( new AdjustmentListener() {
-//            public void adjustmentValueChanged(AdjustmentEvent e) {
-//                double x = e.getValue() *60 *60 * 1000;
+    private JScrollBar getScrollBar(final CategoryAxis domainAxis)
+    {
+        final double r1 = domainAxis.getLowerMargin();
+        final double r2 = domainAxis.getUpperMargin();
+        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 100, 0, 400);
+        scrollBar.addAdjustmentListener( new AdjustmentListener() {
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                double x = e.getValue() *60 *60 * 1000;
 //                domainAxis.set(r1+x, r2+x);
-//            }
-//        });
-//        return scrollBar;
-//    }
+            }
+        });
+        
+        return scrollBar;
+    }
 }
 
 /*
