@@ -68,7 +68,9 @@ import org.w3c.dom.events.MouseEvent;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -112,12 +114,12 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 //	private SystemConfigration sysconfig;
 
 	
-	public void setBanKuaiCjlNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber) 
+	public void setBanKuaiCjlNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber,String period) 
 	{
 		this.curdisplaybk = bankuai;
 		this.displayedweeknumber = weeknumber;
 		
-		HashMap<String, Stock> tmpallbkge = bankuai.getAllBanKuaiGeGu();
+		HashMap<String, Stock> tmpallbkge = bankuai.getAllCurrentBanKuaiGeGu();
 		
 		piechartdataset = new DefaultPieDataset();
     	
@@ -130,7 +132,8 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
     		String stockname = tmpstock.getMyOwnName();
     		
     		//找到对应周的数据
-    		ChenJiaoZhanBiInGivenPeriod tmprecord = tmpstock.getSpecficChenJiaoErRecord(weeknumber);
+    		StockNodeXPeriodData stockxdataforbk = tmpstock.getStockXPeriodDataForABanKuai(bankuai.getMyOwnCode(), period);
+    		ChenJiaoZhanBiInGivenPeriod tmprecord = stockxdataforbk.getSpecficRecord(weeknumber,0);
     		if(tmprecord != null) {
 //    			HashMap<String, Integer> geguweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight ();
 //        	    int geguweight = geguweightmap.get(tdxbkcode);
@@ -148,13 +151,15 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
 		setPanelTitle ("成交量占比");
 		
 	}
-	
-	public void setBanKuaiCjeNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber)
+	/*
+	 * 
+	 */
+	public void setBanKuaiCjeNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber,String period)
 	{
 		this.curdisplaybk = bankuai;
 		this.displayedweeknumber = weeknumber;
 		
-		HashMap<String, Stock> tmpallbkge = bankuai.getAllBanKuaiGeGu();
+		HashMap<String, Stock> tmpallbkge = bankuai.getAllCurrentBanKuaiGeGu();
 		
 		piechartdataset = new DefaultPieDataset();
     	
@@ -167,7 +172,8 @@ public class BanKuaiFengXiPieChartPnl extends JPanel
     		String stockname = tmpstock.getMyOwnName();
     		
     		//找到对应周的数据
-    		ChenJiaoZhanBiInGivenPeriod tmprecord = tmpstock.getSpecficChenJiaoErRecord(weeknumber);
+    		StockNodeXPeriodData stockxdataforbk = tmpstock.getStockXPeriodDataForABanKuai(bankuai.getMyOwnCode(), period);
+    		ChenJiaoZhanBiInGivenPeriod tmprecord = stockxdataforbk.getSpecficRecord(weeknumber,0);
     		if(tmprecord != null) {
 //    			HashMap<String, Integer> geguweightmap = tmpstock.getGeGuSuoShuBanKuaiWeight ();
 //        	    int geguweight = geguweightmap.get(tdxbkcode);

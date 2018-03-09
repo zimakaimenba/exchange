@@ -35,38 +35,38 @@ public interface BanKuaiAndStockBasic
 	public void setCreatedTime(String bankuaicreatedtime) ;
 	public boolean checktHanYuPingYin (String nameorhypy);
 	
-	/**
-	 * @return the jingZhengDuiShou
-	 */
-	public String getJingZhengDuiShou() ;
-	/**
-	 * @param jingZhengDuiShou the jingZhengDuiShou to set
-	 */
-	public void setJingZhengDuiShou(String jingZhengDuiShou);
-	/**
-	 * @return the keHuCustom
-	 */
-	public String getKeHuCustom() ;
-	/**
-	 * @param keHuCustom the keHuCustom to set
-	 */
-	public void setKeHuCustom(String keHuCustom) ;
-
-	public LocalDate getGainiantishidate() ;
-	public void setGainiantishidate(LocalDate gainiantishidate);
-	public String getGainiantishi();
-	public void setGainiantishi(String gainiantishi) ;
-	public LocalDate getQuanshangpingjidate() ;
-	public void setQuanshangpingjidate(LocalDate quanshangpingjidate);
-	public String getQuanshangpingji() ;
-	public void setQuanshangpingji(String quanshangpingji) ;
-	public LocalDate getFumianxiaoxidate() ;
-	public void setFumianxiaoxidate(LocalDate fumianxiaoxidate) ;
-	public String getFumianxiaoxi() ;
-	public void setFumianxiaoxi(String fumianxiaoxi) ;
-	public String getZhengxiangguan() ;
-	public void setZhengxiangguan(String zhengxiangguan);
-	public String getFuxiangguan() ;
-	public void setFuxiangguan(String fuxiangguan) ;
+//	/**
+//	 * @return the jingZhengDuiShou
+//	 */
+//	public String getJingZhengDuiShou() ;
+//	/**
+//	 * @param jingZhengDuiShou the jingZhengDuiShou to set
+//	 */
+//	public void setJingZhengDuiShou(String jingZhengDuiShou);
+//	/**
+//	 * @return the keHuCustom
+//	 */
+//	public String getKeHuCustom() ;
+//	/**
+//	 * @param keHuCustom the keHuCustom to set
+//	 */
+//	public void setKeHuCustom(String keHuCustom) ;
+//
+//	public LocalDate getGainiantishidate() ;
+//	public void setGainiantishidate(LocalDate gainiantishidate);
+//	public String getGainiantishi();
+//	public void setGainiantishi(String gainiantishi) ;
+//	public LocalDate getQuanshangpingjidate() ;
+//	public void setQuanshangpingjidate(LocalDate quanshangpingjidate);
+//	public String getQuanshangpingji() ;
+//	public void setQuanshangpingji(String quanshangpingji) ;
+//	public LocalDate getFumianxiaoxidate() ;
+//	public void setFumianxiaoxidate(LocalDate fumianxiaoxidate) ;
+//	public String getFumianxiaoxi() ;
+//	public void setFumianxiaoxi(String fumianxiaoxi) ;
+//	public String getZhengxiangguan() ;
+//	public void setZhengxiangguan(String zhengxiangguan);
+//	public String getFuxiangguan() ;
+//	public void setFuxiangguan(String fuxiangguan) ;
 	
 }

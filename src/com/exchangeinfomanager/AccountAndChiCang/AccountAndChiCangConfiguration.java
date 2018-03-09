@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.gui;
+package com.exchangeinfomanager.AccountAndChiCang;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,7 +45,7 @@ import com.google.common.collect.Multimaps;
 
 public class AccountAndChiCangConfiguration 
 {
-	AccountAndChiCangConfiguration() 
+	public AccountAndChiCangConfiguration() 
 	{
 		 acntdbop = new AccountDbOperation ();
 		 bkdbopt = new BanKuaiDbOperation ();

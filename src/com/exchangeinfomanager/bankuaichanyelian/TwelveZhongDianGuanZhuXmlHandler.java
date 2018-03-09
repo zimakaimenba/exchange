@@ -238,14 +238,14 @@ class TwelveZhongDianGuanZhuXmlHandler
         	
         	ArrayList<BkChanYeLianTreeNode> tmpsubcyllist = gzbkdetailmap.get(dastr);
         	for(BkChanYeLianTreeNode tmpgzbkifno :tmpsubcyllist) {
-        		if(tmpgzbkifno.shouldBeRemovedWhenSaveXml())
+        		if(tmpgzbkifno.getNodetreerelated().shouldBeRemovedWhenSaveXml())
         			continue;
         		
-        		String tdxbk = tmpgzbkifno.getChanYeLianSuoShuTdxBanKuaiName();
-        		String tdxbkcode = tmpgzbkifno.getChanYeLianSuoShuTdxBanKuaiName();
-        		String subcyl = tmpgzbkifno.getNodeCurLocatedChanYeLian();
-        		String addedtime = tmpgzbkifno.getSelectedToZdgzTime();
-        		String offselted = String.valueOf(tmpgzbkifno.isOfficallySelected() ).toLowerCase();
+        		String tdxbk = tmpgzbkifno.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName();
+        		String tdxbkcode = tmpgzbkifno.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName();
+        		String subcyl = tmpgzbkifno.getNodetreerelated().getNodeCurLocatedChanYeLian();
+        		String addedtime = tmpgzbkifno.getNodetreerelated().getSelectedToZdgzTime();
+        		String offselted = String.valueOf(tmpgzbkifno.getNodetreerelated().isOfficallySelected() ).toLowerCase();
         		
         		Element subcylele = bkele.addElement("Item");
         		subcylele.addAttribute("tdxbk", tdxbk);
@@ -310,7 +310,7 @@ class TwelveZhongDianGuanZhuXmlHandler
 		  
 		  Set<String> daleibankuaiset = new HashSet<String>();
 		  for(BkChanYeLianTreeNode cylnode : daleibankuailist) {
-			  String tdxbk = cylnode.getChanYeLianSuoShuTdxBanKuaiName ();
+			  String tdxbk = cylnode.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName ();
 			  daleibankuaiset.add(tdxbk);
 		  }
 		  

@@ -11,7 +11,7 @@ import javax.swing.JComboBox;
 
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
+import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 
 
 

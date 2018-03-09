@@ -8,6 +8,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 
 public class  BanKuaiFengXiBarRenderer extends BarRenderer
 {
@@ -25,16 +26,17 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
     private String barCharType;
 	protected BkChanYeLianTreeNode node;
 	protected CategoryDataset chartdataset;
+	protected NodeXPeriodData nodexdata;
 	
+	public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+    {
+		this.nodexdata = nodexdata1;
+	}
 	
 	public void setBarColumnShouldChangeColor (int column)
     {
     	this.shouldcolumn = column;
-    	
     }
-
-	
-	
     /*
      * 设置bar是占比还是成交量，显示不同的barcolor
      */

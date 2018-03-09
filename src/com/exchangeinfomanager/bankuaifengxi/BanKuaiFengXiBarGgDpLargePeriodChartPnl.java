@@ -10,33 +10,40 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 
 public class BanKuaiFengXiBarGgDpLargePeriodChartPnl extends BanKuaiFengXiBarLargePeriodChartPnl 
 {
-	public BanKuaiFengXiBarGgDpLargePeriodChartPnl (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
+	public BanKuaiFengXiBarGgDpLargePeriodChartPnl (BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period)
 	{
-		super (node,displayedenddate1,dapan);
+		super (node,displayedenddate1,period);
 		
-		dataset = updateDataset(node,displayedenddate1,dapan); 
+		dataset = updateDataset(node,displayedenddate1,period); 
 		mainPlot.setDataset(dataset);
 		
 //		chart.fireChartChanged();//必须有这句
 	}
 	
-    protected XYDataset updateDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan) 
+    protected XYDataset updateDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
     {
-//    	this.curdisplayednode = node;
-    	LocalDate requirestart = node.getWkRecordsStartDate().with(DayOfWeek.SATURDAY);
-		LocalDate requireend = node.getWkRecordsEndDate().with(DayOfWeek.SATURDAY);;
+    	this.curdisplayednode = node;
+    	NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+    	LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
+		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
+
+		DaPan dapan = (DaPan)node.getRoot();
+		NodeXPeriodData dpxdata = node.getNodeXPeroidData(period);
 		
 		TimeSeries s2 = new TimeSeries("个股大盘成交额占比");
 		double highestHigh =0.0; //设置显示范围
 //		datafx = new DefaultCategoryDataset();
 		
-		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
-			ChenJiaoZhanBiInGivenPeriod tmpggrecord = node.getSpecficChenJiaoErRecord(tmpdate);
-			ChenJiaoZhanBiInGivenPeriod tmpdprecord = dapan.getSpecficChenJiaoErRecord(tmpdate); //返回的是上证或深圳的某个记录，里面uplevel记录的是整个大盘的成交额
+		LocalDate tmpdate = requirestart;
+		do {
+			ChenJiaoZhanBiInGivenPeriod tmpggrecord = nodexdata.getSpecficRecord(tmpdate,0);
+			ChenJiaoZhanBiInGivenPeriod tmpdprecord = dpxdata.getSpecficRecord(tmpdate,0); //返回的是上证或深圳的某个记录，里面uplevel记录的是整个大盘的成交额
 			
 			if(tmpggrecord != null) {
 				Double ggchenjiaol = tmpggrecord.getMyOwnChengJiaoEr();
@@ -54,21 +61,30 @@ public class BanKuaiFengXiBarGgDpLargePeriodChartPnl extends BanKuaiFengXiBarLar
 					highestHigh = ggdpratio;
 
 			} else {
-				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
+				if( !dapan.isDaPanXiuShi(tmpdate,period) ) {
 					int tmpyear = tmpdate.getYear();
 					int tmpmonth = tmpdate.getMonthValue();
 					int tmpdayofmonth = tmpdate.getDayOfMonth();
 					Day tmpday = new Day (tmpdayofmonth,tmpmonth,tmpyear);
 					s2.add(tmpday,0);
 //					datafx.addValue(0, "分析结果", tmpdate);
-				} else //为空说明该周市场没有交易
-					continue;
+				} 
 			}
-		}
+			
+			if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			
+		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
 		final TimeSeriesCollection dataset = new TimeSeriesCollection();
         dataset.addSeries(s2);
         
         return dataset;
     }
+
+	
 }

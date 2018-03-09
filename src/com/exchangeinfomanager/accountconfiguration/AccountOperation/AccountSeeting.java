@@ -39,7 +39,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasi
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
+import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.TableCellListener;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;

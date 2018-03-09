@@ -46,6 +46,8 @@ import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
@@ -82,7 +84,7 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-public abstract class BanKuaiFengXiBarChartPnl extends JPanel 
+public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChartPanelHightLightListener
 {
 	/**
 	 * Create the panel.
@@ -107,6 +109,7 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartPnl.class);
 	protected BkChanYeLianTreeNode curdisplayednode;	
+	protected String globeperiod;
 //	private LocalDate displayedenddate;
 //	private String pnltitle;
 	protected CategoryPlot plot;
@@ -184,7 +187,7 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel
         	        dateselected = columnkey;
         	        tooltipselected = xyitem.getToolTipText();
         	        
-        	        getZdgzFx (CommonUtility.formateStringToDate(columnkey.toString()));
+        	        getZdgzFx (CommonUtility.formateStringToDate(columnkey.toString()),globeperiod);
         	         
     	    	} catch ( java.lang.ClassCastException e ) {
     	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
@@ -221,10 +224,10 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel
 			
 		});
     }
-    protected void getZdgzFx(LocalDate localDate) 
+    protected void getZdgzFx(LocalDate localDate,String period) 
     {
-//    	LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
-		ChenJiaoZhanBiInGivenPeriod tmprecord = curdisplayednode.getSpecficChenJiaoErRecord(localDate);
+    	NodeXPeriodData nodexdata = curdisplayednode.getNodeXPeroidData(period);
+		ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(localDate,0);
 		
     	if(tmprecord.hasFengXiJieGuo ()) {
     		ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
@@ -354,6 +357,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
 
     private static final long serialVersionUID = 1L;
     protected BkChanYeLianTreeNode node;
+	private String period;
 
     public CategoryLabelCustomizableCategoryAxis(String label) {
         super(label);
@@ -365,7 +369,8 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
     		return Color.black;
     	else {
     		LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
-    		ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(selecteddate);
+    		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+    		ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(selecteddate,0);
     		
     		if(tmprecord == null)
     			return Color.black;
@@ -377,9 +382,10 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
 //    		return Color.ORANGE;
     }
     
-    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode,String period) 
     {
     	this.node = curdisplayednode;
+    	this.period = period;
     }
    
 }

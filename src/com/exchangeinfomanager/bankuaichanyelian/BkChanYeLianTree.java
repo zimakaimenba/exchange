@@ -49,6 +49,7 @@ public class BkChanYeLianTree extends JTree
 	public BkChanYeLianTree (BkChanYeLianTreeNode bkcylrootnode)
 	{
 		super(bkcylrootnode);
+		this.createEvents(this);
 		this.setDragEnabled(false);
 		this.setDragEnabled(true);
 		this.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
@@ -57,25 +58,15 @@ public class BkChanYeLianTree extends JTree
 		this.setRootVisible(false);
 		this.setTransferHandler(new TreeTransferHandler());
 
-	      //CellEditor cellEditor = new CellEditor(this); 
-//      treechanyelian.setCellEditor(new CustomTreeCellEditor(treechanyelian, (DefaultTreeCellRenderer) treechanyelian.getCellRenderer(),
-//          cellEditor));
-      //treechanyelian.setInvokesStopCellEditing(true);
-//		treeModel.nodeStructureChanged(topNode);
-//        setModifiedTitle(false);
-
-		 bkdbopt = new BanKuaiDbOperation(); 
-//		 hypy = new HanYuPinYing ();
-		 this.currentselectedtdxbk = "";
-		 this.createEvents(this);
-//      
+//		bkdbopt = new BanKuaiDbOperation(); 
+		this.currentselectedtdxbk = "";
 	}
+	
 	private static Logger logger = Logger.getLogger(BkChanYeLianTree.class);
 	
 	private String currentselectedtdxbk;
 	private boolean ignoreExpansion = false;
-	private BanKuaiDbOperation bkdbopt;
-//	private HanYuPinYing hypy;
+//	private BanKuaiDbOperation bkdbopt;
 	
 	private void createEvents(final JTree tree) 
 	{
@@ -85,8 +76,6 @@ public class BkChanYeLianTree extends JTree
             {
             	treeMousePressed( evt);
             }
-
-			
 		});
 		
         this.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
@@ -104,12 +93,12 @@ public class BkChanYeLianTree extends JTree
 	
 	private void treeTreeCollapsed(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeCollapsed
         if (!ignoreExpansion)
-        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).setExpansion(false);
-    }//GEN-LAST:event_treeTreeCollapsed
+        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodetreerelated().setExpansion(false);
+    }
     private void treeTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeExpanded
         if (!ignoreExpansion )
-        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).setExpansion(true);
-    }//GEN-LAST:event_treeTreeExpanded
+        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodetreerelated().setExpansion(true);
+    }
 
     /*
      * 
@@ -157,15 +146,15 @@ public class BkChanYeLianTree extends JTree
 	/*
 	 * 时间参数是 处理这个时间那一周的板块个股和file比
 	 */
-	private void updateTreeParseFileInfo (HashSet<String> stockinfile,LocalDate selectiondate)
-	{
-		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
-		BkChanYeLianTreeNode root = (BkChanYeLianTreeNode) model.getRoot();
-		
-		updateParseFileInfoToTree (root,stockinfile,selectiondate);
-
-		model.nodeStructureChanged(root);
-	}
+//	private void updateTreeParseFileInfo (HashSet<String> stockinfile,LocalDate selectiondate)
+//	{
+//		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
+//		BkChanYeLianTreeNode root = (BkChanYeLianTreeNode) model.getRoot();
+//		
+//		updateParseFileInfoToTree (root,stockinfile,selectiondate);
+//
+//		model.nodeStructureChanged(root);
+//	}
 	/*
 	 * 从根目录开始遍历树，安装每日板块文件
 	 */
@@ -177,7 +166,7 @@ public class BkChanYeLianTree extends JTree
 	    	BkChanYeLianTreeNode childNode = (BkChanYeLianTreeNode) node.getChildAt(i);
 	    	String bkname = childNode.getMyOwnName();
 	    	int childNodetype = childNode.getType();
-	    	childNode.clearCurParseFileStockSet ( );
+	    	childNode.getNodetreerelated().clearCurParseFileStockSet ( );
 
 	    	if( childNodetype == BanKuaiAndStockBasic.TDXBK ) {
 	    		String bkcode = childNode.getMyOwnCode();
@@ -194,7 +183,7 @@ public class BkChanYeLianTree extends JTree
 					
 					if(intersectionbankuai.size() >0 ) { //有交集
 						HashSet<String> stockbkresult = new HashSet<String> (intersectionbankuai);
-						childNode.setParseFileStockSet (stockbkresult); // 把交集保存
+						childNode.getNodetreerelated().setParseFileStockSet (stockbkresult); // 把交集保存
 					}
 	    			
 	    		}
@@ -208,7 +197,7 @@ public class BkChanYeLianTree extends JTree
 	    		
      		    if(intersectionbankuai.size() >0 ) { //有交集
      		    	HashSet<String> stockbkresult = new HashSet<String> (intersectionbankuai);
-					childNode.setParseFileStockSet (stockbkresult); // 把交集保存
+					childNode.getNodetreerelated().setParseFileStockSet (stockbkresult); // 把交集保存
 					
 				    //如果是个股节点，则要把上面所有父节点(子产业链也标记这个个股)
 				     DefaultTreeModel model = (DefaultTreeModel) this.getModel();
@@ -217,7 +206,7 @@ public class BkChanYeLianTree extends JTree
 					    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
 					    	int nodeparentstype = parentnode.getType();
 					    	if(nodeparentstype == BkChanYeLianTreeNode.SUBBK) { //如果是子产业链，
-					    			 parentnode.setParseFileStockSet(stockbkresult);
+					    			 parentnode.getNodetreerelated().setParseFileStockSet(stockbkresult);
 					    	}
 					 }
 				      
@@ -234,7 +223,7 @@ public class BkChanYeLianTree extends JTree
 	 */
 	public void updateParseFileInfoToTreeFromSpecificNode(BkChanYeLianTreeNode node, HashSet<String> stockinfile, LocalDate selectiondate) 
 	{
-		node.clearCurParseFileStockSet ( );
+		node.getNodetreerelated().clearCurParseFileStockSet ( );
 		int nodetype = node.getType();
 		
 		if( nodetype == BanKuaiAndStockBasic.TDXBK ) {
@@ -252,7 +241,7 @@ public class BkChanYeLianTree extends JTree
 				
 				if(intersectionbankuai.size() >0 ) { //有交集
 					HashSet<String> stockbkresult = new HashSet<String> (intersectionbankuai);
-					node.setParseFileStockSet (stockbkresult); // 把交集保存
+					node.getNodetreerelated().setParseFileStockSet (stockbkresult); // 把交集保存
 				}
     			
     		}
@@ -266,7 +255,7 @@ public class BkChanYeLianTree extends JTree
     		
  		    if(intersectionbankuai.size() >0 ) { //有交集
  		    	HashSet<String> stockbkresult = new HashSet<String> (intersectionbankuai);
-				node.setParseFileStockSet (stockbkresult); // 把交集保存
+				node.getNodetreerelated().setParseFileStockSet (stockbkresult); // 把交集保存
 				
 			    //如果是个股节点，则要把上面所有父节点(子产业链也标记这个个股)
 			     DefaultTreeModel model = (DefaultTreeModel) this.getModel();
@@ -291,9 +280,6 @@ public class BkChanYeLianTree extends JTree
 	    }
 	}
 
-
-	
-
 	public void addNewNode(int addnodetype, String subcode, String subname, int direction)
 	{
 		if (this.getSelectionCount() == 1) {
@@ -317,12 +303,11 @@ public class BkChanYeLianTree extends JTree
                 
                 if( parent.getType() != BkChanYeLianTreeNode.BKGEGU) { //父节点不是个股，可以加
                 	parent.add(newNode);
-	                parent.setExpansion(true);
+	                parent.getNodetreerelated().setExpansion(true);
                 } else { ////父节点是个股，不可以加
                 	logger.debug("父节点是个股，不能加板块");
                 	direction = BanKuaiAndChanYeLian.DOWN;
                 }
-                
             } 
             
             if (direction != BanKuaiAndChanYeLian.RIGHT){
@@ -341,7 +326,7 @@ public class BkChanYeLianTree extends JTree
                 else return;
             }
 
-            nodeDnaFromParentToChild ( (BkChanYeLianTreeNode)newNode.getParent(),newNode);
+//            nodeDnaFromParentToChild ( (BkChanYeLianTreeNode)newNode.getParent(),newNode);
             DefaultTreeModel treeModel = (DefaultTreeModel) this.getModel();
             treeModel.nodesWereInserted(newNode.getParent(), new int[] {newNode.getParent().getIndex(newNode)});
             this.startEditingAtPath(new TreePath(newNode.getPath()));
@@ -349,11 +334,11 @@ public class BkChanYeLianTree extends JTree
         }
 	}
 	
-    private void nodeDnaFromParentToChild(BkChanYeLianTreeNode parent, BkChanYeLianTreeNode child) 
-    {
-//    	String suoshubkcode = parent.getTongDaXingBanKuaiCode();
-//    	child.setTongDaXingBanKuaiCode(suoshubkcode);
-	}
+//    private void nodeDnaFromParentToChild(BkChanYeLianTreeNode parent, BkChanYeLianTreeNode child) 
+//    {
+////    	String suoshubkcode = parent.getTongDaXingBanKuaiCode();
+////    	child.setTongDaXingBanKuaiCode(suoshubkcode);
+//	}
 
 	private boolean checkNodeDuplicate(BkChanYeLianTreeNode parent,  BkChanYeLianTreeNode newNode) 
     {
@@ -484,7 +469,7 @@ public class BkChanYeLianTree extends JTree
 	            		JOptionPane.showMessageDialog(null,"所选为通达信板块，无法删除！","Warning",JOptionPane.WARNING_MESSAGE);
 	            		return false;
 	            	}
-	            	if(child.getInZdgzOfficalCount()>0 || child.getInZdgzCandidateCount()>0) {
+	            	if(child.getNodetreerelated().getInZdgzOfficalCount()>0 || child.getNodetreerelated().getInZdgzCandidateCount()>0) {
 	            		JOptionPane.showMessageDialog(null,"所选产业链是关注股票池候选或正式选择，请先在关注股票池中移除后再删除！","Warning",JOptionPane.WARNING_MESSAGE);
 	            		return false;
 	            	}
@@ -496,7 +481,7 @@ public class BkChanYeLianTree extends JTree
 	                    int childIndex = parent.getIndex(child);
 	                    parent.remove(child);
 	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
-	                    if (parent.getChildCount()==0) parent.setExpansion(false);
+	                    if (parent.getChildCount()==0) parent.getNodetreerelated().setExpansion(false);
 	                }
 	            }
 	            
@@ -554,9 +539,9 @@ public class BkChanYeLianTree extends JTree
 	    	
 	    	if(childnodecode.equals(cyltreepathlist.get(0)  ) ) {
     			if(officallsltopt)
-    				childNode.increaseZdgzOfficalCount();
+    				childNode.getNodetreerelated().increaseZdgzOfficalCount();
 	    		
-    			childNode.increaseZdgzCandidateCount();
+    			childNode.getNodetreerelated().increaseZdgzCandidateCount();
 	    			
 	    		DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
 	    		treemodel.nodeChanged(childNode);
@@ -564,8 +549,8 @@ public class BkChanYeLianTree extends JTree
 	    		cyltreepathlist.remove(0);
 	    		
 	    		if(cyltreepathlist.size() == 0) {
-	    			childNode.setOfficallySelected(officallsltopt);
-	    			childNode.setSelectedToZdgzTime(addedtime);
+	    			childNode.getNodetreerelated().setOfficallySelected(officallsltopt);
+	    			childNode.getNodetreerelated().setSelectedToZdgzTime(addedtime);
 	    			
 	    			expectedNode = childNode;
 	    			break;
@@ -585,16 +570,16 @@ public class BkChanYeLianTree extends JTree
 	public void removeZdgzBkCylInfoFromTreeNode(BkChanYeLianTreeNode childNode,boolean stillkeepincandidate) 
 	{
 		 TreeNode[] nodepath = childNode.getPath();
-		 Boolean isofficallselected = childNode.isOfficallySelected();
+		 Boolean isofficallselected = childNode.getNodetreerelated().isOfficallySelected();
 		 
 		 DefaultTreeModel model = (DefaultTreeModel) this.getModel();
 		 TreeNode[] tempath = model.getPathToRoot(childNode);
 		 for(int j=1;j<tempath.length;j++ ) {
 		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
 		    	if(isofficallselected) 
-		    		parentnode.decreaseZdgzOfficalCount();
+		    		parentnode.getNodetreerelated().decreaseZdgzOfficalCount();
 		    	if(!stillkeepincandidate) //只是从offical移除，candidate还有就不用加
-		    		parentnode.decreasedgzCandidateCount();
+		    		parentnode.getNodetreerelated().decreasedgzCandidateCount();
 		    	
 		    	model.nodeChanged(parentnode);
 		 }
@@ -603,7 +588,7 @@ public class BkChanYeLianTree extends JTree
 	public void addZdgzBkCylInfoToTreeNode(BkChanYeLianTreeNode childNode, boolean hasbeenincandidate)  
 	{
 		 TreeNode[] nodepath = childNode.getPath();
-		 Boolean isofficallselected = childNode.isOfficallySelected();
+		 Boolean isofficallselected = childNode.getNodetreerelated().isOfficallySelected();
 		 
 //		 DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
 		 
@@ -612,9 +597,9 @@ public class BkChanYeLianTree extends JTree
 		 for(int j=1;j<tempath.length;j++ ) {
 		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
 		    	if(isofficallselected) 
-		    		parentnode.increaseZdgzOfficalCount();
+		    		parentnode.getNodetreerelated().increaseZdgzOfficalCount();
 		    	if(!hasbeenincandidate) //如果已经在候选里面，cand count就不用加
-		    		parentnode.increaseZdgzCandidateCount();	
+		    		parentnode.getNodetreerelated().increaseZdgzCandidateCount();	
 		    	
 		    	model.nodeChanged(parentnode);
 		 }

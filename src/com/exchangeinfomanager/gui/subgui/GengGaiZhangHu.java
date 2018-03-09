@@ -11,7 +11,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
-import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
+import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 
 import javax.swing.JComboBox;
 import net.miginfocom.swing.MigLayout;

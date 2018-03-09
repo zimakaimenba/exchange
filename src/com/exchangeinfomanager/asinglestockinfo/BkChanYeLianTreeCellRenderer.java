@@ -43,7 +43,7 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnCode() + ((BkChanYeLianTreeNode)value).getMyOwnName();
 	         
 	         // 每日板块信息
-	         HashSet<String> parsefilestockset = ((BkChanYeLianTreeNode)value).getParseFileStockSet ();
+	         HashSet<String> parsefilestockset = ((BkChanYeLianTreeNode)value).getNodetreerelated().getParseFileStockSet ();
 	         if(parsefilestockset !=null && parsefilestockset.size() !=0) {
 	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + parsefilestockset.size() + ")"  ); 
 	         } else
@@ -55,17 +55,17 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon(node, leaf, expanded));
 	         
 	         //各种状态下的COLOR
-	         if(node.getInZdgzOfficalCount() >0 ) {
+	         if(node.getNodetreerelated().getInZdgzOfficalCount() >0 ) {
 	        	 lblnodenameandcount.setForeground(Color.RED);
-	         } else if(node.getInZdgzCandidateCount() >0 ) {
+	         } else if(node.getNodetreerelated().getInZdgzCandidateCount() >0 ) {
 	        	 lblnodenameandcount.setForeground(Color.ORANGE);
-	         } else if(node.getParseFileStockSet().size()>0) {
+	         } else if(node.getNodetreerelated().getParseFileStockSet().size()>0) {
 	        	 lblnodenameandcount.setForeground(Color.BLUE);
 	         } else 
 	        	 lblnodenameandcount.setForeground(this.getForeground());
 	         
 	         //如果是要删除的节点，用特殊的字体表示
-	         if(node.shouldBeRemovedWhenSaveXml()) {
+	         if(node.getNodetreerelated().shouldBeRemovedWhenSaveXml()) {
 	        	 Font font=new Font("黑体",Font.BOLD + Font.ITALIC,14); 
 		         lblnodenameandcount.setFont(font);
 	         } else {

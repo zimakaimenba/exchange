@@ -182,14 +182,14 @@ public class BanKuaiInfoTable extends JTable
 	        Color foreground, background = Color.white;
 	        
 	        if(col == 0 || col == 1 ) {
-	        	if(bankuai.getParseFileStockSet().size()>0)
+	        	if(bankuai.getNodetreerelated().getParseFileStockSet().size()>0)
 		        	background = Color.ORANGE;
 		        else
 		        	background = Color.white;
 	        }
 	        
 	        if(col == 2 || col == 3 || col == 4 ) {
-	        	if(bankuai.getInZdgzCandidateCount() >0 || bankuai.getInZdgzOfficalCount() >0)
+	        	if(bankuai.getNodetreerelated().getInZdgzCandidateCount() >0 || bankuai.getNodetreerelated().getInZdgzOfficalCount() >0)
 	        		background = Color.RED;
 		        else
 		        	background = Color.white;

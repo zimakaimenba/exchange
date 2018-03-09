@@ -30,8 +30,10 @@ import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
 import javax.swing.*;
@@ -62,7 +64,7 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 	private int highlightercolumn = 4;
 	
     @SuppressWarnings("deprecation")
-	public BanKuaiFengXiBarLargePeriodChartPnl(BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan) 
+	public BanKuaiFengXiBarLargePeriodChartPnl(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
     {
     	this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -85,8 +87,9 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
         renderer.setBarPainter(new CustomXYBarPainter ());
 
         domainAxis = new DateAxis();
-        LocalDate requirestart = node.getWkRecordsStartDate().with(DayOfWeek.SATURDAY);
-		LocalDate requireend = node.getWkRecordsEndDate().with(DayOfWeek.SATURDAY);;
+        NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+        LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
+		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
         Day d1 = new Day(requirestart.getDayOfMonth(),requirestart.getMonthValue(),requirestart.getYear());
         Day d2 = new Day(requireend.getDayOfMonth(),requireend.getMonthValue(),requireend.getYear());
         domainAxis.setAutoRange(false);
@@ -101,7 +104,7 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 //	    rangeAxis.setAutoRangeIncludesZero(true);
         
        
-       dataset = getDataset(node,displayedenddate1,dapan);
+       dataset = getDataset(node,displayedenddate1,period);
         
         mainPlot = new XYPlot(dataset, domainAxis, rangeAxis, renderer);
         mainPlot.setDomainGridlinesVisible(true);
@@ -129,40 +132,14 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 //        this.pack();
     }
 
-    private XYDataset getDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan) 
+    private XYDataset getDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
     {
     	this.curdisplayednode = node;
-    	LocalDate requirestart = node.getWkRecordsStartDate().with(DayOfWeek.SATURDAY);
-		LocalDate requireend = node.getWkRecordsEndDate().with(DayOfWeek.SATURDAY);;
+//    	NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+//    	LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
+//		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
 		
 		TimeSeries s1 = new TimeSeries("Series");
-//		double highestHigh =0.0; //设置显示范围
-//
-//		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
-//			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
-//			if(tmprecord != null) {
-//				Double ggbkratio = tmprecord.getCjlZhanBi();
-//				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
-//				int tmpyear = lastdayofweek.getYear();
-//				int tmpmonth = lastdayofweek.getMonthValue();
-//				int tmpdayofmonth = lastdayofweek.getDayOfMonth();
-//				Day tmpday = new Day (tmpdayofmonth,tmpmonth,tmpyear);
-//				s1.add(tmpday,ggbkratio);
-//				
-//				if(ggbkratio > highestHigh)
-//					highestHigh = ggbkratio;
-//			} else { //没有数据，看看是不是大盘停牌还是该股当周没有数据
-//				if( !dapan.isThisWeekXiuShi(tmpdate) ) { //大盘没有停牌
-//					int tmpyear = tmpdate.getYear();
-//					int tmpmonth = tmpdate.getMonthValue();
-//					int tmpdayofmonth = tmpdate.getDayOfMonth();
-//					Day tmpday = new Day (tmpdayofmonth,tmpmonth,tmpyear);
-//					s1.add(tmpday,0);
-////					datafx.addValue(0, "分析结果", tmpdate);
-//				} else //为空说明该周市场没有交易
-//					continue;
-//			}
-//		}
 		
 		final TimeSeriesCollection dataset = new TimeSeriesCollection();
         dataset.addSeries(s1);
@@ -173,7 +150,7 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
     private JScrollBar getScrollBar(final DateAxis domainAxis){
         final double r1 = domainAxis.getLowerBound();
         final double r2 = domainAxis.getUpperBound();
-        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 100, 0, 400);
+        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 100, 100, 0, 400);
         scrollBar.addAdjustmentListener( new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
                 double x = e.getValue() *60 *60 * 1000;
@@ -183,24 +160,84 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
         return scrollBar;
     }
     
-    protected abstract XYDataset updateDataset (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan);
-
+    protected abstract XYDataset updateDataset (BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period);
 }
 
 class CustomXYPlotToolTipGenerator implements XYToolTipGenerator 
 {
+	protected BkChanYeLianTreeNode node;
+	protected NodeXPeriodData nodexdata;
+	
 	@Override
     public String generateToolTip(XYDataset dataset, int series, int item) 
 	{
        Date d = new Date((long) dataset.getXValue(series, item));
        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-       String s = "日期:" + sdf.format(d) + "占比:";
-       DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-       Number zhanbi = dataset.getY(series, item);
-       s += decimalformate.format(zhanbi);;
-       return s;
+
+   	   LocalDate selecteddate = CommonUtility.formateStringToDate(sdf.format(d));
+   	 
+   	   ChenJiaoZhanBiInGivenPeriod nodefx = nodexdata.getSpecficRecord(selecteddate, 0);
+//		if(node.getType() == 4 )
+//			nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
+//		else if(node.getType() == 6 ) 
+//			nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
+		
+		if(nodefx == null)
+			return "";
+		
+		String tooltip = selecteddate.toString() + " ";
+		if(node.getType() == 6 ) { //个股,个股大盘比只有个股，不会有板块
+			Double curzhanbidata = nodefx.getCjlZhanBi();  //占比
+			Double zhanbigrowthrate = nodefx.getGgbkzhanbigrowthrate();
+			Double cjezhanbi = nodefx.getGgbkcjegrowthzhanbi();
+			Integer maxweek = nodefx.getGgbkzhanbimaxweek();
+			Double dpzhanbi = nodefx.getGgdpzhanbi();
+			Integer dpzhanbimaxweek = nodefx.getGgdpzhanbimaxweek();
+			
+			
+			DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+			try {
+				tooltip = tooltip + "大盘占比" + decimalformate.format(dpzhanbi);
+			} catch (java.lang.IllegalArgumentException e ) {
+				tooltip = tooltip + "大盘占比NULL" ;
+			}
+			try {
+				tooltip = tooltip + "大盘MaxWk=" + dpzhanbimaxweek.toString();
+			} catch (java.lang.IllegalArgumentException e ) {
+				tooltip = tooltip + "大盘MaxWk=NULL";
+			}
+			try {
+				tooltip = tooltip + "板块占比" + decimalformate.format(curzhanbidata);
+			} catch (java.lang.IllegalArgumentException e ) {
+				tooltip = tooltip + "板块占比NULL" ;
+			}
+//			try {
+//				tooltip = tooltip +  "占比变化("+ decimalformate.format(zhanbigrowthrate) +  ")";
+//			} catch (java.lang.IllegalArgumentException e ) {
+//				tooltip = tooltip +  "占比变化(NULL)";
+//			}
+			try {
+				tooltip = tooltip + "板块MaxWk=" + maxweek.toString();
+			} catch (java.lang.IllegalArgumentException e ) {
+				e.printStackTrace();
+//				tooltip = tooltip +
+			}
+			
+			
+			return tooltip;
+		}
+   	
+		return "";
     }
 	
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
+    }
+    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+    {
+		this.nodexdata = nodexdata1;
+	}
 }
 
 //class CustomXYBarRenderer extends XYBarRenderer 
@@ -263,7 +300,9 @@ class CustomXYPlotToolTipGenerator implements XYToolTipGenerator
 
 class CustomXYBarPainter implements XYBarPainter 
 {
-	private int highlightercolumn = 4;
+	protected int highlightercolumn = -1;
+	protected BkChanYeLianTreeNode node;
+	protected NodeXPeriodData nodexdata;
    	@Override
     public void paintBarShadow(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base, boolean pegShadow) {
    		
@@ -272,12 +311,29 @@ class CustomXYBarPainter implements XYBarPainter
    	public void paintBar(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base) 
     {
     	bar.setFrame(bar.getX(), bar.getY(), bar.getWidth() +4, bar.getHeight());
-    	
+    	    	
+    	XYDataset dataset = renderer.getPlot().getDataset();
+    	    	
     	if(highlightercolumn == column)
     		g2.setColor(Color.BLUE.darker());
     	else
     		g2.setColor(Color.RED.darker());
+    	
     	g2.fill(bar);
     	g2.draw(bar);
+    }
+   	
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
+    }
+
+    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+    {
+		this.nodexdata = nodexdata1;
+	}
+	public void setBarColumnShouldChangeColor (int column)
+    {
+    	this.highlightercolumn = column;
     }
 };

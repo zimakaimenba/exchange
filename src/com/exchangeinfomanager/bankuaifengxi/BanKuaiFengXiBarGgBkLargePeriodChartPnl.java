@@ -17,7 +17,7 @@ public class BanKuaiFengXiBarGgBkLargePeriodChartPnl extends BanKuaiFengXiBarLar
 	public BanKuaiFengXiBarGgBkLargePeriodChartPnl (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
 	{
 		super (node,displayedenddate1,dapan);
-		
+		DaPan tmpdp = (DaPan)node.getRoot();
 		dataset = updateDataset(node,displayedenddate1,dapan); 
 		mainPlot.setDataset(dataset);
 	}

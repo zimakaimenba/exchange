@@ -22,7 +22,7 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
-import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
+import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;

@@ -101,31 +101,31 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	       
 	       content.append("<h4>板块基本信息</h4>");
 	       
-	       		if(!Strings.isNullOrEmpty( curselectedbknode.getGainiantishi() ) ) 
+	       		if(!Strings.isNullOrEmpty( curselectedbknode.getNodeJiBenMian().getGainiantishi() ) ) 
 				try {
-					content.append( "<p>"+ "概念提示:" + Strings.nullToEmpty( curselectedbknode.getGainiantishidate().toString()) + curselectedbknode.getGainiantishi() + "</p>" );
+					content.append( "<p>"+ "概念提示:" + Strings.nullToEmpty( curselectedbknode.getNodeJiBenMian().getGainiantishidate().toString()) + curselectedbknode.getNodeJiBenMian().getGainiantishi() + "</p>" );
 				} catch (java.lang.NullPointerException e) {
-					content.append("<p>"+ "概念提示:" +  Strings.nullToEmpty( "") + curselectedbknode.getGainiantishi() + "</p>" );
+					content.append("<p>"+ "概念提示:" +  Strings.nullToEmpty( "") + curselectedbknode.getNodeJiBenMian().getGainiantishi() + "</p>" );
 				}
-	       		if(!Strings.isNullOrEmpty(curselectedbknode.getFumianxiaoxi() )  )
+	       		if(!Strings.isNullOrEmpty(curselectedbknode.getNodeJiBenMian().getFumianxiaoxi() )  )
  	       		try {
-					content.append( "<p>"+ "负面消息:" + Strings.nullToEmpty( curselectedbknode.getFumianxiaoxidate().toString()) + curselectedbknode.getFumianxiaoxi() + "</p>" );
+					content.append( "<p>"+ "负面消息:" + Strings.nullToEmpty( curselectedbknode.getNodeJiBenMian().getFumianxiaoxidate().toString()) + curselectedbknode.getNodeJiBenMian().getFumianxiaoxi() + "</p>" );
 				} catch (java.lang.NullPointerException e) {
-					content.append("<p>"+ "负面消息:" +  Strings.nullToEmpty( "") + curselectedbknode.getFumianxiaoxi() + "</p>" );
+					content.append("<p>"+ "负面消息:" +  Strings.nullToEmpty( "") + curselectedbknode.getNodeJiBenMian().getFumianxiaoxi() + "</p>" );
 				}
 	       		
-	      		if(!Strings.isNullOrEmpty(curselectedbknode.getQuanshangpingji() ) ) 
+	      		if(!Strings.isNullOrEmpty(curselectedbknode.getNodeJiBenMian().getQuanshangpingji() ) ) 
 			try {
-				content.append( "<p>"+  "券商评级" + Strings.nullToEmpty(curselectedbknode.getQuanshangpingjidate().toString()) + " " + curselectedbknode.getQuanshangpingji() + "</p>" );;
+				content.append( "<p>"+  "券商评级" + Strings.nullToEmpty(curselectedbknode.getNodeJiBenMian().getQuanshangpingjidate().toString()) + " " + curselectedbknode.getNodeJiBenMian().getQuanshangpingji() + "</p>" );;
 			} catch (java.lang.NullPointerException ex) {
-				content.append( "<p>"+  "券商评级" + Strings.nullToEmpty("") + " " + curselectedbknode.getQuanshangpingji() + "</p>" );;
+				content.append( "<p>"+  "券商评级" + Strings.nullToEmpty("") + " " + curselectedbknode.getNodeJiBenMian().getQuanshangpingji() + "</p>" );;
 			}
-	      		if(!Strings.isNullOrEmpty(curselectedbknode.getZhengxiangguan() ) )
- 	      		content.append( "<p>"+  "正相关及客户(#" + Strings.nullToEmpty(curselectedbknode.getZhengxiangguan() )
-											 + " " + Strings.nullToEmpty(curselectedbknode.getKeHuCustom() ) +  "#)" + "</p>" );
-	      		if(!Strings.isNullOrEmpty(curselectedbknode.getFuxiangguan() ) )
- 	      		content.append( "<p>"+  "负相关及竞争对手(#" + Strings.nullToEmpty(curselectedbknode.getFuxiangguan() )
- 	      									 + " " + Strings.nullToEmpty(curselectedbknode.getJingZhengDuiShou() ) + "#)" + "</p>" );
+	      		if(!Strings.isNullOrEmpty(curselectedbknode.getNodeJiBenMian().getZhengxiangguan() ) )
+ 	      		content.append( "<p>"+  "正相关及客户(#" + Strings.nullToEmpty(curselectedbknode.getNodeJiBenMian().getZhengxiangguan() )
+											 + " " + Strings.nullToEmpty(curselectedbknode.getNodeJiBenMian().getKeHuCustom() ) +  "#)" + "</p>" );
+	      		if(!Strings.isNullOrEmpty(curselectedbknode.getNodeJiBenMian().getFuxiangguan() ) )
+ 	      		content.append( "<p>"+  "负相关及竞争对手(#" + Strings.nullToEmpty(curselectedbknode.getNodeJiBenMian().getFuxiangguan() )
+ 	      									 + " " + Strings.nullToEmpty(curselectedbknode.getNodeJiBenMian().getJingZhengDuiShou() ) + "#)" + "</p>" );
 
 	     htmlstring = doc.toString();
 	     this.setText(htmlstring);
@@ -149,7 +149,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	       org.jsoup.select.Elements content = doc.select("body"); 
 	       
 	       content.append("<h4>板块关注分析信息</h4>");
-	       Object[][] sellbuyObjects = (curselectedbknode).getZdgzMrmcZdgzYingKuiRecords();
+	       Object[][] sellbuyObjects = (curselectedbknode).getNodeJiBenMian().getZdgzMrmcZdgzYingKuiRecords();
 	       for(int i=0;i<sellbuyObjects.length;i++) {
 	    	   String output = "";
 	    	   try {

@@ -16,14 +16,19 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
-import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuTableModel extends DefaultTableModel 
 {
+	BanKuaiGeGuTableModel () {
+		super ();
+	}
+	
 	String[] jtableTitleStrings = { "代码", "名称","板块权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
 	BanKuai curbk;
 	private ArrayList<Entry<String, Stock>> entryList;
@@ -36,25 +41,20 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private Boolean showparsedfile = false;
 	private Integer dpmaxwk = 10000000;
 	private Integer bkmaxwk = 10000000;
+	private String period;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
-	
-	BanKuaiGeGuTableModel ()
-	{
-		super ();
-	}
 
-	public void refresh (BanKuai bankuai,LocalDate wknum)
+	public void refresh (BanKuai bankuai,LocalDate wknum,String period)
 	{
-		curbk = bankuai;
-		showwknum = wknum;
-		HashMap<String, Stock> stockmap = bankuai.getSpecificPeriodBanKuaiGeGu(wknum);	
-		stockcodeinparsefile = bankuai.getParseFileStockSet();
+		this.curbk = bankuai;
+		this.showwknum = wknum;
+		this.period = period;
+		HashMap<String, Stock> stockmap = bankuai.getSpecificPeriodBanKuaiGeGu(wknum,period);	
+		stockcodeinparsefile = bankuai.getNodetreerelated().getParseFileStockSet();
 		try {
 			entryList = new ArrayList<Map.Entry<String, Stock>>(stockmap.entrySet()  );
 		} catch ( java.lang.NullPointerException e) {
-//			e.printStackTrace();
-			logger.debug(curbk.getMyOwnCode()+curbk.getMyOwnName() + "没有个股，请检查！");
-//			return ;
+			logger.debug(curbk.getMyOwnCode()+curbk.getMyOwnName() + "没有个股，有问题，请检查！");
 		}
     	
     	this.fireTableDataChanged();
@@ -92,16 +92,12 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //	    	logger.debug(rowIndex + "col" + columnIndex  + "  ");
 	    	if(entryList.isEmpty())
 	    		return null;
-	    	
-	    	String bkcode = null;
-	    	ChenJiaoZhanBiInGivenPeriod fxrecord = null;
 
 	    	Entry<String, Stock> thisbk = entryList.get(rowIndex);
 		    curdisplaystock = thisbk.getValue();
-		    bkcode = curdisplaystock.getMyOwnCode();
-
-		    fxrecord = curdisplaystock.getNodeFengXiResultForSpecificDate(showwknum);
-	    	
+		    String bkcode = curdisplaystock.getMyOwnCode();
+		    StockNodeXPeriodData stockxdataforbk = curdisplaystock.getStockXPeriodDataForABanKuai(bkcode, period);
+		    ChenJiaoZhanBiInGivenPeriod fxrecord = stockxdataforbk.getSpecficRecord(showwknum, 0);
 	    	
 	    	Object value = "??";
 	    	switch (columnIndex) {
@@ -114,11 +110,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	value = thisbkname;
             	break;
             case 2: //权重
-            	HashMap<String, Integer> stockweightmap = curdisplaystock.getGeGuSuoShuBanKuaiWeight();
-            	Object[] stockweight;
+            	Integer stockweight = curdisplaystock.getGeGuSuoShuBanKuaiWeight(bkcode);
             	try {
-            		stockweight = stockweightmap.values().toArray();
-            		value = (Integer)stockweight[0];
+            		value = (Integer)stockweight;
             	} catch (java.lang.NullPointerException e) {
             		value = 0;
             	}
@@ -164,10 +158,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	      String bkcode = thisstock.getValue().getMyOwnCode();
 	      String thisbkname = thisstock.getValue().getMyOwnName();
 
-		  HashMap<String, Integer> stockweightmap = stock.getGeGuSuoShuBanKuaiWeight();
-		  stockweightmap.put(this.curbk.getMyOwnCode(),newweight);
-		  stock.setGeGuSuoShuBanKuaiWeight(stockweightmap);
-		  
+		  stock.setGeGuSuoShuBanKuaiWeight(curbk.getMyOwnCode(),newweight);
 		  this.fireTableDataChanged();
 	  }
 	  /*
@@ -241,7 +232,6 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			 else 
 				 entryList.clear();
 	    	this.fireTableDataChanged();
-	    	
 	    }
 	    public int getStockRowIndex (String neededfindstring) 
 	    {
@@ -278,7 +268,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 
 		public HashSet<String> getStockInParseFile() 
 		{
-			return curbk.getParseFileStockSet();
+			return curbk.getNodetreerelated().getParseFileStockSet();
 		}
 		
 		//设置突出显示成交额阀值

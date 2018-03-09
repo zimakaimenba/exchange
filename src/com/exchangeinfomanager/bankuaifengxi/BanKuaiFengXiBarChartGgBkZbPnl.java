@@ -20,6 +20,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -38,93 +40,135 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartGgBkZbPnl.class);
 
 	/*
-	 * 个股板块 成交量占比
+	 * 板块按周相对于某板块的交易额
 	 */
-	public void setNodeCjlZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
+	public void setBanKuaiCjlZhanBi (BanKuai node, LocalDate displayedenddate1,String period)
 	{
-//		this.curdisplayednode = node;
-//		this.displayedenddate = displayedenddate1;
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
-		this.setNodeCjlZhanBiByWeek (node,requirestart,requireend,dapan);
-//		barchartdataset = new DefaultCategoryDataset();
-//		double highestHigh =0.0; //设置显示范围
-////		datafx = new DefaultCategoryDataset();
-//		
-//		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
-//			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
-//			if(tmprecord != null) {
-//				Double ggbkratio = tmprecord.getCjlZhanBi();
-//				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
-//				barchartdataset.setValue(ggbkratio,"占比",lastdayofweek);
-//				
-//				if(ggbkratio > highestHigh)
-//					highestHigh = ggbkratio;
-//			} else {
-//				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
-//					barchartdataset.setValue(0.0,"占比",tmpdate);
-////					datafx.addValue(0, "分析结果", tmpdate);
-//				} else //为空说明该周市场没有交易
-//					continue;
-//			}
-//			
-//		}
-//		
-//		setPanelTitle ("成交量占比",displayedenddate1);
-//		
-//		operationAfterDataSetup (node,highestHigh);
+		this.setBanKuaiCjlZhanBi (node,requirestart,requireend,period);
 	}
-	public void setNodeCjlZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate, DaPan dapan)
+	public void setBanKuaiCjlZhanBi (BanKuai node,LocalDate startdate,LocalDate enddate,String period)
 	{
 		this.curdisplayednode = node;
-//		this.displayedenddate = displayedenddate1;
+
+		BkChanYeLianTreeNode.NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+		displayDataToGui (nodexdata,startdate,enddate,period,"成交量");
+	}
+	/*
+	 * 股票按周相对于某板块的交易额
+	 */
+	public void setStockCjlZhanBi (Stock node,BanKuai upnode, LocalDate displayedenddate1,String period)
+	{
+		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		this.setStockCjlZhanBi (node,upnode,requirestart,requireend,period);
+	}
+	public void setStockCjlZhanBi (Stock node,BanKuai upnode,LocalDate startdate,LocalDate enddate,String period)
+	{
+		this.curdisplayednode = node;
+		String bkcode = upnode.getMyOwnCode();
+		BkChanYeLianTreeNode.NodeXPeriodData nodexdata = node.getStockXPeriodDataForABanKuai(bkcode, period);
+		displayDataToGui (nodexdata,startdate,enddate,period,"成交量");
+	}
+
+	private void displayDataToGui (BkChanYeLianTreeNode.NodeXPeriodData nodexdata,LocalDate startdate,LocalDate enddate,String period,String indicater)
+	{
+		DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
+		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
 		
 		barchartdataset = new DefaultCategoryDataset();
 		double highestHigh =0.0; //设置显示范围
-//		datafx = new DefaultCategoryDataset();
-		
-		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
-			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
+
+		LocalDate tmpdate = requirestart;
+		do  {
+			ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(tmpdate,0);
 			if(tmprecord != null) {
-				Double ggbkratio = tmprecord.getCjlZhanBi();
+				Double ggbkratio;
+				if(indicater.equals("成交量") )
+					 ggbkratio = tmprecord.getCjlZhanBi();
+				else
+					ggbkratio = tmprecord.getCjeZhanBi();
+				
 				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
 				barchartdataset.setValue(ggbkratio,"占比",lastdayofweek);
 				
 				if(ggbkratio > highestHigh)
 					highestHigh = ggbkratio;
 			} else {
-				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
+				if( !dapan.isDaPanXiuShi(tmpdate,period) ) {
 					barchartdataset.setValue(0.0,"占比",tmpdate);
 //					datafx.addValue(0, "分析结果", tmpdate);
-				} else //为空说明该周市场没有交易
-					continue;
+				} 
 			}
 			
-		}
+			if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			
+		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
-		setPanelTitle ("成交量占比",requireend);
+		setPanelTitle (indicater + "占比",requireend);
 		
-		operationAfterDataSetup (node,highestHigh);
+		operationAfterDataSetup (nodexdata,requirestart,requireend,highestHigh,period);
 	}
 
 	
 	/*
 	 * 板块大盘/个股板块成交额 占比
 	 */
-	public void setNodeCjeZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate displayedenddate1, DaPan dapan)
+	/*
+	 * 板块按周相对于某板块的交易额
+	 */
+	public void setBanKuaiCjeZhanBi (BanKuai node,LocalDate displayedenddate1,String period)
 	{
-//		this.curdisplayednode = node;
-//		this.displayedenddate = displayedenddate1;
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
-		this.setNodeCjeZhanBiByWeek(node,requirestart,requireend,dapan);
+		this.setBanKuaiCjeZhanBi (node,requirestart,requireend,period);
+	}
+	public void setBanKuaiCjeZhanBi (BanKuai node,LocalDate startdate,LocalDate enddate,String period)
+	{
+		this.curdisplayednode = node;
+//		String bkcode = upnode.getMyOwnCode();
+		BkChanYeLianTreeNode.NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+		displayDataToGui (nodexdata,startdate,enddate,period,"成交额");
+	}
+	/*
+	 * 股票按周相对于某板块的交易额
+	 */
+	public void setStockCjeZhanBi (Stock node,BkChanYeLianTreeNode upnode, LocalDate displayedenddate1,String period)
+	{
+		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		this.setStockCjeZhanBi (node,upnode,requirestart,requireend,period);
+	}
+	public void setStockCjeZhanBi (Stock node,BkChanYeLianTreeNode upnode,LocalDate startdate,LocalDate enddate,String period)
+	{
+		this.curdisplayednode = node;
+		String bkcode = upnode.getMyOwnCode();
+		BkChanYeLianTreeNode.NodeXPeriodData nodexdata = node.getStockXPeriodDataForABanKuai(bkcode, period);
+		displayDataToGui (nodexdata,startdate,enddate,period,"成交额");
+	}
+	/*
+	 * 显示制定时间周期的数据
+	 */
+//	public void setNodeCjeZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate, DaPan dapan)
+//	{
+//		this.curdisplayednode = node;
+//		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);;
+//		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);;
+//		
 //		barchartdataset = new DefaultCategoryDataset();
 //		double highestHigh =0.0; //设置显示范围
-////		datafx = new DefaultCategoryDataset();
 //		
 //		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
 //			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
@@ -145,65 +189,31 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 //			
 //		}
 //		
-//		setPanelTitle ("成交额占比",displayedenddate1);
+//		setPanelTitle ("成交额占比",enddate);
 //		
-//		operationAfterDataSetup (node,highestHigh);
-	}
-	/*
-	 * 显示制定时间周期的数据
-	 */
-	public void setNodeCjeZhanBiByWeek (BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate, DaPan dapan)
-	{
-		this.curdisplayednode = node;
-		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);;
-		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);;
-		
-		barchartdataset = new DefaultCategoryDataset();
-		double highestHigh =0.0; //设置显示范围
-		
-		for(LocalDate tmpdate = requirestart;tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend); tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ){
-			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
-			if(tmprecord != null) {
-				Double ggbkratio = tmprecord.getCjeZhanBi();
-				LocalDate lastdayofweek = tmprecord.getRecordsDayofEndofWeek();
-				barchartdataset.setValue(ggbkratio,"占比",lastdayofweek);
-				
-				if(ggbkratio > highestHigh)
-					highestHigh = ggbkratio;
-			} else {
-				if( !dapan.isThisWeekXiuShi(tmpdate) ) {
-					barchartdataset.setValue(0.0,"占比",tmpdate);
-//					datafx.addValue(0, "分析结果", tmpdate);
-				} else //为空说明该周市场没有交易
-					continue;
-			}
-			
-		}
-		
-		setPanelTitle ("成交额占比",enddate);
-		
-		operationAfterDataSetup (node,highestHigh);
-	}
+//		operationAfterDataSetup (nodexdata,requirestart,requireend,highestHigh,period);
+//	}
 
 	/*
 	 * 突出显示一些预先设置
 	 */
-	private void operationAfterDataSetup(BkChanYeLianTreeNode node, double highestHigh) 
+	private void operationAfterDataSetup (BkChanYeLianTreeNode.NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, String period) 
 	{
 		CustomRendererForGgBkZhanBi render = (CustomRendererForGgBkZhanBi)super.plot.getRenderer();
-		render.setDisplayNode(node);
+		render.setDisplayNode(this.curdisplayednode);
 		render.setDateSet (barchartdataset);
+		render.setDisplayNodeXPeriod (nodexdata);
 		
 		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 		render.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
 		render.setItemLabelsVisible(true);
 
 		//
-		if(node.getType() == 4) { //板块
+		if(this.curdisplayednode.getType() == 4) { //板块
 			CustomToolTipGeneratorForBkZhanBi custotooltip = new CustomToolTipGeneratorForBkZhanBi();
 			custotooltip.setDisplayNode(curdisplayednode);
 			render.setSeriesToolTipGenerator(0,custotooltip);
-		} else if(node.getType() == 6) { //gegu
+		} else if(this.curdisplayednode.getType() == 6) { //gegu
 			CustomToolTipGeneratorForGgZhanBi custotooltip = new CustomToolTipGeneratorForGgZhanBi();
 			custotooltip.setDisplayNode(curdisplayednode);
 			render.setSeriesToolTipGenerator(0,custotooltip);
@@ -211,7 +221,7 @@ public class BanKuaiFengXiBarChartGgBkZbPnl extends BanKuaiFengXiBarChartPnl
 		
 		//如有分析结果，ticklable显示红色
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
-		axis.setDisplayNode(node);
+		axis.setDisplayNode(this.curdisplayednode,period);
 		
 		super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
 		
@@ -233,7 +243,12 @@ class CustomRendererForGgBkZhanBi extends BanKuaiFengXiBarRenderer
 //        getItemLabelGenerator
     }
 
-    public Paint getItemPaint(final int row, final int column) 
+//    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+//    {
+//		this.nodexdata = nodexdata1;
+//	}
+
+	public Paint getItemPaint(final int row, final int column) 
     {
         if(column == shouldcolumn)
             return Color.blue;
@@ -246,11 +261,11 @@ class CustomRendererForGgBkZhanBi extends BanKuaiFengXiBarRenderer
 		String selected = super.chartdataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	 
-    	ChenJiaoZhanBiInGivenPeriod nodefx = null;
-    	if(node.getType() == 4)
-    		nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
-    	else if(node.getType() == 6)
-    		nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
+    	ChenJiaoZhanBiInGivenPeriod nodefx = nodexdata.getSpecficRecord(selecteddate, 0);
+//    	if(node.getType() == 4)
+//    		nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
+//    	else if(node.getType() == 6)
+//    		nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
     		
 		Integer maxweek;
 		if(nodefx != null)
@@ -266,20 +281,21 @@ class CustomRendererForGgBkZhanBi extends BanKuaiFengXiBarRenderer
     
 }
 
-class CustomToolTipGeneratorForBkZhanBi implements CategoryToolTipGenerator 
+class CustomToolTipGeneratorForBkZhanBi extends BanKuaiFengXiBarToolTipGenerator 
 {
-    private BkChanYeLianTreeNode node;
+//    private BkChanYeLianTreeNode node;
+//	private NodeXPeriodData nodexdata;
 
 	public String generateToolTip(CategoryDataset dataset, int row, int column)  
     {
 		String selected = dataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	 
-    	ChenJiaoZhanBiInGivenPeriod nodefx = null;
-		if(node.getType() == 4 )
-			nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
-		else if(node.getType() == 6 ) 
-			nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
+    	ChenJiaoZhanBiInGivenPeriod nodefx = nodexdata.getSpecficRecord(selecteddate, 0);
+//		if(node.getType() == 4 )
+//			nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
+//		else if(node.getType() == 6 ) 
+//			nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
 		
 		if(nodefx == null)
 			return "";
@@ -314,10 +330,14 @@ class CustomToolTipGeneratorForBkZhanBi implements CategoryToolTipGenerator
 		return "";
     }
     
-    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
-    {
-    	this.node = curdisplayednode;
-    }
+//    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+//    {
+//    	this.node = curdisplayednode;
+//    }
+//    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+//    {
+//		this.nodexdata = nodexdata1;
+//	}
 }
 
 

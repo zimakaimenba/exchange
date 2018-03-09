@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.asinglestockinfo;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -24,7 +24,9 @@ public class ChenJiaoZhanBiInGivenPeriod {
 			this.dataperiodtype = null;
 		
 	}
-	public static String  DAY = "DAY", WEEK = "WEEK", SIXTYMINUTES = "SIXTYMINUTES";
+	public static String  DAY = "DAY", WEEK = "WEEK", SIXTYMINUTES = "SIXTYMINUTES", MONTH= "MONTH";
+	private String dataperiodtype; //日线，周线，月线，年线
+	
 	private String myuplevelcode;
 
 	private Double openprice;
@@ -32,25 +34,24 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	private Double highprice;
 	private Double lowprice;
 	private LocalDate  dayofendoftheweek;
-	private String dataperiodtype; //日线，周线，月线，年线
-
+	
 	private Double myownchengjiaoliang; //成交量
 	private Double uplevelchengjiaoliang; //上级板块的成交量
-	
 	private Double myownchengjiaoer; //成交额
 	private Double uplevelchengjiaoer; //上级板块的成交额
-	private Double ggbkzhanbigrowthrate;  //个股板块占比增速
-	private Integer ggbkzhanbimaxweek;  //个股板块占比最大周
+	private Double ggbkcjezhanbigrowthrate;  //个股板块占比增速
+	private Integer ggbkcjezhanbimaxweek;  //个股板块占比最大周
 	private Integer ggbkcjemaxweek; //个股板块成交额最大周
-	private Double ggbkcjegrowthzhanbi;  //个股板块成交量贡献率
-	private Double ggdpcjezhanbi;  //个股成交额大盘占比
-	private Double ggdpcjegrowthzhanbi;  //个股大盘成交量贡献率
-	private Integer ggdpcjezhanbimaxweek;//个股大盘占比最大周
-	private Double ggdpcjezhanbigrowthrate; //个股大盘占比增速
+	private Double ggbkcjegrowthratetosuperbankuaicjegrowth;  //个股板块成交量贡献率
+//	private Double ggdpcjezhanbi;  //个股成交额大盘占比
+//	private Double ggdpcjegrowthzhanbi;  //个股大盘成交量贡献率
+//	private Integer ggdpcjezhanbimaxweek;//个股大盘占比最大周
+//	private Double ggdpcjezhanbigrowthrate; //个股大盘占比增速
 	
 	private Boolean hasfengxijieguo; //有加入关注，分析结果等等
 	
 	private String myowncode;
+	private double ggbkcjedifference; //个股的成交额本周期和合理的上周期的差额
 	/**
 	 * @return the myowncode
 	 */
@@ -84,6 +85,10 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	public int getRecordsYear() 
 	{
 		return this.dayofendoftheweek.getYear();
+	}
+	public int getRecordsMonth () 
+	{
+		return this.dayofendoftheweek.getMonthValue();
 	}
 	/**
 	 * @return the week
@@ -167,101 +172,101 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	}
 	
 	
-	/**
-	 * @return the ggdpcjegrowthzhanbi
-	 */
-	public Double getGgdpcjegrowthzhanbi() {
-		return ggdpcjegrowthzhanbi;
-	}
-	/**
-	 * @param ggdpcjegrowthzhanbi the ggdpcjegrowthzhanbi to set
-	 */
-	public void setGgdpcjegrowthzhanbi(Double ggdpcjegrowthzhanbi) {
-		this.ggdpcjegrowthzhanbi = ggdpcjegrowthzhanbi;
-	}
-	/**
-	 * @return the ggdpzhanbimaxweek
-	 */
-	public Integer getGgdpzhanbimaxweek() {
-		return ggdpcjezhanbimaxweek;
-	}
-	/**
-	 * @param ggdpzhanbimaxweek the ggdpzhanbimaxweek to set
-	 */
-	public void setGgdpzhanbimaxweek(Integer ggdpzhanbimaxweek) {
-		this.ggdpcjezhanbimaxweek = ggdpzhanbimaxweek;
-	}
-	/**
-	 * @return the ggdpzhanbi
-	 */
-	public Double getGgdpzhanbi() {
-		return ggdpcjezhanbi;
-	}
-	/**
-	 * @param ggdpzhanbi the ggdpzhanbi to set
-	 */
-	public void setGgdpzhanbi(Double ggdpzhanbi) {
-		this.ggdpcjezhanbi = ggdpzhanbi;
-	}
+//	/**
+//	 * @return the ggdpcjegrowthzhanbi
+//	 */
+//	public Double getGgdpcjegrowthzhanbi() {
+//		return ggdpcjegrowthzhanbi;
+//	}
+//	/**
+//	 * @param ggdpcjegrowthzhanbi the ggdpcjegrowthzhanbi to set
+//	 */
+//	public void setGgdpcjegrowthzhanbi(Double ggdpcjegrowthzhanbi) {
+//		this.ggdpcjegrowthzhanbi = ggdpcjegrowthzhanbi;
+//	}
+//	/**
+//	 * @return the ggdpzhanbimaxweek
+//	 */
+//	public Integer getGgdpzhanbimaxweek() {
+//		return ggdpcjezhanbimaxweek;
+//	}
+//	/**
+//	 * @param ggdpzhanbimaxweek the ggdpzhanbimaxweek to set
+//	 */
+//	public void setGgdpzhanbimaxweek(Integer ggdpzhanbimaxweek) {
+//		this.ggdpcjezhanbimaxweek = ggdpzhanbimaxweek;
+//	}
+//	/**
+//	 * @return the ggdpzhanbi
+//	 */
+//	public Double getGgdpzhanbi() {
+//		return ggdpcjezhanbi;
+//	}
+//	/**
+//	 * @param ggdpzhanbi the ggdpzhanbi to set
+//	 */
+//	public void setGgdpzhanbi(Double ggdpzhanbi) {
+//		this.ggdpcjezhanbi = ggdpzhanbi;
+//	}
 	
 	/**
 	 * @return the ggbkzhanbigrowthrate
 	 */
-	public Double getGgbkzhanbigrowthrate() {
-		return ggbkzhanbigrowthrate;
+	public Double getGgBkCjeZhanbiGrowthRate() {
+		return ggbkcjezhanbigrowthrate;
 	}
 	/**
 	 * @param ggbkzhanbigrowthrate the ggbkzhanbigrowthrate to set
 	 */
-	public void setGgbkzhanbigrowthrate(Double ggbkzhanbigrowthrate) {
-		this.ggbkzhanbigrowthrate = ggbkzhanbigrowthrate;
+	public void setGgBkCjeZhanbiGrowthRate(Double ggbkzhanbigrowthrate) {
+		this.ggbkcjezhanbigrowthrate = ggbkzhanbigrowthrate;
 	}
 	/**
 	 * @return the ggbkzhanbimaxweek
 	 */
-	public Integer getGgbkzhanbimaxweek() {
-		return ggbkzhanbimaxweek;
+	public Integer getGgBkCjeZhanbiMaxweek() {
+		return ggbkcjezhanbimaxweek;
 	}
 	/**
 	 * @param ggbkzhanbimaxweek the ggbkzhanbimaxweek to set
 	 */
-	public void setGgbkzhanbimaxweek(Integer ggbkzhanbimaxweek) {
-		this.ggbkzhanbimaxweek = ggbkzhanbimaxweek;
+	public void setGgBkCjeZhanbiMaxweek(Integer ggbkzhanbimaxweek) {
+		this.ggbkcjezhanbimaxweek = ggbkzhanbimaxweek;
 	}
 	/**
 	 * @return the ggbkcjegrowthzhanbi
 	 */
-	public Double getGgbkcjegrowthzhanbi() {
-		return ggbkcjegrowthzhanbi;
+	public Double getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth() {
+		return ggbkcjegrowthratetosuperbankuaicjegrowth;
 	}
 	/**
 	 * @param ggbkcjegrowthzhanbi the ggbkcjegrowthzhanbi to set
 	 */
-	public void setGgbkcjegrowthzhanbi(Double ggbkcjegrowthzhanbi) {
-		this.ggbkcjegrowthzhanbi = ggbkcjegrowthzhanbi;
+	public void setGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth(Double ggbkcjegrowthzhanbi) {
+		this.ggbkcjegrowthratetosuperbankuaicjegrowth = ggbkcjegrowthzhanbi;
 	}
-	/**
-	 * @return the ggdpzhanbigrowthrate
-	 */
-	public Double getGgdpzhanbigrowthrate() {
-		return ggdpcjezhanbigrowthrate;
-	}
-	/**
-	 * @param ggdpzhanbigrowthrate the ggdpzhanbigrowthrate to set
-	 */
-	public void setGgdpzhanbigrowthrate(Double ggdpzhanbigrowthrate) {
-		this.ggdpcjezhanbigrowthrate = ggdpzhanbigrowthrate;
-	}
+//	/**
+//	 * @return the ggdpzhanbigrowthrate
+//	 */
+//	public Double getGgdpzhanbigrowthrate() {
+//		return ggdpcjezhanbigrowthrate;
+//	}
+//	/**
+//	 * @param ggdpzhanbigrowthrate the ggdpzhanbigrowthrate to set
+//	 */
+//	public void setGgdpzhanbigrowthrate(Double ggdpzhanbigrowthrate) {
+//		this.ggdpcjezhanbigrowthrate = ggdpzhanbigrowthrate;
+//	}
 	/**
 	 * @return the ggbkcjemaxweek
 	 */
-	public Integer getGgbkcjemaxweek() {
+	public Integer getGgBkCjeMaxweek() {
 		return ggbkcjemaxweek;
 	}
 	/**
 	 * @param ggbkcjemaxweek the ggbkcjemaxweek to set
 	 */
-	public void setGgbkcjemaxweek(Integer ggbkcjemaxweek) {
+	public void setGgBkCjeMaxweek(Integer ggbkcjemaxweek) {
 		this.ggbkcjemaxweek = ggbkcjemaxweek;
 	}
 	public void setFengXiJIeGuo (Boolean fxjg)
@@ -300,6 +305,13 @@ public class ChenJiaoZhanBiInGivenPeriod {
 	}
 	public void setLowPrice(Double lowprice) {
 		this.lowprice = lowprice;
+	}
+	/*
+	 * 本周起成交额和合理的上周期(个股未停牌前提下)的差额
+	 */
+	public void setGgBkCjeDifferenceWithLastPeriod(double d) {
+		this.ggbkcjedifference = d;
+		
 	}
 
 	

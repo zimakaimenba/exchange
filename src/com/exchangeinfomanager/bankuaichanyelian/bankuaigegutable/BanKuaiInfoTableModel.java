@@ -15,6 +15,9 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiNodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 
 public class BanKuaiInfoTableModel extends DefaultTableModel 
@@ -26,19 +29,26 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	
 	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","MaxWeek","成交额增长贡献率"};
 //	HashMap<String,BanKuai> bkmap;
-	List<Map.Entry<String, BanKuai>> entryList;
+	List<BanKuai> entryList;
 	LocalDate showzhbiwknum;
+	private String curperiod;
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTableModel.class);
 	
-	public void refresh  (HashMap<String,BanKuai> curbkzslist, LocalDate curselectdate)
+	public void refresh  (ArrayList<BanKuai> bkhascjl, LocalDate curselectdate,String period)
 	{
 		showzhbiwknum = curselectdate;
-		entryList = new ArrayList<Map.Entry<String, BanKuai>>(curbkzslist.entrySet());
+		this.curperiod = period;
+//		entryList = bkhascjl;
 
 		this.fireTableDataChanged();
 	}
-	
-	 
+	public void addBanKuai (BanKuai bankuai)
+	{
+		if(entryList == null)
+			entryList = new ArrayList<BanKuai> ();
+		else
+			entryList.add(bankuai);
+	}
 	
 	 public int getRowCount() 
 	 {
@@ -58,31 +68,34 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    {
 	    	if(entryList.isEmpty() )
 	    		return null;
+    	
+	    	BanKuai bankuai = entryList.get( rowIndex );
+	    	BanKuaiNodeXPeriodData bkxdata = (BanKuaiNodeXPeriodData)bankuai.getNodeXPeroidData(this.curperiod);
 	    	
-	    	Entry<String, BanKuai> thisbk = entryList.get( rowIndex );
+//	    	ChenJiaoZhanBiInGivenPeriod fxjg = bkxdata.getNodeFengXiResultForSpecificDate (showzhbiwknum);
 	    	
 	    	Object value = "??";
 	    	switch (columnIndex) {
             case 0:
-            	String bkcode = thisbk.getValue().getMyOwnCode();
+            	String bkcode = bankuai.getMyOwnCode();
                 value = bkcode;
                 break;
             case 1:
-            	String thisbkname = thisbk.getValue().getMyOwnName();
+            	String thisbkname = bankuai.getMyOwnName();
             	value = thisbkname;
             	break;
-            case 2:
-            	Double zhanbigrowthrate = thisbk.getValue().getChenJiaoLiangZhanBiGrowthRateForAGivenPeriod (showzhbiwknum);
+            case 2: //"板块代码", "板块名称","占比增长率","MaxWeek","成交额增长贡献率"
+            	Double zhanbigrowthrate = bkxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeZhanbiGrowthRate();
 //    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
 //    	    	percentFormat.setMinimumFractionDigits(1);
             	value = zhanbigrowthrate;
             	break;
             case 3:
-            	int maxweek = thisbk.getValue().getChenJiaoLiangZhanBiMaxWeekForAGivenPeriod (showzhbiwknum);
+            	int maxweek = bkxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeZhanbiMaxweek();
             	value = maxweek;
             	break;
             case 4:
-            	Double cjegrowthrate = thisbk.getValue().getChenJiaoErChangeGrowthRateForAGivenPeriod (showzhbiwknum);
+            	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
 //    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
 //    	    	percentFormat2.setMinimumFractionDigits(1);
             	value = cjegrowthrate;
@@ -132,9 +145,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    } 
 	    public BanKuai getBanKuai (int row)
 	    {
-	    	String bkcode = this.getBanKuaiCode(row);
-//	    	return bkmap.get(bkcode);
-	    	return this.entryList.get(row).getValue();
+	    	return this.entryList.get(row);
 	    }
 
 	    public int getBanKuaiRowIndex (String neededfindstring) 

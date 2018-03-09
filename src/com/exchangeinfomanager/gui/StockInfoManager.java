@@ -20,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 
 import com.exchangeinfomanager.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.Search.SearchDialog;
 //import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeeting;
@@ -28,6 +29,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
@@ -39,7 +41,6 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPa
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiPieChartPnl;
-import com.exchangeinfomanager.bankuaifengxi.ChenJiaoZhanBiInGivenPeriod;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -106,7 +107,6 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.sun.rowset.CachedRowSetImpl;
 import com.exchangeinfomanager.database.*;
-import com.exchangeinfomanager.gui.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.TableCellListener;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
@@ -118,6 +118,7 @@ import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 
 
 import java.awt.event.ActionListener;
@@ -206,10 +207,9 @@ public class StockInfoManager
 		}
 		
 		accountschicangconfig = new AccountAndChiCangConfiguration ();
-
 		acntdbopt = new AccountDbOperation();
 		bkdbopt = new BanKuaiDbOperation ();
-		bkcyl = new BanKuaiAndChanYeLian(this);
+		bkcyl = new BanKuaiAndChanYeLian();
 //		chklstdialog = new BuyCheckListTreeDialog (this,"","");
 //		panelcklt = chklstdialog.getCheckListPanel();
 		initializeGui();
@@ -401,7 +401,7 @@ public class StockInfoManager
 				else
 					return;
 				
-				BanKuai bankuai = bkcyl.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()  );
+				BanKuai bankuai = bkcyl.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), ChenJiaoZhanBiInGivenPeriod.WEEK);
 				editorPanenodeinfo.displayNodeAllInfo(bankuai);
 			}
 		});
@@ -858,7 +858,7 @@ public class StockInfoManager
 					
 				} else if(nodeshouldbedisplayed.getType() == 4) {
 //					bkcyl.startGui ();
-					bkcyl.findBanKuaiInTree(nodeshouldbedisplayed.getMyOwnCode() );
+//					bkcyl.findBanKuaiInTree(nodeshouldbedisplayed.getMyOwnCode() );
 					startBanKuaiGuanLiDlg ();
 					
 				}
@@ -1666,14 +1666,12 @@ public class StockInfoManager
 		
 	protected void startBanKuaiFengXi() 
 	{
-			if(bkfx == null && bkcyl.getBanKuaiFengXi() == null) {
+			if(bkfx == null ) {
 				bkfx = new BanKuaiFengXi (this,bkcyl);
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				bkfx.setVisible(true);
-			} else if(bkfx == null && bkcyl.getBanKuaiFengXi() != null) {
-				bkfx = bkcyl.getBanKuaiFengXi(); 
-			}
+			} 
 			
 			if(!bkfx.isVisible() ) {
 				bkfx.setVisible(true);
@@ -1896,8 +1894,7 @@ public class StockInfoManager
  */
 	private void displayStockSuoShuBanKuai() 
 	{
-//		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList(); //所属通达信系统板块
-		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuSuoShuTDXSysBanKuaiList();
+		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuCurSuoShuTDXSysBanKuaiList();
 		 Set<String> union =  suosusysbankuai.keySet();
 		 Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
 		 
@@ -2064,36 +2061,36 @@ public class StockInfoManager
 				
 			
 				try {
-					txtareagainiants.setText(nodeshouldbedisplayed.getGainiantishi().trim());
+					txtareagainiants.setText(nodeshouldbedisplayed.getNodeJiBenMian().getGainiantishi().trim());
 				} catch (java.lang.NullPointerException e) {
 					txtareagainiants.setText("");
 				}
 				
 				try {
-					dateChsgainian.setDate( Date.from(nodeshouldbedisplayed.getGainiantishidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));    
+					dateChsgainian.setDate( Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getGainiantishidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));    
 				} catch(java.lang.NullPointerException e) {
 					dateChsgainian.setDate(null);
 				}
 				
-				txtfldquanshangpj.setText(nodeshouldbedisplayed.getQuanshangpingji());
+				txtfldquanshangpj.setText(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingji());
 				try {
-					dateChsquanshang.setDate(Date.from(nodeshouldbedisplayed.getQuanshangpingjidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+					dateChsquanshang.setDate(Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingjidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 				} catch(java.lang.NullPointerException e) {
 					dateChsquanshang.setDate(null);
 				}
 				
-				txtareafumianxx.setText(nodeshouldbedisplayed.getFumianxiaoxi());
+				txtareafumianxx.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxi());
 				try {
-					dateChsefumian.setDate( Date.from(nodeshouldbedisplayed.getFumianxiaoxidate().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+					dateChsefumian.setDate( Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxidate().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
 				} catch(java.lang.NullPointerException e) {
 					dateChsefumian.setDate(null);
 				}
 				
 				
-				txtfldzhengxg.setText(nodeshouldbedisplayed.getZhengxiangguan());
-				txtfldfuxg.setText(nodeshouldbedisplayed.getFuxiangguan());
-				tfdJingZhengDuiShou.setText(nodeshouldbedisplayed.getJingZhengDuiShou());
-				tfdCustom.setText(nodeshouldbedisplayed.getKeHuCustom());
+				txtfldzhengxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan());
+				txtfldfuxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFuxiangguan());
+				tfdJingZhengDuiShou.setText(nodeshouldbedisplayed.getNodeJiBenMian().getJingZhengDuiShou());
+				tfdCustom.setText(nodeshouldbedisplayed.getNodeJiBenMian().getKeHuCustom());
 			
 			lblStatusBarOperationIndicatior.setText("");
 			lblStatusBarOperationIndicatior.setText("相关信息查找成功");
@@ -2203,18 +2200,18 @@ public class StockInfoManager
 	    
 		nodeshouldbedisplayed.setMyOwnName(txtFldStockName.getText().trim().replaceAll("\\s*", "")); //去除股票名中间所有的空格
 		if(dateChsgainian.getDate() != null)
-			nodeshouldbedisplayed.setGainiantishidate(dateChsgainian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-		nodeshouldbedisplayed.setGainiantishi(txtareagainiants.getText().trim());
+			nodeshouldbedisplayed.getNodeJiBenMian().setGainiantishidate(dateChsgainian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+		nodeshouldbedisplayed.getNodeJiBenMian().setGainiantishi(txtareagainiants.getText().trim());
 		if(dateChsquanshang.getDate() != null)
-			nodeshouldbedisplayed.setQuanshangpingjidate(dateChsquanshang.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-		nodeshouldbedisplayed.setQuanshangpingji(txtfldquanshangpj.getText().trim());
+			nodeshouldbedisplayed.getNodeJiBenMian().setQuanshangpingjidate(dateChsquanshang.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+		nodeshouldbedisplayed.getNodeJiBenMian().setQuanshangpingji(txtfldquanshangpj.getText().trim());
 		if(dateChsefumian.getDate() != null)
-		nodeshouldbedisplayed.setFumianxiaoxidate(dateChsefumian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-		nodeshouldbedisplayed.setFumianxiaoxi(txtareafumianxx.getText().trim());
-		nodeshouldbedisplayed.setZhengxiangguan( txtfldzhengxg.getText().trim());
-		nodeshouldbedisplayed.setFuxiangguan(txtfldfuxg.getText().trim());
-		nodeshouldbedisplayed.setKeHuCustom(tfdCustom.getText().trim());
-		nodeshouldbedisplayed.setJingZhengDuiShou(tfdJingZhengDuiShou.getText().trim());
+		nodeshouldbedisplayed.getNodeJiBenMian().setFumianxiaoxidate(dateChsefumian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+		nodeshouldbedisplayed.getNodeJiBenMian().setFumianxiaoxi(txtareafumianxx.getText().trim());
+		nodeshouldbedisplayed.getNodeJiBenMian().setZhengxiangguan( txtfldzhengxg.getText().trim());
+		nodeshouldbedisplayed.getNodeJiBenMian().setFuxiangguan(txtfldfuxg.getText().trim());
+		nodeshouldbedisplayed.getNodeJiBenMian().setKeHuCustom(tfdCustom.getText().trim());
+		nodeshouldbedisplayed.getNodeJiBenMian().setJingZhengDuiShou(tfdJingZhengDuiShou.getText().trim());
 	    
 	    if( bkdbopt.updateStockNewInfoToDb(nodeshouldbedisplayed) ) {
 	    	lblStatusBarOperationIndicatior.setText("");
@@ -2279,7 +2276,7 @@ public class StockInfoManager
 	
 	private void displaySellBuyZdgzInfoToGui() 
 	{
-				Object[][] sellbuyObjects = (nodeshouldbedisplayed).getZdgzMrmcZdgzYingKuiRecords();
+				Object[][] sellbuyObjects = (nodeshouldbedisplayed).getNodeJiBenMian().getZdgzMrmcZdgzYingKuiRecords();
 				for(int i=0;i<sellbuyObjects.length;i++) {
 					((DefaultTableModel)tblzhongdiangz.getModel()).addRow(sellbuyObjects[i]);
 				}
