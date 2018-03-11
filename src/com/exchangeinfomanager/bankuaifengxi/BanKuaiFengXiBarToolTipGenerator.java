@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.data.category.CategoryDataset;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 
@@ -10,7 +11,7 @@ public class BanKuaiFengXiBarToolTipGenerator implements CategoryToolTipGenerato
 {
 	protected BkChanYeLianTreeNode node;
 //  private static Logger logger = Logger.getLogger(CustomToolTipGeneratorForChenJiaoEr.class);
-	protected NodeXPeriodData nodexdata;
+	protected NodeXPeriodDataBasic nodexdata;
 
 	@Override
 	public  String generateToolTip(CategoryDataset arg0, int arg1, int arg2) {
@@ -22,7 +23,7 @@ public class BanKuaiFengXiBarToolTipGenerator implements CategoryToolTipGenerato
     {
     	this.node = curdisplayednode;
     }
-    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+    public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
     {
 		this.nodexdata = nodexdata1;
 	}

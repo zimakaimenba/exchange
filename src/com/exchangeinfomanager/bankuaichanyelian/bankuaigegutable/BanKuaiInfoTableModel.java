@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiNodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
@@ -70,9 +71,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    		return null;
     	
 	    	BanKuai bankuai = entryList.get( rowIndex );
-	    	BanKuaiNodeXPeriodData bkxdata = (BanKuaiNodeXPeriodData)bankuai.getNodeXPeroidData(this.curperiod);
-	    	
-//	    	ChenJiaoZhanBiInGivenPeriod fxjg = bkxdata.getNodeFengXiResultForSpecificDate (showzhbiwknum);
+	    	NodeXPeriodDataBasic bkxdata = (BanKuaiNodeXPeriodData)bankuai.getNodeXPeroidData(this.curperiod);
 	    	
 	    	Object value = "??";
 	    	switch (columnIndex) {
@@ -86,8 +85,6 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	break;
             case 2: //"板块代码", "板块名称","占比增长率","MaxWeek","成交额增长贡献率"
             	Double zhanbigrowthrate = bkxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeZhanbiGrowthRate();
-//    	    	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-//    	    	percentFormat.setMinimumFractionDigits(1);
             	value = zhanbigrowthrate;
             	break;
             case 3:
@@ -96,8 +93,6 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	break;
             case 4:
             	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
-//    	    	NumberFormat percentFormat2 = NumberFormat.getPercentInstance();
-//    	    	percentFormat2.setMinimumFractionDigits(1);
             	value = cjegrowthrate;
 	    	}
 

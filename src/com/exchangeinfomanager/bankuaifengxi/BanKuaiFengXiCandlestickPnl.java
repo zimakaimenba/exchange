@@ -84,7 +84,7 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
  * @author ashraf
  */
 @SuppressWarnings("serial")
-public class BanKuaiFengXiCandlestickPnl extends JPanel 
+public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanelDataChangedListener
 {
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickPnl.class);
 	protected BkChanYeLianTreeNode curdisplayednode;
@@ -121,6 +121,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 //		 bkdbopt = new BanKuaiDbOperation ();
 	}
 	
+	@Override
+	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, String period) {
+		// TODO Auto-generated method stub
+		
+	}
 	/*
 	 * 显示K线的同时突出显示指定周的K线，并计算后期指定周期内的最大值最小值
 	 */
@@ -351,6 +356,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel
 			candlestickChart.getXYPlot().removeAnnotation(pointer);
 		
 	}
+
+
 }
 
 class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer 

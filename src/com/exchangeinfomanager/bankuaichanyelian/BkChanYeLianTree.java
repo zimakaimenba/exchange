@@ -632,7 +632,7 @@ public class BkChanYeLianTree extends JTree
 	/*
 	 * 找到指定的节点
 	 */
-	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String bkinputed)
+	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String bkinputed,int requirenodetype) //有时候板块和个股代码相同
 	{
 		TreePath bkpath = null ;
     	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
@@ -644,10 +644,14 @@ public class BkChanYeLianTree extends JTree
 	    while (e.hasMoreElements() ) {
 	    	BkChanYeLianTreeNode node = e.nextElement();
 	    	Boolean found = node.checktHanYuPingYin(bkinputed);
-	        if (found) {
+//    		logger.debug(node.getMyOwnCode());
+	        if (found && node.getType() == requirenodetype ) {
+//	        	logger.debug(node.getMyOwnCode());
 	             bkpath = new TreePath(node.getPath());
+	             break;
 	        }
 	    }
+	    
 		if(bkpath != null) {
 			return (BkChanYeLianTreeNode) bkpath.getPathComponent(1);
 			

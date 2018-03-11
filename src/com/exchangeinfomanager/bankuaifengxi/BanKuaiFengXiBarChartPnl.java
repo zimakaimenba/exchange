@@ -45,6 +45,7 @@ import org.jfree.ui.TextAnchor;
 //import org.jfree.chart.renderer.junit.RendererChangeDetector;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
@@ -84,8 +85,13 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChartPanelHightLightListener
+public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChartPanelDataChangedListener, BarChartPanelHightLightListener  
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Create the panel.
 	 */
@@ -104,6 +110,7 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 		
 		sysconfig = SystemConfigration.getInstance();
 		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
+		
 		bkdbopt = new BanKuaiDbOperation ();
 	}
 	
@@ -226,7 +233,7 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
     }
     protected void getZdgzFx(LocalDate localDate,String period) 
     {
-    	NodeXPeriodData nodexdata = curdisplayednode.getNodeXPeroidData(period);
+    	NodeXPeriodDataBasic nodexdata = curdisplayednode.getNodeXPeroidData(period);
 		ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(localDate,0);
 		
     	if(tmprecord.hasFengXiJieGuo ()) {
@@ -246,6 +253,10 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
         this.dateselected = selecteddate;
         this.barchart.fireChartChanged();//必须有这句
     }
+//    public void updatedDate (BkChanYeLianTreeNode node, LocalDate data, String period)
+//    {
+//    	
+//    }
     /*
      * 设置要突出显示成交量或者占比MAXWK的阀值
      */
@@ -369,7 +380,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
     		return Color.black;
     	else {
     		LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
-    		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+    		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
     		ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(selecteddate,0);
     		
     		if(tmprecord == null)

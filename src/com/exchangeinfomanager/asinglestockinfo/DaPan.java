@@ -3,12 +3,14 @@ package com.exchangeinfomanager.asinglestockinfo;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiNodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 
 public class DaPan extends BkChanYeLianTreeNode
 {
@@ -16,6 +18,7 @@ public class DaPan extends BkChanYeLianTreeNode
 	public DaPan(String dpcode,String dpname) 
 	{
 		super(dpcode,dpname);
+		super.nodetype = BanKuaiAndStockBasic.DAPAN;
 		
 		super.nodewkdata = new DaPanNodeXPeriodData (ChenJiaoZhanBiInGivenPeriod.WEEK) ;
 		super.nodedaydata = new DaPanNodeXPeriodData (ChenJiaoZhanBiInGivenPeriod.DAY) ;
@@ -33,7 +36,7 @@ public class DaPan extends BkChanYeLianTreeNode
 	{
 		this.shenzhen = sz;
 	}
-	public NodeXPeriodData getNodeXPeroidData (String period)
+	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
 	{
 		if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
 			return nodewkdata;
@@ -55,11 +58,18 @@ public class DaPan extends BkChanYeLianTreeNode
 			return false;
 	}
 	
-	public class DaPanNodeXPeriodData extends NodeXPeriodData
+	public class DaPanNodeXPeriodData implements NodeXPeriodDataBasic
 	{
+		private String nodeperiodtype;
 		public DaPanNodeXPeriodData (String nodeperiodtype1)
 		{
-			super(nodeperiodtype1);
+			this.nodeperiodtype = nodeperiodtype1;
+		}
+		
+		@Override
+		public String getNodeperiodtype() 
+		{
+			return this.nodeperiodtype;
 		}
 		/*
 		 * 获得指定周期的记录
@@ -68,8 +78,8 @@ public class DaPan extends BkChanYeLianTreeNode
 		public ChenJiaoZhanBiInGivenPeriod getSpecficRecord(LocalDate requireddate, int differentce) 
 		{
 //			Double dapanchaer = 0.0;
-			String recordsperiod = super.getNodeperiodtype();
-			NodeXPeriodData periodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+			String recordsperiod = getNodeperiodtype();
+			NodeXPeriodDataBasic periodrecords = shanghai.getNodeXPeroidData(recordsperiod);
 			ChenJiaoZhanBiInGivenPeriod record = periodrecords.getSpecficRecord(requireddate,differentce);
 			if( record != null) {
 					
@@ -93,11 +103,10 @@ public class DaPan extends BkChanYeLianTreeNode
 		 */
 		public Double getChengJiaoErDifferenceWithLastPeriod (LocalDate requireddate)
 		{
-//			LocalDate lastwkdate = requireddate.with(DayOfWeek.MONDAY).minus(1,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 			Double dapanchaer = null;
 			
-			String recordsperiod = super.getNodeperiodtype();
-			NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+			String recordsperiod = getNodeperiodtype();
+			NodeXPeriodDataBasic shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
 			ChenJiaoZhanBiInGivenPeriod currecord = shanghaiperiodrecords.getSpecficRecord(requireddate,0);
 			if( currecord != null) {
 					try {
@@ -113,7 +122,7 @@ public class DaPan extends BkChanYeLianTreeNode
 					}
 			}
 			
-			NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
+			NodeXPeriodDataBasic shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
 			currecord = shenzhenperiodrecords.getSpecficRecord(requireddate,0);
 			if( currecord != null) {
 					try {
@@ -148,6 +157,34 @@ public class DaPan extends BkChanYeLianTreeNode
 		}
 		@Override
 		public ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate(LocalDate requireddate) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public void setNodePeriodRecords(ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public boolean addRecordsForAGivenPeriod(ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1,
+				LocalDate position) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		@Override
+		public LocalDate getRecordsStartDate() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public LocalDate getRecordsEndDate() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) {
 			// TODO Auto-generated method stub
 			return null;
 		}

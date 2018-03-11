@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -39,11 +41,11 @@ public class BanKuai extends BkChanYeLianTreeNode
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuai.class);
-	private HashMap<String, Stock> allbkge;
+//	private HashMap<String, Stock> allbkge;
 	private String bankuaileixing; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据 
 	private boolean notexporttogehpi = false;
 
-	public NodeXPeriodData getNodeXPeroidData (String period)
+	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
 	{
 		if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
 			return nodewkdata;
@@ -70,87 +72,134 @@ public class BanKuai extends BkChanYeLianTreeNode
 	 /**
 	 * @return the tmpallbkge
 	 */
-	public HashMap<String, Stock> getAllCurrentBanKuaiGeGu() {
-		return allbkge;
-	}
+	public ArrayList<StockOfBanKuai> getAllCurrentBanKuaiGeGu() 
+	{
+		ArrayList<StockOfBanKuai> stocklist = new ArrayList<StockOfBanKuai> ();
+		int childcount = this.getChildCount();
+		if (this.getChildCount() >= 0) {
+            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
+                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+                stocklist.add(childnode);
+                }
+        }
+		return stocklist;
+    }
 	/*
 	 * 只返回指定周期有成交量的个股,有成交量才说明可能是该板块的个股,没有成交量说明要不已经不是该板块的个股，要不就是停牌
 	 */
-	public HashMap<String, Stock> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,String period) 
+	public ArrayList<StockOfBanKuai> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,String period) 
 	{
-		if(this.allbkge == null || this.allbkge.isEmpty())
-			return null;
+		ArrayList<StockOfBanKuai> result = new ArrayList<StockOfBanKuai> ();
 		
-		LocalDate bkstart = getNodeXPeroidData(period).getRecordsStartDate();
-		LocalDate bkend = getNodeXPeroidData(period).getRecordsEndDate();
-		if(requireddate.isBefore(bkstart) || requireddate.isAfter(bkend) ) //当前没有该日期的记录
-			return null;
-
-		HashMap<String, Stock> result = new HashMap<String, Stock> ();
-		for (Map.Entry<String, Stock> entry : allbkge.entrySet()) {  
-			  Stock stock = entry.getValue();
-			  NodeXPeriodData stockxperioddata = stock.getStockXPeriodDataForABanKuai(this.getMyOwnCode(),period);
-			  if(stockxperioddata != null) {
-				  ChenJiaoZhanBiInGivenPeriod records = stockxperioddata.getSpecficRecord(requireddate, 0);
-				  if(records != null)
-					  result.put(stock.getMyOwnCode(), stock);
-			  }
-		}
-		
+		if (this.getChildCount() >= 0) {
+            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
+                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+                NodeXPeriodDataBasic stockxperioddata = childnode.getNodeXPeroidData(period);
+                if(stockxperioddata != null) {
+                	ChenJiaoZhanBiInGivenPeriod records = stockxperioddata.getSpecficRecord(requireddate, 0);
+  				  if(records != null)
+  					  result.add(childnode);
+                }
+            }
+        }
 		return result;
 	}
 	/*
 	 * 获得某一个个股
 	 */
-	public Stock getBanKuaiGeGu (String stockcode)
+	public StockOfBanKuai getBanKuaiGeGu (String stockcode)
 	{
-		if(this.allbkge == null) 
-			this.allbkge = new HashMap<String, Stock> ();
+		if (this.getChildCount() >= 0) {
+            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
+                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+                if(childnode.getStock().getMyOwnCode().equals(stockcode)) {
+                	return childnode;
+                }
+            }
+        }
 		
-		try {
-			Stock stock = this.allbkge.get(stockcode);
-			if(stock == null) {
-				return null;
-			} else
-				return stock;
-		} catch ( java.lang.NullPointerException e) {
-			e.printStackTrace();
-			return null;
-		}
-		
+		return null;
 	}
+	/*
+	 *这个函数可能会把stock和stockofbankuai 
+	 */
+//	private Boolean isBanKuaiGeGu (Stock stock)
+//	{
+//		if (this.getChildCount() >= 0) {
+//            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
+//                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+//                if(childnode.getStock().getMyOwnCode().equals(stock.getMyOwnCode())) {
+//                	return true;
+//                }
+//            }
+//        }
+//		
+//		return false;
+//	}
 	/*
 	 * 
 	 */
-	private Boolean isBanKuaiGeGu (Stock stock)
+	public void addNewBanKuaiGeGu (StockOfBanKuai stock) 
 	{
-		if(this.allbkge == null) 
-			return false;
+		boolean hasalreadybeenbankuaigegu = false;
 		
-		try {
-			String stockcode = stock.getMyOwnCode();
-			Stock tmpstock = this.allbkge.get(stockcode);
-			if(tmpstock == null) 
-				return false;
-			 else
-				return true;
-		} catch ( java.lang.NullPointerException e) {
-			e.printStackTrace();
-			return null;
-		}
-		
+		if (this.getChildCount() >= 0) {
+            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
+                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+                if(childnode.getStock().getMyOwnCode().equals(stock.getMyOwnCode())) {
+                	hasalreadybeenbankuaigegu = true;
+                }
+            }
+        }
+		if(!hasalreadybeenbankuaigegu)
+			this.add(stock);
 	}
-	/*
-	 * 
+	
+	/**
+	 * @return the sysBanKuaiWeight
 	 */
-	public void addNewBanKuaiGeGu (Stock stock) {
-		if(this.allbkge == null) 
-			this.allbkge = new HashMap<String, Stock> ();
-		
-		if(!this.isBanKuaiGeGu (stock) ) {
-			String stockcode = stock.getMyOwnCode();
-			this.allbkge.put(stockcode, stock);
-		}
+	public Integer getGeGuSuoShuBanKuaiWeight(String stockcode) 
+	{
+		int childcount = this.getChildCount();
+		if (this.getChildCount() >= 0) {
+            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
+                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+                
+                if(childnode.getStock().getMyOwnCode().equals(stockcode)) {
+    				Integer quanzhong = childnode.getQuanZhong();
+    				return quanzhong;
+                }
+            }
+        }
+		return null;
+	}
+	public void setGeGuSuoShuBanKuaiWeight(String stockcode , Integer quanzhong) 
+	{
+		int childcount = this.getChildCount();
+		if (this.getChildCount() >= 0) {
+            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
+                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+                
+                if(childnode.getStock().getMyOwnCode().equals(stockcode)) {
+                	childnode.setStockQuanZhong(quanzhong);
+                }
+            }
+        }
+	}
+	public NodeXPeriodDataBasic getStockXPeriodDataForABanKuai (String stockcode,String period)
+	{
+		int childcount = this.getChildCount();
+		if (this.getChildCount() >= 0) {
+            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
+                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+                
+                if(childnode.getStock().getMyOwnCode().equals(stockcode)) {
+                	NodeXPeriodDataBasic perioddata = childnode.getStockXPeriodDataForBanKuai(period);
+            		return perioddata;
+                }
+            }
+        }
+		return null;
 	}
 
 	/*
@@ -184,159 +233,12 @@ public class BanKuai extends BkChanYeLianTreeNode
 				super(nodeperiodtype1);
 			}
 
-			@Override
-			public ChenJiaoZhanBiInGivenPeriod getSpecficRecord(LocalDate requireddate, int difference) 
-			{
-				if(periodlist == null)
-					return null;
-
-				String nodeperiod = super.getNodeperiodtype();
-				LocalDate expectedate = null;
-				if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.WEEK)) { //如果是周线数据，只要数据周相同，即可返回
-					expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-				} else if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) { //如果是日线数据，必须相同才可返回
-					expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
-				}  else if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) { //如果是日线数据，必须相同才可返回
-					expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
-				}
-				
-				int index = -1;
-				ChenJiaoZhanBiInGivenPeriod foundrecord = null;
-				for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : super.periodlist) {
-					if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) { //如果是周线数据，只要数据周相同，即可返回
-						index ++;
-						
-						int year = expectedate.getYear();
-						int month = expectedate.getMonthValue();
-						
-						int yearnum = tmpcjzb.getRecordsYear();
-						int monthnum = tmpcjzb.getRecordsMonth();
-						
-						if(month == monthnum && yearnum == year) {
-							foundrecord = tmpcjzb;
-							break;
-						}
-					} else	if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.WEEK)) { //如果是周线数据，只要数据周相同，即可返回
-						index ++;
-						
-						int year = expectedate.getYear();
-						WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
-						int weekNumber = expectedate.get(weekFields.weekOfWeekBasedYear());
-						
-						int yearnum = tmpcjzb.getRecordsYear();
-						int wknum = tmpcjzb.getRecordsWeek();
-						
-						if(wknum == weekNumber && yearnum == year) {
-							foundrecord = tmpcjzb;
-							break;
-						}
-					} else if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) { //如果是日线数据，必须相同才可返回
-						index ++;
-						LocalDate recordsday = tmpcjzb.getRecordsDayofEndofWeek();
-						if(recordsday.isEqual(requireddate)) {
-							foundrecord = tmpcjzb;
-							break;
-						}
-					}
-				}
-				
-				return foundrecord;
-			}
 
 			@Override
-			public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate)
+			public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) 
 			{
-				if(periodlist == null)
-					return null;
-				
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
-				if( curcjlrecord == null) 
-					return null;
-				
-				int index = -1;
-				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,super.getNodeperiodtype()) ) { //上周可能大盘修饰
-					index --;
-				}
-				
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
-				if(lastcjlrecord == null) //休市前还是空，说明要是新板块。板块没有停牌的
-					return null;
-				
-				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
-				Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
-				
-				curcjlrecord.setGgBkCjeDifferenceWithLastPeriod (curcje - lastcje);
-				return curcje - lastcje;
-			}
-
-			@Override
-			public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate) 
-			{
-				if(periodlist == null)
-					return null;
-				
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
-				if( curcjlrecord == null) 
-					return null;
-				
-				int index = -1;
-				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,super.getNodeperiodtype()) ) { //上周可能大盘修饰
-					index --;
-				}
-				
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
-				if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
-					logger.debug(getMyOwnCode() + getMyOwnName() + "可能是一个新个股或板块");
-					return 100.0;
-				}
-				
-				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
-				Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
-				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-				logger.debug(getMyOwnCode() + getMyOwnName() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
-				
-				curcjlrecord.setGgBkCjeZhanbiGrowthRate(zhanbigrowthrate);
-				return zhanbigrowthrate;
-			}
-
-			@Override
-			public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate) 
-			{
-				if(periodlist == null)
-					return null;
-				
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
-				if( curcjlrecord == null) 
-					return null;
-				
-				int index = -1;
-				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,super.getNodeperiodtype()) ) { //上周可能大盘修饰
-					index --;
-				}
-				
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
-				if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
-					logger.debug(getMyOwnCode() + getMyOwnName() + "可能是一个新个股或板块");
-					return 100;
-				}
-				
-				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
-				int maxweek = 0;
-				for(;index >= -100000; index--) {
-					lastcjlrecord = this.getSpecficRecord (requireddate,index);
-					
-					if(lastcjlrecord == null) //要不是到了记录的最头部
-						return maxweek;
-					
-					Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
-					if(curzhanbiratio > lastzhanbiratio)
-						maxweek ++;
-					else
-						break;
-				}
-				
-				curcjlrecord.setGgBkCjeZhanbiMaxweek(maxweek);
-				return maxweek;
+				// TODO Auto-generated method stub
+				return null;
 			}
 
 			@Override
@@ -475,6 +377,9 @@ public class BanKuai extends BkChanYeLianTreeNode
 //				
 //				return null;
 			}
+
+
+	
 			
 			
 	}

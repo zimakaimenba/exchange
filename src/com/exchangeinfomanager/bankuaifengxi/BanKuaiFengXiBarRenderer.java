@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 
@@ -26,9 +27,9 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
     private String barCharType;
 	protected BkChanYeLianTreeNode node;
 	protected CategoryDataset chartdataset;
-	protected NodeXPeriodData nodexdata;
+	protected NodeXPeriodDataBasic nodexdata;
 	
-	public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+	public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
     {
 		this.nodexdata = nodexdata1;
 	}

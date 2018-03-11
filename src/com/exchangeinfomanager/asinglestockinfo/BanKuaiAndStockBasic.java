@@ -1,13 +1,15 @@
 package com.exchangeinfomanager.asinglestockinfo;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.jfree.data.category.DefaultCategoryDataset;
 
 public interface BanKuaiAndStockBasic 
 {
-	public static int  TDXBK = 4, SUBBK = 5, BKGEGU = 6;
+	public static int  DAPAN = 3, TDXBK = 4, SUBBK = 5, BKGEGU = 7, TDXGG = 6;
 	
 	public int getType ();
 //	public void setSuoSuTdxBanKuai (String tdxbkcode);
@@ -68,5 +70,62 @@ public interface BanKuaiAndStockBasic
 //	public void setZhengxiangguan(String zhengxiangguan);
 //	public String getFuxiangguan() ;
 //	public void setFuxiangguan(String fuxiangguan) ;
+	
+	public interface NodeXPeriodDataBasic 
+	{
+		public String getNodeperiodtype();
+		//和成交量相关的函数
+		public void setNodePeriodRecords (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1);
+		
+		/*
+		 * 获取数据
+		 */
+//		public ArrayList<ChenJiaoZhanBiInGivenPeriod> getNodePeriodRecords ();
+		
+		/*
+		 * 只能在头尾加，不允许在中间加 
+		 */
+		boolean addRecordsForAGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1,LocalDate position);
+
+		LocalDate getRecordsStartDate ();
+		/*
+		 * 
+		 */
+		LocalDate getRecordsEndDate ();
+		/*
+		 * 在交易记录中找到对应周/日的位置,difference是偏移量，
+		 */
+//		protected Integer getRequiredRecordsPostion (LocalDate requireddate,int difference)
+
+		/*
+		 * 获得指定周的记录
+		 */
+		ChenJiaoZhanBiInGivenPeriod getSpecficRecord (LocalDate requireddate,int difference);
+		/*
+		 * 计算指定周期和上周期的成交额差额，适合stock/bankuai，dapan有自己的计算方法
+		 */
+		Double getChengJiaoErDifferenceWithLastPeriod (LocalDate requireddate);
+		/*
+		 * 对上级板块的成交额占比增速
+		 */
+		Double  getChenJiaoErZhanBiGrowthRateOfSuperBanKuai (LocalDate requireddate);
+		/*
+		 * 对上级板块的成交额占比是多少周内的最大值
+		 */
+		Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (LocalDate requireddate);
+		/*
+		 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
+		 */
+		Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (LocalDate requireddate);
+		/*
+		 * 成交额是多少周内的最大
+		 * 
+		 */
+		Integer getChenJiaoErMaxWeekOfSuperBanKuai (LocalDate requireddate);
+		/*
+		 * 一次性计算所有数据
+		 */
+		ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);
+	}
 	
 }

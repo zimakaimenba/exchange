@@ -14,6 +14,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 
 public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer 
@@ -79,9 +81,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    }
 	    //突出显示成交额达到标准的股票
 	    if( col == 3) {
+	    	BanKuai bk = tablemodel.getCurDispalyBandKuai ();
 		    Double cje = tablemodel.getDisplayChenJiaoEr ();
 		    LocalDate requireddate = tablemodel.getShowCurDate();
-		    Double curcje = stock.getSpecficChenJiaoErRecord(requireddate).getMyOwnChengJiaoEr();
+		    String period = tablemodel.getCurDisplayPeriod();
+		    NodeXPeriodDataBasic nodexdata = bk.getStockXPeriodDataForABanKuai(stock.getMyOwnCode(), period);
+		    Double curcje = nodexdata.getSpecficRecord(requireddate, 0).getMyOwnChengJiaoEr();
 		    if(cje != null && cje >0 && curcje > cje ) 
 		    	background = Color.yellow ;
 		    else
