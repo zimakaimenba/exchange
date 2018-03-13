@@ -8,6 +8,6 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 
 public interface BarChartPanelDataChangedListener 
 {
-	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, String period);
+	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference,String period);
 
 }

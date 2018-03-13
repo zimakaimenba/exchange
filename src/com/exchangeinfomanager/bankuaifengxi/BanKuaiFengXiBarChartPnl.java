@@ -116,7 +116,7 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartPnl.class);
 	protected BkChanYeLianTreeNode curdisplayednode;	
-	protected String globeperiod;
+	protected String globeperiod = "WEEK";
 //	private LocalDate displayedenddate;
 //	private String pnltitle;
 	protected CategoryPlot plot;
@@ -142,7 +142,6 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 		marker.setPaint(Color.BLACK);
 		plot.addRangeMarker(marker);
 	}
-	
 	/*
 	 * 
 	 */

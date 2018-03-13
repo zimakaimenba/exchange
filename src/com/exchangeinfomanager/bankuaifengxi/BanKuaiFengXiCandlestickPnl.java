@@ -63,13 +63,17 @@ import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.Week;
+import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 import org.jfree.data.time.ohlc.OHLCSeriesCollection;
+import org.jfree.data.xy.OHLCDataItem;
 import org.jfree.data.xy.OHLCDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -122,19 +126,73 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	}
 	
 	@Override
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, String period) {
+	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference,String period) 
+	{
 		// TODO Auto-generated method stub
+		if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY))
+			date = date.plus(difference,ChronoUnit.DAYS);
+		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+			date = date.plus(difference,ChronoUnit.WEEKS);
+		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH))
+			date = date.plus(difference,ChronoUnit.MONTHS);
 		
+		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		setNodeCandleStickDate ( node,  requirestart,  requireend, period);
 	}
+	/*
+	 * 显示指定周期的K线
+	 */
+	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday,String period)
+	{
+		this.curdisplayednode = node;
+		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+		
+		ohlcSeries = new OHLCSeries("KPrice");
+//		ArrayList<ChenJiaoZhanBiInGivenPeriod> daydata = node.getWkChenJiaoErZhanBiInGivenPeriod();
+		double lowestLow =10000.0;  double highestHigh =0.0; 
+		for(LocalDate tmpdate = nodestartday;tmpdate.isBefore( nodeendday) || tmpdate.isEqual(nodeendday); tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ){
+			ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(tmpdate,0);
+			if(tmprecord != null) {
+				Double open = tmprecord.getOpenPrice();
+				Double low = tmprecord.getLowPrice();
+				Double close = tmprecord.getClosePrice();
+				Double high = tmprecord.getHighPrice();
+				logger.debug(tmpdate.toString()  + " :" + open + "," + high.toString() + "," + low + "," + close);
+				
+				int year = tmpdate.getYear();
+				int month = tmpdate.getMonthValue();
+				int day = tmpdate.getDayOfMonth();
+				OHLCItem kdata = new OHLCItem(new Day(day,month,year), open, high, low, close);
+				ohlcSeries.add(kdata);
+
+				
+				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
+					lowestLow = low;
+				if(high > highestHigh && high !=0)
+					highestHigh = high;
+			}
+		}
+		
+		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.02);
+		
+		candlestickDataset.addSeries(ohlcSeries);
+		
+		chartPanel.setHorizontalAxisTrace(true); //十字显示
+        chartPanel.setVerticalAxisTrace(true);
+        
+
+        setPanelTitle ( node, nodestartday, nodeendday);
+	}
+
 	/*
 	 * 显示K线的同时突出显示指定周的K线，并计算后期指定周期内的最大值最小值
 	 */
-	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday,LocalDate highlightweekdate)
+	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday,LocalDate highlightweekdate,String period)
 	{
 		this.curdisplayednode = node;
-//		LocalDate requireend = displayedenddate.with(DayOfWeek.SATURDAY);
-//		LocalDate requirestart = displayedenddate.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		
+		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
 		ohlcSeries = new OHLCSeries("KPrice");
 //		ArrayList<ChenJiaoZhanBiInGivenPeriod> daydata = node.getWkChenJiaoErZhanBiInGivenPeriod();
 		double lowestLow =10000.0;  double highestHigh =0.0; 
@@ -143,7 +201,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		double onemonthhigh = 0.0, onemonthlessclose = 0.0; //指定周期后1个月的最大值最小值
 		double twomonthhigh = 0.0, towmonthlessclose = 0.0; //指定周期后2个月的最大值最小值
 		for(LocalDate tmpdate = nodestartday;tmpdate.isBefore( nodeendday) || tmpdate.isEqual(nodeendday); tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ){
-			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
+			ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(tmpdate, 0);
 			if(tmprecord != null) {
 				Double open = tmprecord.getOpenPrice();
 				Double low = tmprecord.getLowPrice();
@@ -155,6 +213,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				int month = tmpdate.getMonthValue();
 				int day = tmpdate.getDayOfMonth();
 				ohlcSeries.add(new Day(day,month,year), open, high, low, close);
+				
 				
 				//为显示寻找最大最小值，以便Y轴做合适调整
 				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
@@ -182,7 +241,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				
 			}
 		}
-
+		
 		//设置显示范围，避免某些情况下太小
 		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.05);
 		
@@ -230,50 +289,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 //        chartPanel.setVerticalAxisTrace(true);
 //		
 //	}
-	/*
-	 * 显示指定周期的K线
-	 */
-	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday)
-	{
-		this.curdisplayednode = node;
-//		LocalDate requireend = displayedenddate.with(DayOfWeek.SATURDAY);
-//		LocalDate requirestart = displayedenddate.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
-		ohlcSeries = new OHLCSeries("KPrice");
-//		ArrayList<ChenJiaoZhanBiInGivenPeriod> daydata = node.getWkChenJiaoErZhanBiInGivenPeriod();
-		double lowestLow =10000.0;  double highestHigh =0.0; 
-		for(LocalDate tmpdate = nodestartday;tmpdate.isBefore( nodeendday) || tmpdate.isEqual(nodeendday); tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ){
-			ChenJiaoZhanBiInGivenPeriod tmprecord = node.getSpecficChenJiaoErRecord(tmpdate);
-			if(tmprecord != null) {
-				Double open = tmprecord.getOpenPrice();
-				Double low = tmprecord.getLowPrice();
-				Double close = tmprecord.getClosePrice();
-				Double high = tmprecord.getHighPrice();
-				logger.debug(tmpdate.toString()  + " :" + open + "," + high.toString() + "," + low + "," + close);
-				
-				int year = tmpdate.getYear();
-				int month = tmpdate.getMonthValue();
-				int day = tmpdate.getDayOfMonth();
-				ohlcSeries.add(new Day(day,month,year), open, high, low, close);
-				
-				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
-					lowestLow = low;
-				if(high > highestHigh && high !=0)
-					highestHigh = high;
-			}
-		}
-
-		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.02);
-		
-		candlestickDataset.addSeries(ohlcSeries);
-		
-		chartPanel.setHorizontalAxisTrace(true); //十字显示
-        chartPanel.setVerticalAxisTrace(true);
-        
-
-        setPanelTitle ( node, nodestartday, nodeendday);
-	}
-	
 	private void createChartPanel() 
 	{
 		/**

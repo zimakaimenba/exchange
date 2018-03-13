@@ -41,6 +41,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.BkfxHightLightValueListener;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -48,18 +49,8 @@ import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
-public class BanKuaiGeGuTable extends JTable 
+public class BanKuaiGeGuTable extends JTable implements BkfxHightLightValueListener
 { 
-	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);
-	private StockInfoManager stockmanager;
-	private BanKuaiGeGuTableRenderer renderer;
-	private JMenuItem menuItemAddNews;
-	private JMenuItem menuItemAddGz;
-	private JMenuItem menuItemReDian;
-	private JMenuItem menuItemMakeLongTou;
-	private StockCalendarAndNewDbOperation newsdbopt;
-	
 	public BanKuaiGeGuTable (StockInfoManager stockmanager1)
 	{
 		super ();
@@ -91,6 +82,17 @@ public class BanKuaiGeGuTable extends JTable
 		createMenu ();
 		createEvents ();
 	}
+	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);
+	private StockInfoManager stockmanager;
+	private BanKuaiGeGuTableRenderer renderer;
+	private JMenuItem menuItemAddNews;
+	private JMenuItem menuItemAddGz;
+	private JMenuItem menuItemReDian;
+	private JMenuItem menuItemMakeLongTou;
+	private StockCalendarAndNewDbOperation newsdbopt;
+	private BanKuaiDbOperation bkdbopt;
+//	private boolean youxianxianshiparsefile;
 	
 	private void createMenu() 
 	{
@@ -129,9 +131,22 @@ public class BanKuaiGeGuTable extends JTable
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
 	}
+	@Override
+	public void hightLightValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemax) 
+	{
+		if(cjezbdpmax != null)
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
+		if(cjezbdpmax != null)
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemax);
+		if(cjezbdpmax != null)
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
+		if(cjezbdpmax != null)
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cje);
+		
+		this.repaint();
+	}
 	
-	private BanKuaiDbOperation bkdbopt;
-//	private boolean youxianxianshiparsefile;
+	
 	
 	private void createEvents() 
 	{
@@ -221,66 +236,6 @@ public class BanKuaiGeGuTable extends JTable
 				 }
 
 	}
-
-//	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
-//	{
-//		        Component comp = super.prepareRenderer(renderer, row, col);
-//		        BanKuaiGeGuTableModel tablemodel = (BanKuaiGeGuTableModel)this.getModel(); 
-//		        HashSet<String> stockinparsefile = tablemodel.getStockInParseFile();
-//		        
-//		        if(stockinparsefile == null)
-//		        	return comp;
-//		        
-//		        //更改显示，显示为%
-//		        if (comp instanceof JLabel && (col == 3 ||  col == 5)) {
-//	            	String value =  ((JLabel)comp).getText();
-//	            	String valuepect = null;
-//	            	try {
-//	            		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value).doubleValue();
-//	            		 
-//	            		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-//	 	    	    	 percentFormat.setMinimumFractionDigits(1);
-//		            	 valuepect = percentFormat.format (formatevalue );
-//	            	} catch (java.lang.NumberFormatException e)   	{
-//	            		e.printStackTrace();
-//	            	} catch (ParseException e) {
-//						e.printStackTrace();
-//					}
-//	            	((JLabel)comp).setText(valuepect);
-//		        }
-//		        
-//		        if (!isRowSelected(row)) {
-//		        	comp.setBackground(getBackground());
-//		        	comp.setForeground(getForeground());
-//		        	int modelRow = convertRowIndexToModel(row);
-//		        	String stockcode = (String)tablemodel.getValueAt(modelRow, 0);
-//					if(stockinparsefile.contains(stockcode)) {
-//						comp.setForeground(Color.BLUE);
-//					}
-//		        }
-//		        
-//		        return comp;
-//	}
-		
-
-
-	
-//	public String getToolTipText(MouseEvent e) 
-//	{
-//        String tip = null;
-//        java.awt.Point p = e.getPoint();
-//        int rowIndex = rowAtPoint(p);
-//        int colIndex = columnAtPoint(p);
-//
-//        try {
-//            tip = getValueAt(rowIndex, colIndex).toString();
-//        } catch (java.lang.NullPointerException e2) {
-//        	tip = "";
-//        } catch (RuntimeException e1) {
-//        	e1.printStackTrace();
-//        }
-//        return tip;
-//    } 
 
 	protected void addReDian() 
 	{
@@ -394,6 +349,8 @@ public class BanKuaiGeGuTable extends JTable
 		   model.removeRow(i); 
 		}
 	}
+
+
 
 }
 

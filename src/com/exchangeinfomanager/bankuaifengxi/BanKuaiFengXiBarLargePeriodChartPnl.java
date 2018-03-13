@@ -29,6 +29,7 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
@@ -87,7 +88,7 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
         renderer.setBarPainter(new CustomXYBarPainter ());
 
         domainAxis = new DateAxis();
-        NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+        NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
         LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
 		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
         Day d1 = new Day(requirestart.getDayOfMonth(),requirestart.getMonthValue(),requirestart.getYear());
@@ -166,7 +167,7 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 class CustomXYPlotToolTipGenerator implements XYToolTipGenerator 
 {
 	protected BkChanYeLianTreeNode node;
-	protected NodeXPeriodData nodexdata;
+	protected NodeXPeriodDataBasic nodexdata;
 	
 	@Override
     public String generateToolTip(XYDataset dataset, int series, int item) 
@@ -176,58 +177,34 @@ class CustomXYPlotToolTipGenerator implements XYToolTipGenerator
 
    	   LocalDate selecteddate = CommonUtility.formateStringToDate(sdf.format(d));
    	 
-   	   ChenJiaoZhanBiInGivenPeriod nodefx = nodexdata.getSpecficRecord(selecteddate, 0);
-//		if(node.getType() == 4 )
-//			nodefx = ((BanKuai)node).getNodeFengXiResultForSpecificDate (selecteddate);
-//		else if(node.getType() == 6 ) 
-//			nodefx = ((Stock)node).getNodeFengXiResultForSpecificDate (selecteddate);
-		
-		if(nodefx == null)
-			return "";
+//   	   ChenJiaoZhanBiInGivenPeriod nodefx = nodexdata.getSpecficRecord(selecteddate, 0);
+//		if(nodefx == null)
+//			return "";
 		
 		String tooltip = selecteddate.toString() + " ";
-		if(node.getType() == 6 ) { //个股,个股大盘比只有个股，不会有板块
-			Double curzhanbidata = nodefx.getCjlZhanBi();  //占比
-			Double zhanbigrowthrate = nodefx.getGgbkzhanbigrowthrate();
-			Double cjezhanbi = nodefx.getGgbkcjegrowthzhanbi();
-			Integer maxweek = nodefx.getGgbkzhanbimaxweek();
-			Double dpzhanbi = nodefx.getGgdpzhanbi();
-			Integer dpzhanbimaxweek = nodefx.getGgdpzhanbimaxweek();
-			
-			
+		
+		 
+			Double curzhanbidata = dataset.getYValue(series, item);   //占比
 			DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 			try {
-				tooltip = tooltip + "大盘占比" + decimalformate.format(dpzhanbi);
+				tooltip = tooltip + "占比" + decimalformate.format(curzhanbidata);
 			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "大盘占比NULL" ;
-			}
-			try {
-				tooltip = tooltip + "大盘MaxWk=" + dpzhanbimaxweek.toString();
-			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "大盘MaxWk=NULL";
-			}
-			try {
-				tooltip = tooltip + "板块占比" + decimalformate.format(curzhanbidata);
-			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "板块占比NULL" ;
-			}
-//			try {
-//				tooltip = tooltip +  "占比变化("+ decimalformate.format(zhanbigrowthrate) +  ")";
-//			} catch (java.lang.IllegalArgumentException e ) {
-//				tooltip = tooltip +  "占比变化(NULL)";
-//			}
-			try {
-				tooltip = tooltip + "板块MaxWk=" + maxweek.toString();
-			} catch (java.lang.IllegalArgumentException e ) {
-				e.printStackTrace();
-//				tooltip = tooltip +
+				tooltip = tooltip + "占比NULL" ;
 			}
 			
+			Integer maxweek;
+			try {
+				 maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);
+				 tooltip = tooltip + "MAXWK" + maxweek;
+			} catch (java.lang.NullPointerException e) {
+				 maxweek = 0;
+				 tooltip = tooltip + "MAXWK=0" ;
+			}
+			
+
 			
 			return tooltip;
-		}
-   	
-		return "";
+
     }
 	
     public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 

@@ -39,10 +39,20 @@ public class StockOfBanKuai extends Stock
 	{
 		return this.stock;
 	}
+	public BanKuai getBanKuai ()
+	{
+		return this.bankuai;
+	}
 	public Integer getQuanZhong ()
 	{
 		return this.quanzhong;
 	}
+	@Override
+	public NodeXPeriodDataBasic getNodeXPeroidData(String period) {
+		NodeXPeriodDataBasic nodexdata = getStockXPeriodDataForBanKuai (period);
+		return nodexdata;
+	}
+	
 	public NodeXPeriodDataBasic getStockXPeriodDataForBanKuai (String period)
 	{
 		if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH))
@@ -53,60 +63,126 @@ public class StockOfBanKuai extends Stock
 			return null;
 	}
 	
-	public class StockOfBanKuaiNodeXPeriodData extends NodeXPeriodData
+	public class StockOfBanKuaiNodeXPeriodData extends StockNodeXPeriodData
 	{
 		public StockOfBanKuaiNodeXPeriodData (String nodeperiodtype1) 
 		{
 			super(nodeperiodtype1);
 		}
-		@Override
+		
+//		@Override
+//		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) 
+//		{
+//			if(periodlist == null)
+//				return null;
+//			
+//			ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
+//			if( curcjlrecord == null) 
+//				return null;
+//			
+//			Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+//			int maxweek = 0;
+//			
+//			DaPan dapan = (DaPan)getRoot();
+//			for(int index = -1;index >= -100000; index--) { //目前记录不可能有10000个周期，所以10000足够
+//				if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) //大盘还可能休市
+//					continue;
+//
+//				if(isTingPai(requireddate,index,getNodeperiodtype())) //本周也可能停牌，停牌前的就不计算了
+//					return maxweek;
+//				
+//				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
+//				Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
+//				if(curcje > lastcje)
+//					maxweek ++;
+//				else
+//					break;
+//			}
+//			
+//			curcjlrecord.setGgBkCjeZhanbiMaxweek(maxweek);
+//			return maxweek;
+//		}
+		/*
+		 * 对上级板块的成交额占比是多少周内的最大值
+		 */
+//		public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate) 
+//		{
+//			if(periodlist == null)
+//				return null;
+//			
+//			ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
+//			if( curcjlrecord == null) 
+//				return null;
+//			
+//			DaPan dapan = (DaPan)getRoot();
+//			Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
+//			int maxweek = 0;
+//			for(int index = -1;index >= -100000; index--) {
+//				if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) //大盘还可能休市
+//					continue;
+//				
+//				if(isTingPai(requireddate,index,getNodeperiodtype())) //本周也可能停牌，停牌前的就不计算了
+//					return maxweek;
+//				
+//				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
+//				
+//				Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
+//				if(curzhanbiratio > lastzhanbiratio)
+//					maxweek ++;
+//				else
+//					break;
+//			}
+//			
+//			curcjlrecord.setGgBkCjeZhanbiMaxweek(maxweek);
+//			return maxweek;
+//		}
+//		@Override
 		/*
 		 * (non-Javadoc)
 		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErChangeGrowthRateOfSuperBanKuai(java.time.LocalDate)
 		 * 和其他该函数不同的地方就是这里是板块的成交量而不是大盘的成交量
 		 */
-		public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate) 
-		{
-			if(periodlist == null)
-				return null;
-			
-			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
-			String nodept = super.getNodeperiodtype();
-			Double bkcjediff = bankuai.getNodeXPeroidData(nodept).getChengJiaoErDifferenceWithLastPeriod(requireddate);//和其他该函数不同的地方就是这里是板块的成交量而不是大盘的成交量
-			if( bkcjediff == null || bkcjediff<0  ) //上级板块缩量，
-				return -100.0;
-			
-			ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
-			if( curcjlrecord == null) 
-				return null;
-			
-			int index = -1;
-			while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,super.getNodeperiodtype()) ) { //上周可能大盘修饰
-				index --;
-			}
-			
-			ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
-			if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
-				Double curggcje = curcjlrecord.getMyOwnChengJiaoEr(); //新板块所有成交量都应该计算入
-				return curggcje/bkcjediff;
-			}
-			
-			Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
-			Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
-			Double cjechange = curcje - lastcje; //个股成交量的变化
-			
-			return cjechange/bkcjediff;
-		}
+//		public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate) 
+//		{
+//			if(periodlist == null)
+//				return null;
+//			
+//			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
+//			String nodept = super.getNodeperiodtype();
+//			Double bkcjediff = bankuai.getNodeXPeroidData(nodept).getChengJiaoErDifferenceWithLastPeriod(requireddate);//和其他该函数不同的地方就是这里是板块的成交量而不是大盘的成交量
+//			if( bkcjediff == null || bkcjediff<0  ) //上级板块缩量，
+//				return -100.0;
+//			
+//			ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
+//			if( curcjlrecord == null) 
+//				return null;
+//			
+//			int index = -1;
+//			while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,super.getNodeperiodtype()) ) { //上周可能大盘修饰
+//				index --;
+//			}
+//			
+//			ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
+//			if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
+//				Double curggcje = curcjlrecord.getMyOwnChengJiaoEr(); //新板块所有成交量都应该计算入
+//				return curggcje/bkcjediff;
+//			}
+//			
+//			Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+//			Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
+//			Double cjechange = curcje - lastcje; //个股成交量的变化
+//			
+//			return cjechange/bkcjediff;
+//		}
 		/*
 		 * 计算个股和大盘/板块成交量的各个数据
 		 */
-		public ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate)
-		{
-			return null;
-		}
+//		public ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate)
+//		{
+//			return null;
+//		}
 
-
-
-		
 	}
+
+
 }

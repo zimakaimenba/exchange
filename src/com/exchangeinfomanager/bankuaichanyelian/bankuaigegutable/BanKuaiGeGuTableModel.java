@@ -41,8 +41,8 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private Double showcje;
 	private Integer cjemaxwk = 10000000;
 	private Boolean showparsedfile = false;
-	private Integer dpmaxwk = 10000000;
-	private Integer bkmaxwk = 10000000;
+	private Integer cjezbdpmaxwk = 10000000;
+	private Integer cjezbbkmaxwk = 10000000;
 	private String period;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
 
@@ -103,21 +103,22 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    	if(entryList.isEmpty())
 	    		return null;
 
-	    	StockOfBanKuai curdisplaystock = entryList.get(rowIndex);
-		    String stockcode = curdisplaystock.getMyOwnCode();
+	    	StockOfBanKuai curdisplaystockofbankuai = entryList.get(rowIndex);
+		    String stockcode = curdisplaystockofbankuai.getMyOwnCode();
 		    String bkcode = curbk.getMyOwnCode();
-		    
-		    NodeXPeriodDataBasic stockxdataforbk = curdisplaystock.getStockXPeriodDataForBanKuai(period);
-//		    NodeXPeriodDataBasic stockxdata = curdisplaystock.getNodeXPeroidData(period);
-	    	
-	    	Object value = "??";
+		    NodeXPeriodDataBasic stockxdataforbk = curdisplaystockofbankuai.getStockXPeriodDataForBanKuai(period);
+
+		    Stock stock = curdisplaystockofbankuai.getStock();
+		    NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
+
+		    Object value = "??";
 	    	switch (columnIndex) {
             case 0:
-            	bkcode = curdisplaystock.getMyOwnCode();
+            	bkcode = curdisplaystockofbankuai.getMyOwnCode();
                 value = bkcode;
                 break;
             case 1: 
-            	String thisbkname = curdisplaystock.getMyOwnName();
+            	String thisbkname = curdisplaystockofbankuai.getMyOwnName();
             	value = thisbkname;
             	break;
             case 2: //权重
@@ -128,28 +129,28 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             		value = 0;
             	}
             	break;
-            case 3: // "代码", "名称","板块权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
-            	Double cjechangegrowthrate = stockxdataforbk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum);// fxrecord.getGgbkcjegrowthzhanbi();
+            case 3: // "板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
+            	Double cjechangegrowthrate = stockxdataforbk.getChenJiaoErChangeGrowthRateOfSuperBanKuai(showwknum);// fxrecord.getGgbkcjegrowthzhanbi();
             	value = cjechangegrowthrate;
             	break;
             case 4://,"板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
-            	Double zhanbigrowthrate = stockxdataforbk.getChenJiaoErChangeGrowthRateOfSuperBanKuai(showwknum);//.getGgbkzhanbimaxweek();
+            	Double zhanbigrowthrate = stockxdataforbk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum);//.getGgbkzhanbimaxweek();
             	value = zhanbigrowthrate;
             	break;
             case 5: 
             	int maxweek =  stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//fxrecord.getGgbkzhanbigrowthrate(); 
             	value = (Integer)maxweek;
             	break;
-            case 6:
-            	Double cjedpgrowthrate = stockxdataforbk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum);//.getGgdpzhanbigrowthrate();
+            case 6://"大盘占比增长率","DpMaxWk","CjeMaxWk"};
+            	Double cjedpgrowthrate = stockxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum);//.getGgdpzhanbigrowthrate();
             	value = cjedpgrowthrate;
                 break;
             case 7:
-            	Integer dpmaxwk = stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//.getGgdpzhanbimaxweek(); 
+            	Integer dpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//.getGgdpzhanbimaxweek(); 
             	value = dpmaxwk;
                 break;
            case 8:
-            	Integer cjemaxwk = stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//.getGgbkcjemaxweek(); 
+            	Integer cjemaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//.getGgbkcjemaxweek(); 
             	value = cjemaxwk;
                 break;
 	    	}
@@ -295,22 +296,22 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			return this.showparsedfile ;
 		}
 		//设置成交额dpMAXWK阀值
-		public void setDisplayDPMaxWk (Integer bkmax)
+		public void setDisplayCjeDPMaxWk (Integer bkmax)
 		{
-			this.dpmaxwk = bkmax;
+			this.cjezbdpmaxwk = bkmax;
 		}
-		public Integer getDisplayDPMaxWk ()
+		public Integer getDisplayCjeDPMaxWk ()
 		{
-			return this.dpmaxwk;
+			return this.cjezbdpmaxwk;
 		}
 		//设置bkMAXWK阀值
-		public void setDisplayBKMaxWk (Integer bkmax)
+		public void setDisplayCjeBKMaxWk (Integer bkmax)
 		{
-			this.bkmaxwk = bkmax;
+			this.cjezbbkmaxwk = bkmax;
 		}
-		public Integer getDisplayBKMaxWk ()
+		public Integer getDisplayCjeBKMaxWk ()
 		{
-			return this.bkmaxwk;
+			return this.cjezbbkmaxwk;
 		}
 		public LocalDate getShowCurDate ()
 		{

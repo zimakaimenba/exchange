@@ -286,13 +286,13 @@ public class BanKuaiAndChanYeLian
 	/*
 	 * 返回这个板块的某个个股的成交量,不做板块是否包含该个股的检查
 	 */
-	public Stock getGeGuOfBanKuai(BanKuai bankuai, String stockcode,String period)
+	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, String stockcode,String period)
 	{
 		StockOfBanKuai stock = bankuai.getBanKuaiGeGu(stockcode);
 		stock = this.getGeGuOfBanKuai( bankuai,  stock,period);
 		return stock;
 	}
-	public Stock getGeGuOfBanKuai(String bkcode, String stockcode,String period) 
+	public StockOfBanKuai getGeGuOfBanKuai(String bkcode, String stockcode,String period) 
 	{
 		BanKuai bankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode(bkcode,BanKuaiAndStockBasic.TDXBK);
 		StockOfBanKuai stock = bankuai.getBanKuaiGeGu(stockcode);
@@ -416,9 +416,50 @@ public class BanKuaiAndChanYeLian
 		return null;
 	}
 	/*
-	 *该函数为每一个独立个股设置制定周期的K线数据 
+	 * 独立个股的指定周期的占比
 	 */
 	public BkChanYeLianTreeNode getStock (String stockcode,LocalDate requiredrecordsday,String period)
+	{
+		//占比还是要看周线/月线，日线数据没有太大意义，下面专门找出个股周线占比数据
+		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		BkChanYeLianTreeNode stock = (Stock)this.treechanyelian.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
+		try{
+			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(ChenJiaoZhanBiInGivenPeriod.WEEK);
+			LocalDate nodestartday = stockxdata.getRecordsStartDate();
+			LocalDate nodeendday = stockxdata.getRecordsEndDate();
+					
+			if(nodestartday == null || nodeendday == null) { //还没有数据，直接找
+				stock = bkdbopt.getStockZhanBi ((Stock)stock,requirestart,requireend,requireend,ChenJiaoZhanBiInGivenPeriod.WEEK); 
+			} else {
+				HashMap<String,LocalDate> startend = null ;
+//				if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+					startend = nodeWeekTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
+//				else if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) 
+//					startend = nodeDayTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
+//				else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) //暂时没开发
+					;
+						 
+				LocalDate searchstart,searchend,position;
+				if(!startend.isEmpty()) {
+							searchstart = startend.get("searchstart"); 
+							searchend = startend.get("searchend");
+							position = 	startend.get("position");
+							
+							stock = bkdbopt.getStockZhanBi ((Stock)stock,searchstart,searchend,position,period);
+				}
+			}
+		} catch (java.lang.NullPointerException e) {
+					e.printStackTrace();
+		}
+		
+		return stock;
+	}
+	/*
+	 *该函数为每一个独立个股设置制定周期的K线数据 
+	 */
+	public BkChanYeLianTreeNode getStockK (String stockcode,LocalDate requiredrecordsday,String period)
 	{
 		BkChanYeLianTreeNode stock = null;
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
@@ -451,46 +492,8 @@ public class BanKuaiAndChanYeLian
 			}
 		} catch (java.lang.NullPointerException e) {
 			e.printStackTrace();
-//			stock = new Stock(stockcode,"");
-//			stock = bkdbopt.getNodeKXianZouShi (stock,requirestart,requireend,requireend);
-//			
-//			this.jyssuoyoustock.put(stockcode, stock);
 		}
-		
-		//占比还是要看周线/月线，日线数据没有太大意义，下面专门找出个股周线占比数据
-		try{
-			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(ChenJiaoZhanBiInGivenPeriod.WEEK);
-			LocalDate nodestartday = stockxdata.getRecordsStartDate();
-			LocalDate nodeendday = stockxdata.getRecordsEndDate();
-			
-			if(nodestartday == null || nodeendday == null) { //还没有数据，直接找
-				stock = bkdbopt.getStockZhanBi ((Stock)stock,requirestart,requireend,requireend,ChenJiaoZhanBiInGivenPeriod.WEEK); 
-			} else {
-				HashMap<String,LocalDate> startend = null ;
-//				if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
-					startend = nodeWeekTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-//				else if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) 
-//					startend = nodeDayTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-//				else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) //暂时没开发
-					;
-				 
-				LocalDate searchstart,searchend,position;
-				if(!startend.isEmpty()) {
-					searchstart = startend.get("searchstart"); 
-					searchend = startend.get("searchend");
-					position = 	startend.get("position");
-					
-					stock = bkdbopt.getStockZhanBi ((Stock)stock,searchstart,searchend,position,period);
-				}
-			}
-		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-//			stock = new Stock(stockcode,"");
-//			stock = bkdbopt.getNodeKXianZouShi (stock,requirestart,requireend,requireend);
-//			
-//			this.jyssuoyoustock.put(stockcode, stock);
-		}
-		
+
 		return stock;
 	}
 	

@@ -466,31 +466,6 @@ public class StockInfoManager
 					
 					nodeshouldbedisplayed = cBxstockcode.getUserInputNode();
 					preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
-//					if(userinputnode.getType() == 6 ) {
-//						tfldgeguname.setText(userinputnode.getMyOwnName());
-//						displayStockSuoShuBanKuai((Stock)userinputnode);
-//					}
-					
-//					String stockcode;
-//					try	{
-//						stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
-//						
-//						if(!checkCodeInputFormat(stockcode)) {
-//							JOptionPane.showMessageDialog(null,"股票/板块代码有误！");
-//							return;
-//						}
-//						
-//						preUpdateSearchResultToGui(stockcode);
-//						updateStockCombox();
-//					} catch(java.lang.NullPointerException ex)	{
-//						ex.printStackTrace();
-//						JOptionPane.showMessageDialog(frame, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
-//						return;
-//					} catch(java.lang.StringIndexOutOfBoundsException ex2) {
-//						ex2.printStackTrace();
-//						JOptionPane.showMessageDialog(null,"股票代码有误！");
-//						return;
-//					}
 				}
 				
 				if(e.getStateChange() == ItemEvent.DESELECTED) {

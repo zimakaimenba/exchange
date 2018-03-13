@@ -9,15 +9,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.jfree.data.time.RegularTimePeriod;
+
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
-public class ChenJiaoZhanBiInGivenPeriod 
+public class StockGivenPeriodDataItem extends org.jfree.data.time.ohlc.OHLCItem
 {
 
-	public ChenJiaoZhanBiInGivenPeriod(String nodecode,String datatype) 
+	public StockGivenPeriodDataItem(String nodecode,String datatype,RegularTimePeriod period, double open, double high, double low, double close,double myamount,double myvolumne) 
 	{
+		super (period,open,high,low,close);
 		
 		this.myowncode = nodecode;
+		
 		if( datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.DAY)
 				|| datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.WEEK)
 				|| datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.SIXTYMINUTES))
@@ -25,16 +29,15 @@ public class ChenJiaoZhanBiInGivenPeriod
 		else
 			this.dataperiodtype = null;
 		
+		
 	}
+	
 	public static String  DAY = "DAY", WEEK = "WEEK", SIXTYMINUTES = "SIXTYMINUTES", MONTH= "MONTH";
 	private String dataperiodtype; //日线，周线，月线，年线
 	
+	private String myowncode;
 	private String myuplevelcode;
 
-	private Double openprice;
-	private Double closeprice;
-	private Double highprice;
-	private Double lowprice;
 	private LocalDate  dayofendoftheweek;
 	
 	private Double myownchengjiaoliang; //成交量
@@ -45,14 +48,10 @@ public class ChenJiaoZhanBiInGivenPeriod
 	private Integer ggbkcjezhanbimaxweek;  //个股板块占比最大周
 	private Integer ggbkcjemaxweek; //个股板块成交额最大周
 	private Double ggbkcjegrowthratetosuperbankuaicjegrowth;  //个股板块成交量贡献率
-//	private Double ggdpcjezhanbi;  //个股成交额大盘占比
-//	private Double ggdpcjegrowthzhanbi;  //个股大盘成交量贡献率
-//	private Integer ggdpcjezhanbimaxweek;//个股大盘占比最大周
-//	private Double ggdpcjezhanbigrowthrate; //个股大盘占比增速
 	
 	private Boolean hasfengxijieguo; //有加入关注，分析结果等等
 	
-	private String myowncode;
+	
 	private double ggbkcjedifference; //个股的成交额本周期和合理的上周期的差额
 	/**
 	 * @return the myowncode
@@ -173,44 +172,7 @@ public class ChenJiaoZhanBiInGivenPeriod
 		return this.myownchengjiaoliang/this.uplevelchengjiaoliang;
 	}
 	
-	
-//	/**
-//	 * @return the ggdpcjegrowthzhanbi
-//	 */
-//	public Double getGgdpcjegrowthzhanbi() {
-//		return ggdpcjegrowthzhanbi;
-//	}
-//	/**
-//	 * @param ggdpcjegrowthzhanbi the ggdpcjegrowthzhanbi to set
-//	 */
-//	public void setGgdpcjegrowthzhanbi(Double ggdpcjegrowthzhanbi) {
-//		this.ggdpcjegrowthzhanbi = ggdpcjegrowthzhanbi;
-//	}
-//	/**
-//	 * @return the ggdpzhanbimaxweek
-//	 */
-//	public Integer getGgdpzhanbimaxweek() {
-//		return ggdpcjezhanbimaxweek;
-//	}
-//	/**
-//	 * @param ggdpzhanbimaxweek the ggdpzhanbimaxweek to set
-//	 */
-//	public void setGgdpzhanbimaxweek(Integer ggdpzhanbimaxweek) {
-//		this.ggdpcjezhanbimaxweek = ggdpzhanbimaxweek;
-//	}
-//	/**
-//	 * @return the ggdpzhanbi
-//	 */
-//	public Double getGgdpzhanbi() {
-//		return ggdpcjezhanbi;
-//	}
-//	/**
-//	 * @param ggdpzhanbi the ggdpzhanbi to set
-//	 */
-//	public void setGgdpzhanbi(Double ggdpzhanbi) {
-//		this.ggdpcjezhanbi = ggdpzhanbi;
-//	}
-	
+
 	/**
 	 * @return the ggbkzhanbigrowthrate
 	 */
@@ -284,30 +246,6 @@ public class ChenJiaoZhanBiInGivenPeriod
 			return false;
 	}
 	
-	public Double getOpenPrice() {
-		return openprice;
-	}
-	public void setOpenPrice(Double openprice) {
-		this.openprice = openprice;
-	}
-	public Double getClosePrice() {
-		return closeprice;
-	}
-	public void setClosePrice(Double closeprice) {
-		this.closeprice = closeprice;
-	}
-	public Double getHighPrice() {
-		return highprice;
-	}
-	public void setHighPrice(Double highprice) {
-		this.highprice = highprice;
-	}
-	public Double getLowPrice() {
-		return lowprice;
-	}
-	public void setLowPrice(Double lowprice) {
-		this.lowprice = lowprice;
-	}
 	/*
 	 * 本周起成交额和合理的上周期(个股未停牌前提下)的差额
 	 */

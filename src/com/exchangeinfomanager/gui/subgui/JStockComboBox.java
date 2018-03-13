@@ -64,8 +64,7 @@ public class JStockComboBox extends  JComboBox<String>
 	{
 		String stockcode = stock.getMyOwnCode();
 		String stocname = stock.getMyOwnName();
-//		this.addItem(stockcode+stocname);
-//		this.setSelectedItem(stockcode+stocname);
+
 		preSearch(stock);
 		updateStockCombox(stockcode+stocname);
 		return nodeshouldbedisplayed;

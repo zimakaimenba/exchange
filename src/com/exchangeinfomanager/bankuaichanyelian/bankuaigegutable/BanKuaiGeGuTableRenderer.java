@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 
 public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer 
 {
@@ -59,7 +60,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    //Õª≥ˆœ‘ æparse file
 	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
 	    int modelRow = table.convertRowIndexToModel(row);
-	    Stock stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
+	    StockOfBanKuai stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
 	    if(col == 0  ) {
 	    	
 	    }
@@ -98,7 +99,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	int bkmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
 	    	
 	    	
-	    	int fazhi = tablemodel.getDisplayBKMaxWk();
+	    	int fazhi = tablemodel.getDisplayCjeBKMaxWk();
 	    	 if(bkmaxwk >= fazhi )
 	    		 background = Color.magenta ;
 	    	 else 
@@ -108,7 +109,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    if( col == 7 || col == 6 ) {
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
 	    	
-	    	int fazhi = tablemodel.getDisplayDPMaxWk();
+	    	int fazhi = tablemodel.getDisplayCjeDPMaxWk();
 	    	 if( dpmaxwk >=fazhi )
 	    		 background = Color.red ;
 	    	 else 

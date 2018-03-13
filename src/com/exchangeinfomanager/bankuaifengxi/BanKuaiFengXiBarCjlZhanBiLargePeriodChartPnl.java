@@ -14,9 +14,9 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriod
 import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 
-public class BanKuaiFengXiBarGgDpLargePeriodChartPnl extends BanKuaiFengXiBarLargePeriodChartPnl 
+public class BanKuaiFengXiBarCjlZhanBiLargePeriodChartPnl extends BanKuaiFengXiBarLargePeriodChartPnl 
 {
-	public BanKuaiFengXiBarGgDpLargePeriodChartPnl (BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period)
+	public BanKuaiFengXiBarCjlZhanBiLargePeriodChartPnl (BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period)
 	{
 		super (node,displayedenddate1,period);
 		

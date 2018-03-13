@@ -125,7 +125,7 @@ public interface BanKuaiAndStockBasic
 		/*
 		 * 一次性计算所有数据
 		 */
-		ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);
+//		ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);
 	}
 	
 }

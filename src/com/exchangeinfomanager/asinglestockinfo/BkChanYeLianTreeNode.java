@@ -19,6 +19,9 @@ import java.util.Set;
 import javax.swing.tree.*;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.ohlc.OHLCItem;
+import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -64,6 +67,7 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 	protected NodeXPeriodDataBasic nodewkdata;
 	protected NodeXPeriodDataBasic nodedaydata;
 	protected NodeXPeriodDataBasic nodemonthdata;
+	
 	
 //	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> wkcjeperiodlist; //板块自己的周成交记录以及一些分析结果
 	
@@ -431,23 +435,37 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			public NodeXPeriodData (String nodeperiodtype1)
 			{
 				this.nodeperiodtype = nodeperiodtype1;
+				stockgivenperioddataseries = new OHLCSeries(nodeperiodtype1);
+				
+//				stockgivenperioddataseries.get
 			}
 
 			private String nodeperiodtype;
-			protected ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist; //板块自己的成交记录以及一些分析结果
+//			protected ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist; //板块自己的成交记录以及一些分析结果
+			
+			protected OHLCSeries stockgivenperioddataseries; //板块自己的成交记录以及一些分析结果
 			
 			public String getNodeperiodtype() {
 				return nodeperiodtype;
 			}
+			public void addNewXPeriodData (LocalDate data,Double open,Double high,Double low,Double close)
+			{
+				int year = data.getYear();
+				int month = data.getMonthValue();
+				int day = data.getDayOfMonth();
+				OHLCItem kdata = new OHLCItem(new Day(day,month,year), open, high, low, close);
+				stockgivenperioddataseries.add(kdata);
+			}
+			
 //			public void setNodeperiodtype(String nodeperiodtype) {
 //				this.nodeperiodtype = nodeperiodtype;
 //			}
 		
 			//和成交量相关的函数
-			public void setNodePeriodRecords (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1)
-			{
-				 this.periodlist = periodlist1;
-			}
+//			public void setNodePeriodRecords (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1)
+//			{
+//				 this.periodlist = periodlist1;
+//			}
 			/*
 			 * 获取数据
 			 */
@@ -458,36 +476,36 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			/*
 			 * 只能在头尾加，不允许在中间加 
 			 */
-			public boolean addRecordsForAGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1,LocalDate position)
-			{
-				if(periodlist1.isEmpty())
-					return false;
-				
-				if(this.periodlist == null || this.periodlist.isEmpty() ) {
-					this.periodlist = periodlist1;
-					return true;
-				}
-				else {
-					ChenJiaoZhanBiInGivenPeriod firstrecord = this.periodlist.get(0);
-					LocalDate firstday = firstrecord.getRecordsDayofEndofWeek();
-					if(position.isBefore(firstday) || position.isEqual(firstday)) {
-//						logger.debug("add before" + this.wkcjeperiodlist.size());
-						this.periodlist.addAll(0, periodlist1);
-//						logger.debug("add after" + this.wkcjeperiodlist.size());
-						return true;
-					}
-					
-					ChenJiaoZhanBiInGivenPeriod lastrecord = this.periodlist.get(this.periodlist.size()-1);
-					LocalDate lastday = lastrecord.getRecordsDayofEndofWeek();
-					if(position.isAfter(lastday) || position.isEqual(lastday)) {
-						this.periodlist.addAll(this.periodlist.size()-1, periodlist1);
-						return true;
-					}
-					
-				}
-				
-				return false;
-			}
+//			public boolean addRecordsForAGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1,LocalDate position)
+//			{
+//				if(periodlist1.isEmpty())
+//					return false;
+//				
+//				if(this.periodlist == null || this.periodlist.isEmpty() ) {
+//					this.periodlist = periodlist1;
+//					return true;
+//				}
+//				else {
+//					ChenJiaoZhanBiInGivenPeriod firstrecord = this.periodlist.get(0);
+//					LocalDate firstday = firstrecord.getRecordsDayofEndofWeek();
+//					if(position.isBefore(firstday) || position.isEqual(firstday)) {
+////						logger.debug("add before" + this.wkcjeperiodlist.size());
+//						this.periodlist.addAll(0, periodlist1);
+////						logger.debug("add after" + this.wkcjeperiodlist.size());
+//						return true;
+//					}
+//					
+//					ChenJiaoZhanBiInGivenPeriod lastrecord = this.periodlist.get(this.periodlist.size()-1);
+//					LocalDate lastday = lastrecord.getRecordsDayofEndofWeek();
+//					if(position.isAfter(lastday) || position.isEqual(lastday)) {
+//						this.periodlist.addAll(this.periodlist.size()-1, periodlist1);
+//						return true;
+//					}
+//					
+//				}
+//				
+//				return false;
+//			}
 
 			public LocalDate getRecordsStartDate ()
 			{
@@ -686,90 +704,12 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 				return zhanbigrowthrate;
 			}
 
-
 			@Override
-			public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) 
-			{
-				if(periodlist == null)
-					return null;
-				
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
-				if( curcjlrecord == null) 
-					return null;
-				
-				int index = -1;
-				DaPan dapan = (DaPan)getRoot();
-				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) ) { //上周可能大盘修饰
-					index --;
-				}
-				
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
-				if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
-					logger.debug(getMyOwnCode() + getMyOwnName() + "可能是一个新个股或板块");
-					return 100;
-				}
-				
-				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
-				int maxweek = 0;
-				for(;index >= -100000; index--) {
-					lastcjlrecord = this.getSpecficRecord (requireddate,index);
-					
-					if(lastcjlrecord == null) //要不是到了记录的最头部
-						return maxweek;
-					
-					Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
-					if(curcje > lastcje)
-						maxweek ++;
-					else
-						break;
-				}
-				
-				curcjlrecord.setGgBkCjeZhanbiMaxweek(maxweek);
-				return maxweek;
-			}
+			public abstract Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) ;
 			/*
 			 * 对上级板块的成交额占比是多少周内的最大值
 			 */
-			public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate) 
-			{
-				if(periodlist == null)
-					return null;
-				
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
-				if( curcjlrecord == null) 
-					return null;
-				
-				int index = -1;
-				DaPan dapan = (DaPan)getRoot();
-				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) ) { //上周可能大盘修饰
-					index --;
-				}
-				
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
-				if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
-					logger.debug(getMyOwnCode() + getMyOwnName() + "可能是一个新个股或板块");
-					return 100;
-				}
-				
-				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
-				int maxweek = 0;
-				for(;index >= -100000; index--) {
-					lastcjlrecord = this.getSpecficRecord (requireddate,index);
-					
-					if(lastcjlrecord == null) //要不是到了记录的最头部
-						return maxweek;
-					
-					Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
-					if(curzhanbiratio > lastzhanbiratio)
-						maxweek ++;
-					else
-						break;
-				}
-				
-				curcjlrecord.setGgBkCjeZhanbiMaxweek(maxweek);
-				return maxweek;
-			}
-			
+			public abstract Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate); 
 			/*
 			 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
 			 */
@@ -778,10 +718,7 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			/*
 			 * 一次性计算所有数据
 			 */
-			public abstract ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);
-			
-
-
+//			public abstract ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);
 		 }
 		 
 		 

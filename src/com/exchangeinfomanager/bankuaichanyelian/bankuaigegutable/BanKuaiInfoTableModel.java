@@ -58,6 +58,11 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		 else
 			 return entryList.size();
 	 }
+	 public void deleteAllRows ()
+	 {
+		 if(this.entryList != null && this.entryList.size() >0)
+			 this.entryList.clear();
+	 }
 
 	    @Override
 	    public int getColumnCount() 

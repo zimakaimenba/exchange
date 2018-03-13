@@ -78,8 +78,9 @@ public class BanKuai extends BkChanYeLianTreeNode
 		int childcount = this.getChildCount();
 		if (this.getChildCount() >= 0) {
             for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
-                stocklist.add(childnode);
+            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
+            	if(childnode.getType() == BanKuaiAndStockBasic.BKGEGU) 
+                    stocklist.add((StockOfBanKuai)childnode);
                 }
         }
 		return stocklist;
@@ -93,13 +94,16 @@ public class BanKuai extends BkChanYeLianTreeNode
 		
 		if (this.getChildCount() >= 0) {
             for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
-                NodeXPeriodDataBasic stockxperioddata = childnode.getNodeXPeroidData(period);
-                if(stockxperioddata != null) {
-                	ChenJiaoZhanBiInGivenPeriod records = stockxperioddata.getSpecficRecord(requireddate, 0);
-  				  if(records != null)
-  					  result.add(childnode);
-                }
+            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
+            	if(childnode.getType() == BanKuaiAndStockBasic.BKGEGU) {
+            		NodeXPeriodDataBasic stockxperioddata = childnode.getNodeXPeroidData(period);
+                    if(stockxperioddata != null) {
+                    	ChenJiaoZhanBiInGivenPeriod records = stockxperioddata.getSpecficRecord(requireddate, 0);
+      				  if(records != null)
+      					  result.add((StockOfBanKuai)childnode);
+                    }
+            	}
+                
             }
         }
 		return result;
@@ -111,10 +115,9 @@ public class BanKuai extends BkChanYeLianTreeNode
 	{
 		if (this.getChildCount() >= 0) {
             for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
-                if(childnode.getStock().getMyOwnCode().equals(stockcode)) {
-                	return childnode;
-                }
+            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
+            	if(childnode.getType() == BanKuaiAndStockBasic.BKGEGU && childnode.getMyOwnCode().equals(stockcode))
+                	return (StockOfBanKuai)childnode;
             }
         }
 		
@@ -145,10 +148,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 		
 		if (this.getChildCount() >= 0) {
             for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
-                if(childnode.getStock().getMyOwnCode().equals(stock.getMyOwnCode())) {
+            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
+            	if(childnode.getType() == BanKuaiAndStockBasic.BKGEGU && childnode.getMyOwnCode().equals(stock.getMyOwnCode()))
                 	hasalreadybeenbankuaigegu = true;
-                }
+                
             }
         }
 		if(!hasalreadybeenbankuaigegu)
@@ -163,10 +166,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 		int childcount = this.getChildCount();
 		if (this.getChildCount() >= 0) {
             for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
                 
-                if(childnode.getStock().getMyOwnCode().equals(stockcode)) {
-    				Integer quanzhong = childnode.getQuanZhong();
+                if( childnode.getMyOwnCode().equals(stockcode)) {
+    				Integer quanzhong = ((StockOfBanKuai)childnode).getQuanZhong();
     				return quanzhong;
                 }
             }
@@ -178,10 +181,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 		int childcount = this.getChildCount();
 		if (this.getChildCount() >= 0) {
             for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
                 
-                if(childnode.getStock().getMyOwnCode().equals(stockcode)) {
-                	childnode.setStockQuanZhong(quanzhong);
+                if(childnode.getMyOwnCode().equals(stockcode)) {
+                	 ((StockOfBanKuai)childnode).setStockQuanZhong(quanzhong);
                 }
             }
         }
@@ -191,10 +194,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 		int childcount = this.getChildCount();
 		if (this.getChildCount() >= 0) {
             for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-                StockOfBanKuai childnode = (StockOfBanKuai)e.nextElement();
+            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
                 
-                if(childnode.getStock().getMyOwnCode().equals(stockcode)) {
-                	NodeXPeriodDataBasic perioddata = childnode.getStockXPeriodDataForBanKuai(period);
+                if(childnode.getMyOwnCode().equals(stockcode)) {
+                	NodeXPeriodDataBasic perioddata = ((StockOfBanKuai)childnode).getStockXPeriodDataForBanKuai(period);
             		return perioddata;
                 }
             }
@@ -233,12 +236,71 @@ public class BanKuai extends BkChanYeLianTreeNode
 				super(nodeperiodtype1);
 			}
 
-
 			@Override
 			public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) 
 			{
-				// TODO Auto-generated method stub
-				return null;
+				if(periodlist == null)
+					return null;
+				
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
+				if( curcjlrecord == null) 
+					return null;
+				
+				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
+				int maxweek = 0;
+				
+				DaPan dapan = (DaPan)getRoot();
+				for(int index = -1;index >= -100000; index--) { //目前记录不可能有10000个周期，所以10000足够
+					if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) //大盘还可能休市
+						continue;
+					
+					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
+					if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+						return maxweek;
+					
+					Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
+					if(curcje > lastcje)
+						maxweek ++;
+					else
+						break;
+				}
+				
+				curcjlrecord.setGgBkCjeZhanbiMaxweek(maxweek);
+				return maxweek;
+			}
+			/*
+			 * 对上级板块的成交额占比是多少周内的最大值
+			 */
+			public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate) 
+			{
+				if(periodlist == null)
+					return null;
+				
+				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
+				if( curcjlrecord == null) 
+					return null;
+
+				DaPan dapan = (DaPan)getRoot();
+				
+				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
+				int maxweek = 0;
+				for(int index = -1;index >= -100000; index--) {
+					if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) //大盘还可能休市
+						continue;
+					
+					ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
+					if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+						return maxweek;
+
+					Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
+					if(curzhanbiratio > lastzhanbiratio)
+						maxweek ++;
+					else
+						break;
+				}
+				
+				curcjlrecord.setGgBkCjeZhanbiMaxweek(maxweek);
+				return maxweek;
 			}
 
 			@Override
@@ -278,10 +340,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 				return cjechange/dpcjediff;
 			}
 
-			@Override
-			public ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate(LocalDate requireddate) 
-			{ 	
-				return null;
+//			@Override
+//			public ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate(LocalDate requireddate) 
+//			{ 	
+//				return null;
 //				if(periodlist == null)
 //					return null;
 //				
@@ -376,7 +438,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 //				}
 //				
 //				return null;
-			}
+//			}
 
 
 	
