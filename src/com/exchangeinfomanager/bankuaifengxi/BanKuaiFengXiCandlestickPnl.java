@@ -73,8 +73,8 @@ import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
+import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
@@ -129,11 +129,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference,String period) 
 	{
 		// TODO Auto-generated method stub
-		if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY))
+		if(period.equals(StockGivenPeriodDataItem.DAY))
 			date = date.plus(difference,ChronoUnit.DAYS);
-		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+		else if(period.equals(StockGivenPeriodDataItem.WEEK))
 			date = date.plus(difference,ChronoUnit.WEEKS);
-		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH))
+		else if(period.equals(StockGivenPeriodDataItem.MONTH))
 			date = date.plus(difference,ChronoUnit.MONTHS);
 		
 		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
@@ -148,31 +148,18 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	{
 		this.curdisplayednode = node;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
-		
-		ohlcSeries = new OHLCSeries("KPrice");
-//		ArrayList<ChenJiaoZhanBiInGivenPeriod> daydata = node.getWkChenJiaoErZhanBiInGivenPeriod();
-		double lowestLow =10000.0;  double highestHigh =0.0; 
-		for(LocalDate tmpdate = nodestartday;tmpdate.isBefore( nodeendday) || tmpdate.isEqual(nodeendday); tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ){
-			ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(tmpdate,0);
-			if(tmprecord != null) {
-				Double open = tmprecord.getOpenPrice();
-				Double low = tmprecord.getLowPrice();
-				Double close = tmprecord.getClosePrice();
-				Double high = tmprecord.getHighPrice();
-				logger.debug(tmpdate.toString()  + " :" + open + "," + high.toString() + "," + low + "," + close);
-				
-				int year = tmpdate.getYear();
-				int month = tmpdate.getMonthValue();
-				int day = tmpdate.getDayOfMonth();
-				OHLCItem kdata = new OHLCItem(new Day(day,month,year), open, high, low, close);
-				ohlcSeries.add(kdata);
+		ohlcSeries = nodexdata.getRangeOHLCData(nodestartday, nodeendday);
 
+		double lowestLow =10000.0;  double highestHigh =0.0; 
+		int itemcount = ohlcSeries.getItemCount();
+		for(int i=0;i<itemcount;i++){
+				Double low = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getLowValue();
+				Double high = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getHighValue();
 				
 				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
 					lowestLow = low;
 				if(high > highestHigh && high !=0)
 					highestHigh = high;
-			}
 		}
 		
 		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.02);
@@ -193,28 +180,18 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	{
 		this.curdisplayednode = node;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
-		ohlcSeries = new OHLCSeries("KPrice");
-//		ArrayList<ChenJiaoZhanBiInGivenPeriod> daydata = node.getWkChenJiaoErZhanBiInGivenPeriod();
+		ohlcSeries = nodexdata.getRangeOHLCData(nodestartday, nodeendday);
+
 		double lowestLow =10000.0;  double highestHigh =0.0; 
 		
 		Day onemonthhighdate = null, twomonthhighdate=null;
 		double onemonthhigh = 0.0, onemonthlessclose = 0.0; //指定周期后1个月的最大值最小值
 		double twomonthhigh = 0.0, towmonthlessclose = 0.0; //指定周期后2个月的最大值最小值
-		for(LocalDate tmpdate = nodestartday;tmpdate.isBefore( nodeendday) || tmpdate.isEqual(nodeendday); tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ){
-			ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(tmpdate, 0);
-			if(tmprecord != null) {
-				Double open = tmprecord.getOpenPrice();
-				Double low = tmprecord.getLowPrice();
-				Double close = tmprecord.getClosePrice();
-				Double high = tmprecord.getHighPrice();
-				logger.debug(tmpdate.toString()  + " :" + open + "," + high.toString() + "," + low + "," + close);
-				
-				int year = tmpdate.getYear();
-				int month = tmpdate.getMonthValue();
-				int day = tmpdate.getDayOfMonth();
-				ohlcSeries.add(new Day(day,month,year), open, high, low, close);
-				
-				
+		int itemcount = ohlcSeries.getItemCount();
+		for(int i=0;i<itemcount;i++){
+			Double low  = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getLowValue();
+			Double high = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getHighValue();
+			
 				//为显示寻找最大最小值，以便Y轴做合适调整
 				if(low < lowestLow && low !=0) //股价不可能为0，为0，说明停牌，无需计算
 					lowestLow = low;
@@ -224,22 +201,21 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				//高亮显示选中的那一周，本来要划一个长方形，觉得实现太麻烦，改在renderer里面高亮
 				
 				//寻找1月/2月最大值
-				long betweendays = Math.abs(tmpdate.toEpochDay() - highlightweekdate.toEpochDay() );
-//				logger.debug(intervalPeriod.getDays());
-				if(tmpdate.isAfter(highlightweekdate) && betweendays <= 30) {
+				RegularTimePeriod dataitemp = ohlcSeries.getPeriod(i);
+				LocalDate endd = dataitemp.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				long betweendays = Math.abs(endd.toEpochDay() - highlightweekdate.toEpochDay() );
+				if(endd.isAfter(highlightweekdate) && betweendays <= 30) {
 					if(high > onemonthhigh) {
 						onemonthhigh = high;	
-						onemonthhighdate = new Day(day,month,year);
+						onemonthhighdate = new Day(dataitemp.getEnd());
 					}
 				} 
-				if(tmpdate.isAfter(highlightweekdate) && betweendays <= 60  ) {
+				if(endd.isAfter(highlightweekdate) && betweendays <= 60  ) {
 					if(high > twomonthhigh) {
 						twomonthhigh = high;
-						twomonthhighdate = new Day(day,month,year);
+						twomonthhighdate = new Day(dataitemp.getEnd());
 					}
 				}
-				
-			}
 		}
 		
 		//设置显示范围，避免某些情况下太小
@@ -282,13 +258,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         candlestickChart.fireChartChanged ();
 		
 	}
-//	private void someCommonSettingAfterDisplay ()
-//	{
-//		candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.02);
-//		chartPanel.setHorizontalAxisTrace(true); //十字显示
-//        chartPanel.setVerticalAxisTrace(true);
-//		
-//	}
 		
 	private void createChartPanel() 
 	{

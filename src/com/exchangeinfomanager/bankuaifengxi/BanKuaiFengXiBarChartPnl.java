@@ -48,7 +48,6 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
@@ -153,14 +152,17 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS);
 		
-		try {
-	    	((TitledBorder)this.getBorder()).setTitle( "\"" + nodecode+ nodename + "\"" + type 
-																+ "从" + CommonUtility.formatDateYYYY_MM_DD(requirestart) 
-																+ "到" + CommonUtility.formatDateYYYY_MM_DD(requireend) );
-	    	this.repaint();
-		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-		}
+//		try {
+//	    	((TitledBorder)this.getBorder()).setTitle( "\"" + nodecode + nodename + "\"" + type 
+//																+ "从" + CommonUtility.formatDateYYYY_MM_DD(requirestart) 
+//																+ "到" + CommonUtility.formatDateYYYY_MM_DD(requireend) );
+//	    	this.repaint();
+//		} catch (java.lang.NullPointerException e) {
+//			e.printStackTrace();
+//		}
+		String tooltip = "\"" + nodecode + nodename + "\"" + type 
+				+ "从" + CommonUtility.formatDateYYYY_MM_DD(requirestart) 
+				+ "到" + CommonUtility.formatDateYYYY_MM_DD(requireend);
     	this.setToolTipText(nodecode+ nodename );
 	}
 	/*
@@ -232,14 +234,18 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
     }
     protected void getZdgzFx(LocalDate localDate,String period) 
     {
-    	NodeXPeriodDataBasic nodexdata = curdisplayednode.getNodeXPeroidData(period);
-		ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(localDate,0);
-		
-    	if(tmprecord.hasFengXiJieGuo ()) {
-    		ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
-        	this.selectedfxjg = fxresult;
-    	} else
-    		this.selectedfxjg = null;
+    	ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
+    	this.selectedfxjg = fxresult;
+    	
+//    	NodeXPeriodDataBasic nodexdata = curdisplayednode.getNodeXPeroidData(period);
+//    	bkdbopt
+//		ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(localDate,0);
+//		
+//    	if(tmprecord.hasFengXiJieGuo ()) {
+//    		ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
+//        	this.selectedfxjg = fxresult;
+//    	} else
+//    		this.selectedfxjg = null;
 	}
 	/*
      * 设置要突出显示的bar
@@ -343,21 +349,6 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 //		popupMenu.add(mntmNewMenuItem);
 		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
    }
-    
-    private JScrollBar getScrollBar(final CategoryAxis domainAxis)
-    {
-        final double r1 = domainAxis.getLowerMargin();
-        final double r2 = domainAxis.getUpperMargin();
-        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 100, 0, 400);
-        scrollBar.addAdjustmentListener( new AdjustmentListener() {
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                double x = e.getValue() *60 *60 * 1000;
-//                domainAxis.set(r1+x, r2+x);
-            }
-        });
-        
-        return scrollBar;
-    }
 }
 
 /*
@@ -380,13 +371,12 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
     	else {
     		LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
     		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
-    		ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(selecteddate,0);
     		
-    		if(tmprecord == null)
-    			return Color.black;
-    		else if(tmprecord.hasFengXiJieGuo ()) 
-        		return Color.magenta.darker();
-        	else 
+//    		if(tmprecord == null)
+//    			return Color.black;
+//    		else if(tmprecord.hasFengXiJieGuo ()) 
+//        		return Color.magenta.darker();
+//        	else 
         		return Color.black;
     	}
 //    		return Color.ORANGE;

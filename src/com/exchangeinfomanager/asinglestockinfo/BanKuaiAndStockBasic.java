@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.ohlc.OHLCItem;
+import org.jfree.data.time.ohlc.OHLCSeries;
 
 public interface BanKuaiAndStockBasic 
 {
@@ -74,24 +77,23 @@ public interface BanKuaiAndStockBasic
 	public interface NodeXPeriodDataBasic 
 	{
 		public String getNodeperiodtype();
-		//和成交量相关的函数
-		public void setNodePeriodRecords (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1);
 		
 		/*
 		 * 获取数据
 		 */
 //		public ArrayList<ChenJiaoZhanBiInGivenPeriod> getNodePeriodRecords ();
 		
-		/*
-		 * 只能在头尾加，不允许在中间加 
-		 */
-		boolean addRecordsForAGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1,LocalDate position);
+		Double getChengJiaoEr (LocalDate requireddate,int difference);
+		
+		void addNewXPeriodData (StockGivenPeriodDataItem kdata);
 
 		LocalDate getRecordsStartDate ();
 		/*
 		 * 
 		 */
 		LocalDate getRecordsEndDate ();
+		
+		Boolean hasRecordInThePeriod (LocalDate requireddate, int difference); 
 		/*
 		 * 在交易记录中找到对应周/日的位置,difference是偏移量，
 		 */
@@ -100,7 +102,7 @@ public interface BanKuaiAndStockBasic
 		/*
 		 * 获得指定周的记录
 		 */
-		ChenJiaoZhanBiInGivenPeriod getSpecficRecord (LocalDate requireddate,int difference);
+//		StockGivenPeriodDataItem getSpecficRecord(LocalDate requireddate, int difference);
 		/*
 		 * 计算指定周期和上周期的成交额差额，适合stock/bankuai，dapan有自己的计算方法
 		 */
@@ -122,6 +124,23 @@ public interface BanKuaiAndStockBasic
 		 * 
 		 */
 		Integer getChenJiaoErMaxWeekOfSuperBanKuai (LocalDate requireddate);
+		/*
+		 * 
+		 */
+		TimeSeries getRangeChengJiaoEr (LocalDate requiredstart,LocalDate requiredend);
+		/*
+		 * 
+		 */
+		TimeSeries getRangeChengJiaoErZhanBi (LocalDate requiredstart,LocalDate requiredend);
+		/*
+		 * 
+		 */
+		public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend);
+		/*
+		 * 
+		 */
+		public OHLCItem getOHLCData (LocalDate requireddate,int difference);
+
 		/*
 		 * 一次性计算所有数据
 		 */

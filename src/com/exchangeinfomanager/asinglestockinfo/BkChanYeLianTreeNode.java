@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,7 +21,11 @@ import java.util.Set;
 import javax.swing.tree.*;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.ComparableObjectItem;
 import org.jfree.data.time.Day;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
@@ -435,91 +441,149 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			public NodeXPeriodData (String nodeperiodtype1)
 			{
 				this.nodeperiodtype = nodeperiodtype1;
-				stockgivenperioddataseries = new OHLCSeries(nodeperiodtype1);
-				
-//				stockgivenperioddataseries.get
+				stockohlc = new OHLCSeries(nodeperiodtype1);
+				stockamo = new TimeSeries(nodeperiodtype1);
+				stockvol = new TimeSeries(nodeperiodtype1);;
+				stockamozhanbi = new TimeSeries(nodeperiodtype1);;
+				stockvolzhanbi = new TimeSeries(nodeperiodtype1);;
+
 			}
 
 			private String nodeperiodtype;
-//			protected ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist; //板块自己的成交记录以及一些分析结果
-			
-			protected OHLCSeries stockgivenperioddataseries; //板块自己的成交记录以及一些分析结果
-			
+			protected OHLCSeries stockohlc; //板块自己的成交记录以及一些分析结果
+			protected TimeSeries stockamo;
+			protected TimeSeries stockvol;
+			protected TimeSeries stockamozhanbi;
+			protected TimeSeries stockvolzhanbi;
+	
+			public void addNewXPeriodData (StockGivenPeriodDataItem kdata)
+			{
+				stockohlc.add(kdata);
+				stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr());
+				stockvol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang());
+				if(kdata.getCjeZhanBi() != null)
+					stockamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi());
+				if(kdata.getCjlZhanBi() != null)
+					stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi());
+			}
+			/*
+			 * 
+			 */
+			public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend)
+			{
+				OHLCSeries tmpohlc = new OHLCSeries ("Kxian");
+				int itemcount = this.stockohlc.getItemCount();
+				for(int i=0;i<itemcount;i++) {
+					RegularTimePeriod dataitemp = this.stockohlc.getPeriod(i);
+					LocalDate startd = dataitemp.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					LocalDate endd = dataitemp.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					
+					if( (startd.isAfter(requiredstart) || startd.equals(requiredstart) )  && ( endd.isBefore(requiredend) || endd.equals(requiredend) ))
+						tmpohlc.add( (OHLCItem) this.stockohlc.getDataItem(i) );
+				}
+				
+				return tmpohlc;
+			}
+			/*
+			 * (non-Javadoc)
+			 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getOHLCData(java.time.LocalDate, int)
+			 */
+			public OHLCItem getOHLCData (LocalDate requireddate,int difference)
+			{
+				int itemcount = this.stockohlc.getItemCount();
+				for(int i=0;i<itemcount;i++) {
+					RegularTimePeriod dataitemp = this.stockohlc.getPeriod(i);
+					if(dataitemp.equals(this.getJFreeChartFormateTimePeriod(requireddate,0)) )
+						return (OHLCItem) this.stockohlc.getDataItem(i);
+				}
+				
+				return null;
+			}
+			/*
+			 * (non-Javadoc)
+			 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getNodeperiodtype()
+			 */
 			public String getNodeperiodtype() {
 				return nodeperiodtype;
 			}
-			public void addNewXPeriodData (LocalDate data,Double open,Double high,Double low,Double close)
-			{
-				int year = data.getYear();
-				int month = data.getMonthValue();
-				int day = data.getDayOfMonth();
-				OHLCItem kdata = new OHLCItem(new Day(day,month,year), open, high, low, close);
-				stockgivenperioddataseries.add(kdata);
-			}
-			
-//			public void setNodeperiodtype(String nodeperiodtype) {
-//				this.nodeperiodtype = nodeperiodtype;
-//			}
-		
-			//和成交量相关的函数
-//			public void setNodePeriodRecords (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1)
-//			{
-//				 this.periodlist = periodlist1;
-//			}
 			/*
-			 * 获取数据
+			 * 
 			 */
-//			protected ArrayList<ChenJiaoZhanBiInGivenPeriod> getNodePeriodRecords ()
-//			{
-//				return this.periodlist;
-//			}
-			/*
-			 * 只能在头尾加，不允许在中间加 
-			 */
-//			public boolean addRecordsForAGivenPeriod (ArrayList<ChenJiaoZhanBiInGivenPeriod> periodlist1,LocalDate position)
-//			{
-//				if(periodlist1.isEmpty())
-//					return false;
-//				
-//				if(this.periodlist == null || this.periodlist.isEmpty() ) {
-//					this.periodlist = periodlist1;
-//					return true;
-//				}
-//				else {
-//					ChenJiaoZhanBiInGivenPeriod firstrecord = this.periodlist.get(0);
-//					LocalDate firstday = firstrecord.getRecordsDayofEndofWeek();
-//					if(position.isBefore(firstday) || position.isEqual(firstday)) {
-////						logger.debug("add before" + this.wkcjeperiodlist.size());
-//						this.periodlist.addAll(0, periodlist1);
-////						logger.debug("add after" + this.wkcjeperiodlist.size());
-//						return true;
-//					}
-//					
-//					ChenJiaoZhanBiInGivenPeriod lastrecord = this.periodlist.get(this.periodlist.size()-1);
-//					LocalDate lastday = lastrecord.getRecordsDayofEndofWeek();
-//					if(position.isAfter(lastday) || position.isEqual(lastday)) {
-//						this.periodlist.addAll(this.periodlist.size()-1, periodlist1);
-//						return true;
-//					}
-//					
-//				}
-//				
-//				return false;
-//			}
-
-			public LocalDate getRecordsStartDate ()
+			public TimeSeries getRangeChengJiaoEr (LocalDate requiredstart,LocalDate requiredend)
 			{
-				ChenJiaoZhanBiInGivenPeriod tmprecords;
+				RegularTimePeriod start = this.getJFreeChartFormateTimePeriod(requiredstart,0);
+				RegularTimePeriod end = this.getJFreeChartFormateTimePeriod(requiredend,0);
 				try {
-					tmprecords = this.periodlist.get(0);
-				} catch (java.lang.NullPointerException e) {
-					return null;
-				} catch (java.lang.IndexOutOfBoundsException e) {
+					return this.stockamo.createCopy( start,  end);
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
 					return null;
 				}
+			}
+			/*
+			 * 
+			 */
+			public TimeSeries getRangeChengJiaoErZhanBi (LocalDate requiredstart,LocalDate requiredend)
+			{
+				RegularTimePeriod start = this.getJFreeChartFormateTimePeriod(requiredstart,0);
+				RegularTimePeriod end = this.getJFreeChartFormateTimePeriod(requiredend,0);
+				try {
+					return this.stockamozhanbi.createCopy( start,  end);
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+					return null;
+				}
+			} 
+			/*
+			 * 
+			 */
+			public Double getChenJiaoErZhanBi (LocalDate requireddate,int difference)
+			{
+				if(stockohlc == null)
+					return null;
 				
-				LocalDate startdate = tmprecords.getRecordsDayofEndofWeek();
-				LocalDate mondayday = startdate.with(DayOfWeek.MONDAY);
+				TimeSeriesDataItem curcjlrecord = null;
+				if(difference >=0 )
+					curcjlrecord = stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+				
+				if( curcjlrecord == null) 
+					return null;
+				else
+					return curcjlrecord.getValue().doubleValue();
+			}
+			/*
+			 * 
+			 */
+			public Double getChengJiaoEr (LocalDate requireddate,int difference)
+			{
+				if(stockohlc == null)
+					return null;
+				
+				TimeSeriesDataItem curcjlrecord = null;
+				if(difference >=0 )
+					curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+				
+				if( curcjlrecord == null) 
+					return null;
+				else
+					return curcjlrecord.getValue().doubleValue();
+			}
+			/*
+			 * (non-Javadoc)
+			 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getRecordsStartDate()
+			 */
+			public LocalDate getRecordsStartDate ()
+			{
+				if(stockohlc.getItemCount() == 0)
+					return null;
+				
+				RegularTimePeriod firstperiod = stockohlc.getPeriod(0);
+				LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+				LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+			
+				TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
+//				System.out.println(startdate.with(fieldUS, 2));
+				LocalDate mondayday = startdate.with(fieldUS, 2);
 				
 				return mondayday;
 			}
@@ -528,182 +592,111 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			 */
 			public LocalDate getRecordsEndDate ()
 			{
-				ChenJiaoZhanBiInGivenPeriod tmprecords;
-				try {
-					tmprecords = this.periodlist.get(this.periodlist.size()-1);
-				} catch (java.lang.NullPointerException e) {
+				if(stockohlc.getItemCount() == 0)
 					return null;
-				} catch (java.lang.IndexOutOfBoundsException e) {
-					return null;
-				}
 				
-				LocalDate enddate = tmprecords.getRecordsDayofEndofWeek().with(DayOfWeek.SATURDAY);
-				return enddate;
-			}
-			/*
-			 * 在交易记录中找到对应周/日的位置,difference是偏移量，
-			 */
-//			protected Integer getRequiredRecordsPostion (LocalDate requireddate,int difference)
-//			{
-//				Integer index = -1;
-//				Boolean found = false;
-//				
-//				ChenJiaoZhanBiInGivenPeriod expectedrecord = this.getSpecficRecord(requireddate, difference);
-////				expectedrecord.getRecordsDayofEndofWeek();
-//				
-//				for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : this.periodlist) {
-//					if(tmpcjzb.getRecordsType().toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.WEEK)) { //如果是周线数据，只要数据周相同，即可返回
-//						index ++;
-//						
-//						int year = expectedrecord.getRecordsYear();
-//						int weeknumber = expectedrecord.getRecordsWeek();
-//						
-//						int yearnum = tmpcjzb.getRecordsYear();
-//						int wknum = tmpcjzb.getRecordsWeek();
-//						
-//						if(wknum == weeknumber && yearnum == year) {
-//							found = true;
-//							break;
-//						}
-//					} else if(tmpcjzb.getRecordsType().toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.DAY)) { //如果是日线数据，必须相同才可返回
-//						index ++;
-//						LocalDate recordsday = tmpcjzb.getRecordsDayofEndofWeek();
-//						if(recordsday.isEqual(requireddate)) {
-//							found = true;
-//							break;
-//						}
-//					}
-//					
-//				}
-//				if(!found)
-//					return null;
-//				else
-//					return index;
-//			}
-
-			@Override
+				int itemcount = stockohlc.getItemCount();
+				RegularTimePeriod firstperiod = stockohlc.getPeriod(itemcount-1);
+				LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 			
-			/*
-			 * 获得指定周的记录
-			 */
-			public ChenJiaoZhanBiInGivenPeriod getSpecficRecord(LocalDate requireddate, int difference) 
-			{
-				if(periodlist == null)
-					return null;
-
-				String nodeperiod = getNodeperiodtype();
-				LocalDate expectedate = null;
-				if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.WEEK)) { //如果是周线数据，只要数据周相同，即可返回
-					expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-				} else if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) { //如果是日线数据，必须相同才可返回
-					expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
-				}  else if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) { //如果是日线数据，必须相同才可返回
-					expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
-				}
-				
-				int index = -1;
-				ChenJiaoZhanBiInGivenPeriod foundrecord = null;
-				for(ChenJiaoZhanBiInGivenPeriod tmpcjzb : periodlist) {
-					if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) { //如果是周线数据，只要数据周相同，即可返回
-						index ++;
-						
-						int year = expectedate.getYear();
-						int month = expectedate.getMonthValue();
-						
-						int yearnum = tmpcjzb.getRecordsYear();
-						int monthnum = tmpcjzb.getRecordsMonth();
-						
-						if(month == monthnum && yearnum == year) {
-							foundrecord = tmpcjzb;
-							break;
-						}
-					} else	if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.WEEK)) { //如果是周线数据，只要数据周相同，即可返回
-						index ++;
-						
-						int year = expectedate.getYear();
-						WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
-						int weekNumber = expectedate.get(weekFields.weekOfWeekBasedYear());
-						
-						int yearnum = tmpcjzb.getRecordsYear();
-						int wknum = tmpcjzb.getRecordsWeek();
-						
-						if(wknum == weekNumber && yearnum == year) {
-							foundrecord = tmpcjzb;
-							break;
-						}
-					} else if(nodeperiod.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) { //如果是日线数据，必须相同才可返回
-						index ++;
-						LocalDate recordsday = tmpcjzb.getRecordsDayofEndofWeek();
-						if(recordsday.isEqual(requireddate)) {
-							foundrecord = tmpcjzb;
-							break;
-						}
-					}
-				}
-				
-				return foundrecord;
+				LocalDate saturday = enddate.with(DayOfWeek.SATURDAY);
+				return saturday;
 			}
-
+			/*
+			 * (non-Javadoc)
+			 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasRecordInThePeriod(java.time.LocalDate, int)
+			 */
+			public Boolean hasRecordInThePeriod (LocalDate requireddate, int difference) 
+			{
+				if(stockohlc == null)
+					return null;
+			
+				 TimeSeriesDataItem stockamovaule = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+				 if(stockamovaule != null)
+					 return true;
+				 else
+					 return false;
+			}
+			
 			/*
 			 * 计算指定周期和上周期的成交额差额，适合stock/bankuai，dapan有自己的计算方法
 			 */
 			public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate)
 			{
-				if(periodlist == null)
+				if(stockohlc == null)
 					return null;
 				
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
+				TimeSeriesDataItem curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0) );
 				if( curcjlrecord == null) 
 					return null;
 				
 				int index = -1;
-				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) ) { //上周可能大盘修饰
+				DaPan dapan = (DaPan)getRoot();
+				while ( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) { //上周可能大盘修饰
 					index --;
 				}
 				
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
+				TimeSeriesDataItem lastcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod (requireddate,index) );
 				if(lastcjlrecord == null) //休市前还是空，说明要是新板块。板块没有停牌的
 					return null;
 				
-				Double curcje = curcjlrecord.getMyOwnChengJiaoEr();
-				Double lastcje = lastcjlrecord.getMyOwnChengJiaoEr();
+				Double curcje = curcjlrecord.getValue().doubleValue();
+				Double lastcje = lastcjlrecord.getValue().doubleValue();
 				
-				curcjlrecord.setGgBkCjeDifferenceWithLastPeriod (curcje - lastcje);
 				return curcje - lastcje;
 			}
-
 			/*
 			 * 对上级板块的成交额占比增速
 			 */
 			public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate) 
 			{
-				if(periodlist == null)
+				if(stockohlc == null)
 					return null;
 				
-				ChenJiaoZhanBiInGivenPeriod curcjlrecord = this.getSpecficRecord (requireddate,0);
+				TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
 				if( curcjlrecord == null) 
 					return null;
 				
 				int index = -1;
-				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) ) { //上周可能大盘修饰
+				DaPan dapan = (DaPan)getRoot();
+				while ( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000) { //上周可能大盘修饰 
 					index --;
 				}
 				
-				ChenJiaoZhanBiInGivenPeriod lastcjlrecord = this.getSpecficRecord (requireddate,index);
+				TimeSeriesDataItem lastcjlrecord = stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod (requireddate,index) );
 				if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
 					logger.debug(getMyOwnCode() + getMyOwnName() + "可能是一个新个股或板块");
 					return 100.0;
 				}
 				
-				Double curzhanbiratio = curcjlrecord.getCjeZhanBi();
-				Double lastzhanbiratio = lastcjlrecord.getCjeZhanBi();
+				Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
+				Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
 				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
 				logger.debug(getMyOwnCode() + getMyOwnName() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
 				
-				curcjlrecord.setGgBkCjeZhanbiGrowthRate(zhanbigrowthrate);
 				return zhanbigrowthrate;
 			}
-
+			/*
+			 * 
+			 */
+			protected RegularTimePeriod getJFreeChartFormateTimePeriod (LocalDate requireddate,int difference) 
+			{
+				String nodeperiod = getNodeperiodtype();
+				LocalDate expectedate = null;
+				RegularTimePeriod period = null;
+				if(nodeperiod.equals(StockGivenPeriodDataItem.WEEK)) { //如果是周线数据，只要数据周相同，即可返回
+					expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
+					period = new org.jfree.data.time.Week (Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+				} else if(nodeperiod.equals(StockGivenPeriodDataItem.DAY)) { //如果是日线数据，必须相同才可返回
+					expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
+					period = new org.jfree.data.time.Day(Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+				}  else if(nodeperiod.equals(StockGivenPeriodDataItem.MONTH)) { //如果是日线数据，必须相同才可返回
+					expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
+				}
+				
+				return period;
+			}
 			@Override
 			public abstract Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) ;
 			/*
@@ -713,12 +706,40 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			/*
 			 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
 			 */
-			public abstract Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (LocalDate requireddate);
+			public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate) 
+			{
+				if(stockohlc == null)
+					return null;
+				
+				TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+				if( curcjlrecord == null) 
+					return null;
+				
+				//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
+				String nodept = getNodeperiodtype();
+				Double dpcjediff = ((DaPan)getRoot()).getNodeXPeroidData(nodept).getChengJiaoErDifferenceWithLastPeriod(requireddate);
+				if( dpcjediff<0 || dpcjediff == null ) {//大盘缩量，
+					return -100.0;
+				}
+				
+				int index = -1;
+				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) { //上周可能大盘修饰
+					index --;
+				}
+				
+				TimeSeriesDataItem lastcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod (requireddate,index) );
+				if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
+					Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
+					return curggcje/dpcjediff;
+				}
+				
+				Double curcje = curcjlrecord.getValue().doubleValue();
+				Double lastcje = lastcjlrecord.getValue().doubleValue();
+				Double cjechange = curcje - lastcje; //个股成交量的变化
+				
+				return cjechange/dpcjediff;
+			}
 			
-			/*
-			 * 一次性计算所有数据
-			 */
-//			public abstract ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);
 		 }
 		 
 		 

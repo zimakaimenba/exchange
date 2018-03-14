@@ -87,7 +87,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
 		    NodeXPeriodDataBasic nodexdata = bk.getStockXPeriodDataForABanKuai(stock.getMyOwnCode(), period);
-		    Double curcje = nodexdata.getSpecficRecord(requireddate, 0).getMyOwnChengJiaoEr();
+		    Double curcje = nodexdata.getChengJiaoEr(requireddate, 0);
 		    if(cje != null && cje >0 && curcje > cje ) 
 		    	background = Color.yellow ;
 		    else

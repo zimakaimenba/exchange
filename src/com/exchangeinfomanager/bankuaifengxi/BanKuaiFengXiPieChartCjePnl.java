@@ -70,9 +70,9 @@ import org.w3c.dom.events.MouseEvent;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -95,11 +95,11 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl implem
 	
 	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference,String period)
 	{
-		if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY))
+		if(period.equals(StockGivenPeriodDataItem.DAY))
 			date = date.plus(difference+pianyiliang,ChronoUnit.DAYS);
-		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+		else if(period.equals(StockGivenPeriodDataItem.WEEK))
 			date = date.plus(difference+this.pianyiliang,ChronoUnit.WEEKS);
-		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH))
+		else if(period.equals(StockGivenPeriodDataItem.MONTH))
 			date = date.plus(difference+this.pianyiliang,ChronoUnit.MONTHS);
 		
 		setBanKuaiCjeNeededDisplay((BanKuai)node,10,date,period);
@@ -123,9 +123,8 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl implem
     		
     		//找到对应周的数据
     		NodeXPeriodDataBasic stockxdataforbk = tmpstock.getNodeXPeroidData(period);
-    		ChenJiaoZhanBiInGivenPeriod tmprecord = stockxdataforbk.getSpecficRecord(weeknumber,0);
-    		if(tmprecord != null) {
-    			double cje = tmprecord.getMyOwnChengJiaoEr();
+    		Double cje = stockxdataforbk.getChengJiaoEr(weeknumber,0);
+    		if(cje != null) {
        	    	if(stockname != null)
         	    		piechartdataset.setValue(ggcode+stockname,cje);
        	    	else 

@@ -42,8 +42,8 @@ public class BanKuaiFengXiBarCjlZhanBiLargePeriodChartPnl extends BanKuaiFengXiB
 		
 		LocalDate tmpdate = requirestart;
 		do {
-			ChenJiaoZhanBiInGivenPeriod tmpggrecord = nodexdata.getSpecficRecord(tmpdate,0);
-			ChenJiaoZhanBiInGivenPeriod tmpdprecord = dpxdata.getSpecficRecord(tmpdate,0); //返回的是上证或深圳的某个记录，里面uplevel记录的是整个大盘的成交额
+			StockGivenPeriodDataItem tmpggrecord = nodexdata.getSpecficRecord(tmpdate,0);
+			StockGivenPeriodDataItem tmpdprecord = dpxdata.getSpecficRecord(tmpdate,0); //返回的是上证或深圳的某个记录，里面uplevel记录的是整个大盘的成交额
 			
 			if(tmpggrecord != null) {
 				Double ggchenjiaol = tmpggrecord.getMyOwnChengJiaoEr();

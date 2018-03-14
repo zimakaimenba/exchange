@@ -10,30 +10,34 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
-public class StockGivenPeriodDataItem extends org.jfree.data.time.ohlc.OHLCItem
-{
+public class StockGivenPeriodDataItem extends OHLCItem
+{											  
 
+	
 	public StockGivenPeriodDataItem(String nodecode,String datatype,RegularTimePeriod period, double open, double high, double low, double close,double myamount,double myvolumne) 
 	{
 		super (period,open,high,low,close);
 		
 		this.myowncode = nodecode;
+		this.myownchengjiaoer = myamount;
+		this.myownchengjiaoliang = myvolumne;
+		this.regulartimeperiod = period;
 		
-		if( datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.DAY)
-				|| datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.WEEK)
-				|| datatype.toUpperCase().equals(ChenJiaoZhanBiInGivenPeriod.SIXTYMINUTES))
+		if( datatype.toUpperCase().equals(StockGivenPeriodDataItem.DAY)
+				|| datatype.toUpperCase().equals(StockGivenPeriodDataItem.WEEK)
+				|| datatype.toUpperCase().equals(StockGivenPeriodDataItem.SIXTYMINUTES))
 			this.dataperiodtype = datatype;
 		else
 			this.dataperiodtype = null;
-		
-		
 	}
 	
 	public static String  DAY = "DAY", WEEK = "WEEK", SIXTYMINUTES = "SIXTYMINUTES", MONTH= "MONTH";
 	private String dataperiodtype; //日线，周线，月线，年线
+	private RegularTimePeriod regulartimeperiod;
 	
 	private String myowncode;
 	private String myuplevelcode;
@@ -128,9 +132,9 @@ public class StockGivenPeriodDataItem extends org.jfree.data.time.ohlc.OHLCItem
 	/**
 	 * @param myownchengjiaoliang the myownchengjiaoliang to set
 	 */
-	public void setMyOwnChengJiaoEr(Double myownchengjiaoliang) {
-		this.myownchengjiaoer = myownchengjiaoliang;
-	}
+//	public void setMyOwnChengJiaoEr(Double myownchengjiaoliang) {
+//		this.myownchengjiaoer = myownchengjiaoliang;
+//	}
 	/**
 	 * @return the uplevelchengjiaoliang
 	 */
@@ -149,15 +153,19 @@ public class StockGivenPeriodDataItem extends org.jfree.data.time.ohlc.OHLCItem
 	 */
 	public Double getCjeZhanBi()  
 	{
-		return this.myownchengjiaoer/this.uplevelchengjiaoer;
+		try {
+			return this.myownchengjiaoer/this.uplevelchengjiaoer;
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		}
 	}
 	
 	public Double getMyownchengjiaoliang() {
 		return myownchengjiaoliang;
 	}
-	public void setMyownchengjiaoliang(Double myownchengjiaoliang) {
-		this.myownchengjiaoliang = myownchengjiaoliang;
-	}
+//	public void setMyownchengjiaoliang(Double myownchengjiaoliang) {
+//		this.myownchengjiaoliang = myownchengjiaoliang;
+//	}
 	public Double getUplevelchengjiaoliang() {
 		return uplevelchengjiaoliang;
 	}
@@ -169,7 +177,12 @@ public class StockGivenPeriodDataItem extends org.jfree.data.time.ohlc.OHLCItem
 	 */
 	public Double getCjlZhanBi()  
 	{
-		return this.myownchengjiaoliang/this.uplevelchengjiaoliang;
+		try {
+			return this.myownchengjiaoliang/this.uplevelchengjiaoliang;
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		}
+			
 	}
 	
 

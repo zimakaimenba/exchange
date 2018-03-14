@@ -89,9 +89,9 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.asinglestockinfo.SubnodeButton;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
@@ -194,16 +194,19 @@ public class BanKuaiAndChanYeLian
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
+		if(bankuai.getMyOwnCode() .equals("880958"))
+			logger.debug("开始测试");
+		
 		//判断时间的相关关系，以便决定是否需要到数据库中查询新纪录
 		if(bkstartday == null || bkendday == null) { //还没有数据，直接找
 			bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,requirestart,requireend,requirestart,period);
 		} else	{
 			HashMap<String,LocalDate> startend = null;
-			if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+			if(period.equals(StockGivenPeriodDataItem.WEEK))
 				startend = nodeWeekTimeStampRelation (bkstartday,bkendday,requirestart,requireend);
-			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) //暂时没开发
+			else if(period.equals(StockGivenPeriodDataItem.DAY)) //暂时没开发
 				;
-			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) //暂时没开发
+			else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
 				;
 			
 			if(!startend.isEmpty()) {
@@ -264,11 +267,11 @@ public class BanKuaiAndChanYeLian
 			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock, bkstartday, bkendday,bkstartday,period);
 		} else {
 			HashMap<String,LocalDate> startend = null;
-			if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+			if(period.equals(StockGivenPeriodDataItem.WEEK))
 				startend = nodeWeekTimeStampRelation (stockstartday,stockendday,bkstartday,bkendday);
-			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) //暂时没开发
+			else if(period.equals(StockGivenPeriodDataItem.DAY)) //暂时没开发
 				;
-			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) //暂时没开发
+			else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
 				;
 			
 			if(!startend.isEmpty()) {
@@ -322,11 +325,11 @@ public class BanKuaiAndChanYeLian
 			szdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,requirestart,requireend,requirestart,period);
 		} else	{
 			HashMap<String,LocalDate> startend = null;
-			if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+			if(period.equals(StockGivenPeriodDataItem.WEEK))
 				startend = nodeWeekTimeStampRelation (bkstartday,bkendday,requirestart,requireend);
-			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) //暂时没开发
+			else if(period.equals(StockGivenPeriodDataItem.DAY)) //暂时没开发
 				;
-			else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) //暂时没开发
+			else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
 				;
 			
 			LocalDate searchstart,searchend,position;
@@ -426,12 +429,12 @@ public class BanKuaiAndChanYeLian
 		
 		BkChanYeLianTreeNode stock = (Stock)this.treechanyelian.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
 		try{
-			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(ChenJiaoZhanBiInGivenPeriod.WEEK);
+			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
 			LocalDate nodestartday = stockxdata.getRecordsStartDate();
 			LocalDate nodeendday = stockxdata.getRecordsEndDate();
 					
 			if(nodestartday == null || nodeendday == null) { //还没有数据，直接找
-				stock = bkdbopt.getStockZhanBi ((Stock)stock,requirestart,requireend,requireend,ChenJiaoZhanBiInGivenPeriod.WEEK); 
+				stock = bkdbopt.getStockZhanBi ((Stock)stock,requirestart,requireend,requireend,StockGivenPeriodDataItem.WEEK); 
 			} else {
 				HashMap<String,LocalDate> startend = null ;
 //				if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
@@ -474,11 +477,11 @@ public class BanKuaiAndChanYeLian
 				stock = bkdbopt.getNodeKXianZouShi (stock,requirestart,requireend,requireend,period);
 			} else {
 				HashMap<String,LocalDate> startend = null ;
-				if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+				if(period.equals(StockGivenPeriodDataItem.WEEK))
 					startend = nodeWeekTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-				else if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY)) 
+				else if(period.equals(StockGivenPeriodDataItem.DAY)) 
 					startend = nodeDayTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-				else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH)) //暂时没开发
+				else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
 					;
 				 
 				LocalDate searchstart,searchend,position;

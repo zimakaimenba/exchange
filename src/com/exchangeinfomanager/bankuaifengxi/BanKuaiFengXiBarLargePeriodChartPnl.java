@@ -31,7 +31,6 @@ import org.jfree.ui.TextAnchor;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
@@ -287,7 +286,7 @@ class CustomXYBarPainter implements XYBarPainter
 
    	public void paintBar(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base) 
     {
-    	bar.setFrame(bar.getX(), bar.getY(), bar.getWidth() +4, bar.getHeight());
+    	bar.setFrame(bar.getX(), bar.getY(), bar.getWidth() , bar.getHeight());
     	    	
     	XYDataset dataset = renderer.getPlot().getDataset();
     	    	
