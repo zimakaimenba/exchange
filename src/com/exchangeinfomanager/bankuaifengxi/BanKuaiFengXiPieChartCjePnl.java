@@ -112,7 +112,9 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl implem
 		
 		ArrayList<StockOfBanKuai> tmpallbkge = bankuai.getAllCurrentBanKuaiGeGu();
 		
-		piechartdataset = new DefaultPieDataset();
+//		piechartdataset = new DefaultPieDataset();
+		piechartdataset.clear();
+		super.piechart.setNotify(false);
     	
     	if(tmpallbkge == null || tmpallbkge.isEmpty())
     		return;
@@ -132,7 +134,8 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl implem
     		}
     	}
     	
-    	pieplot.setDataset(piechartdataset);
+    	super.piechart.setNotify(true);
+//    	pieplot.setDataset(piechartdataset);
 //		createCjeDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
 		setPanelTitle ("成交额占比");
 		

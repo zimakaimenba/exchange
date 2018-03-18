@@ -151,15 +151,7 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 		
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS);
-		
-//		try {
-//	    	((TitledBorder)this.getBorder()).setTitle( "\"" + nodecode + nodename + "\"" + type 
-//																+ "从" + CommonUtility.formatDateYYYY_MM_DD(requirestart) 
-//																+ "到" + CommonUtility.formatDateYYYY_MM_DD(requireend) );
-//	    	this.repaint();
-//		} catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-//		}
+
 		String tooltip = "\"" + nodecode + nodename + "\"" + type 
 				+ "从" + CommonUtility.formatDateYYYY_MM_DD(requirestart) 
 				+ "到" + CommonUtility.formatDateYYYY_MM_DD(requireend);
@@ -177,9 +169,15 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 	 */
 	public void resetDate ()
 	{
-		barchartdataset = new DefaultCategoryDataset();
-		plot.setDataset(barchartdataset);
-		((BanKuaiFengXiBarRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(-1);
+//		barchartdataset = null;
+//		barchartdataset = new DefaultCategoryDataset();
+//		plot.setDataset(barchartdataset);
+		if(barchartdataset != null)
+			barchartdataset.clear();
+		
+		chartPanel.removeAll();
+		
+//		((BanKuaiFengXiBarRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(-1);
 	}
    
     private void createEvent ()
@@ -228,24 +226,19 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 					return;
 				
 				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+				
+				jiarujihua = null;
 			}
 			
 		});
     }
+    /*
+     * 
+     */
     protected void getZdgzFx(LocalDate localDate,String period) 
     {
     	ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
     	this.selectedfxjg = fxresult;
-    	
-//    	NodeXPeriodDataBasic nodexdata = curdisplayednode.getNodeXPeroidData(period);
-//    	bkdbopt
-//		ChenJiaoZhanBiInGivenPeriod tmprecord = nodexdata.getSpecficRecord(localDate,0);
-//		
-//    	if(tmprecord.hasFengXiJieGuo ()) {
-//    		ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
-//        	this.selectedfxjg = fxresult;
-//    	} else
-//    		this.selectedfxjg = null;
 	}
 	/*
      * 设置要突出显示的bar
@@ -258,10 +251,6 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
         this.dateselected = selecteddate;
         this.barchart.fireChartChanged();//必须有这句
     }
-//    public void updatedDate (BkChanYeLianTreeNode node, LocalDate data, String period)
-//    {
-//    	
-//    }
     /*
      * 设置要突出显示成交量或者占比MAXWK的阀值
      */
@@ -312,6 +301,8 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 //        renderer.setToolTipGenerator(new CustomToolTipGeneratorForZhanBi());
 //        renderer.setSeriesPaint(0, Color.blue);
 //        renderer.setDefaultBarPainter(new StandardBarPainter());
+        
+        barchartdataset = new DefaultCategoryDataset(); 
         
         plot = new CategoryPlot(); 
 //        LegendTitle legend = new LegendTitle(plot); 
@@ -372,14 +363,13 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
     		LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
     		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
     		
-//    		if(tmprecord == null)
-//    			return Color.black;
-//    		else if(tmprecord.hasFengXiJieGuo ()) 
-//        		return Color.magenta.darker();
-//        	else 
+    		if(nodexdata == null)
+    			return Color.black;
+    		else if(nodexdata.hasFxjgInPeriod(selecteddate, 0)) 
+        		return Color.magenta.darker();
+        	else 
         		return Color.black;
     	}
-//    		return Color.ORANGE;
     }
     
     public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode,String period) 

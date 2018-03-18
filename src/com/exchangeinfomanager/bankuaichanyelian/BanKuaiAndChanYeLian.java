@@ -194,12 +194,9 @@ public class BanKuaiAndChanYeLian
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
-		if(bankuai.getMyOwnCode() .equals("880958"))
-			logger.debug("开始测试");
-		
 		//判断时间的相关关系，以便决定是否需要到数据库中查询新纪录
 		if(bkstartday == null || bkendday == null) { //还没有数据，直接找
-			bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,requirestart,requireend,requirestart,period);
+			bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,requirestart,requireend,period);
 		} else	{
 			HashMap<String,LocalDate> startend = null;
 			if(period.equals(StockGivenPeriodDataItem.WEEK))
@@ -213,14 +210,13 @@ public class BanKuaiAndChanYeLian
 				LocalDate searchstart,searchend,position;
 				searchstart = startend.get("searchstart"); 
 				searchend = startend.get("searchend");
-				position = 	startend.get("position");	
-				bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,searchstart,searchend,position,period);
+				bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,searchstart,searchend,period);
 			}
 		}
 	
 		String bkcode = bankuai.getMyOwnCode();
 		if(!bkcode.equals("399001") && !bkcode.equals("999999") ) { //2个大盘指数
-			sysncDaPanChenJiaoEr (requiredrecordsday,period);
+			getDaPan (requiredrecordsday,period);
 		}
 		
 		return bankuai;
@@ -247,9 +243,11 @@ public class BanKuaiAndChanYeLian
 		//同步板块的个股
 		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,treechanyelian);
 		ArrayList<StockOfBanKuai> allbkgg = bankuai.getAllCurrentBanKuaiGeGu();
-		for(StockOfBanKuai stock : allbkgg)   
+		for(StockOfBanKuai stock : allbkgg)   {
+			if(stock.getMyOwnCode().equals("002280"))
+				logger.debug("ceshi");
     		  stock = this.getGeGuOfBanKuai(bankuai, stock,period );
-		
+		}
 		return bankuai;
 	}
 	/*
@@ -264,7 +262,10 @@ public class BanKuaiAndChanYeLian
 		LocalDate stockendday = stock.getNodeXPeroidData(period).getRecordsEndDate();
 		
 		if(stockstartday == null || stockendday == null ) { //还没有数据，直接找
-			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock, bkstartday, bkendday,bkstartday,period);
+			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock, bkstartday, bkendday,period);
+			Stock stockroot = stock.getStock();
+			this.getStock(stockroot, bkendday, period);
+//			bkdbopt.getStockZhanBi (stock.getStock(), bkstartday, bkendday,period);
 		} else {
 			HashMap<String,LocalDate> startend = null;
 			if(period.equals(StockGivenPeriodDataItem.WEEK))
@@ -278,9 +279,11 @@ public class BanKuaiAndChanYeLian
 				LocalDate searchstart,searchend,position;
 				searchstart = startend.get("searchstart"); 
 				searchend = startend.get("searchend");
-				position = 	startend.get("position");	
-				stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock,searchstart,searchend,position,period);
+				stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock,searchstart,searchend,period);
+				bkdbopt.getStockZhanBi (stock.getStock(), searchstart, searchend,period);
 			}
+			
+			startend = null;
 		}
 		
 		return stock;
@@ -307,13 +310,14 @@ public class BanKuaiAndChanYeLian
 	/*
 	 * 同步大盘成交额
 	 */
-	private void sysncDaPanChenJiaoEr (LocalDate requiredrecordsday,String period)
+	public void getDaPan (LocalDate requiredrecordsday,String period)
 	{
 		BanKuai shdpbankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
 		BanKuai szdpbankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
 		
-		LocalDate bkstartday = shdpbankuai.getNodeXPeroidData(period).getRecordsStartDate();
-		LocalDate bkendday = shdpbankuai.getNodeXPeroidData(period).getRecordsEndDate();
+		NodeXPeriodDataBasic shdpnodexdata = shdpbankuai.getNodeXPeroidData(period);
+		LocalDate bkstartday = shdpnodexdata.getRecordsStartDate();
+		LocalDate bkendday = shdpnodexdata.getRecordsEndDate();
 		
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
@@ -321,8 +325,8 @@ public class BanKuaiAndChanYeLian
 		
 		//判断时间的相关关系，以便决定是否需要到数据库中查询新纪录
 		if(bkstartday == null || bkendday == null) { //还没有数据，直接找
-			shdpbankuai = bkdbopt.getBanKuaiZhanBi (shdpbankuai,requirestart,requireend,requirestart,period);
-			szdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,requirestart,requireend,requirestart,period);
+			shdpbankuai = bkdbopt.getBanKuaiZhanBi (shdpbankuai,requirestart,requireend,period);
+			szdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,requirestart,requireend,period);
 		} else	{
 			HashMap<String,LocalDate> startend = null;
 			if(period.equals(StockGivenPeriodDataItem.WEEK))
@@ -336,10 +340,11 @@ public class BanKuaiAndChanYeLian
 			if(!startend.isEmpty()) {
 				searchstart = startend.get("searchstart"); 
 				searchend = startend.get("searchend");
-				position = 	startend.get("position");	
-				shdpbankuai = bkdbopt.getBanKuaiZhanBi (shdpbankuai,searchstart,searchend,position,period);
-				szdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,searchstart,searchend,position,period);
+				shdpbankuai = bkdbopt.getBanKuaiZhanBi (shdpbankuai,searchstart,searchend,period);
+				szdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,searchstart,searchend,period);
 			}
+			
+			searchend = null;
 		}
 	}
 	/*
@@ -361,7 +366,6 @@ public class BanKuaiAndChanYeLian
 			searchend = curstart.with(DayOfWeek.SATURDAY).minus(1,ChronoUnit.WEEKS);
 			startend.put("searchstart", searchstart);
 			startend.put("searchend",  searchend);
-			startend.put("position",curstart);
 			return startend;
 		}
 		else if ( (CommonUtility.isInSameWeek(curstart,requiredstart) || requiredstart.isAfter(curstart) )  //部分完整2，后缺失
@@ -371,7 +375,6 @@ public class BanKuaiAndChanYeLian
 			searchend = requiredend;
 			startend.put("searchstart", searchstart);
 			startend.put("searchend", searchend);
-			startend.put("position",curend);
 			return startend;
 		}
 		else if( requiredstart.isBefore(curstart) && requiredend.isAfter(curend)  ) {//部分完整3， 前后双缺失，这种情况目前的设置似乎不可能发生，暂时不写
@@ -398,7 +401,6 @@ public class BanKuaiAndChanYeLian
 			searchend = curstart.with(DayOfWeek.SATURDAY).minus(1,ChronoUnit.WEEKS);
 			startend.put("searchstart", searchstart);
 			startend.put("searchend",  searchend);
-			startend.put("position",curstart);
 			return startend;
 		}
 		else if ( (curstart.isEqual(requiredstart) || requiredstart.isAfter(curstart) )  //部分完整2，后缺失
@@ -408,7 +410,6 @@ public class BanKuaiAndChanYeLian
 			searchend = requiredend;
 			startend.put("searchstart", searchstart);
 			startend.put("searchend", searchend);
-			startend.put("position",curend);
 			return startend;
 		}
 		else if( requiredstart.isBefore(curstart) && requiredend.isAfter(curend)  ) {//部分完整3， 前后双缺失，这种情况目前的设置似乎不可能发生，暂时不写
@@ -421,20 +422,26 @@ public class BanKuaiAndChanYeLian
 	/*
 	 * 独立个股的指定周期的占比
 	 */
-	public BkChanYeLianTreeNode getStock (String stockcode,LocalDate requiredrecordsday,String period)
+	public Stock getStock (String stockcode,LocalDate requiredrecordsday,String period)
+	{
+		Stock stock = (Stock)this.treechanyelian.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
+		this.getStock(stock, requiredrecordsday, period);
+		
+		return stock;
+	}
+	public Stock getStock(Stock stock, LocalDate requiredrecordsday, String period)
 	{
 		//占比还是要看周线/月线，日线数据没有太大意义，下面专门找出个股周线占比数据
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
-		BkChanYeLianTreeNode stock = (Stock)this.treechanyelian.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
 		try{
-			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
 			LocalDate nodestartday = stockxdata.getRecordsStartDate();
 			LocalDate nodeendday = stockxdata.getRecordsEndDate();
 					
 			if(nodestartday == null || nodeendday == null) { //还没有数据，直接找
-				stock = bkdbopt.getStockZhanBi ((Stock)stock,requirestart,requireend,requireend,StockGivenPeriodDataItem.WEEK); 
+				stock = bkdbopt.getStockZhanBi ((Stock)stock,requirestart,requireend,period); 
 			} else {
 				HashMap<String,LocalDate> startend = null ;
 //				if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
@@ -448,10 +455,11 @@ public class BanKuaiAndChanYeLian
 				if(!startend.isEmpty()) {
 							searchstart = startend.get("searchstart"); 
 							searchend = startend.get("searchend");
-							position = 	startend.get("position");
 							
-							stock = bkdbopt.getStockZhanBi ((Stock)stock,searchstart,searchend,position,period);
+							stock = bkdbopt.getStockZhanBi ((Stock)stock,searchstart,searchend,period);
 				}
+				
+				startend = null;
 			}
 		} catch (java.lang.NullPointerException e) {
 					e.printStackTrace();
@@ -462,19 +470,25 @@ public class BanKuaiAndChanYeLian
 	/*
 	 *该函数为每一个独立个股设置制定周期的K线数据 
 	 */
-	public BkChanYeLianTreeNode getStockK (String stockcode,LocalDate requiredrecordsday,String period)
+	public Stock getStockK (String stockcode,LocalDate requiredrecordsday,String period)
 	{
-		BkChanYeLianTreeNode stock = null;
+		Stock stock = (Stock)this.treechanyelian.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
+		this.getStockK(stock, requiredrecordsday, period);
+		return stock;
+	}
+	public Stock getStockK (Stock stock,LocalDate requiredrecordsday,String period)
+	{
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
 		try{
-			stock = (Stock)this.treechanyelian.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
+			
 			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
 			LocalDate nodestartday = stockxdata.getRecordsStartDate();
 			LocalDate nodeendday = stockxdata.getRecordsEndDate();
 			
 			if(nodestartday == null || nodeendday == null) { //还没有数据，直接找
-				stock = bkdbopt.getNodeKXianZouShi (stock,requirestart,requireend,requireend,period);
+				stock = bkdbopt.getNodeKXianZouShi (stock,requirestart,requireend,period);
 			} else {
 				HashMap<String,LocalDate> startend = null ;
 				if(period.equals(StockGivenPeriodDataItem.WEEK))
@@ -488,27 +502,21 @@ public class BanKuaiAndChanYeLian
 				if(!startend.isEmpty()) {
 					searchstart = startend.get("searchstart"); 
 					searchend = startend.get("searchend");
-					position = 	startend.get("position");
 
-					stock = bkdbopt.getNodeKXianZouShi (stock,searchstart,searchend,position,period);
+					stock = bkdbopt.getNodeKXianZouShi (stock,searchstart,searchend,period);
 				}
+				
+				startend = null;
 			}
 		} catch (java.lang.NullPointerException e) {
 			e.printStackTrace();
 		}
-
+		
 		return stock;
 	}
-	
 	/*
 	 * 
 	 */
-//	private  BkChanYeLianTree initializeBkChanYeLianXMLTree()
-//	{
-//		BkChanYeLianTreeNode topNode = cylxmhandler.getBkChanYeLianXMLTree();
-//		BkChanYeLianTree tmptreechanyelian = new BkChanYeLianTree(topNode);
-//		return tmptreechanyelian;
-//	}
 	public BkChanYeLianTree getBkChanYeLianTree () {
 		return treechanyelian;
 	}
@@ -534,8 +542,6 @@ public class BanKuaiAndChanYeLian
 	{
 		return cylxmhandler.getGeGuChanYeLian(stockcode);
 	}
-	
-
 	/*
 	 * 
 	 */

@@ -74,8 +74,14 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    {
 	    	if(entryList.isEmpty() )
 	    		return null;
-    	
-	    	BanKuai bankuai = entryList.get( rowIndex );
+	    	
+	    	BanKuai bankuai = null;
+	    	try {
+	    		bankuai = entryList.get( rowIndex );
+	    	} catch (java.lang.IndexOutOfBoundsException e) {
+	    		e.printStackTrace();
+	    		return null;
+	    	}
 	    	NodeXPeriodDataBasic bkxdata = (BanKuaiNodeXPeriodData)bankuai.getNodeXPeroidData(this.curperiod);
 	    	
 	    	Object value = "??";
@@ -91,14 +97,30 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             case 2: //"板块代码", "板块名称","占比增长率","MaxWeek","成交额增长贡献率"
             	Double zhanbigrowthrate = bkxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeZhanbiGrowthRate();
             	value = zhanbigrowthrate;
+            	
+            	zhanbigrowthrate = null;
+            	bkxdata = null;
+            	bankuai = null;
+            			
             	break;
             case 3:
-            	int maxweek = bkxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeZhanbiMaxweek();
+            	Integer maxweek = bkxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeZhanbiMaxweek();
             	value = maxweek;
+            	
+            	maxweek = null;
+            	bkxdata = null;
+            	bankuai = null;
+            	
             	break;
             case 4:
             	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
             	value = cjegrowthrate;
+            	
+            	cjegrowthrate = null;
+            	bkxdata = null;
+            	bankuai = null;
+            	
+            	break;
 	    	}
 
 	    	return value;
@@ -167,7 +189,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			   			break;
 			   		}
 	    		}
-	   		
+	    	hypy = null;
 	   		return index;
 	    }
 

@@ -112,6 +112,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -166,7 +167,15 @@ public class BanKuaiFengXi extends JDialog {
 
 		initializePaoMaDeng ();
 		
-		this.dateChooser.setDate(new Date ());
+		//星期日是系统每周第一天，一般新的一周还没有数据，所以如果是星期天的话，一般设置为前一天星期六
+		DayOfWeek dayofweek = LocalDate.now().getDayOfWeek();
+		if(dayofweek.equals(DayOfWeek.SATURDAY.SUNDAY) ) {
+			 LocalDate saturday = LocalDate.now().minus(1,ChronoUnit.DAYS);
+			 ZoneId zone = ZoneId.systemDefault();
+			 Instant instant = saturday.atStartOfDay().atZone(zone).toInstant();
+			 this.dateChooser.setDate(Date.from(instant));
+		} else
+			this.dateChooser.setDate(new Date ());
 	}
 	
 	private LocalDate lastselecteddate;
@@ -180,7 +189,7 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiPaiXuTask bkfxtask;
 	private ArrayList<ExportCondition> exportcond;
 	private String globeperiod;
-	
+		
 	private Set<BarChartPanelHightLightListener> chartpanelhighlightlisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelbankuaidatachangelisteners;
 	private Set<BarChartPanelDataChangedListener> piechartpanelbankuaidatachangelisteners;
@@ -206,7 +215,7 @@ public class BanKuaiFengXi extends JDialog {
 		piechartpanelbankuaidatachangelisteners.add(pnllastestggzhanbi);
 		piechartpanelbankuaidatachangelisteners.add(panelLastWkGeGuZhanBi);
 		//个股对板块
-		barchartpanelstockofbankuaidatachangelisteners.add(panelgegucje); //个股对于板块交易额
+//		barchartpanelstockofbankuaidatachangelisteners.add(panelgegucje); //个股对于板块交易额,一般看个股对大盘的成交额，这个就不看了
 		barchartpanelstockofbankuaidatachangelisteners.add(panelgeguwkzhanbi);
 		//独立个股本身
 //		barchartpanelstockdatachangelisteners.add(paneldayCandle);
@@ -229,15 +238,74 @@ public class BanKuaiFengXi extends JDialog {
 		bkfxhighlightvalueslisteners.add(tablexuandingplustwo);
 		
 	}
+	
+	/*
+	 * 所有板块占比增长率的排名
+	 */
+	private void initializeBanKuaiZhanBiByGrowthRate (String period)
+	{
+		this.globeperiod = period;
+    	LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    	
+//    	HashMap<String, BanKuai> bkhascjl = new HashMap<String, BanKuai> ();
+    	
+    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.bkcyl.getBkChanYeLianTree().getModel().getRoot();
+		int bankuaicount = bkcyl.getBkChanYeLianTree().getModel().getChildCount(treeroot);
+        
+		for(int i=0;i< bankuaicount; i++) {
+			
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.bkcyl.getBkChanYeLianTree().getModel().getChild(treeroot, i);
+			if(childnode.getType() != BanKuaiAndStockBasic.TDXBK) 
+				continue;
+			
+			if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
+				continue;
+			
+			
+			String bkcode = childnode.getMyOwnCode();
+			logger.debug(bkcode);
+			childnode = (BanKuai)this.bkcyl.getBanKuai(((BanKuai)childnode), curselectdate,period); 
+			BanKuai.BanKuaiNodeXPeriodData bkxdata = (BanKuai.BanKuaiNodeXPeriodData)childnode.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+			if(bkxdata.hasRecordInThePeriod(curselectdate, 0) != null )//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+				((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai(((BanKuai)childnode));
+    		
+    		//显示大盘成交量
+    		if(bkcode.equals("399001") ) {
+    			BanKuai.BanKuaiNodeXPeriodData bkszdata = (BanKuai.BanKuaiNodeXPeriodData)childnode.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+    			try {
+    				Double cjerec = bkszdata.getChengJiaoEr(curselectdate,0);
+    				lblszcje.setText( cjerec.toString() );
+    			} catch (java.lang.NullPointerException e) {
+    				lblszcje.setText( "本周没有成交额" );
+    			}
+    			
+    		} else if(bkcode.equals("999999") ) {
+    			BanKuai.BanKuaiNodeXPeriodData bkshdata = (BanKuai.BanKuaiNodeXPeriodData)childnode.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+    			try {
+    				Double cjerec = bkshdata.getChengJiaoEr(curselectdate,0);
+    				lblshcje.setText( cjerec.toString() );
+    			} catch (java.lang.NullPointerException e) {
+    				lblshcje.setText( "本周没有成交额" );
+    			}
+    		} 
+    			
+		}
+
+		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(null,curselectdate,period);
+		
+		Toolkit.getDefaultToolkit().beep();
+	}
+
+	
 	/*
 	 * 所有板块占比增长率的排名
 	 */
 	private void initializeBanKuaiZhanBiByGrowthRate2 (String period)
-	{	
+	{
 		this.globeperiod = period;
     	LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     	
-    	bkfxtask = new BanKuaiPaiXuTask(this.bkcyl,  curselectdate,globeperiod);
+    	bkfxtask = new BanKuaiPaiXuTask(this.bkcyl,  curselectdate,period);
     	bkfxtask.addPropertyChangeListener(new PropertyChangeListener() {
 		      @Override
 		      public void propertyChange(final PropertyChangeEvent event) {
@@ -271,10 +339,12 @@ public class BanKuaiFengXi extends JDialog {
 		        	editorPanebankuai.setEnabled(true);
 		        		
 		            try {
-		              final int count = bkfxtask.get();
+		               int count = bkfxtask.get();
 //		          	((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(bkhascjl,curselectdate,period);
 		              progressBarsys.setIndeterminate(false);
 		              progressBarsys.setString(" ");
+		              
+		              System.gc();
 		            } catch (final CancellationException e) {
 		            	progressBarsys.setIndeterminate(false);
 		            	progressBarsys.setValue(0);
@@ -382,6 +452,8 @@ public class BanKuaiFengXi extends JDialog {
 		      				e1.printStackTrace();
 		      		  }
 		      		progressBarExport.setString(" ");
+		      		
+		      		System.gc();
 		            } catch (final CancellationException e) {
 		            	try {
 							exporttask.get();
@@ -440,6 +512,7 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPanebk.setSelectedIndex(0);
 		paneldayCandle.resetDate();
 		pnlggdpcje.resetDate();
+		paneldayCandle.resetDate();
 		
 		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).deleteAllRows();
@@ -450,9 +523,13 @@ public class BanKuaiFengXi extends JDialog {
 		
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		//板块自身占比
-		final BanKuai selectbk = selectedbk;
-		barchartpanelbankuaidatachangelisteners.forEach(l -> l.updatedDate(selectbk, curselectdate, 0,globeperiod));
-    	
+//		final BanKuai selectbk = selectedbk;
+//		barchartpanelbankuaidatachangelisteners.forEach(l -> l.updatedDate(selectbk, curselectdate, 0,globeperiod));
+		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
+			tmplistener.updatedDate(selectedbk, curselectdate, 0,globeperiod);
+		}
+		
+		
 //		setDisplayNoticeLevelForPanels();
 		
 		//更新板块所属个股
@@ -466,8 +543,13 @@ public class BanKuaiFengXi extends JDialog {
 			tabbedPanegegu.setTitleAt(0, "当前周" + curselectdate);
 			
 			//显示2周的板块个股pie chart
-			piechartpanelbankuaidatachangelisteners.forEach(l -> l.updatedDate(selectbk, curselectdate, 0,globeperiod));
+//			piechartpanelbankuaidatachangelisteners.forEach(l -> l.updatedDate(selectbk, curselectdate, 0,globeperiod));
+			for(BarChartPanelDataChangedListener tmplistener : piechartpanelbankuaidatachangelisteners) {
+				tmplistener.updatedDate(selectedbk, curselectdate, 0,globeperiod);
+			}
 		}
+		
+		System.gc();
 	}
 	/*
 	 * 设置成交量或者占比的提示
@@ -570,20 +652,22 @@ public class BanKuaiFengXi extends JDialog {
 	/*
 	 * 用户选择个股后，显示个股日线K线走势已经个股自身对大盘的各种占比
 	 */
-	private void refreshGeGuKXianZouShi (BkChanYeLianTreeNode selectstock2)
+	private void refreshGeGuKXianZouShi (Stock selectstock2)
 	{
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
+		selectstock2 = bkcyl.getStock(selectstock2,curselectdate,StockGivenPeriodDataItem.WEEK);
+		//日线K线走势，目前K线走势和成交量在日线以上周期是分开的，所以调用时候要特别小心，以后会合并
+		selectstock2 = bkcyl.getStockK(selectstock2,curselectdate,StockGivenPeriodDataItem.DAY);
+		
+		for (BarChartPanelDataChangedListener tmplistener : barchartpanelstockdatachangelisteners) {
+			tmplistener.updatedDate(selectstock2, curselectdate, 0,globeperiod);
+		}
+
 		paneldayCandle.resetDate();
-		
-		Stock selectstock = (Stock)bkcyl.getStock(selectstock2.getMyOwnCode(),curselectdate,StockGivenPeriodDataItem.WEEK);
-		selectstock = (Stock)bkcyl.getStockK(selectstock2.getMyOwnCode(),curselectdate,StockGivenPeriodDataItem.DAY);
-		
-		final Stock stock = selectstock;
-		barchartpanelstockdatachangelisteners.forEach(l -> l.updatedDate(stock, curselectdate, 0,globeperiod));
-		paneldayCandle.setNodeCandleStickDate(selectstock,requirestart,requireend,StockGivenPeriodDataItem.DAY);
+		paneldayCandle.setNodeCandleStickDate(selectstock2,requirestart,requireend,StockGivenPeriodDataItem.DAY);
 	}
 	/*
 	 * 用户选择个股周成交量某个数据后，显示该数据前后50个交易日的日线K线走势
@@ -595,7 +679,8 @@ public class BanKuaiFengXi extends JDialog {
 		
 		paneldayCandle.resetDate();
 
-		BkChanYeLianTreeNode selectstock = bkcyl.getStock(selectstock2.getMyOwnCode(),requireend,StockGivenPeriodDataItem.DAY);
+		//日线K线走势，目前K线走势和成交量在日线以上周期是分开的，所以调用时候要特别小心，以后会合并
+		BkChanYeLianTreeNode selectstock = bkcyl.getStockK(selectstock2.getMyOwnCode(),requireend,StockGivenPeriodDataItem.DAY);
 		paneldayCandle.setNodeCandleStickDate(selectstock,requirestart,requireend,selectedday,StockGivenPeriodDataItem.DAY);
 	}
 	
@@ -956,7 +1041,6 @@ public class BanKuaiFengXi extends JDialog {
 				
 			}
 			
-			
 		});
 		
 		//同步几个panel
@@ -1127,6 +1211,8 @@ public class BanKuaiFengXi extends JDialog {
 		});
 		
 		cbxsearchbk.addItemListener(new ItemListener() {
+			
+
 			public void itemStateChanged(ItemEvent arg0) 
 			{
 				if(arg0.getStateChange() == ItemEvent.SELECTED) {
@@ -1279,6 +1365,8 @@ public class BanKuaiFengXi extends JDialog {
 			    		pnllastestggzhanbi.resetDate();
 			    		panelLastWkGeGuZhanBi.resetDate();
 			    		panelselectwkgeguzhanbi.resetDate();
+			    		pnlggdpcje.resetDate();
+			    		paneldayCandle.resetDate();
 			    		panelGeguDapanZhanBi.resetDate();
 			    		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 			    		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).deleteAllRows();
@@ -1287,7 +1375,7 @@ public class BanKuaiFengXi extends JDialog {
 			    		tabbedPanebk.setSelectedIndex(0);
 			    		setHighLightChenJiaoEr();
 			    		
-			    		initializeBanKuaiZhanBiByGrowthRate2 (StockGivenPeriodDataItem.WEEK);
+			    		initializeBanKuaiZhanBiByGrowthRate (StockGivenPeriodDataItem.WEEK);
 			    		
 			    		lastselecteddate = newdate;
 		    		}
@@ -1347,9 +1435,10 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock); //个股对板块的数据
-					refreshGeGuKXianZouShi (selectstock); //K线
+					refreshGeGuKXianZouShi (selectstock.getStock()); //K线
 					cbxstockcode.updateUserSelectedNode (selectstock.getStock()); 
 					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
+					Toolkit.getDefaultToolkit().beep();
 					
 				}
 				if (arg0.getClickCount() == 2) {
@@ -1509,6 +1598,7 @@ public class BanKuaiFengXi extends JDialog {
 				displayNodeInfo(selectedbk);
 				cbxsearchbk.updateUserSelectedNode(selectedbk);
 				patchParsedFile (selectedbk);
+				Toolkit.getDefaultToolkit().beep();
 				//装配每日模型文件
 			}
 		});
@@ -1530,34 +1620,19 @@ public class BanKuaiFengXi extends JDialog {
 			BanKuai bk = ((StockOfBanKuai)node).getBanKuai();
 			this.bkcyl.getBanKuai((BanKuai)bk, requirestart.plusWeeks(1),globeperiod);
 			node = this.bkcyl.getGeGuOfBanKuai(bk, node.getMyOwnCode() ,globeperiod);
-		} 
+		}
+		
+		this.bkcyl.getDaPan (requirestart.plusWeeks(1),globeperiod); //同步大盘数据
 		
 		NodeXPeriodDataBasic nodexdate = node.getNodeXPeroidData(globeperiod);
 		
 		BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl largeinfo = new BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl (node,nodexdate.getRecordsEndDate(),globeperiod);
-		int exchangeresult = JOptionPane.showConfirmDialog(null, largeinfo, "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
+		if(cbxdpmaxwk.isSelected() && tflddisplaydpmaxwk.getText() != null)
+			largeinfo.setHighLightMaxWeekNumber (Integer.parseInt(tflddisplaydpmaxwk.getText()));
+		JOptionPane.showMessageDialog(null, largeinfo, "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
+		
+		largeinfo = null;
 	}
-	/*
-	 * 用户双击某个板块的个股chart，则放大显示该node一年内的占比所有数据
-	 */
-//	protected void displayNodeLargerPeriodData(BanKuai bkcur,Stock stock) 
-//	{
-//		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		LocalDate requireend = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-//		LocalDate requirestart = requireend.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-//		
-//		bkcur = this.bkcyl.getBanKuai(bkcur, requirestart.plusWeeks(1),globeperiod); //先把板块的数据扩大到相应的时间
-//		stock = this.bkcyl.getGeGuOfBanKuai(bkcur, stock.getMyOwnCode(),globeperiod); //个股会根据板块的时间跨度查找数据
-//		NodeXPeriodDataBasic nodexdate = bkcur.getNodeXPeroidData(globeperiod);
-//		
-////		DaPan dapan =  (DaPan) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode("000000");
-//		BanKuaiFengXiBarGgDpLargePeriodChartPnl largeinfo = new BanKuaiFengXiBarGgDpLargePeriodChartPnl (stock,nodexdate.getRecordsEndDate(),globeperiod);
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, largeinfo, "个股一年分析结果", JOptionPane.OK_CANCEL_OPTION);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-//	}
 
 	protected void initializeExportConditions() 
 	{
@@ -2555,90 +2630,149 @@ public class BanKuaiFengXi extends JDialog {
 			int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
 			HashSet<String> outputresultset = new HashSet<String> ();
 			
-			for(int i=0;i< bankuaicount; i++) {
-				if (isCancelled())
+			for(ExportCondition expc : expclist) {
+				if (isCancelled()) 
 					 return null;
 				
-				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
+				Double settingcje = expc.getSettingcje() ;
+				Integer settindpgmaxwk = expc.getSettindpgmaxwk();
+				Integer settinbkgmaxwk = expc.getSettinbkgmaxwk();
+				Integer seetingcjemaxwk = expc.getSettingcjemaxwk();
+				logger.debug("开始导出：条件 成交额 = " + settingcje + "dpmaxwk = " + settindpgmaxwk + " bkmaxwk = " + settinbkgmaxwk + "cjemaxwk= " + seetingcjemaxwk);
 				
-				if(childnode.getType() != BanKuaiAndStockBasic.TDXBK)
-					continue;
-
-				if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
-				 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
-				 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
-					continue;
-				
-				NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(period);
-				if(nodexdata.hasRecordInThePeriod(selectiondate,0) != null) { //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+				//导出板块
+				for(int i=0;i< bankuaicount; i++) {
+					if (isCancelled())
+						 return null;
 					
-					for(ExportCondition expc : expclist) {
-						if (isCancelled()) 
+					
+					
+					BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
+					if(childnode.getType() != BanKuaiAndStockBasic.TDXBK)
+						continue;
+					if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+					 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
+					 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
+						continue;
+					
+					NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(period);
+					if(nodexdata.hasRecordInThePeriod(selectiondate,0) ) { //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+			    			logger.debug("导出板块" + childnode.getMyOwnCode() + childnode.getMyOwnName()  );
+			    			
+							Double recordcje = nodexdata.getChengJiaoEr(selectiondate, 0);
+							Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate);
+							Integer recordmaxcjewk =nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate);
+							
+							if( recordcje >= settingcje &&  recordmaxbkwk >= settindpgmaxwk && recordmaxcjewk >= seetingcjemaxwk ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
+								 String cjs = childnode.getSuoShuJiaoYiSuo();
+								 if(cjs.trim().toLowerCase().equals("sh"))
+									 outputresultset.add("1" + childnode.getMyOwnCode().trim());
+								 else
+									 outputresultset.add("0" + childnode.getMyOwnCode().trim());
+								 
+								 logger.debug(childnode.getMyOwnCode() +  "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
+									   		+ "数据("  +   recordmaxbkwk  + "," + recordcje + "," + recordmaxcjewk + ")")
+											   ;
+							 }
+						
+					}
+				}
+				
+				setProgress(30 );
+				
+				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//				LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
+//				LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+				if(settinbkgmaxwk <0  ) { //说明用户没有选择个股板块占比排序，那直接用tree 的个股，会更快
+					for(int i=0;i< bankuaicount; i++) {
+						if (isCancelled())
 							 return null;
 						
-						Double settingcje = expc.getSettingcje() ;
-						Integer settindpgmaxwk = expc.getSettindpgmaxwk();
-						Integer settinbkgmaxwk = expc.getSettinbkgmaxwk();
-						Integer seetingcjemaxwk = expc.getSettingcjemaxwk();
+						BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
+						if(childnode.getType() != BanKuaiAndStockBasic.TDXGG)
+							continue;
 						
-		    			logger.debug("开始导出：条件 成交额 = " + settingcje + "dpmaxwk = " + settindpgmaxwk + " bkmaxwk = " + settinbkgmaxwk + "cjemaxwk= " + seetingcjemaxwk);
-		    			logger.debug("导出板块" + childnode.getMyOwnCode() + childnode.getMyOwnName()  );
-		    			
-		    			
-						Double recordcje = nodexdata.getChengJiaoEr(selectiondate, 0);
-						Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate);
-						Integer recordmaxcjewk =nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate);
-						
-						if( recordcje >= settingcje &&  recordmaxbkwk >= settindpgmaxwk && recordmaxcjewk >= seetingcjemaxwk ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
-							 String cjs = childnode.getSuoShuJiaoYiSuo();
-							 if(cjs.trim().toLowerCase().equals("sh"))
-								 outputresultset.add("1" + childnode.getMyOwnCode().trim());
-							 else
-								 outputresultset.add("0" + childnode.getMyOwnCode().trim());
-							 
-							 logger.debug(childnode.getMyOwnCode() +  "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
-								   		+ "数据("  +   recordmaxbkwk  + "," + recordcje + "," + recordmaxcjewk + ")")
-										   ;
-						 }
-						
-						//导出个股
-						childnode = bkcyl.getAllGeGuOfBanKuai (((BanKuai)childnode),period);
-						ArrayList<StockOfBanKuai> rowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(selectiondate,period);
-						for (StockOfBanKuai stockofbankuai : rowbkallgg) {
-							 if (isCancelled()) 
-								 return null;
-
-							 NodeXPeriodDataBasic stockxdataforbk = stockofbankuai.getNodeXPeroidData( period);
-							 if(stockxdataforbk.hasRecordInThePeriod(selectiondate, 0))
-								 continue;
-							 
-							 recordcje = stockxdataforbk.getChengJiaoEr(selectiondate, 0);
-							 recordmaxbkwk = stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate) ;
-							 
-							 Stock ggstock = stockofbankuai.getStock();
-							 NodeXPeriodDataBasic stockxdata = ggstock.getNodeXPeroidData(globeperiod);
-							 Integer recordmaxdpwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate);
-							 recordmaxcjewk = stockxdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate);
-							 
-							 if(recordcje >= settingcje &&  recordmaxbkwk >= settinbkgmaxwk
-										 && recordmaxcjewk >= seetingcjemaxwk && recordmaxdpwk >=  settindpgmaxwk)  { //满足条件，导出 ; 
-									   if(ggstock.getMyOwnCode().startsWith("60") )
-										   outputresultset.add("1" + ggstock.getMyOwnCode().trim());
-									   else
-										   outputresultset.add("0" + ggstock.getMyOwnCode().trim());
-									   
-									   logger.debug(childnode.getMyOwnCode() + "个股：" + ggstock.getMyOwnCode() + "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
-									   		+ "数据("  + recordmaxdpwk + "," +  recordmaxbkwk  + "," + recordcje + "," + recordmaxcjewk + ")")
-											   ;   
-							 } 
+						childnode = bkcyl.getStock((Stock)childnode,curselectdate,StockGivenPeriodDataItem.WEEK);
+						NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(period);
+						if(nodexdata.hasRecordInThePeriod(selectiondate,0) ) { //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+				    			logger.debug("导出个股" + childnode.getMyOwnCode() + childnode.getMyOwnName()  );
+				    			
+								Double recordcje = nodexdata.getChengJiaoEr(selectiondate, 0);
+								Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate);
+								Integer recordmaxcjewk =nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate);
+								
+								if( recordcje >= settingcje &&  recordmaxbkwk >= settindpgmaxwk && recordmaxcjewk >= seetingcjemaxwk ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
+									 String cjs = childnode.getSuoShuJiaoYiSuo();
+									 if(cjs.trim().toLowerCase().equals("sh"))
+										 outputresultset.add("1" + childnode.getMyOwnCode().trim());
+									 else
+										 outputresultset.add("0" + childnode.getMyOwnCode().trim());
+									 
+									 logger.debug(childnode.getMyOwnCode() +  "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
+										   		+ "数据("  +   recordmaxbkwk  + "," + recordcje + "," + recordmaxcjewk + ")")
+												   ;
+								 }
 							
 						}
+					}
+					
+					setProgress(60 );
+				} else if(settinbkgmaxwk > 0)  { //导出板块个股
+					for(int i=0;i< bankuaicount; i++) {
+						if (isCancelled())
+							 return null;
 						
-						setProgress(i*90/bankuaicount );
-		    		}
-				}
-	    	}
+						
+						BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
+						if(childnode.getType() != BanKuaiAndStockBasic.TDXBK)
+							continue;
+						if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
+						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
+							continue;
+						
+						NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(period);
+						if(nodexdata.hasRecordInThePeriod(selectiondate,0) ) { //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+							childnode = bkcyl.getAllGeGuOfBanKuai (((BanKuai)childnode),period);
+							ArrayList<StockOfBanKuai> rowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(selectiondate,period);
+							for (StockOfBanKuai stockofbankuai : rowbkallgg) {
+								 if (isCancelled()) 
+									 return null;
 
+								 NodeXPeriodDataBasic stockxdataforbk = stockofbankuai.getNodeXPeroidData( period);
+								 if(!stockxdataforbk.hasRecordInThePeriod(selectiondate, 0))
+									 continue;
+								 
+								 Double recordcje = stockxdataforbk.getChengJiaoEr(selectiondate, 0);
+								 Integer recordmaxbkwk = stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate) ;
+								 
+								 Stock ggstock = stockofbankuai.getStock();
+								 NodeXPeriodDataBasic stockxdata = ggstock.getNodeXPeroidData(globeperiod);
+								 Integer recordmaxdpwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate);
+								 Integer recordmaxcjewk = stockxdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate);
+								 
+								 if(recordcje >= settingcje &&  recordmaxbkwk >= settinbkgmaxwk
+											 && recordmaxcjewk >= seetingcjemaxwk && recordmaxdpwk >=  settindpgmaxwk)  { //满足条件，导出 ; 
+										   if(ggstock.getMyOwnCode().startsWith("60") )
+											   outputresultset.add("1" + ggstock.getMyOwnCode().trim());
+										   else
+											   outputresultset.add("0" + ggstock.getMyOwnCode().trim());
+										   
+										   logger.debug(childnode.getMyOwnCode() + "个股：" + ggstock.getMyOwnCode() + "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
+										   		+ "数据("  + recordmaxdpwk + "," +  recordmaxbkwk  + "," + recordcje + "," + recordmaxcjewk + ")")
+												   ;   
+								 } 
+								
+							}
+
+					
+						}
+					}
+					
+					setProgress(60 );
+				}
+			}
+			
 			for(String outputstock : outputresultset ) {
 				 String outputresult = outputstock +  System.getProperty("line.separator");
 				 try {
@@ -2646,9 +2780,11 @@ public class BanKuaiFengXi extends JDialog {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-			 }
-			 
-			 setProgress( 100 );
+			}
+			
+			outputfile = null;
+			outputresultset = null;
+			setProgress( 100 );
 			 
 			 return 100;
 	    }
@@ -2685,7 +2821,7 @@ public class BanKuaiFengXi extends JDialog {
 	}
 	
 	/*
-	 * 导出个股耗时太长，用另外一个线程专门处理，避免主GUI无法使用
+	 * 板块排序耗时太长，用另外一个线程专门处理，避免主GUI无法使用
 	 * http://www.javacreed.com/swing-worker-example/
 	 * https://github.com/javacreed/swing-worker-example/blob/master/src/main/java/com/javacreed/examples/swing/worker/part3/Application.java
 	 */
@@ -2733,7 +2869,7 @@ public class BanKuaiFengXi extends JDialog {
 				String bkcode = childnode.getMyOwnCode();
 				logger.debug(bkcode);
 				childnode = (BanKuai)this.bkcyl.getBanKuai(((BanKuai)childnode), curselectdate,period); 
-				BanKuai.BanKuaiNodeXPeriodData bkxdata = (BanKuai.BanKuaiNodeXPeriodData)childnode.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+				BanKuai.BanKuaiNodeXPeriodData bkxdata = (BanKuai.BanKuaiNodeXPeriodData)childnode.getNodeXPeroidData(period);
 	    		if(bkxdata.hasRecordInThePeriod(curselectdate, 0) != null ) {//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 	    			((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai(((BanKuai)childnode));
 	    		}

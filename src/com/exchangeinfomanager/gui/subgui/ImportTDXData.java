@@ -178,16 +178,16 @@ public class ImportTDXData extends JDialog {
 		
 		//从通达信foxpro中导入股票的基本面信息
 		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
-					try {
-						File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
-						List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
-						for (String line : lines) {
-				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					}
+//					try {
+//						File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
+//						List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
+//						for (String line : lines) {
+//				        	tfldresult.append(line+"\n");
+//				        }
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					} catch (java.lang.NullPointerException e) {
+//					}
 					
 					cbximporttdxgeguinfo.setEnabled(false);
 		 }
@@ -361,8 +361,7 @@ public class ImportTDXData extends JDialog {
 					
 					partThatHasBeImportAfterWsork();
 				}
-				
-				partThatCanImportDuringWork ();
+			 partThatCanImportDuringWork ();
 				
 				lblstatus.setText("同步结束");
 				

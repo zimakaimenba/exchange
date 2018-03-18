@@ -51,6 +51,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		this.curbk = bankuai;
 		this.showwknum = wknum;
 		this.period = period;
+		entryList = null;
 		entryList = bankuai.getSpecificPeriodBanKuaiGeGu(wknum,period);	
 		
     	
@@ -116,10 +117,15 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             case 0:
             	bkcode = curdisplaystockofbankuai.getMyOwnCode();
                 value = bkcode;
+                
+                bkcode = null;
                 break;
             case 1: 
             	String thisbkname = curdisplaystockofbankuai.getMyOwnName();
             	value = thisbkname;
+            	
+            	thisbkname = null;
+            	
             	break;
             case 2: //权重
             	Integer stockweight =  curbk.getGeGuSuoShuBanKuaiWeight(stockcode);
@@ -128,30 +134,79 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	} catch (java.lang.NullPointerException e) {
             		value = 0;
             	}
+            	
+            	stockweight = null;
+            	curdisplaystockofbankuai = null;
+            	stockxdataforbk = null;
+            	stock = null;
+            	stockxdata = null;
+            	
             	break;
             case 3: // "板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
             	Double cjechangegrowthrate = stockxdataforbk.getChenJiaoErChangeGrowthRateOfSuperBanKuai(showwknum);// fxrecord.getGgbkcjegrowthzhanbi();
             	value = cjechangegrowthrate;
+            	
+            	cjechangegrowthrate = null;
+            	curdisplaystockofbankuai = null;
+            	stockxdataforbk = null;
+            	stock = null;
+            	stockxdata = null;
+            	
             	break;
             case 4://,"板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
             	Double zhanbigrowthrate = stockxdataforbk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum);//.getGgbkzhanbimaxweek();
             	value = zhanbigrowthrate;
+            	
+//            	zhanbigrowthrate = null;
+            	curdisplaystockofbankuai = null;
+            	stockxdataforbk = null;
+            	stock = null;
+            	stockxdata = null;
+            	
             	break;
             case 5: 
-            	int maxweek =  stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//fxrecord.getGgbkzhanbigrowthrate(); 
+            	Integer maxweek =  stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//fxrecord.getGgbkzhanbigrowthrate(); 
             	value = (Integer)maxweek;
+            	
+            	maxweek = null;
+            	curdisplaystockofbankuai = null;
+            	stockxdataforbk = null;
+            	stock = null;
+            	stockxdata = null;
+            	
             	break;
             case 6://"大盘占比增长率","DpMaxWk","CjeMaxWk"};
             	Double cjedpgrowthrate = stockxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum);//.getGgdpzhanbigrowthrate();
             	value = cjedpgrowthrate;
+            	
+            	cjedpgrowthrate = null;
+            	curdisplaystockofbankuai = null;
+            	stockxdataforbk = null;
+            	stock = null;
+            	stockxdata = null;
+            	
                 break;
             case 7:
             	Integer dpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//.getGgdpzhanbimaxweek(); 
             	value = dpmaxwk;
+            	
+            	dpmaxwk = null;
+            	curdisplaystockofbankuai = null;
+            	stockxdataforbk = null;
+            	stock = null;
+            	stockxdata = null;
+            	
                 break;
            case 8:
             	Integer cjemaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//.getGgbkcjemaxweek(); 
             	value = cjemaxwk;
+            	
+            	cjemaxwk = null;
+            	curdisplaystockofbankuai = null;
+            	stockxdataforbk = null;
+            	stock = null;
+            	stockxdata = null;
+            	
                 break;
 	    	}
 	    	

@@ -65,7 +65,6 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
@@ -114,80 +113,6 @@ public class BanKuaiDbOperation
 	{
 		sysconfig = SystemConfigration.getInstance();
 	}
-	
-	
-//	public Stock getStockTDXBanKuaiInfo(Stock stockbasicinfo) 
-//	{
-//		String stockcode = stockbasicinfo.getMyOwnCode();
-//		HashMap<String,String> tmpsysbk = new HashMap<String,String> ();
-//		
-//		String sqlquerystat =null;
-//		sqlquerystat=  "SELECT gpgn.概念板块 板块代码, tdxbk.`板块名称` 板块名称 FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk"
-//				+ "  WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gpgn.概念板块 = tdxbk.`板块ID` AND ISNULL(移除时间)"
-//				+ "UNION " 
-//				+ " SELECT gphy.行业板块 板块代码, tdxbk.`板块名称` 板块名称 FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk "
-//				+ " WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gphy.`行业板块` = tdxbk.`板块ID` AND ISNULL(移除时间)"
-//				+ "UNION " 
-//				+ " SELECT gpfg.`风格板块`板块代码, tdxbk.`板块名称` 板块名称  FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk"
-//				+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`风格板块` = tdxbk.`板块ID` AND ISNULL(移除时间)"
-//				;
-//		
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
-//		try  {     
-//	        while(rs_gn.next()) {
-//	        	String bkcode = rs_gn.getString("板块代码");
-//	        	String bkname = rs_gn.getString("板块名称");
-//	        	tmpsysbk.put(bkcode,bkname);
-//	        } 
-//	        
-//	    }catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    	
-//	    }catch(Exception e) {
-//	    	e.printStackTrace();
-//	    } finally {
-//	    	if(rs_gn != null) {
-//	    		try {
-//					rs_gn.close();
-//				} catch (SQLException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//	    		rs_gn = null;
-//	    	}
-//	    }
-//		
-//		stockbasicinfo.setGeGuSuoShuTDXSysBanKuaiList(tmpsysbk);
-//		
-////		sqlquerystat=  "SELECT 自定义板块 FROM 股票通达信自定义板块对应表  WHERE 股票代码= "
-////						+ "'" +  stockcode.trim() + "'"
-////						;
-////		//logger.debug(sqlquerystat);
-////		CachedRowSetImpl rs_zdy = connectdb.sqlQueryStatExecute(sqlquerystat);
-////		HashSet<String> tmpzdybk = new HashSet<String> ();
-////		try  {     
-////			rs_zdy.last();  
-////	        int rows = rs_zdy.getRow();  
-////	        rs_zdy.first();  
-////	        int k = 0;  
-////	        //while(rs.next())
-////	        for(int j=0;j<rows;j++) { 
-////	        	tmpzdybk.add( rs_zdy.getString("自定义板块") );
-////	        	rs_zdy.next();
-////	        } 
-////	        rs_zdy.close();
-////	    }catch(java.lang.NullPointerException e){ 
-////	    	e.printStackTrace();
-////	    }catch(Exception e) {
-////	    	e.printStackTrace();
-////	    }
-////		
-////		stockbasicinfo.setSuoShuTDXZdyBanKuai(tmpzdybk);
-//		
-//		return stockbasicinfo;
-//	}
-
 	/*
 	 * 
 	 */
@@ -465,7 +390,6 @@ public class BanKuaiDbOperation
 
 		return tmprecordfile;
 	}
-	
 	/*
 	 * 通达信的概念板块与个股对应
 	 */
@@ -651,8 +575,6 @@ public class BanKuaiDbOperation
 		
 		 return addednumber;
 	}
-	
-
 	/*
 	 * 对余880指数板块，有一些在TDX配置文件中有额外信息，更新一下
 	 */
@@ -718,120 +640,9 @@ public class BanKuaiDbOperation
 		} catch (IOException e3) {
 			e3.printStackTrace();
 		}
-
-        
-        
-//        
-//        
-//        
-//        Set<String> tmpsysbkset =  tmpsysbkmap.keySet(); //新的板块列表
-//        HashMap<String, BanKuai> curbkindbmap = this.getTDXBanKuaiList();
-//        Set<String> curdaleidetaillistset = curbkindbmap.keySet();
-//        
-//        //把tmpsysbkset里面有的，curdaleidetaillistset没有的选出，这是新的，要加入数据库
-//        SetView<String> differencebankuainew = Sets.difference(tmpsysbkset, curdaleidetaillistset );
-//        try {
-//	        if(differencebankuainew.size() == 0)
-//	        	Files.append("没有新的板块。" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//			else
-//				Files.append("导入新板块："+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//		} catch (IOException ex) {
-//				ex.printStackTrace();
-//		}
-//			
-//        for (String newbkcode : differencebankuainew) {
-//        	String newbk = tmpsysbkmap.get(newbkcode).get(0);
-//        	String newbktdxswcode = tmpsysbkmap.get(newbkcode).get(5);
-//			String sqlinsertstat = "INSERT INTO  通达信板块列表(板块名称,创建时间,板块ID,对应TDXSWID,指数所属交易所) values ("
-//					+ "'" + newbk.trim() + "'" + ","
-//					+ "\"" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() )   + "\"" + ","
-//					+ "'" + newbkcode + "'" + ","
-//					+ "'" + newbktdxswcode + "'" + ","
-//					+ " '" + "sh" + "'"
-//					+ ")"
-//					;
-//			logger.debug(sqlinsertstat);
-//			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-//
-//			try {
-//				Files.append(newbk.trim() + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//        
-//        
-//        //把 curdaleidetaillistset 里面有的，tmpsysbkset没有的选出，这是旧的，要从数据库中删除
-//        SetView<String> differencebankuaiold = Sets.difference(curdaleidetaillistset, tmpsysbkset );
-//			try {
-//				if(differencebankuaiold.size() != 0)
-//					Files.append("删除旧板块：" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//			} catch (IOException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//        for (String oldbkcode : differencebankuaiold) {
-//        	String oldbk = this.getTDXBanKuaiList().get(oldbkcode).getMyOwnName();
-//        	String sqldeletetstat = "DELETE  FROM 通达信板块列表 "
-//        							+ " WHERE 板块名称=" + "'"  + oldbk + "'"
-//        							;
-//        	logger.debug(sqldeletetstat);
-//    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-//    		
-//    		try {
-//				Files.append( oldbk.trim() + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//    		    		
-//    		//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
-//    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
-//					+ " WHERE 概念板块=" + "'"  + oldbk + "'"
-//					;
-//			logger.debug(sqldeletetstat);
-//			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-//			
-//			sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
-//					+ " WHERE 行业板块=" + "'"  + oldbk + "'"
-//					;
-//			logger.debug(sqldeletetstat);
-//			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-//			
-//			sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
-//					+ " WHERE 风格板块=" + "'"  + oldbk + "'"
-//					;
-//			logger.debug(sqldeletetstat);
-//			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-//			
-//			sqldeletetstat = "DELETE  FROM 产业链子板块列表"
-//					+ " WHERE 所属通达信板块=" + "'"  + oldbk + "'"
-//					;
-//			logger.debug(sqldeletetstat);
-//			autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-//        }
-//        
-//        //对于没有变化的板块，要检查板块名称是否有变化
-//        SetView<String> intersectionbankuai = Sets.intersection(curdaleidetaillistset, tmpsysbkset );
-//        for(String interbkcode : intersectionbankuai) {
-//        	String bknameintdxfile =  tmpsysbkmap.get(interbkcode).get(0); //通达信里面的板块名字
-//        	String tdxswidintdxfile = tmpsysbkmap.get(interbkcode).get(5); 
-//        	String bknameincurdb = curbkindbmap.get(interbkcode).getMyOwnName();
-//        	
-//        	String updatesqlstat = "UPDATE 通达信板块列表 SET "
-//        						+ " 板块名称 = '" + bknameintdxfile  + "'" + ","
-//        						+ " 对应TDXSWID= '" + tdxswidintdxfile + "'"
-//        						+ " where 板块名称 != '" + bknameintdxfile + "' and 板块ID = '" + interbkcode + "'"
-//        						;
-//        	logger.debug(updatesqlstat);
-//        	connectdb.sqlUpdateStatExecute(updatesqlstat);
-//        }
         
 		return true;
 	}
-	
-	
-	
 	/*
 	 * 通达信的行业与个股对应文件
 	 * 相关文件：
@@ -1043,6 +854,194 @@ public class BanKuaiDbOperation
 		 
 		 return allupdatednum;
 	}
+	/*
+	 * 
+	 */
+	public int refreshTDXDrawLineInfo (File tmprecordfile)
+	{
+		File file = new File(sysconfig.getTDXDrawLineNameFile() );
+//		 if(!file.exists() ) {
+//			 try {
+//				Files.append( "没有发现" +  sysconfig.getTDXGaiNianBanKuaiToGeGuFile() +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			 return -1;
+//		 }
+		 
+		 int addednumber =0;
+		 BufferedInputStream dis = null;
+		 FileInputStream in = null;
+		 try {
+			    in = new FileInputStream(file);  
+			    dis = new BufferedInputStream(in);
+               
+           // 股票板块信息文件头格式，T0002/hq_cache/block.dat block_fg.dat block_gn.dat block_zs.dat
+		   // 文件头：384字节
+//               struct TTDXBlockHeader
+//               {
+//                   char         szVersion[64];        // 0, Registry ver:1.0 (1999-9-28)
+//                   int            nIndexOffset;            // 64, 0x00000054
+//                   int            nDataOffset;            // 68, 0x00000180
+//                   int            nData1;                // 72, 0x00000003
+//                   int            nData2;                // 76, 0x00000000
+//                   int            nData3;                // 80, 0x00000003
+//               };
+               int fileheadbytenumber = 500;
+               byte[] itemBuf = new byte[fileheadbytenumber];
+               dis.read(itemBuf, 0, fileheadbytenumber); 
+               String fileHead =new String(itemBuf,0,fileheadbytenumber);  
+               logger.debug(fileHead);
+               
+               //板块个数：2字节
+               dis.read(itemBuf, 0, 2); 
+               String bknumber =new String(itemBuf,0,2);  
+               logger.debug(bknumber);
+			 
+               //各板块数据存储结构（紧跟板块数目依次存放）
+//               第一个版块的起始位置为0x182h。
+//               每个板块占据的存储空间为2813个字节，每个板块最多包括400只股票。(2813 -9 - 2 - 2) / 7 =  400
+//               板块名称：9字节
+//               该板块包含的个股个数：2字节
+//               板块类别：2字节
+//               该板块下个股代码列表（连续存放，直到代码为空）
+//                   个股代码：7字节
+//               struct TTDXBlockRecord
+//               {
+//                   char         szName[9];
+//                   short        nCount;
+//                   short        nLevel;
+//                   char         szCode[400][7];
+//               };
+               int sigbk = 2813;
+               byte[] itemBuf2 = new byte[sigbk];
+               int i=0;
+               Files.append("开始导入通达信股票概念对应信息:" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+               while (dis.read(itemBuf2, 0, sigbk) != -1) {
+            	   //板块名称
+            	   String gupiaoheader = (new String(itemBuf2,0,9)).trim();
+            	   logger.debug(gupiaoheader);
+            	   
+            	   //板块个股
+                   String gupiaolist =new String(itemBuf2,12,sigbk-12);
+                  
+                   List<String> tmpstockcodestr = Splitter.fixedLength(7).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(gupiaolist); 
+                   logger.debug(tmpstockcodestr);
+//                   System.out.print(tmpstockcodestr.size());
+                   Set<String> tmpstockcodesetnew = new HashSet(tmpstockcodestr);
+                   logger.debug(tmpstockcodesetnew);
+                   
+                   //从数据库中读出当前该板块的个股
+                   Set<String> tmpstockcodesetold = new HashSet();
+                   CachedRowSetImpl rs = null;
+	   			    try {
+	   			    	String sqlquerystat = "SELECT gnbk.股票代码  FROM 股票通达信概念板块对应表 gnbk, 通达信板块列表 bklb"
+		    						+ " WHERE  gnbk.板块代码 = bklb.`板块ID`"
+		    						+ " AND bklb.`板块名称` = '"  + gupiaoheader + "'"
+		    						+ " AND ISNULL(gnbk.移除时间)"
+		    						;
+	   			    	
+//	   			    	String sqlquerystat = "SELECT *  FROM 股票通达信概念板块对应表  WHERE  概念板块 = " 
+//	   			    							+ "'"  + gupiaoheader + "'"
+//	   			    							+ "AND ISNULL(移除时间)"
+//	   			    							;
+	   			    	logger.debug(sqlquerystat);
+	   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	   			    	
+	   			        rs.last();  
+	   			        int rows = rs.getRow();  
+	   			        rs.first();  
+	   			        for(int j=0;j<rows;j++) {  
+	   			        	String stockcode = rs.getString("股票代码");
+	   			        	tmpstockcodesetold.add(stockcode);
+	   			        	
+	   			            rs.next();
+	   			        }
+	   			        
+	   			    }catch(java.lang.NullPointerException e){ 
+	   			    	e.printStackTrace();
+	   			    } catch (SQLException e) {
+	   			    	e.printStackTrace();
+	   			    }catch(Exception e){
+	   			    	e.printStackTrace();
+	   			    } finally {
+				    	if(rs != null)
+							try {
+								rs.close();
+								rs = null;
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+				    }
+	   			    
+	   			 //把 tmpstockcodesetold 里面有的，tmpstockcodesetnew没有的选出，这是旧的，要从数据库中删除
+		   	        SetView<String> differencebankuaiold = Sets.difference(tmpstockcodesetold,tmpstockcodesetnew  );
+		   	        for (String str : differencebankuaiold) {
+//		   	        	String sqldeletetstat = "DELETE  FROM 股票通达信概念板块对应表 "
+//		   	        							+ " WHERE 股票代码=" + "'" + str + "'" 
+//		   	        							+ " AND 概念板块=" + "'" + gupiaoheader + "'" 
+//		   	        							;
+//		   	        	logger.debug(sqldeletetstat);
+//		   	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//		                Files.append("删除：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+//		   	        	String sqlupdatestat = "UPDATE 股票通达信概念板块对应表   SET"
+//		   	        			+ " 移除时间 =" + "'" +  sysconfig.formatDate(new Date() ) + "'" 
+//	   			 				+ " WHERE 股票代码 = " + "'" + str.trim() + "'" 
+//	   			 				+ " AND 概念板块=" + "'" + gupiaoheader + "'" 
+//	   			 				+ " AND isnull(移除时间)"
+//	   			 				;
+		   	        	String sqlupdatestat = "UPDATE 股票通达信概念板块对应表 JOIN 通达信板块列表"
+       							+ "  ON  股票通达信概念板块对应表.`股票代码` = " + "'" + str.trim() + "'"
+       							+ "  AND isnull(移除时间)"
+       							+ "  and  股票通达信概念板块对应表.`板块代码` = 通达信板块列表.`板块ID` "
+       							+ "  and 通达信板块列表.`板块名称`=" + "'" + gupiaoheader + "'"
+       							+ "  SET 移除时间 = " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() ) + "'"
+       							;
+				       	logger.debug(sqlupdatestat);
+				   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		   	        }
+	   			   
+	   		        //把tmpstockcodesetnew里面有的，tmpstockcodesetold没有的选出，这是新的，要加入数据库
+	   		        SetView<String> differencebankuainew = Sets.difference(tmpstockcodesetnew, tmpstockcodesetold ); 
+		   		    for (String str : differencebankuainew) {
+		   				
+//		   				String sqlinsertstat = "INSERT INTO  股票通达信概念板块对应表(股票代码,概念板块,股票权重) values ("
+//		   						+ "'" + str.trim() + "'" + ","
+//		   						+ "'" + gupiaoheader + "'"  + ","
+//		   						+ 10 
+//		   						+ ")"
+//		   						;
+		   		    	String sqlinsertstat = "insert into 股票通达信概念板块对应表(股票代码,板块代码,股票权重)"
+								+ "	  SELECT '" + str + "', 通达信板块列表.`板块ID`, 10 "
+								+ " FROM 通达信板块列表  where 通达信板块列表.`板块名称` = '" + gupiaoheader + "'"   
+								;
+		   				logger.debug(sqlinsertstat);
+		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		   				addednumber ++;
+		                Files.append("加入：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+		   			}
+               }
+		 } catch (Exception e) {
+			 e.printStackTrace();
+			 return -1;
+		 } finally {
+			 try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+             try {
+				dis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}     
+		 }
+		
+		 return addednumber;
+	}
+	/*
+	 * 
+	 */
 	private void checkStockHangYeNewInfo(String stockcode, String stockoldTDXSWID, String stocknewTDXSWID)
 	{
 		//先把老记录 移除时间更新
@@ -1595,7 +1594,7 @@ public class BanKuaiDbOperation
 	private int refreshTDXZhiShuShangHaiLists(File tmprecordfile)
 	{
 		//先从数据库中读取现有所有的上海指数
-		HashMap<String, BanKuai> curallshbk = this.getTDXBanKuaiList("sh");
+		  HashSet<String> curallshbk = this.getTDXBanKuaiSet("sh");
 		
 		//从文件中读取最新的指数
 		HashSet allinsertbk = new HashSet (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
@@ -1692,7 +1691,7 @@ public class BanKuaiDbOperation
 			}     
 		 }
 		 
-		 SetView<String> differencebankuaiold = Sets.difference(curallshbk.keySet(), allinsertbk );
+		 SetView<String> differencebankuaiold = Sets.difference( curallshbk, allinsertbk );
 		 if(differencebankuaiold.size() >0 ) { //说明有某些板块需要删除
 			 for(String oldbkcode : differencebankuaiold) {
 				 String sqldeletetstat = "DELETE  FROM  通达信板块列表 WHERE "
@@ -1737,7 +1736,7 @@ public class BanKuaiDbOperation
 	private int refreshTDXZhiShuShenZhenLists(File tmprecordfile)
 	{
 		//先从数据库中读取现有所有的上海指数
-		HashMap<String, BanKuai> curallszbk = this.getTDXBanKuaiList("sz");
+		HashSet<String> curallszbk = this.getTDXBanKuaiSet("sz");
 				
 		//从文件中读取最新的指数
 		HashSet allinsertbk = new HashSet (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
@@ -1837,7 +1836,7 @@ public class BanKuaiDbOperation
 			}     
 		 }
 		 
-		 SetView<String> differencebankuaiold = Sets.difference(curallszbk.keySet(), allinsertbk );
+		 SetView<String> differencebankuaiold = Sets.difference(curallszbk, allinsertbk );
 		 if(differencebankuaiold.size() >0 ) { //说明有某些板块需要删除
 			 for(String oldbkcode : differencebankuaiold) {
 				 String sqldeletetstat = "DELETE  FROM  通达信板块列表 WHERE "
@@ -1926,52 +1925,6 @@ public class BanKuaiDbOperation
    
 	}
 	/*
-	 * 找出通达信定义的所有板块.不包括交易所的指数板块，用新的BkChanYeLianTreeNode存储
-	 */
-//	public HashMap<String, BkChanYeLianTreeNode> getTDXBanKuaiList()   
-//	{
-//		HashMap<String,BkChanYeLianTreeNode> tmpsysbankuailiebiaoinfo = new HashMap<String,BkChanYeLianTreeNode> ();
-//
-//		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信板块列表 	ORDER BY 板块名称 ,板块ID,创建时间 "
-//							   ;   
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//	    try {  
-//	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//	    	
-//	        rs.last();  
-//	        int rows = rs.getRow();  
-////	        data = new Object[rows][];    
-////	        int columnCount = 3;//列数  
-//	        rs.first();  
-//	        //int k = 0;  
-//	        //while(rs.next())
-//	        for(int j=0;j<rows;j++) { 
-//	        	
-//	        	BkChanYeLianTreeNode tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"));
-//	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块ID"), tmpbk);
-//	            rs.next();
-//	        }
-//	        
-//	    }catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    } finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    } 
-//	    
-//	    return tmpsysbankuailiebiaoinfo;
-//	}
-	/*
 	 * 所有股票
 	 */
 	public ArrayList<Stock> getAllStocks() 
@@ -2015,106 +1968,54 @@ public class BanKuaiDbOperation
 	    return tmpsysbankuailiebiaoinfo;
 	}
 	/*
-	 * 所有的指数，包括交易所指数和板块
-	 */
-//	public HashMap<String, BanKuai> getTDXAllZhiShuAndBanKuai() 
-//	{
-//		HashMap<String,BanKuai> tmpsysbankuailiebiaoinfo = new HashMap<String,BanKuai> ();
-//
-//		String sqlquerystat = "SELECT 板块ID,板块名称,创建时间  FROM 通达信交易所指数列表" +
-//								" UNION" +
-//								" SELECT 板块ID,板块名称,创建时间  FROM 通达信板块列表  "  ;	
-//							   ;   
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//	    try {  
-//	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//	    	
-//	        rs.last();  
-//	        int rows = rs.getRow();  
-//	        rs.first();  
-//	        //int k = 0;  
-////	        while(rs.next()) {
-//	        for(int j=0;j<rows;j++) {  
-//	        	logger.debug(rs.getString("板块ID") );
-//	        	logger.debug(rs.getString("板块名称"));
-//	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称") );
-////	        	boolean notexporttogephi = rs.getBoolean("不导出到gephi");
-////	        	if(notexporttogephi)
-////	        		tmpbk.setNotExportToGephi();
-////	        	tmpbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
-//	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块ID"), tmpbk);
-//	            rs.next();
-//	        }
-//	        
-//	    }catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    } finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    } 
-//	    
-//	    return tmpsysbankuailiebiaoinfo;
-//
-//	}
-	/*
-	 * 交易所定义的所有指数
-	 */
-//	public HashMap<String, BanKuai> getTDXAllZhiShuList() 
-//	{
-//		HashMap<String,BanKuai> tmpsysbankuailiebiaoinfo = new HashMap<String,BanKuai> ();
-//
-//		String sqlquerystat = "SELECT *  FROM 通达信交易所指数列表 "
-//							   ;   
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//	    try {  
-//	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//	    	
-//	        rs.last();  
-//	        int rows = rs.getRow();  
-//	        rs.first();  
-//	        //int k = 0;  
-////	        while(rs.next()) {
-//	        for(int j=0;j<rows;j++) {  
-////	        	logger.debug(rs.getString("板块ID"));
-//	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"));
-//	        	tmpbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
-//	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块ID"), tmpbk);
-//	            rs.next();
-//	        }
-//	        
-//	    }catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    } finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    } 
-//	    
-//	    return tmpsysbankuailiebiaoinfo;
-//	}
-
-	/*
 	 * 找出通达信定义的所有板块.不包括交易所的指数板块
 	 */
+	private HashSet<String> getTDXBanKuaiSet(String jys)
+	{
+		HashSet<String> tmpsysbankuailiebiaoinfo = new HashSet<String>();
+		
+		String sqlquerystat;
+		if(!jys.toLowerCase().equals("all"))
+			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述  FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
+		else
+			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述 FROM 通达信板块列表 	"  ;
+		logger.debug(sqlquerystat);
+		CachedRowSetImpl rs = null;
+	    try {  
+	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	    	
+	        rs.last();  
+	        int rows = rs.getRow();  
+//	        data = new Object[rows][];    
+//	        int columnCount = 3;//列数  
+	        rs.first();  
+	        //int k = 0;  
+	        //while(rs.next())
+	        for(int j=0;j<rows;j++) {  
+	        	String bkcode = rs.getString("板块ID");
+	        	tmpsysbankuailiebiaoinfo.add(bkcode);
+	        	
+	            rs.next();
+	        }
+	        
+	    }catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    } finally {
+	    	if(rs != null)
+				try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    } 
+	    
+	    return tmpsysbankuailiebiaoinfo;
+	}
 	public ArrayList<BanKuai> getTDXBanKuaiList(String jys)   
 	{
 		ArrayList<BanKuai> tmpsysbankuailiebiaoinfo = new ArrayList<BanKuai> ();
@@ -2206,386 +2107,7 @@ public class BanKuaiDbOperation
 	    }  
 		return tmpsubbklist;
 	}
-	/*
-	 * 找出某通达信风格板块的所有个股
-	 */
-//	private HashMap<String,String> getTDXFengGeBanKuaiGeGu(String currentbk) 
-//	{
-//		String sqlquerystat = "SELECT fg.股票代码, agu.股票名称" 
-//				+ " FROM 股票通达信风格板块对应表  AS fg,  A股  AS agu"
-//				+ " WHERE  fg.风格板块= " + "'" + currentbk + "'" 
-//				+ " AND fg.股票代码  = agu.股票代码" + "'"
-//				+ " AND ISNULL(移除时间)"
-//				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
-//				;   
-//		logger.debug(sqlquerystat);
-//		HashMap<String,String> tmpfgset = new HashMap<String,String>();
-//		CachedRowSetImpl rsfg = null;
-//		try {  
-//			rsfg = connectdb.sqlQueryStatExecute(sqlquerystat);
-//			
-//			rsfg.last();  
-//			int rows = rsfg.getRow();  
-//			rsfg.first();  
-//			for(int j=0;j<rows;j++) {  
-//				String tmpstockcode = rsfg.getString("股票代码");
-//				String tmpstockname = rsfg.getString("股票名称");
-//				tmpfgset.put(tmpstockcode,tmpstockname);
-//				rsfg.next();
-//			}
-//			
-//		}catch(java.lang.NullPointerException e){ 
-//			e.printStackTrace();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				rsfg.close ();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//			rsfg = null;
-//		}
-//		
-//		return tmpfgset;
-//	}
-	/*
-	 * 找出某通达信概念板块的所有个股
-	 */
-//	private HashMap<String,String> getTDXGaiNianBanKuaiGeGu(String currentbk) 
-//	{
-//		String sqlquerystat = "SELECT gn.股票代码, agu.股票名称" 
-//				+ " FROM 股票通达信概念板块对应表  AS gn, A股 AS agu"
-//				+ " WHERE  gn.概念板块= " + "'" + currentbk + "'" 
-//				+ " AND gn.股票代码  = agu.股票代码" + "'"
-//				+ " AND ISNULL(移除时间)"
-//				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
-//				;   
-//		logger.debug(sqlquerystat);
-//		HashMap<String,String> tmpgnset = new HashMap<String,String>();
-//		CachedRowSetImpl rsfg = null;
-//		try {  
-//			 rsfg = connectdb.sqlQueryStatExecute(sqlquerystat);
-//			
-//			rsfg.last();  
-//			int rows = rsfg.getRow();  
-//			rsfg.first();  
-//			for(int j=0;j<rows;j++) {  
-//				String tmpstockcode = rsfg.getString("股票代码");
-//				String tmpstockname = rsfg.getString("股票名称");
-//				tmpgnset.put(tmpstockcode,tmpstockname);
-//				rsfg.next();
-//			}
-//			rsfg.close();
-//		}catch(java.lang.NullPointerException e){ 
-//			e.printStackTrace();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				rsfg.close ();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//			rsfg = null;
-//		}
-//		
-//		return tmpgnset;
-//	}
-
 	
-	/*
-	 * 找出某个时间点 行业/概念/风格/指数 通达信板块的所有个股及个股权重
-	 */
-//	public HashMap<String, Stock> getTDXBanKuaiGeGuOfHyGnFg(String currentbk,String currentbkcode, Date selecteddatestart , Date selecteddateend)
-//	{
-//				String actiontable = this.getBanKuaiType(currentbkcode);
-//				if(actiontable == null)
-//					return null;
-//			
-//				String sqlquerystat = null;
-//				 if(actiontable.trim().equals("股票通达信基本面信息对应表") ) { //找地域板块
-//					 sqlquerystat = "SELECT tdxjbm.股票代码GPDM AS 股票代码, agu.股票名称, tdxjbm.股票权重" 
-//								+ " FROM 股票通达信基本面信息对应表  AS tdxjbm, A股 AS agu, 通达信板块列表 AS tdxbk"
-//								+ " WHERE  tdxbk.板块ID= " + "'" + currentbkcode + "'" 
-//								+ " AND tdxbk.对应TDXSWID = tdxjbm.地域DY"
-//								+ " AND tdxjbm.股票代码GPDM  = agu.股票代码" 
-//								;
-//				 } else { //概念风格行业板块
-//					 sqlquerystat = "SELECT hy.股票代码, agu.股票名称, hy.股票权重 , hy.`行业板块` as 板块ID" 
-//								+ " FROM 股票通达信行业板块对应表  AS hy, A股 AS agu"
-//								+ " WHERE  hy.行业板块= " + "'" + currentbkcode + "'" 
-//								+ " AND hy.股票代码  = agu.股票代码" 
-//								+ " AND unix_timestamp(Date('" + sysconfig.formatDate(selecteddateend) + "')) >= unix_timestamp(Date(加入时间)) "
-//								+ " AND (unix_timestamp(Date('" +sysconfig.formatDate(selecteddatestart) + "')) <= unix_timestamp(Date(移除时间)) OR ISNULL(移除时间) ) "
-//								
-//								+ " UNION "
-//								
-//								+ "SELECT gn.股票代码, agu.股票名称, gn.股票权重 , gn.`概念板块` as 板块ID" 
-//								+ " FROM 股票通达信概念板块对应表  AS gn, A股 AS agu"
-//								+ " WHERE  gn.概念板块= " + "'" + currentbkcode + "'" 
-//								+ " AND gn.股票代码  = agu.股票代码" 
-//								+ " AND unix_timestamp(Date('" + sysconfig.formatDate(selecteddateend) + "')) >= unix_timestamp(Date(加入时间)) "
-//								+ " AND (unix_timestamp(Date('" +sysconfig.formatDate(selecteddatestart) + "')) <= unix_timestamp(Date(移除时间)) OR ISNULL(移除时间) ) "
-//								
-//								+ " UNION "
-//								
-//								+ "SELECT fg.股票代码, agu.股票名称, fg.股票权重 , fg.`风格板块` as 板块ID" 
-//								+ " FROM 股票通达信风格板块对应表  AS fg,  A股  AS agu"
-//								+ " WHERE  fg.风格板块= " + "'" + currentbkcode + "'" 
-//								+ " AND fg.股票代码  = agu.股票代码" 
-//								+ " AND unix_timestamp(Date('" + sysconfig.formatDate(selecteddateend) + "')) >= unix_timestamp(Date(加入时间)) "
-//								+ " AND (unix_timestamp(Date('" +sysconfig.formatDate(selecteddatestart) + "')) <= unix_timestamp(Date(移除时间)) OR ISNULL(移除时间) ) "
-//								
-//								+ " UNION "
-//
-//								+ "SELECT zs.股票代码, agu.股票名称, zs.股票权重 , zs.`指数板块` as 板块ID" 
-//								+ " FROM 股票通达信交易所指数对应表  AS zs,  A股  AS agu"
-//								+ " WHERE  zs.指数板块= " + "'" + currentbkcode + "'" 
-//								+ " AND zs.股票代码  = agu.股票代码" 
-//								+ " AND unix_timestamp(Date('" + sysconfig.formatDate(selecteddateend) + "')) >= unix_timestamp(Date(加入时间)) "
-//								+ " AND (unix_timestamp(Date('" +sysconfig.formatDate(selecteddatestart) + "')) <= unix_timestamp(Date(移除时间)) OR ISNULL(移除时间) ) "
-//								
-//								+ "GROUP BY  股票代码  ORDER BY 股票代码,股票名称 "
-//								;
-//				 }
-//				
-//		logger.debug(sqlquerystat);
-////		HashMap<String,String> tmpgnset = new HashMap<String,String>();
-//		HashMap<String,Stock> gegumap = new HashMap<String,Stock> ();
-//		CachedRowSetImpl rsfg = null;
-//		try {  
-//			 rsfg = connectdb.sqlQueryStatExecute(sqlquerystat);
-//
-//			while(rsfg.next()) {  
-//				String tmpstockcode = rsfg.getString(1); //"股票代码"
-//				String tmpstockname = rsfg.getString("股票名称"); //"股票名称"
-//				int stockweight = rsfg.getInt("股票权重");
-//				
-//				logger.debug(tmpstockname+tmpstockcode);
-//				Stock tmpstock = new Stock (tmpstockcode,tmpstockname);
-//				
-//				HashMap<String, Integer> stockbkweight = new  HashMap<String, Integer>() ;
-//				stockbkweight.put(currentbkcode, stockweight); //板块代码加权重
-//				tmpstock.setGeGuSuoShuBanKuaiWeight (  stockbkweight );
-//				
-//				gegumap.put(tmpstockcode, tmpstock);
-//				
-//			}
-//			
-//		}catch(java.lang.NullPointerException e){ 
-//			e.printStackTrace();
-////			logger.debug( "数据库连接为NULL!");
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				if(rsfg != null)
-//					rsfg.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//			rsfg = null;
-//		}
-//		
-//
-//		return gegumap;
-//	}
-//	/*
-//	 * 计算某个股票在某个时间段内属于某个板块时候的成交量
-//	 */
-//	private double setStockChenJiaoE(String stockcode, String stockname, String currentbk, String currentbkcode,
-//			Date selecteddatestart, Date selecteddateend) 
-//	{
-//		String formatedstartdate = sysconfig.formatDate(selecteddatestart);
-//		String formatedenddate  = sysconfig.formatDate(selecteddateend);
-//		String diyusqlquerystat;
-//		if(stockcode.startsWith("6")) {
-//			diyusqlquerystat =  "SELECT 通达信上交所股票每日交易信息.`代码` AS 股票代码, 股票通达信风格板块对应表.风格板块 AS 板块, sum(通达信上交所股票每日交易信息.`成交额`) AS 成交额"
-//					+ "		from 通达信上交所股票每日交易信息 join"
-//					+ "		     股票通达信风格板块对应表"
-//					+ "		     on 通达信上交所股票每日交易信息.`代码` = 股票通达信风格板块对应表.`股票代码`"
-//					+ "			  and 通达信上交所股票每日交易信息.`交易日期` >= 股票通达信风格板块对应表.`加入时间` and"
-//					+ "		        (通达信上交所股票每日交易信息.`交易日期` <= 股票通达信风格板块对应表.`移除时间` or 股票通达信风格板块对应表.`移除时间` is null)"
-//					+ "		where Date(通达信上交所股票每日交易信息.`交易日期`) >= Date('" + formatedstartdate + "') "
-//					+ "           and Date(通达信上交所股票每日交易信息.`交易日期`) <= Date('" +  formatedenddate + "')"
-//					+ "		and 股票通达信风格板块对应表.`风格板块` = '" + currentbkcode + "' and 通达信上交所股票每日交易信息.`代码` = '" + stockcode +"'"
-//					+ "		group by 通达信上交所股票每日交易信息.`代码`, 股票通达信风格板块对应表.`风格板块`"
-//					
-//					+ " UNION "
-//					
-//					+ "SELECT 通达信上交所股票每日交易信息.`代码` AS 股票代码, 股票通达信行业板块对应表.行业板块 AS 板块, sum(通达信上交所股票每日交易信息.`成交额`) AS 成交额"
-//					+ "		from 通达信上交所股票每日交易信息 join"
-//					+ "		     股票通达信行业板块对应表"
-//					+ "		     on 通达信上交所股票每日交易信息.`代码` = 股票通达信行业板块对应表.`股票代码`"
-//					+ "			  and 通达信上交所股票每日交易信息.`交易日期` >= 股票通达信行业板块对应表.`加入时间` and"
-//					+ "		        (通达信上交所股票每日交易信息.`交易日期` <= 股票通达信行业板块对应表.`移除时间` or 股票通达信行业板块对应表.`移除时间` is null)"
-//					+ "		where Date(通达信上交所股票每日交易信息.`交易日期`) >= Date('" + formatedstartdate + "') "
-//					+ "           and Date(通达信上交所股票每日交易信息.`交易日期`) <= Date('" +  formatedenddate + "')"
-//					+ "		and 股票通达信行业板块对应表.`行业板块` = '" + currentbkcode + "' and 通达信上交所股票每日交易信息.`代码` = '" + stockcode +"'"
-//					+ "		group by 通达信上交所股票每日交易信息.`代码`, 股票通达信行业板块对应表.`行业板块`"
-//					
-//					+ " UNION "
-//					
-//					+  "SELECT 通达信上交所股票每日交易信息.`代码` AS 股票代码, 股票通达信概念板块对应表.概念板块 AS 板块, sum(通达信上交所股票每日交易信息.`成交额`) AS 成交额"
-//					+ "		from 通达信上交所股票每日交易信息 join"
-//					+ "		     股票通达信概念板块对应表"
-//					+ "		     on 通达信上交所股票每日交易信息.`代码` = 股票通达信概念板块对应表.`股票代码`"
-//					+ "			  and 通达信上交所股票每日交易信息.`交易日期` >= 股票通达信概念板块对应表.`加入时间` and"
-//					+ "		        (通达信上交所股票每日交易信息.`交易日期` <= 股票通达信概念板块对应表.`移除时间` or 股票通达信概念板块对应表.`移除时间` is null)"
-//					+ "		where Date(通达信上交所股票每日交易信息.`交易日期`) >= Date('" + formatedstartdate + "') "
-//					+ "           and Date(通达信上交所股票每日交易信息.`交易日期`) <= Date('" +  formatedenddate + "')"
-//					+ "		and 股票通达信概念板块对应表.`概念板块` = '" + currentbkcode + "' and 通达信上交所股票每日交易信息.`代码` = '" + stockcode +"'"
-//					+ "		group by 通达信上交所股票每日交易信息.`代码`, 股票通达信概念板块对应表.`概念板块`"
-//					
-//					+ " UNION "
-//					
-//					+  "SELECT 通达信上交所股票每日交易信息.`代码` AS 股票代码, 股票通达信交易所指数对应表.指数板块 AS 板块, sum(通达信上交所股票每日交易信息.`成交额`) AS 成交额"
-//					+ "		from 通达信上交所股票每日交易信息 join"
-//					+ "		     股票通达信交易所指数对应表"
-//					+ "		     on 通达信上交所股票每日交易信息.`代码` = 股票通达信交易所指数对应表.`股票代码`"
-//					+ "			  and 通达信上交所股票每日交易信息.`交易日期` >= 股票通达信交易所指数对应表.`加入时间` and"
-//					+ "		        (通达信上交所股票每日交易信息.`交易日期` <= 股票通达信交易所指数对应表.`移除时间` or 股票通达信交易所指数对应表.`移除时间` is null)"
-//					+ "		where Date(通达信上交所股票每日交易信息.`交易日期`) >= Date('" + formatedstartdate + "') "
-//					+ "           and Date(通达信上交所股票每日交易信息.`交易日期`) <= Date('" +  formatedenddate + "')"
-//					+ "		and 股票通达信交易所指数对应表.`指数板块` = '" + currentbkcode + "' and 通达信上交所股票每日交易信息.`代码` = '" + stockcode +"'"
-//					
-//					+ "		group by  股票代码,  板块"
-//					
-//					;
-//			
-//		} else {
-//			diyusqlquerystat = 					 "SELECT 通达信深交所股票每日交易信息.`代码` AS 股票代码, 股票通达信风格板块对应表.风格板块 AS 板块, sum(通达信深交所股票每日交易信息.`成交额`) AS 成交额"
-//					+ "		from 通达信深交所股票每日交易信息 join"
-//					+ "		     股票通达信风格板块对应表"
-//					+ "		     on 通达信深交所股票每日交易信息.`代码` = 股票通达信风格板块对应表.`股票代码`"
-//					+ "			  and 通达信深交所股票每日交易信息.`交易日期` >= 股票通达信风格板块对应表.`加入时间` and"
-//					+ "		        (通达信深交所股票每日交易信息.`交易日期` <= 股票通达信风格板块对应表.`移除时间` or 股票通达信风格板块对应表.`移除时间` is null)"
-//					+ "		where Date(通达信深交所股票每日交易信息.`交易日期`) >= Date('" + formatedstartdate + "') "
-//					+ "           and Date(通达信深交所股票每日交易信息.`交易日期`) <= Date('" +  formatedenddate + "')"
-//					+ "		and 股票通达信风格板块对应表.`风格板块` = '" + currentbkcode + "' and 通达信深交所股票每日交易信息.`代码` = '" + stockcode +"'"
-//					+ "		group by 通达信深交所股票每日交易信息.`代码`, 股票通达信风格板块对应表.`风格板块`"
-//					
-//					+ " UNION "
-//					
-//					+ "SELECT 通达信深交所股票每日交易信息.`代码` AS 股票代码, 股票通达信行业板块对应表.行业板块 AS 板块, sum(通达信深交所股票每日交易信息.`成交额`) AS 成交额"
-//					+ "		from 通达信深交所股票每日交易信息 join"
-//					+ "		     股票通达信行业板块对应表"
-//					+ "		     on 通达信深交所股票每日交易信息.`代码` = 股票通达信行业板块对应表.`股票代码`"
-//					+ "			  and 通达信深交所股票每日交易信息.`交易日期` >= 股票通达信行业板块对应表.`加入时间` and"
-//					+ "		        (通达信深交所股票每日交易信息.`交易日期` <= 股票通达信行业板块对应表.`移除时间` or 股票通达信行业板块对应表.`移除时间` is null)"
-//					+ "		where Date(通达信深交所股票每日交易信息.`交易日期`) >= Date('" + formatedstartdate + "') "
-//					+ "           and Date(通达信深交所股票每日交易信息.`交易日期`) <= Date('" +  formatedenddate + "')"
-//					+ "		and 股票通达信行业板块对应表.`行业板块` = '" + currentbkcode + "' and 通达信深交所股票每日交易信息.`代码` = '" + stockcode +"'"
-//					+ "		group by 通达信深交所股票每日交易信息.`代码`, 股票通达信行业板块对应表.`行业板块`"
-//					
-//					+ " UNION "
-//					
-//					+  "SELECT 通达信深交所股票每日交易信息.`代码` AS 股票代码, 股票通达信概念板块对应表.概念板块 AS 板块, sum(通达信深交所股票每日交易信息.`成交额`) AS 成交额"
-//					+ "		from 通达信深交所股票每日交易信息 join"
-//					+ "		     股票通达信概念板块对应表"
-//					+ "		     on 通达信深交所股票每日交易信息.`代码` = 股票通达信概念板块对应表.`股票代码`"
-//					+ "			  and 通达信深交所股票每日交易信息.`交易日期` >= 股票通达信概念板块对应表.`加入时间` and"
-//					+ "		        (通达信深交所股票每日交易信息.`交易日期` <= 股票通达信概念板块对应表.`移除时间` or 股票通达信概念板块对应表.`移除时间` is null)"
-//					+ "		where Date(通达信深交所股票每日交易信息.`交易日期`) >= Date('" + formatedstartdate + "') "
-//					+ "           and Date(通达信深交所股票每日交易信息.`交易日期`) <= Date('" +  formatedenddate + "')"
-//					+ "		and 股票通达信概念板块对应表.`概念板块` = '" + currentbkcode + "' and 通达信深交所股票每日交易信息.`代码` = '" + stockcode +"'"
-//					+ "		group by 通达信深交所股票每日交易信息.`代码`, 股票通达信概念板块对应表.`概念板块`"
-//					
-//					+ " UNION "
-//					
-//					+  "SELECT 通达信深交所股票每日交易信息.`代码` AS 股票代码, 股票通达信交易所指数对应表.指数板块 AS 板块, sum(通达信深交所股票每日交易信息.`成交额`) AS 成交额"
-//					+ "		from 通达信深交所股票每日交易信息 join"
-//					+ "		     股票通达信交易所指数对应表"
-//					+ "		     on 通达信深交所股票每日交易信息.`代码` = 股票通达信交易所指数对应表.`股票代码`"
-//					+ "			  and 通达信深交所股票每日交易信息.`交易日期` >= 股票通达信交易所指数对应表.`加入时间` and"
-//					+ "		        (通达信深交所股票每日交易信息.`交易日期` <= 股票通达信交易所指数对应表.`移除时间` or 股票通达信交易所指数对应表.`移除时间` is null)"
-//					+ "		where Date(通达信深交所股票每日交易信息.`交易日期`) >= Date('" + formatedstartdate + "') "
-//					+ "           and Date(通达信深交所股票每日交易信息.`交易日期`) <= Date('" +  formatedenddate + "')"
-//					+ "		and 股票通达信交易所指数对应表.`指数板块` = '" + currentbkcode + "' and 通达信深交所股票每日交易信息.`代码` = '" + stockcode +"'"
-//					
-//					+ "		group by  股票代码,  板块"
-//					
-//					;
-//		}
-//		logger.debug(diyusqlquerystat);
-//		CachedRowSetImpl rsdy = null;
-//		double dy = 0.0;
-//		try {  
-//			 rsdy = connectdb.sqlQueryStatExecute(diyusqlquerystat);
-//			 while(rsdy.next()) {
-//				 dy = rsdy.getDouble("成交额");
-//				 logger.debug(dy);
-//			 }
-//		}catch(java.lang.NullPointerException e){ 
-//			logger.debug( "数据库连接为NULL!");
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				if(rsdy != null)
-//					rsdy.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//			rsdy = null;
-//		}
-//		
-//		return dy;
-//	}
-	/*
-	 * 找出某通达信行业板块的所有个股
-	 */
-//	private HashMap<String,String> getTDXHangYeBanKuaiGeGu(String currentbk) 
-//	{
-//		String sqlquerystat = "SELECT hy.股票代码, agu.股票名称" 
-//				+ " FROM 股票通达信行业板块对应表  AS hy, A股 AS agu"
-//				+ " WHERE  hy.行业板块= " + "'" + currentbk + "'" 
-//				+ " AND hy.股票代码  = agu.股票代码" + "'"
-//				+ " AND ISNULL(移除时间)"
-//				//+ " GROUP BY  czjl.买卖账号, czjl.股票代码, agu.股票名称"
-//				;   
-//		logger.debug(sqlquerystat);
-//		HashMap<String,String> tmpgnset = new HashMap<String,String>();
-//		CachedRowSetImpl rsfg = null;
-//		try {  
-//			 rsfg = connectdb.sqlQueryStatExecute(sqlquerystat);
-//			
-//			rsfg.last();  
-//			int rows = rsfg.getRow();  
-//			rsfg.first();  
-//			for(int j=0;j<rows;j++) {  
-//				String tmpstockcode = rsfg.getString("股票代码");
-//				String tmpstockname = rsfg.getString("股票名称");
-//				tmpgnset.put(tmpstockcode,tmpstockname);
-//				rsfg.next();
-//			}
-//			
-//		}catch(java.lang.NullPointerException e){ 
-//			e.printStackTrace();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		} finally {
-//			 try {
-//				rsfg.close ();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//			 rsfg = null;
-//		}
-//		
-//		return tmpgnset;
-//	}
 	/*
 	 * 
 	 */
@@ -2698,14 +2220,14 @@ public class BanKuaiDbOperation
 //			header = true;
 //		else header = false;
 		
-		HashMap<String, BanKuai> allsysbk = this.getTDXBanKuaiList (cys.toLowerCase());
-		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
+		HashSet<String> allsysbk = this.getTDXBanKuaiSet (cys.toLowerCase());
+		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk );
 		int found =0 ; int notfound = 0;
 		try {
 			Files.append("系统共有"+ allbkcode.size() + "个板块！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		
 			for(String tmpbkcode:allbkcode) {
-				String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
+//				String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
 				String bkfilename = (filenamerule.replaceAll("YY",cys.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
 				
 				File tmpbkfile = new File(exportath + "/" + bkfilename);
@@ -2732,14 +2254,12 @@ public class BanKuaiDbOperation
 	 */
 	public void refreshTDXSystemBanKuaiLeiXing () 
 	{
-		HashMap<String, BanKuai> curallbk = this.getTDXBanKuaiList("all");
+		 ArrayList<BanKuai> curallbk = this.getTDXBanKuaiList("all");
 		
 
-		for (Map.Entry<String, BanKuai> entry : curallbk.entrySet()) {
+		for ( BanKuai bankuai : curallbk) {
 
-		    String bkcode = entry.getKey().trim();
-		    logger.debug(bkcode);
-		    BanKuai bankuai = entry.getValue();
+		    String bkcode = bankuai.getMyOwnCode();
 		    String bkcys = bankuai.getSuoShuJiaoYiSuo();
 		    
 		    String cjltablename;
@@ -2811,10 +2331,9 @@ public class BanKuaiDbOperation
 		else
 			cjltablename = "通达信交易所指数每日交易信息";
 		
-		HashMap<String, BanKuai> allsysbk = this.getTDXBanKuaiList (cys.toLowerCase());
-		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
+		 HashSet<String> allbkcode = this.getTDXBanKuaiSet (cys.toLowerCase());;
 		for(String tmpbkcode:allbkcode) {
-			String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
+//			String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
 			String bkfilename = (filenamerule.replaceAll("YY",cys.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
 			File tmpbkfile = new File(exportath + "/" + bkfilename);
 			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
@@ -2832,14 +2351,18 @@ public class BanKuaiDbOperation
    			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	while(rs.next()) {
 //   			    		logger.debug(rs.getMetaData().getColumnCount());
-   			    		java.util.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME
-	   			    	Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
-	   			    	ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()) .toLocalDate();
+   			    		java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME
+   			    		try {
+   			    			ldlastestdbrecordsdate = lastestdbrecordsdate.toLocalDate();
+   			    		} catch (java.lang.NullPointerException e) {
+   			    			logger.debug(tmpbkcode + "没有记录");
+   			    		}
+//	   			    	Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
+//	   			    	ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()) .toLocalDate();
 //   			    		ldlastestdbrecordsdate = 	(lastestdbrecordsdate.toInstant()).atZone(ZoneId.systemDefault()).toLocalDate();
    			    	}
    			    } catch(java.lang.NullPointerException e) { 
-//   			    	e.printStackTrace();
-   			    		logger.debug("Exception: (BanKuaiDbOperation.java:2711)");
+   			    	e.printStackTrace();
    			    } catch (SQLException e) {
    			    	e.printStackTrace();
    			    }catch(Exception e){
@@ -2859,114 +2382,9 @@ public class BanKuaiDbOperation
 		
 		return tmprecordfile;
 	}
-//	/*
-//	 * 同步通达信交易所深圳的每日成交量信息
-//	 */
-//	public File preCheckTDXBanKuaiVolOfShenZhenAmoToDb ()
-//	{
-//		File tmpreportfolder = Files.createTempDir();
-//		File tmprecordfile = new File(tmpreportfolder + "同步通达信交易所深圳板块成交量预检查.tmp");
-//		
-//		List<String> volamooutput = getTDXVolFilesRule ();
-//		String exportath = volamooutput.get(0);
-//		String filenamerule = volamooutput.get(1);
-////		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
-////		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
-////		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
-////		boolean header;
-////		if(volamooutput.get(4).endsWith("1"))
-////			header = true;
-////		else header = false;
-//		
-//		HashMap<String, BanKuai> allsysbk = this.getTDXBanKuaiList ("sz");
-//		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
-//		int found =0 ; int notfound = 0;
-//		try {
-//			Files.append("数据库共有"+ allbkcode.size() + "个通达信交易所指数！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//		
-//			for(String tmpbkcode:allbkcode) {
-//				String bkfilename = (filenamerule.replaceAll("YY","SZ")).replaceAll("XXXXXX", tmpbkcode);
-//				File tmpbkfile = new File(exportath + "/" + bkfilename);
-//					
-//					if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {
-//						Files.append(tmpbkcode + "未找到记录文件！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//						notfound ++;
-//					}
-//					 else {
-//						 //Files.append(tmpbkcode + "有记录文件！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//						 found ++;
-//					 }
-//			}
-//			
-//			Files.append(found + "个通达信交易所深圳板块有记录文件！"+ notfound + "个通达信交易所指数没有记录文件！" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
-//		
-//		return tmprecordfile;
-//	}
-//	/*
-//	 * 同步通达信指数每日成交量信息，信息存在“通达信交易所指数每日交易信息”，过去是为指数保存的表，现在改成存深圳的成交量
-//	 */
-//	public File refreshTDXZhiShuOfShenZhenVolAmoToDb ()
-//	{
-//		File tmpreportfolder = Files.createTempDir();
-//		File tmprecordfile = new File(tmpreportfolder + "同步通达信深圳板块成交量报告.tmp");
-//		
-//		List<String> volamooutput = getTDXVolFilesRule ();
-//		String exportath = volamooutput.get(0);
-//		String filenamerule = volamooutput.get(1);
-//		String dateRule = volamooutput.get(2);
-//			
-//		HashMap<String, BanKuai> allsysbk = this.getTDXBanKuaiList ("sz");
-//		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk.keySet() );
-//		for(String tmpbkcode:allbkcode) {
-//			String bkfilename = (filenamerule.replaceAll("YY","SZ")).replaceAll("XXXXXX", tmpbkcode); 
-//			File tmpbkfile = new File(exportath + "/" + bkfilename);
-//			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
-//			    continue; 
-//			} 
-//
-//				CachedRowSetImpl  rs = null;
-//				LocalDate ldlastestdbrecordsdate = null;
-//				try { 				
-//					String sqlquerystat1 = "SELECT MAX(交易日期) 	MOST_RECENT_TIME"
-//							+ " FROM 通达信交易所指数每日交易信息  WHERE  代码 = " 
-//   							+ "'"  + tmpbkcode + "'" 
-//   							;
-//					logger.debug(sqlquerystat1);
-//   			    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat1);
-//   			    	//rs.first();
-//   			    	while(rs.next()) {
-//   			    		java.util.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME");
-//   			    		Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
-//   			    		ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
-//   			    		logger.debug(lastestdbrecordsdate);
-//   			    	}
-//   			    	
-//   			    }catch(java.lang.NullPointerException e){ 
-////   			    	e.printStackTrace();
-//   			    	logger.debug(e.getMessage());
-//   			    } catch (SQLException e) {
-//   			    	e.printStackTrace();
-//   			    }catch(Exception e){
-//   			    	e.printStackTrace();
-//   			    } finally {
-//   			    	if(rs != null)
-//						try {
-//							rs.close();
-//							rs = null;
-//						} catch (SQLException e) {
-//							e.printStackTrace();
-//						}
-//   			    }
-//				
-//				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,ldlastestdbrecordsdate,"通达信交易所指数每日交易信息",dateRule,tmprecordfile);
-//		}
-//		
-//		return tmprecordfile;
-//	}
-
+	/*
+	 * 
+	 */
 	private List<String> getTDXVolFilesRule ()
 	{
 		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
@@ -3262,326 +2680,6 @@ public class BanKuaiDbOperation
 		return tableunderupdated;
 	}
 	/*
-	 * 
-	 */
-//	private String getTdxBanKuaiNameByCode(String tmpbkcode) 
-//	{
-//		String sqlquerystatfrombk     = "SELECT 板块名称  FROM 通达信板块列表             WHERE 板块ID = " + tmpbkcode;
-//		String sqlquerystatfromzhishu = "SELECT 板块名称  FROM 通达信交易所指数列表   WHERE 板块ID = " + tmpbkcode;
-//		
-//		logger.debug(sqlquerystatfrombk);
-//		String bkname = null ;
-//		CachedRowSetImpl rs = null;
-//	    try {  
-//	    	rs = connectdb.sqlQueryStatExecute(sqlquerystatfrombk);
-//	    	
-//	        rs.last();  
-//	        int rows = rs.getRow(); 
-//	        if(rows  == 0) {
-//	        	rs = connectdb.sqlQueryStatExecute(sqlquerystatfromzhishu);
-//	        	rs.last();
-//	        	rows = rs.getRow();
-//	        }
-//	        rs.first();
-//	        if(rows>0)
-//	        	bkname = rs.getString(1);
-//	        
-//	    }catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    } finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    } 
-//	
-//		
-//		return bkname;
-//	}
-//	/*
-//	 * 增加板块新闻
-//	 */
-//	public boolean addBanKuaiNews (String bankuaiid,ChanYeLianNews newdetail)
-//	{
-//		int autoIncKeyFromApi = newdetail.getNewsId();
-//		String title = newdetail.getNewsTitle();
-//		LocalDate newdate = newdetail.getGenerateDate();
-//		String slackurl = newdetail.getNewsSlackUrl();
-//		String keywords = newdetail.getKeyWords ();
-//		
-//		if( autoIncKeyFromApi == -1) { //说明是新的NEWS sysconfig.formatDate( actionday )
-//			//先update商业新闻表
-//			String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,SLACK链接,录入日期,关联板块) values ("
-//					+ "'" + title + "'" + ","
-//					+ "'" + keywords + "'" + ","
-//					+ "'" + slackurl  + "'" + ","
-//					+ "'" +  newdate + "'" + ","
-//					+ "'" +  bankuaiid + "|" + "'"
-//					+ ")"
-//					;
-//			logger.debug(sqlinsertstat);
-//			 autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
-//		} else {
-//			//如果板块id是不是已经在新闻的板块list里面了，已经加过了。
-//			String  updatestat = "UPDATE 商业新闻 "
-//								  + " SET 关联板块 = "
-//								  + " CASE WHEN 关联板块 like '%" + bankuaiid + "%' THEN"
-//								  + " CONCAT(关联板块,  ' ') " 
-//								  + " ELSE " 
-//								  + " CONCAT(关联板块,  '"+ bankuaiid + "|' )"
-//								  +	" END" 
-//								  + " WHERE ID=" +  autoIncKeyFromApi
-//								  ;
-//			logger.debug(updatestat);
-//			connectdb.sqlUpdateStatExecute (updatestat);
-//		}
-//		
-//		
-//		//再把新闻id update到板块表或者指数表
-////		boolean inzhishutable = false;
-////		String checkstat = "SELECT COUNT(1) FROM 通达信交易所指数列表 WHERE 板块ID = '" + bankuaiid + "'";
-////		CachedRowSetImpl rs = null; 
-////	    try {  
-////	    	 rs = connectdb.sqlQueryStatExecute(checkstat);
-////	    	 while(rs.next()) {
-////	    		 int exists = rs.getInt("COUNT(1)");
-////		    	 if(exists == 1)
-////		    		 inzhishutable = true;
-////	    	 }
-////	    	 
-////	    }catch(java.lang.NullPointerException e){ 
-////	    	e.printStackTrace();
-////	    } catch (SQLException e) {
-////	    	e.printStackTrace();
-////	    }catch(Exception e){
-////	    	e.printStackTrace();
-////	    }  finally {
-////	    	if(rs != null)
-////				try {
-////					rs.close();
-////					rs = null;
-////				} catch (SQLException e) {
-////					e.printStackTrace();
-////				}
-////	    }
-////	    
-////	    String updatestat;
-////	    if(inzhishutable) 
-////	    	updatestat = "UPDATE 通达信交易所指数列表"  
-////	    				+ "  SET 相关新闻 ="
-////	    				+ " CASE WHEN 相关新闻 IS NULL THEN "
-////	    				+  "'" + autoIncKeyFromApi + "|'"
-////	    				+ "  ELSE "
-////	    				+ "  CONCAT(相关新闻," + "'" + autoIncKeyFromApi + "|')" 
-////	    				+ " END "
-////	    				+ " WHERE 板块ID='" +  bankuaiid.trim() + "'"
-////	    				;
-////	     else
-////	    	updatestat = "UPDATE 通达信板块列表"  
-////	    				+ "  SET 相关新闻 ="
-////	    				+ " CASE WHEN 相关新闻 IS NULL THEN "
-////	    				+  "'" + autoIncKeyFromApi + "|'"
-////	    				+ "  ELSE "
-////	    				+ "  CONCAT(相关新闻," + "'" + autoIncKeyFromApi + "|')" 
-////	    				+ " END "
-////	    				+ " WHERE 板块ID='" +  bankuaiid.trim() + "'"
-////	    				;
-////	    
-////		logger.debug(updatestat);
-////		connectdb.sqlUpdateStatExecute (updatestat);
-//		
-//		return true;
-//	}
-//
-//	public void deleteBanKuaiNews(String myowncode, ChanYeLianNews aseltnews)
-//	{
-//		int newsid = aseltnews.getNewsId();
-//		
-//		if("ALL".equals(myowncode.toUpperCase())) { //删除该新闻
-//			String deletestat = "DELETE  FROM 商业新闻 WHERE ID=" + newsid;
-//			
-//			logger.debug(deletestat);
-//			connectdb.sqlUpdateStatExecute (deletestat);
-//			
-////			updatestat = "UPDATE 通达信板块列表  SET 相关新闻 = REPLACE (相关新闻, '" + String.valueOf(newsid).trim() + "|', ' ' ) WHERE 板块ID='" + myowncode + "'";
-////			logger.debug(updatestat);
-////			connectdb.sqlUpdateStatExecute (updatestat);
-////			
-////			updatestat = "UPDATE 通达信交易所指数列表  SET 相关新闻 = REPLACE (相关新闻, '" + String.valueOf(newsid).trim() + "|', ' ' ) WHERE 板块ID='" + myowncode + "'";
-////			logger.debug(updatestat);
-////			connectdb.sqlUpdateStatExecute (updatestat);
-//		} else { //删除在所有板块里的新闻
-//			String updatestat = "UPDATE 商业新闻  SET 关联板块 = REPLACE (关联板块, '" + myowncode.trim() + "|', ' ' ) WHERE ID=" + newsid;
-//			logger.debug(updatestat);
-//			connectdb.sqlDeleteStatExecute(updatestat);
-//			
-////			String  updatestat = "UPDATE 通达信板块列表 "
-////					  + " SET 相关新闻 = "
-////					  + " CASE WHEN 关联板块 like '%" + String.valueOf(newsid)+"|"  + "%' THEN"
-////					  + " CONCAT(关联板块,  ' ') " 
-////					  + " ELSE " 
-////					  + " CONCAT(关联板块,  '"+ bankuaiid + "|' )"
-////					  +	" END" 
-////					  + " WHERE ID=" +  autoIncKeyFromApi
-////					  ;
-////			logger.debug(updatestat);
-////			connectdb.sqlUpdateStatExecute (updatestat);
-//			
-//		}
-//		
-//		
-//		
-//	}
-	
-//	public ArrayList<ChanYeLianNews> getBanKuaiRelatedNews(String bankuaiid) 
-//	{
-//		ArrayList<ChanYeLianNews> newslist = new ArrayList<ChanYeLianNews>();
-//		if("ALL".equals(bankuaiid.toUpperCase()) ) {
-//			String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 40 DAY ORDER BY  录入日期 DESC"
-//									;
-//			CachedRowSetImpl rs = null; 
-//		    try {  
-//		    	logger.debug(sqlquerystat);
-//		    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//		    	 
-//		    	 while(rs.next()) {
-//		    		 ChanYeLianNews cylnew = new ChanYeLianNews ();
-//		    		 int newsid = rs.getInt("id");
-//		    		 java.util.Date selectednew = rs.getDate("录入日期");
-//		    		 String newtitle = rs.getString("新闻标题");
-//		    		 String keywords = rs.getString("关键词");
-//		    		 String slack = rs.getString("SLACK链接");
-//		    		 String relatedbk = rs.getString("关联板块");
-//
-//		    		 cylnew.setNewsId(newsid);
-//		    		 cylnew.setGenerateDate (Instant.ofEpochMilli(selectednew.getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
-//		    		 cylnew.setNewsTitle(newtitle);
-//		    		 cylnew.setNewsSlackUrl(slack);
-//		    		 cylnew.setKeyWords (keywords);
-//		    		 cylnew.setNewsRelatedBanKuai(relatedbk);
-//		    		 
-//		    		 newslist.add(cylnew);
-//		    	 }
-//		    		  
-//		    }catch(java.lang.NullPointerException e){ 
-//		    	e.printStackTrace();
-//		    } catch (SQLException e) {
-//		    	e.printStackTrace();
-//		    }catch(Exception e){
-//		    	e.printStackTrace();
-//		    }  finally {
-//		    	if(rs != null)
-//					try {
-//						rs.close();
-//						rs = null;
-//					} catch (SQLException e) {
-//						e.printStackTrace();
-//					}
-//		    }
-//			
-//			return newslist;
-//		}
-//		
-//		//单个板块/个股新闻
-//		String sqlquerystat = "SELECT * FROM 商业新闻   WHERE 关联板块 like '%" + bankuaiid.trim()+"|"  + "%' ORDER BY  录入日期 DESC";
-//		CachedRowSetImpl rs = null;
-//		try {
-//			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//   		 	while(rs.next()) {
-//	   		 	ChanYeLianNews cylnew = new ChanYeLianNews ();
-//	   			 int newsid = rs.getInt("id");
-//	   			 java.util.Date selectednew = rs.getDate("录入日期");
-//		    	 String newtitle = rs.getString("新闻标题");
-//		    	 String keywords = rs.getString("关键词");
-//		    	 String slack = rs.getString("SLACK链接");
-//		    		 
-//		    	 cylnew.setNewsId(newsid);
-//		    	 cylnew.setGenerateDate ( Instant.ofEpochMilli(selectednew.getTime()).atZone(ZoneId.systemDefault()).toLocalDate() );
-//		    	 cylnew.setNewsTitle(newtitle);
-//		    	 cylnew.setNewsSlackUrl(slack);
-//		    	 cylnew.setKeyWords (keywords);
-//		    		 
-//		    	 newslist.add(cylnew);
-//   		 	}
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    }
-//		return newslist;
-//		
-////		String sqlquerystat = "SELECT 相关新闻 FROM 通达信板块列表   WHERE 板块ID =  " + bankuaiid
-////							   + " UNION "
-////							   + "SELECT 相关新闻  FROM 通达信交易所指数列表   WHERE 板块ID =  " + bankuaiid
-////							   ;
-////		
-////		CachedRowSetImpl rs = null; 
-////	    try {
-////	    	List<String> tmpbknewslist = null;
-////	    	logger.debug(sqlquerystat);
-////	    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-////	    	 while(rs.next()) {
-////	    		 String tmpnewids = rs.getString("相关新闻");
-////	    		 tmpbknewslist = Splitter.on("|").omitEmptyStrings().splitToList(tmpnewids); //
-////	    	 }
-////	    	 
-////	    	 for(String newid:tmpbknewslist) {
-////	    		 ChanYeLianNews cylnew = new ChanYeLianNews ();
-////	    		 String sqlquerystat2 = "SELECT * FROM 商业新闻   WHERE ID = '" + newid.trim().substring(2, newid.trim().length()) + "'"; //个股新闻对应的ID是ID+ID号，因为后面替换时候防止出现ID号|重复的情况
-////	    		 rs = connectdb.sqlQueryStatExecute(sqlquerystat2);
-////	    		 while(rs.next()) {
-////	    			 int newsid = rs.getInt("id");
-////	    			 Date selectednew = rs.getDate("录入日期");
-////		    		 String newtitle = rs.getString("新闻标题");
-////		    		 String keywords = rs.getString("关键词");
-////		    		 String slack = rs.getString("SLACK链接");
-////		    		 
-////		    		 cylnew.setNewsId(newsid);
-////		    		 cylnew.setGenerateDate (selectednew);
-////		    		 cylnew.setNewsTitle(newtitle);
-////		    		 cylnew.setNewsSlackUrl(slack);
-////		    		 cylnew.setKeyWords (keywords);
-////		    		 
-////		    		 newslist.add(cylnew);
-////	    		 }
-////	    		 
-////	    	 }
-////	    }catch(java.lang.NullPointerException e){ 
-////	    	e.printStackTrace();
-////	    } catch (SQLException e) {
-////	    	e.printStackTrace();
-////	    }catch(Exception e){
-////	    	e.printStackTrace();
-////	    }  finally {
-////	    	if(rs != null)
-////				try {
-////					rs.close();
-////					rs = null;
-////				} catch (SQLException e) {
-////					e.printStackTrace();
-////				}
-////	    }
-////		
-////		return newslist;
-//	}
-	/*
 	 * 判断板块是什么类型的板块，概念/风格/指数/行业/地域
 	 */
 	private HashMap<String,String> getActionRelatedTables (BanKuai bankuai,String stockcode)
@@ -3876,257 +2974,9 @@ public class BanKuaiDbOperation
 		return currentbk;
 	}
 	/*
-	 * 找出某个时间点 行业/概念/风格/指数 通达信某个板块的所有个股及权重和成交额，这个函数一般用于找一周内的情况
-	 */
-	public HashMap<String, Stock> getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang(BanKuai bankuai, LocalDate selecteddatestart , LocalDate selecteddateend)
-	{
-//		if(currentbkcode.equals("000959"))
-//			logger.debug("000959 arrived");
-		
-		String currentbkcode = bankuai.getMyOwnCode();
-			HashMap<String, String> actiontables = this.getActionRelatedTables(bankuai,null);
-//			logger.debug(actiontables);
-			String bktypetable = actiontables.get("股票板块对应表");
-			String bkorzsvoltable = actiontables.get("板块每日交易量表");
-			String bknametable = actiontables.get("板块指数名称表");
-			if(bktypetable == null) {
-				return null;
-			}
-			
-			String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart);
-			String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend);
-
-			HashMap<String,Stock> gegumap = new HashMap<String,Stock> ();
-			
-			CachedRowSetImpl rs1 = null;
-			try { 
-				String sqlquerystat1 = "";
-				if(bktypetable.trim().equals("股票通达信基本面信息对应表") ) { //找地域板块
-					String dycode = actiontables.get("地域代码");
-					 sqlquerystat1 = "SELECT A.`板块代码`, A.`板块名称`,A.category_amount, B.`股票代码`, \"\" AS 股票名称, B.stock_amount,   10 AS 股票权重,\r\n" + 
-					 		"       B.stock_amount / A.category_amount ratio, '" + formatedenddate +"' as lastdayofweek  \r\n" + 
-					 		"from \r\n" + 
-					 		"( SELECT 股票通达信基本面信息对应表.`股票代码GPDM` AS 股票代码, 股票通达信基本面信息对应表.`地域DY`, sum(通达信上交所股票每日交易信息.`成交额`)  stock_amount\r\n" + 
-					 		"from 股票通达信基本面信息对应表 , 通达信上交所股票每日交易信息\r\n" + 
-					 		"where 股票通达信基本面信息对应表.`股票代码GPDM`  = 通达信上交所股票每日交易信息.`代码`\r\n" + 
-					 		"and 通达信上交所股票每日交易信息.`交易日期` between ' " + formatedstartdate + "' and '" + formatedenddate + "'\r\n" + 
-					 		"and 股票通达信基本面信息对应表.`地域DY` = '"+ dycode + "'\r\n" + 
-					 		"group by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`\r\n" + 
-					 		"order by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY` \r\n" + 
-					 		") B ,\r\n" + 
-					 		"( select 通达信板块每日交易信息.`代码` AS 板块代码  , 通达信板块列表.`板块名称`, 通达信板块列表.`对应TDXSWID` AS `地域DY`,  sum(通达信板块每日交易信息.`成交额`) category_amount\r\n" + 
-					 		"          from 通达信板块每日交易信息, 通达信板块列表\r\n" + 
-					 		"         where 通达信板块每日交易信息.`代码` =  通达信板块列表.`板块ID`\r\n" + 
-					 		"			  and 通达信板块每日交易信息.`交易日期` between ' " + formatedstartdate + "' and '" + formatedenddate + "'\r\n" + 
-					 		"           and 通达信板块每日交易信息.`代码` =  '" + currentbkcode + "'\r\n" + 
-					 		"         group by 通达信板块每日交易信息.`代码`\r\n" + 
-					 		"         order by 通达信板块每日交易信息.`代码`\r\n" + 
-					 		") A \r\n" + 
-					 		"WHERE B.`地域DY` = A.`地域DY`"
-					 		; 
-					 		
-				 } else { //概念风格行业指数板块
-					 //from WQW
-					 sqlquerystat1 =" select A.`板块代码`, B.`板块名称`,B.category_amount, A.`股票代码`,  A.`股票名称`,A.stock_amount,   A.`股票权重`,\r\n" + 
-						 		"       \r\n" + 
-						 		"       A.stock_amount / B.category_amount ratio, '" + formatedenddate + "' as lastdayofweek" + 
-						 		"  from (select  X.`股票代码`,a股.`股票名称`, X.`板块代码` ,X.stock_amount,X.`股票权重`\r\n" + 
-						 		"FROM \r\n" + 
-						 		"       (select " +  bktypetable +  ".`股票代码` , " +  bktypetable +  ".`板块代码` , sum(通达信上交所股票每日交易信息.`成交额`) stock_amount," +  bktypetable +  ".`股票权重`\r\n" + 
-						 		"          from " +  bktypetable +  ", 通达信上交所股票每日交易信息\r\n" + 
-						 		"         where " +  bktypetable +  ".`股票代码`   = 通达信上交所股票每日交易信息.`代码`\r\n" + 
-						 		"           and Date(通达信上交所股票每日交易信息.`交易日期`) >= Date(" +  bktypetable +  ".`加入时间`)\r\n" + 
-						 		"           and 通达信上交所股票每日交易信息.`交易日期` <  ifnull(" +  bktypetable +  ".`移除时间`, '2099-12-31')\r\n" + 
-						 		"           and (通达信上交所股票每日交易信息.`交易日期` between '" +  formatedstartdate +  "' and '" +  formatedenddate +  "')\r\n" + 
-						 		"           and " +  bktypetable +  ".`板块代码` =  '" +  currentbkcode +  "'\r\n" + 
-						 		"         \r\n" + 
-						 		"         group by " +  bktypetable +  ".`股票代码`, " +  bktypetable +  ".`板块代码`\r\n" + 
-						 		"         order by " +  bktypetable +  ".`股票代码`, " +  bktypetable +  ".`板块代码` ) X,\r\n" + 
-						 		"         a股\r\n" + 
-						 		"where  X.`股票代码` = a股.`股票代码`\r\n" + 
-						 		"order by X.`股票代码`,a股.`股票名称`) A,\r\n" + 
-						 		"         \r\n" + 
-						 		"       (select " + bkorzsvoltable + ".`代码` , " + bknametable + ".`板块名称`,   sum(" + bkorzsvoltable + ".`成交额`) category_amount\r\n" + 
-						 		"          from " + bkorzsvoltable + ", " + bknametable + "\r\n" + 
-						 		"         where " + bkorzsvoltable + ".`代码` =  " + bknametable + ".`板块ID`\r\n" + 
-						 		"			  and " + bkorzsvoltable + ".`交易日期` >= '" +  formatedstartdate +  "'\r\n" + 
-						 		"           and " + bkorzsvoltable + ".`交易日期` <= '" +  formatedenddate +  "'\r\n" + 
-						 		"           and " + bkorzsvoltable + ".`代码` =  '" +  currentbkcode +  "'\r\n" + 
-						 		"         group by " + bkorzsvoltable + ".`代码`\r\n" + 
-						 		"         order by " + bkorzsvoltable + ".`代码`) B\r\n" + 
-						 		" where A.`板块代码`   = B.`代码`\r\n" + 
-						 		"\r\n" + 
-						 		"  order by A.`板块代码`,  A.`股票代码`;"
-								;
-					 
-				 }
-				 logger.debug(sqlquerystat1);
-				 rs1 = connectdb.sqlQueryStatExecute(sqlquerystat1);
-
-				 while(rs1.next()) {  
-					String tmpstockcode = rs1.getString("股票代码");
-					String tmpstockname;
-					try {
-						tmpstockname = rs1.getString("股票名称"); //"股票名称"
-					} catch (java.lang.NullPointerException e ) {
-						tmpstockname = "";
-					}
-					
-					Stock tmpstock = new Stock (tmpstockcode,tmpstockname);
-					
-					Integer weight = rs1.getInt("股票权重");
-					HashMap<String,Integer>  tmpweight = new HashMap<String,Integer> () ;
-					tmpweight.put(currentbkcode, weight);
-					tmpstock.setGeGuSuoShuBanKuaiWeight(tmpweight  );
-					
-//					ChenJiaoZhanBiInGivenPeriod cjlrecords = new ChenJiaoZhanBiInGivenPeriod ();
-//					double stcokcje = rs1.getDouble("stock_amount");
-//					double bkcje = rs1.getDouble("category_amount");
-//					String lastdayofweek1 = rs1.getString("lastdayofweek");
-//					cjlrecords.setDayofEndofWeek(CommonUtility.formateStringToDate(lastdayofweek1) );
-//					cjlrecords.setMyOwnChengJiaoEr(stcokcje);
-//					cjlrecords.setUpLevelChengJiaoEr(bkcje);
-//					ArrayList<ChenJiaoZhanBiInGivenPeriod > tmpcjelist = new ArrayList<ChenJiaoZhanBiInGivenPeriod > ();
-//					tmpcjelist.add(cjlrecords);
-//					tmpstock.setChenJiaoErZhanBiInGivenPeriod (tmpcjelist);
-					
-
-					gegumap.put(tmpstockcode, tmpstock);
-				}
-					
-				}catch(java.lang.NullPointerException e){ 
-					e.printStackTrace();
-//					logger.debug( "数据库连接为NULL!");
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}catch(Exception e){
-					e.printStackTrace();
-				} finally {
-					try {
-						if(rs1 != null)
-							rs1.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-					rs1 = null;
-				}
-				
-			 CachedRowSetImpl rs2 = null;
-			 try {
-					String sqlquerystat2 = "";
-					if(bktypetable.trim().equals("股票通达信基本面信息对应表") ) { 
-						String dycode = actiontables.get("地域代码");
-						sqlquerystat2 = "SELECT A.`板块代码`, A.`板块名称`,A.category_amount, B.`股票代码`, \"\" AS 股票名称, B.stock_amount,   10 AS 股票权重,\r\n" + 
-						 		"       B.stock_amount / A.category_amount ratio, '" + formatedenddate +"' as lastdayofweek  \r\n" + 
-						 		"from \r\n" + 
-						 		"( SELECT 股票通达信基本面信息对应表.`股票代码GPDM` AS 股票代码, 股票通达信基本面信息对应表.`地域DY`, sum(通达信深交所股票每日交易信息.`成交额`)  stock_amount\r\n" + 
-						 		"from 股票通达信基本面信息对应表 , 通达信深交所股票每日交易信息\r\n" + 
-						 		"where 股票通达信基本面信息对应表.`股票代码GPDM`  = 通达信深交所股票每日交易信息.`代码`\r\n" + 
-						 		"and 通达信深交所股票每日交易信息.`交易日期` between ' " + formatedstartdate + "' and '" + formatedenddate + "'\r\n" + 
-						 		"and 股票通达信基本面信息对应表.`地域DY` = '"+ dycode + "'\r\n" + 
-						 		"group by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY`\r\n" + 
-						 		"order by 股票通达信基本面信息对应表.`股票代码GPDM`, 股票通达信基本面信息对应表.`地域DY` \r\n" + 
-						 		") B ,\r\n" + 
-						 		"( select 通达信板块每日交易信息.`代码` AS 板块代码  , 通达信板块列表.`板块名称`, 通达信板块列表.`对应TDXSWID` AS `地域DY`,  sum(通达信板块每日交易信息.`成交额`) category_amount\r\n" + 
-						 		"          from 通达信板块每日交易信息, 通达信板块列表\r\n" + 
-						 		"         where 通达信板块每日交易信息.`代码` =  通达信板块列表.`板块ID`\r\n" + 
-						 		"			  and 通达信板块每日交易信息.`交易日期` between ' " + formatedstartdate + "' and '" + formatedenddate + "'\r\n" + 
-						 		"           and 通达信板块每日交易信息.`代码` =  '" + currentbkcode + "'\r\n" + 
-						 		"         group by 通达信板块每日交易信息.`代码`\r\n" + 
-						 		"         order by 通达信板块每日交易信息.`代码`\r\n" + 
-						 		") A \r\n" + 
-						 		"WHERE B.`地域DY` = A.`地域DY`"
-						 		;  
-//									;
-					 } else { //概念风格行业指数板块
-						 //from WQW
-						 sqlquerystat2 =" select A.`板块代码`, B.`板块名称`,B.category_amount, A.`股票代码`,  A.`股票名称`,A.stock_amount,   A.`股票权重`,\r\n" + 
-							 		"       \r\n" + 
-							 		"       A.stock_amount / B.category_amount ratio, '" + formatedenddate + "' as lastdayofweek" + 
-							 		"  from (select  X.`股票代码`,a股.`股票名称`, X.`板块代码` ,X.stock_amount,X.`股票权重`\r\n" + 
-							 		"FROM \r\n" + 
-							 		"       (select " +  bktypetable +  ".`股票代码` , " +  bktypetable +  ".`板块代码` , sum(通达信深交所股票每日交易信息.`成交额`) stock_amount," +  bktypetable +  ".`股票权重`\r\n" + 
-							 		"          from " +  bktypetable +  ", 通达信深交所股票每日交易信息\r\n" + 
-							 		"         where " +  bktypetable +  ".`股票代码`   = 通达信深交所股票每日交易信息.`代码`\r\n" + 
-							 		"           and Date(通达信深交所股票每日交易信息.`交易日期`) >= Date(" +  bktypetable +  ".`加入时间`)\r\n" + 
-							 		"           and 通达信深交所股票每日交易信息.`交易日期` <  ifnull(" +  bktypetable +  ".`移除时间`, '2099-12-31')\r\n" + 
-							 		"           and (通达信深交所股票每日交易信息.`交易日期` between '" +  formatedstartdate +  "' and '" +  formatedenddate +  "')\r\n" + 
-							 		"           and " +  bktypetable +  ".`板块代码` =  '" +  currentbkcode +  "'\r\n" + 
-							 		"         \r\n" + 
-							 		"         group by " +  bktypetable +  ".`股票代码`, " +  bktypetable +  ".`板块代码`\r\n" + 
-							 		"         order by " +  bktypetable +  ".`股票代码`, " +  bktypetable +  ".`板块代码` ) X,\r\n" + 
-							 		"         a股\r\n" + 
-							 		"where  X.`股票代码` = a股.`股票代码`\r\n" + 
-							 		"order by X.`股票代码`,a股.`股票名称`) A,\r\n" + 
-							 		"         \r\n" + 
-							 		"       (select " + bkorzsvoltable + ".`代码` , " + bknametable + ".`板块名称`,   sum(" + bkorzsvoltable + ".`成交额`) category_amount\r\n" + 
-							 		"          from " + bkorzsvoltable + ", " + bknametable + "\r\n" + 
-							 		"         where " + bkorzsvoltable + ".`代码` =  " + bknametable + ".`板块ID`\r\n" + 
-							 		"			  and " + bkorzsvoltable + ".`交易日期` >= '" +  formatedstartdate +  "'\r\n" + 
-							 		"           and " + bkorzsvoltable + ".`交易日期` <= '" +  formatedenddate +  "'\r\n" + 
-							 		"           and " + bkorzsvoltable + ".`代码` =  '" +  currentbkcode +  "'\r\n" + 
-							 		"         group by " + bkorzsvoltable + ".`代码`\r\n" + 
-							 		"         order by " + bkorzsvoltable + ".`代码`) B\r\n" + 
-							 		" where A.`板块代码`   = B.`代码`\r\n" + 
-							 		"\r\n" + 
-							 		"  order by A.`板块代码`,  A.`股票代码`;"
-									;
-					 }
-					 logger.debug(sqlquerystat2);
-					 rs2 = connectdb.sqlQueryStatExecute(sqlquerystat2);
-					 while(rs2.next()) {  
-						String tmpstockcode = rs2.getString("股票代码");
-						String tmpstockname;
-						try {
-							tmpstockname = rs2.getString("股票名称"); //"股票名称"
-						} catch (java.lang.NullPointerException e ) {
-							tmpstockname = "";
-						}
-						Stock tmpstock = new Stock (tmpstockcode,tmpstockname);
-						
-						Integer weight = rs2.getInt("股票权重");
-						HashMap<String,Integer>  tmpweight = new HashMap<String,Integer> () ;
-						tmpweight.put(currentbkcode, weight);
-						tmpstock.setGeGuSuoShuBanKuaiWeight(tmpweight  );
-						
-//						ChenJiaoZhanBiInGivenPeriod cjlrecords = new ChenJiaoZhanBiInGivenPeriod ();
-//						double stcokcje = rs2.getDouble("stock_amount");
-//						double bkcje = rs2.getDouble("category_amount");
-//						String lastdayofweek1 = rs2.getString("lastdayofweek");
-//						cjlrecords.setDayofEndofWeek(CommonUtility.formateStringToDate(lastdayofweek1) );
-//						cjlrecords.setMyOwnChengJiaoEr(stcokcje);
-//						cjlrecords.setUpLevelChengJiaoEr(bkcje);
-//						ArrayList<ChenJiaoZhanBiInGivenPeriod > tmpcjelist = new ArrayList<ChenJiaoZhanBiInGivenPeriod > ();
-//						tmpcjelist.add(cjlrecords);
-//						tmpstock.setChenJiaoErZhanBiInGivenPeriod (tmpcjelist);
-						
-	
-						gegumap.put(tmpstockcode, tmpstock);
-					}
-						
-					}catch(java.lang.NullPointerException e){ 
-						e.printStackTrace();
-	//					logger.debug( "数据库连接为NULL!");
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}catch(Exception e){
-						e.printStackTrace();
-					} finally {
-						try {
-							if(rs2 != null)
-								rs2.close();
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-						rs2 = null;
-					}
-
-			 return gegumap;
-	}
-	/*
 	 * 板块设定时间跨度内和大盘相比的按周期占比。
 	 */
-	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,LocalDate addposition, String period)
+	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
 		if(period.equals(StockGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
@@ -4182,33 +3032,32 @@ public class BanKuaiDbOperation
 //		logger.debug(sqlquerystat);
 		logger.debug("为板块" + bankuai.getMyOwnCode() + bankuai.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
 		
-//		String sqlquerystatfx = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
-//				"WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
-//				"AND 操作记录重点关注.`日期` between '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"
-//				;
+		String sqlquerystatfx = "SELECT 操作记录重点关注.`日期`, COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
+				" WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
+				" AND 操作记录重点关注.`日期` between '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
+				" GROUP BY YEAR(操作记录重点关注.`日期`), WEEK(操作记录重点关注.`日期`) "
+				;
 		
 		CachedRowSetImpl rs = null;
-//		CachedRowSetImpl rsfx = null;
+		CachedRowSetImpl rsfx = null;
 		Boolean hasfengxiresult = false;
 		try {
-			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+			rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
+			while(rsfx.next()) {
+				java.sql.Date recdate = rsfx.getDate("日期");
+				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(recdate);
+				Integer reccount = rsfx.getInt("RESULT");
+				nodewkperioddata.addFxjgToPeriod(wknum, reccount);
+			}
 			
-//			rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
-//			while(rsfx.next()) {
-//				Integer recnum = rsfx.getInt("RESULT");
-//				if(recnum >0)
-//					hasfengxiresult = true;
-//			}
-			 
+			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rs.next()) {
-				double bankuaicje = rs.getDouble("板块周交易额");
-				double dapancje = rs.getDouble("大盘周交易额");
+				Double bankuaicje = rs.getDouble("板块周交易额");
+				Double dapancje = rs.getDouble("大盘周交易额");
 				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
 				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
-				double bankuaicjl = rs.getDouble("板块周交易量");
-				double dapancjl = rs.getDouble("大盘周交易量");
-//				int year = rs.getInt("CALYEAR");
-//				int week = rs.getInt("CALWEEK");
+				Double bankuaicjl = rs.getDouble("板块周交易量");
+				Double dapancjl = rs.getDouble("大盘周交易量");
 				
 				StockGivenPeriodDataItem bkperiodrecord = new StockGivenPeriodDataItem( bkcode, StockGivenPeriodDataItem.WEEK,
 						wknum, 0.0, 0.0,  0.0,  0.0, bankuaicje, bankuaicjl);
@@ -4218,21 +3067,16 @@ public class BanKuaiDbOperation
 				bkperiodrecord.setUplevelchengjiaoliang(dapancjl);
 				
 				nodewkperioddata.addNewXPeriodData(bkperiodrecord);
+				
+				bkperiodrecord = null;
+				bankuaicje = null;
+				dapancje = null;
+				lastdayofweek = null;
+				wknum = null;
+				bankuaicjl = null;
+				dapancjl = null;
 
-				//找出分析表里面对应时间段的分析结果
-//				if(hasfengxiresult) {
-//					sqlquerystat = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
-//							"WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
-//							"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + lastdayofweek + "')" 
-//							;
-////					logger.debug(sqlquerystat);
-//					rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
-//					while(rsfx.next()) {
-//						Integer recnum = rsfx.getInt("RESULT");
-//						if(recnum >0)
-//							bkperiodrecord.setFengXiJIeGuo(true);
-//					}
-//				}
+
 				
 			}
 		}catch(java.lang.NullPointerException e){ 
@@ -4242,9 +3086,11 @@ public class BanKuaiDbOperation
 	    }  finally {
 	    	try {
 				rs.close();
-//				rsfx.close();
+				rsfx.close();
 				rs = null;
-//				rsfx = null;
+				rsfx = null;
+				bkcjltable = null;
+				System.gc();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4257,7 +3103,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 股票对板块的按周占比
 	 */
-	public StockOfBanKuai getGeGuZhanBiOfBanKuai(BanKuai bkcode, StockOfBanKuai stock,LocalDate selecteddatestart,LocalDate selecteddateend,LocalDate addposition,String period)
+	public StockOfBanKuai getGeGuZhanBiOfBanKuai(BanKuai bkcode, StockOfBanKuai stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
 		if(period.equals(StockGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
@@ -4364,13 +3210,14 @@ public class BanKuaiDbOperation
 				e.printStackTrace();
 			}
 			rsfg = null;
+			nodedayperioddata = null;
 //			rsfx = null;
 		}
 		
 		//上面是个股对板块的制定周期(默认是周线)，下面部分是为个股自身周线数据，用来计算个股对大盘的数据
-		StockOfBanKuai stockofbankuai = bkcode.getBanKuaiGeGu(stock.getMyOwnCode());
+//		StockOfBanKuai stockofbankuai = bkcode.getBanKuaiGeGu(stock.getMyOwnCode());
 		
-		this.getStockZhanBi (stockofbankuai.getStock(), selecteddatestart, selecteddateend,addposition,period);
+//		this.getStockZhanBi (stock.getStock(), selecteddatestart, selecteddateend,addposition,period);
 		
 		return stock;
 
@@ -4378,7 +3225,7 @@ public class BanKuaiDbOperation
 	/*
 	 * //上面是个股对板块的制定周期(默认是周线)，下面部分是为个股自身周线数据，用来计算个股对大盘的数据
 	 */
-	public Stock getStockZhanBi(Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,LocalDate addposition,String period)
+	public Stock getStockZhanBi(Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{	
 		if(period.equals(StockGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
@@ -4433,9 +3280,10 @@ public class BanKuaiDbOperation
 	//	logger.debug(sqlquerystat);
 		logger.debug("为板块" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
 		
-		String sqlquerystatfx = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
-				"WHERE 股票代码='" + stock + "'" + "\r\n" + 
-				"AND 操作记录重点关注.`日期` between '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"
+		String sqlquerystatfx = "SELECT 操作记录重点关注.`日期`, COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
+				" WHERE 股票代码='" + stockcode + "'" + "\r\n" + 
+				" AND 操作记录重点关注.`日期` between '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
+				" GROUP BY YEAR(操作记录重点关注.`日期`), WEEK(操作记录重点关注.`日期`) "
 				;
 		
 		CachedRowSetImpl rs = null;
@@ -4446,9 +3294,10 @@ public class BanKuaiDbOperation
 			
 			rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
 			while(rsfx.next()) {
-				Integer recnum = rsfx.getInt("RESULT");
-				if(recnum >0)
-					hasfengxiresult = true;
+				java.sql.Date recdate = rsfx.getDate("日期");
+				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(recdate);
+				Integer reccount = rsfx.getInt("RESULT");
+				nodewkperioddata.addFxjgToPeriod(wknum, reccount);
 			}
 			 
 			while(rs.next()) {
@@ -4459,7 +3308,7 @@ public class BanKuaiDbOperation
 				double bankuaicjl = rs.getDouble("板块周交易量");
 				double dapancjl = rs.getDouble("大盘周交易量");
 
-				StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( stockcode, StockGivenPeriodDataItem.WEEK, recordwk, 
+				StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( stockcode, period, recordwk, 
 						  0.0,  0.0,  0.0,  0.0, bankuaicje, bankuaicjl);
 				
 				stokofbkrecord.setRecordsDayofEndofWeek(lastdayofweek);
@@ -4467,23 +3316,8 @@ public class BanKuaiDbOperation
 				stokofbkrecord.setUplevelchengjiaoliang(dapancjl);
 				
 				nodewkperioddata.addNewXPeriodData(stokofbkrecord);
-
 				
-				//找出分析表里面对应时间段的分析结果
-//				if(hasfengxiresult) {
-//					sqlquerystat = "SELECT COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
-//							"WHERE 股票代码='" + stockcode + "'" + "\r\n" + 
-//							"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + lastdayofweek + "')" 
-//							;
-//	//				logger.debug(sqlquerystat);
-//					rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
-//					while(rsfx.next()) {
-//						Integer recnum = rsfx.getInt("RESULT");
-//						if(recnum >0)
-//							stokofbkrecord.setFengXiJIeGuo(true);
-//					}
-//				}
-				
+				stokofbkrecord = null;
 			}
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -4494,11 +3328,13 @@ public class BanKuaiDbOperation
 				rs.close();
 				rsfx.close();
 				rs = null;
-				rsfx.close();
+				rsfx = null;
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+	    	
+	    	bkcjltable = null;
+	    	nodewkperioddata = null; 
 	    }
 
 		return stock;
@@ -4507,7 +3343,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 获取个股或板块某时间段的日线走势
 	 */
-	public BkChanYeLianTreeNode getNodeKXianZouShi(BkChanYeLianTreeNode stock, LocalDate nodestartday, LocalDate nodeendday, LocalDate position, String period) 
+	public Stock getNodeKXianZouShi(Stock stock, LocalDate nodestartday, LocalDate nodeendday, String period) 
 	{//本函数初始是开发为日的K线数据，所以周/月线的占比掉用其他函数
 		if(period.equals(StockGivenPeriodDataItem.WEEK)) //调用周线查询函数
 			; 
@@ -4543,18 +3379,14 @@ public class BanKuaiDbOperation
 				 java.sql.Date actiondate = rsfx.getDate("交易日期");
 				 org.jfree.data.time.Day recordwk = new org.jfree.data.time.Day (actiondate);
 				 
-				 StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( nodecode, StockGivenPeriodDataItem.DAY, recordwk, 
+				 StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( nodecode, period, recordwk, 
 						 open,  high,  low,  close, cje, cjl);
 				 
 				 stokofbkrecord.setRecordsDayofEndofWeek(actiondate);
-				 
-				 if(nodecode.equals("000936"))
-					 logger.debug("just pose to check");
-				 
 				 nodedayperioddata.addNewXPeriodData(stokofbkrecord);
+				 
+				 stokofbkrecord = null;
 			 }
-			 
-			
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();
 //			logger.debug( "数据库连接为NULL!");
@@ -4566,11 +3398,11 @@ public class BanKuaiDbOperation
 			try {
 				if(rsfx != null)
 					rsfx.close();
-				rsfx.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			rsfx = null;
+			searchtable = null;
 		}
 
 		return stock;
@@ -4619,568 +3451,7 @@ public class BanKuaiDbOperation
 			jrjh = null;
 		return jrjh;
 	}
-	/*
-	 * 某个股票在某个板块的某个时间段内的按周占比，给bar chart用
-	 */
-//	public CachedRowSetImpl getGeGuZhanBi(String tdxbk, String stockcode, Date selecteddatestart,Date selecteddateend) 
-//	{
-//		HashMap<String, String> actiontables = this.getActionRelatedTables(tdxbk,stockcode);
-//		String stockvsbktable = actiontables.get("股票板块对应表");
-//		String bkcjltable = actiontables.get("板块每日交易量表");
-//		String gegucjltable = actiontables.get("股票每日交易量表");
-//		
-//		String formatedstartdate = sysconfig.formatDate(selecteddatestart);
-//		String formatedenddate  = sysconfig.formatDate(selecteddateend);
-//		
-//		String sqlquerystat = "SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , DATE(BKJYE.交易日期 + INTERVAL (7 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate,\r\n" + 
-//				"       SUM(BKJYE.成交额) AS 股票周交易额, SUM(ZSJYE.成交额) AS 板块周交易额, SUM(BKJYE.`成交额`)/SUM(ZSJYE.`成交额`) 占比\r\n" + 
-//				" FROM  " + gegucjltable  + " BKJYE\r\n" + 
-//				" INNER JOIN " +  bkcjltable   + " ZSJYE \r\n" + 
-//				"ON ZSJYE.代码 = '" + tdxbk + "'  \r\n" + 
-//				"       AND BKJYE.`交易日期` = ZSJYE.`交易日期`\r\n" + 
-//				"       AND  BKJYE.`代码` = '" + stockcode  + "'\r\n" + 
-//				"        AND Year(BKJYE.`交易日期`) = YEAR(NOW())\r\n" + 
-//				"        AND WEEK(BKJYE.`交易日期`) >=WEEK('" + formatedstartdate + "') \r\n" + 
-//				"		  AND WEEK(BKJYE.`交易日期`) <=WEEK('" + formatedenddate + "')\r\n" + 
-//				" GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`;"
-//				;
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//		try {
-//			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//   		 	
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	
-//	    }
-//		return rs;
-//	}
-
-	/*
-	 * 某个股票在某个板块内的占比增长率,
-	 */
-//	public void getStockZhanBiGrowthRateInBanKuai (String stockcode, String bkcode,Date selecteddatestart,Date selecteddateend)
-//	{
-//		HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode,stockcode);
-//		String stockvsbktable = actiontables.get("股票板块对应表");
-//		String bkcjltable = actiontables.get("板块每日交易量表");
-//		String gegucjltable = actiontables.get("股票每日交易量表");
-//		
-//		String formatedstartdate = sysconfig.formatDate(selecteddatestart);
-//		String formatedenddate  = sysconfig.formatDate(selecteddateend);
-//		
-//		String sqlquerystat = "		select A.`板块代码`, A.`股票代码`,\r\n" + 
-//				"	       A.stock_amount,  B.category_amount,\r\n" + 
-//				"	       A.stock_amount / B.category_amount ratio\r\n" + 
-//				"	  from (select 股票通达信风格板块对应表.`股票代码`, 股票通达信风格板块对应表.`板块代码`, sum(通达信上交所股票每日交易信息.`成交额`) stock_amount\r\n" + 
-//				"	          from 股票通达信风格板块对应表, 通达信上交所股票每日交易信息\r\n" + 
-//				"	         where 股票通达信风格板块对应表.`股票代码`   = 通达信上交所股票每日交易信息.`股票代码`\r\n" + 
-//				"	           and 通达信上交所股票每日交易信息.`交易日期` >= 股票通达信风格板块对应表.`加入时间`\r\n" + 
-//				"	           and 通达信上交所股票每日交易信息.`交易日期` <  ifnull(股票通达信风格板块对应表.`移除时间`, '2099-12-31')\r\n" + 
-//				"	           and (通达信上交所股票每日交易信息.`交易日期` between '2017-09-04' and '2017-09-08')\r\n" + 
-//				"	         group by 股票通达信风格板块对应表.`股票代码`, 股票通达信风格板块对应表.`板块代码`\r\n" + 
-//				"	         order by 股票通达信风格板块对应表.`股票代码`, 股票通达信风格板块对应表.`板块代码`) A,\r\n" + 
-//				"	         \r\n" + 
-//				"	       (select 通达信板块每日交易信息.`板块代码` , sum(通达信板块每日交易信息.`成交额`) category_amount\r\n" + 
-//				"	          from 通达信板块每日交易信息\r\n" + 
-//				"	         where 通达信板块每日交易信息.`交易日期` >= '2017-09-04'\r\n" + 
-//				"	           and 通达信板块每日交易信息.`交易日期` <= '2017-09-08'\r\n" + 
-//				"	         group by 通达信板块每日交易信息.`板块代码`\r\n" + 
-//				"	         order by 通达信板块每日交易信息.`板块代码`) B\r\n" + 
-//				"	 where A.`板块代码`   = B.`板块代码`\r\n" + 
-//				"	  order by A.`板块代码`,  A.`股票代码`"
-//				;
-//		logger.debug(sqlquerystat);
-//		HashMap<String,Double> bkfxzhanbimap = new HashMap<String,Double> ();
-//		CachedRowSetImpl rs = null;
-//		try {
-//			
-//			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//   		 	while(rs.next()) {
-////   		 		String bkname = rs.getString("板块名称");
-//   		 		String bkcode = rs.getString("BKCODE");
-//   		 		Double bkzhanbi = rs.getDouble("占比");
-//   		 		
-//   		 		bkfxzhanbimap.put(bkcode, bkzhanbi);
-//   		 	}
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    }
-//		
-//		sqlquerystat = "		select A.`板块代码`, A.`股票代码`,\r\n" + 
-//				"	       A.stock_amount,  B.category_amount,\r\n" + 
-//				"	       A.stock_amount / B.category_amount ratio\r\n" + 
-//				"	  from (select 股票通达信风格板块对应表.`股票代码`, 股票通达信风格板块对应表.`板块代码`, sum(通达信上交所股票每日交易信息.`成交额`) stock_amount\r\n" + 
-//				"	          from 股票通达信风格板块对应表, 通达信上交所股票每日交易信息\r\n" + 
-//				"	         where 股票通达信风格板块对应表.`股票代码`   = 通达信上交所股票每日交易信息.`股票代码`\r\n" + 
-//				"	           and 通达信上交所股票每日交易信息.`交易日期` >= 股票通达信风格板块对应表.`加入时间`\r\n" + 
-//				"	           and 通达信上交所股票每日交易信息.`交易日期` <  ifnull(股票通达信风格板块对应表.`移除时间`, '2099-12-31')\r\n" + 
-//				"	           and (通达信上交所股票每日交易信息.`交易日期` between '2017-09-04' and '2017-09-08')\r\n" + 
-//				"	         group by 股票通达信风格板块对应表.`股票代码`, 股票通达信风格板块对应表.`板块代码`\r\n" + 
-//				"	         order by 股票通达信风格板块对应表.`股票代码`, 股票通达信风格板块对应表.`板块代码`) A,\r\n" + 
-//				"	         \r\n" + 
-//				"	       (select 通达信板块每日交易信息.`板块代码` , sum(通达信板块每日交易信息.`成交额`) category_amount\r\n" + 
-//				"	          from 通达信板块每日交易信息\r\n" + 
-//				"	         where 通达信板块每日交易信息.`交易日期` >= '2017-09-04'\r\n" + 
-//				"	           and 通达信板块每日交易信息.`交易日期` <= '2017-09-08'\r\n" + 
-//				"	         group by 通达信板块每日交易信息.`板块代码`\r\n" + 
-//				"	         order by 通达信板块每日交易信息.`板块代码`) B\r\n" + 
-//				"	 where A.`板块代码`   = B.`板块代码`\r\n" + 
-//				"	  order by A.`板块代码`,  A.`股票代码`"
-//				;
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs2 = null;
-//		try {
-//			rs2 = connectdb.sqlQueryStatExecute(sqlquerystat);
-//   		 	while(rs.next()) {
-////   		 		String bkname = rs.getString("板块名称");
-//   		 		String bkcode = rs.getString("BKCODE");
-//   		 		Double bkzhanbi = rs.getDouble("占比");
-//   		 		
-//   		 	try{
-//   		 		Double bkzhanbi = bkfxzhanbimap.get(bkcode);
-//   		 		Double bkzbgrowthrate = (bkbenzhouzb - bkzhanbi)/bkzhanbi;
-//   		 		bkfxzhanbimap.put(bkcode, bkzbgrowthrate); 
-//		 		} catch(java.lang.NullPointerException e){
-//		 			//没有，说明是新板块，怎么处理？
-//		 			bkfxzhanbimap.put(bkcode, 10000.0); //暂时设置增长率为10000
-//		 		}
-//   		 
-//   		 	}
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	if(rs2 != null)
-//				try {
-//					rs2.close();
-//					rs2 = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    }
-//		
-//		
-//		
-//		
-//	}
 	
-	/*
-	 * 某一个板块设定时间跨度内和大盘相比的每周占比
-	 */
-//	public  CachedRowSetImpl getBanKuaiZhanBi (String bkcode,Date selecteddatestart,Date selecteddateend)
-//	{
-//		HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode,null);
-//		String bkcjltable = actiontables.get("板块每日交易量表");
-//		
-//		String formatedstartdate = sysconfig.formatDate(selecteddatestart);
-//		String formatedenddate  = sysconfig.formatDate(selecteddateend);
-//				
-//		if(!bkcjltable.equals("通达信交易所指数每日交易信息")) { 
-//		
-//			String sqlquerystat = "SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , BKJYE.交易日期, DATE(BKJYE.交易日期 + INTERVAL (7 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate,"
-//					+ "	       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
-//					+ "	FROM  通达信板块每日交易信息 BKJYE"
-//					+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
-//					+ "	ON ZSJYE.代码 in ('999999','399001' )"
-//					+ "	       AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
-//					+ "	       AND Year(BKJYE.`交易日期`) = YEAR(NOW())"
-//					+ "  AND WEEK(BKJYE.`交易日期`) >=WEEK('" + formatedstartdate + "') AND WEEK(BKJYE.`交易日期`) <=WEEK('" + formatedenddate + "')"
-//					+ "	       AND BKJYE.`代码` = '" + bkcode + "'"
-//					+ "			GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
-//					;
-//			logger.debug(sqlquerystat);
-//			CachedRowSetImpl rs = null;
-//			try {
-//				rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//	   		 	
-//			}catch(java.lang.NullPointerException e){ 
-//		    	e.printStackTrace();
-//		    } catch(Exception e){
-//		    	e.printStackTrace();
-//		    }  finally {
-//		    	
-//		    }
-//			return rs;
-//		} else { //板块是指数板块,变成了在同表内的查询
-//			String sqlquerystat = "SELECT Year(通达信交易所指数每日交易信息.交易日期) AS CALYEAR , WEEK(通达信交易所指数每日交易信息.交易日期) AS CALWEEK, 通达信交易所指数每日交易信息.`代码` AS BKCODE ,"
-//					+ "	sum(通达信交易所指数每日交易信息.成交额) AS 板块周交易额,	sum(sum_dapan) AS 大盘周交易额, sum(通达信交易所指数每日交易信息.成交额) / sum(sum_dapan) AS 占比"
-//					+ " FROM 通达信交易所指数每日交易信息 , ("
-//					+ "    SELECT 通达信交易所指数每日交易信息.交易日期 dapanjyrq,  SUM(通达信交易所指数每日交易信息.成交额) sum_dapan"
-//					+ "    FROM 通达信交易所指数每日交易信息"
-//					+ "    where  通达信交易所指数每日交易信息.`代码` IN  ('999999','399001' )"
-//					+ "    group by dapanjyrq"
-//					+ ") sq"
-//					+ " where  通达信交易所指数每日交易信息.交易日期 = dapanjyrq AND 通达信交易所指数每日交易信息.`代码` = '"  + bkcode + "'" + " AND Year(通达信交易所指数每日交易信息.交易日期)  = YEAR(now()) "
-//					+ " GROUP BY Year(通达信交易所指数每日交易信息.交易日期)  , WEEK(通达信交易所指数每日交易信息.交易日期), 通达信交易所指数每日交易信息.`代码`"
-//					; 
-//			logger.debug(sqlquerystat);
-//			CachedRowSetImpl rs = null;
-//			try {
-//				rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//	   		 	
-//			}catch(java.lang.NullPointerException e){ 
-//		    	e.printStackTrace();
-//		    } catch(Exception e){
-//		    	e.printStackTrace();
-//		    }  finally {
-//		    	
-//		    }
-//			return rs;
-//		}
-//	}
-	/*
-	 * 某板块所有当前个股的占比增长率
-	 */
-//	public HashMap<String,Double> getAllGeGuOfChenJiaoErWeekZhanBiInBanKuaiOrderByZhanBiGrowthRate(String bkcode, Date selecteddatestart,Date selecteddateend)
-//	{
-//		String formatedstartdate = sysconfig.formatDate(selecteddatestart);
-//		String formatedenddate  = sysconfig.formatDate(selecteddateend);
-//		
-//		HashMap<String,Double> bkfxzhanbimap = new HashMap<String,Double> ();
-//		
-//		
-//	}
-	/*
-	 * 所有指数板块成交额占比增长率，以占比增长率排名
-	 */
-//	public HashMap<String,Double> getAllZhiShuBanKuaiOfChenJiaoErWeekZhanBiOrderByZhanBiGrowthRate(Date selecteddatestart,Date selecteddateend)
-//	{
-//		String formatedstartdate = sysconfig.formatDate(selecteddatestart);
-//		String formatedenddate  = sysconfig.formatDate(selecteddateend);
-//		
-//		HashMap<String,Double> bkfxzhanbimap = new HashMap<String,Double> ();
-//		//上周的交易占比
-//		String sqlquerystat = "SELECT  CALYEAR ,  CALWEEK, EndOfWeekDate, BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称`\r\n" + 
-//				"FROM  (      \r\n" + 
-//				"SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , DATE(BKJYE.交易日期 + INTERVAL (7 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate,\r\n" + 
-//				"       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比\r\n" + 
-//				"       \r\n" + 
-//				"FROM  通达信交易所指数每日交易信息 BKJYE\r\n" + 
-//				"INNER JOIN 通达信交易所指数每日交易信息  ZSJYE  \r\n" + 
-//				"ON ZSJYE.代码 in ('999999','399001' ) \r\n" + 
-//				"       AND BKJYE.`交易日期` = ZSJYE.`交易日期`\r\n" + 
-//				"       AND Year(BKJYE.`交易日期`) = YEAR(NOW())\r\n" + 
-//				"    AND WEEK(BKJYE.`交易日期`) >= (WEEK('" + formatedstartdate + "')-1) AND WEEK(BKJYE.`交易日期`) <= (WEEK('" + formatedenddate + "')-1)" +
-//				"		GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`\r\n" + 
-//				"				) X\r\n" + 
-//				"				,通达信交易所指数列表 BKLB\r\n" + 
-//				"				WHERE BKCODE = BKLB.`板块ID`"
-//				;
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//		try {
-//			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//   		 	while(rs.next()) {
-////   		 		String bkname = rs.getString("板块名称");
-//   		 		String bkcode = rs.getString("BKCODE");
-//   		 		Double bkzhanbi = rs.getDouble("占比");
-//   		 		
-//   		 		bkfxzhanbimap.put(bkcode, bkzhanbi);
-//   		 	}
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    }
-//		
-//		sqlquerystat = "SELECT  CALYEAR ,  CALWEEK, EndOfWeekDate, BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称`\r\n" + 
-//				"FROM  (      \r\n" + 
-//				"SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , DATE(BKJYE.交易日期 + INTERVAL (7 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate,\r\n" + 
-//				"       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比\r\n" + 
-//				"       \r\n" + 
-//				"FROM  通达信交易所指数每日交易信息 BKJYE\r\n" + 
-//				"INNER JOIN 通达信交易所指数每日交易信息  ZSJYE  \r\n" + 
-//				"ON ZSJYE.代码 in ('999999','399001' ) \r\n" + 
-//				"       AND BKJYE.`交易日期` = ZSJYE.`交易日期`\r\n" + 
-//				"       AND Year(BKJYE.`交易日期`) = YEAR(NOW())\r\n" + 
-//				"    AND WEEK(BKJYE.`交易日期`) >=WEEK('" + formatedstartdate + "') AND WEEK(BKJYE.`交易日期`) <=WEEK('" + formatedenddate + "') " +
-//				"		GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`\r\n" + 
-//				"				) X\r\n" + 
-//				"				,通达信交易所指数列表 BKLB\r\n" + 
-//				"				WHERE BKCODE = BKLB.`板块ID`"
-//				;
-//		
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rssz = null; 
-//		try {  
-//		 	 rssz = connectdb.sqlQueryStatExecute(sqlquerystat);
-//		 	 while(rssz.next()) {
-//		 		String bkname = rssz.getString("板块名称");
-//   		 		String bkcode = rssz.getString("BKCODE");
-//   		 		Double bkbenzhouzb  = rssz.getDouble("占比");
-//   		 		
-//   		 		try{
-//	   		 		Double bkzhanbi = bkfxzhanbimap.get(bkcode);
-//	   		 		Double bkzbgrowthrate = (bkbenzhouzb - bkzhanbi)/bkzhanbi;
-//	   		 		bkfxzhanbimap.put(bkcode, bkzbgrowthrate); 
-//   		 		} catch(java.lang.NullPointerException e){
-//   		 			//没有，说明是新板块，怎么处理？
-//   		 			bkfxzhanbimap.put(bkcode, 10000.0); //暂时设置增长率为10000
-//   		 		}
-//		 		 
-//		 	 }
-//		} catch(java.lang.NullPointerException e){ 
-//		 	e.printStackTrace();
-//		} catch (SQLException e) {
-//		 	logger.debug(sqlquerystat);
-//		 	e.printStackTrace();
-//		} catch(Exception e){
-//		 	e.printStackTrace();
-//		} finally {
-//		 	if(rssz != null)
-//					try {
-//						rssz.close();
-//						rssz = null;
-//					} catch (SQLException e) {
-//						e.printStackTrace();
-//					}
-//		 }
-//		
-//		return bkfxzhanbimap;
-//	}
-//	/*
-//	 * 所有880板块成交额占比，以占比增长率排名
-//	 */
-//	public HashMap<String,Double> getAllTdxBanKuaiOfChenJiaoErWeekZhanBiOrderByZhanBiGrowthRate(Date selecteddatestart,Date selecteddateend)
-//	{
-//		String formatedstartdate = sysconfig.formatDate(selecteddatestart);
-//		String formatedenddate  = sysconfig.formatDate(selecteddateend);
-//		
-//		HashMap<String,Double> bkfxzhanbimap = new HashMap<String,Double> ();
-//		//上周的交易占比
-//		String sqlquerystat = "SELECT  CALYEAR ,  CALWEEK,  EndOfWeekDate, BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称`"
-//				+ "	FROM  ("
-//				+ "	SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , DATE(BKJYE.交易日期 + INTERVAL (7 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate, "
-//				+ " SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
-//				+ "	FROM  通达信板块每日交易信息 BKJYE"
-//				+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
-//				+ "	ON ZSJYE.代码 in ('999999','399001' )"
-//				+ "    AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
-//				+ "    AND Year(BKJYE.`交易日期`) = YEAR(NOW())"
-//				+ "    AND WEEK(BKJYE.`交易日期`) >= (WEEK('" + formatedstartdate + "')-1) AND WEEK(BKJYE.`交易日期`) <= (WEEK('" + formatedenddate + "')-1)"
-//				+ "	GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
-//				+ "	) X"
-//				+ "	,通达信板块列表 BKLB"
-//				+ "	WHERE BKCODE = BKLB.`板块ID`"
-//				;
-//				
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//		try {
-//			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//   		 	while(rs.next()) {
-//   		 		String bkname = rs.getString("板块名称");
-//   		 		String bkcode = rs.getString("BKCODE");
-//   		 		Double bkzhanbi = rs.getDouble("占比");
-//   		 		
-//   		 		bkfxzhanbimap.put(bkcode, bkzhanbi);
-//   		 	}
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    }
-//		
-//		//这周的交易占比
-//		sqlquerystat = "SELECT  CALYEAR ,  CALWEEK,  EndOfWeekDate, BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称`"
-//				+ "	FROM  ("
-//				+ "	SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE , DATE(BKJYE.交易日期 + INTERVAL (7 - DAYOFWEEK(BKJYE.交易日期)) DAY) EndOfWeekDate, "
-//				+ " SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
-//				+ "	FROM  通达信板块每日交易信息 BKJYE"
-//				+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
-//				+ "	ON ZSJYE.代码 in ('999999','399001' )"
-//				+ "    AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
-//				+ "    AND Year(BKJYE.`交易日期`) = YEAR(NOW())"
-//				+ "    AND WEEK(BKJYE.`交易日期`) >= (WEEK('" + formatedstartdate + "')) AND WEEK(BKJYE.`交易日期`) <= (WEEK('" + formatedenddate + "'))"
-//				+ "	GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
-//				+ "	) X"
-//				+ "	,通达信板块列表 BKLB"
-//				+ "	WHERE BKCODE = BKLB.`板块ID`"
-//				;
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rssz = null; 
-//		try {  
-//		 	 rssz = connectdb.sqlQueryStatExecute(sqlquerystat);
-//		 	 while(rssz.next()) {
-//		 		String bkname = rssz.getString("板块名称");
-//   		 		String bkcode = rssz.getString("BKCODE");
-//   		 		Double bkbenzhouzb  = rssz.getDouble("占比");
-//   		 		
-//   		 		try{
-//	   		 		Double bklastzhanbi = bkfxzhanbimap.get(bkcode);
-//	   		 		Double bkzbgrowthrate = (bkbenzhouzb - bklastzhanbi)/bklastzhanbi;
-//	   		 		bkfxzhanbimap.put(bkcode, bkzbgrowthrate); 
-//   		 		} catch(java.lang.NullPointerException e){
-//   		 			//没有，说明是新板块，怎么处理？
-//   		 			bkfxzhanbimap.put(bkcode, 10000.0); //暂时设置增长率为10000
-//   		 		}
-//		 		 
-//		 	 }
-//		} catch(java.lang.NullPointerException e){ 
-//		 	e.printStackTrace();
-//		} catch (SQLException e) {
-//		 	logger.debug(sqlquerystat);
-//		 	e.printStackTrace();
-//		} catch(Exception e){
-//		 	e.printStackTrace();
-//		} finally {
-//		 	if(rssz != null)
-//					try {
-//						rssz.close();
-//						rssz = null;
-//					} catch (SQLException e) {
-//						e.printStackTrace();
-//					}
-//		 }
-//		
-//		return bkfxzhanbimap;
-//	}
-	/*
-	 * 检查设定日期周的数据是否完整，只对当前走进行数据完整性测试，过去周默认数据完整。
-	 * -1 数据完整  0：所选周没有数据  >0，数据到那一天
-	 */
-//	private int precheckBeforeBanKuaiFengXi(Date bkfxdate)
-//	{
-//		if(CommonUtility.getWeekNumber(bkfxdate) == CommonUtility.getWeekNumber(new Date()) ) {
-//			
-//			String sqlquerystat = " SELECT MAX(交易日期) FROM 通达信交易所指数每日交易信息" ;
-//			CachedRowSetImpl rs = null; 
-//			try {  
-//			 	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//			 	 
-//			 	 java.sql.Timestamp tmplastmdftime = null;
-//			 	 while(rs.next())
-//			 		  tmplastmdftime = rs.getTimestamp("MAX(交易日期)");
-//			 	 logger.debug(tmplastmdftime);
-//			 	 
-//			 	 if(CommonUtility.getWeekNumber(bkfxdate) == CommonUtility.getWeekNumber(tmplastmdftime) ){
-//			 		 
-//			 		Calendar cal = Calendar.getInstance();
-//				 	 cal.setTime(tmplastmdftime);
-//				 	 int whichdays = cal.get(Calendar.DAY_OF_WEEK);
-//				 	 if(whichdays == 6)
-//				 		 return -1;
-//				 	 else 
-//				 		 return whichdays;
-//			 	 } else 
-//			 		 return 0;
-//			 }catch(java.lang.NullPointerException e){ 
-//			 	e.printStackTrace();
-//			 } catch (SQLException e) {
-//			 	logger.debug(sqlquerystat);
-//			 	e.printStackTrace();
-//			 }catch(Exception e){
-//			 	e.printStackTrace();
-//			 }  finally {
-//			 	if(rs != null)
-//						try {
-//							rs.close();
-//							rs = null;
-//						} catch (SQLException e) {
-//							e.printStackTrace();
-//						}
-//			 }
-//		} else 
-//			return -1;
-//		return -1;
-//	}
-	
-	
-	
-	/*
-	 * 板块成交额占比，以占比排序
-	 */
-//	public DefaultCategoryDataset getBanKuaiFengXiBarInfoOfChenJiaoErZhanBiOrderByZhanBi(LocalDate bkfxdate) 
-//	{
-//		HashMap<String, BanKuai> curdaleidetaillistmap = this.getTDXBanKuaiList();
-//		Set<String> curdaleidetaillistset = curdaleidetaillistmap.keySet();
-//		String fengxidate = formateDateForDiffDatabase("mysql",CommonUtility.formatDateYYYY_MM_DD_HHMMSS(bkfxdate).substring(0,10)); 
-//		
-//		String sqlquerystat = "	SELECT  CALYEAR ,  CALWEEK,  BKCODE ,  板块周交易额,  大盘周交易额,  占比, BKLB.`板块名称` "
-//				+ "FROM  ("
-//				+ "	SELECT Year(BKJYE.交易日期) AS CALYEAR , WEEK(BKJYE.交易日期) AS CALWEEK, BKJYE.`代码` AS BKCODE,"
-//				+ "       SUM(BKJYE.成交额)/2 AS 板块周交易额, SUM(ZSJYE.成交额) AS 大盘周交易额, SUM(BKJYE.`成交额`)/(2*SUM(ZSJYE.`成交额`)) AS 占比"
-//				+ "	FROM  通达信板块每日交易信息 BKJYE"
-//				+ "	INNER JOIN 通达信交易所指数每日交易信息  ZSJYE"
-//				+ "	ON ZSJYE.代码 in ('999999','399001' )"
-//				+ "    AND BKJYE.`交易日期` = ZSJYE.`交易日期`"
-//				+ "    AND Year(BKJYE.`交易日期`) = YEAR(" +  fengxidate + " )"
-//				+ "    AND BKJYE.`交易日期` BETWEEN DATE_SUB( " +  fengxidate + " ,  INTERVAL( WEEKDAY( " +  fengxidate + " ) ) DAY ) AND " +  fengxidate  
-//				+ " GROUP BY Year(BKJYE.`交易日期`),WEEK(BKJYE.`交易日期`),BKJYE.`代码`"
-//				+ ") X"
-//				+ ",通达信板块列表 BKLB"
-//				+ "	WHERE BKCODE = BKLB.`板块ID`"
-//				+ "	ORDER BY 占比 desc"
-//				;
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//		DefaultCategoryDataset barchart_dataset = new DefaultCategoryDataset();
-//		try {
-//			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//   		 	while(rs.next()) {
-//   		 		String bkname = rs.getString("板块名称");
-//   		 		String bkcode = rs.getString("BKCODE");
-//   		 		Double bkzhanbi = rs.getDouble("占比");
-//   		 		
-//   		 		barchart_dataset.addValue(bkzhanbi, "板块成交额占比", bkname);
-//   		 	}
-//		}catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    }
-//		
-//		return barchart_dataset;
-//	}
 	/*
 	 * 同步个股成交量信息，参数为交易所 SH/SZ
 	 */
@@ -5200,9 +3471,7 @@ public class BanKuaiDbOperation
 		
 		ArrayList<String> allgegucode = new ArrayList<String>( );
 		CachedRowSetImpl  rsdm = null;
-		
 		try { 	
-			
 			String sqlquerystat = "SELECT  股票代码  FROM A股  WHERE      ifnull(已退市,1 )  or 已退市 = false "
 						;
 			logger.debug(sqlquerystat);
@@ -5236,7 +3505,6 @@ public class BanKuaiDbOperation
 		else if(jiaoyisuo.toLowerCase().equals("sh") )
 			optTable = "通达信上交所股票每日交易信息";
 		for(String tmpbkcode:allgegucode) {
-			//String bkfilename = "SH" + filenamerule.replaceAll("YYXXXXXX", tmpbkcode);
 			String bkfilename = null;
 			if(jiaoyisuo.toLowerCase().equals("sz") )
 				bkfilename = (filenamerule.replaceAll("YY","SZ")).replaceAll("XXXXXX", tmpbkcode);
@@ -5259,9 +3527,15 @@ public class BanKuaiDbOperation
    			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	while(rs.next()) {
 //   			    		logger.debug(rs.getMetaData().getColumnCount());
-   			    		 Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
-   			    		 Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
-   			    		ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+   			    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
+   			    		 try {
+   			    			 ldlastestdbrecordsdate =lastestdbrecordsdate.toLocalDate();
+   			    		 } catch (java.lang.NullPointerException e) {
+   			    			 logger.info(tmpbkcode + "似乎没有数据，请检查！");
+   			    		 }
+//   			    		 Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
+//   			    		ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+//   			    		ldlastestdbrecordsdate = lastestdbrecordsdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
    			    	}
    			    } catch(java.lang.NullPointerException e) { 
    			    	e.printStackTrace();
@@ -5277,6 +3551,7 @@ public class BanKuaiDbOperation
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
+   			    	allgegucode = null;
    			    }
 				
 				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,ldlastestdbrecordsdate,optTable,dateRule,tmprecordfile);
@@ -5300,6 +3575,8 @@ public class BanKuaiDbOperation
 				;
 		logger.debug(sqlupdatestat);
 		connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		
+		actiontables = null;
 		
 		//因为不知道bkcode在哪个表里面，
 //		String sqlupdatestat1 = "update 股票通达信交易所指数对应表  set 股票权重 = " +  weight  + 
@@ -5437,6 +3714,10 @@ public class BanKuaiDbOperation
 				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 	        }
 	        
+	        neededimportzdybknames = null;
+	        curzdybknames = null;
+	        differencebankuaiold = null;
+	        
 	        return 1;
 	}
 	/*
@@ -5518,6 +3799,7 @@ public class BanKuaiDbOperation
    	        }
 		}
 		
+		neededimportzdybknames = null;
 		return 0;
 	}
 	

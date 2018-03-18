@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
@@ -140,7 +141,14 @@ public interface BanKuaiAndStockBasic
 		 * 
 		 */
 		public OHLCItem getOHLCData (LocalDate requireddate,int difference);
-
+		/*
+		 * 
+		 */
+		public Boolean hasFxjgInPeriod (LocalDate requireddate,int difference);
+		/*
+		 * 
+		 */
+		public void addFxjgToPeriod (RegularTimePeriod period,Integer fxjg);
 		/*
 		 * 一次性计算所有数据
 		 */

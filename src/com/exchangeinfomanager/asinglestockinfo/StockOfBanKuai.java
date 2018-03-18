@@ -24,7 +24,7 @@ public class StockOfBanKuai extends Stock
 		
 		super.nodewkdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = null; //个股对板块，周线数据才有意义，日线毫无意义
-		super.nodemonthdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+//		super.nodemonthdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 	}
 	
 	private static Logger logger = Logger.getLogger(StockOfBanKuai.class);

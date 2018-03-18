@@ -444,8 +444,9 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 				stockohlc = new OHLCSeries(nodeperiodtype1);
 				stockamo = new TimeSeries(nodeperiodtype1);
 				stockvol = new TimeSeries(nodeperiodtype1);;
-				stockamozhanbi = new TimeSeries(nodeperiodtype1);;
-				stockvolzhanbi = new TimeSeries(nodeperiodtype1);;
+				stockamozhanbi = new TimeSeries(nodeperiodtype1);
+				stockvolzhanbi = new TimeSeries(nodeperiodtype1);
+				stockfxjg = new TimeSeries(nodeperiodtype1);
 
 			}
 
@@ -455,16 +456,47 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			protected TimeSeries stockvol;
 			protected TimeSeries stockamozhanbi;
 			protected TimeSeries stockvolzhanbi;
+			protected TimeSeries stockfxjg;
 	
 			public void addNewXPeriodData (StockGivenPeriodDataItem kdata)
 			{
-				stockohlc.add(kdata);
-				stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr());
-				stockvol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang());
-				if(kdata.getCjeZhanBi() != null)
-					stockamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi());
-				if(kdata.getCjlZhanBi() != null)
-					stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi());
+				try {
+					stockohlc.add(kdata);
+				} catch (org.jfree.data.general.SeriesException e) {
+					System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+				}
+				try {
+					stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
+//					stockvol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
+					if(kdata.getCjeZhanBi() != null)
+						stockamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi(),false);
+//					if(kdata.getCjlZhanBi() != null)
+//						stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
+				} catch (org.jfree.data.general.SeriesException e) {
+					System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//					e.printStackTrace();
+				}
+				
+//				kdata = null;
+			}
+			/*
+			 * (non-Javadoc)
+			 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
+			 */
+			public Boolean hasFxjgInPeriod (LocalDate requireddate,int difference)
+			{
+				TimeSeriesDataItem fxjgitem = stockfxjg.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+				if(fxjgitem == null)
+					return false;
+				else
+					 return true;
+			}
+			/*
+			 * 
+			 */
+			public void addFxjgToPeriod (RegularTimePeriod period,Integer fxjg)
+			{
+				stockfxjg.add(period,fxjg);
 			}
 			/*
 			 * 
@@ -544,7 +576,7 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 				
 				TimeSeriesDataItem curcjlrecord = null;
 				if(difference >=0 )
-					curcjlrecord = stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+					curcjlrecord = stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				
 				if( curcjlrecord == null) 
 					return null;
@@ -561,7 +593,7 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 				
 				TimeSeriesDataItem curcjlrecord = null;
 				if(difference >=0 )
-					curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+					curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				
 				if( curcjlrecord == null) 
 					return null;
@@ -574,15 +606,15 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			 */
 			public LocalDate getRecordsStartDate ()
 			{
-				if(stockohlc.getItemCount() == 0)
+				if(stockamo.getItemCount() == 0)
 					return null;
-				
-				RegularTimePeriod firstperiod = stockohlc.getPeriod(0);
+//				
+//				RegularTimePeriod firstperiod = stockohlc.getPeriod(0);
+				RegularTimePeriod firstperiod = stockamo.getTimePeriod( 0);
 				LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 				LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 			
 				TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
-//				System.out.println(startdate.with(fieldUS, 2));
 				LocalDate mondayday = startdate.with(fieldUS, 2);
 				
 				return mondayday;
@@ -592,11 +624,13 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			 */
 			public LocalDate getRecordsEndDate ()
 			{
-				if(stockohlc.getItemCount() == 0)
+				if(stockamo.getItemCount() == 0)
 					return null;
 				
-				int itemcount = stockohlc.getItemCount();
-				RegularTimePeriod firstperiod = stockohlc.getPeriod(itemcount-1);
+//				int itemcount = stockohlc.getItemCount();
+//				RegularTimePeriod firstperiod = stockohlc.getPeriod(itemcount-1);
+				int itemcount = stockamo.getItemCount();
+				RegularTimePeriod firstperiod = stockamo.getTimePeriod( itemcount - 1 );
 				LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 			

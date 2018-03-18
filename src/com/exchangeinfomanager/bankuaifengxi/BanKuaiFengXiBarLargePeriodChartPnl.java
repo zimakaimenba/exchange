@@ -14,6 +14,7 @@ import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.CrosshairState;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
@@ -61,32 +62,16 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 	protected JFreeChart chart;
 	protected ChartPanel chartPanel;
 	protected BkChanYeLianTreeNode curdisplayednode;
-	private int highlightercolumn = 4;
+//	private int highlightercolumn = 4;
 	
     @SuppressWarnings("deprecation")
 	public BanKuaiFengXiBarLargePeriodChartPnl(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
     {
     	this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-//    	renderer = new CustomXYBarRenderer (.3);
-        renderer = new XYBarRenderer(.3);
-        renderer.setMargin(0.4);
-        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
-        renderer.setItemLabelAnchorOffset(5);
-        renderer.setItemLabelsVisible(true);
-        renderer.setBaseItemLabelsVisible(true);
-//        renderer.setBarPainter(new StandardXYBarPainter());
-        NumberFormat format = NumberFormat.getPercentInstance();
-        format.setMaximumFractionDigits(3); // etc.
-        DateFormat dateformate = DateFormat.getDateInstance();
-//        renderer.setBaseItemLabelGenerator(new  StandardXYItemLabelGenerator ("{0} {1} {2}", format, format));
-        renderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator(StandardXYItemLabelGenerator.DEFAULT_ITEM_LABEL_FORMAT, dateformate, format) );
-        renderer.setBaseItemLabelsVisible(true);
-        renderer.setBaseToolTipGenerator(new CustomXYPlotToolTipGenerator());
-        
-        renderer.setBarPainter(new CustomXYBarPainter ());
+    	renderer = new CustomXYBarRenderer (.3);
 
-        domainAxis = new DateAxis();
+    	domainAxis = new DateAxis();
         NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
         LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
 		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
@@ -102,7 +87,6 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
         rangeAxis = new NumberAxis();
 //	    rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 //	    rangeAxis.setAutoRangeIncludesZero(true);
-        
        
        dataset = getDataset(node,displayedenddate1,period);
         
@@ -131,23 +115,22 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
         this.add(getScrollBar(domainAxis));
 //        this.pack();
     }
-
+    /*
+     * 
+     */
+    public void setHighLightMaxWeekNumber(int maxwk) 
+    {
+    	((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightMaxWeekNumber(maxwk);
+    }
     private XYDataset getDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
     {
     	this.curdisplayednode = node;
-//    	NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
-//    	LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
-//		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
-		
-		TimeSeries s1 = new TimeSeries("Series");
-		
 		final TimeSeriesCollection dataset = new TimeSeriesCollection();
-        dataset.addSeries(s1);
-        
         return dataset;
     }
 
-    private JScrollBar getScrollBar(final DateAxis domainAxis){
+    private JScrollBar getScrollBar(final DateAxis domainAxis)
+    {
         final double r1 = domainAxis.getLowerBound();
         final double r2 = domainAxis.getUpperBound();
         JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 100, 100, 0, 400);
@@ -173,15 +156,9 @@ class CustomXYPlotToolTipGenerator implements XYToolTipGenerator
 	{
        Date d = new Date((long) dataset.getXValue(series, item));
        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
    	   LocalDate selecteddate = CommonUtility.formateStringToDate(sdf.format(d));
    	 
-//   	   ChenJiaoZhanBiInGivenPeriod nodefx = nodexdata.getSpecficRecord(selecteddate, 0);
-//		if(nodefx == null)
-//			return "";
-		
 		String tooltip = selecteddate.toString() + " ";
-		
 		 
 			Double curzhanbidata = dataset.getYValue(series, item);   //Õ¼±È
 			DecimalFormat decimalformate = new DecimalFormat("%#0.000");
@@ -216,69 +193,78 @@ class CustomXYPlotToolTipGenerator implements XYToolTipGenerator
 	}
 }
 
-//class CustomXYBarRenderer extends XYBarRenderer 
-//{
-//	/**
-//	 * 
-//	 */
-//	private static final long serialVersionUID = 1L;
-//
-//	public CustomXYBarRenderer (double margin)
+class CustomXYBarRenderer extends XYBarRenderer 
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private BkChanYeLianTreeNode node;
+	private NodeXPeriodDataBasic nodexdata;
+	private int highlightmaxwk = 10000;
+	public CustomXYBarRenderer (double margin)
+	{
+		super (margin);
+		super.setMargin(0.4);
+	    super.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
+	    super.setItemLabelAnchorOffset(5);
+	    super.setItemLabelsVisible(true);
+	    super.setBaseItemLabelsVisible(true);
+	    NumberFormat format = NumberFormat.getPercentInstance();
+        format.setMaximumFractionDigits(3); // etc.
+        DateFormat dateformate = DateFormat.getDateInstance();
+//        renderer.setBaseItemLabelGenerator(new  StandardXYItemLabelGenerator ("{0} {1} {2}", format, format));
+        super.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator(StandardXYItemLabelGenerator.DEFAULT_ITEM_LABEL_FORMAT, dateformate, format) );
+        super.setBaseItemLabelsVisible(true);
+        super.setBaseToolTipGenerator(new CustomXYPlotToolTipGenerator());
+        super.setBarPainter(new CustomXYBarPainter ());
+	}
+	
+//	protected void drawItemLabel(Graphics2D g2, XYDataset dataset, int series, int item, XYPlot plot, XYItemLabelGenerator generator, Rectangle2D bar, boolean negative)
 //	{
-//		super (margin);
-//		super.setMargin(0.4);
-//        super.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
-//        super.setItemLabelAnchorOffset(5);
-//        super.setItemLabelsVisible(true);
-//        super.setBaseItemLabelsVisible(true);
-////        renderer.setBarPainter(new StandardXYBarPainter());
-//        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-//        super.setItemLabelGenerator(new  StandardXYItemLabelGenerator ());
-//        super.setItemLabelsVisible(true);
-//        super.setBaseToolTipGenerator(new CustomXYPlotToolTipGenerator());
-//	}
-//	
-//	public XYBarPainter	getBarPainter()
-//	{
-//	       XYBarPainter painter = new XYBarPainter() 
-//	        {
-//		       	@Override
-//		        public void paintBarShadow(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base, boolean pegShadow) {
-//		       		
-//		       	}
-//
-//		       	public void paintBar(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base) 
-//		        {
-//		        	bar.setFrame(bar.getX(), bar.getY(), bar.getWidth() +4, bar.getHeight());
-//		        	
-//		        	if(4 == column)
-//		        		g2.setColor(Color.BLUE.darker());
-//		        	else
-//		        		g2.setColor(Color.RED.darker());
-//		        	g2.fill(bar);
-//		        	g2.draw(bar);
-//		        }
-//	       };
+//		 g2.setColor(Color.cyan);
 //		
-//	       return painter;
 //	}
-//	
-//	@Override
-//    public Paint getItemPaint(int row, int col) {
-//        if (col == 4) {
-//            return Color.BLUE.darker();
-//        } else {
-//            return super.getItemPaint(row, col);
-//        }
-//    }
-//}
+    public Paint getItemLabelPaint(final int row, final int column)
+    {
+    	XYPlot plot = getPlot ();
+    	XYDataset dataset = plot.getDataset();
+		double selectedy = dataset.getY(row, column).doubleValue();
+//		TimeSeries series = (TimeSeries) dataset.getSeriesKey(1);
+		Date d = new Date((long) dataset.getXValue(0, column));
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		LocalDate selecteddate = CommonUtility.formateStringToDate(sdf.format(d)); 
+		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate);
+		
+		if(maxweek !=null && maxweek >= highlightmaxwk)
+			return Color.RED;
+		else 
+			return Color.black;
+    }
+	
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
+    }
+
+    public void setDisplayNodeXPeriodData(NodeXPeriodDataBasic nodexdata1) 
+    {
+		this.nodexdata = nodexdata1;
+	}
+    public void setHighLightMaxWeekNumber(int maxwk) 
+    {
+    	this.highlightmaxwk = maxwk;
+    }
+
+
+}
 
 
 class CustomXYBarPainter implements XYBarPainter 
 {
 	protected int highlightercolumn = -1;
 	protected BkChanYeLianTreeNode node;
-	protected NodeXPeriodData nodexdata;
+	protected NodeXPeriodDataBasic nodexdata;
    	@Override
     public void paintBarShadow(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base, boolean pegShadow) {
    		
@@ -304,7 +290,7 @@ class CustomXYBarPainter implements XYBarPainter
     	this.node = curdisplayednode;
     }
 
-    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+    public void setDisplayNodeXPeriodData(NodeXPeriodDataBasic nodexdata1) 
     {
 		this.nodexdata = nodexdata1;
 	}

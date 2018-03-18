@@ -130,6 +130,8 @@ public class BanKuaiGeGuTable extends JTable implements BkfxHightLightValueListe
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
+		
+		sortKeys = null;
 	}
 	@Override
 	public void hightLightValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemax) 

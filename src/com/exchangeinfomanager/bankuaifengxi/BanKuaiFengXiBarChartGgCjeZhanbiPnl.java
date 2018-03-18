@@ -81,26 +81,18 @@ public class BanKuaiFengXiBarChartGgCjeZhanbiPnl extends BanKuaiFengXiBarChartPn
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.MONDAY);
 		
-		barchartdataset = new DefaultCategoryDataset();
+		barchartdataset.clear();
+		super.barchart.setNotify(false);
+		
 		double highestHigh =0.0; //设置显示范围
 		
 		TimeSeries rangecjezb = nodexdata.getRangeChengJiaoErZhanBi(startdate, enddate);
-//		int itemcount = rangecjezb.getItemCount();
-//		for(int i=0;i<itemcount;i++) {
-//			TimeSeriesDataItem cjezbrecord = rangecjezb.getDataItem(i);
-//			RegularTimePeriod datestr = cjezbrecord.getPeriod();
-//			LocalDate latdayofweek = datestr.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
-//			double zb = cjezbrecord.getValue().doubleValue();
-//			barchartdataset.setValue(zb,"占比",latdayofweek);
-//			
-//			if(zb > highestHigh)
-//				highestHigh = zb;
-//		}
-		
+	
 		LocalDate tmpdate = requirestart;
 		do  {
 			org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
 			TimeSeriesDataItem cjerecord = rangecjezb.getDataItem(tmpwk);
+			tmpwk = null;
 			if(cjerecord != null) {
 				double cjezb = cjerecord.getValue().doubleValue();
 				barchartdataset.setValue(cjezb,"占比",tmpdate.with(DayOfWeek.FRIDAY));
@@ -124,6 +116,7 @@ public class BanKuaiFengXiBarChartGgCjeZhanbiPnl extends BanKuaiFengXiBarChartPn
 		
 		setPanelTitle ("成交额" + period + "占比",requireend);
 		
+		super.barchart.setNotify(true);
 		operationAfterDataSetup (nodexdata,requirestart,requireend,highestHigh,period);
 	}
 	/*
@@ -133,7 +126,6 @@ public class BanKuaiFengXiBarChartGgCjeZhanbiPnl extends BanKuaiFengXiBarChartPn
 	{
 		CustomRendererForZhanBi render = (CustomRendererForZhanBi)super.plot.getRenderer();
 		render.setDisplayNode(this.curdisplayednode);
-		render.setDateSet (barchartdataset);
 		render.setDisplayNodeXPeriod (nodexdata);
 		
 		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
@@ -151,8 +143,6 @@ public class BanKuaiFengXiBarChartGgCjeZhanbiPnl extends BanKuaiFengXiBarChartPn
 		axis.setDisplayNode(this.curdisplayednode,period);
 		
 		super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
-		
-		super.plot.setDataset(barchartdataset);
 	}
 
 }
@@ -176,7 +166,9 @@ class CustomRendererForZhanBi extends BanKuaiFengXiBarRenderer
     
     public Paint getItemLabelPaint(final int row, final int column)
     {
-		String selected = super.chartdataset.getColumnKey(column).toString();
+    	CategoryPlot plot = getPlot ();
+    	CategoryDataset dataset = plot.getDataset();
+		String selected =  dataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
 
     	Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);
@@ -196,8 +188,6 @@ class CustomToolTipGeneratorForZhanBi extends BanKuaiFengXiBarToolTipGenerator
 		String selected = dataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	 
-//    	ChenJiaoZhanBiInGivenPeriod nodefx = nodexdata.getSpecficRecord(selecteddate, 0);
-		
 		String tooltip = selected.toString() + " ";
 		
 		Double curzhanbidata = (Double)dataset.getValue(row, column);  //占比
@@ -228,5 +218,3 @@ class CustomToolTipGeneratorForZhanBi extends BanKuaiFengXiBarToolTipGenerator
 			return tooltip;
     }
 }
-
-

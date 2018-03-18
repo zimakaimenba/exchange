@@ -149,6 +149,10 @@ public class BanKuaiInfoTable extends JTable
 			 
 	        Component comp = super.prepareRenderer(renderer, row, col);
 	        BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
+	        if(tablemodel.getRowCount() == 0) {
+	        	return null;
+	        }
+	        
 	        int modelRow = convertRowIndexToModel(row);
 	        BanKuai bankuai = tablemodel.getBanKuai(modelRow);
 	        

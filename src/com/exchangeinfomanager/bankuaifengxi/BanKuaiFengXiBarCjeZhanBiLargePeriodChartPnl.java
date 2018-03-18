@@ -21,6 +21,7 @@ public class BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl extends BanKuaiFengXiB
 		DaPan tmpdp = (DaPan)node.getRoot();
 		dataset = updateDataset(node,displayedenddate1,period); 
 		mainPlot.setDataset(dataset);
+
 	}
 	@Override
     protected XYDataset updateDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period) 
@@ -29,12 +30,12 @@ public class BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl extends BanKuaiFengXiB
     	LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
 		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
 		TimeSeries rangecjezb = nodexdata.getRangeChengJiaoErZhanBi(requirestart, requireend);
-		
-		double highestHigh = rangecjezb.getMaxY();; //…Ë÷√œ‘ æ∑∂Œß
 
 		final TimeSeriesCollection dataset = new TimeSeriesCollection();
         dataset.addSeries(rangecjezb);
         
+        ((CustomXYBarRenderer)super.mainPlot.getRenderer()).setDisplayNode(node);
+        ((CustomXYBarRenderer)super.mainPlot.getRenderer()).setDisplayNodeXPeriodData (nodexdata);
         return dataset;
     }
 

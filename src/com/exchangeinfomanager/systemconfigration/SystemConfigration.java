@@ -515,7 +515,15 @@ public class SystemConfigration
 		{
 			return this.getTDXInstalledLocation() + "T0002/hq_cache/" + "profile.dat";
 		}
-
+		/*
+		 * 通达信划线信息
+		 * 
+		 */
+		public String getTDXDrawLineNameFile ()
+		{
+//			return this.getTDXInstalledLocation() + "T0002/tdxline.dat" ;
+			return  "e:/tdxline.dat" ;
+		}
 		/*
 		 * 生成通达信语言代码
 		 */

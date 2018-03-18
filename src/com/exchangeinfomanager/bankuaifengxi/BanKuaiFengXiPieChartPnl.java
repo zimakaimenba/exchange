@@ -93,6 +93,7 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements BarChar
     	PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator("{0}{1}({2})"); //If you need the %, use in label format {0} = {2} instead of {0} = {1} and will be displayed California = 10%.
     	pieplot.setLabelGenerator(labelGenerator);
         
+    	piechartdataset = new DefaultPieDataset();
     	pieplot.setDataset(piechartdataset);
     	
     	piechart = new JFreeChart(pieplot);
@@ -213,8 +214,13 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements BarChar
 		
 		public void resetDate ()
 		{
-			piechartdataset = new DefaultPieDataset();
-			pieplot.setDataset(piechartdataset);
+//			piechartdataset = null;
+//			piechartdataset = new DefaultPieDataset();
+//			pieplot.setDataset(piechartdataset);
+			if(piechartdataset != null)
+				piechartdataset.clear();
+			
+			this.piechartPanel.removeAll();
 		}
 
 		public Comparable getCurHightLightStock ()

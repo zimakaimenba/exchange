@@ -152,6 +152,9 @@ class ChanYeLianXMLHandler
 			} else 
 				logger.debug(bankuaichanyelianxml+ "´æÔÚ´íÎó");
 		}
+		
+		allstocks = null;
+		e = null;
 	}
 	/*
 	 * 

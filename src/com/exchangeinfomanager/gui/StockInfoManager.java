@@ -29,9 +29,9 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
@@ -401,7 +401,7 @@ public class StockInfoManager
 				else
 					return;
 				
-				BanKuai bankuai = bkcyl.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), ChenJiaoZhanBiInGivenPeriod.WEEK);
+				BanKuai bankuai = bkcyl.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), StockGivenPeriodDataItem.WEEK);
 				editorPanenodeinfo.displayNodeAllInfo(bankuai);
 			}
 		});
@@ -1099,7 +1099,7 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-
+				bkdbopt.refreshTDXDrawLineInfo (null);
 			}
 		});
 		
@@ -1655,56 +1655,7 @@ public class StockInfoManager
 			bkfx.toFront();
 	}
 
-	/*
-	 * 
-	 */
-//	protected  void displayBanKuaiOfStockZhanBiByWeek(String firstshowbkcode) 
-//	{
-//		String bkcode = firstshowbkcode.trim().substring(1,7);
-////		TreePath bankuaitreepath = bkcyl.getBkChanYeLianTree().locateNodeByNameOrHypyOrBkCode(bkcode);
-////		BanKuai bankuai = (BanKuai) bankuaitreepath.getPathComponent(1);
-////   	 	String tdxbk = bankuai.getMyOwnName(); 
-////   	 	String tdxbkcode = bankuai.getMyOwnCode();
-//    	
-//		LocalDate curselectdate = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		BanKuai bankuai = bkcyl.getBanKuai(bkcode,curselectdate);
-//		DaPan dapan =  (DaPan) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode("000000");
-//    	
-//    	//板块成交额
-//    	panelbkcje.resetDate();
-//    	panelbkcje.setNodeJiaoYiErByWeek (bankuai,curselectdate,dapan);
-//    	
-//    	//板块成交额占比
-//    	panelZhanBi.resetDate();
-//    	panelZhanBi.setNodeZhanBiByWeek(bankuai,curselectdate,dapan);
-//	}
-	/*
-	 * 股票在板块的半年内的占比
-	 */
-//	protected  void displayStockBanKuaiZhanBiByStock (String bkname)
-//	{
-//		String bkcode = bkname.trim().substring(1,7);
-//		
-//		LocalDate curselectdate = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//    	Stock stockofbankuai = bkcyl.getGeGuOfBanKuai (bkcode,nodeshouldbedisplayed .getMyOwnCode());
-//    	stockofbankuai.setMyOwnName(txtFldStockName.getText());
-//    	DaPan dapan =  (DaPan) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode("000000");
-//
-//    	//个股成交额
-//    	panelgegucje.resetDate();
-//    	panelgegucje.setNodeJiaoYiErByWeek (stockofbankuai,curselectdate,dapan);
-//
-//    	//个股板块成交额占比
-//    	pnlGeGuWkZhanBi.resetDate();
-//    	pnlGeGuWkZhanBi.setNodeZhanBiByWeek(stockofbankuai,curselectdate,dapan);
-//    	
-//    	//个股大盘成交额占比
-//    	panelGeguWkDpZhanBi.resetDate();
-//    	tabbedPanegeguzhanbi.setSelectedIndex(0);
-//    	panelGeguWkDpZhanBi.setNodeAndDaPanZhanBiByWeek (stockofbankuai,curselectdate,dapan);
-//	}
-	
-	
+
 		protected void saveKuaiSuJiLuJiaoYi() 
 		{
 			try {
@@ -1800,19 +1751,12 @@ public class StockInfoManager
 			Object[] tableData = new Object[] { addedday, action,  buyresult, autoIncKeyFromApi ,actionstockaccount,"个股盈亏"};
 			DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
 			tableModel.insertRow(0, tableData);
+			
 		}
 
-		
-//		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountschicangconfig.getStockChicangAccountsList(stocknumberpricepanel.getStockcode()),formatStockCode((String)cBxstockcode.getSelectedItem()) );
-//		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).fireTableDataChanged();
-		
 	}
 
 
-//	LocalDate startday = dateChsBanKuaiZhanbi.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//	LocalDate requirestart = startday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-//	dateChsBanKuaiZhanbi.setDate(Date.from(requirestart.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
-	
 
 	protected void initializeSearchDialog() 
 	{

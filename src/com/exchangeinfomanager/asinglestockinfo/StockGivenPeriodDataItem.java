@@ -53,7 +53,7 @@ public class StockGivenPeriodDataItem extends OHLCItem
 	private Integer ggbkcjemaxweek; //个股板块成交额最大周
 	private Double ggbkcjegrowthratetosuperbankuaicjegrowth;  //个股板块成交量贡献率
 	
-	private Boolean hasfengxijieguo; //有加入关注，分析结果等等
+	private Integer hasfengxijieguo; //有加入关注，分析结果等等
 	
 	
 	private double ggbkcjedifference; //个股的成交额本周期和合理的上周期的差额
@@ -246,17 +246,14 @@ public class StockGivenPeriodDataItem extends OHLCItem
 	public void setGgBkCjeMaxweek(Integer ggbkcjemaxweek) {
 		this.ggbkcjemaxweek = ggbkcjemaxweek;
 	}
-	public void setFengXiJIeGuo (Boolean fxjg)
+	public void setFengXiJIeGuo (Integer fxjg)
 	{
 		this.hasfengxijieguo =  fxjg;
 		
 	}
-	public Boolean hasFengXiJieGuo ()
+	public Integer getFengXiJieGuo ()
 	{
-		if(this.hasfengxijieguo != null)
-			return this.hasfengxijieguo;
-		else
-			return false;
+		return this.hasfengxijieguo;
 	}
 	
 	/*

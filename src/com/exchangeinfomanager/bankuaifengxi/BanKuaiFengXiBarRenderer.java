@@ -51,10 +51,10 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
     	this.node = curdisplayednode;
     }
     
-    public void setDateSet (CategoryDataset dataset)
-    {
-    	this.chartdataset = dataset;
-    }
+//    public void setDateSet (CategoryDataset dataset)
+//    {
+//    	this.chartdataset = dataset;
+//    }
     public void setDisplayMaxwkLevel (int maxl) 
     {
     	this.displayedmaxwklevel = maxl;

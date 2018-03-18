@@ -119,10 +119,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	{
 		// Create new chart
 		 createChartPanel();
-
-//		 sysconfig = SystemConfigration.getInstance();
-//		 this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
-//		 bkdbopt = new BanKuaiDbOperation ();
 	}
 	
 	@Override
@@ -146,10 +142,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	 */
 	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday,String period)
 	{
+		candlestickChart.setNotify(false);
+		this.resetDate();
+		
 		this.curdisplayednode = node;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
 		ohlcSeries = nodexdata.getRangeOHLCData(nodestartday, nodeendday);
-
+		ohlcSeries.setNotify(false);
+		candlestickDataset.setNotify(false);
+		
 		double lowestLow =10000.0;  double highestHigh =0.0; 
 		int itemcount = ohlcSeries.getItemCount();
 		for(int i=0;i<itemcount;i++){
@@ -169,8 +170,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		chartPanel.setHorizontalAxisTrace(true); //十字显示
         chartPanel.setVerticalAxisTrace(true);
         
-
+        ohlcSeries.setNotify(true);
+        candlestickDataset.setNotify(true);
+        candlestickChart.setNotify(true);
+        ohlcSeries.setNotify(false);
+        candlestickDataset.setNotify(false);
+        candlestickChart.setNotify(false);
+        
         setPanelTitle ( node, nodestartday, nodeendday);
+        
 	}
 
 	/*
@@ -178,10 +186,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	 */
 	public void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday,LocalDate highlightweekdate,String period)
 	{
+		candlestickChart.setNotify(false);
+		
 		this.curdisplayednode = node;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
 		ohlcSeries = nodexdata.getRangeOHLCData(nodestartday, nodeendday);
 
+		ohlcSeries.setNotify(false);
+		candlestickDataset.setNotify(false);
+		
 		double lowestLow =10000.0;  double highestHigh =0.0; 
 		
 		Day onemonthhighdate = null, twomonthhighdate=null;
@@ -226,12 +239,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		chartPanel.setHorizontalAxisTrace(true); //十字显示
         chartPanel.setVerticalAxisTrace(true);
         
-      //高亮显示选中的那一周，本来要划一个长方形，觉得实现太麻烦，改在renderer里面高亮
-//         XYShapeAnnotation shapeAnnotation = new XYShapeAnnotation(
-//                new Rectangle2D.Double( fromX - xFactor, fromY - yFactor, xFactor+xFactor, yFactor+yFactor ),
-//                20, Color.BLUE );
-////        shapeAnnotation.setToolTipText( toolTip );
-//        candlestickChart.getXYPlot().addAnnotation( shapeAnnotation );
         ((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (highlightweekdate);
         
         //draw annotation
@@ -255,8 +262,12 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 
         setPanelTitle ( node,  nodestartday,nodeendday);
         
-        candlestickChart.fireChartChanged ();
-		
+        ohlcSeries.setNotify(true);
+        candlestickDataset.setNotify(true);
+        candlestickChart.setNotify(true);
+        ohlcSeries.setNotify(false);
+        candlestickDataset.setNotify(false);
+        candlestickChart.setNotify(false);
 	}
 		
 	private void createChartPanel() 
@@ -302,11 +313,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		chartPanel.setMouseWheelEnabled(true);
 		chartPanel.setHorizontalAxisTrace(false);
 	    chartPanel.setVerticalAxisTrace(false);
-	    chartPanel.addMouseWheelListener(new MouseWheelListener() {
-			public void mouseWheelMoved(MouseWheelEvent arg0) {
-				
-			}
-		});
+//	    chartPanel.addMouseWheelListener(new MouseWheelListener() {
+//			public void mouseWheelMoved(MouseWheelEvent arg0) {
+//				
+//			}
+//		});
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
@@ -319,27 +330,44 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	
 	private void setPanelTitle (BkChanYeLianTreeNode node, LocalDate requirestart,LocalDate requireend)
 	{
-		String nodecode = node.getMyOwnCode();
-		String nodename = node.getMyOwnName();
+		try {
+			String nodecode = node.getMyOwnCode();
+			String nodename = node.getMyOwnName();
+			
+			((TitledBorder)this.getBorder()).setTitle(nodecode+ nodename
+	    												+ "从" + requirestart.toString() + "到" + requireend
+	    												+ "日线K线");
+		} catch (java.lang.NullPointerException e) {
+			((TitledBorder)this.getBorder()).setTitle("");
+		}
 		
-		((TitledBorder)this.getBorder()).setTitle(nodecode+ nodename
-    												+ "从" + requirestart.toString() + "到" + requireend
-    												+ "日线K线");
     	this.repaint();
-    	this.setToolTipText(nodecode+ nodename );
 	}
 
 
 	public void resetDate()
 	{
-//		ohlcSeries = new OHLCSeries("Price");
-//		candlestickDataset.addSeries(ohlcSeries);
+		
 		candlestickDataset.removeAllSeries();
 		((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (null);
 		List<XYPointerAnnotation> pointerlist = candlestickChart.getXYPlot().getAnnotations();
 		for(XYPointerAnnotation pointer : pointerlist) 
 			candlestickChart.getXYPlot().removeAnnotation(pointer);
 		
+		chartPanel.removeAll();
+		this.setPanelTitle(null, null, null);
+		
+		try {
+			ohlcSeries.setNotify(true);
+	        candlestickDataset.setNotify(true);
+	        candlestickChart.setNotify(true);
+	        ohlcSeries.setNotify(false);
+	        candlestickDataset.setNotify(false);
+	        candlestickChart.setNotify(false);
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+	
 	}
 
 
