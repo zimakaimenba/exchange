@@ -1615,7 +1615,7 @@ public class BanKuaiFengXi extends JDialog {
 		if(node.getType() == BanKuaiAndStockBasic.TDXBK) {
 			node = this.bkcyl.getBanKuai((BanKuai)node, requirestart.plusWeeks(1),globeperiod);
 		} else if(node.getType() == BanKuaiAndStockBasic.TDXGG) {
-			node = this.bkcyl.getStock(node.getMyOwnCode(), requirestart.plusWeeks(1),globeperiod);
+			node = this.bkcyl.getStock((Stock)node, requirestart.plusWeeks(1),globeperiod);
 		} else if(node.getType() == BanKuaiAndStockBasic.BKGEGU) {
 			BanKuai bk = ((StockOfBanKuai)node).getBanKuai();
 			this.bkcyl.getBanKuai((BanKuai)bk, requirestart.plusWeeks(1),globeperiod);
@@ -1626,12 +1626,16 @@ public class BanKuaiFengXi extends JDialog {
 		
 		NodeXPeriodDataBasic nodexdate = node.getNodeXPeroidData(globeperiod);
 		
-		BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl largeinfo = new BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl (node,nodexdate.getRecordsEndDate(),globeperiod);
-		if(cbxdpmaxwk.isSelected() && tflddisplaydpmaxwk.getText() != null)
-			largeinfo.setHighLightMaxWeekNumber (Integer.parseInt(tflddisplaydpmaxwk.getText()));
+		BanKuaiFengXiLargePeirod largeinfo = new BanKuaiFengXiLargePeirod (node,nodexdate.getRecordsEndDate(),globeperiod);
 		JOptionPane.showMessageDialog(null, largeinfo, "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
 		
+//		BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl largeinfo = new BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl (node,nodexdate.getRecordsEndDate(),globeperiod);
+//		if(cbxdpmaxwk.isSelected() && tflddisplaydpmaxwk.getText() != null)
+//			largeinfo.setHighLightMaxWeekNumber (Integer.parseInt(tflddisplaydpmaxwk.getText()));
+//		JOptionPane.showMessageDialog(null, largeinfo, "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
+		
 		largeinfo = null;
+		System.gc();
 	}
 
 	protected void initializeExportConditions() 
@@ -1870,9 +1874,9 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiInfoTable tableBkZhanBi;
 //	private JTable tableGuGuZhanBiInBk;
 	private BanKuaiGeGuTable tableGuGuZhanBiInBk;
-	private BanKuaiFengXiBarChartGgCjeZhanbiPnl panelbkwkzhanbi;
+	private BanKuaiFengXiBarChartCjeZhanbiPnl panelbkwkzhanbi;
 	private JTextField tfldweight;
-	private BanKuaiFengXiBarChartGgCjeZhanbiPnl panelgeguwkzhanbi;
+	private BanKuaiFengXiBarChartCjeZhanbiPnl panelgeguwkzhanbi;
 	private BanKuaiFengXiPieChartCjePnl pnllastestggzhanbi;
 	private BanKuaiFengXiPieChartCjePnl panelLastWkGeGuZhanBi;
 	private BanKuaiFengXiPieChartCjePnl panelselectwkgeguzhanbi;
@@ -1889,7 +1893,7 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiGeGuTable tablexuandingplusone;
 	private BanKuaiGeGuTable tablexuandingplustwo;
 	private JTabbedPane tabbedPanegegu;
-	private BanKuaiFengXiBarChartGgCjeZhanbiPnl panelGeguDapanZhanBi;
+	private BanKuaiFengXiBarChartCjeZhanbiPnl panelGeguDapanZhanBi;
 	private JTextField tfldshowcje;
 	private JTextField tfldparsedfile;
 	private JTabbedPane tabbedPanegeguzhanbi;
@@ -1916,7 +1920,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JTextField tfldbkmaxwk;
 	private JTextField tfldcjemaxwk;
 	private JCheckBox chkcjemaxwk;
-	private BanKuaiFengXiBarChartGgCjlZhanbiPnl panelggdpcjlwkzhanbi;
+	private BanKuaiFengXiBarChartCjlZhanbiPnl panelggdpcjlwkzhanbi;
 	private BanKuaiFengXiPieChartCjlPnl pnllastestggcjlzhanbi;
 	private JTabbedPane tabbedPane_1;
 	private BanKuaiFengXiPieChartCjlPnl panelselectwkgegucjlzhanbi;
@@ -2039,16 +2043,16 @@ public class BanKuaiFengXi extends JDialog {
 		panelbkcje = new BanKuaiFengXiBarChartCjePnl();
 		panelbkcje.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
-		panelbkwkzhanbi = new BanKuaiFengXiBarChartGgCjeZhanbiPnl();
+		panelbkwkzhanbi = new BanKuaiFengXiBarChartCjeZhanbiPnl();
 		panelbkwkzhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
 		
-		panelGeguDapanZhanBi = new BanKuaiFengXiBarChartGgCjeZhanbiPnl();
+		panelGeguDapanZhanBi = new BanKuaiFengXiBarChartCjeZhanbiPnl();
 		tabbedPanegeguzhanbi.addTab("\u5927\u76D8\u6210\u4EA4\u989D\u5360\u6BD4", null, panelGeguDapanZhanBi, null);
 		
-		panelgeguwkzhanbi = new BanKuaiFengXiBarChartGgCjeZhanbiPnl();
+		panelgeguwkzhanbi = new BanKuaiFengXiBarChartCjeZhanbiPnl();
 		tabbedPanegeguzhanbi.addTab("\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", null, panelgeguwkzhanbi, null);
 		
 		JTabbedPane tabbedPane_2 = new JTabbedPane(JTabbedPane.TOP);
@@ -2086,7 +2090,7 @@ public class BanKuaiFengXi extends JDialog {
 		panelgegucje = new BanKuaiFengXiBarChartCjePnl();
 		tabbedPane_2.addTab("\u677F\u5757\u6210\u4EA4\u989D", null, panelgegucje, null);
 		
-		panelggdpcjlwkzhanbi = new BanKuaiFengXiBarChartGgCjlZhanbiPnl();
+		panelggdpcjlwkzhanbi = new BanKuaiFengXiBarChartCjlZhanbiPnl();
 		tabbedPanegeguzhanbi.addTab("\u5927\u76D8\u6210\u4EA4\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		panel_2.setLayout(gl_panel_2);
 		

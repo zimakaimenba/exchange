@@ -167,6 +167,9 @@ public class BanKuaiInfoTable extends JTable
 	        //¸ü¸ÄÏÔÊ¾
 	        if (comp instanceof JLabel && (col == 2 ||  col == 4)) {
             	String value =  ((JLabel)comp).getText();
+            	if(value == null || value.length() == 0)
+            		return null;
+            	
             	String valuepect = null;
             	try {
             		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value).doubleValue();

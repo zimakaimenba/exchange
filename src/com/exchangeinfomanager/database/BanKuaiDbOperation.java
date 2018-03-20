@@ -3090,7 +3090,7 @@ public class BanKuaiDbOperation
 				rs = null;
 				rsfx = null;
 				bkcjltable = null;
-				System.gc();
+//				System.gc();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

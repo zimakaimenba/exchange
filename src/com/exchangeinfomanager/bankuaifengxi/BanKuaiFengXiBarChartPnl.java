@@ -38,6 +38,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.category.SlidingCategoryDataset;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleEdge;
@@ -121,7 +122,7 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
 	protected DefaultCategoryDataset barchartdataset ;
-//	protected DefaultCategoryDataset datafx ;
+//	protected SlidingCategoryDataset barchartdataset;
 	protected JFreeChart barchart;
 	private Comparable dateselected;
 	private ArrayList<JiaRuJiHua> selectedfxjg;
@@ -169,15 +170,10 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 	 */
 	public void resetDate ()
 	{
-//		barchartdataset = null;
-//		barchartdataset = new DefaultCategoryDataset();
-//		plot.setDataset(barchartdataset);
 		if(barchartdataset != null)
 			barchartdataset.clear();
 		
 		chartPanel.removeAll();
-		
-//		((BanKuaiFengXiBarRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(-1);
 	}
    
     private void createEvent ()

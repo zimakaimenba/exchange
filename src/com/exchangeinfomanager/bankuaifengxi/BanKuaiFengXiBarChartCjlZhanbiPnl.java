@@ -26,24 +26,23 @@ import org.jfree.ui.TextAnchor;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
-public class BanKuaiFengXiBarChartGgCjlZhanbiPnl extends BanKuaiFengXiBarChartPnl 
+public class BanKuaiFengXiBarChartCjlZhanbiPnl extends BanKuaiFengXiBarChartPnl 
 {
 
-	public BanKuaiFengXiBarChartGgCjlZhanbiPnl() 
+	public BanKuaiFengXiBarChartCjlZhanbiPnl() 
 	{
 		super ();
 		super.plot.setRenderer(new CustomRendererForZhanBi() );
 		((CustomRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartGgCjlZhanbiPnl.class);
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjlZhanbiPnl.class);
 	@Override
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference,String period)
 	{

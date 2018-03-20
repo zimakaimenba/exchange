@@ -198,7 +198,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	
                 break;
            case 8:
-            	Integer cjemaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum);//.getGgbkcjemaxweek(); 
+            	Integer cjemaxwk = stockxdata.getChenJiaoErMaxWeekOfSuperBanKuai(showwknum);//.getGgbkcjemaxweek(); 
             	value = cjemaxwk;
             	
             	cjemaxwk = null;

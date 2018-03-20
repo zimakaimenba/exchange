@@ -34,17 +34,17 @@ import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
-public class BanKuaiFengXiBarChartGgCjeZhanbiPnl extends BanKuaiFengXiBarChartPnl
+public class BanKuaiFengXiBarChartCjeZhanbiPnl extends BanKuaiFengXiBarChartPnl
 {
 
-	public BanKuaiFengXiBarChartGgCjeZhanbiPnl() 
+	public BanKuaiFengXiBarChartCjeZhanbiPnl() 
 	{
 		super ();
 		super.plot.setRenderer(new CustomRendererForZhanBi() );
 		((CustomRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartGgCjeZhanbiPnl.class);
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjeZhanbiPnl.class);
 	
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference, String period)
 	{

@@ -242,24 +242,31 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         ((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (highlightweekdate);
         
         //draw annotation
-        double millisonemonth = onemonthhighdate.getFirstMillisecond();
-        final XYPointerAnnotation pointeronemonth = new XYPointerAnnotation(String.valueOf(onemonthhigh), millisonemonth, onemonthhigh, 0 );
-        pointeronemonth.setBaseRadius(0.0);
-        pointeronemonth.setTipRadius(25.0);
-        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
-        pointeronemonth.setPaint(Color.YELLOW);
-        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
-		candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
+        try {
+	        double millisonemonth = onemonthhighdate.getFirstMillisecond();
+	        XYPointerAnnotation pointeronemonth = new XYPointerAnnotation(String.valueOf(onemonthhigh), millisonemonth, onemonthhigh, 0 );
+	        pointeronemonth.setBaseRadius(0.0);
+	        pointeronemonth.setTipRadius(25.0);
+	        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
+	        pointeronemonth.setPaint(Color.YELLOW);
+	        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
+			candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
+        } catch (java.lang.NullPointerException e) {
+        	
+        }
+		try {
+			double millistwomonth = twomonthhighdate.getFirstMillisecond();
+	        XYPointerAnnotation pointertwomonth = new XYPointerAnnotation(String.valueOf(twomonthhigh) , millistwomonth, twomonthhigh, 0);
+	        pointertwomonth.setBaseRadius(0.0);
+	        pointertwomonth.setTipRadius(25.0);
+	        pointertwomonth.setFont(new Font("SansSerif", Font.BOLD, 9));
+	        pointertwomonth.setPaint(Color.YELLOW);
+	        pointertwomonth.setTextAnchor(TextAnchor.CENTER);
+			candlestickChart.getXYPlot().addAnnotation(pointertwomonth);
+		} catch (java.lang.NullPointerException e) {
+	        	
+	    }
 		
-		double millistwomonth = twomonthhighdate.getFirstMillisecond();
-        final XYPointerAnnotation pointertwomonth = new XYPointerAnnotation(String.valueOf(twomonthhigh) , millistwomonth, twomonthhigh, 0);
-        pointertwomonth.setBaseRadius(0.0);
-        pointertwomonth.setTipRadius(25.0);
-        pointertwomonth.setFont(new Font("SansSerif", Font.BOLD, 9));
-        pointertwomonth.setPaint(Color.YELLOW);
-        pointertwomonth.setTextAnchor(TextAnchor.CENTER);
-		candlestickChart.getXYPlot().addAnnotation(pointertwomonth);
-
         setPanelTitle ( node,  nodestartday,nodeendday);
         
         ohlcSeries.setNotify(true);

@@ -1,12 +1,15 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.geom.RectangularShape;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.Date;
@@ -14,31 +17,33 @@ import java.util.Locale;
 
 import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
-import org.jfree.data.time.Day;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYBarPainter;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.ui.RectangleEdge;
 
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.DaPan;
 
-public class BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl extends BanKuaiFengXiBarLargePeriodChartPnl 
+public class BanKuaiFengXiBarCjeLargePeriodChartPnl extends BanKuaiFengXiBarLargePeriodChartPnl
 {
-	public BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl (BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period)
+	public BanKuaiFengXiBarCjeLargePeriodChartPnl (BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period)
 	{
 		super (node,displayedenddate1,period);
+		((CustomXYBarRenderer)super.mainPlot.getRenderer()).setBarPainter(new CustomXYBarCjePainter());
 		super.chart.setNotify(false);
-	    NumberFormat format = NumberFormat.getPercentInstance();
-        format.setMaximumFractionDigits(3); // etc.
+		NumberFormat format = NumberFormat.getNumberInstance();
+//        format.setMaximumFractionDigits(30000); // etc.
         DateFormat dateformate = DateFormat.getDateInstance();
         ((CustomXYBarRenderer)super.mainPlot.getRenderer()).setBaseItemLabelGenerator(new StandardXYItemLabelGenerator(StandardXYItemLabelGenerator.DEFAULT_ITEM_LABEL_FORMAT, dateformate, format) );
-        ((CustomXYBarRenderer)super.mainPlot.getRenderer()).setBaseToolTipGenerator(new CustomXYPlotCjeZbToolTipGenerator());
+        ((CustomXYBarRenderer)super.mainPlot.getRenderer()).setBaseToolTipGenerator(new CustomXYPlotCjeToolTipGenerator());
         
 		dataset = updateDataset(node,displayedenddate1,period); 
 		mainPlot.setDataset(dataset);
-		
 		super.chart.setNotify(true);
 	}
 	@Override
@@ -47,7 +52,7 @@ public class BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl extends BanKuaiFengXiB
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
     	LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
 		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
-		TimeSeries rangecjezb = nodexdata.getRangeChengJiaoErZhanBi(requirestart, requireend);
+		TimeSeries rangecjezb = nodexdata.getRangeChengJiaoEr(requirestart, requireend);
 
 		TimeSeriesCollection dataset = (TimeSeriesCollection) super.mainPlot.getDataset();
 		dataset.setNotify(false);
@@ -59,13 +64,36 @@ public class BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl extends BanKuaiFengXiB
         dataset.setNotify(true);
         return dataset;
     }
-
+	
 
 
 }
 
+class CustomXYBarCjePainter extends CustomXYBarPainter 
+{
+  	@Override
+    public void paintBarShadow(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base, boolean pegShadow) {
+   		
+   	}
 
-class CustomXYPlotCjeZbToolTipGenerator extends CustomXYPlotToolTipGenerator 
+   	public void paintBar(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base) 
+    {
+    	bar.setFrame(bar.getX(), bar.getY(), bar.getWidth() , bar.getHeight());
+    	    	
+//    	XYDataset dataset = renderer.getPlot().getDataset();
+    	    	
+    	if(highlightercolumn == column)
+    		g2.setColor(Color.BLUE.darker());
+    	else
+    		g2.setColor(Color.ORANGE.darker());
+    	
+    	g2.fill(bar);
+    	g2.draw(bar);
+    }
+   	
+}
+
+class CustomXYPlotCjeToolTipGenerator extends CustomXYPlotToolTipGenerator 
 {
 //	protected BkChanYeLianTreeNode node;
 //	protected NodeXPeriodDataBasic nodexdata;
@@ -81,24 +109,29 @@ class CustomXYPlotCjeZbToolTipGenerator extends CustomXYPlotToolTipGenerator
    	 
 		String tooltip = selecteddate.toString() + " ";
 		 
-			Double curzhanbidata = dataset.getYValue(series, item);   //占比
-			DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-			try {
-				tooltip = tooltip + "占比" + decimalformate.format(curzhanbidata);
-			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "占比NULL" ;
-			}
+			Double curcje = dataset.getYValue(series, item);   //占比
+	    	String danwei = "";
+	    	if(curcje >= 100000000) {
+	    		curcje = curcje / 100000000;
+	    		danwei = "亿";
+	    	}  	else if(curcje >= 10000000 && curcje <100000000) {
+	    		curcje = curcje / 10000000;
+	    		danwei = "千万";
+	    	}  	else if(curcje >= 1000000 && curcje <10000000) {
+	    		curcje = curcje / 1000000;
+	    		danwei = "百万";
+	    	}
+	    		
+	    	DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
 			
 			Integer maxweek = 0;
 			try {
-				 maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);
-				 tooltip = tooltip + "MAXWK= " + maxweek;
+				 maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate);
 			} catch (java.lang.NullPointerException e) {
 				 maxweek = 0;
-				 tooltip = tooltip + "MAXWK= 0" ;
 			}
 
-			return tooltip;
+			return selecteddate + " " + "成交额" + decimalformate.format(curcje) + danwei +  "成交额MaxWk=" + maxweek;
     }
 	
 //    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
@@ -110,4 +143,3 @@ class CustomXYPlotCjeZbToolTipGenerator extends CustomXYPlotToolTipGenerator
 //		this.nodexdata = nodexdata1;
 //	}
 }
-

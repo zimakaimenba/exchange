@@ -1,5 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryLabelPositions;
@@ -7,6 +9,9 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickMarkPosition;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.entity.CategoryItemEntity;
+import org.jfree.chart.entity.PlotEntity;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
@@ -16,11 +21,13 @@ import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.CrosshairState;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -50,7 +57,10 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.Date;
+import java.util.Locale;
 
 public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel 
 {
@@ -98,6 +108,7 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 //        mainPlot.setAxisOffset(new Spacer(100, 15D, 15D, 15D, 15D)); 
         mainPlot.setDomainCrosshairVisible(true); 
         mainPlot.setRangeCrosshairVisible(true); 
+        mainPlot.setDomainPannable(true);
         
         
         chart = new JFreeChart(null, null, mainPlot, true);
@@ -114,6 +125,8 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 //        this.add(getScrollBar(domainAxis), BorderLayout.SOUTH);
         this.add(getScrollBar(domainAxis));
 //        this.pack();
+        
+        createEvent ();
     }
     /*
      * 
@@ -125,14 +138,18 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
     private XYDataset getDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
     {
     	this.curdisplayednode = node;
-		final TimeSeriesCollection dataset = new TimeSeriesCollection();
+		TimeSeriesCollection dataset = new TimeSeriesCollection();
         return dataset;
     }
-
+    public void setHighLightSelectColumn (LocalDate data)
+    {
+    	((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightSelectColumn (data);
+    }
+    
     private JScrollBar getScrollBar(final DateAxis domainAxis)
     {
-        final double r1 = domainAxis.getLowerBound();
-        final double r2 = domainAxis.getUpperBound();
+        double r1 = domainAxis.getLowerBound();
+        double r2 = domainAxis.getUpperBound();
         JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 100, 100, 0, 400);
         scrollBar.addAdjustmentListener( new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -143,54 +160,62 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
         return scrollBar;
     }
     
-    protected abstract XYDataset updateDataset (BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period);
-}
-
-class CustomXYPlotToolTipGenerator implements XYToolTipGenerator 
-{
-	protected BkChanYeLianTreeNode node;
-	protected NodeXPeriodDataBasic nodexdata;
-	
-	@Override
-    public String generateToolTip(XYDataset dataset, int series, int item) 
-	{
-       Date d = new Date((long) dataset.getXValue(series, item));
-       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-   	   LocalDate selecteddate = CommonUtility.formateStringToDate(sdf.format(d));
-   	 
-		String tooltip = selecteddate.toString() + " ";
-		 
-			Double curzhanbidata = dataset.getYValue(series, item);   //占比
-			DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-			try {
-				tooltip = tooltip + "占比" + decimalformate.format(curzhanbidata);
-			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "占比NULL" ;
-			}
-			
-			Integer maxweek;
-			try {
-				 maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);
-				 tooltip = tooltip + "MAXWK" + maxweek;
-			} catch (java.lang.NullPointerException e) {
-				 maxweek = 0;
-				 tooltip = tooltip + "MAXWK=0" ;
-			}
-			
-
-			
-			return tooltip;
-
-    }
-	
-    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    private void createEvent ()
     {
-    	this.node = curdisplayednode;
+    	chartPanel.addChartMouseListener(new ChartMouseListener() {
+    		
+    		public void chartMouseClicked(ChartMouseEvent cme)
+    		{
+    	        Plot p = cme.getChart().getPlot();
+    	        if(p instanceof XYPlot) {
+    	            XYPlot xyp = (XYPlot)p;
+    	            if(cme.getEntity() instanceof XYItemEntity) {
+    	                XYItemEntity e = (XYItemEntity)(cme.getEntity());
+    	                XYPlot plot = cme.getChart().getXYPlot();
+    	                XYDataset dataset = e.getDataset();
+    	                for(int i = 0; i < plot.getDatasetCount(); i ++){
+    	                    XYDataset test = plot.getDataset(i);
+    	                    if(test == dataset) {
+    	                        XYItemRenderer r = plot.getRenderer(i);
+    	                        if(r instanceof CustomXYBarRenderer){
+    	                        	CustomXYBarRenderer sel = (CustomXYBarRenderer)r;
+    	                        	System.out.println("Series index: " + e.getSeriesIndex() + ", item index " + e.getItem());
+    	                        	sel.setHighLightSelectColumn(e.getItem());
+    	                        }
+    	                    }
+    	                }
+    	                
+    	            }
+    	            
+    	        }
+    		}
+
+    	    public void chartMouseClicked2(ChartMouseEvent cme) {
+    	    	try {
+    	    		XYItemEntity xyitem = (XYItemEntity) cme.getEntity(); // get clicked entity
+    	    		XYDataset tmpdataset = xyitem.getDataset();
+    	    		int itemindex = xyitem.getItem();
+    	    		
+    	    		((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightSelectColumn (itemindex);
+        	         
+    	    	} catch ( java.lang.ClassCastException e ) {
+
+    	    	}
+    	    }
+
+			@Override
+			public void chartMouseMoved(ChartMouseEvent arg0) {
+			}
+
+    	});
     }
-    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
+    
+    public ChartPanel getChartPanel() 
     {
-		this.nodexdata = nodexdata1;
+    	return chartPanel;
 	}
+    
+    protected abstract XYDataset updateDataset (BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period);
 }
 
 class CustomXYBarRenderer extends XYBarRenderer 
@@ -200,8 +225,8 @@ class CustomXYBarRenderer extends XYBarRenderer
 	 */
 	private static final long serialVersionUID = 1L;
 	private BkChanYeLianTreeNode node;
-	private NodeXPeriodDataBasic nodexdata;
-	private int highlightmaxwk = 10000;
+	protected NodeXPeriodDataBasic nodexdata;
+	protected int highlightmaxwk = 10000;
 	public CustomXYBarRenderer (double margin)
 	{
 		super (margin);
@@ -210,13 +235,12 @@ class CustomXYBarRenderer extends XYBarRenderer
 	    super.setItemLabelAnchorOffset(5);
 	    super.setItemLabelsVisible(true);
 	    super.setBaseItemLabelsVisible(true);
-	    NumberFormat format = NumberFormat.getPercentInstance();
-        format.setMaximumFractionDigits(3); // etc.
-        DateFormat dateformate = DateFormat.getDateInstance();
-//        renderer.setBaseItemLabelGenerator(new  StandardXYItemLabelGenerator ("{0} {1} {2}", format, format));
-        super.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator(StandardXYItemLabelGenerator.DEFAULT_ITEM_LABEL_FORMAT, dateformate, format) );
+//	    NumberFormat format = NumberFormat.getPercentInstance();
+//        format.setMaximumFractionDigits(3); // etc.
+//        DateFormat dateformate = DateFormat.getDateInstance();
+//        super.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator(StandardXYItemLabelGenerator.DEFAULT_ITEM_LABEL_FORMAT, dateformate, format) );
         super.setBaseItemLabelsVisible(true);
-        super.setBaseToolTipGenerator(new CustomXYPlotToolTipGenerator());
+//        super.setBaseToolTipGenerator(new CustomXYPlotCjeZbToolTipGenerator());
         super.setBarPainter(new CustomXYBarPainter ());
 	}
 	
@@ -225,16 +249,16 @@ class CustomXYBarRenderer extends XYBarRenderer
 //		 g2.setColor(Color.cyan);
 //		
 //	}
-    public Paint getItemLabelPaint(final int row, final int column)
+    public Paint getItemLabelPaint( int row,  int column)
     {
     	XYPlot plot = getPlot ();
-    	XYDataset dataset = plot.getDataset();
-		double selectedy = dataset.getY(row, column).doubleValue();
+    	XYDataset tmpdataset = plot.getDataset();
+		double selectedy = tmpdataset.getY(row, column).doubleValue();
 //		TimeSeries series = (TimeSeries) dataset.getSeriesKey(1);
-		Date d = new Date((long) dataset.getXValue(0, column));
+		Date d = new Date((long) tmpdataset.getXValue(0, column));
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		LocalDate selecteddate = CommonUtility.formateStringToDate(sdf.format(d)); 
-		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate);
+		Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);
 		
 		if(maxweek !=null && maxweek >= highlightmaxwk)
 			return Color.RED;
@@ -245,21 +269,51 @@ class CustomXYBarRenderer extends XYBarRenderer
     public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
     {
     	this.node = curdisplayednode;
+    	((CustomXYPlotCjeZbToolTipGenerator)this.getBaseToolTipGenerator()).setDisplayNode(curdisplayednode);
     }
 
     public void setDisplayNodeXPeriodData(NodeXPeriodDataBasic nodexdata1) 
     {
 		this.nodexdata = nodexdata1;
+		((CustomXYPlotToolTipGenerator)this.getBaseToolTipGenerator()).setDisplayNodeXPeriod(nodexdata1);
 	}
     public void setHighLightMaxWeekNumber(int maxwk) 
     {
     	this.highlightmaxwk = maxwk;
     }
-
-
+    public void setHighLightSelectColumn (int column) 
+    {
+    	((CustomXYBarPainter)this.getBarPainter()).setBarColumnShouldChangeColor(column);
+    }
+    public void setHighLightSelectColumn (LocalDate date) 
+    {
+////    	chart.setNotify(false);
+//    	XYPlot plot = getPlot ();
+//    	XYDataset tmpdataset = plot.getDataset();
+//		TimeSeries series = (TimeSeries) tmpdataset.get.getSeriesKey(1);
+    }
 }
 
+abstract class CustomXYPlotToolTipGenerator implements XYToolTipGenerator 
+{
 
+	protected BkChanYeLianTreeNode node;
+	protected NodeXPeriodDataBasic nodexdata;
+	@Override
+	public String generateToolTip(XYDataset arg0, int arg1, int arg2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
+    }
+    public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
+    {
+		this.nodexdata = nodexdata1;
+	}
+}
 class CustomXYBarPainter implements XYBarPainter 
 {
 	protected int highlightercolumn = -1;
@@ -274,7 +328,7 @@ class CustomXYBarPainter implements XYBarPainter
     {
     	bar.setFrame(bar.getX(), bar.getY(), bar.getWidth() , bar.getHeight());
     	    	
-    	XYDataset dataset = renderer.getPlot().getDataset();
+//    	XYDataset dataset = renderer.getPlot().getDataset();
     	    	
     	if(highlightercolumn == column)
     		g2.setColor(Color.BLUE.darker());
@@ -285,17 +339,17 @@ class CustomXYBarPainter implements XYBarPainter
     	g2.draw(bar);
     }
    	
-    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
-    {
-    	this.node = curdisplayednode;
-    }
-
-    public void setDisplayNodeXPeriodData(NodeXPeriodDataBasic nodexdata1) 
-    {
-		this.nodexdata = nodexdata1;
-	}
+//    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+//    {
+//    	this.node = curdisplayednode;
+//    }
+//
+//    public void setDisplayNodeXPeriodData(NodeXPeriodDataBasic nodexdata1) 
+//    {
+//		this.nodexdata = nodexdata1;
+//	}
 	public void setBarColumnShouldChangeColor (int column)
     {
     	this.highlightercolumn = column;
     }
-};
+}

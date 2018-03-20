@@ -461,23 +461,25 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			public void addNewXPeriodData (StockGivenPeriodDataItem kdata)
 			{
 				try {
+					stockohlc.setNotify(false);
 					stockohlc.add(kdata);
 				} catch (org.jfree.data.general.SeriesException e) {
 					System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 				}
 				try {
+					stockamo.setNotify(false);
 					stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
 //					stockvol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
-					if(kdata.getCjeZhanBi() != null)
+					if(kdata.getCjeZhanBi() != null) {
+						stockamozhanbi.setNotify(false);
 						stockamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi(),false);
+					}
 //					if(kdata.getCjlZhanBi() != null)
 //						stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
 				} catch (org.jfree.data.general.SeriesException e) {
 					System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //					e.printStackTrace();
 				}
-				
-//				kdata = null;
 			}
 			/*
 			 * (non-Javadoc)
