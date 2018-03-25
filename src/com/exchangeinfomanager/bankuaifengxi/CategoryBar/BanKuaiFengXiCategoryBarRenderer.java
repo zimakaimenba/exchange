@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
 import java.awt.Paint;
@@ -11,15 +11,15 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriod
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 
-public class  BanKuaiFengXiBarRenderer extends BarRenderer
+public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 {
 
-	public BanKuaiFengXiBarRenderer() 
+	public BanKuaiFengXiCategoryBarRenderer() 
 	{
 		super ();
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarRenderer.class);
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarRenderer.class);
 	private static final long serialVersionUID = 1L;
 //	private Paint[] colors;
     protected int shouldcolumn = -1;
@@ -28,33 +28,34 @@ public class  BanKuaiFengXiBarRenderer extends BarRenderer
 	protected BkChanYeLianTreeNode node;
 	protected CategoryDataset chartdataset;
 	protected NodeXPeriodDataBasic nodexdata;
-	
+	/*
+	 * 
+	 */
 	public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
     {
 		this.nodexdata = nodexdata1;
+		BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();
+    	tooltipgenerator.setDisplayNodeXPeriod(nodexdata1);
 	}
-	
+	/*
+	 * 
+	 */
 	public void setBarColumnShouldChangeColor (int column)
     {
     	this.shouldcolumn = column;
     }
-    /*
-     * 设置bar是占比还是成交量，显示不同的barcolor
-     */
-//    public void setBarCharType(String type) 
-//    {
-//    	this.barCharType = type;
-//    }
-	
+	/*
+	 * 
+	 */
     public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
     {
     	this.node = curdisplayednode;
+    	BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();
+    	tooltipgenerator.setDisplayNode(curdisplayednode);
     }
-    
-//    public void setDateSet (CategoryDataset dataset)
-//    {
-//    	this.chartdataset = dataset;
-//    }
+    /*
+     * 
+     */
     public void setDisplayMaxwkLevel (int maxl) 
     {
     	this.displayedmaxwklevel = maxl;

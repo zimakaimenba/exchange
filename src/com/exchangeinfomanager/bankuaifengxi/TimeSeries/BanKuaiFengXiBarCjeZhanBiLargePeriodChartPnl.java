@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.TimeSeries;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;

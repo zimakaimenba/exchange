@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.data.category.CategoryDataset;
@@ -7,7 +7,7 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriod
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 
-public class BanKuaiFengXiBarToolTipGenerator implements CategoryToolTipGenerator 
+public class BanKuaiFengXiCategoryBarToolTipGenerator implements CategoryToolTipGenerator 
 {
 	protected BkChanYeLianTreeNode node;
 //  private static Logger logger = Logger.getLogger(CustomToolTipGeneratorForChenJiaoEr.class);

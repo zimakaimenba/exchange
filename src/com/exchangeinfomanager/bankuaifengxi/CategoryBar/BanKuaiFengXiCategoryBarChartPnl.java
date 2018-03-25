@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -12,6 +12,7 @@ import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.DateAxis;
@@ -52,6 +53,9 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriod
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
+import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
+import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
+import com.exchangeinfomanager.bankuaifengxi.TooltipChartPanel.TooltipChartPanel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
@@ -78,6 +82,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
@@ -85,7 +90,7 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChartPanelDataChangedListener, BarChartPanelHightLightListener  
+public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener  
 {
 	/**
 	 * 
@@ -95,16 +100,9 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 	/**
 	 * Create the panel.
 	 */
-	public BanKuaiFengXiBarChartPnl() 
+	public BanKuaiFengXiCategoryBarChartPnl() 
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
-		standardChartTheme.setExtraLargeFont(new Font("隶书",Font.BOLD,20) );
-		standardChartTheme.setRegularFont(new Font("隶书",Font.BOLD,20) );
-		standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,20));
-		ChartFactory.setChartTheme(standardChartTheme);
-
 		createChartPanel();
 		createEvent ();
 		
@@ -114,7 +112,7 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 		bkdbopt = new BanKuaiDbOperation ();
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartPnl.class);
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
 	protected BkChanYeLianTreeNode curdisplayednode;	
 	protected String globeperiod = "WEEK";
 //	private LocalDate displayedenddate;
@@ -124,17 +122,19 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 	protected DefaultCategoryDataset barchartdataset ;
 //	protected SlidingCategoryDataset barchartdataset;
 	protected JFreeChart barchart;
-	private Comparable dateselected;
+	private Comparable<String> dateselected;
 	private ArrayList<JiaRuJiHua> selectedfxjg;
 	private String tooltipselected;
 	private SystemConfigration sysconfig;
 	protected int shoulddisplayedmonthnum;
 	private BanKuaiDbOperation bkdbopt;
+	protected boolean selectchanged;
+	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
 
 	/*
 	 * 
 	 */
-	protected void setDaZiJinValueMarker (double d)
+	public void setDaZiJinValueMarker (double d)
 	{
 		ValueMarker marker = new ValueMarker (d);
 //		marker.setLabel("热点占比警戒线");
@@ -175,7 +175,9 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 		
 		chartPanel.removeAll();
 	}
-   
+   /*
+    * 
+    */
     private void createEvent ()
     {
     	chartPanel.addChartMouseListener(new ChartMouseListener() {
@@ -184,18 +186,23 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
     	    	try {
     	    		CategoryItemEntity xyitem = (CategoryItemEntity) cme.getEntity(); // get clicked entity
         	        CategoryDataset dataset = xyitem.getDataset(); // get data set
-        	        Comparable columnkey = xyitem.getColumnKey();
+        	        Comparable<String> columnkey = xyitem.getColumnKey();
         	        highLightSpecificBarColumn (columnkey);
         	        dateselected = columnkey;
         	        tooltipselected = xyitem.getToolTipText();
         	        
         	        getZdgzFx (CommonUtility.formateStringToDate(columnkey.toString()),globeperiod);
+        	        
+        	        selectchanged = true;
+        	        
+        	        chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(columnkey));
         	         
     	    	} catch ( java.lang.ClassCastException e ) {
-    	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
-    	    		xyitem1.getPlot();
-    	    		dateselected = null;
-        	        tooltipselected = null;
+//    	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
+//    	    		xyitem1.getPlot();
+//    	    		dateselected = null;
+//        	        tooltipselected = null;
+        	        selectchanged = false;
     	    	}
     	    }
 
@@ -239,26 +246,47 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 	/*
      * 设置要突出显示的bar
      */
+    @Override
     public void highLightSpecificBarColumn (Comparable selecteddate)
     {
+    	if(selecteddate == null)
+    		return;
+    	
     	int cindex = barchartdataset.getColumnIndex(selecteddate) ;
-    	((BanKuaiFengXiBarRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
+    	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
     	
         this.dateselected = selecteddate;
         this.barchart.fireChartChanged();//必须有这句
+    }
+    @Override
+    public void highLightSpecificBarColumn (Integer columnindex)
+    {
+    	
+    }
+	@Override
+	public void setHightLightColumnListeners(Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners1) {
+		this.chartpanelhighlightlisteners = chartpanelhighlightlisteners1;
+		
+	}
+    /*
+     * 
+     */
+    public boolean isSelectedColumnChanged ()
+    {
+    	return this.selectchanged;
     }
     /*
      * 设置要突出显示成交量或者占比MAXWK的阀值
      */
     public void setDisplayMaxwkLevel  (int maxl) 
     {
-    	((BanKuaiFengXiBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel(maxl);
+    	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel(maxl);
     	 barchart.fireChartChanged();//必须有这句
     }
     /*
      * 
      */
-	public Comparable getCurSelectedBarDate ()
+	public Comparable<String> getCurSelectedBarDate ()
 	{
 		return dateselected;
 	}
@@ -284,51 +312,54 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
+		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
+		standardChartTheme.setExtraLargeFont(new Font("隶书",Font.BOLD,20) );
+		standardChartTheme.setRegularFont(new Font("隶书",Font.BOLD,20) );
+		standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,20));
+		ChartFactory.setChartTheme(standardChartTheme);
+		
 //    	https://www.youtube.com/watch?v=YV80Titt9Q4
 //    	BarRenderer renderer = new BarRenderer ();
-    	BanKuaiFengXiBarRenderer renderer = new BanKuaiFengXiBarRenderer ();
+    	BanKuaiFengXiCategoryBarRenderer renderer = new BanKuaiFengXiCategoryBarRenderer ();
 //        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 //        renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
         renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
         renderer.setItemLabelAnchorOffset(5);
         renderer.setItemLabelsVisible(true);
         renderer.setBaseItemLabelsVisible(true);
-//        renderer.setSeriesToolTipGenerator(0,new CustomToolTipGeneratorForZhanBi());
-//        renderer.setToolTipGenerator(new CustomToolTipGeneratorForZhanBi());
-//        renderer.setSeriesPaint(0, Color.blue);
-//        renderer.setDefaultBarPainter(new StandardBarPainter());
+        renderer.setMaximumBarWidth(.5);
+        renderer.setMinimumBarLength(.5);
+        renderer.setItemMargin(-2);
+
         
         barchartdataset = new DefaultCategoryDataset(); 
         
         plot = new CategoryPlot(); 
+//        plot.setBackgroundPaint(Color.GRAY); 
+//        plot.setDomainGridlinePaint(Color.white); 
+//        plot.setRangeGridlinePaint(Color.white);
 //        LegendTitle legend = new LegendTitle(plot); 
 //        legend.setPosition(RectangleEdge.TOP); 
         plot.setDataset(barchartdataset); 
         plot.setRenderer(renderer); 
-//        plot.setDomainAxis(new CategoryAxis(""));
         plot.setDomainAxis(new CategoryLabelCustomizableCategoryAxis(""));
         plot.setRangeAxis(new NumberAxis(""));
         plot.setRangePannable(true);
-//        plot.setDomainPannable(true);
-//        ((BanKuaiFengXiBarRenderer) plot.getRenderer()).setBarPainter(new StandardBarPainter());
-        CategoryAxis axis = plot.getDomainAxis();
-        axis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
-//	    axis.setTickLabelPaint(Color.RED); 
-
-	   
-
+        
         barchart = new JFreeChart(plot);
         barchart.removeLegend();
         barchart.setNotify(true);
 //        barchart.setDomainZoomable(true);
 
         chartPanel = new ChartPanel(barchart);
+//         chartPanel = new TooltipChartPanel(barchart);
 //        chartPanel.setHorizontalAxisTrace(true); //十字显示
-//        chartPanel.setPreferredSize(new Dimension(400, 400));
+        chartPanel.setPreferredSize(new Dimension(1500, 350));
         chartPanel.setVerticalAxisTrace(true);
         chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
 //        this.add(getScrollBar(axis));
+        
         
         
         JPopupMenu popupMenu = new JPopupMenu();
@@ -336,6 +367,25 @@ public abstract class BanKuaiFengXiBarChartPnl extends JPanel implements BarChar
 //		popupMenu.add(mntmNewMenuItem);
 		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
    }
+    
+    /*
+     * 
+     */
+    private JScrollBar getScrollBar( CategoryAxis axis)
+    {
+        double r1 = axis.getLowerMargin();
+        double r2 = axis.getUpperMargin();
+        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 100, 100, 0, 400);
+        scrollBar.addAdjustmentListener( new AdjustmentListener() {
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                double x = e.getValue() *60 *60 * 1000;
+//                axis.set.setRange(r1+x, r2+x);
+            }
+        });
+        return scrollBar;
+    }
+    
+    
 }
 
 /*
@@ -349,6 +399,9 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
 
     public CategoryLabelCustomizableCategoryAxis(String label) {
         super(label);
+        super.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
+        super.setLowerMargin(0.01);
+        super.setUpperMargin(0.01);
     }
     
     public Paint getTickLabelPaint(Comparable category)

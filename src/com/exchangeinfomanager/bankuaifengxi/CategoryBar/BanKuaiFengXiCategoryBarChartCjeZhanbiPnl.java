@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
 import java.awt.Paint;
@@ -34,17 +34,26 @@ import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
-public class BanKuaiFengXiBarChartCjeZhanbiPnl extends BanKuaiFengXiBarChartPnl
+public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl
 {
 
-	public BanKuaiFengXiBarChartCjeZhanbiPnl() 
+	public BanKuaiFengXiCategoryBarChartCjeZhanbiPnl() 
 	{
 		super ();
-		super.plot.setRenderer(new CustomRendererForZhanBi() );
-		((CustomRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+		super.plot.setRenderer(new CustomCategroyRendererForZhanBi() );
+		
+		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+		
+		CustomCategroyToolTipGeneratorForZhanBi custotooltip = new CustomCategroyToolTipGeneratorForZhanBi();
+//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setSeriesToolTipGenerator(0,custotooltip);
+		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
+		
+		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelsVisible(true);
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjeZhanbiPnl.class);
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartCjeZhanbiPnl.class);
 	
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference, String period)
 	{
@@ -56,6 +65,10 @@ public class BanKuaiFengXiBarChartCjeZhanbiPnl extends BanKuaiFengXiBarChartPnl
 			date = date.plus(difference,ChronoUnit.MONTHS);
 			
 		setNodeCjeZhanBi(node,date,period);
+	}
+	public void updatedDate (BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate,String period)
+	{
+		this.setNodeCjeZhanBi (node,startdate,enddate,period);
 	}
 	/*
 	 * 板块按周相对于某板块的交易额
@@ -124,19 +137,9 @@ public class BanKuaiFengXiBarChartCjeZhanbiPnl extends BanKuaiFengXiBarChartPnl
 	 */
 	private void operationAfterDataSetup (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, String period) 
 	{
-		CustomRendererForZhanBi render = (CustomRendererForZhanBi)super.plot.getRenderer();
+		CustomCategroyRendererForZhanBi render = (CustomCategroyRendererForZhanBi)super.plot.getRenderer();
 		render.setDisplayNode(this.curdisplayednode);
 		render.setDisplayNodeXPeriod (nodexdata);
-		
-		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-		render.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-		render.setItemLabelsVisible(true);
-
-
-		CustomToolTipGeneratorForZhanBi custotooltip = new CustomToolTipGeneratorForZhanBi();
-		custotooltip.setDisplayNode(curdisplayednode);
-		custotooltip.setDisplayNodeXPeriod(nodexdata);
-		render.setSeriesToolTipGenerator(0,custotooltip);
 		
 		//如有分析结果，ticklable显示红色
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
@@ -147,11 +150,11 @@ public class BanKuaiFengXiBarChartCjeZhanbiPnl extends BanKuaiFengXiBarChartPnl
 
 }
 
-class CustomRendererForZhanBi extends BanKuaiFengXiBarRenderer 
+class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer 
 {
 	private static final long serialVersionUID = 1L;
    
-    public CustomRendererForZhanBi() {
+    public CustomCategroyRendererForZhanBi() {
         super();
         super.displayedmaxwklevel = 4;
     }
@@ -161,7 +164,7 @@ class CustomRendererForZhanBi extends BanKuaiFengXiBarRenderer
         if(column == shouldcolumn)
             return Color.blue;
         else   
-            return Color.RED;
+            return Color.RED.darker();
    }
     
     public Paint getItemLabelPaint(final int row, final int column)
@@ -181,7 +184,7 @@ class CustomRendererForZhanBi extends BanKuaiFengXiBarRenderer
     
 }
 
-class CustomToolTipGeneratorForZhanBi extends BanKuaiFengXiBarToolTipGenerator 
+class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarToolTipGenerator 
 {
 	public String generateToolTip(CategoryDataset dataset, int row, int column)  
     {
@@ -210,9 +213,9 @@ class CustomToolTipGeneratorForZhanBi extends BanKuaiFengXiBarToolTipGenerator
 //				tooltip = tooltip  +  "占比变化(NULL)";
 //			}
 			try {
-				tooltip = tooltip +  "MaxWk=" + maxweek.toString() ;
+				tooltip = tooltip +  "占比MaxWk=" + maxweek.toString() ;
 			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "MaxWk=NULL";
+				tooltip = tooltip + "占比MaxWk=NULL";
 			}
 			
 			return tooltip;

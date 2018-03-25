@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.PieChart;
 
 import java.awt.Font;
 import java.io.File;
@@ -28,6 +28,7 @@ import org.jfree.data.general.PieDataset;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.google.common.io.Files;
 
 public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements BarChartPanelDataChangedListener

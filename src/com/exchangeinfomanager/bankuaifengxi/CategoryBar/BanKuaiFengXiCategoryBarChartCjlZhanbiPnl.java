@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -32,17 +32,17 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriod
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
-public class BanKuaiFengXiBarChartCjlZhanbiPnl extends BanKuaiFengXiBarChartPnl 
+public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl 
 {
 
-	public BanKuaiFengXiBarChartCjlZhanbiPnl() 
+	public BanKuaiFengXiCategoryBarChartCjlZhanbiPnl() 
 	{
 		super ();
-		super.plot.setRenderer(new CustomRendererForZhanBi() );
-		((CustomRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+		super.plot.setRenderer(new BanKuaiFengXiCategoryBarRenderer() );
+		((BanKuaiFengXiCategoryBarRenderer) plot.getRenderer()).setBarPainter(new StandardBarPainter());
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjlZhanbiPnl.class);
+	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartCjlZhanbiPnl.class);
 	@Override
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference,String period)
 	{
@@ -153,6 +153,11 @@ public class BanKuaiFengXiBarChartCjlZhanbiPnl extends BanKuaiFengXiBarChartPnl
 //        target.setLabelTextAnchor(TextAnchor.CENTER_LEFT);
 //        target.setPaint(new Color(222, 222, 255, 128));
 //        plot.addRangeMarker(target, Layer.BACKGROUND);
+		
+	}
+	@Override
+	public void updatedDate(BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate, String period) {
+		// TODO Auto-generated method stub
 		
 	}
 

@@ -77,6 +77,14 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
+import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjlZhanbiPnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
+import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
+import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -190,7 +198,7 @@ public class BanKuaiFengXi extends JDialog {
 	private ArrayList<ExportCondition> exportcond;
 	private String globeperiod;
 		
-	private Set<BarChartPanelHightLightListener> chartpanelhighlightlisteners;
+	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelbankuaidatachangelisteners;
 	private Set<BarChartPanelDataChangedListener> piechartpanelbankuaidatachangelisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelstockofbankuaidatachangelisteners;
@@ -228,6 +236,12 @@ public class BanKuaiFengXi extends JDialog {
 		chartpanelhighlightlisteners.add(panelbkcje);
 		chartpanelhighlightlisteners.add(pnlggdpcje);
 		chartpanelhighlightlisteners.add(panelbkwkzhanbi);
+		panelGeguDapanZhanBi.setHightLightColumnListeners (chartpanelhighlightlisteners);
+		panelgegucje.setHightLightColumnListeners (chartpanelhighlightlisteners);
+		panelgeguwkzhanbi.setHightLightColumnListeners (chartpanelhighlightlisteners);
+		panelbkcje.setHightLightColumnListeners (chartpanelhighlightlisteners);
+		pnlggdpcje.setHightLightColumnListeners (chartpanelhighlightlisteners);
+		panelbkwkzhanbi.setHightLightColumnListeners (chartpanelhighlightlisteners);
 		
 		//同步几个表要highlight的数据
 		bkfxhighlightvalueslisteners.add(tableGuGuZhanBiInBk);
@@ -644,9 +658,9 @@ public class BanKuaiFengXi extends JDialog {
 
 			barchartpanelstockofbankuaidatachangelisteners.forEach(l -> l.updatedDate(stock, curselectdate, 0,globeperiod));
 		
-			Comparable datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
-			if(datekey != null) 
-				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//			Comparable datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
+//			if(datekey != null) 
+//				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
 
 	}
 	/*
@@ -667,7 +681,8 @@ public class BanKuaiFengXi extends JDialog {
 		}
 
 		paneldayCandle.resetDate();
-		paneldayCandle.setNodeCandleStickDate(selectstock2,requirestart,requireend,StockGivenPeriodDataItem.DAY);
+		paneldayCandle.updatedDate(selectstock2,requirestart,requireend,StockGivenPeriodDataItem.DAY);
+		paneldayCandle.displayRangeHighLowValue(true);
 	}
 	/*
 	 * 用户选择个股周成交量某个数据后，显示该数据前后50个交易日的日线K线走势
@@ -681,7 +696,8 @@ public class BanKuaiFengXi extends JDialog {
 
 		//日线K线走势，目前K线走势和成交量在日线以上周期是分开的，所以调用时候要特别小心，以后会合并
 		BkChanYeLianTreeNode selectstock = bkcyl.getStockK(selectstock2.getMyOwnCode(),requireend,StockGivenPeriodDataItem.DAY);
-		paneldayCandle.setNodeCandleStickDate(selectstock,requirestart,requireend,selectedday,StockGivenPeriodDataItem.DAY);
+		paneldayCandle.updatedDate(selectstock,requirestart,requireend,StockGivenPeriodDataItem.DAY);
+		paneldayCandle.highLightSpecificDateCandleStickWithHighLowValue(selectedday, StockGivenPeriodDataItem.DAY, true);
 	}
 	
 	private void displayStockSuoShuBanKuai(Stock selectstock) 
@@ -1005,16 +1021,17 @@ public class BanKuaiFengXi extends JDialog {
 				
 				java.awt.event.MouseEvent me = e.getTrigger();
     	        if (me.getClickCount() == 2) {
-    	        	displayNodeLargerPeriodData (bkcur);
+    	        	Comparable<String> datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
+    	        	displayNodeLargerPeriodData (bkcur,datekey);
     	        }
     	        
     	        if (me.getClickCount() == 1) {
     	        	//显示选择的tooltip
-    				String tooltip = panelbkwkzhanbi.getToolTipSelected ();
-    				if(tooltip == null)
+    				if(!panelbkwkzhanbi.isSelectedColumnChanged())
     					return;
     				
     				//显示选择周的分析记录等
+    				String tooltip = panelbkwkzhanbi.getToolTipSelected ();
     				ArrayList<JiaRuJiHua> fxjg = panelbkwkzhanbi.getCurSelectedFengXiJieGuo ();
     				setUserSelectedColumnMessage(tooltip,fxjg);
     			
@@ -1030,8 +1047,8 @@ public class BanKuaiFengXi extends JDialog {
     				}
     				
     				//同步几个panel
-    				Comparable datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
-    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//    				Comparable<String> datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
+//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     	        }
 			}
 
@@ -1065,21 +1082,22 @@ public class BanKuaiFengXi extends JDialog {
 				
 				java.awt.event.MouseEvent me = e.getTrigger();
     	        if (me.getClickCount() == 2) {
-    	        	displayNodeLargerPeriodData (selectstock.getStock());
+    	        	Comparable datekey = panelGeguDapanZhanBi.getCurSelectedBarDate ();
+    	        	displayNodeLargerPeriodData (selectstock.getStock(),datekey);
     	        }
     	        
     	        if (me.getClickCount() == 1) {
     	        	//显示选择的tooltip
-    				String tooltip = panelGeguDapanZhanBi.getToolTipSelected ();
-    				if(tooltip == null)
+    				if(!panelGeguDapanZhanBi.isSelectedColumnChanged())
     					return;
     				
     				//显示选择周的分析记录等
+    				String tooltip = panelGeguDapanZhanBi.getToolTipSelected ();
     				ArrayList<JiaRuJiHua> fxjg = panelGeguDapanZhanBi.getCurSelectedFengXiJieGuo ();
     				setUserSelectedColumnMessage(tooltip,fxjg);
     				//
-    				Comparable datekey = panelGeguDapanZhanBi.getCurSelectedBarDate ();
-    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//    				Comparable datekey = panelGeguDapanZhanBi.getCurSelectedBarDate ();
+//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
     				//显示个股在选择的日期前后50个交易日的走势
     				LocalDate selecteddate = CommonUtility.formateStringToDate(datekey.toString());
@@ -1107,8 +1125,8 @@ public class BanKuaiFengXi extends JDialog {
 				setUserSelectedColumnMessage(tooltip,fxjg);
 				
      			//
-				Comparable datekey = panelbkcje.getCurSelectedBarDate ();
-				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//				Comparable datekey = panelbkcje.getCurSelectedBarDate ();
+//				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
 
 //				////显示选择周的分析记录
 //				String selectdate = datekey.toString();
@@ -1132,7 +1150,7 @@ public class BanKuaiFengXi extends JDialog {
 				
 				//
 				Comparable datekey = pnlggdpcje.getCurSelectedBarDate ();
-				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
 				
 				//显示个股在选择的日期前后50个交易日的走势
 				int row = tableGuGuZhanBiInBk.getSelectedRow();
@@ -1162,8 +1180,8 @@ public class BanKuaiFengXi extends JDialog {
 				setUserSelectedColumnMessage(tooltip,fxjg);
 				
 				//
-				Comparable datekey = panelgegucje.getCurSelectedBarDate ();
-				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//				Comparable datekey = panelgegucje.getCurSelectedBarDate ();
+//				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
 				
 //				//显示个股在选择的日期前后50个交易日的走势
 //				int row = tableGuGuZhanBiInBk.getSelectedRow();
@@ -1194,7 +1212,7 @@ public class BanKuaiFengXi extends JDialog {
 				
 			
 				Comparable datekey = panelgeguwkzhanbi.getCurSelectedBarDate ();
-				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
 				
 				//显示个股在选择的日期前后50个交易日的走势
 				int row = tableGuGuZhanBiInBk.getSelectedRow();
@@ -1413,6 +1431,8 @@ public class BanKuaiFengXi extends JDialog {
 					String stockcode = cbxstockcode.getSelectedItem().toString().substring(0, 6);
 					if(!findInputedNodeInTable (stockcode) )
 						JOptionPane.showMessageDialog(null,"在某个个股表内没有发现该股，可能在这个时间段内该股停牌","Warning",JOptionPane.WARNING_MESSAGE);
+					
+					Toolkit.getDefaultToolkit().beep();
 				}
 				
 				
@@ -1606,7 +1626,7 @@ public class BanKuaiFengXi extends JDialog {
 	/*
 	 * 用户双击某个板块占比chart，则放大显示该node一年内的占比所有数据
 	 */
-	protected void displayNodeLargerPeriodData(BkChanYeLianTreeNode node) 
+	protected void displayNodeLargerPeriodData(BkChanYeLianTreeNode node, Comparable<String> datekey) 
 	{
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate requireend = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
@@ -1616,6 +1636,7 @@ public class BanKuaiFengXi extends JDialog {
 			node = this.bkcyl.getBanKuai((BanKuai)node, requirestart.plusWeeks(1),globeperiod);
 		} else if(node.getType() == BanKuaiAndStockBasic.TDXGG) {
 			node = this.bkcyl.getStock((Stock)node, requirestart.plusWeeks(1),globeperiod);
+			node = this.bkcyl.getStockK((Stock)node, requirestart.plusWeeks(1), StockGivenPeriodDataItem.DAY);
 		} else if(node.getType() == BanKuaiAndStockBasic.BKGEGU) {
 			BanKuai bk = ((StockOfBanKuai)node).getBanKuai();
 			this.bkcyl.getBanKuai((BanKuai)bk, requirestart.plusWeeks(1),globeperiod);
@@ -1626,13 +1647,10 @@ public class BanKuaiFengXi extends JDialog {
 		
 		NodeXPeriodDataBasic nodexdate = node.getNodeXPeroidData(globeperiod);
 		
-		BanKuaiFengXiLargePeirod largeinfo = new BanKuaiFengXiLargePeirod (node,nodexdate.getRecordsEndDate(),globeperiod);
-		JOptionPane.showMessageDialog(null, largeinfo, "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
-		
-//		BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl largeinfo = new BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl (node,nodexdate.getRecordsEndDate(),globeperiod);
-//		if(cbxdpmaxwk.isSelected() && tflddisplaydpmaxwk.getText() != null)
-//			largeinfo.setHighLightMaxWeekNumber (Integer.parseInt(tflddisplaydpmaxwk.getText()));
-//		JOptionPane.showMessageDialog(null, largeinfo, "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
+		BanKuaiFengXiLargePnl largeinfo = new BanKuaiFengXiLargePnl (node, requirestart.plusWeeks(1).with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY)
+				, curselectdate, globeperiod);
+		largeinfo.highLightSpecificBarColumn(datekey);
+		JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
 		
 		largeinfo = null;
 		System.gc();
@@ -1874,9 +1892,9 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiInfoTable tableBkZhanBi;
 //	private JTable tableGuGuZhanBiInBk;
 	private BanKuaiGeGuTable tableGuGuZhanBiInBk;
-	private BanKuaiFengXiBarChartCjeZhanbiPnl panelbkwkzhanbi;
+	private BanKuaiFengXiCategoryBarChartPnl panelbkwkzhanbi;
 	private JTextField tfldweight;
-	private BanKuaiFengXiBarChartCjeZhanbiPnl panelgeguwkzhanbi;
+	private BanKuaiFengXiCategoryBarChartPnl panelgeguwkzhanbi;
 	private BanKuaiFengXiPieChartCjePnl pnllastestggzhanbi;
 	private BanKuaiFengXiPieChartCjePnl panelLastWkGeGuZhanBi;
 	private BanKuaiFengXiPieChartCjePnl panelselectwkgeguzhanbi;
@@ -1886,14 +1904,14 @@ public class BanKuaiFengXi extends JDialog {
 	private JButton btnsixmonthafter;
 	private BanKuaiGeGuTable tablexuandingzhou;
 	private JStockComboBox cbxstockcode;
-	private BanKuaiFengXiBarChartCjePnl panelbkcje;
-	private BanKuaiFengXiBarChartCjePnl panelgegucje;
+	private BanKuaiFengXiCategoryBarChartPnl panelbkcje;
+	private BanKuaiFengXiCategoryBarChartPnl panelgegucje;
 	private BanKuaiGeGuTable tablexuandingminustwo; //new BanKuaiGeGuTable (this.stockmanager);
 	private BanKuaiGeGuTable tablexuandingminusone;
 	private BanKuaiGeGuTable tablexuandingplusone;
 	private BanKuaiGeGuTable tablexuandingplustwo;
 	private JTabbedPane tabbedPanegegu;
-	private BanKuaiFengXiBarChartCjeZhanbiPnl panelGeguDapanZhanBi;
+	private BanKuaiFengXiCategoryBarChartPnl panelGeguDapanZhanBi;
 	private JTextField tfldshowcje;
 	private JTextField tfldparsedfile;
 	private JTabbedPane tabbedPanegeguzhanbi;
@@ -1920,7 +1938,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JTextField tfldbkmaxwk;
 	private JTextField tfldcjemaxwk;
 	private JCheckBox chkcjemaxwk;
-	private BanKuaiFengXiBarChartCjlZhanbiPnl panelggdpcjlwkzhanbi;
+	private BanKuaiFengXiCategoryBarChartCjlZhanbiPnl panelggdpcjlwkzhanbi;
 	private BanKuaiFengXiPieChartCjlPnl pnllastestggcjlzhanbi;
 	private JTabbedPane tabbedPane_1;
 	private BanKuaiFengXiPieChartCjlPnl panelselectwkgegucjlzhanbi;
@@ -1928,7 +1946,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JButton btnClear;
 	private JProgressBar progressBarsys;
 	private JCheckBox cbxggquanzhong;
-	private BanKuaiFengXiBarChartCjePnl pnlggdpcje;
+	private BanKuaiFengXiCategoryBarChartPnl pnlggdpcje;
 	
 	private void initializeGui() {
 		
@@ -1954,7 +1972,7 @@ public class BanKuaiFengXi extends JDialog {
 		scrollPanestockbk.setViewportView(editorPanebankuai);
 		
 		paneldayCandle = new BanKuaiFengXiCandlestickPnl();
-		paneldayCandle.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		paneldayCandle.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
@@ -2040,19 +2058,19 @@ public class BanKuaiFengXi extends JDialog {
 		tfldselectedmsg.setEditable(false);
 		tfldselectedmsg.setColumns(10);
 		
-		panelbkcje = new BanKuaiFengXiBarChartCjePnl();
+		panelbkcje = new BanKuaiFengXiCategoryBarChartCjePnl();
 		panelbkcje.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
-		panelbkwkzhanbi = new BanKuaiFengXiBarChartCjeZhanbiPnl();
+		panelbkwkzhanbi = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl();
 		panelbkwkzhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
 		
-		panelGeguDapanZhanBi = new BanKuaiFengXiBarChartCjeZhanbiPnl();
+		panelGeguDapanZhanBi = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl();
 		tabbedPanegeguzhanbi.addTab("\u5927\u76D8\u6210\u4EA4\u989D\u5360\u6BD4", null, panelGeguDapanZhanBi, null);
 		
-		panelgeguwkzhanbi = new BanKuaiFengXiBarChartCjeZhanbiPnl();
+		panelgeguwkzhanbi = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl();
 		tabbedPanegeguzhanbi.addTab("\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", null, panelgeguwkzhanbi, null);
 		
 		JTabbedPane tabbedPane_2 = new JTabbedPane(JTabbedPane.TOP);
@@ -2084,13 +2102,13 @@ public class BanKuaiFengXi extends JDialog {
 					.addContainerGap())
 		);
 		
-		pnlggdpcje = new BanKuaiFengXiBarChartCjePnl();
+		pnlggdpcje = new BanKuaiFengXiCategoryBarChartCjePnl();
 		tabbedPane_2.addTab("\u5927\u76D8\u6210\u4EA4\u989D", null, pnlggdpcje, null);
 		
-		panelgegucje = new BanKuaiFengXiBarChartCjePnl();
+		panelgegucje = new BanKuaiFengXiCategoryBarChartCjePnl();
 		tabbedPane_2.addTab("\u677F\u5757\u6210\u4EA4\u989D", null, panelgegucje, null);
 		
-		panelggdpcjlwkzhanbi = new BanKuaiFengXiBarChartCjlZhanbiPnl();
+		panelggdpcjlwkzhanbi = new BanKuaiFengXiCategoryBarChartCjlZhanbiPnl();
 		tabbedPanegeguzhanbi.addTab("\u5927\u76D8\u6210\u4EA4\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		panel_2.setLayout(gl_panel_2);
 		

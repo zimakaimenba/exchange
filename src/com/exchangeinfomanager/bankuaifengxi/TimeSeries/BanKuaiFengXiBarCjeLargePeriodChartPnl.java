@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.TimeSeries;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -64,9 +64,6 @@ public class BanKuaiFengXiBarCjeLargePeriodChartPnl extends BanKuaiFengXiBarLarg
         dataset.setNotify(true);
         return dataset;
     }
-	
-
-
 }
 
 class CustomXYBarCjePainter extends CustomXYBarPainter 

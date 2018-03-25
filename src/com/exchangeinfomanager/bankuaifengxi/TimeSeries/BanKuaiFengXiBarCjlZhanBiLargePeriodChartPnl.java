@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.TimeSeries;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -11,7 +11,6 @@ import org.jfree.data.xy.XYDataset;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 
 public class BanKuaiFengXiBarCjlZhanBiLargePeriodChartPnl extends BanKuaiFengXiBarLargePeriodChartPnl 

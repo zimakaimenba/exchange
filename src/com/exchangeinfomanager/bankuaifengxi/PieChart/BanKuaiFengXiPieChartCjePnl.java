@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.PieChart;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -70,46 +70,56 @@ import org.w3c.dom.events.MouseEvent;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
+import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
 
-public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl implements BarChartPanelDataChangedListener
+public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl implements BarChartPanelDataChangedListener
 {
+	private int pianyiliang;
+
 	/**
 	 * Create the panel.
 	 */
-	public BanKuaiFengXiPieChartCjlPnl() 
+	public BanKuaiFengXiPieChartCjePnl(int pianyiliang) 
 	{
 		super ();
+		this.pianyiliang = pianyiliang;
 	}
 	
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference, String period)
+	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference,String period)
 	{
-		if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY))
-			date = date.plus(difference,ChronoUnit.DAYS);
-		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
-			date = date.plus(difference,ChronoUnit.WEEKS);
-		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH))
-			date = date.plus(difference,ChronoUnit.MONTHS);
+		if(period.equals(StockGivenPeriodDataItem.DAY))
+			date = date.plus(difference+pianyiliang,ChronoUnit.DAYS);
+		else if(period.equals(StockGivenPeriodDataItem.WEEK))
+			date = date.plus(difference+this.pianyiliang,ChronoUnit.WEEKS);
+		else if(period.equals(StockGivenPeriodDataItem.MONTH))
+			date = date.plus(difference+this.pianyiliang,ChronoUnit.MONTHS);
 		
 		setBanKuaiCjeNeededDisplay((BanKuai)node,10,date,period);
 	}
+	@Override
+	public void updatedDate(BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate, String period) {
+		// TODO Auto-generated method stub
+	}
 	
-	public void setBanKuaiCjeNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber,String period) 
+	public void setBanKuaiCjeNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber, String period) 
 	{
 		this.curdisplaybk = bankuai;
 		this.displayedweeknumber = weeknumber;
 		
 		ArrayList<StockOfBanKuai> tmpallbkge = bankuai.getAllCurrentBanKuaiGeGu();
 		
-		piechartdataset = new DefaultPieDataset();
+//		piechartdataset = new DefaultPieDataset();
+		piechartdataset.clear();
+		super.piechart.setNotify(false);
     	
     	if(tmpallbkge == null || tmpallbkge.isEmpty())
     		return;
@@ -120,9 +130,8 @@ public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl implem
     		
     		//找到对应周的数据
     		NodeXPeriodDataBasic stockxdataforbk = tmpstock.getNodeXPeroidData(period);
-    		ChenJiaoZhanBiInGivenPeriod tmprecord = stockxdataforbk.getSpecficRecord(weeknumber,0);
-    		if(tmprecord != null) {
-    			double cje = tmprecord.getMyownchengjiaoliang();
+    		Double cje = stockxdataforbk.getChengJiaoEr(weeknumber,0);
+    		if(cje != null) {
        	    	if(stockname != null)
         	    		piechartdataset.setValue(ggcode+stockname,cje);
        	    	else 
@@ -130,11 +139,13 @@ public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl implem
     		}
     	}
     	
-    	pieplot.setDataset(piechartdataset);
+    	super.piechart.setNotify(true);
+//    	pieplot.setDataset(piechartdataset);
 //		createCjeDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
 		setPanelTitle ("成交额占比");
 		
 	}
+
 
 }
 

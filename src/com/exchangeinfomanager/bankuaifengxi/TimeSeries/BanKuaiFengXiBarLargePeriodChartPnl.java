@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.TimeSeries;
 
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -41,6 +41,7 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriod
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
@@ -62,7 +63,7 @@ import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel 
+public abstract  class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel implements BarChartPanelHightLightColumnListener
 {
 	protected XYPlot mainPlot;
 	protected DateAxis domainAxis ;
@@ -72,7 +73,8 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 	protected JFreeChart chart;
 	protected ChartPanel chartPanel;
 	protected BkChanYeLianTreeNode curdisplayednode;
-//	private int highlightercolumn = 4;
+	private String  tooltipselected;
+	private Integer curselectbarindex;
 	
     @SuppressWarnings("deprecation")
 	public BanKuaiFengXiBarLargePeriodChartPnl(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
@@ -116,17 +118,27 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
         chart.setNotify(true);
         
         chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(1400, 400));
+        chartPanel.setPreferredSize(new Dimension(1400, 325));
         chartPanel.setVerticalAxisTrace(true);
         chartPanel.setDomainZoomable(true);
         
 
         this.add(chartPanel);
-//        this.add(getScrollBar(domainAxis), BorderLayout.SOUTH);
         this.add(getScrollBar(domainAxis));
-//        this.pack();
         
         createEvent ();
+    }
+    
+	/*
+     * 设置要突出显示的bar
+     */
+    public void highLightSpecificBarColumn (Comparable selecteddate)
+    {
+    }
+    public void highLightSpecificBarColumn (Integer columnindex)
+    {
+    	((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightSelectColumn(columnindex);
+    	this.chart.fireChartChanged();//必须有这句
     }
     /*
      * 
@@ -141,11 +153,9 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
         return dataset;
     }
-    public void setHighLightSelectColumn (LocalDate data)
-    {
-    	((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightSelectColumn (data);
-    }
-    
+    /*
+     * 
+     */
     private JScrollBar getScrollBar(final DateAxis domainAxis)
     {
         double r1 = domainAxis.getLowerBound();
@@ -159,12 +169,27 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
         });
         return scrollBar;
     }
-    
+    /*
+     * 
+     */
+	public String getToolTipSelected() 
+	{
+		if(tooltipselected != null)
+			return this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + tooltipselected;
+		else
+			return null;
+	}
+	/*
+	 * 
+	 */
+	public Integer getCurSelectedIndex() 
+	{
+		return curselectbarindex;
+	}
     private void createEvent ()
     {
     	chartPanel.addChartMouseListener(new ChartMouseListener() {
-    		
-    		public void chartMouseClicked(ChartMouseEvent cme)
+			public void chartMouseClicked(ChartMouseEvent cme)
     		{
     	        Plot p = cme.getChart().getPlot();
     	        if(p instanceof XYPlot) {
@@ -179,29 +204,29 @@ public abstract class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel
     	                        XYItemRenderer r = plot.getRenderer(i);
     	                        if(r instanceof CustomXYBarRenderer){
     	                        	CustomXYBarRenderer sel = (CustomXYBarRenderer)r;
-    	                        	System.out.println("Series index: " + e.getSeriesIndex() + ", item index " + e.getItem());
+//    	                        	System.out.println("Series index: " + e.getSeriesIndex() + ", item index " + e.getItem());
     	                        	sel.setHighLightSelectColumn(e.getItem());
+    	                        	tooltipselected = e.getToolTipText();
+    	                        	curselectbarindex = e.getItem();
     	                        }
     	                    }
     	                }
-    	                
     	            }
-    	            
     	        }
     		}
 
-    	    public void chartMouseClicked2(ChartMouseEvent cme) {
-    	    	try {
-    	    		XYItemEntity xyitem = (XYItemEntity) cme.getEntity(); // get clicked entity
-    	    		XYDataset tmpdataset = xyitem.getDataset();
-    	    		int itemindex = xyitem.getItem();
-    	    		
-    	    		((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightSelectColumn (itemindex);
-        	         
-    	    	} catch ( java.lang.ClassCastException e ) {
-
-    	    	}
-    	    }
+//    	    public void chartMouseClicked2(ChartMouseEvent cme) {
+//    	    	try {
+//    	    		XYItemEntity xyitem = (XYItemEntity) cme.getEntity(); // get clicked entity
+//    	    		XYDataset tmpdataset = xyitem.getDataset();
+//    	    		int itemindex = xyitem.getItem();
+//    	    		
+//    	    		((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightSelectColumn (itemindex);
+//        	         
+//    	    	} catch ( java.lang.ClassCastException e ) {
+//
+//    	    	}
+//    	    }
 
 			@Override
 			public void chartMouseMoved(ChartMouseEvent arg0) {
@@ -285,13 +310,7 @@ class CustomXYBarRenderer extends XYBarRenderer
     {
     	((CustomXYBarPainter)this.getBarPainter()).setBarColumnShouldChangeColor(column);
     }
-    public void setHighLightSelectColumn (LocalDate date) 
-    {
-////    	chart.setNotify(false);
-//    	XYPlot plot = getPlot ();
-//    	XYDataset tmpdataset = plot.getDataset();
-//		TimeSeries series = (TimeSeries) tmpdataset.get.getSeriesKey(1);
-    }
+
 }
 
 abstract class CustomXYPlotToolTipGenerator implements XYToolTipGenerator 
@@ -327,8 +346,6 @@ class CustomXYBarPainter implements XYBarPainter
    	public void paintBar(Graphics2D g2, XYBarRenderer renderer, int row, int column, RectangularShape bar, RectangleEdge base) 
     {
     	bar.setFrame(bar.getX(), bar.getY(), bar.getWidth() , bar.getHeight());
-    	    	
-//    	XYDataset dataset = renderer.getPlot().getDataset();
     	    	
     	if(highlightercolumn == column)
     		g2.setColor(Color.BLUE.darker());

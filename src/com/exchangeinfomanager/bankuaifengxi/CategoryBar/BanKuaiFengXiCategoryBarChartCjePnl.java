@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
 import java.awt.Paint;
@@ -42,14 +42,25 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
-public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl 
+public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBarChartPnl 
 {
 
-	public BanKuaiFengXiBarChartCjePnl() 
+	public BanKuaiFengXiCategoryBarChartCjePnl() 
 	{
 		super ();
 		super.plot.setRenderer(new CustomRendererForCje() );
+		
 		((CustomRendererForCje) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+		
+		CustomCategoryToolTipGeneratorForChenJiaoEr custotooltip = new CustomCategoryToolTipGeneratorForChenJiaoEr();
+//		((CustomRendererForCje) plot.getRenderer()).setSeriesToolTipGenerator(0,custotooltip);
+		((CustomRendererForCje) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
+		
+		DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
+		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelsVisible(true);
+		
+		
 	}
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference,String period)
 	{
@@ -62,7 +73,12 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 			
 		setBanKuaiJiaoYiEr(node,date,period);
 	}
-	 private static Logger logger = Logger.getLogger(BanKuaiFengXiBarChartCjePnl.class);
+	public void updatedDate (BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate,String period)
+	{
+		this.setBanKuaiJiaoYiEr (node,startdate,enddate,period);
+	}
+	
+	 private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartCjePnl.class);
 	/*
 	 * 板块按周相对于某板块的交易额
 	 */
@@ -73,12 +89,18 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 		
 		this.setBanKuaiJiaoYiEr (node,requirestart,requireend,period);
 	}
+	/*
+	 * 
+	 */
 	public void setBanKuaiJiaoYiEr (BkChanYeLianTreeNode node,LocalDate startdate,LocalDate enddate,String period)
 	{
 		this.curdisplayednode = node;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
 		displayDataToGui (nodexdata,startdate,enddate,period);
 	}
+	/*
+	 * 
+	 */
 	private void displayDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period) 
 	{
 		DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
@@ -128,14 +150,6 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 		CustomRendererForCje cjerender = (CustomRendererForCje) super.plot.getRenderer(); 
 		cjerender.setDisplayNode(this.curdisplayednode);
 		cjerender.setDisplayNodeXPeriod (nodexdata);
-		DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
-		((CustomRendererForCje) plot.getRenderer()).setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-		cjerender.setItemLabelsVisible(true);
-		
-		CustomToolTipGeneratorForChenJiaoEr custotooltip = new CustomToolTipGeneratorForChenJiaoEr();
-		custotooltip.setDisplayNode(this.curdisplayednode);
-		custotooltip.setDisplayNodeXPeriod (nodexdata);
-		cjerender.setSeriesToolTipGenerator(0,custotooltip);
 			
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
 		axis.setDisplayNode(this.curdisplayednode,period);
@@ -144,9 +158,10 @@ public class BanKuaiFengXiBarChartCjePnl extends BanKuaiFengXiBarChartPnl
 	
 		setPanelTitle ("成交额",enddate);
 	}
+
 }
 
-class CustomRendererForCje extends BanKuaiFengXiBarRenderer 
+class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer 
 {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(CustomRendererForCje.class);
@@ -192,7 +207,7 @@ class CustomRendererForCje extends BanKuaiFengXiBarRenderer
 }
 
 
-class CustomToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiBarToolTipGenerator  
+class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryBarToolTipGenerator  
 {
 	public String generateToolTip(CategoryDataset dataset, int row, int column)  
     {

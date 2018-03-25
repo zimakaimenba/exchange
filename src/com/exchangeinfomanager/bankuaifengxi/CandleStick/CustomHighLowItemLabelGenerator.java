@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.CandleStick;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;

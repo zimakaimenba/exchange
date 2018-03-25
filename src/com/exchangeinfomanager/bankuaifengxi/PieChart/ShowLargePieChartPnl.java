@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.PieChart;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
