@@ -3411,7 +3411,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 获取某个节点在指定周的所有关注分析等结果
 	 */
-	public ArrayList<JiaRuJiHua> getZdgzFxjgForANodeOfGivenPeriod (String nodecode, LocalDate givenwk)
+	public ArrayList<JiaRuJiHua> getZdgzFxjgForANodeOfGivenPeriod (String nodecode, LocalDate givenwk, String period)
 	{
 		String sqlquerystat = "SELECT *  FROM 操作记录重点关注 \r\n" + 
 				"WHERE 股票代码='" + nodecode + "'" + "\r\n" + 

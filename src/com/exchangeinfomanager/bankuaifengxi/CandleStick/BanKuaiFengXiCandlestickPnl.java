@@ -263,14 +263,25 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	 */
 	public void highLightSpecificDateCandleStickWithHighLowValue (LocalDate highlightweekdate,String period,boolean highlow)
 	{
+		if(ohlcSeries == null )
+			return ;
+		
 		ohlcSeries.setNotify(false);
         candlestickDataset.setNotify(false);
         candlestickChart.setNotify(false);
         
         ((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (highlightweekdate,period);
         
-        if(!highlow)
+        if(!highlow) {
+        	 ohlcSeries.setNotify(true);
+             candlestickDataset.setNotify(true);
+             candlestickChart.setNotify(true);
+             ohlcSeries.setNotify(false);
+             candlestickDataset.setNotify(false);
+             candlestickChart.setNotify(false);
+             
         	return ;
+        }
 		
 		Day onemonthhighdate = null, twomonthhighdate=null;
 		double onemonthhigh = 0.0, onemonthlessclose = 0.0; //指定周期后1个月的最大值最小值
@@ -433,10 +444,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	
 	}
 	@Override
-	public void highLightSpecificBarColumn(Comparable<String> selecteddate) 
+	public void highLightSpecificBarColumn(LocalDate selecteddate) 
 	{
+		if(selecteddate == null)
+			return;
+		
 		LocalDate selectdate1 = CommonUtility.formateStringToDate(selecteddate.toString());
-		this.highLightSpecificDateCandleStickWithHighLowValue(selectdate1, StockGivenPeriodDataItem.DAY, false);
+		this.highLightSpecificDateCandleStickWithHighLowValue(selectdate1, StockGivenPeriodDataItem.DAY, true);
 		
 	}
 	@Override
@@ -444,13 +458,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
-	public void setHightLightColumnListeners(Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 }
 
 class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer 

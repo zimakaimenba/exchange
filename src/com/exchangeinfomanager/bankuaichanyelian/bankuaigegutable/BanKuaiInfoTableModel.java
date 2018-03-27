@@ -18,7 +18,6 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 
 public class BanKuaiInfoTableModel extends DefaultTableModel 
@@ -28,7 +27,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		super ();
 	}
 	
-	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","MaxWeek","成交额增长贡献率"};
+	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","占比MaxWk","成交额增长贡献率","CjeMaxWk"};
 //	HashMap<String,BanKuai> bkmap;
 	List<BanKuai> entryList;
 	LocalDate showzhbiwknum;
@@ -121,6 +120,15 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	bankuai = null;
             	
             	break;
+            case 5:
+            	Integer cjemaxwk = bkxdata.getChenJiaoErMaxWeekOfSuperBanKuai(showzhbiwknum);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
+            	value = cjemaxwk;
+            	
+            	cjemaxwk = null;
+            	bkxdata = null;
+            	bankuai = null;
+            	
+            	break;
 	    	}
 
 	    	return value;
@@ -143,6 +151,9 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			          break;
 		        case 4:
 			          clazz = Double.class;
+			          break;
+		        case 5:
+			          clazz = Integer.class;
 			          break;
 		      }
 		      

@@ -73,6 +73,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
@@ -104,6 +107,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		createChartPanel();
+		
 		createEvent ();
 		
 		sysconfig = SystemConfigration.getInstance();
@@ -115,22 +119,26 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
 	protected BkChanYeLianTreeNode curdisplayednode;	
 	protected String globeperiod = "WEEK";
-//	private LocalDate displayedenddate;
-//	private String pnltitle;
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
 	protected DefaultCategoryDataset barchartdataset ;
-//	protected SlidingCategoryDataset barchartdataset;
 	protected JFreeChart barchart;
-	private Comparable<String> dateselected;
-	private ArrayList<JiaRuJiHua> selectedfxjg;
-	private String tooltipselected;
+//	private ArrayList<JiaRuJiHua> selectedfxjg;
+	
 	private SystemConfigration sysconfig;
 	protected int shoulddisplayedmonthnum;
 	private BanKuaiDbOperation bkdbopt;
+	
+//	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
+	
+	public static final String SELECTED_PROPERTY = "selected";
 	protected boolean selectchanged;
-	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
-
+	private String tooltipselected;
+	private LocalDate dateselected;
+	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+	        pcs.addPropertyChangeListener(listener);
+	}
 	/*
 	 * 
 	 */
@@ -185,23 +193,15 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
     	    public void chartMouseClicked(ChartMouseEvent cme) {
     	    	try {
     	    		CategoryItemEntity xyitem = (CategoryItemEntity) cme.getEntity(); // get clicked entity
-        	        CategoryDataset dataset = xyitem.getDataset(); // get data set
-        	        Comparable<String> columnkey = xyitem.getColumnKey();
+//        	        CategoryDataset dataset = xyitem.getDataset(); // get data set
+        	        LocalDate columnkey = LocalDate.parse(xyitem.getColumnKey().toString());
+        	        String selectedtooltip = xyitem.getToolTipText();
+        	        
+        	        setCurSelectedBarInfo (columnkey,selectedtooltip);
         	        highLightSpecificBarColumn (columnkey);
-        	        dateselected = columnkey;
-        	        tooltipselected = xyitem.getToolTipText();
-        	        
-        	        getZdgzFx (CommonUtility.formateStringToDate(columnkey.toString()),globeperiod);
-        	        
+
         	        selectchanged = true;
-        	        
-        	        chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(columnkey));
-        	         
     	    	} catch ( java.lang.ClassCastException e ) {
-//    	    		PlotEntity xyitem1 = (PlotEntity) cme.getEntity();
-//    	    		xyitem1.getPlot();
-//    	    		dateselected = null;
-//        	        tooltipselected = null;
         	        selectchanged = false;
     	    	}
     	    }
@@ -235,24 +235,19 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 			
 		});
     }
-    /*
-     * 
-     */
-    protected void getZdgzFx(LocalDate localDate,String period) 
-    {
-    	ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (this.curdisplayednode.getMyOwnCode(),localDate);
-    	this.selectedfxjg = fxresult;
-	}
 	/*
      * 设置要突出显示的bar
      */
     @Override
-    public void highLightSpecificBarColumn (Comparable selecteddate)
+    public void highLightSpecificBarColumn (LocalDate selecteddate)
     {
     	if(selecteddate == null)
     		return;
     	
     	int cindex = barchartdataset.getColumnIndex(selecteddate) ;
+    	if(cindex == -1)
+    		return ;
+    	
     	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
     	
         this.dateselected = selecteddate;
@@ -263,11 +258,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
     {
     	
     }
-	@Override
-	public void setHightLightColumnListeners(Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners1) {
-		this.chartpanelhighlightlisteners = chartpanelhighlightlisteners1;
-		
-	}
     /*
      * 
      */
@@ -286,20 +276,30 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
     /*
      * 
      */
-	public Comparable<String> getCurSelectedBarDate ()
+	public LocalDate getCurSelectedBarDate ()
 	{
 		return dateselected;
 	}
+	/*
+	 * 
+	 */
+	public void setCurSelectedBarInfo (LocalDate newdate,String selectedtooltip) 
+	{
+        String oldText = this.dateselected + this.tooltipselected;
+        this.dateselected = newdate ;
+        this.tooltipselected =  this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + selectedtooltip;
+        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
+        pcs.firePropertyChange(evt);
+    }
+	/*
+	 * 
+	 */
 	public String getToolTipSelected ()
 	{
 		if(tooltipselected != null)
 			return this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + tooltipselected;
 		else
 			return null;
-	}
-	public ArrayList<JiaRuJiHua> getCurSelectedFengXiJieGuo ()
-	{
-		return this.selectedfxjg;
 	}
 	/*
 	 * 
@@ -358,9 +358,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
         chartPanel.setVerticalAxisTrace(true);
         chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
-//        this.add(getScrollBar(axis));
-        
-        
         
         JPopupMenu popupMenu = new JPopupMenu();
 		mntmFenXiJiLu = new JMenuItem("分析记录");

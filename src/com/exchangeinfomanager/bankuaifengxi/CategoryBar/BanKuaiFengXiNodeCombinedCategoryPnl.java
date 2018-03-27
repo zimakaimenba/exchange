@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +26,7 @@ import org.jfree.chart.plot.CategoryPlot;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
@@ -37,8 +41,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	/**
 	 * Create the panel.
 	 */
-	public BanKuaiFengXiNodeCombinedCategoryPnl() 
+	public BanKuaiFengXiNodeCombinedCategoryPnl(BkChanYeLianTreeNode curdisplayednode) 
 	{
+		this.curdisplayednode =  curdisplayednode;
+		
 		createGui ();
 				
 		chartpanelhighlightlisteners = new HashSet<BarChartPanelHightLightColumnListener> ();
@@ -46,6 +52,14 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 		chartpanelhighlightlisteners.add(cjezblargepnl);
 		
 		createEvents();
+	}
+	public static final String SELECTED_PROPERTY = "selected";
+	protected boolean selectchanged;
+	private String tooltipselected;
+	private LocalDate dateselected;
+	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+	        pcs.addPropertyChangeListener(listener);
 	}
 	/*
 	 * 
@@ -62,6 +76,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	
 	}
 
+	private BkChanYeLianTreeNode curdisplayednode;
 	private BanKuaiFengXiCategoryBarChartPnl cjelargepnl;
 	private BanKuaiFengXiCategoryBarChartPnl cjezblargepnl;
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
@@ -79,7 +94,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 		cjezblargepnl.updatedDate(node, startdate,enddate, period);
 	}
 	@Override
-	public void highLightSpecificBarColumn(Comparable<String> selecteddate) 
+	public void highLightSpecificBarColumn(LocalDate selecteddate) 
 	{
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selecteddate));
 	}
@@ -88,75 +103,55 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	{
 		// TODO Auto-generated method stub
 	}
-	@Override
-	public void setHightLightColumnListeners(Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners1) 
-	{
-		cjelargepnl.setHightLightColumnListeners(chartpanelhighlightlisteners1);
-		cjezblargepnl.setHightLightColumnListeners(chartpanelhighlightlisteners1);
-	}
+
 	/*
 	 * 
 	 */
 	private void createEvents ()
 	{
-		cjelargepnl.getChartPanel().addChartMouseListener(new ChartMouseListener() { 
+		cjelargepnl.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
-			public void chartMouseClicked(ChartMouseEvent e)  
-			{
-				java.awt.event.MouseEvent me = e.getTrigger();
-    	        if (me.getClickCount() == 2) {
-    	        }
-    	        
-    	        if (me.getClickCount() == 1) {
-    	        	//显示选择的tooltip
-    				String tooltip = cjelargepnl.getToolTipSelected ();
-    				if(tooltip == null)
-    					return;
-	 			
-//     				String selectdate = cjelargepnl.getCurSelectedBarDate().toString();
-//     				LocalDate selectdate1 = CommonUtility.formateStringToDate(selectdate);
-     				
-     				//同步几个panel
-     				Comparable<String> datekey = cjelargepnl.getCurSelectedBarDate ();
-     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-    	        }
-			}
-
-			@Override
-			public void chartMouseMoved(ChartMouseEvent arg0) {
-
+			 public void propertyChange(PropertyChangeEvent evt)  
+			 {
+				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+					String selectedinfo = evt.getNewValue().toString();
+                    
+					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+    				
+    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
+    				setCurSelectedBarInfo (datekey,tooltip);
+				}
 			}
 		});
-		
-		cjezblargepnl.getChartPanel().addChartMouseListener(new ChartMouseListener() { 
+		cjezblargepnl.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
-			public void chartMouseClicked(ChartMouseEvent e)  
-			{
-				java.awt.event.MouseEvent me = e.getTrigger();
-    	        if (me.getClickCount() == 2) {
-    	        }
-    	        
-    	        if (me.getClickCount() == 1) {
-    	        	//显示选择的tooltip
-    				String tooltip = cjezblargepnl.getToolTipSelected ();
-    				if(tooltip == null)
-    					return;
-	 			
-//     				String selectdate = cjelargepnl.getCurSelectedBarDate().toString();
-//     				LocalDate selectdate1 = CommonUtility.formateStringToDate(selectdate);
-     				
-     				//同步几个panel
-     				Comparable<String> datekey = cjezblargepnl.getCurSelectedBarDate ();
-     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-    	        }
-			}
-
-			@Override
-			public void chartMouseMoved(ChartMouseEvent arg0) {
-				// TODO Auto-generated method stub
+			 public void propertyChange(PropertyChangeEvent evt)  
+			 {
+				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+					String selectedinfo = evt.getNewValue().toString();
+                    
+					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+    				
+    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
+    				setCurSelectedBarInfo (datekey,tooltip);
+				}
 			}
 		});
 	}
+	
+	/*
+	 * 
+	 */
+	public void setCurSelectedBarInfo (LocalDate newdate,String selectedtooltip) 
+	{
+        String oldText = this.dateselected + this.tooltipselected;
+        this.dateselected = newdate ;
+        this.tooltipselected =  this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + selectedtooltip;
+        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
+        pcs.firePropertyChange(evt);
+    }
 
 	
     /*
