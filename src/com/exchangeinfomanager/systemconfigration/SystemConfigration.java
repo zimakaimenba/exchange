@@ -600,8 +600,7 @@ public class SystemConfigration
 			return this.setSoftWareMode;
 		}
 		public String getGephiFileExportPath() {
-			// TODO Auto-generated method stub
-			return this.gephifileexportparth;
+			return this.systeminstalledpath;
 		}
 		
 		public boolean getPrivateModeSetting ()

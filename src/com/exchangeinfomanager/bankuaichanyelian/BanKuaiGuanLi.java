@@ -63,6 +63,11 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
+import java.awt.Color;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.LineBorder;
 
 
 public class BanKuaiGuanLi extends JDialog 
@@ -76,257 +81,30 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param cylxmlhandler 
 	 */
 	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiAndChanYeLian bkcyl) 
-//	public BanKuaiGuanLi( BanKuaiAndChanYeLian bkcyl)
 	{
 		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
-//		this.stockdbopt = stockdbopt2;
-//		this.cylxmlhandler = cylxmlhandler2;
-//		this.zdgzbkxmlhandler = zdgzbkxmlhandler2;
 		this.stockInfoManager = stockInfoManager2;
 		this.bkcylpnl = bkcyl;
+		
 		initializeGui ();
 		createEvents ();
-//		zhishulist = bkdbopt.getTDXAllZhiShuList ("all");
-		sysbankuailist = bkdbopt.getTDXBanKuaiList ("all"); 
-//		initializeTDXBanKuaiLists ();
-//		initializeTDXZhiShuLists ();
-//		initialzieZdyBanKuaList ();
-//		initializeGephi ();
-		
-//		startDialog ();
+
+		initializeTDXBanKuaiLists ();
 	}
-	
 
-
-//	private TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
 	private StockInfoManager stockInfoManager;	
 	private BanKuaiDbOperation bkdbopt;
-	HashMap<String,BanKuai> zhishulist;
-	HashMap<String,BanKuai> sysbankuailist ; 
+	private HashMap<String,BanKuai> zhishulist;
+//	private HashMap<String,BanKuai> sysbankuailist ; 
 	private SystemConfigration sysconfig;
-//	private StockDbOperations stockdbopt;
-//	private ChanYeLianXMLHandler2 cylxmlhandler;
 
-//
-//	public void startDialog ()
-//	{
-//		initializeGui ();
-//		createEvents ();
-//		initializeTDXBanKuaiLists ();
-//		initializeTDXZhiShuLists ();
-//		initialzieZdyBanKuaList ();
-//	}
-
-	private void initializeTDXZhiShuLists() 
-	{		
-		((BanKuaiDetailTableModel)tablezhishu.getModel()).refresh(zhishulist);
-	}
-
-	private void initialzieZdyBanKuaList() 
-	{		
-//		((BanKuaiDetailTableModel)tableZdy.getModel()).refresh(zhishulist);
-		
-	}
 	private void initializeTDXBanKuaiLists() 
 	{
-		 
-		
 		((BanKuaiDetailTableModel)tableSysBk.getModel()).refresh(sysbankuailist);
 	}
 
-	private void initializeGephi() {
-		String parsedpath = sysconfig.getGephiFileExportPath ();
-		tfldfilepath.setText(parsedpath);
 		
-	}
-	/*
-	 * 
-	 */
-	private void writeBanKuaiAndGeGuNodeFile (HashMap<String,BanKuai> allbkandzs, HashMap<String,BanKuai> sysbankuailist)
-	{
-		String parsedpath = sysconfig.getGephiFileExportPath ();
-		String bkggnodecsvfile = parsedpath + "板块个股GEPHINodes列表" 
-							+ CommonUtility.formatDateYYMMDD(dateChooser.getDate()).replaceAll("-", "")
-							+ ".csv"
-							;
-		
-		File csvfile = new File(bkggnodecsvfile);
-		if(csvfile.exists())
-			csvfile.delete();
-		
-		List<String[]> contentArrayList = new ArrayList<>();
-		String[] titlestrng = {"id","label","bkgg","amount","zhangfu"};
-		contentArrayList.add(titlestrng);
-		
-		List<String[]> listofcsv = new ArrayList<>();
-//		HashMap<String, BanKuai> allbkandzs = bkdbopt.getTDXAllZhiShuAndBanKuai ();
-		for (Entry<String, BanKuai> entry : allbkandzs.entrySet()) {
-			String bkcode = entry.getKey();
-			BanKuai bankuai = entry.getValue();
-			String bkname = bankuai.getMyOwnName();
-			if(bkname == null) bkname = bkcode;
-					
-			String[] ss = {bkcode,bkname,"板块","",""};
-			listofcsv.add(ss);
-
-		}
-		
-		for (Entry<String, BanKuai> entry : sysbankuailist.entrySet()) {
-			String bkcode = entry.getKey();
-			BanKuai bankuai = entry.getValue();
-			String bkname = bankuai.getMyOwnName();
-			if(bkname == null) bkname = bkcode;
-					
-			String[] ss = {bkcode,bkname,"板块","",""};
-			listofcsv.add(ss);
-
-		}
-		
-		HashMap<String, Stock> stockmap = bkdbopt.getAllStocks ();
-		for (Entry<String, Stock> entry : stockmap.entrySet()) {
-			String stockcode = entry.getKey();
-			Stock bankuai = entry.getValue();
-			String stockname = bankuai.getMyOwnName();
-			if(stockname == null) stockname = stockcode;
-					
-			String[] ss = {stockcode,stockname,"个股","",""};
-			listofcsv.add(ss);
-		}
-		
-//	    try {
-//			CSVWriter writer = new CSVWriter(new FileWriter(bkggnodecsvfile), '\t');
-//			writer.writeAll(contentArrayList);
-//			writer.writeAll(listofcsv);
-//			 writer.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-		CSVWriter writer = null;  
-		String  characters = ",";
-	    try {
-		    if (",".equalsIgnoreCase(characters)){
-		    	//初始化CSVWriter
-		        writer = new CSVWriter(new FileWriter(csvfile),',',CSVWriter.NO_QUOTE_CHARACTER);  
-		    } else{
-		    	//初始化CSVWriter，带分隔符
-		        writer = new CSVWriter(new FileWriter(csvfile),characters.toCharArray()[0],CSVWriter.NO_QUOTE_CHARACTER);  
-		    }
-	    } catch (IOException e) {  
-	        e.printStackTrace();  
-	    }
-
-	    try {
-		    writer.writeAll(contentArrayList);
-		    writer.writeAll(listofcsv); 
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	private void writeBanKuaiAndGeGuEdegeFile (HashMap<String,BanKuai> allbkandzs, HashMap<String,BanKuai> sysbankuailist)
-	{
-		String parsedpath = sysconfig.getGephiFileExportPath ();
-		String bkggnodecsvfile = parsedpath + "板块个股GEPHI对应关系edegs" 
-							+ CommonUtility.formatDateYYMMDD(dateChooser.getDate()).replaceAll("-", "")
-							+ ".csv"
-							;
-		
-		File csvfile = new File(bkggnodecsvfile);
-		if(csvfile.exists())
-			csvfile.delete();
-		
-		List<String[]> contentArrayList = new ArrayList<>();
-		String[] titlestrng = {"source","target","type","weight"};
-		contentArrayList.add(titlestrng);
-		
-		List<String[]> listofcsv = new ArrayList<>();
-//		HashMap<String, BanKuai> allbkandzs = bkdbopt.getTDXAllZhiShuAndBanKuai ();
-		for (Entry<String, BanKuai> entry : allbkandzs.entrySet()) {
-			String bkcode = entry.getKey();
-			BanKuai bankuai = entry.getValue();
-			String bkname = bankuai.getMyOwnName();
-			if(bkname == null) bkname = bkcode;
-			
-			Date startdate = CommonUtility.getFirstDayOfWeek(new Date());
-  	        Date lastdate = CommonUtility.getLastDayOfWeek(new Date());
-  	       	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (bkname,bkcode,startdate,lastdate);
-			
-			if(tmpallbkge.size() == 0)
-				continue;
-			
-			for (Entry<String, Stock> entrygegu : tmpallbkge.entrySet()) {
-				String gegucode =entrygegu.getKey();
-				Stock gegu = entrygegu.getValue();
-				String geguname = gegu.getMyOwnName();
-				if(geguname == null) geguname = gegucode;
-				
-				HashMap<String, Integer> ggweight = gegu.getGeGuSuoShuBanKuaiWeight();
-				String weight = ggweight.values().toString();
-				
-				String[] ss = {gegucode,bkcode,"Directed",weight.substring(1,weight.length()-1)};
-				listofcsv.add(ss);
-				
-			}
-		}
-		
-		for (Entry<String, BanKuai> entry : sysbankuailist.entrySet()) {
-			String bkcode = entry.getKey();
-			BanKuai bankuai = entry.getValue();
-			String bkname = bankuai.getMyOwnName();
-			if(bkname == null) bkname = bkcode;
-			
-			Date startdate = CommonUtility.getFirstDayOfWeek(new Date());
-  	        Date lastdate = CommonUtility.getLastDayOfWeek(new Date());
-  	       	HashMap<String, Stock> tmpallbkge = bkdbopt.getTDXBanKuaiGeGuOfHyGnFgAndChenJiaoLIang (bkname,bkcode,startdate,lastdate);
-			
-			if(tmpallbkge.size() == 0)
-				continue;
-			
-			for (Entry<String, Stock> entrygegu : tmpallbkge.entrySet()) {
-				String gegucode =entrygegu.getKey();
-				Stock gegu = entrygegu.getValue();
-				String geguname = gegu.getMyOwnName();
-				if(geguname == null) geguname = gegucode;
-				
-				HashMap<String, Integer> ggweight = gegu.getGeGuSuoShuBanKuaiWeight();
-				String weight = ggweight.values().toString();
-				
-				String[] ss = {gegucode,bkcode,"Directed",weight.substring(1,weight.length()-1)};
-				listofcsv.add(ss);
-				
-			}
-		}
-		
-		CSVWriter writer = null;  
-		String  characters = ",";
-	    try {
-		    if (",".equalsIgnoreCase(characters)){
-		    	//初始化CSVWriter
-		        writer = new CSVWriter(new FileWriter(csvfile),',',CSVWriter.NO_QUOTE_CHARACTER);  
-		    } else{
-		    	//初始化CSVWriter，带分隔符
-		        writer = new CSVWriter(new FileWriter(csvfile),characters.toCharArray()[0],CSVWriter.NO_QUOTE_CHARACTER);  
-		    }
-	    } catch (IOException e) {  
-	        e.printStackTrace();  
-	    }
-
-        try {
-    	    writer.writeAll(contentArrayList);
-    	    writer.writeAll(listofcsv);
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	
 
 	private void createEvents() 
 	{
@@ -344,25 +122,6 @@ public class BanKuaiGuanLi extends JDialog
 				Boolean status = (Boolean)((BanKuaiDetailTableModel)tableSysBk.getModel()).getValueAt(row, column);
 				
 				 ((BanKuaiDetailTableModel)tableSysBk.getModel()).setValueAt(!status,row, column);
-
-				
-			}
-		});
-		
-		tablezhishu.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) 
-			{
-				int row = tablezhishu.getSelectedRow();
-				int column = tablezhishu.getSelectedColumn();
-				
-				
-				if(column !=3)
-					return;
-				
-				Boolean status = (Boolean)((BanKuaiDetailTableModel)tablezhishu.getModel()).getValueAt(row, column);
-				
-				 ((BanKuaiDetailTableModel)tablezhishu.getModel()).setValueAt(!status,row, column);
 
 				
 			}
@@ -411,13 +170,15 @@ public class BanKuaiGuanLi extends JDialog
 	private BanKuaiAndChanYeLian bkcylpnl;
 	private JPanel panelSys;
 	private JTable tableZdy;
-	private JTable tablezhishu;
 	private JTextField tfldfilepath;
 	private JButton btnstartexport;
 	private JComboBox<String> cbxexporttype;
 	private JDateChooser dateChooser;
 	private JComboBox<String> cbxexportdaytype;
 	private JButton button;
+	private JCheckBox cbxnotimport;
+	private JCheckBox cbxnotbkfx;
+	private JCheckBox cbxnotgephi;
 	
 	private void initializeGui()
 	{
@@ -455,57 +216,91 @@ public class BanKuaiGuanLi extends JDialog
 		
 		JLabel label_1 = new JLabel("\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757");
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		
-		JLabel lblNewLabel = new JLabel("\u901A\u8FBE\u4FE1\u4EA4\u6613\u6240\u6307\u6570");
-		
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Gephi\u5BFC\u51FA\u8BBE\u7F6E", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, new Color(240, 240, 240), new Color(255, 255, 255), new Color(105, 105, 105), new Color(160, 160, 160)), new LineBorder(new Color(180, 180, 180), 5)), "\u677F\u5757\u5C5E\u6027\u8BBE\u7F6E", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
 
 		GroupLayout gl_panelSys = new GroupLayout(panelSys);
 		gl_panelSys.setHorizontalGroup(
-			gl_panelSys.createParallelGroup(Alignment.TRAILING)
+			gl_panelSys.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panelSys.createSequentialGroup()
-					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panelSys.createSequentialGroup()
-							.addGap(23)
-							.addComponent(label))
-						.addGroup(gl_panelSys.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)))
-					.addGap(18)
-					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 278, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel))
-					.addGap(32)
-					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-						.addComponent(label_1)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE))
-					.addGap(698))
-				.addGroup(Alignment.LEADING, gl_panelSys.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 532, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(969, Short.MAX_VALUE))
+					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panelSys.createSequentialGroup()
+							.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+								.addComponent(label)
+								.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE))
+							.addGap(17)
+							.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_panelSys.createSequentialGroup()
+									.addComponent(label_1)
+									.addContainerGap(1168, Short.MAX_VALUE))
+								.addGroup(Alignment.TRAILING, gl_panelSys.createSequentialGroup()
+									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+									.addComponent(panel, GroupLayout.PREFERRED_SIZE, 532, GroupLayout.PREFERRED_SIZE)
+									.addGap(440))))
+						.addGroup(gl_panelSys.createSequentialGroup()
+							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(1278, Short.MAX_VALUE))))
 		);
 		gl_panelSys.setVerticalGroup(
 			gl_panelSys.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panelSys.createSequentialGroup()
-					.addContainerGap(15, Short.MAX_VALUE)
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addContainerGap(23, Short.MAX_VALUE)
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
 						.addComponent(label)
-						.addComponent(lblNewLabel)
 						.addComponent(label_1))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
-							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 443, GroupLayout.PREFERRED_SIZE)
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 441, GroupLayout.PREFERRED_SIZE))
-						.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 447, GroupLayout.PREFERRED_SIZE))
-					.addGap(38))
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 680, GroupLayout.PREFERRED_SIZE))
+						.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 680, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+					.addGap(11))
 		);
+		
+		cbxnotimport = new JCheckBox("\u4E0D\u5BFC\u5165\u6BCF\u65E5\u4EA4\u6613\u6570\u636E");
+		
+		cbxnotbkfx = new JCheckBox("\u4E0D\u505A\u677F\u5757\u5206\u6790");
+		
+		cbxnotgephi = new JCheckBox("\u4E0D\u5BFC\u51FA\u5230Gephi");
+		
+		JButton buttonapplybksetting = new JButton("\u5E94\u7528");
+		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
+		gl_panel_1.setHorizontalGroup(
+			gl_panel_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addComponent(cbxnotbkfx)
+						.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+							.addComponent(cbxnotimport)
+							.addGroup(gl_panel_1.createSequentialGroup()
+								.addComponent(cbxnotgephi)
+								.addGap(40)
+								.addComponent(buttonapplybksetting))))
+					.addGap(19))
+		);
+		gl_panel_1.setVerticalGroup(
+			gl_panel_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(cbxnotimport)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(cbxnotbkfx)
+					.addGap(1)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+						.addComponent(cbxnotgephi)
+						.addComponent(buttonapplybksetting))
+					.addContainerGap(13, Short.MAX_VALUE))
+		);
+		panel_1.setLayout(gl_panel_1);
 		
 		JLabel lblGephi = new JLabel("Gephi\u6587\u4EF6\u5B58\u653E\u8DEF\u5F84");
 		
@@ -566,25 +361,6 @@ public class BanKuaiGuanLi extends JDialog
 		panel.setLayout(gl_panel);
 		
 		BanKuaiDetailTableModel zhishubankmodel = new BanKuaiDetailTableModel();
-		tablezhishu = new JTable(zhishubankmodel) {
-			private static final long serialVersionUID = 1L;
-
-			public String getToolTipText(MouseEvent e) {
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                    //catch null pointer exception if mouse is over an empty line
-                }
-
-                return tip;
-            }
-		};
-		scrollPane_1.setViewportView(tablezhishu);
 		
 		BanKuaiDetailTableModel zidingyibankmodel = new BanKuaiDetailTableModel();
 		tableZdy = new JTable(zidingyibankmodel){
@@ -637,10 +413,10 @@ public class BanKuaiGuanLi extends JDialog
 		
 		//pnlGingo2 = new Ginkgo2(this.bkdbopt, this.stockdbopt,this.cylxmlhandler);
 //		bkcylpnl = new BanKuaiAndChanYeLian(this.stockInfoManager) ;
-		bkcylpnl.startGui();
+//		bkcylpnl.startGui();
 		
 		//tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, pnlGingo2, null);
-		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, bkcylpnl, null);
+//		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, bkcylpnl, null);
 		tabbedPane.setSelectedIndex(1) ;
 		
 		contentPanel.setLayout(gl_contentPanel);
@@ -687,7 +463,7 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 	HashMap<String,BanKuai> bankuailist;
 
 	List<BanKuai> valuesList; //存放板块对象列表
-	String[] jtableTitleStrings = { "板块名称", "板块代码","更新时间","选择"};
+	String[] jtableTitleStrings = { "板块名称", "板块代码"};
 	Boolean[] status;
 	
 	BanKuaiDetailTableModel ()
@@ -697,38 +473,15 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 	public void refresh(HashMap<String,BanKuai> bankuailist)
 	{
 		this.bankuailist =  bankuailist;
-		valuesList = new ArrayList<BanKuai>(bankuailist.values());
-		Collator collator = Collator.getInstance(Locale.CHINESE);
-		Ordering<BanKuai> sortedCopy = Ordering.from(byBkName);
-		 Collections.sort(valuesList,sortedCopy);
-		 
-		 status = new Boolean[this.getRowCount()];
-		 for(int i=0;i<this.getRowCount();i++) {
-			 status[i] = false;
-		 }
-		 this.fireTableDataChanged();
-
+		this.fireTableDataChanged();
 	}
-
-	Comparator<BanKuai> byBkName = new Comparator<BanKuai>() {
-		Collator collator = Collator.getInstance(Locale.CHINESE);
-		//Collections.sort(rightnamelist,collator);
-	    public int compare(final BanKuai p1, final BanKuai p2) {
-	    	try {
-	    		return p1.getMyOwnCode().compareTo(p2.getMyOwnCode()  );
-	    	} catch (java.lang.NullPointerException e) {
-	    		return 1;
-	    	}
-	        
-	    }
-	};
 
 	 public int getRowCount() 
 	 {
 		 if(this.bankuailist != null)
 			 return bankuailist.size();
-		 else return 0;
-		  
+		 else 
+			 return 0;
 	 }
 
 	    @Override
@@ -754,12 +507,6 @@ class BanKuaiDetailTableModel extends AbstractTableModel
             	value = valuesList.get(rowIndex).getMyOwnName();
             	//value = this.bankuailist.get(tmpc[rowIndex]).getBankuaicode();
                 break;
-            case 2:
-            	value = valuesList.get(rowIndex).getCreatedTime();
-            	//value = this.bankuailist.get(tmpc[rowIndex]).getBankuaicreatedtime();
-            	break;
-            case 3:
-            	value = status[rowIndex];
 	    	}
 
         return value;
@@ -774,12 +521,6 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 		        case 1:
 			          clazz = String.class;
 			          break;
-		        case 2:
-			          clazz = String.class;
-			          break;
-		        case 3:
-		        	clazz = Boolean.class;
-		        	break;
 		      }
 		      
 		      return clazz;
@@ -848,8 +589,4 @@ class BanKuaiDetailTableModel extends AbstractTableModel
 	    	status[row] = status1;
 	    	this.fireTableCellUpdated(row, column);
 	    }
-	    
-	
-
-	    
 }

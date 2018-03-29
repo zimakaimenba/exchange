@@ -2022,9 +2022,9 @@ public class BanKuaiDbOperation
 		
 		String sqlquerystat;
 		if(!jys.toLowerCase().equals("all"))
-			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述  FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
+			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述,导出Gephi,导入交易数据,板块分析   FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
 		else
-			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述 FROM 通达信板块列表 	"  ;
+			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述,导出Gephi,导入交易数据,板块分析   FROM 通达信板块列表 	"  ;
 		logger.debug(sqlquerystat);
 		CachedRowSetImpl rs = null;
 	    try {  
@@ -2041,6 +2041,10 @@ public class BanKuaiDbOperation
 	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称") );
 	        	tmpbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
 	        	tmpbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
+	        	
+	        	tmpbk.setExporttogehpi(rs.getBoolean("导出Gephi"));
+	        	tmpbk.setImportdailytradingdata(rs.getBoolean("导入交易数据"));
+	        	tmpbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
 	        	
 	        	tmpsysbankuailiebiaoinfo.add(tmpbk);
 	        	
@@ -2331,9 +2335,15 @@ public class BanKuaiDbOperation
 		else
 			cjltablename = "通达信交易所指数每日交易信息";
 		
-		 HashSet<String> allbkcode = this.getTDXBanKuaiSet (cys.toLowerCase());;
-		for(String tmpbkcode:allbkcode) {
+		 HashSet<String> allbkcode = this.getTDXBanKuaiSet (cys.toLowerCase());
+		 ArrayList<BanKuai> allbklist = this.getTDXBanKuaiList(cys.toLowerCase()); //这样可以判断哪些板块无需导入每日数据
+//		for(String tmpbkcode:allbkcode) {
+		for(BanKuai bk :  allbklist ) {
 //			String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
+			if(!bk.isImportdailytradingdata())
+				continue;
+			
+			String tmpbkcode = bk.getMyOwnCode();
 			String bkfilename = (filenamerule.replaceAll("YY",cys.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
 			File tmpbkfile = new File(exportath + "/" + bkfilename);
 			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
@@ -2379,6 +2389,9 @@ public class BanKuaiDbOperation
 				
 				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,ldlastestdbrecordsdate,cjltablename,dateRule,tmprecordfile);
 		}
+		
+		allbklist = null;
+		allbkcode = null;
 		
 		return tmprecordfile;
 	}

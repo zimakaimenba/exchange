@@ -88,6 +88,7 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjlZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
+import com.exchangeinfomanager.bankuaifengxi.Gephi.GephiFilesGenerator;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -281,6 +282,8 @@ public class BanKuaiFengXi extends JDialog {
 			if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
 				continue;
 			
+			if( !((BanKuai)childnode).isShowinbkfxgui() )
+				continue;
 			
 			String bkcode = childnode.getMyOwnCode();
 			logger.debug(bkcode);
@@ -970,6 +973,7 @@ public class BanKuaiFengXi extends JDialog {
                 }
 			}
 		});
+		
 		panelgegubkcje.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			 public void propertyChange(PropertyChangeEvent evt)   
@@ -984,7 +988,35 @@ public class BanKuaiFengXi extends JDialog {
 			}
 		});
 		
-	
+		btngephi.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				File filegephi;
+
+				if(tfldparsedfile.getText() != null && tfldparsedfile.getText().trim().length() != 0) {
+					GephiFilesGenerator gephigenerator = new GephiFilesGenerator (bkcyl);
+					filegephi = gephigenerator.generatorGephiFile(sysconfig.toUNIXpath(tfldparsedfile.getText().trim() ), dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), globeperiod);
+				} else {
+					chooseParsedFile ();
+					GephiFilesGenerator gephigenerator = new GephiFilesGenerator (bkcyl);
+					filegephi = gephigenerator.generatorGephiFile(sysconfig.toUNIXpath(tfldparsedfile.getText().trim() ), dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), globeperiod);
+				}
+				
+				if(filegephi == null)
+					return; 
+				int exchangeresult = JOptionPane.showConfirmDialog(null, "Gephi文件生产成功，请在" + filegephi.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
+	      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
+	      			  return;
+	      		  }
+	      		  try {
+	      			String path = filegephi.getAbsolutePath();
+	      			Runtime.getRuntime().exec("explorer.exe /select," + path);
+	      		  } catch (IOException e1) {
+	      				e1.printStackTrace();
+	      		  }
+			}
+		});
+		
 		btnClear.addMouseListener(new MouseAdapter() 
 		{
 			@Override
@@ -1908,6 +1940,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JProgressBar progressBarsys;
 	private JCheckBox cbxggquanzhong;
 	private BanKuaiFengXiCategoryBarChartPnl pnlggdpcje;
+	private JButton btngephi;
 	
 	private void initializeGui() {
 		
@@ -2396,6 +2429,9 @@ public class BanKuaiFengXi extends JDialog {
 			btnClear = new JButton("");
 			btnClear.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/delete.png")));
 			
+			btngephi = new JButton("\u4EA7\u751FGephi");
+			btngephi.setForeground(Color.ORANGE);
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -2430,7 +2466,9 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnChosPasFile)
-						.addGap(250)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btngephi)
+						.addGap(151)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
@@ -2469,7 +2507,8 @@ public class BanKuaiFengXi extends JDialog {
 									.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 										.addComponent(btnChosPasFile, GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
 										.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-										.addComponent(ckboxparsefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addComponent(ckboxparsefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btngephi))
 									.addGap(4)))))
 			);
 			buttonPane.setLayout(gl_buttonPane);
@@ -2631,8 +2670,6 @@ public class BanKuaiFengXi extends JDialog {
 					if (isCancelled())
 						 return null;
 					
-					
-					
 					BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
 					if(childnode.getType() != BanKuaiAndStockBasic.TDXBK)
 						continue;
@@ -2769,10 +2806,18 @@ public class BanKuaiFengXi extends JDialog {
 			}
 			
 			outputfile = null;
-			outputresultset = null;
+			
+			setProgress( 80 );
+			
+			GephiFilesGenerator gephigenerator = new GephiFilesGenerator (bkcyl);
+			gephigenerator.generatorGephiFile(outputresultset, dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), globeperiod);
+			
 			setProgress( 100 );
-			 
-			 return 100;
+			
+			gephigenerator = null;
+			outputresultset = null;
+			
+			return 100;
 	    }
 
 	    /*
@@ -2851,7 +2896,10 @@ public class BanKuaiFengXi extends JDialog {
 				
 				if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
 					continue;
-								
+				
+				if( !((BanKuai)childnode).isShowinbkfxgui() )
+					continue;
+				
 				String bkcode = childnode.getMyOwnCode();
 				logger.debug(bkcode);
 				childnode = (BanKuai)this.bkcyl.getBanKuai(((BanKuai)childnode), curselectdate,period); 
@@ -2920,49 +2968,3 @@ class ParseBanKuaiFielProcessor implements LineProcessor<List<String>>
         return stocklists;
     }
 }
-
-class RedispatchingMouseAdapter implements MouseListener, MouseWheelListener, MouseMotionListener
-{
-
-    public void mouseClicked(MouseEvent e) {
-        redispatchToParent(e);
-    }
-
-    public void mousePressed(MouseEvent e) {
-        redispatchToParent(e);
-    }
-
-    public void mouseReleased(MouseEvent e) {
-        redispatchToParent(e);
-    }
-
-    public void mouseEntered(MouseEvent e) {
-        redispatchToParent(e);
-    }
-    
-    public void mouseExited(MouseEvent e) {
-        redispatchToParent(e);
-    }
-
-    public void mouseWheelMoved(MouseWheelEvent e){
-        redispatchToParent(e);
-    }
-
-    public void mouseDragged(MouseEvent e){
-        redispatchToParent(e);
-    }
-
-    public void mouseMoved(MouseEvent e) {
-        redispatchToParent(e);
-    }
-
-    private void redispatchToParent(MouseEvent e){
-        Component source = (Component) e.getSource();
-        MouseEvent parentEvent = SwingUtilities.convertMouseEvent(source, e, source.getParent());
-        source.getParent().dispatchEvent(parentEvent);
-    }
-}
-
-
-
-

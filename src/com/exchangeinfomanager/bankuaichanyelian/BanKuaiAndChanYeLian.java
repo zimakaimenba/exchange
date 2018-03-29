@@ -222,6 +222,9 @@ public class BanKuaiAndChanYeLian
 	public BanKuai getBanKuai (String bkcode,LocalDate requiredrecordsday,String period) 
 	{
 		BanKuai bankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode(bkcode,BanKuaiAndStockBasic.TDXBK);
+		if(bankuai == null)
+			return null;
+		
 		bankuai = this.getBanKuai (bankuai,requiredrecordsday,period);
 		return bankuai;
 	}
@@ -293,13 +296,22 @@ public class BanKuaiAndChanYeLian
 	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, String stockcode,String period)
 	{
 		StockOfBanKuai stock = bankuai.getBanKuaiGeGu(stockcode);
+		if(stock == null)
+			return null;
+		
 		stock = this.getGeGuOfBanKuai( bankuai,  stock,period);
 		return stock;
 	}
 	public StockOfBanKuai getGeGuOfBanKuai(String bkcode, String stockcode,String period) 
 	{
 		BanKuai bankuai = (BanKuai) treechanyelian.getSpecificNodeByHypyOrCode(bkcode,BanKuaiAndStockBasic.TDXBK);
+		if(bankuai == null)
+			return null;
+		
 		StockOfBanKuai stock = bankuai.getBanKuaiGeGu(stockcode);
+		if(stock == null)
+			return null;
+		
 		stock = this.getGeGuOfBanKuai( bankuai,  stock,period);
 
 		return stock;
@@ -423,6 +435,9 @@ public class BanKuaiAndChanYeLian
 	public Stock getStock (String stockcode,LocalDate requiredrecordsday,String period)
 	{
 		Stock stock = (Stock)this.treechanyelian.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
+		if(stock == null)
+			return null;
+		
 		this.getStock(stock, requiredrecordsday, period);
 		
 		return stock;

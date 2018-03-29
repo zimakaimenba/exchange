@@ -27,7 +27,7 @@ public class StockOfBanKuai extends Stock
 //		super.nodemonthdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 	}
 	
-	private static Logger logger = Logger.getLogger(StockOfBanKuai.class);
+//	private static Logger logger = Logger.getLogger(StockOfBanKuai.class);
 	private BanKuai bankuai;
 	private Stock stock;
 	private Integer quanzhong;

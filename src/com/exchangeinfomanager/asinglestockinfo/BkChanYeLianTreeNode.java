@@ -62,7 +62,7 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
    		
   }
 	
-    private static Logger logger = Logger.getLogger(BkChanYeLianTreeNode.class);
+    private Logger logger = Logger.getLogger(BkChanYeLianTreeNode.class);
 	private ArrayList<String> hanyupingyin; //∫∫”Ô∆¥“Ù
     protected int nodetype;
 	private String myname; 

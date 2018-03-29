@@ -41,11 +41,31 @@ public class BanKuai extends BkChanYeLianTreeNode
 //		super.nodemonthdata = new BanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuai.class);
+//	private static Logger logger = Logger.getLogger(BanKuai.class);
 //	private HashMap<String, Stock> allbkge;
 	private String bankuaileixing; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据 
-	private boolean notexporttogehpi = false;
+	private boolean exporttogehpi = true;
+	private boolean importdailytradingdata = true;
+	private boolean showinbkfxgui = true;
 
+	public boolean isExporttogehpi() {
+		return exporttogehpi;
+	}
+	public void setExporttogehpi(boolean exporttogehpi) {
+		this.exporttogehpi = exporttogehpi;
+	}
+	public boolean isImportdailytradingdata() {
+		return importdailytradingdata;
+	}
+	public void setImportdailytradingdata(boolean importdailytradingdata) {
+		this.importdailytradingdata = importdailytradingdata;
+	}
+	public boolean isShowinbkfxgui() {
+		return showinbkfxgui;
+	}
+	public void setShowinbkfxgui(boolean showinbkfxgui) {
+		this.showinbkfxgui = showinbkfxgui;
+	}
 	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
 	{
 		if(period.equals(StockGivenPeriodDataItem.WEEK))
@@ -206,29 +226,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode#setParseFileStockSet(java.util.HashSet)
-	 */
-//	public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
-//	 {
-//	    	if(super.parsefilestockset == null) {
-//	    		this.parsefilestockset = new HashSet<String> ();
-//	    		this.parsefilestockset = parsefilestockset2;
-//	    	} else
-//	    		this.parsefilestockset = parsefilestockset2;
-//	 }
-	/*
-	 * GEPHI part
-	 */
-//	public void setNotExportToGephi ()
-//	 {
-//		 this.notexporttogehpi = true;
-//	 }
-//	 public boolean shouldNotExportToGephi ()
-//	 {
-//		 return this.notexporttogehpi;
-//	 }
+
 	 
 	public class BanKuaiNodeXPeriodData extends NodeXPeriodData 
 	{

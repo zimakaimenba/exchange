@@ -27,7 +27,7 @@ public class DaPan extends BkChanYeLianTreeNode
 		super.nodedaydata = new DaPanNodeXPeriodData (StockGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new DaPanNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 	}
-	private static Logger logger = Logger.getLogger(DaPan.class);
+//	private static Logger logger = Logger.getLogger(DaPan.class);
 	private BanKuai shanghai; //上证成交记录
 	private BanKuai shenzhen; //深证成交记录
 	
