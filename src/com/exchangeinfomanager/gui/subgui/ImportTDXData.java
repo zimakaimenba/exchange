@@ -175,8 +175,7 @@ public class ImportTDXData extends JDialog {
 	}
 	private void partThatHasBeImportAfterWsork () 
 	{
-		
-		//从通达信foxpro中导入股票的基本面信息
+		//从通达信foxpro中导入股票的基本面信息,暂时不用，因为还没有用到这些信息
 		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
 //					try {
 //						File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();

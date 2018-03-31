@@ -2135,8 +2135,9 @@ public class BanKuaiDbOperation
 		return subcylcode;
 		
 	}
-	
-	
+	/*
+	 * 
+	 */
 	public void setNewZdyBanKuai(String bkname, String bkcode) 
 	{
 		String dbbkname =  "zdy"+bkname.trim();
@@ -2156,7 +2157,6 @@ public class BanKuaiDbOperation
 	
 	public HashMap<String, BanKuai> getZdyBanKuaiList ()
 	{
-		
 				//HashSet<String> tmpbankuailiebiaoset = new HashSet<String> ();
 				HashMap<String,BanKuai> tmpsysbankuailiebiaoinfo = new HashMap<String,BanKuai> ();
 				//Multimap<String,String> tmpsysbkmap =   ArrayListMultimap.create();
@@ -2207,7 +2207,6 @@ public class BanKuaiDbOperation
 	/*
 	 * 检查数据库中的通达信板块哪些有记录文件，哪些没有。 
 	 */
-	
 	public File preCheckTDXBanKuaiVolAmoToDb (String cys)
 	{
 		File tmpreportfolder = Files.createTempDir();
@@ -2259,7 +2258,6 @@ public class BanKuaiDbOperation
 	public void refreshTDXSystemBanKuaiLeiXing () 
 	{
 		 ArrayList<BanKuai> curallbk = this.getTDXBanKuaiList("all");
-		
 
 		for ( BanKuai bankuai : curallbk) {
 
@@ -2283,7 +2281,6 @@ public class BanKuaiDbOperation
 					 dy = rs.getInt("RESULT");
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		    
@@ -2308,13 +2305,25 @@ public class BanKuaiDbOperation
 				bktype = BanKuai.NOGGNOSELFCJL;
 			
 			if(bktype != null) {
-				String sqlupdatequery = "UPDATE 通达信板块列表 SET 板块类型描述 = " + "'" + bktype +"'" + " WHERE 板块ID = " + bkcode;
+				String sqlupdatequery = "UPDATE 通达信板块列表 SET 板块类型描述 = " + "'" + bktype +"'" + " WHERE 板块ID = '" + bkcode + "'";
+				logger.debug(sqlupdatequery);
+			    connectdb.sqlUpdateStatExecute(sqlupdatequery);
+			}
+			if(bktype.equals(BanKuai.NOGGWITHSELFCJL)  ||  bktype.equals(BanKuai.NOGGNOSELFCJL)) { //没有个股的板块肯定不导出到gephi
+				String sqlupdatequery = "UPDATE 通达信板块列表 SET 导出Gephi = false WHERE 板块ID = '" + bkcode + "'";
+				logger.debug(sqlupdatequery);
+			    connectdb.sqlUpdateStatExecute(sqlupdatequery);
+			}
+			if(  bktype.equals(BanKuai.NOGGNOSELFCJL)) { //没有个股没有成交量的板块肯定不做板块分析
+				String sqlupdatequery = "UPDATE 通达信板块列表 SET 板块分析 = false WHERE 板块ID = '" + bkcode + "'";
 				logger.debug(sqlupdatequery);
 			    connectdb.sqlUpdateStatExecute(sqlupdatequery);
 			}
 				
 
 		}
+		
+		curallbk = null;
 	}
 	/*
 	 * 同步通达信上证板块的每日成交量信息，信息存在"通达信板块每日交易信息"，
@@ -2525,51 +2534,9 @@ public class BanKuaiDbOperation
             }  
         }  
 	}
-	
-	/*
-	 * 交易所定义的所有指数 用新的BkChanYeLianTreeNode存储
-	 */
-//	public HashMap<String, BkChanYeLianTreeNode> getTDXAllZhiShuList2() 
-//	{
-//		HashMap<String,BkChanYeLianTreeNode> tmpsysbankuailiebiaoinfo = new HashMap<String,BkChanYeLianTreeNode> ();
-//
-//		String sqlquerystat = "SELECT *  FROM 通达信交易所指数列表 WHERE 板块ID IS NOT NULL"
-//							   ;   
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//	    try {  
-//	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//	    	
-//	        rs.last();  
-//	        int rows = rs.getRow();  
-//	        rs.first();  
-//	        for(int j=0;j<rows;j++) {  
-//	        	BkChanYeLianTreeNode tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"));
-//	        	//tmpbk.setBanKuaiJiaoYiSuo(rs.getString("指数所属交易所"));
-//	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块ID"), tmpbk);
-//	            rs.next();
-//	        }
-//	        
-//	    }catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    } finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    } 
-//	    
-//	    return tmpsysbankuailiebiaoinfo;
-//	}
-
-	
+/*
+ * 
+ */
 	public Date getTDXRelatedTableLastModfiedTime() 
 	{
 		Date lastesttdxtablesmdftime = null;
@@ -2608,37 +2575,6 @@ public class BanKuaiDbOperation
 						e.printStackTrace();
 					}
 		    }
-		    
-//	   sqlquerystat = " SELECT MAX(数据最新更新时间) FROM 通达信交易所指数列表"   ;
-//		CachedRowSetImpl rszs = null; 
-//	    try {  
-//	    	 rszs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//	    	 
-//	    	 java.sql.Timestamp tmplastmdftime = null;
-//	    	 while(rszs.next())
-//	    		  tmplastmdftime = rszs.getTimestamp("MAX(数据最新更新时间)");
-//	    	 logger.debug(tmplastmdftime);
-//	    	 if(tmplastmdftime.after(lastesttdxtablesmdftime))
-//	    		 lastesttdxtablesmdftime = tmplastmdftime;
-//	    }catch(java.lang.NullPointerException e){
-//	    	lastesttdxtablesmdftime = null;
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	logger.debug(sqlquerystat);
-//	    	lastesttdxtablesmdftime = null;
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	lastesttdxtablesmdftime = null;
-//	    	e.printStackTrace();
-//	    }  finally {
-//	    	if(rszs != null)
-//				try {
-//					rszs.close();
-//					rszs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    }
 			
 		return lastesttdxtablesmdftime;
 	}
@@ -4997,9 +4933,17 @@ public class BanKuaiDbOperation
 //			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
 //			return autoIncKeyFromApi;
 //		}
-		
-		
-		
+		public void updateBanKuaiExportGephiBkfxOperation(String nodecode, boolean importdailydata, boolean exporttogephi, boolean showinbkfx)
+		{
+			String sqlupdatestat = "UPDATE 通达信板块列表 SET " +
+								" 导入交易数据=" + importdailydata  + "," +
+								" 导出Gephi=" + exporttogephi +  ","  +
+								" 板块分析=" + showinbkfx +
+								" WHERE 板块ID='" + nodecode + "'"
+								;
+			logger.debug(sqlupdatestat);
+	   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		}
 
 }
 

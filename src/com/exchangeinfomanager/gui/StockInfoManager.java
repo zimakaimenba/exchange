@@ -18,8 +18,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-import com.exchangeinfomanager.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.Search.SearchDialog;
 //import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
@@ -39,8 +39,6 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiBarChartPnl;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiPieChartPnl;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;

@@ -14,10 +14,15 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultTreeModel;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.JTreeTable.AbstractTreeTableModel;
+import com.exchangeinfomanager.commonlib.JTreeTable.JTreeTable;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
@@ -68,6 +73,8 @@ import java.awt.Color;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 
 public class BanKuaiGuanLi extends JDialog 
@@ -80,17 +87,17 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiAndChanYeLian bkcyl) 
+	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiAndChanYeLian bkcyl1) 
 	{
 		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockInfoManager = stockInfoManager2;
-		this.bkcylpnl = bkcyl;
+		this.bkcyl = bkcyl1;
 		
 		initializeGui ();
 		createEvents ();
 
-		initializeTDXBanKuaiLists ();
+//		initializeTDXBanKuaiLists ();
 	}
 
 	private StockInfoManager stockInfoManager;	
@@ -101,13 +108,70 @@ public class BanKuaiGuanLi extends JDialog
 
 	private void initializeTDXBanKuaiLists() 
 	{
-		((BanKuaiDetailTableModel)tableSysBk.getModel()).refresh(sysbankuailist);
-	}
-
+		DefaultTreeModel treeModel = (DefaultTreeModel)this.bkcyl.getBkChanYeLianTree().getModel();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+//		DefaultTableModel tableModel = (DefaultTableModel)this.tableSysBk.getModel();
 		
+		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.bkcyl.getBkChanYeLianTree());
+	}
+	/*
+	 * 
+	 */
+	private void commonrules (BkChanYeLianTreeNode node)
+	{
+		if(node.getType() == BanKuaiAndStockBasic.TDXBK) {
+			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL ) || ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL )  ) {
+//				cbxnotgephi.setEnabled(false);
+			}
+		}
+	}
 
 	private void createEvents() 
 	{
+		cbxnotgephi.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+			}
+		});
+		cbxnotbkfx.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+			}
+		});
+		cbxnotimport.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				if(cbxnotimport.isSelected()) {
+					cbxnotbkfx.setSelected(true);
+					cbxnotgephi.setSelected(true);
+					
+					cbxnotbkfx.setEnabled(false);
+					cbxnotgephi.setEnabled(false);
+				} else {
+					cbxnotbkfx.setEnabled(true);
+					cbxnotgephi.setEnabled(true);
+					
+					buttonapplybksetting.setEnabled(true);
+				}
+				
+			}
+		});
+		
+		buttonapplybksetting.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int row = tableSysBk.getSelectedRow();
+				int column = tableSysBk.getSelectedColumn();
+				
+				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
+				if(selectnode.getType() == BanKuaiAndStockBasic.TDXBK) {
+					bkdbopt.updateBanKuaiExportGephiBkfxOperation (selectnode.getMyOwnCode(),!cbxnotimport.isSelected(),!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected());
+					((BanKuai)selectnode).setImportdailytradingdata(!cbxnotimport.isSelected());
+					((BanKuai)selectnode).setExporttogehpi(!cbxnotgephi.isSelected());
+					((BanKuai)selectnode).setShowinbkfxgui(!cbxnotbkfx.isSelected());
+					
+					buttonapplybksetting.setEnabled(false);
+				}
+			}
+		});
+		
 		tableSysBk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -115,34 +179,37 @@ public class BanKuaiGuanLi extends JDialog
 				int row = tableSysBk.getSelectedRow();
 				int column = tableSysBk.getSelectedColumn();
 				
-				
-				if(column !=3)
-					return;
-				
-				Boolean status = (Boolean)((BanKuaiDetailTableModel)tableSysBk.getModel()).getValueAt(row, column);
-				
-				 ((BanKuaiDetailTableModel)tableSysBk.getModel()).setValueAt(!status,row, column);
-
-				
+				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
+				if(selectnode.getType() == BanKuaiAndStockBasic.TDXBK) {
+					cbxnotimport.setEnabled(true);
+					cbxnotbkfx.setEnabled(true);
+					cbxnotgephi.setEnabled(true);
+					buttonapplybksetting.setEnabled(true);
+					
+					cbxnotimport.setSelected(!((BanKuai)selectnode).isImportdailytradingdata());
+					cbxnotbkfx.setSelected(!((BanKuai)selectnode).isShowinbkfxgui());
+					cbxnotgephi.setSelected(!((BanKuai)selectnode).isExporttogehpi());
+					
+					if(cbxnotimport.isSelected()) {
+						cbxnotbkfx.setEnabled(false);
+						cbxnotgephi.setEnabled(false);
+					}
+						
+				} else { //个股，不能设置
+					cbxnotimport.setSelected(false);
+					cbxnotbkfx.setSelected(false);
+					cbxnotgephi.setSelected(false);
+					
+					cbxnotimport.setEnabled(false);
+					cbxnotbkfx.setEnabled(false);
+					cbxnotgephi.setEnabled(false);
+					buttonapplybksetting.setEnabled(false);
+				}
 			}
 		});
 		
-		btnstartexport.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				writeBanKuaiAndGeGuNodeFile (zhishulist, sysbankuailist );
-				if(cbxexporttype.getSelectedItem().toString().equals("导出所有板块数据")) {
-					
-					writeBanKuaiAndGeGuEdegeFile (zhishulist,sysbankuailist);
-				} else {
-					HashMap<String, BanKuai> selectedbk1 = ((BanKuaiDetailTableModel)tableSysBk.getModel()).getSelectedBanKuai();
-					HashMap<String, BanKuai> selectedbk2 = ((BanKuaiDetailTableModel)tablezhishu.getModel()).getSelectedBanKuai();
-					
-					writeBanKuaiAndGeGuEdegeFile (selectedbk2,selectedbk1);
-				}
-				
-			}
-		});
+
+		
 		
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -154,20 +221,16 @@ public class BanKuaiGuanLi extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
-				if(bkcylpnl.isXmlEdited()) {
-					JOptionPane.showMessageDialog(null,"板块产业链编辑后尚未保存，请先保存");
-					return;
-				} else					
-					dispose ();
+				dispose ();
 			}
 		});
 		
 	}
 
 	private JButton okButton;
-	private JTable tableSysBk;
+	private JTreeTable tableSysBk;
 	private final JPanel contentPanel = new JPanel();
-	private BanKuaiAndChanYeLian bkcylpnl;
+	private BanKuaiAndChanYeLian bkcyl;
 	private JPanel panelSys;
 	private JTable tableZdy;
 	private JTextField tfldfilepath;
@@ -179,6 +242,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JCheckBox cbxnotimport;
 	private JCheckBox cbxnotbkfx;
 	private JCheckBox cbxnotgephi;
+	private JButton buttonapplybksetting;
 	
 	private void initializeGui()
 	{
@@ -267,11 +331,15 @@ public class BanKuaiGuanLi extends JDialog
 		
 		cbxnotimport = new JCheckBox("\u4E0D\u5BFC\u5165\u6BCF\u65E5\u4EA4\u6613\u6570\u636E");
 		
+		
 		cbxnotbkfx = new JCheckBox("\u4E0D\u505A\u677F\u5757\u5206\u6790");
+		
 		
 		cbxnotgephi = new JCheckBox("\u4E0D\u5BFC\u51FA\u5230Gephi");
 		
-		JButton buttonapplybksetting = new JButton("\u5E94\u7528");
+		
+		buttonapplybksetting = new JButton("\u5E94\u7528");
+		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -360,33 +428,9 @@ public class BanKuaiGuanLi extends JDialog
 		);
 		panel.setLayout(gl_panel);
 		
-		BanKuaiDetailTableModel zhishubankmodel = new BanKuaiDetailTableModel();
-		
-		BanKuaiDetailTableModel zidingyibankmodel = new BanKuaiDetailTableModel();
-		tableZdy = new JTable(zidingyibankmodel){
-
-			private static final long serialVersionUID = 1L;
-
-			public String getToolTipText(MouseEvent e) {
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                    //catch null pointer exception if mouse is over an empty line
-                }
-
-                return tip;
-            }
-		};
-		scrollPane.setViewportView(tableZdy);
-		
-		
-		BanKuaiDetailTableModel sysaccountsmodel = new BanKuaiDetailTableModel();
-		tableSysBk = new JTable(sysaccountsmodel){
+		//初始化jtreetable
+		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.bkcyl.getBkChanYeLianTree());
+		tableSysBk = new JTreeTable(treetablemodel){
 
 			private static final long serialVersionUID = 1L;
 
@@ -408,16 +452,12 @@ public class BanKuaiGuanLi extends JDialog
 		scrollPanesysbk.setViewportView(tableSysBk);
 		panelSys.setLayout(gl_panelSys);
 		
-		
-		BanKuaiDetailTableModel zdyaccountsmodel = new BanKuaiDetailTableModel();
-		
-		//pnlGingo2 = new Ginkgo2(this.bkdbopt, this.stockdbopt,this.cylxmlhandler);
 //		bkcylpnl = new BanKuaiAndChanYeLian(this.stockInfoManager) ;
 //		bkcylpnl.startGui();
 		
 		//tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, pnlGingo2, null);
 //		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, bkcylpnl, null);
-		tabbedPane.setSelectedIndex(1) ;
+//		tabbedPane.setSelectedIndex(0) ;
 		
 		contentPanel.setLayout(gl_contentPanel);
 		{
@@ -458,135 +498,58 @@ public class BanKuaiGuanLi extends JDialog
 }
 
 
-class BanKuaiDetailTableModel extends AbstractTableModel 
+class BanKuaiDetailTableModel extends AbstractTreeTableModel 
 {
-	HashMap<String,BanKuai> bankuailist;
-
-	List<BanKuai> valuesList; //存放板块对象列表
-	String[] jtableTitleStrings = { "板块名称", "板块代码"};
-	Boolean[] status;
+	String[] jtableTitleStrings = { "板块ID","板块名称","板块类型"};
 	
-	BanKuaiDetailTableModel ()
+	BanKuaiDetailTableModel (BkChanYeLianTree cyltree)
 	{
-	}
-
-	public void refresh(HashMap<String,BanKuai> bankuailist)
-	{
-		this.bankuailist =  bankuailist;
-		this.fireTableDataChanged();
-	}
-
-	 public int getRowCount() 
-	 {
-		 if(this.bankuailist != null)
-			 return bankuailist.size();
-		 else 
-			 return 0;
-	 }
-
-	    @Override
-	    public int getColumnCount() 
-	    {
-	        return jtableTitleStrings.length;
-	    
-	    } 
-//	    
-	    public Object getValueAt(int rowIndex, int columnIndex) 
-	    {
-	    	if(bankuailist == null)
-	    		return null;
-	    	Object value = "??";
-	    	
-	    	
-	    	switch (columnIndex) {
-            case 0:
-                value = valuesList.get(rowIndex).getMyOwnCode();
-            	//value = this.bankuailist.get(tmpc[rowIndex]).getBankuainame();
-                break;
-            case 1:
-            	value = valuesList.get(rowIndex).getMyOwnName();
-            	//value = this.bankuailist.get(tmpc[rowIndex]).getBankuaicode();
-                break;
-	    	}
-
-        return value;
-	  }
-
-     public Class<?> getColumnClass(int columnIndex) {
-		      Class clazz = String.class;
-		      switch (columnIndex) {
-		      case 0:
-		    	  clazz = String.class;
-		    	  break;
-		        case 1:
-			          clazz = String.class;
-			          break;
-		      }
-		      
-		      return clazz;
-		}
-	    
-//	    @Override
-//	    public Class<?> getColumnClass(int columnIndex) {
-//	        return // Return the class that best represents the column...
-//	    }
-	    
-	    public String getColumnName(int column){ 
-	    	return jtableTitleStrings[column];
-	    }//设置表格列名 
+		super (  (BkChanYeLianTreeNode)cyltree.getModel().getRoot() );
 		
+	}
+
+	@Override
+	public int getColumnCount() {
+		return jtableTitleStrings.length;
+	}
+
+
+	@Override
+	public String getColumnName(int column) {
+		return jtableTitleStrings[column];
+	}
+
+
+	@Override
+	public Object getValueAt(Object node, int column) {
+		 switch(column) {
+         case 0:
+            return node;
+         case 1:
+             return ((BkChanYeLianTreeNode)node).getMyOwnName();
+         case 2:
+        	 if ( ((BkChanYeLianTreeNode)node).getType() == BanKuaiAndStockBasic.TDXBK  )
+        		 return ((BanKuai)node).getBanKuaiLeiXing();
+        	 else 
+        		 return "";
+		 }   
+		 return null;
+	}
+
+
+	@Override
+	public Object getChild(Object parent, int index) {
+		return ((BkChanYeLianTreeNode) parent).getChildAt(index);
+	}
+
+
+	@Override
+	public int getChildCount(Object parent) {
+		if (!((BkChanYeLianTreeNode) parent).isLeaf()) {
+	         return ((BkChanYeLianTreeNode) parent).getChildCount();
+	      }
+	      return 0;
+	}
 	    
-	    public boolean isCellEditable(int row,int column) {
-	    	if(column == 3 ) {
-//	    		boolean curstatus = (Boolean)this.getValueAt(row,column);
-//	    		this.setValueAt(new Boolean(!curstatus), row, column);
-//	    		this.fireTableCellUpdated(row, column);
-//	    		return !curstatus;
-	    		return true;
-	    	}
-	    	else
-	    		return false;
-		}
-	    
-//	    public AccountInfoBasic getAccountsAt(int row) {
-//	        return accountslist.get(row);
-//	    }
-	    
-	    private void deleteAllRows()
-	    {
-//	    	if(this.accountslist == null)
-//				 return ;
-//			 else 
-//				 accountslist.clear();
-	    }
-	    
-	    private BanKuai getBanKuai (int rowIndex)
-	    {
-	    	return (BanKuai) bankuailist.get(rowIndex);
-	    }
-	    private boolean isSelected (int row)
-	    {
-	    	if((Boolean)this.getValueAt(row,3))
-	    		return true;
-	    	else
-	    		return false;
-	    }
-	    
-	    public HashMap<String,BanKuai> getSelectedBanKuai ()
-	    {
-	    	HashMap<String,BanKuai> tmpbklist = new HashMap<String,BanKuai> ();
-	    	for(int i=0;i<getRowCount();i++) {
-	    		if(this.isSelected(i) ) {
-	    			String bkcode = (String)this.getValueAt(i, 0);
-	    			BanKuai tmpbk = bankuailist.get(bkcode);
-	    			tmpbklist.put(bkcode, tmpbk);
-	    		}
-	    	}
-	    	return tmpbklist;
-	    }
-	    public void setValueAt(Boolean status1,int row, int column)
-	    {
-	    	status[row] = status1;
-	    	this.fireTableCellUpdated(row, column);
-	    }
+
 }

@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.checkboxtree;
+package com.exchangeinfomanager.commonlib.checkboxtree;
 
 import java.awt.Color;
 import java.awt.Component;
