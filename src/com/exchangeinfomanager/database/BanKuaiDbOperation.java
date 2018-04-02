@@ -4766,7 +4766,8 @@ public class BanKuaiDbOperation
 	                		|| datavalueindb.equals("0") )
 	                	continue;
 
-	                String lastupdatedate = formateDateForDiffDatabase("mysql", datavalueindb );
+	                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+	                LocalDate lastupdatedate = LocalDate.parse(datavalueindb,formatter );
 	                double zgb = Double.parseDouble(jbminfomap.get("ZGB").toString());
 	                double gjg  = Double.parseDouble(jbminfomap.get("GJG").toString());
 	                double fqrfrg  = Double.parseDouble(jbminfomap.get("FQRFRG").toString());
@@ -4815,7 +4816,7 @@ public class BanKuaiDbOperation
 	                		              		+ "VALUES("
 	                		              		+ "'" + stockcode + "'" +","
 	                		              		+ zgb +","
-	                		              		+ lastupdatedate +","
+	                		              		+ "'" + lastupdatedate +"',"
 	                		              		+ gjg +","
 	                		              		+ fqrfrg +","
 	                		              		+ frg +","
@@ -4852,7 +4853,7 @@ public class BanKuaiDbOperation
 	                		              		+ ")"
 	                		              		+ " ON DUPLICATE KEY UPDATE "
 	                        					+ " 总股本ZGB=" + zgb +","
-	                        					+ " 更新日期GXRQ=" + lastupdatedate +","
+	                        					+ " 更新日期GXRQ= '" + lastupdatedate +"' ,"
 	                        					+ " GJG=" + gjg +","
 	                        					+ " FQRFRG=" + fqrfrg +","
 	                        					+ " 法人股FRG=" + frg +","
@@ -4915,24 +4916,9 @@ public class BanKuaiDbOperation
 	        return tmprecordfile;
 			
 		}
-//		/*
-//		 * 存储板块为某一周的热点，用来回溯热点，否则过段时间就忘了前期是什么热点
-//		 */
-//		public int setBanKuaiAsReDian(String bkcode, BanKuaiReDian bkrd) 
-//		{
-//			LocalDate rediandate = bkrd.getReDianDate();
-//			String miaoshu = bkrd.getReDianMiaoShu ();
-//			
-//			String sqlinsertstat = "INSERT INTO 板块个股热点记录(代码,热点日期,描述) values ("
-//					+ "'" + bkcode + "'" + ","
-//					+ "'" + rediandate + "'" + ","
-//					+ "'" + miaoshu  + "'" 
-//					+ ")"
-//					;
-//			logger.debug(sqlinsertstat);
-//			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
-//			return autoIncKeyFromApi;
-//		}
+		/*
+		 * 设置板块的属性: 是否导入数据，是否出现在板块分析界面中，是否导出到Gephi
+		 */
 		public void updateBanKuaiExportGephiBkfxOperation(String nodecode, boolean importdailydata, boolean exporttogephi, boolean showinbkfx)
 		{
 			String sqlupdatestat = "UPDATE 通达信板块列表 SET " +

@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
@@ -38,7 +37,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //	private int curdisplayrow = -1;
 //	private Stock curdisplaystock;
 //	private HashSet<String> stockcodeinparsefile;
-	private Double showcje;
+	private Double showcje = 1000000000000.0;
 	private Integer cjemaxwk = 10000000;
 	private Boolean showparsedfile = false;
 	private Integer cjezbdpmaxwk = 10000000;

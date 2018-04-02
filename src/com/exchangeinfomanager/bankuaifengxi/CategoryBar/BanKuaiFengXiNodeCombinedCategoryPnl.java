@@ -27,6 +27,8 @@ import org.jfree.chart.plot.CategoryPlot;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
+import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
+import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
@@ -36,7 +38,7 @@ import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeZhanB
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 
-public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarChartPanelHightLightColumnListener
+public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener
 {
 	/**
 	 * Create the panel.
@@ -80,15 +82,14 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	private BanKuaiFengXiCategoryBarChartPnl cjelargepnl;
 	private BanKuaiFengXiCategoryBarChartPnl cjezblargepnl;
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
-	/**
-	 * Create the panel.
-	 */
-	public void updateData(BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period) 
+	
+	@Override
+	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference, String period) 
 	{
-		cjelargepnl.updatedDate(node, displayedenddate1, 0, period);
-		cjezblargepnl.updatedDate(node, displayedenddate1, 0, period);
+		cjelargepnl.updatedDate(node, date, difference, period);
+		cjezblargepnl.updatedDate(node, date, difference, period);
 	}
-	public void updateData(BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate,String period) 
+	public void updatedDate(BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate,String period) 
 	{
 		cjelargepnl.updatedDate(node, startdate,enddate, period);
 		cjezblargepnl.updatedDate(node, startdate,enddate, period);
@@ -97,6 +98,12 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	public void highLightSpecificBarColumn(LocalDate selecteddate) 
 	{
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selecteddate));
+	}
+	@Override
+	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemaxwk) 
+	{
+		cjezblargepnl.hightLightFxValues(null,cjezbdpmax, null, null) ;
+		cjelargepnl.hightLightFxValues(null,null, null, cjemaxwk) ;
 	}
 	@Override
 	public void highLightSpecificBarColumn(Integer columnindex) 
@@ -152,7 +159,6 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
         PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
         pcs.firePropertyChange(evt);
     }
-
 	
     /*
      * 

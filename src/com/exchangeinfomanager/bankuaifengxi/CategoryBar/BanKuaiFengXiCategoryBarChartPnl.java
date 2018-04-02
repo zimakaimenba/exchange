@@ -53,6 +53,7 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriod
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
+import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.bankuaifengxi.TooltipChartPanel.TooltipChartPanel;
@@ -93,7 +94,7 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener  
+public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener
 {
 	/**
 	 * 

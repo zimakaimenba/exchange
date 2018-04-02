@@ -96,7 +96,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
 	private void updateData(BkChanYeLianTreeNode node, LocalDate displayedstartdate1, LocalDate displayedenddate1,
 			String period) {
-		centerPanel.updateData(node, displayedstartdate1,displayedenddate1,  period);
+		centerPanel.updatedDate(node, displayedstartdate1,displayedenddate1, period);
 		nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  StockGivenPeriodDataItem.DAY);
 	}
 

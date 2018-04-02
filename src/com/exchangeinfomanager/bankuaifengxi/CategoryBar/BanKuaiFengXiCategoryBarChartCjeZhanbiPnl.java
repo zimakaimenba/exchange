@@ -147,6 +147,15 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 		super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
 	}
+	/*
+	 * 
+	 */
+	@Override
+	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax) 
+	{
+		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbbkmax);
+		this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰
+	}
 
 }
 

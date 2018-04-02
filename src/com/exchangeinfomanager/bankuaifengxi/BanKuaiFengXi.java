@@ -215,7 +215,7 @@ public class BanKuaiFengXi extends JDialog {
 	private Set<BarChartPanelDataChangedListener> piechartpanelbankuaidatachangelisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelstockofbankuaidatachangelisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelstockdatachangelisteners;
-	private Set<BkfxHightLightValueListener> bkfxhighlightvalueslisteners;
+	private Set<BarChartHightLightFxDataValueListener> bkfxhighlightvalueslisteners;
 	
 	/*
 	 * 用户在界面的操作，各个模块的协同操作
@@ -236,7 +236,7 @@ public class BanKuaiFengXi extends JDialog {
 		piechartpanelbankuaidatachangelisteners.add(panelLastWkGeGuZhanBi);
 		//个股对板块
 //		barchartpanelstockofbankuaidatachangelisteners.add(panelgegucje); //个股对于板块交易额,一般看个股对大盘的成交额，这个就不看了
-		barchartpanelstockofbankuaidatachangelisteners.add(panelggubkcjezhanbi);
+		barchartpanelstockofbankuaidatachangelisteners.add(panelggbkcjezhanbi);
 		//独立个股本身
 //		barchartpanelstockdatachangelisteners.add(paneldayCandle);
 		barchartpanelstockdatachangelisteners.add(pnlggdpcje);
@@ -244,7 +244,7 @@ public class BanKuaiFengXi extends JDialog {
 		//用户点击bar chart的一个column, highlight bar chart
 		chartpanelhighlightlisteners.add(panelGgDpCjeZhanBi);
 		chartpanelhighlightlisteners.add(panelgegubkcje);
-		chartpanelhighlightlisteners.add(panelggubkcjezhanbi);
+		chartpanelhighlightlisteners.add(panelggbkcjezhanbi);
 		chartpanelhighlightlisteners.add(panelbkcje);
 		chartpanelhighlightlisteners.add(pnlggdpcje);
 		chartpanelhighlightlisteners.add(panelbkwkzhanbi);
@@ -462,7 +462,7 @@ public class BanKuaiFengXi extends JDialog {
 		        	exportCancelAction.putValue(Action.NAME, "导出条件个股");
 		            try {
 		              final int count = exporttask.get();
-		              		              
+	  			
 		              int exchangeresult = JOptionPane.showConfirmDialog(null, "个股导出成功，请在" + filefmxx.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
 		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
 		      			  progressBarExport.setString(" ");
@@ -475,7 +475,6 @@ public class BanKuaiFengXi extends JDialog {
 		      				e1.printStackTrace();
 		      		  }
 		      		progressBarExport.setString(" ");
-		      		
 		      		System.gc();
 		            } catch (final CancellationException e) {
 		            	try {
@@ -525,7 +524,7 @@ public class BanKuaiFengXi extends JDialog {
 		panelbkwkzhanbi.resetDate();
 		pnllastestggzhanbi.resetDate();
 		panelbkwkzhanbi.resetDate();
-		panelggubkcjezhanbi.resetDate();
+		panelggbkcjezhanbi.resetDate();
 		panelselectwkgeguzhanbi.resetDate();
 		panelLastWkGeGuZhanBi.resetDate();
 		panelGgDpCjeZhanBi.resetDate();
@@ -650,7 +649,7 @@ public class BanKuaiFengXi extends JDialog {
 			LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 //			DaPan dapan =  (DaPan) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode("000000");
 			
-			panelggubkcjezhanbi.resetDate();
+			panelggbkcjezhanbi.resetDate();
 			panelGgDpCjeZhanBi.resetDate();
 			panelgegubkcje.resetDate();
 			panelggdpcjlwkzhanbi.resetDate();
@@ -805,7 +804,13 @@ public class BanKuaiFengXi extends JDialog {
 		} else
 			showcje = -1.0;
 		
-		bkfxhighlightvalueslisteners.forEach(l -> l.hightLightValues(dpmaxwk, bkmaxwk, showcje, cjemaxwk) );
+		bkfxhighlightvalueslisteners.forEach(l -> l.hightLightFxValues(dpmaxwk, bkmaxwk, showcje, cjemaxwk) );
+		//对于panel来说，hightLightFxValues第一个参数不能用，因为panel 都是 节点对她的上级的占比
+		panelGgDpCjeZhanBi.hightLightFxValues(null,dpmaxwk, null, null) ;
+		pnlggdpcje.hightLightFxValues(null,null, null, cjemaxwk) ;
+		panelbkcje.hightLightFxValues(null,null, null, cjemaxwk) ;
+		panelbkwkzhanbi.hightLightFxValues(null,dpmaxwk, null, null) ;
+		panelggbkcjezhanbi.hightLightFxValues(null,bkmaxwk, null, null) ;
 	}
     /*
      * 
@@ -981,7 +986,7 @@ public class BanKuaiFengXi extends JDialog {
 			}
 		});
 		
-		panelggubkcjezhanbi.addPropertyChangeListener(new PropertyChangeListener() {
+		panelggbkcjezhanbi.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			 public void propertyChange(PropertyChangeEvent evt)   
 			{
@@ -1072,6 +1077,7 @@ public class BanKuaiFengXi extends JDialog {
 					return;
 				}
 				refreshBanKuaiGeGuTableHightLight ();
+				
 			}
 		});
 		
@@ -1106,8 +1112,6 @@ public class BanKuaiFengXi extends JDialog {
 					return;
 				}
 				refreshBanKuaiGeGuTableHightLight ();
-				
-				
 			}
 		});
 		//paresefile
@@ -1149,7 +1153,6 @@ public class BanKuaiFengXi extends JDialog {
 					return;
 				}
 				refreshBanKuaiGeGuTableHightLight ();
-				
 			}
 		});
 		/*
@@ -1372,7 +1375,7 @@ public class BanKuaiFengXi extends JDialog {
 		    			panelbkcje.resetDate();
 		    			panelgegubkcje.resetDate ();
 		    			panelbkwkzhanbi.resetDate();
-			    		panelggubkcjezhanbi.resetDate();
+			    		panelggbkcjezhanbi.resetDate();
 			    		pnllastestggzhanbi.resetDate();
 			    		panelLastWkGeGuZhanBi.resetDate();
 			    		panelselectwkgeguzhanbi.resetDate();
@@ -1887,7 +1890,7 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiGeGuTable tableGuGuZhanBiInBk;
 	private BanKuaiFengXiCategoryBarChartPnl panelbkwkzhanbi;
 	private JTextField tfldweight;
-	private BanKuaiFengXiCategoryBarChartPnl panelggubkcjezhanbi;
+	private BanKuaiFengXiCategoryBarChartPnl panelggbkcjezhanbi;
 	private BanKuaiFengXiPieChartCjePnl pnllastestggzhanbi;
 	private BanKuaiFengXiPieChartCjePnl panelLastWkGeGuZhanBi;
 	private BanKuaiFengXiPieChartCjePnl panelselectwkgeguzhanbi;
@@ -2064,8 +2067,8 @@ public class BanKuaiFengXi extends JDialog {
 		panelGgDpCjeZhanBi = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl();
 		tabbedPanegeguzhanbi.addTab("\u5927\u76D8\u6210\u4EA4\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
 		
-		panelggubkcjezhanbi = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl();
-		tabbedPanegeguzhanbi.addTab("\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", null, panelggubkcjezhanbi, null);
+		panelggbkcjezhanbi = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl();
+		tabbedPanegeguzhanbi.addTab("\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", null, panelggbkcjezhanbi, null);
 		
 		JTabbedPane tabbedPane_2 = new JTabbedPane(JTabbedPane.TOP);
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
@@ -2654,6 +2657,7 @@ public class BanKuaiFengXi extends JDialog {
 	    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)bkcyltree.getModel().getRoot();
 			int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
 			HashSet<String> outputresultset = new HashSet<String> ();
+			ArrayList<BkChanYeLianTreeNode> outputnodeslist = new ArrayList<BkChanYeLianTreeNode> ();
 			
 			for(ExportCondition expc : expclist) {
 				if (isCancelled()) 
@@ -2687,6 +2691,10 @@ public class BanKuaiFengXi extends JDialog {
 							Integer recordmaxcjewk =nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate);
 							
 							if( recordcje >= settingcje &&  recordmaxbkwk >= settindpgmaxwk && recordmaxcjewk >= seetingcjemaxwk ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
+								if(!outputnodeslist.contains(childnode)){
+									outputnodeslist.add(childnode);
+								}
+								
 								 String cjs = childnode.getSuoShuJiaoYiSuo();
 								 if(cjs.trim().toLowerCase().equals("sh"))
 									 outputresultset.add("1" + childnode.getMyOwnCode().trim());
@@ -2725,13 +2733,17 @@ public class BanKuaiFengXi extends JDialog {
 								Integer recordmaxcjewk =nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate);
 								
 								if( recordcje >= settingcje &&  recordmaxbkwk >= settindpgmaxwk && recordmaxcjewk >= seetingcjemaxwk ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
-									 String cjs = childnode.getSuoShuJiaoYiSuo();
-									 if(cjs.trim().toLowerCase().equals("sh"))
+									if(!outputnodeslist.contains(childnode)){
+										outputnodeslist.add(childnode);
+									}
+									
+									String cjs = childnode.getSuoShuJiaoYiSuo();
+									if(cjs.trim().toLowerCase().equals("sh"))
 										 outputresultset.add("1" + childnode.getMyOwnCode().trim());
-									 else
+									else
 										 outputresultset.add("0" + childnode.getMyOwnCode().trim());
 									 
-									 logger.debug(childnode.getMyOwnCode() +  "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
+									logger.debug(childnode.getMyOwnCode() +  "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
 										   		+ "数据("  +   recordmaxbkwk  + "," + recordcje + "," + recordmaxcjewk + ")")
 												   ;
 								 }
@@ -2776,12 +2788,16 @@ public class BanKuaiFengXi extends JDialog {
 								 
 								 if(recordcje >= settingcje &&  recordmaxbkwk >= settinbkgmaxwk
 											 && recordmaxcjewk >= seetingcjemaxwk && recordmaxdpwk >=  settindpgmaxwk)  { //满足条件，导出 ; 
-										   if(ggstock.getMyOwnCode().startsWith("60") )
+									 if(!outputnodeslist.contains(childnode)){
+											outputnodeslist.add(childnode);
+									 }
+									 
+									 if(ggstock.getMyOwnCode().startsWith("60") )
 											   outputresultset.add("1" + ggstock.getMyOwnCode().trim());
-										   else
+									  else
 											   outputresultset.add("0" + ggstock.getMyOwnCode().trim());
 										   
-										   logger.debug(childnode.getMyOwnCode() + "个股：" + ggstock.getMyOwnCode() + "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
+									  logger.debug(childnode.getMyOwnCode() + "个股：" + ggstock.getMyOwnCode() + "满足导出条件(" + settindpgmaxwk + "," + settinbkgmaxwk + settingcje + ","  + seetingcjemaxwk +  "), "
 										   		+ "数据("  + recordmaxdpwk + "," +  recordmaxbkwk  + "," + recordcje + "," + recordmaxcjewk + ")")
 												   ;   
 								 } 
@@ -2796,6 +2812,14 @@ public class BanKuaiFengXi extends JDialog {
 				}
 			}
 			
+			setProgress( 80 );
+			
+			//对导出的板块和个股按照周成交额进行排序，这样导入到通达信后能自动按照成交额排序
+			Collections.sort(outputnodeslist, new NodeChenJiaoErComparator(selectiondate,0,period) );
+			for(BkChanYeLianTreeNode node : outputnodeslist) {
+				double cje = node.getNodeXPeroidData( period).getChengJiaoEr(selectiondate, 0);
+				System.out.println(cje);
+			}
 			for(String outputstock : outputresultset ) {
 				 String outputresult = outputstock +  System.getProperty("line.separator");
 				 try {
@@ -2805,16 +2829,13 @@ public class BanKuaiFengXi extends JDialog {
 					}
 			}
 			
-			outputfile = null;
-			
-			setProgress( 80 );
-			
 			GephiFilesGenerator gephigenerator = new GephiFilesGenerator (bkcyl);
-			gephigenerator.generatorGephiFile(outputresultset, dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), globeperiod);
-			
-			setProgress( 100 );
-			
-			gephigenerator = null;
+  			gephigenerator.generatorGephiFile(outputfile, dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), globeperiod);
+
+  			setProgress( 100 );
+  			
+  			outputnodeslist = null;
+			outputfile = null;
 			outputresultset = null;
 			
 			return 100;
@@ -2829,7 +2850,6 @@ public class BanKuaiFengXi extends JDialog {
 	    	try {
 				get();
 			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	      
@@ -2845,7 +2865,6 @@ public class BanKuaiFengXi extends JDialog {
 				int i = get ();
 				logger.debug("export be canceled");
 			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    }
@@ -2947,7 +2966,27 @@ public class BanKuaiFengXi extends JDialog {
 	}
 }
 
-
+/*
+ * 
+ */
+class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode> {
+	private String period;
+	private LocalDate compareDate;
+	private int difference;
+	public NodeChenJiaoErComparator (LocalDate compareDate, int difference, String period )
+	{
+		this.period = period;
+		this.compareDate = compareDate;
+		this.difference = difference;
+	}
+    public int compare(BkChanYeLianTreeNode chair1, BkChanYeLianTreeNode chair2) {
+        double result = chair1.getNodeXPeroidData( period).getChengJiaoEr(compareDate, difference) - chair2.getNodeXPeroidData( period).getChengJiaoEr(compareDate, difference);
+        if(result >0)
+        	return 1;
+        else
+        	return 0;
+    }
+}
 
 /*
  * google guava files 类，可以直接处理读出的line

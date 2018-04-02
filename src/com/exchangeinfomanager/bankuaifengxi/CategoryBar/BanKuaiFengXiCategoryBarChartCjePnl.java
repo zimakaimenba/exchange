@@ -158,7 +158,15 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	
 		setPanelTitle ("成交额",enddate);
 	}
-
+	/*
+	 * 
+	 */
+	@Override
+	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax) 
+	{
+		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemax);
+		this.barchart.fireChartChanged();//必须有这句
+	}
 }
 
 class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer 

@@ -41,7 +41,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
-import com.exchangeinfomanager.bankuaifengxi.BkfxHightLightValueListener;
+import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -49,7 +49,7 @@ import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
-public class BanKuaiGeGuTable extends JTable implements BkfxHightLightValueListener
+public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxDataValueListener
 { 
 	public BanKuaiGeGuTable (StockInfoManager stockmanager1)
 	{
@@ -134,15 +134,15 @@ public class BanKuaiGeGuTable extends JTable implements BkfxHightLightValueListe
 		sortKeys = null;
 	}
 	@Override
-	public void hightLightValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemax) 
+	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemax) 
 	{
-		if(cjezbdpmax != null)
+		if(cjezbbkmax != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
-		if(cjezbdpmax != null)
+		if(cjemax != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemax);
 		if(cjezbdpmax != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
-		if(cjezbdpmax != null)
+		if(cje != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cje);
 		
 		this.repaint();
