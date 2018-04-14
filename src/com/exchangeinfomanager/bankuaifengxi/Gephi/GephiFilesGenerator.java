@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,10 +64,16 @@ public class GephiFilesGenerator
 	/*
 	 * 
 	 */
-	public void generatorGephiFile (HashSet<String> requiredcylnodeset,LocalDate requiredrecordsday,String period)
+	public File generatorGephiFile (HashSet<String> requiredcylnodeset,LocalDate requiredrecordsday,String period)
 	{
 		this.recorddate = requiredrecordsday.with(DayOfWeek.FRIDAY);
+	
 		writeBanKuaiAndGeGuFiles (requiredcylnodeset,requiredrecordsday,period);
+		
+		File filegephinode = saveNodesFile ();
+		File filegephiedge = saveEdgesFile ();
+		
+		return filegephiedge;
 	}
 	/*
 	 * 
@@ -105,6 +112,30 @@ public class GephiFilesGenerator
 	/*
 	 * 
 	 */
+	public File generatorGephiFile (File parsefile,LocalDate requiredrecordsday,String period)
+	{
+		List<String> readparsefileLines = null;
+		try {
+			readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiFielProcessor ());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		this.recorddate = requiredrecordsday;
+		
+		HashSet<String> requiredcylnodeset = new HashSet<String> (readparsefileLines);
+		
+		writeBanKuaiAndGeGuFiles (requiredcylnodeset,requiredrecordsday,period);
+		
+		File filegephinode = saveNodesFile ();
+		File filegephiedge = saveEdgesFile ();
+		
+		return filegephiedge;
+	
+	}
+	/*
+	 * 
+	 */
 	private String[] formateGephiNodeFileRecord (BkChanYeLianTreeNode cylnode)
 	{
 		String nodecode = cylnode.getMyOwnCode();
@@ -123,9 +154,11 @@ public class GephiFilesGenerator
 	 */
 	private void writeBanKuaiAndGeGuFiles (HashSet<String> requiredcylnodeset,LocalDate requiredrecordsday,String period)
 	{
-//		List<String[]> listofcsv = new ArrayList<>();
 		HashMap<String, String> tmpggbkset = new HashMap<String, String> ();
 		for (String nodecode : requiredcylnodeset) {
+//			if(nodecode.trim().length() ==7) //直接从板块分析导出条件过来的数据，里面板块代码是7位的，要截取。
+//				nodecode = nodecode.substring(1);
+			
 			BkChanYeLianTreeNode cylnode ;
 			cylnode = this.bkcyl.getBanKuai(nodecode, requiredrecordsday, period);
 			if(cylnode != null) {
@@ -139,17 +172,19 @@ public class GephiFilesGenerator
 				//个股属于的板块也要加
 				cylnode = bkdbopt.getTDXBanKuaiForAStock ((Stock)cylnode); //通达信板块信息
 				HashMap<String, String> tdxbk = ((Stock)cylnode).getGeGuCurSuoShuTDXSysBanKuaiList();
-				for (Map.Entry<String, String> entry : tdxbk.entrySet()) { 	//edge file
-					String bkcode = entry.getKey();
-					String bkname = entry.getValue();
-					
-					String[] ss = {nodecode,bkcode,"Directed",""};
-					edgecontentArrayList.add(ss);
-					
-					BanKuai bk = this.bkcyl.getBanKuai(bkcode, requiredrecordsday, period);
-					if(!((BanKuai)cylnode).isExporttogehpi())
-						tdxbk.remove(bkcode);
-				}
+				for(Iterator<Map.Entry<String, String>> it = tdxbk.entrySet().iterator(); it.hasNext(); ) {
+				      Map.Entry<String, String> entry = it.next();
+				      String bkcode = entry.getKey();
+				      String bkname = entry.getValue();
+						
+				      BanKuai bk = this.bkcyl.getBanKuai(bkcode, requiredrecordsday, period);
+				      if(!((BanKuai)bk).isExporttogehpi()) {
+				    	  it.remove();
+				      } else {
+				    	  String[] ss = {nodecode,bkcode,"Directed",""};
+					      edgecontentArrayList.add(ss);  
+				      }
+			    }
 				
 				tmpggbkset.putAll(tdxbk);
 			}
@@ -161,7 +196,12 @@ public class GephiFilesGenerator
 			String[] ss = {nodecode,nodename,"板块","",""};
 			nodecontentArrayList.add(ss);
 		}
+		
+		tmpggbkset = null;
 	}
+	/*
+	 * 
+	 */
 	private File saveEdgesFile() 
 	{
 		String parsedpath = sysconfig.getGephiFileExportPath ();
@@ -222,7 +262,6 @@ public class GephiFilesGenerator
 //		}
         
         return  csvfile;
-		
 	}
 	private File saveNodesFile() 
 	{

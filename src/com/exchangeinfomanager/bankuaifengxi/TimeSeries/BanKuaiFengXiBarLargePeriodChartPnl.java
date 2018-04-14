@@ -132,7 +132,7 @@ public abstract  class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel implem
 	/*
      * 设置要突出显示的bar
      */
-    public void highLightSpecificBarColumn (Comparable selecteddate)
+    public void highLightSpecificBarColumn (LocalDate selecteddate)
     {
     }
     public void highLightSpecificBarColumn (Integer columnindex)
@@ -140,6 +140,11 @@ public abstract  class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel implem
     	((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightSelectColumn(columnindex);
     	this.chart.fireChartChanged();//必须有这句
     }
+//	@Override
+//	public void highLightSpecificBarColumn(LocalDate selecteddate) {
+//		// TODO Auto-generated method stub
+//		
+//	}
     /*
      * 
      */
@@ -283,7 +288,7 @@ class CustomXYBarRenderer extends XYBarRenderer
 		Date d = new Date((long) tmpdataset.getXValue(0, column));
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		LocalDate selecteddate = CommonUtility.formateStringToDate(sdf.format(d)); 
-		Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);
+		Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
 		
 		if(maxweek !=null && maxweek >= highlightmaxwk)
 			return Color.RED;

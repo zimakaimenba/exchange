@@ -111,20 +111,20 @@ public interface BanKuaiAndStockBasic
 		/*
 		 * 对上级板块的成交额占比增速
 		 */
-		Double  getChenJiaoErZhanBiGrowthRateOfSuperBanKuai (LocalDate requireddate);
+		Double  getChenJiaoErZhanBiGrowthRateOfSuperBanKuai (LocalDate requireddate,int difference);
 		/*
 		 * 对上级板块的成交额占比是多少周内的最大值
 		 */
-		Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (LocalDate requireddate);
+		Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (LocalDate requireddate,int difference);
 		/*
 		 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
 		 */
-		Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (LocalDate requireddate);
+		Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (LocalDate requireddate,int difference);
 		/*
 		 * 成交额是多少周内的最大
 		 * 
 		 */
-		Integer getChenJiaoErMaxWeekOfSuperBanKuai (LocalDate requireddate);
+		Integer getChenJiaoErMaxWeekOfSuperBanKuai (LocalDate requireddate,int difference);
 		/*
 		 * 
 		 */
@@ -140,7 +140,7 @@ public interface BanKuaiAndStockBasic
 		/*
 		 * 
 		 */
-		public OHLCItem getOHLCData (LocalDate requireddate,int difference);
+		public OHLCItem getSpecificDateOHLCData (LocalDate requireddate,int difference);
 		/*
 		 * 
 		 */

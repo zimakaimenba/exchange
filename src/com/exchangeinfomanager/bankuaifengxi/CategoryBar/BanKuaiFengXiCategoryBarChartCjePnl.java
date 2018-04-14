@@ -117,7 +117,8 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		
 		LocalDate tmpdate = requirestart;
 		do  {
-			org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
+				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
 			TimeSeriesDataItem cjerecord = rangecje.getDataItem(tmpwk);
 			tmpwk = null;
 			if(cjerecord != null) {
@@ -195,7 +196,7 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
 		
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	 
-		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate);
+		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
 		
 		if(maxweek !=null && maxweek >= super.displayedmaxwklevel)
 			return Color.CYAN;
@@ -238,7 +239,7 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
     	DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
 		
 		//显示成交额是多少周最大
-		Integer maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate);
+		Integer maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
 		
 		return selecteddate + " " + "成交额" + decimalformate.format(curcje) + danwei +  "成交额MaxWk=" + maxwk;
 		

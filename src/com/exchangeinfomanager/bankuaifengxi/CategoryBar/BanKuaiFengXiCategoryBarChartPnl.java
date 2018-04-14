@@ -123,6 +123,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
 	protected DefaultCategoryDataset barchartdataset ;
+	protected DefaultCategoryDataset linechartdataset;
 	protected JFreeChart barchart;
 //	private ArrayList<JiaRuJiHua> selectedfxjg;
 	
@@ -319,6 +320,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 		standardChartTheme.setLargeFont(new Font("¡• È",Font.BOLD,20));
 		ChartFactory.setChartTheme(standardChartTheme);
 		
+		//bar parts
 //    	https://www.youtube.com/watch?v=YV80Titt9Q4
 //    	BarRenderer renderer = new BarRenderer ();
     	BanKuaiFengXiCategoryBarRenderer renderer = new BanKuaiFengXiCategoryBarRenderer ();
@@ -331,7 +333,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
         renderer.setMaximumBarWidth(.5);
         renderer.setMinimumBarLength(.5);
         renderer.setItemMargin(-2);
-
         
         barchartdataset = new DefaultCategoryDataset(); 
         
@@ -343,10 +344,22 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 //        legend.setPosition(RectangleEdge.TOP); 
         plot.setDataset(barchartdataset); 
         plot.setRenderer(renderer); 
-        plot.setDomainAxis(new CategoryLabelCustomizableCategoryAxis(""));
         plot.setRangeAxis(new NumberAxis(""));
         plot.setRangePannable(true);
         
+//        //line part
+//        linechartdataset = new DefaultCategoryDataset();
+//        BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
+//        plot.setDataset(1, linechartdataset);
+//        plot.setRenderer(1, linerenderer);
+//        ValueAxis rangeAxis2 = new NumberAxis("MatchNumber");
+//        plot.setRangeAxis(1, rangeAxis2);
+//        
+//        // change the rendering order so the primary dataset appears "behind" the 
+//        // other datasets...
+//        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+        plot.setDomainAxis(new CategoryLabelCustomizableCategoryAxis(""));
+        //
         barchart = new JFreeChart(plot);
         barchart.removeLegend();
         barchart.setNotify(true);
@@ -425,4 +438,13 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
     	this.period = period;
     }
    
+}
+
+class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
+{
+	public BanKuaiFengXiCategoryLineRenderer ()
+	{
+		super ();
+	}
+	
 }

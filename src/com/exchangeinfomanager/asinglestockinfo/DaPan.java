@@ -118,25 +118,25 @@ public class DaPan extends BkChanYeLianTreeNode
 		}
 
 		@Override
-		public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate) {
+		public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate) {
+		public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate) {
+		public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) {
+		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -166,7 +166,7 @@ public class DaPan extends BkChanYeLianTreeNode
 		}
 
 		@Override
-		public OHLCItem getOHLCData(LocalDate requireddate, int difference) {
+		public OHLCItem getSpecificDateOHLCData(LocalDate requireddate, int difference) {
 			// TODO Auto-generated method stub
 			return null;
 		}

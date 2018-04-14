@@ -391,6 +391,95 @@ public class BanKuaiDbOperation
 		return tmprecordfile;
 	}
 	/*
+	 * 
+	 */
+	public File refreshDZHStockGuQuan() 
+	{
+//		File file = new File(sysconfig.getDZHStockGuQuanFile() );
+		File file = new File("E:/stock/dzh365/Download/PWR/full_sh.PWR");
+		 if(!file.exists() ) {
+			 return null;
+		 }
+		 
+		 BufferedInputStream dis = null;
+		 FileInputStream in = null;
+		 try {
+			    in = new FileInputStream(file);  
+			    dis = new BufferedInputStream(in);
+			    
+			    
+			    int fileheadbytenumber = 12;
+	            byte[] itemBuf = new byte[fileheadbytenumber];
+	            dis.read(itemBuf, 0, fileheadbytenumber); 
+	            String fileHead =new String(itemBuf,0,fileheadbytenumber);  
+	            logger.debug(fileHead);
+	            
+	            while(true) {
+	            	int sigbk = 16;
+		            byte[] itemBuf2 = new byte[sigbk];
+//		            int i=0;
+		            dis.read(itemBuf2, 0, sigbk) ;
+		            String stockcode = new String(itemBuf2, 0, sigbk );
+		            logger.debug(stockcode);
+		            
+		            int sigbk2 = 20;
+		            byte[] itemBuf3 = new byte[sigbk2];
+//		            int i=0;
+		            dis.read(itemBuf3, 0, sigbk2) ;
+		            String stockdate = new String(itemBuf3, 0, sigbk2 );
+		            logger.debug(stockdate);
+		            
+//		            sigbk2 = 4;
+//		            itemBuf3 = new byte[sigbk2];
+////		            int i=0;
+//		            dis.read(itemBuf3, 0, sigbk2) ;
+//		            String stocknext = new String(itemBuf3, 0, sigbk2 );
+//		            logger.debug(stocknext);
+//		            
+//		            sigbk2 = 4;
+//		            itemBuf3 = new byte[sigbk2];
+////		            int i=0;
+//		            dis.read(itemBuf3, 0, sigbk2) ;
+//		            stocknext = new String(itemBuf3, 0, sigbk2 );
+//		            logger.debug(stocknext);
+//		            
+//		            sigbk2 = 4;
+//		            itemBuf3 = new byte[sigbk2];
+////		            int i=0;
+//		            dis.read(itemBuf3, 0, sigbk2) ;
+//		            stocknext = new String(itemBuf3, 0, sigbk2 );
+//		            logger.debug(stocknext);
+//		            
+//		            sigbk2 = 4;
+//		            itemBuf3 = new byte[sigbk2];
+////		            int i=0;
+//		            dis.read(itemBuf3, 0, sigbk2) ;
+//		            stocknext = new String(itemBuf3, 0, sigbk2 );
+//		            logger.debug(stocknext);
+
+	            }
+			    
+		 } catch (Exception e) {
+			 e.printStackTrace();
+			 return null;
+		 } finally {
+			 try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+             try {
+				dis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}     
+		 }
+		 
+		 
+		 
+//		return null;
+	}
+	/*
 	 * 通达信的概念板块与个股对应
 	 */
 	private int refreshTDXGaiNianBanKuaiToGeGu (File tmprecordfile)
@@ -4432,8 +4521,12 @@ public class BanKuaiDbOperation
 	            		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
 	            		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
 	            		   if(zhishuname.trim().length() ==2 ) {
+	            			   try{
 	            			   List<String> tmplinepartnamelist2 = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(2).trim());
 	            			   zhishuname = zhishuname + tmplinepartnamelist2.get(0).trim();
+	            			   } catch (java.lang.IndexOutOfBoundsException e) {
+	            				   e.printStackTrace();
+	            			   }
 	            		   }
 	            			   
 	            	   }
@@ -4443,7 +4536,8 @@ public class BanKuaiDbOperation
 	            		   logger.debug(zhishuname);
 	            	   
 	            	   String sqlinsertstat = "Update a股 set 股票名称 = '" + zhishuname.trim() + "'\r\n" + 
-	   						   					"where 股票代码 = '" + zhishucode.trim() + "' "
+	            			   					", 所属交易所 = 'SZ' "	+ "\r\n" +
+	            			   				   " WHERE 股票代码 = '" + zhishucode.trim() + "' "
 	   						   ;
 	            	   logger.debug(sqlinsertstat);
 		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
@@ -4468,7 +4562,6 @@ public class BanKuaiDbOperation
 			
 			return -1;
 		}
-
 		/*
 		 * 同步股票现用名字信息
 		 */
@@ -4521,11 +4614,12 @@ public class BanKuaiDbOperation
 	            		   logger.debug(zhishuname);
 	            	   
 	            	   String sqlinsertstat = "Update a股 set 股票名称 = '" + zhishuname.trim() + "'\r\n" + 
-	            	   						   "where 股票代码 = '" + zhishucode.trim() + "' "
+	            			   				   ", 所属交易所 = 'SH' "	+ "\r\n" +
+	            	   						   " WHERE 股票代码 = '" + zhishucode.trim() + "' "
 		   						;
 //	            	   logger.debug(sqlinsertstat);
-		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-//		                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+		   			   int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+//		               Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	               }
 	               
 			 } catch (Exception e) {
@@ -4545,7 +4639,6 @@ public class BanKuaiDbOperation
 			 }
 			
 			return 1;
-			
 		}
 		/*
 		 * 从通达信中导入股票曾用名的信息
@@ -4899,7 +4992,18 @@ public class BanKuaiDbOperation
 	                		+ "   SELECT 股票代码 FROM A股 WHERE 股票代码 = '" + stockcode + "'"
 	                		+ ") LIMIT 1"
 	                		;
-	                connectdb.sqlInsertStatExecute(sqlinsetstat);
+	                int insertresult = connectdb.sqlInsertStatExecute(sqlinsetstat);
+	                if(insertresult >0) {
+	                	String jys;
+	                	if(stockcode.startsWith("60"))
+	                		jys = "SH";
+	                	else
+	                		jys = "SZ";
+	                	String sqlinsertstat = "Update a股 SET 所属交易所 = '" + jys + "'"	+ "\r\n" +
+ 	   						   " WHERE 股票代码 = '" + stockcode.trim() + "' "
+ 	   						   ;
+	                	int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+	                }
 	            }
 	        } catch (IOException e1) {
 	        	logger.debug("出错SQL是:" + sqlinsetstat);
@@ -4930,6 +5034,7 @@ public class BanKuaiDbOperation
 			logger.debug(sqlupdatestat);
 	   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		}
+		
 
 }
 

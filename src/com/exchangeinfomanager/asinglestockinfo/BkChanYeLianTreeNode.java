@@ -447,7 +447,6 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 				stockamozhanbi = new TimeSeries(nodeperiodtype1);
 				stockvolzhanbi = new TimeSeries(nodeperiodtype1);
 				stockfxjg = new TimeSeries(nodeperiodtype1);
-
 			}
 
 			private String nodeperiodtype;
@@ -522,7 +521,7 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			 * (non-Javadoc)
 			 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getOHLCData(java.time.LocalDate, int)
 			 */
-			public OHLCItem getOHLCData (LocalDate requireddate,int difference)
+			public OHLCItem getSpecificDateOHLCData (LocalDate requireddate,int difference)
 			{
 				int itemcount = this.stockohlc.getItemCount();
 				for(int i=0;i<itemcount;i++) {
@@ -685,12 +684,12 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 			/*
 			 * 对上级板块的成交额占比增速
 			 */
-			public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate) 
+			public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) 
 			{
 				if(stockohlc == null)
 					return null;
 				
-				TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+				TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				if( curcjlrecord == null) 
 					return null;
 				
@@ -734,20 +733,20 @@ public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode imple
 				return period;
 			}
 			@Override
-			public abstract Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) ;
+			public abstract Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) ;
 			/*
 			 * 对上级板块的成交额占比是多少周内的最大值
 			 */
-			public abstract Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate); 
+			public abstract Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference); 
 			/*
 			 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
 			 */
-			public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate) 
+			public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) 
 			{
 				if(stockohlc == null)
 					return null;
 				
-				TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+				TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				if( curcjlrecord == null) 
 					return null;
 				

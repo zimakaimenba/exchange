@@ -91,7 +91,7 @@ class CustomXYPlotCjeZbToolTipGenerator extends CustomXYPlotToolTipGenerator
 			
 			Integer maxweek = 0;
 			try {
-				 maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);
+				 maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
 				 tooltip = tooltip + "MAXWK= " + maxweek;
 			} catch (java.lang.NullPointerException e) {
 				 maxweek = 0;

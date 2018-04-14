@@ -308,43 +308,67 @@ public class SystemConfigration
 	  */
 	 public String getTdxZdgzReportFile ()
 	 {
-		return this.getSystemInstalledPath() + "TDX重点关注历史报告.txt";
+		return this.getSystemInstalledPath() + "/reports/TDX重点关注历史报告.txt";
 	 }
 		/**
 		 * @return the tdxbbfilenamegainiantishi
 		 */
 		public String getTdxBbFileGaiNianTiShi() {
-			return this.getSystemInstalledPath() + "TDX概念提示报告.txt";
+			return this.getSystemInstalledPath() + "/reports/TDX概念提示报告.txt";
 		}
 		/**
 		 * @return the tdxbbfilenamefumianxiaoxi
 		 */
 		public String getTdxBbfileFuMianXiaoXi() {
-			return this.getSystemInstalledPath()  + "TDX负面消息报告.txt";
+			return this.getSystemInstalledPath()  + "/reports/TDX负面消息报告.txt";
 		}
 		/**
 		 * @return the tdxbbfilenamezfxgkhzd
 		 */
 		public String getTdxBbFileZzfxgkhzd() {
-			return this.getSystemInstalledPath() + "TDX正负相关客户竞对报告.txt";
+			return this.getSystemInstalledPath() + "/reports/TDX正负相关客户竞对报告.txt";
 		}
 		public String getTDXChanYeLianReportFile() 
 		{
-			return this.getSystemInstalledPath() + "TDX个股产业链报告报告.txt";
+			return this.getSystemInstalledPath() + "/reports/TDX个股产业链报告报告.txt";
 		}
 		public String getTDXModelMatchExportFile ()
 		{
-			return this.getSystemInstalledPath() + "TDX模型个股";
+			return this.getSystemInstalledPath() + "/weeklyreports/TDX模型个股";
 		}
-		
+	
+		/*
+		 * 
+		 */
+		public String getGeGuChanYeLianXmlFile() 
+		{
+			return this.getSystemInstalledPath() + "/config/个股产业链设置.xml";
+		}
+		/*
+		 * 生成通达信语言代码
+		 */
+		public String getZhongDianGuanZhuBanKuaiSheZhiTongDaXinFile() 
+		{
+			// TODO Auto-generated method stub
+			return systeminstalledpath + "TDX重点关注板块设置通达信代码.txt";
+		}
+		public String getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile() 
+		{
+			return  systeminstalledpath + "/config/重点关注板块设置.xml";
+		}
+		//子版块/板块产业链
+		public String getBanKuaiChanYeLianXml() 
+		{
+			return systeminstalledpath + "/config/板块产业链.xml";
+		}
 	 public String getSysSettingFile () 
 	 {
-		 return this.getSystemInstalledPath() + "系统设置.xml";
+		 return this.getSystemInstalledPath() + "/config/系统设置.xml";
 	 }
 		
 	 public String getQuanShangJiaoYiSheZhi ()
 	 {
-		 return this.getSystemInstalledPath() + "券商交易设置.xml";
+		 return this.getSystemInstalledPath() + "/config/券商交易设置.xml";
 	 }
 	 public List<String> getTDXVOLFilesPath ()
 	 {
@@ -487,13 +511,7 @@ public class SystemConfigration
 			return this.getTDXInstalledLocation() + "incon.dat"; 
 		}
 
-		/*
-		 * 
-		 */
-		public String getGeGuChanYeLianXmlFile() 
-		{
-			return systeminstalledpath + "个股产业链设置.xml";
-		}
+		
 		/*
 		 * 指数对应关系文件shm.tnf
 		 */
@@ -524,31 +542,15 @@ public class SystemConfigration
 //			return this.getTDXInstalledLocation() + "T0002/tdxline.dat" ;
 			return  "e:/tdxline.dat" ;
 		}
-		/*
-		 * 生成通达信语言代码
-		 */
-		public String getZhongDianGuanZhuBanKuaiSheZhiTongDaXinFile() 
-		{
-			// TODO Auto-generated method stub
-			return systeminstalledpath + "TDX重点关注板块设置通达信代码.txt";
-		}
-		public String getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile() 
-		{
-			return  systeminstalledpath + "重点关注板块设置.xml";
-		}
-		//子版块/板块产业链
-		public String getBanKuaiChanYeLianXml() 
-		{
-			return systeminstalledpath + "板块产业链.xml";
-		}
+		
 		public String getBuyingChecklistsXMLFile (String type)
 		{
 			switch (type) {
-				case "caiwu": return  systeminstalledpath + "买入checklist财务.xml";
-				case "zhenche": return  systeminstalledpath + "买入checklist政策.xml";
-				case "ticai": return  systeminstalledpath + "买入checklist题材.xml";
-				case "gudong": return  systeminstalledpath +"买入checklist股东.xml";
-				case "jishu": return  systeminstalledpath + "买入checklist技术.xml";
+				case "caiwu": return  this.getTDXInstalledLocation() + "/checklists/买入checklist财务.xml";
+				case "zhenche": return  this.getTDXInstalledLocation() + "/checklists/买入checklist政策.xml";
+				case "ticai": return  this.getTDXInstalledLocation() + "/checklists/买入checklist题材.xml";
+				case "gudong": return  this.getTDXInstalledLocation() +"/checklists/买入checklist股东.xml";
+				case "jishu": return  this.getTDXInstalledLocation() + "/checklists/买入checklist技术.xml";
 			}
 			return null;
 			

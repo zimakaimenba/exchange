@@ -124,6 +124,11 @@ public class ImportTDXData extends JDialog {
 
 	private void partThatCanImportDuringWork ()
 	{
+		if(cbximportdzhguquan.isSelected() && cbximportdzhguquan.isEnabled()) { //导入大智慧的个股股权信息
+			File resulttmpfilesys = bkdbopt.refreshDZHStockGuQuan ();
+			cbximportdzhguquan.setEnabled(false);
+		}
+		
 		//从通达信中导入股票曾用名和现用名的信息
 		if(chbximportcym.isSelected() && chbximportcym.isEnabled())	{
 			File resulttmpfilesys = bkdbopt.refreshEverUsedStorkName (); //股票曾用名的信息
@@ -175,18 +180,19 @@ public class ImportTDXData extends JDialog {
 	}
 	private void partThatHasBeImportAfterWsork () 
 	{
+		
 		//从通达信foxpro中导入股票的基本面信息,暂时不用，因为还没有用到这些信息
 		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
-//					try {
-//						File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
-//						List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
-//						for (String line : lines) {
-//				        	tfldresult.append(line+"\n");
-//				        }
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					} catch (java.lang.NullPointerException e) {
-//					}
+					try {
+						File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
+						List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
+						for (String line : lines) {
+				        	tfldresult.append(line+"\n");
+				        }
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (java.lang.NullPointerException e) {
+					}
 					
 					cbximporttdxgeguinfo.setEnabled(false);
 		 }
@@ -344,7 +350,8 @@ public class ImportTDXData extends JDialog {
 			{
 				if(!chbxdaorutdxsysbk.isSelected() && !cbximporttdxgeguinfo.isSelected() 
 						&& !chbxdaorutdxsysbkvol.isSelected() && !cbxImportShGeGuVol.isSelected() 
-						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()) {
+						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()
+						&& !cbximportdzhguquan.isSelected() ) {
 					JOptionPane.showMessageDialog(null,"请选择需要导入的项目！");
 					return;
 					
@@ -414,6 +421,7 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox cbxImportShGeGuVol;
 	private JCheckBox chbxselectall;
 	private JButton btnchecksync;
+	private JCheckBox cbximportdzhguquan;
 	
 	private void initializeGui() 
 	{
@@ -454,44 +462,47 @@ public class ImportTDXData extends JDialog {
 		JProgressBar progressBar_4 = new JProgressBar();
 		
 		JProgressBar progressBar_5 = new JProgressBar();
+		
+		cbximportdzhguquan = new JCheckBox("\u5BFC\u5165\u5927\u667A\u6167\u4E2A\u80A1\u80A1\u6743\u4FE1\u606F");
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
+				.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addComponent(cbximportdzhguquan)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(chbxdaorutdxzdybk)
 							.addGap(291)
 							.addComponent(progressBar_5, GroupLayout.DEFAULT_SIZE, 10, Short.MAX_VALUE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(cbximporttdxgeguinfo)
 									.addGap(18)
 									.addComponent(progressBar_1, GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE))
-								.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(chbximportcym)
 									.addGap(18)
-									.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE))
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(chbxdaorutdxsysbk)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(pbarbankuai, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(pbarbankuai, GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(cbxImportShGeGuVol)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(cbxImportSzGeGuVol)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE))
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(chbxdaorutdxsysbkvol)
 									.addGap(12)
-									.addComponent(progressBar_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addComponent(scrollPane_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))
+									.addComponent(progressBar_2, GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE))
+								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))
 							.addGap(75)))
 					.addContainerGap())
 		);
@@ -528,7 +539,9 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 						.addComponent(cbxImportShGeGuVol)
 						.addComponent(progressBar_3, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE))
-					.addGap(72)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(cbximportdzhguquan)
+					.addGap(43)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 214, GroupLayout.PREFERRED_SIZE)
 					.addGap(38))
 		);

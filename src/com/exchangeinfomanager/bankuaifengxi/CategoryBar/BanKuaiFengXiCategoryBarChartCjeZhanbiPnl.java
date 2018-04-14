@@ -12,9 +12,12 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
@@ -25,6 +28,7 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.Week;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
@@ -40,6 +44,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	public BanKuaiFengXiCategoryBarChartCjeZhanbiPnl() 
 	{
 		super ();
+
 		super.plot.setRenderer(new CustomCategroyRendererForZhanBi() );
 		
 		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
@@ -51,10 +56,75 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
 		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelsVisible(true);
+		
+        //line part
+        linechartdataset = new DefaultCategoryDataset();
+        BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
+        plot.setDataset(1, linechartdataset);
+        plot.setRenderer(1, linerenderer);
+        ValueAxis rangeAxis2 = new NumberAxis("");
+        plot.setRangeAxis(1, rangeAxis2);
+        
+        // change the rendering order so the primary dataset appears "behind" the 
+        // other datasets...
+        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartCjeZhanbiPnl.class);
-	
+	/*
+	 * 
+	 */
+	public void updateConditionMatchData (BkChanYeLianTreeNode node, String period,TimeSeries matchdata)
+	{
+		super.barchart.setNotify(false);
+		
+		if(linechartdataset != null)
+			linechartdataset.clear();
+		
+		int maxnum = 0;
+		if(node.getType() == BanKuaiAndStockBasic.TDXBK ) {
+			DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
+			
+			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+			LocalDate tmpdate = nodexdata.getRecordsStartDate();
+			LocalDate dataenddate = nodexdata.getRecordsEndDate();
+			
+			do  {
+				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+				TimeSeriesDataItem cjerecord = matchdata.getDataItem(tmpwk);
+				tmpwk = null;
+				if(cjerecord != null) {
+					int matchnum = cjerecord.getValue().intValue();
+					linechartdataset.setValue(matchnum,"matchnumber",tmpdate.with(DayOfWeek.FRIDAY));
+					
+					if(matchnum > maxnum)
+						maxnum = matchnum; 
+				} else {
+					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
+						linechartdataset.setValue(0.0,"matchnumber",tmpdate);
+					} 
+				}
+				
+				if(period.equals(StockGivenPeriodDataItem.WEEK))
+					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(StockGivenPeriodDataItem.DAY))
+					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(StockGivenPeriodDataItem.MONTH))
+					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+				
+			} while (tmpdate.isBefore( dataenddate ) || tmpdate.isEqual(dataenddate ));
+		}
+		
+		super.plot.getRangeAxis(1).setRange(0,maxnum *1.5);
+		
+		super.barchart.setNotify(true);
+		
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode, java.time.LocalDate, int, java.lang.String)
+	 * 升级占比数据
+	 */
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference, String period)
 	{
 		if(period.equals(StockGivenPeriodDataItem.DAY))
@@ -73,14 +143,14 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	/*
 	 * 板块按周相对于某板块的交易额
 	 */
-	public void setNodeCjeZhanBi (BkChanYeLianTreeNode node,LocalDate displayedenddate1,String period)
+	private void setNodeCjeZhanBi (BkChanYeLianTreeNode node,LocalDate displayedenddate1,String period)
 	{
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		this.setNodeCjeZhanBi (node,requirestart,requireend,period);
 	}
-	public void setNodeCjeZhanBi (BkChanYeLianTreeNode node,LocalDate startdate,LocalDate enddate,String period)
+	private void setNodeCjeZhanBi (BkChanYeLianTreeNode node,LocalDate startdate,LocalDate enddate,String period)
 	{
 		this.curdisplayednode = node;
 		super.globeperiod = period;
@@ -183,7 +253,7 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
 		String selected =  dataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
 
-    	Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);
+    	Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
 
 		if(maxweek != null  && maxweek >= super.displayedmaxwklevel)
 			return Color.MAGENTA;
@@ -206,7 +276,7 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 		if(curzhanbidata == null)
 			return null;
 
-			Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate);//nodefx.getGgbkzhanbimaxweek();
+			Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);//nodefx.getGgbkzhanbimaxweek();
 			if(maxweek == null)
 				return null;
 			

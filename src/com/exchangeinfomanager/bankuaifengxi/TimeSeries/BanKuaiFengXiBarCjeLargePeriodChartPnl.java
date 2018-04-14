@@ -64,6 +64,8 @@ public class BanKuaiFengXiBarCjeLargePeriodChartPnl extends BanKuaiFengXiBarLarg
         dataset.setNotify(true);
         return dataset;
     }
+
+
 }
 
 class CustomXYBarCjePainter extends CustomXYBarPainter 
@@ -123,7 +125,7 @@ class CustomXYPlotCjeToolTipGenerator extends CustomXYPlotToolTipGenerator
 			
 			Integer maxweek = 0;
 			try {
-				 maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate);
+				 maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
 			} catch (java.lang.NullPointerException e) {
 				 maxweek = 0;
 			}
