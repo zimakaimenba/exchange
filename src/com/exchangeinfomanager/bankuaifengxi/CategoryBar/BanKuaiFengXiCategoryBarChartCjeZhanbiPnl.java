@@ -221,7 +221,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	 * 
 	 */
 	@Override
-	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax) 
+	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax,Double showhsl) 
 	{
 		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbbkmax);
 		this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰

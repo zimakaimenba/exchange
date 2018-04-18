@@ -104,11 +104,11 @@ public class ConnectDataBase
 		
 		private boolean checkExecuteOnServer (String sqlstatement)
 		{
-			List<String> rmtservertable = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(sysconfig.getTablesDataSelectedFromServer() );
-			for(String str:rmtservertable) {
-				if(sqlstatement.contains(str) )
-					return true;
-			}
+//			List<String> rmtservertable = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(sysconfig.getTablesDataSelectedFromServer() );
+//			for(String str:rmtservertable) {
+//				if(sqlstatement.contains(str) )
+//					return true;
+//			}
 			
 			return false;
 		}

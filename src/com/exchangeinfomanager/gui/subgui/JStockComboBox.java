@@ -1,6 +1,8 @@
 package com.exchangeinfomanager.gui.subgui;
 
 import java.awt.Color;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -11,7 +13,9 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
@@ -34,7 +38,6 @@ public class JStockComboBox extends  JComboBox<String>
 		this.setForeground(Color.RED);
 		bkdbopt = new BanKuaiDbOperation ();
 	}
-	
 	public JStockComboBox(int onlyselecttype) //用户可以指定只选择从数据库中读出某种类型的node
 	{
 		super();
@@ -48,6 +51,7 @@ public class JStockComboBox extends  JComboBox<String>
 	private BanKuaiDbOperation bkdbopt;
 	private BkChanYeLianTreeNode nodeshouldbedisplayed;
 	private Integer onlyselectnodetype;
+	private MenuItem mntmYiTuishi;
 	
 	/*
 	 * 

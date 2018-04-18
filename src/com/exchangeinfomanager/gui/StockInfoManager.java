@@ -388,6 +388,16 @@ public class StockInfoManager
 
 	private void createEvents()
 	{
+		btnyituishi.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				int action = JOptionPane.showConfirmDialog(null, "是否将该股设置为已经退市状态？设置后将无法更改，是否继续？","警告", JOptionPane.YES_NO_OPTION);
+				if(0 == action) {
+					bkdbopt.setStockAsYiJingTuiShi (formatStockCode((String)cBxstockcode.getSelectedItem()));
+				}
+			}
+		});
 		
 		editorpansuosubk.addMouseListener(new MouseAdapter() {
 			@Override
@@ -519,7 +529,7 @@ public class StockInfoManager
 				accountsetting.setVisible(true);
 				
 			}
-//			
+			
 //			boolean isBuyOrSell (String descriptioninrecords) 
 //			{
 //				boolean buysell ;
@@ -1011,7 +1021,6 @@ public class StockInfoManager
 					saveKuaiSuJiLuJiaoYi ();
 					return ;
 				}
-					
 					
 				BuyStockNumberPrice stocknumberpricepanel = new BuyStockNumberPrice ( formatStockCode((String)cBxstockcode.getSelectedItem()),accountschicangconfig,true);
 				int exchangeresult = JOptionPane.showConfirmDialog(null, stocknumberpricepanel, "买入交易细节", JOptionPane.OK_CANCEL_OPTION);
@@ -2304,6 +2313,7 @@ public class StockInfoManager
 	private JButton btndetailfx;
 	private JMenuItem menuItembkfx;
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
+	private JButton btnyituishi;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2494,23 +2504,25 @@ public class StockInfoManager
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(panel_2, 0, 0, Short.MAX_VALUE)
-								.addComponent(scrollPane, 0, 0, Short.MAX_VALUE)
-								.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
-								.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addGap(1093)
-							.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 474, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(panelStatusBar, GroupLayout.PREFERRED_SIZE, 213, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnDBStatus))
-						.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 762, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(13, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+								.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(panel_2, 0, 0, Short.MAX_VALUE)
+										.addComponent(scrollPane, 0, 0, Short.MAX_VALUE)
+										.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
+										.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE))
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+							.addGap(1093)
+							.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
@@ -2983,7 +2995,7 @@ public class StockInfoManager
 		JButton btnGudongzjc = new JButton("\u80A1\u4E1C\u589E\u51CF\u6301");
 		btnGudongzjc.setEnabled(false);
 		
-		panel_1.setLayout(new MigLayout("", "[45px][45px][87px][57px][69px][81px][81px][93px][105px]", "[26px]"));
+		panel_1.setLayout(new MigLayout("", "[45px][45px][87px][57px][69px][81px][81px][93px][105px][]", "[26px]"));
 		panel_1.add(btnMai, "cell 0 0,alignx left,aligny center");
 		panel_1.add(btnSell, "cell 1 0,alignx left,aligny center");
 		panel_1.add(btnjiaruzdgz, "cell 2 0,alignx left,growy");
@@ -2996,6 +3008,11 @@ public class StockInfoManager
 		btndetailfx = new JButton("\u677F\u5757\u8BE6\u7EC6\u5206\u6790");
 		panel_1.add(btndetailfx, "cell 8 0");
 		btndetailfx.setEnabled(false);
+		
+		btnyituishi = new JButton("");
+		btnyituishi.setToolTipText("\u8BBE\u7F6E\u4E3A\u5DF2\u9000\u5E02");
+		btnyituishi.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/cloud-computing.png")));
+		panel_1.add(btnyituishi, "cell 9 0");
 		frame.getContentPane().setLayout(groupLayout);
 		
 		menuBar = new JMenuBar();

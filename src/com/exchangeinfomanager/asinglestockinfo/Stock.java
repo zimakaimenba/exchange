@@ -13,7 +13,10 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.time.ohlc.OHLCItem;
+import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiNodeXPeriodData;
@@ -36,11 +39,11 @@ public class Stock extends BkChanYeLianTreeNode {
 		
 		super.nodewkdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new StockNodeXPeriodData (StockGivenPeriodDataItem.DAY) ;
-		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+//		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 	}
 	
 	private String checklistXml;
-	private static Logger logger = Logger.getLogger(Stock.class);
+//	private static Logger logger = Logger.getLogger(Stock.class);
 	
 //	private Multimap<String> chiCangAccountNameList; //持有该股票的所有账户的名字
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; //持有该股票的所有账户<账户，账户信息>
@@ -156,24 +159,6 @@ public class Stock extends BkChanYeLianTreeNode {
 	{
 		return this.nodeallchanyelian;
 	}
-/*
- * (non-Javadoc)
- * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode#setParseFileStockSet(java.util.HashSet)
- */
-//	public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
-//	 {
-//	    	if(super.parsefilestockset == null) {
-//	    		this.parsefilestockset = new HashSet<String> ();
-//	    		this.parsefilestockset = parsefilestockset2;
-//	    	} else
-//	    		this.parsefilestockset = parsefilestockset2;
-//	 }
-	
-//	public void setStockXPeriodDataForABanKuai (String bankuaicode,StockOfBanKuai bkofst)
-//	{
-//		suoShuTdxBanKuaiData.put(bankuaicode, bkofst);
-//	}
-	
 	/*
 	 * 
 	 */
@@ -220,16 +205,101 @@ public class Stock extends BkChanYeLianTreeNode {
 		public StockNodeXPeriodData (String nodeperiodtype1) 
 		{
 			super(nodeperiodtype1);
-		
+			stockhuanshoulv = new TimeSeries(nodeperiodtype1);
+			stockliutongshizhi = new TimeSeries(nodeperiodtype1);
+			stockzongshizhi = new TimeSeries(nodeperiodtype1);
 		}
 		
+		private  TimeSeries stockhuanshoulv;
+		private  TimeSeries stockliutongshizhi;
+		private  TimeSeries stockzongshizhi;
+		
+		public void addNewXPeriodData (StockGivenPeriodDataItem kdata)
+		{
+			try {
+				stockohlc.setNotify(false);
+				stockohlc.add(kdata);
+			} catch (org.jfree.data.general.SeriesException e) {
+				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+			}
+			try {
+				stockamo.setNotify(false);
+				stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
+//				stockvol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
+				if(kdata.getCjeZhanBi() != null) {
+					stockamozhanbi.setNotify(false);
+					stockamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi(),false);
+				}
+//				if(kdata.getCjlZhanBi() != null)
+//					stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
+			} catch (org.jfree.data.general.SeriesException e) {
+				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				e.printStackTrace();
+			}
+			
+			try {
+				stockhuanshoulv.setNotify(false);
+				stockhuanshoulv.add(kdata.getPeriod(),kdata.getHuanshoulv(),false);
+			} catch (org.jfree.data.general.SeriesException e) {
+				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				e.printStackTrace();
+			} 
+			try {
+				stockliutongshizhi.setNotify(false);
+				stockliutongshizhi.add(kdata.getPeriod(),kdata.getLiutongshizhi(),false);
+			} catch (org.jfree.data.general.SeriesException e) {
+				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				e.printStackTrace();
+			}
+			try {	
+				stockzongshizhi.setNotify(false);
+				stockzongshizhi.add(kdata.getPeriod(),kdata.getZongshizhi(),false);
+				
+			} catch (org.jfree.data.general.SeriesException e) {
+				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				e.printStackTrace();
+			}
+		}
+		/*
+		 * (non-Javadoc)
+		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
+		 */
+		public double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference)
+		{
+			TimeSeriesDataItem curhslrecord = stockhuanshoulv.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			Double curhsl = curhslrecord.getValue().doubleValue();
+			
+			return curhsl;
+		}
+		/*
+		 * (non-Javadoc)
+		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
+		 */
+		public double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference)
+		{
+			TimeSeriesDataItem curzszrecord = stockzongshizhi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			Double curzsz = curzszrecord.getValue().doubleValue();
+			
+			return curzsz;
+		}
+		/*
+		 * (non-Javadoc)
+		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
+		 */
+		public double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference)
+		{
+			TimeSeriesDataItem curltszrecord = stockliutongshizhi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			Double curltsz = curltszrecord.getValue().doubleValue();
+			
+			return curltsz;
+		}
 		@Override
-		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate) 
+		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 		{
 			if(stockohlc == null)
 				return null;
 			
-			TimeSeriesDataItem curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+			TimeSeriesDataItem curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 			if( curcjlrecord == null) 
 				return null;
 			
@@ -237,7 +307,7 @@ public class Stock extends BkChanYeLianTreeNode {
 			int maxweek = 0;
 			
 			DaPan dapan = (DaPan)getRoot();
-			for(int index = -1;index >= -100000; index--) { //目前记录不可能有10000个周期，所以10000足够
+			for(int index = -1;index >= -100; index--) { //目前记录不可能有10000个周期，所以10000足够
 				if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) //大盘还可能休市
 					continue;
 				
@@ -260,12 +330,12 @@ public class Stock extends BkChanYeLianTreeNode {
 		/*
 		 * 对上级板块的成交额占比是多少周内的最大值
 		 */
-		public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate) 
+		public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 		{
 			if(stockohlc == null)
 				return null;
 			
-			TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+			TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 			if( curcjlrecord == null) 
 				return null;
 
@@ -295,9 +365,6 @@ public class Stock extends BkChanYeLianTreeNode {
 
 			return maxweek;
 		}
-		
-
-
 	}
 }
 

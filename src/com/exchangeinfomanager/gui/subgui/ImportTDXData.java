@@ -41,6 +41,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.Collator;
 
 import javax.swing.JComboBox;
@@ -48,6 +50,8 @@ import javax.swing.JCheckBox;
 import javax.swing.ScrollPaneConstants;
 import java.awt.GridBagLayout;
 import java.awt.Color;
+
+import org.apache.commons.io.FileUtils;
 
 public class ImportTDXData extends JDialog {
 	
@@ -176,7 +180,6 @@ public class ImportTDXData extends JDialog {
 			} catch (java.lang.NullPointerException e) {
 			}
 		}
-		
 	}
 	private void partThatHasBeImportAfterWsork () 
 	{
@@ -302,6 +305,21 @@ public class ImportTDXData extends JDialog {
 			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
 		}
 		
+//		if(ckbxtushare.isSelected()) { //导入TUSHARE的数据
+//			String pythoninterpreter = sysconfig.getPythonInterpreter();
+//			String pythonscripts = sysconfig.getPythonScriptsPath ();
+//			String cmd = pythoninterpreter + "/python.exe" + "   " + pythonscripts + "exportdailydata.py\"" ;
+//			System.out.println(cmd);
+//			try {
+//				Process p = Runtime.getRuntime().exec(cmd);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+		
+		if(ckbxnetease.isSelected()) { //导入网易的股票的数据
+			bkdbopt.importNetEaseStockData ();
+		}
 	}
 
 	private void createEvents() 
@@ -345,18 +363,25 @@ public class ImportTDXData extends JDialog {
 			}
 		});
 		
-		btnStart.addActionListener(new ActionListener() {
+		btnStart.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				if(!chbxdaorutdxsysbk.isSelected() && !cbximporttdxgeguinfo.isSelected() 
 						&& !chbxdaorutdxsysbkvol.isSelected() && !cbxImportShGeGuVol.isSelected() 
 						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()
-						&& !cbximportdzhguquan.isSelected() ) {
+						&& !cbximportdzhguquan.isSelected()
+						&& !ckbxnetease.isSelected() 
+						) {
 					JOptionPane.showMessageDialog(null,"请选择需要导入的项目！");
 					return;
 					
 				}
-				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() ||cbxImportShGeGuVol.isSelected() || cbxImportSzGeGuVol.isSelected()) {
+				//
+				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() 
+						||cbxImportShGeGuVol.isSelected() || cbxImportSzGeGuVol.isSelected() 
+						|| ckbxnetease.isSelected()
+						) {
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
 					int hour = cal.get(Calendar.HOUR_OF_DAY);
 					int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;
@@ -398,7 +423,6 @@ public class ImportTDXData extends JDialog {
       		  }
 		} else
 			JOptionPane.showMessageDialog(null, "通达信数据完整！","Warning", JOptionPane.WARNING_MESSAGE);
-		
 	}
 
 	private final JPanel contentPanel = new JPanel();
@@ -422,6 +446,7 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox chbxselectall;
 	private JButton btnchecksync;
 	private JCheckBox cbximportdzhguquan;
+	private JCheckBox ckbxnetease;
 	
 	private void initializeGui() 
 	{
@@ -464,12 +489,15 @@ public class ImportTDXData extends JDialog {
 		JProgressBar progressBar_5 = new JProgressBar();
 		
 		cbximportdzhguquan = new JCheckBox("\u5BFC\u5165\u5927\u667A\u6167\u4E2A\u80A1\u80A1\u6743\u4FE1\u606F");
+		
+		ckbxnetease = new JCheckBox("\u5BFC\u5165\u7F51\u6613\u8D22\u7ECF\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F\uFF08\u6362\u624B\u7387/\u6D41\u901A\u5E02\u503C/\u603B\u5E02\u503C\uFF09");
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addComponent(ckbxnetease)
 						.addComponent(cbximportdzhguquan)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(chbxdaorutdxzdybk)
@@ -541,7 +569,9 @@ public class ImportTDXData extends JDialog {
 						.addComponent(progressBar_3, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(cbximportdzhguquan)
-					.addGap(43)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(ckbxnetease)
+					.addGap(20)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 214, GroupLayout.PREFERRED_SIZE)
 					.addGap(38))
 		);

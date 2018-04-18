@@ -13,7 +13,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.io.Reader;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -47,6 +50,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.tree.TreeNode;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -86,6 +90,8 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.sun.rowset.CachedRowSetImpl;
 
 import net.iryndin.jdbf.core.DbfMetadata;
@@ -253,6 +259,14 @@ public class BanKuaiDbOperation
 				tmpnode.setMyOwnName(stockname);
 			} catch(java.lang.NullPointerException ex1) {
 				tmpnode.setMyOwnName( " ");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			try {
+				Boolean stockname = rs.getBoolean("已退市");
+				//这里应该设置退市状态，目前没那么重要，所以暂时不开发
+			} catch(java.lang.NullPointerException ex1) {
+				Boolean stockname = false;
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -2020,23 +2034,23 @@ public class BanKuaiDbOperation
 	{
 		ArrayList<Stock> tmpsysbankuailiebiaoinfo = new ArrayList<Stock> ();
 
-		String sqlquerystat = "SELECT 股票代码,股票名称 FROM A股"									
+		String sqlquerystat = "SELECT 股票代码,股票名称,已退市,所属交易所 FROM A股"									
 							   ;   
 		logger.debug(sqlquerystat);
 		CachedRowSetImpl rs = null;
 	    try {  
 	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-	    	
-	        rs.last();  
-	        int rows = rs.getRow();  
-	        rs.first();  
-	        //int k = 0;  
-//	        while(rs.next()) {
-	        for(int j=0;j<rows;j++) {  
-	        	Stock tmpbk = new Stock (rs.getString("股票代码"),rs.getString("股票名称"));
-	        	logger.debug(rs.getString("股票代码"));
-	        	tmpsysbankuailiebiaoinfo.add(tmpbk);
-	            rs.next();
+
+	        while(rs.next()) {
+	        	Stock tmpbk = null;
+	        	if(!rs.getBoolean("已退市")) {
+	        		tmpbk = new Stock (rs.getString("股票代码"),rs.getString("股票名称"));
+	        		tmpbk.setSuoShuJiaoYiSuo(rs.getString("所属交易所"));
+		        	tmpsysbankuailiebiaoinfo.add(tmpbk);
+	        	} else {
+	        		logger.debug(rs.getString("股票代码") + "已经退市");
+	        	}
+	        	
 	        }
 	    }catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -2942,18 +2956,9 @@ public class BanKuaiDbOperation
 				 		;
 			 } else { //概念风格行业指数板块
 				 //from WQW
-//				 sqlquerystat1 = "select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , "+ bktypetable + ".`股票权重`\r\n" + 
-//				 		"          from "+ bktypetable + ", a股\r\n" + 
-//				 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`\r\n" + 
-//				 		"           and '" +  formatedstartdate + "' >= Date("+ bktypetable + ".`加入时间`)\r\n" + 
-//				 		"           and '" +  formatedenddate + "' <  ifnull("+ bktypetable + ".`移除时间`, '2099-12-31')\r\n" + 
-//				 		"           and "+ bktypetable + ".`板块代码` =  '" + currentbkcode + "'\r\n" + 
-//				 		"         \r\n" + 
-//				 		"         group by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码`\r\n" + 
-//				 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` ";
 				 sqlquerystat1 = "select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , "+ bktypetable + ".`股票权重`\r\n" + 
 					 		"          from "+ bktypetable + ", a股\r\n" + 
-					 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`\r\n" + 
+					 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`  AND a股.`已退市` IS NULL \r\n" + 
 					 		
 					 		"and (  (  Date("+ bktypetable + ".`加入时间`) between '" +  formatedstartdate + "'  and '" +  formatedenddate + "')\r\n" + 
 					 		"           		 or( ifnull("+ bktypetable + ".`移除时间`, '2099-12-31') between '" +  formatedstartdate + "'  and '" +  formatedenddate + "')\r\n" + 
@@ -2973,7 +2978,6 @@ public class BanKuaiDbOperation
 			 rs1 = connectdb.sqlQueryStatExecute(sqlquerystat1);
 			 
 			 while(rs1.next()) {  
-				 
 				String tmpstockcode = rs1.getString("股票代码");
 				
 				String tmpstockname;
@@ -2984,12 +2988,13 @@ public class BanKuaiDbOperation
 				}
 				
 				Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BanKuaiAndStockBasic.TDXGG);
-				StockOfBanKuai bkofst = new StockOfBanKuai(currentbk,tmpstock);
-				
-				Integer weight = rs1.getInt("股票权重");
-				bkofst.setStockQuanZhong(weight);
-				
-				currentbk.addNewBanKuaiGeGu(bkofst);
+				if(tmpstock != null) {
+					StockOfBanKuai bkofst = new StockOfBanKuai(currentbk,tmpstock);
+					Integer weight = rs1.getInt("股票权重");
+					bkofst.setStockQuanZhong(weight);
+					
+					currentbk.addNewBanKuaiGeGu(bkofst);
+				}
 			}
 				
 			}catch(java.lang.NullPointerException e){ 
@@ -3098,7 +3103,7 @@ public class BanKuaiDbOperation
 				Double dapancjl = rs.getDouble("大盘周交易量");
 				
 				StockGivenPeriodDataItem bkperiodrecord = new StockGivenPeriodDataItem( bkcode, StockGivenPeriodDataItem.WEEK,
-						wknum, 0.0, 0.0,  0.0,  0.0, bankuaicje, bankuaicjl);
+						wknum, 0.0, 0.0,  0.0,  0.0, bankuaicje, bankuaicjl,null,null,null);
 				
 				bkperiodrecord.setRecordsDayofEndofWeek(lastdayofweek);
 				bkperiodrecord.setUpLevelChengJiaoEr(dapancje);
@@ -3224,7 +3229,7 @@ public class BanKuaiDbOperation
 				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 				
 				StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( stockcode, StockGivenPeriodDataItem.WEEK, recordwk, 
-						  0.0,  0.0,  0.0,  0.0, stcokcje, stcokcjl);
+						  0.0,  0.0,  0.0,  0.0, stcokcje, stcokcjl,null,null,null);
 				
 				stokofbkrecord.setRecordsDayofEndofWeek(lastdayofweek);
 				stokofbkrecord.setUpLevelChengJiaoEr(bkcje);
@@ -3261,7 +3266,7 @@ public class BanKuaiDbOperation
 
 	}
 	/*
-	 * //上面是个股对板块的制定周期(默认是周线)，下面部分是为个股自身周线数据，用来计算个股对大盘的数据
+	 * //上面是个股对板块的指定周期(默认是周线)，下面部分是为个股自身周线数据，用来计算个股对大盘的数据
 	 */
 	public Stock getStockZhanBi(Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{	
@@ -3285,8 +3290,8 @@ public class BanKuaiDbOperation
 		//包含成交量和成交额的SQL
 		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
 				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比, \r\n" +
-	
-				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比 \r\n" + 
+				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
+				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU       \r\n" +
 				 
 				"FROM\r\n" + 
 				"(\r\n" + 
@@ -3306,7 +3311,13 @@ public class BanKuaiDbOperation
 				") T,\r\n" + 
 				"\r\n" + 
 				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
-						+ "sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , sum( " + bkcjltable + ".`成交量`) AS 板块周交易量 from " + bkcjltable + "\r\n" +  
+						+ " sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
+						+ " sum( " + bkcjltable + ".`成交量`) AS 板块周交易量,  \r\n"
+						+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
+						+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
+						+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
+						+ "  count(1) as JILUTIAOSHU \r\n"
+						+ " from " + bkcjltable + "\r\n" +  
 				"where 代码 = '" + stockcode + "'\r\n" + 
 				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
 				") M\r\n" + 
@@ -3345,17 +3356,20 @@ public class BanKuaiDbOperation
 				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 				double bankuaicjl = rs.getDouble("板块周交易量");
 				double dapancjl = rs.getDouble("大盘周交易量");
+				double huanshoulv = rs.getDouble("板块周换手率");
+				double pingjunzongshizhi = rs.getDouble("周平均总市值");
+				double pingjunliutongshizhi = rs.getDouble("周平均流通市值");
 
-				StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( stockcode, period, recordwk, 
-						  0.0,  0.0,  0.0,  0.0, bankuaicje, bankuaicjl);
+				StockGivenPeriodDataItem stokrecord = new StockGivenPeriodDataItem( stockcode, period, recordwk, 
+						  0.0,  0.0,  0.0,  0.0, bankuaicje, bankuaicjl,huanshoulv,pingjunzongshizhi,pingjunliutongshizhi);
 				
-				stokofbkrecord.setRecordsDayofEndofWeek(lastdayofweek);
-				stokofbkrecord.setUpLevelChengJiaoEr(dapancje);
-				stokofbkrecord.setUplevelchengjiaoliang(dapancjl);
+				stokrecord.setRecordsDayofEndofWeek(lastdayofweek);
+				stokrecord.setUpLevelChengJiaoEr(dapancje);
+				stokrecord.setUplevelchengjiaoliang(dapancjl);
 				
-				nodewkperioddata.addNewXPeriodData(stokofbkrecord);
+				nodewkperioddata.addNewXPeriodData(stokrecord);
 				
-				stokofbkrecord = null;
+				stokrecord = null;
 			}
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -3418,7 +3432,7 @@ public class BanKuaiDbOperation
 				 org.jfree.data.time.Day recordwk = new org.jfree.data.time.Day (actiondate);
 				 
 				 StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( nodecode, period, recordwk, 
-						 open,  high,  low,  close, cje, cjl);
+						 open,  high,  low,  close, cje, cjl,null,null,null);
 				 
 				 stokofbkrecord.setRecordsDayofEndofWeek(actiondate);
 				 nodedayperioddata.addNewXPeriodData(stokofbkrecord);
@@ -5034,8 +5048,181 @@ public class BanKuaiDbOperation
 			logger.debug(sqlupdatestat);
 	   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		}
-		
+		/*
+		 * 导入网易股票行情接口的数据，
+		 */
+		public void importNetEaseStockData() 
+		{
+			ArrayList<Stock> allstocks = this.getAllStocks ();
+			//下载需要的时间段的数据
+			for(Stock stock : allstocks) {
+				String stockcode = stock.getMyOwnCode();
+				String formatedstockcode; String stockdatatable ;
+				if(stock.getSuoShuJiaoYiSuo().trim().toLowerCase().equals("sh")) { 
+					formatedstockcode = "0" + stockcode;
+					stockdatatable = "通达信上交所股票每日交易信息";
+				} else {
+					formatedstockcode = "1" + stockcode;
+					stockdatatable = "通达信深交所股票每日交易信息";
+				}
+				
+				CachedRowSetImpl  rs = null;
+				LocalDate ldlastestdbrecordsdate = null;
+				try { 	
+					//找出每日交易的起点终点
+					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME FROM  " + stockdatatable + 
+											" WHERE  代码 = '" + stockcode + "' and 换手率 IS NOT NULL"
+											;
+					logger.debug(sqlquerystat);
+				    rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+				    while(rs.next()) {
+//				    		logger.debug(rs.getMetaData().getColumnCount());
+				    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
+				    		 try {
+				    			 ldlastestdbrecordsdate = lastestdbrecordsdate.toLocalDate();
+				    		 } catch (java.lang.NullPointerException e) {
+				    			 logger.info(stockcode + "似乎没有数据，请检查！");
+				    		 }
+				    }
+				    if(ldlastestdbrecordsdate == null)
+				    	ldlastestdbrecordsdate =  LocalDate.parse("2013-03-04"); //当前数据的起点
+				    else
+				    	ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1);
+				    
+//				    //找出股本变动表里面的最新股本记录时间,目前网易数据没有股本信息，只有市值信息
+//				    sqlquerystat = "SELECT 流通股本,总股本,MOST_RECENT_TIME\r\n" +
+//				    				" FROM 个股股本变化信息  t \r\n" + 
+//				    				" INNER JOIN \r\n" +
+//				    				" (SELECT 代码, MAX(变动日期) 	MOST_RECENT_TIME \r\n" + 
+//				    				" FROM  个股股本变化信息  \r\n" +
+//				    				" WHERE 代码 ='" + stockcode + "'  )a \r\n " +
+//				    				" on a.代码 = t.代码 AND a.MOST_RECENT_TIME =变动日期 \r\n "
+//				    				;
+//				    rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+//				    double zongguben =0.0; double liutongguben = 0.0 ;
+//				    while(rs.next()) {
+//
+//				    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
+//				    		 try {
+//				    			 ldlastestdbrecordsdate =lastestdbrecordsdate.toLocalDate();
+//				    			 zongguben  = rs.getDouble("总市值");
+//				    			 liutongguben = rs.getDouble("流通市值");
+//				    		 } catch (java.lang.NullPointerException e) {
+//				    			 logger.info(stockcode + "似乎没有数据，请检查！");
+//				    			 zongguben = 0.0;
+//				    			 liutongguben = 0.0;
+//				    		 }
+//				    }
+				    
+				    //获取文件
+				    URL URLink; //https://blog.csdn.net/NarutoInspire/article/details/72716724
+				    DateTimeFormatter formatters = DateTimeFormatter.ofPattern("yyyyMMdd");
+				    String startdate = ldlastestdbrecordsdate.format(formatters);
+				    String enddate = LocalDate.now().format(formatters);
+				    String urlstr = "http://quotes.money.163.com/service/chddata.html?code=" + formatedstockcode + "&start=" + startdate + 
+				    				"&end=" + enddate + "&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP";
+				    String savedfilename = sysconfig.getNetEaseDownloadedFilePath () + stockcode + ".csv";
+				    File savedfile = null;
+					try {
+						URLink = new URL( urlstr); //"http://quotes.money.163.com/service/chddata.html?code=0601857&start=20071105&end=20150618&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP"
+						
+						savedfile = new File (savedfilename);
+						if(savedfile.exists())
+							savedfile.delete();
+						
+						FileUtils.copyURLToFile(URLink, savedfile,10000,10000); //http://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/FileUtils.html#copyURLToFile(java.net.URL,%20java.io.File)
+					} catch ( IOException e) {
+						e.printStackTrace();
+					}
+					//导入数据到数据库
+					if(!savedfile.exists()) {
+						System.out.println(stockcode + "似乎未能从网易得到"+ stockcode + "的数据，请立即检查！");
+					} else {
+						try (
+//								java.io.Reader filereader = java.nio.file.Files.newBufferedReader(Paths.get(savedfilename));
+//					            CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
+								
+								FileReader filereader = new FileReader(savedfile);
+								CSVReader csvReader = new CSVReader(filereader);
+					    ){ 
+					            // Reading Records One by One in a String array
+					            String[] nextRecord; int titlesign =0;
+					            while ((nextRecord = csvReader.readNext()) != null) {
+					            	if(0 == titlesign) {
+						                String huanshoulv = nextRecord[10];
+						                String zongshizhi = nextRecord[13];
+						                
+						                if(!huanshoulv.trim().equals("换手率") || !zongshizhi.trim().equals("总市值")) {
+						                	System.out.println("网易数据文件格式可能有改变，请检查！");
+						                	return ;
+						                } else {
+						                	titlesign = 1;
+						                }
+					            	} else { //第二行
+					            		String shoupanjia = nextRecord[3];
+					            		if(Double.parseDouble(shoupanjia) == 0) //收盘价不可能为0，0说明停牌，在交易数据表中，停牌是没有记录的，跳过 
+					            			continue;
+					            		
+					            		LocalDate lactiondate = null;
+					            		String actiondate =  nextRecord[0];
+					            		if(Pattern.matches("\\d*/\\d*/\\d*",actiondate) ) {
+					            			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+					            			lactiondate = LocalDate.parse(actiondate, formatter);
+					            		} else if(Pattern.matches("\\d*-\\d*-\\d*",actiondate) ) {
+					            			lactiondate = LocalDate.parse(actiondate);
+					            		} else {
+					            			System.out.println("网易数据文件日期格式改变！");
+					            			return ;
+					            		}
+					            		
+						                String zhangdiefu = nextRecord[9];
+						                String huanshoulv = nextRecord[10];
+						                String zongshizhi = nextRecord[13];
+						                String liutongshizhi = nextRecord[14];
+						                //update 涨跌幅和换手率数据
+						                String sqlupdate = "Update " + stockdatatable + " SET " +
+						                					" 涨跌幅=" + Double.parseDouble(zhangdiefu) + "," +
+						                					" 换手率=" + Double.parseDouble(huanshoulv) + "," +
+						                					" 流通市值= " + Double.parseDouble(liutongshizhi) + "," +
+						                					" 总市值= " + Double.parseDouble(zongshizhi) +
+						                					" WHERE 交易日期 = '" + lactiondate + "'" + 
+						                					" AND 代码= '" + stockcode + "'"
+						                					;
+						                logger.debug(sqlupdate);
+									    int result = connectdb.sqlUpdateStatExecute(sqlupdate);		
+					            	}
+					            	
+					            }
+					        } 
+					}
+				 } catch(java.lang.NullPointerException e) { 
+				    	e.printStackTrace();
+				 } catch (SQLException e) {
+				    	e.printStackTrace();
+				 }catch(Exception e){
+				    	e.printStackTrace();
+				 } finally {
+				    	if(rs != null)
+						try {
+							rs.close();
+							rs = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+				    	
+				    	
+				}
+			}
 
+			allstocks = null;
+		}
+		public void setStockAsYiJingTuiShi(String formatStockCode) 
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+		
 }
 
 /*

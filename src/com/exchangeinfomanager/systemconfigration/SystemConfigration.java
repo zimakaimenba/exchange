@@ -65,6 +65,7 @@ public class SystemConfigration
 	private double bkdpzhanbimarker;
 	private double ggdpzhanbimarker;
 	private Boolean priavtemode;
+	private String pythoninterpreter;
 	
 	private void getSystemInfoFromXML() 
 	{
@@ -149,14 +150,10 @@ public class SystemConfigration
 			Element priavtemodesetting = xmlroot.element("privatemode");
 			this.priavtemode = Boolean.parseBoolean(priavtemodesetting.getText());
 			
-			Element bkdpzhanbimarker = xmlroot.element("fengxibankuaidapanzhanbiyuzhi");
-			this.bkdpzhanbimarker = Double.parseDouble(bkdpzhanbimarker.getText());
+			Element elepythoninterpreter = xmlroot.element("pythoninterper");
+			this.pythoninterpreter = elepythoninterpreter.getText();
 			
-			Element ggdpzhanbimarker = xmlroot.element("fengxigegudapanzhanbiyuzhi");
-			this.ggdpzhanbimarker = Double.parseDouble(ggdpzhanbimarker.getText());
-			
-//			Element eletdxvol = xmlroot.element("tdxvolpah");
-//			this.tdxvolpath = eletdxvol.getText(); 
+			 
 			
 			//本地数据库信息
 			Element elesorce = xmlroot.element("databasesources");
@@ -203,9 +200,9 @@ public class SystemConfigration
 				}
 			}
 			
-			//哪些数据从server读取
-			Element elermtdatatablefromserver = xmlroot.element("tablesfromserver");
-			this.datatablesfromserver = elermtdatatablefromserver.getText();
+//			//哪些数据从server读取
+//			Element elermtdatatablefromserver = xmlroot.element("tablesfromserver");
+//			this.datatablesfromserver = elermtdatatablefromserver.getText();
 			
 			try {
 				xmlfileinput.close();
@@ -284,13 +281,13 @@ public class SystemConfigration
 	 {
 		 return rmtcurdb;
 	 } 
-	 /*
-	  * 哪些数据从server表读取
-	  */
-	 public String getTablesDataSelectedFromServer ()
-	 {
-		 return this.datatablesfromserver;
-	 }
+//	 /*
+//	  * 哪些数据从server表读取
+//	  */
+//	 public String getTablesDataSelectedFromServer ()
+//	 {
+//		 return this.datatablesfromserver;
+//	 }
 	 /*
 	  * 
 	  */
@@ -620,6 +617,28 @@ public class SystemConfigration
 		 */
 		public double getGgdpzhanbimarker() {
 			return ggdpzhanbimarker;
+		}
+		/*
+		 * 
+		 */
+		public String getPythonInterpreter ()
+		{
+			return pythoninterpreter;
+		}
+		public String getPythonScriptsPath() 
+		{
+			if(this.systeminstalledpath.contains(" ")) {
+				return "\"" + this.systeminstalledpath + "python/execscripts/" ;
+			} else 
+				return this.systeminstalledpath + "python/execscripts/";
+		}
+		public String getPythonScriptsExecExportsPath ()
+		{
+			return this.systeminstalledpath + "python/execexports/";
+		}
+		public String getNetEaseDownloadedFilePath() 
+		{
+			return this.systeminstalledpath + "netease/downloaded/";
 		}
 
 }

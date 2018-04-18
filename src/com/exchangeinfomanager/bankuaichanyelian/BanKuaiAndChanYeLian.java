@@ -245,14 +245,12 @@ public class BanKuaiAndChanYeLian
 		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,treechanyelian);
 		ArrayList<StockOfBanKuai> allbkgg = bankuai.getAllCurrentBanKuaiGeGu();
 		for(StockOfBanKuai stock : allbkgg)   {
-			if(stock.getMyOwnCode().equals("002280"))
-				logger.debug("ceshi");
     		  stock = this.getGeGuOfBanKuai(bankuai, stock,period );
 		}
 		return bankuai;
 	}
 	/*
-	 * 同步每个个股的数据
+	 * 同步每个板块的所属个股的属于板块的相关数据，同时同步该股自己的数据
 	 */
 	private StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, StockOfBanKuai stock,String period)
 	{

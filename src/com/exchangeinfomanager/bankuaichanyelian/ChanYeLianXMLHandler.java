@@ -237,15 +237,15 @@ class ChanYeLianXMLHandler
 	private void addNewTdxBanKuaiFromDbToChanYeLianTree(BkChanYeLianTreeNode topNode, SetView<String> newBanKuaiFromDb, BkChanYeLianTree treeallstocks) 
 	{
 		for(String newbkcode:newBanKuaiFromDb) {
-			        	logger.debug("XML将要中加入" + newbkcode);
-			        	try {
+			logger.debug("XML将要中加入" + newbkcode);
+			try {
 			        		BanKuai parentsleaf = (BanKuai)treeallstocks.getSpecificNodeByHypyOrCode(newbkcode,BanKuaiAndStockBasic.TDXBK);
 			        		
 							topNode.add(parentsleaf);
 							
-						} catch (java.lang.NullPointerException ex) {
+			} catch (java.lang.NullPointerException ex) {
 							ex.printStackTrace();
-						}
+			}
 	    }
 	}
 

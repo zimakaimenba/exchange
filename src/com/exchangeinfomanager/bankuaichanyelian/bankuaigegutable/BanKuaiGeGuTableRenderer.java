@@ -125,6 +125,15 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	 else 
 	    		 background = Color.white ;
 	    }
+	    if( col == 9) {
+	    	double hsl = Double.parseDouble( tablemodel.getValueAt(modelRow, 9).toString() );
+	    	
+	    	double shouldhsl = tablemodel.getDisplayHuanShouLv();
+	    	if(hsl >= shouldhsl)
+	    		 background = Color.BLUE.brighter() ;
+	    	 else 
+	    		 background = Color.white ;
+	    }
 	    
 	    if (!table.isRowSelected(row)) 
 	    	comp.setBackground(background);

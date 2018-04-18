@@ -43,9 +43,13 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	/**
 	 * Create the panel.
 	 */
-	public BanKuaiFengXiNodeCombinedCategoryPnl(BkChanYeLianTreeNode curdisplayednode) 
+	public BanKuaiFengXiNodeCombinedCategoryPnl(BkChanYeLianTreeNode curdisplayednode,String horizonorvertical) 
 	{
 		this.curdisplayednode =  curdisplayednode;
+		if(horizonorvertical.toLowerCase().equals("horizon"))
+			this.horizonlayout = true;
+		else 
+			this.horizonlayout = false;
 		
 		createGui ();
 				
@@ -59,6 +63,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	protected boolean selectchanged;
 	private String tooltipselected;
 	private LocalDate dateselected;
+	private boolean horizonlayout;
+	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
@@ -68,7 +74,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	 */
 	private void createGui() 
 	{
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		if(this.horizonlayout)
+			this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		else
+			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		cjelargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
 		this.add(cjelargepnl);
@@ -100,10 +109,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selecteddate));
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemaxwk) 
+	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemaxwk,Double showhsl) 
 	{
-		cjezblargepnl.hightLightFxValues(null,cjezbdpmax, null, null) ;
-		cjelargepnl.hightLightFxValues(null,null, null, cjemaxwk) ;
+		cjezblargepnl.hightLightFxValues(null,cjezbdpmax, null, null,null) ;
+		cjelargepnl.hightLightFxValues(null,null, null, cjemaxwk,null) ;
 	}
 	@Override
 	public void highLightSpecificBarColumn(Integer columnindex) 

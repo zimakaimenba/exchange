@@ -135,10 +135,10 @@ public class SystemSetting extends JDialog
 				cbxprivatemode.setSelected(Boolean.parseBoolean(text));
 			}
 			
-			Element eletablefromserver = xmlroot.element("tablesfromserver");
-			if(eletablefromserver != null ) {
-				String text = eletablefromserver.getText();
-				tfldtablefromserver.setText(text);
+			Element elepythoninterper = xmlroot.element("pythoninterper");
+			if(elepythoninterper != null ) {
+				String text = elepythoninterper.getText();
+				tfldpythonptah.setText(text);
 			}
 			
 			
@@ -252,6 +252,15 @@ public class SystemSetting extends JDialog
 	 }
 	private void createEvents() 
 	{
+		btnchoosepython.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				choosePythonInterper ();
+				
+			}
+		});
+		
 		btnchsparsefilepath.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -505,15 +514,9 @@ public class SystemSetting extends JDialog
 				Element priavtemodesetting = rootele.addElement("privatemode");
 				priavtemodesetting.setText( String.valueOf(cbxprivatemode.isSelected() ) );
 				
-				Element elebkdpzhanbi = rootele.addElement("fengxibankuaidapanzhanbiyuzhi");
-				elebkdpzhanbi.setText(tfldbkdpmarker.getText().trim());
-				
-				Element eleggdpzhanbi = rootele.addElement("fengxigegudapanzhanbiyuzhi");
-				eleggdpzhanbi.setText(tfldggdpmarker.getText().trim());
-				
-				Element eletablefromserver = rootele.addElement("tablesfromserver");
-				eletablefromserver.setText(tfldtablefromserver.getText().trim());
-				
+				Element elebpythoninterper = rootele.addElement("pythoninterper");
+				elebpythoninterper.setText(tfldpythonptah.getText().trim());
+
 				Element elesorce = rootele.addElement("databasesources");
 				Set<String> dbsnameset = curdbmap.keySet();
 				Iterator<String> dbsit = dbsnameset.iterator();
@@ -596,7 +599,19 @@ public class SystemSetting extends JDialog
 		
 	}
 	
-//	https://dzone.com/articles/programmatically-restart-java
+	protected void choosePythonInterper() 
+	{
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+		    logger.debug(chooser.getSelectedFile());
+		    String linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+		    logger.debug(linuxpath);
+		    tfldpythonptah.setText(linuxpath);
+		}
+	}
+
+	//	https://dzone.com/articles/programmatically-restart-java
 	/** 
 	 * Sun property pointing the main class and its arguments. 
 	 * Might not be defined on non Hotspot VM implementations.
@@ -763,15 +778,13 @@ public class SystemSetting extends JDialog
 	private JLabel lblGephi;
 	private JTextField tfldgephi;
 	private JButton btngephi;
-	private JLabel label_3;
-	private JTextField tfldtablefromserver;
-	private JTextField tfldbkdpmarker;
-	private JTextField tfldggdpmarker;
+	private JTextField tfldpythonptah;
+	private JButton btnchoosepython;
 	private void initializeGui() 
 	{
 		setTitle("\u7CFB\u7EDF\u8BBE\u7F6E");
 		
-		setBounds(100, 100, 603, 842);
+		setBounds(100, 100, 603, 854);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.NORTH);
@@ -853,24 +866,16 @@ public class SystemSetting extends JDialog
 		btngephi = new JButton("");
 		btngephi.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		
-		label_3 = new JLabel("\u670D\u52A1\u5668\u8BFB\u53D6\u7684\u6570\u636E\u5E93\u8868");
+		JLabel lblPythonInterpreter = new JLabel(" Python Interpreter\u8DEF\u5F84");
 		
-		tfldtablefromserver = new JTextField();
-		tfldtablefromserver.setEnabled(false);
-		tfldtablefromserver.setEditable(false);
-		tfldtablefromserver.setColumns(10);
+		tfldpythonptah = new JTextField();
+		tfldpythonptah.setEnabled(false);
+		tfldpythonptah.setEditable(false);
+		tfldpythonptah.setColumns(10);
 		
-		JLabel label_4 = new JLabel("\u677F\u5757/\u5927\u76D8\u5360\u6BD4\u9608\u503C");
+		btnchoosepython = new JButton("");
 		
-		tfldbkdpmarker = new JTextField();
-		tfldbkdpmarker.setText("0.01");
-		tfldbkdpmarker.setColumns(10);
-		
-		JLabel label_5 = new JLabel("\u4E2A\u80A1/\u5927\u76D8\u5360\u6BD4\u9608\u503C");
-		
-		tfldggdpmarker = new JTextField();
-		tfldggdpmarker.setText("0.001");
-		tfldggdpmarker.setColumns(10);
+		btnchoosepython.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -878,26 +883,13 @@ public class SystemSetting extends JDialog
 					.addGap(26)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
+							.addComponent(saveButton)
 							.addContainerGap())
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-							.addGroup(gl_contentPanel.createSequentialGroup()
-								.addComponent(cbxprivatemode)
-								.addContainerGap())
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(label_2)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(label_4)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(tfldbkdpmarker, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(label_5)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(tfldggdpmarker, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-									.addContainerGap())
+									.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED))
 								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_contentPanel.createSequentialGroup()
 										.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -911,48 +903,57 @@ public class SystemSetting extends JDialog
 												.addComponent(lblNewLabel)
 												.addPreferredGap(ComponentPlacement.RELATED)
 												.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 453, GroupLayout.PREFERRED_SIZE))
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-													.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)
+											.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+												.addGroup(gl_contentPanel.createSequentialGroup()
+													.addComponent(label_2)
+													.addPreferredGap(ComponentPlacement.UNRELATED)
+													.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+												.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)
+												.addComponent(cbxprivatemode)
+												.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
 													.addGroup(gl_contentPanel.createSequentialGroup()
 														.addComponent(label)
-														.addGap(106)
+														.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 														.addComponent(btnrmteditdb)
-														.addGap(18)
+														.addPreferredGap(ComponentPlacement.UNRELATED)
 														.addComponent(btnrmtadd)
 														.addPreferredGap(ComponentPlacement.RELATED)
 														.addComponent(btndelrmtdbs))
-													.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
-													.addGroup(gl_contentPanel.createSequentialGroup()
-														.addGap(500)
-														.addComponent(saveButton))
-													.addGroup(gl_contentPanel.createSequentialGroup()
+													.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
 														.addComponent(lblNewLabel_2)
-														.addGap(120)
+														.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 														.addComponent(btnEditDb)
 														.addPreferredGap(ComponentPlacement.RELATED)
 														.addComponent(btmaddnewdb)
-														.addGap(18)
-														.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
-													.addGroup(gl_contentPanel.createSequentialGroup()
-														.addComponent(label_3)
 														.addPreferredGap(ComponentPlacement.RELATED)
-														.addComponent(tfldtablefromserver, GroupLayout.PREFERRED_SIZE, 361, GroupLayout.PREFERRED_SIZE))))
+														.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
+													.addComponent(scrollPanelocal, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)))
 											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(lblGephi)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(tfldgephi, GroupLayout.PREFERRED_SIZE, 364, GroupLayout.PREFERRED_SIZE)
-												.addPreferredGap(ComponentPlacement.UNRELATED)
-												.addComponent(btngephi)))
-										.addContainerGap())
+												.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+													.addGroup(gl_contentPanel.createSequentialGroup()
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(lblPythonInterpreter)
+														.addPreferredGap(ComponentPlacement.UNRELATED)
+														.addComponent(tfldpythonptah))
+													.addGroup(gl_contentPanel.createSequentialGroup()
+														.addComponent(lblGephi)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(tfldgephi, GroupLayout.PREFERRED_SIZE, 364, GroupLayout.PREFERRED_SIZE)))
+												.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+													.addGroup(gl_contentPanel.createSequentialGroup()
+														.addPreferredGap(ComponentPlacement.UNRELATED, 508, Short.MAX_VALUE)
+														.addComponent(btnchoosepython))
+													.addGroup(gl_contentPanel.createSequentialGroup()
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+															.addComponent(btnchsparsefilepath)
+															.addComponent(btngephi))))))
+										.addPreferredGap(ComponentPlacement.RELATED))
 									.addGroup(gl_contentPanel.createSequentialGroup()
 										.addComponent(label_1)
 										.addPreferredGap(ComponentPlacement.UNRELATED)
-										.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
-										.addComponent(btnchsparsefilepath)
-										.addGap(26)))))))
+										.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE))))
+							.addGap(494))))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
@@ -961,9 +962,9 @@ public class SystemSetting extends JDialog
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblNewLabel)
 						.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGap(18)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
@@ -976,48 +977,54 @@ public class SystemSetting extends JDialog
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 								.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
 								.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)))
-						.addComponent(btnchsparsefilepath))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnchsparsefilepath)))
 					.addGap(19)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblGephi, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addComponent(tfldgephi, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btngephi))
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(42)
-							.addComponent(saveButton))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(18)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblGephi, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tfldgephi, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+							.addGap(6)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblPythonInterpreter)
+								.addComponent(btnchoosepython))
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 								.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-								.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(label_4)
-								.addComponent(tfldbkdpmarker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(label_5)
-								.addComponent(tfldggdpmarker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(9)
-							.addComponent(cbxprivatemode)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblNewLabel_2)
-						.addComponent(btnEditDb)
-						.addComponent(btndeletedbs)
-						.addComponent(btmaddnewdb))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(btngephi))
 					.addGap(18)
+					.addComponent(saveButton)
+					.addGap(8)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(label)
-						.addComponent(btnrmtadd)
-						.addComponent(btndelrmtdbs)
-						.addComponent(btnrmteditdb))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label_3)
-						.addComponent(tfldtablefromserver, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(cbxprivatemode)
+							.addGap(295))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(btnEditDb)
+								.addComponent(btmaddnewdb)
+								.addComponent(btndeletedbs)
+								.addComponent(lblNewLabel_2))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+										.addComponent(label)
+										.addComponent(btndelrmtdbs)))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+										.addComponent(btnrmteditdb)
+										.addComponent(btnrmtadd))))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)))
 					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
 					.addGap(35))
 		);

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<ZhongDianGuanZhuanBanKuaiDetail>
+  <DaLeiBanKuai daleiname="成长股">
+    <Item tdxbk="880581" tdxbkcode="880581" addedTime="18-03-05" officallyselected="true">880581</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="特定时间"/>
+  <DaLeiBanKuai daleiname="重组收购"/>
+  <DaLeiBanKuai daleiname="稳定白马"/>
+  <DaLeiBanKuai daleiname="黑天鹅受益"/>
+  <DaLeiBanKuai daleiname="业绩反转"/>
+  <DaLeiBanKuai daleiname="重大事件"/>
+  <DaLeiBanKuai daleiname="涨价概念"/>
+  <DaLeiBanKuai daleiname="次新股"/>
+  <DaLeiBanKuai daleiname="超跌周期"/>
+  <DaLeiBanKuai daleiname="券商参券"/>
+  <DaLeiBanKuai daleiname="国新政策"/>
+</ZhongDianGuanZhuanBanKuaiDetail>

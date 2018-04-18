@@ -16,9 +16,10 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 
 public class StockGivenPeriodDataItem extends OHLCItem
 {											  
-
-	
-	public StockGivenPeriodDataItem(String nodecode,String datatype,RegularTimePeriod period, double open, double high, double low, double close,double myamount,double myvolumne) 
+	public StockGivenPeriodDataItem(String nodecode,String datatype,RegularTimePeriod period,
+			double open, double high, double low, double close,double myamount,double myvolumne,
+			Double huanshoulv,Double zongshizhi,Double liutongshizhi
+			) 
 	{
 		super (period,open,high,low,close);
 		
@@ -26,6 +27,9 @@ public class StockGivenPeriodDataItem extends OHLCItem
 		this.myownchengjiaoer = myamount;
 		this.myownchengjiaoliang = myvolumne;
 		this.regulartimeperiod = period;
+		this.huanshoulv = huanshoulv;
+		this.zongshizhi = zongshizhi;
+		this.liutongshizhi = liutongshizhi;
 		
 		if( datatype.toUpperCase().equals(StockGivenPeriodDataItem.DAY)
 				|| datatype.toUpperCase().equals(StockGivenPeriodDataItem.WEEK)
@@ -52,6 +56,9 @@ public class StockGivenPeriodDataItem extends OHLCItem
 	private Integer ggbkcjezhanbimaxweek;  //个股板块占比最大周
 	private Integer ggbkcjemaxweek; //个股板块成交额最大周
 	private Double ggbkcjegrowthratetosuperbankuaicjegrowth;  //个股板块成交量贡献率
+	private Double huanshoulv;
+	private Double zongshizhi;
+	private Double liutongshizhi;
 	
 	private Integer hasfengxijieguo; //有加入关注，分析结果等等
 	
@@ -262,6 +269,24 @@ public class StockGivenPeriodDataItem extends OHLCItem
 	public void setGgBkCjeDifferenceWithLastPeriod(double d) {
 		this.ggbkcjedifference = d;
 		
+	}
+	public Double getHuanshoulv() {
+		return huanshoulv;
+	}
+	public void setHuanshoulv(Double huanshoulv) {
+		this.huanshoulv = huanshoulv;
+	}
+	public Double getZongshizhi() {
+		return zongshizhi;
+	}
+	public void setZongshizhi(Double zongshizhi) {
+		this.zongshizhi = zongshizhi;
+	}
+	public Double getLiutongshizhi() {
+		return liutongshizhi;
+	}
+	public void setLiutongshizhi(Double liutongshizhi) {
+		this.liutongshizhi = liutongshizhi;
 	}
 
 	

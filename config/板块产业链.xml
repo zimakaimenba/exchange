@@ -1,0 +1,1269 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<两交易所>
+  <BanKuai bkname="染料涂料" bkcode="880340" Type="4"/>
+  <BanKuai bkname="水运" bkcode="880461" Type="4"/>
+  <BanKuai bkname="风能" bkcode="880582" Type="4"/>
+  <BanKuai bkname="空气治理" bkcode="880581" Type="4"/>
+  <BanKuai bkname="铁路" bkcode="880460" Type="4"/>
+  <BanKuai bkname="智能交通" bkcode="880580" Type="4"/>
+  <BanKuai bkname="湖北板块" bkcode="880219" Type="4"/>
+  <BanKuai bkname="橡胶" bkcode="880339" Type="4"/>
+  <BanKuai bkname="深圳板块" bkcode="880218" Type="4"/>
+  <BanKuai bkname="塑料" bkcode="880338" Type="4"/>
+  <BanKuai bkname="山西板块" bkcode="880217" Type="4"/>
+  <BanKuai bkname="运输服务" bkcode="880459" Type="4"/>
+  <BanKuai bkname="地热能" bkcode="880575" Type="4"/>
+  <BanKuai bkname="广东板块" bkcode="880212" Type="4"/>
+  <BanKuai bkname="水务" bkcode="880454" Type="4"/>
+  <BanKuai bkname="公共交通" bkcode="880453" Type="4"/>
+  <BanKuai bkname="河北板块" bkcode="880211" Type="4"/>
+  <BanKuai bkname="苹果概念" bkcode="880574" Type="4">
+    <SubBanKuai subbkname="SIP模组" subbkcode="8805741" suoshubkcode="880574" Type="5">
+      <gegu geguname="环旭电子" gegucode="601231" suoshubkcode="880574" Type="6"/>
+    </SubBanKuai>
+    <SubBanKuai subbkname="光摄像头" subbkcode="8805743" suoshubkcode="880574" Type="5">
+      <SubBanKuai subbkname="光摄像头模组" subbkcode="8805744" suoshubkcode="880574" Type="5">
+        <gegu geguname="欧菲科技" gegucode="002456" suoshubkcode="880574" Type="6"/>
+      </SubBanKuai>
+      <SubBanKuai subbkname="镜头" subbkcode="8805745" suoshubkcode="880574" Type="5"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="广西板块" bkcode="880210" Type="4"/>
+  <BanKuai bkname="摘帽概念" bkcode="880573" Type="4"/>
+  <BanKuai bkname="电信运营" bkcode="880452" Type="4"/>
+  <BanKuai bkname="化纤" bkcode="880330" Type="4"/>
+  <BanKuai bkname="新零售" bkcode="880572" Type="4"/>
+  <BanKuai bkname="上海板块" bkcode="880216" Type="4"/>
+  <BanKuai bkname="农药化肥" bkcode="880337" Type="4"/>
+  <BanKuai bkname="生态农业" bkcode="880579" Type="4"/>
+  <BanKuai bkname="化工原料" bkcode="880336" Type="4">
+    <SubBanKuai subbkname="PVC" subbkcode="8803363" suoshubkcode="880336" Type="5"/>
+    <SubBanKuai subbkname="甲醇" subbkcode="8803364" suoshubkcode="880336" Type="5"/>
+    <SubBanKuai subbkname="OLED" subbkcode="8803361" suoshubkcode="880336" Type="5">
+      <SubBanKuai subbkname="水汽阻隔膜" subbkcode="8803362" suoshubkcode="880336" Type="5">
+        <gegu geguname="康得新" gegucode="002450" suoshubkcode="880336" Type="6"/>
+      </SubBanKuai>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="山东板块" bkcode="880215" Type="4"/>
+  <BanKuai bkname="建筑节能" bkcode="880578" Type="4"/>
+  <BanKuai bkname="化工" bkcode="880335" Type="4"/>
+  <BanKuai bkname="宁夏板块" bkcode="880214" Type="4"/>
+  <BanKuai bkname="安防服务" bkcode="880577" Type="4"/>
+  <BanKuai bkname="环境保护" bkcode="880456" Type="4"/>
+  <BanKuai bkname="供气供热" bkcode="880455" Type="4"/>
+  <BanKuai bkname="河南板块" bkcode="880213" Type="4"/>
+  <BanKuai bkname="重组概念" bkcode="880576" Type="4"/>
+  <BanKuai bkname="碳纤维" bkcode="880571" Type="4"/>
+  <BanKuai bkname="海水淡化" bkcode="880570" Type="4"/>
+  <BanKuai bkname="天津板块" bkcode="880209" Type="4"/>
+  <BanKuai bkname="小金属" bkcode="880329" Type="4">
+    <SubBanKuai subbkname="铼" subbkcode="8803297" suoshubkcode="880329" Type="5">
+      <gegu geguname="炼石有色" gegucode="000697" suoshubkcode="880329" Type="6"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="陕西板块" bkcode="880208" Type="4"/>
+  <BanKuai bkname="北京板块" bkcode="880207" Type="4"/>
+  <BanKuai bkname="黄金" bkcode="880328" Type="4"/>
+  <BanKuai bkname="3D打印" bkcode="880569" Type="4"/>
+  <BanKuai bkname="电器仪表" bkcode="880448" Type="4"/>
+  <BanKuai bkname="铅锌" bkcode="880327" Type="4"/>
+  <BanKuai bkname="青海板块" bkcode="880206" Type="4"/>
+  <BanKuai bkname="奢侈品" bkcode="880564" Type="4"/>
+  <BanKuai bkname="纺织机械" bkcode="880443" Type="4"/>
+  <BanKuai bkname="黑龙江" bkcode="880201" Type="4"/>
+  <BanKuai bkname="轻工机械" bkcode="880442" Type="4"/>
+  <BanKuai bkname="钢加工" bkcode="880321" Type="4"/>
+  <BanKuai bkname="食品安全" bkcode="880563" Type="4"/>
+  <BanKuai bkname="化工机械" bkcode="880441" Type="4"/>
+  <BanKuai bkname="特种钢" bkcode="880320" Type="4"/>
+  <BanKuai bkname="高校背景" bkcode="880562" Type="4"/>
+  <BanKuai bkname="工业机械" bkcode="880440" Type="4"/>
+  <BanKuai bkname="工程机械" bkcode="880447" Type="4"/>
+  <BanKuai bkname="生物质能" bkcode="880568" Type="4"/>
+  <BanKuai bkname="辽宁板块" bkcode="880205" Type="4"/>
+  <BanKuai bkname="铝" bkcode="880326" Type="4"/>
+  <BanKuai bkname="三沙概念" bkcode="880567" Type="4"/>
+  <BanKuai bkname="甘肃板块" bkcode="880204" Type="4"/>
+  <BanKuai bkname="电气设备" bkcode="880446" Type="4"/>
+  <BanKuai bkname="铜" bkcode="880325" Type="4"/>
+  <BanKuai bkname="专用机械" bkcode="880445" Type="4">
+    <SubBanKuai subbkname="芯片设备" subbkcode="8804451" suoshubkcode="880445" Type="5">
+      <gegu geguname="长川科技" gegucode="300604" suoshubkcode="880445" Type="6"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="吉林板块" bkcode="880203" Type="4"/>
+  <BanKuai bkname="图们江" bkcode="880566" Type="4"/>
+  <BanKuai bkname="有色" bkcode="880324" Type="4"/>
+  <BanKuai bkname="农用机械" bkcode="880444" Type="4"/>
+  <BanKuai bkname="新疆板块" bkcode="880202" Type="4"/>
+  <BanKuai bkname="送转潜力" bkcode="880565" Type="4"/>
+  <BanKuai bkname="全国地产" bkcode="880483" Type="4"/>
+  <BanKuai bkname="渔业" bkcode="880362" Type="4"/>
+  <BanKuai bkname="房地产" bkcode="880482" Type="4"/>
+  <BanKuai bkname="种植业" bkcode="880361" Type="4"/>
+  <BanKuai bkname="农林牧渔" bkcode="880360" Type="4"/>
+  <BanKuai bkname="粤港澳" bkcode="880919" Type="4"/>
+  <BanKuai bkname="全息概念" bkcode="880918" Type="4"/>
+  <BanKuai bkname="基因概念" bkcode="880913" Type="4"/>
+  <BanKuai bkname="电商概念" bkcode="880912" Type="4"/>
+  <BanKuai bkname="雄安新区" bkcode="880911" Type="4"/>
+  <BanKuai bkname="草甘膦" bkcode="880910" Type="4"/>
+  <BanKuai bkname="央企改革" bkcode="880917" Type="4">
+    <SubBanKuai subbkname="铁路总公司" subbkcode="8809174" suoshubkcode="880917" Type="5"/>
+    <SubBanKuai subbkname="上海国资" subbkcode="8809173" suoshubkcode="880917" Type="5"/>
+    <SubBanKuai subbkname="三峡集团" subbkcode="8809172" suoshubkcode="880917" Type="5"/>
+    <SubBanKuai subbkname="中国建材集团" subbkcode="8809175" suoshubkcode="880917" Type="5"/>
+  </BanKuai>
+  <BanKuai bkname="国产软件" bkcode="880916" Type="4"/>
+  <BanKuai bkname="职业教育" bkcode="880915" Type="4"/>
+  <BanKuai bkname="养老概念" bkcode="880597" Type="4"/>
+  <BanKuai bkname="建筑" bkcode="880476" Type="4"/>
+  <BanKuai bkname="日用化工" bkcode="880355" Type="4"/>
+  <BanKuai bkname="体育概念" bkcode="880596" Type="4"/>
+  <BanKuai bkname="内蒙板块" bkcode="880232" Type="4"/>
+  <BanKuai bkname="多元金融" bkcode="880474" Type="4"/>
+  <BanKuai bkname="民营银行" bkcode="880595" Type="4"/>
+  <BanKuai bkname="一带一路" bkcode="880594" Type="4"/>
+  <BanKuai bkname="保险" bkcode="880473" Type="4"/>
+  <BanKuai bkname="西藏板块" bkcode="880231" Type="4"/>
+  <BanKuai bkname="民营医院" bkcode="880599" Type="4"/>
+  <BanKuai bkname="装修装饰" bkcode="880478" Type="4"/>
+  <BanKuai bkname="博彩概念" bkcode="880598" Type="4"/>
+  <BanKuai bkname="建筑工程" bkcode="880477" Type="4"/>
+  <BanKuai bkname="婴童概念" bkcode="880593" Type="4"/>
+  <BanKuai bkname="海南板块" bkcode="880230" Type="4"/>
+  <BanKuai bkname="矿物制品" bkcode="880351" Type="4"/>
+  <BanKuai bkname="证券" bkcode="880472" Type="4"/>
+  <BanKuai bkname="互联金融" bkcode="880592" Type="4"/>
+  <BanKuai bkname="造纸" bkcode="880350" Type="4"/>
+  <BanKuai bkname="银行" bkcode="880471" Type="4"/>
+  <BanKuai bkname="上海自贸" bkcode="880591" Type="4"/>
+  <BanKuai bkname="网络游戏" bkcode="880590" Type="4"/>
+  <BanKuai bkname="燃料电池" bkcode="880909" Type="4"/>
+  <BanKuai bkname="在线教育" bkcode="880908" Type="4"/>
+  <BanKuai bkname="蓝宝石" bkcode="880907" Type="4"/>
+  <BanKuai bkname="特斯拉" bkcode="880902" Type="4"/>
+  <BanKuai bkname="信息安全" bkcode="880901" Type="4"/>
+  <BanKuai bkname="贵州板块" bkcode="880229" Type="4"/>
+  <BanKuai bkname="浙江板块" bkcode="880228" Type="4"/>
+  <BanKuai bkname="智能家居" bkcode="880906" Type="4"/>
+  <BanKuai bkname="超导概念" bkcode="880905" Type="4"/>
+  <BanKuai bkname="智能机器" bkcode="880904" Type="4"/>
+  <BanKuai bkname="水域改革" bkcode="880903" Type="4"/>
+  <BanKuai bkname="交通设施" bkcode="880465" Type="4"/>
+  <BanKuai bkname="四川板块" bkcode="880223" Type="4"/>
+  <BanKuai bkname="土地流转" bkcode="880586" Type="4"/>
+  <BanKuai bkname="建材" bkcode="880344" Type="4"/>
+  <BanKuai bkname="仓储物流" bkcode="880464" Type="4"/>
+  <BanKuai bkname="江西板块" bkcode="880222" Type="4"/>
+  <BanKuai bkname="风沙治理" bkcode="880585" Type="4"/>
+  <BanKuai bkname="公路" bkcode="880463" Type="4"/>
+  <BanKuai bkname="湖南板块" bkcode="880221" Type="4"/>
+  <BanKuai bkname="石墨烯" bkcode="880584" Type="4"/>
+  <BanKuai bkname="充电桩" bkcode="880583" Type="4">
+    <SubBanKuai subbkname="储能" subbkcode="8805831" suoshubkcode="880583" Type="5">
+      <gegu geguname="科陆电子" gegucode="002121" suoshubkcode="880583" Type="6"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="福建板块" bkcode="880220" Type="4"/>
+  <BanKuai bkname="空运" bkcode="880462" Type="4"/>
+  <BanKuai bkname="云南板块" bkcode="880227" Type="4"/>
+  <BanKuai bkname="其他建材" bkcode="880348" Type="4"/>
+  <BanKuai bkname="智能穿戴" bkcode="880589" Type="4"/>
+  <BanKuai bkname="江苏板块" bkcode="880226" Type="4"/>
+  <BanKuai bkname="港口" bkcode="880468" Type="4"/>
+  <BanKuai bkname="玻璃" bkcode="880347" Type="4"/>
+  <BanKuai bkname="机场" bkcode="880467" Type="4"/>
+  <BanKuai bkname="水泥" bkcode="880346" Type="4"/>
+  <BanKuai bkname="绿色照明" bkcode="880588" Type="4"/>
+  <BanKuai bkname="重庆板块" bkcode="880225" Type="4"/>
+  <BanKuai bkname="安徽板块" bkcode="880224" Type="4"/>
+  <BanKuai bkname="聚氨酯" bkcode="880587" Type="4"/>
+  <BanKuai bkname="路桥" bkcode="880466" Type="4"/>
+  <BanKuai bkname="陶瓷" bkcode="880345" Type="4"/>
+  <BanKuai bkname="传媒娱乐" bkcode="880418" Type="4"/>
+  <BanKuai bkname="股权激励" bkcode="880539" Type="4"/>
+  <BanKuai bkname="参股金融" bkcode="880538" Type="4"/>
+  <BanKuai bkname="核电核能" bkcode="880537" Type="4"/>
+  <BanKuai bkname="多晶硅" bkcode="880536" Type="4"/>
+  <BanKuai bkname="出版业" bkcode="880419" Type="4"/>
+  <BanKuai bkname="医药商业" bkcode="880410" Type="4"/>
+  <BanKuai bkname="武汉规划" bkcode="880531" Type="4"/>
+  <BanKuai bkname="三网融合" bkcode="880530" Type="4"/>
+  <BanKuai bkname="商贸代理" bkcode="880414" Type="4"/>
+  <BanKuai bkname="稀土永磁" bkcode="880535" Type="4">
+    <SubBanKuai subbkname="稀土永磁材料" subbkcode="8805351" suoshubkcode="880535" Type="5">
+      <SubBanKuai subbkname="镨钕" subbkcode="8805354" suoshubkcode="880535" Type="5"/>
+    </SubBanKuai>
+    <SubBanKuai subbkname="稀土发光材料" subbkcode="8805352" suoshubkcode="880535" Type="5">
+      <SubBanKuai subbkname="氧化铈" subbkcode="8805353" suoshubkcode="880535" Type="5"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="批发业" bkcode="880413" Type="4"/>
+  <BanKuai bkname="锂电池" bkcode="880534" Type="4">
+    <SubBanKuai subbkname="三元材料" subbkcode="8805341" suoshubkcode="880534" Type="5">
+      <SubBanKuai subbkname="钴" subbkcode="8805342" suoshubkcode="880534" Type="5"/>
+      <SubBanKuai subbkname="锂" subbkcode="8805343" suoshubkcode="880534" Type="5">
+        <gegu geguname="天齐锂业" gegucode="002466" suoshubkcode="880534" Type="6"/>
+        <gegu geguname="雅化集团" gegucode="002497" suoshubkcode="880534" Type="6"/>
+      </SubBanKuai>
+      <SubBanKuai subbkname="负极材料" subbkcode="8805345" suoshubkcode="880534" Type="5">
+        <SubBanKuai subbkname="硅碳负极" subbkcode="8805349" suoshubkcode="880534" Type="5">
+          <gegu geguname="中国宝安" gegucode="000009" suoshubkcode="880534" Type="6"/>
+        </SubBanKuai>
+        <SubBanKuai subbkname="石墨负极" subbkcode="8805348" suoshubkcode="880534" Type="5">
+          <gegu geguname="中科电气" gegucode="300035" suoshubkcode="880534" Type="6"/>
+        </SubBanKuai>
+      </SubBanKuai>
+      <SubBanKuai subbkname="正极材料" subbkcode="8805344" suoshubkcode="880534" Type="5">
+        <gegu geguname="当升科技" gegucode="300073" suoshubkcode="880534" Type="6"/>
+        <gegu geguname="厦门钨业" gegucode="600549" suoshubkcode="880534" Type="6"/>
+      </SubBanKuai>
+      <SubBanKuai subbkname="电解液" subbkcode="8805347" suoshubkcode="880534" Type="5">
+        <gegu geguname="多氟多" gegucode="002407" suoshubkcode="880534" Type="6"/>
+        <gegu geguname="天赐材料" gegucode="002709" suoshubkcode="880534" Type="6"/>
+      </SubBanKuai>
+      <SubBanKuai subbkname="隔膜" subbkcode="8805346" suoshubkcode="880534" Type="5">
+        <gegu geguname="创新股份" gegucode="002812" suoshubkcode="880534" Type="6"/>
+        <gegu geguname="中材科技" gegucode="002080" suoshubkcode="880534" Type="6"/>
+        <gegu geguname="星源材质" gegucode="300568" suoshubkcode="880534" Type="6"/>
+      </SubBanKuai>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="商品城" bkcode="880412" Type="4"/>
+  <BanKuai bkname="物联网" bkcode="880533" Type="4">
+    <SubBanKuai subbkname="物联网安全" subbkcode="8805333" suoshubkcode="880533" Type="5"/>
+  </BanKuai>
+  <BanKuai bkname="其他商业" bkcode="880411" Type="4"/>
+  <BanKuai bkname="整体上市" bkcode="880532" Type="4"/>
+  <BanKuai bkname="环渤海" bkcode="880528" Type="4"/>
+  <BanKuai bkname="百货" bkcode="880407" Type="4"/>
+  <BanKuai bkname="商业连锁" bkcode="880406" Type="4"/>
+  <BanKuai bkname="珠三角" bkcode="880527" Type="4"/>
+  <BanKuai bkname="长三角" bkcode="880526" Type="4"/>
+  <BanKuai bkname="铁路基建" bkcode="880525" Type="4"/>
+  <BanKuai bkname="电器连锁" bkcode="880409" Type="4"/>
+  <BanKuai bkname="次新股" bkcode="880529" Type="4">
+    <SubBanKuai subbkname="深次新股" subbkcode="8805291" suoshubkcode="880529" Type="5"/>
+    <SubBanKuai subbkname="次新叠加" subbkcode="8805292" suoshubkcode="880529" Type="5"/>
+  </BanKuai>
+  <BanKuai bkname="超市连锁" bkcode="880408" Type="4"/>
+  <BanKuai bkname="MSCI成份" bkcode="880883" Type="4"/>
+  <BanKuai bkname="智能电网" bkcode="880520" Type="4"/>
+  <BanKuai bkname="久不分红" bkcode="880882" Type="4"/>
+  <BanKuai bkname="上周弱势" bkcode="880881" Type="4"/>
+  <BanKuai bkname="上周强势" bkcode="880880" Type="4"/>
+  <BanKuai bkname="中成药" bkcode="880403" Type="4"/>
+  <BanKuai bkname="含可转债" bkcode="880524" Type="4"/>
+  <BanKuai bkname="生物制药" bkcode="880402" Type="4"/>
+  <BanKuai bkname="黄河三角" bkcode="880523" Type="4"/>
+  <BanKuai bkname="化学制药" bkcode="880401" Type="4"/>
+  <BanKuai bkname="成渝特区" bkcode="880522" Type="4"/>
+  <BanKuai bkname="医药" bkcode="880400" Type="4"/>
+  <BanKuai bkname="近期异动" bkcode="880884" Type="4"/>
+  <BanKuai bkname="黄金概念" bkcode="880521" Type="4"/>
+  <BanKuai bkname="高端装备" bkcode="880560" Type="4"/>
+  <BanKuai bkname="普钢" bkcode="880319" Type="4">
+    <SubBanKuai subbkname="中厚板" subbkcode="8803192" suoshubkcode="880319" Type="5"/>
+    <SubBanKuai subbkname="螺纹钢" subbkcode="8803191" suoshubkcode="880319" Type="5"/>
+    <SubBanKuai subbkname="冷热轧" subbkcode="8803194" suoshubkcode="880319" Type="5"/>
+    <SubBanKuai subbkname="硅钢" subbkcode="8803193" suoshubkcode="880319" Type="5"/>
+  </BanKuai>
+  <BanKuai bkname="机械基件" bkcode="880439" Type="4"/>
+  <BanKuai bkname="钢铁" bkcode="880318" Type="4"/>
+  <BanKuai bkname="宽带提速" bkcode="880559" Type="4"/>
+  <BanKuai bkname="机床制造" bkcode="880438" Type="4"/>
+  <BanKuai bkname="节能" bkcode="880558" Type="4"/>
+  <BanKuai bkname="通用机械" bkcode="880437" Type="4"/>
+  <BanKuai bkname="石油开采" bkcode="880311" Type="4"/>
+  <BanKuai bkname="运输设备" bkcode="880432" Type="4"/>
+  <BanKuai bkname="页岩气" bkcode="880553" Type="4"/>
+  <BanKuai bkname="石油" bkcode="880310" Type="4"/>
+  <BanKuai bkname="船舶" bkcode="880431" Type="4"/>
+  <BanKuai bkname="金融改革" bkcode="880552" Type="4"/>
+  <BanKuai bkname="涉矿概念" bkcode="880551" Type="4"/>
+  <BanKuai bkname="航空" bkcode="880430" Type="4"/>
+  <BanKuai bkname="保障房" bkcode="880550" Type="4"/>
+  <BanKuai bkname="生物疫苗" bkcode="880557" Type="4"/>
+  <BanKuai bkname="IP变现" bkcode="880556" Type="4"/>
+  <BanKuai bkname="石油贸易" bkcode="880313" Type="4"/>
+  <BanKuai bkname="东亚自贸" bkcode="880554" Type="4"/>
+  <BanKuai bkname="石油加工" bkcode="880312" Type="4"/>
+  <BanKuai bkname="新型电力" bkcode="880308" Type="4"/>
+  <BanKuai bkname="可燃冰" bkcode="880549" Type="4"/>
+  <BanKuai bkname="火力发电" bkcode="880307" Type="4"/>
+  <BanKuai bkname="新三板" bkcode="880548" Type="4"/>
+  <BanKuai bkname="水力发电" bkcode="880306" Type="4"/>
+  <BanKuai bkname="旅游景点" bkcode="880426" Type="4"/>
+  <BanKuai bkname="电力" bkcode="880305" Type="4"/>
+  <BanKuai bkname="电子支付" bkcode="880547" Type="4"/>
+  <BanKuai bkname="广告包装" bkcode="880421" Type="4"/>
+  <BanKuai bkname="水利建设" bkcode="880542" Type="4"/>
+  <BanKuai bkname="影视音像" bkcode="880420" Type="4"/>
+  <BanKuai bkname="触摸屏" bkcode="880541" Type="4"/>
+  <BanKuai bkname="创投概念" bkcode="880540" Type="4"/>
+  <BanKuai bkname="卫星导航" bkcode="880546" Type="4"/>
+  <BanKuai bkname="旅游服务" bkcode="880425" Type="4"/>
+  <BanKuai bkname="云计算" bkcode="880545" Type="4"/>
+  <BanKuai bkname="旅游" bkcode="880424" Type="4"/>
+  <BanKuai bkname="焦炭加工" bkcode="880303" Type="4"/>
+  <BanKuai bkname="太阳能" bkcode="880544" Type="4"/>
+  <BanKuai bkname="煤炭开采" bkcode="880302" Type="4">
+    <SubBanKuai subbkname="动力煤" subbkcode="8803022" suoshubkcode="880302" Type="5"/>
+    <SubBanKuai subbkname="喷吹煤" subbkcode="8803023" suoshubkcode="880302" Type="5"/>
+    <SubBanKuai subbkname="焦煤" subbkcode="8803021" suoshubkcode="880302" Type="5"/>
+  </BanKuai>
+  <BanKuai bkname="酒店餐饮" bkcode="880423" Type="4"/>
+  <BanKuai bkname="外资背景" bkcode="880543" Type="4"/>
+  <BanKuai bkname="文教休闲" bkcode="880422" Type="4"/>
+  <BanKuai bkname="煤炭" bkcode="880301" Type="4"/>
+  <BanKuai bkname="国开持股" bkcode="880858" Type="4"/>
+  <BanKuai bkname="证金持股" bkcode="880857" Type="4">
+    <SubBanKuai subbkname="持股创业板" subbkcode="8808571" suoshubkcode="880857" Type="5">
+      <gegu geguname="东软载波" gegucode="300183" suoshubkcode="880857" Type="6"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="定增实施" bkcode="880856" Type="4"/>
+  <BanKuai bkname="定增获准" bkcode="880855" Type="4"/>
+  <BanKuai bkname="员工持股" bkcode="880859" Type="4"/>
+  <BanKuai bkname="定增预案" bkcode="880850" Type="4"/>
+  <BanKuai bkname="预高送转" bkcode="880854" Type="4"/>
+  <BanKuai bkname="中字头" bkcode="880853" Type="4"/>
+  <BanKuai bkname="参股新股" bkcode="880852" Type="4"/>
+  <BanKuai bkname="已高送转" bkcode="880851" Type="4"/>
+  <BanKuai bkname="行业龙头" bkcode="880847" Type="4"/>
+  <BanKuai bkname="破净资产" bkcode="880846" Type="4"/>
+  <BanKuai bkname="高股息股" bkcode="880845" Type="4"/>
+  <BanKuai bkname="预计扭亏" bkcode="880844" Type="4"/>
+  <BanKuai bkname="股份回购" bkcode="880849" Type="4"/>
+  <BanKuai bkname="被举牌" bkcode="880848" Type="4"/>
+  <BanKuai bkname="业绩预降" bkcode="880843" Type="4"/>
+  <BanKuai bkname="业绩预升" bkcode="880842" Type="4"/>
+  <BanKuai bkname="油气改革" bkcode="880600" Type="4"/>
+  <BanKuai bkname="ST板块" bkcode="880516" Type="4"/>
+  <BanKuai bkname="低价股" bkcode="880879" Type="4"/>
+  <BanKuai bkname="百元股" bkcode="880878" Type="4"/>
+  <BanKuai bkname="通达信88" bkcode="880515" Type="4"/>
+  <BanKuai bkname="户数减少" bkcode="880877" Type="4"/>
+  <BanKuai bkname="低碳经济" bkcode="880519" Type="4"/>
+  <BanKuai bkname="最近复牌" bkcode="880872" Type="4"/>
+  <BanKuai bkname="TDX 信息" bkcode="880992" Type="4"/>
+  <BanKuai bkname="股权分散" bkcode="880871" Type="4"/>
+  <BanKuai bkname="TDX 建设" bkcode="880991" Type="4"/>
+  <BanKuai bkname="两年新股" bkcode="880870" Type="4"/>
+  <BanKuai bkname="TDX 金融" bkcode="880990" Type="4"/>
+  <BanKuai bkname="户数增加" bkcode="880876" Type="4"/>
+  <BanKuai bkname="海峡西岸" bkcode="880513" Type="4"/>
+  <BanKuai bkname="中小银行" bkcode="880875" Type="4"/>
+  <BanKuai bkname="承诺注资" bkcode="880511" Type="4"/>
+  <BanKuai bkname="昨曾涨停" bkcode="880874" Type="4"/>
+  <BanKuai bkname="个人持股" bkcode="880873" Type="4"/>
+  <BanKuai bkname="5G概念" bkcode="880506" Type="4"/>
+  <BanKuai bkname="股权转让" bkcode="880869" Type="4"/>
+  <BanKuai bkname="TDX 交运" bkcode="880989" Type="4"/>
+  <BanKuai bkname="稀缺资源" bkcode="880505" Type="4"/>
+  <BanKuai bkname="高贝塔值" bkcode="880868" Type="4"/>
+  <BanKuai bkname="TDX 公用" bkcode="880988" Type="4"/>
+  <BanKuai bkname="昨高换手" bkcode="880867" Type="4"/>
+  <BanKuai bkname="长株潭" bkcode="880504" Type="4"/>
+  <BanKuai bkname="TDX 制造" bkcode="880987" Type="4"/>
+  <BanKuai bkname="皖江区域" bkcode="880503" Type="4"/>
+  <BanKuai bkname="近期新低" bkcode="880866" Type="4"/>
+  <BanKuai bkname="军工航天" bkcode="880507" Type="4"/>
+  <BanKuai bkname="TDX 材料" bkcode="880982" Type="4"/>
+  <BanKuai bkname="连续亏损" bkcode="880861" Type="4"/>
+  <BanKuai bkname="TDX 能源" bkcode="880981" Type="4"/>
+  <BanKuai bkname="扣非亏损" bkcode="880860" Type="4"/>
+  <BanKuai bkname="TDX 服务" bkcode="880986" Type="4"/>
+  <BanKuai bkname="含B股" bkcode="880502" Type="4"/>
+  <BanKuai bkname="近期新高" bkcode="880865" Type="4"/>
+  <BanKuai bkname="TDX 商贸" bkcode="880985" Type="4"/>
+  <BanKuai bkname="含H股" bkcode="880501" Type="4"/>
+  <BanKuai bkname="昨日振荡" bkcode="880864" Type="4"/>
+  <BanKuai bkname="TDX 可选" bkcode="880984" Type="4"/>
+  <BanKuai bkname="昨日涨停" bkcode="880863" Type="4"/>
+  <BanKuai bkname="TDX 消费" bkcode="880983" Type="4"/>
+  <BanKuai bkname="梧桐持股" bkcode="880862" Type="4"/>
+  <BanKuai bkname="酿酒" bkcode="880380" Type="4"/>
+  <BanKuai bkname="红黄药酒" bkcode="880383" Type="4"/>
+  <BanKuai bkname="啤酒" bkcode="880382" Type="4"/>
+  <BanKuai bkname="白酒" bkcode="880381" Type="4"/>
+  <BanKuai bkname="智能电视" bkcode="880935" Type="4"/>
+  <BanKuai bkname="智能医疗" bkcode="880933" Type="4"/>
+  <BanKuai bkname="农村金融" bkcode="880932" Type="4"/>
+  <BanKuai bkname="无人机" bkcode="880939" Type="4"/>
+  <BanKuai bkname="污水处理" bkcode="880938" Type="4"/>
+  <BanKuai bkname="网贷概念" bkcode="880937" Type="4"/>
+  <BanKuai bkname="猪肉" bkcode="880936" Type="4"/>
+  <BanKuai bkname="综合类" bkcode="880497" Type="4"/>
+  <BanKuai bkname="食品" bkcode="880375" Type="4"/>
+  <BanKuai bkname="软饮料" bkcode="880374" Type="4"/>
+  <BanKuai bkname="装饰园林" bkcode="880931" Type="4"/>
+  <BanKuai bkname="汽车电子" bkcode="880930" Type="4"/>
+  <BanKuai bkname="通信设备" bkcode="880490" Type="4">
+    <SubBanKuai subbkname="手机天线" subbkcode="8804901" suoshubkcode="880490" Type="5">
+      <gegu geguname="信维通信" gegucode="300136" suoshubkcode="880490" Type="6"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="乳制品" bkcode="880373" Type="4"/>
+  <BanKuai bkname="互联网" bkcode="880494" Type="4"/>
+  <BanKuai bkname="软件服务" bkcode="880493" Type="4"/>
+  <BanKuai bkname="食品饮料" bkcode="880372" Type="4"/>
+  <BanKuai bkname="元器件" bkcode="880492" Type="4">
+    <SubBanKuai subbkname="OLED" subbkcode="8804921" suoshubkcode="880492" Type="5">
+      <SubBanKuai subbkname="PI基材" subbkcode="8804922" suoshubkcode="880492" Type="5">
+        <gegu geguname="丹邦科技" gegucode="002618" suoshubkcode="880492" Type="6"/>
+      </SubBanKuai>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="半导体" bkcode="880491" Type="4"/>
+  <BanKuai bkname="基金独门" bkcode="880809" Type="4"/>
+  <BanKuai bkname="维生素" bkcode="880929" Type="4">
+    <SubBanKuai subbkname="泛酸钙" subbkcode="8809291" suoshubkcode="880929" Type="5">
+      <gegu geguname="亿帆医药" gegucode="002019" suoshubkcode="880929" Type="6"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="高管减持" bkcode="880808" Type="4"/>
+  <BanKuai bkname="券商重仓" bkcode="880803" Type="4"/>
+  <BanKuai bkname="QFII重仓" bkcode="880802" Type="4"/>
+  <BanKuai bkname="赛马概念" bkcode="880923" Type="4"/>
+  <BanKuai bkname="基金重仓" bkcode="880801" Type="4"/>
+  <BanKuai bkname="钛金属" bkcode="880922" Type="4"/>
+  <BanKuai bkname="阿里概念" bkcode="880921" Type="4"/>
+  <BanKuai bkname="抗流感" bkcode="880928" Type="4"/>
+  <BanKuai bkname="高管增持" bkcode="880807" Type="4"/>
+  <BanKuai bkname="抗癌" bkcode="880927" Type="4"/>
+  <BanKuai bkname="社保重仓" bkcode="880806" Type="4"/>
+  <BanKuai bkname="保险重仓" bkcode="880805" Type="4"/>
+  <BanKuai bkname="固废处理" bkcode="880926" Type="4"/>
+  <BanKuai bkname="信托重仓" bkcode="880804" Type="4"/>
+  <BanKuai bkname="特钢" bkcode="880925" Type="4"/>
+  <BanKuai bkname="农业综合" bkcode="880366" Type="4"/>
+  <BanKuai bkname="房产服务" bkcode="880486" Type="4"/>
+  <BanKuai bkname="园区开发" bkcode="880485" Type="4"/>
+  <BanKuai bkname="饲料" bkcode="880364" Type="4"/>
+  <BanKuai bkname="区域地产" bkcode="880484" Type="4"/>
+  <BanKuai bkname="林业" bkcode="880363" Type="4"/>
+  <BanKuai bkname="免疫治疗" bkcode="880920" Type="4"/>
+  <BanKuai bkname="服饰" bkcode="880369" Type="4"/>
+  <BanKuai bkname="电脑设备" bkcode="880489" Type="4"/>
+  <BanKuai bkname="纺织" bkcode="880368" Type="4"/>
+  <BanKuai bkname="纺织服饰" bkcode="880367" Type="4"/>
+  <BanKuai bkname="配股股" bkcode="880836" Type="4"/>
+  <BanKuai bkname="绩优股" bkcode="880835" Type="4"/>
+  <BanKuai bkname="微利股" bkcode="880834" Type="4"/>
+  <BanKuai bkname="亏损股" bkcode="880833" Type="4"/>
+  <BanKuai bkname="活跃股" bkcode="880837" Type="4"/>
+  <BanKuai bkname="家居用品" bkcode="880399" Type="4"/>
+  <BanKuai bkname="医疗保健" bkcode="880398" Type="4"/>
+  <BanKuai bkname="新能源车" bkcode="880951" Type="4"/>
+  <BanKuai bkname="军民融合" bkcode="880950" Type="4"/>
+  <BanKuai bkname="汽车整车" bkcode="880391" Type="4"/>
+  <BanKuai bkname="汽车类" bkcode="880390" Type="4"/>
+  <BanKuai bkname="摩托车" bkcode="880394" Type="4"/>
+  <BanKuai bkname="汽车服务" bkcode="880393" Type="4"/>
+  <BanKuai bkname="汽车配件" bkcode="880392" Type="4"/>
+  <BanKuai bkname="区块链" bkcode="880946" Type="4"/>
+  <BanKuai bkname="OLED概念" bkcode="880945" Type="4">
+    <SubBanKuai subbkname="水汽阻隔膜" subbkcode="8809451" suoshubkcode="880945" Type="5"/>
+    <SubBanKuai subbkname="传输和发光材料" subbkcode="8809452" suoshubkcode="880945" Type="5">
+      <gegu geguname="万润股份" gegucode="002643" suoshubkcode="880945" Type="6"/>
+      <gegu geguname="濮阳惠成" gegucode="300481" suoshubkcode="880945" Type="6"/>
+      <gegu geguname="强力新材" gegucode="300429" suoshubkcode="880945" Type="6"/>
+    </SubBanKuai>
+    <SubBanKuai subbkname="薄膜" subbkcode="8809454" suoshubkcode="880945" Type="5"/>
+    <SubBanKuai subbkname="面板" subbkcode="8809453" suoshubkcode="880945" Type="5">
+      <gegu geguname="深天马Ａ" gegucode="000050" suoshubkcode="880945" Type="6"/>
+      <gegu geguname="京东方Ａ" gegucode="000725" suoshubkcode="880945" Type="6"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="高市盈率" bkcode="880824" Type="4"/>
+  <BanKuai bkname="小盘股" bkcode="880823" Type="4"/>
+  <BanKuai bkname="无人驾驶" bkcode="880944" Type="4"/>
+  <BanKuai bkname="量子通信" bkcode="880943" Type="4"/>
+  <BanKuai bkname="低市净率" bkcode="880829" Type="4"/>
+  <BanKuai bkname="智慧城市" bkcode="880949" Type="4"/>
+  <BanKuai bkname="人工智能" bkcode="880948" Type="4"/>
+  <BanKuai bkname="高市净率" bkcode="880827" Type="4"/>
+  <BanKuai bkname="低市盈率" bkcode="880826" Type="4"/>
+  <BanKuai bkname="债转股" bkcode="880947" Type="4"/>
+  <BanKuai bkname="家用电器" bkcode="880387" Type="4"/>
+  <BanKuai bkname="大盘股" bkcode="880821" Type="4"/>
+  <BanKuai bkname="虚拟现实" bkcode="880942" Type="4"/>
+  <BanKuai bkname="跨境电商" bkcode="880941" Type="4"/>
+  <BanKuai bkname="PPP模式" bkcode="880940" Type="4"/>
+  <BanKuai bkname="全指价值" bkcode="000058" Type="4"/>
+  <BanKuai bkname="300有色" bkcode="000850" Type="4"/>
+  <BanKuai bkname="等权90" bkcode="000971" Type="4"/>
+  <BanKuai bkname="全指成长" bkcode="000057" Type="4"/>
+  <BanKuai bkname="上证国企" bkcode="000056" Type="4"/>
+  <BanKuai bkname="上证地企" bkcode="000055" Type="4"/>
+  <BanKuai bkname="500原料" bkcode="000854" Type="4"/>
+  <BanKuai bkname="钱江30" bkcode="000975" Type="4"/>
+  <BanKuai bkname="CSSW丝路" bkcode="000853" Type="4"/>
+  <BanKuai bkname="800金融" bkcode="000974" Type="4"/>
+  <BanKuai bkname="中证1000" bkcode="000852" Type="4"/>
+  <BanKuai bkname="全R成长" bkcode="000059" Type="4"/>
+  <BanKuai bkname="百发100" bkcode="000851" Type="4"/>
+  <BanKuai bkname="500信息" bkcode="000858" Type="4"/>
+  <BanKuai bkname="大宗商品" bkcode="000979" Type="4"/>
+  <BanKuai bkname="500医药" bkcode="000857" Type="4"/>
+  <BanKuai bkname="医药100" bkcode="000978" Type="4"/>
+  <BanKuai bkname="500工业" bkcode="000856" Type="4"/>
+  <BanKuai bkname="内地低碳" bkcode="000977" Type="4"/>
+  <BanKuai bkname="央视500" bkcode="000855" Type="4"/>
+  <BanKuai bkname="沪企债30" bkcode="000061" Type="4"/>
+  <BanKuai bkname="全R价值" bkcode="000060" Type="4"/>
+  <BanKuai bkname="上证龙头" bkcode="000065" Type="4"/>
+  <BanKuai bkname="非周期" bkcode="000064" Type="4"/>
+  <BanKuai bkname="上证周期" bkcode="000063" Type="4"/>
+  <BanKuai bkname="上证沪企" bkcode="000062" Type="4"/>
+  <BanKuai bkname="上证全指" bkcode="000047" Type="4"/>
+  <BanKuai bkname="上证中小" bkcode="000046" Type="4"/>
+  <BanKuai bkname="上证小盘" bkcode="000045" Type="4"/>
+  <BanKuai bkname="上证中盘" bkcode="000044" Type="4"/>
+  <BanKuai bkname="中证新兴" bkcode="000964" Type="4"/>
+  <BanKuai bkname="800等权" bkcode="000842" Type="4"/>
+  <BanKuai bkname="中证下游" bkcode="000963" Type="4"/>
+  <BanKuai bkname="上证民企" bkcode="000049" Type="4"/>
+  <BanKuai bkname="800医药" bkcode="000841" Type="4"/>
+  <BanKuai bkname="责任指数" bkcode="000048" Type="4"/>
+  <BanKuai bkname="中证上游" bkcode="000961" Type="4"/>
+  <BanKuai bkname="腾讯济安" bkcode="000847" Type="4"/>
+  <BanKuai bkname="ESG100" bkcode="000846" Type="4"/>
+  <BanKuai bkname="基本400" bkcode="000966" Type="4"/>
+  <BanKuai bkname="300非银" bkcode="000849" Type="4"/>
+  <BanKuai bkname="300非周" bkcode="000969" Type="4"/>
+  <BanKuai bkname="50等权" bkcode="000050" Type="4"/>
+  <BanKuai bkname="新兴成指" bkcode="000171" Type="4"/>
+  <BanKuai bkname="50AH优选" bkcode="000170" Type="4"/>
+  <BanKuai bkname="上证海外" bkcode="000054" Type="4"/>
+  <BanKuai bkname="180基本" bkcode="000053" Type="4"/>
+  <BanKuai bkname="50基本" bkcode="000052" Type="4"/>
+  <BanKuai bkname="180等权" bkcode="000051" Type="4"/>
+  <BanKuai bkname="全指信息" bkcode="000993" Type="4"/>
+  <BanKuai bkname="公用等权" bkcode="000079" Type="4"/>
+  <BanKuai bkname="全指金融" bkcode="000992" Type="4"/>
+  <BanKuai bkname="电信等权" bkcode="000078" Type="4"/>
+  <BanKuai bkname="全指医药" bkcode="000991" Type="4"/>
+  <BanKuai bkname="信息等权" bkcode="000077" Type="4"/>
+  <BanKuai bkname="全指消费" bkcode="000990" Type="4"/>
+  <BanKuai bkname="两岸三地" bkcode="000999" Type="4"/>
+  <BanKuai bkname="中证TMT" bkcode="000998" Type="4"/>
+  <BanKuai bkname="消费80" bkcode="000069" Type="4"/>
+  <BanKuai bkname="500等权" bkcode="000982" Type="4"/>
+  <BanKuai bkname="上证资源" bkcode="000068" Type="4"/>
+  <BanKuai bkname="上证新兴" bkcode="000067" Type="4"/>
+  <BanKuai bkname="上证商品" bkcode="000066" Type="4"/>
+  <BanKuai bkname="上海国企" bkcode="000865" Type="4"/>
+  <BanKuai bkname="全指能源" bkcode="000986" Type="4"/>
+  <BanKuai bkname="CS精准医" bkcode="000863" Type="4"/>
+  <BanKuai bkname="300等权" bkcode="000984" Type="4"/>
+  <BanKuai bkname="智能资产" bkcode="000983" Type="4"/>
+  <BanKuai bkname="HK银行" bkcode="000869" Type="4"/>
+  <BanKuai bkname="全指可选" bkcode="000989" Type="4"/>
+  <BanKuai bkname="港中小企" bkcode="000867" Type="4"/>
+  <BanKuai bkname="全指材料" bkcode="000987" Type="4"/>
+  <BanKuai bkname="工业等权" bkcode="000072" Type="4"/>
+  <BanKuai bkname="材料等权" bkcode="000071" Type="4"/>
+  <BanKuai bkname="能源等权" bkcode="000070" Type="4"/>
+  <BanKuai bkname="金融等权" bkcode="000076" Type="4"/>
+  <BanKuai bkname="医药等权" bkcode="000075" Type="4"/>
+  <BanKuai bkname="消费等权" bkcode="000074" Type="4"/>
+  <BanKuai bkname="可选等权" bkcode="000073" Type="4"/>
+  <BanKuai bkname="180高贝" bkcode="000135" Type="4"/>
+  <BanKuai bkname="中小300" bkcode="399008" Type="4"/>
+  <BanKuai bkname="企债指数" bkcode="000013" Type="4"/>
+  <BanKuai bkname="上证银行" bkcode="000134" Type="4"/>
+  <BanKuai bkname="深证300" bkcode="399007" Type="4"/>
+  <BanKuai bkname="国债指数" bkcode="000012" Type="4"/>
+  <BanKuai bkname="上证150" bkcode="000133" Type="4"/>
+  <BanKuai bkname="基金指数" bkcode="000011" Type="4"/>
+  <BanKuai bkname="上证100" bkcode="000132" Type="4"/>
+  <BanKuai bkname="深证200" bkcode="399009" Type="4"/>
+  <BanKuai bkname="180金融" bkcode="000018" Type="4"/>
+  <BanKuai bkname="上证转债" bkcode="000139" Type="4"/>
+  <BanKuai bkname="中证可选" bkcode="000931" Type="4"/>
+  <BanKuai bkname="深证100R" bkcode="399004" Type="4"/>
+  <BanKuai bkname="新综指" bkcode="000017" Type="4"/>
+  <BanKuai bkname="380低贝" bkcode="000138" Type="4"/>
+  <BanKuai bkname="成份Ｂ指" bkcode="399003" Type="4"/>
+  <BanKuai bkname="上证50" bkcode="000016" Type="4"/>
+  <BanKuai bkname="380高贝" bkcode="000137" Type="4"/>
+  <BanKuai bkname="创业板指" bkcode="399006" Type="4"/>
+  <BanKuai bkname="红利指数" bkcode="000015" Type="4"/>
+  <BanKuai bkname="180低贝" bkcode="000136" Type="4"/>
+  <BanKuai bkname="中小板指" bkcode="399005" Type="4"/>
+  <BanKuai bkname="细分医药" bkcode="000814" Type="4"/>
+  <BanKuai bkname="中证信息" bkcode="000935" Type="4"/>
+  <BanKuai bkname="中证金融" bkcode="000934" Type="4"/>
+  <BanKuai bkname="中证医药" bkcode="000933" Type="4"/>
+  <BanKuai bkname="治理指数" bkcode="000019" Type="4"/>
+  <BanKuai bkname="中证消费" bkcode="000932" Type="4"/>
+  <BanKuai bkname="民企200" bkcode="000939" Type="4"/>
+  <BanKuai bkname="兴证海峡" bkcode="000817" Type="4"/>
+  <BanKuai bkname="细分地产" bkcode="000816" Type="4"/>
+  <BanKuai bkname="有色金属" bkcode="000819" Type="4"/>
+  <BanKuai bkname="深证1000" bkcode="399011" Type="4"/>
+  <BanKuai bkname="深证700" bkcode="399010" Type="4"/>
+  <BanKuai bkname="深市精选" bkcode="399013" Type="4"/>
+  <BanKuai bkname="创业300" bkcode="399012" Type="4"/>
+  <BanKuai bkname="180治理" bkcode="000021" Type="4"/>
+  <BanKuai bkname="380稳定" bkcode="000142" Type="4"/>
+  <BanKuai bkname="中型综指" bkcode="000020" Type="4"/>
+  <BanKuai bkname="380动态" bkcode="000141" Type="4"/>
+  <BanKuai bkname="Ｂ股指数" bkcode="000003" Type="4"/>
+  <BanKuai bkname="Ａ股指数" bkcode="000002" Type="4"/>
+  <BanKuai bkname="180动态" bkcode="000123" Type="4"/>
+  <BanKuai bkname="创业创新" bkcode="399018" Type="4"/>
+  <BanKuai bkname="上证指数" bkcode="000001" Type="4"/>
+  <BanKuai bkname="农业主题" bkcode="000122" Type="4"/>
+  <BanKuai bkname="医药主题" bkcode="000121" Type="4"/>
+  <BanKuai bkname="公用指数" bkcode="000007" Type="4"/>
+  <BanKuai bkname="380基本" bkcode="000128" Type="4"/>
+  <BanKuai bkname="中小创新" bkcode="399015" Type="4"/>
+  <BanKuai bkname="地产指数" bkcode="000006" Type="4"/>
+  <BanKuai bkname="商业指数" bkcode="000005" Type="4"/>
+  <BanKuai bkname="消费50" bkcode="000126" Type="4"/>
+  <BanKuai bkname="SME创新" bkcode="399017" Type="4"/>
+  <BanKuai bkname="工业指数" bkcode="000004" Type="4"/>
+  <BanKuai bkname="180稳定" bkcode="000125" Type="4"/>
+  <BanKuai bkname="深证创新" bkcode="399016" Type="4"/>
+  <BanKuai bkname="500沪市" bkcode="000802" Type="4"/>
+  <BanKuai bkname="上证380" bkcode="000009" Type="4"/>
+  <BanKuai bkname="中证红利" bkcode="000922" Type="4"/>
+  <BanKuai bkname="综合指数" bkcode="000008" Type="4"/>
+  <BanKuai bkname="180波动" bkcode="000129" Type="4"/>
+  <BanKuai bkname="食品饮料" bkcode="000807" Type="4"/>
+  <BanKuai bkname="中证能源" bkcode="000928" Type="4"/>
+  <BanKuai bkname="消费服务" bkcode="000806" Type="4"/>
+  <BanKuai bkname="A股资源" bkcode="000805" Type="4"/>
+  <BanKuai bkname="基本面50" bkcode="000925" Type="4"/>
+  <BanKuai bkname="医药生物" bkcode="000808" Type="4"/>
+  <BanKuai bkname="上证180" bkcode="000010" Type="4"/>
+  <BanKuai bkname="上证高新" bkcode="000131" Type="4"/>
+  <BanKuai bkname="380波动" bkcode="000130" Type="4"/>
+  <BanKuai bkname="上证消费" bkcode="000036" Type="4"/>
+  <BanKuai bkname="上证可选" bkcode="000035" Type="4"/>
+  <BanKuai bkname="上证工业" bkcode="000034" Type="4"/>
+  <BanKuai bkname="市值百强" bkcode="000155" Type="4"/>
+  <BanKuai bkname="上证材料" bkcode="000033" Type="4"/>
+  <BanKuai bkname="中证转债" bkcode="000832" Type="4"/>
+  <BanKuai bkname="上证信息" bkcode="000039" Type="4"/>
+  <BanKuai bkname="300地产" bkcode="000952" Type="4"/>
+  <BanKuai bkname="上证金融" bkcode="000038" Type="4"/>
+  <BanKuai bkname="沪股通" bkcode="000159" Type="4"/>
+  <BanKuai bkname="300银行" bkcode="000951" Type="4"/>
+  <BanKuai bkname="上证医药" bkcode="000037" Type="4"/>
+  <BanKuai bkname="上证环保" bkcode="000158" Type="4"/>
+  <BanKuai bkname="300基建" bkcode="000950" Type="4"/>
+  <BanKuai bkname="300运输" bkcode="000957" Type="4"/>
+  <BanKuai bkname="中高企债" bkcode="000833" Type="4"/>
+  <BanKuai bkname="银河99" bkcode="000959" Type="4"/>
+  <BanKuai bkname="创业成长" bkcode="000958" Type="4"/>
+  <BanKuai bkname="沪新丝路" bkcode="000160" Type="4"/>
+  <BanKuai bkname="超大盘" bkcode="000043" Type="4"/>
+  <BanKuai bkname="上证央企" bkcode="000042" Type="4"/>
+  <BanKuai bkname="上证公用" bkcode="000041" Type="4"/>
+  <BanKuai bkname="沪互联+" bkcode="000162" Type="4"/>
+  <BanKuai bkname="上证电信" bkcode="000040" Type="4"/>
+  <BanKuai bkname="沪中国造" bkcode="000161" Type="4"/>
+  <BanKuai bkname="180基建" bkcode="000025" Type="4"/>
+  <BanKuai bkname="优势制造" bkcode="000146" Type="4"/>
+  <BanKuai bkname="优势资源" bkcode="000145" Type="4"/>
+  <BanKuai bkname="沪公司债" bkcode="000022" Type="4"/>
+  <BanKuai bkname="180价值" bkcode="000029" Type="4"/>
+  <BanKuai bkname="300红利" bkcode="000821" Type="4"/>
+  <BanKuai bkname="180成长" bkcode="000028" Type="4"/>
+  <BanKuai bkname="180红利" bkcode="000149" Type="4"/>
+  <BanKuai bkname="180运输" bkcode="000027" Type="4"/>
+  <BanKuai bkname="消费领先" bkcode="000148" Type="4"/>
+  <BanKuai bkname="财富大盘" bkcode="000940" Type="4"/>
+  <BanKuai bkname="180资源" bkcode="000026" Type="4"/>
+  <BanKuai bkname="优势消费" bkcode="000147" Type="4"/>
+  <BanKuai bkname="800有色" bkcode="000823" Type="4"/>
+  <BanKuai bkname="内地资源" bkcode="000944" Type="4"/>
+  <BanKuai bkname="300高贝" bkcode="000828" Type="4"/>
+  <BanKuai bkname="中证环保" bkcode="000827" Type="4"/>
+  <BanKuai bkname="深成指R" bkcode="399002" Type="4"/>
+  <BanKuai bkname="深证成指" bkcode="399001" Type="4"/>
+  <BanKuai bkname="上证能源" bkcode="000032" Type="4"/>
+  <BanKuai bkname="上民红利" bkcode="000153" Type="4"/>
+  <BanKuai bkname="180R价值" bkcode="000031" Type="4"/>
+  <BanKuai bkname="上央红利" bkcode="000152" Type="4"/>
+  <BanKuai bkname="180R成长" bkcode="000030" Type="4"/>
+  <BanKuai bkname="上国红利" bkcode="000151" Type="4"/>
+  <BanKuai bkname="380红利" bkcode="000150" Type="4"/>
+  <BanKuai bkname="380公用" bkcode="000113" Type="4"/>
+  <BanKuai bkname="380电信" bkcode="000112" Type="4"/>
+  <BanKuai bkname="380信息" bkcode="000111" Type="4"/>
+  <BanKuai bkname="380金融" bkcode="000110" Type="4"/>
+  <BanKuai bkname="380成长" bkcode="000117" Type="4"/>
+  <BanKuai bkname="信用100" bkcode="000116" Type="4"/>
+  <BanKuai bkname="380等权" bkcode="000115" Type="4"/>
+  <BanKuai bkname="持续产业" bkcode="000114" Type="4"/>
+  <BanKuai bkname="300医药" bkcode="000913" Type="4"/>
+  <BanKuai bkname="300消费" bkcode="000912" Type="4"/>
+  <BanKuai bkname="380R成长" bkcode="000119" Type="4"/>
+  <BanKuai bkname="300可选" bkcode="000911" Type="4"/>
+  <BanKuai bkname="380价值" bkcode="000118" Type="4"/>
+  <BanKuai bkname="300工业" bkcode="000910" Type="4"/>
+  <BanKuai bkname="300公用" bkcode="000917" Type="4"/>
+  <BanKuai bkname="300金融" bkcode="000914" Type="4"/>
+  <BanKuai bkname="300价值" bkcode="000919" Type="4"/>
+  <BanKuai bkname="300成长" bkcode="000918" Type="4"/>
+  <BanKuai bkname="380R价值" bkcode="000120" Type="4"/>
+  <BanKuai bkname="沪投资品" bkcode="000102" Type="4"/>
+  <BanKuai bkname="5年信用" bkcode="000101" Type="4"/>
+  <BanKuai bkname="上证F500" bkcode="000100" Type="4"/>
+  <BanKuai bkname="380工业" bkcode="000106" Type="4"/>
+  <BanKuai bkname="380材料" bkcode="000105" Type="4"/>
+  <BanKuai bkname="380能源" bkcode="000104" Type="4"/>
+  <BanKuai bkname="沪消费品" bkcode="000103" Type="4"/>
+  <BanKuai bkname="380医药" bkcode="000109" Type="4"/>
+  <BanKuai bkname="小康指数" bkcode="000901" Type="4"/>
+  <BanKuai bkname="380消费" bkcode="000108" Type="4"/>
+  <BanKuai bkname="380可选" bkcode="000107" Type="4"/>
+  <BanKuai bkname="中证800" bkcode="000906" Type="4"/>
+  <BanKuai bkname="中证500" bkcode="000905" Type="4"/>
+  <BanKuai bkname="中证200" bkcode="000904" Type="4"/>
+  <BanKuai bkname="中证100" bkcode="000903" Type="4"/>
+  <BanKuai bkname="300材料" bkcode="000909" Type="4"/>
+  <BanKuai bkname="300能源" bkcode="000908" Type="4"/>
+  <BanKuai bkname="上证F300" bkcode="000099" Type="4"/>
+  <BanKuai bkname="新兴综指" bkcode="000891" Type="4"/>
+  <BanKuai bkname="上证流通" bkcode="000090" Type="4"/>
+  <BanKuai bkname="上证上游" bkcode="000094" Type="4"/>
+  <BanKuai bkname="180分层" bkcode="000093" Type="4"/>
+  <BanKuai bkname="资源50" bkcode="000092" Type="4"/>
+  <BanKuai bkname="沪财中小" bkcode="000091" Type="4"/>
+  <BanKuai bkname="上证F200" bkcode="000098" Type="4"/>
+  <BanKuai bkname="高端装备" bkcode="000097" Type="4"/>
+  <BanKuai bkname="上证下游" bkcode="000096" Type="4"/>
+  <BanKuai bkname="上证中游" bkcode="000095" Type="4"/>
+  <BanKuai bkname="Ｂ股指数" bkcode="999997" Type="4"/>
+  <BanKuai bkname="Ａ股指数" bkcode="999998" Type="4"/>
+  <BanKuai bkname="沪深300" bkcode="000300" Type="4"/>
+  <BanKuai bkname="上证指数" bkcode="999999" Type="4"/>
+  <BanKuai bkname="次新开板" bkcode="880885" Type="4"/>
+  <BanKuai bkname="TDX 综企" bkcode="880993" Type="4"/>
+  <BanKuai bkname="芯片" bkcode="880952" Type="4">
+    <SubBanKuai subbkname="芯片设备" subbkcode="8809522" suoshubkcode="880952" Type="5">
+      <gegu geguname="北方华创" gegucode="002371" suoshubkcode="880952" Type="6"/>
+    </SubBanKuai>
+    <SubBanKuai subbkname="封装封测" subbkcode="8809521" suoshubkcode="880952" Type="5">
+      <gegu geguname="通富微电" gegucode="002156" suoshubkcode="880952" Type="6"/>
+      <gegu geguname="华天科技" gegucode="002185" suoshubkcode="880952" Type="6"/>
+      <gegu geguname="长电科技" gegucode="600584" suoshubkcode="880952" Type="6"/>
+    </SubBanKuai>
+    <SubBanKuai subbkname="芯片设计" subbkcode="8809523" suoshubkcode="880952" Type="5">
+      <gegu geguname="兆易创新" gegucode="603986" suoshubkcode="880952" Type="6"/>
+      <gegu geguname="富瀚微" gegucode="300613" suoshubkcode="880952" Type="6"/>
+    </SubBanKuai>
+  </BanKuai>
+  <BanKuai bkname="昨日较强" bkcode="880886" Type="4"/>
+  <BanKuai bkname="租购同权" bkcode="880953" Type="4"/>
+  <BanKuai bkname="成长40" bkcode="399326" Type="4"/>
+  <BanKuai bkname="深证治理" bkcode="399328" Type="4"/>
+  <BanKuai bkname="国证治理" bkcode="399322" Type="4"/>
+  <BanKuai bkname="深证红利" bkcode="399324" Type="4"/>
+  <BanKuai bkname="深证100" bkcode="399330" Type="4"/>
+  <BanKuai bkname="深证民营" bkcode="399337" Type="4"/>
+  <BanKuai bkname="深证科技" bkcode="399339" Type="4"/>
+  <BanKuai bkname="中小板R" bkcode="399333" Type="4"/>
+  <BanKuai bkname="深证央企" bkcode="399335" Type="4"/>
+  <BanKuai bkname="深证责任" bkcode="399341" Type="4"/>
+  <BanKuai bkname="综合" bkcode="880685" Type="4"/>
+  <BanKuai bkname="传媒" bkcode="880684" Type="4"/>
+  <BanKuai bkname="中小板综" bkcode="399101" Type="4"/>
+  <BanKuai bkname="电脑应用" bkcode="880683" Type="4"/>
+  <BanKuai bkname="新指" bkcode="399100" Type="4"/>
+  <BanKuai bkname="网络服务" bkcode="880682" Type="4"/>
+  <BanKuai bkname="深证转债" bkcode="399307" Type="4"/>
+  <BanKuai bkname="深证ETF" bkcode="399306" Type="4"/>
+  <BanKuai bkname="深信用债" bkcode="399301" Type="4"/>
+  <BanKuai bkname="沪深300" bkcode="399300" Type="4"/>
+  <BanKuai bkname="国证2000" bkcode="399303" Type="4"/>
+  <BanKuai bkname="深公司债" bkcode="399302" Type="4"/>
+  <BanKuai bkname="央视50" bkcode="399550" Type="4"/>
+  <BanKuai bkname="国证50" bkcode="399310" Type="4"/>
+  <BanKuai bkname="央视成长" bkcode="399552" Type="4"/>
+  <BanKuai bkname="央视创新" bkcode="399551" Type="4"/>
+  <BanKuai bkname="巨潮小盘" bkcode="399316" Type="4"/>
+  <BanKuai bkname="巨潮中盘" bkcode="399315" Type="4"/>
+  <BanKuai bkname="央视文化" bkcode="399557" Type="4"/>
+  <BanKuai bkname="国证Ｂ指" bkcode="399318" Type="4"/>
+  <BanKuai bkname="国证Ａ指" bkcode="399317" Type="4"/>
+  <BanKuai bkname="国证300" bkcode="399312" Type="4"/>
+  <BanKuai bkname="央视治理" bkcode="399554" Type="4"/>
+  <BanKuai bkname="国证1000" bkcode="399311" Type="4"/>
+  <BanKuai bkname="央视回报" bkcode="399553" Type="4"/>
+  <BanKuai bkname="巨潮大盘" bkcode="399314" Type="4"/>
+  <BanKuai bkname="央视生态" bkcode="399556" Type="4"/>
+  <BanKuai bkname="巨潮100" bkcode="399313" Type="4"/>
+  <BanKuai bkname="央视责任" bkcode="399555" Type="4"/>
+  <BanKuai bkname="资源优势" bkcode="399319" Type="4"/>
+  <BanKuai bkname="国证红利" bkcode="399321" Type="4"/>
+  <BanKuai bkname="国证服务" bkcode="399320" Type="4"/>
+  <BanKuai bkname="巨潮地产" bkcode="399367" Type="4"/>
+  <BanKuai bkname="国证大宗" bkcode="399366" Type="4"/>
+  <BanKuai bkname="CBN-兴全" bkcode="399369" Type="4"/>
+  <BanKuai bkname="国证军工" bkcode="399368" Type="4"/>
+  <BanKuai bkname="燃气" bkcode="880659" Type="4"/>
+  <BanKuai bkname="水务" bkcode="880658" Type="4"/>
+  <BanKuai bkname="电力" bkcode="880657" Type="4"/>
+  <BanKuai bkname="中盘成长" bkcode="399374" Type="4"/>
+  <BanKuai bkname="中药" bkcode="880652" Type="4"/>
+  <BanKuai bkname="大盘价值" bkcode="399373" Type="4"/>
+  <BanKuai bkname="化学制药" bkcode="880651" Type="4"/>
+  <BanKuai bkname="小盘成长" bkcode="399376" Type="4"/>
+  <BanKuai bkname="其他轻工" bkcode="880650" Type="4"/>
+  <BanKuai bkname="中盘价值" bkcode="399375" Type="4"/>
+  <BanKuai bkname="国证成长" bkcode="399370" Type="4"/>
+  <BanKuai bkname="医疗服务" bkcode="880656" Type="4"/>
+  <BanKuai bkname="医疗器械" bkcode="880655" Type="4"/>
+  <BanKuai bkname="大盘成长" bkcode="399372" Type="4"/>
+  <BanKuai bkname="医药商业" bkcode="880654" Type="4"/>
+  <BanKuai bkname="国证价值" bkcode="399371" Type="4"/>
+  <BanKuai bkname="生物制品" bkcode="880653" Type="4"/>
+  <BanKuai bkname="南方低碳" bkcode="399378" Type="4"/>
+  <BanKuai bkname="配股预案" bkcode="880890" Type="4"/>
+  <BanKuai bkname="小盘价值" bkcode="399377" Type="4"/>
+  <BanKuai bkname="国证基金" bkcode="399379" Type="4"/>
+  <BanKuai bkname="家用轻工" bkcode="880649" Type="4"/>
+  <BanKuai bkname="包装印刷" bkcode="880648" Type="4"/>
+  <BanKuai bkname="造纸" bkcode="880647" Type="4"/>
+  <BanKuai bkname="不活跃股" bkcode="880889" Type="4"/>
+  <BanKuai bkname="服装家纺" bkcode="880646" Type="4"/>
+  <BanKuai bkname="1000消费" bkcode="399385" Type="4"/>
+  <BanKuai bkname="白色家电" bkcode="880641" Type="4"/>
+  <BanKuai bkname="1000可选" bkcode="399384" Type="4"/>
+  <BanKuai bkname="电脑设备" bkcode="880640" Type="4"/>
+  <BanKuai bkname="1000金融" bkcode="399387" Type="4"/>
+  <BanKuai bkname="1000医药" bkcode="399386" Type="4"/>
+  <BanKuai bkname="1000能源" bkcode="399381" Type="4"/>
+  <BanKuai bkname="纺织制造" bkcode="880645" Type="4"/>
+  <BanKuai bkname="次新超跌" bkcode="880887" Type="4"/>
+  <BanKuai bkname="国证ETF" bkcode="399380" Type="4"/>
+  <BanKuai bkname="饮料制造" bkcode="880644" Type="4"/>
+  <BanKuai bkname="1000工业" bkcode="399383" Type="4"/>
+  <BanKuai bkname="食品加工" bkcode="880643" Type="4"/>
+  <BanKuai bkname="1000材料" bkcode="399382" Type="4"/>
+  <BanKuai bkname="视听器材" bkcode="880642" Type="4"/>
+  <BanKuai bkname="深证Ａ指" bkcode="399107" Type="4"/>
+  <BanKuai bkname="深证综指" bkcode="399106" Type="4"/>
+  <BanKuai bkname="深证价值" bkcode="399348" Type="4"/>
+  <BanKuai bkname="深证Ｂ指" bkcode="399108" Type="4"/>
+  <BanKuai bkname="乐富指数" bkcode="399103" Type="4"/>
+  <BanKuai bkname="通信运营" bkcode="880681" Type="4"/>
+  <BanKuai bkname="创业板综" bkcode="399102" Type="4"/>
+  <BanKuai bkname="深证300R" bkcode="399344" Type="4"/>
+  <BanKuai bkname="餐饮" bkcode="880680" Type="4"/>
+  <BanKuai bkname="深证成长" bkcode="399346" Type="4"/>
+  <BanKuai bkname="旅游综合" bkcode="880679" Type="4"/>
+  <BanKuai bkname="深报综指" bkcode="399352" Type="4"/>
+  <BanKuai bkname="保险" bkcode="880674" Type="4"/>
+  <BanKuai bkname="深报指数" bkcode="399351" Type="4"/>
+  <BanKuai bkname="证券" bkcode="880673" Type="4"/>
+  <BanKuai bkname="分析师指" bkcode="399354" Type="4"/>
+  <BanKuai bkname="多元金融" bkcode="880672" Type="4"/>
+  <BanKuai bkname="国证物流" bkcode="399353" Type="4"/>
+  <BanKuai bkname="银行" bkcode="880671" Type="4"/>
+  <BanKuai bkname="酒店" bkcode="880678" Type="4"/>
+  <BanKuai bkname="景点" bkcode="880677" Type="4"/>
+  <BanKuai bkname="皖江30" bkcode="399350" Type="4"/>
+  <BanKuai bkname="贸易" bkcode="880676" Type="4"/>
+  <BanKuai bkname="零售" bkcode="880675" Type="4"/>
+  <BanKuai bkname="国证基建" bkcode="399359" Type="4"/>
+  <BanKuai bkname="珠三角" bkcode="399356" Type="4"/>
+  <BanKuai bkname="园区开发" bkcode="880670" Type="4"/>
+  <BanKuai bkname="长三角" bkcode="399355" Type="4"/>
+  <BanKuai bkname="泰达指数" bkcode="399358" Type="4"/>
+  <BanKuai bkname="环渤海" bkcode="399357" Type="4"/>
+  <BanKuai bkname="房产开发" bkcode="880669" Type="4"/>
+  <BanKuai bkname="物流" bkcode="880668" Type="4"/>
+  <BanKuai bkname="计算机指" bkcode="399363" Type="4"/>
+  <BanKuai bkname="公交" bkcode="880663" Type="4"/>
+  <BanKuai bkname="国证民营" bkcode="399362" Type="4"/>
+  <BanKuai bkname="高速公路" bkcode="880662" Type="4"/>
+  <BanKuai bkname="国证农业" bkcode="399365" Type="4"/>
+  <BanKuai bkname="港口" bkcode="880661" Type="4"/>
+  <BanKuai bkname="中金消费" bkcode="399364" Type="4"/>
+  <BanKuai bkname="环保工程" bkcode="880660" Type="4"/>
+  <BanKuai bkname="铁路运输" bkcode="880667" Type="4"/>
+  <BanKuai bkname="航运" bkcode="880666" Type="4"/>
+  <BanKuai bkname="国证商业" bkcode="399361" Type="4"/>
+  <BanKuai bkname="机场" bkcode="880665" Type="4"/>
+  <BanKuai bkname="新硬件" bkcode="399360" Type="4"/>
+  <BanKuai bkname="航空运输" bkcode="880664" Type="4"/>
+  <BanKuai bkname="添富快钱" bkcode="159005" Type="4"/>
+  <BanKuai bkname="国证通信" bkcode="399389" Type="4"/>
+  <BanKuai bkname="1000信息" bkcode="399388" Type="4"/>
+  <BanKuai bkname="1000公用" bkcode="399390" Type="4"/>
+  <BanKuai bkname="国证食品" bkcode="399396" Type="4"/>
+  <BanKuai bkname="国证有色" bkcode="399395" Type="4"/>
+  <BanKuai bkname="绩效指数" bkcode="399398" Type="4"/>
+  <BanKuai bkname="OCT文化" bkcode="399397" Type="4"/>
+  <BanKuai bkname="国证新兴" bkcode="399392" Type="4"/>
+  <BanKuai bkname="投资时钟" bkcode="399391" Type="4"/>
+  <BanKuai bkname="国证医药" bkcode="399394" Type="4"/>
+  <BanKuai bkname="国证地产" bkcode="399393" Type="4"/>
+  <BanKuai bkname="中经GDP" bkcode="399399" Type="4"/>
+  <BanKuai bkname="中小总值" bkcode="880021" Type="4"/>
+  <BanKuai bkname="Ａ主均价" bkcode="880014" Type="4"/>
+  <BanKuai bkname="Ａ主平均" bkcode="880013" Type="4"/>
+  <BanKuai bkname="Ａ主流通" bkcode="880012" Type="4"/>
+  <BanKuai bkname="Ａ主总值" bkcode="880011" Type="4"/>
+  <BanKuai bkname="Ａ主活筹" bkcode="880017" Type="4"/>
+  <BanKuai bkname="Ａ主停板" bkcode="880016" Type="4"/>
+  <BanKuai bkname="Ａ主涨跌" bkcode="880015" Type="4"/>
+  <BanKuai bkname="平均股价" bkcode="880003" Type="4"/>
+  <BanKuai bkname="流通市值" bkcode="880002" Type="4"/>
+  <BanKuai bkname="总市值" bkcode="880001" Type="4"/>
+  <BanKuai bkname="活筹市值" bkcode="880007" Type="4"/>
+  <BanKuai bkname="停板家数" bkcode="880006" Type="4"/>
+  <BanKuai bkname="涨跌家数" bkcode="880005" Type="4"/>
+  <BanKuai bkname="成交均价" bkcode="880004" Type="4"/>
+  <BanKuai bkname="创业停板" bkcode="880036" Type="4"/>
+  <BanKuai bkname="创业涨跌" bkcode="880035" Type="4"/>
+  <BanKuai bkname="创业均价" bkcode="880034" Type="4"/>
+  <BanKuai bkname="创业平均" bkcode="880033" Type="4"/>
+  <BanKuai bkname="招商快线" bkcode="159003" Type="4"/>
+  <BanKuai bkname="保证金" bkcode="159001" Type="4"/>
+  <BanKuai bkname="创业活筹" bkcode="880037" Type="4"/>
+  <BanKuai bkname="创业流通" bkcode="880032" Type="4"/>
+  <BanKuai bkname="创业总值" bkcode="880031" Type="4"/>
+  <BanKuai bkname="中小涨跌" bkcode="880025" Type="4"/>
+  <BanKuai bkname="中小均价" bkcode="880024" Type="4"/>
+  <BanKuai bkname="中小平均" bkcode="880023" Type="4"/>
+  <BanKuai bkname="中小流通" bkcode="880022" Type="4"/>
+  <BanKuai bkname="中小活筹" bkcode="880027" Type="4"/>
+  <BanKuai bkname="中小停板" bkcode="880026" Type="4"/>
+  <BanKuai bkname="中证红利" bkcode="399922" Type="4"/>
+  <BanKuai bkname="中证能源" bkcode="399928" Type="4"/>
+  <BanKuai bkname="基本面50" bkcode="399925" Type="4"/>
+  <BanKuai bkname="中证消费" bkcode="399932" Type="4"/>
+  <BanKuai bkname="中证可选" bkcode="399931" Type="4"/>
+  <BanKuai bkname="中证金融" bkcode="399934" Type="4"/>
+  <BanKuai bkname="中证医药" bkcode="399933" Type="4"/>
+  <BanKuai bkname="民企200" bkcode="399939" Type="4"/>
+  <BanKuai bkname="中证信息" bkcode="399935" Type="4"/>
+  <BanKuai bkname="小康指数" bkcode="399901" Type="4"/>
+  <BanKuai bkname="300材料" bkcode="399909" Type="4"/>
+  <BanKuai bkname="300能源" bkcode="399908" Type="4"/>
+  <BanKuai bkname="中证100" bkcode="399903" Type="4"/>
+  <BanKuai bkname="中证500" bkcode="399905" Type="4"/>
+  <BanKuai bkname="中证200" bkcode="399904" Type="4"/>
+  <BanKuai bkname="300工业" bkcode="399910" Type="4"/>
+  <BanKuai bkname="300消费" bkcode="399912" Type="4"/>
+  <BanKuai bkname="300可选" bkcode="399911" Type="4"/>
+  <BanKuai bkname="300成长" bkcode="399918" Type="4"/>
+  <BanKuai bkname="300公用" bkcode="399917" Type="4"/>
+  <BanKuai bkname="300价值" bkcode="399919" Type="4"/>
+  <BanKuai bkname="300金融" bkcode="399914" Type="4"/>
+  <BanKuai bkname="300医药" bkcode="399913" Type="4"/>
+  <BanKuai bkname="800地产" bkcode="399965" Type="4"/>
+  <BanKuai bkname="中证新兴" bkcode="399964" Type="4"/>
+  <BanKuai bkname="中证军工" bkcode="399967" Type="4"/>
+  <BanKuai bkname="800非银" bkcode="399966" Type="4"/>
+  <BanKuai bkname="中证上游" bkcode="399961" Type="4"/>
+  <BanKuai bkname="中证下游" bkcode="399963" Type="4"/>
+  <BanKuai bkname="300非周" bkcode="399969" Type="4"/>
+  <BanKuai bkname="化学纤维" bkcode="880616" Type="4"/>
+  <BanKuai bkname="化学制品" bkcode="880615" Type="4"/>
+  <BanKuai bkname="化学原料" bkcode="880614" Type="4"/>
+  <BanKuai bkname="石油化工" bkcode="880613" Type="4"/>
+  <BanKuai bkname="化工新材" bkcode="880619" Type="4"/>
+  <BanKuai bkname="橡胶" bkcode="880618" Type="4"/>
+  <BanKuai bkname="塑料" bkcode="880617" Type="4"/>
+  <BanKuai bkname="移动互联" bkcode="399970" Type="4"/>
+  <BanKuai bkname="采掘服务" bkcode="880612" Type="4"/>
+  <BanKuai bkname="煤炭开采" bkcode="880610" Type="4"/>
+  <BanKuai bkname="CS新能车" bkcode="399976" Type="4"/>
+  <BanKuai bkname="证券公司" bkcode="399975" Type="4"/>
+  <BanKuai bkname="医药100" bkcode="399978" Type="4"/>
+  <BanKuai bkname="内地低碳" bkcode="399977" Type="4"/>
+  <BanKuai bkname="300深市" bkcode="399972" Type="4"/>
+  <BanKuai bkname="中证传媒" bkcode="399971" Type="4"/>
+  <BanKuai bkname="国企改革" bkcode="399974" Type="4"/>
+  <BanKuai bkname="中证国防" bkcode="399973" Type="4"/>
+  <BanKuai bkname="大宗商品" bkcode="399979" Type="4"/>
+  <BanKuai bkname="农产加工" bkcode="880605" Type="4"/>
+  <BanKuai bkname="饲料" bkcode="880604" Type="4"/>
+  <BanKuai bkname="林业" bkcode="880603" Type="4"/>
+  <BanKuai bkname="渔业" bkcode="880602" Type="4"/>
+  <BanKuai bkname="石油开采" bkcode="880609" Type="4"/>
+  <BanKuai bkname="动物保健" bkcode="880608" Type="4"/>
+  <BanKuai bkname="畜禽养殖" bkcode="880607" Type="4"/>
+  <BanKuai bkname="农业综合" bkcode="880606" Type="4"/>
+  <BanKuai bkname="种植业" bkcode="880601" Type="4"/>
+  <BanKuai bkname="深证F60" bkcode="399701" Type="4"/>
+  <BanKuai bkname="深证F200" bkcode="399703" Type="4"/>
+  <BanKuai bkname="深证F120" bkcode="399702" Type="4"/>
+  <BanKuai bkname="内地资源" bkcode="399944" Type="4"/>
+  <BanKuai bkname="深证中游" bkcode="399705" Type="4"/>
+  <BanKuai bkname="深证上游" bkcode="399704" Type="4"/>
+  <BanKuai bkname="CSSW证券" bkcode="399707" Type="4"/>
+  <BanKuai bkname="深证下游" bkcode="399706" Type="4"/>
+  <BanKuai bkname="交运服务" bkcode="880638" Type="4"/>
+  <BanKuai bkname="其它交运" bkcode="880637" Type="4"/>
+  <BanKuai bkname="汽车部件" bkcode="880636" Type="4"/>
+  <BanKuai bkname="汽车整车" bkcode="880635" Type="4"/>
+  <BanKuai bkname="通信设备" bkcode="880639" Type="4"/>
+  <BanKuai bkname="半导体" bkcode="880630" Type="4"/>
+  <BanKuai bkname="电子制造" bkcode="880634" Type="4"/>
+  <BanKuai bkname="其他电子" bkcode="880633" Type="4"/>
+  <BanKuai bkname="光学光电" bkcode="880632" Type="4"/>
+  <BanKuai bkname="元件" bkcode="880631" Type="4"/>
+  <BanKuai bkname="300基建" bkcode="399950" Type="4"/>
+  <BanKuai bkname="300地产" bkcode="399952" Type="4"/>
+  <BanKuai bkname="300银行" bkcode="399951" Type="4"/>
+  <BanKuai bkname="创业成长" bkcode="399958" Type="4"/>
+  <BanKuai bkname="300运输" bkcode="399957" Type="4"/>
+  <BanKuai bkname="军工指数" bkcode="399959" Type="4"/>
+  <BanKuai bkname="仪器仪表" bkcode="880627" Type="4"/>
+  <BanKuai bkname="专用设备" bkcode="880626" Type="4"/>
+  <BanKuai bkname="通用机械" bkcode="880625" Type="4"/>
+  <BanKuai bkname="建筑装饰" bkcode="880624" Type="4"/>
+  <BanKuai bkname="金属制品" bkcode="880629" Type="4"/>
+  <BanKuai bkname="电气设备" bkcode="880628" Type="4"/>
+  <BanKuai bkname="建筑材料" bkcode="880623" Type="4"/>
+  <BanKuai bkname="金属新材" bkcode="880622" Type="4"/>
+  <BanKuai bkname="有色金属" bkcode="880621" Type="4"/>
+  <BanKuai bkname="钢铁" bkcode="880620" Type="4"/>
+  <BanKuai bkname="中证酒" bkcode="399987" Type="4"/>
+  <BanKuai bkname="中证银行" bkcode="399986" Type="4"/>
+  <BanKuai bkname="中证医疗" bkcode="399989" Type="4"/>
+  <BanKuai bkname="地产等权" bkcode="399983" Type="4"/>
+  <BanKuai bkname="500等权" bkcode="399982" Type="4"/>
+  <BanKuai bkname="煤炭等权" bkcode="399990" Type="4"/>
+  <BanKuai bkname="CSWD并购" bkcode="399992" Type="4"/>
+  <BanKuai bkname="一带一路" bkcode="399991" Type="4"/>
+  <BanKuai bkname="中证煤炭" bkcode="399998" Type="4"/>
+  <BanKuai bkname="中证白酒" bkcode="399997" Type="4"/>
+  <BanKuai bkname="信息安全" bkcode="399994" Type="4"/>
+  <BanKuai bkname="CSWD生科" bkcode="399993" Type="4"/>
+  <BanKuai bkname="智能家居" bkcode="399996" Type="4"/>
+  <BanKuai bkname="基建工程" bkcode="399995" Type="4"/>
+  <BanKuai bkname="深成公用" bkcode="399689" Type="4"/>
+  <BanKuai bkname="深成金融" bkcode="399686" Type="4"/>
+  <BanKuai bkname="深成医药" bkcode="399685" Type="4"/>
+  <BanKuai bkname="深成电信" bkcode="399688" Type="4"/>
+  <BanKuai bkname="深成信息" bkcode="399687" Type="4"/>
+  <BanKuai bkname="安防产业" bkcode="399693" Type="4"/>
+  <BanKuai bkname="创业低波" bkcode="399692" Type="4"/>
+  <BanKuai bkname="深证节能" bkcode="399695" Type="4"/>
+  <BanKuai bkname="创业高贝" bkcode="399694" Type="4"/>
+  <BanKuai bkname="创业专利" bkcode="399691" Type="4"/>
+  <BanKuai bkname="中小专利" bkcode="399690" Type="4"/>
+  <BanKuai bkname="中关村60" bkcode="399697" Type="4"/>
+  <BanKuai bkname="深证创投" bkcode="399696" Type="4"/>
+  <BanKuai bkname="金融科技" bkcode="399699" Type="4"/>
+  <BanKuai bkname="优势成长" bkcode="399698" Type="4"/>
+  <BanKuai bkname="创业板V" bkcode="399668" Type="4"/>
+  <BanKuai bkname="创业板G" bkcode="399667" Type="4"/>
+  <BanKuai bkname="国证定增" bkcode="399428" Type="4"/>
+  <BanKuai bkname="专利领先" bkcode="399427" Type="4"/>
+  <BanKuai bkname="深证农业" bkcode="399669" Type="4"/>
+  <BanKuai bkname="中关村A" bkcode="399422" Type="4"/>
+  <BanKuai bkname="中小高贝" bkcode="399664" Type="4"/>
+  <BanKuai bkname="中小低波" bkcode="399663" Type="4"/>
+  <BanKuai bkname="中创高贝" bkcode="399666" Type="4"/>
+  <BanKuai bkname="中关村50" bkcode="399423" Type="4"/>
+  <BanKuai bkname="中创低波" bkcode="399665" Type="4"/>
+  <BanKuai bkname="新丝路" bkcode="399429" Type="4"/>
+  <BanKuai bkname="深防御50" bkcode="399671" Type="4"/>
+  <BanKuai bkname="深周期50" bkcode="399670" Type="4"/>
+  <BanKuai bkname="国证银行" bkcode="399431" Type="4"/>
+  <BanKuai bkname="创业板50" bkcode="399673" Type="4"/>
+  <BanKuai bkname="深红利50" bkcode="399672" Type="4"/>
+  <BanKuai bkname="国证证券" bkcode="399437" Type="4"/>
+  <BanKuai bkname="深证200R" bkcode="399679" Type="4"/>
+  <BanKuai bkname="国证煤炭" bkcode="399436" Type="4"/>
+  <BanKuai bkname="深次新股" bkcode="399678" Type="4"/>
+  <BanKuai bkname="国证油气" bkcode="399439" Type="4"/>
+  <BanKuai bkname="国证电力" bkcode="399438" Type="4"/>
+  <BanKuai bkname="国证交运" bkcode="399433" Type="4"/>
+  <BanKuai bkname="深互联网" bkcode="399675" Type="4"/>
+  <BanKuai bkname="国证汽车" bkcode="399432" Type="4"/>
+  <BanKuai bkname="深A医药" bkcode="399674" Type="4"/>
+  <BanKuai bkname="国证农牧" bkcode="399435" Type="4"/>
+  <BanKuai bkname="深互联EW" bkcode="399677" Type="4"/>
+  <BanKuai bkname="国证传媒" bkcode="399434" Type="4"/>
+  <BanKuai bkname="深医药EW" bkcode="399676" Type="4"/>
+  <BanKuai bkname="国证钢铁" bkcode="399440" Type="4"/>
+  <BanKuai bkname="深成工业" bkcode="399682" Type="4"/>
+  <BanKuai bkname="深成材料" bkcode="399681" Type="4"/>
+  <BanKuai bkname="深成消费" bkcode="399684" Type="4"/>
+  <BanKuai bkname="生物医药" bkcode="399441" Type="4"/>
+  <BanKuai bkname="深成可选" bkcode="399683" Type="4"/>
+  <BanKuai bkname="深成能源" bkcode="399680" Type="4"/>
+  <BanKuai bkname="综企指数" bkcode="399249" Type="4"/>
+  <BanKuai bkname="文化指数" bkcode="399248" Type="4"/>
+  <BanKuai bkname="农林指数" bkcode="399231" Type="4"/>
+  <BanKuai bkname="制造指数" bkcode="399233" Type="4"/>
+  <BanKuai bkname="采矿指数" bkcode="399232" Type="4"/>
+  <BanKuai bkname="IT指数" bkcode="399239" Type="4"/>
+  <BanKuai bkname="餐饮指数" bkcode="399238" Type="4"/>
+  <BanKuai bkname="建筑指数" bkcode="399235" Type="4"/>
+  <BanKuai bkname="水电指数" bkcode="399234" Type="4"/>
+  <BanKuai bkname="运输指数" bkcode="399237" Type="4"/>
+  <BanKuai bkname="批零指数" bkcode="399236" Type="4"/>
+  <BanKuai bkname="商务指数" bkcode="399242" Type="4"/>
+  <BanKuai bkname="地产指数" bkcode="399241" Type="4"/>
+  <BanKuai bkname="公共指数" bkcode="399244" Type="4"/>
+  <BanKuai bkname="科研指数" bkcode="399243" Type="4"/>
+  <BanKuai bkname="金融指数" bkcode="399240" Type="4"/>
+  <BanKuai bkname="企债指数" bkcode="399481" Type="4"/>
+  <BanKuai bkname="新浪100" bkcode="399297" Type="4"/>
+  <BanKuai bkname="深信中低" bkcode="399299" Type="4"/>
+  <BanKuai bkname="深信中高" bkcode="399298" Type="4"/>
+  <BanKuai bkname="500深市" bkcode="399802" Type="4"/>
+  <BanKuai bkname="中证新能" bkcode="399808" Type="4"/>
+  <BanKuai bkname="高铁产业" bkcode="399807" Type="4"/>
+  <BanKuai bkname="保险主题" bkcode="399809" Type="4"/>
+  <BanKuai bkname="中证体育" bkcode="399804" Type="4"/>
+  <BanKuai bkname="工业4.0" bkcode="399803" Type="4"/>
+  <BanKuai bkname="环境治理" bkcode="399806" Type="4"/>
+  <BanKuai bkname="互联金融" bkcode="399805" Type="4"/>
+  <BanKuai bkname="CSSW电子" bkcode="399811" Type="4"/>
+  <BanKuai bkname="CSSW传媒" bkcode="399810" Type="4"/>
+  <BanKuai bkname="中证国安" bkcode="399813" Type="4"/>
+  <BanKuai bkname="养老产业" bkcode="399812" Type="4"/>
+  <BanKuai bkname="大农业" bkcode="399814" Type="4"/>
+  <BanKuai bkname="生态100" bkcode="399817" Type="4"/>
+  <BanKuai bkname="500深ET" bkcode="159932" Type="4"/>
+  <BanKuai bkname="中小成长" bkcode="399602" Type="4"/>
+  <BanKuai bkname="金融ETF" bkcode="159931" Type="4"/>
+  <BanKuai bkname="能源ETF" bkcode="159930" Type="4"/>
+  <BanKuai bkname="中小价值" bkcode="399604" Type="4"/>
+  <BanKuai bkname="可选消费" bkcode="159936" Type="4"/>
+  <BanKuai bkname="景顺500" bkcode="159935" Type="4"/>
+  <BanKuai bkname="黄金ETF" bkcode="159934" Type="4"/>
+  <BanKuai bkname="金地ETF" bkcode="159933" Type="4"/>
+  <BanKuai bkname="信息技术" bkcode="159939" Type="4"/>
+  <BanKuai bkname="广发医药" bkcode="159938" Type="4"/>
+  <BanKuai bkname="博时黄金" bkcode="159937" Type="4"/>
+  <BanKuai bkname="创业板R" bkcode="399606" Type="4"/>
+  <BanKuai bkname="科技100" bkcode="399608" Type="4"/>
+  <BanKuai bkname="深证能源" bkcode="399613" Type="4"/>
+  <BanKuai bkname="恒生ETF" bkcode="159920" Type="4"/>
+  <BanKuai bkname="中创100" bkcode="399612" Type="4"/>
+  <BanKuai bkname="深证工业" bkcode="399615" Type="4"/>
+  <BanKuai bkname="深证材料" bkcode="399614" Type="4"/>
+  <BanKuai bkname="南方300" bkcode="159925" Type="4"/>
+  <BanKuai bkname="300等权" bkcode="159924" Type="4"/>
+  <BanKuai bkname="100ETF" bkcode="159923" Type="4"/>
+  <BanKuai bkname="中创100R" bkcode="399611" Type="4"/>
+  <BanKuai bkname="500ETF" bkcode="159922" Type="4"/>
+  <BanKuai bkname="TMT50" bkcode="399610" Type="4"/>
+  <BanKuai bkname="医药ETF" bkcode="159929" Type="4"/>
+  <BanKuai bkname="消费ETF" bkcode="159928" Type="4"/>
+  <BanKuai bkname="国债ETF" bkcode="159926" Type="4"/>
+  <BanKuai bkname="深证消费" bkcode="399617" Type="4"/>
+  <BanKuai bkname="深证可选" bkcode="399616" Type="4"/>
+  <BanKuai bkname="深证金融" bkcode="399619" Type="4"/>
+  <BanKuai bkname="深证医药" bkcode="399618" Type="4"/>
+  <BanKuai bkname="工业ETF" bkcode="159953" Type="4"/>
+  <BanKuai bkname="创业ETF" bkcode="159952" Type="4"/>
+  <BanKuai bkname="中关村A" bkcode="159951" Type="4"/>
+  <BanKuai bkname="创业板HX" bkcode="159957" Type="4"/>
+  <BanKuai bkname="创业板E" bkcode="159955" Type="4"/>
+  <BanKuai bkname="深证ETF" bkcode="159943" Type="4"/>
+  <BanKuai bkname="中创100" bkcode="159942" Type="4"/>
+  <BanKuai bkname="纳指100" bkcode="159941" Type="4"/>
+  <BanKuai bkname="全指金融" bkcode="159940" Type="4"/>
+  <BanKuai bkname="全指消费" bkcode="159946" Type="4"/>
+  <BanKuai bkname="全指能源" bkcode="159945" Type="4"/>
+  <BanKuai bkname="全指材料" bkcode="159944" Type="4"/>
+  <BanKuai bkname="创业板50" bkcode="159949" Type="4"/>
+  <BanKuai bkname="创业板EF" bkcode="159948" Type="4"/>
+  <BanKuai bkname="深成指EF" bkcode="159950" Type="4"/>
+  <BanKuai bkname="大盘低波" bkcode="399404" Type="4"/>
+  <BanKuai bkname="深消费50" bkcode="399646" Type="4"/>
+  <BanKuai bkname="防御100" bkcode="399403" Type="4"/>
+  <BanKuai bkname="100低波" bkcode="399645" Type="4"/>
+  <BanKuai bkname="中盘低波" bkcode="399406" Type="4"/>
+  <BanKuai bkname="深证GDP" bkcode="399648" Type="4"/>
+  <BanKuai bkname="大盘高贝" bkcode="399405" Type="4"/>
+  <BanKuai bkname="深医药50" bkcode="399647" Type="4"/>
+  <BanKuai bkname="大中盘" bkcode="399400" Type="4"/>
+  <BanKuai bkname="中小新兴" bkcode="399642" Type="4"/>
+  <BanKuai bkname="深证新兴" bkcode="399641" Type="4"/>
+  <BanKuai bkname="周期100" bkcode="399402" Type="4"/>
+  <BanKuai bkname="深证时钟" bkcode="399644" Type="4"/>
+  <BanKuai bkname="中小盘" bkcode="399401" Type="4"/>
+  <BanKuai bkname="创业新兴" bkcode="399643" Type="4"/>
+  <BanKuai bkname="小盘低波" bkcode="399408" Type="4"/>
+  <BanKuai bkname="中盘高贝" bkcode="399407" Type="4"/>
+  <BanKuai bkname="中小红利" bkcode="399649" Type="4"/>
+  <BanKuai bkname="小盘高贝" bkcode="399409" Type="4"/>
+  <BanKuai bkname="中小责任" bkcode="399651" Type="4"/>
+  <BanKuai bkname="中小治理" bkcode="399650" Type="4"/>
+  <BanKuai bkname="I100" bkcode="399415" Type="4"/>
+  <BanKuai bkname="300绩效" bkcode="399657" Type="4"/>
+  <BanKuai bkname="100绩效" bkcode="399656" Type="4"/>
+  <BanKuai bkname="新能源车" bkcode="399417" Type="4"/>
+  <BanKuai bkname="深成指EW" bkcode="399659" Type="4"/>
+  <BanKuai bkname="I300" bkcode="399416" Type="4"/>
+  <BanKuai bkname="中小绩效" bkcode="399658" Type="4"/>
+  <BanKuai bkname="红利100" bkcode="399411" Type="4"/>
+  <BanKuai bkname="深证龙头" bkcode="399653" Type="4"/>
+  <BanKuai bkname="苏州率先" bkcode="399410" Type="4"/>
+  <BanKuai bkname="中创高新" bkcode="399652" Type="4"/>
+  <BanKuai bkname="国证转债" bkcode="399413" Type="4"/>
+  <BanKuai bkname="深证绩效" bkcode="399655" Type="4"/>
+  <BanKuai bkname="国证新能" bkcode="399412" Type="4"/>
+  <BanKuai bkname="深证文化" bkcode="399654" Type="4"/>
+  <BanKuai bkname="国证高铁" bkcode="399419" Type="4"/>
+  <BanKuai bkname="国证国安" bkcode="399418" Type="4"/>
+  <BanKuai bkname="中创EW" bkcode="399660" Type="4"/>
+  <BanKuai bkname="国证保证" bkcode="399420" Type="4"/>
+  <BanKuai bkname="深证高贝" bkcode="399662" Type="4"/>
+  <BanKuai bkname="深证低波" bkcode="399661" Type="4"/>
+  <BanKuai bkname="深F120" bkcode="159910" Type="4"/>
+  <BanKuai bkname="中创400" bkcode="399624" Type="4"/>
+  <BanKuai bkname="中小基础" bkcode="399623" Type="4"/>
+  <BanKuai bkname="中创成长" bkcode="399626" Type="4"/>
+  <BanKuai bkname="中创500" bkcode="399625" Type="4"/>
+  <BanKuai bkname="深证信息" bkcode="399620" Type="4"/>
+  <BanKuai bkname="深价值" bkcode="159913" Type="4"/>
+  <BanKuai bkname="深300ET" bkcode="159912" Type="4"/>
+  <BanKuai bkname="深证公用" bkcode="399622" Type="4"/>
+  <BanKuai bkname="民营ETF" bkcode="159911" Type="4"/>
+  <BanKuai bkname="深证电信" bkcode="399621" Type="4"/>
+  <BanKuai bkname="中创400" bkcode="159918" Type="4"/>
+  <BanKuai bkname="深F60" bkcode="159916" Type="4"/>
+  <BanKuai bkname="创业板" bkcode="159915" Type="4"/>
+  <BanKuai bkname="700成长" bkcode="399628" Type="4"/>
+  <BanKuai bkname="中创价值" bkcode="399627" Type="4"/>
+  <BanKuai bkname="300ETF" bkcode="159919" Type="4"/>
+  <BanKuai bkname="700价值" bkcode="399629" Type="4"/>
+  <BanKuai bkname="大数据" bkcode="880954" Type="4"/>
+  <BanKuai bkname="创业板EW" bkcode="399635" Type="4"/>
+  <BanKuai bkname="中小板EW" bkcode="399634" Type="4"/>
+  <BanKuai bkname="深证地产" bkcode="399637" Type="4"/>
+  <BanKuai bkname="深证装备" bkcode="399636" Type="4"/>
+  <BanKuai bkname="深成ETF" bkcode="159903" Type="4"/>
+  <BanKuai bkname="1000价值" bkcode="399631" Type="4"/>
+  <BanKuai bkname="中小" bkcode="159902" Type="4"/>
+  <BanKuai bkname="1000成长" bkcode="399630" Type="4"/>
+  <BanKuai bkname="深100ET" bkcode="159901" Type="4"/>
+  <BanKuai bkname="深300EW" bkcode="399633" Type="4"/>
+  <BanKuai bkname="深100EW" bkcode="399632" Type="4"/>
+  <BanKuai bkname="中小300" bkcode="159907" Type="4"/>
+  <BanKuai bkname="深成长" bkcode="159906" Type="4"/>
+  <BanKuai bkname="深红利" bkcode="159905" Type="4"/>
+  <BanKuai bkname="深证大宗" bkcode="399639" Type="4"/>
+  <BanKuai bkname="深证环保" bkcode="399638" Type="4"/>
+  <BanKuai bkname="深TMT" bkcode="159909" Type="4"/>
+  <BanKuai bkname="深F200" bkcode="159908" Type="4"/>
+  <BanKuai bkname="创业基础" bkcode="399640" Type="4"/>
+  <BanKuai bkname="创业板ET" bkcode="159958" Type="4"/>
+  <BanKuai bkname="破发行价" bkcode="880891" Type="4"/>
+  <BanKuai bkname="工业互联" bkcode="880957" Type="4"/>
+  <BanKuai bkname="腾讯概念" bkcode="880956" Type="4"/>
+  <BanKuai bkname="乡村振兴" bkcode="880955" Type="4"/>
+</两交易所>
