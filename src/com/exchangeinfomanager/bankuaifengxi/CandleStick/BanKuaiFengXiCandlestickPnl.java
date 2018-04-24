@@ -154,7 +154,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		int itemcount = ohlcSeries.getItemCount();
 		for(int i=0;i<itemcount;i++) {
-				RegularTimePeriod dataitemp = ohlcSeries.getPeriod(i);
+//				RegularTimePeriod dataitemp = ohlcSeries.getPeriod(i);
 				Double low = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getLowValue();
 				Double high = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getHighValue();
 				
@@ -169,7 +169,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		try {
 			candlestickChart.getXYPlot().getRangeAxis().setRange(lowestLow*0.98, highestHigh*1.02);
 		} catch (java.lang.IllegalArgumentException e ) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		
 		candlestickDataset.addSeries(ohlcSeries);

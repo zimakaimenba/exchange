@@ -43,9 +43,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	/**
 	 * Create the panel.
 	 */
-	public BanKuaiFengXiNodeCombinedCategoryPnl(BkChanYeLianTreeNode curdisplayednode,String horizonorvertical) 
+//	public BanKuaiFengXiNodeCombinedCategoryPnl(BkChanYeLianTreeNode curdisplayednode,String horizonorvertical) 
+	public BanKuaiFengXiNodeCombinedCategoryPnl(String horizonorvertical)
 	{
-		this.curdisplayednode =  curdisplayednode;
+//		this.curdisplayednode =  curdisplayednode;
 		if(horizonorvertical.toLowerCase().equals("horizon"))
 			this.horizonlayout = true;
 		else 

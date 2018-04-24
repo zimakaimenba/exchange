@@ -298,7 +298,8 @@ public class SystemConfigration
 	 
 	 public String getBanKuaiParsedFileStoredPath ()
 	 {
-		 return this.bkparsestoredpath;
+//		 return this.bkparsestoredpath;
+		 return this.getSystemInstalledPath() + "/weeklyreports/";
 	 }
 	 /*
 	  * 
@@ -628,17 +629,25 @@ public class SystemConfigration
 		public String getPythonScriptsPath() 
 		{
 			if(this.systeminstalledpath.contains(" ")) {
-				return "\"" + this.systeminstalledpath + "python/execscripts/" ;
+				return "\"" + this.systeminstalledpath + "dailydata/python/execscripts/" ;
 			} else 
-				return this.systeminstalledpath + "python/execscripts/";
+				return this.systeminstalledpath + "dailydata/python/execscripts/";
 		}
 		public String getPythonScriptsExecExportsPath ()
 		{
-			return this.systeminstalledpath + "python/execexports/";
+			return this.systeminstalledpath + "dailydata/python/execexports/";
 		}
 		public String getNetEaseDownloadedFilePath() 
 		{
-			return this.systeminstalledpath + "netease/downloaded/";
+			return this.systeminstalledpath + "dailydata/netease/downloaded/";
+		}
+		public String getXueQiuDownloadedFilePath() 
+		{
+			return this.systeminstalledpath + "dailydata/xueqiu/downloaded/";
+		}
+		public String getEastMoneyDownloadedFilePath() 
+		{
+			return this.systeminstalledpath + "dailydata/eastmoney/downloaded/";
 		}
 
 }

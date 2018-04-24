@@ -39,6 +39,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.WeeklyExportFileFengXi;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -233,6 +234,7 @@ public class StockInfoManager
 	private BanKuaiAndChanYeLian bkcyl;
 //	private BuyCheckListTreeDialog chklstdialog;
 //	private JPanel panelcklt;
+	private WeeklyExportFileFengXi effx;
 
 	
 	
@@ -388,6 +390,12 @@ public class StockInfoManager
 
 	private void createEvents()
 	{
+		menuItemfxwjfx.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				startWeeklyExportFileFengXi();
+			}
+		});
+		
 		btnyituishi.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -1661,6 +1669,21 @@ public class StockInfoManager
 			
 			bkfx.toFront();
 	}
+	protected void startWeeklyExportFileFengXi() 
+	{
+			if(effx == null ) {
+				effx = new WeeklyExportFileFengXi (this,bkcyl);
+				effx.setModal(false);
+				effx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				effx.setVisible(true);
+			} 
+			
+			if(!effx.isVisible() ) {
+				effx.setVisible(true);
+			} 
+			
+			effx.toFront();
+	}
 
 
 		protected void saveKuaiSuJiLuJiaoYi() 
@@ -2314,6 +2337,7 @@ public class StockInfoManager
 	private JMenuItem menuItembkfx;
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JButton btnyituishi;
+	private JMenuItem menuItemfxwjfx;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -3043,6 +3067,10 @@ public class StockInfoManager
 		menuItembkfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
 		
 		menuOperationList.add(menuItembkfx);
+		
+		menuItemfxwjfx = new JMenuItem("\u6A21\u578B\u6587\u4EF6\u5206\u6790");
+		menuItemfxwjfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis_23.570881226054px_1202840_easyicon.net.png")));
+		menuOperationList.add(menuItemfxwjfx);
 		
 		menuItemimportrecords = new JMenuItem("\u5BFC\u5165\u4EA4\u6613\u8BB0\u5F55");
 		menuItemimportrecords.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/import.png")));

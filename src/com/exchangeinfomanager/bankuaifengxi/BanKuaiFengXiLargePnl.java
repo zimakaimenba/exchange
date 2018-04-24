@@ -105,7 +105,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.setLayout(new BorderLayout());
 
 		this.nodekpnl = new BanKuaiFengXiCandlestickPnl ();
-		this.centerPanel = new BanKuaiFengXiNodeCombinedCategoryPnl (displaynode,"vertical");
+		this.centerPanel = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical");
 		
 
 		tfldselectedmsg = new JTextArea();

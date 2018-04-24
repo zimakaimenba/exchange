@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.database;
 
 import java.awt.Container;
+
 import java.awt.EventQueue;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -12,9 +13,14 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.io.Reader;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
@@ -31,6 +37,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -50,8 +57,26 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.tree.TreeNode;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -70,6 +95,7 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriod
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
@@ -90,6 +116,8 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.sun.rowset.CachedRowSetImpl;
@@ -97,6 +125,9 @@ import com.sun.rowset.CachedRowSetImpl;
 import net.iryndin.jdbf.core.DbfMetadata;
 import net.iryndin.jdbf.core.DbfRecord;
 import net.iryndin.jdbf.reader.DbfReader;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 
 public class BanKuaiDbOperation 
@@ -3275,7 +3306,7 @@ public class BanKuaiDbOperation
 		else if(period.equals(StockGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
-		NodeXPeriodDataBasic nodewkperioddata = stock.getNodeXPeroidData(period);
+		StockNodeXPeriodData nodewkperioddata = (StockNodeXPeriodData)stock.getNodeXPeroidData(period);
 	
 		String stockcode = stock.getMyOwnCode();
 		String bkcjltable;
@@ -3407,7 +3438,7 @@ public class BanKuaiDbOperation
 		String nodecode = stock.getMyOwnCode();
 		String jys = stock.getSuoShuJiaoYiSuo();
 		String searchtable;
-		if(jys.equals("sh"))
+		if(jys.toLowerCase().equals("sh"))
 			searchtable = "通达信上交所股票每日交易信息";
 		else
 			searchtable = "通达信深交所股票每日交易信息";
@@ -5056,6 +5087,7 @@ public class BanKuaiDbOperation
 			ArrayList<Stock> allstocks = this.getAllStocks ();
 			//下载需要的时间段的数据
 			for(Stock stock : allstocks) {
+				boolean neteasthasdata = false;
 				String stockcode = stock.getMyOwnCode();
 				String formatedstockcode; String stockdatatable ;
 				if(stock.getSuoShuJiaoYiSuo().trim().toLowerCase().equals("sh")) { 
@@ -5071,7 +5103,7 @@ public class BanKuaiDbOperation
 				try { 	
 					//找出每日交易的起点终点
 					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME FROM  " + stockdatatable + 
-											" WHERE  代码 = '" + stockcode + "' and 换手率 IS NOT NULL"
+											" WHERE  代码 = '" + stockcode + "' AND 换手率 IS NOT NULL AND 总市值 IS  NOT NULL AND 流通市值 IS  NOT NULL"
 											;
 					logger.debug(sqlquerystat);
 				    rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -5084,35 +5116,26 @@ public class BanKuaiDbOperation
 				    			 logger.info(stockcode + "似乎没有数据，请检查！");
 				    		 }
 				    }
-				    if(ldlastestdbrecordsdate == null)
+				} catch(java.lang.NullPointerException e) { 
+			    	e.printStackTrace();
+				} catch (SQLException e) {
+			    	e.printStackTrace();
+				}catch(Exception e){
+			    	e.printStackTrace();
+				} finally {
+			    	if(rs != null)
+					try {
+						rs.close();
+						rs = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+			   }
+				
+			   if(ldlastestdbrecordsdate == null)
 				    	ldlastestdbrecordsdate =  LocalDate.parse("2013-03-04"); //当前数据的起点
-				    else
+			   else
 				    	ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1);
-				    
-//				    //找出股本变动表里面的最新股本记录时间,目前网易数据没有股本信息，只有市值信息
-//				    sqlquerystat = "SELECT 流通股本,总股本,MOST_RECENT_TIME\r\n" +
-//				    				" FROM 个股股本变化信息  t \r\n" + 
-//				    				" INNER JOIN \r\n" +
-//				    				" (SELECT 代码, MAX(变动日期) 	MOST_RECENT_TIME \r\n" + 
-//				    				" FROM  个股股本变化信息  \r\n" +
-//				    				" WHERE 代码 ='" + stockcode + "'  )a \r\n " +
-//				    				" on a.代码 = t.代码 AND a.MOST_RECENT_TIME =变动日期 \r\n "
-//				    				;
-//				    rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//				    double zongguben =0.0; double liutongguben = 0.0 ;
-//				    while(rs.next()) {
-//
-//				    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
-//				    		 try {
-//				    			 ldlastestdbrecordsdate =lastestdbrecordsdate.toLocalDate();
-//				    			 zongguben  = rs.getDouble("总市值");
-//				    			 liutongguben = rs.getDouble("流通市值");
-//				    		 } catch (java.lang.NullPointerException e) {
-//				    			 logger.info(stockcode + "似乎没有数据，请检查！");
-//				    			 zongguben = 0.0;
-//				    			 liutongguben = 0.0;
-//				    		 }
-//				    }
 				    
 				    //获取文件
 				    URL URLink; //https://blog.csdn.net/NarutoInspire/article/details/72716724
@@ -5137,6 +5160,7 @@ public class BanKuaiDbOperation
 					//导入数据到数据库
 					if(!savedfile.exists()) {
 						System.out.println(stockcode + "似乎未能从网易得到"+ stockcode + "的数据，请立即检查！");
+						neteasthasdata = false;
 					} else {
 						try (
 //								java.io.Reader filereader = java.nio.file.Files.newBufferedReader(Paths.get(savedfilename));
@@ -5146,7 +5170,7 @@ public class BanKuaiDbOperation
 								CSVReader csvReader = new CSVReader(filereader);
 					    ){ 
 					            // Reading Records One by One in a String array
-					            String[] nextRecord; int titlesign =0;
+					            String[] nextRecord; int titlesign =0; 
 					            while ((nextRecord = csvReader.readNext()) != null) {
 					            	if(0 == titlesign) {
 						                String huanshoulv = nextRecord[10];
@@ -5154,7 +5178,8 @@ public class BanKuaiDbOperation
 						                
 						                if(!huanshoulv.trim().equals("换手率") || !zongshizhi.trim().equals("总市值")) {
 						                	System.out.println("网易数据文件格式可能有改变，请检查！");
-						                	return ;
+						                	neteasthasdata = false;
+						                	break;
 						                } else {
 						                	titlesign = 1;
 						                }
@@ -5172,7 +5197,8 @@ public class BanKuaiDbOperation
 					            			lactiondate = LocalDate.parse(actiondate);
 					            		} else {
 					            			System.out.println("网易数据文件日期格式改变！");
-					            			return ;
+					            			neteasthasdata = false;
+						                	break;
 					            		}
 					            		
 						                String zhangdiefu = nextRecord[9];
@@ -5190,36 +5216,324 @@ public class BanKuaiDbOperation
 						                					;
 						                logger.debug(sqlupdate);
 									    int result = connectdb.sqlUpdateStatExecute(sqlupdate);		
+									    
+									    neteasthasdata = true;
 					            	}
 					            	
 					            }
-					        } 
+					        } catch (IOException e) {
+								e.printStackTrace();
+							} 
 					}
-				 } catch(java.lang.NullPointerException e) { 
-				    	e.printStackTrace();
-				 } catch (SQLException e) {
-				    	e.printStackTrace();
-				 }catch(Exception e){
-				    	e.printStackTrace();
-				 } finally {
-				    	if(rs != null)
-						try {
-							rs.close();
-							rs = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-				    	
-				    	
-				}
+				 
+				
+//				if(!neteasthasdata) { //网易有时候会得不到数据，就要用雪球的方法得到数据
+//					logger.info(stockcode + "未能从网易获取日期为" + ldlastestdbrecordsdate + "数据，将从其他数据源获取数据！");
+//					importXueQiuStockData (stockcode,ldlastestdbrecordsdate);
+//				}
 			}
 
 			allstocks = null;
 		}
+		/*
+		 * 从雪球获得数据，目前不完善
+		 */
+		private void importXueQiuStockData(String stockcode,LocalDate ldlastestdbrecordsdate)
+		{
+//			Authenticator.setDefault (new Authenticator() {
+//			    protected PasswordAuthentication getPasswordAuthentication() {
+//			        return new PasswordAuthentication ("justjustjustjust@gmail.com", "sure2001".toCharArray());
+//			    }
+//			});
+			
+
+			HttpClient httpClient = HttpClientBuilder.create().build();
+			HttpGet httpGet = new HttpGet("https://xueqiu.com/stock/forchartk/stocklist.json?symbol=SH600756&period=1day&type=before&begin=1478620800000&end=1510126200000&_=1510126200000");
+			httpGet.addHeader(BasicScheme.authenticate(
+			 new UsernamePasswordCredentials("justjustjustjust@gmail.com", "sure2001"),
+			 "GBK", false));
+
+			HttpResponse httpResponse = null;
+			try {
+				httpResponse = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			HttpEntity responseEntity = httpResponse.getEntity();
+			try {
+				InputStreamReader isr = new InputStreamReader(responseEntity.getContent() );
+				int numCharsRead;
+				char[] charArray = new char[1024];
+				StringBuffer sb = new StringBuffer();
+				while ((numCharsRead = isr.read(charArray)) > 0) {
+					sb.append(charArray, 0, numCharsRead);
+				}
+				String result = sb.toString();
+				if(result.contains("error")) { //网易有时候会得不到数据，就要用雪球的方法得到数据
+					logger.info(stockcode + "未能从雪球获取日期为" + ldlastestdbrecordsdate + "数据，将从其他数据源获取数据！");
+					importSoHuStockData (stockcode,ldlastestdbrecordsdate);
+				} else {
+					System.out.println(result);
+				}
+				
+			} catch (UnsupportedOperationException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		/*
+		 * 搜狐数据只有涨跌幅和换手率，没有流通市值和总市值数据
+		 */
+		private void importSoHuStockData(String stockcode, LocalDate ldlastestdbrecordsdate) 
+		{
+			HttpClient httpClient = HttpClientBuilder.create().build();
+			
+			DateTimeFormatter formatters = DateTimeFormatter.ofPattern("yyyyMMdd");
+		    String startdate = ldlastestdbrecordsdate.format(formatters);
+		    String enddate = LocalDate.now().format(formatters);
+		    //              "http://q.stock.sohu.com/hisHq?code=cn_000001&start=20170930&end=20181231&stat=1&order=D&period=d&callback=historySearchHandler&rt=jsonp");
+		    String urlstr = "http://q.stock.sohu.com/hisHq?code=cn_" + stockcode + "&start=" + startdate + "&end=" + enddate + "&stat=1&order=D&period=d&callback=historySearchHandler&rt=json";
+//		    String urlstr = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qlpic_000001_2_6";
+			HttpGet httpGet = new HttpGet(urlstr);
+
+			HttpResponse httpResponse = null;
+			try {
+				httpResponse = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			HttpEntity responseEntity = httpResponse.getEntity();
+			try {
+				InputStreamReader isr = new InputStreamReader(responseEntity.getContent() );
+				int numCharsRead;
+				char[] charArray = new char[1024];
+				StringBuffer sb = new StringBuffer();
+				while ((numCharsRead = isr.read(charArray)) > 0) {
+					sb.append(charArray, 0, numCharsRead);
+				}
+				String result = sb.toString();
+				if(result.contains("error")) { 
+					logger.info(stockcode + "未能从搜狐获取日期为" + ldlastestdbrecordsdate + "数据，将从其他数据源获取数据！");
+				} else {
+//					Map jsonJavaRootObject = new Gson().fromJson(result, Map.class);
+//					Map<String, Object> map = new Gson().fromJson(result, new TypeToken<Map<String, Object>>(){}.getType());
+//					map.forEach((x,y)-> System.out.println("key : " + x + " , value : " + y));
+				}
+				
+			} catch (UnsupportedOperationException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 		public void setStockAsYiJingTuiShi(String formatStockCode) 
 		{
 			// TODO Auto-generated method stub
 			
+		}
+
+		/*
+		 * check股票每日数据是否完整
+		 */
+		public HashSet<String> checkStockDataIsCompleted() 
+		{
+			HashSet<String> stockset = new HashSet<String>(); 
+			CachedRowSetImpl  rssh = null;
+			try { 	
+				//找出每日交易的起点终点
+				String sqlquerystat = "SELECT \r\n" +
+						  "通达信上交所股票每日交易信息.`代码`\r\n" +
+						  "FROM \r\n" +
+						  "通达信上交所股票每日交易信息 \r\n" +   
+						  "LEFT JOIN a股 \r\n" +
+						  "ON 通达信上交所股票每日交易信息.`代码` = a股.股票代码  \r\n" +
+						  "WHERE \r\n" +
+						  "(通达信上交所股票每日交易信息.涨跌幅 is null or      通达信上交所股票每日交易信息.换手率 is null or      通达信上交所股票每日交易信息.总市值 is null or      通达信上交所股票每日交易信息.流通市值 is null) \r\n" +
+						  "and a股.已退市 is null \r\n"
+						  ;
+				logger.debug(sqlquerystat);
+				
+			    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    
+			    while(rssh.next()) {
+			    	String stockcode = rssh.getString("代码");
+			    	stockset.add(stockcode);
+			    }
+			} catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+			} catch (SQLException e) {
+		    	e.printStackTrace();
+			}catch(Exception e){
+		    	e.printStackTrace();
+			} finally {
+		    	if(rssh != null)
+				try {
+					rssh.close();
+					rssh = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		   }
+			
+			
+			CachedRowSetImpl  rssz = null;
+			try { 	
+				//找出每日交易的起点终点
+				String sqlquerystat = "SELECT \r\n" +
+						  "通达信深交所股票每日交易信息.`代码`\r\n" +
+						  "FROM \r\n" +
+						  "通达信深交所股票每日交易信息 \r\n" +   
+						  "LEFT JOIN a股 \r\n" +
+						  "ON 通达信深交所股票每日交易信息.`代码` = a股.股票代码  \r\n" +
+						  "WHERE \r\n" +
+						  "(通达信深交所股票每日交易信息.涨跌幅 is null or      通达信深交所股票每日交易信息.换手率 is null or      通达信深交所股票每日交易信息.总市值 is null or      通达信深交所股票每日交易信息.流通市值 is null) \r\n" +
+						  "and a股.已退市 is null \r\n"
+						  ;
+				logger.debug(sqlquerystat);
+				
+			    rssz = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    
+			    while(rssz.next()) {
+			    	String stockcode = rssz.getString("代码");
+			    	stockset.add(stockcode);
+			    }
+			} catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+			} catch (SQLException e) {
+		    	e.printStackTrace();
+			}catch(Exception e){
+		    	e.printStackTrace();
+			} finally {
+		    	if(rssz != null)
+				try {
+					rssz.close();
+					rssz = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		   }
+			return stockset;
+		}
+		/*
+		 * 从东方财富下载的数据，数据全，但是只能当天数据，如果当天错过，就无法得到历史数据
+		 */
+		public boolean importEastMoneyStockData(File eastmoneyfile)
+		{
+			HashSet<String> missingdatastockset = this.checkStockDataIsCompleted ();
+		    FileInputStream fileInputStream = null;
+			try {
+				fileInputStream = new FileInputStream(eastmoneyfile);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+		    POIFSFileSystem fileSystem = null;
+			try {
+				fileSystem = new POIFSFileSystem(bufferedInputStream);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    HSSFWorkbook workbook = null;
+			try {
+				workbook = new HSSFWorkbook(fileSystem);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			 // for each sheet in the workbook
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+
+                String sheetname = workbook.getSheetName(i);
+                LocalDate lactiondate = null;
+                try {
+					if(Pattern.matches("\\d*/\\d*/\\d*",sheetname) ) {
+	        			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+	        			lactiondate = LocalDate.parse(sheetname, formatter);
+	        		} else if (Pattern.matches("\\d*",sheetname) ) {
+	        			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+	        			lactiondate = LocalDate.parse(sheetname, formatter);
+	        		} else if(Pattern.matches("\\d*-\\d*-\\d*",sheetname) ) 
+	        			lactiondate = LocalDate.parse(sheetname);
+                } catch (Exception ex) {
+                	lactiondate = LocalDate.now();
+                }
+                
+                HSSFSheet sheet = workbook.getSheet(workbook.getSheetName(i));
+
+    		    int lastRowIndex = sheet.getLastRowNum();
+    		     //先找到数据对应的列的值
+    		    int codeindex = -1, huanshouindex = -1,zongshizhiindex = -1,liutongshizhiindex = -1,zhangdiefuindex = -1;
+    		    HSSFRow headrow = sheet.getRow(0);
+    		    short lastCellNum = headrow.getLastCellNum();
+		        for (int j = 0; j < lastCellNum; j++) {
+		        	String cellValue = headrow.getCell(j).getStringCellValue();
+		        	if(cellValue.equals("换手%"))
+		        		huanshouindex = j;
+		        	else if(cellValue.equals("总市值"))
+		        		zongshizhiindex = j;
+		        	else if(cellValue.equals("流通市值"))
+		        		liutongshizhiindex = j;
+		        	else if(cellValue.equals("代码"))
+		        		codeindex = j;
+		        	else if(cellValue.equals("涨幅"))
+		        		zhangdiefuindex = j;
+		        }
+		        if(huanshouindex == -1 || zongshizhiindex == -1 || liutongshizhiindex == -1) {
+		        	logger.info("东方财富数据格式可能有改变，请检查！");
+		        	return false;
+		        }
+		        //导入数据
+		        for (int m = 1; m <= lastRowIndex; m++) {
+    		        HSSFRow row = sheet.getRow(m);
+    		        if (row == null) { break; }
+
+    		        String stockcode = row.getCell(codeindex).getStringCellValue();
+    		        String stockdatatable;
+    		        if(missingdatastockset.contains(stockcode)) {
+    		        	if(stockcode.startsWith("6")) { 
+    						stockdatatable = "通达信上交所股票每日交易信息";
+    					} else {
+    						stockdatatable = "通达信深交所股票每日交易信息";
+    					}
+    		        	
+    		        	String huanshoulv = row.getCell(huanshouindex).getStringCellValue().trim();
+        		        String zongshizhi = row.getCell(zongshizhiindex).getStringCellValue().trim();
+        		        String liutongshizhi = row.getCell(liutongshizhiindex).getStringCellValue().trim();
+        		        String zhangdiefu = row.getCell(zhangdiefuindex).getStringCellValue().trim();
+        		        
+		                //update 涨跌幅和换手率数据
+		                String sqlupdate = "Update " + stockdatatable + " SET " +
+		                					" 涨跌幅=" + Double.parseDouble(zhangdiefu) + "," +
+		                					" 换手率=" + Double.parseDouble(huanshoulv) + "," +
+		                					" 流通市值= " + Double.parseDouble(liutongshizhi) + "," +
+		                					" 总市值= " + Double.parseDouble(zongshizhi) +
+		                					" WHERE 交易日期 = '" + lactiondate + "'" + 
+		                					" AND 代码= '" + stockcode + "'"
+		                					;
+		                logger.debug(sqlupdate);
+					    int result = connectdb.sqlUpdateStatExecute(sqlupdate);
+    		        }
+    		    }
+            }
+
+		    try {
+				bufferedInputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+		    missingdatastockset = null;
+		    return true;
 		}
 		
 		

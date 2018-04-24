@@ -346,8 +346,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
         plot.setRenderer(renderer); 
         plot.setRangeAxis(new NumberAxis(""));
         plot.setRangePannable(true);
-        
-//        //line part
+
+        //        //line part
 //        linechartdataset = new DefaultCategoryDataset();
 //        BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
 //        plot.setDataset(1, linechartdataset);
