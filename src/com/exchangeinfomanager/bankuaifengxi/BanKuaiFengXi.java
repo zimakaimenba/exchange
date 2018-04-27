@@ -315,11 +315,7 @@ public class BanKuaiFengXi extends JDialog {
     		} 
     			
 		}
-		
-//		ArrayList<ExportCondition> initializeconditon = new ArrayList<ExportCondition> ();
-//		initializeconditon.add(new ExportCondition ("5","7",null,"5"));
-//		initializeconditon.add(new ExportCondition ("5",null,"4",null));
-		
+	
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,period,null);
 		
 		Toolkit.getDefaultToolkit().beep();
@@ -2830,7 +2826,9 @@ public class BanKuaiFengXi extends JDialog {
 
 						childnode = bkcyl.getStock((Stock)childnode,selectiondate,StockGivenPeriodDataItem.WEEK);
 						NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(period);
-						if(nodexdata.hasRecordInThePeriod(selectiondate,0) ) { //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+						 //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+						// 同时刚上市的新股也不考虑
+						if(nodexdata.hasRecordInThePeriod(selectiondate,0) && !((StockNodeXPeriodData)nodexdata).isVeryVeryNewXinStock()   ) {
 								Double recordcje = nodexdata.getChengJiaoEr(selectiondate, 0);
 								Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate,0);
 								Integer recordmaxcjewk =nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate,0);
@@ -2851,7 +2849,6 @@ public class BanKuaiFengXi extends JDialog {
 						if (isCancelled())
 							 return null;
 						
-						
 						BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
 						if(childnode.getType() != BanKuaiAndStockBasic.TDXBK)
 							continue;
@@ -2865,7 +2862,7 @@ public class BanKuaiFengXi extends JDialog {
 							continue;
 						
 						NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(period);
-						if(nodexdata.hasRecordInThePeriod(selectiondate,0) ) { //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+						if(nodexdata.hasRecordInThePeriod(selectiondate,0)  ) { //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 							childnode = bkcyl.getAllGeGuOfBanKuai (((BanKuai)childnode),period);
 							Set<StockOfBanKuai> rowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(selectiondate,0,period);
 							for (StockOfBanKuai stockofbankuai : rowbkallgg) {
@@ -2873,7 +2870,7 @@ public class BanKuaiFengXi extends JDialog {
 									 return null;
 
 								 NodeXPeriodDataBasic stockxdataforbk = stockofbankuai.getNodeXPeroidData( period);
-								 if(!stockxdataforbk.hasRecordInThePeriod(selectiondate, 0))
+								 if(!stockxdataforbk.hasRecordInThePeriod(selectiondate, 0)  )
 									 continue;
 								 
 								 Double recordcje = stockxdataforbk.getChengJiaoEr(selectiondate, 0);
@@ -2881,6 +2878,8 @@ public class BanKuaiFengXi extends JDialog {
 								 
 								 Stock ggstock = stockofbankuai.getStock();
 								 NodeXPeriodDataBasic stockxdata = ggstock.getNodeXPeroidData(globeperiod);
+								 if( ((StockNodeXPeriodData)stockxdata).isVeryVeryNewXinStock() ) // 刚上市的新股也不考虑
+									 continue;
 								 Integer recordmaxdpwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate,0);
 								 Integer recordmaxcjewk = stockxdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate,0);
 								 Double recordhsl = ((StockNodeXPeriodData)stockxdata).getSpecificTimeHuanShouLv(selectiondate, 0);

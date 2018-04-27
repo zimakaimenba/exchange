@@ -35,17 +35,18 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 //		logger.debug("row" + row +"column" + col);
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
-	    
+	    String valuepect = "";
 	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { 
 
-        	String valuepect = null;
-        	try {
+	    	try {
         		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
         		 
         		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-	    	    	 percentFormat.setMinimumFractionDigits(1);
+	    	     percentFormat.setMinimumFractionDigits(1);
             	 valuepect = percentFormat.format (formatevalue );
-        	} catch (java.lang.NumberFormatException e)   	{
+        	} catch (java.lang.NullPointerException e) {
+        		valuepect = "";
+	    	}catch (java.lang.NumberFormatException e)   	{
         		e.printStackTrace();
         	} catch (ParseException e) {
 				e.printStackTrace();
@@ -53,35 +54,37 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         	((JLabel)comp).setText(valuepect);
         }
 	    
+	    //对每个column设置显示颜色会导致table拖动反应很慢，慎重
 	    BanKuaiGeGuTableModel tablemodel =  (BanKuaiGeGuTableModel)table.getModel() ;
-	    
-	    Color foreground, background = Color.white;
-	    
-	    //突出显示parse file
-	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
 	    int modelRow = table.convertRowIndexToModel(row);
 	    StockOfBanKuai stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
-	    if(col == 0  ) {
-	    	
-	    }
-	    if( col == 1 ) {
-	    	if(!table.isRowSelected(row) && parsefiel != null && tablemodel.showParsedFile()  ) {
-		    	String stockcode = stock.getMyOwnCode();
-		    	
-		    	if(parsefiel != null && parsefiel.contains(stockcode)  )
-		    		background = Color.ORANGE  ;
-		    	else
-		    		background = Color.white;
-		    } 
-	    	else
-	    		background = Color.white;
-	    } 
-	    //突出权重，目前没有特别设置
-	    if(col == 2) {
-	    	background = Color.white;
-	    }
+	    
+	    Color foreground, background = Color.white;
+//	    
+//	    //突出显示parse file
+//	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
+	 
+//	    if(col == 0  ) {
+//	    	
+//	    }
+//	    if( col == 1 ) {
+//	    	if(!table.isRowSelected(row) && parsefiel != null && tablemodel.showParsedFile()  ) {
+//		    	String stockcode = stock.getMyOwnCode();
+//		    	
+//		    	if(parsefiel != null && parsefiel.contains(stockcode)  )
+//		    		background = Color.ORANGE  ;
+//		    	else
+//		    		background = Color.white;
+//		    } 
+//	    	else
+//	    		background = Color.white;
+//	    } 
+//	    //突出权重，目前没有特别设置
+//	    if(col == 2) {
+//	    	background = Color.white;
+//	    }
 	    //突出显示成交额达到标准的股票
-	    if( col == 3) {
+	    if( col == 3 && value != null ) {
 	    	BanKuai bk = tablemodel.getCurDispalyBandKuai ();
 		    Double cje = tablemodel.getDisplayChenJiaoEr ();
 		    LocalDate requireddate = tablemodel.getShowCurDate();
@@ -92,10 +95,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	background = Color.yellow ;
 		    else
 		    	background = Color.white;
-	    } 
-	    
-	    //突出显示bkMAXWK>=4的个股
-	    if(col == 5 || col == 4  ) {
+	    } else   if( (col == 5 || col == 4) && value != null  ) { //突出显示bkMAXWK>=的个股
 	    	int bkmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
 	    	
 	    	
@@ -104,9 +104,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		 background = Color.magenta ;
 	    	 else 
 	    		 background = Color.white ;
-	    }
-	    //突出显示dpMAXWK>=4的个股
-	    if( col == 7 || col == 6 ) {
+	    } else  if( (col == 7 || col == 6)  && value != null  ) { 	    //突出显示dpMAXWK>=的个股
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
 	    	
 	    	int fazhi = tablemodel.getDisplayCjeDPMaxWk();
@@ -114,9 +112,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		 background = Color.red ;
 	    	 else 
 	    		 background = Color.white ;
-	    }
-	  //突出显示CjeMAXWK>=的个股
-	    if( col ==  8 ) {
+	    }else  if( col ==  8  && value != null ) { //突出显示CjeMAXWK>=的个股
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 8).toString() );
 	    	
 	    	int fazhi = tablemodel.getDisplayCjeMaxWk();
@@ -124,8 +120,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		 background = Color.CYAN ;
 	    	 else 
 	    		 background = Color.white ;
-	    }
-	    if( col == 9) {
+	    } else   if( col == 9 && value != null  ) {	    //突出换手率
 	    	double hsl = Double.parseDouble( tablemodel.getValueAt(modelRow, 9).toString() );
 	    	
 	    	double shouldhsl = tablemodel.getDisplayHuanShouLv();
@@ -134,8 +129,8 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	 else 
 	    		 background = Color.white ;
 	    }
-	    
-	    if (!table.isRowSelected(row)) 
+ 
+	    if(!hasFocus)
 	    	comp.setBackground(background);
 	    
 	    return comp;
