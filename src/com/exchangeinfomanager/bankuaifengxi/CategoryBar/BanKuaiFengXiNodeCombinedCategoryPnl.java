@@ -169,23 +169,4 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
         PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
         pcs.firePropertyChange(evt);
     }
-	
-    /*
-     * 
-     */
-//    private JScrollBar getScrollBar(CategoryAxis axis)
-//    {
-//        double r1 = axis.getLowerMargin();
-//        double r2 = axis.getUpperMargin();
-//        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 100, 100, 0, 400);
-//        scrollBar.addAdjustmentListener( new AdjustmentListener() {
-//            public void adjustmentValueChanged(AdjustmentEvent e) {
-//                double x = e.getValue() *60 *60 * 1000;
-////                axis.setRange(r1+x, r2+x);
-//            }
-//        });
-//        return scrollBar;
-//    }
-
-
 }

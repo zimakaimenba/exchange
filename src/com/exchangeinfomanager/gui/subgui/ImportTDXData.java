@@ -316,7 +316,7 @@ public class ImportTDXData extends JDialog {
 		//从网络上导入数据后，有可能某些数据还是不能从网上得到，没办法了，只能手工从东方财富里面导出
 		HashSet<String> missingdatastockset = bkdbopt.checkStockDataIsCompleted();
 		if(!missingdatastockset.isEmpty()) {
-			int exchangeresult = JOptionPane.showConfirmDialog(null, "网络导入数据不完整，请从东方财富下载完整数据后从文件直接导入。","导入不完整", JOptionPane.OK_CANCEL_OPTION);
+			int exchangeresult = JOptionPane.showConfirmDialog(null, "从网易导入的数据不完整，请从东方财富下载完整数据后从文件直接导入。","导入不完整", JOptionPane.OK_CANCEL_OPTION);
       		if(exchangeresult == JOptionPane.CANCEL_OPTION) 
       			return;
       		else {

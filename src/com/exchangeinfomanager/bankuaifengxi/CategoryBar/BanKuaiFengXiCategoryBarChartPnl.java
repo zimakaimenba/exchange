@@ -2,8 +2,6 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
-import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
@@ -12,58 +10,29 @@ import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
-import org.jfree.chart.axis.AxisSpace;
+
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
+
 import org.jfree.chart.entity.CategoryItemEntity;
-import org.jfree.chart.entity.ChartEntity;
-import org.jfree.chart.entity.PlotEntity;
-import org.jfree.chart.entity.XYItemEntity;
-import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
-import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-import org.jfree.chart.renderer.category.StandardBarPainter;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.title.LegendTitle;
-import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.category.SlidingCategoryDataset;
-import org.jfree.data.xy.DefaultXYDataset;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
-//import org.jfree.chart.renderer.junit.RendererChangeDetector;
-
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.DaPan;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
-import com.exchangeinfomanager.bankuaifengxi.TooltipChartPanel.TooltipChartPanel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.sun.rowset.CachedRowSetImpl;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -100,7 +69,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Create the panel.
 	 */
@@ -347,17 +315,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
         plot.setRangeAxis(new NumberAxis(""));
         plot.setRangePannable(true);
 
-        //        //line part
-//        linechartdataset = new DefaultCategoryDataset();
-//        BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
-//        plot.setDataset(1, linechartdataset);
-//        plot.setRenderer(1, linerenderer);
-//        ValueAxis rangeAxis2 = new NumberAxis("MatchNumber");
-//        plot.setRangeAxis(1, rangeAxis2);
-//        
-//        // change the rendering order so the primary dataset appears "behind" the 
-//        // other datasets...
-//        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
         plot.setDomainAxis(new CategoryLabelCustomizableCategoryAxis(""));
         //
         barchart = new JFreeChart(plot);
@@ -378,32 +335,15 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 //		popupMenu.add(mntmNewMenuItem);
 		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
    }
-    
-    /*
-     * 
-     */
-    private JScrollBar getScrollBar( CategoryAxis axis)
-    {
-        double r1 = axis.getLowerMargin();
-        double r2 = axis.getUpperMargin();
-        JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 100, 100, 0, 400);
-        scrollBar.addAdjustmentListener( new AdjustmentListener() {
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                double x = e.getValue() *60 *60 * 1000;
-//                axis.set.setRange(r1+x, r2+x);
-            }
-        });
-        return scrollBar;
-    }
-    
+ 
     
 }
 
 /*
  * 设置X轴，如果有分析结果就显示为橙色
  */
-class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
-
+class CategoryLabelCustomizableCategoryAxis extends CategoryAxis 
+{
     private static final long serialVersionUID = 1L;
     protected BkChanYeLianTreeNode node;
 	private String period;
@@ -437,9 +377,10 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis {
     	this.node = curdisplayednode;
     	this.period = period;
     }
-   
 }
-
+/*
+ * 
+ */
 class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 {
 	public BanKuaiFengXiCategoryLineRenderer ()

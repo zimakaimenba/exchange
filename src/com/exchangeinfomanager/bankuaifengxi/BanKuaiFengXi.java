@@ -2498,7 +2498,7 @@ public class BanKuaiFengXi extends JDialog {
 			cbxhuanshoulv.setForeground(Color.BLUE);
 			
 			tfldhuanshoulv = new JTextField();
-			tfldhuanshoulv.setText("15");
+			tfldhuanshoulv.setText("30");
 			tfldhuanshoulv.setColumns(10);
 			
 			

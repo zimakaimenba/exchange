@@ -198,7 +198,7 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
     	 
 		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
 		
-		if(maxweek !=null && maxweek >= super.displayedmaxwklevel)
+		if(maxweek != null && maxweek >= super.displayedmaxwklevel)
 			return Color.CYAN;
 		else 
 			return Color.black;
@@ -242,6 +242,5 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 		Integer maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
 		
 		return selecteddate + " " + "成交额" + decimalformate.format(curcje) + danwei +  "成交额MaxWk=" + maxwk;
-		
     }
 }
