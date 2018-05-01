@@ -213,7 +213,34 @@ public class Stock extends BkChanYeLianTreeNode {
 		private  TimeSeries stockhuanshoulv;
 		private  TimeSeries stockliutongshizhi;
 		private  TimeSeries stockzongshizhi;
-		
+		/*
+		* (non-Javadoc)
+		* @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem)
+		*/
+		public Boolean isVeryVeryNewXinStock ()
+		{
+		if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.WEEK)) {
+		if(super.stockamo.getItemCount() >=4)
+		return false;
+		else 
+		return true;
+		} else if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.DAY)) {
+		if(super.stockamo.getItemCount() >= 20)
+		return false;
+		else 
+		return true;
+		}  else if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.MONTH)) {
+		if(super.stockamo.getItemCount() > 1)
+		return false;
+		else 
+		return true;
+		}
+		return null;
+		}
+		/*
+		 * (non-Javadoc)
+		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem)
+		 */
 		public void addNewXPeriodData (StockGivenPeriodDataItem kdata)
 		{
 			try {

@@ -3035,7 +3035,12 @@ public class StockInfoManager
 		
 		btnyituishi = new JButton("");
 		btnyituishi.setToolTipText("\u8BBE\u7F6E\u4E3A\u5DF2\u9000\u5E02");
-		btnyituishi.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/cloud-computing.png")));
+		try {
+			btnyituishi.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/cloud-computing.png")));
+		} catch (java.lang.NullPointerException ex) {
+			
+		}
+		
 		panel_1.add(btnyituishi, "cell 9 0");
 		frame.getContentPane().setLayout(groupLayout);
 		

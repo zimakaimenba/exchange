@@ -445,6 +445,14 @@ public class BanKuaiFengXi extends JDialog {
 			dateshowinfilename = "month" +  curselectdate.withDayOfMonth(curselectdate.lengthOfMonth()).toString().replaceAll("-","");
 		String exportfilename = sysconfig.getTDXModelMatchExportFile ()+ dateshowinfilename + ".EBK";
 		File filefmxx = new File( exportfilename );
+		if(!filefmxx.getParentFile().exists()) {  
+            //如果目标文件所在的目录不存在，则创建父目录  
+            logger.debug("目标文件所在目录不存在，准备创建它！");  
+            if(!filefmxx.getParentFile().mkdirs()) {  
+                System.out.println("创建目标文件所在目录失败！");  
+                return ;  
+            }  
+        }  
 		try {
 				if (filefmxx.exists()) {
 					filefmxx.delete();
@@ -1406,7 +1414,7 @@ public class BanKuaiFengXi extends JDialog {
 					BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
 					refreshCurentBanKuaiFengXiResult (selectedbk,globeperiod);
 					displayNodeInfo(selectedbk);
-					patchParsedFile (selectedbk);
+//					patchParsedFile (selectedbk);
 					cbxsearchbk.updateUserSelectedNode(selectedbk);
 					
 					//找到该股票
@@ -1415,9 +1423,7 @@ public class BanKuaiFengXi extends JDialog {
 						JOptionPane.showMessageDialog(null,"在某个个股表内没有发现该股，可能在这个时间段内该股停牌","Warning",JOptionPane.WARNING_MESSAGE);
 					
 					Toolkit.getDefaultToolkit().beep();
-				}
-				
-				
+				}		
 			}
 		});
 		
@@ -1638,6 +1644,10 @@ public class BanKuaiFengXi extends JDialog {
 		for(int i=0; i<columncount;i ++) {
 			result = result + curtable.getColumnName(i) + ":" + curtable.getValueAt(row, i) +";";
 		}
+		StockNodeXPeriodData nodexdata = (StockNodeXPeriodData) selectstock.getStock().getNodeXPeroidData(globeperiod);
+		Double liutongshizhi = nodexdata.getSpecificTimeLiuTongShiZhi(dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), 0);
+		Double zongshizhi = nodexdata.getSpecificTimeZongShiZhi(dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), 0);
+		result = result + "流通市值:" + liutongshizhi/100000000 + "亿" + "总市值:" + zongshizhi/100000000 + "\n";
 		setUserSelectedColumnMessage (result, null);
 		result = null;
 	}
@@ -2455,7 +2465,7 @@ public class BanKuaiFengXi extends JDialog {
 			
 			tfldbkmaxwk = new JTextField();
 			tfldbkmaxwk.setForeground(Color.MAGENTA);
-			tfldbkmaxwk.setText("4");
+			tfldbkmaxwk.setText("5");
 			tfldbkmaxwk.setColumns(10);
 			
 			chkcjemaxwk = new JCheckBox("\u7A81\u51FA\u6210\u4EA4\u989DMAXWK>=");

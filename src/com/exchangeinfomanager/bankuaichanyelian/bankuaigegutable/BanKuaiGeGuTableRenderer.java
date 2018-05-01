@@ -130,8 +130,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		 background = Color.white ;
 	    }
  
-	    if(!hasFocus)
+//	    if(!hasFocus)
 	    	comp.setBackground(background);
+	    if(table.isRowSelected(row) && col == 0 ) {
+	    	comp.setBackground(Color.blue);
+	    	
+	    }
 	    
 	    return comp;
 	}

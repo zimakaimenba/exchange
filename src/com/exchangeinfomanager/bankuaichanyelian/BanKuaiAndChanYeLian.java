@@ -262,8 +262,8 @@ public class BanKuaiAndChanYeLian
 		
 		if(stockstartday == null || stockendday == null ) { //还没有数据，直接找
 			stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock, bkstartday, bkendday,period);
-			Stock stockroot = stock.getStock();
-			this.getStock(stockroot, bkendday, period);
+			Stock stockroot = stock.getStock(); //本身stock胡数据
+			this.getStock(stockroot, bkstartday, bkendday, period);
 //			bkdbopt.getStockZhanBi (stock.getStock(), bkstartday, bkendday,period);
 		} else {
 			HashMap<String,LocalDate> startend = null;
@@ -279,7 +279,7 @@ public class BanKuaiAndChanYeLian
 				searchstart = startend.get("searchstart"); 
 				searchend = startend.get("searchend");
 				stock = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stock,searchstart,searchend,period);
-				bkdbopt.getStockZhanBi (stock.getStock(), searchstart, searchend,period);
+				this.getStock (stock.getStock(), searchstart, searchend,period);
 			}
 			
 			startend = null;
@@ -440,12 +440,8 @@ public class BanKuaiAndChanYeLian
 		
 		return stock;
 	}
-	public Stock getStock(Stock stock, LocalDate requiredrecordsday, String period)
+	public Stock getStock(Stock stock, LocalDate requirestart, LocalDate requireend,String period)
 	{
-		//占比还是要看周线/月线，日线数据没有太大意义，下面专门找出个股周线占比数据
-		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		
 		try{
 			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
 			LocalDate nodestartday = stockxdata.getRecordsStartDate();
@@ -475,6 +471,16 @@ public class BanKuaiAndChanYeLian
 		} catch (java.lang.NullPointerException e) {
 					e.printStackTrace();
 		}
+		
+		return stock;
+	}
+	public Stock getStock(Stock stock, LocalDate requiredrecordsday, String period)
+	{
+		//占比还是要看周线/月线，日线数据没有太大意义，下面专门找出个股周线占比数据
+		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		stock = this.getStock(stock,requirestart,requireend,period);
 		
 		return stock;
 	}
