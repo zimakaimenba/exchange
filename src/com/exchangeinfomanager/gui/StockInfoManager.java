@@ -189,6 +189,7 @@ public class StockInfoManager
 	      }
 	    }
 	    
+	    
 		sysconfig = SystemConfigration.getInstance();
 		connectdb = ConnectDataBase.getInstance();
 		boolean localconnect = connectdb.isLocalDatabaseconnected();
