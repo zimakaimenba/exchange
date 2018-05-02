@@ -43,7 +43,7 @@ public class Stock extends BkChanYeLianTreeNode {
 	}
 	
 	private String checklistXml;
-//	private static Logger logger = Logger.getLogger(Stock.class);
+	private static Logger logger = Logger.getLogger(Stock.class);
 	
 //	private Multimap<String> chiCangAccountNameList; //持有该股票的所有账户的名字
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; //持有该股票的所有账户<账户，账户信息>
@@ -305,7 +305,13 @@ public class Stock extends BkChanYeLianTreeNode {
 		public double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference)
 		{
 			TimeSeriesDataItem curzszrecord = stockzongshizhi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-			Double curzsz = curzszrecord.getValue().doubleValue();
+			Double curzsz = null ;
+			try {
+				curzsz = curzszrecord.getValue().doubleValue();
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info(" ");
+			}
 			
 			return curzsz;
 		}
