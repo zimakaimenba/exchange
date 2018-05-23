@@ -91,6 +91,7 @@ import org.jfree.data.time.RegularTimePeriod;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
@@ -98,7 +99,6 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
-import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -670,7 +670,8 @@ public class BanKuaiDbOperation
 				       	logger.debug(sqlupdatestat);
 				   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		   	        }
-	   			   
+		   	     differencebankuaiold = null;
+		   	     
 	   		        //把tmpstockcodesetnew里面有的，tmpstockcodesetold没有的选出，这是新的，要加入数据库
 	   		        SetView<String> differencebankuainew = Sets.difference(tmpstockcodesetnew, tmpstockcodesetold ); 
 		   		    for (String str : differencebankuainew) {
@@ -690,6 +691,7 @@ public class BanKuaiDbOperation
 		   				addednumber ++;
 		                Files.append("加入：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   			}
+		   		 differencebankuainew = null;
                }
 		 } catch (Exception e) {
 			 e.printStackTrace();
@@ -1134,6 +1136,7 @@ public class BanKuaiDbOperation
 				       	logger.debug(sqlupdatestat);
 				   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		   	        }
+		   	     differencebankuaiold = null;
 	   			   
 	   		        //把tmpstockcodesetnew里面有的，tmpstockcodesetold没有的选出，这是新的，要加入数据库
 	   		        SetView<String> differencebankuainew = Sets.difference(tmpstockcodesetnew, tmpstockcodesetold ); 
@@ -1154,6 +1157,7 @@ public class BanKuaiDbOperation
 		   				addednumber ++;
 		                Files.append("加入：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   			}
+		   		 differencebankuainew = null;
                }
 		 } catch (Exception e) {
 			 e.printStackTrace();
@@ -1485,6 +1489,7 @@ public class BanKuaiDbOperation
 		   	    		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 //		   	    		Files.append("删除："  + str.trim() + " " + gupiaoheader + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   	        }
+		   	     differencebankuaiold = null;
 		   	        
 	   		        //把tmpstockcodesetnew里面有的，tmpstockcodesetold没有的选出，这是新的，要加入数据库
 	   		        SetView<String> differencebankuainew = Sets.difference(tmpstockcodesetnew, tmpstockcodesetold ); 
@@ -1505,6 +1510,7 @@ public class BanKuaiDbOperation
 		   				
 //		   				Files.append("加入："  + str.trim() + " " + gupiaoheader + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   			}
+		   		 differencebankuainew = null;
 		   	        
 //		   	        if(differencebankuainew.size() ==0 && differencebankuaiold.size()>0 ) { // 新的为0，旧的大于零，删除的时候现在实现机制数据库不更新最后更新时间，对更新XML有影响，所以强制更新一条信息
 //		   	        	String sqlupdatestat = "UPDATE 通达信板块列表 SET 数据最新更新时间 = "
@@ -1681,7 +1687,8 @@ public class BanKuaiDbOperation
 				       	logger.debug(sqlupdatestat);
 				   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		   	        }
-	   			   
+		   	     differencebankuaiold = null;
+		   	     
 	   		        //把tmpstockcodesetnew里面有的，tmpstockcodesetold没有的选出，这是新的，要加入数据库
 	   		        SetView<String> differencebankuainew = Sets.difference(tmpstockcodesetnew, tmpstockcodesetold ); 
 		   		    for (String str : differencebankuainew) {
@@ -1701,6 +1708,7 @@ public class BanKuaiDbOperation
 		   				addednumber ++;
 		                Files.append("加入：" + str.trim() + " " + gupiaoheader +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   			}
+		   		 differencebankuainew = null;
               }
 		 } catch (Exception e) {
 			 e.printStackTrace();
@@ -1860,7 +1868,7 @@ public class BanKuaiDbOperation
 //				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 			 }
 		 }
-		  
+		 differencebankuaiold = null;
 		
 		return 1;
 	}
@@ -2005,7 +2013,7 @@ public class BanKuaiDbOperation
 				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 			 }
 		 }
-		
+		 differencebankuaiold = null;
 		return -1;
 	}
 
@@ -3779,6 +3787,7 @@ public class BanKuaiDbOperation
 				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 				//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
 			}
+		    differencebankuainew = null;
 		    
 	        //把旧的自定义板块删除出数据库
 	        SetView<String> differencebankuaiold = Sets.difference(curzdybknames,neededimportzdybknames  );
@@ -3796,10 +3805,11 @@ public class BanKuaiDbOperation
 				//logger.debug(sqldeletetstat);
 				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 	        }
+	        differencebankuaiold = null;
 	        
 	        neededimportzdybknames = null;
 	        curzdybknames = null;
-	        differencebankuaiold = null;
+	        
 	        
 	        return 1;
 	}
@@ -3868,7 +3878,8 @@ public class BanKuaiDbOperation
    				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
    				//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
    			}
-   		    
+   		 differencebankuainew = null;
+   		 
    	        //把 tmpstockcodesetold 里面有的，tmpstockcodesetnew没有的选出，这是旧的，要从数据库中删除
    	        SetView<String> differencebankuaiold = Sets.difference(tmpstockcodesetold,stocknamesnew  );
    	        for (String oldstock : differencebankuaiold) {
@@ -3880,7 +3891,9 @@ public class BanKuaiDbOperation
    	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
    	    		//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
    	        }
+   	     differencebankuaiold = null;
 		}
+		
 		
 		neededimportzdybknames = null;
 		return 0;
@@ -5534,6 +5547,91 @@ public class BanKuaiDbOperation
 		
 		    missingdatastockset = null;
 		    return true;
+		}
+		/*
+		 * 该周大盘共有几个交易日
+		 */
+		public int getTradingDaysOfTheWeek(LocalDate curselectdate) 
+		{
+			LocalDate monday = curselectdate.with(DayOfWeek.MONDAY);
+			LocalDate friday = curselectdate.with(DayOfWeek.FRIDAY);
+			
+			boolean hasbkcode = true;
+            CachedRowSetImpl rspd = null; 
+            int result = 0;
+			try {
+				   String sqlquerystat = "select count(*) as result from 通达信板块每日交易信息 " + 
+							"where 代码 = '999999' " +
+							"and 交易日期 >= '" + monday + "'" + 
+							"and 交易日期 <= '" + friday + "'"
+							;
+	
+			    	logger.debug(sqlquerystat);
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			    	
+			        while(rspd.next())  {
+			        	result = rspd.getInt("result");
+			        }
+			       
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+			
+			return result;
+		}
+		/*
+		 * 
+		 */
+		public HashMap<String, String> getGuPiaoChi() 
+		{
+			HashMap<String,String> gpcindb = new HashMap<String,String> ();
+			boolean hasbkcode = true;
+            CachedRowSetImpl rspd = null; 
+            
+			try {
+				   String sqlquerystat = "SELECT * FROM 产业链板块州列表 "
+							;
+	
+			    	logger.debug(sqlquerystat);
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			    	
+			        while(rspd.next())  {
+			        	String bkzcode = rspd.getString("板块州代码");
+			        	String bkzname = rspd.getString("板块州名称");
+			        	gpcindb.put(bkzcode, bkzname);
+			        }
+			       
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+	
+			return gpcindb;
 		}
 		
 		

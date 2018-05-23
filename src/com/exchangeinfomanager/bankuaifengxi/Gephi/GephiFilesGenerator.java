@@ -17,11 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -33,7 +34,7 @@ import com.opencsv.CSVWriter;
 
 public class GephiFilesGenerator 
 {
-	public GephiFilesGenerator (BanKuaiAndChanYeLian bkcyl2)
+	public GephiFilesGenerator (AllCurrentTdxBKAndStoksTree bkcyl2)
 	{
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
@@ -43,7 +44,7 @@ public class GephiFilesGenerator
 	}
 	private SystemConfigration sysconfig;
 	private BanKuaiDbOperation bkdbopt;
-	private BanKuaiAndChanYeLian bkcyl;
+	private AllCurrentTdxBKAndStoksTree bkcyl;
 	List<String[]> nodecontentArrayList;
 	private List<String[]> edgecontentArrayList;
 	private LocalDate recorddate;

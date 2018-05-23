@@ -48,5 +48,53 @@ public class BkChanYeLianTreeIconFactory {
 	        }
 	        return icon;
 	    }
+	    
+	    ImageIcon guPiaoChiHasChildIcon = new ImageIcon(getClass().getResource("/images/starClosed15.png"));
+	    ImageIcon guPiaoChiNoChildIcon = new ImageIcon(getClass().getResource("/images/greyClosed15.png"));
+	    
+	    ImageIcon subGuPiaoHasChildIcon = new ImageIcon(getClass().getResource("/images/star15.png"));
+	    ImageIcon subGuPiaoNoChildIcon = new ImageIcon(getClass().getResource("/images/greyCircle15.png"));
+	    
+	    ImageIcon banKuaiHasChildIcon = new ImageIcon(getClass().getResource("/images/flagred.png"));
+	    ImageIcon banKuaiNoChildIcon = new ImageIcon(getClass().getResource("/images/flaggrey.png"));
+	    
+	    ImageIcon subBanKuaiHasChildIcon = new ImageIcon(getClass().getResource("/images/star15.png"));
+	    ImageIcon subBanKuaiNoChildIcon = new ImageIcon(getClass().getResource("/images/star15.png"));
+	    
+	    ImageIcon stockIcon = new ImageIcon(getClass().getResource("/images/check15.png"));
+	    
+	    
+	    public ImageIcon getIcon(BkChanYeLianTreeNode node)
+	    {
+	    	if (node.getType() == BkChanYeLianTreeNode.GPC) {
+	    		if(node.getChildCount() > 0)
+	    			icon =  guPiaoChiHasChildIcon;
+	    		else icon = guPiaoChiNoChildIcon;
+	    	} else
+	    		
+	    	if (node.getType() == BkChanYeLianTreeNode.SUBGPC) {
+	    		if(node.getChildCount() > 0)
+	    			icon = subGuPiaoHasChildIcon;
+	    		else icon = subGuPiaoNoChildIcon;
+	    	} else
+	    		
+	    	if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
+	    		if(node.getChildCount() > 0)
+	    			icon = banKuaiHasChildIcon;
+	    		else icon = banKuaiNoChildIcon;
+	    	} else
+	    		
+	    	if (node.getType() == BkChanYeLianTreeNode.SUBBK) {
+	    		if(node.getChildCount() > 0)
+	    			icon = subBanKuaiHasChildIcon;
+	    		else icon = subBanKuaiNoChildIcon;
+	    	} else
+	    		
+	    	if (node.getType() == BkChanYeLianTreeNode.TDXGG) {
+	    			icon = stockIcon;
+	    	}
+	    	
+			return icon;
+	    }
 
 }

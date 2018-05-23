@@ -14,7 +14,7 @@ public class JLocalDateChooser extends JDateChooser
 	{
 		super ();
 	}
-	public void setocalDate (LocalDate date)
+	public void setLocalDate (LocalDate date)
 	{
 		ZoneId zone = ZoneId.systemDefault();
 		Instant instant = date.atStartOfDay().atZone(zone).toInstant();

@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian;
+package com.exchangeinfomanager.asinglestockinfo;
 
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -25,13 +25,6 @@ import org.apache.log4j.Logger;
 
 import javax.swing.tree.TreeNode;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeCellRenderer;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.SubBanKuai;
-import com.exchangeinfomanager.asinglestockinfo.TreeTransferHandler;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.google.common.base.Charsets;
@@ -42,13 +35,15 @@ import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
-
-
 public class BkChanYeLianTree extends JTree 
 {
 	public BkChanYeLianTree (BkChanYeLianTreeNode bkcylrootnode)
 	{
 		super(bkcylrootnode);
+		
+		InvisibleTreeModel ml = new InvisibleTreeModel(bkcylrootnode);
+		ml.activateFilter(true);
+		this.setModel(ml);
 		this.createEvents(this);
 		this.setDragEnabled(false);
 		this.setDragEnabled(true);
@@ -58,7 +53,6 @@ public class BkChanYeLianTree extends JTree
 		this.setRootVisible(false);
 		this.setTransferHandler(new TreeTransferHandler());
 
-//		bkdbopt = new BanKuaiDbOperation(); 
 		this.currentselectedtdxbk = "";
 	}
 	
@@ -373,6 +367,7 @@ public class BkChanYeLianTree extends JTree
                 else return 0;
         }});
     }
+    
 	public void moveNode(int direction) 
 	{
 		if (this.getSelectionCount()==0) return;
@@ -632,7 +627,7 @@ public class BkChanYeLianTree extends JTree
 	/*
 	 * 找到指定的节点
 	 */
-	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String bkinputed,int requirenodetype) //有时候板块和个股代码相同
+	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String bkinputed,int requirenodetype) //有时候板块和个股代码相同,所以要加上type
 	{
 		TreePath bkpath = null ;
     	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
@@ -657,6 +652,26 @@ public class BkChanYeLianTree extends JTree
 			
 		} else
 			return null;
+	}
+	/*
+	 * 
+	 */
+	public HashSet<BkChanYeLianTreeNode> getSpecificNodesSet (int requirenodetype)
+	{
+		HashSet<BkChanYeLianTreeNode> nodesset = new HashSet<BkChanYeLianTreeNode> ();
+		
+    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+    	
+	    @SuppressWarnings("unchecked")
+		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
+	    while (e.hasMoreElements() ) {
+	    	BkChanYeLianTreeNode node = e.nextElement();
+	    	if(node.getType() == requirenodetype) {
+	    		nodesset.add(node);
+	    	}
+	    }
+	    
+	    return nodesset;
 	}
 	
 	

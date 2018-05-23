@@ -219,23 +219,23 @@ public class Stock extends BkChanYeLianTreeNode {
 		*/
 		public Boolean isVeryVeryNewXinStock ()
 		{
-		if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.WEEK)) {
-		if(super.stockamo.getItemCount() >=4)
-		return false;
-		else 
-		return true;
-		} else if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.DAY)) {
-		if(super.stockamo.getItemCount() >= 20)
-		return false;
-		else 
-		return true;
-		}  else if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.MONTH)) {
-		if(super.stockamo.getItemCount() > 1)
-		return false;
-		else 
-		return true;
-		}
-		return null;
+			if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.WEEK)) {
+				if(super.stockamo.getItemCount() >=4)
+					return false;
+				else 
+					return true;
+			} else if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.DAY)) {
+				if(super.stockamo.getItemCount() >= 20)
+					return false;
+				else 
+					return true;
+			}  else if(super.getNodeperiodtype().equals(StockGivenPeriodDataItem.MONTH)) {
+				if(super.stockamo.getItemCount() > 1)
+					return false;
+				else 
+					return true;
+			}
+			return null;
 		}
 		/*
 		 * (non-Javadoc)

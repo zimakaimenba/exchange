@@ -37,12 +37,14 @@ import org.dom4j.io.XMLWriter;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
+import com.exchangeinfomanager.asinglestockinfo.GuPiaoChi;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.asinglestockinfo.SubBanKuai;
-import com.exchangeinfomanager.checkboxtree.CheckBoxTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.SubGuPiaoChi;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets;
@@ -98,7 +100,7 @@ class ChanYeLianXMLHandler
 	            e.printStackTrace();  
 	     }  
 		
-		initializeAllStocksTree ();
+		initializeChanYeLianTree ();
 	}
 	
 	private static Logger logger = Logger.getLogger(ChanYeLianXMLHandler.class);
@@ -117,55 +119,43 @@ class ChanYeLianXMLHandler
 //	private BkChanYeLianTree treeallstocks;
 	private BkChanYeLianTree treecyl;
 	
-	private void initializeAllStocksTree() 
+	private void initializeChanYeLianTree() 
 	{
 		DaPan alltopNode = new DaPan("000000","两交易所");
 		
-		ArrayList<Stock> allstocks = bkopt.getAllStocks ();
-		for (Stock stock : allstocks ) {
-		    alltopNode.add(stock);
-//		    logger.debug(stock.getMyOwnCode() + "类型" + stock.getType());
-		}
-		
-		ArrayList<BanKuai> allbkandzs = bkopt.getTDXBanKuaiList ("all");
-		for (BanKuai bankuai : allbkandzs ) {
-		    alltopNode.add(bankuai);
-//		    logger.debug(bankuai.getMyOwnCode()+ "类型" + bankuai.getType());
-		}
+//		ArrayList<Stock> allstocks = bkopt.getAllStocks ();
+//		ArrayList<BanKuai> allbkandzs = bkopt.getTDXBanKuaiList ("all");
 
-		treecyl = new BkChanYeLianTree(alltopNode);
 		
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treecyl.getModel().getRoot();
-	    @SuppressWarnings("unchecked")
-		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
-	    while (e.hasMoreElements() ) {
-	    	BkChanYeLianTreeNode node = e.nextElement();
-    		logger.debug(node.getMyOwnCode() + "类型" + node.getType());
-	    }
+		
+//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treecyl.getModel().getRoot();
+//	    @SuppressWarnings("unchecked")
+//		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
+//	    while (e.hasMoreElements() ) {
+//	    	BkChanYeLianTreeNode node = e.nextElement();
+//    		logger.debug(node.getMyOwnCode() + "类型" + node.getType());
+//	    }
 		
 		//产业链tree part
-		if(this.isXmlShouldUpdated() ) {
-			hasXmlRevised = true;
-
-			if(cylxmlroot != null) {
-				generateChanYeLianTreeFromXML(alltopNode,cylxmlroot,treecyl); //生成产业链树
-			} else 
-				logger.debug(bankuaichanyelianxml+ "存在错误");
+		if(cylxmlroot != null) {
+			generateChanYeLianTreeFromXML(alltopNode,cylxmlroot); //生成产业链树
 		}
 		
-		allstocks = null;
-		e = null;
+		treecyl = new BkChanYeLianTree(alltopNode);
+		
+//		allstocks = null;
+//		e = null;
+		System.out.println("test1");
 	}
 	/*
 	 * 
 	 */
-	private void generateChanYeLianTreeFromXML(BkChanYeLianTreeNode topNode, Element xmlelement, BkChanYeLianTree treeallstocks ) 
+	private void generateChanYeLianTreeFromXML(BkChanYeLianTreeNode topNode, Element xmlelement) 
 	{
 	    	 Iterator it = xmlelement.elementIterator();
 	    	 
 	    	 while (it.hasNext() ) 
 	    	 {
-	    		   boolean shouldremovedwhensavexml = false;
 				   Element element = (Element) it.next();
 			   
 				   BkChanYeLianTreeNode parentsleaf = null;
@@ -174,23 +164,26 @@ class ChanYeLianXMLHandler
 				   String nodetypestr = element.attributeValue("Type").trim();
 				   Integer nodetype = Integer.parseInt(nodetypestr ); 
 				   
+				   if(BanKuaiAndStockBasic.GPC == nodetype ) { //是股票池
+					   bkowncode = element.attributeValue("gpccode"); 
+					   bkname = element.attributeValue("gpcname");
+					   
+					   parentsleaf = new GuPiaoChi(bkowncode,bkname);
+				   } else
+				   if(BanKuaiAndStockBasic.SUBGPC == nodetype ) { //是股票池
+					   bkowncode = element.attributeValue("subgpccode"); 
+					   bkname = element.attributeValue("subgpcname");
+					   
+					   parentsleaf = new SubGuPiaoChi(bkowncode,bkname);
+				   } else
 				   if(BanKuaiAndStockBasic.TDXBK == nodetype ) { //是通达信板块  
 					   bkowncode = element.attributeValue("bkcode");
+					   bkname = element.attributeValue("bkname");
 					   suoshubkcode = bkowncode;
 					 
-					   try{
-						   parentsleaf = (BanKuai) treeallstocks.getSpecificNodeByHypyOrCode(bkowncode,nodetype);
-						  
-					   } catch (java.lang.NullPointerException e) { //可能出现数据库中已经删除的板块，XML里面还有的板块，是要删除的板块
-						   bkname = element.attributeValue("bkname");
-						   shouldremovedwhensavexml = true;
-						   
-						   parentsleaf = new BanKuai ( bkowncode,bkname);
-						   ((BanKuai)parentsleaf).setBanKuaiLeiXing(BanKuai.NOGGNOSELFCJL); //后面显示的时候还需要这属性，对于删除的板块设置为nogegu no cje
-					   }
-					   
-					   
-				   } else if(BanKuaiAndStockBasic.SUBBK == nodetype ) {//是自定义子板块
+					   parentsleaf = new BanKuai(bkowncode,bkname);
+				   } else
+				   if(BanKuaiAndStockBasic.SUBBK == nodetype ) {//是自定义子板块
 					   bkname = element.attributeValue("subbkname");
 					   bkowncode = element.attributeValue("subbkcode");
 					   suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
@@ -198,37 +191,19 @@ class ChanYeLianXMLHandler
 					    parentsleaf = new SubBanKuai(bkowncode,bkname);
 					    topNode.add(parentsleaf);
 					   
-				   } else if(BanKuaiAndStockBasic.TDXBK == nodetype) {//是个股
+				   } else 
+				   if(BanKuaiAndStockBasic.TDXGG == nodetype) {//是个股
 					   bkname = element.attributeValue("geguname");
 					   bkowncode = element.attributeValue("gegucode");
 					   
-					   Stock tmpparentsleaf = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (bkowncode,nodetype );
-					   logger.debug(bkowncode);
-					   tmpparentsleaf = bkopt.getTDXBanKuaiForAStock (tmpparentsleaf); //通达信板块信息
-					   suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
-					   if( !tmpparentsleaf.isInTdxBanKuai(suoshubkcode))//如果该股已经不属于该板块，需要删除的，则标记好
-						   shouldremovedwhensavexml = true;
-
-					   StockOfBanKuai stofbk = new StockOfBanKuai ((BanKuai)topNode,(Stock)tmpparentsleaf);
-					   parentsleaf = stofbk; //树形里面还是存板块所属的个股
+					   parentsleaf = new Stock(bkowncode,bkname );
+				   }
+				   
+				   if(parentsleaf != null) {
 					   topNode.add(parentsleaf);
-				   }
-
-				   if(shouldremovedwhensavexml) //如果代码已经属于需要删除的，则标记好
-					   parentsleaf.getNodetreerelated().setShouldBeRemovedWhenSaveXml ();
-				   
-				   try {
-					   String addedTime =  element.attributeValue("addedTime"); //板块或个股加入到产业链树的时间
-					   if(addedTime != null)
-						   parentsleaf.getNodetreerelated().setAddedToCylTreeTime(addedTime);
-					   
-				   } catch (java.lang.NullPointerException ex) {
-					   ex.printStackTrace();
-				   }
-
-				   
-
-				   generateChanYeLianTreeFromXML(parentsleaf,element,treeallstocks);
+					   generateChanYeLianTreeFromXML(parentsleaf,element);
+				   } else
+					   return;
 			}
 	}
 	/*

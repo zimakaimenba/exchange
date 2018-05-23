@@ -28,8 +28,8 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -39,18 +39,14 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiInfoTable extends JTable 
 {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private BanKuaiDbOperation bkdbopt;
 	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
-	private BanKuaiAndChanYeLian bkcyl;
+	private AllCurrentTdxBKAndStoksTree bkcyl;
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 
-	public BanKuaiInfoTable(StockInfoManager stockmanager1,BanKuaiAndChanYeLian bkcyl2) 
+	public BanKuaiInfoTable(StockInfoManager stockmanager1,AllCurrentTdxBKAndStoksTree bkcyl2) 
 	{
 		super ();
 		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel ();

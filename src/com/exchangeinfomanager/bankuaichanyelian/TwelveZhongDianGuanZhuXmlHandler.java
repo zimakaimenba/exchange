@@ -28,6 +28,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
@@ -70,16 +71,14 @@ class TwelveZhongDianGuanZhuXmlHandler
 			logger.debug(this.xmlfile + "存在错误");
 			return;
 		}
-	
 	}
+	
 	private static Logger logger = Logger.getLogger(TwelveZhongDianGuanZhuXmlHandler.class);
 	private HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkdetailmap;
 //	private Multimap<String,String> gzbkdetailsimplemap;
 	private static Element xmlroot = null;
 	private Document document;
 	private SystemConfigration sysconfig;
-
-	
 	private String xmlfile;
 	//private HashMap<String,ArrayList<GuanZhuBanKuaiInfo>> gzbkmap; //重点关注的板块
 	private boolean hasXmlRevised;
@@ -145,7 +144,7 @@ class TwelveZhongDianGuanZhuXmlHandler
 				   } else 
 					   officallyselt = true;
 				  
-				   //把重点关注信息添加到树上。
+				   //把重点关注信息添加到树上。并获得NODE的path
 				    BkChanYeLianTreeNode expectnode = cyltree.updateZdgzInfoToBkCylTreeNode(chanyelian, addedtime,officallyselt);
 				    if(expectnode != null)
 				    	tmpgzbksublist.add(expectnode);
@@ -154,6 +153,7 @@ class TwelveZhongDianGuanZhuXmlHandler
 //				    	hasXmlRevised = true;
 //				    }
 			   }
+			   
 			   gzbkdetailmap.put(daleiname, tmpgzbksublist);
 		 }
 		 

@@ -1,18 +1,37 @@
 <?xml version="1.0" encoding="GBK"?>
 
 <ZhongDianGuanZhuanBanKuaiDetail>
-  <DaLeiBanKuai daleiname="成长股">
-    <Item tdxbk="880581" tdxbkcode="880581" addedTime="18-03-05" officallyselected="true">880581</Item>
+  <DaLeiBanKuai daleiname="超跌反弹">
+    <Item tdxbk="880302" tdxbkcode="880302" addedTime="17-11-30" officallyselected="true">880302</Item>
   </DaLeiBanKuai>
-  <DaLeiBanKuai daleiname="特定时间"/>
   <DaLeiBanKuai daleiname="重组收购"/>
   <DaLeiBanKuai daleiname="稳定白马"/>
   <DaLeiBanKuai daleiname="黑天鹅受益"/>
-  <DaLeiBanKuai daleiname="业绩反转"/>
-  <DaLeiBanKuai daleiname="重大事件"/>
-  <DaLeiBanKuai daleiname="涨价概念"/>
+  <DaLeiBanKuai daleiname="前热点余热">
+    <Item tdxbk="880952" tdxbkcode="880952" addedTime="17-11-14" officallyselected="true">880952</Item>
+    <Item tdxbk="880398" tdxbkcode="880398" addedTime="17-11-14" officallyselected="true">880398</Item>
+    <Item tdxbk="880471" tdxbkcode="880471" addedTime="17-11-26" officallyselected="true">880471</Item>
+    <Item tdxbk="880319" tdxbkcode="880319" addedTime="17-11-28" officallyselected="true">880319</Item>
+    <Item tdxbk="880346" tdxbkcode="880346" addedTime="17-11-30" officallyselected="true">880346</Item>
+    <Item tdxbk="880302" tdxbkcode="880302" addedTime="17-11-30" officallyselected="true">880302</Item>
+    <Item tdxbk="880303" tdxbkcode="880303" addedTime="17-11-30" officallyselected="true">880303</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="涨价和业绩反转"/>
   <DaLeiBanKuai daleiname="次新股"/>
-  <DaLeiBanKuai daleiname="超跌周期"/>
+  <DaLeiBanKuai daleiname="港股联动"/>
   <DaLeiBanKuai daleiname="券商参券"/>
-  <DaLeiBanKuai daleiname="国新政策"/>
+  <DaLeiBanKuai daleiname="题材转业绩">
+    <Item tdxbk="880940" tdxbkcode="880940" addedTime="17-10-24" officallyselected="false">880940</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="成长和概念">
+    <Item tdxbk="880948" tdxbkcode="880948" addedTime="17-10-11" officallyselected="true">880948</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="特定时间重大事件">
+    <Item tdxbk="880529" tdxbkcode="880529" addedTime="17-10-26" officallyselected="true">880529-&gt;8805292</Item>
+    <Item tdxbk="880565" tdxbkcode="880565" addedTime="17-11-02" officallyselected="true">880565</Item>
+  </DaLeiBanKuai>
+  <DaLeiBanKuai daleiname="国新政策">
+    <Item tdxbk="880931" tdxbkcode="880931" addedTime="17-10-11" officallyselected="false">880931</Item>
+    <Item tdxbk="000300" tdxbkcode="000300" addedTime="17-10-26" officallyselected="true">000300</Item>
+  </DaLeiBanKuai>
 </ZhongDianGuanZhuanBanKuaiDetail>

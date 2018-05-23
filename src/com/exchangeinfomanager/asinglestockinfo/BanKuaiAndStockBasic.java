@@ -13,7 +13,7 @@ import org.jfree.data.time.ohlc.OHLCSeries;
 
 public interface BanKuaiAndStockBasic 
 {
-	public static int  DAPAN = 3, TDXBK = 4, SUBBK = 5, BKGEGU = 7, TDXGG = 6;
+	public static int  DAPAN = 3, TDXBK = 4, SUBBK = 5, BKGEGU = 7, TDXGG = 6, GPC = 8, SUBGPC = 9;
 	
 	public int getType ();
 //	public void setSuoSuTdxBanKuai (String tdxbkcode);

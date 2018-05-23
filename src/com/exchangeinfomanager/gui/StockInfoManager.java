@@ -27,19 +27,20 @@ import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeet
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportQuanShangJiaoYiRecords;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
+import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
-import com.exchangeinfomanager.bankuaichanyelian.BkChanYeLianTree;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
-import com.exchangeinfomanager.bankuaifengxi.WeeklyExportFileFengXi;
+import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -181,14 +182,13 @@ public class StockInfoManager
 	 */
 	public StockInfoManager() 
 	{
-		Enumeration e = Logger.getRootLogger().getAllAppenders();
-	    while ( e.hasMoreElements() ) {
-	      Appender app = (Appender)e.nextElement();
-	      if ( app instanceof FileAppender ){
-	        System.out.println("File: " + ((FileAppender)app).getFile());
-	      }
-	    }
-	    
+//		Enumeration e = Logger.getRootLogger().getAllAppenders();
+//	    while ( e.hasMoreElements() ) {
+//	      Appender app = (Appender)e.nextElement();
+//	      if ( app instanceof FileAppender ){
+//	        System.out.println("File: " + ((FileAppender)app).getFile());
+//	      }
+//	    }
 	    
 		sysconfig = SystemConfigration.getInstance();
 		connectdb = ConnectDataBase.getInstance();
@@ -209,7 +209,9 @@ public class StockInfoManager
 		accountschicangconfig = new AccountAndChiCangConfiguration ();
 		acntdbopt = new AccountDbOperation();
 		bkdbopt = new BanKuaiDbOperation ();
-		bkcyl = new BanKuaiAndChanYeLian();
+//		bkcyl = new BanKuaiAndChanYeLian2();
+		allbkstock = new AllCurrentTdxBKAndStoksTree ();
+		
 //		chklstdialog = new BuyCheckListTreeDialog (this,"","");
 //		panelcklt = chklstdialog.getCheckListPanel();
 		initializeGui();
@@ -232,10 +234,11 @@ public class StockInfoManager
 	private BanKuaiGuanLi bkgldialog = null;
 	private BanKuaiFengXi bkfx ;
 	private SearchDialog searchdialog;
-	private BanKuaiAndChanYeLian bkcyl;
+	private BanKuaiAndChanYeLian2 bkcyl;
 //	private BuyCheckListTreeDialog chklstdialog;
 //	private JPanel panelcklt;
 	private WeeklyExportFileFengXi effx;
+	private AllCurrentTdxBKAndStoksTree allbkstock;
 
 	
 	
@@ -418,7 +421,7 @@ public class StockInfoManager
 				else
 					return;
 				
-				BanKuai bankuai = bkcyl.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), StockGivenPeriodDataItem.WEEK);
+				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), StockGivenPeriodDataItem.WEEK);
 				editorPanenodeinfo.displayNodeAllInfo(bankuai);
 			}
 		});
@@ -1658,7 +1661,7 @@ public class StockInfoManager
 	protected void startBanKuaiFengXi() 
 	{
 			if(bkfx == null ) {
-				bkfx = new BanKuaiFengXi (this,bkcyl);
+				bkfx = new BanKuaiFengXi (this,allbkstock);
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				bkfx.setVisible(true);
@@ -1673,7 +1676,7 @@ public class StockInfoManager
 	protected void startWeeklyExportFileFengXi() 
 	{
 			if(effx == null ) {
-				effx = new WeeklyExportFileFengXi (this,bkcyl);
+				effx = new WeeklyExportFileFengXi (this,allbkstock);
 				effx.setModal(false);
 				effx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				effx.setVisible(true);
@@ -1728,7 +1731,8 @@ public class StockInfoManager
 		protected void startBanKuaiGuanLiDlg()
 		{
 			if(bkgldialog == null ) {
-				bkgldialog = new BanKuaiGuanLi(this,bkcyl);
+				BanKuaiAndChanYeLian2 bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
+				bkgldialog = new BanKuaiGuanLi(this,allbkstock,bkcyl);
 				bkgldialog.setModal(false);
 		//		bkgldialog.startDialog ();
 				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

@@ -29,7 +29,6 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
-import com.exchangeinfomanager.bankuaichanyelian.HanYuPinYing;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.google.common.base.Splitter;
@@ -37,12 +36,13 @@ import com.google.common.base.Strings;
 
 
 
-public abstract class BkChanYeLianTreeNode  extends DefaultMutableTreeNode implements  BanKuaiAndStockBasic
+public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  BanKuaiAndStockBasic
 {
 
     public BkChanYeLianTreeNode(String myowncode, String name)
     {
 		super(myowncode);
+
 		if(name != null)
 			this.myname = name;
 		else 

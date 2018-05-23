@@ -16,8 +16,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -75,6 +77,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import javax.swing.JTree;
 
 
 public class BanKuaiGuanLi extends JDialog 
@@ -87,11 +90,12 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, BanKuaiAndChanYeLian bkcyl1) 
+	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, AllCurrentTdxBKAndStoksTree bkstk1,BanKuaiAndChanYeLian2 bkcyl1) 
 	{
 		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockInfoManager = stockInfoManager2;
+		this.allbkstks = bkstk1;
 		this.bkcyl = bkcyl1;
 		
 		initializeGui ();
@@ -105,14 +109,15 @@ public class BanKuaiGuanLi extends JDialog
 	private HashMap<String,BanKuai> zhishulist;
 //	private HashMap<String,BanKuai> sysbankuailist ; 
 	private SystemConfigration sysconfig;
+	private BanKuaiAndChanYeLian2 bkcyl;
 
 	private void initializeTDXBanKuaiLists() 
 	{
-		DefaultTreeModel treeModel = (DefaultTreeModel)this.bkcyl.getBkChanYeLianTree().getModel();
+		DefaultTreeModel treeModel = (DefaultTreeModel)this.allbkstks.getAllBkStocksTree().getModel();
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
 //		DefaultTableModel tableModel = (DefaultTableModel)this.tableSysBk.getModel();
 		
-		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.bkcyl.getBkChanYeLianTree());
+		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree());
 	}
 	/*
 	 * 
@@ -230,19 +235,14 @@ public class BanKuaiGuanLi extends JDialog
 	private JButton okButton;
 	private JTreeTable tableSysBk;
 	private final JPanel contentPanel = new JPanel();
-	private BanKuaiAndChanYeLian bkcyl;
+	private AllCurrentTdxBKAndStoksTree allbkstks;
 	private JPanel panelSys;
 	private JTable tableZdy;
-	private JTextField tfldfilepath;
-	private JButton btnstartexport;
-	private JComboBox<String> cbxexporttype;
-	private JDateChooser dateChooser;
-	private JComboBox<String> cbxexportdaytype;
-	private JButton button;
 	private JCheckBox cbxnotimport;
 	private JCheckBox cbxnotbkfx;
 	private JCheckBox cbxnotgephi;
 	private JButton buttonapplybksetting;
+	private BkChanYeLianTree cyltree;
 	
 	private void initializeGui()
 	{
@@ -280,9 +280,6 @@ public class BanKuaiGuanLi extends JDialog
 		
 		JLabel label_1 = new JLabel("\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757");
 		
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Gephi\u5BFC\u51FA\u8BBE\u7F6E", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, new Color(240, 240, 240), new Color(255, 255, 255), new Color(105, 105, 105), new Color(160, 160, 160)), new LineBorder(new Color(180, 180, 180), 5)), "\u677F\u5757\u5C5E\u6027\u8BBE\u7F6E", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
@@ -298,15 +295,11 @@ public class BanKuaiGuanLi extends JDialog
 								.addComponent(label)
 								.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE))
 							.addGap(17)
-							.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_panelSys.createParallelGroup(Alignment.TRAILING)
 								.addGroup(gl_panelSys.createSequentialGroup()
 									.addComponent(label_1)
 									.addContainerGap(1168, Short.MAX_VALUE))
-								.addGroup(Alignment.TRAILING, gl_panelSys.createSequentialGroup()
-									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
-									.addComponent(panel, GroupLayout.PREFERRED_SIZE, 532, GroupLayout.PREFERRED_SIZE)
-									.addGap(440))))
+								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE)))
 						.addGroup(gl_panelSys.createSequentialGroup()
 							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
 							.addContainerGap(1278, Short.MAX_VALUE))))
@@ -314,20 +307,21 @@ public class BanKuaiGuanLi extends JDialog
 		gl_panelSys.setVerticalGroup(
 			gl_panelSys.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panelSys.createSequentialGroup()
-					.addContainerGap(23, Short.MAX_VALUE)
+					.addContainerGap(25, Short.MAX_VALUE)
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
 						.addComponent(label)
 						.addComponent(label_1))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 680, GroupLayout.PREFERRED_SIZE))
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 680, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 680, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
 					.addGap(11))
 		);
+		
+		cyltree = this.bkcyl.getBkChanYeLianTree();
+		scrollPane.setViewportView(cyltree);
 		
 		cbxnotimport = new JCheckBox("\u4E0D\u5BFC\u5165\u6BCF\u65E5\u4EA4\u6613\u6570\u636E");
 		
@@ -370,66 +364,8 @@ public class BanKuaiGuanLi extends JDialog
 		);
 		panel_1.setLayout(gl_panel_1);
 		
-		JLabel lblGephi = new JLabel("Gephi\u6587\u4EF6\u5B58\u653E\u8DEF\u5F84");
-		
-		tfldfilepath = new JTextField();
-		tfldfilepath.setColumns(10);
-		
-		button = new JButton("\u9009\u62E9\u8DEF\u5F84");
-		
-		dateChooser = new JDateChooser(new Date());
-		
-		cbxexporttype = new JComboBox();
-		cbxexporttype.setModel(new DefaultComboBoxModel(new String[] {"\u5BFC\u51FA\u6240\u6709\u677F\u5757\u6570\u636E", "\u4EC5\u5BFC\u51FA\u6240\u9009\u677F\u5757\u6570\u636E"}));
-		
-		btnstartexport = new JButton("\u5F00\u59CB\u5BFC\u51FA");
-		
-		cbxexportdaytype = new JComboBox();
-		cbxexportdaytype.setModel(new DefaultComboBoxModel(new String[] {"\u6309\u65E5\u5BFC\u51FA", "\u6309\u5468\u5BFC\u51FA"}));
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(lblGephi)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tfldfilepath, GroupLayout.PREFERRED_SIZE, 223, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(button))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(cbxexporttype, GroupLayout.PREFERRED_SIZE, 362, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnstartexport))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 198, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(cbxexportdaytype, GroupLayout.PREFERRED_SIZE, 153, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(43, Short.MAX_VALUE))
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblGephi)
-						.addComponent(tfldfilepath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(button))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-						.addComponent(cbxexportdaytype, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE))
-					.addGap(7)
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnstartexport, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(cbxexporttype, GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
-					.addContainerGap(145, Short.MAX_VALUE))
-		);
-		panel.setLayout(gl_panel);
-		
 		//≥ı ºªØjtreetable
-		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.bkcyl.getBkChanYeLianTree());
+		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree());
 		tableSysBk = new JTreeTable(treetablemodel){
 
 			private static final long serialVersionUID = 1L;

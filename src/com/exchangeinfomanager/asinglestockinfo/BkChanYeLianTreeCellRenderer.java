@@ -36,11 +36,12 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 		 if(value !=null && value instanceof DefaultMutableTreeNode) {
 			 
 	         int nodetype = ((BkChanYeLianTreeNode)value).getType();
+	         
 	         String bktreenodename;
-	         if(nodetype != BkChanYeLianTreeNode.BKGEGU)
-	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnName();
-	         else
+	         if(nodetype == BkChanYeLianTreeNode.BKGEGU || nodetype == BkChanYeLianTreeNode.TDXGG)
 	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnCode() + ((BkChanYeLianTreeNode)value).getMyOwnName();
+	         else
+	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnName();
 	         
 	         // 每日板块信息
 	         HashSet<String> parsefilestockset = ((BkChanYeLianTreeNode)value).getNodetreerelated().getParseFileStockSet ();
@@ -52,7 +53,8 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) value;
 	        //ICON
 	         
-	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon(node, leaf, expanded));
+//	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon(node, leaf, expanded)); //
+	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon(node));
 	         
 	         //各种状态下的COLOR
 	         if(node.getNodetreerelated().getInZdgzOfficalCount() >0 ) {

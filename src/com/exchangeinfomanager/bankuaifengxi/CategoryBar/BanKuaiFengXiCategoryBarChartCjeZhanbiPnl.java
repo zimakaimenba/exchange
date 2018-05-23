@@ -34,6 +34,7 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -280,6 +281,11 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 			if(maxweek == null)
 				return null;
 			
+			Double hsl = null ;
+			if(super.node.getType() == BanKuaiAndStockBasic.TDXGG) {
+				hsl = ((StockNodeXPeriodData)nodexdata).getSpecificTimeHuanShouLv(selecteddate, 0);
+			}
+			
 			DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 			try {
 				tooltip = tooltip +  "占比" + decimalformate.format(curzhanbidata) ;
@@ -296,6 +302,14 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 			} catch (java.lang.IllegalArgumentException e ) {
 				tooltip = tooltip + "占比MaxWk=NULL";
 			}
+			try {
+				tooltip = tooltip +  "HSL=" + hsl.toString() ;
+			} catch (java.lang.IllegalArgumentException e ) {
+				
+			} catch (java.lang.NullPointerException ex) {
+				
+			}
+			
 			
 			return tooltip;
     }

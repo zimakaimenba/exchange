@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian;
+package com.exchangeinfomanager.asinglestockinfo;
 
 import org.apache.log4j.Logger;
 

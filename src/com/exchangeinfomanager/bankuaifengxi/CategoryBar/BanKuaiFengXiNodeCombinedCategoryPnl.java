@@ -96,11 +96,13 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	@Override
 	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference, String period) 
 	{
+		this.curdisplayednode = node;
 		cjelargepnl.updatedDate(node, date, difference, period);
 		cjezblargepnl.updatedDate(node, date, difference, period);
 	}
 	public void updatedDate(BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate,String period) 
 	{
+		this.curdisplayednode = node;
 		cjelargepnl.updatedDate(node, startdate,enddate, period);
 		cjezblargepnl.updatedDate(node, startdate,enddate, period);
 	}
@@ -165,7 +167,12 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	{
         String oldText = this.dateselected + this.tooltipselected;
         this.dateselected = newdate ;
-        this.tooltipselected =  this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + selectedtooltip;
+        try {
+        	this.tooltipselected =  this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + selectedtooltip;
+        } catch (java.lang.NullPointerException e) {
+//        	e.printStackTrace();
+        	this.tooltipselected =  "个股代码/名称NULL"  + ": " + selectedtooltip;
+        }
         PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
         pcs.firePropertyChange(evt);
     }
