@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.ai;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

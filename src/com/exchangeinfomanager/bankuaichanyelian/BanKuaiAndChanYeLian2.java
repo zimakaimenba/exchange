@@ -93,10 +93,10 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.GuPiaoChi;
+import com.exchangeinfomanager.asinglestockinfo.InvisibleTreeModel;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
-import com.exchangeinfomanager.asinglestockinfo.SubnodeButton;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
@@ -168,7 +168,7 @@ public class BanKuaiAndChanYeLian2
 
 	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian2.class);
 	
-	public static final int UP=0, LEFT=1, RIGHT=2, DOWN=3, NONE=4;
+	
 	
 	protected SystemConfigration sysconfig;
 	protected HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap;
@@ -197,8 +197,9 @@ public class BanKuaiAndChanYeLian2
 		// 先保证12个股票池一致
 		HashMap<String,String> gpcindb = bkdbopt.getGuPiaoChi ();
 		
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.treechanyelian.getModel().getRoot();
-		int bankuaicount = treechanyelian.getModel().getChildCount(treeroot);
+		InvisibleTreeModel ml = (InvisibleTreeModel)this.treechanyelian.getModel();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)(ml.getRoot());
+		int bankuaicount = this.treechanyelian.getModel().getChildCount(treeroot);
 		HashSet<String> gpcintree = new HashSet<String> ();
 		for(int i=0;i< bankuaicount; i++) {
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.treechanyelian.getModel().getChild(treeroot, i);
@@ -212,18 +213,41 @@ public class BanKuaiAndChanYeLian2
 		}
 		differencegpc = null;
 		gpcintree = null;
+		
 		//保证板块一致，所有应该删除的板块都删除，名字一致，缺少的板块都放到其他部分
-		HashSet<BkChanYeLianTreeNode> cyltreebkset = this.treechanyelian.getSpecificNodesSet (BanKuaiAndStockBasic.TDXBK);
-	    HashSet<BkChanYeLianTreeNode> allbks = allbkstocks.getAllBkStocksTree().getSpecificNodesSet (BanKuaiAndStockBasic.TDXBK);
-	    
-	    SetView<BkChanYeLianTreeNode> differencebkold = Sets.difference(cyltreebkset, allbks );
-	    for(BkChanYeLianTreeNode oldnode : differencebkold) {
-	    	kkk
+		HashSet<String> cyltreebkset = this.treechanyelian.getSpecificTypeNodesCodesSet ("000000",BanKuaiAndStockBasic.DAPAN,BanKuaiAndStockBasic.TDXBK);
+	    HashSet<String> allbks = allbkstocks.getAllBkStocksTree().getSpecificTypeNodesCodesSet ("000000",BanKuaiAndStockBasic.DAPAN,BanKuaiAndStockBasic.TDXBK);
+
+	    DefaultTreeModel model = (DefaultTreeModel) treechanyelian.getModel();
+	    SetView<String> differencebkold = Sets.difference(cyltreebkset, allbks ); //应该删除的
+	    for(String oldnodecode : differencebkold) {
+	    	BkChanYeLianTreeNode oldnode = this.treechanyelian.getSpecificNodeByHypyOrCode (oldnodecode,BanKuaiAndStockBasic.TDXBK);
+	    	TreePath nodepath = new TreePath(oldnode.getPath() );
+	    	this.treechanyelian.deleteNodes(nodepath);
 	    }
+//	    HashSet<BkChanYeLianTreeNode> cyltreebkset1 = this.treechanyelian.getSpecificTypeNodesSet (BanKuaiAndStockBasic.TDXBK);
+	    
+	    SetView<String> differencebknew = Sets.difference(allbks, cyltreebkset ); //应该添加的
+	    BkChanYeLianTreeNode qitanode = treechanyelian.getSpecificNodeByHypyOrCode("qt", BanKuaiAndStockBasic.GPC);
+	    for(String newnode : differencebknew) {
+	    	BkChanYeLianTreeNode tmpnode = allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newnode, BanKuaiAndStockBasic.TDXBK);
+	    	BanKuai newbk = new BanKuai (newnode,tmpnode.getMyOwnName() );
+	    	qitanode.add(newbk);
+	    }
+//	    HashSet<BkChanYeLianTreeNode> cyltreebkset2 = this.treechanyelian.getSpecificTypeNodesSet (BanKuaiAndStockBasic.TDXBK);
 		//保证个股一致，所有应该删除的个股删除，名字一致
 		
+	    
+		ml.reload(treeroot);
  	}
-	
+	/*
+	 * 保存产业链树到XML
+	 */
+	public boolean saveChanYeLianTreeToXML (BkChanYeLianTreeNode treerootnode)
+	{
+		cylxmhandler.saveTreeToChanYeLianXML(treerootnode);
+		return true;
+	}
 	/*
 	 * 判断是否属于重点关注板块
 	 */

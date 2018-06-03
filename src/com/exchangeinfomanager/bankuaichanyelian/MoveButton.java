@@ -1,10 +1,10 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.bankuaichanyelian;
 
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI2;
 
 public class MoveButton extends javax.swing.JButton{
 
-    private int direction = BanKuaiAndChanYeLian.NONE;
+    private int direction = BanKuaiAndChanYeLianGUI2.NONE;
         
     public void setDirection(int direction){
         this.direction = direction;

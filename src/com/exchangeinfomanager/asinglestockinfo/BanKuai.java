@@ -44,6 +44,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 		super.nodewkdata = new BanKuaiNodeXPeriodData (StockGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new BanKuaiNodeXPeriodData (StockGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new BanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+		super.nodetreerelated = new BanKuai.BanKuaiTreeRelated (this);
 	}
 	
 //	private static Logger logger = Logger.getLogger(BanKuai.class);
@@ -53,6 +54,10 @@ public class BanKuai extends BkChanYeLianTreeNode
 	private boolean importdailytradingdata = true;
 	private boolean showinbkfxgui = true;
 
+//	public  TreeRelated getNodeTreeRelated ()
+//	{
+//		return super.nodetreerelated;
+//	}
 	public boolean isExporttogehpi() {
 		return exporttogehpi;
 	}
@@ -62,6 +67,9 @@ public class BanKuai extends BkChanYeLianTreeNode
 	public void setExporttogehpi(boolean exporttogehpi) {
 		this.exporttogehpi = exporttogehpi;
 	}
+	/*
+	 * 设置是否要每天导入交易数据，设置为false的则在每天导入数据的时候跳过
+	 */
 	public boolean isImportdailytradingdata() {
 		return importdailytradingdata;
 	}
@@ -129,7 +137,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 		
 	}
 	/*
-	 * 这个算法极其耗时间，暂时不用。
+	 * 这个算法极其耗时间，暂时不用。用于计算在指定时期满足设定条件的板块个股个数
 	 */
 	public Integer getPeriodMatchConditionStockNum (ArrayList<ExportCondition> initialzedcon,LocalDate selecteddate,String period,int zhouqirange)
 	{
@@ -324,14 +332,44 @@ public class BanKuai extends BkChanYeLianTreeNode
             	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
                 
                 if(childnode.getMyOwnCode().equals(stockcode)) {
-                	NodeXPeriodDataBasic perioddata = ((StockOfBanKuai)childnode).getStockXPeriodDataForBanKuai(period);
+                	NodeXPeriodDataBasic perioddata = ((StockOfBanKuai)childnode).getNodeXPeroidData(period);
             		return perioddata;
                 }
             }
         }
 		return null;
 	}
-
+	/*
+	 * 
+	 */
+	public class BanKuaiTreeRelated extends TreeRelated
+	{
+		public BanKuaiTreeRelated (BkChanYeLianTreeNode treenode1)
+		{
+			super(treenode1);
+		}
+		
+		private HashMap<LocalDate,Integer> stocknumsinparsedfile;
+		public void setStocksNumInParsedFile (LocalDate parsefiledate, Integer stocksnum)
+		{
+			if(stocknumsinparsedfile == null)
+				stocknumsinparsedfile = new HashMap<LocalDate,Integer> ();
+			else {
+				LocalDate friday = parsefiledate.with(DayOfWeek.FRIDAY);
+				stocknumsinparsedfile.put(friday, stocksnum);
+			}
+		}
+		public Integer getStocksNumInParsedFileForSpecificDate (LocalDate requiredate)
+		{
+			try {
+				LocalDate friday = requiredate.with(DayOfWeek.FRIDAY);
+				return stocknumsinparsedfile.get(friday);
+			} catch (java.lang.NullPointerException e) {
+				return null;
+			}
+		}
+		
+	}
 
 	 
 	public class BanKuaiNodeXPeriodData extends NodeXPeriodData 

@@ -89,16 +89,16 @@ class ChanYeLianXMLHandler
 			e.printStackTrace();
 		}
 		
-		try {
-			SAXReader ggcylsaxreader = new SAXReader();
-			ggcylxmldocument = ggcylsaxreader.read(xmlfileinput );
-			ggcylxmlroot = ggcylxmldocument.getRootElement();
-		} catch (DocumentException e) {
-			e.printStackTrace();
-			return;
-		 } catch (Exception e) {  
-	            e.printStackTrace();  
-	     }  
+//		try {
+//			SAXReader ggcylsaxreader = new SAXReader();
+//			ggcylxmldocument = ggcylsaxreader.read(xmlfileinput );
+//			ggcylxmlroot = ggcylxmldocument.getRootElement();
+//		} catch (DocumentException e) {
+//			e.printStackTrace();
+//			return;
+//		 } catch (Exception e) {  
+//	            e.printStackTrace();  
+//	     }  
 		
 		initializeChanYeLianTree ();
 	}
@@ -114,6 +114,7 @@ class ChanYeLianXMLHandler
 	private Document ggcylxmldocument;
 	private Element ggcylxmlroot;
 	private boolean hasXmlRevised = false;
+	private boolean onlysavewhenhavechild;
 
 	private SetView<String> oldBanKuaiFromDb = null;
 //	private BkChanYeLianTree treeallstocks;
@@ -141,11 +142,11 @@ class ChanYeLianXMLHandler
 			generateChanYeLianTreeFromXML(alltopNode,cylxmlroot); //生成产业链树
 		}
 		
-		treecyl = new BkChanYeLianTree(alltopNode);
+		treecyl = new BkChanYeLianTree(alltopNode,"CYLTREE");
 		
 //		allstocks = null;
 //		e = null;
-		System.out.println("test1");
+//		System.out.println("test1");
 	}
 	/*
 	 * 
@@ -300,17 +301,17 @@ class ChanYeLianXMLHandler
 		 
 		 return bkcylxmlset;
 	}
-
-	
-	 
+	/*
+	 * 
+	 */
 	 public boolean saveTreeToChanYeLianXML (BkChanYeLianTreeNode ginkgorootnode)  
      {
 			//产业链XML
 			Document cyldocument = DocumentFactory.getInstance().createDocument();
-	        Element cylrootele = cyldocument.addElement(ginkgorootnode.getUserObject().toString());//添加文档根
+	        Element cylrootele = cyldocument.addElement("两交易所");//添加文档根
 	        //个股产业链XML
 	        Document gegucyldocument = DocumentFactory.getInstance().createDocument();
-	        Element gegucylrootele = gegucyldocument.addElement("geguchanyelian");//添加文档根 
+//	        Element gegucylrootele = gegucyldocument.addElement("两交易所");//添加文档根 
 	        
 	        exportToDoc (ginkgorootnode,cylrootele,gegucyldocument);
 	    	
@@ -356,67 +357,80 @@ class ChanYeLianXMLHandler
 	            String tmpbkcode = treeChild.getMyOwnCode() ;
 	            int nodetype = treeChild.getType();
 	            String tmpname = treeChild.getMyOwnName();
-//	            if(nodetype == BkChanYeLianTreeNode.BKGEGU ) {
-//	            	ASingleStockInfo tmpsinglestock = new ASingleStockInfo (tmpbkcode); 
-//	            	tmpsinglestock = stockopt.getSingleStockBasicInfo(tmpsinglestock);
-//	            	tmpname = tmpsinglestock.getStockname();
-//	            } else if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
-//	            	tmpname = bkopt.getTdxBanKuaiNameByCode (tmpbkcode);
-//	            } else {
-//	            	tmpname = treeChild.getUserObject().toString();
-//	            }
+	            String status = String.valueOf(nodetype);
 
-		        String status = String.valueOf(nodetype);
-		        Element cylchildele = null;
+	            Element cylchildele = null;
+		        if(Integer.parseInt(status) == BkChanYeLianTreeNode.GPC) {
+		        	cylchildele = cylparentele.addElement("GuPiaoChi");
+		        	cylchildele.addAttribute("gpccode", tmpbkcode  );
+		            cylchildele.addAttribute("gpcname", tmpname  );
+		            cylchildele.addAttribute("Type", status);
+		            
+		          //对于GPC="其他"的节点不保存，保存其他没有什么特别作用
+		            if(tmpname.equals("其他") )  //其他里面如果板块没有子信息就不存了，否则存的太多没意义
+		            	onlysavewhenhavechild = true;
+		            else
+		            	onlysavewhenhavechild = false;
+		        } else
+		        if(Integer.parseInt(status) == BkChanYeLianTreeNode.SUBGPC) {
+		        	cylchildele = cylparentele.addElement("SubGuPiaoChi");
+		        	cylchildele.addAttribute("subgpccode", tmpbkcode  );
+		            cylchildele.addAttribute("subgpcname", tmpname  );
+		            cylchildele.addAttribute("Type", status);
+		        } else
 		        if(Integer.parseInt(status) == BkChanYeLianTreeNode.TDXBK) {
+		        	if(treeChild.getChildCount() == 0 && onlysavewhenhavechild)
+		        		continue;
+		        	
 		        	cylchildele = cylparentele.addElement("BanKuai");
+		        	cylchildele.addAttribute("bkcode", tmpbkcode  );
 		            cylchildele.addAttribute("bkname", tmpname  );
-		            cylchildele.addAttribute("bkcode", tmpbkcode  );
 		            cylchildele.addAttribute("Type", status);
-		            
-		        } else if(Integer.parseInt(status) == BkChanYeLianTreeNode.SUBBK) {
+		        } else 
+		        if(Integer.parseInt(status) == BkChanYeLianTreeNode.SUBBK) {
 		        	cylchildele = cylparentele.addElement("SubBanKuai");
-		        	cylchildele.addAttribute("subbkname", tmpname);
 		        	cylchildele.addAttribute("subbkcode", tmpbkcode  );
+		        	cylchildele.addAttribute("subbkname", tmpname);
 		        	String suoshubkcode = treeChild.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName();
 		            cylchildele.addAttribute("suoshubkcode", suoshubkcode  ); 
 		            cylchildele.addAttribute("Type", status);
 		            
-		        } else if(Integer.parseInt(status) == BkChanYeLianTreeNode.BKGEGU) {
+		        } else 
+		        if(Integer.parseInt(status) == BkChanYeLianTreeNode.TDXGG || Integer.parseInt(status) == BkChanYeLianTreeNode.BKGEGU) {
 	            	cylchildele = cylparentele.addElement("gegu");
+	            	cylchildele.addAttribute("gegucode", tmpbkcode  );
 		        	cylchildele.addAttribute("geguname", tmpname  );
-		        	cylchildele.addAttribute("gegucode", tmpbkcode  );
-		        	String suoshubkcode = treeChild.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName();
-		            cylchildele.addAttribute("suoshubkcode", suoshubkcode  ); 
+//		        	String suoshubkcode = treeChild.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName();
+//		            cylchildele.addAttribute("suoshubkcode", suoshubkcode  ); 
 		            cylchildele.addAttribute("Type", status);
 	            	
 		        	  //如果是个股，要保存到个股产业链XML里  	
-		            	TreeNode[] path = treeChild.getPath();
-		            	String chanyelianstring = "";
-		            	String curbankuai = ((BkChanYeLianTreeNode)path[1]).getMyOwnName(); //板块名字
-		            
-		            	
-		            	for(int i=1;i<path.length-1;i++) //把产业链整合成一个字符串
-		            		chanyelianstring = chanyelianstring + ((BkChanYeLianTreeNode)path[i]).getMyOwnName() + "-";
-		            	chanyelianstring = chanyelianstring.substring(0, chanyelianstring.length()-1);
-		            	
-		            	String xpath = ".//gegu[@stockcode=\"" + tmpbkcode + "\"]";
-		            	 Node tmpnode = ggcyldoc.selectSingleNode(xpath);
-		            	 if(tmpnode != null) { //已经存在的
-		            		 Element tmpitemele = ((Element)tmpnode).addElement("chanyelian");
-		            		 tmpitemele.addAttribute("bankuai", curbankuai);
-		            		 tmpitemele.addAttribute("suoshubkcode", tmpbkcode);
-		            		 tmpitemele.setText(chanyelianstring);
-		            		 
-		            	 } else {
-				             Element tmpggcylele = ggcyldoc.getRootElement().addElement("gegu" );
-			    			 tmpggcylele.addAttribute("stockcode", tmpbkcode  );
-			    			 tmpggcylele.addAttribute("stockname", tmpname  );
-			    			 Element tmpnewitem = tmpggcylele.addElement("chanyelian");
-			    			 tmpnewitem.addAttribute("bankuai", curbankuai);
-			    			 tmpnewitem.addAttribute("suoshubkcode", tmpbkcode);
-			    			 tmpnewitem.setText(chanyelianstring);
-		            	 }
+//		            	TreeNode[] path = treeChild.getPath();
+//		            	String chanyelianstring = "";
+//		            	String curbankuai = ((BkChanYeLianTreeNode)path[1]).getMyOwnName(); //板块名字
+//		            
+//		            	
+//		            	for(int i=1;i<path.length-1;i++) //把产业链整合成一个字符串
+//		            		chanyelianstring = chanyelianstring + ((BkChanYeLianTreeNode)path[i]).getMyOwnName() + "-";
+//		            	chanyelianstring = chanyelianstring.substring(0, chanyelianstring.length()-1);
+//		            	
+//		            	String xpath = ".//gegu[@stockcode=\"" + tmpbkcode + "\"]";
+//		            	 Node tmpnode = ggcyldoc.selectSingleNode(xpath);
+//		            	 if(tmpnode != null) { //已经存在的
+//		            		 Element tmpitemele = ((Element)tmpnode).addElement("chanyelian");
+//		            		 tmpitemele.addAttribute("bankuai", curbankuai);
+//		            		 tmpitemele.addAttribute("suoshubkcode", tmpbkcode);
+//		            		 tmpitemele.setText(chanyelianstring);
+//		            		 
+//		            	 } else {
+//				             Element tmpggcylele = ggcyldoc.getRootElement().addElement("gegu" );
+//			    			 tmpggcylele.addAttribute("stockcode", tmpbkcode  );
+//			    			 tmpggcylele.addAttribute("stockname", tmpname  );
+//			    			 Element tmpnewitem = tmpggcylele.addElement("chanyelian");
+//			    			 tmpnewitem.addAttribute("bankuai", curbankuai);
+//			    			 tmpnewitem.addAttribute("suoshubkcode", tmpbkcode);
+//			    			 tmpnewitem.setText(chanyelianstring);
+//		            	 }
 
 		         }
 		          

@@ -3,6 +3,7 @@ package com.exchangeinfomanager.asinglestockinfo;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.time.LocalDate;
 import java.util.HashSet;
 
 import javax.swing.JLabel;
@@ -10,6 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 
 
 
@@ -43,10 +46,16 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         else
 	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnName();
 	         
-	         // 每日板块信息
-	         HashSet<String> parsefilestockset = ((BkChanYeLianTreeNode)value).getNodetreerelated().getParseFileStockSet ();
-	         if(parsefilestockset !=null && parsefilestockset.size() !=0) {
-	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + parsefilestockset.size() + ")"  ); 
+	         // 每日板块分析信息
+	         Integer patchfilestocknum = 0;
+	         if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
+	        	 LocalDate diswk = ((BkChanYeLianTree)tree).getCurrentDisplayedWk ();
+	        	 TreeRelated tmptreerelated = ((BkChanYeLianTreeNode)value).getNodeTreerelated (); 
+	        	 patchfilestocknum = ((BanKuai.BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (diswk);
+	         }
+	         
+	         if( patchfilestocknum != null  && patchfilestocknum > 0) {
+	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + patchfilestocknum + ")"  ); 
 	         } else
 	        	 lblnodenameandcount.setText( bktreenodename );
 	         
@@ -57,25 +66,19 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon(node));
 	         
 	         //各种状态下的COLOR
-	         if(node.getNodetreerelated().getInZdgzOfficalCount() >0 ) {
-	        	 lblnodenameandcount.setForeground(Color.RED);
-	         } else if(node.getNodetreerelated().getInZdgzCandidateCount() >0 ) {
-	        	 lblnodenameandcount.setForeground(Color.ORANGE);
-	         } else if(node.getNodetreerelated().getParseFileStockSet().size()>0) {
+	         if(patchfilestocknum != null && patchfilestocknum > 0) {
 	        	 lblnodenameandcount.setForeground(Color.BLUE);
 	         } else 
 	        	 lblnodenameandcount.setForeground(this.getForeground());
 	         
 	         //如果是要删除的节点，用特殊的字体表示
-	         if(node.getNodetreerelated().shouldBeRemovedWhenSaveXml()) {
-	        	 Font font=new Font("黑体",Font.BOLD + Font.ITALIC,14); 
-		         lblnodenameandcount.setFont(font);
-	         } else {
-	        	 Font font=new Font("宋体",Font.PLAIN,14); 
-		         lblnodenameandcount.setFont(font);
-	         }
-	        	 
-	         
+//	         if(node.getNodetreerelated().shouldBeRemovedWhenSaveXml()) {
+//	        	 Font font=new Font("黑体",Font.BOLD + Font.ITALIC,14); 
+//		         lblnodenameandcount.setFont(font);
+//	         } else {
+//	        	 Font font=new Font("宋体",Font.PLAIN,14); 
+//		         lblnodenameandcount.setFont(font);
+//	         }
 	        	 
 	         if(isSelected) {
 	        	 lblnodenameandcount.setOpaque(true);
@@ -95,8 +98,6 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 		    }
 //		 
 //         String stringValue = tree.convertValueToText(value, isSelected,expanded, leaf, row, hasFocus);  
-		   
-		 
          return returnValue;
      }
 

@@ -108,7 +108,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    	StockOfBanKuai curdisplaystockofbankuai = entryList.get(rowIndex);
 		    String stockcode = curdisplaystockofbankuai.getMyOwnCode();
 		    String bkcode = curbk.getMyOwnCode();
-		    NodeXPeriodDataBasic stockxdataforbk = curdisplaystockofbankuai.getStockXPeriodDataForBanKuai(period);
+		    NodeXPeriodDataBasic stockxdataforbk = curdisplaystockofbankuai.getNodeXPeroidData(period);
 
 		    Stock stock = curdisplaystockofbankuai.getStock();
 		    NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
@@ -327,10 +327,10 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	    	}
 	    }
 
-		public HashSet<String> getStockInParseFile() 
-		{
-			return curbk.getNodetreerelated().getParseFileStockSet();
-		}
+//		public HashSet<String> getStockInParseFile() 
+//		{
+//			return curbk.getNodeTreerelated().getParseFileStockSet();
+//		}
 		
 		//设置突出显示成交额阀值
 		public void setDisplayChenJiaoEr (Double cje)

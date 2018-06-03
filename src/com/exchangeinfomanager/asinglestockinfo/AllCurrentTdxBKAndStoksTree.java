@@ -46,7 +46,7 @@ public class AllCurrentTdxBKAndStoksTree
 //		    logger.debug(bankuai.getMyOwnCode()+ "¿‡–Õ" + bankuai.getType());
 		}
 
-		treecyl = new BkChanYeLianTree(alltopNode);
+		treecyl = new BkChanYeLianTree(alltopNode,"ALLBKSTOCKS");
 		allstocks = null;
 	}
 	

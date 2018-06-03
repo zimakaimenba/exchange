@@ -1661,7 +1661,10 @@ public class StockInfoManager
 	protected void startBanKuaiFengXi() 
 	{
 			if(bkfx == null ) {
-				bkfx = new BanKuaiFengXi (this,allbkstock);
+				if(bkcyl == null)
+					bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
+				
+				bkfx = new BanKuaiFengXi (this,allbkstock,bkcyl);
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				bkfx.setVisible(true);
@@ -1731,7 +1734,7 @@ public class StockInfoManager
 		protected void startBanKuaiGuanLiDlg()
 		{
 			if(bkgldialog == null ) {
-				BanKuaiAndChanYeLian2 bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
+				bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
 				bkgldialog = new BanKuaiGuanLi(this,allbkstock,bkcyl);
 				bkgldialog.setModal(false);
 		//		bkgldialog.startDialog ();

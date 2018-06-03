@@ -2216,10 +2216,13 @@ public class BanKuaiDbOperation
 	 */
 	public HashMap<String,String> getSubBanKuai(String tdxbk) 
 	{
-		String sqlquerystat = "SELECT * FROM 产业链子板块列表 	"
-								+" WHERE 所属通达信板块 =" + "'" + tdxbk + "'" 
-								+ "ORDER BY 子板块名称"
-				   			   ;   
+		String sqlquerystat = "SELECT 产业链子板块列表.`子板块代码`, 产业链子板块列表.`子板块名称`" + 
+				" FROM 产业链子板块列表" +
+				" INNER JOIN 产业链板块子板块对应表" +
+				" ON 产业链子板块列表.`子板块代码` = 产业链板块子板块对应表.`子板块代码`" +
+				" WHERE 产业链板块子板块对应表.`通达信板块代码`  = '" + tdxbk + "' " +
+				" ORDER BY 产业链子板块列表.`子板块代码`" 
+				; 
 		logger.debug(sqlquerystat);
 		HashMap<String,String> tmpsubbklist = new HashMap<String,String> ();
 		CachedRowSetImpl rs = null;
@@ -2255,7 +2258,7 @@ public class BanKuaiDbOperation
 	}
 	
 	/*
-	 * 
+	 * 当前只能加不能删除
 	 */
 	public String addNewSubBanKuai(String tdxbk,String newsubbk) 
 	{
@@ -2263,17 +2266,32 @@ public class BanKuaiDbOperation
 		int cursize = cursubbks.size();
 		if(cursubbks.containsValue(newsubbk)) 
 			return null;
-			
-		String subcylcode = tdxbk + String.valueOf(cursize+1);
-		String sqlinsertstat = "INSERT INTO  产业链子板块列表(子板块名称,所属通达信板块,子板块代码) values ("
+		
+		String subcylcode;
+		if(cursize+1 >= 10)
+			subcylcode = tdxbk + String.valueOf(cursize+1);
+		else
+			subcylcode = tdxbk + "0" + String.valueOf(cursize+1);
+		
+		
+		String sqlinsertstat = "INSERT INTO  产业链子板块列表(子板块名称,子板块代码) values ("
 								+ "'" + newsubbk.trim() + "'" + ","
-								+ "'" + tdxbk.trim() + "'" + ","
 								+ "'" + subcylcode.trim() + "'"
 								+ ")"
 								;
 		logger.debug(sqlinsertstat);
 		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
+		sqlinsertstat = "INSERT INTO  产业链板块子板块对应表(通达信板块代码,子板块代码) values ("
+				+ "'" + tdxbk.trim() + "'" + ","
+				+ "'" + subcylcode.trim() + "'"
+				+ ")"
+				;
+		logger.debug(sqlinsertstat);
+		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+
+
+		cursubbks = null;
 		return subcylcode;
 		
 	}
@@ -3251,7 +3269,11 @@ public class BanKuaiDbOperation
 				;
 		 }
 //		logger.debug(sqlquerystat);
-		logger.debug("为个股" + stock.getMyOwnCode()  + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
+		try{
+			logger.debug("为个股" + stock.getMyOwnCode()  + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
+		} catch (java.lang.NullPointerException e) {
+			
+		}
 		
 
 		CachedRowSetImpl rsfg = null;
@@ -5593,7 +5615,7 @@ public class BanKuaiDbOperation
 			return result;
 		}
 		/*
-		 * 
+		 * 股票池/板块州
 		 */
 		public HashMap<String, String> getGuPiaoChi() 
 		{
@@ -5633,7 +5655,87 @@ public class BanKuaiDbOperation
 	
 			return gpcindb;
 		}
-		
+		/*
+		 * 股票池对应的子股票池/板块国
+		 */
+		public HashMap<String, String> getSubGuPiaoChi(String gpccode) 
+		{
+			HashMap<String,String> gpcindb = new HashMap<String,String> ();
+			boolean hasbkcode = true;
+            CachedRowSetImpl rspd = null; 
+            
+			try {
+				   String sqlquerystat = "SELECT 产业链板块国列表.`板块国代码`,产业链板块国列表.`板块国名称`" + 
+										" FROM 产业链板块国列表" +
+										" INNER JOIN 产业链板块州板块国对应表" +
+										" ON 产业链板块国列表.`板块国代码` = 产业链板块州板块国对应表.`板块国代码`" +
+										" WHERE 产业链板块州板块国对应表.`板块州代码`  = '" + gpccode + "' " +
+										" ORDER BY 产业链板块国列表.`板块国代码`" 
+										;
+	
+			    	logger.debug(sqlquerystat);
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			    	
+			        while(rspd.next())  {
+			        	String bkzcode = rspd.getString("板块国代码");
+			        	String bkzname = rspd.getString("板块国名称");
+			        	gpcindb.put(bkzcode, bkzname);
+			        }
+			       
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+	
+			return gpcindb;
+		}
+		/*
+		 * 
+		 */
+		public String addNewSubGuoPiaoChi(String nodecode, String subnodename) 
+		{
+			HashMap<String, String> cursubbks = this.getSubGuPiaoChi(nodecode);
+			int cursize = cursubbks.size();
+			if(cursubbks.containsValue(subnodename.trim())) 
+				return null;
+			
+			String subgpccode;
+			if(cursize+1 >= 10)
+				subgpccode = nodecode + String.valueOf(cursize+1);
+			else
+				subgpccode = nodecode + "0" + String.valueOf(cursize+1);
+			
+			String sqlinsertstat = "INSERT INTO 产业链板块国列表(板块国代码,板块国名称) VALUES ("
+									+ "'" + subgpccode.trim() + "'" + ","
+									+ "'" + subnodename.trim() + "'" 
+											+ ")"
+									;
+			logger.debug(sqlinsertstat);
+			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			
+			sqlinsertstat = "INSERT INTO  产业链板块州板块国对应表(板块州代码,板块国代码) values ("
+									+ "'" + nodecode.trim() + "'" + ","
+									+ "'" + subgpccode.trim() + "'" 
+									+ ")"
+									;
+			logger.debug(sqlinsertstat);
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			
+			cursubbks = null;
+			return subgpccode;
+		}
 		
 }
 

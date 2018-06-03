@@ -243,6 +243,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JCheckBox cbxnotgephi;
 	private JButton buttonapplybksetting;
 	private BkChanYeLianTree cyltree;
+	private BanKuaiAndChanYeLianGUI2 bkcylpnl;
 	
 	private void initializeGui()
 	{
@@ -388,12 +389,12 @@ public class BanKuaiGuanLi extends JDialog
 		scrollPanesysbk.setViewportView(tableSysBk);
 		panelSys.setLayout(gl_panelSys);
 		
-//		bkcylpnl = new BanKuaiAndChanYeLian(this.stockInfoManager) ;
+		bkcylpnl = new BanKuaiAndChanYeLianGUI2(bkcyl,stockInfoManager,allbkstks) ;
 //		bkcylpnl.startGui();
 		
 		//tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, pnlGingo2, null);
-//		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, bkcylpnl, null);
-//		tabbedPane.setSelectedIndex(0) ;
+		tabbedPane.addTab("\u4EA7\u4E1A\u94FE\u5B50\u7248\u5757\u5B9A\u4E49", null, bkcylpnl, null);
+		tabbedPane.setSelectedIndex(0) ;
 		
 		contentPanel.setLayout(gl_contentPanel);
 		{

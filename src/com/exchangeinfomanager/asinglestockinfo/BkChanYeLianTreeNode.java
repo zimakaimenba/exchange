@@ -58,8 +58,6 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
    		
    		//NodeJiBenMian  TreeRelated
    		this.nodejbm = new BkChanYeLianTreeNode.NodeJiBenMian ();
-   		this.nodetreerelated = new BkChanYeLianTreeNode.TreeRelated (this);
-   		
   }
 	
     private Logger logger = Logger.getLogger(BkChanYeLianTreeNode.class);
@@ -69,16 +67,11 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 	private String suoshujiaoyisuo;
 	
 	private NodeJiBenMian nodejbm;
-	private TreeRelated nodetreerelated;
+	protected TreeRelated nodetreerelated;
 	protected NodeXPeriodDataBasic nodewkdata;
 	protected NodeXPeriodDataBasic nodedaydata;
 	protected NodeXPeriodDataBasic nodemonthdata;
 	
-	
-//	protected ArrayList<ChenJiaoZhanBiInGivenPeriod> wkcjeperiodlist; //板块自己的周成交记录以及一些分析结果
-	
-	
-
 	public String getSuoShuJiaoYiSuo ()
 	{
 		return this.suoshujiaoyisuo;
@@ -93,7 +86,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 		return this.nodejbm;
 	}
 
-	public TreeRelated getNodetreerelated ()
+	public TreeRelated getNodeTreerelated ()
 	{
 		return this.nodetreerelated;
 	}
@@ -147,6 +140,9 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 		// TODO Auto-generated method stub
 		
 	}
+	/*
+	 * 
+	 */
 	public abstract NodeXPeriodDataBasic getNodeXPeroidData (String period);
 	
 	/*
@@ -156,8 +152,6 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 	{
 			public TreeRelated (BkChanYeLianTreeNode treenode1)
 			{
-				nodetreerelated = this;
-				
 				treenode = treenode1; 
 				expanded = false;
 		        shouldberemovedwhensavexml = false;
@@ -165,7 +159,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			
 			private BkChanYeLianTreeNode treenode;
 			private boolean expanded;
-			protected HashSet<String> parsefilestockset; //板块解析文件内含有的该板块列表
+//			protected HashSet<String> parsefilestockset; //板块解析文件内含有的该板块列表
 			private boolean isofficallyselected ;
 			private int inzdgzofficalcount =0;
 			private int inzdgzcandidatecount =0;
@@ -183,22 +177,22 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			}
 			
 
-			//子类里面有具体实现
-		    public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
-		    {
-		    	if(this.parsefilestockset == null) {
-		    		this.parsefilestockset = new HashSet<String> ();
-		    		this.parsefilestockset = parsefilestockset2;
-		    	} else
-		    		this.parsefilestockset = parsefilestockset2;
-		    }
-		    public HashSet<String> getParseFileStockSet ()
-		    {
-		    	if(this.parsefilestockset == null)
-		    		return new HashSet<String> ();
-		    	else
-		    		return this.parsefilestockset;
-		    }
+//			//子类里面有具体实现
+//		    public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
+//		    {
+//		    	if(this.parsefilestockset == null) {
+//		    		this.parsefilestockset = new HashSet<String> ();
+//		    		this.parsefilestockset = parsefilestockset2;
+//		    	} else
+//		    		this.parsefilestockset = parsefilestockset2;
+//		    }
+//		    public HashSet<String> getParseFileStockSet ()
+//		    {
+//		    	if(this.parsefilestockset == null)
+//		    		return new HashSet<String> ();
+//		    	else
+//		    		return this.parsefilestockset;
+//		    }
 		    public void setExpansion(boolean expanded){
 		        this.expanded = expanded;
 		    }
@@ -282,8 +276,6 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 				 }
 
 				return bkchanyelianinname.substring(0,bkchanyelianinname.length()-2);
-
-				
 			}
 			/**
 			 * @return the selectedtime
@@ -315,14 +307,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			{
 				this.addedtocyltreetime	 = CommonUtility.formateStringToDate(addedtime2);
 			}
-
-			public void clearCurParseFileStockSet() {
-				if(this.parsefilestockset != null)
-					this.parsefilestockset.clear();
-			}
-
-
-			
+		
 		}
 	 /*
 	  * 基本面信息

@@ -4,12 +4,15 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.jfree.data.time.TimeSeriesDataItem;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 
 public class StockOfBanKuai extends Stock
@@ -25,6 +28,7 @@ public class StockOfBanKuai extends Stock
 		super.nodewkdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = null; //个股对板块，周线数据才有意义，日线毫无意义
 //		super.nodemonthdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+		super.nodetreerelated = new StockOfBanKuai.StockOfBanKuaiTreeRelated(this);
 	}
 	
 //	private static Logger logger = Logger.getLogger(StockOfBanKuai.class);
@@ -49,19 +53,59 @@ public class StockOfBanKuai extends Stock
 		return this.quanzhong;
 	}
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.asinglestockinfo.Stock#getNodeXPeroidData(java.lang.String)
+	 */
 	public NodeXPeriodDataBasic getNodeXPeroidData(String period) {
-		NodeXPeriodDataBasic nodexdata = getStockXPeriodDataForBanKuai (period);
-		return nodexdata;
-	}
-	
-	public NodeXPeriodDataBasic getStockXPeriodDataForBanKuai (String period)
-	{
+		
 		if(period.equals(StockGivenPeriodDataItem.MONTH))
-			return (StockOfBanKuaiNodeXPeriodData) this.nodemonthdata;
+			return (StockOfBanKuaiNodeXPeriodData) super.nodemonthdata;
 		else if(period.equals(StockGivenPeriodDataItem.WEEK))
-			return this.nodewkdata;
+			return super.nodewkdata;
 		else 
 			return null;
+		
+//		NodeXPeriodDataBasic nodexdata = getStockXPeriodDataForBanKuai (period);
+//		return nodexdata;
+	}
+	
+//	private NodeXPeriodDataBasic getStockXPeriodDataForBanKuai (String period)
+//	{
+//		if(period.equals(StockGivenPeriodDataItem.MONTH))
+//			return (StockOfBanKuaiNodeXPeriodData) super.nodemonthdata;
+//		else if(period.equals(StockGivenPeriodDataItem.WEEK))
+//			return super.nodewkdata;
+//		else 
+//			return null;
+//	}
+	
+	/*
+	 * 
+	 */
+	public class StockOfBanKuaiTreeRelated extends TreeRelated
+	{
+		public StockOfBanKuaiTreeRelated (BkChanYeLianTreeNode treenode1)
+		{
+			super(treenode1);
+		}
+		
+		private HashMap<LocalDate,Boolean> isinparsedfile;
+		public void setStocksNumInParsedFile (LocalDate parsefiledate, Boolean isin)
+		{
+			if(isinparsedfile == null)
+				isinparsedfile = new HashMap<LocalDate,Boolean> ();
+			else {
+				LocalDate friday = parsefiledate.with(DayOfWeek.FRIDAY);
+				isinparsedfile.put(friday, isin);
+			}
+		}
+		public Boolean getStocksNumInParsedFileForSpecificDate (LocalDate requiredate)
+		{
+			LocalDate friday = requiredate.with(DayOfWeek.FRIDAY);
+			return isinparsedfile.get(friday);
+		}
+		
 	}
 	
 	public class StockOfBanKuaiNodeXPeriodData extends StockNodeXPeriodData

@@ -31,7 +31,6 @@ import javax.swing.table.TableCellRenderer;
 
 import org.jfree.chart.ChartPanel;
 
-import com.exchangeinfomanager.asinglestockinfo.SubnodeButton;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
@@ -124,7 +123,6 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.SubnodeButton;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
@@ -187,31 +185,10 @@ public class BanKuaiAndChanYeLianGUI  extends JDialog
 		this.stockInfoManager = stockInfoManager2;
 		this.bkdbopt = new BanKuaiDbOperation ();
 
-//		this.cylxmhandler = new ChanYeLianXMLHandler ();
-//		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
-		
-//		treechanyelian = initializeBkChanYeLianXMLTree();
-//		DaPan treerootdapan = (DaPan)treechanyelian.getModel().getRoot();
-//		BanKuai sh = this.getBanKuai("999999", LocalDate.now());
-//		BanKuai sz = this.getBanKuai("399001", LocalDate.now());
-//		treerootdapan.setShangHai(sh);
-//		treerootdapan.setShenZhen(sz);
-//		this.jyssuoyoustock = new HashMap<String,BkChanYeLianTreeNode> ();
-//		
-//		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
-		startGui ();
+	
 	}
-	public void startGui ()
-	{
-			initializeGui ();
-			initializeAllDaLeiZdgzTableFromXml ();
-			initializeBanKuaiParsedFile ();
-			createEvents ();
-			if(cylxmhandler.hasXmlRevised())
-				btnSaveAll.setEnabled(true);
-	}
-
-	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian.class);
+	
+	
 	
 	public static final int UP=0, LEFT=1, RIGHT=2, DOWN=3, NONE=4;
 	
@@ -1389,7 +1366,7 @@ public class BanKuaiAndChanYeLianGUI  extends JDialog
 	private JScrollPane sclpGeGuZhanBi;
 	private JDateChooser dchgeguwkzhanbi;
 	private JButton btndisplaybkfx;
-	private BanKuaiFengXiBarChartPnl bkfxpnl ;
+//	private BanKuaiFengXiBarChartPnl bkfxpnl ;
 //	private BanKuaiFengXiPieChartPnl pnlGeGuZhanBi;
 	private JTextField tfldquanzhong;
 	private JCheckBox cbxtichuquanzhong;
@@ -2037,442 +2014,442 @@ public class BanKuaiAndChanYeLianGUI  extends JDialog
 }
 
 
-/*
- * 12个大类某个具体大类的关注内容表
- */
-class CurZdgzBanKuaiTableModel extends AbstractTableModel 
-{
-	private HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkmap;
-	private String cbxDale;
-
-	String[] jtableTitleStrings = {  "板块产业链","创建时间","入选","发现"};
-	
-	CurZdgzBanKuaiTableModel ()
-	{
-
-	}
-
-	public boolean shouldRemovedNodeWhenSaveXml(int row){
-		BkChanYeLianTreeNode bkcyltn = this.getGuanZhuBanKuaiInfo(row);
-		if(bkcyltn.getNodetreerelated().shouldBeRemovedWhenSaveXml())
-			return true;
-		return false;
-	}
-
-	public void refresh (HashMap<String,ArrayList<BkChanYeLianTreeNode>> zdgzbkmap2,String cbxDale2) 
-	{
-		this.gzbkmap =  zdgzbkmap2;
-		this.cbxDale = cbxDale2;
-		this.fireTableDataChanged();
-	}
-	public int getGuanZhuBanKuaiInfoIndex (BkChanYeLianTreeNode parent)
-	{
-		String currentdalei = this.cbxDale;
-		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
-		
-		int findsimilarnode = -1;
-		
-		for(int i=0;i<tmpgzbkinfo.size();i++) {
-			String cylinmapnode = tmpgzbkinfo.get(i).getNodetreerelated().getNodeCurLocatedChanYeLian().trim();
-			String cylinverfiednode = parent.getNodetreerelated().getNodeCurLocatedChanYeLian().trim();
-
-			if(cylinmapnode.equals(cylinverfiednode) ) 
-				return i;
-			else if(cylinmapnode.contains(cylinverfiednode) )
-				findsimilarnode = i;
-		}
-
-		return findsimilarnode;
-	}
-	public BkChanYeLianTreeNode getGuanZhuBanKuaiInfo (int rowindex)
-	{
-		String currentdalei = this.cbxDale;
-		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
-		try {
-			return tmpgzbkinfo.get(rowindex);
-		} catch (java.lang.IndexOutOfBoundsException ex) {
-			return null;
-		}
-	}
-
-	 public int getRowCount() 
-	 {
-		 try {
-			 String currentdalei = this.cbxDale;  
-			 ArrayList<BkChanYeLianTreeNode> tmpgzbklist = gzbkmap.get(currentdalei);
-			 return tmpgzbklist.size();
-		 } catch (java.lang.NullPointerException e) {
-			 return 0;
-		 }
-	 }
-
-	    @Override
-	    public int getColumnCount() 
-	    {
-	        return jtableTitleStrings.length;
-	    
-	    } 
-//	    
-	    public Object getValueAt(int rowIndex, int columnIndex) 
-	    {
-	    	if(gzbkmap == null)
-	    		return null;
-	    	
-	    	String currentdalei = this.cbxDale;  
-			ArrayList<BkChanYeLianTreeNode> tmpgzbklist = gzbkmap.get(currentdalei);
-			if(tmpgzbklist == null)
-				return null;
-			BkChanYeLianTreeNode tmpgzbk = tmpgzbklist.get(rowIndex);
-	    	
-	    	Object value = "??";
-
-	    	switch (columnIndex) {
-            case 0:
-                value = tmpgzbk.getNodetreerelated().getNodeCurLocatedChanYeLianByName();
-                break;
-            case 1:
-            	try {
-            		value = tmpgzbk.getNodetreerelated().getSelectedToZdgzTime();
-            	} catch (java.lang.NullPointerException e) {
-            		value = "";
-            	}
-            	
-                break;
-            case 2:
-                value = new Boolean(tmpgzbk.getNodetreerelated().isOfficallySelected() );
-                break;
-            case 3:
-            	if(tmpgzbk.getNodetreerelated().getParseFileStockSet() != null && tmpgzbk.getNodetreerelated().getParseFileStockSet().size() >0)
-            		value = new Boolean(true );
-            	else 
-            		value = new Boolean(false );
-                break;
-	    	}
-	    	
-
-	    	return value;
-	  }
-
-     public Class<?> getColumnClass(int columnIndex) {
-		      Class clazz = String.class;
-		      switch (columnIndex) {
-		      case 0:
-		    	  clazz = String.class;
-		    	  break;
-		        case 1:
-			          clazz = String.class;
-			          break;
-		        case 2:
-			          clazz = Boolean.class;
-			          break;
-		        case 3:
-			          clazz = Boolean.class;
-			          break;
-		      }
-		      
-		      return clazz;
-		}
-	    
-	    public String getColumnName(int column){ 
-	    	return jtableTitleStrings[column];
-	    }//设置表格列名 
-
-	    public boolean isCellEditable(int row,int column) {
-	    	return false;
-		}
-	    
-	    public void deleteAllRows()
-	    {
-			this.cbxDale = "";
-	    }
-//	    public void deleteRow(int row)
-//	    {
-//	    	String currentdalei = cbxDale.getSelectedItem().toString();  
-//			ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = gzbkmap.get(currentdalei);
-//			tmpgzbklist.remove(row);
-//	    }
-	    
-}
-
-
-/*
- * 重点关注板块表
- */
-class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel 
-{
-	private HashMap<String, ArrayList<BkChanYeLianTreeNode>> gzbkmap;
-	
-	private String[] jtableTitleStrings = { "股票池", "关注板块","发现"};
-	private ArrayList<String> gzdalei;
-	private boolean foundstockinparsefile = false;
-	
-	ZdgzBanKuaiDetailXmlTableModel ()
-	{
-	}
-
-	public void refresh (HashMap<String,ArrayList<BkChanYeLianTreeNode>> zdgzbkmap) 
-	{
-		this.gzbkmap =  zdgzbkmap;
-		this.gzdalei = new ArrayList<String>(zdgzbkmap.keySet() );
-		this.fireTableDataChanged();
-	}
-
-	 public int getRowCount() 
-	 {
-		return gzdalei.size();
-	 }
-	 
-	 public String getZdgzDaLei (int row)
-	 {
-		 return (String)gzdalei.get(row);
-	 }
-	 public int getDaLeiIndex (String dalei)
-	 {
-		 return this.gzdalei.indexOf(dalei);
-	 }
-	 public ArrayList<BkChanYeLianTreeNode>  getDaLeiChanYeLianList (String dalei)
-	 {
-		 return gzbkmap.get(dalei) ;
-	 }
-	 public boolean hasShouldRemovedNodeWhenSaveXml (int rowindex)
-	 {
-		 boolean hasnode = false;
-		String dalei = (String)gzdalei.get(rowindex);
-		ArrayList<BkChanYeLianTreeNode> daleidetail = gzbkmap.get(dalei) ;
-		for(BkChanYeLianTreeNode tmpbkcyltn : daleidetail)
-			if(tmpbkcyltn.getNodetreerelated().shouldBeRemovedWhenSaveXml())
-				hasnode = true;
-		
-		return hasnode;
-	 }
-
-	    @Override
-	    public int getColumnCount() 
-	    {
-	        return jtableTitleStrings.length;
-	    
-	    } 
-//	    
-	    public Object getValueAt(int rowIndex, int columnIndex) 
-	    {
-	    	if(gzbkmap == null)
-	    		return null;
-	    	
-	    	
-	    	Object value = "??";
-	    	
-	    	switch (columnIndex) {
-            case 0:
-                value = gzdalei.get(rowIndex);
-                break;
-            case 1:
-            	String result = "";
-            	try {
-            		ArrayList<BkChanYeLianTreeNode> zdgzsub = this.getDaLeiChanYeLianList(this.getZdgzDaLei(rowIndex));
-            		if(zdgzsub.size() == 0)
-            			foundstockinparsefile = false;
-            		
-            		for(BkChanYeLianTreeNode gznode : zdgzsub) {
-            			if(gznode.getNodetreerelated().isOfficallySelected()) {
-            				String chanyelian = gznode.getNodetreerelated().getNodeCurLocatedChanYeLianByName(); 
-            				
-            				String seltime = "";
-            				if(gznode.getNodetreerelated().getSelectedToZdgzTime() != null)
-            					seltime = gznode.getNodetreerelated().getSelectedToZdgzTime();
-            				result = result + chanyelian + "(" + seltime +")" + " | " + " ";
-            				
-            				if(gznode.getNodetreerelated().getParseFileStockSet() != null && gznode.getNodetreerelated().getParseFileStockSet().size() > 0)
-            					foundstockinparsefile = true;
-            				else
-            					foundstockinparsefile = false;
-            			}
-            		}
-
-            	 } catch (java.lang.NullPointerException e) {
-            		 e.printStackTrace();
-            	 }
-            	
-            	value = result;
-                break;
-            case 2:
-                value = new Boolean (foundstockinparsefile);
-                break;
-	    	}
-        return value;
-	  }
-
-     public Class<?> getColumnClass(int columnIndex) {
-		      Class clazz = String.class;
-		      switch (columnIndex) {
-		      case 0:
-		    	  clazz = String.class;
-		    	  break;
-		        case 1:
-			          clazz = String.class;
-			          break;
-		        case 2:
-			          clazz = Boolean.class;
-			          break;
-		      }
-		      
-		      return clazz;
-		}
-	    
+///*
+// * 12个大类某个具体大类的关注内容表
+// */
+//class CurZdgzBanKuaiTableModel extends AbstractTableModel 
+//{
+//	private HashMap<String,ArrayList<BkChanYeLianTreeNode>> gzbkmap;
+//	private String cbxDale;
+//
+//	String[] jtableTitleStrings = {  "板块产业链","创建时间","入选","发现"};
+//	
+//	CurZdgzBanKuaiTableModel ()
+//	{
+//
+//	}
+//
+//	public boolean shouldRemovedNodeWhenSaveXml(int row){
+//		BkChanYeLianTreeNode bkcyltn = this.getGuanZhuBanKuaiInfo(row);
+//		if(bkcyltn.getNodetreerelated().shouldBeRemovedWhenSaveXml())
+//			return true;
+//		return false;
+//	}
+//
+//	public void refresh (HashMap<String,ArrayList<BkChanYeLianTreeNode>> zdgzbkmap2,String cbxDale2) 
+//	{
+//		this.gzbkmap =  zdgzbkmap2;
+//		this.cbxDale = cbxDale2;
+//		this.fireTableDataChanged();
+//	}
+//	public int getGuanZhuBanKuaiInfoIndex (BkChanYeLianTreeNode parent)
+//	{
+//		String currentdalei = this.cbxDale;
+//		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
+//		
+//		int findsimilarnode = -1;
+//		
+//		for(int i=0;i<tmpgzbkinfo.size();i++) {
+//			String cylinmapnode = tmpgzbkinfo.get(i).getNodetreerelated().getNodeCurLocatedChanYeLian().trim();
+//			String cylinverfiednode = parent.getNodetreerelated().getNodeCurLocatedChanYeLian().trim();
+//
+//			if(cylinmapnode.equals(cylinverfiednode) ) 
+//				return i;
+//			else if(cylinmapnode.contains(cylinverfiednode) )
+//				findsimilarnode = i;
+//		}
+//
+//		return findsimilarnode;
+//	}
+//	public BkChanYeLianTreeNode getGuanZhuBanKuaiInfo (int rowindex)
+//	{
+//		String currentdalei = this.cbxDale;
+//		ArrayList<BkChanYeLianTreeNode> tmpgzbkinfo = this.gzbkmap.get(currentdalei);
+//		try {
+//			return tmpgzbkinfo.get(rowindex);
+//		} catch (java.lang.IndexOutOfBoundsException ex) {
+//			return null;
+//		}
+//	}
+//
+//	 public int getRowCount() 
+//	 {
+//		 try {
+//			 String currentdalei = this.cbxDale;  
+//			 ArrayList<BkChanYeLianTreeNode> tmpgzbklist = gzbkmap.get(currentdalei);
+//			 return tmpgzbklist.size();
+//		 } catch (java.lang.NullPointerException e) {
+//			 return 0;
+//		 }
+//	 }
+//
 //	    @Override
-//	    public Class<?> getColumnClass(int columnIndex) {
-//	        return // Return the class that best represents the column...
+//	    public int getColumnCount() 
+//	    {
+//	        return jtableTitleStrings.length;
+//	    
+//	    } 
+////	    
+//	    public Object getValueAt(int rowIndex, int columnIndex) 
+//	    {
+//	    	if(gzbkmap == null)
+//	    		return null;
+//	    	
+//	    	String currentdalei = this.cbxDale;  
+//			ArrayList<BkChanYeLianTreeNode> tmpgzbklist = gzbkmap.get(currentdalei);
+//			if(tmpgzbklist == null)
+//				return null;
+//			BkChanYeLianTreeNode tmpgzbk = tmpgzbklist.get(rowIndex);
+//	    	
+//	    	Object value = "??";
+//
+//	    	switch (columnIndex) {
+//            case 0:
+//                value = tmpgzbk.getNodetreerelated().getNodeCurLocatedChanYeLianByName();
+//                break;
+//            case 1:
+//            	try {
+//            		value = tmpgzbk.getNodetreerelated().getSelectedToZdgzTime();
+//            	} catch (java.lang.NullPointerException e) {
+//            		value = "";
+//            	}
+//            	
+//                break;
+//            case 2:
+//                value = new Boolean(tmpgzbk.getNodetreerelated().isOfficallySelected() );
+//                break;
+//            case 3:
+//            	if(tmpgzbk.getNodetreerelated().getParseFileStockSet() != null && tmpgzbk.getNodetreerelated().getParseFileStockSet().size() >0)
+//            		value = new Boolean(true );
+//            	else 
+//            		value = new Boolean(false );
+//                break;
+//	    	}
+//	    	
+//
+//	    	return value;
+//	  }
+//
+//     public Class<?> getColumnClass(int columnIndex) {
+//		      Class clazz = String.class;
+//		      switch (columnIndex) {
+//		      case 0:
+//		    	  clazz = String.class;
+//		    	  break;
+//		        case 1:
+//			          clazz = String.class;
+//			          break;
+//		        case 2:
+//			          clazz = Boolean.class;
+//			          break;
+//		        case 3:
+//			          clazz = Boolean.class;
+//			          break;
+//		      }
+//		      
+//		      return clazz;
+//		}
+//	    
+//	    public String getColumnName(int column){ 
+//	    	return jtableTitleStrings[column];
+//	    }//设置表格列名 
+//
+//	    public boolean isCellEditable(int row,int column) {
+//	    	return false;
+//		}
+//	    
+//	    public void deleteAllRows()
+//	    {
+//			this.cbxDale = "";
 //	    }
-	    
-	    public String getColumnName(int column){ 
-	    	return jtableTitleStrings[column];
-	    }//设置表格列名 
-		
-
-	    public boolean isCellEditable(int row,int column) {
-	    	return false;
-		}
-
-}
-
-
-class BanKuaiSubChanYeLianTableModel extends DefaultTableModel 
-{
-	private HashMap<String,String> bksubcylmap; //包含代码和名称
-	private ArrayList<String> bksubcylcodelist;
-	String[] jtableTitleStrings = { "子产业链代码", "子产业链名称"};
-	
-	
-	BanKuaiSubChanYeLianTableModel ()
-	{
-	}
-
-	public void addRow(String newsubcylcode, String newsubbk)
-	{
-		this.bksubcylmap.put(newsubcylcode, newsubbk);
-		this.bksubcylcodelist = new ArrayList<String> (this.bksubcylmap.keySet());
-		this.fireTableDataChanged();
-	}
-
-	public void refresh  (HashMap<String,String> bksubcylmap2)
-	{
-		this.bksubcylmap = bksubcylmap2;
-		bksubcylcodelist = new ArrayList<String> (this.bksubcylmap.keySet());
-		this.fireTableDataChanged();
-	}
-	
-	 public int getRowCount() 
-	 {
-		 if(this.bksubcylmap == null)
-			 return 0;
-		 else 
-			 return this.bksubcylmap.size();
-	 }
-
-	    @Override
-	    public int getColumnCount() 
-	    {
-	        return jtableTitleStrings.length;
-	    } 
-	    
-	    public Object getValueAt(int rowIndex, int columnIndex) 
-	    {
-	    	if(bksubcylmap.isEmpty())
-	    		return null;
-	    	
-	    	Object value = "??";
-	    	switch (columnIndex) {
-            case 0:
-                value = bksubcylcodelist.get(rowIndex);
-                break;
-            case 1:
-            	value = bksubcylmap.get( bksubcylcodelist.get(rowIndex) );
-                break;
-	    	}
-
-        return value;
-	  }
-
-     public Class<?> getColumnClass(int columnIndex) {
-		      Class clazz = String.class;
-		      switch (columnIndex) {
-		      case 0:
-		    	  clazz = String.class;
-		    	  break;
-		        case 1:
-			          clazz = String.class;
-			          break;
-		      }
-		      
-		      return clazz;
-	 }
-	    
-	    public String getColumnName(int column) { 
-	    	return jtableTitleStrings[column];
-	    }//设置表格列名 
-		
-
-	    public boolean isCellEditable(int row,int column) {
-	    	return false;
-		}
-	    public String getSubChanYeLianCode (int row) 
-	    {
-	    	return bksubcylcodelist.get(row) ;
-	    }
-	    public String getSubChanYeLianName (int row) 
-	    {
-	    	return bksubcylmap.get( bksubcylcodelist.get(row) );
-	    } 
-	    
-	    public void deleteAllRows()
-	    {
-	    	if(this.bksubcylmap == null)
-				 return ;
-			 else 
-				 bksubcylmap.clear();
-	    	
-	    	this.fireTableDataChanged();
-	    }
-}
-
-/*
- * google guava files 类，可以直接处理读出的line
- */
-class ParseBanKuaiFielProcessor implements LineProcessor<List<String>> 
-{
-   
-    private List<String> stocklists = Lists.newArrayList();
-   
-    @Override
-    public boolean processLine(String line) throws IOException {
-    	if(line.trim().length() ==7)
-    		stocklists.add(line.substring(1));
-        return true;
-    }
-    @Override
-    public List<String> getResult() {
-        return stocklists;
-    }
-}
-
-//It’s a little trick to make a row automatically selected when the user right clicks on the table. Create a handler class for mouse-clicking events as follows:
-class TableMouseListener extends MouseAdapter {
-    
-    private JTable table;
-     
-    public TableMouseListener(JTable table) {
-        this.table = table;
-    }
-     
-    @Override
-    public void mousePressed(MouseEvent event) {
-        // selects the row at which point the mouse is clicked
-        Point point = event.getPoint();
-        int currentRow = table.rowAtPoint(point);
-        table.setRowSelectionInterval(currentRow, currentRow);
-        
-        
-    }
-}
+////	    public void deleteRow(int row)
+////	    {
+////	    	String currentdalei = cbxDale.getSelectedItem().toString();  
+////			ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = gzbkmap.get(currentdalei);
+////			tmpgzbklist.remove(row);
+////	    }
+//	    
+//}
+//
+//
+///*
+// * 重点关注板块表
+// */
+//class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel 
+//{
+//	private HashMap<String, ArrayList<BkChanYeLianTreeNode>> gzbkmap;
+//	
+//	private String[] jtableTitleStrings = { "股票池", "关注板块","发现"};
+//	private ArrayList<String> gzdalei;
+//	private boolean foundstockinparsefile = false;
+//	
+//	ZdgzBanKuaiDetailXmlTableModel ()
+//	{
+//	}
+//
+//	public void refresh (HashMap<String,ArrayList<BkChanYeLianTreeNode>> zdgzbkmap) 
+//	{
+//		this.gzbkmap =  zdgzbkmap;
+//		this.gzdalei = new ArrayList<String>(zdgzbkmap.keySet() );
+//		this.fireTableDataChanged();
+//	}
+//
+//	 public int getRowCount() 
+//	 {
+//		return gzdalei.size();
+//	 }
+//	 
+//	 public String getZdgzDaLei (int row)
+//	 {
+//		 return (String)gzdalei.get(row);
+//	 }
+//	 public int getDaLeiIndex (String dalei)
+//	 {
+//		 return this.gzdalei.indexOf(dalei);
+//	 }
+//	 public ArrayList<BkChanYeLianTreeNode>  getDaLeiChanYeLianList (String dalei)
+//	 {
+//		 return gzbkmap.get(dalei) ;
+//	 }
+//	 public boolean hasShouldRemovedNodeWhenSaveXml (int rowindex)
+//	 {
+//		 boolean hasnode = false;
+//		String dalei = (String)gzdalei.get(rowindex);
+//		ArrayList<BkChanYeLianTreeNode> daleidetail = gzbkmap.get(dalei) ;
+//		for(BkChanYeLianTreeNode tmpbkcyltn : daleidetail)
+//			if(tmpbkcyltn.getNodetreerelated().shouldBeRemovedWhenSaveXml())
+//				hasnode = true;
+//		
+//		return hasnode;
+//	 }
+//
+//	    @Override
+//	    public int getColumnCount() 
+//	    {
+//	        return jtableTitleStrings.length;
+//	    
+//	    } 
+////	    
+//	    public Object getValueAt(int rowIndex, int columnIndex) 
+//	    {
+//	    	if(gzbkmap == null)
+//	    		return null;
+//	    	
+//	    	
+//	    	Object value = "??";
+//	    	
+//	    	switch (columnIndex) {
+//            case 0:
+//                value = gzdalei.get(rowIndex);
+//                break;
+//            case 1:
+//            	String result = "";
+//            	try {
+//            		ArrayList<BkChanYeLianTreeNode> zdgzsub = this.getDaLeiChanYeLianList(this.getZdgzDaLei(rowIndex));
+//            		if(zdgzsub.size() == 0)
+//            			foundstockinparsefile = false;
+//            		
+//            		for(BkChanYeLianTreeNode gznode : zdgzsub) {
+//            			if(gznode.getNodetreerelated().isOfficallySelected()) {
+//            				String chanyelian = gznode.getNodetreerelated().getNodeCurLocatedChanYeLianByName(); 
+//            				
+//            				String seltime = "";
+//            				if(gznode.getNodetreerelated().getSelectedToZdgzTime() != null)
+//            					seltime = gznode.getNodetreerelated().getSelectedToZdgzTime();
+//            				result = result + chanyelian + "(" + seltime +")" + " | " + " ";
+//            				
+//            				if(gznode.getNodetreerelated().getParseFileStockSet() != null && gznode.getNodetreerelated().getParseFileStockSet().size() > 0)
+//            					foundstockinparsefile = true;
+//            				else
+//            					foundstockinparsefile = false;
+//            			}
+//            		}
+//
+//            	 } catch (java.lang.NullPointerException e) {
+//            		 e.printStackTrace();
+//            	 }
+//            	
+//            	value = result;
+//                break;
+//            case 2:
+//                value = new Boolean (foundstockinparsefile);
+//                break;
+//	    	}
+//        return value;
+//	  }
+//
+//     public Class<?> getColumnClass(int columnIndex) {
+//		      Class clazz = String.class;
+//		      switch (columnIndex) {
+//		      case 0:
+//		    	  clazz = String.class;
+//		    	  break;
+//		        case 1:
+//			          clazz = String.class;
+//			          break;
+//		        case 2:
+//			          clazz = Boolean.class;
+//			          break;
+//		      }
+//		      
+//		      return clazz;
+//		}
+//	    
+////	    @Override
+////	    public Class<?> getColumnClass(int columnIndex) {
+////	        return // Return the class that best represents the column...
+////	    }
+//	    
+//	    public String getColumnName(int column){ 
+//	    	return jtableTitleStrings[column];
+//	    }//设置表格列名 
+//		
+//
+//	    public boolean isCellEditable(int row,int column) {
+//	    	return false;
+//		}
+//
+//}
+//
+//
+//class BanKuaiSubChanYeLianTableModel extends DefaultTableModel 
+//{
+//	private HashMap<String,String> bksubcylmap; //包含代码和名称
+//	private ArrayList<String> bksubcylcodelist;
+//	String[] jtableTitleStrings = { "子产业链代码", "子产业链名称"};
+//	
+//	
+//	BanKuaiSubChanYeLianTableModel ()
+//	{
+//	}
+//
+//	public void addRow(String newsubcylcode, String newsubbk)
+//	{
+//		this.bksubcylmap.put(newsubcylcode, newsubbk);
+//		this.bksubcylcodelist = new ArrayList<String> (this.bksubcylmap.keySet());
+//		this.fireTableDataChanged();
+//	}
+//
+//	public void refresh  (HashMap<String,String> bksubcylmap2)
+//	{
+//		this.bksubcylmap = bksubcylmap2;
+//		bksubcylcodelist = new ArrayList<String> (this.bksubcylmap.keySet());
+//		this.fireTableDataChanged();
+//	}
+//	
+//	 public int getRowCount() 
+//	 {
+//		 if(this.bksubcylmap == null)
+//			 return 0;
+//		 else 
+//			 return this.bksubcylmap.size();
+//	 }
+//
+//	    @Override
+//	    public int getColumnCount() 
+//	    {
+//	        return jtableTitleStrings.length;
+//	    } 
+//	    
+//	    public Object getValueAt(int rowIndex, int columnIndex) 
+//	    {
+//	    	if(bksubcylmap.isEmpty())
+//	    		return null;
+//	    	
+//	    	Object value = "??";
+//	    	switch (columnIndex) {
+//            case 0:
+//                value = bksubcylcodelist.get(rowIndex);
+//                break;
+//            case 1:
+//            	value = bksubcylmap.get( bksubcylcodelist.get(rowIndex) );
+//                break;
+//	    	}
+//
+//        return value;
+//	  }
+//
+//     public Class<?> getColumnClass(int columnIndex) {
+//		      Class clazz = String.class;
+//		      switch (columnIndex) {
+//		      case 0:
+//		    	  clazz = String.class;
+//		    	  break;
+//		        case 1:
+//			          clazz = String.class;
+//			          break;
+//		      }
+//		      
+//		      return clazz;
+//	 }
+//	    
+//	    public String getColumnName(int column) { 
+//	    	return jtableTitleStrings[column];
+//	    }//设置表格列名 
+//		
+//
+//	    public boolean isCellEditable(int row,int column) {
+//	    	return false;
+//		}
+//	    public String getSubChanYeLianCode (int row) 
+//	    {
+//	    	return bksubcylcodelist.get(row) ;
+//	    }
+//	    public String getSubChanYeLianName (int row) 
+//	    {
+//	    	return bksubcylmap.get( bksubcylcodelist.get(row) );
+//	    } 
+//	    
+//	    public void deleteAllRows()
+//	    {
+//	    	if(this.bksubcylmap == null)
+//				 return ;
+//			 else 
+//				 bksubcylmap.clear();
+//	    	
+//	    	this.fireTableDataChanged();
+//	    }
+//}
+//
+///*
+// * google guava files 类，可以直接处理读出的line
+// */
+//class ParseBanKuaiFielProcessor implements LineProcessor<List<String>> 
+//{
+//   
+//    private List<String> stocklists = Lists.newArrayList();
+//   
+//    @Override
+//    public boolean processLine(String line) throws IOException {
+//    	if(line.trim().length() ==7)
+//    		stocklists.add(line.substring(1));
+//        return true;
+//    }
+//    @Override
+//    public List<String> getResult() {
+//        return stocklists;
+//    }
+//}
+//
+////It’s a little trick to make a row automatically selected when the user right clicks on the table. Create a handler class for mouse-clicking events as follows:
+//class TableMouseListener extends MouseAdapter {
+//    
+//    private JTable table;
+//     
+//    public TableMouseListener(JTable table) {
+//        this.table = table;
+//    }
+//     
+//    @Override
+//    public void mousePressed(MouseEvent event) {
+//        // selects the row at which point the mouse is clicked
+//        Point point = event.getPoint();
+//        int currentRow = table.rowAtPoint(point);
+//        table.setRowSelectionInterval(currentRow, currentRow);
+//        
+//        
+//    }
+//}
 
 
 //http://www.jfree.org/phpBB2/viewtopic.php?f=3&t=29571#
