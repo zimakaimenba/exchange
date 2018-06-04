@@ -83,6 +83,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
+import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
@@ -1866,7 +1867,7 @@ public class BanKuaiFengXi extends JDialog {
             	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) ||  nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)  ) //有些指数是没有个股不列入比较范围
 					continue;
 
-            	String tmpname = treeChild.getMyOwnName();
+//            	String tmpname = treeChild.getMyOwnName();
             	nodeinallbktree = this.allbksks.getAllGeGuOfBanKuai(nodeinallbktree, StockGivenPeriodDataItem.WEEK);
             	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,StockGivenPeriodDataItem.WEEK);
             	HashSet<String> stkofbkset = new HashSet<String>  ();
@@ -1874,11 +1875,21 @@ public class BanKuaiFengXi extends JDialog {
             		stkofbkset.add(stkofbk.getMyOwnCode());
             	}
             	
-	    		SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
+            	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
 	    		BanKuaiTreeRelated treerelated = null;
-				if(intersectionbankuai.size() > 0)
+				if(intersectionbankuai.size() > 0) {
 					treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
 	    			treerelated.setStocksNumInParsedFile (localDate,intersectionbankuai.size());
+				}
+				
+				for(String stkofbk : intersectionbankuai ) {
+					StockOfBanKuai stkinbk = nodeinallbktree.getBanKuaiGeGu(stkofbk);
+	    			StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkinbk.getNodeTreerelated();
+            		stofbktree.setStocksNumInParsedFile (localDate,true);
+				}
+				
+				curbkallbkset = null;
+				stkofbkset= null;
 	        } 
 	          
 	        patchParsedFileToTrees(treeChild,localDate,stockinfile);
