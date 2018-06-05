@@ -1829,14 +1829,13 @@ public class BanKuaiFengXi extends JDialog {
 		Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
 		this.dateChooser.setDate(Date.from(instant));
     	
+		//应该先从XML读取相关的数据，没有才去都文件一个个匹配
     	List<String> readparsefileLines = null;
 		try {
 			readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiFielProcessor ());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
 		
 		stockinfile = new HashSet<String> (readparsefileLines);
 		//现在产业链树上标记个股的数量
@@ -1864,7 +1863,9 @@ public class BanKuaiFengXi extends JDialog {
             	BkChanYeLianTree bkstkstree = this.allbksks.getAllBkStocksTree();
             	BanKuai nodeinallbktree = (BanKuai)bkstkstree.getSpecificNodeByHypyOrCode(tmpbkcode, BkChanYeLianTreeNode.TDXBK);
             	
-            	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) ||  nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)  ) //有些指数是没有个股不列入比较范围
+            	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
+            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) 
+            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) //有些指数是没有个股不列入比较范围
 					continue;
 
 //            	String tmpname = treeChild.getMyOwnName();
@@ -2964,7 +2965,7 @@ public class BanKuaiFengXi extends JDialog {
 									if(!outputnodeslist.contains(childnode)){
 										outputnodeslist.add(childnode);
 									}
-								 }
+								}
 						}
 					}
 					
@@ -3036,6 +3037,7 @@ public class BanKuaiFengXi extends JDialog {
 				e1.printStackTrace();
 			} 
 			
+			//写入板块分析文件
 			for(BkChanYeLianTreeNode node : outputnodeslist) {
 				 String outputstock;
 				 String cjs = node.getSuoShuJiaoYiSuo();
@@ -3052,8 +3054,13 @@ public class BanKuaiFengXi extends JDialog {
 				}
 			}
 		
+			//生产gephi文件
 			GephiFilesGenerator gephigenerator = new GephiFilesGenerator (allbksks);
   			gephigenerator.generatorGephiFile(outputfile, dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), globeperiod);
+  			
+  			setProgress( 90 );
+  			//把板块分析文件的结果保存在XML里
+  			parseSelectedBanKuaiFile (outputfile.getName());
 
   			setProgress( 100 );
   			

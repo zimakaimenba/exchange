@@ -21,6 +21,7 @@ import org.jfree.data.time.ohlc.OHLCSeries;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.google.common.base.Strings;
 
 public class Stock extends BkChanYeLianTreeNode {
@@ -40,6 +41,7 @@ public class Stock extends BkChanYeLianTreeNode {
 		super.nodewkdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new StockNodeXPeriodData (StockGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+		
 	}
 	
 	private String checklistXml;
@@ -174,6 +176,8 @@ public class Stock extends BkChanYeLianTreeNode {
 		} else
 			return false;
 	}
+	
+	
 	/*
 	 * 判断本周期是停牌后复牌
 	 */

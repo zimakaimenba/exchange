@@ -1,40 +1,45 @@
 <?xml version="1.0" encoding="GBK"?>
 
 <两交易所>
-  <GuPiaoChi gpccode="GPC001" gpcname="超跌反弹" Type="8">
-  	<BanKuai bkname="染料涂料" bkcode="880340" Type="4"/>
+  <GuPiaoChi gpccode="GPC008" gpcname="港美联动" Type="8"/>
+  <GuPiaoChi gpccode="GPC009" gpcname="券商参券" Type="8"/>
+  <GuPiaoChi gpccode="GPC006" gpcname="涨价和业绩反转" Type="8"/>
+  <GuPiaoChi gpccode="GPC007" gpcname="次新股" Type="8">
+    <BanKuai bkcode="880529" bkname="次新股" Type="4"/>
   </GuPiaoChi>
-  <GuPiaoChi gpccode="GPC001" gpcname="重组收购" Type="8"/>
-  <GuPiaoChi gpccode="GPC002" gpcname="稳定白马" Type="8"/>
-  <GuPiaoChi gpccode="GPC003" gpcname="前热点余热" Type="8">
-	  <BanKuai bkname="水运" bkcode="880461" Type="4"/>
-	  <BanKuai bkname="风能" bkcode="880582" Type="4"/>
-	  <BanKuai bkname="空气治理" bkcode="880581" Type="4"/>
-	  <BanKuai bkname="铁路" bkcode="880460" Type="4"/>
-	  <BanKuai bkname="智能交通" bkcode="880580" Type="4"/>
-	  <BanKuai bkname="湖北板块" bkcode="880219" Type="4"/>
+  <GuPiaoChi gpccode="GPC004" gpcname="黑天鹅受益" Type="8"/>
+  <GuPiaoChi gpccode="GPC005" gpcname="前热点余热" Type="8"/>
+  <GuPiaoChi gpccode="GPC002" gpcname="重组收购" Type="8">
+    <BanKuai bkcode="880574" bkname="苹果概念" Type="4">
+      <SubBanKuai subbkcode="8805741" subbkname="SIP模组" suoshubkcode="GPC002" Type="5"/>
+      <SubBanKuai subbkcode="8805743" subbkname="光摄像头" suoshubkcode="GPC002" Type="5"/>
+      <SubBanKuai subbkcode="8805742" subbkname="摄像头" suoshubkcode="GPC002" Type="5"/>
+      <SubBanKuai subbkcode="8805745" subbkname="镜头" suoshubkcode="GPC002" Type="5"/>
+      <SubBanKuai subbkcode="8805744" subbkname="光摄像头模组" suoshubkcode="GPC002" Type="5"/>
+    </BanKuai>
   </GuPiaoChi>
-  <GuPiaoChi gpccode="GPC004" gpcname="成长和概念" Type="8">
-  	<SubGuPiaoChi subgpccode="GPC004S01" subgpcname="自动驾驶" Type="9"/>
-  	<SubGuPiaoChi subgpccode="GPC004S02" subgpcname="自动驾驶" Type="9">
-		  <BanKuai bkname="橡胶" bkcode="880339" Type="4"/>
-		  <BanKuai bkname="深圳板块" bkcode="880218" Type="4"/>
-	  </SubGuPiaoChi>
-	  <BanKuai bkname="塑料" bkcode="880338" Type="4"/>
-	  <BanKuai bkname="河北板块" bkcode="880211" Type="4"/>
-	  <SubGuPiaoChi subgpccode="GPC004S03" subgpcname="信息技术" Type="9">
-		 	<BanKuai bkname="苹果概念" bkcode="880574" Type="4">
-		    <SubBanKuai subbkname="SIP模组" subbkcode="8805741" suoshubkcode="880574" Type="5">
-		      <gegu geguname="环旭电子" gegucode="601231" suoshubkcode="880574" Type="6"/>
-		    </SubBanKuai>
-		    <SubBanKuai subbkname="光摄像头" subbkcode="8805743" suoshubkcode="880574" Type="5">
-		      <SubBanKuai subbkname="光摄像头模组" subbkcode="8805744" suoshubkcode="880574" Type="5">
-		        <gegu geguname="欧菲科技" gegucode="002456" suoshubkcode="880574" Type="6"/>
-		      </SubBanKuai>
-		      <SubBanKuai subbkname="镜头" subbkcode="8805745" suoshubkcode="880574" Type="5"/>
-		    </SubBanKuai>
-		  </BanKuai>
-	  </SubGuPiaoChi>
+  <GuPiaoChi gpccode="GPC013" gpcname="国新政策" Type="8"/>
+  <GuPiaoChi gpccode="GPC003" gpcname="稳定白马" Type="8"/>
+  <GuPiaoChi gpccode="GPC011" gpcname="成长和概念" Type="8">
+    <SubGuPiaoChi subgpccode="GPC01101" subgpcname="信息产业" Type="9">
+      <BanKuai bkcode="880945" bkname="OLED概念" Type="4"/>
+      <BanKuai bkcode="880946" bkname="区块链" Type="4">
+        <gegu gegucode="002517" geguname="恺英网络" Type="6"/>
+      </BanKuai>
+    </SubGuPiaoChi>
   </GuPiaoChi>
-  <GuPiaoChi gpccode="GPC012" gpcname="其他" Type="8" />
+  <GuPiaoChi gpccode="GPC001" gpcname="超跌反弹" Type="8"/>
+  <GuPiaoChi gpccode="GPC012" gpcname="特定时间重大事件" Type="8"/>
+  <GuPiaoChi gpccode="GPC010" gpcname="题材转业绩" Type="8"/>
+  <GuPiaoChi gpccode="GPC014" gpcname="其他" Type="8">
+    <BanKuai bkcode="880461" bkname="水运" Type="4">
+      <gegu gegucode="600428" geguname="中远海特" Type="6"/>
+    </BanKuai>
+    <BanKuai bkcode="880336" bkname="化工原料" Type="4">
+      <SubBanKuai subbkcode="8803361" subbkname="OLED" suoshubkcode="GPC014" Type="5"/>
+      <SubBanKuai subbkcode="8803362" subbkname="水汽阻隔膜" suoshubkcode="GPC014" Type="5">
+        <SubBanKuai subbkcode="8803364" subbkname="甲醇" suoshubkcode="GPC014" Type="5"/>
+      </SubBanKuai>
+    </BanKuai>
+  </GuPiaoChi>
 </两交易所>

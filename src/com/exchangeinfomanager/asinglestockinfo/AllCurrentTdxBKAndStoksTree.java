@@ -140,6 +140,9 @@ public class AllCurrentTdxBKAndStoksTree
 		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getRecordsStartDate();
 		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getRecordsEndDate();
 		
+		if(bkstartday == null && bkendday == null) //板块本身没有数据，无法找出对应的个股的数据，所以原路返回
+			return stock;
+		
 		LocalDate stockstartday = stock.getNodeXPeroidData(period).getRecordsStartDate();
 		LocalDate stockendday = stock.getNodeXPeroidData(period).getRecordsEndDate();
 		

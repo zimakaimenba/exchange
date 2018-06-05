@@ -116,7 +116,7 @@ public class BkChanYeLianTree extends JTree
     }
     private void treeTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeExpanded
         if (!ignoreExpansion )
-        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreerelated().setExpansion(true);
+        	((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreerelated().setExpansion(true);
     }
 
     /*
