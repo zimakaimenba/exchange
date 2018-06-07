@@ -343,6 +343,9 @@ class ChanYeLianXMLHandler
 			hasXmlRevised = true;
 			return hasXmlRevised;
 	    }
+	 	/*
+	 	 * 
+	 	 */
 	 	private void exportToDoc (BkChanYeLianTreeNode parentnode,Element cylparentele, Document ggcyldoc)
 		{
 			BkChanYeLianTreeNode treeChild;
@@ -351,7 +354,7 @@ class ChanYeLianXMLHandler
 				
 	            treeChild = (BkChanYeLianTreeNode) child.nextElement();
 	            
-	            if(treeChild.getNodetreerelated().shouldBeRemovedWhenSaveXml()) //应该删除的节点，该节点以下的所有节点都不保存
+	            if(treeChild.getNodeTreerelated().shouldBeRemovedWhenSaveXml()) //应该删除的节点，该节点以下的所有节点都不保存
 	            	continue;
 	            
 	            String tmpbkcode = treeChild.getMyOwnCode() ;
@@ -391,7 +394,7 @@ class ChanYeLianXMLHandler
 		        	cylchildele = cylparentele.addElement("SubBanKuai");
 		        	cylchildele.addAttribute("subbkcode", tmpbkcode  );
 		        	cylchildele.addAttribute("subbkname", tmpname);
-		        	String suoshubkcode = treeChild.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName();
+		        	String suoshubkcode = treeChild.getNodeTreerelated().getChanYeLianSuoShuTdxBanKuaiName();
 		            cylchildele.addAttribute("suoshubkcode", suoshubkcode  ); 
 		            cylchildele.addAttribute("Type", status);
 		            

@@ -332,7 +332,7 @@ public class SystemConfigration
 		}
 		public String getTDXModelMatchExportFile ()
 		{
-			return this.getSystemInstalledPath() + "/weeklyreports/TDX模型个股";
+			return this.getSystemInstalledPath() + "/weeklyreports/";
 		}
 	
 		/*
@@ -359,6 +359,10 @@ public class SystemConfigration
 		{
 			return systeminstalledpath + "/config/板块产业链.xml";
 		}
+//		public String getBkfxWeeklyFileResultXml ()
+//		{
+//			return this.getSystemInstalledPath() + "/config/板块文件分析结果.xml";
+//		}
 	 public String getSysSettingFile () 
 	 {
 		 return this.getSystemInstalledPath() + "/config/系统设置.xml";

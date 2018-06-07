@@ -458,8 +458,9 @@ public class BanKuaiFengXi extends JDialog {
 			dateshowinfilename = "day" + curselectdate.toString().replaceAll("-","");
 		else if(globeperiod.equals(StockGivenPeriodDataItem.MONTH))
 			dateshowinfilename = "month" +  curselectdate.withDayOfMonth(curselectdate.lengthOfMonth()).toString().replaceAll("-","");
-		String exportfilename = sysconfig.getTDXModelMatchExportFile ()+ dateshowinfilename + ".EBK";
+		String exportfilename = sysconfig.getTDXModelMatchExportFile () + "TDX模型个股" + dateshowinfilename + ".EBK";
 		File filefmxx = new File( exportfilename );
+		
 		if(!filefmxx.getParentFile().exists()) {  
             //如果目标文件所在的目录不存在，则创建父目录  
             logger.debug("目标文件所在目录不存在，准备创建它！");  
@@ -468,6 +469,7 @@ public class BanKuaiFengXi extends JDialog {
                 return ;  
             }  
         }  
+		
 		try {
 				if (filefmxx.exists()) {
 					filefmxx.delete();
@@ -494,7 +496,9 @@ public class BanKuaiFengXi extends JDialog {
 		        	exportCancelAction.putValue(Action.NAME, "导出条件个股");
 		            try {
 		              final int count = exporttask.get();
-	  			
+		              //保存XML
+		              bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (filefmxx.getName(),curselectdate.with(DayOfWeek.FRIDAY) );
+		              
 		              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
 		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
 		      			  progressBarExport.setString(" ");
@@ -587,6 +591,22 @@ public class BanKuaiFengXi extends JDialog {
 			
 			selectedbk = allbksks.getAllGeGuOfBanKuai (selectedbk,period);
 			
+			//如果板块的分析结果个股数目》0，则要把符合条件的个股标记好
+			BkChanYeLianTreeNode nodeincyltree = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(selectedbk.getMyOwnCode(), BanKuaiAndStockBasic.TDXBK);
+			BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)nodeincyltree.getNodeTreerelated ();
+			Integer patchfilestocknum = ((BanKuai.BanKuaiTreeRelated)treerelated).getStocksNumInParsedFileForSpecificDate (curselectdate);
+			if(patchfilestocknum != null && patchfilestocknum >0) {
+				Set<String> stkofbkset = this.bkcyl.getBanKuaiFxSetOfSpecificDate(selectedbk.getMyOwnCode(), curselectdate);
+				
+				for(String stkofbk : stkofbkset ) {
+					StockOfBanKuai stkinbk = selectedbk.getBanKuaiGeGu(stkofbk);
+	    			StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkinbk.getNodeTreerelated();
+	        		stofbktree.setStocksNumInParsedFile (curselectdate,true);
+				}
+				
+				stkofbkset= null;
+			}
+			
 			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate,period);
 			
 			//更改显示日期
@@ -597,6 +617,8 @@ public class BanKuaiFengXi extends JDialog {
 			for(BarChartPanelDataChangedListener tmplistener : piechartpanelbankuaidatachangelisteners) {
 				tmplistener.updatedDate(selectedbk, curselectdate, 0,globeperiod);
 			}
+			
+			
 		}
 		
 		System.gc();
@@ -1156,10 +1178,10 @@ public class BanKuaiFengXi extends JDialog {
 //						ckboxparsefile.setSelected(false);
 //						return;
 						
-						chooseParsedFile ();
+						chooseParsedFile (null);
 					}
 					
-					parseSelectedBanKuaiFile (tfldparsedfile.getText());
+//					chooseParsedFile (tfldparsedfile.getText());
 					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
 					tableGuGuZhanBiInBk.repaint();
 				}
@@ -1631,7 +1653,7 @@ public class BanKuaiFengXi extends JDialog {
 		{
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				chooseParsedFile ();
+				chooseParsedFile (null);
 			}
 		});
 		
@@ -1784,119 +1806,75 @@ public class BanKuaiFengXi extends JDialog {
 	/*
 	 * 
 	 */
-	protected void chooseParsedFile() 
+	protected void chooseParsedFile(String pasedpathintextfld) 
 	{
-		String parsedpath = sysconfig.getBanKuaiParsedFileStoredPath ();
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		chooser.setCurrentDirectory(new File(parsedpath) );
-		
-		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-		    
-		    String linuxpath;
-		    if(chooser.getSelectedFile().isDirectory())
-		    	linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-		    else
-		    	linuxpath = (chooser.getSelectedFile()).toString().replace('\\', '/');
-		    
-//		    logger.info(linuxpath);
-		    tfldparsedfile.setText(linuxpath);
-		    
-		    if(ckboxparsefile.isSelected()) //只在需要的时候计算
-		    	parseSelectedBanKuaiFile (linuxpath);
-		}
-	}
-	/*
-	 * 
-	 */
-	private void parseSelectedBanKuaiFile(String linuxpath) 
-	{
-		File parsefile = new File(linuxpath);
-    	if(!parsefile.exists() )
-    		return;
-    	
-    	String filename = parsefile.getName();
-		filename = filename.replaceAll("\\D+","");
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		LocalDate localDate = null;
-		try{
-			 localDate = LocalDate.parse(filename, formatter);
-		} catch (java.time.format.DateTimeParseException e) {
-			tfldparsedfile.setText("");
-			return;
-		}
-		ZoneId zone = ZoneId.systemDefault();
-		Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
-		this.dateChooser.setDate(Date.from(instant));
-    	
-		//应该先从XML读取相关的数据，没有才去都文件一个个匹配
-    	List<String> readparsefileLines = null;
-		try {
-			readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiFielProcessor ());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		stockinfile = new HashSet<String> (readparsefileLines);
-		//现在产业链树上标记个股的数量
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.bkcyl.getBkChanYeLianTree().getModel().getRoot();
-		patchParsedFileToTrees(treeroot,localDate,stockinfile);
-		
-		this.bkcyl.getBkChanYeLianTree().setCurrentDisplayedWk (localDate);
-		DefaultTreeModel treeModel = (DefaultTreeModel) cyltree.getModel();
-		treeModel.reload();
-	}
-	/*
-	 * 
-	 */
-	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot,LocalDate localDate, HashSet<String> stockinfile)
-	{
-		BkChanYeLianTreeNode treeChild;
-		
-		for (Enumeration<BkChanYeLianTreeNode> child = treeroot.children(); child.hasMoreElements();) {
+		String filename = null;
+		if(pasedpathintextfld == null) {
+			String parsedpath = sysconfig.getBanKuaiParsedFileStoredPath ();
+			JFileChooser chooser = new JFileChooser();
+			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			chooser.setCurrentDirectory(new File(parsedpath) );
 			
-            treeChild = (BkChanYeLianTreeNode) child.nextElement();
-            
-            int nodetype = treeChild.getType();
-            if( nodetype == BkChanYeLianTreeNode.TDXBK) {
-            	String tmpbkcode = treeChild.getMyOwnCode() ;
-            	BkChanYeLianTree bkstkstree = this.allbksks.getAllBkStocksTree();
-            	BanKuai nodeinallbktree = (BanKuai)bkstkstree.getSpecificNodeByHypyOrCode(tmpbkcode, BkChanYeLianTreeNode.TDXBK);
-            	
-            	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
-            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) 
-            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) //有些指数是没有个股不列入比较范围
-					continue;
+			if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			    if(chooser.getSelectedFile().isDirectory())
+			    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+			    else
+			    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
+			    tfldparsedfile.setText(filename);
+			} else
+				return;
+		} else {
+			filename = pasedpathintextfld; 
+		}
+		
+		if(!filename.endsWith("EBK")) //不是板块文件
+			return;
+		
+		if(ckboxparsefile.isSelected()) {//只在需要的时候计算		
+			//找到对应的XML
+			String xmlfilename = filename.replace(".EBK", ".XML");
+			File filexml = new File( xmlfilename );
+			
+			boolean xmlfileexist = false;
+			String exportfilename = sysconfig.getTDXModelMatchExportFile () +  filexml.getName();
+			File filexminconfigpath = new File(exportfilename);
+			try {
+					if (filexminconfigpath.exists()) 
+						xmlfileexist = true;
+			} catch (Exception e) {
+					e.printStackTrace();
+					return ;
+			}
+			
+			String filenamedate = filename.replaceAll("\\D+","");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+			LocalDate localDate = null;
+			try{
+					 localDate = LocalDate.parse(filenamedate, formatter);
+			} catch (java.time.format.DateTimeParseException e) {
+					tfldparsedfile.setText("");
+					return;
+			}
+			LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			if(!curselectdate.equals(localDate) ) {
+				ZoneId zone = ZoneId.systemDefault();
+				Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
+				this.dateChooser.setDate(Date.from(instant));
+			}
+			
+			if(xmlfileexist) {
+				this.bkcyl.patchWeeklyBanKuaiFengXiXmlFileToCylTree (filexminconfigpath,localDate);
+			} else { //不存在要生成
+				this.bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (filename,localDate);
+			}
 
-//            	String tmpname = treeChild.getMyOwnName();
-            	nodeinallbktree = this.allbksks.getAllGeGuOfBanKuai(nodeinallbktree, StockGivenPeriodDataItem.WEEK);
-            	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,StockGivenPeriodDataItem.WEEK);
-            	HashSet<String> stkofbkset = new HashSet<String>  ();
-            	for(StockOfBanKuai stkofbk : curbkallbkset) {
-            		stkofbkset.add(stkofbk.getMyOwnCode());
-            	}
-            	
-            	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
-	    		BanKuaiTreeRelated treerelated = null;
-				if(intersectionbankuai.size() > 0) {
-					treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
-	    			treerelated.setStocksNumInParsedFile (localDate,intersectionbankuai.size());
-				}
-				
-				for(String stkofbk : intersectionbankuai ) {
-					StockOfBanKuai stkinbk = nodeinallbktree.getBanKuaiGeGu(stkofbk);
-	    			StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkinbk.getNodeTreerelated();
-            		stofbktree.setStocksNumInParsedFile (localDate,true);
-				}
-				
-				curbkallbkset = null;
-				stkofbkset= null;
-	        } 
-	          
-	        patchParsedFileToTrees(treeChild,localDate,stockinfile);
-        }
+			filexml = null;
+			filexminconfigpath = null;
+		}
+		
 	}
-
+	
+	
 	/*
 	 * 在个股表中发现输入的个股
 	 */
@@ -3059,8 +3037,9 @@ public class BanKuaiFengXi extends JDialog {
   			gephigenerator.generatorGephiFile(outputfile, dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), globeperiod);
   			
   			setProgress( 90 );
-  			//把板块分析文件的结果保存在XML里
-  			parseSelectedBanKuaiFile (outputfile.getName());
+  			//把板块分析文件的结果转为XML，另生成XML保存
+//  			bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (outputfile.getName(),selectiondate);
+  			
 
   			setProgress( 100 );
   			
@@ -3216,31 +3195,3 @@ class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode> {
     }
 }
 
-/*
- * google guava files 
- */
-class ParseBanKuaiFielProcessor implements LineProcessor<List<String>> 
-{
-   
-    private List<String> stocklists = Lists.newArrayList();
-   
-    @Override
-    public boolean processLine(String line) throws IOException {
-    	if(line.trim().length() ==7) {
-    		if(line.startsWith("1")) { //上海的个股或板块
-    			if(line.startsWith("16")) { //上海的个股
-    				stocklists.add(line.substring(1));
-    			}
-    		} else  {
-    			if(line.startsWith("00") || line.startsWith("03") ) { //深圳的个股
-    				stocklists.add(line.substring(1));
-    			}
-    		}
-    	}
-        return true;
-    }
-    @Override
-    public List<String> getResult() {
-        return stocklists;
-    }
-}

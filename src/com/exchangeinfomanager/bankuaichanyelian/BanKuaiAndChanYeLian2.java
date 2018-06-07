@@ -63,6 +63,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -91,12 +92,14 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.GuPiaoChi;
 import com.exchangeinfomanager.asinglestockinfo.InvisibleTreeModel;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiTreeRelated;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
@@ -150,26 +153,26 @@ public class BanKuaiAndChanYeLian2
 {
 	private static final long serialVersionUID = 1L;
 
-	public BanKuaiAndChanYeLian2 (AllCurrentTdxBKAndStoksTree allbkstocks) 
+	public BanKuaiAndChanYeLian2 (AllCurrentTdxBKAndStoksTree allbkstocks2) 
 	{
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
+		this.allbkstocks = allbkstocks2;
 
 		this.cylxmhandler = new ChanYeLianXMLHandler ();
 		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
-		
+		this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
+	
 		treechanyelian = cylxmhandler.getBkChanYeLianXMLTree();
 		updatedChanYeLianTree (allbkstocks);
 		
 		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
 	}
 	
-	
-
 	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian2.class);
 	
-	
-	
+	private BkfxWeeklyFileResultXmlHandler bkfxrfxmlhandler;
+	private AllCurrentTdxBKAndStoksTree allbkstocks;
 	protected SystemConfigration sysconfig;
 	protected HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap;
 	protected ChanYeLianXMLHandler cylxmhandler;
@@ -180,8 +183,190 @@ public class BanKuaiAndChanYeLian2
     protected BanKuaiDbOperation bkdbopt;
 
 //	private String currentselectedtdxbk = "";
-	private HashSet<String> stockinfile;
-	
+//	private HashSet<String> stockinfile;
+	/*
+	 * XML存在
+	 */
+	public void patchWeeklyBanKuaiFengXiXmlFileToCylTree(File xmlfile, LocalDate localDate)
+	{
+		bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (xmlfile);
+		
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.treechanyelian.getModel().getRoot();
+		patchParsedResultXmlToTrees(treeroot,localDate);
+		
+		this.treechanyelian.setCurrentDisplayedWk (localDate);
+		DefaultTreeModel treeModel = (DefaultTreeModel) treechanyelian.getModel();
+		treeModel.reload();
+	}
+	/*
+	 * 
+	 */
+	private void patchParsedResultXmlToTrees(BkChanYeLianTreeNode treeroot,  LocalDate localDate)
+	{
+		BkChanYeLianTreeNode treeChild;
+		
+		for (Enumeration<BkChanYeLianTreeNode> child = treeroot.children(); child.hasMoreElements();) {
+			
+            treeChild = (BkChanYeLianTreeNode) child.nextElement();
+            
+            int nodetype = treeChild.getType();
+            if( nodetype == BkChanYeLianTreeNode.TDXBK) {
+            	String tmpbkcode = treeChild.getMyOwnCode() ;
+            	BkChanYeLianTree bkstkstree = this.allbkstocks.getAllBkStocksTree();
+            	BanKuai nodeinallbktree = (BanKuai)bkstkstree.getSpecificNodeByHypyOrCode(tmpbkcode, BkChanYeLianTreeNode.TDXBK);
+            	
+            	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
+            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) 
+            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) //有些指数是没有个股不列入比较范围
+					continue;
+          	
+            	
+            	Integer setnum = this.bkfxrfxmlhandler.getBanKuaiFxSetNumberOfSpecificDate(tmpbkcode, localDate);
+            	if(setnum == null)
+            		continue;
+  
+				if(setnum != null && setnum > 0) {
+					BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
+	    			treerelated.setStocksNumInParsedFile (localDate, setnum);
+				}
+	        } 
+            
+            patchParsedResultXmlToTrees(treeChild,localDate);
+		}
+	}
+	/*
+	 * 
+	 */
+	public Set<String> getBanKuaiFxSetOfSpecificDate(String myOwnCode, LocalDate curselectdate) 
+	{
+		Set<String> stkinbkset = this.bkfxrfxmlhandler.getBanKuaiFxSetOfSpecificDate(myOwnCode, curselectdate);
+		return stkinbkset;
+	}
+	/*
+	 * 为每周导出的符合模型的文件生成XML
+	 */
+	public void parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree(String weeklyfilename, LocalDate selectiondate)
+	{
+		File parsefile = new File(weeklyfilename);
+    	if(!parsefile.exists() )
+    		return;
+		
+    	List<String> readparsefileLines = null;
+		try {
+			readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiWeeklyFielProcessor ());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		HashSet<String> stockinfile = new HashSet<String> (readparsefileLines);
+		this.bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (null);
+		//现在产业链树上标记个股的数量
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.treechanyelian.getModel().getRoot();
+		patchParsedFileToTrees(treeroot,selectiondate,stockinfile);
+		
+		this.bkfxrfxmlhandler.saveXmlFileForBkfxWeeklyFile(weeklyfilename);
+
+		this.treechanyelian.setCurrentDisplayedWk (selectiondate);
+		DefaultTreeModel treeModel = (DefaultTreeModel) treechanyelian.getModel();
+		treeModel.reload();
+		
+		readparsefileLines = null;
+		stockinfile = null;
+	}
+	/*
+	 * 
+	 */
+	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot,LocalDate localDate, HashSet<String> stockinfile)
+	{
+		BkChanYeLianTreeNode treeChild;
+		
+		for (Enumeration<BkChanYeLianTreeNode> child = treeroot.children(); child.hasMoreElements();) {
+			
+            treeChild = (BkChanYeLianTreeNode) child.nextElement();
+            
+            int nodetype = treeChild.getType();
+            if( nodetype == BkChanYeLianTreeNode.TDXBK) {
+            	String tmpbkcode = treeChild.getMyOwnCode() ;
+            	BkChanYeLianTree bkstkstree = this.allbkstocks.getAllBkStocksTree();
+            	BanKuai nodeinallbktree = (BanKuai)bkstkstree.getSpecificNodeByHypyOrCode(tmpbkcode, BkChanYeLianTreeNode.TDXBK);
+            	
+            	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
+            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) 
+            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) //有些指数是没有个股不列入比较范围
+					continue;
+
+//            	String tmpname = treeChild.getMyOwnName();
+            	nodeinallbktree = this.allbkstocks.getAllGeGuOfBanKuai(nodeinallbktree, StockGivenPeriodDataItem.WEEK);
+            	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,StockGivenPeriodDataItem.WEEK);
+            	HashSet<String> stkofbkset = new HashSet<String>  ();
+            	for(StockOfBanKuai stkofbk : curbkallbkset) {
+            		stkofbkset.add(stkofbk.getMyOwnCode());
+            	}
+            	
+            	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
+	    		BanKuaiTreeRelated treerelated = null;
+				if(intersectionbankuai.size() > 0) {
+					treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
+	    			treerelated.setStocksNumInParsedFile (localDate,intersectionbankuai.size());
+				}
+				
+				for(String stkofbk : intersectionbankuai ) {
+					StockOfBanKuai stkinbk = nodeinallbktree.getBanKuaiGeGu(stkofbk);
+	    			StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkinbk.getNodeTreerelated();
+            		stofbktree.setStocksNumInParsedFile (localDate,true);
+				}
+				//信息存入XML
+				if(intersectionbankuai.size() >0)
+					this.bkfxrfxmlhandler.addBanKuaiFxSetToXml (nodeinallbktree.getMyOwnCode(),intersectionbankuai,localDate);
+				
+				curbkallbkset = null;
+				stkofbkset= null;
+	        } 
+	          
+	        patchParsedFileToTrees(treeChild,localDate,stockinfile);
+        }
+	}
+
+//	/*
+//	 * 
+//	 */
+//	public void saveBkFxFileResultToXml ()
+//	{
+//		if(this.bkfxrfxmlhandler  == null )
+//			return;
+//		else
+//			this.bkfxrfxmlhandler.saveXml ();
+//	}
+//	/*
+//	 * 
+//	 */
+//	public void addBanKuaiFxSetToXml ( String bkcode, Set<String> bkstks, LocalDate date)
+//	{
+//		if(this.bkfxrfxmlhandler  == null )
+//			this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
+//		
+//		this.bkfxrfxmlhandler.addBanKuaiFxSetToXml(bkcode, bkstks, date);
+//	}
+//	/*
+//	 * 
+//	 */
+//	public Set<String> getBanKuaiFxSetOfSpecificDate (String bkcode, LocalDate date)
+//	{
+//		if(this.bkfxrfxmlhandler  == null )
+//			this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
+//		
+//		return this.bkfxrfxmlhandler.getBanKuaiFxSetOfSpecificDate ( bkcode,  date);
+//	}
+//	/*
+//	 * 
+//	 */
+//	public boolean isAlreadyInFengXiResultFile (LocalDate date)
+//	{
+//		if(this.bkfxrfxmlhandler  == null )
+//			this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
+//			
+//		return this.bkfxrfxmlhandler.isAlreadyInFengXiResultFile(date);
+//	}
 	/*
 	 * 
 	 */
@@ -288,6 +473,8 @@ public class BanKuaiAndChanYeLian2
 //		
 //		
 //	}
+	
+
 
 //	private String getCurSelectedDaLei ()
 //    {
@@ -1359,3 +1546,31 @@ public class BanKuaiAndChanYeLian2
 }
 
 
+/*
+ * google guava files 
+ */
+class ParseBanKuaiWeeklyFielProcessor implements LineProcessor<List<String>> 
+{
+   
+    private List<String> stocklists = Lists.newArrayList();
+   
+    @Override
+    public boolean processLine(String line) throws IOException {
+    	if(line.trim().length() ==7) {
+    		if(line.startsWith("1")) { //上海的个股或板块
+    			if(line.startsWith("16")) { //上海的个股
+    				stocklists.add(line.substring(1));
+    			}
+    		} else  {
+    			if(line.startsWith("00") || line.startsWith("03") ) { //深圳的个股
+    				stocklists.add(line.substring(1));
+    			}
+    		}
+    	}
+        return true;
+    }
+    @Override
+    public List<String> getResult() {
+        return stocklists;
+    }
+}

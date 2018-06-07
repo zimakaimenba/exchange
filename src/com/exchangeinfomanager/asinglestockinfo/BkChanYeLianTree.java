@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import javax.swing.tree.TreeNode;
 
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI2;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -114,11 +115,19 @@ public class BkChanYeLianTree extends JTree
         if (!ignoreExpansion)
         ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreerelated().setExpansion(false);
     }
+	/*
+	 * 
+	 */
     private void treeTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeExpanded
-        if (!ignoreExpansion )
-        	((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreerelated().setExpansion(true);
+        if (!ignoreExpansion ) 
+        	try {
+        		BkChanYeLianTreeNode node = ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent());
+        		TreeRelated treerelatd = node.getNodeTreerelated();
+        		treerelatd.setExpansion(true);
+        	} catch(java.lang.NullPointerException  e) {
+        		e.printStackTrace();
+        	}
     }
-
     /*
      * 
      */

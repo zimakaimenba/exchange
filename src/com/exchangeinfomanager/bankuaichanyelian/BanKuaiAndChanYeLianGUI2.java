@@ -521,7 +521,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 	                } 
 	            	
 	            	parent.add(newNode);
-	                parent.getNodetreerelated().setExpansion(true);
+	                parent.getNodeTreerelated().setExpansion(true);
 	            } 
 	            
 	            if (direction != BanKuaiAndChanYeLianGUI2.RIGHT){
@@ -597,7 +597,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 		                    
 		                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
 		                    if (parent.getChildCount() == 0) 
-		                    	parent.getNodetreerelated().setExpansion(false);
+		                    	parent.getNodeTreerelated().setExpansion(false);
 		                }
 		            }
 		            
@@ -1299,7 +1299,7 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 
 	public boolean shouldRemovedNodeWhenSaveXml(int row){
 		BkChanYeLianTreeNode bkcyltn = this.getGuanZhuBanKuaiInfo(row);
-		if(bkcyltn.getNodetreerelated().shouldBeRemovedWhenSaveXml())
+		if(bkcyltn.getNodeTreerelated().shouldBeRemovedWhenSaveXml())
 			return true;
 		return false;
 	}
@@ -1318,8 +1318,8 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 		int findsimilarnode = -1;
 		
 		for(int i=0;i<tmpgzbkinfo.size();i++) {
-			String cylinmapnode = tmpgzbkinfo.get(i).getNodetreerelated().getNodeCurLocatedChanYeLian().trim();
-			String cylinverfiednode = parent.getNodetreerelated().getNodeCurLocatedChanYeLian().trim();
+			String cylinmapnode = tmpgzbkinfo.get(i).getNodeTreerelated().getNodeCurLocatedChanYeLian().trim();
+			String cylinverfiednode = parent.getNodeTreerelated().getNodeCurLocatedChanYeLian().trim();
 
 			if(cylinmapnode.equals(cylinverfiednode) ) 
 				return i;
@@ -1373,21 +1373,21 @@ class CurZdgzBanKuaiTableModel extends AbstractTableModel
 
 	    	switch (columnIndex) {
             case 0:
-                value = tmpgzbk.getNodetreerelated().getNodeCurLocatedChanYeLianByName();
+                value = tmpgzbk.getNodeTreerelated().getNodeCurLocatedChanYeLianByName();
                 break;
             case 1:
             	try {
-            		value = tmpgzbk.getNodetreerelated().getSelectedToZdgzTime();
+            		value = tmpgzbk.getNodeTreerelated().getSelectedToZdgzTime();
             	} catch (java.lang.NullPointerException e) {
             		value = "";
             	}
             	
                 break;
             case 2:
-                value = new Boolean(tmpgzbk.getNodetreerelated().isOfficallySelected() );
+                value = new Boolean(tmpgzbk.getNodeTreerelated().isOfficallySelected() );
                 break;
             case 3:
-            	if(tmpgzbk.getNodetreerelated().getParseFileStockSet() != null && tmpgzbk.getNodetreerelated().getParseFileStockSet().size() >0)
+            	if(tmpgzbk.getNodeTreerelated().getParseFileStockSet() != null && tmpgzbk.getNodeTreerelated().getParseFileStockSet().size() >0)
             		value = new Boolean(true );
             	else 
             		value = new Boolean(false );
