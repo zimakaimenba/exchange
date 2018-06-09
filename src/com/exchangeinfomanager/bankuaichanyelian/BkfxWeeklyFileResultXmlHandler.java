@@ -36,7 +36,7 @@ class BkfxWeeklyFileResultXmlHandler
 
 	public BkfxWeeklyFileResultXmlHandler() 
 	{
-//		this.sysconfig = SystemConfigration.getInstance();
+		this.sysconfig = SystemConfigration.getInstance();
 //		this.bkopt = new BanKuaiDbOperation ();
 	}
 	/*
@@ -67,8 +67,11 @@ class BkfxWeeklyFileResultXmlHandler
 	/*
 	 * 
 	 */
-	public void addBanKuaiFxSetToXml ( String bkcode, Set<String> bkstks, LocalDate date)
+	public void addBanKuaiFxSetToXml ( String bkcode, boolean selfinset, Set<String> bkstks, LocalDate date)
 	{
+		if(bkstks.size() == 0)
+			return;
+		
 		String xpath = ".//BanKuai[@bkcode=\"" + bkcode + "\"]";  
 		Node tmpnode = bkfxxmldoc.selectSingleNode(xpath);
 		
@@ -76,6 +79,10 @@ class BkfxWeeklyFileResultXmlHandler
 			Element bankuai = bkfxxmlroot.addElement("BanKuai");
 			bankuai.addAttribute("bkcode", bkcode  );
 			bankuai.addAttribute("StocskNum", String.valueOf(bkstks.size())  );
+			if(selfinset)
+				bankuai.addAttribute("selfIsMatchModel", "TRUE"  );
+			else
+				bankuai.addAttribute("selfIsMatchModel", "FALSE"  );
 
 			for(String stkcode : bkstks) {
 				Element stock = bankuai.addElement("gegu");
@@ -123,7 +130,7 @@ class BkfxWeeklyFileResultXmlHandler
 		format.setEncoding("GBK");    // 指定XML编码        
 		//保存产业链XML
 		try {
-			XMLWriter writer = new XMLWriter(new FileOutputStream(xmlfilename),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
+			XMLWriter writer = new XMLWriter(new FileOutputStream(exportxmlfile),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
 				writer.write(bkfxxmldoc); //输出到文件  
 				//writer.flush();
 				writer.close();

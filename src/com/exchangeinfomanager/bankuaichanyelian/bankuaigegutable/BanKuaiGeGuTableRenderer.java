@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
@@ -36,7 +37,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    String valuepect = "";
-	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { 
+	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { //用百分比显示
 
 	    	try {
         		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
@@ -60,29 +61,18 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    StockOfBanKuai stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
 	    
 	    Color foreground, background = Color.white;
-//	    
-//	    //突出显示parse file
-//	    HashSet<String> parsefiel =  tablemodel.getStockInParseFile();
-	 
-//	    if(col == 0  ) {
-//	    	
-//	    }
-//	    if( col == 1 ) {
-//	    	if(!table.isRowSelected(row) && parsefiel != null && tablemodel.showParsedFile()  ) {
-//		    	String stockcode = stock.getMyOwnCode();
-//		    	
-//		    	if(parsefiel != null && parsefiel.contains(stockcode)  )
-//		    		background = Color.ORANGE  ;
-//		    	else
-//		    		background = Color.white;
-//		    } 
-//	    	else
-//	    		background = Color.white;
-//	    } 
-//	    //突出权重，目前没有特别设置
-//	    if(col == 2) {
-//	    	background = Color.white;
-//	    }
+
+	    if( col == 1 ) {
+	    	LocalDate requireddate = tablemodel.getShowCurDate();
+	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stock.getNodeTreerelated();
+    	
+	 		Boolean isin = stofbktree.isInBanKuaiFengXiResultFileForSpecificDate(requireddate);
+	    	if(isin != null && isin  ) 
+		    		background = Color.ORANGE;  
+	    	else
+		    		background = Color.white;
+	    	} 
+
 	    //突出显示成交额达到标准的股票
 	    if( col == 3 && value != null ) {
 	    	BanKuai bk = tablemodel.getCurDispalyBandKuai ();
@@ -130,11 +120,10 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		 background = Color.white ;
 	    }
  
-//	    if(!hasFocus)
-	    	comp.setBackground(background);
+    	comp.setBackground(background);
+    	
 	    if(table.isRowSelected(row) && col == 0 ) {
 	    	comp.setBackground(Color.blue);
-	    	
 	    }
 	    
 	    return comp;

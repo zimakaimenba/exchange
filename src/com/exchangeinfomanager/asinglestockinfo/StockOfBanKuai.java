@@ -93,17 +93,26 @@ public class StockOfBanKuai extends Stock
 		private HashMap<LocalDate,Boolean> isinparsedfile;
 		public void setStocksNumInParsedFile (LocalDate parsefiledate, Boolean isin)
 		{
-			if(isinparsedfile == null)
+			if(isinparsedfile == null) {
 				isinparsedfile = new HashMap<LocalDate,Boolean> ();
-			else {
 				LocalDate friday = parsefiledate.with(DayOfWeek.FRIDAY);
-				isinparsedfile.put(friday, isin);
+				if(isin)
+					isinparsedfile.put(friday, isin);
+			} else {
+				LocalDate friday = parsefiledate.with(DayOfWeek.FRIDAY);
+				if(isin)
+					isinparsedfile.put(friday, isin);
 			}
 		}
-		public Boolean getStocksNumInParsedFileForSpecificDate (LocalDate requiredate)
+		public Boolean isInBanKuaiFengXiResultFileForSpecificDate (LocalDate requiredate)
 		{
 			LocalDate friday = requiredate.with(DayOfWeek.FRIDAY);
-			return isinparsedfile.get(friday);
+			try {
+				Boolean result = isinparsedfile.get(friday);
+				return result;
+			} catch(java.lang.NullPointerException e) {
+				return null;
+			}
 		}
 		
 	}

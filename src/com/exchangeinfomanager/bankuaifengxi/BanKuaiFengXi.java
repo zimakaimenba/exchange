@@ -867,10 +867,11 @@ public class BanKuaiFengXi extends JDialog {
     	    	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode)cyltree.getLastSelectedPathComponent();
     	    	if(node.getType() == BanKuaiAndStockBasic.TDXBK) {
     	    		BanKuai bankuai = (BanKuai)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(node.getMyOwnCode(), BanKuaiAndStockBasic.TDXBK);
-    	    		refreshCurentBanKuaiFengXiResult (bankuai,globeperiod);
-    				displayNodeInfo(bankuai);
+//    	    		refreshCurentBanKuaiFengXiResult (bankuai,globeperiod);
+//    				displayNodeInfo(bankuai);
     				cbxsearchbk.updateUserSelectedNode(bankuai);
     				
+    				tabbedPanebk.setSelectedIndex(2);
     				Toolkit.getDefaultToolkit().beep();
     	    	}
     	        
@@ -1183,7 +1184,7 @@ public class BanKuaiFengXi extends JDialog {
 					
 //					chooseParsedFile (tfldparsedfile.getText());
 					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
-					tableGuGuZhanBiInBk.repaint();
+//					tableGuGuZhanBiInBk.repaint();
 				}
 			
 				if(!ckboxparsefile.isSelected()) {
@@ -1313,8 +1314,6 @@ public class BanKuaiFengXi extends JDialog {
 					} else 	{
 						JOptionPane.showMessageDialog(null,"股票/板块代码有误或名称拼音有误！","Warning", JOptionPane.WARNING_MESSAGE);
 					}
-
-					
 				}
 			}
 			
@@ -1830,7 +1829,10 @@ public class BanKuaiFengXi extends JDialog {
 		if(!filename.endsWith("EBK")) //不是板块文件
 			return;
 		
-		if(ckboxparsefile.isSelected()) {//只在需要的时候计算		
+			ckboxparsefile.setSelected(true);
+			
+			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
+			
 			//找到对应的XML
 			String xmlfilename = filename.replace(".EBK", ".XML");
 			File filexml = new File( xmlfilename );
@@ -1870,7 +1872,7 @@ public class BanKuaiFengXi extends JDialog {
 
 			filexml = null;
 			filexminconfigpath = null;
-		}
+		
 		
 	}
 	

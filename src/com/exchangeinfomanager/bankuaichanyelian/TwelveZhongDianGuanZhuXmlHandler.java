@@ -310,7 +310,7 @@ class TwelveZhongDianGuanZhuXmlHandler
 		  
 		  Set<String> daleibankuaiset = new HashSet<String>();
 		  for(BkChanYeLianTreeNode cylnode : daleibankuailist) {
-			  String tdxbk = cylnode.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName ();
+			  String tdxbk = cylnode.getNodeTreerelated().getChanYeLianSuoShuTdxBanKuaiName ();
 			  daleibankuaiset.add(tdxbk);
 		  }
 		  

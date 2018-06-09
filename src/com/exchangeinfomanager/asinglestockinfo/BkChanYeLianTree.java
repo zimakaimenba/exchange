@@ -125,7 +125,7 @@ public class BkChanYeLianTree extends JTree
         		TreeRelated treerelatd = node.getNodeTreerelated();
         		treerelatd.setExpansion(true);
         	} catch(java.lang.NullPointerException  e) {
-        		e.printStackTrace();
+//        		e.printStackTrace();
         	}
     }
     /*

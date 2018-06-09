@@ -348,16 +348,31 @@ public class BanKuai extends BkChanYeLianTreeNode
 		{
 			super(treenode1);
 		}
-		
+		public boolean selfismatchmodel;
 		private HashMap<LocalDate,Integer> stocknumsinparsedfile;
-		public void setStocksNumInParsedFile (LocalDate parsefiledate, Integer stocksnum)
+		
+		private void setSelfIsMatchModel (boolean selfinset)
 		{
-			if(stocknumsinparsedfile == null)
+			this.selfismatchmodel = selfinset;
+		}
+		public boolean getSelfIsMatchModel ()
+		{
+			return this.selfismatchmodel;
+		}
+		public void setStocksNumInParsedFile (LocalDate parsefiledate, boolean selfinset, Integer stocksnum)
+		{
+			if(stocknumsinparsedfile == null) {
 				stocknumsinparsedfile = new HashMap<LocalDate,Integer> ();
-			else {
 				LocalDate friday = parsefiledate.with(DayOfWeek.FRIDAY);
-				stocknumsinparsedfile.put(friday, stocksnum);
+				if(stocksnum >0)
+					stocknumsinparsedfile.put(friday, stocksnum);
+			} else {
+				LocalDate friday = parsefiledate.with(DayOfWeek.FRIDAY);
+				if(stocksnum >0)
+					stocknumsinparsedfile.put(friday, stocksnum);
 			}
+			
+			this.setSelfIsMatchModel(selfinset);
 		}
 		public Integer getStocksNumInParsedFileForSpecificDate (LocalDate requiredate)
 		{

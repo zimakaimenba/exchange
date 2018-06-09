@@ -253,16 +253,23 @@ public class BanKuaiAndChanYeLian2
 		
     	List<String> readparsefileLines = null;
 		try {
-			readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiWeeklyFielProcessor ());
+			readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetStocksProcessor ());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		List<String> readparsefilegetbkLines = null;
+		try {
+			readparsefilegetbkLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetBanKuaisProcessor ());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		HashSet<String> stockinfile = new HashSet<String> (readparsefileLines);
+		HashSet<String> bkinfile = new HashSet<String> (readparsefilegetbkLines);
 		this.bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (null);
 		//现在产业链树上标记个股的数量
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.treechanyelian.getModel().getRoot();
-		patchParsedFileToTrees(treeroot,selectiondate,stockinfile);
+		patchParsedFileToTrees(treeroot,selectiondate,stockinfile,bkinfile);
 		
 		this.bkfxrfxmlhandler.saveXmlFileForBkfxWeeklyFile(weeklyfilename);
 
@@ -271,12 +278,15 @@ public class BanKuaiAndChanYeLian2
 		treeModel.reload();
 		
 		readparsefileLines = null;
+		readparsefilegetbkLines = null;
 		stockinfile = null;
+		bkinfile = null;
+		parsefile = null;
 	}
 	/*
 	 * 
 	 */
-	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot,LocalDate localDate, HashSet<String> stockinfile)
+	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot,LocalDate localDate, HashSet<String> stockinfile, HashSet<String> bkinfile)
 	{
 		BkChanYeLianTreeNode treeChild;
 		
@@ -296,6 +306,10 @@ public class BanKuaiAndChanYeLian2
 					continue;
 
 //            	String tmpname = treeChild.getMyOwnName();
+            	boolean selfinset = false;
+            	if(bkinfile.contains(tmpbkcode))
+            		selfinset = true;
+            	
             	nodeinallbktree = this.allbkstocks.getAllGeGuOfBanKuai(nodeinallbktree, StockGivenPeriodDataItem.WEEK);
             	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,StockGivenPeriodDataItem.WEEK);
             	HashSet<String> stkofbkset = new HashSet<String>  ();
@@ -303,27 +317,28 @@ public class BanKuaiAndChanYeLian2
             		stkofbkset.add(stkofbk.getMyOwnCode());
             	}
             	
+            	//不管有没有，板块和个股都必须设置，这样可以把上一个XML的信息抹去
             	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
 	    		BanKuaiTreeRelated treerelated = null;
-				if(intersectionbankuai.size() > 0) {
-					treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
-	    			treerelated.setStocksNumInParsedFile (localDate,intersectionbankuai.size());
+				treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
+    			treerelated.setStocksNumInParsedFile (localDate,selfinset,intersectionbankuai.size());
+
+				for(StockOfBanKuai stkofbk : curbkallbkset ) {
+					StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkofbk.getNodeTreerelated();
+					if( intersectionbankuai.contains(stkofbk.getMyOwnCode() ) ) 
+						stofbktree.setStocksNumInParsedFile (localDate,true);
+					else
+						stofbktree.setStocksNumInParsedFile (localDate,false);
 				}
-				
-				for(String stkofbk : intersectionbankuai ) {
-					StockOfBanKuai stkinbk = nodeinallbktree.getBanKuaiGeGu(stkofbk);
-	    			StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkinbk.getNodeTreerelated();
-            		stofbktree.setStocksNumInParsedFile (localDate,true);
-				}
+
 				//信息存入XML
-				if(intersectionbankuai.size() >0)
-					this.bkfxrfxmlhandler.addBanKuaiFxSetToXml (nodeinallbktree.getMyOwnCode(),intersectionbankuai,localDate);
+				this.bkfxrfxmlhandler.addBanKuaiFxSetToXml (nodeinallbktree.getMyOwnCode(),selfinset,intersectionbankuai,localDate);
 				
 				curbkallbkset = null;
 				stkofbkset= null;
 	        } 
 	          
-	        patchParsedFileToTrees(treeChild,localDate,stockinfile);
+	        patchParsedFileToTrees(treeChild,localDate,stockinfile,bkinfile);
         }
 	}
 
@@ -1547,9 +1562,9 @@ public class BanKuaiAndChanYeLian2
 
 
 /*
- * google guava files 
+ * google guava  
  */
-class ParseBanKuaiWeeklyFielProcessor implements LineProcessor<List<String>> 
+class ParseBanKuaiWeeklyFielGetStocksProcessor implements LineProcessor<List<String>> 
 {
    
     private List<String> stocklists = Lists.newArrayList();
@@ -1574,3 +1589,29 @@ class ParseBanKuaiWeeklyFielProcessor implements LineProcessor<List<String>>
         return stocklists;
     }
 }
+class ParseBanKuaiWeeklyFielGetBanKuaisProcessor implements LineProcessor<List<String>> 
+{
+   
+    private List<String> stocklists = Lists.newArrayList();
+   
+    @Override
+    public boolean processLine(String line) throws IOException {
+    	if(line.trim().length() ==7) {
+    		if(line.startsWith("1")) { //上海的个股或板块
+    			if(!line.startsWith("16")) { //上海的板块
+    				stocklists.add(line.substring(1));
+    			}
+    		} else  {
+    			if(!line.startsWith("00") && !line.startsWith("03") ) { //深圳的板块
+    				stocklists.add(line.substring(1));
+    			}
+    		}
+    	}
+        return true;
+    }
+    @Override
+    public List<String> getResult() {
+        return stocklists;
+    }
+}
+
