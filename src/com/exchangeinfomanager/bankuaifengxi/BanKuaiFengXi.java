@@ -497,7 +497,7 @@ public class BanKuaiFengXi extends JDialog {
 		            try {
 		              final int count = exporttask.get();
 		              //保存XML
-		              bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (filefmxx.getName(),curselectdate.with(DayOfWeek.FRIDAY) );
+		              bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (filefmxx,curselectdate.with(DayOfWeek.FRIDAY) );
 		              
 		              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
 		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
@@ -1834,12 +1834,12 @@ public class BanKuaiFengXi extends JDialog {
 			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
 			
 			//找到对应的XML
-			String xmlfilename = filename.replace(".EBK", ".XML");
-			File filexml = new File( xmlfilename );
+			File fileebk = new File( filename );
 			
 			boolean xmlfileexist = false;
-			String exportfilename = sysconfig.getTDXModelMatchExportFile () +  filexml.getName();
-			File filexminconfigpath = new File(exportfilename);
+			String exportxmlfilename = sysconfig.getTDXModelMatchExportFile () +  fileebk.getName();
+			String xmlfilename = exportxmlfilename.replace(".EBK", ".XML");
+			File filexminconfigpath = new File(xmlfilename);
 			try {
 					if (filexminconfigpath.exists()) 
 						xmlfileexist = true;
@@ -1848,13 +1848,13 @@ public class BanKuaiFengXi extends JDialog {
 					return ;
 			}
 			
-			String filenamedate = filename.replaceAll("\\D+","");
+			String filenamedate = fileebk.getName().replaceAll("\\D+","");
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 			LocalDate localDate = null;
 			try{
 					 localDate = LocalDate.parse(filenamedate, formatter);
 			} catch (java.time.format.DateTimeParseException e) {
-					tfldparsedfile.setText("");
+					tfldparsedfile.setText("文件错误！请重新选择文件！");
 					return;
 			}
 			LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -1867,10 +1867,10 @@ public class BanKuaiFengXi extends JDialog {
 			if(xmlfileexist) {
 				this.bkcyl.patchWeeklyBanKuaiFengXiXmlFileToCylTree (filexminconfigpath,localDate);
 			} else { //不存在要生成
-				this.bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (filename,localDate);
+				this.bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (fileebk,localDate);
 			}
 
-			filexml = null;
+			filexminconfigpath = null;
 			filexminconfigpath = null;
 		
 		

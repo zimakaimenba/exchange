@@ -99,17 +99,17 @@ class BkfxWeeklyFileResultXmlHandler
 	/*
 	 * 
 	 */
-	public void  saveXmlFileForBkfxWeeklyFile (String weeklyfilename)
+	public void  saveXmlFileForBkfxWeeklyFile (File weeklyfilename)
 	{
-		String xmlfilename = weeklyfilename.replace(".EBK", ".XML");
-		File filefmxx = new File( xmlfilename );
+		String xmlfilename = weeklyfilename.getName().replace(".EBK", ".XML");
+//		File filefmxx = new File( xmlfilename );
 		
-		String exportfilename = sysconfig.getTDXModelMatchExportFile () + filefmxx.getName();
+		String exportfilename = sysconfig.getTDXModelMatchExportFile () + xmlfilename;
 		File exportxmlfile = new File(exportfilename);
 		if(!exportxmlfile.getParentFile().exists()) {  
             //如果目标文件所在的目录不存在，则创建父目录  
             logger.debug("目标文件所在目录不存在，准备创建它！");  
-            if(!filefmxx.getParentFile().mkdirs()) {  
+            if(!exportxmlfile.getParentFile().mkdirs()) {  
                 System.out.println("创建目标文件所在目录失败！");  
                 return ;  
             }  
@@ -139,7 +139,7 @@ class BkfxWeeklyFileResultXmlHandler
 		}
 		
 		exportxmlfile = null;
-		filefmxx = null;
+//		filefmxx = null;
 	}
 	/*
 	 * 

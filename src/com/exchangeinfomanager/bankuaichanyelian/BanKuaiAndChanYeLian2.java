@@ -227,7 +227,8 @@ public class BanKuaiAndChanYeLian2
   
 				if(setnum != null && setnum > 0) {
 					BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
-	    			treerelated.setStocksNumInParsedFile (localDate, setnum);
+					Boolean selfisin = treerelated.getSelfIsMatchModel ();
+	    			treerelated.setStocksNumInParsedFile (localDate, selfisin,  setnum);
 				}
 	        } 
             
@@ -243,11 +244,11 @@ public class BanKuaiAndChanYeLian2
 		return stkinbkset;
 	}
 	/*
-	 * 为每周导出的符合模型的文件生成XML
+	 * XML不存在，为每周导出的符合模型的文件生成XML
 	 */
-	public void parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree(String weeklyfilename, LocalDate selectiondate)
+	public void parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree(File weeklyfilename, LocalDate selectiondate)
 	{
-		File parsefile = new File(weeklyfilename);
+		File parsefile = weeklyfilename;
     	if(!parsefile.exists() )
     		return;
 		
