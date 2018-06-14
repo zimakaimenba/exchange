@@ -55,6 +55,7 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
@@ -521,7 +522,12 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 	                } 
 	            	
 	            	parent.add(newNode);
-	                parent.getNodeTreerelated().setExpansion(true);
+	            	try {
+	            		TreeRelated tree = parent.getNodeTreerelated();
+	            		tree.setExpansion(true);
+	            	} catch(java.lang.NullPointerException e) {
+//	            		e.printStackTrace();
+	            	}
 	            } 
 	            
 	            if (direction != BanKuaiAndChanYeLianGUI2.RIGHT){
@@ -629,6 +635,36 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 	 */
 	private void createEvents() 
 	{
+		btnAddSubBk.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				String newsubbk = JOptionPane.showInputDialog(null,"请输入子板块名称:","增加子版块", JOptionPane.QUESTION_MESSAGE);
+				if(newsubbk == null)
+					return;
+				
+//				if(bkdbopt.getSysBkSet().contains(newsubbk) ) {
+//					JOptionPane.showMessageDialog(null,"输入子版块名称与通达信板块名称冲突,请重新输入!");
+//					return ;
+//				}
+				
+				TreePath closestPath = cyltree.getSelectionPath();
+//		        logger.debug(closestPath);
+		         BkChanYeLianTreeNode tdxbk = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
+		         if(tdxbk.getType() != BanKuaiAndStockBasic.TDXBK)
+		        	 return;
+		         
+		        String tdxbkcode = tdxbk.getMyOwnCode();
+				String newsubcylcode = bkdbopt.addNewSubBanKuai (tdxbkcode,newsubbk.trim() ); 
+				if(newsubcylcode != null)
+					((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).addRow(newsubcylcode,newsubbk);
+				else
+					JOptionPane.showMessageDialog(null,"添加失败，可能是因为重名！","Warning",JOptionPane.WARNING_MESSAGE);
+//	  	        ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).fireTableDataChanged ();
+				
+			}
+		});
+		
 		tfldfindgegu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent arg0) {
 				String nodeid = tfldfindgegu.getText().trim();

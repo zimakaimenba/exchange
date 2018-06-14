@@ -40,7 +40,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //	private HashSet<String> stockcodeinparsefile;
 	private Double showcje = 1000000000000.0;
 	private Integer cjemaxwk = 10000000;
-	private Boolean showparsedfile = false;
+//	private Boolean showparsedfile = false;
 	private Integer cjezbdpmaxwk = 10000000;
 	private Integer cjezbbkmaxwk = 10000000;
 	private String period;
@@ -351,14 +351,14 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			return this.cjemaxwk;
 		}
 		//设置显示每日板块文件
-		public void setShowParsedFile (Boolean onoff)
-		{
-			this.showparsedfile = onoff;
-		}
-		public Boolean showParsedFile ()
-		{
-			return this.showparsedfile ;
-		}
+//		public void setShowParsedFile (Boolean onoff)
+//		{
+//			this.showparsedfile = onoff;
+//		}
+//		public Boolean showParsedFile ()
+//		{
+//			return this.showparsedfile ;
+//		}
 		//设置成交额dpMAXWK阀值
 		public void setDisplayCjeDPMaxWk (Integer bkmax)
 		{

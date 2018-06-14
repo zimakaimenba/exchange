@@ -211,6 +211,7 @@ public class StockInfoManager
 		bkdbopt = new BanKuaiDbOperation ();
 //		bkcyl = new BanKuaiAndChanYeLian2();
 		allbkstock = new AllCurrentTdxBKAndStoksTree ();
+		bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
 		
 //		chklstdialog = new BuyCheckListTreeDialog (this,"","");
 //		panelcklt = chklstdialog.getCheckListPanel();
@@ -358,7 +359,7 @@ public class StockInfoManager
 //					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
 //					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
 					
-					
+					//
 					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
 					
 					if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
@@ -855,7 +856,6 @@ public class StockInfoManager
 //					bkcyl.startGui ();
 //					bkcyl.findBanKuaiInTree(nodeshouldbedisplayed.getMyOwnCode() );
 					startBanKuaiGuanLiDlg ();
-					
 				}
 				
 				
@@ -1029,6 +1029,19 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
+				if(nodeshouldbedisplayed.getType() == 6) {
+					JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
+					int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
+//					if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//						return;
+					
+//					 int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+//					 jiarujihua.setDbRecordsId(autoIncKeyFromApi);
+//					 
+//					 updateTableAfterZdgz (jiarujihua);
+					
+				}
+				
 				if(kspanel.getJiaoyiGushu()>0 && kspanel.getJiaoyiJiage()>0) {
 					saveKuaiSuJiLuJiaoYi ();
 					return ;
@@ -1667,7 +1680,7 @@ public class StockInfoManager
 				bkfx = new BanKuaiFengXi (this,allbkstock,bkcyl);
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				bkfx.setVisible(true);
+//				bkfx.setVisible(true);
 			} 
 			
 			if(!bkfx.isVisible() ) {
@@ -1736,27 +1749,22 @@ public class StockInfoManager
 			if(bkgldialog == null ) {
 				bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
 				bkgldialog = new BanKuaiGuanLi(this,allbkstock,bkcyl);
-				bkgldialog.setModal(false);
-		//		bkgldialog.startDialog ();
+				bkgldialog.setModal(true);
+
 				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				bkgldialog.setVisible(true);
 			} 
 			
 			if(!bkgldialog.isVisible() ) {
 				bkgldialog.setVisible(true);
 			 } 
-			bkgldialog.toFront();
+
 		}
 
 	protected void refreshChiCangAccountPanel ()
 	{
 		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem()); 
-//		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountschicangconfig.getStockChiCangAccount(stockcode),stockcode );
-//		((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).fireTableDataChanged();
-//		HashMap<String, AccountInfoBasic> accountsnamelist = ((Stock)nodeshouldbedisplayed).getChiCangAccounts();
+
 		displayAccountTableToGui ();
-		
-		
 	}
 
 	protected void postSellAction(BuyStockNumberPrice stocknumberpricepanel)

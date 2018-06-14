@@ -107,91 +107,91 @@ public class BanKuai extends BkChanYeLianTreeNode
 		else 
 			return null;
 	}
-	/*
-	 * 参数zhouqirange指对period周期的selecteddate的前几个周期合并计算
-	 */
-	public  TimeSeries getRangedMatchConditionStockNum (ArrayList<ExportCondition> initialzedcon,String period,int zhouqirange)
-	{
-		TimeSeries rangestocknum = new TimeSeries("stocknum");
-		NodeXPeriodDataBasic nodexdata = this.getNodeXPeroidData(period);
-		
-		LocalDate startdate = nodexdata.getRecordsStartDate();
-		LocalDate enddate = nodexdata.getRecordsEndDate();
-		LocalDate tmpdate = startdate;
-		do  {
-			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
-				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
-			int matchresult = getPeriodMatchConditionStockNum (initialzedcon, tmpdate, period, zhouqirange);
-			rangestocknum.add(tmpwk, matchresult);
-			
-			if(period.equals(StockGivenPeriodDataItem.WEEK))
-				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(StockGivenPeriodDataItem.DAY))
-				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(StockGivenPeriodDataItem.MONTH))
-				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
-			
-		} while (tmpdate.isBefore( enddate) || tmpdate.isEqual(enddate));
-		
-		return rangestocknum;
-		
-	}
+//	/*
+//	 * 参数zhouqirange指对period周期的selecteddate的前几个周期合并计算
+//	 */
+//	public  TimeSeries getRangedMatchConditionStockNum (ArrayList<ExportCondition> initialzedcon,String period,int zhouqirange)
+//	{
+//		TimeSeries rangestocknum = new TimeSeries("stocknum");
+//		NodeXPeriodDataBasic nodexdata = this.getNodeXPeroidData(period);
+//		
+//		LocalDate startdate = nodexdata.getRecordsStartDate();
+//		LocalDate enddate = nodexdata.getRecordsEndDate();
+//		LocalDate tmpdate = startdate;
+//		do  {
+//			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
+//				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+//			int matchresult = getPeriodMatchConditionStockNum (initialzedcon, tmpdate, period, zhouqirange);
+//			rangestocknum.add(tmpwk, matchresult);
+//			
+//			if(period.equals(StockGivenPeriodDataItem.WEEK))
+//				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+//			else if(period.equals(StockGivenPeriodDataItem.DAY))
+//				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+//			else if(period.equals(StockGivenPeriodDataItem.MONTH))
+//				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+//			
+//		} while (tmpdate.isBefore( enddate) || tmpdate.isEqual(enddate));
+//		
+//		return rangestocknum;
+//		
+//	}
 	/*
 	 * 这个算法极其耗时间，暂时不用。用于计算在指定时期满足设定条件的板块个股个数
 	 */
-	public Integer getPeriodMatchConditionStockNum (ArrayList<ExportCondition> initialzedcon,LocalDate selecteddate,String period,int zhouqirange)
-	{
-		if(this.getType() != BanKuaiAndStockBasic.TDXBK)
-			return null;
-		if( ((BanKuai)this).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
-		 ||  ((BanKuai)this).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
-		 ||  ((BanKuai)this).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
-			return null;
-		
-		Set<StockOfBanKuai> rowbkallgg = new HashSet<StockOfBanKuai> ();
-		for(int rangeindex = 0;rangeindex <= zhouqirange ; rangeindex ++) { //先把这几周的个股都找出来，以免重复计算
-				rowbkallgg.addAll( ((BanKuai)this).getSpecificPeriodBanKuaiGeGu(selecteddate,rangeindex,period) );
-		}
-		
-		HashSet<String> matchednum = new HashSet<String> ();
-		for (ExportCondition expcon : initialzedcon) {
-			Double settingcje = expcon.getSettingcje() ;
-			Integer settindpgmaxwk = expcon.getSettindpgmaxwk();
-			Integer settinbkgmaxwk = expcon.getSettinbkgmaxwk();
-			Integer seetingcjemaxwk = expcon.getSettingcjemaxwk();
-		
-			for (StockOfBanKuai stockofbankuai : rowbkallgg) {
-				NodeXPeriodDataBasic stockxdataforbk = stockofbankuai.getNodeXPeroidData(period);
-				boolean nodeevermatch = false;
-				for(int rangeindex = 0;rangeindex <= zhouqirange ; rangeindex ++) {
-					if(!stockxdataforbk.hasRecordInThePeriod(selecteddate, rangeindex))
-						 continue;
-						
-						 Double recordcje = stockxdataforbk.getChengJiaoEr(selecteddate, rangeindex);
-						 Integer recordmaxbkwk = stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,rangeindex) ;
-						 
-						 Stock ggstock = stockofbankuai.getStock();
-						 NodeXPeriodDataBasic stockxdata = ggstock.getNodeXPeroidData(period);
-						 Integer recordmaxdpwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,rangeindex);
-						 Integer recordmaxcjewk = stockxdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,rangeindex);
-						 
-						 if(recordcje >= settingcje &&  recordmaxbkwk >= settinbkgmaxwk
-									 && recordmaxcjewk >= seetingcjemaxwk && recordmaxdpwk >=  settindpgmaxwk)  { //满足条件，导出 ;
-							 nodeevermatch = true;
-						 }
-
-					}
-					
-				if(nodeevermatch)
-					matchednum.add(stockofbankuai.getMyOwnCode()) ;
-			}
-		}
-		
-		int result = matchednum.size();
-		rowbkallgg = null;
-		matchednum = null;
-		return result;
-	}
+//	public Integer getPeriodMatchConditionStockNum (ArrayList<ExportCondition> initialzedcon,LocalDate selecteddate,String period,int zhouqirange)
+//	{
+//		if(this.getType() != BanKuaiAndStockBasic.TDXBK)
+//			return null;
+//		if( ((BanKuai)this).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+//		 ||  ((BanKuai)this).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
+//		 ||  ((BanKuai)this).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
+//			return null;
+//		
+//		Set<StockOfBanKuai> rowbkallgg = new HashSet<StockOfBanKuai> ();
+//		for(int rangeindex = 0;rangeindex <= zhouqirange ; rangeindex ++) { //先把这几周的个股都找出来，以免重复计算
+//				rowbkallgg.addAll( ((BanKuai)this).getSpecificPeriodBanKuaiGeGu(selecteddate,rangeindex,period) );
+//		}
+//		
+//		HashSet<String> matchednum = new HashSet<String> ();
+//		for (ExportCondition expcon : initialzedcon) {
+//			Double settingcje = expcon.getSettingcje() ;
+//			Integer settindpgmaxwk = expcon.getSettindpgmaxwk();
+//			Integer settinbkgmaxwk = expcon.getSettinbkgmaxwk();
+//			Integer seetingcjemaxwk = expcon.getSettingcjemaxwk();
+//		
+//			for (StockOfBanKuai stockofbankuai : rowbkallgg) {
+//				NodeXPeriodDataBasic stockxdataforbk = stockofbankuai.getNodeXPeroidData(period);
+//				boolean nodeevermatch = false;
+//				for(int rangeindex = 0;rangeindex <= zhouqirange ; rangeindex ++) {
+//					if(!stockxdataforbk.hasRecordInThePeriod(selecteddate, rangeindex))
+//						 continue;
+//						
+//						 Double recordcje = stockxdataforbk.getChengJiaoEr(selecteddate, rangeindex);
+//						 Integer recordmaxbkwk = stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,rangeindex) ;
+//						 
+//						 Stock ggstock = stockofbankuai.getStock();
+//						 NodeXPeriodDataBasic stockxdata = ggstock.getNodeXPeroidData(period);
+//						 Integer recordmaxdpwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,rangeindex);
+//						 Integer recordmaxcjewk = stockxdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,rangeindex);
+//						 
+//						 if(recordcje >= settingcje &&  recordmaxbkwk >= settinbkgmaxwk
+//									 && recordmaxcjewk >= seetingcjemaxwk && recordmaxdpwk >=  settindpgmaxwk)  { //满足条件，导出 ;
+//							 nodeevermatch = true;
+//						 }
+//
+//					}
+//					
+//				if(nodeevermatch)
+//					matchednum.add(stockofbankuai.getMyOwnCode()) ;
+//			}
+//		}
+//		
+//		int result = matchednum.size();
+//		rowbkallgg = null;
+//		matchednum = null;
+//		return result;
+//	}
 	/*
 	 * 
 	 */

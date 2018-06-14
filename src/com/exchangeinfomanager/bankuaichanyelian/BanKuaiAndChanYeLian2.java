@@ -342,47 +342,13 @@ public class BanKuaiAndChanYeLian2
 	        patchParsedFileToTrees(treeChild,localDate,stockinfile,bkinfile);
         }
 	}
-
-//	/*
-//	 * 
-//	 */
-//	public void saveBkFxFileResultToXml ()
-//	{
-//		if(this.bkfxrfxmlhandler  == null )
-//			return;
-//		else
-//			this.bkfxrfxmlhandler.saveXml ();
-//	}
-//	/*
-//	 * 
-//	 */
-//	public void addBanKuaiFxSetToXml ( String bkcode, Set<String> bkstks, LocalDate date)
-//	{
-//		if(this.bkfxrfxmlhandler  == null )
-//			this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
-//		
-//		this.bkfxrfxmlhandler.addBanKuaiFxSetToXml(bkcode, bkstks, date);
-//	}
-//	/*
-//	 * 
-//	 */
-//	public Set<String> getBanKuaiFxSetOfSpecificDate (String bkcode, LocalDate date)
-//	{
-//		if(this.bkfxrfxmlhandler  == null )
-//			this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
-//		
-//		return this.bkfxrfxmlhandler.getBanKuaiFxSetOfSpecificDate ( bkcode,  date);
-//	}
-//	/*
-//	 * 
-//	 */
-//	public boolean isAlreadyInFengXiResultFile (LocalDate date)
-//	{
-//		if(this.bkfxrfxmlhandler  == null )
-//			this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
-//			
-//		return this.bkfxrfxmlhandler.isAlreadyInFengXiResultFile(date);
-//	}
+	/*
+	 * 
+	 */
+	public void removeGeguFromModelFile (LocalDate date, String bkcode, String ggcode)
+	{
+		
+	}
 	/*
 	 * 
 	 */

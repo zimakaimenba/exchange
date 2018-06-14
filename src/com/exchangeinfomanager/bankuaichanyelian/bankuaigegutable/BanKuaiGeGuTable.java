@@ -92,11 +92,12 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	private JMenuItem menuItemMakeLongTou;
 	private StockCalendarAndNewDbOperation newsdbopt;
 	private BanKuaiDbOperation bkdbopt;
+	private JPopupMenu popupMenuGeguNews;
 //	private boolean youxianxianshiparsefile;
 	
 	private void createMenu() 
 	{
-		JPopupMenu popupMenuGeguNews = new JPopupMenu();
+		popupMenuGeguNews = new JPopupMenu();
 		menuItemAddNews = new JMenuItem("添加个股新闻");
 		menuItemAddGz = new JMenuItem("开始关注");
 		menuItemReDian = new JMenuItem("标记龙头个股");
@@ -108,7 +109,10 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 				
 		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
-
+	public JPopupMenu getPopupMenu ()
+	{
+		return this.popupMenuGeguNews;
+	}
 	public TableCellRenderer getCellRenderer(int row, int column) 
 	{
 		return renderer;

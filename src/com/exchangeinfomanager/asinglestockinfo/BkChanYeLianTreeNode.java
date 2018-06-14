@@ -159,7 +159,6 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			
 			private BkChanYeLianTreeNode treenode;
 			private boolean expanded;
-//			protected HashSet<String> parsefilestockset; //板块解析文件内含有的该板块列表
 			private boolean isofficallyselected ;
 			private int inzdgzofficalcount =0;
 			private int inzdgzcandidatecount =0;
@@ -175,24 +174,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			{
 				return this.shouldberemovedwhensavexml;
 			}
-			
 
-//			//子类里面有具体实现
-//		    public  void setParseFileStockSet (HashSet<String> parsefilestockset2)
-//		    {
-//		    	if(this.parsefilestockset == null) {
-//		    		this.parsefilestockset = new HashSet<String> ();
-//		    		this.parsefilestockset = parsefilestockset2;
-//		    	} else
-//		    		this.parsefilestockset = parsefilestockset2;
-//		    }
-//		    public HashSet<String> getParseFileStockSet ()
-//		    {
-//		    	if(this.parsefilestockset == null)
-//		    		return new HashSet<String> ();
-//		    	else
-//		    		return this.parsefilestockset;
-//		    }
 		    public void setExpansion(boolean expanded){
 		        this.expanded = expanded;
 		    }
@@ -316,7 +298,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 	 {
 			public NodeJiBenMian ()
 			{
-				nodejbm = this;
+//				nodejbm = this;
 //				this.myowncode = nodecode;
 			}
 			

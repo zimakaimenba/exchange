@@ -41,6 +41,7 @@ public class Stock extends BkChanYeLianTreeNode {
 		super.nodewkdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new StockNodeXPeriodData (StockGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+		super.nodetreerelated = new TreeRelated (this);
 		
 	}
 	
