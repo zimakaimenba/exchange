@@ -1488,7 +1488,6 @@ class CashAccountsTableModel extends AbstractTableModel
 	{
 		this.accountslist = new ArrayList<CashAccountBasic> ();
 		refresh (cashaccountslist);
-	
 	}
 	public void refresh  (HashMap<String, CashAccountBasic> cashaccountslist)
 	{

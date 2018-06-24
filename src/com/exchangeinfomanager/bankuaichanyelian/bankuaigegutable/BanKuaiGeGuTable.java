@@ -42,10 +42,10 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPa
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 

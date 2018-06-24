@@ -311,6 +311,9 @@ public class BanKuai extends BkChanYeLianTreeNode
         }
 		return null;
 	}
+	/*
+	 * 
+	 */
 	public void setGeGuSuoShuBanKuaiWeight(String stockcode , Integer quanzhong) 
 	{
 		int childcount = this.getChildCount();
@@ -324,6 +327,9 @@ public class BanKuai extends BkChanYeLianTreeNode
             }
         }
 	}
+	/*
+	 * 
+	 */
 	public NodeXPeriodDataBasic getStockXPeriodDataForABanKuai (String stockcode,String period)
 	{
 		int childcount = this.getChildCount();

@@ -16,10 +16,10 @@ import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 
 public class BanKuaiPopUpMenu extends JPopupMenu
 {

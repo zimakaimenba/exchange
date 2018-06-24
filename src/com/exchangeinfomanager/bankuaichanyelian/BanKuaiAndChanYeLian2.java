@@ -107,11 +107,11 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInf
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.google.common.base.Charsets;

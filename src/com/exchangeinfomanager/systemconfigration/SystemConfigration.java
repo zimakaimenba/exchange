@@ -25,7 +25,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -652,6 +652,10 @@ public class SystemConfigration
 		public String getEastMoneyDownloadedFilePath() 
 		{
 			return this.systeminstalledpath + "dailydata/eastmoney/downloaded/";
+		}
+		public String getDaPanFengXiWeeklyXmlMatrixFile() 
+		{
+			return this.systeminstalledpath + "checklists/dapanfengximatrix.xml";
 		}
 
 }

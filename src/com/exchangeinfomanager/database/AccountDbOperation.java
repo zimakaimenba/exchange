@@ -146,12 +146,9 @@ public class AccountDbOperation
 
 	    return acntchicangmap;
 	}
-	
-
-
-	
-
-
+	/*
+	 * 
+	 */
 	public int setZijingLiuShui(LocalDateTime actiondate,String accountname, String actionqstype, boolean ischuru, double zhuanruxianjing,String actionshuoming) 
 	{
 		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();

@@ -27,9 +27,9 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -162,11 +162,9 @@ public class TDXFormatedOpt {
     	SAXReader reader;
     	
     	File cylfile =   new File(cylxml );
-    	File cylreport = new File(cylreportname);
 		if(!cylfile.exists()) { 
 			return null;
-		} 
-    	
+		}
     	FileInputStream xmlfileinput = null;
 		try {
 			xmlfileinput = new FileInputStream(cylxml);
@@ -174,13 +172,23 @@ public class TDXFormatedOpt {
 			return null;
 		}
 		
+    	File cylreport = new File(cylreportname);
 		try {
 			if (cylreport.exists()) {
 				cylreport.delete();
 				cylreport.createNewFile();
 			} else
 				cylreport.createNewFile();
+		} catch (java.io.IOException e) {
+			cylreport.getParentFile().mkdirs(); //目录不存在，先创建目录
+			try {
+				cylreport.createNewFile();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		} catch (Exception e) {
+			e.printStackTrace();
+			cylreport.delete();
 			return null;
 		}
 		
@@ -210,6 +218,7 @@ public class TDXFormatedOpt {
 			}
 		} catch (DocumentException e) {
 			logger.debug(cylxml+ "存在错误");
+			cylreport.delete();
 			return null;
 		}
 		
@@ -230,9 +239,18 @@ public class TDXFormatedOpt {
 					filezdgz.createNewFile();
 				} else
 					filezdgz.createNewFile();
-		} catch (Exception e) {
+		 } catch (java.io.IOException e) {
+			 filezdgz.getParentFile().mkdirs(); //目录不存在，先创建目录
+				try {
+					filezdgz.createNewFile();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				filezdgz.delete();
 				return null;
-		}
+			}
 		 
 		String sqlquerystat = "SELECT * FROM 操作记录重点关注 WHERE 日期 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) +50 ) DAY )  ";
 //			logger.debug(sqlquerystat);
@@ -319,16 +337,26 @@ public class TDXFormatedOpt {
 		 File filegnts = new File( sysconfig.getTdxBbFileGaiNianTiShi() );
 		 File filefmxx = new File( sysconfig.getTdxBbfileFuMianXiaoXi() );
 		 File filezzfxgkzd = new File( sysconfig.getTdxBbFileZzfxgkhzd() );
-		
+		 
 		try {
 			if (filegnts.exists()) {
 				filegnts.delete();
 				filegnts.createNewFile();
 			} else
 				filegnts.createNewFile();
+		} catch (java.io.IOException e) {
+			filegnts.getParentFile().mkdirs(); //目录不存在，先创建目录
+			try {
+				filegnts.createNewFile();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		} catch (Exception e) {
+			e.printStackTrace();
+			filegnts.delete();
 			return null;
 		}
+		
 		try {
 			if (filefmxx.exists()) {
 				filefmxx.delete();
@@ -345,6 +373,7 @@ public class TDXFormatedOpt {
 			} else
 				filezzfxgkzd.createNewFile();
 		} catch (Exception e) {
+			filezzfxgkzd.delete();
 			return null;
 		}
 		
@@ -520,6 +549,6 @@ public class TDXFormatedOpt {
 		
 		
 //		stockZdgzReports ();
-		return filegnts.getAbsolutePath();
+		return filegnts.getParent();
 	}
 }

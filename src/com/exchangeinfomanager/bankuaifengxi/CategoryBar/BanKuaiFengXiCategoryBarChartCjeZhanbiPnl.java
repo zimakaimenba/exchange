@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartPanel;
@@ -75,52 +76,51 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	/*
 	 * 
 	 */
-	public void updateConditionMatchData (BkChanYeLianTreeNode node, String period,TimeSeries matchdata)
-	{
-		super.barchart.setNotify(false);
-		
-		if(linechartdataset != null)
-			linechartdataset.clear();
-		
-		int maxnum = 0;
-		if(node.getType() == BanKuaiAndStockBasic.TDXBK ) {
-			DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
-			
-			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
-			LocalDate tmpdate = nodexdata.getRecordsStartDate();
-			LocalDate dataenddate = nodexdata.getRecordsEndDate();
-			
-			do  {
-				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
-				TimeSeriesDataItem cjerecord = matchdata.getDataItem(tmpwk);
-				tmpwk = null;
-				if(cjerecord != null) {
-					int matchnum = cjerecord.getValue().intValue();
-					linechartdataset.setValue(matchnum,"matchnumber",tmpdate.with(DayOfWeek.FRIDAY));
-					
-					if(matchnum > maxnum)
-						maxnum = matchnum; 
-				} else {
-					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
-						linechartdataset.setValue(0.0,"matchnumber",tmpdate);
-					} 
-				}
-				
-				if(period.equals(StockGivenPeriodDataItem.WEEK))
-					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-				else if(period.equals(StockGivenPeriodDataItem.DAY))
-					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-				else if(period.equals(StockGivenPeriodDataItem.MONTH))
-					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
-				
-			} while (tmpdate.isBefore( dataenddate ) || tmpdate.isEqual(dataenddate ));
-		}
-		
-		super.plot.getRangeAxis(1).setRange(0,maxnum *1.5);
-		
-		super.barchart.setNotify(true);
-		
-	}
+//	public void updateConditionMatchData1 (BkChanYeLianTreeNode node, String period,TimeSeries matchdata)
+//	{
+//		super.barchart.setNotify(false);
+//		
+//		if(linechartdataset != null)
+//			linechartdataset.clear();
+//		
+//		int maxnum = 0;
+//		if(node.getType() == BanKuaiAndStockBasic.TDXBK ) {
+//			DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
+//			
+//			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+//			LocalDate tmpdate = nodexdata.getRecordsStartDate();
+//			LocalDate dataenddate = nodexdata.getRecordsEndDate();
+//			
+//			do  {
+//				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+//				TimeSeriesDataItem cjerecord = matchdata.getDataItem(tmpwk);
+//				tmpwk = null;
+//				if(cjerecord != null) {
+//					int matchnum = cjerecord.getValue().intValue();
+//					linechartdataset.setValue(matchnum,"matchnumber",tmpdate.with(DayOfWeek.FRIDAY));
+//					
+//					if(matchnum > maxnum)
+//						maxnum = matchnum; 
+//				} else {
+//					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
+//						linechartdataset.setValue(0.0,"matchnumber",tmpdate);
+//					} 
+//				}
+//				
+//				if(period.equals(StockGivenPeriodDataItem.WEEK))
+//					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+//				else if(period.equals(StockGivenPeriodDataItem.DAY))
+//					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+//				else if(period.equals(StockGivenPeriodDataItem.MONTH))
+//					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+//				
+//			} while (tmpdate.isBefore( dataenddate ) || tmpdate.isEqual(dataenddate ));
+//		}
+//		
+//		super.plot.getRangeAxis(1).setRange(0,maxnum *1.5);
+//		
+//		super.barchart.setNotify(true);
+//	}
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode, java.time.LocalDate, int, java.lang.String)
@@ -135,37 +135,42 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		else if(period.equals(StockGivenPeriodDataItem.MONTH))
 			date = date.plus(difference,ChronoUnit.MONTHS);
 			
-		setNodeCjeZhanBi(node,date,period);
+//		setNodeCjeZhanBi(node,date,period);
+		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		this.updatedDate (node,requirestart,requireend,period);
 	}
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate,String period)
 	{
-		this.setNodeCjeZhanBi (node,startdate,enddate,period);
-	}
-	/*
-	 * 板块按周相对于某板块的交易额
-	 */
-	private void setNodeCjeZhanBi (BkChanYeLianTreeNode node,LocalDate displayedenddate1,String period)
-	{
-		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+//		this.setNodeCjeZhanBi (node,startdate,enddate,period);
+		barchartdataset.clear();
 		
-		this.setNodeCjeZhanBi (node,requirestart,requireend,period);
-	}
-	private void setNodeCjeZhanBi (BkChanYeLianTreeNode node,LocalDate startdate,LocalDate enddate,String period)
-	{
-		this.curdisplayednode = node;
+		super.curdisplayednode = node;
 		super.globeperiod = period;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+		
 		displayDataToGui (nodexdata,startdate,enddate,period);
+		
+//		CustomCategroyRendererForZhanBi render = (CustomCategroyRendererForZhanBi)super.plot.getRenderer();
+//		render.setDisplayNode(this.curdisplayednode);
+//		render.setDisplayNodeXPeriod (nodexdata);
+//		
+//		//如有分析结果，ticklable显示红色
+//		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
+//		axis.setDisplayNode(this.curdisplayednode,period);
+		
 	}
+	/*
+	 * 
+	 */
 	private void displayDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period)
 	{
 		DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.MONDAY);
-		
-		barchartdataset.clear();
+
 		super.barchart.setNotify(false);
 		
 		double highestHigh =0.0; //设置显示范围
@@ -179,13 +184,13 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			tmpwk = null;
 			if(cjerecord != null) {
 				double cjezb = cjerecord.getValue().doubleValue();
-				barchartdataset.setValue(cjezb,"占比",tmpdate.with(DayOfWeek.FRIDAY));
+				barchartdataset.setValue(cjezb,curdisplayednode.getMyOwnCode(),tmpdate.with(DayOfWeek.FRIDAY));
 				
 				if(cjezb > highestHigh)
 					highestHigh = cjezb;
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
-					barchartdataset.setValue(0.0,"占比",tmpdate);
+					barchartdataset.setValue(0.0,curdisplayednode.getMyOwnCode(),tmpdate);
 				} 
 			}
 			
@@ -198,7 +203,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
-		setPanelTitle ("成交额" + period + "占比",requireend);
+		setPanelTitle ("成交额" + period + curdisplayednode.getMyOwnCode(),requireend);
 		
 		super.barchart.setNotify(true);
 		operationAfterDataSetup (nodexdata,requirestart,requireend,highestHigh,period);
@@ -229,7 +234,9 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	}
 
 }
-
+/*
+ * 
+ */
 class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer 
 {
 	private static final long serialVersionUID = 1L;

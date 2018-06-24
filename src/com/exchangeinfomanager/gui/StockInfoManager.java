@@ -40,6 +40,8 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 
 import javax.swing.GroupLayout;
@@ -99,6 +101,7 @@ import com.exchangeinfomanager.tongdaxinreport.*;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -114,7 +117,6 @@ import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.JStockComboBox;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -392,9 +394,54 @@ public class StockInfoManager
 			 buychklstdialog.setVisible(true);
 		buychklstdialog.toFront();
 	}
+	/*
+	 * 
+	 */
+	private void tableMouseClickActions (MouseEvent arg0)
+	{
+		int row = tblzhongdiangz.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		int modelRow = tblzhongdiangz.convertRowIndexToModel(row);
+				 
+        if (arg0.getClickCount() == 1) {
 
+        }
+        if (arg0.getClickCount() == 2) {
+        	String date = (String)tblzhongdiangz.getValueAt(modelRow, 0);	
+        	System.out.println(date);
+        	LocalDate selectdate = null;
+        	try {
+        		selectdate = LocalDate.parse(date);
+        	} catch( java.time.format.DateTimeParseException e) {
+        		selectdate = LocalDate.parse(date.substring(0, 10).trim());
+        	}
+        	
+        	DaPanWeeklyFengXi dpfx = new DaPanWeeklyFengXi(allbkstock,bkcyl,selectdate);
+        	
+        	if(!dpfx.isVisible() ) 
+        		dpfx.setVisible(true);
+        	dpfx.toFront();
+
+		}
+	}
+	/*
+	 * 
+	 */
 	private void createEvents()
 	{
+		tblzhongdiangz.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent arg0) 
+        	{
+        		tableMouseClickActions (arg0);
+        	}
+        });
+
+	
+
 		menuItemfxwjfx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				startWeeklyExportFileFengXi();
@@ -575,10 +622,24 @@ public class StockInfoManager
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				//BanKuaiDbOperation bkdbopt = new BanKuaiDbOperation ();
-				ImportTDXData importtdx= new ImportTDXData();
-				importtdx.setModal(true);
-				importtdx.setVisible(true);
+				if( this.importPreCheckTDX()) {
+					ImportTDXData importtdx= new ImportTDXData();
+					importtdx.setModal(true);
+					importtdx.setVisible(true);
+				}
+			}
+			
+			private Boolean importPreCheckTDX()
+			{
+				String tdxpath = sysconfig.getTDXInstalledLocation();
+				
+				File file = new File(sysconfig.getTDXStockEverUsedNameFile() );
+				if(!file.exists() ) {
+					 System.out.println("通达信目录不正确:" + tdxpath ); 
+					 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前设置为:" + tdxpath);
+					 return false;
+				 } else 
+					 return true;
 			}
 		});
 		
@@ -1618,23 +1679,33 @@ public class StockInfoManager
 		{
 			public void actionPerformed(ActionEvent e) 
 			{			
-				TDXFormatedOpt.stockJiBenMianToReports();
-				TDXFormatedOpt.stockZdgzReports ();
-				String resultfiepath = TDXFormatedOpt.parseChanYeLianXmlToTDXReport();
-//				JOptionPane.showMessageDialog(null,"报表生成成功，请在" + resultfiepath + "下查看！");
+				String jbmexportresult = TDXFormatedOpt.stockJiBenMianToReports();
+				String zdgzexportresult = TDXFormatedOpt.stockZdgzReports ();
+				String xmlexportresult = TDXFormatedOpt.parseChanYeLianXmlToTDXReport();
 				
-				int exchangeresult = JOptionPane.showConfirmDialog(null, "报表生成成功，请在" + resultfiepath + "下查看！是否打开该目录？","报表完毕", JOptionPane.OK_CANCEL_OPTION);
-			
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+				if(Strings.isNullOrEmpty(xmlexportresult) && Strings.isNullOrEmpty(jbmexportresult) && Strings.isNullOrEmpty(zdgzexportresult) ) {
+					int exchangeresult = JOptionPane.showConfirmDialog(null, "报表生成失败，请检查原因！","报表完毕", JOptionPane.OK_CANCEL_OPTION);
 					return;
-				
-				try {
-					Desktop.getDesktop().open(new File(resultfiepath));
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
 				}
 				
+				String reportsummary = "";
+				if(Strings.isNullOrEmpty(xmlexportresult)) 
+					reportsummary = reportsummary + "产业链报表生成失败。";
+				if(Strings.isNullOrEmpty(jbmexportresult)) 
+					reportsummary = reportsummary + "基本面报表生成失败。";
+				if(Strings.isNullOrEmpty(zdgzexportresult)) 
+					reportsummary = reportsummary + "重点关注报表生成失败。";
+				
+				int exchangeresult = JOptionPane.showConfirmDialog(null, reportsummary + "其他报表生成成功，是否打开报表目录？","报表完毕", JOptionPane.OK_CANCEL_OPTION);
+				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+						return;
+					
+				try {
+						Desktop.getDesktop().open(new File(jbmexportresult));
+				} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+				}
 			}
 		});
 }
@@ -2491,10 +2562,7 @@ public class StockInfoManager
 //			          };
 //	    tblzhongdiangz.setDefaultRenderer(Object.class, tcr);
 		sclpaneJtable.setViewportView(tblzhongdiangz);
-		
 
-
-		
 		popupMenu = new JPopupMenu();
 		addPopup(tblzhongdiangz, popupMenu);
 		

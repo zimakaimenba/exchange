@@ -85,6 +85,7 @@ public interface BanKuaiAndStockBasic
 //		public ArrayList<ChenJiaoZhanBiInGivenPeriod> getNodePeriodRecords ();
 		
 		Double getChengJiaoEr (LocalDate requireddate,int difference);
+		Double getChenJiaoErZhanBi (LocalDate requireddate,int difference);
 		
 		void addNewXPeriodData (StockGivenPeriodDataItem kdata);
 

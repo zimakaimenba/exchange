@@ -101,12 +101,12 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombin
 import com.exchangeinfomanager.bankuaifengxi.Gephi.GephiFilesGenerator;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.JStockComboBox;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
@@ -122,6 +122,7 @@ import com.google.common.io.LineProcessor;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -136,6 +137,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -626,15 +629,15 @@ public class BanKuaiFengXi extends JDialog {
 	/*
 	 * 设置成交量或者占比的提示
 	 */
-	private void setDisplayNoticeLevelForPanels() 
-	{
-		panelbkwkzhanbi.setDaZiJinValueMarker (0.01); //大于1%是板块强势的表现
-		panelgegubkcje.setDaZiJinValueMarker ( 580000000); //5.8亿
-		panelgegubkcje.setDaZiJinValueMarker (1000000000);
-		panelgegubkcje.setDaZiJinValueMarker (1500000000);
-		panelgegubkcje.setDaZiJinValueMarker (2000000000);
-		
-	}
+//	private void setDisplayNoticeLevelForPanels() 
+//	{
+//		panelbkwkzhanbi.setDaZiJinValueMarker (0.01); //大于1%是板块强势的表现
+//		panelgegubkcje.setDaZiJinValueMarker ( 580000000); //5.8亿
+//		panelgegubkcje.setDaZiJinValueMarker (1000000000);
+//		panelgegubkcje.setDaZiJinValueMarker (1500000000);
+//		panelgegubkcje.setDaZiJinValueMarker (2000000000);
+//		
+//	}
 
 	/*
 	 * 几个表显示用户在选择周个股占比增长率排名等
@@ -847,6 +850,33 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void createEvents() 
 	{
+		menuItemRmvNodeFmFile.addActionListener(new ActionListener() {
+			@Override
+
+			public void actionPerformed(ActionEvent evt) {
+				int bkrow = tableBkZhanBi.getSelectedRow();
+				if(bkrow <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				int bkmodelRow = tableBkZhanBi.convertRowIndexToModel(bkrow);
+				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(bkmodelRow);
+				
+				int ggrow = tableGuGuZhanBiInBk.getSelectedRow();
+				if(ggrow <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个股票！","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				int ggmodelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(ggrow);
+				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
+
+				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			}
+			
+		});
+		
 		cyltree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
 //            	chanYeLianTreeMousePressed(evt);
@@ -877,26 +907,6 @@ public class BanKuaiFengXi extends JDialog {
     	        
             }
         });
-		
-		btntiaojiantongji.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) 
-			{
-				int row = tableBkZhanBi.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				
-				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-				if(exportcond.size()>0) {
-//					selectedbk.getPeriodMatchConditionStockNum(exportcond, lastselecteddate, globeperiod, Integer.parseInt( tfldtongjizhouqi.getText() ) );
-//					TimeSeries matchresult = selectedbk.getRangedMatchConditionStockNum (exportcond,globeperiod, Integer.parseInt( tfldtongjizhouqi.getText() ) );
-					TimeSeries matchresult = fengXiMatchedStockNumFromFormerExportedFile (exportcond,globeperiod, Integer.parseInt( tfldtongjizhouqi.getText() ) );
-					((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)panelbkwkzhanbi).updateConditionMatchData (selectedbk,globeperiod,matchresult);
-				}
-			}
-		});
 		
 		panelbkwkzhanbi.getChartPanel().addChartMouseListener(new ChartMouseListener() { 
 			@Override
@@ -1183,13 +1193,14 @@ public class BanKuaiFengXi extends JDialog {
 					}
 					
 //					chooseParsedFile (tfldparsedfile.getText());
-					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
+//					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
 //					tableGuGuZhanBiInBk.repaint();
 				}
 			
 				if(!ckboxparsefile.isSelected()) {
-					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(false);
-					tableGuGuZhanBiInBk.repaint();
+//					((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(false);
+//					tableGuGuZhanBiInBk.repaint();
+					ckboxparsefile.setSelected(true);
 				}
 			}
 		});
@@ -1442,6 +1453,13 @@ public class BanKuaiFengXi extends JDialog {
 			    		tabbedPanegegu.setTitleAt(0, "当前周");
 			    		tabbedPanegegu.setTitleAt(1, "选定周");
 			    		tabbedPanebk.setSelectedIndex(0);
+			    		ckboxparsefile.setSelected(false);
+			    		tfldparsedfile.setText("");
+			    		
+			    		bkcyl.getBkChanYeLianTree().setCurrentDisplayedWk (newdate);
+			    		DefaultTreeModel treeModel = (DefaultTreeModel) bkcyl.getBkChanYeLianTree().getModel();
+			    		treeModel.reload();
+			    		
 			    		setHighLightChenJiaoEr();
 			    		
 			    		initializeBanKuaiZhanBiByGrowthRate (StockGivenPeriodDataItem.WEEK);
@@ -1533,16 +1551,17 @@ public class BanKuaiFengXi extends JDialog {
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					refreshGeGuKXianZouShi (selectstock.getStock()); //K线
 					cbxstockcode.updateUserSelectedNode (selectstock.getStock()); 
 					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
 					displayStockCurrentFxResult (tablexuandingzhou);
+					
+					Toolkit.getDefaultToolkit().beep();
 				}
 				if (arg0.getClickCount() == 2) {
 //					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
 //					 displayStockSuoShuBanKuai (selectstock);
 				}
-				
-				
 			}
 		});
 		tablexuandingminustwo.addMouseListener(new MouseAdapter() 
@@ -1559,10 +1578,15 @@ public class BanKuaiFengXi extends JDialog {
 	
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
+					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					refreshGeGuKXianZouShi (selectstock.getStock()); //K线
 					cbxstockcode.updateUserSelectedNode (selectstock.getStock()); 
 					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
 					displayStockCurrentFxResult (tablexuandingminustwo);
+					
+					Toolkit.getDefaultToolkit().beep();
+					
 				}
 				 if (arg0.getClickCount() == 2) {
 //					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
@@ -1584,10 +1608,14 @@ public class BanKuaiFengXi extends JDialog {
 	
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
-					 refreshGeGuFengXiResult (selectstock);
-					 cbxstockcode.updateUserSelectedNode (selectstock.getStock()); 
-					 displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
-					 displayStockCurrentFxResult (tablexuandingminusone);
+					hightlightSpecificSector (selectstock);
+					refreshGeGuFengXiResult (selectstock);
+					refreshGeGuKXianZouShi (selectstock.getStock()); //K线
+					cbxstockcode.updateUserSelectedNode (selectstock.getStock()); 
+					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
+					displayStockCurrentFxResult (tablexuandingminusone);
+					
+					Toolkit.getDefaultToolkit().beep();
 				}
 				 if (arg0.getClickCount() == 2) {
 //					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
@@ -1609,10 +1637,14 @@ public class BanKuaiFengXi extends JDialog {
 	
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
+					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					refreshGeGuKXianZouShi (selectstock.getStock()); //K线
 					cbxstockcode.updateUserSelectedNode (selectstock.getStock()); 
 					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
 					displayStockCurrentFxResult (tablexuandingplusone);
+					
+					Toolkit.getDefaultToolkit().beep();
 				}
 				 if (arg0.getClickCount() == 2) {
 //					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
@@ -1634,10 +1666,14 @@ public class BanKuaiFengXi extends JDialog {
 	
 				if (arg0.getClickCount() == 1) {
 					hightlightSpecificSector (selectstock);
+					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock);
+					refreshGeGuKXianZouShi (selectstock.getStock()); //K线
 					cbxstockcode.updateUserSelectedNode (selectstock.getStock()); 
 					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
 					displayStockCurrentFxResult (tablexuandingplustwo);
+					
+					Toolkit.getDefaultToolkit().beep();
 				}
 				 if (arg0.getClickCount() == 2) {
 //					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
@@ -1819,42 +1855,68 @@ public class BanKuaiFengXi extends JDialog {
 			    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
 			    else
 			    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
-			    tfldparsedfile.setText(filename);
 			} else
 				return;
 		} else {
 			filename = pasedpathintextfld; 
 		}
 		
-		if(!filename.endsWith("EBK")) //不是板块文件
+		if(!filename.endsWith("EBK") && !filename.endsWith("XML")) { //不是板块文件
+			tfldparsedfile.setText("文件错误！请重新选择文件！");
+			ckboxparsefile.setSelected(false);
 			return;
-		
-			ckboxparsefile.setSelected(true);
-			
-			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
+		}
+//			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
 			
 			//找到对应的XML
-			File fileebk = new File( filename );
-			
+			File fileebk = null;
 			boolean xmlfileexist = false;
-			String exportxmlfilename = sysconfig.getTDXModelMatchExportFile () +  fileebk.getName();
-			String xmlfilename = exportxmlfilename.replace(".EBK", ".XML");
-			File filexminconfigpath = new File(xmlfilename);
-			try {
-					if (filexminconfigpath.exists()) 
+			File filexminconfigpath = null;
+			String filenamedate = null;
+			if(filename.endsWith("EBK")) {
+				fileebk = new File( filename );
+				String exportxmlfilename = sysconfig.getTDXModelMatchExportFile () +  fileebk.getName();
+				String xmlfilename = exportxmlfilename.replace(".EBK", ".XML");
+				filexminconfigpath = new File(xmlfilename);
+				try {
+						if (filexminconfigpath.exists()) 
+							xmlfileexist = true;
+				} catch (Exception e) {
+						e.printStackTrace();
+						return ;
+				}
+				
+				 filenamedate = fileebk.getName().replaceAll("\\D+","");
+				
+			} else {
+				filexminconfigpath = new File(filename);
+				Path inputfilepath = FileSystems.getDefault().getPath(filexminconfigpath.getParent());
+				Path systemrequiredpath = FileSystems.getDefault().getPath(sysconfig.getTDXModelMatchExportFile ());
+				try {
+					boolean cresult = java.nio.file.Files.isSameFile(systemrequiredpath, inputfilepath);
+					if(!cresult ) {
+						tfldparsedfile.setText("XML文件位置错误！请在指定的目录里重新选择文件！");
+						ckboxparsefile.setSelected(false);
+						return;
+					} else {
 						xmlfileexist = true;
-			} catch (Exception e) {
+						
+						filenamedate = filexminconfigpath.getName().replaceAll("\\D+","");
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
-					return ;
+				}
 			}
 			
-			String filenamedate = fileebk.getName().replaceAll("\\D+","");
+			
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 			LocalDate localDate = null;
 			try{
 					 localDate = LocalDate.parse(filenamedate, formatter);
 			} catch (java.time.format.DateTimeParseException e) {
-					tfldparsedfile.setText("文件错误！请重新选择文件！");
+					tfldparsedfile.setText("文件格式错误！请重新选择文件！");
+					ckboxparsefile.setSelected(false);
 					return;
 			}
 			LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -1864,6 +1926,9 @@ public class BanKuaiFengXi extends JDialog {
 				this.dateChooser.setDate(Date.from(instant));
 			}
 			
+			ckboxparsefile.setSelected(true);
+			tfldparsedfile.setText(filename);
+			
 			if(xmlfileexist) {
 				this.bkcyl.patchWeeklyBanKuaiFengXiXmlFileToCylTree (filexminconfigpath,localDate);
 			} else { //不存在要生成
@@ -1872,8 +1937,7 @@ public class BanKuaiFengXi extends JDialog {
 
 			filexminconfigpath = null;
 			filexminconfigpath = null;
-		
-		
+
 	}
 	
 	
@@ -2018,9 +2082,6 @@ public class BanKuaiFengXi extends JDialog {
 		 }
 		
 	}
-
-	private  JTextField tfldtongjizhouqi;
-	private JButton btntiaojiantongji;
 	private final JPanel contentPanel = new JPanel();
 	private JButton okButton;
 	private JButton cancelButton;
@@ -2087,6 +2148,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JTextField tfldhuanshoulv;
 	private JCheckBox cbxhuanshoulv;
 	private BkChanYeLianTree cyltree;
+	private JMenuItem menuItemRmvNodeFmFile;
 	
 	private void initializeGui() {
 		
@@ -2371,6 +2433,9 @@ public class BanKuaiFengXi extends JDialog {
 
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
+		menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
+		tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRmvNodeFmFile);
+		
 		JScrollPane scrollPanexuandingminusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
 		tabbedPanegegu.setBackgroundAt(2, Color.LIGHT_GRAY);
@@ -2581,15 +2646,6 @@ public class BanKuaiFengXi extends JDialog {
 			btnClear = new JButton("");
 			btnClear.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/delete.png")));
 			
-			btntiaojiantongji = new JButton("\u6761\u4EF6\u7EDF\u8BA1");
-			btntiaojiantongji.setEnabled(false);
-			
-			tfldtongjizhouqi = new JTextField();
-			tfldtongjizhouqi.setText("2");
-			tfldtongjizhouqi.setColumns(10);
-			
-			JLabel label = new JLabel("\u5468\u671F");
-			
 			JLabel label_1 = new JLabel("          ");
 			
 			cbxhuanshoulv = new JCheckBox("\u7A81\u51FA\u6362\u624B\u7387>=");
@@ -2608,13 +2664,7 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnClear, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addComponent(btntiaojiantongji)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(tfldtongjizhouqi, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(label)
-						.addGap(12)
+						.addGap(188)
 						.addComponent(label_1)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(cbxggquanzhong)
@@ -2674,10 +2724,7 @@ public class BanKuaiFengXi extends JDialog {
 											.addComponent(tfldbkmaxwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 											.addComponent(chkcjemaxwk)
 											.addComponent(btnClear)
-											.addComponent(btntiaojiantongji)
-											.addComponent(tfldtongjizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-											.addComponent(label_1)
-											.addComponent(label))
+											.addComponent(label_1))
 										.addGroup(gl_buttonPane.createSequentialGroup()
 											.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 												.addComponent(tfldcjemaxwk, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
@@ -2689,7 +2736,7 @@ public class BanKuaiFengXi extends JDialog {
 									.addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 								.addGroup(gl_buttonPane.createSequentialGroup()
 									.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-										.addComponent(btnChosPasFile, GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+										.addComponent(btnChosPasFile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
 										.addComponent(ckboxparsefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(tfldhuanshoulv, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))

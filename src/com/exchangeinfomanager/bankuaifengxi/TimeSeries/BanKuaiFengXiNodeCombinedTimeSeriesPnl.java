@@ -19,8 +19,8 @@ import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightListener;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiCandlestick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeLargePeriodChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 
 public class BanKuaiFengXiNodeCombinedTimeSeriesPnl extends JPanel {
 

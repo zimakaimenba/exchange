@@ -33,6 +33,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -97,10 +98,10 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
@@ -2638,14 +2639,23 @@ public class BanKuaiDbOperation
                         @SuppressWarnings("deprecation")
 						List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
 
-                        if( tmplinelist.size() ==7 && !tmplinelist.get(5).equals("0")) { //有可能是半天数据，有0，不完整，不能录入
+                        if( tmplinelist.size() ==7 && !tmplinelist.get(5).equals("0")) { //有可能是半天数据，有0，不完整，不能录入,对个股来说，半天数据也有，要特别处理
                         	LocalDate curlinedate = null;
                     		try {
                     			String beforparsedate = tmplinelist.get(0);
                     			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datarule);
                     			curlinedate =  LocalDate.parse(beforparsedate,formatter) ;
                     			
-                    			if(curlinedate.isAfter(lastestdbrecordsdate)) {
+                    			LocalTime tdytime = LocalTime.now(); //如果是在交易时间导入数据的话，当天的数据还没有，所以要判断一下
+            				    LocalDate tdydate = LocalDate.now(); 
+            					if( ( tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(18, 0, 0)) <0) ) {
+            						 if(curlinedate.equals(tdydate)) {
+            							 curlinedate = null;
+            							 continue;
+            						 }
+            					}
+            					
+                    			if( curlinedate.isAfter(lastestdbrecordsdate)) {
                         			String sqlinsertstat = "INSERT INTO " + inserttablename +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额) values ("
                     						+ "'" + tmpbkcode + "'" + ","
                     						+ "'" +  curlinedate + "'" + ","
@@ -5176,11 +5186,22 @@ public class BanKuaiDbOperation
 			   else
 				    	ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1);
 				    
-				    //获取文件
+				    //获取网易文件
 				    URL URLink; //https://blog.csdn.net/NarutoInspire/article/details/72716724
 				    DateTimeFormatter formatters = DateTimeFormatter.ofPattern("yyyyMMdd");
 				    String startdate = ldlastestdbrecordsdate.format(formatters);
-				    String enddate = LocalDate.now().format(formatters);
+				    
+				    LocalTime tdytime = LocalTime.now(); //如果是在交易时间导入数据的话，当天的数据还没有，所以要判断一下
+				    LocalDate endldate = LocalDate.now(); 
+					if( ( tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(18, 0, 0)) <0) ) {
+						 endldate = endldate.minusDays(1);
+					}
+				    
+					if(ldlastestdbrecordsdate.compareTo(endldate) >0) { //说明只有今天的数据没有导入，而今天还没有数据，所以跳出
+						continue;
+					}
+					
+				    String enddate = endldate.format(formatters);
 				    String urlstr = "http://quotes.money.163.com/service/chddata.html?code=" + formatedstockcode + "&start=" + startdate + 
 				    				"&end=" + enddate + "&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP";
 				    String savedfilename = sysconfig.getNetEaseDownloadedFilePath () + stockcode + ".csv";
@@ -5739,6 +5760,57 @@ public class BanKuaiDbOperation
 			
 			cursubbks = null;
 			return subgpccode;
+		}
+		/*
+		 * 
+		 */
+		public String getZdgzInfo(String nodecode, LocalDate date) 
+		{
+			LocalDate monday = date.with(DayOfWeek.MONDAY);
+			LocalDate saterday = date.with(DayOfWeek.SATURDAY);
+			
+			CachedRowSetImpl rspd = null; 
+            String result = "";
+            int recordsnum = 0;
+			try {
+				String sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
+						  " WHERE 股票代码= '" + nodecode + "'" + 
+						  " AND 日期 BETWEEN '" + monday + "' AND '" + saterday + "'" 
+						  ;
+	
+			    	logger.debug(sqlquerystat);
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			        while(rspd.next())  {
+			        	result = result + rspd.getString("原因描述");
+			        	int surviveid = rspd.getInt("id");
+			        	
+			        	recordsnum ++;
+			        	
+			        	if(recordsnum >1) { //过去设计遗留，现在要全部改正，每周只有一个记录
+				        	int deletedid = rspd.getInt("id");
+				        	result = result + rspd.getDate("日期") + rspd.getString("加入移出标志") + rspd.getString("原因描述");
+			        		String sqldelete = "DELETE FROM 操作记录重点关注 WHERE ID = " + deletedid ;
+			        		connectdb.sqlDeleteStatExecute(sqldelete);
+				        }
+			        }
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+			
+			return result.trim();
 		}
 		
 }

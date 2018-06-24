@@ -2,7 +2,7 @@ package com.exchangeinfomanager.database;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.gui.subgui.JiaRuJiHua;
+import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
 import com.sun.rowset.CachedRowSetImpl;

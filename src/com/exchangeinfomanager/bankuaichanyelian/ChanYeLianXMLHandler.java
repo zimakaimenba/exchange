@@ -83,12 +83,12 @@ class ChanYeLianXMLHandler
 			e.printStackTrace();
 		}
 		
-		try {
-			xmlfileinput = new FileInputStream(geguchanyelianxml);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
+//		try {
+//			xmlfileinput = new FileInputStream(geguchanyelianxml);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//		
 //		try {
 //			SAXReader ggcylsaxreader = new SAXReader();
 //			ggcylxmldocument = ggcylsaxreader.read(xmlfileinput );
