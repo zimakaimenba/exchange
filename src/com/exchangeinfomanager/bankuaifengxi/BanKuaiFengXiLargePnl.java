@@ -18,7 +18,6 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTab
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
-import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
@@ -57,8 +56,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
     				
     				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				ArrayList<JiaRuJiHua> fxjg = getZdgzFx (displaynode,datekey,displayperiod);
-    				setUserSelectedColumnMessage(tooltip,fxjg);
+    				setUserSelectedColumnMessage(tooltip);
     				
     				nodekpnl.highLightSpecificBarColumn(datekey);
                 }
@@ -66,29 +64,13 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
         });
 		
 	}
-    /*
-     * 
-     */
-    private  ArrayList<JiaRuJiHua> getZdgzFx( BkChanYeLianTreeNode curdisplayednode, LocalDate localDate,String period) 
-    {
-		ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (curdisplayednode.getMyOwnCode(),localDate,period);
-    	return fxresult;
-	}
 	/*
 	 * 显示用户点击bar column后应该提示的信息
 	 */
-	private void setUserSelectedColumnMessage(String selttooltips,ArrayList<JiaRuJiHua> fxjg) 
+	private void setUserSelectedColumnMessage(String selttooltips) 
 	{
 		String allstring = selttooltips + "\n";
-		if(fxjg !=null) {
-			for(JiaRuJiHua jrjh : fxjg) {
-				LocalDate actiondate = jrjh.getJiaRuDate();
-				String actiontype = jrjh.getGuanZhuType();
-				String shuoming = jrjh.getJiHuaShuoMing();
-				
-				allstring = allstring +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]" + "\n";
-			}
-		}
+		
 		
 		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
 		 tfldselectedmsg.setCaretPosition(0);

@@ -2,12 +2,15 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.awt.Color;   
 import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,10 +45,10 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPa
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
-import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.gui.WeeklyFenXiWizard;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -88,8 +91,8 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	private BanKuaiGeGuTableRenderer renderer;
 	private JMenuItem menuItemAddNews;
 	private JMenuItem menuItemAddGz;
-	private JMenuItem menuItemReDian;
-	private JMenuItem menuItemMakeLongTou;
+//	private JMenuItem menuItemReDian;
+//	private JMenuItem menuItemMakeLongTou;
 	private StockCalendarAndNewDbOperation newsdbopt;
 	private BanKuaiDbOperation bkdbopt;
 	private JPopupMenu popupMenuGeguNews;
@@ -99,13 +102,13 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	{
 		popupMenuGeguNews = new JPopupMenu();
 		menuItemAddNews = new JMenuItem("添加个股新闻");
-		menuItemAddGz = new JMenuItem("开始关注");
-		menuItemReDian = new JMenuItem("标记龙头个股");
-		menuItemMakeLongTou = new JMenuItem("设置股票板块权重");
+		menuItemAddGz = new JMenuItem("个股分析");
+//		menuItemReDian = new JMenuItem("标记龙头个股");
+//		menuItemMakeLongTou = new JMenuItem("设置股票板块权重");
 		popupMenuGeguNews.add(menuItemAddNews);
-		popupMenuGeguNews.add(menuItemMakeLongTou);
+//		popupMenuGeguNews.add(menuItemMakeLongTou);
 		popupMenuGeguNews.add(menuItemAddGz);
-		popupMenuGeguNews.add(menuItemReDian);
+//		popupMenuGeguNews.add(menuItemReDian);
 				
 		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
@@ -170,12 +173,12 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		});
 		
 //		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
-		menuItemMakeLongTou.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				setGeGuWeightInBanKuai ();
-			}
-			
-		});
+//		menuItemMakeLongTou.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent evt) {
+//				setGeGuWeightInBanKuai ();
+//			}
+//			
+//		});
 		
 		menuItemAddGz.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -184,12 +187,12 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 			
 		});
 		
-		menuItemReDian.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				addReDian();
-			}
-			
-		});
+//		menuItemReDian.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent evt) {
+//				addReDian();
+//			}
+//			
+//		});
 		
 		
 		this.addMouseListener(new MouseAdapter() {
@@ -264,7 +267,9 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		InsertedMeeting insetmeeting = newsdbopt.setReDianBanKuaiLongTouGeGuToShangYeXinWen(jiarujihua);
 		
 	}
-	
+	/*
+	 * 
+	 */
 	protected void addGuanZhu() 
 	{
 		int row = this.getSelectedRow();
@@ -273,14 +278,18 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 			return;
 		}
 		
-		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (row);
-		
-		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"加入关注" ); 
-		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "计划细节", JOptionPane.OK_CANCEL_OPTION);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
-		
-		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+		Stock stock = ((BanKuaiGeGuTableModel) this.getModel()).getStock(row);
+
+		LocalDate fxdate = ((BanKuaiGeGuTableModel)this.getModel()).getShowCurDate();
+		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( stock,fxdate);
+    	ggfx.setSize(new Dimension(1400, 800));
+    	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
+    	ggfx.setLocationRelativeTo(null);
+    	if(!ggfx.isVisible() ) 
+    		ggfx.setVisible(true);
+    	ggfx.toFront();
+    	
+    	ggfx = null;
 	
 	}
 	

@@ -128,7 +128,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
         startTimeChooser.setDate(Date.from(meeting.getStart().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
         slackurlField.setText(meeting.getSlackUrl());
         
-        System.out.println(meeting.getNewsownercodes());
+//        System.out.println(meeting.getNewsownercodes());
     }
 
     public T getMeeting() {

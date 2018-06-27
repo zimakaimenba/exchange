@@ -1,24 +1,15 @@
 package com.exchangeinfomanager.database;
 
-import java.awt.Container;
-
-import java.awt.EventQueue;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-import java.io.Reader;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
@@ -52,13 +43,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import javax.swing.tree.TreeNode;
-
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -78,17 +63,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentFactory;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-import org.jfree.chart.ChartFactory;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.time.RegularTimePeriod;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
@@ -98,7 +72,7 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
+import com.exchangeinfomanager.bankuaifengxi.ai.ZhongDianGuanZhu;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -3538,46 +3512,46 @@ public class BanKuaiDbOperation
 	/*
 	 * 获取某个节点在指定周的所有关注分析等结果
 	 */
-	public ArrayList<JiaRuJiHua> getZdgzFxjgForANodeOfGivenPeriod (String nodecode, LocalDate givenwk, String period)
-	{
-		String sqlquerystat = "SELECT *  FROM 操作记录重点关注 \r\n" + 
-				"WHERE 股票代码='" + nodecode + "'" + "\r\n" + 
-				"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + givenwk + "')" 
-				;
-		logger.debug(sqlquerystat);
-		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
-		
-		ArrayList<JiaRuJiHua> jrjh = new ArrayList<JiaRuJiHua> ();
-		try {
-			while(rsfx.next()) {
-				String acttype = rsfx.getString("加入移出标志");
-				JiaRuJiHua guanzhu = new JiaRuJiHua(nodecode,acttype); 
-				
-				java.sql.Date  lastdayofweek = rsfx.getDate("日期");
-				LocalDate actiondate = lastdayofweek.toLocalDate(); 
-				guanzhu.setJiaRuDate (actiondate );
-				String shuoming = rsfx.getString("原因描述");
-				guanzhu.setiHuaShuoMing(shuoming);
-				jrjh.add(guanzhu);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  finally {
-			try {
-				if(rsfx != null)
-					rsfx.close();
-				rsfx.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			rsfx = null;
-		}
-		
-		if(jrjh.size() == 0)
-			jrjh = null;
-		return jrjh;
-	}
+//	public ArrayList<JiaRuJiHua> getZdgzFxjgForANodeOfGivenPeriod (String nodecode, LocalDate givenwk, String period)
+//	{
+//		String sqlquerystat = "SELECT *  FROM 操作记录重点关注 \r\n" + 
+//				"WHERE 股票代码='" + nodecode + "'" + "\r\n" + 
+//				"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + givenwk + "')" 
+//				;
+//		logger.debug(sqlquerystat);
+//		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
+//		
+//		ArrayList<JiaRuJiHua> jrjh = new ArrayList<JiaRuJiHua> ();
+//		try {
+//			while(rsfx.next()) {
+//				String acttype = rsfx.getString("加入移出标志");
+//				JiaRuJiHua guanzhu = new JiaRuJiHua(nodecode,acttype); 
+//				
+//				java.sql.Date  lastdayofweek = rsfx.getDate("日期");
+//				LocalDate actiondate = lastdayofweek.toLocalDate(); 
+//				guanzhu.setJiaRuDate (actiondate );
+//				String shuoming = rsfx.getString("原因描述");
+//				guanzhu.setiHuaShuoMing(shuoming);
+//				jrjh.add(guanzhu);
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}  finally {
+//			try {
+//				if(rsfx != null)
+//					rsfx.close();
+//				rsfx.close();
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//			rsfx = null;
+//		}
+//		
+//		if(jrjh.size() == 0)
+//			jrjh = null;
+//		return jrjh;
+//	}
 	
 	/*
 	 * 同步个股成交量信息，参数为交易所 SH/SZ
@@ -4205,24 +4179,16 @@ public class BanKuaiDbOperation
 		    
 		    return data;
 		}
-		
+		/*
+		 * 
+		 */
 		public String getMingRiJiHua() 
 		{
-			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
-			String sqlquerystat = null;
-			sqlquerystat= 	" SELECT * FROM 操作记录重点关注   \r\n" + 
-							" WHERE 日期 >= date_sub(curdate(),interval 30 day) \r\n" + 
-							"		and 日期 <= curdate()\r\n" + 
-							" AND 加入移出标志 = '明日计划' " 
-							;
-			sqlstatmap.put("mysql", sqlquerystat);
-			
-//			sqlquerystat=  "SELECT * FROM 操作记录重点关注 "
-//					+ " WHERE 日期 <  DATE() AND  日期 > IIF( Weekday( date() ) =  2,date()-3,date()-1)  "
-//					+ "AND 加入移出标志 = '明日计划'"
-//					;
-//			sqlstatmap.put("access", sqlquerystat);
-			
+			String sqlquerystat = 	" SELECT * FROM 操作记录重点关注   \r\n" + 
+									" WHERE 日期 >= date_sub(curdate(),interval 30 day) \r\n" + 
+									"		and 日期 <= curdate()\r\n" + 
+									" AND 加入移出标志 = '明日计划' " 
+									;
 			CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			
 			String pmdresult = "";
@@ -4410,33 +4376,6 @@ public class BanKuaiDbOperation
 		 return true;
 		}
 
-		public int setZdgzRelatedActions(JiaRuJiHua jiarujihua) 
-		{
-			String stockcode = jiarujihua.getStockCode();		
-			String zdgzsign = jiarujihua.getGuanZhuType();
-			String shuoming = "";
-			LocalDate actiondate = jiarujihua.getJiaRuDate();
-			
-			if(jiarujihua.isMingRiJiHua()) {
-				zdgzsign = "明日计划";
-				shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
-			} else
-				shuoming =  jiarujihua.getJiHuaShuoMing();
-			
-			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
-			String sqlinsertstat = "INSERT INTO 操作记录重点关注(股票代码,日期,加入移出标志,原因描述) values ("
-					+ "'" +  stockcode.trim() + "'" + "," 
-					+ "'" + actiondate + "'" + ","
-					+  "'" + zdgzsign + "'" + ","
-					+ "'" + shuoming + "'"  
-					+ ")"
-					;
-			//logger.debug(sqlinsertstat);
-			sqlstatmap.put("mysql", sqlinsertstat);
-			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
-			return autoIncKeyFromApi;
-		}
-		
 		public Stock getTDXBanKuaiForAStock(Stock stockbasicinfo) 
 		{
 			String stockcode = stockbasicinfo.getMyOwnCode();
@@ -5764,26 +5703,28 @@ public class BanKuaiDbOperation
 		/*
 		 * 
 		 */
-		public String getZdgzInfo(String nodecode, LocalDate date) 
+		public String getBanKuaiOrStockZdgzInfo(String nodecode, LocalDate date) 
 		{
 			LocalDate monday = date.with(DayOfWeek.MONDAY);
 			LocalDate saterday = date.with(DayOfWeek.SATURDAY);
 			
 			CachedRowSetImpl rspd = null; 
             String result = "";
-            int recordsnum = 0;
+            
 			try {
 				String sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
 						  " WHERE 股票代码= '" + nodecode + "'" + 
-						  " AND 日期 BETWEEN '" + monday + "' AND '" + saterday + "'" 
+						  " AND 日期  BETWEEN '" + monday + "' AND '" + saterday + "'" +
+						  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' OR 加入移出标志 = '重点关注' OR 加入移出标志 = '热点板块 ' OR  加入移出标志 = '加入重点' )    "
 						  ;
 	
 			    	logger.debug(sqlquerystat);
 			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
 			    	
+			    	int surviveid = 0 ; int recordsnum = 0;
 			        while(rspd.next())  {
 			        	result = result + rspd.getString("原因描述");
-			        	int surviveid = rspd.getInt("id");
+			        	surviveid = rspd.getInt("id");
 			        	
 			        	recordsnum ++;
 			        	
@@ -5793,6 +5734,11 @@ public class BanKuaiDbOperation
 			        		String sqldelete = "DELETE FROM 操作记录重点关注 WHERE ID = " + deletedid ;
 			        		connectdb.sqlDeleteStatExecute(sqldelete);
 				        }
+			        }
+			        
+			        if(recordsnum >1) { 
+			        	String sqlupdate = "UPDATE  操作记录重点关注 SET 原因描述= '" + result + "' WHERE ID = " + surviveid ;
+		        		connectdb.sqlUpdateStatExecute(sqlupdate);
 			        }
 			} catch(java.lang.NullPointerException e){ 
 			    	e.printStackTrace();
@@ -5811,6 +5757,85 @@ public class BanKuaiDbOperation
 			}
 			
 			return result.trim();
+		}
+		/*
+		 * 
+		 */
+		public void updateBanKuaiOrStockZdgzInfo(String nodecode, LocalDate currentdate, String xmlcontents) 
+		{
+			LocalDate monday = currentdate.with(DayOfWeek.MONDAY);
+			LocalDate saterday = currentdate.with(DayOfWeek.SATURDAY);
+			
+			CachedRowSetImpl rspd = null; 
+            int updateid = -1;
+            
+			try {
+				String sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
+						  " WHERE 股票代码= '" + nodecode + "'" + 
+						  " AND 日期  BETWEEN '" + monday + "' AND '" + saterday + "'" +
+						  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' OR 加入移出标志 = '重点关注' OR 加入移出标志 = '热点板块 ' OR  加入移出标志 = '加入重点' )    " 
+						  ;
+	
+			    	logger.debug(sqlquerystat);
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			        while(rspd.next())  {
+			        	updateid =  rspd.getInt("id");
+			        }
+			        
+			        if(-1 == updateid ) { //说明本来数据库里没有相关的XML记录
+			        	String sqlinsert = "INSERT INTO  操作记录重点关注(股票代码,日期,加入移出标志,原因描述) values ("
+		   						+ "'" + nodecode.trim() + "'" + ","
+		   						+ "'" + currentdate + "'"  + ","
+		   						+ "'加入关注'"  + "," 
+		   						+ "'" + xmlcontents + "'" 
+		   						+ ")"
+		   						;
+			        	connectdb.sqlInsertStatExecute(sqlinsert);
+			        } else {
+			        	String sqlupdate = "UPDATE  操作记录重点关注 SET 原因描述= '" + xmlcontents + "',"
+			        						+ "加入移出标志 = '分析结果' "
+			        						+ " WHERE ID = " + updateid ;
+		        		connectdb.sqlUpdateStatExecute(sqlupdate);
+			        }
+			        
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+	
+			
+		}
+		/*
+		 * 
+		 */
+		public int setMingRiJiHua(BkChanYeLianTreeNode nodecode,LocalDate actiondate, String mrjhaction,Double mrjhprice,String shuoming) 
+		{
+			String stockcode = nodecode.getMyOwnCode();		
+			String zdgzsign = "明日计划";
+			String mrjhshuoming = mrjhaction + "(价格" + mrjhprice + ")(" +  shuoming + ")";
+
+			String sqlinsertstat = "INSERT INTO 操作记录重点关注(股票代码,日期,加入移出标志,原因描述) values ("
+					+ "'" +  stockcode.trim() + "'" + "," 
+					+ "'" + actiondate + "'" + ","
+					+  "'" + zdgzsign + "'" + ","
+					+ "'" + mrjhshuoming + "'"  
+					+ ")"
+					;
+			logger.debug(sqlinsertstat);
+			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			return autoIncKeyFromApi;
 		}
 		
 }

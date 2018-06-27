@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,6 +18,8 @@ public class Cache {
     private LabelService labelService;
 	private String nodecode;
 	private boolean datachanged = false;
+	private LocalDate cashestartdate;
+	private LocalDate casheenddate;
 
     public Cache(String nodecode,MeetingService meetingService, LabelService labelService) {
     	this.nodecode = nodecode;

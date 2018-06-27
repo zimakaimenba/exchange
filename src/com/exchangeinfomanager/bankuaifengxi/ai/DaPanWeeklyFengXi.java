@@ -16,6 +16,7 @@ import javax.swing.table.TableCellRenderer;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
+import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
@@ -30,6 +31,8 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.github.cjwizard.WizardPage;
+import com.google.common.base.Strings;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -59,16 +62,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.swing.JTextArea;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-public class DaPanWeeklyFengXi extends JDialog 
+/*
+ * 用于大盘每周分析
+ */
+public class DaPanWeeklyFengXi extends WizardPage 
 {
 	/**
 	 * Create the dialog.
 	 */
-	public DaPanWeeklyFengXi(AllCurrentTdxBKAndStoksTree allbksks2, BanKuaiAndChanYeLian2 bkcyl2, LocalDate selectdate) 
+	public DaPanWeeklyFengXi(String title, String description, LocalDate selectdate) 
 	{
-		this.allbksks = allbksks2;
-		this.bkcyl = bkcyl2;
+		super(title,description);
+		
+		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
+		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		this.selectdate = selectdate;
 		
 		this.sysconfig = SystemConfigration.getInstance();
@@ -76,6 +86,8 @@ public class DaPanWeeklyFengXi extends JDialog
 		zhishulist = new ArrayList<BkChanYeLianTreeNode>();
 		
 		createGui ();
+		datachooser.setLocalDate(selectdate);
+		
 		createEvents ();
 		
 		showZhiShuAnalysisXmlResults ();
@@ -88,6 +100,8 @@ public class DaPanWeeklyFengXi extends JDialog
 	private DaPanWeeklyFengXiXmlHandler dpfxmlhandler; 
 	private LocalDate selectdate;
 	private List<BkChanYeLianTreeNode> zhishulist;
+	private boolean infochanged = false;
+	private ZhongDianGuanZhu zdgzinfo;
 
 	/*
 	 * 
@@ -97,7 +111,7 @@ public class DaPanWeeklyFengXi extends JDialog
 		if(zhishulist == null)
 			return;
 		
-		LocalDate startdate = selectdate.minus(8,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
+		LocalDate startdate = selectdate.minus(10,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		LocalDate enddate = selectdate.with(DayOfWeek.SATURDAY);
 		panel.updatedMultiDate(zhishulist, startdate, enddate, StockGivenPeriodDataItem.WEEK);
 		
@@ -107,48 +121,138 @@ public class DaPanWeeklyFengXi extends JDialog
 	 */
 	private void showZhiShuAnalysisXmlResults() 
 	{
-		this.dpfxmlhandler = new  DaPanWeeklyFengXiXmlHandler(selectdate);
-		ZhongDianGuanZhu zdgzinfo = this.dpfxmlhandler.getZhongDianGuanZhu();
+		this.dpfxmlhandler = new  DaPanWeeklyFengXiXmlHandler("000000",selectdate);
+		zdgzinfo = this.dpfxmlhandler.getZhongDianGuanZhu();
 
 		ArrayList<ZdgzItem> govpolicy = zdgzinfo.getGovpolicy();
 		((PolicyTableModel)tablepolicy.getModel()).refresh(govpolicy);
 		
-		ArrayList<String> dapan = zdgzinfo.getDapan();
-		for(String zhishucode : dapan) {
-			BanKuai zhishu = allbksks.getBanKuai(zhishucode, selectdate, StockGivenPeriodDataItem.WEEK);
-			zhishulist.add(zhishu);
+		ArrayList<ZdgzItem> dapan = zdgzinfo.getDapanZhiShuLists();
+		for(ZdgzItem zhishu : dapan) {
+			String zhishucode = zhishu.getValue();
+			BanKuai zhishubankuai = allbksks.getBanKuai(zhishucode, selectdate, StockGivenPeriodDataItem.WEEK);
+			zhishulist.add(zhishubankuai);
 		}
 		((DaPanTableModel)tablebk.getModel()).refresh(zhishulist,this.selectdate);
 		
-		txaComments.setText(zdgzinfo.getAnalysisComments() );
+		txaComments.setText(zdgzinfo.getDaPanAnalysisComments() );
+	}
+	/*
+	 * 
+	 */
+	public void saveFenXiResult ()
+	{
+		if(infochanged) {
+			zdgzinfo.setDaPanAnalysisComments(txaComments.getText());
+			
+			dpfxmlhandler.saveFenXiXml (zdgzinfo);
+		}
 	}
 	/*
 	 * 
 	 */
 	private void createEvents() 
 	{
+		btnxmlMartrix.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				try {
+					String cmd = "rundll32 url.dll,FileProtocolHandler " + sysconfig.getDaPanFengXiWeeklyXmlMatrixFile ();
+					Process p  = Runtime.getRuntime().exec(cmd);
+					p.waitFor();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+				    e1.printStackTrace();
+				}
+			}
+		});
+		
+		tablepolicy.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				int row = tablepolicy.getSelectedRow();
+				int column = tablepolicy.getSelectedColumn();
+				if(row != -1) {
+					if(column == 1) {
+						((PolicyTableModel)tablepolicy.getModel()).isPolicyZdgzItemSelected(row);
+						infochanged = true;
+					}
+					
+				}
+			}
+		});
+		
+		btnremv.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int row = tablebk.getSelectedRow();
+				if(row != -1) {
+					((DaPanTableModel)tablebk.getModel()).deleteZhiShu(row);
+					infochanged = true;
+				} else 
+					JOptionPane.showMessageDialog(null,"请选择需要删除的指数！");
+			}
+		});
+		
 		btnadd.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				String stockcode = tfldbkcode.getText();
-				if( Pattern.matches("\\d{6}$",stockcode)   ) {
-					addNewNode (stockcode);
-					
+				String zhishucode = tfldbkcode.getText();
+				if( Pattern.matches("\\d{6}$",zhishucode)   ) {
+					BanKuai bknode = (BanKuai)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(zhishucode, BanKuaiAndStockBasic.TDXBK);
+					if(bknode !=null)
+						((DaPanTableModel)tablebk.getModel()).addNewZhiShu(bknode);
+					else {
+						JOptionPane.showMessageDialog(null,"未能找到该指数，可能代码有误，重新输入！");
+						return ;
+					}
 				} else {
 					JOptionPane.showMessageDialog(null,"指数代码有误，重新输入！");
 					return ;
 				}
 			}
-
-
 		});
+		
+		txaComments.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				infochanged = true;
+			}
+		});
+		
+		btnremovepolicy.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				int row = tablepolicy.getSelectedRow();
+				if(row != -1) {
+					((PolicyTableModel)tablepolicy.getModel()).deleteZdgzItem(row);
+					infochanged = true;
+				}
+			}
+		});
+		
+		btnaddchecklists.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				ZdgzItem zdgzitem = new ZdgzItem ("GP" + String.valueOf(zdgzinfo.getGovpolicy().size()+1));
+				int exchangeresult = JOptionPane.showConfirmDialog(null, zdgzitem, "增加CheckList", JOptionPane.OK_CANCEL_OPTION);
+				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+					return;
+				
+				((PolicyTableModel)tablepolicy.getModel()).addNewItem(zdgzitem);
+				infochanged = true;
+			}
+		});
+		
+
 	}
 	/*
 	 * 
 	 */
 	private void addNewNode(String stockcode) 
 	{
-		BanKuai bknode = (BanKuai)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(stockcode, BanKuaiAndStockBasic.TDXBK);
 		
 	}
 
@@ -157,18 +261,21 @@ public class DaPanWeeklyFengXi extends JDialog
 	private JButton btnadd;
 	private JLocalDateChooser datachooser;
 	private JTable tablebk;
-	private JButton okButton;
 	private JTable tablepolicy;
 	private JButton btnNews;
 	private JTextArea txaComments;
 	private BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl panel;
+	private JButton btnaddchecklists;
+	private JButton btnremovepolicy;
+	private JButton btnremv;
+	private JButton btnxmlMartrix;
 	
 	private void createGui ()
 	{
 		setBounds(100, 100, 1292, 721);
-		getContentPane().setLayout(new BorderLayout());
+		setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		add(contentPanel, BorderLayout.CENTER);
 		
 		panel = new BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl();
 		
@@ -188,17 +295,17 @@ public class DaPanWeeklyFengXi extends JDialog
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 1236, Short.MAX_VALUE)
+						.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 499, GroupLayout.PREFERRED_SIZE)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(scrollPane_3, GroupLayout.DEFAULT_SIZE, 525, Short.MAX_VALUE))
-								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addGap(5)
-									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 524, GroupLayout.PREFERRED_SIZE)))
-							.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(scrollPane_3, GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)))
 					.addGap(20))
 		);
@@ -207,26 +314,26 @@ public class DaPanWeeklyFengXi extends JDialog
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 317, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-							.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
-							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 278, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(10)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 170, GroupLayout.PREFERRED_SIZE)
-								.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))))
+					.addGap(16)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)
+						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(scrollPane_3, GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE))
+						.addComponent(scrollPane_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		
 		txaComments = new JTextArea();
+		
 		scrollPane_3.setViewportView(txaComments);
 		
 		
 		PolicyTableModel tablepolicymodel = new PolicyTableModel ();
 		tablepolicy = new JTable(tablepolicymodel) {
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
+			{
 				 
 		        Component comp = super.prepareRenderer(renderer, row, col);
 		        PolicyTableModel tablemodel = (PolicyTableModel)this.getModel(); 
@@ -245,10 +352,8 @@ public class DaPanWeeklyFengXi extends JDialog
 		        	comp.setFont(font);
 		        	
 			        //为不同情况突出显示不同的颜色
-			        if( col == 1 ) 
-				       background = Color.GREEN;
-			        else 
-			        	background = Color.WHITE;
+			         background = Color.GREEN;
+			        
 		        } else {
 		        	background = Color.WHITE;
 		        }
@@ -258,7 +363,23 @@ public class DaPanWeeklyFengXi extends JDialog
 		        
 		        return comp;
 			}
+			
+			public String getToolTipText(MouseEvent e) 
+			{
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+
+                try {
+                    tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {
+//                	e1.printStackTrace();
+                }
+                return tip;
+            } 
 		};
+		
 		scrollPane_2.setViewportView(tablepolicy);
 		
 		DaPanTableModel dpmodel = new DaPanTableModel ();
@@ -298,29 +419,30 @@ public class DaPanWeeklyFengXi extends JDialog
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			add(buttonPane, BorderLayout.SOUTH);
 			
 			tfldbkcode = new JTextField();
 			tfldbkcode.setColumns(10);
-			{
-				okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				getRootPane().setDefaultButton(okButton);
-			}
+//				getRootPane().setDefaultButton(okButton);
+			
 			
 			datachooser = new JLocalDateChooser ();
 			datachooser.setEnabled(false);
 			
-			btnadd = new JButton("\u52A0\u5165\u5206\u6790");
+			btnadd = new JButton("\u52A0\u5165\u6307\u6570");
 			
 			
-			JButton btnremv = new JButton("\u79FB\u51FA\u5206\u6790");
+			btnremv = new JButton("\u5220\u9664\u6307\u6570");
 			
-			JButton btnaddchecklists = new JButton("\u6DFB\u52A0\u653F\u7B56Checklists");
+			btnaddchecklists = new JButton("\u6DFB\u52A0\u653F\u7B56Checklists");
+
+			btnremovepolicy = new JButton("\u5220\u9664");
 			
-			JButton btnremovepolicy = new JButton("\u5220\u9664");
 			
 			btnNews = new JButton("\u5927\u76D8\u76F8\u5173\u65B0\u95FB");
+			
+			btnxmlMartrix = new JButton("\u6253\u5F00Xml Martrix");
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -329,50 +451,37 @@ public class DaPanWeeklyFengXi extends JDialog
 						.addComponent(btnaddchecklists)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnremovepolicy)
-						.addGap(196)
-						.addComponent(btnNews)
-						.addGap(26)
+						.addGap(300)
 						.addComponent(tfldbkcode, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-						.addGap(18)
-						.addComponent(datachooser, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnadd)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnremv, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
-						.addGap(159)
-						.addComponent(okButton)
-						.addGap(44))
+						.addGap(99)
+						.addComponent(btnxmlMartrix)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnNews)
+						.addGap(18)
+						.addComponent(datachooser, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
+						.addGap(27))
 			);
 			gl_buttonPane.setVerticalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
-						.addGap(5)
-						.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
+						.addContainerGap()
+						.addGroup(gl_buttonPane.createParallelGroup(Alignment.TRAILING)
 							.addComponent(datachooser, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
 							.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnaddchecklists, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnremovepolicy, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
 								.addComponent(tfldbkcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
 								.addComponent(btnadd, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
 								.addComponent(btnremv, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnaddchecklists, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnremovepolicy, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnNews, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
-								.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)))
-						.addContainerGap())
+								.addComponent(btnxmlMartrix, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnNews, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)))
+						.addGap(11))
 			);
 			buttonPane.setLayout(gl_buttonPane);
-		}
-	}
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			DaPanWeeklyFengXi dialog = new DaPanWeeklyFengXi(null,null,null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 }
@@ -392,6 +501,16 @@ class DaPanTableModel extends AbstractTableModel
 	{
 		this.dapan = zhishulist;
 		this.showdate = showdate2;
+		this.fireTableDataChanged();
+	}
+	public void addNewZhiShu (BanKuai zhishu)
+	{
+		dapan.add(zhishu);
+		this.fireTableDataChanged();
+	}
+	public void deleteZhiShu (int row)
+	{
+		this.dapan.remove(row);
 		this.fireTableDataChanged();
 	}
 
@@ -459,39 +578,60 @@ class DaPanTableModel extends AbstractTableModel
 	    public String getColumnName(int column){ 
 	    	return jtableTitleStrings[column];
 	    }//设置表格列名 
-		
 
-	    public boolean isCellEditable(int row,int column) {
+	    public boolean isCellEditable(int row,int column)
+	    {
 			return false;
 		}
 }
 
 class PolicyTableModel extends AbstractTableModel 
 {
-	String[] jtableTitleStrings = { "选中", "描述"};
+	String[] jtableTitleStrings = { "ID","选中", "政策面"};
 	private ArrayList<ZdgzItem> govpolicy;
 	
 	PolicyTableModel ()
 	{
 	}
-	
 	public void refresh  (ArrayList<ZdgzItem> govpolicy )
 	{
 		this.govpolicy = govpolicy;
 		this.fireTableDataChanged();
 	}
-	
+	public void addNewItem(ZdgzItem zdgzitem) 
+	{
+		this.govpolicy.add(zdgzitem);
+		this.fireTableDataChanged();
+	}
 	public ZdgzItem getPolicyZdgzItem (int rowIndex) 
 	{
 		return this.govpolicy.get(rowIndex);
 	}
-	 public int getRowCount() 
-	 {
+	public void deleteZdgzItem (int row)
+	{
+		govpolicy.remove(row);
+		this.fireTableDataChanged();
+	}
+	public void isPolicyZdgzItemSelected (int rowIndex)
+	{
+		ZdgzItem zdgzitem = govpolicy.get(rowIndex);
+		
+    	try {
+    		boolean selected = zdgzitem.isSelected();
+    		 zdgzitem.setItemSelected(!selected);
+    	} catch (Exception e) {
+    		zdgzitem.setItemSelected(true);
+    	}
+    	
+    	this.fireTableDataChanged();
+	}
+	public int getRowCount() 
+	{
 		 if(govpolicy != null)
 	        return govpolicy.size();
 		 else
 			 return 0;
-	 }
+	}
 
 	    @Override
 	    public int getColumnCount() 
@@ -503,18 +643,20 @@ class PolicyTableModel extends AbstractTableModel
 	    {
 	    	Object value = "??";
 	    	ZdgzItem zdgzitem = govpolicy.get(rowIndex);
-	    	String selected = zdgzitem.getValue();
-	    	String contents = zdgzitem.getContents();
-	    	
+
 	    	switch (columnIndex) {
-            case 0:
+	    	case 0:
+	    		value = zdgzitem.getId().toUpperCase();
+	    		break;
+            case 1:
             	try {
-    	    		value = Boolean.parseBoolean(selected);
+    	    		value = zdgzitem.isSelected();
     	    	} catch (Exception e) {
     	    		value = new Boolean (false);
     	    	}
                 break;
-            case 1:
+            case 2:
+            	String contents = zdgzitem.getContents();
                 value = contents;
                 break;
 	    	}
@@ -526,9 +668,12 @@ class PolicyTableModel extends AbstractTableModel
 		      Class clazz = String.class;
 		      switch (columnIndex) {
 		      case 0:
+		    	  clazz = String.class;
+		    	  break;
+		      case 1:
 		    	  clazz = Boolean.class;
 		    	  break;
-		        case 1:
+		        case 2:
 		          clazz = String.class;
 		          break;
 		      }
@@ -541,7 +686,11 @@ class PolicyTableModel extends AbstractTableModel
 	    }//设置表格列名 
 		
 
-	    public boolean isCellEditable(int row,int column) {
-			return false;
+	    public boolean isCellEditable(int row,int column) 
+	    {
+			if(1 == column) {
+				return true;
+			} else 
+				return false;
 		}
 }

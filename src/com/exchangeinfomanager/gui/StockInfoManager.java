@@ -41,7 +41,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInf
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
-import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
+import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 
 import javax.swing.GroupLayout;
@@ -141,6 +141,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.Dialog;
 import java.awt.Dimension;
 
 import javax.swing.border.SoftBevelBorder;
@@ -211,12 +212,10 @@ public class StockInfoManager
 		accountschicangconfig = new AccountAndChiCangConfiguration ();
 		acntdbopt = new AccountDbOperation();
 		bkdbopt = new BanKuaiDbOperation ();
-//		bkcyl = new BanKuaiAndChanYeLian2();
-		allbkstock = new AllCurrentTdxBKAndStoksTree ();
-		bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
 		
-//		chklstdialog = new BuyCheckListTreeDialog (this,"","");
-//		panelcklt = chklstdialog.getCheckListPanel();
+		allbkstock = AllCurrentTdxBKAndStoksTree.getInstance();
+		bkcyl = BanKuaiAndChanYeLian2.getInstance();
+		
 		initializeGui();
 		displayAccountAndChiCang ();
 		displayDbInfo();
@@ -238,20 +237,15 @@ public class StockInfoManager
 	private BanKuaiFengXi bkfx ;
 	private SearchDialog searchdialog;
 	private BanKuaiAndChanYeLian2 bkcyl;
-//	private BuyCheckListTreeDialog chklstdialog;
-//	private JPanel panelcklt;
 	private WeeklyExportFileFengXi effx;
 	private AllCurrentTdxBKAndStoksTree allbkstock;
-
-	
-	
-	
+	/*
+	 * 
+	 */
 	protected void refeshSystem() 
 	{
 		sysconfig.reconfigSystemSettings () ;  //新的采用直接重启系统的方法，简单
 	}
-
-	
 	/*
 	 * 把持仓显示在相应的位置
 	 */
@@ -419,13 +413,24 @@ public class StockInfoManager
         		selectdate = LocalDate.parse(date.substring(0, 10).trim());
         	}
         	
-        	DaPanWeeklyFengXi dpfx = new DaPanWeeklyFengXi(allbkstock,bkcyl,selectdate);
-        	
-        	if(!dpfx.isVisible() ) 
-        		dpfx.setVisible(true);
-        	dpfx.toFront();
-
+        	String stockcode = cBxstockcode.getSelectedItem().toString().substring(0, 6);
+        	showWeeklyFenXiWizardDialog (selectdate);
 		}
+	}
+	/*
+	 * 
+	 */
+	private void showWeeklyFenXiWizardDialog(LocalDate selectdate) 
+	{
+		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( nodeshouldbedisplayed,selectdate);
+    	ggfx.setSize(new Dimension(1400, 800));
+    	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
+    	ggfx.setLocationRelativeTo(null);
+    	if(!ggfx.isVisible() ) 
+    		ggfx.setVisible(true);
+    	ggfx.toFront();
+    	
+    	ggfx = null;
 	}
 	/*
 	 * 
@@ -695,7 +700,6 @@ public class StockInfoManager
 				} 
 				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
 				int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加个股新闻", JOptionPane.OK_CANCEL_OPTION);
-				System.out.print(exchangeresult);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 				
@@ -782,10 +786,6 @@ public class StockInfoManager
 				tabbedPane.addTab("\u4E70\u5165\u5FEB\u901F\u8BB0\u5F55", null, kspanel, null);
 			}
 		});
-			
-		
-				
-
 		
 		 Action tableaction = new AbstractAction()  {
 			private static final long serialVersionUID = 1L;
@@ -860,41 +860,6 @@ public class StockInfoManager
 			}
 		});
 		
-		
-		
-		/*
-		 * 移出重点关注
-		 */
-		btnyichuzdgz.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) 
-			{
-				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"移出关注"); 
-				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "计划细节", JOptionPane.OK_CANCEL_OPTION);
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-				
-				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-				
-				if(autoIncKeyFromApi >0) {
-					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
-					//String stockcode = jiarujihua.getStockCode();		
-					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now());
-					String zdgzsign = "移出关注";
-					String shuoming = "";
-					if(jiarujihua.isMingRiJiHua()) {
-						zdgzsign = "明日计划";
-						shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
-					} else
-						shuoming =  jiarujihua.getJiHuaShuoMing();
-					
-					Object[] tableData = new Object[] { addedday, zdgzsign,  shuoming,autoIncKeyFromApi," ","操作记录重点关注"};
-					tableModel.insertRow(0, tableData);
-					tblzhongdiangz.setEditingColumn(3);
-				}
-			}
-		});
-		
 		/*
 		 * 加入重点关注
 		 */
@@ -902,55 +867,8 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				if(nodeshouldbedisplayed.getType() == 6) {
-					JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
-					int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
-					if(exchangeresult == JOptionPane.CANCEL_OPTION)
-						return;
-					
-					 int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-					 jiarujihua.setDbRecordsId(autoIncKeyFromApi);
-					 
-					 updateTableAfterZdgz (jiarujihua);
-					
-				} else if(nodeshouldbedisplayed.getType() == 4) {
-//					bkcyl.startGui ();
-//					bkcyl.findBanKuaiInTree(nodeshouldbedisplayed.getMyOwnCode() );
-					startBanKuaiGuanLiDlg ();
-				}
-				
-				
-//				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
-//				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
-//				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//					return;
-//				
-//				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-				
-//				if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
-//					DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
-//					//String stockcode = jiarujihua.getStockCode();		
-//					String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() );
-//					String zdgzsign = "加入关注";
-//					String shuoming = "";
-//					if(jiarujihua.isMingRiJiHua()) {
-//						zdgzsign = "明日计划";
-//						shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
-//					} else
-//						shuoming =  jiarujihua.getJiHuaShuoMing();
-//					
-//					Object[] tableData = new Object[] { addedday, zdgzsign,  shuoming,autoIncKeyFromApi," ","操作记录重点关注"};
-//					tableModel.insertRow(0, tableData);
-//					tblzhongdiangz.setEditingColumn(3);
-//				}
-
-//				if(updateZdgzActionToGuiDB("加入关注",jiarujihua)) {
-//					btngengxinxx.setEnabled(true);
-//					sclpaneJtable.getVerticalScrollBar().setValue(0);
-//					//添加或移出后应该在股票信息里面加入当天，以防用户2次点击，这里是简单的做法，之间吧按钮禁止，以后有时间在拓展。
-//					btnjiaruzdgz.setEnabled(false);
-//					updateSearchDialog ();
-//				}
+				showWeeklyFenXiWizardDialog (LocalDate.now());
+				preUpdateSearchResultToGui(kspanel.getStockcode());
 			}
 
 			
@@ -1090,18 +1008,7 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				if(nodeshouldbedisplayed.getType() == 6) {
-					JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatStockCode((String)cBxstockcode.getSelectedItem()),"加入关注" ); 
-					int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "加入关注", JOptionPane.OK_CANCEL_OPTION);
-//					if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//						return;
-					
-//					 int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-//					 jiarujihua.setDbRecordsId(autoIncKeyFromApi);
-//					 
-//					 updateTableAfterZdgz (jiarujihua);
-					
-				}
+				showWeeklyFenXiWizardDialog (LocalDate.now());
 				
 				if(kspanel.getJiaoyiGushu()>0 && kspanel.getJiaoyiJiage()>0) {
 					saveKuaiSuJiLuJiaoYi ();
@@ -1710,31 +1617,31 @@ public class StockInfoManager
 		});
 }
 	
-	public void updateTableAfterZdgz(JiaRuJiHua jiarujihua) 
-	{
-		String stockcode = jiarujihua.getStockCode().trim();
-		if(  !stockcode.equals(formatStockCode((String)cBxstockcode.getSelectedItem()))  )
-			return;
-		
-		Integer autoIncKeyFromApi = jiarujihua.getDbRecordsId();
-		
-		if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
-			DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
-			//String stockcode = jiarujihua.getStockCode();		
-			String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() );
-			String zdgzsign = "加入关注";
-			String shuoming = "";
-			if(jiarujihua.isMingRiJiHua()) {
-				zdgzsign = "明日计划";
-				shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
-			} else
-				shuoming =  jiarujihua.getJiHuaShuoMing();
-			
-			Object[] tableData = new Object[] { addedday, zdgzsign,  shuoming,autoIncKeyFromApi," ","操作记录重点关注"};
-			tableModel.insertRow(0, tableData);
-			tblzhongdiangz.setEditingColumn(3);
-		}
-	}
+//	public void updateTableAfterZdgz(JiaRuJiHua jiarujihua) 
+//	{
+//		String stockcode = jiarujihua.getStockCode().trim();
+//		if(  !stockcode.equals(formatStockCode((String)cBxstockcode.getSelectedItem()))  )
+//			return;
+//		
+//		Integer autoIncKeyFromApi = jiarujihua.getDbRecordsId();
+//		
+//		if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
+//			DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
+//			//String stockcode = jiarujihua.getStockCode();		
+//			String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() );
+//			String zdgzsign = "加入关注";
+//			String shuoming = "";
+//			if(jiarujihua.isMingRiJiHua()) {
+//				zdgzsign = "明日计划";
+//				shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
+//			} else
+//				shuoming =  jiarujihua.getJiHuaShuoMing();
+//			
+//			Object[] tableData = new Object[] { addedday, zdgzsign,  shuoming,autoIncKeyFromApi," ","操作记录重点关注"};
+//			tableModel.insertRow(0, tableData);
+//			tblzhongdiangz.setEditingColumn(3);
+//		}
+//	}
 
 
 	public BanKuaiFengXi getBanKuaiFengXi ()
@@ -1745,10 +1652,7 @@ public class StockInfoManager
 	protected void startBanKuaiFengXi() 
 	{
 			if(bkfx == null ) {
-				if(bkcyl == null)
-					bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
-				
-				bkfx = new BanKuaiFengXi (this,allbkstock,bkcyl);
+				bkfx = new BanKuaiFengXi (this);
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 //				bkfx.setVisible(true);
@@ -1775,8 +1679,9 @@ public class StockInfoManager
 			
 			effx.toFront();
 	}
-
-
+		/*
+		 * 
+		 */
 		protected void saveKuaiSuJiLuJiaoYi() 
 		{
 			try {
@@ -1814,12 +1719,13 @@ public class StockInfoManager
 			refreshChiCangAccountPanel ();
 			
 		}
-		
+		/*
+		 * 
+		 */
 		protected void startBanKuaiGuanLiDlg()
 		{
 			if(bkgldialog == null ) {
-				bkcyl = new BanKuaiAndChanYeLian2 (allbkstock);
-				bkgldialog = new BanKuaiGuanLi(this,allbkstock,bkcyl);
+				bkgldialog = new BanKuaiGuanLi(this);
 				bkgldialog.setModal(true);
 
 				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -2204,7 +2110,6 @@ public class StockInfoManager
 			btnSell.setEnabled(true);
 			
 			btnjiaruzdgz.setEnabled(true);
-			btnyichuzdgz.setEnabled(true);
 			btnSongZhuanGu.setEnabled(true);
 			tfdCustom.setEnabled(true);
 			tfdJingZhengDuiShou.setEnabled(true);
@@ -2216,7 +2121,6 @@ public class StockInfoManager
 				btnMai.setEnabled(false);
 				btnSell.setEnabled(false);
 				btnSongZhuanGu.setEnabled(false);
-				btnyichuzdgz.setEnabled(false);
 			}
 		
 	}
@@ -2388,7 +2292,6 @@ public class StockInfoManager
 	private JButton btnMai;
 	private JButton btnSell;
 	private JButton btnjiaruzdgz;
-	private JButton btnyichuzdgz;
 	private JScrollPane sclpaneJtable;
 	private BanKuaiListEditorPane  editorpansuosubk;
 	private JPopupMenu popupMenu;
@@ -3085,12 +2988,8 @@ public class StockInfoManager
 		JButton btnzengjiadingzeng = new JButton("\u589E\u52A0\u5B9A\u589E");
 		btnzengjiadingzeng.setEnabled(false);
 		
-		btnjiaruzdgz = new JButton("\u5173\u6CE8/\u8BA1\u5212");
+		btnjiaruzdgz = new JButton("\u5173\u6CE8/\u5206\u6790/\u8BA1\u5212");
 		btnjiaruzdgz.setEnabled(false);
-		
-		btnyichuzdgz = new JButton("\u79FB\u51FA");
-		
-		btnyichuzdgz.setEnabled(false);
 		
 		btnSongZhuanGu = new JButton("\u9001\u8F6C\u80A1");
 		btnSongZhuanGu.setToolTipText("\u9001\u914D\u80A1\u8BBE\u7F6E");
@@ -3107,7 +3006,6 @@ public class StockInfoManager
 		panel_1.add(btnMai, "cell 0 0,alignx left,aligny center");
 		panel_1.add(btnSell, "cell 1 0,alignx left,aligny center");
 		panel_1.add(btnjiaruzdgz, "cell 2 0,alignx left,growy");
-		panel_1.add(btnyichuzdgz, "cell 3 0,alignx left,growy");
 		panel_1.add(btnSongZhuanGu, "cell 4 0,alignx left,aligny center");
 		panel_1.add(btnNewButton_2, "cell 5 0,alignx left,aligny center");
 		panel_1.add(btnzengjiadingzeng, "cell 6 0,alignx left,aligny center");

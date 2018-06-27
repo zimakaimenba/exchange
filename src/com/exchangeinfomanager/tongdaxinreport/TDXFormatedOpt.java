@@ -27,7 +27,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
+import com.exchangeinfomanager.bankuaifengxi.ai.ZdgzItem;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -252,26 +252,25 @@ public class TDXFormatedOpt {
 				return null;
 			}
 		 
-		String sqlquerystat = "SELECT * FROM 操作记录重点关注 WHERE 日期 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) +50 ) DAY )  ";
+		String sqlquerystat = "SELECT * FROM 操作记录重点关注 WHERE 日期 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) +80 ) DAY )  ";
 //			logger.debug(sqlquerystat);
 		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-		if(rs == null)
-		{   
+		if(rs == null)	{   
 				logger.debug("读取数据库失败");
 				return null;
 		}
 		
-		ArrayListMultimap<String ,JiaRuJiHua> treemap = ArrayListMultimap.create();
+		ArrayListMultimap<String ,ZdgzItem> treemap = ArrayListMultimap.create();
 		try {
 			while(rs.next()) {
 				String formatedstockcode = rs.getString("股票代码");
-				String zdgztype = rs.getString("加入移出标志");
+//				String zdgztype = rs.getString("加入移出标志");
 				java.util.Date date = rs.getDate("日期");
-				String addreason = rs.getString("原因描述");
 				
-				JiaRuJiHua jiarujihua = new JiaRuJiHua ( formatedstockcode,zdgztype);
-				jiarujihua.setJiaRuDate(Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
-				jiarujihua.setiHuaShuoMing (addreason);
+				//借用ZdgzItem
+				ZdgzItem jiarujihua = new ZdgzItem ( formatedstockcode);
+//				jiarujihua.setValue(zdgztype);
+				jiarujihua.setContents(date.toString());
 				
 				treemap.put(formatedstockcode, jiarujihua);
 			}
@@ -291,26 +290,22 @@ public class TDXFormatedOpt {
 		//遍历treemap
 		Set<String> stockcodeset = treemap.keySet();
 		for(String stockcode : stockcodeset) {
-			if(stockcode.equals("002717"))
-				logger.debug("002717");
-			List<JiaRuJiHua> keyvalues = treemap.get(stockcode);
-			Collections.sort(keyvalues, new Comparator<JiaRuJiHua>() { //先排序
+			List<ZdgzItem> keyvalues = treemap.get(stockcode);
+			Collections.sort(keyvalues, new Comparator<ZdgzItem>() { //先排序
 				@Override
-				public int compare(JiaRuJiHua o1, JiaRuJiHua o2) {
-					if (o1.getJiaRuDate() == null || o2.getJiaRuDate() == null)
+				public int compare(ZdgzItem o1, ZdgzItem o2) {
+					if (o1.getContents() == null || o2.getContents() == null)
 				        return 0;
-					return o2.getJiaRuDate().compareTo(o1.getJiaRuDate());
+					return o2.getContents().compareTo(o1.getContents());
 				}
 			});
 			
 			String result = "";
 //			LocalDate latestdate = keyvalues.get(0).getJiaRuDate();
-			for(JiaRuJiHua sigle : keyvalues) {
-				LocalDate curdate = sigle.getJiaRuDate();
-				String curtype = sigle.getGuanZhuType();
-				String jrreason = sigle.getJiHuaShuoMing ();
+			for(ZdgzItem sigle : keyvalues) {
+				String curdate = sigle.getContents();
 				
-				result = result + curdate + curtype +  jrreason;
+				result = result + curdate ;
 			}
 			
 			if(!Strings.isNullOrEmpty(result)  ) {

@@ -3,18 +3,15 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.swing.table.AbstractTableModel;
-
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 
 class NewsTableModel extends AbstractTableModel 
 {
 	String[] jtableTitleStrings = { "新闻标题", "录入日期"};
 	private ArrayList<InsertedMeeting> cylnewslists;
-	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian.class);
+	private static Logger logger = Logger.getLogger(NewsTableModel.class);
 	
 	NewsTableModel (){
 	}

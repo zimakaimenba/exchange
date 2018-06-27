@@ -184,6 +184,12 @@ public class DaPan extends BkChanYeLianTreeNode
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public Double getChenJiaoErZhanBi(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 	
 

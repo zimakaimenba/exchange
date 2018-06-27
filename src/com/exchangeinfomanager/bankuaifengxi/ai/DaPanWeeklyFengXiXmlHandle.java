@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -21,33 +22,24 @@ import com.exchangeinfomanager.asinglestockinfo.SubBanKuai;
 import com.exchangeinfomanager.asinglestockinfo.SubGuPiaoChi;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.google.common.base.Strings;
 
-class DaPanWeeklyFengXiXmlHandler 
+class DaPanWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
 {
-
-	private SystemConfigration sysconfig;
-	private BanKuaiDbOperation bkopt;
-	private Document xmldoc;
-	private Element xmlroot;
-	private String dpfxweeklyxmlmatrixfile;
-	private SAXReader reader;
-	private ZhongDianGuanZhu zdgzinfo;
-
-	public DaPanWeeklyFengXiXmlHandler(LocalDate date) 
+	
+	
+	
+	public DaPanWeeklyFengXiXmlHandler(String nodecode ,LocalDate date) 
 	{
-		this.sysconfig = SystemConfigration.getInstance();
-		this.bkopt = new BanKuaiDbOperation ();
-		this.zdgzinfo = new ZhongDianGuanZhu ();
-		
-		reader = new SAXReader();
-		
-		String text = this.getStockBanKuaiZdgz(date);
-		if( text != null) {
-			this.dpfxweeklyxmlmatrixfile = sysconfig.getDaPanFengXiWeeklyXmlMatrixFile ();
+		super (nodecode,date);
+
+		String text = this.getStockBanKuaiZdgz(curnodecode,date); //本系统大盘的代码
+		if( !hasxmlindatabase) {
+			super.fxweeklyxmlmatrixfile = sysconfig.getDaPanFengXiWeeklyXmlMatrixFile ();
 			
 			FileInputStream xmlfileinput = null;
 			try {
-				xmlfileinput = new FileInputStream(dpfxweeklyxmlmatrixfile);
+				xmlfileinput = new FileInputStream(super.fxweeklyxmlmatrixfile);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -61,119 +53,100 @@ class DaPanWeeklyFengXiXmlHandler
 				e.printStackTrace();
 				return;
 			}
-		}
-		
-	}
-	/*
-	 * 
-	 */
-	public ZhongDianGuanZhu getZhongDianGuanZhu ()
-	{
-		return this.zdgzinfo;
-	}
-	/*
-	 * 
-	 */
-	private String getStockBanKuaiZdgz(LocalDate date) 
-	{
-		String zdgzinfo = bkopt.getZdgzInfo ("999999",date);
-		
-		if(zdgzinfo.isEmpty())
-			return null;
-		
-		try {
-//			xmldoc = reader.read(zdgzinfo);
-			xmldoc = DocumentHelper.parseText(zdgzinfo);
-			xmlroot = xmldoc.getRootElement();
-			
+		} else
 			createZdgzFromXml (xmlroot,null);
-		} catch (DocumentException e) {
-			e.printStackTrace(); //说明不是XML，是原来遗留的,但对999999应该没有，以前没有过
-			return zdgzinfo;
-		}
-		
-		return null;
 	}
 	/*
-	 * 
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFengXiXmlHandler#createZdgzFromXml(org.dom4j.Element, java.lang.String)
 	 */
-	private void createZdgzFromXml(Element xmlroot,String extracomments) 
+	protected void createZdgzFromXml(Element xmlroot,String extracomments) 
 	{
 		if(zdgzinfo == null)
 			zdgzinfo = new ZhongDianGuanZhu ();
 		
-		Element eleply = xmlroot.element("GovPolicy");
-		Iterator it = eleply.elementIterator();
-		ArrayList<ZdgzItem> govpolicy = new ArrayList<ZdgzItem> ();
-	   	while (it.hasNext() ) 
-	   	{
-	   		Element element = (Element) it.next();
-	   		
-	   		String id = element.attributeValue("id").trim();
-	   		ZdgzItem zdgzitem = new ZdgzItem(id);
-	   		
-	   		try {
-		   		String selectedcolor =  element.attributeValue("selectedcolor").trim();
-		   		zdgzitem.setSelectedcolor(selectedcolor);
-	   		} catch (java.lang.NullPointerException e) {
-	   			
-	   		}
-	   		
-	   		try {
-		   		String vaule = element.attributeValue("value").trim();
-		   		zdgzitem.setValue(vaule);
-		   	} catch (java.lang.NullPointerException e) {
-	   			
-	   		}
-	   		
-	   		try {
-		   		String text = element.getText();
-		   		zdgzitem.setContents(text);
-		   	} catch (java.lang.NullPointerException e) {
-	   			
-	   		}
-	   		
-	   		govpolicy.add(zdgzitem);
-	   	}
-	   	
-	   	zdgzinfo.setGovpolicy(govpolicy);
-	   	
-	   	Element eledapan = xmlroot.element("DaPan");
-		Iterator itdapan = eledapan.elementIterator();
-		ArrayList<String> dapan = new ArrayList<String> ();
-	   	while (itdapan.hasNext() ) 
-	   	{
-	   		Element element = (Element) itdapan.next();
-	   		
-	   		String id = element.attributeValue("id").trim();
-
-	   		try {
-		   		String vaule = element.attributeValue("value").trim();
-		   		dapan.add(vaule);
-			} catch (java.lang.NullPointerException e) {
-	   			
-	   		}
-	   	}
-	   	
-	   	zdgzinfo.setDapan(dapan);
-	   	
+		getGovPolicy (xmlroot);
+		getDaPanZhiShu (xmlroot);
+		getAnalysisComments (xmlroot,extracomments);
+		
+	}
+	private void getAnalysisComments(Element xmlroot, String extracomments) 
+	{
 		Element elecomments = xmlroot.element("AnalysisComments");
 		Iterator itcomments = elecomments.elementIterator();
 	   	while (itcomments.hasNext() ) 
 	   	{
 	   		Element element = (Element) itcomments.next();
 	   		
-	   		String id = element.attributeValue("id").trim();
+	   		String id = element.attributeValue("id").trim().toUpperCase();
 
 		   	try {	
 		   		String text = element.getText();
 		   		if(extracomments != null)
 		   			text = text + extracomments;
-		   		zdgzinfo.setAnalysisComments (text);
+		   		zdgzinfo.setDaPanAnalysisComments (text);
 			} catch (java.lang.NullPointerException e) {
 	   			
 	   		}
 	   	}
+		
+	}
+	/*
+	 * 
+	 */
+	private void getDaPanZhiShu (Element xmlroot)
+	{
+		Element eledapan = xmlroot.element("DaPan");
+	   	ArrayList<ZdgzItem> dapan = getXmlElementInfo (eledapan);
+	   	zdgzinfo.setDapanZhiShuLists(dapan);
+	}
+	/*
+	 * 
+	 */
+	private void getGovPolicy (Element xmlroot)
+	{
+		Element eleply = xmlroot.element("GovPolicy");
+		ArrayList<ZdgzItem> govpolicy = getXmlElementInfo (eleply);
+	   	zdgzinfo.setGovpolicy(govpolicy);
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFengXiXmlHandler#setupXmlContentsFromGui(org.dom4j.Element)
+	 */
+	void setupXmlContentsFromGui(Element rootele) 
+	{
+		setGovPolicy (rootele);
+        setDaPanZhiShu(rootele);
+        setAnalysisComments(rootele);
+	}
+	/*
+	 * 
+	 */
+	private void setGovPolicy (Element xmlroot) 
+	{
+		Element elegvply = xmlroot.addElement("GovPolicy");
+        elegvply.addAttribute("value", "政策面");
+        ArrayList<ZdgzItem> govpolicy = zdgzinfo.getGovpolicy();
+        createFenXiXmlItems(elegvply, govpolicy);
+	}
+	/*
+	 * 
+	 */
+	private void setDaPanZhiShu (Element rootele) 
+	{
+		 	Element eledapan = rootele.addElement("DaPan");
+	        eledapan.addAttribute("value", "指数分析");
+	        ArrayList<ZdgzItem> zhishulist = zdgzinfo.getDapanZhiShuLists();
+	        createFenXiXmlItems(eledapan,zhishulist);
+	}
+	private void setAnalysisComments (Element rootele) 
+	{
+		Element elecomments = rootele.addElement("AnalysisComments");
+        elecomments.addAttribute("value", "本周总结");
+        Element eleitem = elecomments.addElement("item");
+        eleitem.addAttribute("id", "ac01");
+        String comments = zdgzinfo.getDaPanAnalysisComments();
+        eleitem.setText(comments);
 	}
 
 }

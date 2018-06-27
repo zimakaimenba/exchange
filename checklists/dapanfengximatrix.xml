@@ -10,12 +10,14 @@
 		<item id="gp03">证监会停发IPO</item>
 		<item id="gp06">央行银监会支持金融创新</item>
 		<item id="gp14" >政府放松去杠杆</item>
-		<item id="gp05" value="TRUE" selectedcolor="GREEN">汇金减持国家队手里的股票</item>
+		<item id="gp05" selectedcolor="GREEN">汇金减持国家队手里的股票</item>
 		<item id="gp12" selectedcolor="GREEN">证监会扩大或变相IPO规模。</item>
 		<item id="gp07" selectedcolor="GREEN">央行银监会打击限制金融创新</item>
 		<item id="gp08" selectedcolor="GREEN">证监会口气严厉，大量IPO</item>
 		<item id="gp09" selectedcolor="GREEN">汇金在香港减持4大行</item>
 		<item id="gp13" selectedcolor="GREEN">政府继续去杠杆</item>
+		<item id="gp15" >沪港通/深港通北向资金的走势，流入/留出</item>
+		<item id="gp16" >沪港通/深港通北向资金主要买入板块</item>
 </GovPolicy>
 
 <DaPan value="大盘分析">
@@ -24,8 +26,20 @@
 	<item id="dp03" value="880529">次新股</item>
 </DaPan>
 
+<ReDianBanKuai>
+</ReDianBanKuai>
+
+<ReDianGeGu>
+</ReDianGeGu>
+
+<RuoShiBanKuai>
+</RuoShiBanKuai>
+
+<RuoShiGeGu>
+</RuoShiGeGu>
+
 <AnalysisComments value="本周总结">
-	<item id="ac01" value="">创业板指数还可以，其他不行</item>
+	<item id="ac01" ></item>
 </AnalysisComments>
 
 </Checklists>

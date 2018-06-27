@@ -1525,7 +1525,7 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
 		String dalei = (String)gzdalei.get(rowindex);
 		ArrayList<BkChanYeLianTreeNode> daleidetail = gzbkmap.get(dalei) ;
 		for(BkChanYeLianTreeNode tmpbkcyltn : daleidetail)
-			if(tmpbkcyltn.getNodetreerelated().shouldBeRemovedWhenSaveXml())
+			if(tmpbkcyltn.getNodeTreerelated().shouldBeRemovedWhenSaveXml())
 				hasnode = true;
 		
 		return hasnode;

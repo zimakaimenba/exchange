@@ -35,7 +35,6 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.StockCalendar.View;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.toedter.calendar.JDateChooser;
@@ -86,7 +85,7 @@ public class ChanYeLianNewsPanel extends JDialog
 	private ChanYeLianGeGuNews panelallnews;
 	private JButton addnewstogegu;
 	private JPanel centerPanel;
-	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian.class);
+	private static Logger logger = Logger.getLogger(ChanYeLianNewsPanel.class);
 	
 
 	private void createEvents() 

@@ -657,6 +657,10 @@ public class SystemConfigration
 		{
 			return this.systeminstalledpath + "checklists/dapanfengximatrix.xml";
 		}
+		public String getGeGuFengXiWeeklyXmlMatrixFile() 
+		{
+			return this.systeminstalledpath + "checklists/gegufengximatrix.xml";
+		}
 
 }
 

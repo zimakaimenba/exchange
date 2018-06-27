@@ -101,7 +101,6 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombin
 import com.exchangeinfomanager.bankuaifengxi.Gephi.GephiFilesGenerator;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
-import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -187,11 +186,11 @@ public class BanKuaiFengXi extends JDialog {
 	 * Create the dialog.
 	 * @param bkcyl2 
 	 */
-	public BanKuaiFengXi(StockInfoManager stockmanager1, AllCurrentTdxBKAndStoksTree allbksks2, BanKuaiAndChanYeLian2 bkcyl2)
+	public BanKuaiFengXi(StockInfoManager stockmanager1)
 	{
 		this.stockmanager = stockmanager1;
-		this.allbksks = allbksks2;
-		this.bkcyl = bkcyl2;
+		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
+		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 		
@@ -778,18 +777,9 @@ public class BanKuaiFengXi extends JDialog {
 	/*
 	 * 显示用户点击bar column后应该提示的信息
 	 */
-	private void setUserSelectedColumnMessage(String selttooltips,ArrayList<JiaRuJiHua> fxjg) 
+	private void setUserSelectedColumnMessage(String selttooltips) 
 	{
 		String allstring = selttooltips + "\n";
-		if(fxjg !=null) {
-			for(JiaRuJiHua jrjh : fxjg) {
-				LocalDate actiondate = jrjh.getJiaRuDate();
-				String actiontype = jrjh.getGuanZhuType();
-				String shuoming = jrjh.getJiHuaShuoMing();
-				
-				allstring = allstring +  "[" + actiondate.toString() + actiontype +  " " + shuoming + "]" + "\n";
-			}
-		}
 		
 		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
 //		 JScrollBar verticalScrollBar = scrollPaneuserselctmsg.getVerticalScrollBar();
@@ -836,14 +826,6 @@ public class BanKuaiFengXi extends JDialog {
 		panelbkcje.hightLightFxValues(null,null, null, cjemaxwk,null) ;
 		panelbkwkzhanbi.hightLightFxValues(null,dpmaxwk, null, null,null) ;
 		panelggbkcjezhanbi.hightLightFxValues(null,bkmaxwk, null, null,null) ;
-	}
-    /*
-     * 
-     */
-    private  ArrayList<JiaRuJiHua> getZdgzFx( BkChanYeLianTreeNode curdisplayednode, LocalDate localDate,String period) 
-    {
-    	ArrayList<JiaRuJiHua> fxresult = bkdbopt.getZdgzFxjgForANodeOfGivenPeriod (curdisplayednode.getMyOwnCode(),localDate,period);
-    	return fxresult;
 	}
 	/*
 	 * 
@@ -951,8 +933,7 @@ public class BanKuaiFengXi extends JDialog {
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
     				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				ArrayList<JiaRuJiHua> fxjg = getZdgzFx (bkcur,CommonUtility.formateStringToDate(datekey.toString()),globeperiod);
-    				setUserSelectedColumnMessage(tooltip,fxjg);
+    				setUserSelectedColumnMessage(tooltip);
     				
     				if(bkcur.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股， 
     					LocalDate selectdate = CommonUtility.formateStringToDate(datekey.toString());
@@ -985,8 +966,7 @@ public class BanKuaiFengXi extends JDialog {
 //    				refreshGeGuKXianZouShiOfFiftyDays (selectstock,datekey);
     				
     				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				ArrayList<JiaRuJiHua> fxjg = getZdgzFx (selectstock,CommonUtility.formateStringToDate(datekey.toString()),globeperiod);
-    				setUserSelectedColumnMessage(tooltip,fxjg);
+    				setUserSelectedColumnMessage(tooltip);
                 }
             }
         });
@@ -1030,8 +1010,7 @@ public class BanKuaiFengXi extends JDialog {
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
     				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				ArrayList<JiaRuJiHua> fxjg = getZdgzFx (bkcur,CommonUtility.formateStringToDate(datekey.toString()),globeperiod);
-    				setUserSelectedColumnMessage(tooltip,fxjg);
+    				setUserSelectedColumnMessage(tooltip);
 				}
 			}
 		});
@@ -1056,8 +1035,7 @@ public class BanKuaiFengXi extends JDialog {
 //    				refreshGeGuKXianZouShiOfFiftyDays (selectstock,datekey);
     				
     				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				ArrayList<JiaRuJiHua> fxjg = getZdgzFx (selectstock,CommonUtility.formateStringToDate(datekey.toString()),globeperiod);
-    				setUserSelectedColumnMessage(tooltip,fxjg);
+    				setUserSelectedColumnMessage(tooltip);
                 }
 			}
 		});
@@ -1744,7 +1722,7 @@ public class BanKuaiFengXi extends JDialog {
 		Double liutongshizhi = nodexdata.getSpecificTimeLiuTongShiZhi(dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), 0);
 		Double zongshizhi = nodexdata.getSpecificTimeZongShiZhi(dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), 0);
 		result = result + "流通市值:" + liutongshizhi/100000000 + "亿" + "总市值:" + zongshizhi/100000000 + "\n";
-		setUserSelectedColumnMessage (result, null);
+
 		result = null;
 	}
 	/*

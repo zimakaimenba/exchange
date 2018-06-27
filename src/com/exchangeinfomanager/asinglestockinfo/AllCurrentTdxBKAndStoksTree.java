@@ -11,11 +11,12 @@ import org.apache.log4j.Logger;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class AllCurrentTdxBKAndStoksTree 
 {
-	public AllCurrentTdxBKAndStoksTree ()
+	private AllCurrentTdxBKAndStoksTree ()
 	{
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
@@ -23,6 +24,18 @@ public class AllCurrentTdxBKAndStoksTree
 		initializeAllStocksTree ();
 		setupDaPan ();
 	}
+	
+	 // µ¥ÀýÊµÏÖ  
+	 public static AllCurrentTdxBKAndStoksTree getInstance ()
+	 {  
+	        return Singtonle.instance;  
+	 }
+	 
+	 private static class Singtonle 
+	 {  
+	        private static AllCurrentTdxBKAndStoksTree instance =  new AllCurrentTdxBKAndStoksTree ();  
+	 }
+	
 	
 	private static Logger logger = Logger.getLogger(AllCurrentTdxBKAndStoksTree.class);
 	

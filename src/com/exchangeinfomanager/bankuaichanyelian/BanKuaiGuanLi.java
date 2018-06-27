@@ -90,13 +90,13 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(StockInfoManager stockInfoManager2, AllCurrentTdxBKAndStoksTree bkstk1,BanKuaiAndChanYeLian2 bkcyl1) 
+	public BanKuaiGuanLi(StockInfoManager stockInfoManager2 ) 
 	{
 		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockInfoManager = stockInfoManager2;
-		this.allbkstks = bkstk1;
-		this.bkcyl = bkcyl1;
+		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
+		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		
 		initializeGui ();
 		createEvents ();

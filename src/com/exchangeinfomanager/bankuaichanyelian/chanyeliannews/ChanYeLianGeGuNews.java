@@ -1,7 +1,7 @@
 package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import com.exchangeinfomanager.StockCalendar.View;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +37,7 @@ public class ChanYeLianGeGuNews extends View
 	private MeetingService meetingService;
 	private String title;
 	private String nodecode;
-	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian.class);
+	private static Logger logger = Logger.getLogger(ChanYeLianGeGuNews.class);
 
 	public ChanYeLianGeGuNews(MeetingService meetingService, Cache cache,String title)
 	{

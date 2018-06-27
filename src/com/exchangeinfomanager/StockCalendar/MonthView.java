@@ -2,12 +2,14 @@ package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.exchangeinfomanager.commonlib.WrapLayout;
+import com.exchangeinfomanager.gui.WeeklyFenXiWizard;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -33,10 +35,12 @@ public class MonthView extends View
         super(meetingService, cache);
 
         cache.addCacheListener(this);
-        this.onMeetingChange(cache);
+        this.onMeetingChange(cache); //获取本月的信息
         this.initMonthView();
     }
-
+    /*
+     * 
+     */
     private void initMonthView() 
     {
         super.setBackground(ColorScheme.BACKGROUND);
@@ -53,7 +57,7 @@ public class MonthView extends View
     private JPanel getWeekdaysPanel() {
 
         JPanel weekdays = JPanelFactory.createFixedSizePanel(new GridLayout(1, 7));
-        weekdays.add(new JLabel("星期一"));
+        weekdays.add(new JLabel("MonDay"));
         weekdays.add(new JLabel("Tuesday"));
         weekdays.add(new JLabel("Wednesday"));
         weekdays.add(new JLabel("Thursday"));
@@ -115,6 +119,10 @@ public class MonthView extends View
     }
 
     @Override
+    /*
+     * (non-Javadoc)
+     * @see com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener#onMeetingChange(com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache)
+     */
     public void onMeetingChange(Cache cache) 
     {
         Collection<InsertedMeeting> meetings = cache.produceMeetings();
@@ -199,16 +207,41 @@ public class MonthView extends View
                                                   .stream()
                                                   .filter(m -> m.getID() == Integer.valueOf(label.getName()))
                                                   .findFirst();
-
+            
             if (meeting.isPresent()) {
                 JLabel source = (JLabel) e.getSource();
+                String title = source.getText();
                 LocalDate date = LocalDate.parse(source.getParent().getParent().getName());
-                getModifyDialog().setMeeting(meeting.get());
-                getModifyDialog().setVisible(true);
+                
+                InsertedMeeting selectedmeeting = meeting.get();
+                String owner = selectedmeeting.getNewsownercodes();
+                if( owner.contains("000000") && title.contains("总结") ) { //说明是大盘一周总结，内容是XML，用DaPanWeeklyFengXi显示内容
+                	showWeeklyFenXiWizardDialog  ("000000",date);
+                } else {
+                	getModifyDialog().setMeeting(meeting.get());
+                    getModifyDialog().setVisible(true);
+                }
+                
             }
         }
 
     }
+    /*
+	 * 
+	 */
+	private void showWeeklyFenXiWizardDialog(String nodeshouldbedisplayed, LocalDate selectdate) 
+	{
+		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( nodeshouldbedisplayed,BanKuaiAndStockBasic.DAPAN,selectdate);
+    	ggfx.setSize(new Dimension(1400, 800));
+    	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
+    	ggfx.setLocationRelativeTo(null);
+    	if(!ggfx.isVisible() ) 
+    		ggfx.setVisible(true);
+    	ggfx.toFront();
+    	
+    	ggfx = null;
+	}
+    
 
 
 //	@Override

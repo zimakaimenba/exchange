@@ -126,7 +126,11 @@ public class Meeting {
         int result = start.hashCode();
         result = 31 * result + title.hashCode();
         result = 31 * result + description.hashCode();
-        result = 31 * result + brief.hashCode();
+        try {
+        	result = 31 * result + brief.hashCode();
+        } catch(java.lang.NullPointerException e ) {
+        	
+        }
         return result;
     }
 

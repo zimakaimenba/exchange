@@ -2,7 +2,6 @@ package com.exchangeinfomanager.database;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
 import com.sun.rowset.CachedRowSetImpl;
@@ -78,7 +77,40 @@ public final class StockCalendarAndNewDbOperation {
 	            newmeeting.setCurrentownercode(bankuaiid);
 	            meetings.add(newmeeting);
    		 	}
-   		 	
+   		 
+   		 CachedRowSetImpl rspd = null;
+   		 if("ALL".equals(bankuaiid.toUpperCase()) ) { //如果是ALL，还要从操作记录重点关注中读取每周总结报告
+   			 	sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
+					  " WHERE 股票代码= '000000'" + 
+					  " AND 日期  >= DATE(NOW()) - INTERVAL 360 DAY " +
+					  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' OR 加入移出标志 = '重点关注' )" 
+					  ;
+
+		    	logger.debug(sqlquerystat);
+		    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+		    	
+		        while(rspd.next())  {
+		        	int meetingID = rspd.getInt("id");
+			        java.sql.Date startdate = rspd.getDate("日期"); 
+		            LocalDate start = startdate.toLocalDate();
+//		            String title = result.getString("新闻标题");
+		            String description = rspd.getString("原因描述");
+		            if(Strings.isNullOrEmpty(description))
+		            	description = "描述";
+//		            String location = result.getString("关键词");
+//		            String slackurl = result.getString("SLACK链接");
+//		            String ownercodes = result.getString("关联板块");
+		            
+//		            InsertedMeeting newmeeting = new InsertedMeeting(
+//			                new Meeting("一周总结", start,  description, location, new HashSet<InsertedMeeting.Label>(),slackurl,ownercodes), meetingID);
+		            InsertedMeeting newmeeting = new InsertedMeeting(
+			                new Meeting("一周总结", start,  description, null, new HashSet<InsertedMeeting.Label>(),null,"000000"), meetingID);
+		            newmeeting.setCurrentownercode(bankuaiid);
+		            meetings.add(newmeeting);
+		        }
+
+   		 }
+   			 
    		 for (InsertedMeeting m : meetings) {
          	int meetingid = m.getID();
          	sqlquerystat = "SELECT label.* FROM label INNER JOIN meetingLabel ON label.LABEL_ID = meetingLabel.LABEL_ID " +
@@ -102,6 +134,9 @@ public final class StockCalendarAndNewDbOperation {
                  InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
                  m.getLabels().add(label);
              }
+             
+             set.close();
+             set = null;
          }
 
 		}catch(java.lang.NullPointerException e){ 
@@ -115,6 +150,7 @@ public final class StockCalendarAndNewDbOperation {
 				try {
 					result.close();
 					result = null;
+					
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -389,127 +425,129 @@ public final class StockCalendarAndNewDbOperation {
         return updatedLabel;
     }
     
-    /*
-	 * 原来热点板块和龙头个股都是保存在重点关注表里面，后面功能增加，这2个需要保存到商业新闻里面，前端界面暂时不变，后台改用这个函数
-	 */
-	public InsertedMeeting setReDianBanKuaiLongTouGeGuToShangYeXinWen (JiaRuJiHua jiarujihua)
-	{
-		String newsownercode = jiarujihua.getStockCode();		
-		String zdgzsign = jiarujihua.getGuanZhuType().trim();
-		String description = jiarujihua.getJiHuaShuoMing();
-		LocalDate newdate = jiarujihua.getJiaRuDate();
-		
-		
-    	String title = zdgzsign +  newsownercode; //热点板块880623
-    	String keywords = zdgzsign + " " + newsownercode + " "; //热点板块
-    	
-    	InsertedMeeting insertedMeeting = null;
- 
-    	//获取板块个股name
-    	CachedRowSetImpl rs_gn = null;
-		try  { 
-			String sqlquerystat = null	;
-			if(zdgzsign.contains("板块" )) {
-				sqlquerystat = "Select 板块名称 AS '名称' FROM  通达信板块列表 WHERE 板块ID = '" + newsownercode + "'"
-								;
-			} else if(zdgzsign.contains("个股") ) {
-				sqlquerystat = "Select 股票名称 AS '名称' FROM  A股  WHERE 股票代码 = '" + newsownercode + "'"
-								;
-			}
-			
-			rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
-			
-	        while(rs_gn.next()) {
-	        	String bkname = rs_gn.getString(1);
-	        	title = title +  bkname ; //热点板块880623黑龙江
-	        	keywords = keywords + " " + bkname + " ";
-	        } 
-	        
-	    }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    	
-	    }catch(Exception e) {
-	    	e.printStackTrace();
-	    } finally {
-	    	if(rs_gn != null) {
-	    		try {
-					rs_gn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	    		rs_gn = null;
-	    	}
-	    }
-		//获取相应的label
-		int bkgglableid = 0;
-		InsertedMeeting.Label label = null;
-		try  { 
-			HashMap<String,String> labelmap = new HashMap<String,String> (); 
-			String sqlquerystat = "Select * FROM  label" 
-								;
-			rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
-			
-	        while(rs_gn.next()) {
-	        	String labelname = rs_gn.getString("NAME");
-	        	if(labelname.equals(zdgzsign)) {
-	        		int labelid = rs_gn.getInt("LABEL_ID");
-	        		bkgglableid = labelid;
-	        		Color colour = Color.decode(rs_gn.getString("COLOUR"));
-	                boolean active = rs_gn.getBoolean("ACTIVE");
-	                label = new InsertedMeeting.Label(new Meeting.Label(labelname, colour, active), labelid);
-	                
-	        		break;
-	        	}
-	        } 
-	    }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    	
-	    }catch(Exception e) {
-	    	e.printStackTrace();
-	    } finally {
-	    	if(rs_gn != null) {
-	    		try {
-					rs_gn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	    		rs_gn = null;
-	    	}
-	    }
-		
-		
-			
-		try {
-			String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,录入日期,关联板块,具体描述) values ("
-						+ "'" + title + "'" + ","
-						+ "'" + keywords + "'" + ","
-						+ "'" +  newdate + "'" + ","
-						+ "'" +  newsownercode +  "|'" + ","
-						+ "'" +  description + "'"
-						+ ")"
-						;
-				logger.debug(sqlinsertstat);
-				int meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
-				if(bkgglableid != 0) {
-		                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID) VALUES( " + meetingID + "," + bkgglableid + ")";
-		   			 	
-		                connectdb.sqlInsertStatExecute(sqlstatementlabel);
-				 }
-				 
-				 Meeting meeting = new Meeting(title,newdate,
-						 description, keywords, new HashSet<>(),"SlackURL",newsownercode);
-		         insertedMeeting = new InsertedMeeting(meeting, meetingID);
-		         insertedMeeting.getLabels().add(label);
-				
-			}catch(java.lang.NullPointerException e){ 
-		    	e.printStackTrace();
-		    } catch(Exception e){
-		    	e.printStackTrace();
-		    }  finally {
-		    	
-		    }
-		return insertedMeeting;
-	}
+//    /*
+//	 * 原来热点板块和龙头个股都是保存在重点关注表里面，后面功能增加，这2个需要保存到商业新闻里面，前端界面暂时不变，后台改用这个函数
+//	 */
+//	public InsertedMeeting setReDianBanKuaiLongTouGeGuToShangYeXinWen (JiaRuJiHua jiarujihua)
+//	{
+//		String newsownercode = jiarujihua.getStockCode();		
+//		String zdgzsign = jiarujihua.getGuanZhuType().trim();
+//		String description = jiarujihua.getJiHuaShuoMing();
+//		LocalDate newdate = jiarujihua.getJiaRuDate();
+//		
+//		
+//    	String title = zdgzsign +  newsownercode; //热点板块880623
+//    	String keywords = zdgzsign + " " + newsownercode + " "; //热点板块
+//    	
+//    	InsertedMeeting insertedMeeting = null;
+// 
+//    	//获取板块个股name
+//    	CachedRowSetImpl rs_gn = null;
+//		try  { 
+//			String sqlquerystat = null	;
+//			if(zdgzsign.contains("板块" )) {
+//				sqlquerystat = "Select 板块名称 AS '名称' FROM  通达信板块列表 WHERE 板块ID = '" + newsownercode + "'"
+//								;
+//			} else if(zdgzsign.contains("个股") ) {
+//				sqlquerystat = "Select 股票名称 AS '名称' FROM  A股  WHERE 股票代码 = '" + newsownercode + "'"
+//								;
+//			}
+//			
+//			rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
+//			
+//	        while(rs_gn.next()) {
+//	        	String bkname = rs_gn.getString(1);
+//	        	title = title +  bkname ; //热点板块880623黑龙江
+//	        	keywords = keywords + " " + bkname + " ";
+//	        } 
+//	        
+//	    }catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    	
+//	    }catch(Exception e) {
+//	    	e.printStackTrace();
+//	    } finally {
+//	    	if(rs_gn != null) {
+//	    		try {
+//					rs_gn.close();
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//	    		rs_gn = null;
+//	    	}
+//	    }
+//		//获取相应的label
+//		int bkgglableid = 0;
+//		InsertedMeeting.Label label = null;
+//		try  { 
+//			HashMap<String,String> labelmap = new HashMap<String,String> (); 
+//			String sqlquerystat = "Select * FROM  label" 
+//								;
+//			rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
+//			
+//	        while(rs_gn.next()) {
+//	        	String labelname = rs_gn.getString("NAME");
+//	        	if(labelname.equals(zdgzsign)) {
+//	        		int labelid = rs_gn.getInt("LABEL_ID");
+//	        		bkgglableid = labelid;
+//	        		Color colour = Color.decode(rs_gn.getString("COLOUR"));
+//	                boolean active = rs_gn.getBoolean("ACTIVE");
+//	                label = new InsertedMeeting.Label(new Meeting.Label(labelname, colour, active), labelid);
+//	                
+//	        		break;
+//	        	}
+//	        } 
+//	    }catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    	
+//	    }catch(Exception e) {
+//	    	e.printStackTrace();
+//	    } finally {
+//	    	if(rs_gn != null) {
+//	    		try {
+//					rs_gn.close();
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//	    		rs_gn = null;
+//	    	}
+//	    }
+//		
+//		
+//			
+//		try {
+//			String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,录入日期,关联板块,具体描述) values ("
+//						+ "'" + title + "'" + ","
+//						+ "'" + keywords + "'" + ","
+//						+ "'" +  newdate + "'" + ","
+//						+ "'" +  newsownercode +  "|'" + ","
+//						+ "'" +  description + "'"
+//						+ ")"
+//						;
+//				logger.debug(sqlinsertstat);
+//				int meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
+//				if(bkgglableid != 0) {
+//		                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID) VALUES( " + meetingID + "," + bkgglableid + ")";
+//		   			 	
+//		                connectdb.sqlInsertStatExecute(sqlstatementlabel);
+//				 }
+//				 
+//				 Meeting meeting = new Meeting(title,newdate,
+//						 description, keywords, new HashSet<>(),"SlackURL",newsownercode);
+//		         insertedMeeting = new InsertedMeeting(meeting, meetingID);
+//		         insertedMeeting.getLabels().add(label);
+//				
+//			}catch(java.lang.NullPointerException e){ 
+//		    	e.printStackTrace();
+//		    } catch(Exception e){
+//		    	e.printStackTrace();
+//		    }  finally {
+//		    	
+//		    }
+//		return insertedMeeting;
+//	}
+    
+    
 }
