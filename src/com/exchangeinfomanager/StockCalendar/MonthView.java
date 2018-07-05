@@ -8,8 +8,8 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
+import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.WrapLayout;
-import com.exchangeinfomanager.gui.WeeklyFenXiWizard;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

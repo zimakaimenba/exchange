@@ -73,8 +73,6 @@ import com.google.common.collect.Sets.SetView;
 import com.google.common.io.LineProcessor;
 import com.toedter.calendar.JDateChooser;
 
-
-
 public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends JPanel 
 {
 	public BanKuaiAndChanYeLianGUI2 (T bkcyl1, StockInfoManager stockInfoManager1,AllCurrentTdxBKAndStoksTree bkstk1)
@@ -104,7 +102,6 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 		cyltree = this.bkcyl.getBkChanYeLianTree();
 		treeScrollPane.setViewportView(cyltree);
 	}
-	
 	/*
      * 和选择板块相关的子产业链，个股 
      */
@@ -282,10 +279,12 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 		nodebkset = null;
 		allbkstset = null;
 	}
-	
+	/*
+	 * 
+	 */
 	public boolean saveCylXmlAndZdgzXml () //GEN-FIRST:event_saveButtonActionPerformed 
 	{
-		if(btnSaveAll.isEnabled() ) {
+		if(this.cyltree.shouldSaveTreeToXml() ) {
 			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)cyltree.getModel().getRoot();
 			if(!bkcyl.saveChanYeLianTreeToXML(treeroot) ) {
 				JOptionPane.showMessageDialog(null, "保存产业链XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
@@ -859,15 +858,18 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panelzdgz, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 893, Short.MAX_VALUE)
-						.addComponent(panelcyltree, Alignment.LEADING, 0, 0, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(1)
+							.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 893, Short.MAX_VALUE)
+							.addGap(1))
+						.addComponent(panelcyltree, 0, 0, Short.MAX_VALUE))
 					.addGap(4))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(0)
-					.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 296, GroupLayout.PREFERRED_SIZE)
+					.addGap(5)
+					.addComponent(panelzdgz, GroupLayout.PREFERRED_SIZE, 447, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panelcyltree, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
@@ -1315,6 +1317,8 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 			}
 		});
 	}
+
+	
 }
 
 

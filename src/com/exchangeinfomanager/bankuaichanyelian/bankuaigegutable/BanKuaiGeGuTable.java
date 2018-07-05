@@ -45,10 +45,10 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPa
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
+import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.WeeklyFenXiWizard;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -256,7 +256,10 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 			return;
 		}
 		
-		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (row);
+		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+//		 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
+		
+		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (model_row);
 		
 		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"龙头个股" ); 
 		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "龙头个股", JOptionPane.OK_CANCEL_OPTION);
@@ -278,7 +281,8 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 			return;
 		}
 		
-		Stock stock = ((BanKuaiGeGuTableModel) this.getModel()).getStock(row);
+		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+		Stock stock = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
 
 		LocalDate fxdate = ((BanKuaiGeGuTableModel)this.getModel()).getShowCurDate();
 		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( stock,fxdate);
@@ -301,7 +305,8 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 			return;
 		}
 		
-		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (row);
+		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (model_row);
 		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
 		cylnews.setVisible(true);
 //		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
@@ -311,9 +316,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 //			return;
 		
 //		bkdbopt.newsdbopt(stockcode, cylnews.getInputedNews());
-		
 	}
-	
 	/*
      * 设置该板块个股的权重
      */

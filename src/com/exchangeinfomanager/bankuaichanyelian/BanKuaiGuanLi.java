@@ -226,6 +226,7 @@ public class BanKuaiGuanLi extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
+				bkcylpnl.saveCylXmlAndZdgzXml();
 				dispose ();
 			}
 		});

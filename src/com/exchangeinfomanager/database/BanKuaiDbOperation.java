@@ -3966,104 +3966,54 @@ public class BanKuaiDbOperation
 		
 		 return zdybkmap;
 	}
-		
-	//private Object[][] zdgzmrmcykRecords = null;
+		/*
+		 * 获取板块或个股的买入卖出关注送配股等信息
+		 */
 		public BkChanYeLianTreeNode getZdgzMrmcZdgzYingKuiFromDB (BkChanYeLianTreeNode stockbasicinfo)
 		{
-			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
-			String sqlquerystat = null;
-			sqlquerystat = getZdgzMrmcYingKuiSQLForMysql (stockbasicinfo);
-			sqlstatmap.put("mysql", sqlquerystat);
+			String sqlquerystat;
+			if(stockbasicinfo.getType() == BanKuaiAndStockBasic.TDXGG || stockbasicinfo.getType() == BanKuaiAndStockBasic.BKGEGU) 
+				sqlquerystat = getZdgzMrmcYingKuiSQLForStock (stockbasicinfo);
+			else //板块和个股是不一样的，板块没有买入卖出信息
+				sqlquerystat = getZdgzMrmcYingKuiSQLForBanKuai (stockbasicinfo);
 			
-//			sqlquerystat = getZdgzMrmcYingKuiSQLForAccess (stockbasicinfo);
-//			sqlstatmap.put("access", sqlquerystat);
-	     
 			 CachedRowSetImpl rs = null;
-			 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
+			 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			 stockbasicinfo.getNodeJiBenMian().setZdgzmrmcykRecords( setZdgzMrmcZdgzYingKuiRecords (rs) );
 			 
 			 try {
 					rs.close();
 					rs = null;
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 			 } 
 			
 			 return stockbasicinfo;
 		}
-		
-		private String getZdgzMrmcYingKuiSQLForAccess(Stock stockbasicinfo) 
+		/*
+		 * 获取板块的相关信息
+		 */
+		private String getZdgzMrmcYingKuiSQLForBanKuai(BkChanYeLianTreeNode stockbasicinfo) 
 		{
 			String stockcode = stockbasicinfo.getUserObject().toString();
-			String sqlquerystat1= "SELECT ggyk.日期, "
-								+ "IIF(ggyk.盈亏金额>0,'盈利','亏损') AS 盈亏情况,"
-								+ " ggyk.原因描述,"
-								+ " ggyk.ID,"
-								+ " ggyk.操作账号,"
-								+  "'个股盈亏'" 
-								+ " FROM  A股个股盈亏 ggyk "
-								+ " WHERE ggyk.股票代码 =" + "'" + stockcode + "'" 
-								
-								+ " UNION ALL " 
-								;
-			//logger.debug(sqlquerystat1);
-	       String sqlquerystat2="SELECT czjl.日期, " +		""
-								+ "IIF( czjl.买卖金额=0.0,'送转股',IIF(czjl.挂单 = true,IIF(czjl.买入卖出标志, '挂单买入', '挂单卖出'),IIF(czjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
-								+ " czjl.原因描述,"
-								+ " czjl.ID,"
-								+ " czjl.买卖账号,"
-								+ "'操作记录买卖'" 
-								+ " FROM 操作记录买卖 czjl "
-								+ "	WHERE czjl.股票代码 =" + "'" + stockcode + "'"
-								
-								+ " UNION ALL " 
-								;
-	       //logger.debug(sqlquerystat2);
-	      String sqlquerystat3="SELECT rqczjl.日期,"
-								+ "IIF( rqczjl.买卖金额=0.0,'送转股',IIF(rqczjl.挂单 = true,IIF(rqczjl.买入卖出标志, '挂单买入', '挂单卖出'),IIF(rqczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
-								+ "rqczjl.原因描述,"
-								+ "rqczjl.ID,"
-								+ "rqczjl.买卖账号,"
-								+ "'操作记录融券买卖'"
-								+ " FROM 操作记录融券买卖 rqczjl"
-								+ "	WHERE rqczjl.股票代码 =" + "'" + stockcode + "'"
-								
-								+ " UNION  ALL "
-								;
-	      //logger.debug(sqlquerystat3);
-		 String sqlquerystat4="SELECT rzczjl.日期,"
-								+ "IIF( rzczjl.买卖金额=0.0,'送转股',IIF(rzczjl.挂单 = true,IIF(rzczjl.买入卖出标志, '挂单买入', '挂单卖出'),IIF(rzczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,"
-								+ "rzczjl.原因描述,"
-								+ "rzczjl.ID,"
-								+ "rzczjl.买卖账号,"
-								+ "'操作记录融资买卖'"
-								+ " FROM 操作记录融资买卖 rzczjl"
-								+ " WHERE rzczjl.股票代码 =" + "'" + stockcode + "'"
-								
-								+ " UNION ALL "
-								;
-		 //logger.debug(sqlquerystat4);
-	     String sqlquerystat5="SELECT zdgz.日期,"
+			String sqlquerystat = "SELECT zdgz.日期,"
 								+ "zdgz.加入移出标志,"
 								+ "zdgz.原因描述,"
 								+ "zdgz.ID,"
 								+ "null,"
 								+ "'操作记录重点关注'"
 								+ " FROM 操作记录重点关注  zdgz"
-								+ " WHERE zdgz.股票代码 =" + "'" + stockcode + "'"
+								+ " WHERE (zdgz.股票代码 =" + "'" + stockcode + "'"
+								+ " OR zdgz.股票代码 ='000000')"
 								+ " ORDER BY 1 DESC,5,3 " //desc
 								;
-	     //logger.debug(sqlquerystat5);
-		
-	     String sqlquerystat = sqlquerystat1 + sqlquerystat2 + sqlquerystat3 + sqlquerystat4 + sqlquerystat5;
-	     //logger.debug(sqlquerystat);
-	     
+	     	     
 	     return sqlquerystat;
-			
 		}
-
-		private String getZdgzMrmcYingKuiSQLForMysql(BkChanYeLianTreeNode stockbasicinfo) 
+		/*
+		 * 获取个股的相关信息
+		 */
+		private String getZdgzMrmcYingKuiSQLForStock(BkChanYeLianTreeNode stockbasicinfo) 
 		{
 			String stockcode = stockbasicinfo.getMyOwnCode();
 			String sqlquerystat1= "SELECT ggyk.日期, "
@@ -5706,7 +5656,7 @@ public class BanKuaiDbOperation
 		public String getBanKuaiOrStockZdgzInfo(String nodecode, LocalDate date) 
 		{
 			LocalDate monday = date.with(DayOfWeek.MONDAY);
-			LocalDate saterday = date.with(DayOfWeek.SATURDAY);
+			LocalDate saterday = date.with(DayOfWeek.SUNDAY);
 			
 			CachedRowSetImpl rspd = null; 
             String result = "";
@@ -5715,7 +5665,8 @@ public class BanKuaiDbOperation
 				String sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
 						  " WHERE 股票代码= '" + nodecode + "'" + 
 						  " AND 日期  BETWEEN '" + monday + "' AND '" + saterday + "'" +
-						  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' OR 加入移出标志 = '重点关注' OR 加入移出标志 = '热点板块 ' OR  加入移出标志 = '加入重点' )    "
+						  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' "
+						  + " OR 加入移出标志 = '重点关注' OR 加入移出标志 = '热点板块 ' OR  加入移出标志 = '加入重点' OR  加入移出标志 = '移出关注')    "
 						  ;
 	
 			    	logger.debug(sqlquerystat);
@@ -5756,7 +5707,10 @@ public class BanKuaiDbOperation
 						}
 			}
 			
-			return result.trim();
+			if(Strings.isNullOrEmpty(result))
+				return null;
+			else
+				return result.trim();
 		}
 		/*
 		 * 
@@ -5764,7 +5718,7 @@ public class BanKuaiDbOperation
 		public void updateBanKuaiOrStockZdgzInfo(String nodecode, LocalDate currentdate, String xmlcontents) 
 		{
 			LocalDate monday = currentdate.with(DayOfWeek.MONDAY);
-			LocalDate saterday = currentdate.with(DayOfWeek.SATURDAY);
+			LocalDate saterday = currentdate.with(DayOfWeek.SUNDAY);
 			
 			CachedRowSetImpl rspd = null; 
             int updateid = -1;
@@ -5773,7 +5727,8 @@ public class BanKuaiDbOperation
 				String sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
 						  " WHERE 股票代码= '" + nodecode + "'" + 
 						  " AND 日期  BETWEEN '" + monday + "' AND '" + saterday + "'" +
-						  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' OR 加入移出标志 = '重点关注' OR 加入移出标志 = '热点板块 ' OR  加入移出标志 = '加入重点' )    " 
+						  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' "
+						  + " OR 加入移出标志 = '重点关注' OR 加入移出标志 = '热点板块 ' OR  加入移出标志 = '加入重点' OR  加入移出标志 = '移出关注')    " 
 						  ;
 	
 			    	logger.debug(sqlquerystat);
@@ -5787,7 +5742,7 @@ public class BanKuaiDbOperation
 			        	String sqlinsert = "INSERT INTO  操作记录重点关注(股票代码,日期,加入移出标志,原因描述) values ("
 		   						+ "'" + nodecode.trim() + "'" + ","
 		   						+ "'" + currentdate + "'"  + ","
-		   						+ "'加入关注'"  + "," 
+		   						+ "'分析结果'"  + ","
 		   						+ "'" + xmlcontents + "'" 
 		   						+ ")"
 		   						;

@@ -1,12 +1,15 @@
 package com.exchangeinfomanager.bankuaifengxi.ai;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -18,12 +21,18 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.TableCellListener;
@@ -49,68 +58,40 @@ import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import com.toedter.calendar.JDateChooser;
 
-public class GeGuWeeklyFengXi extends WizardPage
+public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 {
 
 	private static Logger logger = Logger.getLogger(GeGuWeeklyFengXi.class);
-	private final JPanel contentPanel = new JPanel();
-	private JTable tableFinancial;
-	private JTable tablegudong;
-	private JTable tablejishu;
-	private JTable tableTiCai;
-	private JTable tableGuPiaoChi;
-	private JTextArea txaAnalysisComments;
-	private JTextArea txaExaComments;
-	private GeGuWeeklyFengXiXmlHandler ggxmlhandler;
-	private boolean infochanged = false;
-	private ZhongDianGuanZhu zdgz;
-	protected JTable curworktable;
-	private JButton btnaddcklst;
-	private JButton btnRmvChklt;
-	private JCheckBox jbxMingRiJIhua;
-	private JTextField tfdJihuaJiage;
-	private JComboBox cbxJihuaLeixing;
-	private BanKuaiDbOperation bkopt;
-	private BkChanYeLianTreeNode nodecode;
-	private LocalDate actiondate;
-	private JTextField tfldmrjhshuoming;
-	private JCheckBox chcbxkaishi;
-	private JCheckBox chcbxjieshu;
-	private JCheckBox chcbxmx;
-	private JCheckBox chcbxfantan;
-	private JCheckBox chckbxmacd;
-	private JButton btnxmlMatrix;
 	private SystemConfigration sysconf;
+//	private boolean xmlmartixshouldsave;
 
 
 	/**
 	 * Create the dialog.
 	 */
-	public GeGuWeeklyFengXi(String title, String description,BkChanYeLianTreeNode displaynode, LocalDate date) 
+	public GeGuWeeklyFengXi(String title, String description,BkChanYeLianTreeNode displaynode2, LocalDate selectdate2,WeeklyFengXiXmlHandler fxmlhandler) 
 	{
-		super (title,description);
+		super(title,description,displaynode2,selectdate2,fxmlhandler);
 		
 		//确保只有个股才用这个类，板块和大盘不可以用。
 		if(displaynode.getType() == BanKuaiAndStockBasic.DAPAN || displaynode.getType() == BanKuaiAndStockBasic.TDXBK)
 			return;
 		
-		this.bkopt = new BanKuaiDbOperation ();
-		this.nodecode = displaynode;
-		this.actiondate = date;
-		sysconf = SystemConfigration.getInstance();
-		
 		initializGui ();
 		createEvents ();
 		
-		showStockAnalysisXmlResults (displaynode.getMyOwnCode(),date);
+		dateChooser.setLocalDate(selectdate2);
+		updateMingRiJiHuaActions ();
+		
+		showStockAnalysisXmlResults (displaynode.getMyOwnCode(),selectdate2);
 	}
 	
 	
 	private void showStockAnalysisXmlResults(String stockcode, LocalDate date) 
 	{
-		ggxmlhandler = new GeGuWeeklyFengXiXmlHandler (stockcode,date);
-		zdgz = ggxmlhandler.getZhongDianGuanZhu();
+		zdgz = super.fxmlhandler.getZhongDianGuanZhu();
 		
 		((GeGuCheckListsTableModel)tableGuPiaoChi.getModel()).refresh(zdgz.getGeGuGuPiaoChi());
 		((GeGuCheckListsTableModel)tableTiCai.getModel()).refresh(zdgz.getGeGuTiCha());
@@ -119,29 +100,40 @@ public class GeGuWeeklyFengXi extends WizardPage
 		((GeGuCheckListsTableModel)tablegudong.getModel()).refresh(zdgz.getGeGuGuDong());
 		
 		txaAnalysisComments.setText(zdgz.getGeGuAnalysisComments());
-		
 	}
-	
+	@Override
+	public String getWeeklyFenXiComments() 
+	{
+		return txaAnalysisComments.getText();
+	}
 	/*
 	 * 
 	 */
-	public void saveFenXiResult ()
+	private void updateMingRiJiHuaActions ()
 	{
-		if(infochanged ) {
-			zdgz.setDaPanAnalysisComments(txaAnalysisComments.getText());
-			
-			if(jbxMingRiJIhua.isSelected() && !Strings.isNullOrEmpty( tfdJihuaJiage.getText() ) ) { //明日计划
-//				zdgz.setMrjhenabled(true);
-//				zdgz.setMrjhaction( cbxJihuaLeixing.getSelectedItem().toString());
-//				zdgz.setMrjhprice(Double.parseDouble(tfdJihuaJiage.getText()));
-				
-		        bkopt.setMingRiJiHua(nodecode,actiondate.plus(1,ChronoUnit.DAYS),
-		        		cbxJihuaLeixing.getSelectedItem().toString(),Double.parseDouble(tfdJihuaJiage.getText()), tfldmrjhshuoming.getText() );
-			}
-			
-			ggxmlhandler.saveFenXiXml (zdgz);
-		}
+		LocalDate sun = LocalDate.now().with(DayOfWeek.SUNDAY);
+		long weeks = ChronoUnit.WEEKS.between(LocalDate.now().with(DayOfWeek.SUNDAY), dateChooser.getLocalDate());
+		if(weeks == 0) { //不是当前周，应该不可以设置明日计划，毕竟过去已经过去。
+			jbxMingRiJIhua.setEnabled(true);
+		} else
+			jbxMingRiJIhua.setEnabled(false);
 	}
+	/*
+	 * 
+	 */
+//	public void saveMingRiJiHuaFenXiResult ()
+//	{
+//			if(jbxMingRiJIhua.isSelected() && !Strings.isNullOrEmpty( tfdJihuaJiage.getText() ) ) { //明日计划
+////				zdgz.setMrjhenabled(true);
+////				zdgz.setMrjhaction( cbxJihuaLeixing.getSelectedItem().toString());
+////				zdgz.setMrjhprice(Double.parseDouble(tfdJihuaJiage.getText()));
+//				
+//		        bkopt.setMingRiJiHua(nodecode,actiondate.plus(1,ChronoUnit.DAYS),
+//		        		cbxJihuaLeixing.getSelectedItem().toString(),Double.parseDouble(tfdJihuaJiage.getText()), tfldmrjhshuoming.getText() );
+//			}
+//			
+//		
+//	}
 	
 	/* (non-Javadoc)
      * @see com.github.cjwizard.WizardPage#updateSettings(com.github.cjwizard.WizardSettings)
@@ -149,7 +141,7 @@ public class GeGuWeeklyFengXi extends WizardPage
     @Override
     public void updateSettings(WizardSettings settings) {
 //             super.updateSettings(settings);
-       System.out.println("test");
+//       System.out.println("test");
        // This is called when the user clicks next, so we could do
        // some longer-running processing here if we wanted to, and
        // pop up progress bars, etc.  Once this method returns, the
@@ -176,12 +168,12 @@ public class GeGuWeeklyFengXi extends WizardPage
 			}
 		});
 		
-		txaAnalysisComments.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-				infochanged = true;
-			}
-		});
+//		txaAnalysisComments.addKeyListener(new KeyAdapter() {
+//			@Override
+//			public void keyTyped(KeyEvent arg0) {
+//				infochanged = true;
+//			}
+//		});
 		
 		jbxMingRiJIhua.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) 
@@ -191,7 +183,8 @@ public class GeGuWeeklyFengXi extends WizardPage
 					//tfdShuoming.setEnabled(true);
 					cbxJihuaLeixing.setEnabled(true);
 					tfldmrjhshuoming.setEnabled(true);
-					infochanged = true;
+					PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", "");
+			        pcs.firePropertyChange(evt2);
 				} else {
 					tfdJihuaJiage.setEnabled(false);
 					//tfdShuoming.setEnabled(true);
@@ -212,6 +205,35 @@ public class GeGuWeeklyFengXi extends WizardPage
 			            logger.debug("Old   : " + tcl.getOldValue());
 			            logger.debug("New   : " + tcl.getNewValue());
 			            
+			            if(tcl.getColumn() == 1) {
+			            	 Boolean old = (Boolean) tcl.getOldValue();
+				             Boolean newvalue = (Boolean) tcl.getNewValue();
+				            if(old != newvalue) {
+				            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+						        pcs.firePropertyChange(evt);
+				            }
+			            } else if(tcl.getColumn() == 3) {
+			            	String old = (String) tcl.getOldValue();
+				            String newvalue = (String) tcl.getNewValue();
+				            if(!old.equals(newvalue)) {
+				            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+						        pcs.firePropertyChange(evt);
+				            }
+			            } if(tcl.getColumn() == 2) {
+			            	String old = (String) tcl.getOldValue();
+				            String newvalue = (String) tcl.getNewValue();
+				            if(!old.equals(newvalue)) {
+				            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+						        pcs.firePropertyChange(evt);
+						        
+						        PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLMATRIX_PROPERTY, "", "new");
+						        pcs.firePropertyChange(evt2);
+				            }
+			            	
+			            }
+			            
+			            	
+			            
 //			            Object[] tabledata= new Object [6] ;
 //			            tabledata[0] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),0);
 //			            tabledata[1] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),1);
@@ -222,22 +244,30 @@ public class GeGuWeeklyFengXi extends WizardPage
 //			            
 //			            setTableNewInfoToDB (tabledata);
 			            
+			            
 			        }
 			    };
 
 			TableCellListener tcl = new TableCellListener(tableGuPiaoChi, tableaction);
-			    
-			tableGuPiaoChi.addPropertyChangeListener(new PropertyChangeListener() {
-				public void propertyChange(PropertyChangeEvent e) {
-					if ("tableCellEditor".equals(e.getPropertyName()))
-					{
-						if (tableGuPiaoChi.isEditing())
-							logger.debug("edit");
-						else
-							logger.debug("unedit");
-					}
-				}
-			});
+			TableCellListener tcl2 = new TableCellListener(tableFinancial, tableaction);
+			TableCellListener tcl3 = new TableCellListener(tablegudong, tableaction);
+			TableCellListener tcl4 = new TableCellListener(tablejishu, tableaction);
+			TableCellListener tcl5 = new TableCellListener(tableTiCai, tableaction);
+			
+//			tableGuPiaoChi.addPropertyChangeListener(new PropertyChangeListener() {
+//				public void propertyChange(PropertyChangeEvent e) {
+//					if ("tableCellEditor".equals(e.getPropertyName()))
+//					{
+//						if (tableGuPiaoChi.isEditing())
+//							logger.debug("edit");
+//						else {
+//							logger.debug("unedit");
+//							int row = tableGuPiaoChi.getSelectedRow();
+//							
+//						}
+//					}
+//				}
+//			});
 			
 			btnRmvChklt.addMouseListener(new MouseAdapter() {
 				@Override
@@ -245,7 +275,20 @@ public class GeGuWeeklyFengXi extends WizardPage
 					int row = curworktable.getSelectedRow();
 					if(row != -1) {
 						((GeGuCheckListsTableModel)curworktable.getModel()).deleteZdgzItem(row);
-						infochanged = true;
+						
+						int action = JOptionPane.showConfirmDialog(null, "是否同时将该项从XML Matrix文件删除？","警告", JOptionPane.YES_NO_OPTION);
+						if(0 == action) {
+							PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+					        pcs.firePropertyChange(evt);
+					        
+					        PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLMATRIX_ADDED, "", "new");
+					        pcs.firePropertyChange(evt2);
+					        
+						} else {
+							PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+					        pcs.firePropertyChange(evt);
+						}
+						
 					}
 				}
 			});
@@ -254,15 +297,22 @@ public class GeGuWeeklyFengXi extends WizardPage
 				@Override
 				public void mouseClicked(MouseEvent e) 
 				{
+					String xmltag = ((GeGuCheckListsTableModel)curworktable.getModel()).getXmlTagBelonged();
 					Object value = ((GeGuCheckListsTableModel)curworktable.getModel()).getValueAt(0, 0);
 					Integer idcount = ((GeGuCheckListsTableModel)curworktable.getModel()).getRowCount() +1;
-					ZdgzItem zdgzitem = new ZdgzItem ( value.toString().substring(0, 2) + idcount.toString());
+					ZdgzItem zdgzitem = new ZdgzItem ( value.toString().substring(0, 2) + idcount.toString(),xmltag);
 					int exchangeresult = JOptionPane.showConfirmDialog(null, zdgzitem, "增加CheckList", JOptionPane.OK_CANCEL_OPTION);
 					if(exchangeresult == JOptionPane.CANCEL_OPTION)
 						return;
 					
 					((GeGuCheckListsTableModel)curworktable.getModel()).addNewItem(zdgzitem);
-					infochanged = true;
+					PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", "NEW");
+			        pcs.firePropertyChange(evt);
+					
+					if(zdgzitem.shouldAddToXmlMartixFile()) {
+						PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", "NEW");
+				        pcs.firePropertyChange(evt2);
+					}
 				}
 			});
 			
@@ -274,7 +324,7 @@ public class GeGuWeeklyFengXi extends WizardPage
 					int column = tableFinancial.getSelectedColumn();
 					changeTableRowSelectedStatus (tableFinancial,row,column);
 					curworktable = tableFinancial;
-					infochanged = true;
+					
 				}
 			});
 			
@@ -286,7 +336,7 @@ public class GeGuWeeklyFengXi extends WizardPage
 					int column = tablegudong.getSelectedColumn();
 					changeTableRowSelectedStatus (tablegudong,row,column);
 					curworktable = tablegudong;
-					infochanged = true;
+					
 				}
 			});
 			
@@ -298,7 +348,7 @@ public class GeGuWeeklyFengXi extends WizardPage
 					int column = tablejishu.getSelectedColumn();
 					changeTableRowSelectedStatus (tablejishu,row,column);
 					curworktable = tablejishu;
-					infochanged = true;
+					
 				}
 			});
 			
@@ -310,7 +360,7 @@ public class GeGuWeeklyFengXi extends WizardPage
 					int column = tableTiCai.getSelectedColumn();
 					changeTableRowSelectedStatus (tableTiCai,row,column);
 					curworktable = tableTiCai;
-					infochanged = true;
+					
 				}
 			});
 			
@@ -322,7 +372,32 @@ public class GeGuWeeklyFengXi extends WizardPage
 					int column = tableGuPiaoChi.getSelectedColumn();
 					changeTableRowSelectedStatus (tableGuPiaoChi,row,column);
 					curworktable = tableGuPiaoChi;
-					infochanged = true;
+					
+				}
+			});
+			
+			txaExaComments.getDocument().addDocumentListener(new DocumentListener() {
+
+				@Override
+				public void changedUpdate(DocumentEvent arg0) {
+					String new_value = arg0.getDocument().toString();
+					PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", arg0.getDocument());
+			        pcs.firePropertyChange(evt);
+				}
+
+				@Override
+				public void insertUpdate(DocumentEvent arg0) {
+					String new_value = arg0.getDocument().toString();
+					PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", arg0.getDocument());
+			        pcs.firePropertyChange(evt);
+					
+				}
+
+				@Override
+				public void removeUpdate(DocumentEvent arg0) {
+					String new_value = arg0.getDocument().toString();
+					PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", arg0.getDocument());
+			        pcs.firePropertyChange(evt);
 				}
 			});
 			
@@ -371,20 +446,56 @@ public class GeGuWeeklyFengXi extends WizardPage
 			txaAnalysisComments.setText(cutext + date.toString() +  boxtext + ", ");
 	}
 	/*
-	 * 
+	 * 用户点击
 	 */
 	protected void changeTableRowSelectedStatus(JTable tableFinancial2, int row, int column) 
 	{
-		if(row != -1) {
-			if(column == 1) {
-				((GeGuCheckListsTableModel)tableFinancial2.getModel()).isPolicyZdgzItemSelected(row);
-				infochanged = true;
-			}
-			
-		}
+//		if(row != -1) {
+//			if(column == 1) {
+//				((GeGuCheckListsTableModel)tableFinancial2.getModel()).isPolicyZdgzItemSelected(row);
+//				infochanged = true;
+//			}
+//			
+//		}
+		
+		String output = txaExaComments.getText()
+						+ ((GeGuCheckListsTableModel)tableFinancial2.getModel()).getValueAt(row, 2) 
+						+ ", " 
+						+ ((GeGuCheckListsTableModel)tableFinancial2.getModel()).getValueAt(row, 3)
+						+ "。\n"
+						;
+		txaExaComments.setText(output);
 	}
 
 
+	private final JPanel contentPanel = new JPanel();
+	private JTable tableFinancial;
+	private JTable tablegudong;
+	private JTable tablejishu;
+	private JTable tableTiCai;
+	private JTable tableGuPiaoChi;
+	private JTextArea txaAnalysisComments;
+	private JTextArea txaExaComments;
+//	private GeGuWeeklyFengXiXmlHandler ggxmlhandler;
+	private ZhongDianGuanZhu zdgz;
+	protected JTable curworktable;
+	private JButton btnaddcklst;
+	private JButton btnRmvChklt;
+	private JCheckBox jbxMingRiJIhua;
+	private JTextField tfdJihuaJiage;
+	private JComboBox cbxJihuaLeixing;
+	private BanKuaiDbOperation bkopt;
+	private BkChanYeLianTreeNode nodecode;
+	private LocalDate actiondate;
+	private JTextField tfldmrjhshuoming;
+	private JCheckBox chcbxkaishi;
+	private JCheckBox chcbxjieshu;
+	private JCheckBox chcbxmx;
+	private JCheckBox chcbxfantan;
+	private JCheckBox chckbxmacd;
+	private JButton btnxmlMatrix;
+	private JCheckBox checkBox;
+	private JLocalDateChooser dateChooser;
 	private void initializGui ()
 	{
 		setBounds(100, 100, 1569, 806);
@@ -456,14 +567,18 @@ public class GeGuWeeklyFengXi extends WizardPage
 		chcbxfantan = new JCheckBox("\u5927\u6DA8\u540E\u53F3\u4FA7\u4E0B\u5C71\u8D70\u52BF\uFF0C\u53CD\u5F39\u8D8A\u6765\u8D8A\u5F31");
 		
 		chckbxmacd = new JCheckBox("\u4E0B\u8DCC\u7F29\u91CF\uFF0C\u5206\u65F6MACD\u80CC\u79BB");
-		panel.setLayout(new MigLayout("", "[73px][2px][142px]", "[23px][23px][23px][23px]"));
+		panel.setLayout(new MigLayout("", "[73px][2px][142px]", "[23px][23px][23px][23px][]"));
 		panel.add(chcbxkaishi, "cell 0 0,alignx left,aligny top");
 		panel.add(chcbxjieshu, "cell 2 0,alignx left,aligny top");
-		panel.add(chcbxmx, "cell 0 1 3 1,alignx left,aligny top");
+		panel.add(chcbxmx, "flowx,cell 0 1 3 1,alignx left,aligny top");
 		panel.add(chcbxfantan, "cell 0 2 3 1,alignx left,aligny top");
 		panel.add(chckbxmacd, "cell 0 3 3 1,alignx left,aligny top");
 		
+		checkBox = new JCheckBox("\u6B21\u65B0\u80A1");
+		panel.add(checkBox, "cell 0 4");
+		
 		txaExaComments = new JTextArea();
+		txaExaComments.setLineWrap(true);
 		scrollPane_6.setViewportView(txaExaComments);
 		
 		txaAnalysisComments = new JTextArea();
@@ -489,6 +604,7 @@ public class GeGuWeeklyFengXi extends WizardPage
                 return tip;
             } 
 		};
+		setTableColumnsWidth(tableGuPiaoChi);
 		scrollPane_4.setViewportView(tableGuPiaoChi);
 		
 		GeGuCheckListsTableModel tabletichaimoodel = new GeGuCheckListsTableModel ();
@@ -509,6 +625,7 @@ public class GeGuWeeklyFengXi extends WizardPage
                 return tip;
             } 
 		};
+		setTableColumnsWidth(tableTiCai);
 		scrollPane_3.setViewportView(tableTiCai);
 		
 		GeGuCheckListsTableModel tablejishumodel = new GeGuCheckListsTableModel ();
@@ -529,6 +646,7 @@ public class GeGuWeeklyFengXi extends WizardPage
                 return tip;
             } 
 		};
+		setTableColumnsWidth(tablejishu);
 		scrollPane_2.setViewportView(tablejishu);
 		
 		GeGuCheckListsTableModel tablegudongmodel = new GeGuCheckListsTableModel ();
@@ -549,6 +667,7 @@ public class GeGuWeeklyFengXi extends WizardPage
                 return tip;
             } 
 		};
+		setTableColumnsWidth(tablegudong);
 		scrollPane_1.setViewportView(tablegudong);
 		
 		GeGuCheckListsTableModel tableFinancialmodel = new GeGuCheckListsTableModel ();
@@ -558,6 +677,17 @@ public class GeGuWeeklyFengXi extends WizardPage
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
+			
+			
+			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+		        Component comp = super.prepareRenderer(renderer, row, col);
+
+//		        Font defaultFont = this.getFont();
+//	        	Font font=new Font(defaultFont.getName(),Font.ITALIC,10);
+//	        	comp.setFont(font);
+				return comp;
+			}
 
 			public String getToolTipText(MouseEvent e) 
 			{
@@ -575,6 +705,7 @@ public class GeGuWeeklyFengXi extends WizardPage
             } 
 		};
 		
+		setTableColumnsWidth(tableFinancial);
 		scrollPane.setViewportView(tableFinancial);
 		contentPanel.setLayout(gl_contentPanel);
 		{
@@ -606,6 +737,9 @@ public class GeGuWeeklyFengXi extends WizardPage
 			
 			btnxmlMatrix = new JButton("\u6253\u5F00XML Matrix");
 			
+			dateChooser = new JLocalDateChooser();
+			dateChooser.setEnabled(false);
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -616,7 +750,9 @@ public class GeGuWeeklyFengXi extends WizardPage
 						.addComponent(btnRmvChklt)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addComponent(btnxmlMatrix)
-						.addGap(204)
+						.addGap(59)
+						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
+						.addGap(27)
 						.addComponent(jbxMingRiJIhua)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE)
@@ -634,20 +770,49 @@ public class GeGuWeeklyFengXi extends WizardPage
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addGap(5)
-						.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnaddcklst)
-							.addComponent(btnRmvChklt)
-							.addComponent(jbxMingRiJIhua)
-							.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(label)
-							.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(label_1)
-							.addComponent(tfldmrjhshuoming, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(btnxmlMatrix)))
+						.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
+							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnaddcklst)
+								.addComponent(btnRmvChklt)
+								.addComponent(jbxMingRiJIhua)
+								.addComponent(cbxJihuaLeixing, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(label)
+								.addComponent(tfdJihuaJiage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(label_1)
+								.addComponent(tfldmrjhshuoming, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnxmlMatrix)))
+						.addContainerGap())
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}
 		
+	}
+	
+	private void setTableColumnsWidth (JTable table)
+	{
+		table.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(50);
+		table.getTableHeader().getColumnModel().getColumn(0).setMinWidth(50);
+		table.getTableHeader().getColumnModel().getColumn(0).setWidth(50);
+		table.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(50);
+		
+		table.getTableHeader().getColumnModel().getColumn(1).setMaxWidth(50);
+		table.getTableHeader().getColumnModel().getColumn(1).setMinWidth(50);
+		table.getTableHeader().getColumnModel().getColumn(1).setWidth(50);
+		table.getTableHeader().getColumnModel().getColumn(1).setPreferredWidth(50);		
+		
+//		table.getTableHeader().getColumnModel().getColumn(3).setMaxWidth(0);
+//		table.getTableHeader().getColumnModel().getColumn(3).setMinWidth(0);
+//		table.getTableHeader().getColumnModel().getColumn(3).setWidth(0);
+//		table.getTableHeader().getColumnModel().getColumn(3).setPreferredWidth(0);
+//	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(4).setMaxWidth(80);
+//	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(4).setMinWidth(80);
+//	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(4).setWidth(80);
+//	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(4).setPreferredWidth(80);
+//	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
+//	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
+//	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
+//	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
 	}
 }
 
@@ -656,6 +821,8 @@ class GeGuCheckListsTableModel extends AbstractTableModel
 {
 	String[] jtableTitleStrings = { "ID","选中", "描述","分析结果"};
 	private ArrayList<ZdgzItem> zdgzitems;
+//	private Boolean infochanged;
+	private String xmltagbelonged;
 	
 	GeGuCheckListsTableModel ()
 	{
@@ -664,13 +831,25 @@ class GeGuCheckListsTableModel extends AbstractTableModel
 	public void refresh  (ArrayList<ZdgzItem> zdgzitems2 )
 	{
 		this.zdgzitems = zdgzitems2;
+		this.xmltagbelonged = this.zdgzitems.get(0).getXmlTagBelonged();
+		
 		this.fireTableDataChanged();
 	}
-	
+	public String getXmlTagBelonged() {
+		return xmltagbelonged;
+	}
 	public ZdgzItem getPolicyZdgzItem (int rowIndex) 
 	{
 		return this.zdgzitems.get(rowIndex);
 	}
+	
+//	public boolean isInfoChanged ()
+//	{
+//		if(infochanged != null)
+//			return this.infochanged;
+//		else 
+//			return false;
+//	}
 	
 	public void setColumnName(String name) {
 		jtableTitleStrings[1] = name;
@@ -713,6 +892,19 @@ class GeGuCheckListsTableModel extends AbstractTableModel
 	    {
 	        return jtableTitleStrings.length;
 	    } 
+	    
+	    @Override
+	    public void setValueAt(Object aValue, int rowIndex, int columnIndex)
+	    {
+	    	ZdgzItem zdgzitem = zdgzitems.get(rowIndex);
+	        if(3 == columnIndex) {
+	        	zdgzitem.setValue((String) aValue);
+	        } else if(1 == columnIndex) {
+	        	zdgzitem.setItemSelected((Boolean) aValue);
+	        } else if(2 == columnIndex) {
+	        	zdgzitem.setContents((String) aValue);
+	        }
+	    }
 	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
@@ -772,5 +964,14 @@ class GeGuCheckListsTableModel extends AbstractTableModel
 	    {
 				return true;
 		}
-
+	    
+//	    public void addTableModelListener () 
+//	    {
+//	    	new TableModelListener() {
+//				@Override
+//				public void tableChanged(TableModelEvent e) {
+//					infochanged = true;
+//				} 
+//	    	} ;
+//	    }
 }

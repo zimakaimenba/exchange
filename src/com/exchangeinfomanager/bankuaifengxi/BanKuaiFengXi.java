@@ -2389,8 +2389,11 @@ public class BanKuaiFengXi extends JDialog {
 		JScrollPane scrollPane = new JScrollPane();
 		tabbedPanebk.addTab("\u4EA7\u4E1A\u94FE", null, scrollPane, null);
 		
-		cyltree = bkcyl.getBkChanYeLianTree();
-		scrollPane.setViewportView(cyltree);
+		
+			cyltree = bkcyl.getBkChanYeLianTree();
+			scrollPane.setViewportView(cyltree);
+		
+		
 		
 		JScrollPane scrollPanedangqian = new JScrollPane();
 		tabbedPanegegu.addTab("µ±«∞÷‹", null, scrollPanedangqian, null);

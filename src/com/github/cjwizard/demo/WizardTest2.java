@@ -111,8 +111,8 @@ public class WizardTest2 extends JDialog {
        * @see com.github.cjwizard.PageFactory#createPage(java.util.List, com.github.cjwizard.WizardSettings)
        */
       @Override
-      public WizardPage createPage(List<WizardPage> path,
-            WizardSettings settings) {
+      public WizardPage createPage(List<WizardPage> path,    WizardSettings settings) 
+      {
          log.debug("creating page "+path.size());
          
          // Get the next page to display.  The path is the list of all wizard

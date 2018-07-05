@@ -440,9 +440,9 @@ class ChanYeLianXMLHandler
 		         exportToDoc(treeChild,cylchildele,ggcyldoc);
 	        }
 		}
-
-	 
-		
+		/*
+		 * 
+		 */
 		public void openChanYeLianXmlInWinSystem ()
 		{
 			String gegucylxmlfilepath = sysconfig.getBanKuaiChanYeLianXml ();
@@ -455,7 +455,9 @@ class ChanYeLianXMLHandler
 				e1.printStackTrace();
 			}
 		}
-		
+		/*
+		 * 
+		 */
 		public Stock getStockChanYeLianInfo (Stock stockbasicinfo2) 
 		{
 			String stockcode = stockbasicinfo2.getMyOwnCode().trim();
@@ -507,115 +509,115 @@ class ChanYeLianXMLHandler
 		/*
 		 * 把数据库中的板块信息保存到XML中, 用新的BkChanYeLianTreeNode存储
 		 */
-		private void updateBkCylXmlFileAfterDbChanged2 ()
-		{
-			
-//			HashMap<String, BkChanYeLianTreeNode> tdxbk = bkopt.getTDXBanKuaiList2 ();
-			HashMap<String, BanKuai> tdxbk = bkopt.getTDXBanKuaiList ("all");
-			
-			Set<String> uniontdxbkindb = tdxbk.keySet();
-			
-//			SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
-			 
-			Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
-			
-			//XML没有，数据库有，要添加如XML
-			SetView<String> differencebankuainew = Sets.difference(uniontdxbkindb, bkcylxmlset );
-	        for (String newbkcode : differencebankuainew) {
-	        	logger.debug("XML将要中加入" + newbkcode);
-				//在XML 中加入新的板块 //<BanKuai bkname="高速公路" Status="4">
-//				String xpathnew = ".//BanKuai[@bkname=\"" + newbk + "\"]";
-//				Node tmpnode = cylxmldoc.selectSingleNode(xpathnew);
-					Element newele = cylxmlroot.addElement("BanKuai"); //在XML 中加入新的板块
-					String bkname = null;
-					try {
-						bkname = tdxbk.get(newbkcode).getUserObject().toString();
-					} catch (java.lang.NullPointerException ex) {
-//						bkname = tdxzhishu.get(newbkcode).getUserObject().toString();
-					}
-					newele.addAttribute("bkname", bkname);
-					newele.addAttribute("bkcode", newbkcode);
-					newele.addAttribute("Type", String.valueOf(BkChanYeLianTreeNode.TDXBK) );
-					logger.debug("XML中加入" + newbkcode + bkname);
-	        }
-	        
-	        //XML里面有，数据库中没有了，应该删除，要从几个XML都删除
-	        SetView<String> differencebankuaiold = Sets.difference(bkcylxmlset, uniontdxbkindb );
-		    for (String oldbkcode : differencebankuaiold) {
-				//从产业链XML中删除该板块
-				try {
-					String xpath = ".//BanKuai[@bkcode=\"" + oldbkcode + "\"]";
-					Node tmpnode = cylxmldoc.selectSingleNode(xpath);
-					cylxmlroot.remove(tmpnode);
-					logger.debug("产业链XML中删除" + oldbkcode);
-				} catch (java.lang.NullPointerException ex) {
-					
-				}
-				
-				//从个股产业链XML中删除该板块 //  <bankuai bkname="智能穿戴">智能穿戴</bankuai>
-				try {
-					String xpath = ".//gegu/chanyelian[@bkcode=\"" + oldbkcode + "\"]";
-					@SuppressWarnings("unchecked")
-					List<Node> tmpnodegg = ggcylxmldocument.selectNodes(xpath);
-					for(Node singlenode:tmpnodegg)
-						ggcylxmlroot.remove(singlenode);
-					//xmldoc.remove(tmpnode);
-					logger.debug("个股产业链XML中删除" + oldbkcode);
-				} catch (java.lang.NullPointerException ex) {
-				}
-				
-				
-		    }
-		    
-		    //对于没有变化的板块，要检查板块的名字是否有改变
-		    SetView<String> intersectionbankuai = Sets.intersection(uniontdxbkindb, bkcylxmlset );
-		    for(String intsbkcode : intersectionbankuai) {
-		    	try {
-					String xpath = ".//BanKuai[@bkcode=\"" + intsbkcode + "\"]";
-					Element tmpnode = (Element)cylxmldoc.selectSingleNode(xpath);
-					String curnameinxml = tmpnode.attribute("bkname").getText();
-					
-					String bknameindb = null;
-					try {
-						bknameindb = tdxbk.get(intsbkcode).getUserObject().toString();
-					} catch (java.lang.NullPointerException ex) {
-//						bknameindb = tdxzhishu.get(intsbkcode).getUserObject().toString();
-					}
-					
-					if(!bknameindb.equals(curnameinxml ) ) 
-						tmpnode.attribute("bkname").setText(bknameindb);
-					
-				} catch (java.lang.NullPointerException ex) {
-					
-				}
-		    	
-		    }
-		    
-		    
-		    OutputFormat format = OutputFormat.createPrettyPrint();
-			format.setEncoding("GBK");    // 指定XML编码        
-			//保存产业链XML
-			try {
-				XMLWriter writer = new XMLWriter(new FileOutputStream(bankuaichanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-					writer.write(cylxmldoc); //输出到文件  
-					//writer.flush();
-					writer.close();
-			} catch (IOException e) {
-					e.printStackTrace();
-			}
-			//保存个股产业链XML		
-			try {
-				XMLWriter writer = new XMLWriter(new FileOutputStream(geguchanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-				writer.write(ggcylxmldocument); //输出到文件  
-				//writer.flush();
-				writer.close();
-				
-			} catch (IOException e) {
-					e.printStackTrace();
-			}
-			
-			hasXmlRevised = true;
-		}
+//		private void updateBkCylXmlFileAfterDbChanged2 ()
+//		{
+//			
+////			HashMap<String, BkChanYeLianTreeNode> tdxbk = bkopt.getTDXBanKuaiList2 ();
+//			HashMap<String, BanKuai> tdxbk = bkopt.getTDXBanKuaiList ("all");
+//			
+//			Set<String> uniontdxbkindb = tdxbk.keySet();
+//			
+////			SetView<String> uniontdxbkindb = Sets.union(tdxbkset, tdxzhishuset );
+//			 
+//			Set<String> bkcylxmlset = this.getTDXBanKuaiSetInCylXml ();
+//			
+//			//XML没有，数据库有，要添加如XML
+//			SetView<String> differencebankuainew = Sets.difference(uniontdxbkindb, bkcylxmlset );
+//	        for (String newbkcode : differencebankuainew) {
+//	        	logger.debug("XML将要中加入" + newbkcode);
+//				//在XML 中加入新的板块 //<BanKuai bkname="高速公路" Status="4">
+////				String xpathnew = ".//BanKuai[@bkname=\"" + newbk + "\"]";
+////				Node tmpnode = cylxmldoc.selectSingleNode(xpathnew);
+//					Element newele = cylxmlroot.addElement("BanKuai"); //在XML 中加入新的板块
+//					String bkname = null;
+//					try {
+//						bkname = tdxbk.get(newbkcode).getUserObject().toString();
+//					} catch (java.lang.NullPointerException ex) {
+////						bkname = tdxzhishu.get(newbkcode).getUserObject().toString();
+//					}
+//					newele.addAttribute("bkname", bkname);
+//					newele.addAttribute("bkcode", newbkcode);
+//					newele.addAttribute("Type", String.valueOf(BkChanYeLianTreeNode.TDXBK) );
+//					logger.debug("XML中加入" + newbkcode + bkname);
+//	        }
+//	        
+//	        //XML里面有，数据库中没有了，应该删除，要从几个XML都删除
+//	        SetView<String> differencebankuaiold = Sets.difference(bkcylxmlset, uniontdxbkindb );
+//		    for (String oldbkcode : differencebankuaiold) {
+//				//从产业链XML中删除该板块
+//				try {
+//					String xpath = ".//BanKuai[@bkcode=\"" + oldbkcode + "\"]";
+//					Node tmpnode = cylxmldoc.selectSingleNode(xpath);
+//					cylxmlroot.remove(tmpnode);
+//					logger.debug("产业链XML中删除" + oldbkcode);
+//				} catch (java.lang.NullPointerException ex) {
+//					
+//				}
+//				
+//				//从个股产业链XML中删除该板块 //  <bankuai bkname="智能穿戴">智能穿戴</bankuai>
+//				try {
+//					String xpath = ".//gegu/chanyelian[@bkcode=\"" + oldbkcode + "\"]";
+//					@SuppressWarnings("unchecked")
+//					List<Node> tmpnodegg = ggcylxmldocument.selectNodes(xpath);
+//					for(Node singlenode:tmpnodegg)
+//						ggcylxmlroot.remove(singlenode);
+//					//xmldoc.remove(tmpnode);
+//					logger.debug("个股产业链XML中删除" + oldbkcode);
+//				} catch (java.lang.NullPointerException ex) {
+//				}
+//				
+//				
+//		    }
+//		    
+//		    //对于没有变化的板块，要检查板块的名字是否有改变
+//		    SetView<String> intersectionbankuai = Sets.intersection(uniontdxbkindb, bkcylxmlset );
+//		    for(String intsbkcode : intersectionbankuai) {
+//		    	try {
+//					String xpath = ".//BanKuai[@bkcode=\"" + intsbkcode + "\"]";
+//					Element tmpnode = (Element)cylxmldoc.selectSingleNode(xpath);
+//					String curnameinxml = tmpnode.attribute("bkname").getText();
+//					
+//					String bknameindb = null;
+//					try {
+//						bknameindb = tdxbk.get(intsbkcode).getUserObject().toString();
+//					} catch (java.lang.NullPointerException ex) {
+////						bknameindb = tdxzhishu.get(intsbkcode).getUserObject().toString();
+//					}
+//					
+//					if(!bknameindb.equals(curnameinxml ) ) 
+//						tmpnode.attribute("bkname").setText(bknameindb);
+//					
+//				} catch (java.lang.NullPointerException ex) {
+//					
+//				}
+//		    	
+//		    }
+//		    
+//		    
+//		    OutputFormat format = OutputFormat.createPrettyPrint();
+//			format.setEncoding("GBK");    // 指定XML编码        
+//			//保存产业链XML
+//			try {
+//				XMLWriter writer = new XMLWriter(new FileOutputStream(bankuaichanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
+//					writer.write(cylxmldoc); //输出到文件  
+//					//writer.flush();
+//					writer.close();
+//			} catch (IOException e) {
+//					e.printStackTrace();
+//			}
+//			//保存个股产业链XML		
+//			try {
+//				XMLWriter writer = new XMLWriter(new FileOutputStream(geguchanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
+//				writer.write(ggcylxmldocument); //输出到文件  
+//				//writer.flush();
+//				writer.close();
+//				
+//			} catch (IOException e) {
+//					e.printStackTrace();
+//			}
+//			
+//			hasXmlRevised = true;
+//		}
 
 
 }

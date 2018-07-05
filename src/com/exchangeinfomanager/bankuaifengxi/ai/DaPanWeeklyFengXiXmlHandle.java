@@ -11,6 +11,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
@@ -26,35 +27,10 @@ import com.google.common.base.Strings;
 
 class DaPanWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
 {
-	
-	
-	
 	public DaPanWeeklyFengXiXmlHandler(String nodecode ,LocalDate date) 
 	{
 		super (nodecode,date);
-
-		String text = this.getStockBanKuaiZdgz(curnodecode,date); //本系统大盘的代码
-		if( !hasxmlindatabase) {
-			super.fxweeklyxmlmatrixfile = sysconfig.getDaPanFengXiWeeklyXmlMatrixFile ();
-			
-			FileInputStream xmlfileinput = null;
-			try {
-				xmlfileinput = new FileInputStream(super.fxweeklyxmlmatrixfile);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			
-			try {
-				xmldoc = reader.read(xmlfileinput);
-				xmlroot = xmldoc.getRootElement();
-				
-				createZdgzFromXml (xmlroot,text);
-			} catch (DocumentException e) {
-				e.printStackTrace();
-				return;
-			}
-		} else
-			createZdgzFromXml (xmlroot,null);
+		super.setupXmlHandler (sysconfig.getDaPanFengXiWeeklyXmlMatrixFile ());
 	}
 	/*
 	 * (non-Javadoc)
@@ -68,8 +44,19 @@ class DaPanWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
 		getGovPolicy (xmlroot);
 		getDaPanZhiShu (xmlroot);
 		getAnalysisComments (xmlroot,extracomments);
-		
 	}
+	/*
+	 * 
+	 */
+	private void getDaPanZhiShu (Element xmlroot)
+	{
+		Element eledapan = xmlroot.element("DaPan");
+	   	ArrayList<ZdgzItem> dapan = getXmlElementInfo (eledapan);
+	   	zdgzinfo.setDapanZhiShuLists(dapan);
+	}
+	/*
+	 * 
+	 */
 	private void getAnalysisComments(Element xmlroot, String extracomments) 
 	{
 		Element elecomments = xmlroot.element("AnalysisComments");
@@ -94,59 +81,53 @@ class DaPanWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
 	/*
 	 * 
 	 */
-	private void getDaPanZhiShu (Element xmlroot)
-	{
-		Element eledapan = xmlroot.element("DaPan");
-	   	ArrayList<ZdgzItem> dapan = getXmlElementInfo (eledapan);
-	   	zdgzinfo.setDapanZhiShuLists(dapan);
-	}
-	/*
-	 * 
-	 */
 	private void getGovPolicy (Element xmlroot)
 	{
 		Element eleply = xmlroot.element("GovPolicy");
 		ArrayList<ZdgzItem> govpolicy = getXmlElementInfo (eleply);
 	   	zdgzinfo.setGovpolicy(govpolicy);
 	}
+
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFengXiXmlHandler#setupXmlContentsFromGui(org.dom4j.Element)
 	 */
-	void setupXmlContentsFromGui(Element rootele) 
+	void setupXmlContentsFromGui(Element rootele,String fortype) 
 	{
-		setGovPolicy (rootele);
-        setDaPanZhiShu(rootele);
-        setAnalysisComments(rootele);
+		setGovPolicy (rootele,fortype);
+        setDaPanZhiShu(rootele,fortype);
+        setAnalysisComments(rootele,fortype);
 	}
 	/*
 	 * 
 	 */
-	private void setGovPolicy (Element xmlroot) 
+	private void setGovPolicy (Element xmlroot, String fortype) 
 	{
 		Element elegvply = xmlroot.addElement("GovPolicy");
         elegvply.addAttribute("value", "政策面");
         ArrayList<ZdgzItem> govpolicy = zdgzinfo.getGovpolicy();
-        createFenXiXmlItems(elegvply, govpolicy);
+        createFenXiXmlItems(elegvply, govpolicy,fortype);
 	}
 	/*
 	 * 
 	 */
-	private void setDaPanZhiShu (Element rootele) 
+	private void setDaPanZhiShu (Element rootele, String fortype) 
 	{
 		 	Element eledapan = rootele.addElement("DaPan");
 	        eledapan.addAttribute("value", "指数分析");
 	        ArrayList<ZdgzItem> zhishulist = zdgzinfo.getDapanZhiShuLists();
-	        createFenXiXmlItems(eledapan,zhishulist);
+	        createFenXiXmlItems(eledapan,zhishulist,fortype);
 	}
-	private void setAnalysisComments (Element rootele) 
+	private void setAnalysisComments (Element rootele, String fortype) 
 	{
 		Element elecomments = rootele.addElement("AnalysisComments");
         elecomments.addAttribute("value", "本周总结");
         Element eleitem = elecomments.addElement("item");
         eleitem.addAttribute("id", "ac01");
-        String comments = zdgzinfo.getDaPanAnalysisComments();
-        eleitem.setText(comments);
+        if(!fortype.toLowerCase().equals("matrix")) {
+        	String comments = zdgzinfo.getDaPanAnalysisComments();
+            eleitem.setText(comments);
+        }
 	}
-
 }

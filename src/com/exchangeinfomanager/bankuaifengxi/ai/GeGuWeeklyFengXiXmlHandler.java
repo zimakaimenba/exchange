@@ -22,31 +22,8 @@ public class GeGuWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
 	public GeGuWeeklyFengXiXmlHandler (String stockcode, LocalDate date) 
 	{
 		super (stockcode,date);
-		
-		String text = super.getStockBanKuaiZdgz(stockcode,date);
-		if( !hasxmlindatabase) {
-			this.fxweeklyxmlmatrixfile = sysconfig.getGeGuFengXiWeeklyXmlMatrixFile ();
-			
-			FileInputStream xmlfileinput = null;
-			try {
-				xmlfileinput = new FileInputStream(fxweeklyxmlmatrixfile);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			
-			try {
-				xmldoc = reader.read(xmlfileinput);
-				xmlroot = xmldoc.getRootElement();
-				
-				createZdgzFromXml (xmlroot,text);
-			} catch (DocumentException e) {
-				e.printStackTrace();
-				return;
-			}
-		} else 
-			createZdgzFromXml (xmlroot,null);
+		super.setupXmlHandler (sysconfig.getGeGuFengXiWeeklyXmlMatrixFile ());
 	}
-	
 	/*
 	 * 
 	 */
@@ -115,67 +92,69 @@ public class GeGuWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
 	   	}
 	}
 	/*
-	 * 
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFengXiXmlHandler#setupXmlContentsFromGui(org.dom4j.Element, java.lang.String)
 	 */
-	void setupXmlContentsFromGui(Element rootele) 
+	void setupXmlContentsFromGui(Element rootele,String fortype) 
 	{
-		setFinancial (rootele);
-        setGuDong (rootele);
-        setJiShu(rootele);
-        setTiCai(rootele);
-        setGuPiaoChi(rootele);
-        setAnalysisComments(rootele);
+		setFinancial (rootele,fortype);
+        setGuDong (rootele,fortype);
+        setJiShu(rootele,fortype);
+        setTiCai(rootele,fortype);
+        setGuPiaoChi(rootele,fortype);
+        setAnalysisComments(rootele,fortype);
 	}
 
-	private void setFinancial (Element xmlroot) 
+	private void setFinancial (Element xmlroot, String fortype) 
 	{
 		Element elefina = xmlroot.addElement("Financial");
 		elefina.addAttribute("value", "财务报表");
         ArrayList<ZdgzItem> financial = zdgzinfo.getGeGuFinancial();
-        createFenXiXmlItems(elefina, financial);
+        createFenXiXmlItems(elefina, financial,fortype);
 	}
-	private void setGuDong (Element rootele)
+	private void setGuDong (Element rootele, String fortype)
 	{
 		Element elegd = rootele.addElement("gudong");
         elegd.addAttribute("value", "股东研究");
         ArrayList<ZdgzItem> gudong = zdgzinfo.getGeGuGuDong();
-        createFenXiXmlItems(elegd,gudong);
+        createFenXiXmlItems(elegd,gudong,fortype);
 	}
-	private void setJiShu (Element rootele) 
+	private void setJiShu (Element rootele, String fortype) 
 	{
 		Element ele = rootele.addElement("jishu");
         ele.addAttribute("value", "模型与技术面");
         ArrayList<ZdgzItem> jishu = zdgzinfo.getGeGuJiShu();
-        createFenXiXmlItems(ele,jishu);
+        createFenXiXmlItems(ele,jishu,fortype);
 	}
-	private void setTiCai (Element rootele) 
+	private void setTiCai (Element rootele, String fortype) 
 	{
 		Element ele = rootele.addElement("TiCai");
         ele.addAttribute("value", "题材与消息面");
         ArrayList<ZdgzItem> ticai = zdgzinfo.getGeGuTiCha();
-        createFenXiXmlItems(ele,ticai);
+        createFenXiXmlItems(ele,ticai,fortype);
 	}
-	private void setGuPiaoChi (Element rootele) 
+	private void setGuPiaoChi (Element rootele, String fortype) 
 	{
 		Element ele = rootele.addElement("GuPiaoChi");
         ele.addAttribute("value", "股票池");
         ArrayList<ZdgzItem> gpc = zdgzinfo.getGeGuGuPiaoChi();
-        createFenXiXmlItems(ele,gpc);
+        createFenXiXmlItems(ele,gpc,fortype);
 	}
-	private void setAnalysisComments (Element rootele) 
+	private void setAnalysisComments (Element rootele, String fortype) 
 	{
 		Element elecomments = rootele.addElement("AnalysisComments");
         elecomments.addAttribute("value", "本周总结");
         Element eleitem = elecomments.addElement("item");
         eleitem.addAttribute("id", "ac01");
-        String comments = zdgzinfo.getDaPanAnalysisComments();
-        try {
-        	eleitem.setText(comments);
-        } catch (java.lang.IllegalArgumentException e) {
-        	eleitem.setText("");
+        if(!fortype.toLowerCase().equals("matrix")) {
+        	String comments = zdgzinfo.getDaPanAnalysisComments();
+            try {
+            	eleitem.setText(comments);
+            } catch (java.lang.IllegalArgumentException e) {
+            	eleitem.setText("");
+            }
         }
+        
 	}
-
-
 
 }

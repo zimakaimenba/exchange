@@ -21,6 +21,9 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombin
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
+/*
+ * 可以显示某个node大周期的占比数据
+ */
 public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHightLightColumnListener
 {
 	private BanKuaiFengXiNodeCombinedCategoryPnl centerPanel;

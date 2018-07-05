@@ -97,7 +97,7 @@ public class BanKuaiInfoTable extends JTable
 	private void tableMouseClickActions (MouseEvent arg0)
 	{
 
-        		int  view_row = this.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
+        		 int  view_row = this.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
 				 int  view_col = this.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
 				 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
 				 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
@@ -113,8 +113,6 @@ public class BanKuaiInfoTable extends JTable
 //					 } catch ( java.lang.NullPointerException e) {
 //						 pnlGeGuZhanBi.hightlightSpecificSector (stockcode);
 //					 }
-
-						 
         		}
         		 if (arg0.getClickCount() == 2) {
 //					 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
@@ -123,7 +121,7 @@ public class BanKuaiInfoTable extends JTable
 //					 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
 					 
 					 
-					 int row = this.getSelectedRow();
+//					 int row = this.getSelectedRow();
 					 //int column = tblSearchResult.getSelectedColumn();
 					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
 					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
@@ -154,7 +152,6 @@ public class BanKuaiInfoTable extends JTable
 	        String bktype = bankuai.getBanKuaiLeiXing();
 	        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
 	        	Font defaultFont = this.getFont();
-	        	
 	        	Font font=new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
 	        	comp.setFont(font);
 	        }

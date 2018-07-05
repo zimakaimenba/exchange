@@ -17,6 +17,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -64,6 +66,7 @@ public class BkChanYeLianTree extends JTree
 	private boolean ignoreExpansion = false;
 	private String currentselectedtdxbk;
 	private LocalDate currentdisplayedwk; //tree当前所显示的分析州
+	protected boolean treechangedshouldsave = false;
 
 	/*
 	 * 
@@ -89,8 +92,40 @@ public class BkChanYeLianTree extends JTree
 	/*
 	 * 
 	 */
+	public Boolean shouldSaveTreeToXml ()
+	{
+		return treechangedshouldsave;
+	}
+	/*
+	 * 
+	 */
 	private void createEvents(final JTree tree) 
 	{
+		
+			((InvisibleTreeModel)this.getModel()).addTreeModelListener( new  TreeModelListener () {
+
+				@Override
+				public void treeNodesChanged(TreeModelEvent arg0) {
+					treechangedshouldsave = true;
+				}
+
+				@Override
+				public void treeNodesInserted(TreeModelEvent arg0) {
+					treechangedshouldsave = true;
+				}
+
+				@Override
+				public void treeNodesRemoved(TreeModelEvent arg0) {
+					treechangedshouldsave = true;
+				}
+
+				@Override
+				public void treeStructureChanged(TreeModelEvent arg0) {
+					treechangedshouldsave = true;
+				}});
+			
+		
+		
 		this.addMouseListener(new MouseAdapter() {
     		
             public void mouseClicked(MouseEvent evt) 

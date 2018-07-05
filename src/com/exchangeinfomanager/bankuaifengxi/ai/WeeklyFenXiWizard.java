@@ -1,8 +1,9 @@
-package com.exchangeinfomanager.gui;
+package com.exchangeinfomanager.bankuaifengxi.ai;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JCheckBox;
@@ -10,16 +11,14 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
-import com.exchangeinfomanager.bankuaifengxi.ai.BanKuaiWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
-import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXi;
+import com.exchangeinfomanager.gui.StockInfoManager;
 import com.github.cjwizard.APageFactory;
 import com.github.cjwizard.StackWizardSettings;
 import com.github.cjwizard.WizardContainer;
@@ -30,22 +29,18 @@ import com.github.cjwizard.pagetemplates.TitledPageTemplate;
 
 public class WeeklyFenXiWizard  extends JDialog {
 
-	   /**
+	   private BkChanYeLianTreeNode dapan;
+	/**
 	    * Commons logging log instance
 	    */
-	   private final Logger log = LoggerFactory.getLogger(WeeklyFenXiWizard.class);
-//		private AllCurrentTdxBKAndStoksTree allbksks;
-//		private BanKuaiAndChanYeLian2 bkcyl;
-		private LocalDate selectdate;
-//		private String stockcode;
-		private BkChanYeLianTreeNode displaynode;
-	   
-		public WeeklyFenXiWizard(String nodeshouldbedisplayed, int nodetype, LocalDate selectdate2)
+		public WeeklyFenXiWizard(String nodecodeshouldbedisplayed, int nodetype, LocalDate selectdate2)
 		{
 			this.selectdate = selectdate2;
+			
 			AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-			displaynode = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodeshouldbedisplayed, nodetype);
-			int type = displaynode.getType();
+			displaygegunode = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecodeshouldbedisplayed, nodetype);
+			
+			dapan = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000000", BanKuaiAndStockBasic.DAPAN);
 			
 			setupWizard ();
 		}
@@ -55,16 +50,26 @@ public class WeeklyFenXiWizard  extends JDialog {
 	      // first, build the wizard.  The TestFactory defines the
 	      // wizard content and behavior.
 		  this.selectdate = selectdate2;
-		  this.displaynode = nodeshouldbedisplayed;
+		  this.displaygegunode = nodeshouldbedisplayed;
+		  
 		  setupWizard ();
 	   }
+	   
+//	   private final Logger log = LoggerFactory.getLogger(WeeklyFenXiWizard.class);
+	   private static Logger log = Logger.getLogger(WeeklyFenXiWizard.class);
+//		private AllCurrentTdxBKAndStoksTree allbksks;
+//		private BanKuaiAndChanYeLian2 bkcyl;
+		private LocalDate selectdate;
+
+		private BkChanYeLianTreeNode displaygegunode;
+		
 	   /*
 	    * 
 	    */
 	   private void setupWizard() 
 	   {
-		   WeeklyFxGuiFactory wkfxfactory = new WeeklyFxGuiFactory();
-		      final WizardContainer wc =
+		   	WeeklyFxGuiFactory wkfxfactory = new WeeklyFxGuiFactory();
+		    final WizardContainer wc =
 		         new WizardContainer(wkfxfactory,
 		                             new TitledPageTemplate(),
 		                             new StackWizardSettings());
@@ -100,7 +105,7 @@ public class WeeklyFenXiWizard  extends JDialog {
 		         }
 
 		        public void onPageChanging(WizardPage newPage, List<WizardPage> path) {
-		            log.debug("settings: "+wc.getSettings());
+		            log.debug("settings: "+ wc.getSettings());
 		            WeeklyFenXiWizard.this.dispose();
 		        }
 		      });
@@ -120,7 +125,10 @@ public class WeeklyFenXiWizard  extends JDialog {
 	   private class WeeklyFxGuiFactory extends APageFactory
 	   {
 	      // To keep things simple, we'll just create an array of wizard pages:
-		   DaPanWeeklyFengXi dpfx =  new DaPanWeeklyFengXi("", "大盘与政策分析",selectdate) {
+		   WeeklyFengXiXmlHandler dpxmlhandler = new DaPanWeeklyFengXiXmlHandler ("000000",selectdate);
+		   
+		   
+		   WeeklyFenXiWizardPage dpfx =  new DaPanWeeklyFengXi("", "大盘指数分析",dapan,selectdate,dpxmlhandler) {
 				private static final long serialVersionUID = 1L;
 
 			/* (non-Javadoc)
@@ -142,9 +150,12 @@ public class WeeklyFenXiWizard  extends JDialog {
               }
            };
            
-           BanKuaiWeeklyFengXi bkfx = new BanKuaiWeeklyFengXi ("", "板块分析",selectdate);         
+           GovAndBanKuaiWeeklyFengXi bkfx = new GovAndBanKuaiWeeklyFengXi ("", "政策面和板块分析",dapan,selectdate,dpxmlhandler);  
            
-           GeGuWeeklyFengXi ggfx = new GeGuWeeklyFengXi("", "个股分析",displaynode,selectdate)
+           GeGuWeeklyFengXiXmlHandler ggxmlhandler = new GeGuWeeklyFengXiXmlHandler (displaygegunode.getMyOwnCode(),selectdate);
+           
+           GeGuWeeklyFengXi ggfx = new GeGuWeeklyFengXi("", "个股分析"+ displaygegunode.getMyOwnCode()+displaygegunode.getMyOwnName(),
+        		   displaygegunode,selectdate,ggxmlhandler)
            {
 				private static final long serialVersionUID = 1L;
 
@@ -167,11 +178,13 @@ public class WeeklyFenXiWizard  extends JDialog {
           
            };
            
-           WizardPage thirdpage = new WizardPage("Three", "Third Page"){
+         
+           
+           WizardPage thirdpage = new WizardPage("Three", "Third Page") {
            {
                   add(new JLabel("Three!"));
-                  setBackground(Color.green);
-               }
+                  setBackground(Color.BLUE.darker());
+           }
 
                /**
                 * This is the last page in the wizard, so we will enable the finish
@@ -198,6 +211,22 @@ public class WeeklyFenXiWizard  extends JDialog {
 	    		  thirdpage
 	      };
 	      
+	      WizardGuiXmlHandlerController dpcontroller ;
+	      WizardGuiXmlHandlerController ggcontroller ;
+
+	      public WeeklyFxGuiFactory ()
+	      {
+	    	  List<WeeklyFenXiWizardPage> dpwizardpage = new ArrayList<WeeklyFenXiWizardPage> ();
+	    	  List<WeeklyFenXiWizardPage> ggwizardpage = new ArrayList<WeeklyFenXiWizardPage> ();
+	    	  
+	    	  dpwizardpage.add(dpfx); 
+	    	  dpwizardpage.add(bkfx);
+	    	  
+	    	  ggwizardpage.add(ggfx);
+	    	  
+	    	  dpcontroller = new WizardGuiXmlHandlerController (dpwizardpage,dpxmlhandler); //MVC MODEL
+    		  ggcontroller = new WizardGuiXmlHandlerController (ggwizardpage,ggxmlhandler);
+	      }
 	      
 	      /* (non-Javadoc)
 	       * @see com.github.cjwizard.PageFactory#createPage(java.util.List, com.github.cjwizard.WizardSettings)
@@ -206,7 +235,7 @@ public class WeeklyFenXiWizard  extends JDialog {
 	      public WizardPage createPage(List<WizardPage> path, WizardSettings settings) 
 	      {
 	         log.debug("creating page "+path.size());
-	         
+         
 	         // Get the next page to display.  The path is the list of all wizard
 	         // pages that the user has proceeded through from the start of the
 	         // wizard, so we can easily see which step the user is on by taking
@@ -214,7 +243,7 @@ public class WeeklyFenXiWizard  extends JDialog {
 	         // WizardPage:
 	         WizardPage page;
 	         
-	         if(displaynode.getType() == BanKuaiAndStockBasic.DAPAN || displaynode.getType() == BanKuaiAndStockBasic.TDXBK)
+	         if(displaygegunode.getType() == BanKuaiAndStockBasic.DAPAN || displaygegunode.getType() == BanKuaiAndStockBasic.TDXBK)
 	        	 page = pageszhishu[path.size()];
 	         else
 	        	 page = pages[path.size()];
@@ -231,8 +260,13 @@ public class WeeklyFenXiWizard  extends JDialog {
 	       */
 	      public void saveFenXiResult ()
 	      {
-	    	  dpfx.saveFenXiResult();
-	    	  ggfx.saveFenXiResult();
+	    	  if(displaygegunode.getType() == BanKuaiAndStockBasic.DAPAN || displaygegunode.getType() == BanKuaiAndStockBasic.TDXBK) {
+	    		  dpcontroller.saveFenXiResult();
+	    	  }
+	    	  else {
+	    		  dpcontroller.saveFenXiResult();
+	    		  ggcontroller.saveFenXiResult();
+	    	  }
 	      }
 	      
 	   }

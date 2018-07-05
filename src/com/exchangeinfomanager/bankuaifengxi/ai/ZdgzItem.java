@@ -13,103 +13,29 @@ import java.awt.event.MouseEvent;
 public class ZdgzItem extends JPanel 
 {
 
-	public ZdgzItem(String id) 
+	public ZdgzItem(String id,String xmltagbelonged2) 
 	{
 		initializeGui ();
 		this.tfldid.setText( id);
 		
+		this.xmltagbelonged = xmltagbelonged2;
+		
 		createEvents ();
 	}
 	
-	private void createEvents() 
-	{
-		checkBox.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) 
-			{	if(checkBox.isSelected())
-					selectedcolor = "GREEN";
-			}
-		});
-		
-		chbxselected.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if(chbxselected.isSelected())
-					selected = true;
-			}
-		});
-		
+	/**
+	 * @return the xmltagbelonged
+	 */
+	public String getXmlTagBelonged() {
+		return xmltagbelonged;
 	}
 
-	public void initializeGui() 
-	{
-		tfldContents = new JTextField();
-		tfldContents.setColumns(10);
-		
-		checkBox = new JCheckBox("\u5F53\u88AB\u9009\u62E9\u65F6\u5019\u663E\u793A\u7EFF\u8272");
-		
-		
-		lblNewLabel = new JLabel("CheckList");
-		
-		tfldvalue = new JTextField();
-		tfldvalue.setColumns(10);
-		
-		JLabel lblNeirong = new JLabel("Value");
-		
-		tfldid = new JTextField();
-		tfldid.setColumns(10);
-		
-		JLabel lblId = new JLabel("id");
-		
-		chbxselected = new JCheckBox("\u4FDD\u6301\u9009\u4E2D");
-		
-		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(checkBox)
-							.addGap(18)
-							.addComponent(chbxselected))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(lblNeirong)
-								.addComponent(lblId, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(tfldvalue, Alignment.LEADING, 364, 364, 364)
-								.addComponent(tfldContents, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 364, GroupLayout.PREFERRED_SIZE)
-								.addComponent(tfldid, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-					.addContainerGap(18, Short.MAX_VALUE))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(7)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(tfldid, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblId))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-						.addComponent(tfldContents, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(tfldvalue, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNeirong))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(checkBox)
-						.addComponent(chbxselected))
-					.addContainerGap())
-		);
-		setLayout(groupLayout);
-
-		
-	}
+	/**
+	 * @param xmltagbelonged the xmltagbelonged to set
+	 */
+//	public void setXmlTagBelonged(String xmltagbelonged) {
+//		this.xmltagbelonged = xmltagbelonged;
+//	}
 
 	/**
 	 * @return the id
@@ -170,6 +96,113 @@ public class ZdgzItem extends JPanel
 	public void setContents(String contents) {
 		this.tfldContents.setText( contents );
 	}
+	/*
+	 * 
+	 */
+	public boolean shouldAddToXmlMartixFile ()
+	{
+		if(chckbxxmlMatrix.isSelected())
+			return true;
+		else
+			return false;
+	}
+	
+	private void createEvents() 
+	{
+		checkBox.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{	if(checkBox.isSelected())
+					selectedcolor = "GREEN";
+			}
+		});
+		
+		chbxselected.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(chbxselected.isSelected())
+					selected = true;
+			}
+		});
+		
+	}
+
+	public void initializeGui() 
+	{
+		tfldContents = new JTextField();
+		tfldContents.setColumns(10);
+		
+		checkBox = new JCheckBox("\u5F53\u88AB\u9009\u62E9\u65F6\u5019\u663E\u793A\u7EFF\u8272");
+		
+		
+		lblNewLabel = new JLabel("CheckList");
+		
+		tfldvalue = new JTextField();
+		tfldvalue.setColumns(10);
+		
+		JLabel lblNeirong = new JLabel("Value");
+		
+		tfldid = new JTextField();
+		tfldid.setColumns(10);
+		
+		JLabel lblId = new JLabel("id");
+		
+		chbxselected = new JCheckBox("\u4FDD\u6301\u9009\u4E2D");
+		chbxselected.setSelected(true);
+		
+		chckbxxmlMatrix = new JCheckBox("\u540C\u65F6\u52A0\u5165XML Matrix\u6587\u4EF6");
+		chckbxxmlMatrix.setSelected(true);
+		
+		GroupLayout groupLayout = new GroupLayout(this);
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(checkBox)
+							.addGap(18)
+							.addComponent(chbxselected)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(chckbxxmlMatrix))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(lblNeirong)
+								.addComponent(lblId, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(tfldvalue, Alignment.LEADING, 364, 364, 364)
+								.addComponent(tfldContents, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 364, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tfldid, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+					.addContainerGap(18, Short.MAX_VALUE))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(7)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(tfldid, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblId))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+						.addComponent(tfldContents, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(tfldvalue, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNeirong))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(checkBox)
+						.addComponent(chbxselected)
+						.addComponent(chckbxxmlMatrix))
+					.addContainerGap())
+		);
+		setLayout(groupLayout);
+
+		
+	}
 
 	private String selectedcolor;
 	private JTextField tfldContents;
@@ -179,6 +212,6 @@ public class ZdgzItem extends JPanel
 	private JTextField tfldid;
 	private JCheckBox chbxselected;
 	private Boolean selected;
-	
-
+	private JCheckBox chckbxxmlMatrix;
+	private String xmltagbelonged;
 }

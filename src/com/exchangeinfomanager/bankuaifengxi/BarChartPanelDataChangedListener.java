@@ -6,6 +6,9 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 
+/*
+ * 
+ */
 public interface BarChartPanelDataChangedListener 
 {
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference,String period);

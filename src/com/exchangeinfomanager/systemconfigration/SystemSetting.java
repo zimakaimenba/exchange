@@ -212,6 +212,8 @@ public class SystemSetting extends JDialog
 			xmlfileinput.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
 		}
 	}
 	

@@ -43,6 +43,7 @@ import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
+import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -393,9 +394,12 @@ public class StockInfoManager
 	 */
 	private void tableMouseClickActions (MouseEvent arg0)
 	{
+		if( tblzhongdiangz.getRowCount() <=0 )
+			return;
+		
 		int row = tblzhongdiangz.getSelectedRow();
 		if(row <0) {
-			JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null,"没有记录被选中！","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 		int modelRow = tblzhongdiangz.convertRowIndexToModel(row);
@@ -423,7 +427,7 @@ public class StockInfoManager
 	private void showWeeklyFenXiWizardDialog(LocalDate selectdate) 
 	{
 		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( nodeshouldbedisplayed,selectdate);
-    	ggfx.setSize(new Dimension(1400, 800));
+    	ggfx.setSize(new Dimension(1400, 860));
     	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
     	ggfx.setLocationRelativeTo(null);
     	if(!ggfx.isVisible() ) 
@@ -1659,6 +1663,7 @@ public class StockInfoManager
 			} 
 			
 			if(!bkfx.isVisible() ) {
+//				bkfx.repaint();
 				bkfx.setVisible(true);
 			} 
 			
