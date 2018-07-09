@@ -46,24 +46,28 @@ public final class StockCalendarAndNewDbOperation {
 		sysconfig = SystemConfigration.getInstance();
 	}
 	
-	public Collection<InsertedMeeting> getBanKuaiRelatedNews(String bankuaiid) 
+	public Collection<InsertedMeeting> getBanKuaiRelatedNews(String bankuaiid,LocalDate startdate, LocalDate enddate) 
 	{
 		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
 		
 		String sqlquerystat;
 		if("ALL".equals(bankuaiid.toUpperCase()) ) 
-			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期 >= DATE(NOW()) - INTERVAL 360 DAY ORDER BY 录入日期 DESC"
-									;
+			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期  BETWEEN '" + startdate + "' AND '" + enddate 
+							+ "' ORDER BY 录入日期 DESC"
+							;
 		else
-			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 关联板块 like '%" + bankuaiid.trim() +  "%' ORDER BY  录入日期 DESC";
+			sqlquerystat = "SELECT * FROM 商业新闻   "
+					+ " WHERE 录入日期  BETWEEN '" + startdate + "' AND '" + enddate + "'"
+					+ " AND 关联板块 like '%" + bankuaiid.trim() +  "%' ORDER BY  录入日期 DESC"
+					;
 		
 		CachedRowSetImpl result = null;
 		try {
 			result = connectdb.sqlQueryStatExecute(sqlquerystat);
    		 	while(result.next()) {
 	   		 	int meetingID = result.getInt("news_id");
-		        java.sql.Date startdate = result.getDate("录入日期"); 
-	            LocalDate start = startdate.toLocalDate();
+		        java.sql.Date recorddate = result.getDate("录入日期"); 
+	            LocalDate start = recorddate.toLocalDate();
 	            String title = result.getString("新闻标题");
 	            String description = result.getString("具体描述");
 	            if(Strings.isNullOrEmpty(description))
@@ -82,7 +86,7 @@ public final class StockCalendarAndNewDbOperation {
    		 if("ALL".equals(bankuaiid.toUpperCase()) ) { //如果是ALL，还要从操作记录重点关注中读取每周总结报告
    			 	sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
 					  " WHERE 股票代码= '000000'" + 
-					  " AND 日期  >= DATE(NOW()) - INTERVAL 360 DAY " +
+					  " AND  日期  BETWEEN '" + startdate + "' AND '" + enddate + "'" +
 					  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' OR 加入移出标志 = '重点关注' )" 
 					  ;
 
@@ -91,18 +95,12 @@ public final class StockCalendarAndNewDbOperation {
 		    	
 		        while(rspd.next())  {
 		        	int meetingID = rspd.getInt("id");
-			        java.sql.Date startdate = rspd.getDate("日期"); 
-		            LocalDate start = startdate.toLocalDate();
-//		            String title = result.getString("新闻标题");
+			        java.sql.Date recorddate = rspd.getDate("日期"); 
+		            LocalDate start = recorddate.toLocalDate();
 		            String description = rspd.getString("原因描述");
 		            if(Strings.isNullOrEmpty(description))
 		            	description = "描述";
-//		            String location = result.getString("关键词");
-//		            String slackurl = result.getString("SLACK链接");
-//		            String ownercodes = result.getString("关联板块");
-		            
-//		            InsertedMeeting newmeeting = new InsertedMeeting(
-//			                new Meeting("一周总结", start,  description, location, new HashSet<InsertedMeeting.Label>(),slackurl,ownercodes), meetingID);
+
 		            InsertedMeeting newmeeting = new InsertedMeeting(
 			                new Meeting("一周总结", start,  description, null, new HashSet<InsertedMeeting.Label>(),null,"000000"), meetingID);
 		            newmeeting.setCurrentownercode(bankuaiid);
@@ -119,13 +117,6 @@ public final class StockCalendarAndNewDbOperation {
          	
          	CachedRowSetImpl set = connectdb.sqlQueryStatExecute(sqlquerystat);
          	
-//             statement = connection.prepareStatement(
-//                 "SELECT label.* FROM label INNER JOIN meetingLabel ON label.LABEL_ID = meetingLabel.LABEL_ID " +
-//                     "WHERE meetingLabel.MEETING_ID = ? AND label.USER_ID = ?");
-//             statement.setInt(1, m.getID());
-//             statement.setInt(2, userID);
-//
-//             ResultSet set = statement.executeQuery();
              while (set.next()) {
                  int labelID = set.getInt("LABEL_ID");
                  String name = set.getString("NAME");

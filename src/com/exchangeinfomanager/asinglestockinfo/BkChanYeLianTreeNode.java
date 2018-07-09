@@ -464,7 +464,12 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			 */
 			public void addFxjgToPeriod (RegularTimePeriod period,Integer fxjg)
 			{
-				stockfxjg.add(period,fxjg);
+				try {
+					stockfxjg.add(period,fxjg);
+//					 addOrUpdate()
+				} catch (org.jfree.data.general.SeriesException e) {
+//					e.printStackTrace();
+				}
 			}
 			/*
 			 * 

@@ -31,12 +31,17 @@ public class WizardGuiXmlHandlerController implements ChangeListener,PropertyCha
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) 
 	{
+		String evtname = evt.getPropertyName();
         if (evt.getPropertyName().equals(WeeklyFengXiXmlHandler.XMLINDB_PROPERTY)) {
         	xmlhandler.setXmlindbchanged(true);
-        } 
+        } else if (evt.getPropertyName().equals(WeeklyFengXiXmlHandler.XMLINDB_ADDED)) {
+        	xmlhandler.setXmlindbchanged(true);
+        } if (evt.getPropertyName().equals(WeeklyFengXiXmlHandler.XMLINDB_RMVED)) {
+        	xmlhandler.setXmlindbchanged(true);
+        }
         else if (evt.getPropertyName().equals(WeeklyFengXiXmlHandler.XMLMATRIX_PROPERTY)) {
         	xmlhandler.setXmlmatrixfilechanged(true);
-        }  else if (evt.getPropertyName().equals(WeeklyFengXiXmlHandler.XMLINDB_ADDED)) {
+        }  else if (evt.getPropertyName().equals(WeeklyFengXiXmlHandler.XMLMATRIX_ADDED)) {
         	xmlhandler.setXmlmatrixfilechanged(true);
         }else if (evt.getPropertyName().equals(WeeklyFengXiXmlHandler.XMLMATRIX_RMVED)) {
         	xmlhandler.setXmlmatrixfilechanged(true);

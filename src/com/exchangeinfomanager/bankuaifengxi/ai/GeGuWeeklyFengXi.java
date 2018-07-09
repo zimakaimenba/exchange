@@ -76,7 +76,7 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 		super(title,description,displaynode2,selectdate2,fxmlhandler);
 		
 		//确保只有个股才用这个类，板块和大盘不可以用。
-		if(displaynode.getType() == BanKuaiAndStockBasic.DAPAN || displaynode.getType() == BanKuaiAndStockBasic.TDXBK)
+		if(displaynode.getType() == BanKuaiAndStockBasic.DAPAN /*|| displaynode.getType() == BanKuaiAndStockBasic.TDXBK*/)
 			return;
 		
 		initializGui ();
@@ -183,8 +183,9 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 					//tfdShuoming.setEnabled(true);
 					cbxJihuaLeixing.setEnabled(true);
 					tfldmrjhshuoming.setEnabled(true);
-					PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", "");
-			        pcs.firePropertyChange(evt2);
+					
+//					PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", "");
+//			        pcs.firePropertyChange(evt2);
 				} else {
 					tfdJihuaJiage.setEnabled(false);
 					//tfdShuoming.setEnabled(true);
@@ -376,7 +377,7 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 				}
 			});
 			
-			txaExaComments.getDocument().addDocumentListener(new DocumentListener() {
+			txaAnalysisComments.getDocument().addDocumentListener(new DocumentListener() {
 
 				@Override
 				public void changedUpdate(DocumentEvent arg0) {

@@ -58,7 +58,8 @@ public class WholeMonthNewsView extends View
         super.add(this.calendar,BorderLayout.CENTER);
     }
 
-    private void initView() {
+    private LocalDate initView() 
+    {
         this.calendar.removeAll();
         this.calendar.setLayout(new BorderLayout());
 
@@ -93,7 +94,8 @@ public class WholeMonthNewsView extends View
             scrollpane.setViewportView (panel);
 
             this.calendar.add(scrollpane,BorderLayout.CENTER);
-
+            
+            return firstDayInMonth;
     }
 
     private JPanel getMonthDay(LocalDate date) {
@@ -113,10 +115,12 @@ public class WholeMonthNewsView extends View
     @Override
     public void onMeetingChange(Cache cache) 
     {
-        Collection<InsertedMeeting> meetings = cache.produceMeetings();
+    	LocalDate firstdayofmonth = this.initView();
+    	
+        Collection<InsertedMeeting> meetings = cache.produceMeetings(firstdayofmonth);
         Collection<InsertedMeeting.Label> labels = cache.produceLabels();
 
-        this.initView();
+        
         for (InsertedMeeting m : meetings) {
             LocalDate mDate = m.getStart();
             logger.debug(mDate.getMonth());

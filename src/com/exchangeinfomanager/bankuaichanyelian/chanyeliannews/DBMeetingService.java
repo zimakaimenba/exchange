@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.logging.Logger;
 
@@ -28,9 +29,9 @@ public class DBMeetingService  implements MeetingService {
     	this.cache = cache;
     }
     @Override
-    public Collection<InsertedMeeting> getMeetings(String nodeid) throws SQLException {
+    public Collection<InsertedMeeting> getMeetings(String nodeid,LocalDate startdate, LocalDate enddate) throws SQLException {
 //        return this.database.getMeetings();
-        return this.database.getBanKuaiRelatedNews (nodeid);
+        return this.database.getBanKuaiRelatedNews (nodeid, startdate,  enddate);
     }
 
     @Override

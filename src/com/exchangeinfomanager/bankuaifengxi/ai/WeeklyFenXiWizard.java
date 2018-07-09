@@ -243,7 +243,7 @@ public class WeeklyFenXiWizard  extends JDialog {
 	         // WizardPage:
 	         WizardPage page;
 	         
-	         if(displaygegunode.getType() == BanKuaiAndStockBasic.DAPAN || displaygegunode.getType() == BanKuaiAndStockBasic.TDXBK)
+	         if(displaygegunode.getType() == BanKuaiAndStockBasic.DAPAN /*|| displaygegunode.getType() == BanKuaiAndStockBasic.TDXBK*/)
 	        	 page = pageszhishu[path.size()];
 	         else
 	        	 page = pages[path.size()];
@@ -260,7 +260,7 @@ public class WeeklyFenXiWizard  extends JDialog {
 	       */
 	      public void saveFenXiResult ()
 	      {
-	    	  if(displaygegunode.getType() == BanKuaiAndStockBasic.DAPAN || displaygegunode.getType() == BanKuaiAndStockBasic.TDXBK) {
+	    	  if(displaygegunode.getType() == BanKuaiAndStockBasic.DAPAN /*|| displaygegunode.getType() == BanKuaiAndStockBasic.TDXBK*/) {
 	    		  dpcontroller.saveFenXiResult();
 	    	  }
 	    	  else {

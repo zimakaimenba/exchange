@@ -67,12 +67,13 @@ public class ChanYeLianNewsPanel extends JDialog
 		this.myowncode = curnodecode;
 		MeetingService allmeetingService = new DBMeetingService ();
     	LabelService alllabelService = new DBLabelService ();
-        Cache cacheAll = new Cache("ALL",allmeetingService, alllabelService);
-        panelallnews = new ChanYeLianGeGuNews(allmeetingService,cacheAll,"所有10日内新闻");
+    	
+        Cache cacheAll = new Cache("ALL",allmeetingService, alllabelService,LocalDate.now(),LocalDate.now().minusWeeks(5));
+        panelallnews = new ChanYeLianGeGuNews(allmeetingService,cacheAll,"所有30日内新闻");
         
         MeetingService curmeetingService = new DBMeetingService ();
     	LabelService curlabelService = new DBLabelService ();
-        Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService);
+        Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService,LocalDate.now(),LocalDate.now().minusWeeks(10));
         panelgegunews = new ChanYeLianGeGuNews(curmeetingService,cachecurnode,curnodecode + "所有新闻");
 		
 		initializeGui ();

@@ -56,7 +56,7 @@ public class StockCalendar extends JCalendar {
     	//所有过去一年的新闻，
     	MeetingService meetingService = new DBMeetingService ( );
     	LabelService labelService = new DBLabelService ();
-        cache = new Cache("ALL",meetingService, labelService);
+        cache = new Cache("ALL",meetingService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
         this.monthView = new MonthView(meetingService, cache);
         this.yearView = new YearView(meetingService, cache);
         this.sidebar = new Sidebar(labelService, cache);
@@ -64,7 +64,7 @@ public class StockCalendar extends JCalendar {
         //每月固定信息，用于记录长期月度重复信息,显示在Cal星期的上部
         MeetingService meetingServicewholemonth = new DBMeetingService ( );
     	LabelService labelServicewholemonth = new DBLabelService ();
-        cachewholemonth = new Cache("000000",meetingServicewholemonth, labelServicewholemonth);
+        cachewholemonth = new Cache("000000",meetingServicewholemonth, labelServicewholemonth,LocalDate.now(),LocalDate.now().minusMonths(6));
         this.wholemonthview = new WholeMonthNewsView (meetingServicewholemonth, cachewholemonth);
 
 	    this.initHeaderPanel();
@@ -90,6 +90,7 @@ public class StockCalendar extends JCalendar {
     {
     	cache.refreshNews ();
     }
+
     
 
     private void initJFrame() {

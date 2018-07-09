@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.net.URL;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -78,6 +79,7 @@ public class JStockCalendarDateChooser extends JDateChooser implements PopupMenu
 
 	@Override
 	public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {
+		Date changedate = super.lastSelectedDate;
 		stockcal.refreshNews ();
 		
 	}

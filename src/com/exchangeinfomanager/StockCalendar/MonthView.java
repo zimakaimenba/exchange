@@ -67,7 +67,8 @@ public class MonthView extends View
         return weekdays;
     }
 
-    private void initView() {
+    private LocalDate initView() 
+    {
         this.calendar.removeAll();
 
         LocalDate firstDayInMonth = super.getDate().withDayOfMonth(1);
@@ -105,6 +106,8 @@ public class MonthView extends View
 
             this.calendar.add(scrollpane);
         }
+        
+        return first;
     }
 
     private JPanel getMonthDay(LocalDate date) {
@@ -125,10 +128,12 @@ public class MonthView extends View
      */
     public void onMeetingChange(Cache cache) 
     {
-        Collection<InsertedMeeting> meetings = cache.produceMeetings();
+    	LocalDate firstdayofmonth = this.initView();
+    	
+        Collection<InsertedMeeting> meetings = cache.produceMeetings(firstdayofmonth);
         Collection<InsertedMeeting.Label> labels = cache.produceLabels();
 
-        this.initView();
+        
         for (InsertedMeeting m : meetings) {
             LocalDate mDate = m.getStart();
             if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
@@ -170,7 +175,9 @@ public class MonthView extends View
     public void onLabelChange(Cache cache) {
         this.onMeetingChange(cache);
     }
-
+    /*
+     * 
+     */
     private class DayController extends MouseAdapter 
     { 
         @Override
