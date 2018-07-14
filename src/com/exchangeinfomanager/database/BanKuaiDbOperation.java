@@ -2479,7 +2479,7 @@ public class BanKuaiDbOperation
 		else
 			cjltablename = "通达信交易所指数每日交易信息";
 		
-		 HashSet<String> allbkcode = this.getTDXBanKuaiSet (cys.toLowerCase());
+//		 HashSet<String> allbkcode = this.getTDXBanKuaiSet (cys.toLowerCase());
 		 ArrayList<BanKuai> allbklist = this.getTDXBanKuaiList(cys.toLowerCase()); //这样可以判断哪些板块无需导入每日数据
 //		for(String tmpbkcode:allbkcode) {
 		for(BanKuai bk :  allbklist ) {
@@ -2535,7 +2535,7 @@ public class BanKuaiDbOperation
 		}
 		
 		allbklist = null;
-		allbkcode = null;
+//		allbkcode = null;
 		
 		return tmprecordfile;
 	}
@@ -3671,32 +3671,15 @@ public class BanKuaiDbOperation
 		String bktypetable = actiontables.get("股票板块对应表");
 		String bkorzsvoltable = actiontables.get("板块每日交易量表");
 		String bknametable = actiontables.get("板块指数名称表");
-		String sqlupdatestat = "update " + bktypetable  + " set 股票权重 = " +  weight  + 
-				" where 板块代码 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "'" 
+		String sqlupdatestat = "UPDATE " + bktypetable  + " SET 股票权重 = " +  weight  + 
+				" WHERE 板块代码 = '" + bkcode + 
+				"' AND 股票代码 = '" + stockcode + "'" +
+				"  AND  ISNULL(移除时间)"
 				;
 		logger.debug(sqlupdatestat);
 		connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		
 		actiontables = null;
-		
-		//因为不知道bkcode在哪个表里面，
-//		String sqlupdatestat1 = "update 股票通达信交易所指数对应表  set 股票权重 = " +  weight  + 
-//							" where 指数板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)" 
-//							;
-//		String sqlupdatestat2 = "update 股票通达信概念板块对应表  set 股票权重 = " +  weight  + 
-//							" where 概念板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
-//							;
-//		String sqlupdatestat3 = "update 股票通达信行业板块对应表  set 股票权重 = " +  weight  + 
-//							" where 行业板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
-//							;
-//		String sqlupdatestat4 = "update 股票通达信风格板块对应表  set 股票权重 = " +  weight  + 
-//							" where 风格板块 = '" + bkcode + "' AND 股票代码 = '" + stockcode + "' AND ISNULL(移除时间)"
-//							;
-//		//很傻的实现
-//		connectdb.sqlUpdateStatExecute(sqlupdatestat1);
-//		connectdb.sqlUpdateStatExecute(sqlupdatestat2);
-//		connectdb.sqlUpdateStatExecute(sqlupdatestat3);
-//		connectdb.sqlUpdateStatExecute(sqlupdatestat4);
 	}
 	
 	/*
@@ -4509,6 +4492,7 @@ public class BanKuaiDbOperation
 	            			   zhishuname = zhishuname + tmplinepartnamelist2.get(0).trim();
 	            			   } catch (java.lang.IndexOutOfBoundsException e) {
 	            				   e.printStackTrace();
+	            				   logger.debug(tmplinelist + "出错");
 	            			   }
 	            		   }
 	            			   

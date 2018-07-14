@@ -87,7 +87,7 @@ public class JStockComboBox extends  JComboBox<String>
 	public BkChanYeLianTreeNode updateUserSelectedNode (String stockcode)
 	{
 //		this.addItem(stockcode+stocname);
-		this.setSelectedItem(stockcode);
+//		this.setSelectedItem(stockcode);
 		preSearch(stockcode);
 		updateStockCombox();
 		return nodeshouldbedisplayed;
@@ -172,22 +172,22 @@ public class JStockComboBox extends  JComboBox<String>
 			
 		});
 		
-		this.addItemListener(new ItemListener() 
-		{
-			public void itemStateChanged(ItemEvent e)
-			{
-				if(e.getStateChange() == ItemEvent.SELECTED) {
-					
-//					statChangeActions ();
-					
-				}
-				
-				if(e.getStateChange() == ItemEvent.DESELECTED) {
-				
-				}
-			}
-						
-		});
+//		this.addItemListener(new ItemListener() 
+//		{
+//			public void itemStateChanged(ItemEvent e)
+//			{
+//				if(e.getStateChange() == ItemEvent.SELECTED) {
+//					
+////					statChangeActions ();
+//					
+//				}
+//				
+//				if(e.getStateChange() == ItemEvent.DESELECTED) {
+//				
+//				}
+//			}
+//						
+//		});
 		
 	}
 	
@@ -250,7 +250,7 @@ public class JStockComboBox extends  JComboBox<String>
 	private void updateStockCombox (String tmp)
 	{
 		boolean isaddItem = true;
-		int updateItem = -1;
+//		int updateItem = -1;
 
 	   	  //判断用户所输入的项目是否有重复，若有重复则不增加到JComboBox中。
 	   	  try{
@@ -280,12 +280,12 @@ public class JStockComboBox extends  JComboBox<String>
 	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
 	  			  this.setSelectedIndex(0);
 	   	  	  }
-	   	  	  if(updateItem >= 0) {
-	   	  		  this.removeItemAt(updateItem);
-	   	  		  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
-	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
-	  			this.setSelectedIndex(0);
-	   	  	  }
+//	   	  	  if(updateItem >= 0) {
+//	   	  		  this.removeItemAt(updateItem);
+//	   	  		  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
+//	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
+//	  			  this.setSelectedIndex(0);
+//	   	  	  }
 	   	  }catch(NumberFormatException ne){
 	   		
 	   	  }

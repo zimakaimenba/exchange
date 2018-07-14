@@ -875,8 +875,10 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 		);
 		
 		btnCylAddToZdgz = new JButton("\u52A0\u5165\u91CD\u70B9\u5173\u6CE8");
+		btnCylAddToZdgz.setEnabled(false);
 		
 		btnCylRemoveFromZdgz = new JButton("\u79FB\u9664\u91CD\u70B9\u5173\u6CE8");
+		btnCylRemoveFromZdgz.setEnabled(false);
 		
 		addSubnodeButton = new SubnodeButton();
 		addSubnodeButton.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
@@ -1090,13 +1092,13 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 		JScrollPane scrollPaneDaLei = new JScrollPane();
 		
 		btnadddalei = new JButton("\u589E\u52A0\u80A1\u7968\u6C60");
+		btnadddalei.setEnabled(false);
 				
 		btndeldalei = new JButton("\u5220\u9664\u80A1\u7968\u6C60");
-		
-		
-		JSeparator separator_1 = new JSeparator();
+		btndeldalei.setEnabled(false);
 		
 		btnopenzdgzxml = new JButton("\u6253\u5F00XML");
+		btnopenzdgzxml.setEnabled(false);
 		
 		GroupLayout gl_panelzdgz = new GroupLayout(panelzdgz);
 		gl_panelzdgz.setHorizontalGroup(
@@ -1104,27 +1106,24 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 				.addGroup(gl_panelzdgz.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPaneDaLeiDetail, GroupLayout.PREFERRED_SIZE, 306, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_panelzdgz.createSequentialGroup()
-							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPaneDaLeiDetail, GroupLayout.PREFERRED_SIZE, 306, GroupLayout.PREFERRED_SIZE)
-								.addGroup(gl_panelzdgz.createSequentialGroup()
-									.addComponent(btnGenTDXCode)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnopenzdgzxml)))
+							.addComponent(btnGenTDXCode)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
-								.addComponent(buttonremoveoffical)
-								.addComponent(buttonaddofficial))
-							.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panelzdgz.createSequentialGroup()
-									.addGap(22)
-									.addComponent(btnadddalei)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btndeldalei))
-								.addGroup(gl_panelzdgz.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(scrollPaneDaLei, GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE))))
-						.addComponent(separator_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 873, Short.MAX_VALUE))
+							.addComponent(btnopenzdgzxml)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
+						.addComponent(buttonremoveoffical)
+						.addComponent(buttonaddofficial))
+					.addGroup(gl_panelzdgz.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panelzdgz.createSequentialGroup()
+							.addGap(22)
+							.addComponent(btnadddalei)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btndeldalei))
+						.addGroup(gl_panelzdgz.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(scrollPaneDaLei, GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
 		gl_panelzdgz.setVerticalGroup(
@@ -1148,8 +1147,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 							.addGap(77)
 							.addComponent(buttonremoveoffical)
 							.addGap(76)))
-					.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 2, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addGap(12))
 		);
 		
 		//ZdgzBanKuaiDetailXmlTableModel xmlaccountsmodel = new ZdgzBanKuaiDetailXmlTableModel( );

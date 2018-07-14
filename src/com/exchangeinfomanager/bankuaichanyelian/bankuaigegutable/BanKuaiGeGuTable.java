@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -46,6 +47,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
+import com.exchangeinfomanager.commonlib.ToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -85,6 +87,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		createMenu ();
 		createEvents ();
 	}
+	
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);
 	private StockInfoManager stockmanager;
@@ -92,7 +95,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	private JMenuItem menuItemAddNews;
 	private JMenuItem menuItemAddGz;
 //	private JMenuItem menuItemReDian;
-//	private JMenuItem menuItemMakeLongTou;
+	private JMenuItem menuItemQuanZhong;
 	private StockCalendarAndNewDbOperation newsdbopt;
 	private BanKuaiDbOperation bkdbopt;
 	private JPopupMenu popupMenuGeguNews;
@@ -104,18 +107,20 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		menuItemAddNews = new JMenuItem("添加个股新闻");
 		menuItemAddGz = new JMenuItem("个股分析");
 //		menuItemReDian = new JMenuItem("标记龙头个股");
-//		menuItemMakeLongTou = new JMenuItem("设置股票板块权重");
+		menuItemQuanZhong = new JMenuItem("设置股票板块权重");
 		popupMenuGeguNews.add(menuItemAddNews);
-//		popupMenuGeguNews.add(menuItemMakeLongTou);
+		popupMenuGeguNews.add(menuItemQuanZhong);
 		popupMenuGeguNews.add(menuItemAddGz);
 //		popupMenuGeguNews.add(menuItemReDian);
 				
 		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
+	
 	public JPopupMenu getPopupMenu ()
 	{
 		return this.popupMenuGeguNews;
 	}
+	
 	public TableCellRenderer getCellRenderer(int row, int column) 
 	{
 		return renderer;
@@ -173,12 +178,12 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		});
 		
 //		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
-//		menuItemMakeLongTou.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent evt) {
-//				setGeGuWeightInBanKuai ();
-//			}
-//			
-//		});
+		menuItemQuanZhong.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				setGeGuWeightInBanKuai ();
+			}
+			
+		});
 		
 		menuItemAddGz.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -247,29 +252,29 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 				 }
 
 	}
-
-	protected void addReDian() 
-	{
-		int row = this.getSelectedRow();
-		if(row <0) {
-			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		
-		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-//		 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-		
-		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (model_row);
-		
-		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"龙头个股" ); 
-		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "龙头个股", JOptionPane.OK_CANCEL_OPTION);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
-		
-//		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-		InsertedMeeting insetmeeting = newsdbopt.setReDianBanKuaiLongTouGeGuToShangYeXinWen(jiarujihua);
-		
-	}
+//
+//	protected void addReDian() 
+//	{
+//		int row = this.getSelectedRow();
+//		if(row <0) {
+//			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
+//			return;
+//		}
+//		
+//		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+////		 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
+//		
+//		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (model_row);
+//		
+//		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"龙头个股" ); 
+//		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "龙头个股", JOptionPane.OK_CANCEL_OPTION);
+//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//			return;
+//		
+////		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+//		InsertedMeeting insetmeeting = newsdbopt.setReDianBanKuaiLongTouGeGuToShangYeXinWen(jiarujihua);
+//		
+//	}
 	/*
 	 * 
 	 */
@@ -289,6 +294,9 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
     	ggfx.setSize(new Dimension(1400, 800));
     	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
     	ggfx.setLocationRelativeTo(null);
+    	
+    	Toolkit.getDefaultToolkit().beep();
+    	
     	if(!ggfx.isVisible() ) 
     		ggfx.setVisible(true);
     	ggfx.toFront();
@@ -328,37 +336,44 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		int modelRow = this.convertRowIndexToModel(row);
 		
 //		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
-		BanKuai bkcode = ((BanKuaiGeGuTableModel)(this.getModel())).getTdxBkCode();
-//		String bkname = ((BanKuaiGeGuTableModel)(this.getModel())).getTdxBkName();
+		BanKuai bkcode = ((BanKuaiGeGuTableModel)this.getModel()).getCurDispalyBandKuai();
 		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(modelRow);
 		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (modelRow);
 		
-		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重，注意权重不能大于10！",weight);
-		int newweight = Integer.parseInt(weightresult);
-		if(newweight>10)
-			JOptionPane.showMessageDialog(null,"权重值不能超过10！","Warning",JOptionPane.WARNING_MESSAGE);
-		
-		if(weight != newweight) {
-			bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
-			( (BanKuaiGeGuTableModel)this.getModel() ).setStockCurWeight (modelRow,newweight);
+		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重,权重值不能超过5！\n\r"
+											+ "5:主业且不亏损,\n\r 4:主业并亏损,\n\r3:营收占比很大,\n\r2:营收占比很小,\n\r1:营收占比几乎没有概念阶段,\n\r0:毫无关系"
+				,weight);
+		try {
+			int newweight = Integer.parseInt(weightresult);
+			if(newweight>5)
+				JOptionPane.showMessageDialog(null,"权重值不能超过5！\n\r"
+												+ "5:主业且不亏损,4:主业并亏损,3:营收占比很大,2:营收占比很小,1:营收占比几乎没有概念阶段,0:毫无关系"	
+						,"Warning",JOptionPane.WARNING_MESSAGE);
+			
+			if(weight != newweight) {
+				bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
+				( (BanKuaiGeGuTableModel)this.getModel() ).setStockCurWeight (modelRow,newweight);
+			}
+		} catch (java.lang.NumberFormatException e) {
+			return;
 		}
 	}
 	
-	public void hideZhanBiColumn (int hidecolumn) 
-	{
-		TableColumnModel tcm = this.getColumnModel();
-		if(hidecolumn >1) {
-			//在板块分析界面不需要3个column
-			this.removeColumn(tcm.getColumn(3));
-			this.removeColumn(tcm.getColumn(3));
-			this.removeColumn(tcm.getColumn(3));
-			this.removeColumn(tcm.getColumn(3));
-
-		} 
-//		else if (hidecolumn == 1) {
-//			this.removeColumn(tcm.getColumn(6));
-//		}
-	}
+//	public void hideZhanBiColumn (int hidecolumn) 
+//	{
+//		TableColumnModel tcm = this.getColumnModel();
+//		if(hidecolumn >1) {
+//			//在板块分析界面不需要3个column
+//			this.removeColumn(tcm.getColumn(3));
+//			this.removeColumn(tcm.getColumn(3));
+//			this.removeColumn(tcm.getColumn(3));
+//			this.removeColumn(tcm.getColumn(3));
+//
+//		} 
+////		else if (hidecolumn == 1) {
+////			this.removeColumn(tcm.getColumn(6));
+////		}
+//	}
 	
 	public void removeRows () 
 	{
@@ -375,32 +390,5 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 }
 
 
-class ToolTipHeader extends JTableHeader {
-    String[] toolTips;
-   
-    public ToolTipHeader(TableColumnModel model) {
-      super(model);
-    }
-     
-    public String getToolTipText(MouseEvent e) {
-      int col  = columnAtPoint(e.getPoint());
-      int modelCol = getTable().convertColumnIndexToModel(col);
-      String retStr;
-      try {
-        retStr = toolTips[modelCol];
-      } catch (NullPointerException ex) {
-        retStr = "";
-      } catch (ArrayIndexOutOfBoundsException ex) {
-        retStr = "";
-      }
-      if (retStr.length() < 1) {
-        retStr = super.getToolTipText(e);
-      }
-      return retStr;
-    }  
-     
-    public void setToolTipStrings(String[] toolTips) {
-      this.toolTips = toolTips;
-    }
-}
+
 

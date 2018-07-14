@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -13,6 +15,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.dom4j.DocumentException;
@@ -32,6 +35,7 @@ import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl;
+import com.exchangeinfomanager.commonlib.MultilineTableCell;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -53,9 +57,15 @@ import javax.swing.JEditorPane;
 import net.miginfocom.swing.MigLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineBreakMeasurer;
+import java.awt.font.TextLayout;
 import java.beans.PropertyChangeEvent;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
+import java.text.BreakIterator;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.DayOfWeek;
@@ -91,16 +101,6 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 		showZhiShuAnalysisXmlResults ();
 	}
 
-//	private SystemConfigration sysconfig;
-//	private BanKuaiDbOperation bkdbopt;
-//	private AllCurrentTdxBKAndStoksTree allbksks;
-//	private BanKuaiAndChanYeLian2 bkcyl;
-//	private DaPanWeeklyFengXiXmlHandler dpfxmlhandler; 
-//	private LocalDate selectdate;
-//	private List<BkChanYeLianTreeNode> zhishulist;
-//	private boolean infochanged = false;
-//	private boolean xmlmartixshouldsave = false;
-//	private ZhongDianGuanZhu zdgzinfo;
 	/*
 	 * 
 	 */
@@ -111,14 +111,7 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 
 		ArrayList<ZdgzItem> govpolicy = zdgzinfo.getGovpolicy();
 		((PolicyTableModel)tablepolicy.getModel()).refresh(govpolicy);
-		
-//		ArrayList<ZdgzItem> dapan = zdgzinfo.getDapanZhiShuLists();
-//		for(ZdgzItem zhishu : dapan) {
-//			String zhishucode = zhishu.getValue();
-//			BanKuai zhishubankuai = allbksks.getBanKuai(zhishucode, selectdate, StockGivenPeriodDataItem.WEEK);
-//			zhishulist.add(zhishubankuai);
-//		}
-//		
+	
 		txaComments.setText(zdgzinfo.getDaPanAnalysisComments() );
 	}
 	/*
@@ -139,22 +132,6 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 				}
 			}
 		});
-		
-//		tablepolicy.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) 
-//			{
-//				int row = tablepolicy.getSelectedRow();
-//				int column = tablepolicy.getSelectedColumn();
-//				if(row != -1) {
-//					if(column == 1) {
-//						((PolicyTableModel)tablepolicy.getModel()).isPolicyZdgzItemSelected(row);
-////						infochanged = true;
-//					}
-//					
-//				}
-//			}
-//		});
 		
 		txaComments.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -309,6 +286,17 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 		
 		PolicyTableModel tablepolicymodel = new PolicyTableModel ();
 		tablepolicy = new JTable(tablepolicymodel) {
+			MultilineTableCell wordWrapRenderer = new MultilineTableCell (); 
+			
+			public TableCellRenderer getCellRenderer(int row, int column) {
+		        if (column == 2 ) {
+		            return wordWrapRenderer;
+		        }
+		        else {
+		            return super.getCellRenderer(row, column);
+		        }
+		    }
+			
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
 			{
 				 
@@ -317,6 +305,12 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 		        if(tablemodel.getRowCount() == 0) {
 		        	return null;
 		        }
+		        
+//		        int fontHeight = getFontMetrics(this.getFont()).getHeight();
+//		        int textLength = ((String)this.getValueAt(row, col)).length();
+//		        int lines = textLength / this.getColumnCount() +1;//+1, cause we need at least 1 row.           
+//		        int height = fontHeight * lines;            
+//		        this.setRowHeight(row, height);
 		        
 		        int modelRow = convertRowIndexToModel(row);
 		        ZdgzItem zdgzitem = tablemodel.getPolicyZdgzItem(modelRow);
@@ -552,3 +546,5 @@ class PolicyTableModel extends AbstractTableModel
 				return false;
 		}
 }
+
+

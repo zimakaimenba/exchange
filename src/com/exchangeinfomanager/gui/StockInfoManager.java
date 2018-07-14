@@ -222,8 +222,6 @@ public class StockInfoManager
 		displayDbInfo();
 		createEvents();
     	initializePaoMaDeng ();
-    	
-    	
  	}
 	
 	private static Logger logger = Logger.getLogger(StockInfoManager.class);
@@ -409,7 +407,6 @@ public class StockInfoManager
         }
         if (arg0.getClickCount() == 2) {
         	String date = (String)tblzhongdiangz.getValueAt(modelRow, 0);	
-        	System.out.println(date);
         	LocalDate selectdate = null;
         	try {
         		selectdate = LocalDate.parse(date);
@@ -427,12 +424,15 @@ public class StockInfoManager
 	private void showWeeklyFenXiWizardDialog(LocalDate selectdate) 
 	{
 		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( nodeshouldbedisplayed,selectdate);
-    	ggfx.setSize(new Dimension(1400, 860));
+    	ggfx.setSize(new Dimension(1550, 900));
     	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
     	ggfx.setLocationRelativeTo(null);
+    	Toolkit.getDefaultToolkit().beep();
     	if(!ggfx.isVisible() ) 
     		ggfx.setVisible(true);
+    	
     	ggfx.toFront();
+    	
     	
     	ggfx = null;
 	}
@@ -453,7 +453,7 @@ public class StockInfoManager
 
 		menuItemfxwjfx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				startWeeklyExportFileFengXi();
+				
 			}
 		});
 		
@@ -534,8 +534,7 @@ public class StockInfoManager
 //		});
 		
 		
-		cBxstockcode.addItemListener(new ItemListener()
-		{
+		cBxstockcode.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) 
 			{
@@ -1669,21 +1668,7 @@ public class StockInfoManager
 			
 			bkfx.toFront();
 	}
-	protected void startWeeklyExportFileFengXi() 
-	{
-			if(effx == null ) {
-				effx = new WeeklyExportFileFengXi (this,allbkstock);
-				effx.setModal(false);
-				effx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				effx.setVisible(true);
-			} 
-			
-			if(!effx.isVisible() ) {
-				effx.setVisible(true);
-			} 
-			
-			effx.toFront();
-	}
+
 		/*
 		 * 
 		 */
@@ -1841,46 +1826,50 @@ public class StockInfoManager
  */
 	private void displayStockSuoShuBanKuai() 
 	{
-		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuCurSuoShuTDXSysBanKuaiList();
-		 Set<String> union =  suosusysbankuai.keySet();
-		 Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
+//		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuCurSuoShuTDXSysBanKuaiList();
+		 editorpansuosubk.displayBanKuaiListContents((Stock)nodeshouldbedisplayed);
 		 
-		 String htmlstring = editorpansuosubk.getText();
-		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-		 logger.debug(doc.toString());
-		 org.jsoup.select.Elements content = doc.select("body");
-		 
-		 content.append( "<html> "
-		 		+ "<body>"
-		 		+ " <p>所属板块:");
-		 
-	     for(String suoshubankcode : union ) {
-	    	 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
-	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
-	    	 if(daleilist.size()>0)
-	    		 content.append("<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> " );
-	    		else
-	    			 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ");
-	     } 
-	     content.append( "</p>");
-	     		
-	     
-//	     String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
-//	     ArrayList<String> gegucyl = ((Stock)nodeshouldbedisplayed).getGeGuAllChanYeLianInfo();
-//	     for(String cyl : gegucyl) {
-//	    	 content.append( " <p>个股产业链:"
-//	    	 		+ "<a  href=\"openBanKuaiAndChanYeLianDialog\">  " + cyl)
-//	    	 		;
-//	     }
-//	     if(gegucyl.size()>0)
-//	    	 content.append( "</p>");
-	     
-	     content.append( "</body>"
-					+ "</html>");
-	    
-	     htmlstring = doc.toString();
-	     editorpansuosubk.setText(htmlstring);
-	     editorpansuosubk.setCaretPosition(0);
+//		 Set<String> union =  suosusysbankuai.keySet();
+//		 Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
+//		 
+//		 String htmlstring = editorpansuosubk.getText();
+//		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+//		 logger.debug(doc.toString());
+//		 org.jsoup.select.Elements content = doc.select("body");
+//		 
+//		 content.append( "<html> "
+//		 		+ "<body>"
+//		 		+ " <p>所属板块:");
+//		 
+//	     for(String suoshubankcode : union ) {
+//	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
+//	    	 
+//	    	 try {
+//	    		 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
+//	    		 content.append("<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> " );
+//	    	 } catch (java.lang.NullPointerException e) {
+//	    		 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ");
+//	    	 }
+//	     } 
+//	     content.append( "</p>");
+//	     		
+//	     
+////	     String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+////	     ArrayList<String> gegucyl = ((Stock)nodeshouldbedisplayed).getGeGuAllChanYeLianInfo();
+////	     for(String cyl : gegucyl) {
+////	    	 content.append( " <p>个股产业链:"
+////	    	 		+ "<a  href=\"openBanKuaiAndChanYeLianDialog\">  " + cyl)
+////	    	 		;
+////	     }
+////	     if(gegucyl.size()>0)
+////	    	 content.append( "</p>");
+//	     
+//	     content.append( "</body>"
+//					+ "</html>");
+//	    
+//	     htmlstring = doc.toString();
+//	     editorpansuosubk.setText(htmlstring);
+//	     editorpansuosubk.setCaretPosition(0);
 	     
 	}
 	
@@ -2227,10 +2216,6 @@ public class StockInfoManager
 				}
 
 	}
-
-	
-
-	
 	
 	private String formatStockCode (String stockcode)
 	{
@@ -2714,8 +2699,8 @@ public class StockInfoManager
 		editorpansuosubk.setPreferredSize(new Dimension(200,30));
 		//txaBanKuai.setEditorKit(new WrapEditorKit());
 		//txaBanKuai.setLineWrap(true);
-		editorpansuosubk.setEditable(false);
-		editorpansuosubk.setContentType("text/html");
+//		editorpansuosubk.setEditable(false);
+//		editorpansuosubk.setContentType("text/html");
 		scrollPane_1.setViewportView(editorpansuosubk);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -3170,8 +3155,9 @@ public class StockInfoManager
 					JFrame.setDefaultLookAndFeelDecorated(true);
 					StockInfoManager window = new StockInfoManager();
 //					showOnScreen(2,window.frame);
+					
 					window.frame.setVisible(true);
-			    	
+					Toolkit.getDefaultToolkit().beep();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

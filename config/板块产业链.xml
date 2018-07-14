@@ -31,7 +31,7 @@
   <GuPiaoChi gpccode="GPC001" gpcname="超跌反弹" Type="8"/>
   <GuPiaoChi gpccode="GPC012" gpcname="特定时间重大事件" Type="8"/>
   <GuPiaoChi gpccode="GPC010" gpcname="题材转业绩" Type="8"/>
-  <GuPiaoChi gpccode="GPC014" gpcname="其他" Type="8">
+  <GuPiaoChi gpccode="GPC999" gpcname="其他" Type="8">
     <BanKuai bkcode="880461" bkname="水运" Type="4">
       <gegu gegucode="600428" geguname="中远海特" Type="6"/>
     </BanKuai>
@@ -41,5 +41,8 @@
         <SubBanKuai subbkcode="8803364" subbkname="甲醇" suoshubkcode="GPC014" Type="5"/>
       </SubBanKuai>
     </BanKuai>
+  </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC015" gpcname="弱势远离" Type="8">
+    <BanKuai bkcode="880897" bkname="本月解禁" Type="4"/>
   </GuPiaoChi>
 </两交易所>

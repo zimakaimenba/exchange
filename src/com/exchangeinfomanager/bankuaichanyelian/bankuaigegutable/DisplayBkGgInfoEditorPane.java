@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -54,8 +55,8 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
     public void displayChanYeLianNewsHtml(BkChanYeLianTreeNode curselectedbknodecode)
     {
     	String curselectedbknodename = curselectedbknodecode.getMyOwnName();
-	       	String curbknodecode = curselectedbknodecode.getMyOwnCode();
-	       	Collection<InsertedMeeting> curnewlist = newsdbopt.getBanKuaiRelatedNews(curbknodecode);
+	    String curbknodecode = curselectedbknodecode.getMyOwnCode();
+	    Collection<InsertedMeeting> curnewlist = newsdbopt.getBanKuaiRelatedNews(curbknodecode,LocalDate.now().minusMonths(3),LocalDate.now());
 	       	 
 	     String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);

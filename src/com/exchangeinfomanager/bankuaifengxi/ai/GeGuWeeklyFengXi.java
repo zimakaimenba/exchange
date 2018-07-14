@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi.ai;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -32,6 +33,7 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.commonlib.MultilineTableCell;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -64,7 +66,7 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 {
 
 	private static Logger logger = Logger.getLogger(GeGuWeeklyFengXi.class);
-	private SystemConfigration sysconf;
+//	private SystemConfigration sysconf;
 //	private boolean xmlmartixshouldsave;
 
 
@@ -158,7 +160,7 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
-					String cmd = "rundll32 url.dll,FileProtocolHandler " + sysconf.getGeGuFengXiWeeklyXmlMatrixFile ();
+					String cmd = "rundll32 url.dll,FileProtocolHandler " + sysconfig.getGeGuFengXiWeeklyXmlMatrixFile ();
 					Process p  = Runtime.getRuntime().exec(cmd);
 					p.waitFor();
 				} catch (Exception e1) {
@@ -298,7 +300,13 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 				@Override
 				public void mouseClicked(MouseEvent e) 
 				{
-					String xmltag = ((GeGuCheckListsTableModel)curworktable.getModel()).getXmlTagBelonged();
+					String xmltag;
+					try {
+						xmltag = ((GeGuCheckListsTableModel)curworktable.getModel()).getXmlTagBelonged();
+					} catch (java.lang.NullPointerException ex) {
+						JOptionPane.showMessageDialog(null,"请先选择需要添加的表！");
+						return;
+					}
 					Object value = ((GeGuCheckListsTableModel)curworktable.getModel()).getValueAt(0, 0);
 					Integer idcount = ((GeGuCheckListsTableModel)curworktable.getModel()).getRowCount() +1;
 					ZdgzItem zdgzitem = new ZdgzItem ( value.toString().substring(0, 2) + idcount.toString(),xmltag);
@@ -311,7 +319,7 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 			        pcs.firePropertyChange(evt);
 					
 					if(zdgzitem.shouldAddToXmlMartixFile()) {
-						PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", "NEW");
+						PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLMATRIX_PROPERTY, "", "NEW");
 				        pcs.firePropertyChange(evt2);
 					}
 				}
@@ -526,36 +534,37 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 						.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane_4, GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
-						.addComponent(scrollPane_5, GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(scrollPane_6, GroupLayout.PREFERRED_SIZE, 259, GroupLayout.PREFERRED_SIZE)
+							.addComponent(scrollPane_6, GroupLayout.PREFERRED_SIZE, 154, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE))
+						.addGroup(Alignment.TRAILING, gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(scrollPane_5, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
+							.addComponent(scrollPane_4, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(5)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
-								.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)))
+								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+								.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(scrollPane_4, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)))
+							.addComponent(scrollPane_4, GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(scrollPane_5, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE)
-								.addComponent(scrollPane_6, GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)))
-						.addComponent(scrollPane_3, GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
+								.addComponent(scrollPane_6, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(scrollPane_3, GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		
@@ -587,125 +596,24 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 		txaAnalysisComments.setLineWrap(true);
 		scrollPane_5.setViewportView(txaAnalysisComments);
 		
-		GeGuCheckListsTableModel tablegpcmodel = new GeGuCheckListsTableModel ();
-		tablegpcmodel.setColumnName("所属股票池");
-		tableGuPiaoChi = new JTable(tablegpcmodel) {
-			public String getToolTipText(MouseEvent e) 
-			{
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                	e1.printStackTrace();
-                }
-                return tip;
-            } 
-		};
+		tableGuPiaoChi = new GeGuCheckListsTable("所属股票池");
 		setTableColumnsWidth(tableGuPiaoChi);
 		scrollPane_4.setViewportView(tableGuPiaoChi);
 		
-		GeGuCheckListsTableModel tabletichaimoodel = new GeGuCheckListsTableModel ();
-		tabletichaimoodel.setColumnName("题材分析");
-		tableTiCai = new JTable(tabletichaimoodel) {
-			public String getToolTipText(MouseEvent e) 
-			{
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                	e1.printStackTrace();
-                }
-                return tip;
-            } 
-		};
+		tableTiCai = new GeGuCheckListsTable("题材分析");
 		setTableColumnsWidth(tableTiCai);
 		scrollPane_3.setViewportView(tableTiCai);
 		
-		GeGuCheckListsTableModel tablejishumodel = new GeGuCheckListsTableModel ();
-		tablejishumodel.setColumnName("技术与模型分析");
-		tablejishu = new JTable(tablejishumodel) {
-			public String getToolTipText(MouseEvent e) 
-			{
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
 
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                	e1.printStackTrace();
-                }
-                return tip;
-            } 
-		};
+		tablejishu = new GeGuCheckListsTable ("技术与模型分析");
 		setTableColumnsWidth(tablejishu);
 		scrollPane_2.setViewportView(tablejishu);
 		
-		GeGuCheckListsTableModel tablegudongmodel = new GeGuCheckListsTableModel ();
-		tablegudongmodel.setColumnName("股东分析");
-		tablegudong = new JTable(tablegudongmodel) {
-			public String getToolTipText(MouseEvent e) 
-			{
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                	e1.printStackTrace();
-                }
-                return tip;
-            } 
-		};
+		tablegudong = new GeGuCheckListsTable ("股东分析") ;
 		setTableColumnsWidth(tablegudong);
 		scrollPane_1.setViewportView(tablegudong);
 		
-		GeGuCheckListsTableModel tableFinancialmodel = new GeGuCheckListsTableModel ();
-		tableFinancialmodel.setColumnName("财务分析");
-		tableFinancial = new JTable(tableFinancialmodel) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			
-			
-			
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-		        Component comp = super.prepareRenderer(renderer, row, col);
-
-//		        Font defaultFont = this.getFont();
-//	        	Font font=new Font(defaultFont.getName(),Font.ITALIC,10);
-//	        	comp.setFont(font);
-				return comp;
-			}
-
-			public String getToolTipText(MouseEvent e) 
-			{
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                	e1.printStackTrace();
-                }
-                return tip;
-            } 
-		};
-		
+		tableFinancial = new GeGuCheckListsTable("财务分析");
 		setTableColumnsWidth(tableFinancial);
 		scrollPane.setViewportView(tableFinancial);
 		contentPanel.setLayout(gl_contentPanel);
@@ -802,10 +710,13 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 		table.getTableHeader().getColumnModel().getColumn(1).setWidth(50);
 		table.getTableHeader().getColumnModel().getColumn(1).setPreferredWidth(50);		
 		
-//		table.getTableHeader().getColumnModel().getColumn(3).setMaxWidth(0);
-//		table.getTableHeader().getColumnModel().getColumn(3).setMinWidth(0);
-//		table.getTableHeader().getColumnModel().getColumn(3).setWidth(0);
-//		table.getTableHeader().getColumnModel().getColumn(3).setPreferredWidth(0);
+		int columntwo = 250;
+		table.getTableHeader().getColumnModel().getColumn(2).setMaxWidth(columntwo);
+		table.getTableHeader().getColumnModel().getColumn(2).setMinWidth(columntwo);
+		table.getTableHeader().getColumnModel().getColumn(2).setWidth(columntwo);
+		table.getTableHeader().getColumnModel().getColumn(2).setPreferredWidth(columntwo);
+		
+		
 //	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(4).setMaxWidth(80);
 //	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(4).setMinWidth(80);
 //	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(4).setWidth(80);
@@ -910,7 +821,13 @@ class GeGuCheckListsTableModel extends AbstractTableModel
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
 	    	Object value = "??";
-	    	ZdgzItem zdgzitem = zdgzitems.get(rowIndex);
+	    	ZdgzItem zdgzitem;
+	    	try {
+	    		zdgzitem = zdgzitems.get(rowIndex);
+	    	} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+//	    		e.printStackTrace();
+	    		return null;
+	    	}
 	    	String itemvalue = zdgzitem.getValue();
 	    	String contents = zdgzitem.getContents();
 	    	
@@ -966,13 +883,83 @@ class GeGuCheckListsTableModel extends AbstractTableModel
 				return true;
 		}
 	    
-//	    public void addTableModelListener () 
-//	    {
-//	    	new TableModelListener() {
-//				@Override
-//				public void tableChanged(TableModelEvent e) {
-//					infochanged = true;
-//				} 
-//	    	} ;
-//	    }
+}
+
+
+class GeGuCheckListsTable extends JTable 
+{
+	public GeGuCheckListsTable (String indicator)
+	{
+		super ();
+		GeGuCheckListsTableModel tablegudongmodel = new GeGuCheckListsTableModel ();
+		super.setModel(tablegudongmodel);
+		tablegudongmodel.setColumnName(indicator);
+	}
+	
+	MultilineTableCell wordWrapRenderer = new MultilineTableCell (); 
+	
+	public TableCellRenderer getCellRenderer(int row, int column) {
+        if (column == 2 ) {
+            return wordWrapRenderer;
+        }
+        else {
+            return super.getCellRenderer(row, column);
+        }
+    }
+	
+	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
+	{
+		 
+        Component comp = super.prepareRenderer(renderer, row, col);
+        GeGuCheckListsTableModel tablemodel = (GeGuCheckListsTableModel)this.getModel(); 
+        if(tablemodel.getRowCount() == 0) {
+        	return null;
+        }
+        
+        int modelRow = convertRowIndexToModel(row);
+        ZdgzItem zdgzitem = tablemodel.getPolicyZdgzItem(modelRow);
+        
+        Color foreground = Color.black, background = Color.white;
+        if(zdgzitem.getSelectedcolor() != null) {
+        	Font defaultFont = this.getFont();
+        	
+        	Font font=new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+        	comp.setFont(font);
+        	
+	        //为不同情况突出显示不同的颜色
+	         background = Color.GREEN;
+	        
+        } else {
+        	background = Color.WHITE;
+        }
+        
+        try {
+            if(zdgzitem.isSelected() && col == 1)
+            	background = Color.RED;
+        } catch (java.lang.NullPointerException e) {
+        	
+        }
+
+        if (!this.isRowSelected(row)) 
+	    	comp.setBackground(background);
+        
+        return comp;
+	}
+
+	
+	public String getToolTipText(MouseEvent e) 
+	{
+        String tip = null;
+        java.awt.Point p = e.getPoint();
+        int rowIndex = rowAtPoint(p);
+        int colIndex = columnAtPoint(p);
+
+        try {
+            tip = getValueAt(rowIndex, colIndex).toString();
+        } catch (java.lang.NullPointerException e1) {
+//        	e1.printStackTrace();
+        }
+        return tip;
+    } 
+
 }

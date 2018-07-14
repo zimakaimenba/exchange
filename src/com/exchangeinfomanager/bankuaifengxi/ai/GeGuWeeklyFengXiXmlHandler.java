@@ -22,7 +22,8 @@ public class GeGuWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
 	public GeGuWeeklyFengXiXmlHandler (String stockcode, LocalDate date) 
 	{
 		super (stockcode,date);
-		super.setupXmlHandler (sysconfig.getGeGuFengXiWeeklyXmlMatrixFile ());
+		if(!stockcode.equals("000000"))
+			super.setupXmlHandler (sysconfig.getGeGuFengXiWeeklyXmlMatrixFile ());
 	}
 	/*
 	 * 

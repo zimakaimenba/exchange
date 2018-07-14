@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
@@ -42,6 +43,7 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -88,13 +90,13 @@ public class BanKuaiAndChanYeLian2
 		this.allbkstocks = AllCurrentTdxBKAndStoksTree.getInstance();
 
 		this.cylxmhandler = new ChanYeLianXMLHandler ();
-		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
+//		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
 		this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
 	
 		treechanyelian = cylxmhandler.getBkChanYeLianXMLTree();
 		updatedChanYeLianTree (allbkstocks);
 		
-		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
+//		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
 		
 	}
 	// 单例实现  
@@ -113,13 +115,13 @@ public class BanKuaiAndChanYeLian2
 	private BkfxWeeklyFileResultXmlHandler bkfxrfxmlhandler;
 	private AllCurrentTdxBKAndStoksTree allbkstocks;
 	protected SystemConfigration sysconfig;
-	protected HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap;
+//	protected HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap;
 	protected ChanYeLianXMLHandler cylxmhandler;
-	protected TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
+//	protected TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
     protected BkChanYeLianTree treechanyelian;
 //    protected BkChanYeLianTree treeallstocks;
-    protected BkChanYeLianTree treeallbankuaiandhisstocks;
-    protected BanKuaiDbOperation bkdbopt;
+//    protected BkChanYeLianTree treeallbankuaiandhisstocks;
+    private BanKuaiDbOperation bkdbopt;
 
 	/*
 	 * XML存在
@@ -298,7 +300,7 @@ public class BanKuaiAndChanYeLian2
 	 */
 	private void updatedChanYeLianTree(AllCurrentTdxBKAndStoksTree allbkstocks)
 	{
-		// 先保证12个股票池一致
+		// 先保证12个股票池XML和数据库一致
 		HashMap<String,String> gpcindb = bkdbopt.getGuPiaoChi ();
 		
 		InvisibleTreeModel ml = (InvisibleTreeModel)this.treechanyelian.getModel();
@@ -332,7 +334,7 @@ public class BanKuaiAndChanYeLian2
 //	    HashSet<BkChanYeLianTreeNode> cyltreebkset1 = this.treechanyelian.getSpecificTypeNodesSet (BanKuaiAndStockBasic.TDXBK);
 	    
 	    SetView<String> differencebknew = Sets.difference(allbks, cyltreebkset ); //应该添加的
-	    BkChanYeLianTreeNode qitanode = treechanyelian.getSpecificNodeByHypyOrCode("qt", BanKuaiAndStockBasic.GPC);
+	    BkChanYeLianTreeNode qitanode = treechanyelian.getSpecificNodeByHypyOrCode("GPC999", BanKuaiAndStockBasic.GPC);
 	    for(String newnode : differencebknew) {
 	    	BkChanYeLianTreeNode tmpnode = allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newnode, BanKuaiAndStockBasic.TDXBK);
 	    	BanKuai newbk = new BanKuai (newnode,tmpnode.getMyOwnName() );
@@ -355,9 +357,24 @@ public class BanKuaiAndChanYeLian2
 	/*
 	 * 判断是否属于重点关注板块
 	 */
-	public Multimap<String,String> checkBanKuaiSuoSuTwelveDaLei (Set<String> union)
+	public Multimap<String,String> checkBanKuaiSuoSuTwelveDaLei (Set<String> bkcodeset)
 	{
-		return zdgzbkxmlhandler.subBkSuoSuTwelveDaLei (union);
+		Multimap<String,String> tmpsuoshudalei =  HashMultimap.create();
+		
+		for(String bkcode : bkcodeset) {
+			BkChanYeLianTreeNode foundbk = this.treechanyelian.getSpecificNodeByHypyOrCode(bkcode, BanKuaiAndStockBasic.TDXBK);
+			TreeNode[] bkpath = foundbk.getPath();
+			BkChanYeLianTreeNode gpcbelonged = (BkChanYeLianTreeNode) bkpath[1];
+			String gpccode = gpcbelonged.getMyOwnCode();
+			if(!gpccode.toUpperCase().equals("GPC999")) {
+				tmpsuoshudalei.put(bkcode, gpcbelonged.getMyOwnName());
+			}
+		}
+		
+		if(tmpsuoshudalei.size() == 0)
+			return null;
+		else
+			return tmpsuoshudalei;
 	}
 	/*
 	 * 股票所属产业链

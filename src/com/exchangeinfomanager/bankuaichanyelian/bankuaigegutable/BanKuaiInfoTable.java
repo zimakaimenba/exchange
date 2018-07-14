@@ -32,6 +32,7 @@ import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.ToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -88,7 +89,7 @@ public class BanKuaiInfoTable extends JTable
         	}
         });
 		
-		JPopupMenu popupMenuGeguNews = new BanKuaiPopUpMenu(this,this.stockmanager);
+		BanKuaiPopUpMenu popupMenuGeguNews = new BanKuaiPopUpMenuForTable(this.stockmanager,this);
 		
 
 		this.setComponentPopupMenu(popupMenuGeguNews);

@@ -154,7 +154,7 @@ public class WeeklyFenXiWizard  extends JDialog {
            
            GeGuWeeklyFengXiXmlHandler ggxmlhandler = new GeGuWeeklyFengXiXmlHandler (displaygegunode.getMyOwnCode(),selectdate);
            
-           GeGuWeeklyFengXi ggfx = new GeGuWeeklyFengXi("", "个股分析"+ displaygegunode.getMyOwnCode()+displaygegunode.getMyOwnName(),
+           GeGuWeeklyFengXi ggfx = new GeGuWeeklyFengXi("", "个股/板块分析 <"+ displaygegunode.getMyOwnCode()+displaygegunode.getMyOwnName() + ">",
         		   displaygegunode,selectdate,ggxmlhandler)
            {
 				private static final long serialVersionUID = 1L;

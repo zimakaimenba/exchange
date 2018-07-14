@@ -37,7 +37,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-
+/**
+ * 
+ */
 class TwelveZhongDianGuanZhuXmlHandler 
 {
 	public  TwelveZhongDianGuanZhuXmlHandler() 
@@ -91,31 +93,6 @@ class TwelveZhongDianGuanZhuXmlHandler
 	{
 		return hasXmlRevised;
 	}
-	
-	/*
-	 * 简版的产业链重点关注信息。系统刚启动需要重点关注map，但还没有树，所以生成一个简版的用
-	 */
-//	public Multimap<String,String> getSimpleZdgzBanKuaiFromXml ()
-//	{
-//		gzbkdetailsimplemap =  HashMultimap.create();
-//		Iterator it = xmlroot.elementIterator();
-//		 while (it.hasNext()) 
-//		 {
-//			   Element daleielement = (Element) it.next();
-//			   ArrayList<BkChanYeLianTreeNode> tmpgzbksublist = new ArrayList<BkChanYeLianTreeNode> (); //重点关注的板块list
-//			   String daleiname = daleielement.attributeValue("daleiname");
-//			   
-//			   Iterator daleiit = daleielement.elementIterator();
-//			   while(daleiit.hasNext()) {
-//				   Element iteele = (Element)daleiit.next();
-//				   
-//				   String suoshutdxbkcode = iteele.attributeValue("tdxbkcode");
-//				   gzbkdetailsimplemap.put(daleiname, suoshutdxbkcode);
-//			   }
-//		 }
-//
-//		return gzbkdetailsimplemap;
-//	}
 	/*
 	 * 读取重点关注XML,把每个关注的产业链包装成产业链XML TREE的节点
 	 */

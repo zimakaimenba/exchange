@@ -435,13 +435,13 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void exportBanKuaiWithGeGuOnCondition2 ()
 	{
-		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
 		
 		if(exportcond == null || exportcond.size() == 0) {
 			if(!ckboxshowcje.isSelected() && !cbxdpmaxwk.isSelected() && !cbxbkmaxwk.isSelected() && !chkcjemaxwk.isSelected()){
 				JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
 				return;
-			} else if(exportcond == null){
+			} else if(exportcond == null) { //用户设置条件后可能直接点击导出，而没有先点击加入，这里是统一界面的行为
 				exportcond = new ArrayList<ExportCondition> ();
 				initializeExportConditions ();
 			} else
@@ -453,6 +453,7 @@ public class BanKuaiFengXi extends JDialog {
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 				return;
 		
+		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		String dateshowinfilename = null;
 		if(globeperiod == null  || globeperiod.equals(StockGivenPeriodDataItem.WEEK))
 			dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
@@ -749,29 +750,31 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void displayStockSuoShuBanKuai(Stock selectstock) 
 	{
-//		 selectstock = bkdbopt.getTDXBanKuaiForAStock (selectstock); //通达信板块信息
-		 HashMap<String, String> suosusysbankuai = ((Stock)selectstock).getGeGuCurSuoShuTDXSysBanKuaiList();
-		 Set<String> union =  suosusysbankuai.keySet();
-		 Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
+		editorPanebankuai.displayBanKuaiListContents(selectstock);
 		 
-		 String htmlstring = "<html> "
-		 		+ "<body>"
-		 		+ " <p>所属板块:";
-	     for(String suoshubankcode : union ) {
-	    	 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
-	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
-	    	 if(daleilist.size()>0)
-	    			htmlstring  +=   "<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> ";
-	    		else
-	    			htmlstring  += "<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ";
-	     } 
-	     htmlstring += "</p>";
-	     		
-	     htmlstring += "</body>"
-					+ "</html>";
-	    	 
-	     editorPanebankuai.setText(htmlstring);
-	     editorPanebankuai.setCaretPosition(0);
+//		 selectstock = bkdbopt.getTDXBanKuaiForAStock (selectstock); //通达信板块信息
+//		 HashMap<String, String> suosusysbankuai = ((Stock)selectstock).getGeGuCurSuoShuTDXSysBanKuaiList();
+//		 Set<String> union =  suosusysbankuai.keySet();
+//		 Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
+//		 
+//		 String htmlstring = "<html> "
+//		 		+ "<body>"
+//		 		+ " <p>所属板块:";
+//	     for(String suoshubankcode : union ) {
+//	    	 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
+//	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
+//	    	 if(daleilist.size()>0)
+//	    			htmlstring  +=   "<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> ";
+//	    		else
+//	    			htmlstring  += "<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ";
+//	     } 
+//	     htmlstring += "</p>";
+//	     		
+//	     htmlstring += "</body>"
+//					+ "</html>";
+//	    	 
+//	     editorPanebankuai.setText(htmlstring);
+//	     editorPanebankuai.setCaretPosition(0);
 	     
 	}
 	/*
@@ -1073,8 +1076,8 @@ public class BanKuaiFengXi extends JDialog {
 			public void mouseClicked(MouseEvent arg0) 
 			{
 				
-				if( exportcond == null)
-					exportcond = new ArrayList<ExportCondition> ();
+//				if( exportcond == null)
+//					exportcond = new ArrayList<ExportCondition> ();
 				
 				if(!ckboxshowcje.isSelected() && !cbxdpmaxwk.isSelected() && !cbxbkmaxwk.isSelected() && !chkcjemaxwk.isSelected()){
 					JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
@@ -1758,7 +1761,28 @@ public class BanKuaiFengXi extends JDialog {
 		System.gc();
 	}
 	/*
-	 * 
+	 * 每周都要导出的条件在这里设置，一次设置节约时间
+	 */
+	protected void initializeNormalExportConditions()
+	{
+		if( exportcond == null)
+			exportcond = new ArrayList<ExportCondition> ();
+		
+		ExportCondition expc1 = new ExportCondition ("5.8",null,"4",null,null,null);
+		exportcond.add(expc1);
+		
+		ExportCondition expc2 = new ExportCondition ("5.8","7",null,"5",null,null);
+		exportcond.add(expc2);
+		
+		ExportCondition expc3 = new ExportCondition ("2.8",null,"4",null,"30","880529");
+		exportcond.add(expc3);
+		
+		decrorateExportButton (expc1);
+		decrorateExportButton (expc2);
+		decrorateExportButton (expc3);
+	}
+	/*
+	 * 用户单个条件的设置
 	 */
 	protected void initializeExportConditions() 
 	{
@@ -1794,26 +1818,37 @@ public class BanKuaiFengXi extends JDialog {
 		if(cbxhuanshoulv.isSelected())
 			exporthsl = tfldhuanshoulv.getText();
 	
+		if( exportcond == null)
+			exportcond = new ArrayList<ExportCondition> ();
+		
 		ExportCondition expc = new ExportCondition (exportcjelevel,exportcjemaxwklevel,exportdpmaxwklevel,exportbkmaxwklevel,exporthsl,exportbk);
 		exportcond.add(expc);
 		
-		//在tooltips显示当前有几个已经添加的条件及内容
-		String htmlstring = btnaddexportcond.getToolTipText();
-		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-		org.jsoup.select.Elements content = doc.select("body");
-		content.append(expc.getTooltips());
-		htmlstring = doc.toString();
-		btnaddexportcond.setToolTipText(htmlstring);
+		decrorateExportButton (expc);
 		
-		int curconditionnum;
-		try {
-			String num = btnaddexportcond.getText() ;
-		 curconditionnum = Integer.parseInt(btnaddexportcond.getText() ) ;
-		 curconditionnum ++ ;
-		} catch (java.lang.NumberFormatException e) {
-			curconditionnum = 1;
-		}
-		btnaddexportcond.setText(String.valueOf(curconditionnum));
+	}
+	/*
+	 * 用户设置条件后，在buttion 的toolstip显示用户设置的条件
+	 */
+	private void decrorateExportButton(ExportCondition expc) 
+	{
+				//在tooltips显示当前有几个已经添加的条件及内容
+				String htmlstring = btnaddexportcond.getToolTipText();
+				org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+				org.jsoup.select.Elements content = doc.select("body");
+				content.append(expc.getTooltips());
+				htmlstring = doc.toString();
+				btnaddexportcond.setToolTipText(htmlstring);
+				
+				int curconditionnum;
+				try {
+					String num = btnaddexportcond.getText() ;
+				 curconditionnum = Integer.parseInt(btnaddexportcond.getText() ) ;
+				 curconditionnum ++ ;
+				} catch (java.lang.NumberFormatException e) {
+					curconditionnum = 1;
+				}
+				btnaddexportcond.setText(String.valueOf(curconditionnum));
 	}
 
 	/*
@@ -1924,88 +1959,92 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	protected boolean findInputedNodeInTable(String nodecode) 
 	{
-		Boolean notfound = false;
-		int rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
-		if(rowindex <0) {
-			tableGuGuZhanBiInBk.getSelectionModel().clearSelection();
-			if(((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0)
+		Boolean notfound = false; int rowindex;
+		if(((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
+			 rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
 				notfound = true;
-		} else {
-			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
-			int curselectrow = tableGuGuZhanBiInBk.getSelectedRow();
-			if( curselectrow != modelRow) {
-				tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
-				tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
+			} else {
+				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+				int curselectrow = tableGuGuZhanBiInBk.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
+					tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
+				}
 			}
 		}
 		
-		rowindex = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
-		if(rowindex <0) {
-			tablexuandingzhou.getSelectionModel().clearSelection();
-			if( ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getRowCount() >0)
+		
+		if( ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
 				notfound = true;
-		} else {
-			int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
-			int curselectrow = tablexuandingzhou.getSelectedRow();
-			if( curselectrow != modelRow) {
-				tablexuandingzhou.setRowSelectionInterval(modelRow, modelRow);
-				tablexuandingzhou.scrollRectToVisible(new Rectangle(tablexuandingzhou.getCellRect(modelRow, 0, true)));
+			} else {
+				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
+				int curselectrow = tablexuandingzhou.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tablexuandingzhou.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingzhou.scrollRectToVisible(new Rectangle(tablexuandingzhou.getCellRect(modelRow, 0, true)));
+				}
 			}
 		}
 		
-		rowindex = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
-		if(rowindex <0) {
-			tablexuandingminusone.getSelectionModel().clearSelection();
-			if( ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 )
+		
+		if( ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
 				notfound = true;
-		} else {
-			int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
-			int curselectrow = tablexuandingminusone.getSelectedRow();
-			if( curselectrow != modelRow)  {
-				tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);
-				tablexuandingminusone.scrollRectToVisible(new Rectangle(tablexuandingminusone.getCellRect(modelRow, 0, true)));
+			} else {
+				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
+				int curselectrow = tablexuandingminusone.getSelectedRow();
+				if( curselectrow != modelRow)  {
+					tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingminusone.scrollRectToVisible(new Rectangle(tablexuandingminusone.getCellRect(modelRow, 0, true)));
+				}
+			}
+		}
+		
+
+		if( ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
+				notfound = true;
+			} else {
+				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
+				int curselectrow = tablexuandingminustwo.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tablexuandingminustwo.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingminustwo.scrollRectToVisible(new Rectangle(tablexuandingminustwo.getCellRect(modelRow, 0, true)));
+				}
 			}
 		}
 
-		rowindex = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
-		if(rowindex <0) {
-			tablexuandingminustwo.getSelectionModel().clearSelection();
-			if( ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0)
-					notfound = true;
-		} else {
-			int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
-			int curselectrow = tablexuandingminustwo.getSelectedRow();
-			if( curselectrow != modelRow) {
-				tablexuandingminustwo.setRowSelectionInterval(modelRow, modelRow);
-				tablexuandingminustwo.scrollRectToVisible(new Rectangle(tablexuandingminustwo.getCellRect(modelRow, 0, true)));
-			}
-		}
-
-		rowindex = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
-		if(rowindex <0) {
-			tablexuandingplusone.getSelectionModel().clearSelection();
-			if(((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0)
-				notfound = true;
-		} else {
-			int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
-			int curselectrow = tablexuandingplusone.getSelectedRow();
-			if( curselectrow != modelRow)  {
-				tablexuandingplusone.setRowSelectionInterval(modelRow, modelRow);
-				tablexuandingplusone.scrollRectToVisible(new Rectangle(tablexuandingplusone.getCellRect(modelRow, 0, true)));
+		if(((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
+				tablexuandingplusone.getSelectionModel().clearSelection();
+			} else {
+				int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
+				int curselectrow = tablexuandingplusone.getSelectedRow();
+				if( curselectrow != modelRow)  {
+					tablexuandingplusone.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingplusone.scrollRectToVisible(new Rectangle(tablexuandingplusone.getCellRect(modelRow, 0, true)));
+				}
 			}
 		}
 		
-		rowindex = ((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel() ).getStockRowIndex(nodecode);
-		if(rowindex <0) {
-			tablexuandingplusone.getSelectionModel().clearSelection();
-			if(((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel() ).getRowCount() >0 )
+		
+		if(((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel() ).getRowCount() >0 ) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
 				notfound = true;
-		} else {
-			int modelRow = tablexuandingplustwo.convertRowIndexToView(rowindex);
-			int curselectrow = tablexuandingplustwo.getSelectedRow();
-			if( curselectrow != modelRow) {
-				tablexuandingplustwo.setRowSelectionInterval(modelRow, modelRow);
-				tablexuandingplustwo.scrollRectToVisible(new Rectangle(tablexuandingplustwo.getCellRect(modelRow, 0, true)));
+			} else {
+				int modelRow = tablexuandingplustwo.convertRowIndexToView(rowindex);
+				int curselectrow = tablexuandingplustwo.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tablexuandingplustwo.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingplustwo.scrollRectToVisible(new Rectangle(tablexuandingplustwo.getCellRect(modelRow, 0, true)));
+				}
 			}
 		}
 		
@@ -2311,8 +2350,17 @@ public class BanKuaiFengXi extends JDialog {
 
 		      @Override
 		      public void actionPerformed(final ActionEvent e) {
-		        if (exporttask == null) {
-		        	exportBanKuaiWithGeGuOnCondition2();
+		    	
+		        if (exporttask == null) { 
+		        	String msg =  "导出常规条件设置个股还是导出当前设置个股？选择“确定”将导出常规条件设置个股。";
+			  		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "导出选择", JOptionPane.OK_CANCEL_OPTION);
+			  		if(exchangeresult == JOptionPane.CANCEL_OPTION) //用户选择导出当前设置 
+			  			exportBanKuaiWithGeGuOnCondition2();
+			  		else { //用户选择导出常规设置
+			  			initializeNormalExportConditions ();
+			  			exportBanKuaiWithGeGuOnCondition2();
+			  		}
+			  			
 		        } else {
 		        	exporttask.cancel(true);
 		        }
@@ -2401,7 +2449,7 @@ public class BanKuaiFengXi extends JDialog {
 		
 		
 		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager);
-		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
+//		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
 		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
 		
@@ -2410,7 +2458,7 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPanegegu.setBackgroundAt(1, UIManager.getColor("MenuItem.selectionBackground"));
 		
 		tablexuandingzhou = new BanKuaiGeGuTable (this.stockmanager);
-		tablexuandingzhou.hideZhanBiColumn(1);
+//		tablexuandingzhou.hideZhanBiColumn(1);
 
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
@@ -2422,28 +2470,28 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPanegegu.setBackgroundAt(2, Color.LIGHT_GRAY);
 		
 		tablexuandingminusone = new BanKuaiGeGuTable (this.stockmanager);
-		tablexuandingminusone.hideZhanBiColumn(1);
+//		tablexuandingminusone.hideZhanBiColumn(1);
 		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
 		
 		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
 		
 		tablexuandingminustwo = new BanKuaiGeGuTable (this.stockmanager);
-		tablexuandingminustwo.hideZhanBiColumn(1);
+//		tablexuandingminustwo.hideZhanBiColumn(1);
 		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
 		
 		JScrollPane scrollPanexuandingplusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
 		
 		tablexuandingplusone = new BanKuaiGeGuTable (this.stockmanager);
-		tablexuandingplusone.hideZhanBiColumn(1);
+//		tablexuandingplusone.hideZhanBiColumn(1);
 		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
 		
 		JScrollPane scrollPanexuandingplustwo = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+2", null, scrollPanexuandingplustwo, null);
 		
 		tablexuandingplustwo = new BanKuaiGeGuTable (this.stockmanager);
-		tablexuandingplustwo.hideZhanBiColumn(1);
+//		tablexuandingplustwo.hideZhanBiColumn(1);
 		scrollPanexuandingplustwo.setViewportView(tablexuandingplustwo);
 		
 //		tableBkZhanBi = new BanKuaiGeGuTable (this.stockmanager);

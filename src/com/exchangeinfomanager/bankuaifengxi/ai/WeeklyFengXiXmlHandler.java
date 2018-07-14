@@ -185,7 +185,13 @@ public abstract class WeeklyFengXiXmlHandler
 	{
 		ArrayList<ZdgzItem> eleitem = new ArrayList<ZdgzItem> ();
 		
-		String xmltag = element.getName();
+		String xmltag = null;
+		try {
+			xmltag = element.getName();
+		} catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
+			return null;
+		}
 		
 		Iterator itele = element.elementIterator();
 	   	while (itele.hasNext() ) 
@@ -238,12 +244,14 @@ public abstract class WeeklyFengXiXmlHandler
         	if(!fortype.toLowerCase().equals("matrix")) {
         		Boolean selected = zdgzitem.isSelected();
             	eleitem.addAttribute("selected",String.valueOf(selected));
+            	
+            	String value = zdgzitem.getValue();
+            	if(!Strings.isNullOrEmpty(value))
+            		eleitem.addAttribute("value",value);
+
         	}
         	
-           	String value = zdgzitem.getValue();
-        	if(!Strings.isNullOrEmpty(value))
-        		eleitem.addAttribute("value",value);
-        	
+           	        	
         	String contents = zdgzitem.getContents();
         	if(!Strings.isNullOrEmpty(contents))
         		eleitem.setText(contents);

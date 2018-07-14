@@ -41,6 +41,7 @@ import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl;
+import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.github.cjwizard.WizardPage;
@@ -58,6 +59,8 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 		
 		initializeGui ();
 		createEvents();
+		
+		dateChooser.setLocalDate(selectdate2);
 		
 		showZhiShuFenXiResults ();
 	}
@@ -202,6 +205,7 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 	private JButton btnremv;
 	private JButton btnadd;
 	private JTextArea txaComments;
+	private JLocalDateChooser dateChooser;
 	
 	private void initializeGui() 
 	{
@@ -254,6 +258,9 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 			chbxcjezhanbi.setSelected(true);
 			
 			btnxmlMartrix = new JButton("\u6253\u5F00XML Martiix\u6587\u4EF6");
+			
+			dateChooser = new JLocalDateChooser();
+			dateChooser.setEnabled(false);
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -268,18 +275,22 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 						.addComponent(btnxmlMartrix)
 						.addGap(573)
 						.addComponent(chbxcjezhanbi)
-						.addGap(174))
+						.addGap(39)
+						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+						.addGap(278))
 			);
 			gl_buttonPane.setVerticalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addGap(5)
-						.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-							.addComponent(tfldbkcode, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-							.addComponent(btnadd)
-							.addComponent(btnremv)
-							.addComponent(chbxcjezhanbi)
-							.addComponent(btnxmlMartrix)))
+						.addGroup(gl_buttonPane.createParallelGroup(Alignment.TRAILING)
+							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(tfldbkcode, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnadd)
+								.addComponent(btnremv)
+								.addComponent(chbxcjezhanbi)
+								.addComponent(btnxmlMartrix))))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 //		}
@@ -315,10 +326,6 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 		);
 		contentPanel.setLayout(gl_contentPanel);
 	}
-
-	
-
-
 }
 
 

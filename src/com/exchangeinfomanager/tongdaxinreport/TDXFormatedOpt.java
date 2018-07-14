@@ -27,6 +27,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXiXmlHandler;
 import com.exchangeinfomanager.bankuaifengxi.ai.ZdgzItem;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -252,27 +253,29 @@ public class TDXFormatedOpt {
 				return null;
 			}
 		 
-		String sqlquerystat = "SELECT * FROM 操作记录重点关注 WHERE 日期 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) +80 ) DAY )  ";
+		String sqlquerystat = "SELECT * FROM 操作记录重点关注 WHERE 日期 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) + 300 ) DAY )  ";
+				
 //			logger.debug(sqlquerystat);
 		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-		if(rs == null)	{   
-				logger.debug("读取数据库失败");
-				return null;
-		}
 		
-		ArrayListMultimap<String ,ZdgzItem> treemap = ArrayListMultimap.create();
+		ArrayListMultimap<String ,String> treemap = ArrayListMultimap.create();
 		try {
 			while(rs.next()) {
 				String formatedstockcode = rs.getString("股票代码");
-//				String zdgztype = rs.getString("加入移出标志");
-				java.util.Date date = rs.getDate("日期");
+				if(formatedstockcode.trim().equals("000000")) // 000000不需要导出
+					continue;
 				
-				//借用ZdgzItem
-				ZdgzItem jiarujihua = new ZdgzItem ( formatedstockcode);
-//				jiarujihua.setValue(zdgztype);
-				jiarujihua.setContents(date.toString());
+				java.sql.Date dateindb = rs.getDate("日期");
+				LocalDate recorddate = dateindb.toLocalDate(); 
 				
-				treemap.put(formatedstockcode, jiarujihua);
+				GeGuWeeklyFengXiXmlHandler xmlhandler = new GeGuWeeklyFengXiXmlHandler (formatedstockcode,recorddate);
+				String comments = recorddate.toString();
+				comments = comments + xmlhandler.getZhongDianGuanZhu().getGeGuAnalysisComments();
+
+				treemap.put(formatedstockcode, comments);
+				
+				xmlhandler = null;
+				comments = null;
 			}
 				
 		} catch (SQLException e) {
@@ -290,23 +293,8 @@ public class TDXFormatedOpt {
 		//遍历treemap
 		Set<String> stockcodeset = treemap.keySet();
 		for(String stockcode : stockcodeset) {
-			List<ZdgzItem> keyvalues = treemap.get(stockcode);
-			Collections.sort(keyvalues, new Comparator<ZdgzItem>() { //先排序
-				@Override
-				public int compare(ZdgzItem o1, ZdgzItem o2) {
-					if (o1.getContents() == null || o2.getContents() == null)
-				        return 0;
-					return o2.getContents().compareTo(o1.getContents());
-				}
-			});
-			
-			String result = "";
-//			LocalDate latestdate = keyvalues.get(0).getJiaRuDate();
-			for(ZdgzItem sigle : keyvalues) {
-				String curdate = sigle.getContents();
-				
-				result = result + curdate ;
-			}
+			List<String> keyvalues = treemap.get(stockcode);
+			String result = keyvalues.toString();
 			
 			if(!Strings.isNullOrEmpty(result)  ) {
 				String lineformatedgainiantx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(stockcode, result );
@@ -318,7 +306,10 @@ public class TDXFormatedOpt {
 			}
 			
 		}
-			
+		
+		treemap = null;
+		stockcodeset = null;
+		
 		return filezdgz.getAbsolutePath();
 	}
 /*
