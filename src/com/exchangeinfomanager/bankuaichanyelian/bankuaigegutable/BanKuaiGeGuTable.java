@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.awt.Color;   
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -290,6 +291,10 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		Stock stock = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
 
 		LocalDate fxdate = ((BanKuaiGeGuTableModel)this.getModel()).getShowCurDate();
+		
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		setCursor(hourglassCursor);
+		
 		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( stock,fxdate);
     	ggfx.setSize(new Dimension(1400, 800));
     	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else

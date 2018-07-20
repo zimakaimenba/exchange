@@ -296,12 +296,18 @@ public class Stock extends BkChanYeLianTreeNode {
 		 * (non-Javadoc)
 		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
 		 */
-		public double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference)
+		public Double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference)
 		{
-			TimeSeriesDataItem curhslrecord = stockhuanshoulv.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-			Double curhsl = curhslrecord.getValue().doubleValue();
+			try{
+				TimeSeriesDataItem curhslrecord = stockhuanshoulv.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+				Double curhsl = curhslrecord.getValue().doubleValue();
+				
+				return curhsl;
+			} catch (java.lang.NullPointerException e) {
+				e.printStackTrace();
+				return null;
+			}
 			
-			return curhsl;
 		}
 		/*
 		 * (non-Javadoc)

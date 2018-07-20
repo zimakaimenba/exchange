@@ -152,6 +152,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 			barchartdataset.clear();
 		
 		chartPanel.removeAll();
+		this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰
 	}
    /*
     * 

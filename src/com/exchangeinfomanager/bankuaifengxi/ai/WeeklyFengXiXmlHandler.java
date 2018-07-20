@@ -244,13 +244,14 @@ public abstract class WeeklyFengXiXmlHandler
         	if(!fortype.toLowerCase().equals("matrix")) {
         		Boolean selected = zdgzitem.isSelected();
             	eleitem.addAttribute("selected",String.valueOf(selected));
-            	
-            	String value = zdgzitem.getValue();
-            	if(!Strings.isNullOrEmpty(value))
-            		eleitem.addAttribute("value",value);
-
         	}
         	
+        	String eleaddedtext = eleadded.getName();
+        	if( !fortype.toLowerCase().equals("matrix") || eleaddedtext.equals("DaPan") ) { //对于大盘指数来说，指数ID是存在VALUE里面的，所以要保存
+        		String value = zdgzitem.getValue();
+            	if(!Strings.isNullOrEmpty(value))
+            		eleitem.addAttribute("value",value);
+        	}
            	        	
         	String contents = zdgzitem.getContents();
         	if(!Strings.isNullOrEmpty(contents))

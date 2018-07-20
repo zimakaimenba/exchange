@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -777,19 +778,19 @@ class GeGuCheckListsTableModel extends AbstractTableModel
 		zdgzitems.remove(row);
 		this.fireTableDataChanged();
 	}
-	public void isPolicyZdgzItemSelected (int rowIndex)
-	{
-		ZdgzItem zdgzitem = zdgzitems.get(rowIndex);
-		
-		try {
-    		boolean selected = zdgzitem.isSelected();
-    		 zdgzitem.setItemSelected(!selected);
-    	} catch (Exception e) { //说明以前没有设置，那肯定要设置为true
-    		zdgzitem.setItemSelected(true);
-    	}
-    	
-    	this.fireTableDataChanged();
-	}
+//	public void isPolicyZdgzItemSelected (int rowIndex)
+//	{
+//		ZdgzItem zdgzitem = zdgzitems.get(rowIndex);
+//		
+//		try {
+//    		boolean selected = zdgzitem.isSelected();
+//    		 zdgzitem.setItemSelected(!selected);
+//    	} catch (Exception e) { //说明以前没有设置，那肯定要设置为true
+//    		zdgzitem.setItemSelected(true);
+//    	}
+//    	
+//    	this.fireTableDataChanged();
+//	}
 	
 	 public int getRowCount() 
 	 {
@@ -891,12 +892,69 @@ class GeGuCheckListsTable extends JTable
 	public GeGuCheckListsTable (String indicator)
 	{
 		super ();
+		
 		GeGuCheckListsTableModel tablegudongmodel = new GeGuCheckListsTableModel ();
 		super.setModel(tablegudongmodel);
 		tablegudongmodel.setColumnName(indicator);
+		
+//		createEvents ();
 	}
 	
-	MultilineTableCell wordWrapRenderer = new MultilineTableCell (); 
+//	protected PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+//	public void addPropertyChangeListener(PropertyChangeListener listener) {
+//	        pcs.addPropertyChangeListener(listener);
+//	}
+	
+	private static Logger logger = Logger.getLogger(GeGuCheckListsTable.class);
+	MultilineTableCell wordWrapRenderer = new MultilineTableCell ();
+	
+//	private void createEvents()
+//	{
+//		Action tableaction = new AbstractAction()  {
+//		private static final long serialVersionUID = 1L;
+//
+//		public void actionPerformed(ActionEvent e)
+//		{
+//		            TableCellListener tcl = (TableCellListener)e.getSource();
+//		            logger.debug("Row   : " + tcl.getRow());
+//		            logger.debug("Column: " + tcl.getColumn());
+//		            logger.debug("Old   : " + tcl.getOldValue());
+//		            logger.debug("New   : " + tcl.getNewValue());
+//		            
+//		            if(tcl.getColumn() == 1) {
+//		            	 Boolean old = (Boolean) tcl.getOldValue();
+//			             Boolean newvalue = (Boolean) tcl.getNewValue();
+//			            if(old != newvalue) {
+//			            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+//					        pcs.firePropertyChange(evt);
+//			            }
+//		            } else if(tcl.getColumn() == 3) {
+//		            	String old = (String) tcl.getOldValue();
+//			            String newvalue = (String) tcl.getNewValue();
+//			            if(!old.equals(newvalue)) {
+//			            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+//					        pcs.firePropertyChange(evt);
+//			            }
+//		            } if(tcl.getColumn() == 2) {
+//		            	String old = (String) tcl.getOldValue();
+//			            String newvalue = (String) tcl.getNewValue();
+//			            if(!old.equals(newvalue)) {
+//			            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+//					        pcs.firePropertyChange(evt);
+//					        
+//					        PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLMATRIX_PROPERTY, "", "new");
+//					        pcs.firePropertyChange(evt2);
+//			            }
+//		            	
+//		            }
+//		            
+//		        }
+//		 };
+//		 
+//		 TableCellListener tcl = new TableCellListener(this, tableaction);
+//	}
+
+	 
 	
 	public TableCellRenderer getCellRenderer(int row, int column) {
         if (column == 2 ) {

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -286,6 +287,9 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void initializeBanKuaiZhanBiByGrowthRate (String period)
 	{
+//		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+//		setCursor(hourglassCursor);
+		
 		this.globeperiod = period;
     	LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     	
@@ -335,7 +339,10 @@ public class BanKuaiFengXi extends JDialog {
 	
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,period,null);
 		
+//		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+//		setCursor(hourglassCursor2);
 		Toolkit.getDefaultToolkit().beep();
+		
 	}
 
 	
@@ -623,8 +630,6 @@ public class BanKuaiFengXi extends JDialog {
 			
 			
 		}
-		
-		System.gc();
 	}
 	/*
 	 * 设置成交量或者占比的提示
@@ -1320,6 +1325,11 @@ public class BanKuaiFengXi extends JDialog {
 					if(userinputnode == null) { //可能是输入的字母没有找到
 						nodecode = cbxstockcode.getSelectedItem().toString();
 					} else {
+						if(userinputnode.getType() == BanKuaiAndStockBasic.TDXBK ) { //如果用户输入查出的是板块，
+							JOptionPane.showMessageDialog(null,"不是个股代码，重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+							
 						nodecode = userinputnode.getMyOwnCode();
 						displayStockSuoShuBanKuai((Stock)userinputnode);
 					}
@@ -1501,6 +1511,9 @@ public class BanKuaiFengXi extends JDialog {
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
 
 				if (arg0.getClickCount() == 1) {
+					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+					setCursor(hourglassCursor);
+					
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock); //个股对板块的数据
 					refreshGeGuKXianZouShi (selectstock.getStock()); //K线
@@ -1508,6 +1521,8 @@ public class BanKuaiFengXi extends JDialog {
 					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
 					displayStockCurrentFxResult (tableGuGuZhanBiInBk);
 					
+					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+					setCursor(hourglassCursor2);
 					Toolkit.getDefaultToolkit().beep();
 				}
 				if (arg0.getClickCount() == 2) {
@@ -1683,12 +1698,17 @@ public class BanKuaiFengXi extends JDialog {
 					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
+				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+				setCursor(hourglassCursor);
 				
 				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
 				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
 				refreshCurentBanKuaiFengXiResult (selectedbk,globeperiod);
 				displayNodeInfo(selectedbk);
 				cbxsearchbk.updateUserSelectedNode(selectedbk);
+				
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+				setCursor(hourglassCursor2);
 				Toolkit.getDefaultToolkit().beep();
 				//装配每日模型文件
 			}

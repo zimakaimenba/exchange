@@ -141,6 +141,7 @@ import javax.swing.border.BevelBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -423,6 +424,9 @@ public class StockInfoManager
 	 */
 	private void showWeeklyFenXiWizardDialog(LocalDate selectdate) 
 	{
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		this.frame.setCursor(hourglassCursor);
+		
 		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( nodeshouldbedisplayed,selectdate);
     	ggfx.setSize(new Dimension(1550, 900));
     	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
@@ -870,8 +874,9 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
+				
 				showWeeklyFenXiWizardDialog (LocalDate.now());
-				preUpdateSearchResultToGui(kspanel.getStockcode());
+//				preUpdateSearchResultToGui(kspanel.getStockcode());
 			}
 
 			

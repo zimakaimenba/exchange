@@ -38,6 +38,7 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.commonlib.MultilineTableCell;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.TableCellListener;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.github.cjwizard.WizardPage;
 import com.google.common.base.Strings;
@@ -49,6 +50,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -77,6 +80,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.swing.JTextArea;
+
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JTree;
@@ -110,7 +115,7 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 		zdgzinfo = super.fxmlhandler.getZhongDianGuanZhu();
 
 		ArrayList<ZdgzItem> govpolicy = zdgzinfo.getGovpolicy();
-		((PolicyTableModel)tablepolicy.getModel()).refresh(govpolicy);
+		((GeGuCheckListsTableModel)tablepolicy.getModel()).refresh(govpolicy);
 	
 		txaComments.setText(zdgzinfo.getDaPanAnalysisComments() );
 	}
@@ -119,6 +124,45 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 	 */
 	private void createEvents() 
 	{
+		Action tableaction = new AbstractAction()  {
+			private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e)
+		        {
+		            TableCellListener tcl = (TableCellListener)e.getSource();
+	            
+		            if(tcl.getColumn() == 1) {
+		            	 Boolean old = (Boolean) tcl.getOldValue();
+			             Boolean newvalue = (Boolean) tcl.getNewValue();
+			            if(old != newvalue) {
+			            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+					        pcs.firePropertyChange(evt);
+			            }
+		            } else if(tcl.getColumn() == 3) {
+		            	String old = (String) tcl.getOldValue();
+			            String newvalue = (String) tcl.getNewValue();
+			            if(!old.equals(newvalue)) {
+			            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+					        pcs.firePropertyChange(evt);
+			            }
+		            } if(tcl.getColumn() == 2) {
+		            	String old = (String) tcl.getOldValue();
+			            String newvalue = (String) tcl.getNewValue();
+			            if(!old.equals(newvalue)) {
+			            	PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_ADDED, "", "new");
+					        pcs.firePropertyChange(evt);
+					        
+					        PropertyChangeEvent evt2 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLMATRIX_PROPERTY, "", "new");
+					        pcs.firePropertyChange(evt2);
+			            }
+		            	
+		            }
+		            
+		        }
+		    };
+
+		TableCellListener tcl = new TableCellListener(tablepolicy, tableaction);
+
 		btnxmlMartrix.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -164,7 +208,7 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 			{
 				int row = tablepolicy.getSelectedRow();
 				if(row != -1) {
-					((PolicyTableModel)tablepolicy.getModel()).deleteZdgzItem(row);
+					((GeGuCheckListsTableModel)tablepolicy.getModel()).deleteZdgzItem(row);
 					int action = JOptionPane.showConfirmDialog(null, "是否同时将该选项从XML Matrix文件中删除？","警告", JOptionPane.YES_NO_OPTION);
 					if(0 == action) {
 						PropertyChangeEvent evt = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLMATRIX_PROPERTY, "", "NEW");
@@ -185,13 +229,13 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 		btnaddchecklists.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				String xmltag = ((PolicyTableModel)tablepolicy.getModel()).getXmlTagBelonged();
+				String xmltag = ((GeGuCheckListsTableModel)tablepolicy.getModel()).getXmlTagBelonged();
 				ZdgzItem zdgzitem = new ZdgzItem ("GP" + String.valueOf(zdgzinfo.getGovpolicy().size()+1), xmltag);
 				int exchangeresult = JOptionPane.showConfirmDialog(null, zdgzitem, "增加CheckList", JOptionPane.OK_CANCEL_OPTION);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 				
-				((PolicyTableModel)tablepolicy.getModel()).addNewItem(zdgzitem);
+				((GeGuCheckListsTableModel)tablepolicy.getModel()).addNewItem(zdgzitem);
 				
 				if(zdgzitem.shouldAddToXmlMartixFile()) {
 					PropertyChangeEvent evt1 = new PropertyChangeEvent(this, WeeklyFengXiXmlHandler.XMLINDB_PROPERTY, "", "NEW");
@@ -241,10 +285,10 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 499, GroupLayout.PREFERRED_SIZE)
+						.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
+							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 636, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrollPane_3, GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
+							.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 399, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
 							.addGap(20))
@@ -270,9 +314,9 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 326, GroupLayout.PREFERRED_SIZE)))
 					.addGap(7)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
 						.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
-						.addComponent(scrollPane_3, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE))
+						.addComponent(scrollPane_3, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		
@@ -284,7 +328,8 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 		scrollPane_3.setViewportView(txaComments);
 		
 		
-		PolicyTableModel tablepolicymodel = new PolicyTableModel ();
+//		PolicyTableModel tablepolicymodel = new PolicyTableModel ();
+		GeGuCheckListsTableModel tablepolicymodel = new GeGuCheckListsTableModel ();
 		tablepolicy = new JTable(tablepolicymodel) {
 			MultilineTableCell wordWrapRenderer = new MultilineTableCell (); 
 			
@@ -301,7 +346,7 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 			{
 				 
 		        Component comp = super.prepareRenderer(renderer, row, col);
-		        PolicyTableModel tablemodel = (PolicyTableModel)this.getModel(); 
+		        GeGuCheckListsTableModel tablemodel = (GeGuCheckListsTableModel)this.getModel(); 
 		        if(tablemodel.getRowCount() == 0) {
 		        	return null;
 		        }
@@ -436,115 +481,115 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 
 
 
-class PolicyTableModel extends AbstractTableModel 
-{
-	String[] jtableTitleStrings = { "ID","选中", "政策面"};
-	private ArrayList<ZdgzItem> govpolicy;
-	private String xmltagbelonged;
-	
-	PolicyTableModel ()
-	{
-	}
-	public void refresh  (ArrayList<ZdgzItem> govpolicy2 )
-	{
-		this.govpolicy = govpolicy2;
-		this.xmltagbelonged = this.govpolicy.get(0).getXmlTagBelonged();
-		
-		this.fireTableDataChanged();
-	}
-	public String getXmlTagBelonged() {
-		return xmltagbelonged;
-	}
-	public void addNewItem(ZdgzItem zdgzitem) 
-	{
-		this.govpolicy.add(zdgzitem);
-		this.fireTableDataChanged();
-	}
-	public ZdgzItem getPolicyZdgzItem (int rowIndex) 
-	{
-		return this.govpolicy.get(rowIndex);
-	}
-	public void deleteZdgzItem (int row)
-	{
-		govpolicy.remove(row);
-		this.fireTableDataChanged();
-	}
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex)
-    {
-    	ZdgzItem zdgzitem = govpolicy.get(rowIndex);
-    	if(1 == columnIndex) {
-        	zdgzitem.setItemSelected((Boolean) aValue);
-        }
-    }
-	public int getRowCount() 
-	{
-		 if(govpolicy != null)
-	        return govpolicy.size();
-		 else
-			 return 0;
-	}
-
-	    @Override
-	    public int getColumnCount() 
-	    {
-	        return jtableTitleStrings.length;
-	    } 
-	    
-	    public Object getValueAt(int rowIndex, int columnIndex) 
-	    {
-	    	Object value = "??";
-	    	ZdgzItem zdgzitem = govpolicy.get(rowIndex);
-
-	    	switch (columnIndex) {
-	    	case 0:
-	    		value = zdgzitem.getId().toUpperCase();
-	    		break;
-            case 1:
-            	try {
-    	    		value = zdgzitem.isSelected();
-    	    	} catch (Exception e) {
-    	    		value = new Boolean (false);
-    	    	}
-                break;
-            case 2:
-            	String contents = zdgzitem.getContents();
-                value = contents;
-                break;
-	    	}
-
-        return value;
-	  }
-
-     public Class<?> getColumnClass(int columnIndex) {
-		      Class clazz = String.class;
-		      switch (columnIndex) {
-		      case 0:
-		    	  clazz = String.class;
-		    	  break;
-		      case 1:
-		    	  clazz = Boolean.class;
-		    	  break;
-		        case 2:
-		          clazz = String.class;
-		          break;
-		      }
-		      
-		      return clazz;
-		}
-	    
-	    public String getColumnName(int column){ 
-	    	return jtableTitleStrings[column];
-	    }//设置表格列名 
-		
-
-	    public boolean isCellEditable(int row,int column) 
-	    {
-			if(1 == column) {
-				return true;
-			} else 
-				return false;
-		}
-}
-
-
+//class PolicyTableModel extends AbstractTableModel 
+//{
+//	String[] jtableTitleStrings = { "ID","选中", "政策面"};
+//	private ArrayList<ZdgzItem> govpolicy;
+//	private String xmltagbelonged;
+//	
+//	PolicyTableModel ()
+//	{
+//	}
+//	public void refresh  (ArrayList<ZdgzItem> govpolicy2 )
+//	{
+//		this.govpolicy = govpolicy2;
+//		this.xmltagbelonged = this.govpolicy.get(0).getXmlTagBelonged();
+//		
+//		this.fireTableDataChanged();
+//	}
+//	public String getXmlTagBelonged() {
+//		return xmltagbelonged;
+//	}
+//	public void addNewItem(ZdgzItem zdgzitem) 
+//	{
+//		this.govpolicy.add(zdgzitem);
+//		this.fireTableDataChanged();
+//	}
+//	public ZdgzItem getPolicyZdgzItem (int rowIndex) 
+//	{
+//		return this.govpolicy.get(rowIndex);
+//	}
+//	public void deleteZdgzItem (int row)
+//	{
+//		govpolicy.remove(row);
+//		this.fireTableDataChanged();
+//	}
+//    @Override
+//    public void setValueAt(Object aValue, int rowIndex, int columnIndex)
+//    {
+//    	ZdgzItem zdgzitem = govpolicy.get(rowIndex);
+//    	if(1 == columnIndex) {
+//        	zdgzitem.setItemSelected((Boolean) aValue);
+//        }
+//    }
+//	public int getRowCount() 
+//	{
+//		 if(govpolicy != null)
+//	        return govpolicy.size();
+//		 else
+//			 return 0;
+//	}
+//
+//	    @Override
+//	    public int getColumnCount() 
+//	    {
+//	        return jtableTitleStrings.length;
+//	    } 
+//	    
+//	    public Object getValueAt(int rowIndex, int columnIndex) 
+//	    {
+//	    	Object value = "??";
+//	    	ZdgzItem zdgzitem = govpolicy.get(rowIndex);
+//
+//	    	switch (columnIndex) {
+//	    	case 0:
+//	    		value = zdgzitem.getId().toUpperCase();
+//	    		break;
+//            case 1:
+//            	try {
+//    	    		value = zdgzitem.isSelected();
+//    	    	} catch (Exception e) {
+//    	    		value = new Boolean (false);
+//    	    	}
+//                break;
+//            case 2:
+//            	String contents = zdgzitem.getContents();
+//                value = contents;
+//                break;
+//	    	}
+//
+//        return value;
+//	  }
+//
+//     public Class<?> getColumnClass(int columnIndex) {
+//		      Class clazz = String.class;
+//		      switch (columnIndex) {
+//		      case 0:
+//		    	  clazz = String.class;
+//		    	  break;
+//		      case 1:
+//		    	  clazz = Boolean.class;
+//		    	  break;
+//		        case 2:
+//		          clazz = String.class;
+//		          break;
+//		      }
+//		      
+//		      return clazz;
+//		}
+//	    
+//	    public String getColumnName(int column){ 
+//	    	return jtableTitleStrings[column];
+//	    }//设置表格列名 
+//		
+//
+//	    public boolean isCellEditable(int row,int column) 
+//	    {
+//			if(1 == column) {
+//				return true;
+//			} else 
+//				return false;
+//		}
+//}
+//
+//

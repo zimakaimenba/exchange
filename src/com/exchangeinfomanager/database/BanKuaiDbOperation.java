@@ -3978,7 +3978,24 @@ public class BanKuaiDbOperation
 		 */
 		private String getZdgzMrmcYingKuiSQLForBanKuai(BkChanYeLianTreeNode stockbasicinfo) 
 		{
-			String stockcode = stockbasicinfo.getUserObject().toString();
+			String stockcode = stockbasicinfo.getMyOwnCode();
+			
+			String serachnodecode ; //除了以下和大盘紧密相关的指数外，其他板块应该只找和自己相关的记录。
+			Set<String> zhishucodes = new HashSet<String> ();
+			zhishucodes.add("000000");
+			zhishucodes.add("999999");
+			zhishucodes.add("399001");
+			zhishucodes.add("399006");
+			zhishucodes.add("399005");
+			zhishucodes.add("000852");
+			zhishucodes.add("000300");
+			zhishucodes.add("000016");
+			zhishucodes.add("399673");
+			if(zhishucodes.contains(stockcode) ) 
+				serachnodecode = "000000";
+			else
+				serachnodecode = stockcode;
+			
 			String sqlquerystat = "SELECT zdgz.日期,"
 								+ "zdgz.加入移出标志,"
 								+ "zdgz.原因描述,"
@@ -3987,7 +4004,7 @@ public class BanKuaiDbOperation
 								+ "'操作记录重点关注'"
 								+ " FROM 操作记录重点关注  zdgz"
 								+ " WHERE (zdgz.股票代码 =" + "'" + stockcode + "'"
-								+ " OR zdgz.股票代码 ='000000')"
+								+ " OR zdgz.股票代码 ='" + serachnodecode + "')"
 								+ " ORDER BY 1 DESC,5,3 " //desc
 								;
 	     	     

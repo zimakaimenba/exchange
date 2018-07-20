@@ -36,6 +36,7 @@ public abstract class WeeklyFenXiWizardPage extends WizardPage
 	public WeeklyFenXiWizardPage(String title, String description, BkChanYeLianTreeNode displaynode2, LocalDate selectdate2,WeeklyFengXiXmlHandler xmlhandler2) 
 	{
 		super(title,description);
+		
 		this.displaynode = displaynode2;
 		this.fxmlhandler = xmlhandler2;
 		this.displaydate = selectdate2;
