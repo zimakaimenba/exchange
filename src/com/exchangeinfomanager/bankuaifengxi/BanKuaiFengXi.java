@@ -849,29 +849,19 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void createEvents() 
 	{
+		cbxshizhifx.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+			}
+		});
+		
 		btnshizhifx.addMouseListener(new MouseAdapter() {
 			
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-				setCursor(hourglassCursor);
+				startupGeGuShiZhiFenXi (true);
 				
-				if(ggszfx == null) {
-					ggszfx = new GeGuShiZhiFenXi ();
-					ggszfx.setModal(false);
-					ggszfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				}
-
-				if(!ggszfx.isVisible() ) {
-					ggszfx.setVisible(true);
-				} 
-				
-				ggszfx.toFront();
-				
-				hourglassCursor = null;
-				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-				setCursor(hourglassCursor2);
 			}
 		});
 		
@@ -1592,6 +1582,11 @@ public class BanKuaiFengXi extends JDialog {
 					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
 					displayStockCurrentFxResult (tableGuGuZhanBiInBk);
 					
+					if(cbxshizhifx.isSelected()) {
+						dispalyStockShiZhiFengXiResult (selectstock);
+						
+					};
+					
 					hourglassCursor = null;
 					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 					setCursor(hourglassCursor2);
@@ -1794,6 +1789,51 @@ public class BanKuaiFengXi extends JDialog {
 			}
 		});
 	}
+	protected void dispalyStockShiZhiFengXiResult(StockOfBanKuai selectstock) 
+	{
+		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		String displayedresult;
+		if(ggszfx == null) {
+			startupGeGuShiZhiFenXi (false);
+			displayedresult = ggszfx.getStockShiZhiDuiBiFenXiResult (selectstock.getMyOwnCode(),curselectdate);
+		} else 
+			displayedresult = ggszfx.getStockShiZhiDuiBiFenXiResult (selectstock.getMyOwnCode(),curselectdate);
+		
+		
+		setUserSelectedColumnMessage (displayedresult);
+		
+	}
+
+	/*
+	 * 
+	 */
+	protected void startupGeGuShiZhiFenXi(boolean showthedialog) 
+	{
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		setCursor(hourglassCursor);
+		
+		if(ggszfx == null) {
+			ggszfx = new GeGuShiZhiFenXi ();
+			ggszfx.setModal(false);
+			ggszfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		}
+		
+		if(showthedialog) {
+			if(!ggszfx.isVisible() ) {
+				ggszfx.setVisible(true);
+			} 
+			
+			ggszfx.toFront();
+		}
+			
+		
+		
+		hourglassCursor = null;
+		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+		setCursor(hourglassCursor2);
+		
+	}
+
 	/*
 	 * 
 	 */
@@ -2794,6 +2834,7 @@ public class BanKuaiFengXi extends JDialog {
 			
 			
 			cbxshizhifx = new JCheckBox("\u8F93\u51FA\u5E02\u503C\u5206\u6790\u7ED3\u679C");
+			
 			
 			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);

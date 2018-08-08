@@ -3055,12 +3055,12 @@ public class StockInfoManager
 		
 		menuOperationList.add(menuItemChanYeLian);
 		
-		menuItembkfx = new JMenuItem("\u677F\u5757\u6210\u4EA4\u91CF\u5206\u6790");
+		menuItembkfx = new JMenuItem("\u6210\u4EA4\u91CF\u5206\u6790");
 		menuItembkfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
 		
 		menuOperationList.add(menuItembkfx);
 		
-		menuItemfxwjfx = new JMenuItem("\u6A21\u578B\u6587\u4EF6\u5206\u6790");
+		menuItemfxwjfx = new JMenuItem("\u4E2A\u80A1\u5E02\u503C\u5206\u6790");
 		menuItemfxwjfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis_23.570881226054px_1202840_easyicon.net.png")));
 		menuOperationList.add(menuItemfxwjfx);
 		

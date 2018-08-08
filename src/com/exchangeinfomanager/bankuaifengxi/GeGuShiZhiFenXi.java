@@ -84,8 +84,11 @@ public class GeGuShiZhiFenXi extends JDialog
 	/*
 	 * 
 	 */
-	public String getStockShiZhiDuiBiFenXiResult (String stockcode)
+	public String getStockShiZhiDuiBiFenXiResult (String stockcode,LocalDate searchdate)
 	{
+		if(!searchdate.equals(datachooser.getLocalDate()))
+			datachooser.setLocalDate(searchdate);
+		
 		String outputresult = displayStockFenXiResult (stockcode);
 		return outputresult;
 	}
@@ -212,7 +215,11 @@ public class GeGuShiZhiFenXi extends JDialog
 			stocklistofrangeshizhi.add(node);
 			
 			Double nodezhanbi = ((StockNodeXPeriodData)node.getNodeXPeroidData( StockGivenPeriodDataItem.WEEK)).getChenJiaoErZhanBi(datachooser.getLocalDate(), 0);
-			allzhanbi = allzhanbi + nodezhanbi; 
+			try {
+				allzhanbi = allzhanbi + nodezhanbi; 
+			} catch (java.lang.NullPointerException e) {
+				logger.info(node.getMyOwnCode() + node.getMyOwnName() +"数据出现问题。日期：" + datachooser.getLocalDate() );
+			}
 			
 			if(node.getMyOwnCode().equalsIgnoreCase(stocksearched.getMyOwnCode()))
 				stocksearchedzhanbi = nodezhanbi;
@@ -228,7 +235,7 @@ public class GeGuShiZhiFenXi extends JDialog
 		resultoutput = resultoutput + "共有" + stocksetofrangeshizhi.size() + "个股票。\n";
 		resultoutput = resultoutput + "平均占比" + percentFormat.format (allzhanbi/stocksetofrangeshizhi.size() ) + "\n";
 		resultoutput = resultoutput + stocksearched.getMyOwnCode() + stocksearched.getMyOwnName() + ":市值" + stockshizhi/100000000 + "亿" +  "个股占比:" + percentFormat.format (stocksearchedzhanbi)  
-							+ "流通市值排名：" + shizhipaiming + "占比排名：" + zhanbipaiming + "\n";
+							+ "流通市值排名：" + (shizhipaiming+1) + "占比排名：" + (zhanbipaiming+1) + "\n";
 		
 	
 		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
