@@ -76,9 +76,12 @@ public class BanKuaiListEditorPane extends JEditorPane
 	    	 try {
 	    		 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
 	    		 if( daleilist.size() != 0) {
-	    			 content.append("<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> " );
-	    			 if(daleilist.contains("»ı ∆‘∂¿Î") )
+	    			 if(daleilist.contains("GREEN") ) {
+	    				 content.append("<a style=\"color:green\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString().replace("GREEN,", "")  + "</a> " );
 	    				 shuyuruoshibankuai = true ;
+	    			 } else
+	    				 content.append("<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> " );
+	    			 
 	    		 }
 	    		 else
 	    			 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ");

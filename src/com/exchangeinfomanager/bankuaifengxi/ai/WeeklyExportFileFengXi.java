@@ -100,6 +100,7 @@ import com.exchangeinfomanager.bankuaifengxi.Gephi.GephiFilesGenerator;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
@@ -180,22 +181,36 @@ public class WeeklyExportFileFengXi extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public WeeklyExportFileFengXi(StockInfoManager stockmanager1, BanKuaiAndChanYeLian bkcyl2)
+	public WeeklyExportFileFengXi()
 	{
-		this.stockmanager = stockmanager1;
-		this.bkcyl = bkcyl2;
-		this.sysconfig = SystemConfigration.getInstance();
+//		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 
 		initializeGui ();
 		initializeShiZhiRangeLevel ();
 		
+		choosedate.setLocalDate(LocalDate.now());
 		createEvents ();
-		
 	}
+	public WeeklyExportFileFengXi(LocalDate serachdate,String stockcode)
+	{
+		tfldstockcode.setText(stockcode);
+		
+		
+//		this.sysconfig = SystemConfigration.getInstance();
+		this.bkdbopt = new BanKuaiDbOperation ();
+
+		initializeGui ();
+		initializeShiZhiRangeLevel ();
+		
+		choosedate.setLocalDate(serachdate);
+		
+		createEvents ();
+	}
+	
 
 	private LocalDate lastselecteddate;
-	private BanKuaiAndChanYeLian bkcyl;
+	
 	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
 	private BanKuaiDbOperation bkdbopt;
@@ -208,12 +223,12 @@ public class WeeklyExportFileFengXi extends JDialog {
 	private ArrayList<Double> shizhirangeLevel3;
 	private ArrayList<Double> shizhirangeLevel4;
 		
-	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
-	private Set<BarChartPanelDataChangedListener> barchartpanelbankuaidatachangelisteners;
-	private Set<BarChartPanelDataChangedListener> piechartpanelbankuaidatachangelisteners;
-	private Set<BarChartPanelDataChangedListener> barchartpanelstockofbankuaidatachangelisteners;
-	private Set<BarChartPanelDataChangedListener> barchartpanelstockdatachangelisteners;
-	private Set<BarChartHightLightFxDataValueListener> bkfxhighlightvalueslisteners;
+//	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
+//	private Set<BarChartPanelDataChangedListener> barchartpanelbankuaidatachangelisteners;
+//	private Set<BarChartPanelDataChangedListener> piechartpanelbankuaidatachangelisteners;
+//	private Set<BarChartPanelDataChangedListener> barchartpanelstockofbankuaidatachangelisteners;
+//	private Set<BarChartPanelDataChangedListener> barchartpanelstockdatachangelisteners;
+//	private Set<BarChartHightLightFxDataValueListener> bkfxhighlightvalueslisteners;
 	/*
 	 * 
 	 */
@@ -926,147 +941,6 @@ public class WeeklyExportFileFengXi extends JDialog {
 			}
 		});
 		
-//		panelbkwkzhanbi.getChartPanel().addChartMouseListener(new ChartMouseListener() { 
-//			@Override
-//			public void chartMouseClicked(ChartMouseEvent e)  
-//			{
-//				int row = tableBkZhanBi.getSelectedRow();
-//				if(row <0) 
-//					return;
-//
-//				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-//				BanKuai bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-//				
-//				java.awt.event.MouseEvent me = e.getTrigger();
-//    	        if (me.getClickCount() == 2) {
-//    	        	LocalDate datekey = panelbkwkzhanbi.getCurSelectedBarDate ();
-//    	        	displayNodeLargerPeriodData (bkcur,datekey);
-//    	        }
-//			}
-//
-//			@Override
-//			public void chartMouseMoved(ChartMouseEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//		});
-//		panelbkwkzhanbi.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//            public void propertyChange(PropertyChangeEvent evt) {
-//            	int row = tableBkZhanBi.getSelectedRow();
-//				if(row <0) 
-//					return;
-//
-//				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-//				BanKuai bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-//
-//                if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-//                    @SuppressWarnings("unchecked")
-//                    String selectedinfo = evt.getNewValue().toString();
-//                    
-//					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-//    				
-//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-//    				ArrayList<JiaRuJiHua> fxjg = getZdgzFx (bkcur,CommonUtility.formateStringToDate(datekey.toString()),globeperiod);
-//    				setUserSelectedColumnMessage(tooltip,fxjg);
-//    				
-//    				if(bkcur.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股， 
-//    					LocalDate selectdate = CommonUtility.formateStringToDate(datekey.toString());
-//    					panelselectwkgeguzhanbi.setBanKuaiCjeNeededDisplay(bkcur,Integer.parseInt(tfldweight.getText() ), selectdate ,globeperiod );
-//    					
-//    					//显示选中周股票占比增加率排名等
-//    					refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
-//    				}
-//                }
-//            }
-//        });
-//		panelGgDpCjeZhanBi.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//            public void propertyChange(PropertyChangeEvent evt) {
-//				
-//				StockOfBanKuai selectstock = null;
-//				int stockrow = tableGuGuZhanBiInBk.getSelectedRow();
-//				if(stockrow != -1) {
-//					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(stockrow);
-//					 selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
-//				}
-//
-//                if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-//                    @SuppressWarnings("unchecked")
-//                    String selectedinfo = evt.getNewValue().toString();
-//                    
-//					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-//    				
-////    				refreshGeGuKXianZouShiOfFiftyDays (selectstock,datekey);
-//    				
-//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-//    				ArrayList<JiaRuJiHua> fxjg = getZdgzFx (selectstock,CommonUtility.formateStringToDate(datekey.toString()),globeperiod);
-//    				setUserSelectedColumnMessage(tooltip,fxjg);
-//                }
-//            }
-//        });
-//		panelGgDpCjeZhanBi.getChartPanel().addChartMouseListener(new ChartMouseListener() { 
-//			@Override
-//			public void chartMouseClicked(ChartMouseEvent e)  
-//			{
-//				StockOfBanKuai selectstock = null;
-//				int stockrow = tableGuGuZhanBiInBk.getSelectedRow();
-//				if(stockrow != -1) {
-//					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(stockrow);
-//					 selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
-//				}
-//					
-//				
-//				java.awt.event.MouseEvent me = e.getTrigger();
-//    	        if (me.getClickCount() == 2) {
-//    	        	LocalDate datekey = panelGgDpCjeZhanBi.getCurSelectedBarDate ();
-//    	        	displayNodeLargerPeriodData (selectstock.getStock(),datekey);
-//    	        }
-//			}
-//			@Override
-//			public void chartMouseMoved(ChartMouseEvent arg0) {
-//			}
-//		});
-//		
-//		panelggbkcjezhanbi.addPropertyChangeListener(new PropertyChangeListener() {
-//			@Override
-//			 public void propertyChange(PropertyChangeEvent evt)   
-//			{
-//			}
-//		});
-//		
-		btngephi.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				File filegephi;
-
-				if(tfldparsedfile.getText() != null && tfldparsedfile.getText().trim().length() != 0) {
-					GephiFilesGenerator gephigenerator = new GephiFilesGenerator (bkcyl);
-					filegephi = gephigenerator.generatorGephiFile(sysconfig.toUNIXpath(tfldparsedfile.getText().trim() ), lastselecteddate, globeperiod);
-				} else {
-					chooseParsedFile ();
-					GephiFilesGenerator gephigenerator = new GephiFilesGenerator (bkcyl);
-					filegephi = gephigenerator.generatorGephiFile(sysconfig.toUNIXpath(tfldparsedfile.getText().trim() ), lastselecteddate, globeperiod);
-				}
-				
-				if(filegephi == null)
-					return; 
-				int exchangeresult = JOptionPane.showConfirmDialog(null, "Gephi文件生产成功，请在" + filegephi.getAbsolutePath() + "下查看！是否打开该目录？","导出完毕", JOptionPane.OK_CANCEL_OPTION);
-	      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
-	      			  return;
-	      		  }
-	      		  try {
-	      			String path = filegephi.getAbsolutePath();
-	      			Runtime.getRuntime().exec("explorer.exe /select," + path);
-	      		  } catch (IOException e1) {
-	      				e1.printStackTrace();
-	      		  }
-			}
-		});
-		
 		btnChosPasFile.addMouseListener(new MouseAdapter() 
 		{
 			@Override
@@ -1290,48 +1164,39 @@ public class WeeklyExportFileFengXi extends JDialog {
 //	}
 	private final JPanel contentPanel = new JPanel();
 	private JButton okButton;
-	private JButton cancelButton;
-	private BanKuaiFengXiCategoryBarChartHuanShouLvPnl pnlgghsllevel1;
 	private JTextField tfldparsedfile;
-	private JTextArea tfldselectedmsg;
 	private JButton btnChosPasFile;
-	private JScrollPane scrollPaneuserselctmsg;
 	private Action exportCancelAction;
 	private Action bkfxCancelAction;
-	private JButton btngephi;
-	private JTextField tflddaochuriqi;
-	private JTextArea tfldexportcondlists;
 	private BanKuaiFengXiCategoryBarChartHuanShouLvPnl pnlgghsllevel3;
 	private BanKuaiFengXiCategoryBarChartHuanShouLvPnl pnlgghsllevel4;
 	private BanKuaiFengXiCategoryBarChartHuanShouLvPnl pnlgghsllevel2;
-	private JTextField tfldL1;
-	private JTextField tfldL2;
-	private JTextField tfldL3;
-	private JTextField tfldL4;
+	private JTextField tfldszfj;
 	private JButton btnappyshizhilevel;
+	private JTable table;
+	private JTextField tfldstockcode;
+	private JButton btnsearchstock;
+	private JButton button;
+	private JButton button_1;
+	private JButton button_2;
+	private JLocalDateChooser choosedate;
+	private JTextArea textArea;
+	private JComboBox<String> comboBox_1;
+	private JCheckBox chckbxNewCheckBox;
 	
 	private void initializeGui() {
 		
 		setTitle("\u677F\u5757\u5206\u6790");
-		setBounds(100, 100, 1788, 1033);
+		setBounds(100, 100, 1550, 900);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.NORTH);
 		
 		JPanel panel = new JPanel();
-		
-		scrollPaneuserselctmsg = new JScrollPane();
-		
-		pnlgghsllevel1 = new BanKuaiFengXiCategoryBarChartHuanShouLvPnl();
-		pnlgghsllevel1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		{
 			okButton = new JButton("OK");
 			okButton.setActionCommand("OK");
 			getRootPane().setDefaultButton(okButton);
-		}
-		{
-			cancelButton = new JButton("Cancel");
-			cancelButton.setActionCommand("Cancel");
 		}
 		
 		pnlgghsllevel3 = new BanKuaiFengXiCategoryBarChartHuanShouLvPnl();
@@ -1343,34 +1208,13 @@ public class WeeklyExportFileFengXi extends JDialog {
 		pnlgghsllevel2 = new BanKuaiFengXiCategoryBarChartHuanShouLvPnl();
 		pnlgghsllevel2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		
-		JLabel lblLevel = new JLabel("Level1");
+		JLabel lblLevel = new JLabel("\u5E02\u503C\u5206\u7EA7(\u4EBF)");
 		lblLevel.setToolTipText("\u786E\u4FDD\u6570\u5B57\u6309\u5927\u5C0F\u6392\u5217,\u9017\u53F7\u9694\u5F00\uFF01");
 		
-		tfldL1 = new JTextField();
-		tfldL1.setToolTipText("\u786E\u4FDD\u6570\u5B57\u6309\u5927\u5C0F\u6392\u5217,\u9017\u53F7\u9694\u5F00\uFF01");
-		tfldL1.setText("30(\u4EBF)");
-		tfldL1.setColumns(10);
-		
-		JLabel lblLevel_1 = new JLabel("Level2");
-		
-		tfldL2 = new JTextField();
-		tfldL2.setToolTipText("\u786E\u4FDD\u6570\u5B57\u6309\u5927\u5C0F\u6392\u5217,\u9017\u53F7\u9694\u5F00\uFF01");
-		tfldL2.setText("50(\u4EBF)");
-		tfldL2.setColumns(10);
-		
-		JLabel lblLevel_2 = new JLabel("Level3");
-		
-		tfldL3 = new JTextField();
-		tfldL3.setToolTipText("\u786E\u4FDD\u6570\u5B57\u6309\u5927\u5C0F\u6392\u5217,\u9017\u53F7\u9694\u5F00\uFF01");
-		tfldL3.setText("90,150(\u4EBF)");
-		tfldL3.setColumns(10);
-		
-		JLabel lblLevel_3 = new JLabel("Level4");
-		
-		tfldL4 = new JTextField();
-		tfldL4.setToolTipText("\u786E\u4FDD\u6570\u5B57\u6309\u5927\u5C0F\u6392\u5217,\u9017\u53F7\u9694\u5F00\uFF01");
-		tfldL4.setText("300,500,700(\u4EBF)");
-		tfldL4.setColumns(10);
+		tfldszfj = new JTextField();
+		tfldszfj.setText("20,30,50,200,400,800,");
+		tfldszfj.setToolTipText("\u786E\u4FDD\u6570\u5B57\u6309\u5927\u5C0F\u6392\u5217,\u9017\u53F7\u9694\u5F00\uFF01");
+		tfldszfj.setColumns(10);
 		
 		btnappyshizhilevel = new JButton("\u5E94\u7528");
 		btnappyshizhilevel.setToolTipText("\u786E\u4FDD\u6570\u5B57\u6309\u5927\u5C0F\u6392\u5217,\u9017\u53F7\u9694\u5F00\uFF01");
@@ -1379,91 +1223,6 @@ public class WeeklyExportFileFengXi extends JDialog {
 		
 		JComboBox<String> comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"\u6D41\u901A\u5E02\u503C", "\u603B\u5E02\u503C"}));
-		
-		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(pnlgghsllevel4, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-								.addComponent(pnlgghsllevel3, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(pnlgghsllevel1, GroupLayout.PREFERRED_SIZE, 788, GroupLayout.PREFERRED_SIZE)
-										.addComponent(pnlgghsllevel2, GroupLayout.PREFERRED_SIZE, 1397, GroupLayout.PREFERRED_SIZE))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(scrollPaneuserselctmsg, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
-										.addComponent(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-							.addGap(34))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblLevel)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(tfldL1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblLevel_1)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(tfldL2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(lblLevel_2)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(tfldL3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(lblLevel_3)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tfldL4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnappyshizhilevel)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
-							.addGap(42)
-							.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-							.addGap(388))))
-		);
-		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
-						.addComponent(pnlgghsllevel1, GroupLayout.PREFERRED_SIZE, 223, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPaneuserselctmsg, GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
-						.addComponent(pnlgghsllevel2, GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(pnlgghsllevel3, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(pnlgghsllevel4, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblLevel)
-						.addComponent(tfldL1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblLevel_1)
-						.addComponent(tfldL2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblLevel_2)
-						.addComponent(tfldL3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblLevel_3)
-						.addComponent(tfldL4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnappyshizhilevel)
-						.addComponent(cancelButton)
-						.addComponent(okButton)
-						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
-		);
-		
-		tfldselectedmsg = new JTextArea();
-		scrollPaneuserselctmsg.setViewportView(tfldselectedmsg);
-		tfldselectedmsg.setLineWrap(true);
-		
-		
-		tfldselectedmsg.setEditable(false);
-		tfldselectedmsg.setColumns(10);
 		
 //		bkfxCancelAction = new AbstractAction("重置") {
 //
@@ -1494,77 +1253,169 @@ public class WeeklyExportFileFengXi extends JDialog {
 		btnChosPasFile = new JButton("\u9009\u62E9\u6587\u4EF6");
 		btnChosPasFile.setForeground(Color.BLACK);
 		
-		btngephi = new JButton("\u4EA7\u751FGephi");
-		btngephi.setForeground(Color.BLACK);
+		comboBox_1 = new JComboBox();
+		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"\u6D41\u901A\u5E02\u503C", "\u603B\u5E02\u503C"}));
 		
-		JLabel label = new JLabel("\u5BFC\u51FA\u65E5\u671F");
+		JButton btnaddlevel = new JButton("\u6DFB\u52A0\u65B0\u5206\u7EA7");
 		
-		tflddaochuriqi = new JTextField();
-		tflddaochuriqi.setEditable(false);
-		tflddaochuriqi.setColumns(10);
+		JButton btndel = new JButton("\u5220\u9664\u6307\u5B9A\u5206\u7EA7");
+		
+		JScrollPane scrollPane = new JScrollPane();
+		
+		chckbxNewCheckBox = new JCheckBox("\u6BCF\u5468\u5206\u6790\u6587\u4EF6");
+		
+		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
+		gl_contentPanel.setHorizontalGroup(
+			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(comboBox_1, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblLevel)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(tfldszfj, GroupLayout.PREFERRED_SIZE, 231, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addGap(784)
+									.addComponent(btnappyshizhilevel)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(btnChosPasFile)
+									.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+										.addComponent(pnlgghsllevel4, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+										.addComponent(pnlgghsllevel3, Alignment.LEADING, 0, 0, Short.MAX_VALUE))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnaddlevel)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btndel)
+									.addGap(198)
+									.addComponent(chckbxNewCheckBox))))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 273, GroupLayout.PREFERRED_SIZE)
+							.addGap(14)
+							.addComponent(pnlgghsllevel2, GroupLayout.PREFERRED_SIZE, 1223, GroupLayout.PREFERRED_SIZE))
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 275, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
+		);
+		gl_contentPanel.setVerticalGroup(
+			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 621, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 177, GroupLayout.PREFERRED_SIZE))
+						.addComponent(pnlgghsllevel2, GroupLayout.PREFERRED_SIZE, 244, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(comboBox_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(lblLevel)
+							.addComponent(tfldszfj, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnaddlevel)
+							.addComponent(btndel)
+							.addComponent(chckbxNewCheckBox))
+						.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
+							.addGap(249)
+							.addComponent(pnlgghsllevel3, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(pnlgghsllevel4, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)
+							.addGap(5)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(okButton)
+								.addComponent(btnChosPasFile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnappyshizhilevel))))
+					.addContainerGap())
+		);
+		
+		textArea = new JTextArea();
+		scrollPane.setViewportView(textArea);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
+		
+		tfldstockcode = new JTextField();
+		tfldstockcode.setColumns(10);
+		
+		btnsearchstock = new JButton("\u6DFB\u52A0\u4E2A\u80A1");
+		
+		choosedate = new JLocalDateChooser();
+		
+		button = new JButton("<");
+		
+		button_1 = new JButton(">");
+		
+		button_2 = new JButton("\u91CD\u7F6E");
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING, false)
-						.addComponent(scrollPane_1, Alignment.LEADING)
-						.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+						.addGroup(gl_panel.createSequentialGroup()
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
 								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(label)
+									.addComponent(choosedate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(tflddaochuriqi, GroupLayout.PREFERRED_SIZE, 137, GroupLayout.PREFERRED_SIZE))
-								.addComponent(tfldparsedfile))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(btnChosPasFile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(btngephi, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-					.addContainerGap(18, Short.MAX_VALUE))
+									.addComponent(button))
+								.addComponent(tfldstockcode))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+								.addGroup(gl_panel.createSequentialGroup()
+									.addComponent(button_1)
+									.addGap(18)
+									.addComponent(button_2))
+								.addComponent(btnsearchstock, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE))))
+					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnChosPasFile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label)
-						.addComponent(tflddaochuriqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btngephi))
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addComponent(choosedate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(button)
+							.addComponent(button_1)
+							.addComponent(button_2)))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
-					.addContainerGap())
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(tfldstockcode, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnsearchstock, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 528, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(81, Short.MAX_VALUE))
 		);
 		
-		tfldexportcondlists = new JTextArea();
-		tfldexportcondlists.setEditable(false);
-		tfldexportcondlists.setLineWrap(true);
-		scrollPane_1.setViewportView(tfldexportcondlists);
-		tfldexportcondlists.setColumns(10);
+		table = new JTable();
+		scrollPane_1.setViewportView(table);
 		panel.setLayout(gl_panel);
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-//			this.setHighLightChenJiaoEr ();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 			
+			buttonPane.add(comboBox_1);
+			buttonPane.add(lblLevel);
+			buttonPane.add(tfldszfj);
+			buttonPane.add(btnaddlevel);
+			buttonPane.add(btndel);
 			
-			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
-			gl_buttonPane.setHorizontalGroup(
-				gl_buttonPane.createParallelGroup(Alignment.LEADING)
-					.addGap(0, 1907, Short.MAX_VALUE)
-			);
-			gl_buttonPane.setVerticalGroup(
-				gl_buttonPane.createParallelGroup(Alignment.LEADING)
-					.addGap(0, 33, Short.MAX_VALUE)
-			);
-			buttonPane.setLayout(gl_buttonPane);
+			buttonPane.add(chckbxNewCheckBox);
+			buttonPane.add(tfldparsedfile);
 		}
 		
 

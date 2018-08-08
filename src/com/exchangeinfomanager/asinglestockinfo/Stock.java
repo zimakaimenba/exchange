@@ -52,9 +52,9 @@ public class Stock extends BkChanYeLianTreeNode {
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; //持有该股票的所有账户<账户，账户信息>
 //	private HashMap<String,StockOfBanKuai> suoShuTdxBanKuaiData; //所属通达信系统板块 <板块code,板块名字>
 //	private  HashMap<String,Integer> sysBanKuaiWeight; //所属通达信系统板块权重
-	private HashSet<String> suoShuZdyBanKuai; //所属自定义板块
+//	private HashSet<String> suoShuZdyBanKuai; //所属自定义板块
 	private HashMap<String, String> suoShuCurSysBanKuai; //个股当前所属的通达信板块
-
+	
 //	private DaPan dapan;
 	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
 	{
@@ -215,9 +215,9 @@ public class Stock extends BkChanYeLianTreeNode {
 			stockzongshizhi = new TimeSeries(nodeperiodtype1);
 		}
 		
-		private  TimeSeries stockhuanshoulv;
-		private  TimeSeries stockliutongshizhi;
-		private  TimeSeries stockzongshizhi;
+		private  TimeSeries stockhuanshoulv; //换手率
+		private  TimeSeries stockliutongshizhi; //流通市值
+		private  TimeSeries stockzongshizhi; //总市值
 		/*
 		* (non-Javadoc)
 		* @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem)
@@ -330,12 +330,15 @@ public class Stock extends BkChanYeLianTreeNode {
 		 * (non-Javadoc)
 		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
 		 */
-		public double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference)
+		public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference)
 		{
 			TimeSeriesDataItem curltszrecord = stockliutongshizhi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-			Double curltsz = curltszrecord.getValue().doubleValue();
-			
-			return curltsz;
+			try{
+				Double curltsz = curltszrecord.getValue().doubleValue();
+				return curltsz;
+			} catch (java.lang.NullPointerException e ) {
+				return null;
+			}
 		}
 		@Override
 		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 

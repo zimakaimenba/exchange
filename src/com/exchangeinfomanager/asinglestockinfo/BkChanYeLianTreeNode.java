@@ -447,13 +447,14 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 //					e.printStackTrace();
 				}
 			}
+			
 			/*
 			 * (non-Javadoc)
 			 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
 			 */
 			public Boolean hasFxjgInPeriod (LocalDate requireddate,int difference)
 			{
-				TimeSeriesDataItem fxjgitem = stockfxjg.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+				TimeSeriesDataItem fxjgitem = stockfxjg.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				if(fxjgitem == null)
 					return false;
 				else

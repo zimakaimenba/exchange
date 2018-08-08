@@ -661,6 +661,10 @@ public class SystemConfigration
 		{
 			return this.systeminstalledpath + "checklists/gegufengximatrix.xml";
 		}
+		public String getSystemAudioPlayed ()
+		{
+			return this.systeminstalledpath + "audio/SystemAlarm1.wav";
+		}
 
 }
 

@@ -270,7 +270,7 @@ public class TDXFormatedOpt {
 				
 				GeGuWeeklyFengXiXmlHandler xmlhandler = new GeGuWeeklyFengXiXmlHandler (formatedstockcode,recorddate);
 				String comments = recorddate.toString();
-				comments = comments + xmlhandler.getZhongDianGuanZhu().getGeGuAnalysisComments();
+				comments = comments + xmlhandler.getZhongDianGuanZhu().getZdgzAllSelectedInfo();
 
 				treemap.put(formatedstockcode, comments);
 				

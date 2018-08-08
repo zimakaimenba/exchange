@@ -36,9 +36,9 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTab
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl;
 import com.exchangeinfomanager.commonlib.MultilineTableCell;
+import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.gui.TableCellListener;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.github.cjwizard.WizardPage;
 import com.google.common.base.Strings;
@@ -252,7 +252,7 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 	}
 	private final JPanel contentPanel = new JPanel();
 	private JLocalDateChooser datachooser;
-	private JTable tablepolicy;
+	private GeGuCheckListsTable tablepolicy;
 	private JTextArea txaComments;
 	private JButton btnaddchecklists;
 	private JButton btnremovepolicy;
@@ -330,71 +330,72 @@ public class GovAndBanKuaiWeeklyFengXi extends WeeklyFenXiWizardPage
 		
 //		PolicyTableModel tablepolicymodel = new PolicyTableModel ();
 		GeGuCheckListsTableModel tablepolicymodel = new GeGuCheckListsTableModel ();
-		tablepolicy = new JTable(tablepolicymodel) {
-			MultilineTableCell wordWrapRenderer = new MultilineTableCell (); 
-			
-			public TableCellRenderer getCellRenderer(int row, int column) {
-		        if (column == 2 ) {
-		            return wordWrapRenderer;
-		        }
-		        else {
-		            return super.getCellRenderer(row, column);
-		        }
-		    }
-			
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
-			{
-				 
-		        Component comp = super.prepareRenderer(renderer, row, col);
-		        GeGuCheckListsTableModel tablemodel = (GeGuCheckListsTableModel)this.getModel(); 
-		        if(tablemodel.getRowCount() == 0) {
-		        	return null;
-		        }
-		        
-//		        int fontHeight = getFontMetrics(this.getFont()).getHeight();
-//		        int textLength = ((String)this.getValueAt(row, col)).length();
-//		        int lines = textLength / this.getColumnCount() +1;//+1, cause we need at least 1 row.           
-//		        int height = fontHeight * lines;            
-//		        this.setRowHeight(row, height);
-		        
-		        int modelRow = convertRowIndexToModel(row);
-		        ZdgzItem zdgzitem = tablemodel.getPolicyZdgzItem(modelRow);
-		        
-		        Color foreground = Color.black, background = Color.white;
-		        if(zdgzitem.getSelectedcolor() != null) {
-		        	Font defaultFont = this.getFont();
-		        	
-		        	Font font=new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
-		        	comp.setFont(font);
-		        	
-			        //为不同情况突出显示不同的颜色
-			         background = Color.GREEN;
-			        
-		        } else {
-		        	background = Color.WHITE;
-		        }
-
-		        if (!this.isRowSelected(row)) 
-			    	comp.setBackground(background);
-		        
-		        return comp;
-			}
-			
-			public String getToolTipText(MouseEvent e) 
-			{
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-//                	e1.printStackTrace();
-                }
-                return tip;
-            } 
-		};
+		tablepolicy = new GeGuCheckListsTable("选中") ;
+//		tablepolicy = new JTable(tablepolicymodel) {
+//			MultilineTableCell wordWrapRenderer = new MultilineTableCell (); 
+//			
+//			public TableCellRenderer getCellRenderer(int row, int column) {
+//		        if (column == 2 ) {
+//		            return wordWrapRenderer;
+//		        }
+//		        else {
+//		            return super.getCellRenderer(row, column);
+//		        }
+//		    }
+//			
+//			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
+//			{
+//				 
+//		        Component comp = super.prepareRenderer(renderer, row, col);
+//		        GeGuCheckListsTableModel tablemodel = (GeGuCheckListsTableModel)this.getModel(); 
+//		        if(tablemodel.getRowCount() == 0) {
+//		        	return null;
+//		        }
+//		        
+////		        int fontHeight = getFontMetrics(this.getFont()).getHeight();
+////		        int textLength = ((String)this.getValueAt(row, col)).length();
+////		        int lines = textLength / this.getColumnCount() +1;//+1, cause we need at least 1 row.           
+////		        int height = fontHeight * lines;            
+////		        this.setRowHeight(row, height);
+//		        
+//		        int modelRow = convertRowIndexToModel(row);
+//		        ZdgzItem zdgzitem = tablemodel.getPolicyZdgzItem(modelRow);
+//		        
+//		        Color foreground = Color.black, background = Color.white;
+//		        if(zdgzitem.getSelectedcolor() != null) {
+//		        	Font defaultFont = this.getFont();
+//		        	
+//		        	Font font=new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+//		        	comp.setFont(font);
+//		        	
+//			        //为不同情况突出显示不同的颜色
+//			         background = Color.GREEN;
+//			        
+//		        } else {
+//		        	background = Color.WHITE;
+//		        }
+//
+//		        if (!this.isRowSelected(row)) 
+//			    	comp.setBackground(background);
+//		        
+//		        return comp;
+//			}
+//			
+//			public String getToolTipText(MouseEvent e) 
+//			{
+//                String tip = null;
+//                java.awt.Point p = e.getPoint();
+//                int rowIndex = rowAtPoint(p);
+//                int colIndex = columnAtPoint(p);
+//
+//                try {
+//                    tip = getValueAt(rowIndex, colIndex).toString();
+//                } catch (RuntimeException e1) {
+////                	e1.printStackTrace();
+//                }
+//                return tip;
+//            } 
+//		};
 		setTableColumnsWidth (tablepolicy);
 		scrollPane_2.setViewportView(tablepolicy);
 		

@@ -2,6 +2,8 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBarOfName;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
@@ -23,12 +25,11 @@ public class BanKuaiFengXiCategoryBarChartHuanShouLvPnl extends BanKuaiFengXiCat
 	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode, java.time.LocalDate, int, java.lang.String)
 	 * 升级占比数据
 	 */
-	public void updatedDate (ArrayList<Stock> stocks, ArrayList<Double> shizhirange,String shizhitype,LocalDate displayedenddate1,String period,String title)
+	public void updatedDate (List<Stock> stocks, List<Double> shizhirange,String shizhitype,LocalDate displayedenddate1,String period,String title)
 	{
-		
 		displayDataToGui (stocks,shizhirange,shizhitype,displayedenddate1,period,title);
 	}
-	private void displayDataToGui (ArrayList<Stock> stocks, ArrayList<Double> shizhirange,String shizhitype,LocalDate lastselecteddate2,String period,String title)
+	private void displayDataToGui (List<Stock> stocks, List<Double> shizhirange,String shizhitype,LocalDate lastselecteddate2,String period,String title)
 	{
 		barchartdataset.clear();
 		super.barchart.setNotify(false);

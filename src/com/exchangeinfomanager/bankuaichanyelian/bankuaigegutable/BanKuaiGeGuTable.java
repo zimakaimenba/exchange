@@ -97,6 +97,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	private JMenuItem menuItemAddGz;
 //	private JMenuItem menuItemReDian;
 	private JMenuItem menuItemQuanZhong;
+	private JMenuItem menuItemGeguInfo;
 	private StockCalendarAndNewDbOperation newsdbopt;
 	private BanKuaiDbOperation bkdbopt;
 	private JPopupMenu popupMenuGeguNews;
@@ -105,6 +106,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	private void createMenu() 
 	{
 		popupMenuGeguNews = new JPopupMenu();
+		menuItemGeguInfo = new JMenuItem("个股信息");
 		menuItemAddNews = new JMenuItem("添加个股新闻");
 		menuItemAddGz = new JMenuItem("个股分析");
 //		menuItemReDian = new JMenuItem("标记龙头个股");
@@ -112,6 +114,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemQuanZhong);
 		popupMenuGeguNews.add(menuItemAddGz);
+		popupMenuGeguNews.add(menuItemGeguInfo);
 //		popupMenuGeguNews.add(menuItemReDian);
 				
 		this.setComponentPopupMenu(popupMenuGeguNews);
@@ -167,7 +170,16 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	
 	private void createEvents() 
 	{
+		menuItemGeguInfo.addActionListener(new ActionListener() {
+			@Override
 
+			public void actionPerformed(ActionEvent evt) {
+
+				showGeGuInfoWin ();
+			}
+			
+		});
+		
 		menuItemAddNews.addActionListener(new ActionListener() {
 			@Override
 
@@ -213,10 +225,21 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	}
 	
 	
+	protected void showGeGuInfoWin() 
+	{
+		 int  view_row = this.getSelectedRow();
+		 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
+		 
+		 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
+		 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
+		 this.stockmanager.preUpdateSearchResultToGui(stockcode);
+		 this.stockmanager.toFront();
+	}
+
 	private void tableMouseClickActions (MouseEvent arg0)
 	{
 
-        		int  view_row = this.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
+        		 int  view_row = this.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
 				 int  view_col = this.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
 				 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
 				 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
@@ -232,18 +255,14 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 //					 } catch ( java.lang.NullPointerException e) {
 //						 pnlGeGuZhanBi.hightlightSpecificSector (stockcode);
 //					 }
-
-						 
         		}
         		 if (arg0.getClickCount() == 2) {
 //					 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
 //					 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
 //					 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
 //					 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-					 
-					 
-					 int row = this.getSelectedRow();
-					 //int column = tblSearchResult.getSelectedColumn();
+
+        			 //int column = tblSearchResult.getSelectedColumn();
 					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
 					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
 //					 logger.debug(stockcode);
@@ -307,6 +326,9 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
     	ggfx.toFront();
     	
     	ggfx = null;
+    	
+    	Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+		setCursor(hourglassCursor2);
 	
 	}
 	

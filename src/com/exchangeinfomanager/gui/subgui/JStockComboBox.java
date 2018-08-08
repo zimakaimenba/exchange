@@ -125,8 +125,12 @@ public class JStockComboBox extends  JComboBox<String>
 				 if(exchangeresult == JOptionPane.CANCEL_OPTION)
 						return;
 				 
-				 int userselected = userselection.getUserSelection();
-				 nodeshouldbedisplayed = nodeslist.get(userselected);
+				 try {
+					 int userselected = userselection.getUserSelection();
+					 nodeshouldbedisplayed = nodeslist.get(userselected);
+				 } catch (java.lang.ArrayIndexOutOfBoundsException e) { //用户没有选择直接回车的情况
+					 nodeshouldbedisplayed = nodeslist.get(0);
+				 }
 			 }
 		 } else
 			 nodeshouldbedisplayed = nodeslist.get(0);

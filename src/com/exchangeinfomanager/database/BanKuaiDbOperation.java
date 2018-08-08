@@ -411,43 +411,43 @@ public class BanKuaiDbOperation
 		return tmprecordfile;
 	}
 	/*
-	 * 
+	 * 大智慧股本文件分析，目前没有用到
 	 */
-	public File refreshDZHStockGuQuan() 
-	{
-//		File file = new File(sysconfig.getDZHStockGuQuanFile() );
-		File file = new File("E:/stock/dzh365/Download/PWR/full_sh.PWR");
-		 if(!file.exists() ) {
-			 return null;
-		 }
-		 
-		 BufferedInputStream dis = null;
-		 FileInputStream in = null;
-		 try {
-			    in = new FileInputStream(file);  
-			    dis = new BufferedInputStream(in);
-			    
-			    
-			    int fileheadbytenumber = 12;
-	            byte[] itemBuf = new byte[fileheadbytenumber];
-	            dis.read(itemBuf, 0, fileheadbytenumber); 
-	            String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-	            logger.debug(fileHead);
-	            
-	            while(true) {
-	            	int sigbk = 16;
-		            byte[] itemBuf2 = new byte[sigbk];
-//		            int i=0;
-		            dis.read(itemBuf2, 0, sigbk) ;
-		            String stockcode = new String(itemBuf2, 0, sigbk );
-		            logger.debug(stockcode);
-		            
-		            int sigbk2 = 20;
-		            byte[] itemBuf3 = new byte[sigbk2];
-//		            int i=0;
-		            dis.read(itemBuf3, 0, sigbk2) ;
-		            String stockdate = new String(itemBuf3, 0, sigbk2 );
-		            logger.debug(stockdate);
+//	public File refreshDZHStockGuQuan() 
+//	{
+////		File file = new File(sysconfig.getDZHStockGuQuanFile() );
+//		File file = new File("E:/stock/dzh365/Download/PWR/full_sh.PWR");
+//		 if(!file.exists() ) {
+//			 return null;
+//		 }
+//		 
+//		 BufferedInputStream dis = null;
+//		 FileInputStream in = null;
+//		 try {
+//			    in = new FileInputStream(file);  
+//			    dis = new BufferedInputStream(in);
+//			    
+//			    
+//			    int fileheadbytenumber = 12;
+//	            byte[] itemBuf = new byte[fileheadbytenumber];
+//	            dis.read(itemBuf, 0, fileheadbytenumber); 
+//	            String fileHead =new String(itemBuf,0,fileheadbytenumber);  
+//	            logger.debug(fileHead);
+//	            
+//	            while(true) {
+//	            	int sigbk = 16;
+//		            byte[] itemBuf2 = new byte[sigbk];
+////		            int i=0;
+//		            dis.read(itemBuf2, 0, sigbk) ;
+//		            String stockcode = new String(itemBuf2, 0, sigbk );
+//		            logger.debug(stockcode);
+//		            
+//		            int sigbk2 = 20;
+//		            byte[] itemBuf3 = new byte[sigbk2];
+////		            int i=0;
+//		            dis.read(itemBuf3, 0, sigbk2) ;
+//		            String stockdate = new String(itemBuf3, 0, sigbk2 );
+//		            logger.debug(stockdate);
 		            
 //		            sigbk2 = 4;
 //		            itemBuf3 = new byte[sigbk2];
@@ -477,28 +477,28 @@ public class BanKuaiDbOperation
 //		            stocknext = new String(itemBuf3, 0, sigbk2 );
 //		            logger.debug(stocknext);
 
-	            }
-			    
-		 } catch (Exception e) {
-			 e.printStackTrace();
-			 return null;
-		 } finally {
-			 try {
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-             try {
-				dis.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}     
-		 }
+//	            }
+//			    
+//		 } catch (Exception e) {
+//			 e.printStackTrace();
+//			 return null;
+//		 } finally {
+//			 try {
+//				in.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//             try {
+//				dis.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}     
+//		 }
 		 
 		 
 		 
 //		return null;
-	}
+//	}
 	/*
 	 * 通达信的概念板块与个股对应
 	 */
@@ -3057,6 +3057,74 @@ public class BanKuaiDbOperation
 		
 		return currentbk;
 	}
+	/*
+	 * 查找在市值范围内的所有股票代码,日期如果是周六/日按周五的市值
+	 */
+	public Set<String> getStockOfRangeShiZhi(Double shizhidown, Double shizhiup, LocalDate localDate, int difference, String zhishitype) 
+	{
+		LocalDate requireend = localDate.with(DayOfWeek.FRIDAY);
+		LocalDate requirestart = localDate.with(DayOfWeek.MONDAY);
+	
+		String sqlquerystat = "SELECT A.STOCKCODE AS STOCKCODE, A.WORKDAY, A.总市值/JILUTIAOSHU AS 个股周平均总市值, A.总流通市值/JILUTIAOSHU AS 个股周平均流通市值\r\n" +
+								"FROM (select 通达信深交所股票每日交易信息.`代码` AS STOCKCODE, 通达信深交所股票每日交易信息.`交易日期` as workday,   sum( 通达信深交所股票每日交易信息.`成交额`) AS 板块周交易额 ,\r\n" + 
+								"sum( 通达信深交所股票每日交易信息.`成交量`) AS 板块周交易量,  \r\n" +
+								"sum( 通达信深交所股票每日交易信息.`换手率`) AS 板块周换手率 , \r\n" +
+								"sum( 通达信深交所股票每日交易信息.`总市值`) AS 总市值 , \r\n" +
+								"sum( 通达信深交所股票每日交易信息.`流通市值`) AS 总流通市值, \r\n" + 
+								"count(1) as JILUTIAOSHU  \r\n" +
+								"from 通达信深交所股票每日交易信息 \r\n" +
+								"where 交易日期  between ' " + requirestart.toString() + "' and  '" + requireend.toString() + "' \r\n" +
+								"GROUP BY YEAR( 通达信深交所股票每日交易信息.`交易日期`), WEEK( 通达信深交所股票每日交易信息.`交易日期`), 代码 \r\n" +
+								") A \r\n" +
+								"WHERE A.总流通市值/JILUTIAOSHU >= " + shizhidown + " AND A.总流通市值/JILUTIAOSHU <" + shizhiup +" \r\n" + 
+								" \r\n"  +
+								"UNION \r\n" +
+								" \r\n" +
+								"SELECT A.STOCKCODE AS STOCKCODE, A.WORKDAY, A.总市值/JILUTIAOSHU AS 个股周平均总市值, A.总流通市值/JILUTIAOSHU AS 个股周平均流通市值\r\n" +
+								"FROM (select 通达信上交所股票每日交易信息.`代码` AS STOCKCODE, 通达信上交所股票每日交易信息.`交易日期` as workday,   sum( 通达信上交所股票每日交易信息.`成交额`) AS 板块周交易额 ,\r\n" + 
+								" sum( 通达信上交所股票每日交易信息.`成交量`) AS 板块周交易量,  \r\n" +
+								" sum( 通达信上交所股票每日交易信息.`换手率`) AS 板块周换手率 , \r\n" +
+								" sum( 通达信上交所股票每日交易信息.`总市值`) AS 总市值 , \r\n" +
+								" sum( 通达信上交所股票每日交易信息.`流通市值`) AS 总流通市值,\r\n" + 
+								"  count(1) as JILUTIAOSHU \r\n" +
+								" from 通达信上交所股票每日交易信息 \r\n" +
+								"where 交易日期 between ' " + requirestart.toString() + "' and  '" + requireend.toString() + "' \r\n" +
+								"GROUP BY YEAR( 通达信上交所股票每日交易信息.`交易日期`), WEEK( 通达信上交所股票每日交易信息.`交易日期`), 代码 \r\n" +
+								") A \r\n" +
+								" \r\n" +
+								"WHERE A.总流通市值/JILUTIAOSHU >= " + shizhidown + " AND A.总流通市值/JILUTIAOSHU <" + shizhiup +" \r\n"   
+							  ;
+		
+		CachedRowSetImpl rsfg = null;
+
+		Set<String> stockcodesetbyshizhirang = new HashSet<String> ();
+		try {  
+			 rsfg = connectdb.sqlQueryStatExecute(sqlquerystat);
+
+			 while(rsfg.next()) {
+				String stockcode  = rsfg.getString("STOCKCODE");
+				stockcodesetbyshizhirang.add(stockcode);
+			}
+		}catch(java.lang.NullPointerException e){ 
+			e.printStackTrace();
+//			logger.debug( "数据库连接为NULL!");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rsfg != null)
+					rsfg.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rsfg = null;
+		}
+		
+		return stockcodesetbyshizhirang;
+	}
+
 	/*
 	 * 板块设定时间跨度内和大盘相比的按周期占比。
 	 */
@@ -5793,6 +5861,68 @@ public class BanKuaiDbOperation
 			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 			return autoIncKeyFromApi;
 		}
+		/*
+		 * TDX划线文件
+		 */
+		public File refreshTDXDrawingFile() 
+		{
+//			File file = new File(sysconfig.getDZHStockGuQuanFile() );
+			File file = new File("E:/tdxline.eld");
+			 if(!file.exists() ) {
+				 return null;
+			 }
+			 
+			 BufferedInputStream dis = null;
+			 FileInputStream in = null;
+			 try {
+				    in = new FileInputStream(file);  
+				    dis = new BufferedInputStream(in);
+				    
+				    
+				    int fileheadbytenumber = 1;
+		            byte[] jiaoyisuocode = new byte[fileheadbytenumber];
+		            dis.read(jiaoyisuocode, 0, fileheadbytenumber); 
+		              
+		            int nodecodebytenumber = 6;
+		            byte[] nodecode = new byte[nodecodebytenumber];
+		            dis.read(nodecode, 0, nodecodebytenumber);
+		            String nodecodestr =new String(nodecode,0,nodecodebytenumber);
+		            
+		            int zhongjiantempbytenumber = 17;
+		            byte[] zhongjian = new byte[zhongjiantempbytenumber];
+		            dis.read(zhongjian, 0, zhongjiantempbytenumber);
+		            
+		            dis.read(jiaoyisuocode, 0, fileheadbytenumber);
+		            
+		            int zhibiaonumber = 6;
+		            byte[] zhibiaobyte = new byte[zhibiaonumber];
+		            dis.read(zhibiaobyte, 0, zhibiaonumber);
+		            String zhibiaoname =new String(zhibiaobyte,0,zhibiaonumber);
+		            
+		            int zhongjian2number = 68;
+		            byte[] zhongjian2byte = new byte[zhongjian2number];
+		            dis.read(zhongjian2byte, 0, zhongjian2number);
+		            
+				    
+			 } catch (Exception e) {
+				 e.printStackTrace();
+				 return null;
+			 } finally {
+				 try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	             try {
+					dis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}     
+			 }
+			return file;
+		}
+		
+
 		
 }
 

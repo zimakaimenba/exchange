@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.gui;
+package com.exchangeinfomanager.commonlib;
 
 import java.awt.event.*;
 import javax.swing.*;

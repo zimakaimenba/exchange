@@ -373,6 +373,9 @@ public class AllCurrentTdxBKAndStoksTree
 		
 		return stock;
 	}
+	/*
+	 * 
+	 */
 	public Stock getStock(Stock stock, LocalDate requiredrecordsday, String period)
 	{
 		//占比还是要看周线/月线，日线数据没有太大意义，下面专门找出个股周线占比数据

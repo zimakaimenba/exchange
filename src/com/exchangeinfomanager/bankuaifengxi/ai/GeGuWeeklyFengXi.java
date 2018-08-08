@@ -35,10 +35,10 @@ import org.apache.log4j.Logger;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.commonlib.MultilineTableCell;
+import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.TableCellListener;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.github.cjwizard.WizardPage;
 import com.github.cjwizard.WizardSettings;
@@ -235,19 +235,6 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 				            }
 			            	
 			            }
-			            
-			            	
-			            
-//			            Object[] tabledata= new Object [6] ;
-//			            tabledata[0] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),0);
-//			            tabledata[1] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),1);
-//			            tabledata[2] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),2);
-//			            tabledata[3] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),3);
-//			            tabledata[4] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),4);
-//			            tabledata[5] = tblzhongdiangz.getModel().getValueAt(tcl.getRow(),5);
-//			            
-//			            setTableNewInfoToDB (tabledata);
-			            
 			            
 			        }
 			    };
@@ -957,7 +944,7 @@ class GeGuCheckListsTable extends JTable
 	 
 	
 	public TableCellRenderer getCellRenderer(int row, int column) {
-        if (column == 2 ) {
+        if (column == 2 || column == 3) {
             return wordWrapRenderer;
         }
         else {

@@ -19,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
+import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.Search.SearchDialog;
@@ -40,6 +42,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.GeGuShiZhiFenXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
@@ -111,7 +114,6 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.sun.rowset.CachedRowSetImpl;
 import com.exchangeinfomanager.database.*;
-import com.exchangeinfomanager.gui.TableCellListener;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
@@ -299,45 +301,22 @@ public class StockInfoManager
 				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
 				localconnect = true;
 			}
-
-//			 if(localconnect == false && rmtconnect == true) {
-//				JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
-//			} else if(localconnect == true && rmtconnect == false) {
-//				JOptionPane.showMessageDialog(null,"仅基本数据可用！");
-//			} else{
-//				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201711_easyicon.net.png")));
-//				lblStatusBarOperationIndicatior.setText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
-//				btnDBStatus.setToolTipText(connectdb.getLocalDatabaseName("full")+"数据库连接失败");
-//				JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
-//				System.exit(0);
-//			}
-			
-			
 		}
-		
+		/*
+		 * 
+		 */
+		private void preUpdateSearchResultToGui()
+		{
+			String stockcode = nodeshouldbedisplayed.getMyOwnCode();
+			preUpdateSearchResultToGui (stockcode);
+		}
+		/*
+		 * 
+		 */
 		public void preUpdateSearchResultToGui(String stockcode) 
 		{
 				btngengxinxx.setEnabled(false);
 				clearGuiDispalyedInfo ();
-				
-//				 ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (stockcode);
-//				 if(nodeslist.size() == 0) {
-//					 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
-//					 return;
-//				 }
-				 
-//				 BkChanYeLianTreeNode nodeshouldbedisplayed = null;
-//				 if(nodeslist.size()>1) {
-//					 //显示JLIST，让用户选择
-//					 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
-//					 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
-//					 if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//							return;
-//					 
-//					 int userselected = userselection.getUserSelection();
-//					 nodeshouldbedisplayed = nodeslist.get(userselected);
-//				 } else
-//					 nodeshouldbedisplayed = nodeslist.get(0);
 				
 				 displayStockJibenmianInfotoGui (); //显示板块或者股票的基本信息
 				 if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
@@ -352,9 +331,6 @@ public class StockInfoManager
 					} 
 					
 					nodeshouldbedisplayed = bkdbopt.getCheckListsXMLInfo ((Stock)nodeshouldbedisplayed);
-//					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
-//					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
-					
 					//
 					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
 					
@@ -431,7 +407,8 @@ public class StockInfoManager
     	ggfx.setSize(new Dimension(1550, 900));
     	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
     	ggfx.setLocationRelativeTo(null);
-    	Toolkit.getDefaultToolkit().beep();
+//    	Toolkit.getDefaultToolkit().beep();
+    	SystemAudioPlayed.playSound();
     	if(!ggfx.isVisible() ) 
     		ggfx.setVisible(true);
     	
@@ -439,6 +416,10 @@ public class StockInfoManager
     	
     	
     	ggfx = null;
+    	
+    	hourglassCursor = null;
+    	Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+		this.frame.setCursor(hourglassCursor2);
 	}
 	/*
 	 * 
@@ -457,7 +438,7 @@ public class StockInfoManager
 
 		menuItemfxwjfx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				showGeGuShiZhiFenXi ();
 			}
 		});
 		
@@ -876,7 +857,7 @@ public class StockInfoManager
 			{
 				
 				showWeeklyFenXiWizardDialog (LocalDate.now());
-//				preUpdateSearchResultToGui(kspanel.getStockcode());
+				preUpdateSearchResultToGui();
 			}
 
 			
@@ -1652,6 +1633,27 @@ public class StockInfoManager
 //	}
 
 
+	protected void showGeGuShiZhiFenXi() 
+	{
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		this.frame.setCursor(hourglassCursor);
+		
+		GeGuShiZhiFenXi ggszfx = new GeGuShiZhiFenXi ();
+		ggszfx.setModal(false);
+		ggszfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+		if(!ggszfx.isVisible() ) {
+			ggszfx.setVisible(true);
+		} 
+		
+		ggszfx.toFront();
+		
+		hourglassCursor = null;
+		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+		this.frame.setCursor(hourglassCursor2);
+		SystemAudioPlayed.playSound();
+		
+	}
 	public BanKuaiFengXi getBanKuaiFengXi ()
 	{
 			return bkfx;
@@ -1659,19 +1661,27 @@ public class StockInfoManager
 		
 	protected void startBanKuaiFengXi() 
 	{
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		this.frame.setCursor(hourglassCursor);
+		
 			if(bkfx == null ) {
 				bkfx = new BanKuaiFengXi (this);
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//				bkfx.setVisible(true);
 			} 
 			
 			if(!bkfx.isVisible() ) {
-//				bkfx.repaint();
+
 				bkfx.setVisible(true);
 			} 
 			
 			bkfx.toFront();
+			
+			SystemAudioPlayed.playSound();
+			
+			hourglassCursor = null;
+			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+			this.frame.setCursor(hourglassCursor2);
 	}
 
 		/*
@@ -3162,7 +3172,8 @@ public class StockInfoManager
 //					showOnScreen(2,window.frame);
 					
 					window.frame.setVisible(true);
-					Toolkit.getDefaultToolkit().beep();
+//					Toolkit.getDefaultToolkit().beep();
+					SystemAudioPlayed.playSound();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

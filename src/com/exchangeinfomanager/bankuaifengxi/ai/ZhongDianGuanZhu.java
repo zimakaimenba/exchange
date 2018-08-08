@@ -20,6 +20,86 @@ public class ZhongDianGuanZhu
 	private ArrayList<ZdgzItem> ticha;
 	private String gganalysisicomments;
 	private ArrayList<ZdgzItem> gggupiaochi;
+	
+	//返回所有被选择项目后的string
+	public String getZdgzAllSelectedInfo ()
+	{
+		String result = "";
+		try{
+			for(ZdgzItem zdgzitem : govpolicy) {
+				result = result + formatedResultString (zdgzitem);
+			}
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			for(ZdgzItem zdgzitem : dapanzhishu) {
+				result = result + formatedResultString (zdgzitem);
+			}
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			for(ZdgzItem zdgzitem : gegufinancial) {
+				result = result + formatedResultString (zdgzitem);
+			}
+		} catch (java.lang.NullPointerException e) {
+					
+		}
+		try{
+			for(ZdgzItem zdgzitem : gudong) {
+				result = result + formatedResultString (zdgzitem);
+			}
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try{
+			for(ZdgzItem zdgzitem : jishu) {
+				result = result + formatedResultString (zdgzitem);
+			}
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			for(ZdgzItem zdgzitem : ticha) {
+				result = result + formatedResultString (zdgzitem);
+			}
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			for(ZdgzItem zdgzitem : gggupiaochi) {
+				result = result + formatedResultString (zdgzitem);
+			}
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			if(!dpanalysisicomments.isEmpty())
+				result =result + dpanalysisicomments;
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			if(!gganalysisicomments.isEmpty())
+				result =result + gganalysisicomments;
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		
+		if(result.isEmpty())
+			return null;
+		else
+			return result;
+	}
+	private String formatedResultString (ZdgzItem zdgzitem)
+	{
+		String result = "";
+		if(zdgzitem.isSelected())
+			result =result + "[" + zdgzitem.getXmlTagBelonged() + ":" + zdgzitem.getId() + "]";
+		
+		return result;
+	}
 	//明日计划
 //	private boolean mrjhenabled;
 //	private String mrjhaction;
