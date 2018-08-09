@@ -528,7 +528,6 @@ public class BanKuaiFengXi extends JDialog {
 		            	try {
 							exporttask.get();
 						} catch (InterruptedException | ExecutionException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 		            	progressBarExport.setIndeterminate(false);
@@ -583,6 +582,7 @@ public class BanKuaiFengXi extends JDialog {
 		paneldayCandle.resetDate();
 		pnlggdpcje.resetDate();
 		paneldayCandle.resetDate();
+		cbxshizhifx.setSelected(false);
 		
 		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).deleteAllRows();
@@ -876,7 +876,7 @@ public class BanKuaiFengXi extends JDialog {
 				}
 				
 				int bkmodelRow = tableBkZhanBi.convertRowIndexToModel(bkrow);
-				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(bkmodelRow);
+//				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(bkmodelRow);
 				
 				int ggrow = tableGuGuZhanBiInBk.getSelectedRow();
 				if(ggrow <0) {
@@ -885,9 +885,9 @@ public class BanKuaiFengXi extends JDialog {
 				}
 				
 				int ggmodelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(ggrow);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
-
-				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
+//
+//				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			}
 			
 		});
@@ -951,7 +951,6 @@ public class BanKuaiFengXi extends JDialog {
 
 			@Override
 			public void chartMouseMoved(ChartMouseEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}
 			
@@ -994,7 +993,7 @@ public class BanKuaiFengXi extends JDialog {
 				int stockrow = tableGuGuZhanBiInBk.getSelectedRow();
 				if(stockrow != -1) {
 					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(stockrow);
-					 selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+					selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
 				}
 
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
@@ -1004,10 +1003,14 @@ public class BanKuaiFengXi extends JDialog {
 					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
-//    				refreshGeGuKXianZouShiOfFiftyDays (selectstock,datekey);
-    				
     				String tooltip = selectedinfo.substring(10,selectedinfo.length());
     				setUserSelectedColumnMessage(tooltip);
+    				
+    				if(cbxshizhifx.isSelected()) { //显示市值排名
+						dispalyStockShiZhiFengXiResult (selectstock,datekey);
+					};
+					
+					SystemAudioPlayed.playSound();
                 }
             }
         });
@@ -1019,7 +1022,7 @@ public class BanKuaiFengXi extends JDialog {
 				int stockrow = tableGuGuZhanBiInBk.getSelectedRow();
 				if(stockrow != -1) {
 					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(stockrow);
-					 selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+					selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
 				}
 					
 				
@@ -1027,6 +1030,7 @@ public class BanKuaiFengXi extends JDialog {
     	        if (me.getClickCount() == 2) {
     	        	LocalDate datekey = panelGgDpCjeZhanBi.getCurSelectedBarDate ();
     	        	displayNodeLargerPeriodData (selectstock.getStock(),datekey);
+    	        	
     	        }
 			}
 			@Override
@@ -1055,6 +1059,9 @@ public class BanKuaiFengXi extends JDialog {
 				}
 			}
 		});
+		/*
+		 * 
+		 */
 		pnlggdpcje.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			 public void propertyChange(PropertyChangeEvent evt)  
@@ -1080,7 +1087,9 @@ public class BanKuaiFengXi extends JDialog {
                 }
 			}
 		});
-		
+		/*
+		 * 
+		 */
 		panelgegubkcje.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			 public void propertyChange(PropertyChangeEvent evt)   
@@ -1550,8 +1559,9 @@ public class BanKuaiFengXi extends JDialog {
 				}		
 			}
 		});
-		
-		
+		/*
+		 * 
+		 */
 		tableGuGuZhanBiInBk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -1582,10 +1592,11 @@ public class BanKuaiFengXi extends JDialog {
 					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
 					displayStockCurrentFxResult (tableGuGuZhanBiInBk);
 					
-					if(cbxshizhifx.isSelected()) {
-						dispalyStockShiZhiFengXiResult (selectstock);
-						
-					};
+//					if(cbxshizhifx.isSelected()) {
+//						LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//						dispalyStockShiZhiFengXiResult (selectstock,curselectdate);
+//					};
+					cbxshizhifx.setSelected(true);
 					
 					hourglassCursor = null;
 					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -1789,9 +1800,11 @@ public class BanKuaiFengXi extends JDialog {
 			}
 		});
 	}
-	protected void dispalyStockShiZhiFengXiResult(StockOfBanKuai selectstock) 
+	protected void dispalyStockShiZhiFengXiResult(StockOfBanKuai selectstock, LocalDate curselectdate) 
 	{
-		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		setCursor(hourglassCursor);
+		
 		String displayedresult;
 		if(ggszfx == null) {
 			startupGeGuShiZhiFenXi (false);
@@ -1802,6 +1815,9 @@ public class BanKuaiFengXi extends JDialog {
 		
 		setUserSelectedColumnMessage (displayedresult);
 		
+		hourglassCursor = null;
+		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+		setCursor(hourglassCursor2);
 	}
 
 	/*
@@ -1892,9 +1908,11 @@ public class BanKuaiFengXi extends JDialog {
 		
 		NodeXPeriodDataBasic nodexdate = node.getNodeXPeroidData(globeperiod);
 		
+		SystemAudioPlayed.playSound();
 		BanKuaiFengXiLargePnl largeinfo = new BanKuaiFengXiLargePnl (node, requirestart.plusWeeks(1).with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY)
 				, curselectdate, globeperiod);
 		largeinfo.highLightSpecificBarColumn(datekey);
+		
 		JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
 		
 		largeinfo = null;
@@ -2060,7 +2078,7 @@ public class BanKuaiFengXi extends JDialog {
 						filenamedate = filexminconfigpath.getName().replaceAll("\\D+","");
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 			}

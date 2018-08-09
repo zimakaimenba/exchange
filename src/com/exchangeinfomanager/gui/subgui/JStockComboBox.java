@@ -51,14 +51,12 @@ public class JStockComboBox extends  JComboBox<String>
 	private BanKuaiDbOperation bkdbopt;
 	private BkChanYeLianTreeNode nodeshouldbedisplayed;
 	private Integer onlyselectnodetype;
-	private MenuItem mntmYiTuishi;
-	
+
 	/*
 	 * 
 	 */
 	public BkChanYeLianTreeNode getUserInputNode ()
 	{
-		statChangeActions ();
 		return nodeshouldbedisplayed;
 	}
 	/*
@@ -91,6 +89,32 @@ public class JStockComboBox extends  JComboBox<String>
 		preSearch(stockcode);
 		updateStockCombox();
 		return nodeshouldbedisplayed;
+	}
+	/*
+	 * 
+	 */
+	private void statChangeActions()
+	{
+		String nodecode;
+		try	{
+			nodecode = formatStockCode( (String)this.getEditor().getItem() );
+			if(!checkCodeInputFormat(nodecode)) {
+				return;
+			}
+			
+			if(this.nodeshouldbedisplayed != null && nodecode.equals( this.nodeshouldbedisplayed.getMyOwnCode() ) )
+				return;
+			
+			preSearch(nodecode);
+			updateStockCombox();
+		} catch(java.lang.NullPointerException ex)	{
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
+			return;
+		} catch(java.lang.StringIndexOutOfBoundsException ex2) {
+			this.nodeshouldbedisplayed = null;
+			return;
+		}
 	}
 	/*
 	 * 获取用户输入的个股的基本信息 
@@ -171,6 +195,7 @@ public class JStockComboBox extends  JComboBox<String>
 			{
 				if(e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
+					statChangeActions ();
 				}
 			}
 			
@@ -199,36 +224,6 @@ public class JStockComboBox extends  JComboBox<String>
 	{
 		this.getEditor().setItem("");
 	}
-
-	private void statChangeActions()
-	{
-		String nodecode;
-		try	{
-			nodecode = formatStockCode((String)this.getSelectedItem());
-			if(!checkCodeInputFormat(nodecode)) {
-//				JOptionPane.showMessageDialog(null,"股票/板块代码有误！","Warning", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			
-			if(this.nodeshouldbedisplayed != null && nodecode.equals( this.nodeshouldbedisplayed.getMyOwnCode() ) )
-				return;
-			
-			preSearch(nodecode);
-			updateStockCombox();
-		} catch(java.lang.NullPointerException ex)	{
-			ex.printStackTrace();
-			JOptionPane.showMessageDialog(null, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
-			return;
-		} catch(java.lang.StringIndexOutOfBoundsException ex2) {
-//			ex2.printStackTrace();
-			this.nodeshouldbedisplayed = null;
-//			JOptionPane.showMessageDialog(null,"股票代码有误！");
-			return;
-		}
-		
-	}
-	
-
 	private boolean checkCodeInputFormat(String stockcode) 
 	{
 		// TODO Auto-generated method stub
@@ -248,7 +243,10 @@ public class JStockComboBox extends  JComboBox<String>
 
 	private String formatStockCode (String stockcode)
 	{
-		return stockcode.substring(0,6).trim(); 
+		if(stockcode.length() >6)
+			return stockcode.substring(0,6).trim();
+		else
+			return stockcode;
 	}
 	
 	private void updateStockCombox (String tmp)
@@ -296,7 +294,7 @@ public class JStockComboBox extends  JComboBox<String>
 	}
 	private void updateStockCombox() 
 	{
-		String tmp = formatStockCode((String)this.getSelectedItem());//有可能是原来输入过的，要把代码选择出来。
+		String tmp = formatStockCode( (String)this.getEditor().getItem() );//有可能是原来输入过的，要把代码选择出来。
 		updateStockCombox (tmp);
 	}
 

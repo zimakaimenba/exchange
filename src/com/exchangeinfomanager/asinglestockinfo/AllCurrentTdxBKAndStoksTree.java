@@ -285,7 +285,9 @@ public class AllCurrentTdxBKAndStoksTree
 			return startend;
 		}
 		else if( requiredstart.isBefore(curstart) && requiredend.isAfter(curend)  ) {//部分完整3， 前后双缺失，这种情况目前的设置似乎不可能发生，暂时不写
-			logger.debug("部分完整3， 前后双缺失，这种情况目前的设置似乎不可能发生");
+			logger.info("部分完整3， 前后双缺失!");
+			startend.put("searchstart", requiredstart);
+			startend.put("searchend", requiredend);
 			return startend;
 		}
 
