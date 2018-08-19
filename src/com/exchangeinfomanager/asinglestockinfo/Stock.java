@@ -56,17 +56,17 @@ public class Stock extends BkChanYeLianTreeNode {
 	private HashMap<String, String> suoShuCurSysBanKuai; //个股当前所属的通达信板块
 	
 //	private DaPan dapan;
-	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
-	{
-		if(period.equals(StockGivenPeriodDataItem.WEEK))
-			return nodewkdata;
-		else if(period.equals(StockGivenPeriodDataItem.MONTH))
-			return nodemonthdata;
-		else if(period.equals(StockGivenPeriodDataItem.DAY))
-			return nodedaydata;
-		else 
-			return null;
-	}
+//	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
+//	{
+//		if(period.equals(StockGivenPeriodDataItem.WEEK))
+//			return nodewkdata;
+//		else if(period.equals(StockGivenPeriodDataItem.MONTH))
+//			return nodemonthdata;
+//		else if(period.equals(StockGivenPeriodDataItem.DAY))
+//			return nodedaydata;
+//		else 
+//			return null;
+//	}
 	
 	public void addNewChiCangAccount (AccountInfoBasic acnt)
 	{
@@ -252,7 +252,7 @@ public class Stock extends BkChanYeLianTreeNode {
 				stockohlc.setNotify(false);
 				stockohlc.add(kdata);
 			} catch (org.jfree.data.general.SeriesException e) {
-				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 			}
 			try {
 				stockamo.setNotify(false);
@@ -265,7 +265,7 @@ public class Stock extends BkChanYeLianTreeNode {
 //				if(kdata.getCjlZhanBi() != null)
 //					stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
-				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //				e.printStackTrace();
 			}
 			
@@ -273,14 +273,14 @@ public class Stock extends BkChanYeLianTreeNode {
 				stockhuanshoulv.setNotify(false);
 				stockhuanshoulv.add(kdata.getPeriod(),kdata.getHuanshoulv(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
-				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //				e.printStackTrace();
 			} 
 			try {
 				stockliutongshizhi.setNotify(false);
 				stockliutongshizhi.add(kdata.getPeriod(),kdata.getLiutongshizhi(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
-				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //				e.printStackTrace();
 			}
 			try {	
@@ -288,7 +288,7 @@ public class Stock extends BkChanYeLianTreeNode {
 				stockzongshizhi.add(kdata.getPeriod(),kdata.getZongshizhi(),false);
 				
 			} catch (org.jfree.data.general.SeriesException e) {
-				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //				e.printStackTrace();
 			}
 		}

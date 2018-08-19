@@ -96,17 +96,17 @@ public class BanKuai extends BkChanYeLianTreeNode
 	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode#getNodeXPeroidData(java.lang.String)
 	 * 获得某个周期的数据
 	 */
-	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
-	{
-		if(period.equals(StockGivenPeriodDataItem.WEEK))
-			return nodewkdata;
-		else if(period.equals(StockGivenPeriodDataItem.MONTH))
-			return nodemonthdata;
-		else if(period.equals(StockGivenPeriodDataItem.DAY))
-			return nodedaydata;
-		else 
-			return null;
-	}
+//	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
+//	{
+//		if(period.equals(StockGivenPeriodDataItem.WEEK))
+//			return nodewkdata;
+//		else if(period.equals(StockGivenPeriodDataItem.MONTH))
+//			return nodemonthdata;
+//		else if(period.equals(StockGivenPeriodDataItem.DAY))
+//			return nodedaydata;
+//		else 
+//			return null;
+//	}
 //	/*
 //	 * 参数zhouqirange指对period周期的selecteddate的前几个周期合并计算
 //	 */
@@ -354,18 +354,33 @@ public class BanKuai extends BkChanYeLianTreeNode
 		{
 			super(treenode1);
 		}
-		public boolean selfismatchmodel;
-		private HashMap<LocalDate,Integer> stocknumsinparsedfile;
-		
-		private void setSelfIsMatchModel (boolean selfinset)
+//		public boolean selfismatchmodel;
+		private Map<LocalDate,Integer> stocknumsinparsedfile;
+		private Set<LocalDate> bkselfinparsedfile;
+		/*
+		 * 
+		 */
+		public void setSelfIsMatchModel (LocalDate selfinsetdate)
 		{
-			this.selfismatchmodel = selfinset;
+			if(bkselfinparsedfile == null)
+				this.bkselfinparsedfile = new HashSet<LocalDate> ();
+			
+			LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
+			this.bkselfinparsedfile.add(friday);
 		}
-		public boolean getSelfIsMatchModel ()
-		{
-			return this.selfismatchmodel;
+		public Boolean selfIsMatchModel (LocalDate selfinsetdate)
+		{ 
+			try{
+				LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
+				return this.bkselfinparsedfile.contains(friday);
+			} catch (java.lang.NullPointerException e) {
+				return false;
+			}
 		}
-		public void setStocksNumInParsedFile (LocalDate parsefiledate, boolean selfinset, Integer stocksnum)
+		/*
+		 * 
+		 */
+		public void setStocksNumInParsedFile (LocalDate parsefiledate, Integer stocksnum)
 		{
 			if(stocknumsinparsedfile == null) {
 				stocknumsinparsedfile = new HashMap<LocalDate,Integer> ();
@@ -377,8 +392,6 @@ public class BanKuai extends BkChanYeLianTreeNode
 				if(stocksnum >0)
 					stocknumsinparsedfile.put(friday, stocksnum);
 			}
-			
-			this.setSelfIsMatchModel(selfinset);
 		}
 		public Integer getStocksNumInParsedFileForSpecificDate (LocalDate requiredate)
 		{

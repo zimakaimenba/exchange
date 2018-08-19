@@ -29,6 +29,7 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.google.common.base.Splitter;
@@ -143,8 +144,18 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 	/*
 	 * 
 	 */
-	public abstract NodeXPeriodDataBasic getNodeXPeroidData (String period);
-	
+//	public abstract NodeXPeriodDataBasic getNodeXPeroidData (String period);
+	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
+	{
+		if(period.equals(StockGivenPeriodDataItem.WEEK))
+			return nodewkdata;
+		else if(period.equals(StockGivenPeriodDataItem.MONTH))
+			return nodemonthdata;
+		else if(period.equals(StockGivenPeriodDataItem.DAY))
+			return nodedaydata;
+		else 
+			return null;
+	}
 	/*
 	 * 和产业链树相关的计算
 	 */
@@ -630,12 +641,12 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			/*
 			 * 计算指定周期和上周期的成交额差额，适合stock/bankuai，dapan有自己的计算方法
 			 */
-			public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate)
+			public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate,int difference)
 			{
 				if(stockohlc == null)
 					return null;
 				
-				TimeSeriesDataItem curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0) );
+				TimeSeriesDataItem curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
 				if( curcjlrecord == null) 
 					return null;
 				
@@ -725,13 +736,13 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 				
 				//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 				String nodept = getNodeperiodtype();
-				Double dpcjediff = ((DaPan)getRoot()).getNodeXPeroidData(nodept).getChengJiaoErDifferenceWithLastPeriod(requireddate);
+				Double dpcjediff = ((DaPan)getRoot()).getNodeXPeroidData(nodept).getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
 				if( dpcjediff<0 || dpcjediff == null ) {//大盘缩量，
 					return -100.0;
 				}
 				
 				int index = -1;
-				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) { //上周可能大盘修饰
+				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) { //前面周可能大盘修饰，-1000是给一个查询的边界，大盘或板块不可能休市超过1000周
 					index --;
 				}
 				
@@ -747,7 +758,6 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 				
 				return cjechange/dpcjediff;
 			}
-			
 		 }
 		 
 		 

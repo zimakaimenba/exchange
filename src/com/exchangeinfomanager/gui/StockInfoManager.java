@@ -1677,7 +1677,7 @@ public class StockInfoManager
 			
 			bkfx.toFront();
 			
-			SystemAudioPlayed.playSound();
+//			SystemAudioPlayed.playSound();
 			
 			hourglassCursor = null;
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);

@@ -160,14 +160,14 @@ public class BanKuaiAndChanYeLian2
 					continue;
           	
             	
-            	Integer setnum = this.bkfxrfxmlhandler.getBanKuaiFxSetNumberOfSpecificDate(tmpbkcode, localDate);
-            	if(setnum == null)
-            		continue;
+            	Integer setnum = this.bkfxrfxmlhandler.getBanKuaiFxSetNumberOfSpecificDate (tmpbkcode, localDate);
+            	Boolean bkselfinparsedfile = this.bkfxrfxmlhandler.getBanKuaiFxSelfMatchModelOfSepecificDate (tmpbkcode, localDate);
   
 				if(setnum != null && setnum > 0) {
 					BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
-					Boolean selfisin = treerelated.getSelfIsMatchModel ();
-	    			treerelated.setStocksNumInParsedFile (localDate, selfisin,  setnum);
+					if(bkselfinparsedfile)
+						treerelated.setSelfIsMatchModel (localDate);
+	    			treerelated.setStocksNumInParsedFile (localDate,  setnum);
 				}
 	        } 
             
@@ -245,11 +245,6 @@ public class BanKuaiAndChanYeLian2
             			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) //有些指数是没有个股不列入比较范围
 					continue;
 
-//            	String tmpname = treeChild.getMyOwnName();
-            	boolean selfinset = false;
-            	if(bkinfile.contains(tmpbkcode))
-            		selfinset = true;
-            	
             	nodeinallbktree = this.allbkstocks.getAllGeGuOfBanKuai(nodeinallbktree, StockGivenPeriodDataItem.WEEK);
             	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,StockGivenPeriodDataItem.WEEK);
             	HashSet<String> stkofbkset = new HashSet<String>  ();
@@ -261,7 +256,9 @@ public class BanKuaiAndChanYeLian2
             	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
 	    		BanKuaiTreeRelated treerelated = null;
 				treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
-    			treerelated.setStocksNumInParsedFile (localDate,selfinset,intersectionbankuai.size());
+    			treerelated.setStocksNumInParsedFile (localDate,intersectionbankuai.size());
+            	if(bkinfile.contains(tmpbkcode))
+            		treerelated.setSelfIsMatchModel(localDate);
 
 				for(StockOfBanKuai stkofbk : curbkallbkset ) {
 					StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkofbk.getNodeTreerelated();
@@ -272,7 +269,7 @@ public class BanKuaiAndChanYeLian2
 				}
 
 				//信息存入XML
-				this.bkfxrfxmlhandler.addBanKuaiFxSetToXml (nodeinallbktree.getMyOwnCode(),selfinset,intersectionbankuai,localDate);
+				this.bkfxrfxmlhandler.addBanKuaiFxSetToXml (nodeinallbktree.getMyOwnCode(),bkinfile.contains(tmpbkcode),intersectionbankuai,localDate);
 				
 				curbkallbkset = null;
 				stkofbkset= null;

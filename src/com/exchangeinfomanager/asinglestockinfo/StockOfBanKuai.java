@@ -25,9 +25,12 @@ public class StockOfBanKuai extends Stock
 		this.bankuai = bankuai1;
 		this.stock = stock1;
 		
+		super.nodewkdata = null;
 		super.nodewkdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.WEEK) ;
-		super.nodedaydata = null; //个股对板块，周线数据才有意义，日线毫无意义
+		super.nodedaydata = null; //对绝大多数分析来说说，周线数据才有意义，日线毫无意义，特别是个股相对于板块的日线数据。
 //		super.nodemonthdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+		
+		super.nodetreerelated = null;
 		super.nodetreerelated = new StockOfBanKuai.StockOfBanKuaiTreeRelated(this);
 	}
 	
@@ -39,6 +42,7 @@ public class StockOfBanKuai extends Stock
 	public void setStockQuanZhong (Integer quanzhong)
 	{
 		this.quanzhong = quanzhong; 
+		
 	}
 	public Stock getStock ()
 	{
@@ -52,23 +56,23 @@ public class StockOfBanKuai extends Stock
 	{
 		return this.quanzhong;
 	}
-	@Override
+//	@Override
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.Stock#getNodeXPeroidData(java.lang.String)
 	 */
-	public NodeXPeriodDataBasic getNodeXPeroidData(String period) {
-		
-		if(period.equals(StockGivenPeriodDataItem.MONTH))
-			return (StockOfBanKuaiNodeXPeriodData) super.nodemonthdata;
-		else if(period.equals(StockGivenPeriodDataItem.WEEK))
-			return super.nodewkdata;
-		else 
-			return null;
-		
-//		NodeXPeriodDataBasic nodexdata = getStockXPeriodDataForBanKuai (period);
-//		return nodexdata;
-	}
+//	public NodeXPeriodDataBasic getNodeXPeroidData(String period) {
+//		
+//		if(period.equals(StockGivenPeriodDataItem.MONTH))
+//			return (StockOfBanKuaiNodeXPeriodData) super.nodemonthdata;
+//		else if(period.equals(StockGivenPeriodDataItem.WEEK))
+//			return (StockOfBanKuaiNodeXPeriodData)super.nodewkdata;
+//		else 
+//			return null;
+//		
+////		NodeXPeriodDataBasic nodexdata = getStockXPeriodDataForBanKuai (period);
+////		return nodexdata;
+//	}
 	
 //	private NodeXPeriodDataBasic getStockXPeriodDataForBanKuai (String period)
 //	{
@@ -129,20 +133,20 @@ public class StockOfBanKuai extends Stock
 		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErChangeGrowthRateOfSuperBanKuai(java.time.LocalDate)
 		 * 和其他该函数不同的地方就是这里是板块的成交量而不是大盘的成交量
 		 */
-		public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate) 
+		public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) 
 		{
 				if(stockohlc == null)
 					return null;
 				
-				TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,0));
+				TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				if( curcjlrecord == null) 
 					return null;
 				
 				//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 				String nodept = getNodeperiodtype();
 				NodeXPeriodDataBasic bkxdata = bankuai.getNodeXPeroidData(nodept);
-				Double bkcjediff = bkxdata.getChengJiaoErDifferenceWithLastPeriod(requireddate);
-				if( bkcjediff<0 || bkcjediff == null ) {//板块缩量，
+				Double bkcjediff = bkxdata.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
+				if( bkcjediff < 0 || bkcjediff == null ) {//板块缩量，
 					return -100.0;
 				}
 				

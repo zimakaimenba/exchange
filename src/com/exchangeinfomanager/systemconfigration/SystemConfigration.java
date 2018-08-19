@@ -295,12 +295,6 @@ public class SystemConfigration
 	 {
 		 return this.systeminstalledpath;
 	 }
-	 
-	 public String getBanKuaiParsedFileStoredPath ()
-	 {
-//		 return this.bkparsestoredpath;
-		 return this.getSystemInstalledPath() + "/weeklyreports/";
-	 }
 	 /*
 	  * 
 	  */
@@ -330,11 +324,29 @@ public class SystemConfigration
 		{
 			return this.getSystemInstalledPath() + "/reports/TDX个股产业链报告报告.txt";
 		}
+		/*
+		 * 
+		 */
 		public String getTDXModelMatchExportFile ()
 		{
-			return this.getSystemInstalledPath() + "/weeklyreports/";
+			return this.getSystemInstalledPath() + "/weeklyreports/占比模型输出";
 		}
-	
+		/*
+		 * 
+		 */
+		 public String getShiZhiFenXiFilesStoredPath ()
+		 {
+//			 return this.bkparsestoredpath;
+			 return this.getSystemInstalledPath() + "/weeklyreports/市值分析输出";
+		 }
+		 /*
+		  * 
+		  */
+		 public String getGephiFenXiFilesStoredPath ()
+		 {
+//			 return this.bkparsestoredpath;
+			 return this.getSystemInstalledPath() + "/weeklyreports/Gephi分析输出";
+		 }
 		/*
 		 * 
 		 */

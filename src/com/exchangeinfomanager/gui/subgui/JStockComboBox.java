@@ -57,6 +57,7 @@ public class JStockComboBox extends  JComboBox<String>
 	 */
 	public BkChanYeLianTreeNode getUserInputNode ()
 	{
+		statChangeActions ();
 		return nodeshouldbedisplayed;
 	}
 	/*

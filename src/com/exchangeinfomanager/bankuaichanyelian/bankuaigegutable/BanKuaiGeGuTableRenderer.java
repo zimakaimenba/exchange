@@ -33,11 +33,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
 	{
-//		logger.debug("row" + row +"column" + col);
+//		{ "代码", "名称","权重","流通市值排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
+		
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    String valuepect = "";
-	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { //用百分比显示
+	    if (comp instanceof JLabel && (col == 4 || col == 6)) { //用百分比显示
 
 	    	try {
         		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
@@ -73,8 +74,8 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    		background = Color.white;
 	    	} 
 
-	    //突出显示成交额达到标准的股票
-	    if( col == 3 && value != null ) {
+	    //突出达到用户标准的股票
+	    if( col == 4 && value != null ) { //成交额>=
 	    	BanKuai bk = tablemodel.getCurDispalyBandKuai ();
 		    Double cje = tablemodel.getDisplayChenJiaoEr ();
 		    LocalDate requireddate = tablemodel.getShowCurDate();
@@ -85,7 +86,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	background = Color.yellow ;
 		    else
 		    	background = Color.white;
-	    } else   if( (col == 5 || col == 4) && value != null  ) { //突出显示bkMAXWK>=的个股
+	    } else   if( col == 5  && value != null  ) { //突出显示bkMAXWK>=的个股
 	    	int bkmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
 	    	
 	    	
@@ -94,7 +95,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		 background = Color.magenta ;
 	    	 else 
 	    		 background = Color.white ;
-	    } else  if( (col == 7 || col == 6)  && value != null  ) { 	    //突出显示dpMAXWK>=的个股
+	    } else  if( col == 7   && value != null  ) { 	    //突出显示dpMAXWK>=的个股
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
 	    	
 	    	int fazhi = tablemodel.getDisplayCjeDPMaxWk();
@@ -102,7 +103,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		 background = Color.red ;
 	    	 else 
 	    		 background = Color.white ;
-	    }else  if( col ==  8  && value != null ) { //突出显示CjeMAXWK>=的个股
+	    }else  if( col == 8  && value != null ) { //突出显示CjeMAXWK>=的个股
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 8).toString() );
 	    	
 	    	int fazhi = tablemodel.getDisplayCjeMaxWk();

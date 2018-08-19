@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,10 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ToolTipHeader;
@@ -43,15 +48,18 @@ public class BanKuaiInfoTable extends JTable
 	private BanKuaiDbOperation bkdbopt;
 	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
-	private AllCurrentTdxBKAndStoksTree bkcyl;
+//	private AllCurrentTdxBKAndStoksTree allbkgg;
+	private BanKuaiAndChanYeLian2 bkcyl;
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 
-	public BanKuaiInfoTable(StockInfoManager stockmanager1,AllCurrentTdxBKAndStoksTree bkcyl2) 
+	public BanKuaiInfoTable(StockInfoManager stockmanager1) 
 	{
 		super ();
 		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel ();
 		this.setModel(bkmodel);
-		this.bkcyl = bkcyl2;
+//		this.allbkgg = AllCurrentTdxBKAndStoksTree.getInstance();
+		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
+		
 		this.createEvents ();
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
@@ -146,6 +154,7 @@ public class BanKuaiInfoTable extends JTable
 	        if(tablemodel.getRowCount() == 0) {
 	        	return null;
 	        }
+	        LocalDate curdate = tablemodel.getCurDisplayedDate();
 	        
 	        int modelRow = convertRowIndexToModel(row);
 	        BanKuai bankuai = tablemodel.getBanKuai(modelRow);
@@ -153,7 +162,7 @@ public class BanKuaiInfoTable extends JTable
 	        String bktype = bankuai.getBanKuaiLeiXing();
 	        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
 	        	Font defaultFont = this.getFont();
-	        	Font font=new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+	        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
 	        	comp.setFont(font);
 	        }
 	        
@@ -181,19 +190,33 @@ public class BanKuaiInfoTable extends JTable
 	        //为不同情况突出显示不同的颜色
 	        Color foreground, background = Color.white;
 	        
-	        if(col == 0 || col == 1 ) {
-//	        	if(bankuai.getNodetreerelated().getParseFileStockSet().size()>0)
-//		        	background = Color.ORANGE;
-//		        else
-//		        	background = Color.white;
-	        }
 	        
-	        if(col == 2 || col == 3 || col == 4 ) {
-	        	if(bankuai.getNodeTreerelated().getInZdgzCandidateCount() >0 || bankuai.getNodeTreerelated().getInZdgzOfficalCount() >0)
-	        		background = Color.RED;
+	        if( col == 1 && !bktype.equals(BanKuai.NOGGWITHSELFCJL) ) {
+	        	TreeRelated tmptreerelated = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BanKuaiAndStockBasic.TDXBK).getNodeTreerelated();
+//	        	TreeRelated tmptreerelated = bankuai.getNodeTreerelated (); 
+	        	Integer patchfilestocknum = ((BanKuai.BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (curdate);
+	        	Boolean selfisin = ((BanKuai.BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (curdate);
+	        	 
+	        	if(patchfilestocknum != null && patchfilestocknum > 0 )
+		        	background = Color.ORANGE;
 		        else
 		        	background = Color.white;
+	        	
+//	        	if(selfisin) {//板块自身满足模型,用粗体
+//		        	 Font font = new Font("黑体",Font.BOLD + Font.ITALIC,14);
+//		        	 ((JLabel)comp).setFont(font);
+//		         } else {
+//		        	 Font font=new Font("宋体",Font.PLAIN,14); 
+//		        	 ((JLabel)comp).setFont(font);
+//		         }
 	        }
+	        
+//	        if(col == 2 || col == 3 || col == 4 ) {
+//	        	if(bankuai.getNodeTreerelated().getInZdgzCandidateCount() >0 || bankuai.getNodeTreerelated().getInZdgzOfficalCount() >0)
+//	        		background = Color.RED;
+//		        else
+//		        	background = Color.white;
+//	        }
 	        
 	        if (!this.isRowSelected(row)) 
 		    	comp.setBackground(background);

@@ -1,26 +1,38 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
+import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
@@ -29,10 +41,13 @@ import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportCondition;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportTask2;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBarOfName.BanKuaiFengXiCategoryBarChartHuanShouLvPnl;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.subgui.JStockComboBox;
+import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 import com.toedter.calendar.JDateChooser;
 
@@ -44,8 +59,12 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingWorker.StateValue;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 import javax.swing.JCheckBox;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -59,9 +78,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import javax.swing.JProgressBar;
 
 public class GeGuShiZhiFenXi extends JDialog 
 {
@@ -71,6 +95,7 @@ public class GeGuShiZhiFenXi extends JDialog
 	public GeGuShiZhiFenXi() 
 	{
 		initializeGui ();
+		this.sysconfig = SystemConfigration.getInstance();
 		datachooser.setLocalDate(LocalDate.now());
 			
 		createEvents ();
@@ -87,6 +112,8 @@ public class GeGuShiZhiFenXi extends JDialog
 	private HashMap<Integer, Set<String>> stocksshizhisets;
 	private BanKuaiDbOperation bkdbopt;
 	private AllCurrentTdxBKAndStoksTree allbksks;
+	private ShiZhiFenXiExportTask exporttask;
+	private SystemConfigration sysconfig;
 	
 	/*
 	 * 
@@ -96,7 +123,7 @@ public class GeGuShiZhiFenXi extends JDialog
 		if(!searchdate.equals(datachooser.getLocalDate()))
 			datachooser.setLocalDate(searchdate);
 		
-		String outputresult = displayStockFenXiResult (stockcode);
+		String outputresult = displayStockFenXiResult (stockcode,false);
 		return outputresult;
 	}
 	/*
@@ -109,6 +136,7 @@ public class GeGuShiZhiFenXi extends JDialog
 		
 		shizhilevellist = null;
 		shizhilevellist = new ArrayList(tmpbszlevelist);
+		
 		Collections.sort(shizhilevellist, new Comparator<String>() {
 		    @Override
 		    public int compare(String sz1, String sz2) {
@@ -128,6 +156,8 @@ public class GeGuShiZhiFenXi extends JDialog
 		int n = shizhilevellist.size() + 1;
 		stocksshizhisets = null;
 		stocksshizhisets = new HashMap<Integer,Set<String>> (n);
+		
+		((GeGuShiZhiFenXiResultTableModel)tableStockShiZhiFenXi.getModel()).removeAllRows();
 		
 //		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 //		setCursor(hourglassCursor);
@@ -158,7 +188,7 @@ public class GeGuShiZhiFenXi extends JDialog
 	/*
 	 * 
 	 */
-	protected String displayStockFenXiResult(String stockcode) 
+	protected String displayStockFenXiResult(String stockcode,boolean showInTable) 
 	{
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);
@@ -236,10 +266,15 @@ public class GeGuShiZhiFenXi extends JDialog
 				stocksearchedzhanbi = nodezhanbi;
 		}
 		
-		Collections.sort(stocklistofrangeshizhi, new NodeShiZhiComparator (datachooser.getLocalDate(),0,StockGivenPeriodDataItem.WEEK,"liutong") );
-		int shizhipaiming = stocklistofrangeshizhi.indexOf(stocksearched );
+		if(showInTable) {
+			((GeGuShiZhiFenXiResultTableModel)tableStockShiZhiFenXi.getModel()).refresh(stocklistofrangeshizhi, datachooser.getLocalDate(), StockGivenPeriodDataItem.WEEK); 
+		}
+		
 		Collections.sort(stocklistofrangeshizhi, new NodeZhanBiComparator (datachooser.getLocalDate(),0,StockGivenPeriodDataItem.WEEK) );
 		int zhanbipaiming = stocklistofrangeshizhi.indexOf(stocksearched );
+
+		Collections.sort(stocklistofrangeshizhi, new NodeShiZhiComparator (datachooser.getLocalDate(),0,StockGivenPeriodDataItem.WEEK,"liutong") );
+		int shizhipaiming = stocklistofrangeshizhi.indexOf(stocksearched );
 		
 		NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
 	    percentFormat.setMinimumFractionDigits(4);
@@ -299,6 +334,113 @@ public class GeGuShiZhiFenXi extends JDialog
 	/*
 	 * 
 	 */
+	public void exportBanKuaiWithGeGuOnCondition2 () 
+	{
+		String msg =  "导出耗时较长，请先确认条件是否正确。\n是否导出？";
+		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
+		if(exchangeresult == JOptionPane.CANCEL_OPTION)
+				return;
+		
+		LocalDate curselectdate = datachooser.getLocalDate();
+		String dateshowinfilename = null;
+		String globeperiod = StockGivenPeriodDataItem.WEEK;
+		if(globeperiod  == null  || globeperiod.equals(StockGivenPeriodDataItem.WEEK))
+			dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
+		else if(globeperiod.equals(StockGivenPeriodDataItem.DAY))
+			dateshowinfilename = "day" + curselectdate.toString().replaceAll("-","");
+		else if(globeperiod.equals(StockGivenPeriodDataItem.MONTH))
+			dateshowinfilename = "month" +  curselectdate.withDayOfMonth(curselectdate.lengthOfMonth()).toString().replaceAll("-","");
+		String exportfilename = sysconfig.getShiZhiFenXiFilesStoredPath () + "TDX市值分析结果" + dateshowinfilename + ".xml";
+		File filefmxx = new File( exportfilename );
+		
+		if(!filefmxx.getParentFile().exists()) {  
+            //如果目标文件所在的目录不存在，则创建父目录  
+            logger.debug("目标文件所在目录不存在，准备创建它！");  
+            if(!filefmxx.getParentFile().mkdirs()) {  
+                System.out.println("创建目标文件所在目录失败！");  
+                return ;  
+            }  
+        }  
+		
+		try {
+				if (filefmxx.exists()) {
+					filefmxx.delete();
+					filefmxx.createNewFile();
+				} else
+					filefmxx.createNewFile();
+		} catch (Exception e) {
+				e.printStackTrace();
+				return ;
+		}
+
+		exporttask = new ShiZhiFenXiExportTask( curselectdate,filefmxx);
+		exporttask.addPropertyChangeListener(new PropertyChangeListener() {
+		      @Override
+		      public void propertyChange(final PropertyChangeEvent eventexport) {
+		        switch (eventexport.getPropertyName()) {
+		        case "progress":
+		        	progressBar.setIndeterminate(false);
+		        	progressBar.setString("正在导出..." + (Integer) eventexport.getNewValue() + "%");
+		          break;
+		        case "state":
+		          switch ((StateValue) eventexport.getNewValue()) {
+		          case DONE:
+		        	exportCancelAction.putValue(Action.NAME, "导出条件个股");
+		            try {
+		              final int count = exporttask.get();
+		              //保存XML
+		              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
+		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
+		      			  progressBar.setString(" ");
+		      			  return;
+		      		  }
+		      		  try {
+		      			String path = filefmxx.getAbsolutePath();
+		      			Runtime.getRuntime().exec("explorer.exe /select," + path);
+		      		  } catch (IOException e1) {
+		      				e1.printStackTrace();
+		      		  }
+		      		progressBar.setString(" ");
+		      		System.gc();
+		            } catch (final CancellationException e) {
+		            	try {
+							exporttask.get();
+						} catch (InterruptedException | ExecutionException e1) {
+							e1.printStackTrace();
+						}
+		            	progressBar.setIndeterminate(false);
+		            	progressBar.setValue(0);
+		            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
+		            } catch (final Exception e) {
+//		              JOptionPane.showMessageDialog(Application.this, "The search process failed", "Search Words",
+//		                  JOptionPane.ERROR_MESSAGE);
+		            }
+
+		            exporttask = null;
+		            break;
+		          case STARTED:
+		          case PENDING:
+		        	  exportCancelAction.putValue(Action.NAME, "取消导出");
+		        	  progressBar.setVisible(true);
+		        	  progressBar.setIndeterminate(true);
+		            break;
+		          }
+		          break;
+		        }
+		      }
+		    });
+		
+		exporttask.execute();
+//		try {
+//			exporttask.get();
+//		} catch (InterruptedException | ExecutionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	}
+	/*
+	 * 
+	 */
 	private void createEvents() 
 	{
 		tfldstockcode.addItemListener(new ItemListener() {
@@ -306,7 +448,7 @@ public class GeGuShiZhiFenXi extends JDialog
 			{
 				if(arg0.getStateChange() == ItemEvent.SELECTED) {
 						BkChanYeLianTreeNode stockcode = tfldstockcode.getUserInputNode ();
-						String outputresult = displayStockFenXiResult (stockcode.getMyOwnCode());
+						String outputresult = displayStockFenXiResult (stockcode.getMyOwnCode(),true);
 						outputResutlToGui(outputresult);
 				}
 				
@@ -326,12 +468,12 @@ public class GeGuShiZhiFenXi extends JDialog
 		    }
 		});
 		
-		btnaddstock.addMouseListener(new MouseAdapter() {
+		btnexportfenxiresult.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
 				BkChanYeLianTreeNode stockcode = tfldstockcode.getUserInputNode ();
-				String outputresult = displayStockFenXiResult (stockcode.getMyOwnCode());
+				String outputresult = displayStockFenXiResult (stockcode.getMyOwnCode(),true);
 				outputResutlToGui(outputresult);
 			}
 		});
@@ -406,7 +548,7 @@ public class GeGuShiZhiFenXi extends JDialog
 	private JTextField tfldshizhilevel;
 	private JTextField tfldparsedfile;
 	private JStockComboBox tfldstockcode;
-	private JTable table;
+	private JTable tableStockShiZhiFenXi;
 	private BanKuaiFengXiCategoryBarChartHuanShouLvPnl panel_1;
 	private BanKuaiFengXiCategoryBarChartHuanShouLvPnl panel_2;
 	private JButton btnadd;
@@ -421,7 +563,11 @@ public class GeGuShiZhiFenXi extends JDialog
 	private JPanel panel;
 	private JScrollPane scrollPane;
 	private JScrollPane scrollPane_1;
-	private JButton btnaddstock;
+	private JButton btnexportfenxiresult;
+	private JProgressBar progressBar;
+	
+	private Action exportCancelAction;
+	private Action bkfxCancelAction;
 	
 	private void initializeGui() 
 	{
@@ -444,8 +590,109 @@ public class GeGuShiZhiFenXi extends JDialog
 		txaeoutput.setLineWrap(true);
 		scrollPane_1.setViewportView(txaeoutput);
 		
-		table = new JTable();
-		scrollPane.setViewportView(table);
+		GeGuShiZhiFenXiResultTableModel ggszfx = new GeGuShiZhiFenXiResultTableModel ();
+		tableStockShiZhiFenXi = new JTable(ggszfx) {
+			 /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				 
+			        Component comp = super.prepareRenderer(renderer, row, col);
+			        int modelRow = this.convertRowIndexToModel(row);
+			        Object value = getModel().getValueAt(modelRow, col);
+			        
+			        try{
+			        	if(value == null)
+			        		return null;
+			        	String currentdisplayedstock = tfldstockcode.getSelectedItem().toString().substring(0, 6);
+			            if (value.toString().trim().equals(currentdisplayedstock) && 1==col) { 
+			            	comp.setBackground(Color.RED);
+			                comp.setForeground(Color.BLACK);
+			            } else {
+			                comp.setBackground(Color.white);
+			                comp.setForeground(Color.BLACK);
+			            }
+			        } catch (java.lang.NullPointerException e ){
+			        	comp.setBackground(Color.white);
+		                comp.setForeground(Color.BLACK);
+			        }
+			        
+			        if( col == 3) {
+			        	String valuepect = "";
+			        	try {
+			        		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
+			        		 
+			        		 NumberFormat doubleFormat = NumberFormat.getNumberInstance();
+				             doubleFormat.setMinimumFractionDigits(3);
+			            	 valuepect = doubleFormat.format (formatevalue );
+			        	} catch (java.lang.NullPointerException e) {
+			        		valuepect = "";
+				    	}catch (java.lang.NumberFormatException e)   	{
+			        		e.printStackTrace();
+			        	} catch (ParseException e) {
+							e.printStackTrace();
+						}
+			        	((JLabel)comp).setText(valuepect);
+			        }
+			        if( col == 4) {
+			        	String valuepect = "";
+			        	try {
+			        		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
+			        		 
+			        		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+				        	 percentFormat.setMinimumFractionDigits(4);
+			            	 valuepect = percentFormat.format (formatevalue );
+			        	} catch (java.lang.NullPointerException e) {
+			        		valuepect = "";
+				    	}catch (java.lang.NumberFormatException e)   	{
+			        		e.printStackTrace();
+			        	} catch (ParseException e) {
+							e.printStackTrace();
+						}
+			        	((JLabel)comp).setText(valuepect);
+			        }
+//			        if( col == 5) {
+//			        	String valuepect = "";
+//			        	try {
+//			        		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
+//			        		 
+//			        		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+//				        	 percentFormat.setMinimumFractionDigits(4);
+//			            	 valuepect = percentFormat.format (formatevalue );
+//			        	} catch (java.lang.NullPointerException e) {
+//			        		valuepect = "";
+//				    	}catch (java.lang.NumberFormatException e)   	{
+//			        		e.printStackTrace();
+//			        	} catch (ParseException e) {
+//							e.printStackTrace();
+//						}
+//			        	((JLabel)comp).setText(valuepect);
+//			        }
+			        
+			        return comp;
+			    }
+				    
+				    public String getToolTipText(MouseEvent e) {
+		                String tip = null;
+		                java.awt.Point p = e.getPoint();
+		                int rowIndex = rowAtPoint(p);
+		                int colIndex = columnAtPoint(p);
+
+		                try {
+		                    tip = getValueAt(rowIndex, colIndex).toString();
+		                } catch (RuntimeException e1) {
+		                    //catch null pointer exception if mouse is over an empty line
+		                }
+
+		                return tip;
+		            }
+
+		};
+		TableRowSorter<GeGuShiZhiFenXiResultTableModel> sorter = new TableRowSorter<GeGuShiZhiFenXiResultTableModel>((GeGuShiZhiFenXiResultTableModel)tableStockShiZhiFenXi.getModel());
+		tableStockShiZhiFenXi.setRowSorter(sorter);
+		scrollPane.setViewportView(tableStockShiZhiFenXi);
 		
 		datachooser = new JLocalDateChooser();
 		
@@ -459,7 +706,24 @@ public class GeGuShiZhiFenXi extends JDialog
 		 
 //		tfldstockcode.setColumns(10);
 		
-		btnaddstock = new JButton("\u6DFB\u52A0\u4E2A\u80A1");
+//		btnexportfenxiresult = new JButton("\u5BFC\u51FA");
+		
+		
+		exportCancelAction = new AbstractAction("导出") {
+
+		      private static final long serialVersionUID = 4669650683189592364L;
+
+		      @Override
+		      public void actionPerformed(final ActionEvent e) {
+		    	
+		        if (exporttask == null) { 
+        			exportBanKuaiWithGeGuOnCondition2();
+		        } else {
+		        	exporttask.cancel(true);
+		        }
+		      }
+		 };
+		 btnexportfenxiresult = new JButton(exportCancelAction);
 		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
@@ -541,14 +805,21 @@ public class GeGuShiZhiFenXi extends JDialog
 			buttonPane.add(btnchoosefile, "cell 7 0,alignx left,aligny top");
 		}
 		
+		progressBar = new JProgressBar();
+		progressBar.setFont(new Font("宋体", Font.PLAIN, 9));
+		progressBar.setValue(0);
+		progressBar.setStringPainted(true);
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addGap(7)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(tfldstockcode, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(datachooser, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE))
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(datachooser, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
 							.addGap(4)
 							.addComponent(btnprevious)
 							.addGap(17)
@@ -556,9 +827,11 @@ public class GeGuShiZhiFenXi extends JDialog
 							.addGap(4)
 							.addComponent(btnreset))
 						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(tfldstockcode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)
-							.addComponent(btnaddstock))))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnexportfenxiresult)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(progressBar, 0, 0, Short.MAX_VALUE)))
+					.addGap(7))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -572,28 +845,16 @@ public class GeGuShiZhiFenXi extends JDialog
 						.addComponent(btnlater)
 						.addComponent(btnreset))
 					.addGap(4)
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnaddstock, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(tfldstockcode, GroupLayout.PREFERRED_SIZE, 34, Short.MAX_VALUE))
-					.addGap(89))
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addComponent(tfldstockcode, GroupLayout.PREFERRED_SIZE, 34, Short.MAX_VALUE)
+						.addComponent(btnexportfenxiresult, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		panel.setLayout(gl_panel);
 	
 		
 	}
-	
-	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		try {
-//			GeGuShiZhiFenXi dialog = new GeGuShiZhiFenXi();
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 }
 
 
@@ -668,4 +929,156 @@ class NodeZhanBiComparator implements Comparator<Stock>
         
         return zhanbi2.compareTo(zhanbi1);
     }
+}
+
+
+
+class GeGuShiZhiFenXiResultTableModel extends DefaultTableModel 
+{
+	private List<Stock> stockslist;
+	private LocalDate searchdate;
+	private String period;
+	
+	String[] jtableTitleStrings = { "排名", "代码","名称","市值(亿)","占比","换手率"};
+	
+	GeGuShiZhiFenXiResultTableModel ()
+	{
+	}
+
+	public void refresh  (List<Stock> stocklistofrangeshizhi,LocalDate searchdate1,String period1)
+	{
+		this.stockslist = stocklistofrangeshizhi;
+		this.searchdate = searchdate1;
+		this.period = period1;
+
+		
+		this.fireTableDataChanged();
+	}
+	 public int getRowCount() 
+	 {
+		 if(this.stockslist == null)
+			 return 0;
+		 else if(this.stockslist.isEmpty()  )
+			 return 0;
+		 else
+			 return this.stockslist.size();
+	 }
+
+	    @Override
+	    public int getColumnCount() 
+	    {
+	        return jtableTitleStrings.length;
+	    } 
+	    
+	    public Object getValueAt(int rowIndex, int columnIndex) 
+	    {
+	    	if(stockslist.isEmpty())
+	    		return null;
+	    	
+	    	Object value = "??";
+	    	Stock stock = stockslist.get(rowIndex);
+	    	
+	    	switch (columnIndex) {
+            case 0:
+                value = rowIndex+1;
+                break;
+            case 1:
+            	String stockcode = stock.getMyOwnCode();
+            	value = stockcode;
+                break;
+            case 2:
+            	String stockname = stock.getMyOwnName();
+            	value = stockname;
+                break;
+            case 3:
+            	Double shizhi = ((StockNodeXPeriodData)stock.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(searchdate, 0)/100000000;
+	    	    value = shizhi  ;
+                break;
+            case 4:
+            	Double zhanbi = ((StockNodeXPeriodData)stock.getNodeXPeroidData( period)).getChenJiaoErZhanBi(searchdate, 0);
+        	    value = zhanbi;
+
+        	    break;
+            case 5:
+            	Double huanshoulv = ((StockNodeXPeriodData)stock.getNodeXPeroidData( period)).getSpecificTimeHuanShouLv(searchdate, 0);
+        	    value = huanshoulv;
+
+        	    break;
+	    	}
+
+        return value;
+	  }
+
+     public Class<?> getColumnClass(int columnIndex) {
+		      Class clazz = String.class;
+		      switch (columnIndex) {
+		      case 0:
+		    	  clazz = Integer.class;
+		    	  break;
+		        case 1:
+			          clazz = String.class;
+			          break;
+		        case 2:
+			          clazz = String.class;
+			          break;
+		        case 3:
+			          clazz = Double.class;
+			          break;
+		        case 4:
+			          clazz = Double.class;
+			          break;
+		        case 5:
+			          clazz = Double.class;
+			          break;
+		      }
+		      
+		      return clazz;
+		}
+	    
+//	    @Override
+//	    public Class<?> getColumnClass(int columnIndex) {
+//	        return // Return the class that best represents the column...
+//	    }
+	    
+	    public String getColumnName(int column){ 
+	    	return jtableTitleStrings[column];
+	    }//设置表格列名 
+		
+
+	    public boolean isCellEditable(int row,int column) {
+	    	return false;
+		}
+	    
+	    public Stock getStocksAt(int row) {
+	        return stockslist.get(row);
+	    }
+	    
+	    public void removeAllRows ()
+	    {
+	    	if(stockslist != null) {
+	    		this.stockslist.clear();
+		    	this.fireTableDataChanged();
+	    	}
+	    	
+	    }
+}
+
+
+class ShiZhiFenXiExportTask extends SwingWorker<Integer, String>  
+{
+	private LocalDate requiredexportdate;
+	private File fxexportfile;
+	
+	public ShiZhiFenXiExportTask (LocalDate exportdate,File exportfile)
+	{
+		this.fxexportfile = exportfile;
+		this.requiredexportdate = exportdate;
+	}
+
+	@Override
+	protected Integer doInBackground() throws Exception 
+	{
+		
+		return null;
+	}
 }

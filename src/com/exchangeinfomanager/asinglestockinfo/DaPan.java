@@ -41,17 +41,18 @@ public class DaPan extends BkChanYeLianTreeNode
 	{
 		this.shenzhen = sz;
 	}
-	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
-	{
-		if(period.equals(StockGivenPeriodDataItem.WEEK))
-			return nodewkdata;
-		else if(period.equals(StockGivenPeriodDataItem.MONTH))
-			return nodemonthdata;
-		else if(period.equals(StockGivenPeriodDataItem.DAY))
-			return nodedaydata;
-		else 
-			return null;
-	}
+//	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
+//	{
+//		if(period.equals(StockGivenPeriodDataItem.WEEK))
+//			return nodewkdata;
+//		else if(period.equals(StockGivenPeriodDataItem.MONTH))
+//			return nodemonthdata;
+//		else if(period.equals(StockGivenPeriodDataItem.DAY))
+//			return nodedaydata;
+//		else 
+//			return null;
+//	}
+	
 	/*
 	 * 
 	 */
@@ -81,16 +82,16 @@ public class DaPan extends BkChanYeLianTreeNode
 		/*
 		 * 计算指定周期和上周期的成交额差额
 		 */
-		public Double getChengJiaoErDifferenceWithLastPeriod (LocalDate requireddate)
+		public Double getChengJiaoErDifferenceWithLastPeriod (LocalDate requireddate,int difference)
 		{
 			Double dapanchaer = null;
 			
 			String recordsperiod = getNodeperiodtype();
 			NodeXPeriodDataBasic shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-			Double shcurrecord = shanghaiperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate);
+			Double shcurrecord = shanghaiperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
 			
 			NodeXPeriodDataBasic shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
-			Double szcurrecord = shenzhenperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate);
+			Double szcurrecord = shenzhenperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
 			
 			return szcurrecord + shcurrecord ;
 		}

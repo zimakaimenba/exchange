@@ -16,6 +16,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -470,7 +471,7 @@ public class BanKuaiFengXi extends JDialog {
 			dateshowinfilename = "day" + curselectdate.toString().replaceAll("-","");
 		else if(globeperiod.equals(StockGivenPeriodDataItem.MONTH))
 			dateshowinfilename = "month" +  curselectdate.withDayOfMonth(curselectdate.lengthOfMonth()).toString().replaceAll("-","");
-		String exportfilename = sysconfig.getTDXModelMatchExportFile () + "TDX模型个股" + dateshowinfilename + ".EBK";
+		String exportfilename = sysconfig.getTDXModelMatchExportFile () + "/TDX模型个股" + dateshowinfilename + ".EBK";
 		File filefmxx = new File( exportfilename );
 		
 		if(!filefmxx.getParentFile().exists()) {  
@@ -492,7 +493,7 @@ public class BanKuaiFengXi extends JDialog {
 				e.printStackTrace();
 				return ;
 		}
-
+//		pnl_paomd.refreshMessage(title+paomad);
 		exporttask = new ExportTask2(this.allbksks,  exportcond, curselectdate,globeperiod,filefmxx);
 		exporttask.addPropertyChangeListener(new PropertyChangeListener() {
 		      @Override
@@ -1343,12 +1344,15 @@ public class BanKuaiFengXi extends JDialog {
 							return;
 					
 					BkChanYeLianTreeNode userinputnode = cbxsearchbk.getUserInputNode();
-					String nodecode;
-					if(userinputnode == null) { //可能是输入的字母没有找到
-						nodecode = cbxsearchbk.getSelectedItem().toString();
-					} else
-						nodecode = userinputnode.getMyOwnCode();
+					if(userinputnode.getType() == BanKuaiAndStockBasic.TDXGG ) { //如果用户输入查出的是板块，
+						JOptionPane.showMessageDialog(null,"不是板块代码，重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+//					else if(userinputnode == null) { //可能是输入的字母没有找到
+////						nodecode = cbxsearchbk.getSelectedItem().toString();
+//					} 
 					
+					String nodecode = userinputnode.getMyOwnCode();
 					int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex( nodecode );
 					
 					if(rowindex != -1) {
@@ -1386,7 +1390,17 @@ public class BanKuaiFengXi extends JDialog {
 						}
 							
 						nodecode = userinputnode.getMyOwnCode();
-						displayStockSuoShuBanKuai((Stock)userinputnode);
+						try{ //如果用户选择的和上次选择的个股一样，不重复做板块查找
+							String stockcodeincbx = ((String)cbxstockcode.getSelectedItem()).substring(0, 6);
+							if(cbxstockcode.isEnabled() ) { //避免和
+								displayStockSuoShuBanKuai((Stock)userinputnode);
+							} else
+								cbxstockcode.setEnabled(true);
+						} catch (java.lang.NullPointerException e) {
+							e.printStackTrace();
+//							cbxstockcode.updateUserSelectedNode (selectstock.getStock());
+						}
+//						displayStockSuoShuBanKuai((Stock)userinputnode);
 					}
 					
 					int rowindex = tableGuGuZhanBiInBk.getSelectedRow();
@@ -1397,9 +1411,6 @@ public class BanKuaiFengXi extends JDialog {
 				}
 				
 				if(arg0.getStateChange() == ItemEvent.DESELECTED) {
-//					BkChanYeLianTreeNode userinputnode = cbxstockcode.getUserInputNode();
-//					logger.info("test");
-				
 				}
 			}
 		});
@@ -1580,8 +1591,11 @@ public class BanKuaiFengXi extends JDialog {
 					
 					try{ //如果用户选择的和上次选择的个股一样，不重复做板块查找
 						String stockcodeincbx = ((String)cbxstockcode.getSelectedItem()).substring(0, 6);
-						if(!selectstock.getMyOwnCode().equals( stockcodeincbx ) ) 
-							cbxstockcode.updateUserSelectedNode (selectstock.getStock());;
+						if(!selectstock.getMyOwnCode().equals( stockcodeincbx ) ) {
+//							cbxstockcode.updateUserSelectedNode (selectstock.getStock());
+							cbxstockcode.setEnabled(false); //避免触发cbxstockcode的itemchange事件，否则会查2此数据库
+							displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
+						}
 					} catch (java.lang.NullPointerException e) {
 						cbxstockcode.updateUserSelectedNode (selectstock.getStock());
 					}
@@ -1589,20 +1603,19 @@ public class BanKuaiFengXi extends JDialog {
 					hightlightSpecificSector (selectstock);
 					refreshGeGuFengXiResult (selectstock); //个股对板块的数据
 					refreshGeGuKXianZouShi (selectstock.getStock()); //K线
-					displayStockSuoShuBanKuai((Stock)cbxstockcode.updateUserSelectedNode (selectstock.getStock()));
 					displayStockCurrentFxResult (tableGuGuZhanBiInBk);
 					
 //					if(cbxshizhifx.isSelected()) {
 //						LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 //						dispalyStockShiZhiFengXiResult (selectstock,curselectdate);
 //					};
-					cbxshizhifx.setSelected(true);
+					cbxshizhifx.setSelected(false);
 					
 					hourglassCursor = null;
 					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 					setCursor(hourglassCursor2);
 //					Toolkit.getDefaultToolkit().beep();
-					SystemAudioPlayed.playSound();
+//					SystemAudioPlayed.playSound();
 				}
 				if (arg0.getClickCount() == 2) {
 //					 selectstock = (Stock)cbxstockcode.updateUserSelectedNode(selectstock);
@@ -2017,9 +2030,10 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	protected void chooseParsedFile(String pasedpathintextfld) 
 	{
+		//先选择文件
 		String filename = null;
 		if(pasedpathintextfld == null) {
-			String parsedpath = sysconfig.getBanKuaiParsedFileStoredPath ();
+			String parsedpath = sysconfig.getTDXModelMatchExportFile ();
 			JFileChooser chooser = new JFileChooser();
 			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			chooser.setCurrentDirectory(new File(parsedpath) );
@@ -2109,6 +2123,7 @@ public class BanKuaiFengXi extends JDialog {
 				this.bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (fileebk,localDate);
 			}
 
+//			tableBkZhanBi.repaint();
 			filexminconfigpath = null;
 			filexminconfigpath = null;
 
@@ -2236,7 +2251,8 @@ public class BanKuaiFengXi extends JDialog {
 		
 		if(!paomad.isEmpty())
 			pnl_paomd.refreshMessage(title+paomad);
-		else pnl_paomd.refreshMessage(null);
+		else 
+			pnl_paomd.refreshMessage(null);
 	}
 	/*
 	 * 
@@ -2585,7 +2601,7 @@ public class BanKuaiFengXi extends JDialog {
 		sclpleft = new JScrollPane();
 		tabbedPanebk.addTab("\u677F\u5757\u5360\u6BD4", null, sclpleft, null);
 		
-		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager,this.allbksks);	
+		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager);	
 		
 		sclpleft.setViewportView(tableBkZhanBi);
 		
@@ -2613,7 +2629,7 @@ public class BanKuaiFengXi extends JDialog {
 		
 		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager);
 //		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
-		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
+//		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
 		
 		JScrollPane scrollPanexuanding = new JScrollPane();
@@ -2761,6 +2777,13 @@ public class BanKuaiFengXi extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				okButton = new JButton("\u5173\u95ED");
+				okButton.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent arg0) {
+						BanKuaiFengXi.this.setVisible(false);
+						BanKuaiFengXi.this.dispatchEvent(new WindowEvent(BanKuaiFengXi.this, WindowEvent.WINDOW_CLOSING));
+					}
+				});
 				okButton.setActionCommand("OK");
 				getRootPane().setDefaultButton(okButton);
 			}
@@ -2895,11 +2918,11 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(btnChosPasFile)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(cbxshizhifx)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnshizhifx)
-						.addGap(136)
+						.addGap(39)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
-						.addGap(1479)
+						.addGap(1638)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
 						.addGap(337))
 			);
@@ -2934,8 +2957,8 @@ public class BanKuaiFengXi extends JDialog {
 								.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 									.addComponent(btnChosPasFile, GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
 									.addComponent(cbxshizhifx)
-									.addComponent(okButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(btnshizhifx))
+									.addComponent(btnshizhifx)
+									.addComponent(okButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 								.addContainerGap())))
 			);
 			buttonPane.setLayout(gl_buttonPane);

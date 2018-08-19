@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.HanYuPinYing;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
@@ -31,7 +32,8 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		super ();
 	}
 	
-	String[] jtableTitleStrings = { "代码", "名称","权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
+//	String[] jtableTitleStrings = { "代码", "名称","权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
+	String[] jtableTitleStrings = { "代码", "名称","权重","流通市值排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
 	BanKuai curbk;
 	private ArrayList<StockOfBanKuai> entryList;
 	private LocalDate showwknum;
@@ -55,6 +57,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		entryList = null;
 		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );	
 		
+		Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,period) );
     	
     	this.fireTableDataChanged();
 	}
@@ -143,8 +146,19 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	stockxdata = null;
             	
             	break;
-            case 3: // "板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
-            	Double cjechangegrowthrate = stockxdataforbk.getChenJiaoErChangeGrowthRateOfSuperBanKuai(showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
+            case 3://{ "代码", "名称","权重","流通市值排名",
+            	Integer liutongshizhipaiming = this.entryList.indexOf(curdisplaystockofbankuai) + 1;
+            	value = liutongshizhipaiming;
+            	
+//            	zhanbigrowthrate = null;
+//            	curdisplaystockofbankuai = null;
+//            	stockxdataforbk = null;
+//            	stock = null;
+//            	stockxdata = null;
+            	
+            	break;
+            case 4: // "板块成交额贡献",
+            	Double cjechangegrowthrate = ((StockOfBanKuai.StockOfBanKuaiNodeXPeriodData)stockxdataforbk).getChenJiaoErChangeGrowthRateOfSuperBanKuai(showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
             	value = cjechangegrowthrate;
             	
 //            	cjechangegrowthrate = null;
@@ -154,20 +168,9 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	stockxdata = null;
             	
             	break;
-            case 4://,"板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk"};
-            	Double zhanbigrowthrate = stockxdataforbk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgbkzhanbimaxweek();
-            	value = zhanbigrowthrate;
-            	
-//            	zhanbigrowthrate = null;
-//            	curdisplaystockofbankuai = null;
-//            	stockxdataforbk = null;
-//            	stock = null;
-//            	stockxdata = null;
-            	
-            	break;
-            case 5: 
-            	Integer maxweek =  stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//fxrecord.getGgbkzhanbigrowthrate(); 
-            	value = (Integer)maxweek;
+            case 5: //  "BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
+            	Integer bkmaxweek =  stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//fxrecord.getGgbkzhanbigrowthrate(); 
+            	value = bkmaxweek;
             	
 //            	maxweek = null;
 //            	curdisplaystockofbankuai = null;
@@ -224,6 +227,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	   * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
 	   * //for sorting http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 	   */
+	    //{ "代码", "名称","权重","流通市值排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
       public Class<?> getColumnClass(int columnIndex) { //{ "代码", "名称","权重","占比增长率","MAX","成交额贡献"};
 		      Class clazz = String.class;
 		      switch (columnIndex) {
@@ -237,7 +241,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			          clazz = String.class;
 			          break;
 		        case 3:
-			          clazz = Double.class;
+			          clazz = Integer.class;
 			          break;
 		        case 4:
 			          clazz = Double.class;
@@ -397,3 +401,27 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 
 }
 
+
+/*
+ * 
+ */
+class NodeLiuTongShiZhiComparator implements Comparator<StockOfBanKuai> {
+	private String period;
+	private LocalDate compareDate;
+	private int difference;
+	public NodeLiuTongShiZhiComparator (LocalDate compareDate, int difference, String period )
+	{
+		this.period = period;
+		this.compareDate = compareDate;
+		this.difference = difference;
+	}
+    public int compare(StockOfBanKuai node1, StockOfBanKuai node2) {
+    	Stock stock1 = node1.getStock();
+    	Stock stock2 = node2.getStock();
+    	
+        Double cje1 = ((StockNodeXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference) ;
+        Double cje2 = ((StockNodeXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference);
+        
+        return cje2.compareTo(cje1);
+    }
+}

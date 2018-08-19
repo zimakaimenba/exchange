@@ -159,6 +159,20 @@ class BkfxWeeklyFileResultXmlHandler
 	/*
 	 * 
 	 */
+	public Boolean getBanKuaiFxSelfMatchModelOfSepecificDate (String bkcode, LocalDate date)
+	{
+		String xpath = ".//BanKuai[@bkcode=\"" + bkcode + "\"]";  
+		Node tmpnode = bkfxxmldoc.selectSingleNode(xpath);
+		
+		if(tmpnode == null) 
+			return null;
+		
+		String selfmatchmodel = ((Element)tmpnode).attributeValue("selfIsMatchModel");
+		return Boolean.parseBoolean(selfmatchmodel);
+	}
+	/*
+	 * 
+	 */
 	public Set<String> getBanKuaiFxSetOfSpecificDate (String bkcode, LocalDate date)
 	{
 		String xpath = ".//BanKuai[@bkcode=\"" + bkcode + "\"]";  
