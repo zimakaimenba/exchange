@@ -221,7 +221,11 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
 		axis.setDisplayNode(this.curdisplayednode,period);
 		
-		super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
+		try{
+			super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
+		} catch (java.lang.IllegalArgumentException e) {
+			e.printStackTrace();
+		}
 	}
 	/*
 	 * 

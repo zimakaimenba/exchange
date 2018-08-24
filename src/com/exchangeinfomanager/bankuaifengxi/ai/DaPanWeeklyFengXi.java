@@ -206,6 +206,8 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 	private JButton btnadd;
 	private JTextArea txaComments;
 	private JLocalDateChooser dateChooser;
+	private JTextArea taraTur;
+	private JTextArea taraWen;
 	
 	private void initializeGui() 
 	{
@@ -293,6 +295,14 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 								.addComponent(btnxmlMartrix))))
 			);
 			buttonPane.setLayout(gl_buttonPane);
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		
+		JScrollPane scrollPane_4 = new JScrollPane();
+		
+		JScrollPane scrollPane_5 = new JScrollPane();
 //		}
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
@@ -303,9 +313,17 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(pnldown, GroupLayout.DEFAULT_SIZE, 1542, Short.MAX_VALUE)
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 527, GroupLayout.PREFERRED_SIZE)
-							.addGap(8)
-							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 328, GroupLayout.PREFERRED_SIZE))
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 443, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 210, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 206, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 223, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane_4, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane_5, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE))
 						.addComponent(pnlup, GroupLayout.DEFAULT_SIZE, 1542, Short.MAX_VALUE))
 					.addContainerGap())
 		);
@@ -318,12 +336,28 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 					.addComponent(pnldown, GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
 					.addGap(4)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE))
+						.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPane_4, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPane_5, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(buttonPane, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
+		
+		JTextArea taraFri = new JTextArea();
+		scrollPane_5.setViewportView(taraFri);
+		
+		JTextArea taraThr = new JTextArea();
+		scrollPane_4.setViewportView(taraThr);
+		
+		taraWen = new JTextArea();
+		scrollPane_3.setViewportView(taraWen);
+		
+		taraTur = new JTextArea();
+		scrollPane_2.setViewportView(taraTur);
 		contentPanel.setLayout(gl_contentPanel);
 	}
 }

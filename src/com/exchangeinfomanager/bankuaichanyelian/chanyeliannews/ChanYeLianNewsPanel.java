@@ -102,6 +102,7 @@ public class ChanYeLianNewsPanel extends JDialog
         	}
         });
 	}
+	
 	private void initializeGui() 
 	{
 		this.centerPanel = JPanelFactory.createFixedSizePanel(WIDTH, HEIGHT, PADDING);

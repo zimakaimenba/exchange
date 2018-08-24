@@ -401,19 +401,19 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 			chckbxmacd.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if(chckbxmacd.isSelected()) 
-						updatedRecords (chckbxmacd,actiondate);
+						updatedRecords (chckbxmacd,dateChooser.getLocalDate() );
 				}
 			});
 			chcbxkaishi.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if(chcbxkaishi.isSelected()) 
-						updatedRecords (chcbxkaishi,actiondate);
+						updatedRecords (chcbxkaishi,dateChooser.getLocalDate() );
 				}
 			});
 			chcbxjieshu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if(chcbxjieshu.isSelected()) 
-						updatedRecords (chcbxjieshu,null);
+						updatedRecords (chcbxjieshu,dateChooser.getLocalDate());
 				}
 			});
 			chcbxmx.addActionListener(new ActionListener() {

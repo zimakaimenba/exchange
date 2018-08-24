@@ -2,6 +2,8 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
@@ -16,6 +18,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportCondition;
 
 public class BanKuaiInfoTableModel extends DefaultTableModel 
@@ -25,20 +28,24 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		super ();
 	}
 	
-	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","占比MaxWk","成交额增长贡献率","CjeMaxWk","条件统计"};
+	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","占比MaxWk","成交额增长贡献率","CjeMaxWk","成交量排名"};
 	List<BanKuai> entryList;
 	LocalDate showzhbiwknum;
 	private String curperiod;
+	private int difference;
 //	private ArrayList<ExportCondition> initialzedcon;
 	
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTableModel.class);
 	
-	public void refresh  (LocalDate curselectdate,String period, ArrayList<ExportCondition> initializeconditon1)
+	public void refresh  (LocalDate curselectdate,int difference2, String period, ArrayList<ExportCondition> initializeconditon1)
 	{
 		this.showzhbiwknum = curselectdate;
+		this.difference = difference2;
 		this.curperiod = period;
 //		this.initialzedcon = initializeconditon1;
-
+		if(entryList != null)
+			Collections.sort(entryList, new BanKuaiChenJiaoErComparator(showzhbiwknum,difference,curperiod) );
+		
 		this.fireTableDataChanged();
 	}
 	public LocalDate getCurDisplayedDate ()
@@ -51,6 +58,8 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			entryList = new ArrayList<BanKuai> ();
 		else
 			entryList.add(bankuai);
+		
+		
 	}
 	
 	 public int getRowCount() 
@@ -133,7 +142,12 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	
             	break;
             case 6: 
-            	value = "";
+            	if(bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) {
+            		Integer chengjiaoerpaiming = this.entryList.indexOf(bankuai) + 1;
+            		value = chengjiaoerpaiming;
+            	} else 
+            		value = 5000;
+            	
             	break;
 	    	}
 
@@ -163,7 +177,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			          clazz = Integer.class;
 			          break;
 		        case 6:
-		        	clazz = String.class;
+		        	clazz = Integer.class;
 			          break;		
 		      }
 		      
@@ -219,4 +233,31 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			return this.jtableTitleStrings;
 		}
 
+}
+
+
+/*
+ * 
+ */
+class BanKuaiChenJiaoErComparator implements Comparator<BanKuai> {
+	private String period;
+	private LocalDate compareDate;
+	private int difference;
+	public BanKuaiChenJiaoErComparator (LocalDate compareDate, int difference, String period )
+	{
+		this.period = period;
+		this.compareDate = compareDate;
+		this.difference = difference;
+	}
+    public int compare(BanKuai node1, BanKuai node2) {
+   	
+        Double cje1 = (node1.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
+        Double cje2 = (node2.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
+        
+        try{
+        	return cje2.compareTo(cje1);
+        } catch (java.lang.NullPointerException e) {
+        	return -1;
+        }
+    }
 }

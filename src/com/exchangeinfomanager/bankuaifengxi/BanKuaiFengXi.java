@@ -339,7 +339,7 @@ public class BanKuaiFengXi extends JDialog {
     			
 		}
 	
-		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,period,null);
+		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,0,period,null);
 		
 //		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 //		setCursor(hourglassCursor2);
@@ -566,7 +566,6 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	protected void refreshCurentBanKuaiFengXiResult(BanKuai selectedbk,String period) 
 	{
-		tfldselectedmsg.setText("");
 		tabbedPanegegu.setSelectedIndex(0);
 		panelbkcje.resetDate();
 		panelbkwkzhanbi.resetDate();
@@ -578,7 +577,11 @@ public class BanKuaiFengXi extends JDialog {
 		panelGgDpCjeZhanBi.resetDate();
 		panelgegubkcje.resetDate();
 		tabbedPanegegu.setTitleAt(1, "选定周");
-		tfldselectedmsg.setText("");
+		tabbedPanegegu.setTitleAt(2, "选定周-1");
+		tabbedPanegegu.setTitleAt(3, "选定周-2");
+		tabbedPanegegu.setTitleAt(4, "选定周+1");
+		tabbedPanegegu.setTitleAt(5, "选定周+2");
+//		tfldselectedmsg.setText("");
 		tabbedPanebk.setSelectedIndex(0);
 		paneldayCandle.resetDate();
 		pnlggdpcje.resetDate();
@@ -667,30 +670,34 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPanegegu.setTitleAt(1, "选定周" + selecteddate);
 		
 		//显示选定周-1股票排名情况
-		LocalDate selectdate2 = selecteddate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
+		LocalDate selectdate2 = selecteddate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
 //		if( checkDateBetweenBanKuaiDate (selectedbk,selectdate2) ) //閿熸枻鎷烽敓鎻亷鎷锋噲閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷烽敓锟
 			((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).refresh(selectedbk, selectdate2,period);
+			tabbedPanegegu.setTitleAt(2,  selectdate2 + "(-1)");
 //		else
 //			((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).deleteAllRows();
 		
 		//显示选定周-2股票排名情况
-		LocalDate selectdate3 = selecteddate.minus(2,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
+		LocalDate selectdate3 = selecteddate.minus(2,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
 //		if( checkDateBetweenBanKuaiDate (selectedbk,selectdate3) )
 			((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).refresh(selectedbk, selectdate3,period);
+			tabbedPanegegu.setTitleAt(3,  selectdate3 + "(-2)");
 //		else 
 //			((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).deleteAllRows();
 		
 		//显示选定周+1股票排名情况
-		LocalDate selectdate4 = selecteddate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
+		LocalDate selectdate4 = selecteddate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
 //		if( checkDateBetweenBanKuaiDate (selectedbk,selectdate4) )
 			((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).refresh(selectedbk, selectdate4,period);
+			tabbedPanegegu.setTitleAt(4,  selectdate4 + "(+1)");
 //		else
 //			((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).deleteAllRows();
 		
 		//显示选定周+2股票排名情况
-		LocalDate selectdate5 = selecteddate.plus(2,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
+		LocalDate selectdate5 = selecteddate.plus(2,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
 //		if( checkDateBetweenBanKuaiDate (selectedbk,selectdate5) )
 			((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).refresh(selectedbk, selectdate5,period);
+			tabbedPanegegu.setTitleAt(5,  selectdate5 + "(+2)");
 //		else
 //			((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).deleteAllRows();
 	}
@@ -978,10 +985,14 @@ public class BanKuaiFengXi extends JDialog {
     				
     				if(bkcur.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股， 
     					LocalDate selectdate = CommonUtility.formateStringToDate(datekey.toString());
-    					panelselectwkgeguzhanbi.setBanKuaiCjeNeededDisplay(bkcur,Integer.parseInt(tfldweight.getText() ), selectdate ,globeperiod );
+    					LocalDate cursetdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    					if(!CommonUtility.isInSameWeek(selectdate,cursetdate) ) {
+    						panelselectwkgeguzhanbi.setBanKuaiCjeNeededDisplay(bkcur,Integer.parseInt(tfldweight.getText() ), selectdate ,globeperiod );
+        					
+        					//显示选中周股票占比增加率排名等
+        					refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
+    					}
     					
-    					//显示选中周股票占比增加率排名等
-    					refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
     				}
                 }
             }
@@ -3495,7 +3506,7 @@ public class BanKuaiFengXi extends JDialog {
 	    		}
 			}
 
-			((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,period,null);
+			((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,0,period,null);
 			setProgress(100);
 			
 			return 100;
