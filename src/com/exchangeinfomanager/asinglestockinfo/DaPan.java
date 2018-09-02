@@ -191,6 +191,14 @@ public class DaPan extends BkChanYeLianTreeNode
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
 	}
 	
 

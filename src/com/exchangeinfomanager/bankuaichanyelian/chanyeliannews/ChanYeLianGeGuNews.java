@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import com.exchangeinfomanager.StockCalendar.View;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +62,7 @@ public class ChanYeLianGeGuNews extends View
 			public void mouseClicked(MouseEvent arg0) 
 			{
 					Meeting meeting = new Meeting("新闻标题",LocalDate.now(),
-	                     "描述", "关键词", new HashSet<>(),"SlackURL",nodecode);
+	                     "描述", "关键词", new HashSet<>(),"SlackURL","999999");
 	                getCreateDialog().setMeeting(meeting);
 	                getCreateDialog().setVisible(true);
 			}
@@ -78,13 +79,14 @@ public class ChanYeLianGeGuNews extends View
 	
 	public void updateNewsToABkGeGu (InsertedMeeting news,String bkggcode)
 	{
-		news.addMeetingToSpecificOwner(bkggcode);
-		
-		try {
-			meetingService.updateMeeting(news);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		Boolean addresult = news.addMeetingToSpecificOwner(bkggcode);
+		if(addresult) {
+			try {
+				meetingService.updateMeeting(news);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -96,7 +98,8 @@ public class ChanYeLianGeGuNews extends View
 			return null;
 		}
 		
-		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
+		int  model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(model_row);
 		
 		return selectednews;
 		

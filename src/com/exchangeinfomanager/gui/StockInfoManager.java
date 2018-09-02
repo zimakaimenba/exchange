@@ -575,7 +575,8 @@ public class StockInfoManager
 			/*
 			 * 导入交易记录
 			 */
-		menuItemimportrecords.addActionListener(new ActionListener() {
+		menuItemimportrecords.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				AccountSeeting accountsetting= new AccountSeeting(accountschicangconfig,frame); 
@@ -687,10 +688,8 @@ public class StockInfoManager
 					ex.printStackTrace();
 				} 
 				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-				int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加个股新闻", JOptionPane.OK_CANCEL_OPTION);
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-				
+				cylnews.setVisible(true);
+
 			}
 		});
 		
@@ -911,7 +910,6 @@ public class StockInfoManager
 		});
 		/*
 		 * 挂单成交
-		 *	
 		 */
 		mntmChengjiao.addMouseListener(new MouseAdapter() {
 
@@ -1035,7 +1033,9 @@ public class StockInfoManager
 			}
 
 		});
-		
+		/*
+		 * 
+		 */
 		btnSell.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) 
@@ -1077,10 +1077,7 @@ public class StockInfoManager
 				postSellAction (stocknumberpricepanel);
 				
 				refreshChiCangAccountPanel ();
-
 			}
-
-		
 		});
 		
 		btnSlack.addMouseListener(new MouseAdapter() 
@@ -1161,7 +1158,9 @@ public class StockInfoManager
 //				}
 //			}
 //		});
-		
+		/*
+		 * 
+		 */
 		mntmopenlcldbfile.addMouseListener(new MouseAdapter() 
 		{
 			@Override
@@ -1184,6 +1183,9 @@ public class StockInfoManager
 				}
 			}
 		});
+		/*
+		 * 
+		 */
 		mntmOpenRmtDb.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) 
@@ -1222,7 +1224,9 @@ public class StockInfoManager
 //				}
 //			}
 //		});
-		
+		/*
+		 * 
+		 */
 		txtfldfuxg.addMouseListener(new MouseAdapter() 
 		{
 			public void mouseClicked(MouseEvent event) 
@@ -2901,9 +2905,9 @@ public class StockInfoManager
 		
 		btnEnableChklsts = new JButton("");
 		
-		btnEnableChklsts.setToolTipText("CheckLists");
+		btnEnableChklsts.setToolTipText("\u67E5\u627E");
 		btnEnableChklsts.setEnabled(false);
-		btnEnableChklsts.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
+		btnEnableChklsts.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_magnifyingglass_1055031.png")));
 		
 		btnXueQiu = new JButton("");
 		btnXueQiu.setToolTipText("\u96EA\u7403");
@@ -2914,7 +2918,7 @@ public class StockInfoManager
 		btnSearch.setToolTipText("\u4E2A\u80A1\u65B0\u95FB");
 		
 		btnSearch.setEnabled(false);
-		btnSearch.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/search_results_30.918276374443px_1194419_easyicon.net.png")));
+		btnSearch.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_icon-70_667363 (4).png")));
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)

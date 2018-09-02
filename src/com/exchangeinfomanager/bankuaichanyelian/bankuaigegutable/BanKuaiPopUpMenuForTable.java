@@ -78,8 +78,10 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 	}
 
 	@Override
-	public void addBanKuaiNews(BkChanYeLianTreeNode node) {
-		// TODO Auto-generated method stub
+	public void addBanKuaiNews(BkChanYeLianTreeNode node) 
+	{
+		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (node.getMyOwnCode());
+		cylnews.setVisible(true);
 		
 	}
 

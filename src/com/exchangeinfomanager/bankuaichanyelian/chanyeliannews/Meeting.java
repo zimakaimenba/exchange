@@ -14,7 +14,7 @@ public class Meeting {
     private LocalDate start;
     private String title;
     private String description;
-    private String brief;
+    private String brief; //keywrods
     private String slackUrl;
     protected String newsownercodes;
     private String currentownercode;
@@ -86,6 +86,7 @@ public class Meeting {
         this.description = description;
     }
 
+    //keywords
     public String getLocation() {
         return brief;
     }

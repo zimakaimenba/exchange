@@ -425,15 +425,17 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 				stockamozhanbi = new TimeSeries(nodeperiodtype1);
 				stockvolzhanbi = new TimeSeries(nodeperiodtype1);
 				stockfxjg = new TimeSeries(nodeperiodtype1);
+				stockexchangedaysnumber = new TimeSeries(nodeperiodtype1);
 			}
 
 			private String nodeperiodtype;
 			protected OHLCSeries stockohlc; //板块自己的成交记录以及一些分析结果
-			protected TimeSeries stockamo;
-			protected TimeSeries stockvol;
-			protected TimeSeries stockamozhanbi;
-			protected TimeSeries stockvolzhanbi;
-			protected TimeSeries stockfxjg;
+			protected TimeSeries stockamo; //成交额
+			protected TimeSeries stockvol; //成交量
+			protected TimeSeries stockamozhanbi; //成交额占比
+			protected TimeSeries stockvolzhanbi; //成交量占比
+			protected TimeSeries stockfxjg; //分析结果
+			protected TimeSeries stockexchangedaysnumber ; //周期的交易日，如每周有几天交易，只保存不是5天的，
 	
 			public void addNewXPeriodData (StockGivenPeriodDataItem kdata)
 			{
@@ -441,8 +443,9 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 					stockohlc.setNotify(false);
 					stockohlc.add(kdata);
 				} catch (org.jfree.data.general.SeriesException e) {
-					System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+					logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 				}
+				
 				try {
 					stockamo.setNotify(false);
 					stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
@@ -454,7 +457,17 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 //					if(kdata.getCjlZhanBi() != null)
 //						stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
 				} catch (org.jfree.data.general.SeriesException e) {
-					System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+					logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//					e.printStackTrace();
+				}
+				
+				try{
+					stockexchangedaysnumber.setNotify(false);
+					if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //5天是默认的，完全不用存
+						stockexchangedaysnumber.add(kdata.getPeriod(),kdata.getExchangeDaysNumber(),false);
+					
+				} catch (org.jfree.data.general.SeriesException e) {
+					logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //					e.printStackTrace();
 				}
 			}
@@ -560,7 +573,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 					return null;
 				
 				TimeSeriesDataItem curcjlrecord = null;
-				if(difference >=0 )
+//				if(difference >=0 )
 					curcjlrecord = stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				
 				if( curcjlrecord == null) 
@@ -577,7 +590,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 					return null;
 				
 				TimeSeriesDataItem curcjlrecord = null;
-				if(difference >=0 )
+//				if(difference >=0 )
 					curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				
 				if( curcjlrecord == null) 
@@ -725,7 +738,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			/*
 			 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
 			 */
-			public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) 
+			public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (LocalDate requireddate,int difference) 
 			{
 				if(stockohlc == null)
 					return null;
@@ -758,7 +771,25 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 				
 				return cjechange/dpcjediff;
 			}
-		 }
+			
+			 /*
+			  * 
+			  */
+			 public Integer getExchangeDaysNumberForthePeriod (LocalDate requireddate,int difference)
+			 {
+				 if(stockexchangedaysnumber == null)
+					 return null;
+				 
+				 TimeSeriesDataItem curdaynumberrecord = this.stockexchangedaysnumber.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+				 if( curdaynumberrecord == null) 
+						return 5;
+				 else
+					 return curdaynumberrecord.getValue().intValue();
+				 
+			 }
+			 
+		 } //END OF 
+		
 		 
 		 
 }

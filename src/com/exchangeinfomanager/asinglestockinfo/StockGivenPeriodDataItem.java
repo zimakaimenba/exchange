@@ -59,11 +59,14 @@ public class StockGivenPeriodDataItem extends OHLCItem
 	private Double huanshoulv;
 	private Double zongshizhi;
 	private Double liutongshizhi;
+	private Double periodhighestzhangdiefu;
+	private Double periodlowestzhangdiefu;
 	
 	private Integer hasfengxijieguo; //有加入关注，分析结果等等
 	
 	
 	private double ggbkcjedifference; //个股的成交额本周期和合理的上周期的差额
+	private Integer exchangedaysnumber; //个股板块每周的交易日数目
 	/**
 	 * @return the myowncode
 	 */
@@ -289,6 +292,24 @@ public class StockGivenPeriodDataItem extends OHLCItem
 		this.liutongshizhi = liutongshizhi;
 	}
 
-	
+	public Double getPeriodhighestzhangdiefu() {
+		return periodhighestzhangdiefu;
+	}
+	public void setPeriodhighestzhangdiefu(Double periodhighestzhangdiefu) {
+		this.periodhighestzhangdiefu = periodhighestzhangdiefu;
+	}
+	public Double getPeriodlowestzhangdiefu() {
+		return periodlowestzhangdiefu;
+	}
+	public void setPeriodlowestzhangdiefu(Double periodlowestzhangdiefu) {
+		this.periodlowestzhangdiefu = periodlowestzhangdiefu;
+	}
+	public void setExchangeDaysNumber(Integer daysnumber) {
+		this.exchangedaysnumber = daysnumber;
+	}
+	public Integer getExchangeDaysNumber() {
+		// TODO Auto-generated method stub
+		return this.exchangedaysnumber;
+	}
 
 }

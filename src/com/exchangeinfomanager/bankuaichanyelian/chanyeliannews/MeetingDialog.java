@@ -54,6 +54,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
     {
     	return this.centerPanel;
     }
+    
     private void createUI() {
         this.titleField = JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
         this.locationField = JTextFactory.createTextField();
@@ -67,6 +68,55 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
         this.labelListDialog = new LabelListDialog();
     }
 
+//    private void createCenterPanel2() 
+//    {
+//    	this.centerPanel = JPanelFactory.createFixedSizePanel(1200, HEIGHT, PADDING);
+//        this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.X_AXIS));
+//        
+//        JPanel pnl1 = JPanelFactory.createFixedSizePanel(WIDTH, HEIGHT, 0);
+//        pnl1.setLayout(new BoxLayout(pnl1, BoxLayout.PAGE_AXIS));
+//        this.centerPanel.add(pnl1);
+//        
+//        JPanel p = JPanelFactory.createPanel(new FlowLayout(FlowLayout.CENTER));
+//        pnl1.add(p);
+//        pnl1.add(Box.createVerticalStrut(PADDING));
+//        pnl1.add(this.titleField);
+//        pnl1.add(Box.createVerticalStrut(30));
+//        pnl1.add(this.getTimeChooser());
+//        pnl1.add(Box.createVerticalStrut(10));
+//
+//        JPanel labelPanel = JPanelFactory.createFixedSizePanel(new GridLayout(1, 2));
+//        labelPanel.add(new JLabel("…Ë÷√ labels: "));
+//        labelButton = JLabelFactory.createButton("Labels");
+//        labelButton.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                super.mouseClicked(e);
+//                labelListDialog.display();
+//            }
+//        });
+//
+//        labelPanel.add(labelButton);
+//        pnl1.add(labelPanel);
+//
+//        pnl1.add(Box.createVerticalStrut(PADDING));
+//        pnl1.add(this.locationField);
+//        pnl1.add(Box.createVerticalStrut(10));
+//        pnl1.add(this.slackurlField);
+//        pnl1.add(Box.createVerticalStrut(10));
+//        JScrollPane despane = new JScrollPane ();
+//        despane.setAutoscrolls(true);
+//        despane.setViewportView(this.descriptionArea);
+//        pnl1.add(despane);
+//        pnl1.add(Box.createVerticalStrut(PADDING));
+//        
+//        
+//        JPanel pnl2 = JPanelFactory.createFixedSizePanel(600, HEIGHT, 0);
+//        pnl2.setLayout(new BoxLayout(pnl2, BoxLayout.PAGE_AXIS));
+//        this.centerPanel.add(pnl2);
+//
+//    	
+//    }
     private void createCenterPanel() {
         this.centerPanel = JPanelFactory.createFixedSizePanel(WIDTH, HEIGHT, PADDING);
         this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.PAGE_AXIS));
@@ -137,7 +187,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
         meeting.setLocation(locationField.getText());
         meeting.setDescription(descriptionArea.getText());
         meeting.setSlackUrl(slackurlField.getText());
-        System.out.println(meeting.getNewsownercodes());
+//        System.out.println(meeting.getNewsownercodes());
         return meeting;
     }
 

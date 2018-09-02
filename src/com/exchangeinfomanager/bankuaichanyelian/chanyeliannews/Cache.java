@@ -17,7 +17,7 @@ public class Cache {
     private Set<InsertedMeeting.Label> meetingLabels;
     private MeetingService meetingService;
     private LabelService labelService;
-	private String nodecode;
+	private String nodecode; //"ALL":所有新闻；"000000":每个固定月都显示的新闻。"999999":显示在jstockcalendar的新闻
 	private boolean datachanged = false;
 	private LocalDate cashestartdate;
 	private LocalDate casheenddate;

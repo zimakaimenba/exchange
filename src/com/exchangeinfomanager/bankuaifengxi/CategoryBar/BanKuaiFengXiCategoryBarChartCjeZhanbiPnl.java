@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
@@ -252,9 +253,23 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
 
 	public Paint getItemPaint(final int row, final int column) 
     {
+		 GradientPaint gp2 = new GradientPaint(
+		            0.0f, 0.0f, Color.red, 
+		            0.0f, 0.0f, new Color(64, 0, 0)
+		        );
+		 
+		 CategoryPlot plot = getPlot ();
+	     CategoryDataset dataset = plot.getDataset();
+		 String selected =  dataset.getColumnKey(column).toString();
+	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+
+	    Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
+		 
         if(column == shouldcolumn)
             return Color.blue;
-        else   
+        else  if(exchangesdaynumber != 5) {
+        	return gp2;
+        } else
             return Color.RED.darker();
    }
     

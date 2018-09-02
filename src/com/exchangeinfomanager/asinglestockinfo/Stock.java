@@ -213,11 +213,15 @@ public class Stock extends BkChanYeLianTreeNode {
 			stockhuanshoulv = new TimeSeries(nodeperiodtype1);
 			stockliutongshizhi = new TimeSeries(nodeperiodtype1);
 			stockzongshizhi = new TimeSeries(nodeperiodtype1);
+			periodhighestzhangdiefu = new TimeSeries(nodeperiodtype1);
+			periodlowestzhangdiefu = new TimeSeries(nodeperiodtype1);
 		}
 		
 		private  TimeSeries stockhuanshoulv; //换手率
 		private  TimeSeries stockliutongshizhi; //流通市值
 		private  TimeSeries stockzongshizhi; //总市值
+		private  TimeSeries periodhighestzhangdiefu; //最高涨幅
+		private  TimeSeries periodlowestzhangdiefu; //最高涨幅
 		/*
 		* (non-Javadoc)
 		* @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem)
@@ -248,26 +252,27 @@ public class Stock extends BkChanYeLianTreeNode {
 		 */
 		public void addNewXPeriodData (StockGivenPeriodDataItem kdata)
 		{
-			try {
-				stockohlc.setNotify(false);
-				stockohlc.add(kdata);
-			} catch (org.jfree.data.general.SeriesException e) {
-//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
-			}
-			try {
-				stockamo.setNotify(false);
-				stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
-//				stockvol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
-				if(kdata.getCjeZhanBi() != null) {
-					stockamozhanbi.setNotify(false);
-					stockamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi(),false);
-				}
-//				if(kdata.getCjlZhanBi() != null)
-//					stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
-			} catch (org.jfree.data.general.SeriesException e) {
-//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
-//				e.printStackTrace();
-			}
+			super.addNewXPeriodData(kdata);
+//			try {
+//				stockohlc.setNotify(false);
+//				stockohlc.add(kdata);
+//			} catch (org.jfree.data.general.SeriesException e) {
+////				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//			}
+//			try {
+//				stockamo.setNotify(false);
+//				stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
+////				stockvol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
+//				if(kdata.getCjeZhanBi() != null) {
+//					stockamozhanbi.setNotify(false);
+//					stockamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi(),false);
+//				}
+////				if(kdata.getCjlZhanBi() != null)
+////					stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
+//			} catch (org.jfree.data.general.SeriesException e) {
+////				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+////				e.printStackTrace();
+//			}
 			
 			try {
 				stockhuanshoulv.setNotify(false);
@@ -286,6 +291,22 @@ public class Stock extends BkChanYeLianTreeNode {
 			try {	
 				stockzongshizhi.setNotify(false);
 				stockzongshizhi.add(kdata.getPeriod(),kdata.getZongshizhi(),false);
+				
+			} catch (org.jfree.data.general.SeriesException e) {
+//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				e.printStackTrace();
+			}
+			try {	
+				periodhighestzhangdiefu.setNotify(false);
+				periodhighestzhangdiefu.add(kdata.getPeriod(),kdata.getPeriodhighestzhangdiefu(),false);
+				
+			} catch (org.jfree.data.general.SeriesException e) {
+//				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+//				e.printStackTrace();
+			}
+			try {	
+				periodlowestzhangdiefu.setNotify(false);
+				periodlowestzhangdiefu.add(kdata.getPeriod(),kdata.getPeriodlowestzhangdiefu(),false);
 				
 			} catch (org.jfree.data.general.SeriesException e) {
 //				System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
@@ -327,6 +348,38 @@ public class Stock extends BkChanYeLianTreeNode {
 			return curzsz;
 		}
 		/*
+		 * 
+		 */
+		public double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
+		{
+			TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			Double curhzdf = null ;
+			try {
+				curhzdf = curhighzdfrecord.getValue().doubleValue();
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info(" ");
+			}
+			
+			return curhzdf;
+		}
+		/*
+		 * 
+		 */
+		public double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference)
+		{
+			TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			Double curlzdf = null ;
+			try {
+				curlzdf = curlowzdfrecord.getValue().doubleValue();
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info(" ");
+			}
+			
+			return curlzdf;
+		}
+		/*
 		 * (non-Javadoc)
 		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
 		 */
@@ -354,7 +407,7 @@ public class Stock extends BkChanYeLianTreeNode {
 			int maxweek = 0;
 			
 			DaPan dapan = (DaPan)getRoot();
-			for(int index = -1;index >= -100; index--) { //目前记录不可能有10000个周期，所以10000足够
+			for(int index = (difference-1); index >= -100; index--) { //目前记录不可能有10000个周期，所以10000足够
 				if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) //大盘还可能休市
 					continue;
 				
@@ -390,7 +443,7 @@ public class Stock extends BkChanYeLianTreeNode {
 			
 			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
 			int maxweek = 0;
-			for(int index = -1;index >= -100000; index--) {
+			for(int index = (difference-1);index >= -100000; index--) {
 				if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) { //大盘还可能休市
 //					logger.debug("dapan停牌");
 					continue;
@@ -412,6 +465,7 @@ public class Stock extends BkChanYeLianTreeNode {
 
 			return maxweek;
 		}
+
 	}
 }
 

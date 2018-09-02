@@ -3150,9 +3150,10 @@ public class BanKuaiDbOperation
 		
 		//包含成交量和成交额的SQL
 		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
-				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比, \r\n" +
+				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比,\r\n" +
 
-				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比 \r\n" + 
+				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
+				"  M.JILUTIAOSHU  \r\n"+
 				 
 				"FROM\r\n" + 
 				"(\r\n" + 
@@ -3172,7 +3173,11 @@ public class BanKuaiDbOperation
 				") T,\r\n" + 
 				"\r\n" + 
 				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
-						+ "sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , sum( " + bkcjltable + ".`成交量`) AS 板块周交易量 from " + bkcjltable + "\r\n" +  
+						+ "sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
+						+ "sum( " + bkcjltable + ".`成交量`) AS 板块周交易量, \r\n"
+						+ " count(1) as JILUTIAOSHU \r\n"
+						+ "from " + bkcjltable + "\r\n" +
+						
 				"where 代码 = '" + bkcode + "'\r\n" + 
 				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
 				") M\r\n" + 
@@ -3210,6 +3215,7 @@ public class BanKuaiDbOperation
 				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
 				Double bankuaicjl = rs.getDouble("板块周交易量");
 				Double dapancjl = rs.getDouble("大盘周交易量");
+				int exchangedaysnumber = rs.getInt("JILUTIAOSHU");
 				
 				StockGivenPeriodDataItem bkperiodrecord = new StockGivenPeriodDataItem( bkcode, StockGivenPeriodDataItem.WEEK,
 						wknum, 0.0, 0.0,  0.0,  0.0, bankuaicje, bankuaicjl,null,null,null);
@@ -3217,6 +3223,7 @@ public class BanKuaiDbOperation
 				bkperiodrecord.setRecordsDayofEndofWeek(lastdayofweek);
 				bkperiodrecord.setUpLevelChengJiaoEr(dapancje);
 				bkperiodrecord.setUplevelchengjiaoliang(dapancjl);
+				bkperiodrecord.setExchangeDaysNumber(exchangedaysnumber);
 				
 				nodewkperioddata.addNewXPeriodData(bkperiodrecord);
 				
@@ -3404,7 +3411,7 @@ public class BanKuaiDbOperation
 		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
 				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比, \r\n" +
 				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
-				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU       \r\n" +
+				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU , M.周最大涨跌幅,M.周最小涨跌幅      \r\n" +
 				 
 				"FROM\r\n" + 
 				"(\r\n" + 
@@ -3429,7 +3436,9 @@ public class BanKuaiDbOperation
 						+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
 						+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
 						+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
-						+ "  count(1) as JILUTIAOSHU \r\n"
+						+ "  count(1) as JILUTIAOSHU ,\r\n"
+						+ "max(" + bkcjltable + ".`涨跌幅`) as 周最大涨跌幅, \r\n"
+						+ "min(" + bkcjltable + ".`涨跌幅`) as 周最小涨跌幅 \r\n"
 						+ " from " + bkcjltable + "\r\n" +  
 				"where 代码 = '" + stockcode + "'\r\n" + 
 				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
@@ -3476,6 +3485,9 @@ public class BanKuaiDbOperation
 				double huanshoulv = rs.getDouble("板块周换手率");
 				double pingjunzongshizhi = rs.getDouble("周平均总市值");
 				double pingjunliutongshizhi = rs.getDouble("周平均流通市值");
+				double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅");
+				double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅");
+				int exchengdaysnumber = rs.getInt("JILUTIAOSHU");
 
 				StockGivenPeriodDataItem stokrecord = new StockGivenPeriodDataItem( stockcode, period, recordwk, 
 						  0.0,  0.0,  0.0,  0.0, bankuaicje, bankuaicjl,huanshoulv,pingjunzongshizhi,pingjunliutongshizhi);
@@ -3483,6 +3495,9 @@ public class BanKuaiDbOperation
 				stokrecord.setRecordsDayofEndofWeek(lastdayofweek);
 				stokrecord.setUpLevelChengJiaoEr(dapancje);
 				stokrecord.setUplevelchengjiaoliang(dapancjl);
+				stokrecord.setPeriodhighestzhangdiefu(periodhighestzhangdiefu);
+				stokrecord.setPeriodlowestzhangdiefu(periodlowestzhangdiefu);
+				stokrecord.setExchangeDaysNumber(exchengdaysnumber);
 				
 				nodewkperioddata.addNewXPeriodData(stokrecord);
 				

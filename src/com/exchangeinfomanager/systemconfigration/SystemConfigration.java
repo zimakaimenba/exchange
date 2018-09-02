@@ -329,7 +329,7 @@ public class SystemConfigration
 		 */
 		public String getTDXModelMatchExportFile ()
 		{
-			return this.getSystemInstalledPath() + "/weeklyreports/占比模型输出";
+			return this.getSystemInstalledPath() + "/weeklyreports/占比模型输出/";
 		}
 		/*
 		 * 
@@ -337,7 +337,7 @@ public class SystemConfigration
 		 public String getShiZhiFenXiFilesStoredPath ()
 		 {
 //			 return this.bkparsestoredpath;
-			 return this.getSystemInstalledPath() + "/weeklyreports/市值分析输出";
+			 return this.getSystemInstalledPath() + "/weeklyreports/市值分析输出/";
 		 }
 		 /*
 		  * 
@@ -345,7 +345,7 @@ public class SystemConfigration
 		 public String getGephiFenXiFilesStoredPath ()
 		 {
 //			 return this.bkparsestoredpath;
-			 return this.getSystemInstalledPath() + "/weeklyreports/Gephi分析输出";
+			 return this.getSystemInstalledPath() + "/weeklyreports/Gephi分析输出/";
 		 }
 		/*
 		 * 

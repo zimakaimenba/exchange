@@ -151,6 +151,10 @@ public interface BanKuaiAndStockBasic
 		 */
 		public void addFxjgToPeriod (RegularTimePeriod period,Integer fxjg);
 		/*
+		 * 
+		 */
+		public Integer getExchangeDaysNumberForthePeriod (LocalDate requireddate,int difference);
+		/*
 		 * 一次性计算所有数据
 		 */
 //		ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);

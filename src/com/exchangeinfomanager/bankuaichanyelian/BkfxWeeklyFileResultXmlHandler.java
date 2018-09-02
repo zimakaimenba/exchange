@@ -104,7 +104,7 @@ class BkfxWeeklyFileResultXmlHandler
 		String xmlfilename = weeklyfilename.getName().replace(".EBK", ".XML");
 //		File filefmxx = new File( xmlfilename );
 		
-		String exportfilename = sysconfig.getTDXModelMatchExportFile () + xmlfilename;
+		String exportfilename = sysconfig.getTDXModelMatchExportFile () +  xmlfilename;
 		File exportxmlfile = new File(exportfilename);
 		if(!exportxmlfile.getParentFile().exists()) {  
             //如果目标文件所在的目录不存在，则创建父目录  

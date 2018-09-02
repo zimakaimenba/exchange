@@ -426,7 +426,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 				int maxweek = 0;
 				
 				DaPan dapan = (DaPan)getRoot();
-				for(int index = -1;index >= -100000; index--) { //目前记录不可能有10000个周期，所以10000足够
+				for(int index = (difference-1);index >= -100000; index--) { //从指定周的上周开始 //目前记录不可能有10000个周期，所以10000足够
 					if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) //大盘还可能休市
 						continue;
 					
@@ -459,7 +459,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 				
 				Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
 				int maxweek = 0;
-				for(int index = -1;index >= -100000; index--) {
+				for(int index = (difference-1); index >= -100000; index--) {
 					if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) //大盘还可能休市
 						continue;
 					
@@ -476,6 +476,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 				
 				return maxweek;
 			}
+
 
 	}
 

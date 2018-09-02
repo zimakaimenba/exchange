@@ -68,13 +68,13 @@ public class ChanYeLianNewsPanel extends JDialog
 		MeetingService allmeetingService = new DBMeetingService ();
     	LabelService alllabelService = new DBLabelService ();
     	
-        Cache cacheAll = new Cache("ALL",allmeetingService, alllabelService,LocalDate.now(),LocalDate.now().minusWeeks(5));
-        panelallnews = new ChanYeLianGeGuNews(allmeetingService,cacheAll,"所有30日内新闻");
+        Cache cacheAll = new Cache("ALL",allmeetingService, alllabelService,LocalDate.now().minusWeeks(10),LocalDate.now());
+        panelallnews = new ChanYeLianGeGuNews(allmeetingService,cacheAll,"10周内所有新闻");
         
         MeetingService curmeetingService = new DBMeetingService ();
     	LabelService curlabelService = new DBLabelService ();
-        Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService,LocalDate.now(),LocalDate.now().minusWeeks(10));
-        panelgegunews = new ChanYeLianGeGuNews(curmeetingService,cachecurnode,curnodecode + "所有新闻");
+        Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService,LocalDate.now().minusWeeks(10),LocalDate.now());
+        panelgegunews = new ChanYeLianGeGuNews(curmeetingService,cachecurnode,curnodecode + "10周内个股新闻");
 		
 		initializeGui ();
 		createEvents ();

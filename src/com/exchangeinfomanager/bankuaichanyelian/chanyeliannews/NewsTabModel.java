@@ -18,7 +18,11 @@ class NewsTableModel extends AbstractTableModel
 	
 	public void refresh  ( Collection<InsertedMeeting> allnewlist)
 	{
-		this.cylnewslists = new ArrayList<InsertedMeeting>(allnewlist);
+		this.cylnewslists = new ArrayList<InsertedMeeting> ();
+		for(InsertedMeeting meeting : allnewlist) {
+			if(!meeting.getTitle().equals("一周总结") ) //一周总结不需要出现在新闻列表里面
+				this.cylnewslists.add(meeting);
+		}
 		
 		this.fireTableDataChanged();
 	}

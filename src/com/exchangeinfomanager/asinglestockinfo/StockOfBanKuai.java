@@ -150,7 +150,7 @@ public class StockOfBanKuai extends Stock
 					return -100.0;
 				}
 				
-				int index = -1;
+				int index = difference-1;
 				while ( ((DaPan)getRoot()).isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) ) { //上周可能大盘修饰
 					index --;
 				}

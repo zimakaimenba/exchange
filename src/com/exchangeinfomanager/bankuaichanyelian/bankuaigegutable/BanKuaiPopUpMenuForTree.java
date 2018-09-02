@@ -49,16 +49,16 @@ public class BanKuaiPopUpMenuForTree extends BanKuaiPopUpMenu
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				String bkcode = null;
 				try {
 					TreePath closestPath = cyltree.getSelectionPath();
 					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-					 bkcode = selectednode.getMyOwnCode();
+					addBanKuaiNews (selectednode);
+					 
 				} catch (java.lang.NullPointerException ex) {
 					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
 				}
 				
-				addBanKuaiNews (bkcode);
+				
 			}
 		});
 		
@@ -99,24 +99,12 @@ public class BanKuaiPopUpMenuForTree extends BanKuaiPopUpMenu
 
 	}
 
-		
-
-
-	protected void addBanKuaiNews(String bkcode) 
-	{
-		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (bkcode);
-		cylnews.setVisible(true);
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加板块新闻", JOptionPane.OK_CANCEL_OPTION);
-//
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-		
-//		bkdbopt.addBanKuaiNews(bkcode, cylnews.getInputedNews());
-	}
 
 	@Override
-	public void addBanKuaiNews(BkChanYeLianTreeNode node) {
-		// TODO Auto-generated method stub
+	public void addBanKuaiNews(BkChanYeLianTreeNode node) 
+	{
+		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (node.getMyOwnCode());
+		cylnews.setVisible(true);
 		
 	}
 }
