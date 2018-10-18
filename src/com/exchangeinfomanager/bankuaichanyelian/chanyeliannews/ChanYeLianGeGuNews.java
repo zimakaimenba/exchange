@@ -47,6 +47,7 @@ public class ChanYeLianGeGuNews extends View
 		this.title = title;
 		this.nodecode = cache.getNodeCode();
 		
+		
 		cache.addCacheListener(this);
 		
 		initializeGui ();
@@ -61,10 +62,8 @@ public class ChanYeLianGeGuNews extends View
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-					Meeting meeting = new Meeting("新闻标题",LocalDate.now(),
-	                     "描述", "关键词", new HashSet<>(),"SlackURL","999999");
-	                getCreateDialog().setMeeting(meeting);
-	                getCreateDialog().setVisible(true);
+				addNews ();
+				
 			}
 		});
 		
@@ -77,6 +76,19 @@ public class ChanYeLianGeGuNews extends View
 		
 	}
 	
+	protected void addNews() 
+	{
+		String newsbelogns = cache.getNodeCode();
+		if(newsbelogns.toLowerCase().equals("all") )
+			newsbelogns = "999999";
+		
+		Meeting meeting = new Meeting("新闻标题",LocalDate.now(),
+                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns);
+        getCreateDialog().setMeeting(meeting);
+        getCreateDialog().setVisible(true);
+		
+	}
+
 	public void updateNewsToABkGeGu (InsertedMeeting news,String bkggcode)
 	{
 		Boolean addresult = news.addMeetingToSpecificOwner(bkggcode);

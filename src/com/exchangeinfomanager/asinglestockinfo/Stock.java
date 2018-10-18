@@ -319,6 +319,10 @@ public class Stock extends BkChanYeLianTreeNode {
 		 */
 		public Double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference)
 		{
+			DaPan dapan = (DaPan)getRoot();
+			if( dapan.isDaPanXiuShi(requireddate, difference ,getNodeperiodtype())  ) //大盘还可能休市
+				return null;
+			
 			try{
 				TimeSeriesDataItem curhslrecord = stockhuanshoulv.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 				Double curhsl = curhslrecord.getValue().doubleValue();
@@ -334,8 +338,12 @@ public class Stock extends BkChanYeLianTreeNode {
 		 * (non-Javadoc)
 		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
 		 */
-		public double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference)
+		public Double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference)
 		{
+			DaPan dapan = (DaPan)getRoot();
+			if( dapan.isDaPanXiuShi(requireddate, difference ,getNodeperiodtype())  ) //大盘还可能休市
+				return null;
+			
 			TimeSeriesDataItem curzszrecord = stockzongshizhi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 			Double curzsz = null ;
 			try {
@@ -348,10 +356,14 @@ public class Stock extends BkChanYeLianTreeNode {
 			return curzsz;
 		}
 		/*
-		 * 
+		 * 得到某个时期的涨跌幅
 		 */
-		public double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
+		public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
 		{
+			DaPan dapan = (DaPan)getRoot();
+			if( dapan.isDaPanXiuShi(requireddate, difference ,getNodeperiodtype())  ) //大盘还可能休市
+				return null;
+			
 			TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 			Double curhzdf = null ;
 			try {
@@ -366,8 +378,12 @@ public class Stock extends BkChanYeLianTreeNode {
 		/*
 		 * 
 		 */
-		public double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference)
+		public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference)
 		{
+			DaPan dapan = (DaPan)getRoot();
+			if( dapan.isDaPanXiuShi(requireddate, difference ,getNodeperiodtype())  ) //大盘还可能休市
+				return null;
+			
 			TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 			Double curlzdf = null ;
 			try {
@@ -385,6 +401,10 @@ public class Stock extends BkChanYeLianTreeNode {
 		 */
 		public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference)
 		{
+			DaPan dapan = (DaPan)getRoot();
+			if( dapan.isDaPanXiuShi(requireddate, difference ,getNodeperiodtype())  ) //大盘还可能休市
+				return null;
+			
 			TimeSeriesDataItem curltszrecord = stockliutongshizhi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 			try{
 				Double curltsz = curltszrecord.getValue().doubleValue();
@@ -394,6 +414,10 @@ public class Stock extends BkChanYeLianTreeNode {
 			}
 		}
 		@Override
+		/*
+		 * (non-Javadoc)
+		 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
+		 */
 		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 		{
 			if(stockohlc == null)

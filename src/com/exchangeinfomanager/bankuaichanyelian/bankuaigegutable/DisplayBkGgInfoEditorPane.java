@@ -44,6 +44,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	{
 		if(this.clearContentsBeforeDisplayNewInfo)
 			this.setText("");
+		
 		this.displayChanYeLianNewsHtml(curselectedbknodecode);
 		this.displayNodeBasicInfo(curselectedbknodecode);
 		this.displayNodeZdgzMrMcZdgzYingKuiInfo (curselectedbknodecode);
@@ -63,7 +64,8 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 //		 logger.debug(doc.toString());
 		 org.jsoup.select.Elements content = doc.select("body");
 		       
-		 content.append( "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>");
+		 
+		content.append( "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>");
     	for(InsertedMeeting cylnew : curnewlist ) {
     		String title = cylnew.getTitle();
     		String newdate = cylnew.getStart().toString(); 

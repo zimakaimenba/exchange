@@ -5111,6 +5111,9 @@ public class BanKuaiDbOperation
 			for(Stock stock : allstocks) {
 				boolean neteasthasdata = false;
 				String stockcode = stock.getMyOwnCode();
+				if(stockcode.startsWith("300")) {
+					logger.debug("chang ye ban coming");
+				}
 				String formatedstockcode; String stockdatatable ;
 				if(stock.getSuoShuJiaoYiSuo().trim().toLowerCase().equals("sh")) { 
 					formatedstockcode = "0" + stockcode;
@@ -5229,7 +5232,7 @@ public class BanKuaiDbOperation
 					            		} else if(Pattern.matches("\\d*-\\d*-\\d*",actiondate) ) {
 					            			lactiondate = LocalDate.parse(actiondate);
 					            		} else {
-					            			System.out.println("网易数据文件日期格式改变！");
+					            			System.out.println("严重错误, 网易数据文件日期格式改变！");
 					            			neteasthasdata = false;
 						                	break;
 					            		}

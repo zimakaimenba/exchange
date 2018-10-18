@@ -31,7 +31,7 @@ public abstract class View extends JPanel implements CacheListener {
     private MeetingDialog modifyDialog;
 
     // each view needs data (meetings) to display
-    private Cache cache;
+    protected Cache cache;
 
     // date of the view
     private LocalDate date = LocalDate.now();

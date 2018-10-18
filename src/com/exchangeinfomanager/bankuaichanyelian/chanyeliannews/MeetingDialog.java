@@ -27,7 +27,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
     protected static final int TITLE_FONT_SIZE = 20;
 
     protected static final DateTimeFormatter LABEL_DATE = DateTimeFormatter.ofPattern("dd MMM uuuu");
-
+    protected JTextField newsownersField;
     protected JTextField titleField;
     protected JTextField locationField; 
     protected JTextField slackurlField;
@@ -55,7 +55,9 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
     	return this.centerPanel;
     }
     
-    private void createUI() {
+    private void createUI() 
+    {
+    	this.newsownersField = JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
         this.titleField = JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
         this.locationField = JTextFactory.createTextField();
         this.slackurlField = JTextFactory.createTextField();
@@ -124,6 +126,8 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
         JPanel p = JPanelFactory.createPanel(new FlowLayout(FlowLayout.CENTER));
         this.centerPanel.add(p);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
+        this.centerPanel.add(this.newsownersField);
+        this.newsownersField.setEnabled(false);
         this.centerPanel.add(this.titleField);
         this.centerPanel.add(Box.createVerticalStrut(30));
         this.centerPanel.add(this.getTimeChooser());
@@ -172,6 +176,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
     public void setMeeting(T meeting) {
         this.meeting = meeting;
         
+        newsownersField.setText(meeting.getNewsownercodes());
         titleField.setText(meeting.getTitle());
         locationField.setText(meeting.getLocation());
         descriptionArea.setText(meeting.getDescription());

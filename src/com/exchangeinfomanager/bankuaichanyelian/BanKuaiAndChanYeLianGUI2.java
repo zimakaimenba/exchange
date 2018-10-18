@@ -314,7 +314,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
          if(nodetype == BanKuaiAndStockBasic.GPC) {
         	 title = "请输入板块国名称";
          }else 
-         if( nodetype != BanKuaiAndStockBasic.TDXBK) {
+         if( nodetype == BanKuaiAndStockBasic.TDXBK) {
         	 title = "请输入子板块名称";
          } else
         	 return;
@@ -327,7 +327,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
  		if(nodetype == BanKuaiAndStockBasic.GPC) {
  			newsubcylcode = bkdbopt.addNewSubGuoPiaoChi (  nodecode,newsubbk.trim() );
         } else 
-        if( nodetype != BanKuaiAndStockBasic.TDXBK) {
+        if( nodetype == BanKuaiAndStockBasic.TDXBK) {
         	newsubcylcode = bkdbopt.addNewSubBanKuai (nodecode,newsubbk.trim() );
         } 
  		
@@ -634,35 +634,30 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 	 */
 	private void createEvents() 
 	{
-		btnAddSubBk.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) 
-			{
-				String newsubbk = JOptionPane.showInputDialog(null,"请输入子板块名称:","增加子版块", JOptionPane.QUESTION_MESSAGE);
-				if(newsubbk == null)
-					return;
-				
-//				if(bkdbopt.getSysBkSet().contains(newsubbk) ) {
-//					JOptionPane.showMessageDialog(null,"输入子版块名称与通达信板块名称冲突,请重新输入!");
-//					return ;
-//				}
-				
-				TreePath closestPath = cyltree.getSelectionPath();
-//		        logger.debug(closestPath);
-		         BkChanYeLianTreeNode tdxbk = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
-		         if(tdxbk.getType() != BanKuaiAndStockBasic.TDXBK)
-		        	 return;
-		         
-		        String tdxbkcode = tdxbk.getMyOwnCode();
-				String newsubcylcode = bkdbopt.addNewSubBanKuai (tdxbkcode,newsubbk.trim() ); 
-				if(newsubcylcode != null)
-					((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).addRow(newsubcylcode,newsubbk);
-				else
-					JOptionPane.showMessageDialog(null,"添加失败，可能是因为重名！","Warning",JOptionPane.WARNING_MESSAGE);
-//	  	        ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).fireTableDataChanged ();
-				
-			}
-		});
+//		btnAddSubBk.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) 
+//			{
+//				String newsubbk = JOptionPane.showInputDialog(null,"请输入子板块名称:","增加子版块", JOptionPane.QUESTION_MESSAGE);
+//				if(newsubbk == null)
+//					return;
+//				
+//				TreePath closestPath = cyltree.getSelectionPath();
+////		        logger.debug(closestPath);
+//		         BkChanYeLianTreeNode tdxbk = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
+//		         if(tdxbk.getType() != BanKuaiAndStockBasic.TDXBK)
+//		        	 return;
+//		         
+//		        String tdxbkcode = tdxbk.getMyOwnCode();
+//				String newsubcylcode = bkdbopt.addNewSubBanKuai (tdxbkcode,newsubbk.trim() ); 
+//				if(newsubcylcode != null)
+//					((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).addRow(newsubcylcode,newsubbk);
+//				else
+//					JOptionPane.showMessageDialog(null,"添加失败，可能是因为重名！","Warning",JOptionPane.WARNING_MESSAGE);
+////	  	        ((BanKuaiSubChanYeLianTableModel)(tablesubcyl.getModel())).fireTableDataChanged ();
+//				
+//			}
+//		});
 		
 		tfldfindgegu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent arg0) {

@@ -191,16 +191,16 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 					return;
 				
 				String bkcode = curdisplayednode.getMyOwnCode();
-				JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"分析结果" ); 
-				LocalDate curselectdate = CommonUtility.formateStringToDate( getCurSelectedBarDate ().toString() );
-				jiarujihua.setJiaRuDate (curselectdate);
-				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "输入分析结果", JOptionPane.OK_CANCEL_OPTION);
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-				
-				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-				
-				jiarujihua = null;
+//				JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"分析结果" ); 
+//				LocalDate curselectdate = CommonUtility.formateStringToDate( getCurSelectedBarDate ().toString() );
+//				jiarujihua.setJiaRuDate (curselectdate);
+//				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "输入分析结果", JOptionPane.OK_CANCEL_OPTION);
+//				if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//					return;
+//				
+//				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
+//				
+//				jiarujihua = null;
 			}
 			
 		});
@@ -325,7 +325,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
         chartPanel = new ChartPanel(barchart);
 //         chartPanel = new TooltipChartPanel(barchart);
 //        chartPanel.setHorizontalAxisTrace(true); //十字显示
-        chartPanel.setPreferredSize(new Dimension(1500, 350));
+//        chartPanel.setPreferredSize(new Dimension(1500, 350));
         chartPanel.setVerticalAxisTrace(true);
         chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
