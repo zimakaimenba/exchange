@@ -183,12 +183,13 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
     public CustomRendererForCje() {
         super();
         super.displayedmaxwklevel = 7;
+        super.displayedcolorindex = Color.orange;
     }
 
 	public Paint getItemPaint(final int row, final int column) 
     {
 		GradientPaint gp2 = new GradientPaint( //当交易周交易日不是5天的话，特俗颜色
-	            0.0f, 0.0f, Color.orange, 
+	            0.0f, 0.0f, super.displayedcolorindex, 
 	            0.0f, 0.0f, new Color(64, 0, 0)
 	        );
 	 
@@ -201,10 +202,10 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
      
         if(column == shouldcolumn) {
           return Color.blue;
-        } else if(exchangesdaynumber != 5)
+        } else if(exchangesdaynumber != 5) //如果不是一个完整交易周，颜色特俗显示
         	return gp2;
         else 
-        	return Color.orange;
+        	return super.displayedcolorindex;
    }
     public Paint getItemLabelPaint(final int row, final int column)
     {

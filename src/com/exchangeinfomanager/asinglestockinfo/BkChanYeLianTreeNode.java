@@ -734,7 +734,11 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			/*
 			 * 对上级板块的成交额占比是多少周内的最大值
 			 */
-			public abstract Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference); 
+			public abstract Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference);
+			/*
+			 * 
+			 */
+			public abstract Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate,int difference);
 			/*
 			 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
 			 */
@@ -773,7 +777,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			}
 			
 			 /*
-			  * 
+			  * 计算指定周有几个交易日
 			  */
 			 public Integer getExchangeDaysNumberForthePeriod (LocalDate requireddate,int difference)
 			 {

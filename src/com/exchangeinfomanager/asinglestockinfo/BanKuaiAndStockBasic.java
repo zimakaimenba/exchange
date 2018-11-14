@@ -118,6 +118,10 @@ public interface BanKuaiAndStockBasic
 		 */
 		Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (LocalDate requireddate,int difference);
 		/*
+		 * 对上级板块的成交额占比是多少周内的最小值
+		 */
+		Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai (LocalDate requireddate,int difference);
+		/*
 		 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
 		 */
 		Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (LocalDate requireddate,int difference);

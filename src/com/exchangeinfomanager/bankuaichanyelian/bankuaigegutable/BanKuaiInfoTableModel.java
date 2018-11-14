@@ -43,8 +43,12 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		this.difference = difference2;
 		this.curperiod = period;
 //		this.initialzedcon = initializeconditon1;
-		if(entryList != null)
-			Collections.sort(entryList, new BanKuaiChenJiaoErComparator(showzhbiwknum,difference,curperiod) );
+		try{
+			if(entryList != null) //∞¥≥…Ωª∂Ó≈≈–Ú
+				Collections.sort(entryList, new BanKuaiChenJiaoErComparator(showzhbiwknum,difference,curperiod) );
+		} catch (java.lang.IllegalArgumentException e) {
+			e.printStackTrace();
+		}
 		
 		this.fireTableDataChanged();
 	}

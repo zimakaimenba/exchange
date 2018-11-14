@@ -51,7 +51,7 @@ import javax.swing.tree.TreeModel;
  * @author Philip Milne
  * @author Scott Violet
  */
- interface TreeTableModel extends TreeModel
+interface TreeTableModel extends TreeModel
 {
     /**
      * Returns the number ofs availible column.

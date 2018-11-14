@@ -198,6 +198,12 @@ public class DaPan extends BkChanYeLianTreeNode
 			return null;
 		}
 
+		@Override
+		public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 
 	}
 	

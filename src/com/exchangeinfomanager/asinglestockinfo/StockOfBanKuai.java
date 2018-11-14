@@ -146,7 +146,7 @@ public class StockOfBanKuai extends Stock
 				String nodept = getNodeperiodtype();
 				NodeXPeriodDataBasic bkxdata = bankuai.getNodeXPeroidData(nodept);
 				Double bkcjediff = bkxdata.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
-				if( bkcjediff < 0 || bkcjediff == null ) {//°å¿éËõÁ¿£¬
+				if( bkcjediff == null || bkcjediff < 0   ) {//°å¿éËõÁ¿£¬
 					return -100.0;
 				}
 				

@@ -249,12 +249,13 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
     public CustomCategroyRendererForZhanBi() {
         super();
         super.displayedmaxwklevel = 4;
+        super.displayedcolorindex = Color.RED.darker();
     }
 
 	public Paint getItemPaint(final int row, final int column) 
     {
 		 GradientPaint gp2 = new GradientPaint(
-		            0.0f, 0.0f, Color.red, 
+		            0.0f, 0.0f, super.displayedcolorindex, 
 		            0.0f, 0.0f, new Color(64, 0, 0)
 		        );
 		 
@@ -270,7 +271,7 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
         else  if(exchangesdaynumber != 5) {
         	return gp2;
         } else
-            return Color.RED.darker();
+            return super.displayedcolorindex;
    }
     
     public Paint getItemLabelPaint(final int row, final int column)
@@ -307,6 +308,10 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 			if(maxweek == null)
 				return null;
 			
+			Integer minweek = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(selecteddate,0);
+			if(minweek == null)
+				return null;
+			
 			Double hsl = null ;
 			if(super.node.getType() == BanKuaiAndStockBasic.TDXGG) {
 				hsl = ((StockNodeXPeriodData)nodexdata).getSpecificTimeHuanShouLv(selecteddate, 0);
@@ -327,6 +332,11 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 				tooltip = tooltip +  "占比MaxWk=" + maxweek.toString() ;
 			} catch (java.lang.IllegalArgumentException e ) {
 				tooltip = tooltip + "占比MaxWk=NULL";
+			}
+			try {
+				tooltip = tooltip +  "占比MinWk=" + minweek.toString() ;
+			} catch (java.lang.IllegalArgumentException e ) {
+				tooltip = tooltip + "占比MinWk=NULL";
 			}
 			try {
 				tooltip = tooltip +  "HSL=" + hsl.toString() ;

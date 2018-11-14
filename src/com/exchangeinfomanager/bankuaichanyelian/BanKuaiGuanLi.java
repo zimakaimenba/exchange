@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Rectangle;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -68,6 +69,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
+import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.UIManager;
@@ -78,6 +80,8 @@ import javax.swing.border.LineBorder;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import javax.swing.JTree;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 public class BanKuaiGuanLi extends JDialog 
@@ -133,6 +137,20 @@ public class BanKuaiGuanLi extends JDialog
 
 	private void createEvents() 
 	{
+		tfldsearchsysbk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+//				String nodeid = tfldsearchsysbk.getText().trim();
+//				int rowindex = ((BanKuaiDetailTableModel)(tableSysBk.getModel())).getNodeLineIndex(nodeid);
+//				
+//				if(rowindex != -1) {
+//					tableSysBk.setRowSelectionInterval(rowindex, rowindex);
+//					tableSysBk.scrollRectToVisible(new Rectangle(tableSysBk.getCellRect(rowindex, 0, true)));
+//				} else 	{
+//					JOptionPane.showMessageDialog(null,"股票/板块代码有误或名称拼音有误！","Warning", JOptionPane.WARNING_MESSAGE);
+//				}
+			}
+		});
+		
 		cbxnotgephi.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 			}
@@ -245,6 +263,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JButton buttonapplybksetting;
 	private BkChanYeLianTree cyltree;
 	private BanKuaiAndChanYeLianGUI2 bkcylpnl;
+	private JTextField tfldsearchsysbk;
 	
 	private void initializeGui()
 	{
@@ -284,6 +303,11 @@ public class BanKuaiGuanLi extends JDialog
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, new Color(240, 240, 240), new Color(255, 255, 255), new Color(105, 105, 105), new Color(160, 160, 160)), new LineBorder(new Color(180, 180, 180), 5)), "\u677F\u5757\u5C5E\u6027\u8BBE\u7F6E", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		
+		tfldsearchsysbk = new JTextField();
+		tfldsearchsysbk.setColumns(10);
+		
+		JButton btnsearchsysbk = new JButton("\u67E5\u627E\u677F\u5757");
 
 
 		GroupLayout gl_panelSys = new GroupLayout(panelSys);
@@ -292,19 +316,20 @@ public class BanKuaiGuanLi extends JDialog
 				.addGroup(gl_panelSys.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+						.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_panelSys.createSequentialGroup()
-							.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-								.addComponent(label)
-								.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE))
-							.addGap(17)
-							.addGroup(gl_panelSys.createParallelGroup(Alignment.TRAILING)
+							.addGroup(gl_panelSys.createParallelGroup(Alignment.TRAILING, false)
 								.addGroup(gl_panelSys.createSequentialGroup()
-									.addComponent(label_1)
-									.addContainerGap(1168, Short.MAX_VALUE))
-								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(gl_panelSys.createSequentialGroup()
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(1278, Short.MAX_VALUE))))
+									.addComponent(tfldsearchsysbk)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnsearchsysbk))
+								.addComponent(label, Alignment.LEADING)
+								.addComponent(scrollPanesysbk, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE))
+							.addGap(17)
+							.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE)
+								.addComponent(label_1))))
+					.addContainerGap(1023, Short.MAX_VALUE))
 		);
 		gl_panelSys.setVerticalGroup(
 			gl_panelSys.createParallelGroup(Alignment.TRAILING)
@@ -313,10 +338,14 @@ public class BanKuaiGuanLi extends JDialog
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
 						.addComponent(label)
 						.addComponent(label_1))
+					.addGap(15)
+					.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
+						.addComponent(tfldsearchsysbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnsearchsysbk))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 680, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 680, GroupLayout.PREFERRED_SIZE))
+					.addGroup(gl_panelSys.createParallelGroup(Alignment.TRAILING, false)
+						.addComponent(scrollPane)
+						.addComponent(scrollPanesysbk, GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
 					.addGap(11))

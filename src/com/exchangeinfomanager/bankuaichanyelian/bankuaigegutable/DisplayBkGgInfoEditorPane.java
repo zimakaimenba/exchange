@@ -58,13 +58,12 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
     	String curselectedbknodename = curselectedbknodecode.getMyOwnName();
 	    String curbknodecode = curselectedbknodecode.getMyOwnCode();
 	    Collection<InsertedMeeting> curnewlist = newsdbopt.getBanKuaiRelatedNews(curbknodecode,LocalDate.now().minusMonths(3),LocalDate.now());
-	       	 
+	    
 	     String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 //		 logger.debug(doc.toString());
 		 org.jsoup.select.Elements content = doc.select("body");
 		       
-		 
 		content.append( "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>");
     	for(InsertedMeeting cylnew : curnewlist ) {
     		String title = cylnew.getTitle();

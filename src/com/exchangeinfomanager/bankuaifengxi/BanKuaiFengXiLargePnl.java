@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -108,9 +109,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	public void highLightSpecificBarColumn(LocalDate selecteddate) 
 	{
 //		centerPanel.highLightSpecificBarColumn(selecteddate);
-//		this.nodebkcjezblargepnl.highLightSpecificBarColumn(selecteddate);
-//		this.nodecombinedpnl.highLightSpecificBarColumn(selecteddate);
-//		this.nodekpnl.highLightSpecificBarColumn(selecteddate);
+		this.nodebkcjezblargepnl.highLightSpecificBarColumn(selecteddate);
+		this.nodecombinedpnl.highLightSpecificBarColumn(selecteddate);
+		this.nodekpnl.highLightSpecificBarColumn(selecteddate);
 	}
 
 	@Override
@@ -138,6 +139,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		
 		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical");
 		this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
+		this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());
 		
 		this.centerPanel.add(this.nodecombinedpnl);
 		this.centerPanel.add(this.nodebkcjezblargepnl);

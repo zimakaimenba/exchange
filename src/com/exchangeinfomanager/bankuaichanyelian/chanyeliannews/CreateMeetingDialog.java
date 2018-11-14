@@ -42,18 +42,28 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
             super.mouseClicked(e);
 
             try {
-                meetingService.createMeeting(getMeeting());
-            } catch (SQLException e1) {
+            	Meeting mt = getMeeting();
+            	if(mt.getTitle().length() >50) {
+            		JOptionPane.showMessageDialog(null,"新闻标题过长！");
+            		setVisible(true);
+            	} else { 
+            		meetingService.createMeeting(getMeeting());
+            		setVisible(false);
+            	}
+            } catch (com.mysql.jdbc.MysqlDataTruncation e2) {
+            	e2.printStackTrace();
+        	}catch (SQLException e1) {
                 e1.printStackTrace();
             }
             
-            setVisible(false);
+            
         }
     }
     private class CreateUrlController extends MouseAdapter {
 
         @Override
-        public void mouseClicked(MouseEvent e) {
+        public void mouseClicked(MouseEvent e) 
+        {
             super.mouseClicked(e);
 
             GetNewsFromHtml	 showhtmldialog = new GetNewsFromHtml (getMeeting());
@@ -62,16 +72,14 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
 			if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 //        			SystemAudioPlayed.playSound();
-        			
             
           try {
         	setMeeting(  showhtmldialog.getMeeting () );
 			meetingService.createMeeting(getMeeting());
 			 setVisible(false);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-        }
+		  } catch (SQLException e1) {
+				e1.printStackTrace();
+		  }
+	   }
     }
 }

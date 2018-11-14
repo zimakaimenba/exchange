@@ -18,8 +18,8 @@ import java.util.Date;
 import java.util.Optional;
 
 @SuppressWarnings("all")
-public  class MeetingDialog<T extends Meeting> extends JDialog {
-
+public  class MeetingDialog<T extends Meeting> extends JDialog 
+{
     protected static final int WIDTH = 400;
     protected static final int HEIGHT = 600;
     protected static final int PADDING = 20;
@@ -173,20 +173,26 @@ public  class MeetingDialog<T extends Meeting> extends JDialog {
         return panel;
     }
 
-    public void setMeeting(T meeting) {
+    public Boolean setMeeting(T meeting)  
+    {
         this.meeting = meeting;
         
-        newsownersField.setText(meeting.getNewsownercodes());
+//        if( meeting.getTitle().length() >50) {
+//        	return -1;
+//        }
+        
         titleField.setText(meeting.getTitle());
+        newsownersField.setText(meeting.getNewsownercodes());
         locationField.setText(meeting.getLocation());
         descriptionArea.setText(meeting.getDescription());
         startTimeChooser.setDate(Date.from(meeting.getStart().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
         slackurlField.setText(meeting.getSlackUrl());
         
-//        System.out.println(meeting.getNewsownercodes());
+        return true;
     }
 
-    public T getMeeting() {
+    public T getMeeting() 
+    {
         meeting.setTitle(titleField.getText());
         meeting.setStart(startTimeChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() );
         meeting.setLocation(locationField.getText());

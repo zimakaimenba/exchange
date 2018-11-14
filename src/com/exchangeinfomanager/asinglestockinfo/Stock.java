@@ -489,6 +489,43 @@ public class Stock extends BkChanYeLianTreeNode {
 
 			return maxweek;
 		}
+		/*
+		 * 
+		 */
+		public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate,int difference)
+		{
+
+			TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			if( curcjlrecord == null) 
+				return null;
+
+			DaPan dapan = (DaPan)getRoot();
+			
+			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
+			int minweek = 0;
+			for(int index = (difference-1);index >= -100000; index--) {
+				if( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype())  ) { //大盘还可能休市
+//					logger.debug("dapan停牌");
+					continue;
+				}
+				
+				if(isTingPai(requireddate,index,getNodeperiodtype())) //本周也可能停牌，停牌前的就不计算了
+					return minweek;
+				
+				TimeSeriesDataItem lastcjlrecord = stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod (requireddate,index) );
+				if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+					return minweek;
+
+				Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
+				if(curzhanbiratio < lastzhanbiratio)
+					minweek ++;
+				else
+					break;
+			}
+
+			return minweek;
+			
+		}
 
 	}
 }

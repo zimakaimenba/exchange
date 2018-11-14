@@ -205,6 +205,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 			
 		});
     }
+    /*
+     * 用户可以定义显示的颜色
+     */
+    public void setBarDisplayedColor (Color colorindex)
+    {
+    	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setBarDisplayedColor(colorindex);
+    }
 	/*
      * 设置要突出显示的bar
      */

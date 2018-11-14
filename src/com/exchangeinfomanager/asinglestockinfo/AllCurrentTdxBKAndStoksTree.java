@@ -391,13 +391,16 @@ public class AllCurrentTdxBKAndStoksTree
 	/*
 	 *该函数为每一个独立个股设置制定周期的K线数据 
 	 */
-	public Stock getStockK (String stockcode,LocalDate requiredrecordsday,String period)
+	public Stock getStockKXian (String stockcode,LocalDate requiredrecordsday,String period)
 	{
 		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
-		this.getStockK(stock, requiredrecordsday, period);
+		this.getStockKXian(stock, requiredrecordsday, period);
 		return stock;
 	}
-	public Stock getStockK (Stock stock,LocalDate requiredrecordsday,String period)
+	/*
+	 * 
+	 */
+	public Stock getStockKXian (Stock stock,LocalDate requiredrecordsday,String period)
 	{
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);

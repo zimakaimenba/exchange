@@ -28,6 +28,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	protected BkChanYeLianTreeNode node;
 	protected CategoryDataset chartdataset;
 	protected NodeXPeriodDataBasic nodexdata;
+	protected Color displayedcolorindex;
 	/*
 	 * 
 	 */
@@ -60,6 +61,14 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
     {
     	this.displayedmaxwklevel = maxl;
     }
+    /*
+     * 用户可以自定义显示颜色
+     */
+	public void setBarDisplayedColor(Color colorindex) 
+	{
+		this.displayedcolorindex = colorindex;
+		
+	}
  
 
 }
