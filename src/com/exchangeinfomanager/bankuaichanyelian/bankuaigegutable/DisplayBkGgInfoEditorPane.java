@@ -79,7 +79,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
     	
     	htmlstring = doc.toString();
     	this.setText(htmlstring);
-    	this.setCaretPosition(0);
+//    	this.setCaretPosition(0);
 	}
     /*
      * 显示节点的基本信息
@@ -131,7 +131,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 
 	     htmlstring = doc.toString();
 	     this.setText(htmlstring);
-	     this.setCaretPosition(0);   
+//	     this.setCaretPosition(0);   
     }
     /*
      * 显示买卖关注等信息
@@ -165,7 +165,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	       
 	       htmlstring = doc.toString();
 		   this.setText(htmlstring);
-		   this.setCaretPosition(0); 
+//		   this.setCaretPosition(0); 
     }
     
     public void setClearContentsBeforeDisplayNewInfo (Boolean onoff)

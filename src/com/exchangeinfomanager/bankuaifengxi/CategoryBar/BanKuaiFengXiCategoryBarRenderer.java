@@ -1,15 +1,19 @@
 package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Paint;
+import java.time.LocalDate;
 
 import org.apache.log4j.Logger;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 
 public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 {
@@ -23,6 +27,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	private static final long serialVersionUID = 1L;
 //	private Paint[] colors;
     protected int shouldcolumn = -1;
+    protected int shouldcolumnlast = -2;
     protected int displayedmaxwklevel = 4;
     private String barCharType;
 	protected BkChanYeLianTreeNode node;
@@ -43,7 +48,10 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	 */
 	public void setBarColumnShouldChangeColor (int column)
     {
-    	this.shouldcolumn = column;
+		if(this.shouldcolumn != column) { //说明用户的选择有了改变，需要修改
+			this.shouldcolumnlast = this.shouldcolumn;
+			this.shouldcolumn = column;
+		}
     }
 	/*
 	 * 
@@ -67,8 +75,34 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	public void setBarDisplayedColor(Color colorindex) 
 	{
 		this.displayedcolorindex = colorindex;
-		
 	}
+	/*
+	 * (non-Javadoc)
+	 * @see org.jfree.chart.renderer.AbstractRenderer#getItemPaint(int, int)
+	 */
+	public Paint getItemPaint(final int row, final int column) 
+    {
+		 GradientPaint gp2 = new GradientPaint(
+		            0.0f, 0.0f, displayedcolorindex, 
+		            0.0f, 0.0f, new Color(64, 0, 0)
+		        );
+		 
+		 CategoryPlot plot = getPlot ();
+	     CategoryDataset dataset = plot.getDataset();
+		 String selected =  dataset.getColumnKey(column).toString();
+	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+
+	    Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
+		 
+	    if(column == shouldcolumnlast)
+	    	return Color.blue.darker();
+	    else if(column == shouldcolumn)
+	    	return new Color (51,153,255);
+        else  if(exchangesdaynumber != 5) {
+        	return gp2;
+        } else
+            return displayedcolorindex;
+   }
  
 
 }

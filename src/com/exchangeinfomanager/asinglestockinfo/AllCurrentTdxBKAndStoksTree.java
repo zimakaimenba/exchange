@@ -227,7 +227,8 @@ public class AllCurrentTdxBKAndStoksTree
 		LocalDate bkendday = shdpnodexdata.getRecordsEndDate();
 		
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		//大盘的start日期要比一般板块和个股早一些，这样做系统反应速度明显提高，具体原因不指定为什么。
+		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange()+12,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		
 		//判断时间的相关关系，以便决定是否需要到数据库中查询新纪录

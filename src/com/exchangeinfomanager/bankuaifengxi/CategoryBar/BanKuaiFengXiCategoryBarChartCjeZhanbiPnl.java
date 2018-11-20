@@ -252,27 +252,29 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
         super.displayedcolorindex = Color.RED.darker();
     }
 
-	public Paint getItemPaint(final int row, final int column) 
-    {
-		 GradientPaint gp2 = new GradientPaint(
-		            0.0f, 0.0f, super.displayedcolorindex, 
-		            0.0f, 0.0f, new Color(64, 0, 0)
-		        );
-		 
-		 CategoryPlot plot = getPlot ();
-	     CategoryDataset dataset = plot.getDataset();
-		 String selected =  dataset.getColumnKey(column).toString();
-	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-
-	    Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
-		 
-        if(column == shouldcolumn)
-            return Color.blue;
-        else  if(exchangesdaynumber != 5) {
-        	return gp2;
-        } else
-            return super.displayedcolorindex;
-   }
+//	public Paint getItemPaint(final int row, final int column) 
+//    {
+//		 GradientPaint gp2 = new GradientPaint(
+//		            0.0f, 0.0f, super.displayedcolorindex, 
+//		            0.0f, 0.0f, new Color(64, 0, 0)
+//		        );
+//		 
+//		 CategoryPlot plot = getPlot ();
+//	     CategoryDataset dataset = plot.getDataset();
+//		 String selected =  dataset.getColumnKey(column).toString();
+//	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+//
+//	    Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
+//		 
+//	    if(column == super.shouldcolumnlast)
+//	    	return Color.blue.darker();
+//	    else if(column == super.shouldcolumn)
+//	    	return new Color (51,153,255);
+//        else  if(exchangesdaynumber != 5) {
+//        	return gp2;
+//        } else
+//            return super.displayedcolorindex;
+//   }
     
     public Paint getItemLabelPaint(final int row, final int column)
     {
@@ -317,7 +319,7 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 				hsl = ((StockNodeXPeriodData)nodexdata).getSpecificTimeHuanShouLv(selecteddate, 0);
 			}
 			
-			DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+			DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
 			try {
 				tooltip = tooltip +  "Õ¼±È" + decimalformate.format(curzhanbidata) ;
 			} catch (java.lang.IllegalArgumentException e ) {

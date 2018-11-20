@@ -43,13 +43,13 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		this.difference = difference2;
 		this.curperiod = period;
 //		this.initialzedcon = initializeconditon1;
-		try{
-			if(entryList != null) //按成交额排序
-				Collections.sort(entryList, new BanKuaiChenJiaoErComparator(showzhbiwknum,difference,curperiod) );
-		} catch (java.lang.IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-		
+//		try{
+//			if(entryList != null) //按成交额排序
+//				Collections.sort(entryList, new NodeChenJiaoErComparator(showzhbiwknum,difference,curperiod) );
+//		} catch (java.lang.IllegalArgumentException e) {
+//			e.printStackTrace();
+//		}
+	 	
 		this.fireTableDataChanged();
 	}
 	public LocalDate getCurDisplayedDate ()
@@ -240,28 +240,3 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 }
 
 
-/*
- * 
- */
-class BanKuaiChenJiaoErComparator implements Comparator<BanKuai> {
-	private String period;
-	private LocalDate compareDate;
-	private int difference;
-	public BanKuaiChenJiaoErComparator (LocalDate compareDate, int difference, String period )
-	{
-		this.period = period;
-		this.compareDate = compareDate;
-		this.difference = difference;
-	}
-    public int compare(BanKuai node1, BanKuai node2) {
-   	
-        Double cje1 = (node1.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
-        Double cje2 = (node2.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
-        
-        try{
-        	return cje2.compareTo(cje1);
-        } catch (java.lang.NullPointerException e) {
-        	return -1;
-        }
-    }
-}

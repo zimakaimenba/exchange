@@ -355,7 +355,7 @@ public class BanKuai extends BkChanYeLianTreeNode
 			super(treenode1);
 		}
 //		public boolean selfismatchmodel;
-		private Map<LocalDate,Integer> stocknumsinparsedfile;
+		private Map<LocalDate,Integer> stocknumsinparsedfile; //
 		private Set<LocalDate> bkselfinparsedfile;
 		/*
 		 * 

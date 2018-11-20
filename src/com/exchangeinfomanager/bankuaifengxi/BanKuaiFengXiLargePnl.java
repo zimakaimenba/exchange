@@ -1,33 +1,50 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
-
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
+import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 /*
  * 可以显示某个node大周期的占比数据
  */
 public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHightLightColumnListener
 {
-//	private BkChanYeLianTreeNode displaynode;
+	private BkChanYeLianTreeNode displaynode;
+	private SystemConfigration sysconfig;
 //	private LocalDate displaystartdate;
 //	private LocalDate displayenddate;
 //	private String displayperiod;
@@ -35,7 +52,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
 	public BanKuaiFengXiLargePnl (BkChanYeLianTreeNode nodebkbelonged, BkChanYeLianTreeNode node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period)
 	{
-//		this.displaynode = node;
+		this.displaynode = node;
+		initialzieSysconf ();
 //		this.displaystartdate = displayedstartdate1;
 //		this.displayenddate = displayedenddate1;
 //		this.displayperiod = period;
@@ -43,11 +61,63 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		createGui ();
 		createEvents ();
 		
+		
+		
 		updateData (nodebkbelonged, node,displayedstartdate1,displayedenddate1,period);
+	}
+	
+	private void initialzieSysconf ()
+	{
+		sysconfig = SystemConfigration.getInstance();
 	}
 	
 	private void createEvents() 
 	{
+		mntmsaveimage.addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent arg0)
+			{
+				String image = sysconfig.getSavedImageStoredPath () + displaynode.getMyOwnCode()+ displaynode.getMyOwnName() + LocalDateTime.now().toString();
+				image = image.replace('.', ' ');
+				image = image.replace(":", "");
+				image = image.replace(" ", "");
+				image = image + ".bmp";
+				File filefmxx = new File( image );
+				if(!filefmxx.getParentFile().exists()) {  
+		            //如果目标文件所在的目录不存在，则创建父目录  
+//		            logger.debug("目标文件所在目录不存在，准备创建它！");  
+		            if(!filefmxx.getParentFile().mkdirs()) {  
+		                System.out.println("创建目标文件所在目录失败！");  
+		                return ;  
+		            }  
+		        } 
+				try {
+					if (filefmxx.exists()) {
+						filefmxx.delete();
+						filefmxx.createNewFile();
+					} else
+						filefmxx.createNewFile();
+				} catch (Exception e) {
+						e.printStackTrace();
+						return ;
+				}
+
+				Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+				BufferedImage capture;
+				try {
+					capture = new Robot().createScreenCapture(screenRect);
+					ImageIO.write(capture, "bmp", filefmxx);
+				} catch (AWTException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+
 		this.nodebkcjezblargepnl.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
@@ -127,6 +197,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private  BanKuaiFengXiCategoryBarChartPnl nodebkcjezblargepnl;
 	private JTextArea tfldselectedmsg;
 	private BanKuaiFengXiCandlestickPnl nodekpnl;
+	private JPopupMenu saveImage;
+	private JMenuItem mntmsaveimage; 
 	private void createGui() 
 	{
 		this.setLayout(new BorderLayout());
@@ -144,7 +216,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.add(this.nodecombinedpnl);
 		this.centerPanel.add(this.nodebkcjezblargepnl);
 		
-
+		JPanel eastpanel;
 		tfldselectedmsg = new JTextArea();
 		tfldselectedmsg.setLineWrap(true);
 		JScrollPane scrollPaneuserselctmsg = new JScrollPane (); 
@@ -153,7 +225,35 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.add(this.nodekpnl,BorderLayout.NORTH);
 		this.add(scrollPaneuserselctmsg,BorderLayout.EAST);
 		this.add(centerPanel,BorderLayout.CENTER);
+		
+//		saveImage = new BanKuaiPopUpMenuForTable(this.stockmanager,this);
+		saveImage = new JPopupMenu ();
+		addPopup(this, saveImage);
+		
+		mntmsaveimage = new JMenuItem("保存到系统");
+		saveImage.add(mntmsaveimage);
+
+		this.setComponentPopupMenu(saveImage);
+
 	}
 
+	private static void addPopup(Component component, final JPopupMenu popup) 
+	{
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+	}
 	
 }

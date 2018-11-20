@@ -28,6 +28,8 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 
 import java.util.Calendar;
@@ -1190,102 +1192,6 @@ public class BanKuaiDbOperation
 			logger.debug(sqlinsertstat);
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		
-	}
-	/*
-	 *早期代码有错误，导致板块和个股的对应关系中可能出现重复， 
-	 */
-	public File checkImportTDXDataSync()
-	{
-		String checkfilename = sysconfig.getSystemInstalledPath ()+  "通达信数据一致性检查结果.txt";
-		File filefmxx = new File( checkfilename );
-		try {
-				if (filefmxx.exists()) {
-					filefmxx.delete();
-					filefmxx.createNewFile();
-				} else
-					filefmxx.createNewFile();
-		} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-		}
-		
-		CachedRowSetImpl rspd = null;
-		String tablename[] = {"股票通达信风格板块对应表","股票通达信概念板块对应表","股票通达信行业板块对应表","股票通达信交易所指数对应表"};
-		Charset charset = Charset.forName("GBK") ;
-		int countaddline =0;
-		for(int i=0;i<tablename.length;i++) {
-			String sqlquerystat = "SELECT 板块代码, 股票代码, 移除时间, COUNT(*) " +
-					" FROM  " + tablename[i] + 
-					" where isnull(移除时间)" +
-					" GROUP BY  板块代码,股票代码,isnull(移除时间)" +
-					" HAVING   COUNT(*) > 1"
-					;
-			rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
-			try {
-				while(rspd.next())  {
-					String bkcode = rspd.getString("板块代码");
-					String stockcode = rspd.getString("股票代码");
-				     
-					 Integer duplinecount = rspd.getInt("COUNT(*)");
-					 if(duplinecount == 2) { //只有2行，那就直接修补
-						 CachedRowSetImpl rsdup = null;
-						 sqlquerystat = "SELECT MAX(加入时间), MIN(id)\n" + 
-									"FROM  股票通达信风格板块对应表\n" + 
-									"where 板块代码 = '" + bkcode + "' and 股票代码 = '" + stockcode + "' and isnull(移除时间) "
-									;
-						 rsdup = connectdb.sqlQueryStatExecute(sqlquerystat);
-						 while(rsdup.next()) {
-							 java.util.Date maxdupdate = rsdup.getDate("MAX(加入时间)");
-							 Integer minid = rsdup.getInt("MIN(id)");
-							 String sqlupdatequery = "UPDATE 股票通达信风格板块对应表 SET 移除时间 = '" + maxdupdate + "' \n" + 
-													  "where id = '" + minid + "'"
-														;
-							 int result = connectdb.sqlUpdateStatExecute(sqlupdatequery);
-							 
-							 String updateresult = tablename[i] + "  " + bkcode + "  的个股  "  + stockcode  + "  存在数据重复，已经更新，把日期" + maxdupdate.toString() + "更新到ID=" + minid.toString() + System.getProperty("line.separator");
-							 logger.debug(updateresult);
-							 try {
-									Files.append(updateresult,filefmxx, charset);
-									countaddline ++;
-							 } catch (IOException e) {
-									e.printStackTrace();
-							 }
-							 
-						 }
-						 rsdup.close();
-						 rsdup = null;
-					 } else {
-						 String stock = "重要：" + tablename[i] + "  " + bkcode + "  的个股  "  + stockcode  + "  存在数据重复,未更新，请手动更新！"+ System.getProperty("line.separator");
-						 logger.debug(stock);
-						 try {
-								Files.append(stock,filefmxx, charset);
-								countaddline ++;
-						 } catch (IOException e) {
-								e.printStackTrace();
-						 }
-					 }
-					 
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}catch(Exception e){
-			    	e.printStackTrace();
-			} finally {
-			    	if(rspd != null)
-					try {
-						rspd.close();
-						rspd = null;
-						
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-			}
-		}
-		
-		if(countaddline >0)
-			return filefmxx;
-		else
-			return null;
 	}
 	
 	/*
@@ -3528,7 +3434,7 @@ public class BanKuaiDbOperation
 	 * 获取个股或板块某时间段的日线走势
 	 */
 	public Stock getNodeKXianZouShi(Stock stock, LocalDate nodestartday, LocalDate nodeendday, String period) 
-	{//本函数初始是开发为日的K线数据，所以周/月线的占比掉用其他函数
+	{//本函数初始是开发为日周期的K线数据，
 		if(period.equals(StockGivenPeriodDataItem.WEEK)) //调用周线查询函数
 			; 
 		else if(period.equals(StockGivenPeriodDataItem.MONTH)) //调用月线查询函数
@@ -5112,7 +5018,7 @@ public class BanKuaiDbOperation
 				boolean neteasthasdata = false;
 				String stockcode = stock.getMyOwnCode();
 				if(stockcode.startsWith("300")) {
-					logger.debug("chang ye ban coming");
+ 					logger.debug("chang ye ban coming");
 				}
 				String formatedstockcode; String stockdatatable ;
 				if(stock.getSuoShuJiaoYiSuo().trim().toLowerCase().equals("sh")) { 
@@ -5374,11 +5280,442 @@ public class BanKuaiDbOperation
 			// TODO Auto-generated method stub
 			
 		}
+		/*
+		 *早期代码有错误，导致板块和个股的对应关系中可能出现重复， 
+		 */
+		private void checkImportTDXDataDuplicateError(File logfile)
+		{
+			CachedRowSetImpl rspd = null;
+			String tablename[] = {"股票通达信风格板块对应表","股票通达信概念板块对应表","股票通达信行业板块对应表","股票通达信交易所指数对应表"};
+			Charset charset = Charset.forName("GBK") ;
+			int countaddline =0;
+			for(int i=0;i<tablename.length;i++) {
+				String sqlquerystat = "SELECT 板块代码, 股票代码, 移除时间, COUNT(*) " +
+						" FROM  " + tablename[i] + 
+						" where isnull(移除时间)" +
+						" GROUP BY  板块代码,股票代码,isnull(移除时间)" +
+						" HAVING   COUNT(*) > 1"
+						;
+				rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+				try {
+					while(rspd.next())  {
+						String bkcode = rspd.getString("板块代码");
+						String stockcode = rspd.getString("股票代码");
+					     
+						 Integer duplinecount = rspd.getInt("COUNT(*)");
+						 if(duplinecount == 2) { //只有2行，那就直接修补
+							 CachedRowSetImpl rsdup = null;
+							 sqlquerystat = "SELECT MAX(加入时间), MIN(id)\n" + 
+										"FROM  股票通达信风格板块对应表\n" + 
+										"where 板块代码 = '" + bkcode + "' and 股票代码 = '" + stockcode + "' and isnull(移除时间) "
+										;
+							 rsdup = connectdb.sqlQueryStatExecute(sqlquerystat);
+							 while(rsdup.next()) {
+								 java.util.Date maxdupdate = rsdup.getDate("MAX(加入时间)");
+								 Integer minid = rsdup.getInt("MIN(id)");
+								 String sqlupdatequery = "UPDATE 股票通达信风格板块对应表 SET 移除时间 = '" + maxdupdate + "' \n" + 
+														  "where id = '" + minid + "'"
+															;
+								 int result = connectdb.sqlUpdateStatExecute(sqlupdatequery);
+								 
+								 String updateresult = tablename[i] + "  " + bkcode + "  的个股  "  + stockcode  + "  存在数据重复，已经更新，把日期" + maxdupdate.toString() + "更新到ID=" + minid.toString() + System.getProperty("line.separator");
+								 logger.debug(updateresult);
+								 try {
+										Files.append(updateresult,logfile, charset);
+										countaddline ++;
+								 } catch (IOException e) {
+										e.printStackTrace();
+								 }
+								 
+							 }
+							 rsdup.close();
+							 rsdup = null;
+						 } else {
+							 String stock = "重要：" + tablename[i] + "  " + bkcode + "  的个股  "  + stockcode  + "  存在数据重复,未更新，请手动更新！"+ System.getProperty("line.separator");
+							 logger.debug(stock);
+							 try {
+									Files.append(stock,logfile, charset);
+									countaddline ++;
+							 } catch (IOException e) {
+									e.printStackTrace();
+							 }
+						 }
+						 
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}catch(Exception e){
+				    	e.printStackTrace();
+				} finally {
+				    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+							
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+				}
+			}
+			
+		}
+		
+		/*
+		 * check每日导入的数据是否完整,结果输出到reports
+		 */
+		public File checkTDXDataImportIsCompleted ()
+		{
+			LocalDate today = LocalDate.now();
+			TemporalField fieldISO = WeekFields.of(Locale.CHINA).dayOfWeek();
+			LocalDate monday = today.with(fieldISO, 2);
+			LocalDate friday = today.with(fieldISO, 6);
+			
+			String checkfilename = sysconfig.getTdxDataImportCheckResult () + friday.toString() +  "通达信数据导入检查结果.txt";
+			File filefmxx = new File( checkfilename );
+			try {
+					if (filefmxx.exists()) {
+						filefmxx.delete();
+						filefmxx.createNewFile();
+					} else
+						filefmxx.createNewFile();
+			} catch (Exception e) {
+					e.printStackTrace();
+					return null;
+			}
+			
+			Charset charset = Charset.forName("GBK") ;
+			
+			//首先检查几个典型指数是否完整，999999/399001
+			CachedRowSetImpl  rssh = null;
+			Integer stockjyrsm =0 ;
+			try {
+				String sqlquerystat = "SELECT  COUNT(1) AS JIAOYIRISHUMU FROM 通达信板块每日交易信息  \r\n" +
+						  "	WHERE  代码 = '999999' \r\n" +
+						  "	AND 交易日期 BETWEEN '" + monday + "' AND ' " + friday + "' \r\n"  
+							;
+				logger.debug(sqlquerystat);
+				
+			    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    while(rssh.next()) {
+			    	stockjyrsm = rssh.getInt("JIAOYIRISHUMU");
+			    }
+			} catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+			} catch (SQLException e) {
+		    	e.printStackTrace();
+			}catch(Exception e){
+		    	e.printStackTrace();
+			} finally {
+		    	if(rssh != null)
+				try {
+					rssh.close();
+					rssh = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				String checkresult = "上证999999本周交易数据有" + stockjyrsm + "天"; 
+				Files.append(checkresult +  System.getProperty("line.separator"),filefmxx, charset);
+			 } catch (IOException e) {
+					e.printStackTrace();
+			 }
 
+			try {
+				String sqlquerystat = "SELECT  COUNT(1) AS JIAOYIRISHUMU FROM 通达信交易所指数每日交易信息  \r\n" +
+						  "	WHERE  代码 = '399001' \r\n" +
+						  "	AND 交易日期 BETWEEN '" + monday + "' AND ' " + friday + "' \r\n"  
+							;
+				logger.debug(sqlquerystat);
+				
+			    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    while(rssh.next()) {
+			    	stockjyrsm = rssh.getInt("JIAOYIRISHUMU");
+			    }
+			} catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+			} catch (SQLException e) {
+		    	e.printStackTrace();
+			}catch(Exception e){
+		    	e.printStackTrace();
+			} finally {
+		    	if(rssh != null)
+				try {
+					rssh.close();
+					rssh = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				String checkresult = "深证399001本周交易数据有" + stockjyrsm + "天"; 
+				Files.append(checkresult +  System.getProperty("line.separator"),filefmxx, charset);
+			 } catch (IOException e) {
+					e.printStackTrace();
+			 }
+			//检查个股板块记录条数和大盘记录条数是否一致
+			ArrayList<BanKuai> allbklist = this.getTDXBanKuaiList("sh"); 
+			for(BanKuai bk :  allbklist ) {
+//				String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
+				if(!bk.isImportdailytradingdata()) //这样可以判断哪些板块无需导入每日数据
+					continue;
+				
+				int bkjiaoyirishumu = 0;
+				String tmpbkcode = bk.getMyOwnCode();
+				try {
+					String sqlquerystat = "SELECT  COUNT(1) AS JIAOYIRISHUMU FROM 通达信板块每日交易信息  \r\n" +
+							  "	WHERE  代码 = '" + tmpbkcode + "' \r\n" +
+							  "	AND 交易日期 BETWEEN '" + monday + "' AND ' " + friday + "' \r\n"  
+								;
+					logger.debug(sqlquerystat);
+					
+				    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+				    while(rssh.next()) {
+				    	bkjiaoyirishumu = rssh.getInt("JIAOYIRISHUMU");
+				    }
+				} catch(java.lang.NullPointerException e) { 
+			    	e.printStackTrace();
+				} catch (SQLException e) {
+			    	e.printStackTrace();
+				}catch(Exception e){
+			    	e.printStackTrace();
+				} finally {
+			    	if(rssh != null)
+					try {
+						rssh.close();
+						rssh = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				if(bkjiaoyirishumu != stockjyrsm) {
+					try {
+						String checkresult = "注意：板块" +  tmpbkcode + "交易数据条目有" + bkjiaoyirishumu + "天,与大盘交易数据条目数据不符合！"; 
+						Files.append(checkresult +  System.getProperty("line.separator"),filefmxx, charset);
+					 } catch (IOException e) {
+							e.printStackTrace();
+					 }
+				}
+				
+			}
+			allbklist = null;
+			allbklist = this.getTDXBanKuaiList("sz"); 
+			for(BanKuai bk :  allbklist ) {
+//				String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
+				if(!bk.isImportdailytradingdata()) //这样可以判断哪些板块无需导入每日数据
+					continue;
+				
+				int bkjiaoyirishumu = 0;
+				String tmpbkcode = bk.getMyOwnCode();
+				try {
+					String sqlquerystat = "SELECT  COUNT(1) AS JIAOYIRISHUMU FROM 通达信交易所指数每日交易信息  \r\n" +
+							  "	WHERE  代码 = '" + tmpbkcode + "' \r\n" +
+							  "	AND 交易日期 BETWEEN '" + monday + "' AND ' " + friday + "' \r\n"  
+								;
+					logger.debug(sqlquerystat);
+					
+				    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+				    Integer stockcode =0 ;
+				    while(rssh.next()) {
+				    	stockcode = rssh.getInt("JIAOYIRISHUMU");
+				    }
+				} catch(java.lang.NullPointerException e) { 
+			    	e.printStackTrace();
+				} catch (SQLException e) {
+			    	e.printStackTrace();
+				}catch(Exception e){
+			    	e.printStackTrace();
+				} finally {
+			    	if(rssh != null)
+					try {
+						rssh.close();
+						rssh = null;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				if(bkjiaoyirishumu != stockjyrsm) {
+					try {
+						String checkresult = "注意：板块" +  tmpbkcode + "交易数据条目有" + bkjiaoyirishumu + "天,与大盘交易数据条目数据不符合！"; 
+						Files.append(checkresult + System.getProperty("line.separator"),filefmxx, charset);
+					 } catch (IOException e) {
+							e.printStackTrace();
+					 }
+				}
+			}
+			//检查型个股数据中从网易导入的数据是否完整   
+			HashSet<String> stockset = new HashSet<String>(); 
+			try { 	
+				//找出每日交易的起点终点
+				String sqlquerystat = "SELECT \r\n" +
+						  "通达信上交所股票每日交易信息.`代码`\r\n" +
+						  "FROM \r\n" +
+						  "通达信上交所股票每日交易信息 \r\n" +   
+						  "LEFT JOIN a股 \r\n" +
+						  "ON 通达信上交所股票每日交易信息.`代码` = a股.股票代码  \r\n" +
+						  "WHERE \r\n" +
+						  "(通达信上交所股票每日交易信息.涨跌幅 is null or      通达信上交所股票每日交易信息.换手率 is null or      通达信上交所股票每日交易信息.总市值 is null or      通达信上交所股票每日交易信息.流通市值 is null) \r\n" +
+						  "and a股.已退市 is null \r\n" + 
+						  "	AND 交易日期 BETWEEN '" + monday + "' AND ' " + friday + "' \r\n"
+						  ;
+				logger.debug(sqlquerystat);
+				
+			    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    
+			    while(rssh.next()) {
+			    	String stockcode = rssh.getString("代码");
+			    	stockset.add(stockcode);
+			    }
+			} catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+			} catch (SQLException e) {
+		    	e.printStackTrace();
+			}catch(Exception e){
+		    	e.printStackTrace();
+			} finally {
+		    	if(rssh != null)
+				try {
+					rssh.close();
+					rssh = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		   }
+			try { 	
+				String sqlquerystat = "SELECT \r\n" +
+						  "通达信深交所股票每日交易信息.`代码`\r\n" +
+						  "FROM \r\n" +
+						  "通达信深交所股票每日交易信息 \r\n" +   
+						  "LEFT JOIN a股 \r\n" +
+						  "ON 通达信深交所股票每日交易信息.`代码` = a股.股票代码  \r\n" +
+						  "WHERE \r\n" +
+						  "(通达信深交所股票每日交易信息.涨跌幅 is null or      通达信深交所股票每日交易信息.换手率 is null or      通达信深交所股票每日交易信息.总市值 is null or      通达信深交所股票每日交易信息.流通市值 is null) \r\n" +
+						  "and a股.已退市 is null \r\n" + 
+						  "	AND 交易日期 BETWEEN '" + monday + "' AND ' " + friday + "' \r\n"
+						  ;
+				logger.debug(sqlquerystat);
+				
+			    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    
+			    while(rssh.next()) {
+			    	String stockcode = rssh.getString("代码");
+			    	stockset.add(stockcode);
+			    }
+			} catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+			} catch (SQLException e) {
+		    	e.printStackTrace();
+			}catch(Exception e){
+		    	e.printStackTrace();
+			} finally {
+		    	if(rssh != null)
+				try {
+					rssh.close();
+					rssh = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		   }
+			for(String stockcode : stockset) {
+					try {
+						String checkresult = "注意：个股" + stockcode + "交易数据网易数据部分有NULL数据"; 
+						Files.append(checkresult + System.getProperty("line.separator"),filefmxx, charset);
+					 } catch (IOException e) {
+							e.printStackTrace();
+					 }
+			}
+			//检查型个股数据中从TDX导入的数据是否完整   
+			stockset.clear(); 
+			try { 	
+				//找出每日交易的起点终点
+				String sqlquerystat = "SELECT \r\n" +
+						  "通达信上交所股票每日交易信息.`代码`\r\n" +
+						  "FROM \r\n" +
+						  "通达信上交所股票每日交易信息 \r\n" +   
+						  "LEFT JOIN a股 \r\n" +
+						  "ON 通达信上交所股票每日交易信息.`代码` = a股.股票代码  \r\n" +
+						  "WHERE \r\n" +
+						  "(通达信上交所股票每日交易信息.收盘价 is null or 通达信上交所股票每日交易信息.最低价 is null or 通达信上交所股票每日交易信息.最高价 is null or 通达信上交所股票每日交易信息.开盘价 is null) \r\n" +
+						  "and a股.已退市 is null \r\n" + 
+						  "	AND 交易日期 BETWEEN '" + monday + "' AND ' " + friday + "' \r\n"
+						  ;
+				logger.debug(sqlquerystat);
+				
+			    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    
+			    while(rssh.next()) {
+			    	String stockcode = rssh.getString("代码");
+			    	stockset.add(stockcode);
+			    }
+			} catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+			} catch (SQLException e) {
+		    	e.printStackTrace();
+			}catch(Exception e){
+		    	e.printStackTrace();
+			} finally {
+		    	if(rssh != null)
+				try {
+					rssh.close();
+					rssh = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		   }
+			try { 	
+				String sqlquerystat = "SELECT \r\n" +
+						  "通达信深交所股票每日交易信息.`代码`\r\n" +
+						  "FROM \r\n" +
+						  "通达信深交所股票每日交易信息 \r\n" +   
+						  "LEFT JOIN a股 \r\n" +
+						  "ON 通达信深交所股票每日交易信息.`代码` = a股.股票代码  \r\n" +
+						  "WHERE \r\n" +
+						  "(通达信深交所股票每日交易信息.收盘价 is null or 通达信深交所股票每日交易信息.最低价 is null or 通达信深交所股票每日交易信息.最高价 is null or 通达信深交所股票每日交易信息.开盘价 is null) \r\n" +
+						  "and a股.已退市 is null \r\n" + 
+						  "	AND 交易日期 BETWEEN '" + monday + "' AND ' " + friday + "' \r\n"
+						  ;
+				logger.debug(sqlquerystat);
+				
+			    rssh = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    
+			    while(rssh.next()) {
+			    	String stockcode = rssh.getString("代码");
+			    	stockset.add(stockcode);
+			    }
+			} catch(java.lang.NullPointerException e) { 
+		    	e.printStackTrace();
+			} catch (SQLException e) {
+		    	e.printStackTrace();
+			}catch(Exception e){
+		    	e.printStackTrace();
+			} finally {
+		    	if(rssh != null)
+				try {
+					rssh.close();
+					rssh = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		   }
+			for(String stockcode : stockset) {
+				try {
+					String checkresult = "注意：个股" + stockcode + "交易数据通达信数据部分有NULL数据"; 
+					Files.append(checkresult + System.getProperty("line.separator"),filefmxx, charset);
+				 } catch (IOException e) {
+						e.printStackTrace();
+				 }
+		}
+		
+			
+//		早期代码有错误，导致板块和个股的对应关系中可能出现重复， 
+		checkImportTDXDataDuplicateError(filefmxx);
+		
+		return 	filefmxx;
+	}
 		/*
 		 * check股票每日数据是否完整
 		 */
-		public HashSet<String> checkStockDataIsCompleted() 
+		private HashSet<String> checkStockDataIsCompleted() 
 		{
 			HashSet<String> stockset = new HashSet<String>(); 
 			CachedRowSetImpl  rssh = null;

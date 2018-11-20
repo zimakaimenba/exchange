@@ -164,7 +164,8 @@ public class StockGivenPeriodDataItem extends OHLCItem
 	public Double getCjeZhanBi()  
 	{
 		try {
-			return this.myownchengjiaoer/this.uplevelchengjiaoer;
+			Double zhanbi = this.myownchengjiaoer/this.uplevelchengjiaoer; 
+			return zhanbi;
 		} catch (java.lang.NullPointerException e) {
 			return null;
 		}

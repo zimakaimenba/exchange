@@ -168,7 +168,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
         	        String selectedtooltip = xyitem.getToolTipText();
         	        
         	        setCurSelectedBarInfo (columnkey,selectedtooltip);
-        	        highLightSpecificBarColumn (columnkey);
+//        	        highLightSpecificBarColumn (columnkey);
 
         	        selectchanged = true;
     	    	} catch ( java.lang.ClassCastException e ) {

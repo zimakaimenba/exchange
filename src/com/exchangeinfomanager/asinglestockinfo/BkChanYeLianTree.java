@@ -39,6 +39,9 @@ import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
+/*
+ * 系统维护2棵树，1个是所有板块和个股在一颗树上。第二个树父节点是板块，下面是属于该板块的所有个股。
+ */
 public class BkChanYeLianTree extends JTree 
 {
 	public BkChanYeLianTree (BkChanYeLianTreeNode bkcylrootnode,String treeid)

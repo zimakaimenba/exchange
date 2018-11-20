@@ -186,27 +186,29 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
         super.displayedcolorindex = Color.orange;
     }
 
-	public Paint getItemPaint(final int row, final int column) 
-    {
-		GradientPaint gp2 = new GradientPaint( //当交易周交易日不是5天的话，特俗颜色
-	            0.0f, 0.0f, super.displayedcolorindex, 
-	            0.0f, 0.0f, new Color(64, 0, 0)
-	        );
-	 
-		 CategoryPlot plot = getPlot ();
-	     CategoryDataset dataset = plot.getDataset();
-		 String selected =  dataset.getColumnKey(column).toString();
-	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-	     
-	     Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
-     
-        if(column == shouldcolumn) {
-          return Color.blue;
-        } else if(exchangesdaynumber != 5) //如果不是一个完整交易周，颜色特俗显示
-        	return gp2;
-        else 
-        	return super.displayedcolorindex;
-   }
+//	public Paint getItemPaint(final int row, final int column) 
+//    {
+//		GradientPaint gp2 = new GradientPaint( //当交易周交易日不是5天的话，特俗颜色
+//	            0.0f, 0.0f, super.displayedcolorindex, 
+//	            0.0f, 0.0f, new Color(64, 0, 0)
+//	        );
+//	 
+//		 CategoryPlot plot = getPlot ();
+//	     CategoryDataset dataset = plot.getDataset();
+//		 String selected =  dataset.getColumnKey(column).toString();
+//	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+//	     
+//	     Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
+//     
+//	    if(column == super.shouldcolumnlast)
+//		   	return Color.blue.darker();
+//		else if(column == shouldcolumn) {
+//	    	return new Color (51,153,255);
+//        } else if(exchangesdaynumber != 5) //如果不是一个完整交易周，颜色特俗显示
+//        	return gp2;
+//        else 
+//        	return super.displayedcolorindex;
+//   }
     public Paint getItemLabelPaint(final int row, final int column)
     {
     	CategoryPlot plot = getPlot ();

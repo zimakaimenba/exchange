@@ -33,7 +33,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	}
 	
 //	String[] jtableTitleStrings = { "代码", "名称","权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
-	String[] jtableTitleStrings = { "代码", "名称","权重","流通市值排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
+	String[] jtableTitleStrings = { "代码", "名称","权重","高级排序排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
 	BanKuai curbk;
 	private ArrayList<StockOfBanKuai> entryList;
 	private LocalDate showwknum;
@@ -61,15 +61,41 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
     	
     	this.fireTableDataChanged();
 	}
-
+	/*
+	 * 
+	 */
+	public void sortTableByLiuTongShiZhi ()
+	{
+		Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,period) );
+		
+		this.fireTableDataChanged();
+	}
+	public void sortTableByZongShiZhi ()
+	{
+		
+	}
+	public void sortTableByChenJiaoEr ()
+	{
+		Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,period) );
+		this.fireTableDataChanged();
+	}
+	/*
+	 * 
+	 */
 	public String[] getTableHeader ()
 	{
 		return this.jtableTitleStrings;
 	}
+	/*
+	 * 
+	 */
 	public BanKuai getCurDispalyBandKuai ()
 	{
 		return this.curbk;
 	}
+	/*
+	 * 
+	 */
 	public int getStockCurWeight(int rowIndex) 
 	{
 		int weight = (Integer)this.getValueAt(rowIndex, 2);
@@ -147,8 +173,8 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	
             	break;
             case 3://{ "代码", "名称","权重","流通市值排名",
-            	Integer liutongshizhipaiming = this.entryList.indexOf(curdisplaystockofbankuai) + 1;
-            	value = liutongshizhipaiming;
+            	Integer paiming = this.entryList.indexOf(curdisplaystockofbankuai) + 1;
+            	value = paiming;
             	
 //            	zhanbigrowthrate = null;
 //            	curdisplaystockofbankuai = null;
@@ -400,10 +426,8 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		
 
 }
-
-
 /*
- * 
+ * 按流通市值对个股排序
  */
 class NodeLiuTongShiZhiComparator implements Comparator<StockOfBanKuai> {
 	private String period;
@@ -425,3 +449,4 @@ class NodeLiuTongShiZhiComparator implements Comparator<StockOfBanKuai> {
         return cje2.compareTo(cje1);
     }
 }
+

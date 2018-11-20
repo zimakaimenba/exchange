@@ -25,7 +25,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -294,6 +293,21 @@ public class SystemConfigration
 	 public String getSystemInstalledPath ()
 	 {
 		 return this.systeminstalledpath;
+	 }
+	 /*
+	  * 
+	  */
+	 public String getSavedImageStoredPath ()
+	 {
+		 return this.getSystemInstalledPath() + "/dailydata/savedimage/";
+	 } 
+	 
+	 /*
+	  * 
+	  */
+	 public String getTdxDataImportCheckResult ()
+	 {
+		 return this.getSystemInstalledPath() + "/dailydata/dataimportcheckresult/";
 	 }
 	 /*
 	  * 
