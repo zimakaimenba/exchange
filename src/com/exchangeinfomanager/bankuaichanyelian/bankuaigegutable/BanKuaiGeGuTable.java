@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
@@ -258,16 +259,6 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 				 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
 				 
         		if (arg0.getClickCount() == 1) {
-//        			int row = this.getSelectedRow();
-//					 //int column = tblSearchResult.getSelectedColumn();
-//					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
-//					 String stockcode = ((BanKuaiGeGuTableModel)this.getModel()).getValueAt(model_row, 0).toString().trim();
-//					 try {
-//						 String stockname = ((BanKuaiGeGuTableModel)this.getModel()).getValueAt(model_row, 1).toString().trim();
-//						 pnlGeGuZhanBi.hightlightSpecificSector (stockcode+stockname);
-//					 } catch ( java.lang.NullPointerException e) {
-//						 pnlGeGuZhanBi.hightlightSpecificSector (stockcode);
-//					 }
         		}
         		 if (arg0.getClickCount() == 2) {
 //					 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
@@ -320,14 +311,14 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		}
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		Stock stock = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
+		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
 
 		LocalDate fxdate = ((BanKuaiGeGuTableModel)this.getModel()).getShowCurDate();
 		
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);
 		
-		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( stock,fxdate);
+		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( stockofbankuai.getStock(),fxdate);
     	ggfx.setSize(new Dimension(1400, 800));
     	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
     	ggfx.setLocationRelativeTo(null);
@@ -423,6 +414,12 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		{
 		   model.removeRow(i); 
 		}
+	}
+
+	@Override
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cje, Integer cjemax, Double shoowhsl) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

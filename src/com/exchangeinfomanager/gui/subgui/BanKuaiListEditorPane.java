@@ -4,6 +4,8 @@
 package com.exchangeinfomanager.gui.subgui;
 
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -36,20 +38,22 @@ public class BanKuaiListEditorPane extends JEditorPane
 		this.setContentType("text/html");
 		
 		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
-		
+		selectstring = "";
 		createEvents ();
 		
 	}
 	
 	private String selectstring;
 	private BanKuaiAndChanYeLian2 bkcyl;
+	public static final String URLSELECTED_PROPERTY = "urlselected";
+
 	/*
 	 * 
 	 */
-	public String getSelectedBanKuai ()
-	{
-		return this.selectstring;
-	}
+//	public String getSelectedBanKuai ()
+//	{
+//		return this.selectstring;
+//	}
 	/*
 	 * 
 	 */
@@ -121,28 +125,35 @@ public class BanKuaiListEditorPane extends JEditorPane
 		 ActionMap actionMap = new ActionMap(); 
 	     actionMap.put("openBanKuaiAndChanYeLianDialog", new AbstractAction (){
 			public void actionPerformed(ActionEvent e) {
-					selectstring = null;
 				 	HyperlinkEvent hle = (HyperlinkEvent)e.getSource();
-				 	String link = null;
-			        try{
-			        	Element elem = hle.getSourceElement(); 
-			            Document doc = elem.getDocument(); 
-			            int start = elem.getStartOffset(); 
-			            int end = elem.getEndOffset(); 
-			            link = doc.getText(start, end-start);
-//			            System.out.println(link);
-//			            link = link.equals("contains people") ? "" : link.substring("contains ".length()); 
-			            StringTokenizer stok = new StringTokenizer(link, ", "); 
-			            while(stok.hasMoreTokens()){ 
-			                String token = stok.nextToken(); 
-			            }
-			        } catch(BadLocationException ex){ 
-			            ex.printStackTrace(); 
-			        }
-			        selectstring = link;
+				 	formateHyperLink (hle);
 			}
 	     }); 
+	     
 	     this.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
+	}
+	protected void formateHyperLink(HyperlinkEvent hle) 
+	{
+		String link = null;
+        try{
+        	Element elem = hle.getSourceElement(); 
+            Document doc = elem.getDocument(); 
+            int start = elem.getStartOffset(); 
+            int end = elem.getEndOffset(); 
+            link = doc.getText(start, end-start);
+
+            StringTokenizer stok = new StringTokenizer(link, ", "); 
+            while(stok.hasMoreTokens()){ 
+                String token = stok.nextToken(); 
+            }
+        } catch(BadLocationException ex){ 
+            ex.printStackTrace(); 
+        }
+        if(!selectstring.equals(link.trim())) {
+        	selectstring = link;
+            firePropertyChange(URLSELECTED_PROPERTY, "", link);
+        }
+        
 	}
 }
 

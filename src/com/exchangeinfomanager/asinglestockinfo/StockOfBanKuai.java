@@ -14,8 +14,11 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-
-public class StockOfBanKuai extends Stock
+/*
+ * 板块的个股和普通大盘的个股有少数相似，但不同就在成交量，一个是对板块的成交量，一个是对大盘的成交量。
+ * StockOfBanKuai 不应该有如流通市值，总市值这些属性，应该只有成交量和成交额属性，还有权重，
+ */
+public class StockOfBanKuai extends BkChanYeLianTreeNode
 {
 	public StockOfBanKuai (BanKuai bankuai1,Stock stock1) 
 	{
@@ -121,7 +124,7 @@ public class StockOfBanKuai extends Stock
 		
 	}
 	
-	public class StockOfBanKuaiNodeXPeriodData extends StockNodeXPeriodData
+	public class StockOfBanKuaiNodeXPeriodData extends NodeXPeriodData
 	{
 		public StockOfBanKuaiNodeXPeriodData (String nodeperiodtype1) 
 		{
@@ -166,6 +169,21 @@ public class StockOfBanKuai extends Stock
 				Double cjechange = curcje - lastcje; //个股成交量的变化
 				
 				return cjechange/bkcjediff;
+		}
+		@Override
+		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 }

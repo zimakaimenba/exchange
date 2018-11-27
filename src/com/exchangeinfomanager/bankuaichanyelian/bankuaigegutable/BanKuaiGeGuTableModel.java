@@ -76,8 +76,13 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	}
 	public void sortTableByChenJiaoEr ()
 	{
-		Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,period) );
-		this.fireTableDataChanged();
+		try{
+			Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,period) );
+			this.fireTableDataChanged();
+		} catch (java.lang.NullPointerException e) {
+			logger.debug("表位空，表排序出错");
+		}
+		
 	}
 	/*
 	 * 
@@ -109,7 +114,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		  if(entryList.isEmpty())
 	    		return ;
 		  
-		  Stock stock = entryList.get(row);
+		  StockOfBanKuai stock = entryList.get(row);
 		  String stockcode = stock.getMyOwnCode();
 	      curbk.setGeGuSuoShuBanKuaiWeight(stockcode,newweight);
 		  this.fireTableDataChanged();

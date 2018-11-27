@@ -126,14 +126,14 @@ public class BanKuaiGuanLi extends JDialog
 	/*
 	 * 
 	 */
-	private void commonrules (BkChanYeLianTreeNode node)
-	{
-		if(node.getType() == BanKuaiAndStockBasic.TDXBK) {
-			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL ) || ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL )  ) {
-//				cbxnotgephi.setEnabled(false);
-			}
-		}
-	}
+//	private void commonrules (BkChanYeLianTreeNode node)
+//	{
+//		if(node.getType() == BanKuaiAndStockBasic.TDXBK) {
+//			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL ) || ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL )  ) {
+////				cbxnotgephi.setEnabled(false);
+//			}
+//		}
+//	}
 
 	private void createEvents() 
 	{
@@ -151,49 +151,49 @@ public class BanKuaiGuanLi extends JDialog
 			}
 		});
 		
-		cbxnotgephi.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-			}
-		});
-		cbxnotbkfx.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-			}
-		});
-		cbxnotimport.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent arg0) {
-				if(cbxnotimport.isSelected()) {
-					cbxnotbkfx.setSelected(true);
-					cbxnotgephi.setSelected(true);
-					
-					cbxnotbkfx.setEnabled(false);
-					cbxnotgephi.setEnabled(false);
-				} else {
-					cbxnotbkfx.setEnabled(true);
-					cbxnotgephi.setEnabled(true);
-					
-					buttonapplybksetting.setEnabled(true);
-				}
-				
-			}
-		});
-		
-		buttonapplybksetting.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				int row = tableSysBk.getSelectedRow();
-				int column = tableSysBk.getSelectedColumn();
-				
-				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
-				if(selectnode.getType() == BanKuaiAndStockBasic.TDXBK) {
-					bkdbopt.updateBanKuaiExportGephiBkfxOperation (selectnode.getMyOwnCode(),!cbxnotimport.isSelected(),!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected());
-					((BanKuai)selectnode).setImportdailytradingdata(!cbxnotimport.isSelected());
-					((BanKuai)selectnode).setExporttogehpi(!cbxnotgephi.isSelected());
-					((BanKuai)selectnode).setShowinbkfxgui(!cbxnotbkfx.isSelected());
-					
-					buttonapplybksetting.setEnabled(false);
-				}
-			}
-		});
+//		cbxnotgephi.addItemListener(new ItemListener() {
+//			public void itemStateChanged(ItemEvent e) {
+//			}
+//		});
+//		cbxnotbkfx.addItemListener(new ItemListener() {
+//			public void itemStateChanged(ItemEvent e) {
+//			}
+//		});
+//		cbxnotimport.addItemListener(new ItemListener() {
+//			public void itemStateChanged(ItemEvent arg0) {
+//				if(cbxnotimport.isSelected()) {
+//					cbxnotbkfx.setSelected(true);
+//					cbxnotgephi.setSelected(true);
+//					
+//					cbxnotbkfx.setEnabled(false);
+//					cbxnotgephi.setEnabled(false);
+//				} else {
+//					cbxnotbkfx.setEnabled(true);
+//					cbxnotgephi.setEnabled(true);
+//					
+//					buttonapplybksetting.setEnabled(true);
+//				}
+//				
+//			}
+//		});
+//		
+//		buttonapplybksetting.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) {
+//				int row = tableSysBk.getSelectedRow();
+//				int column = tableSysBk.getSelectedColumn();
+//				
+//				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
+//				if(selectnode.getType() == BanKuaiAndStockBasic.TDXBK) {
+//					bkdbopt.updateBanKuaiExportGephiBkfxOperation (selectnode.getMyOwnCode(),!cbxnotimport.isSelected(),!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected());
+//					((BanKuai)selectnode).setImportdailytradingdata(!cbxnotimport.isSelected());
+//					((BanKuai)selectnode).setExporttogehpi(!cbxnotgephi.isSelected());
+//					((BanKuai)selectnode).setShowinbkfxgui(!cbxnotbkfx.isSelected());
+//					
+//					buttonapplybksetting.setEnabled(false);
+//				}
+//			}
+//		});
 		
 		tableSysBk.addMouseListener(new MouseAdapter() {
 			@Override
@@ -203,31 +203,7 @@ public class BanKuaiGuanLi extends JDialog
 				int column = tableSysBk.getSelectedColumn();
 				
 				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
-				if(selectnode.getType() == BanKuaiAndStockBasic.TDXBK) {
-					cbxnotimport.setEnabled(true);
-					cbxnotbkfx.setEnabled(true);
-					cbxnotgephi.setEnabled(true);
-					buttonapplybksetting.setEnabled(true);
-					
-					cbxnotimport.setSelected(!((BanKuai)selectnode).isImportdailytradingdata());
-					cbxnotbkfx.setSelected(!((BanKuai)selectnode).isShowinbkfxgui());
-					cbxnotgephi.setSelected(!((BanKuai)selectnode).isExporttogehpi());
-					
-					if(cbxnotimport.isSelected()) {
-						cbxnotbkfx.setEnabled(false);
-						cbxnotgephi.setEnabled(false);
-					}
-						
-				} else { //个股，不能设置
-					cbxnotimport.setSelected(false);
-					cbxnotbkfx.setSelected(false);
-					cbxnotgephi.setSelected(false);
-					
-					cbxnotimport.setEnabled(false);
-					cbxnotbkfx.setEnabled(false);
-					cbxnotgephi.setEnabled(false);
-					buttonapplybksetting.setEnabled(false);
-				}
+				panelsetting.setSettingNode(selectnode);
 			}
 		});
 		
@@ -257,13 +233,10 @@ public class BanKuaiGuanLi extends JDialog
 	private AllCurrentTdxBKAndStoksTree allbkstks;
 	private JPanel panelSys;
 	private JTable tableZdy;
-	private JCheckBox cbxnotimport;
-	private JCheckBox cbxnotbkfx;
-	private JCheckBox cbxnotgephi;
-	private JButton buttonapplybksetting;
 	private BkChanYeLianTree cyltree;
 	private BanKuaiAndChanYeLianGUI2 bkcylpnl;
 	private JTextField tfldsearchsysbk;
+	private BanKuaiShuXingSheZhi panelsetting;
 	
 	private void initializeGui()
 	{
@@ -295,14 +268,10 @@ public class BanKuaiGuanLi extends JDialog
 		
 		JScrollPane scrollPanesysbk = new JScrollPane();
 		
-		JScrollPane scrollPane = new JScrollPane();
-		
 		JLabel label = new JLabel("\u901A\u8FBE\u4FE1\u677F\u5757");
 		
-		JLabel label_1 = new JLabel("\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757");
+		panelsetting = new BanKuaiShuXingSheZhi();
 		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new TitledBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, new Color(240, 240, 240), new Color(255, 255, 255), new Color(105, 105, 105), new Color(160, 160, 160)), new LineBorder(new Color(180, 180, 180), 5)), "\u677F\u5757\u5C5E\u6027\u8BBE\u7F6E", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		
 		tfldsearchsysbk = new JTextField();
 		tfldsearchsysbk.setColumns(10);
@@ -316,87 +285,38 @@ public class BanKuaiGuanLi extends JDialog
 				.addGroup(gl_panelSys.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-						.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_panelSys.createSequentialGroup()
-							.addGroup(gl_panelSys.createParallelGroup(Alignment.TRAILING, false)
-								.addGroup(gl_panelSys.createSequentialGroup()
-									.addComponent(tfldsearchsysbk)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnsearchsysbk))
-								.addComponent(label, Alignment.LEADING)
-								.addComponent(scrollPanesysbk, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE))
-							.addGap(17)
-							.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 241, GroupLayout.PREFERRED_SIZE)
-								.addComponent(label_1))))
-					.addContainerGap(1023, Short.MAX_VALUE))
+						.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)
+						.addComponent(panelsetting, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_panelSys.createParallelGroup(Alignment.TRAILING, false)
+							.addGroup(gl_panelSys.createSequentialGroup()
+								.addComponent(tfldsearchsysbk)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnsearchsysbk))
+							.addComponent(label, Alignment.LEADING)))
+					.addContainerGap(1278, Short.MAX_VALUE))
 		);
 		gl_panelSys.setVerticalGroup(
 			gl_panelSys.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panelSys.createSequentialGroup()
-					.addContainerGap(25, Short.MAX_VALUE)
-					.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label)
-						.addComponent(label_1))
+					.addContainerGap(23, Short.MAX_VALUE)
+					.addComponent(label)
 					.addGap(15)
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.BASELINE)
 						.addComponent(tfldsearchsysbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnsearchsysbk))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panelSys.createParallelGroup(Alignment.TRAILING, false)
-						.addComponent(scrollPane)
-						.addComponent(scrollPanesysbk, GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE))
+					.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 582, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+					.addComponent(panelsetting, GroupLayout.PREFERRED_SIZE, 168, GroupLayout.PREFERRED_SIZE)
 					.addGap(11))
 		);
 		
 		cyltree = this.bkcyl.getBkChanYeLianTree();
-		scrollPane.setViewportView(cyltree);
-		
-		cbxnotimport = new JCheckBox("\u4E0D\u5BFC\u5165\u6BCF\u65E5\u4EA4\u6613\u6570\u636E");
 		
 		
-		cbxnotbkfx = new JCheckBox("\u4E0D\u505A\u677F\u5757\u5206\u6790");
-		
-		
-		cbxnotgephi = new JCheckBox("\u4E0D\u5BFC\u51FA\u5230Gephi");
-		
-		
-		buttonapplybksetting = new JButton("\u5E94\u7528");
-		
-		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
-		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(cbxnotbkfx)
-						.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-							.addComponent(cbxnotimport)
-							.addGroup(gl_panel_1.createSequentialGroup()
-								.addComponent(cbxnotgephi)
-								.addGap(40)
-								.addComponent(buttonapplybksetting))))
-					.addGap(19))
-		);
-		gl_panel_1.setVerticalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(cbxnotimport)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(cbxnotbkfx)
-					.addGap(1)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
-						.addComponent(cbxnotgephi)
-						.addComponent(buttonapplybksetting))
-					.addContainerGap(13, Short.MAX_VALUE))
-		);
-		panel_1.setLayout(gl_panel_1);
-		
-		//初始化jtreetable
+//		初始化jtreetable
 		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree());
+//		JTable tableSysBk1 = new JTable();
 		tableSysBk = new JTreeTable(treetablemodel){
 
 			private static final long serialVersionUID = 1L;

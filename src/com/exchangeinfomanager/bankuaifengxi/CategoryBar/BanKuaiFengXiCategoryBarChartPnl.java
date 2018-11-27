@@ -18,12 +18,18 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.entity.CategoryItemEntity;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.Layer;
+import org.jfree.ui.LengthAdjustmentType;
+import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
@@ -62,7 +68,8 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener
+public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel 
+	implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener
 {
 	/**
 	 * 
@@ -81,7 +88,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 		sysconfig = SystemConfigration.getInstance();
 		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
 		
-		bkdbopt = new BanKuaiDbOperation ();
+//		bkdbopt = new BanKuaiDbOperation ();
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
@@ -96,11 +103,12 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 	
 	private SystemConfigration sysconfig;
 	protected int shoulddisplayedmonthnum;
-	private BanKuaiDbOperation bkdbopt;
+//	private BanKuaiDbOperation bkdbopt;
 	
 //	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
 	
 	public static final String SELECTED_PROPERTY = "selected";
+	public static final String MOUSEDOUBLECLICK_PROPERTY = "mousedoubleclick";
 	protected boolean selectchanged;
 	private String tooltipselected;
 	private LocalDate dateselected;
@@ -117,7 +125,50 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
 //		marker.setLabel("热点占比警戒线");
 		marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
 		marker.setPaint(Color.BLACK);
-		plot.addRangeMarker(marker);
+		this.plot.addRangeMarker(marker);
+	}
+	/*
+	 * 区分出bar的年份或者月份
+	 */
+	protected void decorateXaxisWithYearOrMonth (String monthoryear)
+	{
+		CategoryLabelCustomizableCategoryAxis domainAxis = (CategoryLabelCustomizableCategoryAxis)this.plot.getDomainAxis();
+		List<LocalDate> columnlocaldates = barchartdataset.getColumnKeys();
+		for(int i =0 ; i < columnlocaldates.size(); i ++)  {
+			int curyear = columnlocaldates.get(i).getYear();
+			int curmonth = columnlocaldates.get(i).getMonthValue();
+			int lastyear;
+			int lastmonth;
+			try {
+				 lastyear = columnlocaldates.get(i-1).getYear();
+				 lastmonth = columnlocaldates.get(i-1).getMonthValue();
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+				lastyear = curyear;
+				lastmonth = curmonth;
+			}
+			if(curyear != lastyear && monthoryear.toLowerCase().equals("year")) {
+				CategoryMarker marker = new CategoryMarker(columnlocaldates.get(i));  // position is the value on the axis
+				marker.setPaint(Color.RED.brighter());
+				marker.setAlpha(0.5f);
+				marker.setLabelAnchor(RectangleAnchor.TOP);
+				marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
+				marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
+				marker.setLabel(String.valueOf(curyear)); // see JavaDoc for labels, colors, strokes
+				marker.setDrawAsLine(true);
+				this.plot.addDomainMarker(marker,Layer.BACKGROUND);
+			}
+			if(monthoryear.toLowerCase().equals("month") && curmonth != lastmonth ) {
+				CategoryMarker marker = new CategoryMarker(columnlocaldates.get(i));  // position is the value on the axis
+				marker.setPaint(Color.RED.brighter());
+				marker.setAlpha(0.5f);
+				marker.setLabelAnchor(RectangleAnchor.TOP);
+				marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
+				marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
+				marker.setLabel(String.valueOf(curyear + "-" + curmonth)); // see JavaDoc for labels, colors, strokes
+				marker.setDrawAsLine(true);
+				this.plot.addDomainMarker(marker,Layer.BACKGROUND);
+			}
+		}
 	}
 	/*
 	 * 
@@ -161,22 +212,35 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
     	chartPanel.addChartMouseListener(new ChartMouseListener() {
 
     	    public void chartMouseClicked(ChartMouseEvent cme) {
-    	    	try {
-    	    		CategoryItemEntity xyitem = (CategoryItemEntity) cme.getEntity(); // get clicked entity
-//        	        CategoryDataset dataset = xyitem.getDataset(); // get data set
-        	        LocalDate columnkey = LocalDate.parse(xyitem.getColumnKey().toString());
-        	        String selectedtooltip = xyitem.getToolTipText();
-        	        
-        	        setCurSelectedBarInfo (columnkey,selectedtooltip);
-//        	        highLightSpecificBarColumn (columnkey);
+    	    	
+    	    	
+    	    	java.awt.event.MouseEvent me = cme.getTrigger();
+    	    	if (me.getClickCount() == 2) {
+    	    		PropertyChangeEvent evt;
+    	    		if(dateselected != null)
+    	    			evt = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY, "", dateselected.toString() );
+    	    		else
+    	    			evt = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY, "", "MoustDoubleClicked" );
+    	    		
+    	            pcs.firePropertyChange(evt);
+    	    		
+    	    	} else if (me.getClickCount() == 1) {
+    	    		try {
+    	    			CategoryItemEntity xyitem = (CategoryItemEntity) cme.getEntity(); // get clicked entity
+    	    	        LocalDate columnkey = LocalDate.parse(xyitem.getColumnKey().toString());
+            	        String selectedtooltip = xyitem.getToolTipText();
+            	        
+            	        setCurSelectedBarInfo (columnkey,selectedtooltip);
+//            	        highLightSpecificBarColumn (columnkey);
 
-        	        selectchanged = true;
-    	    	} catch ( java.lang.ClassCastException e ) {
-        	        selectchanged = false;
+            	        selectchanged = true;
+        	    	} catch ( java.lang.ClassCastException e ) {
+            	        selectchanged = false;
+        	    	}
+
     	    	}
     	    }
-
-			@Override
+    	    @Override
 			public void chartMouseMoved(ChartMouseEvent arg0) {
 			}
 
@@ -253,10 +317,10 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel implements
     /*
      * 
      */
-	public LocalDate getCurSelectedBarDate ()
-	{
-		return dateselected;
-	}
+//	public LocalDate getCurSelectedBarDate ()
+//	{
+//		return dateselected;
+//	}
 	/*
 	 * 
 	 */
@@ -360,6 +424,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis
         super.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
         super.setLowerMargin(0.01);
         super.setUpperMargin(0.01);
+        super.setAxisLineVisible(false);
     }
     
     public Paint getTickLabelPaint(Comparable category)

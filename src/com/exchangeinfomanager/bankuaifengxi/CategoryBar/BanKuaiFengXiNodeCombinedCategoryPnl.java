@@ -37,7 +37,8 @@ import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeLarge
 import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
-public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener
+public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel 
+		implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener,PropertyChangeListener
 {
 	/**
 	 * Create the panel.
@@ -46,19 +47,32 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	public BanKuaiFengXiNodeCombinedCategoryPnl(String horizonorvertical)
 	{
 //		this.curdisplayednode =  curdisplayednode;
-		if(horizonorvertical.toLowerCase().equals("horizon"))
+		if(horizonorvertical != null && horizonorvertical.toLowerCase().equals("horizon"))
 			this.horizonlayout = true;
 		else 
 			this.horizonlayout = false;
 		
+		initializeSystem ();
+	}
+	public BanKuaiFengXiNodeCombinedCategoryPnl()
+	{
+		this.horizonlayout = false;
+		initializeSystem ();
+	}
+	private void initializeSystem ()
+	{
 		createGui ();
-				
+		
 		chartpanelhighlightlisteners = new HashSet<BarChartPanelHightLightColumnListener> ();
 		chartpanelhighlightlisteners.add(cjelargepnl);
 		chartpanelhighlightlisteners.add(cjezblargepnl);
 		
+		cjelargepnl.addPropertyChangeListener(this);
+		cjezblargepnl.addPropertyChangeListener(this);
+		
 		createEvents();
 	}
+	
 	public static final String SELECTED_PROPERTY = "selected";
 	protected boolean selectchanged;
 	private String tooltipselected;
@@ -68,6 +82,13 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
+	}
+	/*
+	 * 
+	 */
+	public BkChanYeLianTreeNode getCurDisplayedNode ()
+	{
+		return this.curdisplayednode;
 	}
 	/*
 	 * 
@@ -111,15 +132,27 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selecteddate));
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemaxwk,Double showhsl) 
-	{
-		cjezblargepnl.hightLightFxValues(null,cjezbdpmax, null, null,null) ;
-		cjelargepnl.hightLightFxValues(null,null, null, cjemaxwk,null) ;
+	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemaxwk,Double showhsl) {
+		
+	}
+	@Override
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cje, Integer cjemaxwk, Double shoowhsl) {
+		cjezblargepnl.hightLightFxValues(cjezbtoupleveldpmax, cje, cjemaxwk,shoowhsl) ;
+		cjelargepnl.hightLightFxValues(cjezbtoupleveldpmax, cje, cjemaxwk,shoowhsl) ;
+		
 	}
 	@Override
 	public void highLightSpecificBarColumn(Integer columnindex) 
 	{
-		// TODO Auto-generated method stub
+		
+	}
+	/*
+	 * 
+	 */
+	public void resetDate ()
+	{
+		cjezblargepnl.resetDate();
+		cjelargepnl.resetDate();
 	}
 
 	/*
@@ -127,38 +160,57 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
 	 */
 	private void createEvents ()
 	{
-		cjelargepnl.addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			 public void propertyChange(PropertyChangeEvent evt)  
-			 {
-				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-					String selectedinfo = evt.getNewValue().toString();
-                    
-					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-    				
-    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				setCurSelectedBarInfo (datekey,tooltip);
-				}
-			}
-		});
-		cjezblargepnl.addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			 public void propertyChange(PropertyChangeEvent evt)  
-			 {
-				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-					String selectedinfo = evt.getNewValue().toString();
-                    
-					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-    				
-    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				setCurSelectedBarInfo (datekey,tooltip);
-				}
-			}
-		});
+//		this.addPropertyChangeListener(new PropertyChangeListener() {
+//			@Override
+//			 public void propertyChange(PropertyChangeEvent evt)  
+//			 {
+//				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+//					String selectedinfo = evt.getNewValue().toString();
+//                    
+//					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//    				
+//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
+//    				setCurSelectedBarInfo (datekey,tooltip);
+//					
+//				} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
+//					
+//				}
+//			 }
+//		
+//		});
+		
+//		cjelargepnl.addPropertyChangeListener(new PropertyChangeListener() {
+//			@Override
+//			 public void propertyChange(PropertyChangeEvent evt)  
+//			 {
+//				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+//					String selectedinfo = evt.getNewValue().toString();
+//                    
+//					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//    				
+//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
+//    				setCurSelectedBarInfo (datekey,tooltip);
+//				}
+//			}
+//		});
+//		cjezblargepnl.addPropertyChangeListener(new PropertyChangeListener() {
+//			@Override
+//			 public void propertyChange(PropertyChangeEvent evt)  
+//			 {
+//				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+//					String selectedinfo = evt.getNewValue().toString();
+//                    
+//					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//    				
+//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
+//    				setCurSelectedBarInfo (datekey,tooltip);
+//				}
+//			}
+//		});
 	}
-	
 	/*
 	 * 
 	 */
@@ -175,4 +227,26 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel implements BarC
         PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
         pcs.firePropertyChange(evt);
     }
+	@Override
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+			String selectedinfo = evt.getNewValue().toString();
+            if(selectedinfo.equals("test"))
+            	return;
+			LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+			
+			String tooltip = selectedinfo.substring(10,selectedinfo.length());
+			setCurSelectedBarInfo (datekey,tooltip);
+			
+		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
+			String selectedinfo = evt.getNewValue().toString();
+			
+//			PropertyChangeEvent evt2 = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
+	        pcs.firePropertyChange(evt);
+		}
+		
+	}
+
 }

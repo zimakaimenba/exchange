@@ -168,8 +168,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 	@Override
 	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax,Double showhsl) 
 	{
-		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbbkmax);
-		this.barchart.fireChartChanged();//必须有这句
+		
 	}
 	@Override
 	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference, String period) {
@@ -181,6 +180,12 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cje, Integer cjemax, Double shoowhsl) {
+		// TODO Auto-generated method stub
+		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbtoupleveldpmax);
+		this.barchart.fireChartChanged();//必须有这句
+	}
 
 }
 /*
@@ -191,5 +196,6 @@ class CustomMultiCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRende
 	public CustomMultiCategroyRendererForZhanBi ()
 	{
 		super ();
+		super.displayedcolorindex = Color.RED.darker();
 	}
 }

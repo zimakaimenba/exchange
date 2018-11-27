@@ -108,9 +108,9 @@ public class ImportTDXData extends JDialog {
 
 	private void partThatCanImportDuringWork ()
 	{
-		if(cbxtdxdrawing.isSelected()) { //通达信划线数据
-			bkdbopt.refreshTDXDrawingFile ();
-		}
+//		if(cbxtdxdrawing.isSelected()) { //通达信划线数据
+//			bkdbopt.refreshTDXDrawingFile ();
+//		}
 		if(cbximportdzhguquan.isSelected() && cbximportdzhguquan.isEnabled()) { //导入大智慧的个股股权信息
 //			File resulttmpfilesys = bkdbopt.refreshDZHStockGuQuan ();
 			cbximportdzhguquan.setEnabled(false);
@@ -167,7 +167,7 @@ public class ImportTDXData extends JDialog {
 	private void partThatHasBeImportAfterWsork () 
 	{
 		
-		//从通达信foxpro中导入股票的基本面信息,暂时不用，因为还没有用到这些信息
+		//从通达信foxpro中导入股票的基本面信息
 		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
 					try {
 						File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
@@ -288,21 +288,23 @@ public class ImportTDXData extends JDialog {
 			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
 		}
 		//
-		if(ckbxnetease.isSelected()) { //导入网易的股票的数据,主要是换手率/市值等数据，
+		if(ckbxnetease.isSelected() && ckbxnetease.isEnabled()) { //导入网易的股票的数据,主要是换手率/市值等数据，
 			bkdbopt.importNetEaseStockData ();
+			
+//			//从网络上导入数据后，有可能某些数据还是不能从网上得到，没办法了，只能手工从东方财富里面导出
+//			HashSet<String> missingdatastockset = bkdbopt.checkStockDataIsCompleted();
+//			if(!missingdatastockset.isEmpty()) {
+//				int exchangeresult = JOptionPane.showConfirmDialog(null, "从网易导入的数据不完整，请从东方财富下载完整数据后从文件直接导入。","导入不完整", JOptionPane.OK_CANCEL_OPTION);
+//	      		if(exchangeresult == JOptionPane.CANCEL_OPTION) 
+//	      			return;
+//	      		else {
+//	      			importEastMoneyExportFile ();
+//	      		}
+//			}
+//			missingdatastockset = null;
 		}
 		
-		//从网络上导入数据后，有可能某些数据还是不能从网上得到，没办法了，只能手工从东方财富里面导出
-		HashSet<String> missingdatastockset = bkdbopt.checkStockDataIsCompleted();
-		if(!missingdatastockset.isEmpty()) {
-			int exchangeresult = JOptionPane.showConfirmDialog(null, "从网易导入的数据不完整，请从东方财富下载完整数据后从文件直接导入。","导入不完整", JOptionPane.OK_CANCEL_OPTION);
-      		if(exchangeresult == JOptionPane.CANCEL_OPTION) 
-      			return;
-      		else {
-      			importEastMoneyExportFile ();
-      		}
-		}
-		missingdatastockset = null;
+
 		
 //		if(ckbxtushare.isSelected()) { //导入TUSHARE的数据
 //			String pythoninterpreter = sysconfig.getPythonInterpreter();
@@ -394,7 +396,6 @@ public class ImportTDXData extends JDialog {
 						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()
 						&& !cbximportdzhguquan.isSelected()
 						&& !ckbxnetease.isSelected() 
-						&& !cbxtdxdrawing.isSelected()
 						) {
 					JOptionPane.showMessageDialog(null,"请选择需要导入的项目！");
 					return;
@@ -420,11 +421,13 @@ public class ImportTDXData extends JDialog {
 				
 				lblstatus.setText("同步结束");
 				
-				int exchangeresult = JOptionPane.showConfirmDialog(null, "数据导入完成！是否检查数据一致性？","导入完成", JOptionPane.OK_CANCEL_OPTION);
+				int exchangeresult = JOptionPane.showConfirmDialog(null, "数据导入完成！是否检查数据导入完整性？","导入完成", JOptionPane.OK_CANCEL_OPTION);
 	      		if(exchangeresult == JOptionPane.CANCEL_OPTION) 
 	      			return;
-	      		else
+	      		else {
 	      			checkDataSyncResult ();
+	      		}
+	      			
 	      		
 			}
 		});
@@ -433,9 +436,9 @@ public class ImportTDXData extends JDialog {
 
 	protected void checkDataSyncResult() 
 	{
-		File synccheckresult = bkdbopt.checkImportTDXDataSync ();
+		File synccheckresult = bkdbopt.checkTDXDataImportIsCompleted ();
 		if(synccheckresult != null) {
-			int exchangeresult = JOptionPane.showConfirmDialog(null, "同步通达信数据一致性检查完成，请在" + synccheckresult.getAbsolutePath() + "下查看！是否打开该目录？","检查完毕", JOptionPane.OK_CANCEL_OPTION);
+			int exchangeresult = JOptionPane.showConfirmDialog(null, "同步通达信数据完整性检查完成，请在" + synccheckresult.getAbsolutePath() + "下查看！是否打开该目录？","检查完毕", JOptionPane.OK_CANCEL_OPTION);
       		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
       				return;
       		  try {
@@ -445,8 +448,10 @@ public class ImportTDXData extends JDialog {
       		  } catch (IOException e1) {
       				e1.printStackTrace();
       		  }
-		} else
-			JOptionPane.showMessageDialog(null, "通达信数据完整！","Warning", JOptionPane.WARNING_MESSAGE);
+		} else {
+//			JOptionPane.showMessageDialog(null, "通达信数据完整！","Warning", JOptionPane.WARNING_MESSAGE);
+		}
+			
 	}
 
 	private final JPanel contentPanel = new JPanel();
@@ -473,7 +478,6 @@ public class ImportTDXData extends JDialog {
 	private JComboBox cbximportoptions;
 	private JCheckBox cbximporttime;
 	private JLabel lblstatus;
-	private JCheckBox cbxtdxdrawing;
 	
 	private void initializeGui() 
 	{
@@ -521,21 +525,17 @@ public class ImportTDXData extends JDialog {
 		ckbxnetease = new JCheckBox("\u5BFC\u5165\u7F51\u6613\u8D22\u7ECF\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F\uFF08\u6362\u624B\u7387/\u5E02\u503C\u7B49\uFF09");
 		
 		cbximportoptions = new JComboBox();
+		cbximportoptions.setEnabled(false);
 		cbximportoptions.setModel(new DefaultComboBoxModel(new String[] {"\u5982\u679C\u7F51\u6613\u6570\u636E\u83B7\u53D6\u5931\u8D25\uFF0C\u5219\u4ECE\u5176\u4ED6\u6570\u636E\u6E90\u83B7\u53D6\u6570\u636E", "\u5982\u679C\u7F51\u6613\u6570\u636E\u83B7\u53D6\u5931\u8D25\uFF0C\u76F4\u63A5\u5BFC\u5165\u4E1C\u65B9\u8D22\u5BCC\u6BCF\u65E5\u81EA\u4E0B\u8F7D\u6570\u636E"}));
 		
 		lblstatus = new JLabel("New label");
-		
-		cbxtdxdrawing = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u5212\u7EBF\u6570\u636E");
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(cbximportdzhguquan)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(cbxtdxdrawing))
+						.addComponent(cbximportdzhguquan)
 						.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
 							.addComponent(chbxdaorutdxzdybk)
 							.addGap(291)
@@ -573,7 +573,7 @@ public class ImportTDXData extends JDialog {
 								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
 								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))
 							.addGap(75))
-						.addComponent(lblstatus, GroupLayout.PREFERRED_SIZE, 489, GroupLayout.PREFERRED_SIZE))
+						.addComponent(lblstatus, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 489, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		gl_contentPanel.setVerticalGroup(
@@ -613,11 +613,9 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(ckbxnetease)
 						.addComponent(cbximportoptions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(9)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(cbximportdzhguquan)
-						.addComponent(cbxtdxdrawing))
-					.addGap(18)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(cbximportdzhguquan)
+					.addGap(22)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 214, GroupLayout.PREFERRED_SIZE)
 					.addGap(17)
 					.addComponent(lblstatus))

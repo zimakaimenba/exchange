@@ -32,6 +32,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
 
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
@@ -359,7 +360,10 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 		taraTur = new JTextArea();
 		scrollPane_2.setViewportView(taraTur);
 		contentPanel.setLayout(gl_contentPanel);
+		
+
 	}
+
 }
 
 

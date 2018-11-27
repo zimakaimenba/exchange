@@ -35,7 +35,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	protected NodeXPeriodDataBasic nodexdata;
 	protected Color displayedcolorindex;
 	/*
-	 * 
+	 * 单个个股用这个
 	 */
 	public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
     {
@@ -91,8 +91,13 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	     CategoryDataset dataset = plot.getDataset();
 		 String selected =  dataset.getColumnKey(column).toString();
 	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-
-	    Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
+	     
+	     Integer exchangesdaynumber = 5;
+	     try{
+	    	 exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
+	     } catch (java.lang.NullPointerException e) {
+	    	 exchangesdaynumber = 5;
+	     }
 		 
 	    if(column == shouldcolumnlast)
 	    	return Color.blue.darker();

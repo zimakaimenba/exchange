@@ -453,20 +453,38 @@ public class StockInfoManager
 			}
 		});
 		
-		editorpansuosubk.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				String selbk = editorpansuosubk.getSelectedBanKuai();
-				String selbkcode;
-				if(selbk != null)
-					selbkcode = selbk.trim().substring(1, 7);
-				else
-					return;
-				
-				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), StockGivenPeriodDataItem.WEEK);
-				editorPanenodeinfo.displayNodeAllInfo(bankuai);
-			}
+		editorpansuosubk.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+            	if (evt.getPropertyName().equals(BanKuaiListEditorPane.URLSELECTED_PROPERTY)) {
+            		String selbk = evt.getNewValue().toString();
+            		String selbkcode;
+            		if(selbk != null)
+    					selbkcode = selbk.trim().substring(1, 7);
+    				else
+    					return;
+    				
+    				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), StockGivenPeriodDataItem.WEEK);
+    				editorPanenodeinfo.displayNodeAllInfo(bankuai);
+            		
+            	}
+            }
 		});
+
+//		editorpansuosubk.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				String selbk = editorpansuosubk.getSelectedBanKuai();
+//				String selbkcode;
+//				if(selbk != null)
+//					selbkcode = selbk.trim().substring(1, 7);
+//				else
+//					return;
+//				
+//				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), StockGivenPeriodDataItem.WEEK);
+//				editorPanenodeinfo.displayNodeAllInfo(bankuai);
+//			}
+//		});
 		
 		menuItembkfx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
@@ -2357,6 +2375,17 @@ public class StockInfoManager
 		
 		JPanel panelStatusBar = new JPanel();
 		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		
+		editorpansuosubk = new BanKuaiListEditorPane ();
+		
+		editorpansuosubk.setPreferredSize(new Dimension(200,30));
+		//txaBanKuai.setEditorKit(new WrapEditorKit());
+		//txaBanKuai.setLineWrap(true);
+//		editorpansuosubk.setEditable(false);
+//		editorpansuosubk.setContentType("text/html");
+		scrollPane_1.setViewportView(editorpansuosubk);
+		
 		sclpaneJtable = new JScrollPane();
 		
 		tblzhongdiangz = new JTable(){
@@ -2711,16 +2740,7 @@ public class StockInfoManager
 		tfdJingZhengDuiShou.setEnabled(false);
 		tfdJingZhengDuiShou.setColumns(10);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
 		
-		editorpansuosubk = new BanKuaiListEditorPane ();
-		
-		editorpansuosubk.setPreferredSize(new Dimension(200,30));
-		//txaBanKuai.setEditorKit(new WrapEditorKit());
-		//txaBanKuai.setLineWrap(true);
-//		editorpansuosubk.setEditable(false);
-//		editorpansuosubk.setContentType("text/html");
-		scrollPane_1.setViewportView(editorpansuosubk);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);

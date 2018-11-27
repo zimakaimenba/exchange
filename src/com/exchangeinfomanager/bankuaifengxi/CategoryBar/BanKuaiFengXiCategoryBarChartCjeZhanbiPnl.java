@@ -65,8 +65,8 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
         BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
         plot.setDataset(1, linechartdataset);
         plot.setRenderer(1, linerenderer);
-        ValueAxis rangeAxis2 = new NumberAxis("");
-        plot.setRangeAxis(1, rangeAxis2);
+//        ValueAxis rangeAxis2 = new NumberAxis("");
+//        plot.setRangeAxis(1, rangeAxis2);
         
         // change the rendering order so the primary dataset appears "behind" the 
         // other datasets...
@@ -74,54 +74,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartCjeZhanbiPnl.class);
-	/*
-	 * 
-	 */
-//	public void updateConditionMatchData1 (BkChanYeLianTreeNode node, String period,TimeSeries matchdata)
-//	{
-//		super.barchart.setNotify(false);
-//		
-//		if(linechartdataset != null)
-//			linechartdataset.clear();
-//		
-//		int maxnum = 0;
-//		if(node.getType() == BanKuaiAndStockBasic.TDXBK ) {
-//			DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
-//			
-//			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
-//			LocalDate tmpdate = nodexdata.getRecordsStartDate();
-//			LocalDate dataenddate = nodexdata.getRecordsEndDate();
-//			
-//			do  {
-//				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
-//				TimeSeriesDataItem cjerecord = matchdata.getDataItem(tmpwk);
-//				tmpwk = null;
-//				if(cjerecord != null) {
-//					int matchnum = cjerecord.getValue().intValue();
-//					linechartdataset.setValue(matchnum,"matchnumber",tmpdate.with(DayOfWeek.FRIDAY));
-//					
-//					if(matchnum > maxnum)
-//						maxnum = matchnum; 
-//				} else {
-//					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
-//						linechartdataset.setValue(0.0,"matchnumber",tmpdate);
-//					} 
-//				}
-//				
-//				if(period.equals(StockGivenPeriodDataItem.WEEK))
-//					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-//				else if(period.equals(StockGivenPeriodDataItem.DAY))
-//					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-//				else if(period.equals(StockGivenPeriodDataItem.MONTH))
-//					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
-//				
-//			} while (tmpdate.isBefore( dataenddate ) || tmpdate.isEqual(dataenddate ));
-//		}
-//		
-//		super.plot.getRangeAxis(1).setRange(0,maxnum *1.5);
-//		
-//		super.barchart.setNotify(true);
-//	}
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode, java.time.LocalDate, int, java.lang.String)
@@ -227,15 +179,26 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		} catch (java.lang.IllegalArgumentException e) {
 			e.printStackTrace();
 		}
+		
+		super.decorateXaxisWithYearOrMonth("month".trim());
 	}
 	/*
 	 * 
 	 */
 	@Override
-	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax,Double showhsl) 
+	public void hightLightFxValues(Integer cjezbdporbkmax, Double cje, Integer cjemax,Double showhsl) 
 	{
-		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbbkmax);
-		this.barchart.fireChartChanged();//必须有这句
+		if(cjezbdporbkmax != null) {
+			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbdporbkmax);
+			this.barchart.fireChartChanged();//必须有这句
+		}
+		
+	}
+	@Override
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Integer cjezbtouplevelbkmax, Double cje, Integer cjemax,
+			Double shoowhsl) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

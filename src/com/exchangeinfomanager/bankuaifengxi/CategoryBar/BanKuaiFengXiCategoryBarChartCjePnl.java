@@ -163,6 +163,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		}
 	
 		setPanelTitle ("成交额",enddate);
+		super.decorateXaxisWithYearOrMonth("month".trim());
 	}
 	/*
 	 * 
@@ -170,8 +171,16 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	@Override
 	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax,Double showhsl) 
 	{
-		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemax);
-		this.barchart.fireChartChanged();//必须有这句
+		
+	}
+	@Override
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cje, Integer cjemaxwk, Double shoowhsl) {
+		// TODO Auto-generated method stub
+		if(cjemaxwk != null) {
+			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemaxwk);
+			this.barchart.fireChartChanged();//必须有这句
+		}
+		
 	}
 }
 

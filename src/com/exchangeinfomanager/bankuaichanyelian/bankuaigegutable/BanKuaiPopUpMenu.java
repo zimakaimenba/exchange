@@ -30,6 +30,7 @@ public abstract class BanKuaiPopUpMenu extends JPopupMenu
 	
 	protected JMenuItem menuItemAddNews;
 	protected JMenuItem menuItemAddToGz;
+	protected JMenuItem menuItemSetting;
 //	private JMenuItem menuItemMakeLongTou;
 	protected BanKuaiDbOperation bkdbopt;
 //	private BanKuaiAndChanYeLian bkcyl;
@@ -49,11 +50,13 @@ public abstract class BanKuaiPopUpMenu extends JPopupMenu
 	{
 		menuItemAddNews = new JMenuItem("添加新闻");
 		menuItemAddToGz = new JMenuItem("板块分析");
+		menuItemSetting = new JMenuItem("板块设置");
 //		menuItemMakeLongTou = new JMenuItem("标记热点板块");
 		
 		this.add(menuItemAddNews);
-//		this.add(menuItemMakeLongTou);
 		this.add(menuItemAddToGz);
+		this.add(menuItemSetting);
+		
 	}
 	/*
 	 * 
