@@ -2683,9 +2683,11 @@ public class BanKuaiDbOperation
 	 */
 	private HashMap<String,String> getActionRelatedTables (BanKuai bankuai,String stockcode)
 	{
-		String bkcode = bankuai.getMyOwnCode();
+		
 		HashMap<String,String> actiontables = new HashMap<String,String> ();
-		if(!Strings.isNullOrEmpty(bkcode)) {
+		if(bankuai != null) {
+			String bkcode = bankuai.getMyOwnCode();
+			
 			String stockvsbktable =null;
 				if(stockvsbktable == null) {	
 					CachedRowSetImpl rs = null;
@@ -3168,18 +3170,18 @@ public class BanKuaiDbOperation
 	/*
 	 * 股票对板块的按周占比
 	 */
-	public StockOfBanKuai getGeGuZhanBiOfBanKuai(BanKuai bkcode, StockOfBanKuai stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+	public StockOfBanKuai getGeGuZhanBiOfBanKuai(BanKuai bankuai, StockOfBanKuai stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
 		if(period.equals(StockGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
 		else if(period.equals(StockGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
-		NodeXPeriodDataBasic nodedayperioddata = bkcode.getStockXPeriodDataForABanKuai(stock.getMyOwnCode(),period);
+		NodeXPeriodDataBasic nodedayperioddata = bankuai.getStockXPeriodDataForABanKuai(stock.getMyOwnCode(),period);
 		
 		String stockcode = stock.getMyOwnCode();
 		
-		HashMap<String, String> actiontables = this.getActionRelatedTables(bkcode,stockcode);
+		HashMap<String, String> actiontables = this.getActionRelatedTables(bankuai,stockcode);
 		String stockvsbktable = actiontables.get("股票板块对应表");
 		String bkcjetable = actiontables.get("板块每日交易量表");
 		String gegucjetable = actiontables.get("股票每日交易量表");
@@ -3208,7 +3210,7 @@ public class BanKuaiDbOperation
 				"		and Date(" +  gegucjetable    + ".`交易日期`) >= Date(" +  stockvsbktable + ".`加入时间`)\r\n" + 
 				"		and " +  gegucjetable    + ".`交易日期` <  ifnull(" +  stockvsbktable + ".`移除时间`, '2099-12-31')\r\n" + 
 				"		and " +  gegucjetable    + ".`交易日期` BETWEEN  '" +  formatedstartdate + "' AND '" +  formatedenddate + "'\r\n" + 
-				"		and " +  stockvsbktable + ".`板块代码` =  '"  + bkcode +"'\r\n" + 
+				"		and " +  stockvsbktable + ".`板块代码` =  '"  + bankuai.getMyOwnCode() +"'\r\n" + 
 				"		and " +  stockvsbktable + ".`股票代码` = '"+ stockcode +"'\r\n" + 
 				"         \r\n" + 
 				"group by year(" +  gegucjetable    + ".`交易日期`) ,week(" +  gegucjetable    + ".`交易日期`) , \r\n" + 
@@ -3224,7 +3226,7 @@ public class BanKuaiDbOperation
 				"from " +  bkcjetable + ", " + bknametable + "\r\n" + 
 				"where " +  bkcjetable + ".`代码` = " + bknametable  + ".`板块ID`\r\n" + 
 				"		and " +  bkcjetable + ".`交易日期` BETWEEN '" +  formatedstartdate + "' AND '" +  formatedenddate + "'\r\n" + 
-				"		and " +  bkcjetable + ".`代码` =  '"  + bkcode + "'\r\n" + 
+				"		and " +  bkcjetable + ".`代码` =  '"  + bankuai.getMyOwnCode() + "'\r\n" + 
 				"group by year(" +  bkcjetable + ".`交易日期`), week(" +  bkcjetable + ".`交易日期`)," +  bkcjetable + ".`代码`\r\n" + 
 				"order by year(" +  bkcjetable + ".`交易日期`), week(" +  bkcjetable + ".`交易日期`), " +  bkcjetable + ".`代码`) Z \r\n" + 
 				"         \r\n" + 
@@ -3235,7 +3237,7 @@ public class BanKuaiDbOperation
 		 }
 //		logger.debug(sqlquerystat);
 		try{
-			logger.debug("为个股" + stock.getMyOwnCode()  + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bkcode + "的占比数据！");
+			logger.debug("为个股" + stock.getMyOwnCode()  + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bankuai.getMyOwnCode() + "的占比数据！");
 		} catch (java.lang.NullPointerException e) {
 			
 		}
@@ -3433,22 +3435,33 @@ public class BanKuaiDbOperation
 	/*
 	 * 获取个股或板块某时间段的日线走势
 	 */
-	public Stock getNodeKXianZouShi(Stock stock, LocalDate nodestartday, LocalDate nodeendday, String period) 
+	public BkChanYeLianTreeNode getNodeKXianZouShi(BkChanYeLianTreeNode bkorstock, LocalDate nodestartday, LocalDate nodeendday, String period) 
 	{//本函数初始是开发为日周期的K线数据，
 		if(period.equals(StockGivenPeriodDataItem.WEEK)) //调用周线查询函数
 			; 
 		else if(period.equals(StockGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
-		NodeXPeriodDataBasic nodedayperioddata = stock.getNodeXPeroidData(period);
+		HashMap<String, String> actiontables;
+		String searchtable = null;
+		if(bkorstock.getType() == BanKuaiAndStockBasic.TDXBK) {
+			actiontables = this.getActionRelatedTables ((BanKuai)bkorstock,null);
+			searchtable = actiontables.get("板块每日交易量表");
+		} else if(bkorstock.getType() == BanKuaiAndStockBasic.TDXGG) {
+			actiontables = this.getActionRelatedTables (null,bkorstock.getMyOwnCode());
+			searchtable = actiontables.get("股票每日交易量表");
+		}
 		
-		String nodecode = stock.getMyOwnCode();
-		String jys = stock.getSuoShuJiaoYiSuo();
-		String searchtable;
-		if(jys.toLowerCase().equals("sh"))
-			searchtable = "通达信上交所股票每日交易信息";
-		else
-			searchtable = "通达信深交所股票每日交易信息";
+		
+		NodeXPeriodDataBasic nodedayperioddata = bkorstock.getNodeXPeroidData(period);
+		
+		String nodecode = bkorstock.getMyOwnCode();
+//		String jys = bkorstock.getSuoShuJiaoYiSuo();
+//		String searchtable;
+//		if(jys.toLowerCase().equals("sh"))
+//			searchtable = "通达信上交所股票每日交易信息";
+//		else
+//			searchtable = "通达信深交所股票每日交易信息";
 		
 		String sqlquerystat = "SELECT *  FROM " + searchtable + " \r\n" + 
 				"WHERE 代码='" + nodecode + "'" + "\r\n" + 
@@ -3495,7 +3508,7 @@ public class BanKuaiDbOperation
 			searchtable = null;
 		}
 
-		return stock;
+		return bkorstock;
 	}
 	
 	/*

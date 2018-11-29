@@ -163,7 +163,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		}
 	
 		setPanelTitle ("³É½»¶î",enddate);
-		super.decorateXaxisWithYearOrMonth("month".trim());
+		super.decorateXaxisWithYearOrMonth("year".trim());
 	}
 	/*
 	 * 

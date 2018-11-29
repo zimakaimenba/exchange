@@ -50,10 +50,10 @@ public class BanKuaiListEditorPane extends JEditorPane
 	/*
 	 * 
 	 */
-//	public String getSelectedBanKuai ()
-//	{
-//		return this.selectstring;
-//	}
+	public void resetSelectedBanKuai ()
+	{
+		this.selectstring = "";
+	}
 	/*
 	 * 
 	 */

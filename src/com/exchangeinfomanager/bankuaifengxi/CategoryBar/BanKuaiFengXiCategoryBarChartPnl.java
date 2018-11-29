@@ -99,7 +99,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected DefaultCategoryDataset barchartdataset ;
 	protected DefaultCategoryDataset linechartdataset;
 	protected JFreeChart barchart;
-//	private ArrayList<JiaRuJiHua> selectedfxjg;
+	private List<CategoryMarker> categorymarkerlist;
 	
 	private SystemConfigration sysconfig;
 	protected int shoulddisplayedmonthnum;
@@ -132,7 +132,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	 */
 	protected void decorateXaxisWithYearOrMonth (String monthoryear)
 	{
-		CategoryLabelCustomizableCategoryAxis domainAxis = (CategoryLabelCustomizableCategoryAxis)this.plot.getDomainAxis();
+//		CategoryLabelCustomizableCategoryAxis domainAxis = (CategoryLabelCustomizableCategoryAxis)this.plot.getDomainAxis();
 		List<LocalDate> columnlocaldates = barchartdataset.getColumnKeys();
 		for(int i =0 ; i < columnlocaldates.size(); i ++)  {
 			int curyear = columnlocaldates.get(i).getYear();
@@ -148,7 +148,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			}
 			if(curyear != lastyear && monthoryear.toLowerCase().equals("year")) {
 				CategoryMarker marker = new CategoryMarker(columnlocaldates.get(i));  // position is the value on the axis
-				marker.setPaint(Color.RED.brighter());
+				marker.setPaint(Color.gray);
 				marker.setAlpha(0.5f);
 				marker.setLabelAnchor(RectangleAnchor.TOP);
 				marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
@@ -156,17 +156,19 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 				marker.setLabel(String.valueOf(curyear)); // see JavaDoc for labels, colors, strokes
 				marker.setDrawAsLine(true);
 				this.plot.addDomainMarker(marker,Layer.BACKGROUND);
+				this.categorymarkerlist.add(marker);
 			}
 			if(monthoryear.toLowerCase().equals("month") && curmonth != lastmonth ) {
 				CategoryMarker marker = new CategoryMarker(columnlocaldates.get(i));  // position is the value on the axis
-				marker.setPaint(Color.RED.brighter());
+				marker.setPaint(Color.gray);
 				marker.setAlpha(0.5f);
 				marker.setLabelAnchor(RectangleAnchor.TOP);
 				marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
 				marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
-				marker.setLabel(String.valueOf(curyear + "-" + curmonth)); // see JavaDoc for labels, colors, strokes
+				marker.setLabel(String.valueOf(String.valueOf(curyear).substring(2, 4) + "-" + curmonth)); // see JavaDoc for labels, colors, strokes
 				marker.setDrawAsLine(true);
 				this.plot.addDomainMarker(marker,Layer.BACKGROUND);
+				this.categorymarkerlist.add(marker);
 			}
 		}
 	}
@@ -201,7 +203,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		if(barchartdataset != null)
 			barchartdataset.clear();
 		
-		chartPanel.removeAll();
+		this.chartPanel.removeAll();
+		
+		for(CategoryMarker marker : this.categorymarkerlist) {
+			this.plot.removeDomainMarker(marker);
+		}
+		this.categorymarkerlist.clear();
+		
 		this.barchart.fireChartChanged();//必须有这句
 	}
    /*
@@ -405,6 +413,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		mntmFenXiJiLu = new JMenuItem("分析记录");
 //		popupMenu.add(mntmNewMenuItem);
 		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
+		
+		this.categorymarkerlist = new ArrayList<> ();
    }
  
     

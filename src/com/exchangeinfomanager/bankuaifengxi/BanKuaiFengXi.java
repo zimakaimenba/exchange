@@ -573,6 +573,10 @@ public class BanKuaiFengXi extends JDialog {
 		
 		ckboxparsefile.setSelected(false);
 		tfldparsedfile.setText("");
+		
+		paneldayCandle.resetDate();
+		
+		editorPanebankuai.resetSelectedBanKuai ();
 	}
 	private void clearTheGuiBeforDisplayNewInfoSection2 ()
 	{
@@ -605,6 +609,8 @@ public class BanKuaiFengXi extends JDialog {
     	menuItemliutong.setText("X 按流通市值排名");
     	
 		editorPanenodeinfo.setText("");
+		
+		
 	}
 	private void clearTheGuiBeforDisplayNewInfoSection3 ()
 	{
@@ -614,7 +620,7 @@ public class BanKuaiFengXi extends JDialog {
 		panelggdpcjlwkzhanbi.resetDate();
 //		tabbedPanegeguzhanbi.setSelectedIndex(0);
 //		tabbedPanebk.setSelectedIndex(1);
-		paneldayCandle.resetDate();
+//		paneldayCandle.resetDate();
 		
 	}
 	/*
@@ -671,7 +677,13 @@ public class BanKuaiFengXi extends JDialog {
 				tmplistener.updatedDate(selectedbk, curselectdate, 0,globeperiod);
 			}
 			
-			
+			//板块日线K线走势，目前K线走势和成交量是分开的，所以调用时候要特别小心，以后会合并
+			NodeXPeriodDataBasic bkrecords = selectedbk.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+			LocalDate requirestart = bkrecords.getRecordsStartDate();
+			LocalDate requireend  = bkrecords.getRecordsEndDate();
+			selectedbk = allbksks.getBanKuaiKXian(selectedbk,curselectdate,StockGivenPeriodDataItem.DAY);
+			paneldayCandle.updatedDate(selectedbk,requirestart,requireend,StockGivenPeriodDataItem.DAY);
+			paneldayCandle.displayRangeHighLowValue(true);
 		}
 	}
 	/*
@@ -768,6 +780,7 @@ public class BanKuaiFengXi extends JDialog {
 	private void displayStockSuoShuBanKuai(Stock selectstock) 
 	{
 		editorPanebankuai.displayBanKuaiListContents(selectstock);
+		
 	}
 	/*
 	 * 显示用户点击bar column后应该提示的信息
@@ -1814,6 +1827,7 @@ public class BanKuaiFengXi extends JDialog {
 		BanKuai bkcur = null;
 		if(node.getType() == BanKuaiAndStockBasic.TDXBK) {
 			node = this.allbksks.getBanKuai((BanKuai)node, requirestart.plusWeeks(1),globeperiod);
+			node = this.allbksks.getBanKuaiKXian((BanKuai)node, requirestart.plusWeeks(1), StockGivenPeriodDataItem.DAY);
 		} else if(node.getType() == BanKuaiAndStockBasic.TDXGG) { 
 			node = this.allbksks.getStock((Stock)node, requirestart.plusWeeks(1),globeperiod);
 			node = this.allbksks.getStockKXian((Stock)node, requirestart.plusWeeks(1), StockGivenPeriodDataItem.DAY);
@@ -2098,7 +2112,7 @@ public class BanKuaiFengXi extends JDialog {
 					//在当前表就有的话，就把相关PANEL清空
 					
 					panelGgDpCjeZhanBi.resetDate();
-					paneldayCandle.resetDate();
+//					paneldayCandle.resetDate();
 				}
 			}
 		}
@@ -2768,7 +2782,7 @@ public class BanKuaiFengXi extends JDialog {
 			btnChosPasFile = new JButton("\u9009\u62E9\u6587\u4EF6");
 			btnChosPasFile.setForeground(Color.ORANGE);
 			
-			cbxdpmaxwk = new JCheckBox("\u7A81\u51FA\u5360\u6BD4DPMAXWK>=");
+			cbxdpmaxwk = new JCheckBox("\u7A81\u51FADPMAXWK>=");
 			
 			cbxdpmaxwk.setForeground(Color.RED);
 			
@@ -2777,13 +2791,14 @@ public class BanKuaiFengXi extends JDialog {
 			tflddisplaydpmaxwk.setText("4");
 			tflddisplaydpmaxwk.setColumns(10);
 			
-			cbxbkmaxwk = new JCheckBox("\u7A81\u51FA\u5360\u6BD4BKMAXWK>=");
+			cbxbkmaxwk = new JCheckBox("\u7A81\u51FABKMAXWK>=");
 			cbxbkmaxwk.setBackground(Color.WHITE);
 			
 			cbxbkmaxwk.setForeground(Color.MAGENTA);
 			cbxbkmaxwk.setEnabled(false);
 			
 			tfldbkmaxwk = new JTextField();
+			tfldbkmaxwk.setEnabled(false);
 			tfldbkmaxwk.setForeground(Color.MAGENTA);
 			tfldbkmaxwk.setText("5");
 			tfldbkmaxwk.setColumns(10);
