@@ -53,7 +53,7 @@ import org.jfree.chart.ChartPanel;
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
@@ -93,7 +93,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 	private AllCurrentTdxBKAndStoksTree bkstk;
 	private StockInfoManager stockInfoManager;
 	private T bkcyl;
-	private BkChanYeLianTree cyltree;
+	private BanKuaiAndStockTree cyltree;
 	protected BanKuaiDbOperation bkdbopt;
 	private String currentselectedtdxbk = "";
 	
@@ -668,7 +668,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 					tablebkgegu.setRowSelectionInterval(rowindex, rowindex);
 					tablebkgegu.scrollRectToVisible(new Rectangle(tablebkgegu.getCellRect(rowindex, 0, true)));
 				} else 	{
-					JOptionPane.showMessageDialog(null,"股票/板块代码有误或名称拼音有误！","Warning", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null,"股票/板块代码或名称拼音有误！","Warning", JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		});

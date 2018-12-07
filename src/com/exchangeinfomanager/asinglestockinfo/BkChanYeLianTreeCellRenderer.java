@@ -49,7 +49,7 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         // 每日板块分析信息
 	         Integer patchfilestocknum = 0; Boolean selfisin = false;
 	         if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
-	        	 LocalDate diswk = ((BkChanYeLianTree)tree).getCurrentDisplayedWk ();
+	        	 LocalDate diswk = ((BanKuaiAndStockTree)tree).getCurrentDisplayedWk ();
 	        	 TreeRelated tmptreerelated = ((BkChanYeLianTreeNode)value).getNodeTreerelated (); 
 	        	 patchfilestocknum = ((BanKuai.BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (diswk);
 	        	 

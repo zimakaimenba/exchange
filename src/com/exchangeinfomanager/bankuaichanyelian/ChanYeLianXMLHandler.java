@@ -37,7 +37,7 @@ import org.dom4j.io.XMLWriter;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.GuPiaoChi;
@@ -118,7 +118,7 @@ class ChanYeLianXMLHandler
 
 	private SetView<String> oldBanKuaiFromDb = null;
 //	private BkChanYeLianTree treeallstocks;
-	private BkChanYeLianTree treecyl;
+	private BanKuaiAndStockTree treecyl;
 	
 	private void initializeChanYeLianTree() 
 	{
@@ -142,7 +142,7 @@ class ChanYeLianXMLHandler
 			generateChanYeLianTreeFromXML(alltopNode,cylxmlroot); //生成产业链树
 		}
 		
-		treecyl = new BkChanYeLianTree(alltopNode,"CYLTREE");
+		treecyl = new BanKuaiAndStockTree(alltopNode,"CYLTREE");
 		
 //		allstocks = null;
 //		e = null;
@@ -210,7 +210,7 @@ class ChanYeLianXMLHandler
 	/*
 	 * 
 	 */
-	private void addNewTdxBanKuaiFromDbToChanYeLianTree(BkChanYeLianTreeNode topNode, SetView<String> newBanKuaiFromDb, BkChanYeLianTree treeallstocks) 
+	private void addNewTdxBanKuaiFromDbToChanYeLianTree(BkChanYeLianTreeNode topNode, SetView<String> newBanKuaiFromDb, BanKuaiAndStockTree treeallstocks) 
 	{
 		for(String newbkcode:newBanKuaiFromDb) {
 			logger.debug("XML将要中加入" + newbkcode);
@@ -225,7 +225,7 @@ class ChanYeLianXMLHandler
 	    }
 	}
 
-	public  BkChanYeLianTree getBkChanYeLianXMLTree()
+	public  BanKuaiAndStockTree getBkChanYeLianXMLTree()
 	{
 		return treecyl;
 	}

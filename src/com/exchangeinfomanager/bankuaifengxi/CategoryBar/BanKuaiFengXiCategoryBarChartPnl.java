@@ -396,7 +396,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 
         plot.setDomainAxis(new CategoryLabelCustomizableCategoryAxis(""));
         //
-        barchart = new JFreeChart(plot);
+        barchart = new JFreeChart(plot);  
         barchart.removeLegend();
         barchart.setNotify(true);
 //        barchart.setDomainZoomable(true);

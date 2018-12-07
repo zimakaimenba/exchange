@@ -61,10 +61,10 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelsVisible(true);
 		
         //line part
-        linechartdataset = new DefaultCategoryDataset();
-        BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
-        plot.setDataset(1, linechartdataset);
-        plot.setRenderer(1, linerenderer);
+//        linechartdataset = new DefaultCategoryDataset();
+//        BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
+//        plot.setDataset(1, linechartdataset);
+//        plot.setRenderer(1, linerenderer);
 //        ValueAxis rangeAxis2 = new NumberAxis("");
 //        plot.setRangeAxis(1, rangeAxis2);
         
@@ -310,7 +310,6 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 			} catch (java.lang.NullPointerException ex) {
 				
 			}
-			
 			
 			return tooltip;
     }

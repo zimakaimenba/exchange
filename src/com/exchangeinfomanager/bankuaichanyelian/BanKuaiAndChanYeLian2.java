@@ -16,8 +16,8 @@ import org.apache.log4j.Logger;
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai.StockOfBanKuaiTreeRelated;
@@ -118,7 +118,7 @@ public class BanKuaiAndChanYeLian2
 //	protected HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap;
 	protected ChanYeLianXMLHandler cylxmhandler;
 //	protected TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
-    protected BkChanYeLianTree treechanyelian;
+    protected BanKuaiAndStockTree treechanyelian;
 //    protected BkChanYeLianTree treeallstocks;
 //    protected BkChanYeLianTree treeallbankuaiandhisstocks;
     private BanKuaiDbOperation bkdbopt;
@@ -151,7 +151,7 @@ public class BanKuaiAndChanYeLian2
             int nodetype = treeChild.getType();
             if( nodetype == BkChanYeLianTreeNode.TDXBK) {
             	String tmpbkcode = treeChild.getMyOwnCode() ;
-            	BkChanYeLianTree bkstkstree = this.allbkstocks.getAllBkStocksTree();
+            	BanKuaiAndStockTree bkstkstree = this.allbkstocks.getAllBkStocksTree();
             	BanKuai nodeinallbktree = (BanKuai)bkstkstree.getSpecificNodeByHypyOrCode(tmpbkcode, BkChanYeLianTreeNode.TDXBK);
             	
             	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
@@ -237,7 +237,7 @@ public class BanKuaiAndChanYeLian2
             int nodetype = treeChild.getType();
             if( nodetype == BkChanYeLianTreeNode.TDXBK) {
             	String tmpbkcode = treeChild.getMyOwnCode() ;
-            	BkChanYeLianTree bkstkstree = this.allbkstocks.getAllBkStocksTree();
+            	BanKuaiAndStockTree bkstkstree = this.allbkstocks.getAllBkStocksTree();
             	BanKuai nodeinallbktree = (BanKuai)bkstkstree.getSpecificNodeByHypyOrCode(tmpbkcode, BkChanYeLianTreeNode.TDXBK);
             	
             	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
@@ -288,7 +288,7 @@ public class BanKuaiAndChanYeLian2
 	/*
 	 * 
 	 */
-	public BkChanYeLianTree getBkChanYeLianTree ()
+	public BanKuaiAndStockTree getBkChanYeLianTree ()
 	{
 		return treechanyelian;
 	}
@@ -321,7 +321,7 @@ public class BanKuaiAndChanYeLian2
 		HashSet<String> cyltreebkset = this.treechanyelian.getSpecificTypeNodesCodesSet ("000000",BanKuaiAndStockBasic.DAPAN,BanKuaiAndStockBasic.TDXBK);
 	    HashSet<String> allbks = allbkstocks.getAllBkStocksTree().getSpecificTypeNodesCodesSet ("000000",BanKuaiAndStockBasic.DAPAN,BanKuaiAndStockBasic.TDXBK);
 
-	    DefaultTreeModel model = (DefaultTreeModel) treechanyelian.getModel();
+//	    DefaultTreeModel model = (DefaultTreeModel) treechanyelian.getModel();
 	    SetView<String> differencebkold = Sets.difference(cyltreebkset, allbks ); //应该删除的
 	    for(String oldnodecode : differencebkold) {
 	    	BkChanYeLianTreeNode oldnode = this.treechanyelian.getSpecificNodeByHypyOrCode (oldnodecode,BanKuaiAndStockBasic.TDXBK);
@@ -333,9 +333,19 @@ public class BanKuaiAndChanYeLian2
 	    SetView<String> differencebknew = Sets.difference(allbks, cyltreebkset ); //应该添加的
 	    BkChanYeLianTreeNode qitanode = treechanyelian.getSpecificNodeByHypyOrCode("GPC999", BanKuaiAndStockBasic.GPC);
 	    for(String newnode : differencebknew) {
-	    	BkChanYeLianTreeNode tmpnode = allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newnode, BanKuaiAndStockBasic.TDXBK);
-	    	BanKuai newbk = new BanKuai (newnode,tmpnode.getMyOwnName() );
-	    	qitanode.add(newbk);
+	    	BanKuai tmpnode = (BanKuai)allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newnode, BanKuaiAndStockBasic.TDXBK);
+	
+	    	if(tmpnode.isShowincyltree() ) {
+	    		BanKuai newbk = new BanKuai (newnode,tmpnode.getMyOwnName() );
+
+	    		newbk.setExporttogehpi(tmpnode.isExporttogehpi());
+	    		newbk.setImportdailytradingdata(tmpnode.isImportdailytradingdata());
+	    		newbk.setShowinbkfxgui(tmpnode.isShowinbkfxgui());
+	    		newbk.setShowincyltree(tmpnode.isShowincyltree());
+	    		
+	    		qitanode.add(newbk);
+	    	}
+	    	
 	    }
 //	    HashSet<BkChanYeLianTreeNode> cyltreebkset2 = this.treechanyelian.getSpecificTypeNodesSet (BanKuaiAndStockBasic.TDXBK);
 		//保证个股一致，所有应该删除的个股删除，名字一致

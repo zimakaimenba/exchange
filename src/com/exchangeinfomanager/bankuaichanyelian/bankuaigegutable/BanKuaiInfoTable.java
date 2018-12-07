@@ -113,8 +113,6 @@ public class BanKuaiInfoTable extends JTable
         });
 		
 		BanKuaiPopUpMenu popupMenuGeguNews = new BanKuaiPopUpMenuForTable(this.stockmanager,this);
-		
-
 		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
 	

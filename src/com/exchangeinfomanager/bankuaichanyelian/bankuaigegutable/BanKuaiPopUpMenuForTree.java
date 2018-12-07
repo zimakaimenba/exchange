@@ -12,10 +12,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiShuXingSheZhi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -25,7 +26,7 @@ import com.exchangeinfomanager.gui.StockInfoManager;
 public class BanKuaiPopUpMenuForTree extends BanKuaiPopUpMenu
 {
 
-	private BkChanYeLianTree cyltree;
+	private BanKuaiAndStockTree cyltree;
 	private BanKuaiInfoTable bankuaitable;
 	
 //	private BanKuaiAndChanYeLian bkcyl;
@@ -34,7 +35,7 @@ public class BanKuaiPopUpMenuForTree extends BanKuaiPopUpMenu
 	
 
 	//因为板块有2种表现形式，树和表，所以争对2个形式做了两套
-	public BanKuaiPopUpMenuForTree (BkChanYeLianTree bkcyltree2) 
+	public BanKuaiPopUpMenuForTree (BanKuaiAndStockTree bkcyltree2) 
 	{
 		super ();
 		
@@ -45,6 +46,43 @@ public class BanKuaiPopUpMenuForTree extends BanKuaiPopUpMenu
 	@Override
 	protected void createEvents() 
 	{
+		menuItemAddToGz.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt)
+			{
+				try {
+					TreePath closestPath = cyltree.getSelectionPath();
+					BkChanYeLianTreeNode selectednode = (BkChanYeLianTreeNode)closestPath.getLastPathComponent();
+					
+					 
+				} catch (java.lang.NullPointerException ex) {
+					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
+				}
+				
+				
+			}
+		});
+		
+		menuItemSetting.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt)
+			{
+				try {
+					TreePath closestPath = cyltree.getSelectionPath();
+					BanKuai selectednode = (BanKuai)closestPath.getLastPathComponent();
+					
+					BanKuaiShuXingSheZhi  bksetting = new BanKuaiShuXingSheZhi (selectednode);
+					JOptionPane.showMessageDialog(null, bksetting, selectednode.getMyOwnCode()+selectednode.getMyOwnName()+ "板块设置", JOptionPane.OK_CANCEL_OPTION);
+					bksetting = null;
+					 
+				} catch (java.lang.NullPointerException ex) {
+					JOptionPane.showMessageDialog(null,"请选择产业板块！","Warning",JOptionPane.WARNING_MESSAGE);
+				}
+				
+				
+			}
+		});
+		
 		menuItemAddNews.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt)

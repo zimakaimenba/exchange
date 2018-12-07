@@ -53,11 +53,18 @@ public class BanKuai extends BkChanYeLianTreeNode
 	private boolean exporttogehpi = true;
 	private boolean importdailytradingdata = true;
 	private boolean showinbkfxgui = true;
+	private boolean showincyltree = true;
 
 //	public  TreeRelated getNodeTreeRelated ()
 //	{
 //		return super.nodetreerelated;
 //	}
+	public Boolean isShowincyltree () {
+		return this.showincyltree;
+	}
+	public void setShowincyltree (Boolean showincyltree) {
+		this.showincyltree = showincyltree;
+	}
 	public boolean isExporttogehpi() {
 		return exporttogehpi;
 	}

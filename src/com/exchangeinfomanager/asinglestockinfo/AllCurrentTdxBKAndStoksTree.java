@@ -40,7 +40,7 @@ public class AllCurrentTdxBKAndStoksTree
 	private static Logger logger = Logger.getLogger(AllCurrentTdxBKAndStoksTree.class);
 	
 	private BanKuaiDbOperation bkdbopt;
-	private BkChanYeLianTree treecyl;
+	private BanKuaiAndStockTree treecyl;
 	private SystemConfigration sysconfig;
 	
 	private void initializeAllStocksTree() 
@@ -59,11 +59,11 @@ public class AllCurrentTdxBKAndStoksTree
 //		    logger.debug(bankuai.getMyOwnCode()+ "¿‡–Õ" + bankuai.getType());
 		}
 
-		treecyl = new BkChanYeLianTree(alltopNode,"ALLBKSTOCKS");
+		treecyl = new BanKuaiAndStockTree(alltopNode,"ALLBKSTOCKS");
 		allstocks = null;
 	}
 	
-	public  BkChanYeLianTree getAllBkStocksTree()
+	public  BanKuaiAndStockTree getAllBkStocksTree()
 	{
 		return treecyl;
 	}

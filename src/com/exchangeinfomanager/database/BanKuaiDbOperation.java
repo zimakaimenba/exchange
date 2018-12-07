@@ -68,8 +68,8 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
@@ -2045,9 +2045,9 @@ public class BanKuaiDbOperation
 		
 		String sqlquerystat;
 		if(!jys.toLowerCase().equals("all"))
-			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述,导出Gephi,导入交易数据,板块分析   FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
+			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述,导出Gephi,导入交易数据,板块分析,产业链树   FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
 		else
-			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述,导出Gephi,导入交易数据,板块分析   FROM 通达信板块列表 	"  ;
+			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述,导出Gephi,导入交易数据,板块分析,产业链树   FROM 通达信板块列表 	"  ;
 		logger.debug(sqlquerystat);
 		CachedRowSetImpl rs = null;
 	    try {  
@@ -2068,6 +2068,7 @@ public class BanKuaiDbOperation
 	        	tmpbk.setExporttogehpi(rs.getBoolean("导出Gephi"));
 	        	tmpbk.setImportdailytradingdata(rs.getBoolean("导入交易数据"));
 	        	tmpbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
+	        	tmpbk.setShowincyltree(rs.getBoolean("产业链树"));
 	        	
 	        	tmpsysbankuailiebiaoinfo.add(tmpbk);
 	        	
@@ -2525,16 +2526,6 @@ public class BanKuaiDbOperation
                     			String beforparsedate = tmplinelist.get(0);
                     			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datarule);
                     			curlinedate =  LocalDate.parse(beforparsedate,formatter) ;
-                    			
-                    			LocalTime tdytime = LocalTime.now(); //如果是在交易时间导入数据的话，当天的数据还没有，所以要判断一下
-            				    LocalDate tdydate = LocalDate.now(); 
-            					if( ( tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(18, 0, 0)) <0) ) {
-            						 if(curlinedate.equals(tdydate)) {
-            							 curlinedate = null;
-            							 continue;
-            						 }
-            					}
-            					
                     			if( curlinedate.isAfter(lastestdbrecordsdate)) {
                         			String sqlinsertstat = "INSERT INTO " + inserttablename +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额) values ("
                     						+ "'" + tmpbkcode.trim() + "'" + ","
@@ -2876,7 +2867,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 找出某个时间点 行业/概念/风格/指数 通达信某个板块的所有个股及权重,不找成交额
 	 */
-	public BanKuai getTDXBanKuaiGeGuOfHyGnFg(BanKuai currentbk,LocalDate selecteddatestart , LocalDate selecteddateend, BkChanYeLianTree treeallstocks)
+	public BanKuai getTDXBanKuaiGeGuOfHyGnFg(BanKuai currentbk,LocalDate selecteddatestart , LocalDate selecteddateend, BanKuaiAndStockTree treeallstocks)
 	{
 		String currentbkcode = currentbk.getMyOwnCode();
 		
@@ -3510,50 +3501,6 @@ public class BanKuaiDbOperation
 
 		return bkorstock;
 	}
-	
-	/*
-	 * 获取某个节点在指定周的所有关注分析等结果
-	 */
-//	public ArrayList<JiaRuJiHua> getZdgzFxjgForANodeOfGivenPeriod (String nodecode, LocalDate givenwk, String period)
-//	{
-//		String sqlquerystat = "SELECT *  FROM 操作记录重点关注 \r\n" + 
-//				"WHERE 股票代码='" + nodecode + "'" + "\r\n" + 
-//				"AND WEEK(操作记录重点关注.`日期`) = WEEK('" + givenwk + "')" 
-//				;
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
-//		
-//		ArrayList<JiaRuJiHua> jrjh = new ArrayList<JiaRuJiHua> ();
-//		try {
-//			while(rsfx.next()) {
-//				String acttype = rsfx.getString("加入移出标志");
-//				JiaRuJiHua guanzhu = new JiaRuJiHua(nodecode,acttype); 
-//				
-//				java.sql.Date  lastdayofweek = rsfx.getDate("日期");
-//				LocalDate actiondate = lastdayofweek.toLocalDate(); 
-//				guanzhu.setJiaRuDate (actiondate );
-//				String shuoming = rsfx.getString("原因描述");
-//				guanzhu.setiHuaShuoMing(shuoming);
-//				jrjh.add(guanzhu);
-//			}
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}  finally {
-//			try {
-//				if(rsfx != null)
-//					rsfx.close();
-//				rsfx.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//			rsfx = null;
-//		}
-//		
-//		if(jrjh.size() == 0)
-//			jrjh = null;
-//		return jrjh;
-//	}
 	
 	/*
 	 * 同步个股成交量信息，参数为交易所 SH/SZ
@@ -5009,12 +4956,13 @@ public class BanKuaiDbOperation
 		/*
 		 * 设置板块的属性: 是否导入数据，是否出现在板块分析界面中，是否导出到Gephi
 		 */
-		public void updateBanKuaiExportGephiBkfxOperation(String nodecode, boolean importdailydata, boolean exporttogephi, boolean showinbkfx)
+		public void updateBanKuaiExportGephiBkfxOperation(String nodecode, boolean importdailydata, boolean exporttogephi, boolean showinbkfx,boolean showincyltree)
 		{
 			String sqlupdatestat = "UPDATE 通达信板块列表 SET " +
 								" 导入交易数据=" + importdailydata  + "," +
 								" 导出Gephi=" + exporttogephi +  ","  +
-								" 板块分析=" + showinbkfx +
+								" 板块分析=" + showinbkfx +  ","  +
+								" 产业链树=" + showincyltree + 
 								" WHERE 板块ID='" + nodecode + "'"
 								;
 			logger.debug(sqlupdatestat);

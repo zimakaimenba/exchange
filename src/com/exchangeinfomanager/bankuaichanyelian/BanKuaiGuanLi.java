@@ -20,7 +20,7 @@ import javax.swing.tree.DefaultTreeModel;
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -151,50 +151,6 @@ public class BanKuaiGuanLi extends JDialog
 			}
 		});
 		
-//		cbxnotgephi.addItemListener(new ItemListener() {
-//			public void itemStateChanged(ItemEvent e) {
-//			}
-//		});
-//		cbxnotbkfx.addItemListener(new ItemListener() {
-//			public void itemStateChanged(ItemEvent e) {
-//			}
-//		});
-//		cbxnotimport.addItemListener(new ItemListener() {
-//			public void itemStateChanged(ItemEvent arg0) {
-//				if(cbxnotimport.isSelected()) {
-//					cbxnotbkfx.setSelected(true);
-//					cbxnotgephi.setSelected(true);
-//					
-//					cbxnotbkfx.setEnabled(false);
-//					cbxnotgephi.setEnabled(false);
-//				} else {
-//					cbxnotbkfx.setEnabled(true);
-//					cbxnotgephi.setEnabled(true);
-//					
-//					buttonapplybksetting.setEnabled(true);
-//				}
-//				
-//			}
-//		});
-//		
-//		buttonapplybksetting.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) {
-//				int row = tableSysBk.getSelectedRow();
-//				int column = tableSysBk.getSelectedColumn();
-//				
-//				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
-//				if(selectnode.getType() == BanKuaiAndStockBasic.TDXBK) {
-//					bkdbopt.updateBanKuaiExportGephiBkfxOperation (selectnode.getMyOwnCode(),!cbxnotimport.isSelected(),!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected());
-//					((BanKuai)selectnode).setImportdailytradingdata(!cbxnotimport.isSelected());
-//					((BanKuai)selectnode).setExporttogehpi(!cbxnotgephi.isSelected());
-//					((BanKuai)selectnode).setShowinbkfxgui(!cbxnotbkfx.isSelected());
-//					
-//					buttonapplybksetting.setEnabled(false);
-//				}
-//			}
-//		});
-		
 		tableSysBk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -233,7 +189,7 @@ public class BanKuaiGuanLi extends JDialog
 	private AllCurrentTdxBKAndStoksTree allbkstks;
 	private JPanel panelSys;
 	private JTable tableZdy;
-	private BkChanYeLianTree cyltree;
+	private BanKuaiAndStockTree cyltree;
 	private BanKuaiAndChanYeLianGUI2 bkcylpnl;
 	private JTextField tfldsearchsysbk;
 	private BanKuaiShuXingSheZhi panelsetting;
@@ -389,7 +345,7 @@ class BanKuaiDetailTableModel extends AbstractTreeTableModel
 {
 	String[] jtableTitleStrings = { "°å¿éID","°å¿éÃû³Æ","°å¿éÀàÐÍ"};
 	
-	BanKuaiDetailTableModel (BkChanYeLianTree cyltree)
+	BanKuaiDetailTableModel (BanKuaiAndStockTree cyltree)
 	{
 		super (  (BkChanYeLianTreeNode)cyltree.getModel().getRoot() );
 		

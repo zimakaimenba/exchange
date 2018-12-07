@@ -28,7 +28,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
@@ -96,7 +96,7 @@ class TwelveZhongDianGuanZhuXmlHandler
 	/*
 	 * 读取重点关注XML,把每个关注的产业链包装成产业链XML TREE的节点
 	 */
-	public HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBanKuaiFromXmlAndUpatedToCylTree (BkChanYeLianTree cyltree)
+	public HashMap<String, ArrayList<BkChanYeLianTreeNode>> getZdgzBanKuaiFromXmlAndUpatedToCylTree (BanKuaiAndStockTree cyltree)
 	{
 //		gzbkdetailmap = new HashMap<String,ArrayList<BkChanYeLianTreeNode>>  (); //重点关注的板块
 		
@@ -215,14 +215,14 @@ class TwelveZhongDianGuanZhuXmlHandler
         	
         	ArrayList<BkChanYeLianTreeNode> tmpsubcyllist = gzbkdetailmap.get(dastr);
         	for(BkChanYeLianTreeNode tmpgzbkifno :tmpsubcyllist) {
-        		if(tmpgzbkifno.getNodetreerelated().shouldBeRemovedWhenSaveXml())
+        		if(tmpgzbkifno.getNodeTreerelated().shouldBeRemovedWhenSaveXml())
         			continue;
         		
-        		String tdxbk = tmpgzbkifno.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName();
-        		String tdxbkcode = tmpgzbkifno.getNodetreerelated().getChanYeLianSuoShuTdxBanKuaiName();
-        		String subcyl = tmpgzbkifno.getNodetreerelated().getNodeCurLocatedChanYeLian();
-        		String addedtime = tmpgzbkifno.getNodetreerelated().getSelectedToZdgzTime();
-        		String offselted = String.valueOf(tmpgzbkifno.getNodetreerelated().isOfficallySelected() ).toLowerCase();
+        		String tdxbk = tmpgzbkifno.getNodeTreerelated().getChanYeLianSuoShuTdxBanKuaiName();
+        		String tdxbkcode = tmpgzbkifno.getNodeTreerelated().getChanYeLianSuoShuTdxBanKuaiName();
+        		String subcyl = tmpgzbkifno.getNodeTreerelated().getNodeCurLocatedChanYeLian();
+        		String addedtime = tmpgzbkifno.getNodeTreerelated().getSelectedToZdgzTime();
+        		String offselted = String.valueOf(tmpgzbkifno.getNodeTreerelated().isOfficallySelected() ).toLowerCase();
         		
         		Element subcylele = bkele.addElement("Item");
         		subcylele.addAttribute("tdxbk", tdxbk);

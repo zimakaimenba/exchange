@@ -47,6 +47,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.Collator;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
@@ -71,14 +73,43 @@ public class ImportTDXData extends JDialog {
 		initializeGui ();
 
 		iniiazlizeZdyGui ();
+		formateGui ();
 		createEvents ();
 	}
 	
+	
+
 	JCheckBox[] zdybkckbxs;
 	HashMap<String, String> zdybkmap;
 
 	private SystemConfigration sysconfig;
 	BanKuaiDbOperation bkdbopt;
+	
+	private void formateGui() 
+	{
+		LocalTime tdytime = LocalTime.now(); //如果是在交易时间导入数据的话，当天的数据还没有，所以要判断一下
+		Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
+//		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;
+		if( (wkday<=5 && wkday>=1) && (tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(16, 35, 0)) <0)  ) {
+			chbxdaorutdxsysbk.setSelected(false);
+			cbximporttdxgeguinfo.setSelected(false);
+			chbxdaorutdxsysbkvol.setSelected(false);
+			cbxImportShGeGuVol.setSelected(false);
+			cbxImportSzGeGuVol.setSelected(false);
+			ckbxnetease.setSelected(false);
+			
+			chbxdaorutdxsysbk.setEnabled(false);
+			cbximporttdxgeguinfo.setEnabled(false);
+			chbxdaorutdxsysbkvol.setEnabled(false);
+			cbxImportShGeGuVol.setEnabled(false);
+			cbxImportSzGeGuVol.setEnabled(false);
+			ckbxnetease.setEnabled(false);
+			
+			lblstatus.setText("交易日9:00-16:35期间不可以导入和成交量相关信息！");
+		}
+		
+	}
 	
 	private void iniiazlizeZdyGui() 
 	{
@@ -406,15 +437,16 @@ public class ImportTDXData extends JDialog {
 						||cbxImportShGeGuVol.isSelected() || cbxImportSzGeGuVol.isSelected() 
 						|| ckbxnetease.isSelected()
 						) {
+					LocalTime tdytime = LocalTime.now(); //如果是在交易时间导入数据的话，当天的数据还没有，所以要判断一下
 					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
-					int hour = cal.get(Calendar.HOUR_OF_DAY);
+//					int hour = cal.get(Calendar.HOUR_OF_DAY);
 					int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;
-					if( (wkday<=5 && wkday>=1) && (hour<15 && hour>= 10) && cbximporttime.isSelected() ) {
-						JOptionPane.showMessageDialog(null,"涉及通达信大量数据同步，请在交易日15点收盘后至次日10点前从通达信导出数据后再导入本系统。");
-						return;
-					}
-					
-					partThatHasBeImportAfterWsork();
+					if( (wkday<=5 && wkday>=1) && (tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(16, 35, 0)) <0)  ) {
+						JOptionPane.showMessageDialog(null,"涉及通达信成交量数据同步，请在交易日16:35收盘后至次日9点前从通达信导出数据后再导入本系统。" + "\n" 
+												+ "成交量导入终止，其他操作继续。");
+						formateGui ();
+					} else
+						partThatHasBeImportAfterWsork();
 				}
 				
 				partThatCanImportDuringWork ();
@@ -476,7 +508,6 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox cbximportdzhguquan;
 	private JCheckBox ckbxnetease;
 	private JComboBox cbximportoptions;
-	private JCheckBox cbximporttime;
 	private JLabel lblstatus;
 	
 	private void initializeGui() 
@@ -652,18 +683,13 @@ public class ImportTDXData extends JDialog {
 			
 			btnchecksync = new JButton("\u4E00\u81F4\u6027\u68C0\u67E5");
 			
-			cbximporttime = new JCheckBox("\u5F3A\u5236\u5728\u6536\u76D8\u540E\u5BFC\u5165\u6570\u636E");
-			cbximporttime.setSelected(true);
-			
 			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addComponent(chbxselectall)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addComponent(cbximporttime)
-						.addGap(108)
+						.addGap(255)
 						.addComponent(btnStart)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnchecksync)
@@ -679,8 +705,7 @@ public class ImportTDXData extends JDialog {
 							.addComponent(btnStart)
 							.addComponent(chbxselectall)
 							.addComponent(okButton)
-							.addComponent(btnchecksync)
-							.addComponent(cbximporttime)))
+							.addComponent(btnchecksync)))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}

@@ -128,9 +128,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
     				
     				String tooltip = selectedinfo.substring(10,selectedinfo.length());
     				setUserSelectedColumnMessage(tooltip);
-    				
+
+    				nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
     				nodecombinedpnl.highLightSpecificBarColumn(datekey);
-    				
     				nodekpnl.highLightSpecificBarColumn(datekey);
                 }
             }
@@ -159,7 +159,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	 */
 	private void setUserSelectedColumnMessage(String selttooltips) 
 	{
-		String allstring = selttooltips + "\n";
+		String allstring = selttooltips + "\n" + "*----------------*" + "\n";
 		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
 		tfldselectedmsg.setCaretPosition(0);
 	}

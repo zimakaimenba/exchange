@@ -31,7 +31,6 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTree;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
@@ -2349,7 +2348,7 @@ public class StockInfoManager
 	private JMenuItem menuItemSysSet;
 	private JMenuItem menuItemimportrecords;
 	private JMenuItem mntmOpenRmtDb;
-	private BkChanYeLianTree tree_1;
+//	private BkChanYeLianTree tree_1;
 	private JButton btndetailfx;
 	private JMenuItem menuItembkfx;
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
