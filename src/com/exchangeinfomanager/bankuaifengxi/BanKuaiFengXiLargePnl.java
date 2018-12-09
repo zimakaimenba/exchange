@@ -15,8 +15,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -27,15 +30,20 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-
+import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 /*
@@ -45,13 +53,18 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 {
 	private BkChanYeLianTreeNode displaynode;
 	private SystemConfigration sysconfig;
+	private BkChanYeLianTreeNode nodebankuai;
+	private LocalDate displayedstartdate;
 //	private LocalDate displaystartdate;
 //	private LocalDate displayenddate;
 //	private String displayperiod;
 //	private BanKuaiDbOperation bkdbopt;
+	private LocalDate displayedenddate;
+	private AllCurrentTdxBKAndStoksTree allbksks;
 
 	public BanKuaiFengXiLargePnl (BkChanYeLianTreeNode nodebkbelonged, BkChanYeLianTreeNode node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period)
 	{
+		this.nodebankuai = nodebkbelonged;
 		this.displaynode = node;
 		initialzieSysconf ();
 //		this.displaystartdate = displayedstartdate1;
@@ -60,19 +73,63 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //		this.bkdbopt = new BanKuaiDbOperation ();
 		createGui ();
 		createEvents ();
-		
-		
-		
+
+		this.displayedstartdate = displayedstartdate1;
+		this.displayedenddate = displayedenddate1;
 		updateData (nodebkbelonged, node,displayedstartdate1,displayedenddate1,period);
 	}
 	
 	private void initialzieSysconf ()
 	{
 		sysconfig = SystemConfigration.getInstance();
+		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 	}
 	
 	private void createEvents() 
 	{
+		nodekpnl.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+
+                if (evt.getPropertyName().equals(BanKuaiFengXiCandlestickPnl.ZHISHU_PROPERTY)) {
+                    @SuppressWarnings("unchecked")
+                    String zhishuinfo = evt.getNewValue().toString();
+                    
+                    if(displaynode.getType() != BanKuaiAndStockBasic.BKGEGU && displaynode.getType() != BanKuaiAndStockBasic.TDXGG) {
+                    	return;
+                    }
+                    
+                    if(zhishuinfo.toLowerCase().equals("bankuaizhisu") ) {
+      
+                		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,StockGivenPeriodDataItem.DAY);
+                		nodekpnl.displayRangeHighLowValue(true);
+                		
+                		
+                    } else if(zhishuinfo.toLowerCase().equals("dapanzhishu") ) {
+                    	BanKuai zhishubk = null;
+                    	if(displaynode.getMyOwnCode().startsWith("6") ) {
+                    		BanKuai shdpbankuai = (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
+                    		zhishubk = shdpbankuai;
+                    	} else if(displaynode.getMyOwnCode().startsWith("3")) {
+                    		BanKuai szdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
+                    		zhishubk = szdpbankuai;
+                    	} else{
+                    		
+                    		BanKuai cybdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);     
+                    		zhishubk = cybdpbankuai;
+                    	}
+                    	
+                    	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,StockGivenPeriodDataItem.DAY);
+                		nodekpnl.displayRangeHighLowValue(true);
+                    	
+                    }
+
+                } 
+             }
+        });
+		/*
+		 * 
+		 */
 		mntmsaveimage.addMouseListener(new MouseAdapter() {
 
 			public void mousePressed(MouseEvent arg0)

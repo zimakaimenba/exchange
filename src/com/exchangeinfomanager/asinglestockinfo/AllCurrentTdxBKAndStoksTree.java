@@ -230,7 +230,20 @@ public class AllCurrentTdxBKAndStoksTree
 
 		return stock;
 	}
-
+	/*
+	 * 
+	 */
+	public void getDaPanKXian (LocalDate requiredrecordsday,String period)
+	{
+		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
+		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
+		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);
+		
+		shdpbankuai = (BanKuai) this.getNodeKXian(shdpbankuai, requiredrecordsday, period);
+		szdpbankuai = (BanKuai) this.getNodeKXian(szdpbankuai, requiredrecordsday, period);
+		cybdpbankuai = (BanKuai) this.getNodeKXian(cybdpbankuai, requiredrecordsday, period);
+		
+	}
 	/*
 	 * 同步大盘成交额
 	 */
@@ -238,6 +251,7 @@ public class AllCurrentTdxBKAndStoksTree
 	{
 		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
 		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
+		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);
 		
 		NodeXPeriodDataBasic shdpnodexdata = shdpbankuai.getNodeXPeroidData(period);
 		LocalDate bkstartday = shdpnodexdata.getRecordsStartDate();
@@ -252,6 +266,7 @@ public class AllCurrentTdxBKAndStoksTree
 		if(bkstartday == null || bkendday == null) { //还没有数据，直接找
 			shdpbankuai = bkdbopt.getBanKuaiZhanBi (shdpbankuai,requirestart,requireend,period);
 			szdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,requirestart,requireend,period);
+			cybdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,requirestart,requireend,period);
 		} else	{
 			HashMap<String,LocalDate> startend = null;
 			if(period.equals(StockGivenPeriodDataItem.WEEK))
@@ -267,6 +282,8 @@ public class AllCurrentTdxBKAndStoksTree
 				searchend = startend.get("searchend");
 				shdpbankuai = bkdbopt.getBanKuaiZhanBi (shdpbankuai,searchstart,searchend,period);
 				szdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,searchstart,searchend,period);
+				cybdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,requirestart,requireend,period);
+				
 			}
 			
 			searchend = null;

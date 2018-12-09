@@ -299,7 +299,16 @@ public class SystemConfigration
 	  */
 	 public String getSavedImageStoredPath ()
 	 {
-		 return this.getSystemInstalledPath() + "/dailydata/savedimage/";
+		 String path = this.getSystemInstalledPath() + "/dailydata/savedimage/";
+		 if (java.nio.file.Files.notExists(Paths.get(path))) {
+			 try {
+				java.nio.file.Files.createDirectories(Paths.get(path));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }
+		 return path; 
 	 } 
 	 
 	 /*
@@ -307,83 +316,209 @@ public class SystemConfigration
 	  */
 	 public String getTdxDataImportCheckResult ()
 	 {
-		 return this.getSystemInstalledPath() + "/dailydata/dataimportcheckresult/";
+		 String path = this.getSystemInstalledPath() + "/dailydata/dataimportcheckresult/";
+		 
+		 if (java.nio.file.Files.notExists(Paths.get(path))) {
+			 try {
+				java.nio.file.Files.createDirectories(Paths.get(path));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }
+		 return path;
 	 }
 	 /*
 	  * 
 	  */
 	 public String getTdxZdgzReportFile ()
 	 {
-		return this.getSystemInstalledPath() + "/reports/TDX重点关注历史报告.txt";
+		 String path = this.getSystemInstalledPath() + "/reports/TDX重点关注历史报告.txt";
+		 
+		 if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
+			 try {
+				java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }
+		 return path; 
 	 }
 		/**
 		 * @return the tdxbbfilenamegainiantishi
 		 */
-		public String getTdxBbFileGaiNianTiShi() {
-			return this.getSystemInstalledPath() + "/reports/TDX概念提示报告.txt";
+		public String getTdxBbFileGaiNianTiShi() 
+		{
+			 String path = this.getSystemInstalledPath() + "/reports/TDX概念提示报告.txt";
+			 
+			 if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path;  
 		}
 		/**
 		 * @return the tdxbbfilenamefumianxiaoxi
 		 */
-		public String getTdxBbfileFuMianXiaoXi() {
-			return this.getSystemInstalledPath()  + "/reports/TDX负面消息报告.txt";
+		public String getTdxBbfileFuMianXiaoXi() 
+		{
+			String path =  this.getSystemInstalledPath()  + "/reports/TDX负面消息报告.txt";
+			
+			if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		/**
 		 * @return the tdxbbfilenamezfxgkhzd
 		 */
 		public String getTdxBbFileZzfxgkhzd() {
-			return this.getSystemInstalledPath() + "/reports/TDX正负相关客户竞对报告.txt";
+			String path =  this.getSystemInstalledPath() + "/reports/TDX正负相关客户竞对报告.txt";
+			
+			if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		public String getTDXChanYeLianReportFile() 
 		{
-			return this.getSystemInstalledPath() + "/reports/TDX个股产业链报告报告.txt";
+			String path =   this.getSystemInstalledPath() + "/reports/TDX个股产业链报告报告.txt";
+			
+			if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		/*
 		 * 
 		 */
 		public String getTDXModelMatchExportFile ()
 		{
-			return this.getSystemInstalledPath() + "/weeklyreports/占比模型输出/";
+			String path =    this.getSystemInstalledPath() + "/weeklyreports/占比模型输出/";
+			
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		/*
 		 * 
 		 */
 		 public String getShiZhiFenXiFilesStoredPath ()
 		 {
-//			 return this.bkparsestoredpath;
-			 return this.getSystemInstalledPath() + "/weeklyreports/市值分析输出/";
+			 String path =  this.getSystemInstalledPath() + "/weeklyreports/市值分析输出/";
+			 
+			 if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		 }
 		 /*
 		  * 
 		  */
 		 public String getGephiFenXiFilesStoredPath ()
 		 {
-//			 return this.bkparsestoredpath;
-			 return this.getSystemInstalledPath() + "/weeklyreports/Gephi分析输出/";
+			 String path =  this.getSystemInstalledPath() + "/weeklyreports/Gephi分析输出/";
+			 
+			 if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		 }
 		/*
 		 * 
 		 */
 		public String getGeGuChanYeLianXmlFile() 
 		{
-			return this.getSystemInstalledPath() + "/config/个股产业链设置.xml";
+			 String path =  this.getSystemInstalledPath() + "/config/个股产业链设置.xml";
+			 
+			 if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		/*
 		 * 生成通达信语言代码
 		 */
 		public String getZhongDianGuanZhuBanKuaiSheZhiTongDaXinFile() 
 		{
-			// TODO Auto-generated method stub
-			return systeminstalledpath + "TDX重点关注板块设置通达信代码.txt";
+			String path =   systeminstalledpath + "TDX重点关注板块设置通达信代码.txt";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		public String getTwelveZhongDianGuanZhuBanKuaiSheZhiXmlFile() 
 		{
-			return  systeminstalledpath + "/config/重点关注板块设置.xml";
+			String path =  systeminstalledpath + "/config/重点关注板块设置.xml";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		//子版块/板块产业链
 		public String getBanKuaiChanYeLianXml() 
 		{
-			return systeminstalledpath + "/config/板块产业链.xml";
+			String path =  systeminstalledpath + "/config/板块产业链.xml";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 //		public String getBkfxWeeklyFileResultXml ()
 //		{
@@ -391,12 +526,31 @@ public class SystemConfigration
 //		}
 	 public String getSysSettingFile () 
 	 {
-		 return this.getSystemInstalledPath() + "/config/系统设置.xml";
+		 String path =  this.getSystemInstalledPath() + "/config/系统设置.xml";
+		 
+		 if (java.nio.file.Files.notExists(Paths.get(path))) {
+			 try {
+				java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }
+		 return path; 
 	 }
 		
 	 public String getQuanShangJiaoYiSheZhi ()
 	 {
-		 return this.getSystemInstalledPath() + "/config/券商交易设置.xml";
+		 String path =  this.getSystemInstalledPath() + "/config/券商交易设置.xml";
+		 if (java.nio.file.Files.notExists(Paths.get(path))) {
+			 try {
+				java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }
+		 return path; 
 	 }
 	 public List<String> getTDXVOLFilesPath ()
 	 {
@@ -665,27 +819,81 @@ public class SystemConfigration
 		}
 		public String getPythonScriptsExecExportsPath ()
 		{
-			return this.systeminstalledpath + "dailydata/python/execexports/";
+			String path = this.systeminstalledpath + "dailydata/python/execexports/";
+			 if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		public String getNetEaseDownloadedFilePath() 
 		{
-			return this.systeminstalledpath + "dailydata/netease/downloaded/";
+			String path = this.systeminstalledpath + "dailydata/netease/downloaded/";
+			 if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		public String getXueQiuDownloadedFilePath() 
 		{
-			return this.systeminstalledpath + "dailydata/xueqiu/downloaded/";
+			String path = this.systeminstalledpath + "dailydata/xueqiu/downloaded/";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		public String getEastMoneyDownloadedFilePath() 
 		{
-			return this.systeminstalledpath + "dailydata/eastmoney/downloaded/";
+			String path = this.systeminstalledpath + "dailydata/eastmoney/downloaded/";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		public String getDaPanFengXiWeeklyXmlMatrixFile() 
 		{
-			return this.systeminstalledpath + "checklists/dapanfengximatrix.xml";
+			String path = this.systeminstalledpath + "checklists/dapanfengximatrix.xml";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		public String getGeGuFengXiWeeklyXmlMatrixFile() 
 		{
-			return this.systeminstalledpath + "checklists/gegufengximatrix.xml";
+			String path = this.systeminstalledpath + "checklists/gegufengximatrix.xml";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
 		}
 		public String getSystemAudioPlayed ()
 		{

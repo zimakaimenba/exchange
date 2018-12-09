@@ -7,9 +7,13 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import java.text.AttributedString;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -28,7 +32,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
@@ -100,9 +106,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		super.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		 createChartPanel();
+		 createEvents ();
 	}
 	
+	
+
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickPnl.class);
+	public static final String ZHISHU_PROPERTY = "combinedzhishu";
 	protected BkChanYeLianTreeNode curdisplayednode;
 
 	private OHLCSeries ohlcSeries;
@@ -119,6 +129,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	private JFreeChart candlestickChart;
 
 	private DateAxis dayAxis;
+	private JMenuItem mntmbankuai;
+	private JMenuItem mntmzhishu;
 
 	
 	@Override
@@ -153,6 +165,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		setPanelTitle ( node, startdate, enddate);
 	}
+	/*
+	 * 
+	 */
 	public void updatedDate(BkChanYeLianTreeNode superbk, BkChanYeLianTreeNode node, LocalDate requirestart, LocalDate requireend ,String period)
 	{
 		this.curdisplayednode = node;
@@ -239,65 +254,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         candlestickChart.setNotify(false);
 		
 	}
-//	/*
-//	 * 显示NODE指定周期的K线
-//	 */
-//	private void setNodeCandleStickDate (BkChanYeLianTreeNode node, LocalDate nodestartday, LocalDate nodeendday,String period)
-//	{
-//		candlestickChart.setNotify(false);
-//		this.resetDate();
-//		
-//		this.curdisplayednode = node;
-//		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
-//		ohlcSeries = null;
-//		ohlcSeries = nodexdata.getRangeOHLCData(nodestartday, nodeendday);
-//
-//		ohlcSeries.setNotify(false);
-//		candlestickDataset.setNotify(false);
-//		
-//		double lowestLow =10000.0;  double highestHigh = 0.0; 
-//		
-//		int itemcount = ohlcSeries.getItemCount();
-//		for(int i=0;i<itemcount;i++) {
-////				RegularTimePeriod dataitemp = ohlcSeries.getPeriod(i);
-//				Double low = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getLowValue();
-//				Double high = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getHighValue();
-//				
-//				if(low < lowestLow && low !=0) {//股价不可能为0，为0，说明停牌，无需计算
-//					lowestLow = low;
-//				}
-//				if(high > highestHigh && high !=0) {
-//					highestHigh = high;
-//				}
-//		}
-//		
-//		
-//		try {
-//			candlestickChart.getXYPlot().getRangeAxis(0).setRange(lowestLow*0.98, highestHigh*1.02);
-//		} catch (java.lang.IllegalArgumentException e ) {
-////			e.printStackTrace();
-//		}
-//		
-//		candlestickDataset.addSeries(ohlcSeries);
-//		
-//	
-////		chartPanel.setHorizontalAxisTrace(true); //十字显示
-////        chartPanel.setVerticalAxisTrace(true);
-//        
-//        ohlcSeries.setNotify(true);
-//        candlestickDataset.setNotify(true);
-//        candlestickChart.setNotify(true);
-//        ohlcSeries.setNotify(false);
-//        candlestickDataset.setNotify(false);
-//        candlestickChart.setNotify(false);
-//        
-//        setPanelTitle ( node, nodestartday, nodeendday);
-//        
-////		dapanohlcSeries = nodexdata.getRangeOHLCData(nodestartday.plusDays(30), nodeendday.minusDays(20));
-////		dapancandlestickDataset.addSeries(dapanohlcSeries);
-////		dapancandlestickDataset.setNotify(true);
-//        
-//	}
 	/*
 	 * 
 	 */
@@ -381,7 +337,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         candlestickDataset.setNotify(false);
         candlestickChart.setNotify(false);
         
-        ((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (highlightweekdate,period);
+        ((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer(0)).setHighLightKTimeRange (highlightweekdate,period);
+        ((BanKuaiFengXiCandlestickZhiShuRenderer)candlestickChart.getXYPlot().getRenderer(1)).setHighLightKTimeRange (highlightweekdate,period);
         
         if(!highlow) {
         	 ohlcSeries.setNotify(true);
@@ -458,6 +415,40 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	/*
 	 * 
 	 */
+	private void createEvents() 
+	{
+		mntmbankuai.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				mntmbankuai.setText("X 叠加板块指数");
+				mntmzhishu.setText("叠加所属大盘指数");
+				combinedZhiShuKXian ("bankuaizhisu");
+			}
+		});
+		
+		mntmzhishu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				mntmbankuai.setText("叠加板块指数");
+				mntmzhishu.setText("X 叠加所属大盘指数");
+				combinedZhiShuKXian ("dapanzhishu");
+			}
+		});
+		
+	}
+	protected void combinedZhiShuKXian(String zhishu) 
+	{
+//		PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
+//        this.firePropertyChange(evt);
+		try {
+			this.firePropertyChange(ZHISHU_PROPERTY, "", zhishu);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	/*
+	 * 
+	 */
 	private void createChartPanel() 
 	{
 		/**
@@ -492,19 +483,17 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.setNotify(true);
 		
         //dapan zhishu/bankuai zhishu part
+		
 		dapancandlestickDataset = new OHLCSeriesCollection();
 		candlestickChart.getXYPlot().setDataset(1,dapancandlestickDataset);
-		candlestickChart.getXYPlot().setRenderer(1, new CandlestickRenderer());
+		candlestickChart.getXYPlot().setRenderer(1, new BanKuaiFengXiCandlestickZhiShuRenderer());
 		ValueAxis rangeAxis2 = new NumberAxis("");
+		rangeAxis2.setUpperMargin(0.0);   
+		rangeAxis2.setLowerMargin(0.0); 
 		candlestickChart.getXYPlot().setRangeAxis(1, rangeAxis2);
-		
-//      linechartdataset = new DefaultCategoryDataset();
-//      BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
-//      plot.setDataset(1, linechartdataset);
-//      plot.setRenderer(1, linerenderer);
-//      ValueAxis rangeAxis2 = new NumberAxis("");
-//      plot.setRangeAxis(1, rangeAxis2);
       
+		candlestickChart.getXYPlot().mapDatasetToRangeAxis(0, 0);
+		candlestickChart.getXYPlot().mapDatasetToRangeAxis(1, 1); 
       // change the rendering order so the primary dataset appears "behind" the 
       // other datasets...
 		candlestickChart.getXYPlot().setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
@@ -526,6 +515,14 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		standardChartTheme.setRegularFont(new Font("隶书",Font.BOLD,10) );
 		standardChartTheme.setLargeFont(new Font("隶书",Font.BOLD,10));
 		ChartFactory.setChartTheme(standardChartTheme);
+		
+//		JPopupMenu popupMenu = new JPopupMenu();
+		mntmbankuai = new JMenuItem("叠加板块指数");
+		mntmzhishu = new JMenuItem("叠加所属大盘指数");
+//			popupMenu.add(mntmNewMenuItem);
+		chartPanel.getPopupMenu().add(mntmbankuai);
+		chartPanel.getPopupMenu().add(mntmzhishu);
+			
 		this.add(chartPanel);
 	}
 	
@@ -554,6 +551,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		List<XYPointerAnnotation> pointerlist = candlestickChart.getXYPlot().getAnnotations();
 		for(XYPointerAnnotation pointer : pointerlist) 
 			candlestickChart.getXYPlot().removeAnnotation(pointer);
+		
+		dapancandlestickDataset.removeAllSeries();
 		
 		chartPanel.removeAll();
 		this.setPanelTitle(null, null, null);
@@ -586,7 +585,70 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 	}
 }
+/*
+ * 
+ */
+class BanKuaiFengXiCandlestickZhiShuRenderer extends CandlestickRenderer
+{
+	public BanKuaiFengXiCandlestickZhiShuRenderer ()
+	{
+		super ();
+	}
+	
+	private final Paint  colorZhiShu = Color.GRAY.darker();
+	private final Paint  colorSelected = Color.LIGHT_GRAY;
+	private final Paint  colorFormerSelected = Color.GRAY.brighter();
+	
+	private LocalDate datebeselectedinweeklast;
+	private LocalDate datebeselectedinweek;
+	
+	public void setHighLightKTimeRange (LocalDate selecteddate,String period)
+	{
+		this.datebeselectedinweeklast = this.datebeselectedinweek; 
+		this.datebeselectedinweek = selecteddate;
+	}
+	@Override
+    public Paint getItemPaint(int series, int item) 
+	{
+		return colorZhiShu;
+	}
+	@Override
+    public void drawItem(Graphics2D g2, XYItemRendererState state,
+            Rectangle2D dataArea, PlotRenderingInfo info, XYPlot plot,
+            ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataset,
+            int series, int item, CrosshairState crosshairState, int pass)
+    {
+     
+    	OHLCSeriesCollection highLowData = (OHLCSeriesCollection) dataset;
+    	
+    	int tempcount = highLowData.getSeriesCount();
+        OHLCSeries ser = highLowData.getSeries(series);
+//        RegularTimePeriod per = (Day)ser.getPeriod(item);
+        Day per = (Day)ser.getPeriod(item);
+        Date date = per.getEnd();
+        LocalDate ldate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
 
+        if(  this.datebeselectedinweeklast !=null && ldate.equals(this.datebeselectedinweeklast.with(DayOfWeek.FRIDAY) ) ) {
+        	LocalDate tmpdate = datebeselectedinweeklast.with(DayOfWeek.FRIDAY) ;
+        	setUpPaint(colorFormerSelected);
+            setDownPaint(colorFormerSelected);
+        }
+        else if(  datebeselectedinweek != null && ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) ) {
+        	LocalDate tmpdate = datebeselectedinweek.with(DayOfWeek.FRIDAY) ;
+        	setUpPaint(colorSelected);
+            setDownPaint(colorSelected);
+        } else {
+    		setUpPaint(colorZhiShu);
+            setDownPaint(colorZhiShu);
+        }
+
+        // call parent method
+        super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairState, pass);
+    }   
+}
+/*
+ * 
+ */
 class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer 
 {  //https://stackoverflow.com/questions/29152688/is-it-possible-to-show-hollow-candle-in-candlestick-jfreechart
 
