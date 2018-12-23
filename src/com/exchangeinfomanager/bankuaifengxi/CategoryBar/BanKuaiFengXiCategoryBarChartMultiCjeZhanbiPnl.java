@@ -166,7 +166,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 	 * 
 	 */
 	@Override
-	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax,Double showhsl) 
+	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl) 
 	{
 		
 	}
@@ -181,7 +181,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cje, Integer cjemax, Double shoowhsl) {
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
 		// TODO Auto-generated method stub
 		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbtoupleveldpmax);
 		this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰

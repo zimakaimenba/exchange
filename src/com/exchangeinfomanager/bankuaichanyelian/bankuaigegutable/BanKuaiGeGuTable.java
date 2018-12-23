@@ -151,17 +151,17 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		sortKeys = null;
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemax,Double showhsl) 
+	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl) 
 	{
-		if(cjezbbkmax != null)
+//		if(cjezbbkmax != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
-		if(cjemax != null)
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemax);
-		if(cjezbdpmax != null)
+//		if(cjemaxwk != null )
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
+//		if(cjezbdpmax != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
-		if(cje != null)
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cje);
-		if(showhsl != null)
+//		if(cjemin != null || cjemax != null)
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
+//		if(showhsl != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
 		
 		this.repaint();
@@ -417,7 +417,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	}
 
 	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cje, Integer cjemax, Double shoowhsl) {
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
 		// TODO Auto-generated method stub
 		
 	}

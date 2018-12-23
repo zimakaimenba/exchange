@@ -40,7 +40,8 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //	private int curdisplayrow = -1;
 //	private Stock curdisplaystock;
 //	private HashSet<String> stockcodeinparsefile;
-	private Double showcje = 1000000000000.0;
+	private Double showcjemin = 1000000000000.0;
+	private Double showcjemax = 1000000000000.0;
 	private Integer cjemaxwk = 10000000;
 //	private Boolean showparsedfile = false;
 	private Integer cjezbdpmaxwk = 10000000;
@@ -57,7 +58,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		entryList = null;
 		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );	
 		
-		Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,period) );
+		sortTableByChenJiaoEr ();
     	
     	this.fireTableDataChanged();
 	}
@@ -66,7 +67,11 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	 */
 	public void sortTableByLiuTongShiZhi ()
 	{
-		Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,period) );
+		try{
+			Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,period) );
+		} catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
+		}
 		
 		this.fireTableDataChanged();
 	}
@@ -368,18 +373,40 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //		}
 		
 		//设置突出显示成交额阀值
-		public void setDisplayChenJiaoEr (Double cje)
+		public void setDisplayChenJiaoEr (Double cjemin, Double cjemax)
 		{
-			this.showcje = cje;
+			if(cjemin != null && cjemax == null) {
+				this.showcjemin  = cjemin;
+				this.showcjemax = 1000000000000.0;
+			} else
+			if(cjemax != null && cjemin == null) {
+				this.showcjemin  = 0.0;
+				this.showcjemax  = cjemax;
+			} else
+			if(cjemax != null && cjemin != null) {
+				this.showcjemin  = cjemin;
+				this.showcjemax  = cjemax;
+			} else
+			if(cjemin == null && cjemax == null) {
+				this.showcjemin = 1000000000000.0;
+				this.showcjemax = 1000000000000.0;
+			}
 		}
-		public Double getDisplayChenJiaoEr ()
+		public Double getDisplayChenJiaoErMin ()
 		{
-			return this.showcje ;
+			return this.showcjemin ;
+		}
+		public Double getDisplayChenJiaoErMax ()
+		{
+			return this.showcjemax ;
 		}
 		//设置bkMAXWK阀值
 		public void setDisplayCjeMaxWk (Integer cjemax)
 		{
-			this.cjemaxwk = cjemax;
+			if(cjemax != null)
+				this.cjemaxwk = cjemax;
+			else
+				this.cjemaxwk =  10000000;
 		}
 		public Integer getDisplayCjeMaxWk ()
 		{
@@ -397,7 +424,10 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		//设置成交额dpMAXWK阀值
 		public void setDisplayCjeDPMaxWk (Integer bkmax)
 		{
-			this.cjezbdpmaxwk = bkmax;
+			if(bkmax != null)
+				this.cjezbdpmaxwk = bkmax;
+			else
+				cjezbdpmaxwk = 10000000;
 		}
 		public Integer getDisplayCjeDPMaxWk ()
 		{
@@ -406,7 +436,10 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		//设置bkMAXWK阀值
 		public void setDisplayCjeBKMaxWk (Integer bkmax)
 		{
-			this.cjezbbkmaxwk = bkmax;
+			if(bkmax != null)
+				this.cjezbbkmaxwk = bkmax;
+			else
+				this.cjezbbkmaxwk = 10000000;
 		}
 		public Integer getDisplayCjeBKMaxWk ()
 		{
@@ -422,7 +455,10 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		}
 		public void setDisplayHuanShouLv (Double hsl)
 		{
-			this.huanshoulv = hsl;
+			if(hsl != null)
+				this.huanshoulv = hsl;
+			else
+				huanshoulv = 1000000.0;
 		}
 		public Double getDisplayHuanShouLv ()
 		{

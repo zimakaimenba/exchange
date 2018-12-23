@@ -4142,31 +4142,34 @@ public class BanKuaiDbOperation
 //			return newStockSign;
 //		}
 
-		public Stock getCheckListsXMLInfo(Stock stockbasicinfo)
-		{
-			String stockcode = stockbasicinfo.getMyOwnCode();
-			String sqlquerystat= "SELECT checklistsitems FROM A股   WHERE 股票代码 =" +"'" + stockcode +"'" ;
-			//logger.debug(sqlquerystat);
-			CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
-
-			try {
-				rsagu.first();
-				while (rsagu.next()) {
-					String checklistsitems = rsagu.getString("checklistsitems");
-					stockbasicinfo.setChecklistXml(checklistsitems);
-				}
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
-				rsagu.close();
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			return stockbasicinfo;
-		}
+		/*
+		 * 
+		 */
+//		public Stock getCheckListsXMLInfo(Stock stockbasicinfo)
+//		{
+//			String stockcode = stockbasicinfo.getMyOwnCode();
+//			String sqlquerystat= "SELECT checklistsitems FROM A股   WHERE 股票代码 =" +"'" + stockcode +"'" ;
+//			//logger.debug(sqlquerystat);
+//			CachedRowSetImpl rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
+//
+//			try {
+//				rsagu.first();
+//				while (rsagu.next()) {
+//					String checklistsitems = rsagu.getString("checklistsitems");
+//					stockbasicinfo.setChecklistXml(checklistsitems);
+//				}
+//				
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//			try {
+//				rsagu.close();
+//				
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//			return stockbasicinfo;
+//		}
 		
 		private String formateDateForDiffDatabase (String databasetype,String dbdate)
 		{
@@ -4971,8 +4974,11 @@ public class BanKuaiDbOperation
 		/*
 		 * 导入网易股票行情接口的数据，
 		 */
-		public void importNetEaseStockData() 
+		public File importNetEaseStockData() 
 		{
+			File tmpreportfolder = Files.createTempDir();
+			File tmprecordfile = new File(tmpreportfolder + "同步个股成交量信息.tmp");
+			
 			ArrayList<Stock> allstocks = this.getAllStocks ();
 			//下载需要的时间段的数据
 			for(Stock stock : allstocks) {
@@ -5006,6 +5012,7 @@ public class BanKuaiDbOperation
 				    			 ldlastestdbrecordsdate = lastestdbrecordsdate.toLocalDate();
 				    		 } catch (java.lang.NullPointerException e) {
 				    			 logger.info(stockcode + "似乎没有数据，请检查！");
+				    			 Files.append(stockcode + "似乎没有数据，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 				    		 }
 				    }
 				} catch(java.lang.NullPointerException e) { 
@@ -5118,7 +5125,9 @@ public class BanKuaiDbOperation
 						                					" AND 代码= '" + stockcode + "'"
 						                					;
 						                logger.debug(sqlupdate);
-									    int result = connectdb.sqlUpdateStatExecute(sqlupdate);		
+									    int result = connectdb.sqlUpdateStatExecute(sqlupdate);
+									    
+									    Files.append(stockcode + "导入网易数据成功！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 									    
 									    neteasthasdata = true;
 					            	}
@@ -5137,6 +5146,8 @@ public class BanKuaiDbOperation
 			}
 
 			allstocks = null;
+			
+			return tmprecordfile;
 		}
 		/*
 		 * 从雪球获得数据，目前不完善

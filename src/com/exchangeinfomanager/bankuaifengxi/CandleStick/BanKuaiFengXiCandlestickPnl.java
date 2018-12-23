@@ -496,7 +496,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.getXYPlot().mapDatasetToRangeAxis(1, 1); 
       // change the rendering order so the primary dataset appears "behind" the 
       // other datasets...
-		candlestickChart.getXYPlot().setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+		candlestickChart.getXYPlot().setDatasetRenderingOrder(DatasetRenderingOrder.REVERSE);
 		
 		// Create new chart panel
 		chartPanel = new ChartPanel(candlestickChart);

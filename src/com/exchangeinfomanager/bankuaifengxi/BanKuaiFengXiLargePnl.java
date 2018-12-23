@@ -27,8 +27,11 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
@@ -44,6 +47,7 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 /*
@@ -216,9 +220,19 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	 */
 	private void setUserSelectedColumnMessage(String selttooltips) 
 	{
-		String allstring = selttooltips + "\n" + "*----------------*" + "\n";
-		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
-		tfldselectedmsg.setCaretPosition(0);
+//		String allstring = selttooltips + "\n" + "*----------------------*" + "\n";
+//		
+//		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
+//		tfldselectedmsg.setCaretPosition(0);
+		
+		String htmlstring = "";
+		org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
+		org.jsoup.select.Elements content = doc.select("body");
+		content.append("<font size=\"3\">" + selttooltips + "</font>");
+		
+		
+		htmlstring = doc.toString();
+		tfldselectedmsg.setText(htmlstring);
 	}
 
 	private void updateData(BkChanYeLianTreeNode nodebkbelogned, BkChanYeLianTreeNode node, LocalDate displayedstartdate1, LocalDate displayedenddate1,
@@ -252,7 +266,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private JPanel centerPanel;
 	private BanKuaiFengXiNodeCombinedCategoryPnl nodecombinedpnl;
 	private  BanKuaiFengXiCategoryBarChartPnl nodebkcjezblargepnl;
-	private JTextArea tfldselectedmsg;
+	private BanKuaiListEditorPane tfldselectedmsg;
 	private BanKuaiFengXiCandlestickPnl nodekpnl;
 	private JPopupMenu saveImage;
 	private JMenuItem mntmsaveimage; 
@@ -274,9 +288,12 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.add(this.nodebkcjezblargepnl);
 		
 		JPanel eastpanel;
-		tfldselectedmsg = new JTextArea();
-		tfldselectedmsg.setLineWrap(true);
+		tfldselectedmsg = new BanKuaiListEditorPane();
+//		tfldselectedmsg.setLineWrap(true);
 		JScrollPane scrollPaneuserselctmsg = new JScrollPane (); 
+		JScrollBar bar = scrollPaneuserselctmsg.getHorizontalScrollBar();
+		tfldselectedmsg.setPreferredSize(new Dimension(150, 0));
+		
 		scrollPaneuserselctmsg.setViewportView(tfldselectedmsg);
 
 		this.add(this.nodekpnl,BorderLayout.NORTH);

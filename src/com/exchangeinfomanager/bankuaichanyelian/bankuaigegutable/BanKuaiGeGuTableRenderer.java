@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -56,16 +57,22 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         	((JLabel)comp).setText(valuepect);
         }
 	    
-	    //对每个column设置显示颜色会导致table拖动反应很慢，慎重
 	    BanKuaiGeGuTableModel tablemodel =  (BanKuaiGeGuTableModel)table.getModel() ;
 	    int modelRow = table.convertRowIndexToModel(row);
-	    StockOfBanKuai stock = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
+	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
+	    Stock stock = stockofbank.getStock();
+	    
+	    if(stock.wetherHasReiewedToday()) {
+        	Font defaultFont = this.getFont();
+        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+        	comp.setFont(font);
+        }
 	    
 	    Color foreground, background = Color.white;
 
 	    if( col == 1 ) {
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
-	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stock.getNodeTreerelated();
+	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreerelated();
     	
 	 		Boolean isin = stofbktree.isInBanKuaiFengXiResultFileForSpecificDate(requireddate);
 	    	if(isin != null && isin  ) 
@@ -76,13 +83,15 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 
 	    //突出达到用户标准的股票
 	    if( col == 4 && value != null ) { //成交额>=
-	    	BanKuai bk = tablemodel.getCurDispalyBandKuai ();
-		    Double cje = tablemodel.getDisplayChenJiaoEr ();
+//	    	BanKuai bk = tablemodel.getCurDispalyBandKuai ();
+		    Double cjemin = tablemodel.getDisplayChenJiaoErMin ();
+		    Double cjemax = tablemodel.getDisplayChenJiaoErMax ();
+		    
 		    LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
-		    NodeXPeriodDataBasic nodexdata = bk.getStockXPeriodDataForABanKuai(stock.getMyOwnCode(), period);
+		    NodeXPeriodDataBasic nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		    Double curcje = nodexdata.getChengJiaoEr(requireddate, 0);
-		    if(cje != null && cje >0 && curcje > cje ) 
+		    if( curcje >= cjemin && curcje <= cjemax ) 
 		    	background = Color.yellow ;
 		    else
 		    	background = Color.white;

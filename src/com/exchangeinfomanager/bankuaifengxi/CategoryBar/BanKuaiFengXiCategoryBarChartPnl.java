@@ -27,6 +27,8 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.jsoup.Jsoup;
+
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
@@ -34,6 +36,7 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -322,13 +325,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel(maxl);
     	 barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰
     }
-    /*
-     * 
-     */
-//	public LocalDate getCurSelectedBarDate ()
-//	{
-//		return dateselected;
-//	}
+
 	/*
 	 * 
 	 */

@@ -28,6 +28,7 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.Week;
+import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
@@ -186,7 +187,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	 * 
 	 */
 	@Override
-	public void hightLightFxValues(Integer cjezbdporbkmax, Double cje, Integer cjemax,Double showhsl) 
+	public void hightLightFxValues(Integer cjezbdporbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl) 
 	{
 		if(cjezbdporbkmax != null) {
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbdporbkmax);
@@ -195,7 +196,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Integer cjezbtouplevelbkmax, Double cje, Integer cjemax,
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Integer cjezbtouplevelbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,
 			Double shoowhsl) {
 		// TODO Auto-generated method stub
 		
@@ -263,7 +264,7 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 		String selected = dataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	 
-		String tooltip = selected.toString() + " ";
+		
 		
 		Double curzhanbidata = (Double)dataset.getValue(row, column);  //占比
 		if(curzhanbidata == null)
@@ -282,11 +283,18 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 				hsl = ((StockNodeXPeriodData)nodexdata).getSpecificTimeHuanShouLv(selecteddate, 0);
 			}
 			
+			
+			String htmlstring = selected.toString() + "<br />";
+			org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+			org.jsoup.select.Elements content = doc.select("body");
+			
 			DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
 			try {
-				tooltip = tooltip +  "占比" + decimalformate.format(curzhanbidata) ;
+//				tooltip = tooltip +  "占比" + decimalformate.format(curzhanbidata) ;
+				content.append("占比" + decimalformate.format(curzhanbidata) + "<br />" );
 			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip  +  "占比NULL";
+//				tooltip = tooltip  +  "占比NULL";
+				content.append("占比占比NULL" + "<br />" );
 			}
 //			try {
 //				tooltip = tooltip +   "占比变化("	+ decimalformate.format(zhanbigrowthrate) +  ")";
@@ -294,23 +302,29 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 //				tooltip = tooltip  +  "占比变化(NULL)";
 //			}
 			try {
-				tooltip = tooltip +  "占比MaxWk=" + maxweek.toString() ;
+//				tooltip = tooltip +  "占比MaxWk=" + maxweek.toString() ;
+				content.append("占比MaxWk=" + maxweek.toString() + "<br />" );
 			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "占比MaxWk=NULL";
+//				tooltip = tooltip + "占比MaxWk=NULL";
+				content.append("占比MaxWk=NULL"  + "<br />" );
 			}
 			try {
-				tooltip = tooltip +  "占比MinWk=" + minweek.toString() ;
+//				tooltip = tooltip +  "占比MinWk=" + minweek.toString() ;
+				content.append("占比MinWk=" + minweek.toString() + "<br />" );
 			} catch (java.lang.IllegalArgumentException e ) {
-				tooltip = tooltip + "占比MinWk=NULL";
+//				tooltip = tooltip + "占比MinWk=NULL";
+				content.append("占比MinWk=NULL" + "<br />" );
 			}
 			try {
-				tooltip = tooltip +  "HSL=" + hsl.toString() ;
+//				tooltip = tooltip +  "HSL=" + hsl.toString() ;
+				content.append("HSL=" + hsl.toString()  + "<br />" );
 			} catch (java.lang.IllegalArgumentException e ) {
 				
 			} catch (java.lang.NullPointerException ex) {
 				
 			}
 			
-			return tooltip;
+			htmlstring = doc.toString();
+			return htmlstring;
     }
 }

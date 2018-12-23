@@ -82,8 +82,16 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	 */
 	public Paint getItemPaint(final int row, final int column) 
     {
-		 GradientPaint gp2 = new GradientPaint(
+		 GradientPaint notwholeweekcolor = new GradientPaint(
 		            0.0f, 0.0f, displayedcolorindex, 
+		            0.0f, 0.0f, new Color(64, 0, 0)
+		        );
+		 GradientPaint shouldcolumnlastnotwholeweekcolor = new GradientPaint(
+		            0.0f, 0.0f, Color.blue.darker(), 
+		            0.0f, 0.0f, new Color(64, 0, 0)
+		        );
+		 GradientPaint shouldcolumnnotwholeweekcolor = new GradientPaint(
+		            0.0f, 0.0f, new Color (51,153,255), 
 		            0.0f, 0.0f, new Color(64, 0, 0)
 		        );
 		 
@@ -98,15 +106,28 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	     } catch (java.lang.NullPointerException e) {
 	    	 exchangesdaynumber = 5;
 	     }
+	     
+	     	if(column == shouldcolumnlast && exchangesdaynumber == 5) //完整周
+		    	return Color.blue.darker();
+	     	else if(column == shouldcolumnlast && exchangesdaynumber != 5) //不完整周
+	     		return shouldcolumnlastnotwholeweekcolor;
+		    else if(column == shouldcolumn && exchangesdaynumber == 5)
+		    	return new Color (51,153,255);
+		    else if(column == shouldcolumn && exchangesdaynumber != 5)
+		    	return shouldcolumnnotwholeweekcolor;
+	        else  if(exchangesdaynumber != 5) {
+	        	return notwholeweekcolor;
+	        } else
+	            return displayedcolorindex;
 		 
-	    if(column == shouldcolumnlast)
-	    	return Color.blue.darker();
-	    else if(column == shouldcolumn)
-	    	return new Color (51,153,255);
-        else  if(exchangesdaynumber != 5) {
-        	return gp2;
-        } else
-            return displayedcolorindex;
+//	    if(column == shouldcolumnlast)
+//	    	return Color.blue.darker();
+//	    else if(column == shouldcolumn)
+//	    	return new Color (51,153,255);
+//        else  if(exchangesdaynumber != 5) {
+//        	return notwholeweekcolor;
+//        } else
+//            return displayedcolorindex;
    }
  
 

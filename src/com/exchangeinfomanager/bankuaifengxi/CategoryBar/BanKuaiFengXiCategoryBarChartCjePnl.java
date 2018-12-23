@@ -31,6 +31,7 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.Week;
+import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
@@ -169,12 +170,12 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 * 
 	 */
 	@Override
-	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cje, Integer cjemax,Double showhsl) 
+	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl) 
 	{
 		
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cje, Integer cjemaxwk, Double shoowhsl) {
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin,Double cjemax, Integer cjemaxwk, Double shoowhsl) {
 		// TODO Auto-generated method stub
 		if(cjemaxwk != null) {
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemaxwk);
@@ -271,6 +272,16 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 		//显示成交额是多少周最大
 		Integer maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
 		
-		return selecteddate + " " + "成交额" + decimalformate.format(curcje) + danwei +  "成交额MaxWk=" + maxwk;
+		String htmlstring = "";
+		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+		org.jsoup.select.Elements content = doc.select("body");
+		content.append(selecteddate.toString() + "<br />" );
+		content.append("成交额" + decimalformate.format(curcje) + danwei + "<br />");
+		content.append("成交额MaxWk=" + maxwk  + "<br />");
+		
+		htmlstring = doc.toString();
+		return htmlstring;
+		
+//		return selecteddate + " " + "成交额" + decimalformate.format(curcje) + danwei +  "成交额MaxWk=" + maxwk;
     }
 }

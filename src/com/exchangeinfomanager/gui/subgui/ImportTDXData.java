@@ -318,9 +318,19 @@ public class ImportTDXData extends JDialog {
 			&& cbxImportShGeGuVol.isSelected()  ) {
 			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
 		}
-		//
-		if(ckbxnetease.isSelected() && ckbxnetease.isEnabled()) { //导入网易的股票的数据,主要是换手率/市值等数据，
-			bkdbopt.importNetEaseStockData ();
+		//导入网易的股票的数据,主要是换手率/市值等数据，
+		if(ckbxnetease.isSelected() && ckbxnetease.isEnabled()) { 
+			try {
+				File resulttmpfilenetease = bkdbopt.importNetEaseStockData ();
+				List<String> lines = Files.readLines(resulttmpfilenetease, sysconfig.charSet());
+				for (String line : lines) {
+		        	tfldresult.append(line+"\n");
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {
+			}
+			ckbxnetease.setEnabled(false);
 			
 //			//从网络上导入数据后，有可能某些数据还是不能从网上得到，没办法了，只能手工从东方财富里面导出
 //			HashSet<String> missingdatastockset = bkdbopt.checkStockDataIsCompleted();

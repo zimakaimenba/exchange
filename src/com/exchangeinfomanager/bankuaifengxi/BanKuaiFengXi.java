@@ -606,8 +606,8 @@ public class BanKuaiFengXi extends JDialog {
 		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).deleteAllRows();
 		((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).deleteAllRows();
 		
-		menuItemchengjiaoer.setText("按成交额排名");
-    	menuItemliutong.setText("X 按流通市值排名");
+		menuItemchengjiaoer.setText("X 按成交额排名");
+    	menuItemliutong.setText("按流通市值排名");
     	
 		editorPanenodeinfo.setText("");
 		
@@ -759,9 +759,11 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void refreshTDXGeGuZhanBi (Stock selectstock)
 	{
+		selectstock.setHasReviewedToday();
+		
 		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+//		LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
+//		LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		selectstock = allbksks.getStock(selectstock,curselectdate,StockGivenPeriodDataItem.WEEK);
 		
@@ -807,17 +809,20 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void setUserSelectedColumnMessage(String selttooltips) 
 	{
-		String allstring = selttooltips + "\n" + "*----------------------*" + "\n";
+		String htmlstring = "";
+		org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
+		org.jsoup.select.Elements content = doc.select("body");
+		content.append("<font size=\"3\">" + selttooltips + "</font>");
 		
-		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
-		tfldselectedmsg.setCaretPosition(0);
+		htmlstring = doc.toString();
+		tfldselectedmsg.setText(htmlstring);
 	}
 	/*
 	 * 
 	 */
 	private void refreshBanKuaiGeGuTableHightLight ()
 	{
-		Integer cjemaxwk; Integer bkmaxwk;Integer dpmaxwk ;Double showcje;Double showhsl;
+		Integer cjemaxwk; Integer bkmaxwk;Integer dpmaxwk ; Double showcjemin ;Double showcjemax;Double showhsl;
 		if(chkcjemaxwk.isSelected() ) {
 			cjemaxwk = Integer.parseInt(tfldcjemaxwk.getText() );
 		} else
@@ -831,19 +836,29 @@ public class BanKuaiFengXi extends JDialog {
 		} else
 			dpmaxwk = null;
 		if(ckboxshowcje.isSelected()) {
-			showcje = Double.parseDouble( tfldshowcje.getText() ) * 100000000;
-		} else
-			showcje = null;
+			if( !Strings.isNullOrEmpty(tfldshowcje.getText()) ) {
+				showcjemin = Double.parseDouble( tfldshowcje.getText() ) * 100000000;
+			} else
+				showcjemin = null;
+			
+			if( !Strings.isNullOrEmpty(tfldshowcjemax.getText()) ) {
+				showcjemax = Double.parseDouble( tfldshowcjemax.getText() ) * 100000000;
+			} else
+				showcjemax = null;
+		} else {
+			showcjemin = null;
+			showcjemax = null;
+		}
 		if(cbxhuanshoulv.isSelected())
 			showhsl = Double.parseDouble( tfldhuanshoulv.getText() ) ;
 		else 
 			showhsl = null;
 		
-		bkfxhighlightvaluesoftableslisteners.forEach(l -> l.hightLightFxValues(dpmaxwk, bkmaxwk,showcje, cjemaxwk,showhsl) );
+		bkfxhighlightvaluesoftableslisteners.forEach(l -> l.hightLightFxValues(dpmaxwk, bkmaxwk,showcjemin, showcjemax, cjemaxwk,showhsl) );
 		//对于panel来说，hightLightFxValues第一个参数不能用，因为panel 都是 节点对她的上级的占比
-		panelGgDpCjeZhanBi.hightLightFxValues(dpmaxwk, showcje, cjemaxwk,showhsl);
-		panelbkwkzhanbi.hightLightFxValues(dpmaxwk, showcje, cjemaxwk,showhsl);
-		panelggbkcjezhanbi.hightLightFxValues(bkmaxwk, showcje, cjemaxwk,showhsl);
+		panelGgDpCjeZhanBi.hightLightFxValues(dpmaxwk, showcjemin, showcjemax,cjemaxwk,showhsl);
+		panelbkwkzhanbi.hightLightFxValues(dpmaxwk, showcjemin,showcjemax, cjemaxwk,showhsl);
+		panelggbkcjezhanbi.hightLightFxValues(bkmaxwk, showcjemin, showcjemax, cjemaxwk,showhsl);
 	}
 	/*
 	 * 
@@ -882,11 +897,11 @@ public class BanKuaiFengXi extends JDialog {
                     		BanKuai shdpbankuai = (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
                     		zhishubk = shdpbankuai;
                     	} else if(stockofbank.getMyOwnCode().startsWith("3")) {
-                    		BanKuai szdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
+                    		BanKuai szdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);
                     		zhishubk = szdpbankuai;
                     	} else{
                     		
-                    		BanKuai cybdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);     
+                    		BanKuai cybdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);     
                     		zhishubk = cybdpbankuai;
                     	}
                     	
@@ -914,11 +929,6 @@ public class BanKuaiFengXi extends JDialog {
 			}
 		});
 		
-		
-		menuItemliutong = new JMenuItem("X 按流通市值排名"); //系统默认按流通市值排名
-		menuItemzongshizhi = new JMenuItem("按总市值排名");
-		menuItemchengjiaoer = new JMenuItem("按成交额排名");
-		
         menuItemliutong.addActionListener(new ActionListener() {
 
             @Override
@@ -931,33 +941,6 @@ public class BanKuaiFengXi extends JDialog {
             	((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByLiuTongShiZhi();
             	((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByLiuTongShiZhi();
             	((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).sortTableByLiuTongShiZhi();
-            	
-//            	int selectedindex = tabbedPanegegu.getSelectedIndex();
-//            	switch(selectedindex) {
-//            	case 0:
-//            		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByLiuTongShiZhi();
-//            		
-//            		break;
-//            	case 1:
-//            		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).sortTableByLiuTongShiZhi();
-//            		
-//            		break;
-//            	case 2:
-//            		((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).sortTableByLiuTongShiZhi();
-//            		
-//            		break;
-//            	case 3:
-//            		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByLiuTongShiZhi();
-//            		
-//            		break;
-//            	case 4:
-//            		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByLiuTongShiZhi();
-//            		
-//            		break;
-//            	case 5:
-//            		((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).sortTableByLiuTongShiZhi();
-//            		break;
-//            	}
             }
         });
         menuItemchengjiaoer.addActionListener(new ActionListener() {
@@ -973,33 +956,6 @@ public class BanKuaiFengXi extends JDialog {
         		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByChenJiaoEr();
         		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByChenJiaoEr();
         		((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).sortTableByChenJiaoEr();
-            	
-//            	int selectedindex = tabbedPanegegu.getSelectedIndex();
-//            	switch(selectedindex) {
-//            	case 0:
-//            		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByChenJiaoEr();
-//            		
-//            		break;
-//            	case 1:
-//            		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).sortTableByChenJiaoEr();
-//            		
-//            		break;
-//            	case 2:
-//            		((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).sortTableByChenJiaoEr();
-//            		
-//            		break;
-//            	case 3:
-//            		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByChenJiaoEr();
-//            		
-//            		break;
-//            	case 4:
-//            		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByChenJiaoEr();
-//            		
-//            		break;
-//            	case 5:
-//            		((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel()).sortTableByChenJiaoEr();
-//            		break;
-//            	}
             }
         });
 
@@ -1012,18 +968,15 @@ public class BanKuaiFengXi extends JDialog {
                 if (e.getButton() == MouseEvent.BUTTON1) {
 //                    pane.setSelectedComponent(panel);
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
-                    JPopupMenu jPopupMenu = new JPopupMenu();
-//                    JMenuItem menuItemliutong = new JMenuItem("按流通市值排名");
-//                    JMenuItem menuItemzongshizhi = new JMenuItem("按流通市值排名");
-//                    JMenuItem menuItemchengjiaoer = new JMenuItem("按成交额排名");
-                    
-                    jPopupMenu.add(menuItemzongshizhi);
-                    menuItemzongshizhi.setEnabled(false);
-                    jPopupMenu.add(menuItemliutong);
-                    jPopupMenu.add(menuItemchengjiaoer);
+//                    JPopupMenu jPopupMenu = new JPopupMenu();
+//                   
+//                    jPopupMenu.add(menuItemzongshizhi);
+//                    menuItemzongshizhi.setEnabled(false);
+//                    jPopupMenu.add(menuItemliutong);
+//                    jPopupMenu.add(menuItemchengjiaoer);
                     
                    
-                    jPopupMenu.show(tabbedPanegegu, e.getX(),   e.getY());
+                	jPopupMenuoftabbedpane.show(tabbedPanegegu, e.getX(),   e.getY());
                 }
             }
 
@@ -1349,7 +1302,7 @@ public class BanKuaiFengXi extends JDialog {
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				if( Strings.isNullOrEmpty(tfldshowcje.getText() )) {
+				if( Strings.isNullOrEmpty(tfldshowcje.getText()) &&  Strings.isNullOrEmpty(tfldshowcjemax.getText()) ) {
 					JOptionPane.showMessageDialog(null,"请设置突出显示的成交额！");
 					ckboxshowcje.setSelected(false);
 					return;
@@ -2382,7 +2335,8 @@ public class BanKuaiFengXi extends JDialog {
 	private JTextField tfldshowcje;
 	private JTextField tfldparsedfile;
 	private JTabbedPane tabbedPanegeguzhanbi;
-	private JTextArea tfldselectedmsg;
+//	private JTextArea tfldselectedmsg;
+	private BanKuaiListEditorPane tfldselectedmsg;
 	private JStockComboBox cbxsearchbk;
 	private JButton btnChosPasFile;
 	private JCheckBox ckboxshowcje;
@@ -2421,9 +2375,12 @@ public class BanKuaiFengXi extends JDialog {
 	private JMenuItem menuItemRmvNodeFmFile;
 	private JButton btnshizhifx;
 	private JCheckBox cbxshizhifx;
+	private JPopupMenu jPopupMenuoftabbedpane;
 	private JMenuItem menuItemliutong ; //系统默认按流通市值排名
 	private JMenuItem menuItemzongshizhi ;
 	private JMenuItem menuItemchengjiaoer ;
+	private JTextField tfldshowcjemax;
+	
 	
 	private void initializeGui() {
 		
@@ -2527,13 +2484,14 @@ public class BanKuaiFengXi extends JDialog {
 		pnllastestggcjlzhanbi.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		tabbedPane.addTab("\u677F\u5757\u5F53\u5468\u6210\u4EA4\u91CF\u4E2A\u80A1\u5360\u6BD4", null, pnllastestggcjlzhanbi, null);
 		
-		tfldselectedmsg = new JTextArea();
+//		tfldselectedmsg = new JTextArea();
+		tfldselectedmsg = new BanKuaiListEditorPane ();
 		scrollPaneuserselctmsg.setViewportView(tfldselectedmsg);
-		tfldselectedmsg.setLineWrap(true);
+//		tfldselectedmsg.setLineWrap(true);
 		
 		
 		tfldselectedmsg.setEditable(false);
-		tfldselectedmsg.setColumns(10);
+//		tfldselectedmsg.setColumns(10);
 //		panelbkcje.setBarDisplayedColor(Color.CYAN);
 		
 		panelbkwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl();
@@ -2870,7 +2828,7 @@ public class BanKuaiFengXi extends JDialog {
 			tfldweight.setText("0");
 			tfldweight.setColumns(10);
 			
-			ckboxshowcje = new JCheckBox("\u7A81\u51FA\u663E\u793A\u6210\u4EA4\u989D>(\u4EBF)");
+			ckboxshowcje = new JCheckBox("\u7A81\u51FA\u6210\u4EA4\u989D\u533A\u95F4(\u4EBF)");
 			ckboxshowcje.setBackground(Color.LIGHT_GRAY);
 			ckboxshowcje.setForeground(Color.YELLOW);
 			
@@ -2948,6 +2906,9 @@ public class BanKuaiFengXi extends JDialog {
 			
 			cbxshizhifx = new JCheckBox("\u8F93\u51FA\u5E02\u503C\u5206\u6790\u7ED3\u679C");
 			
+			tfldshowcjemax = new JTextField();
+			tfldshowcjemax.setColumns(10);
+			
 			
 			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
@@ -2965,8 +2926,10 @@ public class BanKuaiFengXi extends JDialog {
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addComponent(ckboxshowcje)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(tfldshowcje, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-						.addGap(4)
+						.addComponent(tfldshowcje, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(tfldshowcjemax, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+						.addGap(6)
 						.addComponent(cbxdpmaxwk)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(tflddisplaydpmaxwk, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
@@ -3022,7 +2985,8 @@ public class BanKuaiFengXi extends JDialog {
 										.addComponent(tfldbkmaxwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(chkcjemaxwk)
 										.addComponent(tfldcjemaxwk, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-										.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+										.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+										.addComponent(tfldshowcjemax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 									.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
 								.addContainerGap())
 							.addGroup(gl_buttonPane.createSequentialGroup()
@@ -3073,23 +3037,17 @@ public class BanKuaiFengXi extends JDialog {
 		tablexuandingminustwo.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
 		tablexuandingminustwo.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
 		//
-//		TableColumnModel tcm = tableGuGuZhanBiInBk.getColumnModel();
-//		tcm.removeColumn( tcm.getColumn(5) );
-//		
-//		TableColumnModel tcm2 = tablexuandingzhou.getColumnModel();
-//		tcm2.removeColumn( tcm2.getColumn(5) );
-//		
-//		TableColumnModel tcm3 = tablexuandingplustwo.getColumnModel();
-//		tcm3.removeColumn( tcm3.getColumn(5) );
-//		
-//		TableColumnModel tcm4 = tablexuandingplusone.getColumnModel();
-//		tcm4.removeColumn( tcm4.getColumn(5) );
-//		
-//		TableColumnModel tcm5 = tablexuandingminusone.getColumnModel();
-//		tcm5.removeColumn( tcm5.getColumn(5) );
-//		
-//		TableColumnModel tcm6 = tablexuandingminustwo.getColumnModel();
-//		tcm6.removeColumn( tcm6.getColumn(5) );
+		
+		jPopupMenuoftabbedpane = new JPopupMenu();
+		menuItemliutong = new JMenuItem(" 按流通市值排名"); 
+		menuItemzongshizhi = new JMenuItem("按总市值排名");
+		menuItemchengjiaoer = new JMenuItem("X 按成交额排名"); //系统默认按成交额排名
+//      
+		jPopupMenuoftabbedpane.add(menuItemzongshizhi);
+       menuItemzongshizhi.setEnabled(false);
+       jPopupMenuoftabbedpane.add(menuItemliutong);
+       jPopupMenuoftabbedpane.add(menuItemchengjiaoer);
+
 	}
 	/*
 	 * 根据星期几已经本周几个交易日自动设置成交量的值
@@ -3138,6 +3096,7 @@ public class BanKuaiFengXi extends JDialog {
 		private Boolean shouldnotexportststocks;
 		private Double havedayangxianundercertainchenjiaoer;
 		private Double settingcje;
+		private Double settingcjemin;
 		private Integer settindpgmaxwk;
 		private Integer settinbkgmaxwk;
 		private Integer settingcjemaxwk;
@@ -3192,10 +3151,21 @@ public class BanKuaiFengXi extends JDialog {
 		private void setSettingcje(String exportcjelevel) {
 			if(exportcjelevel != null) {
 				this.settingcje = Double.parseDouble( exportcjelevel );
-				this.tooltips = this.tooltips + "成交额>=" + settingcje + "亿";
+				this.tooltips = this.tooltips + "成交额<=" + settingcje + "亿";
 			}
 			else
 				this.settingcje = -10000000000000000.0;
+		}
+		public Double getSettingcjemin() {
+			return settingcjemin * 100000000;
+		}
+		private void setSettingcjemin(String exportcjelevel) {
+			if(exportcjelevel != null) {
+				this.settingcjemin = Double.parseDouble( exportcjelevel );
+				this.tooltips = this.tooltips + "成交额>=" + settingcjemin + "亿";
+			}
+			else
+				this.settingcjemin = -10000000000000000.0;
 		}
 		public Integer getSettindpgmaxwk() {
 			return settindpgmaxwk;

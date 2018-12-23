@@ -132,13 +132,13 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selecteddate));
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cje, Integer cjemaxwk,Double showhsl) {
+	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl) {
 		
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cje, Integer cjemaxwk, Double shoowhsl) {
-		cjezblargepnl.hightLightFxValues(cjezbtoupleveldpmax, cje, cjemaxwk,shoowhsl) ;
-		cjelargepnl.hightLightFxValues(cjezbtoupleveldpmax, cje, cjemaxwk,shoowhsl) ;
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax,Integer cjemaxwk, Double shoowhsl) {
+		cjezblargepnl.hightLightFxValues(cjezbtoupleveldpmax, cjemin, cjemax,cjemaxwk,shoowhsl) ;
+		cjelargepnl.hightLightFxValues(cjezbtoupleveldpmax, cjemin, cjemax,cjemaxwk,shoowhsl) ;
 		
 	}
 	@Override
