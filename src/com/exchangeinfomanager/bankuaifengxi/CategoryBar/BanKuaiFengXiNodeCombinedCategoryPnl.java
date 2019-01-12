@@ -23,6 +23,7 @@ import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
@@ -214,19 +215,20 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	/*
 	 * 
 	 */
-	public void setCurSelectedBarInfo (LocalDate newdate,String selectedtooltip) 
-	{
-        String oldText = this.dateselected + this.tooltipselected;
-        this.dateselected = newdate ;
-        try {
-        	this.tooltipselected =  this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + selectedtooltip;
-        } catch (java.lang.NullPointerException e) {
-//        	e.printStackTrace();
-        	this.tooltipselected =  "个股代码/名称NULL"  + ": " + selectedtooltip;
-        }
-        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
-        pcs.firePropertyChange(evt);
-    }
+//	public void setCurSelectedBarInfo (LocalDate newdate,String selectedtooltip) 
+//	{
+//        String oldText = this.dateselected + this.tooltipselected;
+//        this.dateselected = newdate ;
+////        try {
+////        	this.tooltipselected =  this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + selectedtooltip;
+////        } catch (java.lang.NullPointerException e) {
+//////        	e.printStackTrace();
+////        	this.tooltipselected =  "个股代码/名称NULL"  + ": " + selectedtooltip;
+////        }
+////        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
+//        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.tooltipselected );
+//        pcs.firePropertyChange(evt);
+//    }
 	@Override
 	public void propertyChange(PropertyChangeEvent evt)
 	{
@@ -234,11 +236,61 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			String selectedinfo = evt.getNewValue().toString();
             if(selectedinfo.equals("test"))
             	return;
-			LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-			
-			String tooltip = selectedinfo.substring(10,selectedinfo.length());
-			setCurSelectedBarInfo (datekey,tooltip);
+            
+            org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+    		org.jsoup.select.Elements content = doc.select("body");
+    		org.jsoup.select.Elements dl = content.select("dl");
+    		org.jsoup.select.Elements li = dl.get(0).select("li");
+    		String selecteddate = li.get(0).text();
+    		LocalDate datekey = LocalDate.parse(selecteddate);
+    		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+    		
+    		//把两个panel的HTML信息组合成一个HTML向上级界面分发
+    		org.jsoup.select.Elements divnodecodename = content.select("nodecode");
+    		org.jsoup.select.Elements nodetype = content.select("nodetype");
+    		
+    		String cjettp = cjelargepnl.getToolTipSelected ();
+    		org.jsoup.nodes.Document cjedoc = Jsoup.parse(cjettp);
+    		org.jsoup.select.Elements cjecontent = cjedoc.select("body");
+    		org.jsoup.select.Elements cjedl = cjedoc.select("dl");
+    		org.jsoup.select.Elements cjeli = cjedoc.select("li");
+    		
+    		
+    		String cjezbttp = cjezblargepnl.getToolTipSelected ();
+    		org.jsoup.nodes.Document cjezbdoc = Jsoup.parse(cjezbttp);
+    		org.jsoup.select.Elements cjezbcontent = cjezbdoc.select("body");
+    		org.jsoup.select.Elements cjezbdl = cjezbdoc.select("dl");
+    		org.jsoup.select.Elements cjezbli = cjezbdoc.select("li");
+    		
+    		
+    		String html = "";
+    		org.jsoup.nodes.Document htmldoc = Jsoup.parse(html);
+    		org.jsoup.select.Elements htmlcontent = htmldoc.select("body");
+    		for(org.jsoup.nodes.Element htmlbody : htmlcontent) {
+    			org.jsoup.nodes.Element htmldiv = htmlbody.appendElement("div");
+    			htmldiv.appendChild( divnodecodename.get(0) );
+    			htmldiv.appendChild( nodetype.get(0) );
+    			
+    			org.jsoup.nodes.Element htmldl = htmldiv.appendElement("dl");
+   			 
+	   			 org.jsoup.nodes.Element lidate = htmldl.appendElement("li");
+	   			 lidate.appendText(selecteddate.toString());
+	   			 
+	   			 for(int i=1;i<cjeli.size();i++) {
+	   				org.jsoup.nodes.Element htmlcjeli = cjeli.get(i);
+	   				htmldl.appendChild(htmlcjeli);
+	   			 }
+	   			for(int i=1;i<cjezbli.size();i++) { 
+	   				org.jsoup.nodes.Element htmlcjezbli = cjezbli.get(i); 
+	   				htmldl.appendChild(htmlcjezbli);
+	   			 }
+	   			 
+    		}
+    		html = htmldoc.toString();
+    		PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", html );
+            pcs.firePropertyChange(evtnew);
+    		
+//			setCurSelectedBarInfo (datekey,tooltip);
 			
 		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
 			String selectedinfo = evt.getNewValue().toString();

@@ -102,7 +102,11 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	private StockCalendarAndNewDbOperation newsdbopt;
 	private BanKuaiDbOperation bkdbopt;
 	private JPopupMenu popupMenuGeguNews;
-//	private boolean youxianxianshiparsefile;
+
+//	public void addNewMenuItem (JMenuItem newmenuitem)
+//	{
+//		this.popupMenuGeguNews.add(newmenuitem);
+//	}
 	
 	private void createMenu() 
 	{

@@ -28,7 +28,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		super ();
 	}
 	
-	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","占比MaxWk","成交额增长贡献率","CjeMaxWk","成交量排名"};
+	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","占比MaxWk","成交额增长贡献率","CjeMaxWk","成交额排名"};
 	List<BanKuai> entryList;
 	LocalDate showzhbiwknum;
 	private String curperiod;
@@ -37,18 +37,21 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTableModel.class);
 	
+	/*
+	 * 
+	 */
 	public void refresh  (LocalDate curselectdate,int difference2, String period, ArrayList<ExportCondition> initializeconditon1)
 	{
 		this.showzhbiwknum = curselectdate;
 		this.difference = difference2;
 		this.curperiod = period;
 //		this.initialzedcon = initializeconditon1;
-//		try{
-//			if(entryList != null) //按成交额排序
-//				Collections.sort(entryList, new NodeChenJiaoErComparator(showzhbiwknum,difference,curperiod) );
-//		} catch (java.lang.IllegalArgumentException e) {
-//			e.printStackTrace();
-//		}
+		try{
+			if(entryList != null) //按成交额排序
+				Collections.sort(entryList, new NodeChenJiaoErComparator(showzhbiwknum,difference,curperiod) );
+		} catch (java.lang.IllegalArgumentException e) {
+			e.printStackTrace();
+		}
 	 	
 		this.fireTableDataChanged();
 	}
@@ -150,7 +153,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             		Integer chengjiaoerpaiming = this.entryList.indexOf(bankuai) + 1;
             		value = chengjiaoerpaiming;
             	} else 
-            		value = 5000;
+            		value = -5000;
             	
             	break;
 	    	}

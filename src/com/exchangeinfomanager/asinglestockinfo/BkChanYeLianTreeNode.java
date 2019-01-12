@@ -429,7 +429,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			}
 
 			private String nodeperiodtype;
-			protected OHLCSeries stockohlc; //板块自己的成交记录以及一些分析结果
+			protected OHLCSeries stockohlc; //每日成交的OHLC
 			protected TimeSeries stockamo; //成交额
 			protected TimeSeries stockvol; //成交量
 			protected TimeSeries stockamozhanbi; //成交额占比
@@ -539,17 +539,24 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			/*
 			 * 
 			 */
-			public TimeSeries getRangeChengJiaoEr (LocalDate requiredstart,LocalDate requiredend)
-			{
-				RegularTimePeriod start = this.getJFreeChartFormateTimePeriod(requiredstart,0);
-				RegularTimePeriod end = this.getJFreeChartFormateTimePeriod(requiredend,0);
-				try {
-					return this.stockamo.createCopy( start,  end);
-				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
-					return null;
-				}
-			}
+//			public TimeSeries getChengJiaoEr ()
+//			{
+//				return stockamo; //成交额
+//			}
+			/*
+			 * 
+			 */
+//			private TimeSeries getRangeChengJiaoEr (LocalDate requiredstart,LocalDate requiredend)
+//			{
+//				RegularTimePeriod start = this.getJFreeChartFormateTimePeriod(requiredstart,0);
+//				RegularTimePeriod end = this.getJFreeChartFormateTimePeriod(requiredend,0);
+//				try {
+//					return this.stockamo.createCopy( start,  end);
+//				} catch (CloneNotSupportedException e) {
+//					e.printStackTrace();
+//					return null;
+//				}
+//			}
 			/*
 			 * 
 			 */

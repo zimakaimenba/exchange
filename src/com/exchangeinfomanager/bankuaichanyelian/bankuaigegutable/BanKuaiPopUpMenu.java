@@ -31,6 +31,7 @@ public abstract class BanKuaiPopUpMenu extends JPopupMenu
 	protected JMenuItem menuItemAddNews;
 	protected JMenuItem menuItemAddToGz;
 	protected JMenuItem menuItemSetting;
+	
 //	private JMenuItem menuItemMakeLongTou;
 	protected BanKuaiDbOperation bkdbopt;
 //	private BanKuaiAndChanYeLian bkcyl;
@@ -45,7 +46,10 @@ public abstract class BanKuaiPopUpMenu extends JPopupMenu
 
 		createEvents ();
 	}
-	
+	public JPopupMenu getPopupMenu ()
+	{
+		return this;
+	}
 	private void createMenuItems() 
 	{
 		menuItemAddNews = new JMenuItem("Ìí¼ÓÐÂÎÅ");

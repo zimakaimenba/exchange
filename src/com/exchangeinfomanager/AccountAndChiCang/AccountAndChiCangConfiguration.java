@@ -31,6 +31,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountRongZi;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountXinYongPuTong;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
+import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -45,10 +46,10 @@ import com.google.common.collect.Multimaps;
 
 public class AccountAndChiCangConfiguration 
 {
-	public AccountAndChiCangConfiguration() 
+	private AccountAndChiCangConfiguration() 
 	{
 		 acntdbop = new AccountDbOperation ();
-		 bkdbopt = new BanKuaiDbOperation ();
+//		 bkdbopt = new BanKuaiDbOperation ();
 //		 stockdbopt = new StockDbOperations ();
 	
 		 cashaccountsdetailmap = new HashMap<String,CashAccountBasic>();
@@ -65,11 +66,21 @@ public class AccountAndChiCangConfiguration
 //		initiazlizeTodayOpt ();
 	}
 	
-	SystemConfigration sysconfig ;
+	 public static AccountAndChiCangConfiguration getInstance ()
+	 {  
+	        return Singtonle.instance;  
+	 }
+	 
+	 private static class Singtonle 
+	 {  
+	        private static AccountAndChiCangConfiguration instance =  new AccountAndChiCangConfiguration ();  
+	 }
+	
+//	SystemConfigration sysconfig ;
 
 	private AccountDbOperation acntdbop;
 //	private StockDbOperations stockdbopt;
-	private BanKuaiDbOperation bkdbopt;
+//	private BanKuaiDbOperation bkdbopt;
 	private HashMap<String, CashAccountBasic> cashaccountsdetailmap;
 	private HashMap<String ,AccountPuTong> putongaccountsdetailmap;
 	private HashMap<String ,AccountXinYongPuTong> rzrqputongaccountsdetailmap; 

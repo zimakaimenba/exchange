@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -17,6 +18,8 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.labels.CategoryItemLabelGenerator;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -32,6 +35,8 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.Week;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
@@ -52,17 +57,17 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		super ();
 		super.plot.setRenderer(new CustomRendererForCje() );
 		
-		((CustomRendererForCje) plot.getRenderer()).setBarPainter(new StandardBarPainter());
-		
-		CustomCategoryToolTipGeneratorForChenJiaoEr custotooltip = new CustomCategoryToolTipGeneratorForChenJiaoEr();
-//		((CustomRendererForCje) plot.getRenderer()).setSeriesToolTipGenerator(0,custotooltip);
-		((CustomRendererForCje) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
-		
-		DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
-		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelsVisible(true);
-		
-		
+//		((CustomRendererForCje) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+//		
+//		CustomCategoryToolTipGeneratorForChenJiaoEr custotooltip = new CustomCategoryToolTipGeneratorForChenJiaoEr();
+//		((CustomRendererForCje) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
+//		
+////		DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
+////		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+////		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelsVisible(true);
+//		
+//		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
+//		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelGenerator(labelgenerator);
 	}
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference,String period)
 	{
@@ -115,16 +120,18 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		
 		double highestHigh =0.0; //设置显示范围
 		
-		TimeSeries rangecje = nodexdata.getRangeChengJiaoEr(startdate, enddate);
-		
+//		TimeSeries rangecje = nodexdata.getRangeChengJiaoEr(startdate, enddate);
+//		TimeSeries rangecje =  nodexdata.getChengJiaoEr ();
 		LocalDate tmpdate = requirestart;
 		do  {
 			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
-				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
-			TimeSeriesDataItem cjerecord = rangecje.getDataItem(tmpwk);
-			tmpwk = null;
-			if(cjerecord != null) {
-				double cje = cjerecord.getValue().doubleValue();
+//				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+//			TimeSeriesDataItem cjerecord = rangecje.getDataItem(tmpwk);
+//			tmpwk = null;
+			Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);
+			if(cje != null) {
+//				double cje = cjerecord.getValue().doubleValue();
+				
 				barchartdataset.setValue(cje,"占比",tmpdate.with(DayOfWeek.FRIDAY));
 				
 				if(cje > highestHigh)
@@ -183,6 +190,21 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		}
 		
 	}
+	/*
+	 * 
+	 */
+	@Override
+	public String getToolTipSelected ()
+	{
+		int indexx = barchartdataset.getColumnIndex(super.dateselected);
+		
+		CustomCategoryToolTipGeneratorForChenJiaoEr ttpg = 	
+		(CustomCategoryToolTipGeneratorForChenJiaoEr)(((CustomRendererForCje) plot.getRenderer()).getBaseToolTipGenerator());
+		
+		String tooltips = ttpg.generateToolTip(super.barchartdataset, 0, indexx);
+		
+		return tooltips;
+	}
 }
 
 class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer 
@@ -193,32 +215,23 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
     public CustomRendererForCje() {
         super();
         super.displayedmaxwklevel = 7;
-        super.displayedcolorindex = Color.orange;
+        super.displayedcolumncolorindex = Color.orange;
+        
+        this.setBarPainter(new StandardBarPainter());
+		
+		CustomCategoryToolTipGeneratorForChenJiaoEr custotooltip = new CustomCategoryToolTipGeneratorForChenJiaoEr();
+		this.setBaseToolTipGenerator(custotooltip);
+		
+//		DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
+//		this.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+		
+		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGeneratorForCje ();
+		this.setBaseItemLabelGenerator(labelgenerator);
+		this.setBaseItemLabelsVisible(true);
+		
+		labelgenerator.setDisplayedMaxWkLevel(super.displayedmaxwklevel);
     }
 
-//	public Paint getItemPaint(final int row, final int column) 
-//    {
-//		GradientPaint gp2 = new GradientPaint( //当交易周交易日不是5天的话，特俗颜色
-//	            0.0f, 0.0f, super.displayedcolorindex, 
-//	            0.0f, 0.0f, new Color(64, 0, 0)
-//	        );
-//	 
-//		 CategoryPlot plot = getPlot ();
-//	     CategoryDataset dataset = plot.getDataset();
-//		 String selected =  dataset.getColumnKey(column).toString();
-//	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-//	     
-//	     Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
-//     
-//	    if(column == super.shouldcolumnlast)
-//		   	return Color.blue.darker();
-//		else if(column == shouldcolumn) {
-//	    	return new Color (51,153,255);
-//        } else if(exchangesdaynumber != 5) //如果不是一个完整交易周，颜色特俗显示
-//        	return gp2;
-//        else 
-//        	return super.displayedcolorindex;
-//   }
     public Paint getItemLabelPaint(final int row, final int column)
     {
     	CategoryPlot plot = getPlot ();
@@ -245,6 +258,47 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
     }
     
 }
+
+class BkfxItemLabelGeneratorForCje extends BkfxItemLabelGenerator 
+{
+	public BkfxItemLabelGeneratorForCje ()
+	{
+		super (new DecimalFormat(",###"));
+	}
+	@Override
+	public String generateColumnLabel(CategoryDataset dataset, int arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String generateLabel(CategoryDataset dataset, int row, int column) {
+		String selected =  dataset.getColumnKey(column).toString();
+		
+    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+//    	if(selecteddate.equals(LocalDate.parse("2018-11-16"))) {
+//    		String result2 = "";
+//    	}
+    	
+		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
+		
+		String result = "";
+		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
+			NumberFormat nf = this.getNumberFormat();
+			result =  nf.format(dataset.getValue(row, column));
+		} 
+		
+		return result;
+	}
+
+	@Override
+	public String generateRowLabel(CategoryDataset arg0, int arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}
+
 
 
 class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryBarToolTipGenerator  
@@ -274,14 +328,21 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 		
 		String htmlstring = "";
 		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-		org.jsoup.select.Elements content = doc.select("body");
-		content.append(selecteddate.toString() + "<br />" );
-		content.append("成交额" + decimalformate.format(curcje) + danwei + "<br />");
-		content.append("成交额MaxWk=" + maxwk  + "<br />");
+		Elements body = doc.getElementsByTag("body");
+		for(Element elbody : body) {
+			 org.jsoup.nodes.Element dl = elbody.appendElement("dl");
+			 
+			 org.jsoup.nodes.Element li3 = dl.appendElement("li");
+			 li3.appendText(selecteddate.toString());
+			 
+			 org.jsoup.nodes.Element li = dl.appendElement("li");
+			 li.appendText("成交额" + decimalformate.format(curcje) + danwei);
+			 
+			 org.jsoup.nodes.Element li2 = dl.appendElement("li");
+			 li2.appendText("成交额MaxWk=" + maxwk);
+		}
 		
 		htmlstring = doc.toString();
 		return htmlstring;
-		
-//		return selecteddate + " " + "成交额" + decimalformate.format(curcje) + danwei +  "成交额MaxWk=" + maxwk;
     }
 }

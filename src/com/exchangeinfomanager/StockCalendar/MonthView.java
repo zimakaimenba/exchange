@@ -45,7 +45,7 @@ public class MonthView extends View
     {
         super.setBackground(ColorScheme.BACKGROUND);
         super.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        super.add(this.getWeekdaysPanel());
+        super.add(this.getWeekdaysPanel() );
         super.add(Box.createVerticalStrut(10));
 
         this.calendar.setLayout(new GridLayout(6, 7, 1, 1));

@@ -157,7 +157,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	    	   try {
 	    		   output = sellbuyObjects[i][0].toString() + " " + sellbuyObjects[i][1].toString() + " " + sellbuyObjects[i][2].toString();
 	    	   } catch (java.lang.NullPointerException e) {
-    			   e.printStackTrace();
+//    			   e.printStackTrace();
     		   }
 	    	   
 	    	   content.append( "<p>"+ output + "</p>" );

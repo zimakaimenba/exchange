@@ -44,6 +44,7 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiInfoTable extends JTable 
 {
+	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
 	private BanKuaiDbOperation bkdbopt;
 	private SystemConfigration sysconfig;
@@ -86,7 +87,10 @@ public class BanKuaiInfoTable extends JTable
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.swing.JTable#getToolTipText(java.awt.event.MouseEvent)
+	 */
     public String getToolTipText(MouseEvent e) {
         String tip = null;
         java.awt.Point p = e.getPoint();
@@ -112,10 +116,19 @@ public class BanKuaiInfoTable extends JTable
         	}
         });
 		
-		BanKuaiPopUpMenu popupMenuGeguNews = new BanKuaiPopUpMenuForTable(this.stockmanager,this);
+		popupMenuGeguNews = new BanKuaiPopUpMenuForTable(this.stockmanager,this);
 		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
-	
+	/*
+	 * 
+	 */
+	public BanKuaiPopUpMenu getPopupMenu ()
+	{
+		return this.popupMenuGeguNews;
+	}
+	/*
+	 * 
+	 */
 	private void tableMouseClickActions (MouseEvent arg0)
 	{
 

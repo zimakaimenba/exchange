@@ -786,7 +786,19 @@ public class SystemConfigration
 		public String getGephiFileExportPath() {
 			return this.systeminstalledpath;
 		}
-		
+		public String getNodeExportCsvFilePath () 
+		{
+			String path = this.systeminstalledpath + "dailydata/csv/" ;
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			return path;
+		}
 		public boolean getPrivateModeSetting ()
 		{
 			return this.priavtemode;
@@ -898,6 +910,14 @@ public class SystemConfigration
 		public String getSystemAudioPlayed ()
 		{
 			return this.systeminstalledpath + "audio/SystemAlarm1.wav";
+		}
+		/*
+		 * 当前关注个股存放的板块名
+		 */
+		public String getCurZdyBanKuaiOfGuanZhuGeGu() 
+		{
+			// TODO Auto-generated method stub
+			return "模型验证";
 		}
 
 }

@@ -24,7 +24,8 @@ import java.time.LocalDate;
  * and provide update (consumeMeetings) method implementation.
  */
 @SuppressWarnings("all")
-public abstract class View extends JPanel implements CacheListener {
+public abstract class View extends JPanel implements CacheListener 
+{
 
     // create and modify meeting dialogs, which user uses to interact with the program
     private MeetingDialog createDialog;

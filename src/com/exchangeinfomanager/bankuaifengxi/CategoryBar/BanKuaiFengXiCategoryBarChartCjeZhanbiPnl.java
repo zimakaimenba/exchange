@@ -1,9 +1,11 @@
 package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,6 +16,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.CategoryPointerAnnotation;
+import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
@@ -28,7 +32,10 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.Week;
+import org.jfree.ui.TextAnchor;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
@@ -51,15 +58,17 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 
 		super.plot.setRenderer(new CustomCategroyRendererForZhanBi() );
 		
-		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+//		
+//		CustomCategroyToolTipGeneratorForZhanBi custotooltip = new CustomCategroyToolTipGeneratorForZhanBi();
+//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
 		
-		CustomCategroyToolTipGeneratorForZhanBi custotooltip = new CustomCategroyToolTipGeneratorForZhanBi();
-//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setSeriesToolTipGenerator(0,custotooltip);
-		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
+//		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelsVisible(true);
 		
-		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelsVisible(true);
+//		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
+//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(labelgenerator);
 		
         //line part
 //        linechartdataset = new DefaultCategoryDataset();
@@ -78,7 +87,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode, java.time.LocalDate, int, java.lang.String)
-	 * …˝º∂’º±» ˝æ›
+	 * ÂçáÁ∫ßÂç†ÊØîÊï∞ÊçÆ
 	 */
 	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference, String period)
 	{
@@ -110,9 +119,9 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 //		render.setDisplayNode(this.curdisplayednode);
 //		render.setDisplayNodeXPeriod (nodexdata);
 //		
-//		//»Á”–∑÷ŒˆΩ·π˚£¨ticklableœ‘ æ∫Ï…´
-//		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
-//		axis.setDisplayNode(this.curdisplayednode,period);
+//		//Â¶ÇÊúâÂàÜÊûêÁªìÊûúÔºåticklableÊòæÁ§∫Á∫¢Ëâ≤
+		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
+		axis.setDisplayNode(this.curdisplayednode,period);
 		
 	}
 	/*
@@ -127,7 +136,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 
 		super.barchart.setNotify(false);
 		
-		double highestHigh =0.0; //…Ë÷√œ‘ æ∑∂Œß
+		double highestHigh =0.0; //ËÆæÁΩÆÊòæÁ§∫ËåÉÂõ¥
 		
 		TimeSeries rangecjezb = nodexdata.getRangeChengJiaoErZhanBi(startdate, enddate);
 	
@@ -136,17 +145,43 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
 			TimeSeriesDataItem cjerecord = rangecjezb.getDataItem(tmpwk);
 			tmpwk = null;
+			double cjezb = 0;
 			if(cjerecord != null) {
-				double cjezb = cjerecord.getValue().doubleValue();
+				cjezb = cjerecord.getValue().doubleValue();
 				barchartdataset.setValue(cjezb,curdisplayednode.getMyOwnCode(),tmpdate.with(DayOfWeek.FRIDAY));
 				
 				if(cjezb > highestHigh)
 					highestHigh = cjezb;
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
-					barchartdataset.setValue(0.0,curdisplayednode.getMyOwnCode(),tmpdate);
+					cjezb = 0.0;
+					barchartdataset.setValue(0.0,curdisplayednode.getMyOwnCode(),tmpdate.with(DayOfWeek.FRIDAY));
 				} 
 			}
+			
+				if(super.curdisplayednode.getType() == BanKuaiAndStockBasic.TDXGG) {
+					Integer gzjl = ((StockNodeXPeriodData)nodexdata).hasGzjlInPeriod(tmpdate, 0);
+					if(gzjl != null) {
+						double angle; Color paintcolor;String label;
+						if(gzjl == 1) {
+							angle = 10 * Math.PI/4;
+							paintcolor = Color.YELLOW;
+							label = "jr";
+						}	else {						
+							angle = 10 * Math.PI/4;
+							paintcolor = Color.YELLOW;
+							label = "yc";
+						}
+						CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, tmpdate.with(DayOfWeek.FRIDAY), cjezb, angle);
+	//					cpa.setBaseRadius(0.0);
+	//			        cpa.setTipRadius(25.0);
+				        cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+				        cpa.setPaint(paintcolor);
+				        cpa.setTextAnchor(TextAnchor.CENTER);
+						super.plot.addAnnotation(cpa);
+					}
+				}
+
 			
 			if(period.equals(StockGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
@@ -157,13 +192,13 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
-		setPanelTitle ("≥…Ωª∂Ó" + period + curdisplayednode.getMyOwnCode(),requireend);
+		setPanelTitle ("Êàê‰∫§È¢ù" + period + curdisplayednode.getMyOwnCode(),requireend);
 		
 		super.barchart.setNotify(true);
 		operationAfterDataSetup (nodexdata,requirestart,requireend,highestHigh,period);
 	}
 	/*
-	 * Õª≥ˆœ‘ æ“ª–©‘§œ»…Ë÷√
+	 * Á™ÅÂá∫ÊòæÁ§∫‰∏Ä‰∫õÈ¢ÑÂÖàËÆæÁΩÆ
 	 */
 	private void operationAfterDataSetup (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, String period) 
 	{
@@ -171,7 +206,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		render.setDisplayNode(this.curdisplayednode);
 		render.setDisplayNodeXPeriod (nodexdata);
 		
-		//»Á”–∑÷ŒˆΩ·π˚£¨ticklableœ‘ æ∫Ï…´
+		//Â¶ÇÊúâÂàÜÊûêÁªìÊûúÔºåticklableÊòæÁ§∫Á∫¢Ëâ≤
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
 		axis.setDisplayNode(this.curdisplayednode,period);
 		
@@ -191,7 +226,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	{
 		if(cjezbdporbkmax != null) {
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbdporbkmax);
-			this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰
+			this.barchart.fireChartChanged();//ÂøÖÈ°ªÊúâËøôÂè•
 		}
 		
 	}
@@ -200,6 +235,18 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			Double shoowhsl) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public String getToolTipSelected() 
+	{
+		int indexx = barchartdataset.getColumnIndex(super.dateselected);
+		
+		CustomCategroyToolTipGeneratorForZhanBi ttpg = 	
+		(CustomCategroyToolTipGeneratorForZhanBi)(((CustomCategroyRendererForZhanBi) plot.getRenderer()).getBaseToolTipGenerator());
+		
+		String tooltips = ttpg.generateToolTip(super.barchartdataset, 0, indexx);
+		
+		return tooltips;
 	}
 
 }
@@ -213,33 +260,24 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
     public CustomCategroyRendererForZhanBi() {
         super();
         super.displayedmaxwklevel = 4;
-        super.displayedcolorindex = Color.RED.darker();
+        super.displayedcolumncolorindex = Color.RED.darker();
+        
+        this.setBarPainter(new StandardBarPainter());
+		
+		CustomCategroyToolTipGeneratorForZhanBi custotooltip = new CustomCategroyToolTipGeneratorForZhanBi();
+		this.setBaseToolTipGenerator(custotooltip);
+		
+//		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+//		this.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+
+		
+		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGeneratorForCjeZhanBi ();
+		this.setBaseItemLabelGenerator(labelgenerator);
+		this.setBaseItemLabelsVisible(true);
+		
+		labelgenerator.setDisplayedMaxWkLevel(this.displayedmaxwklevel);
     }
 
-//	public Paint getItemPaint(final int row, final int column) 
-//    {
-//		 GradientPaint gp2 = new GradientPaint(
-//		            0.0f, 0.0f, super.displayedcolorindex, 
-//		            0.0f, 0.0f, new Color(64, 0, 0)
-//		        );
-//		 
-//		 CategoryPlot plot = getPlot ();
-//	     CategoryDataset dataset = plot.getDataset();
-//		 String selected =  dataset.getColumnKey(column).toString();
-//	     LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-//
-//	    Integer exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0);
-//		 
-//	    if(column == super.shouldcolumnlast)
-//	    	return Color.blue.darker();
-//	    else if(column == super.shouldcolumn)
-//	    	return new Color (51,153,255);
-//        else  if(exchangesdaynumber != 5) {
-//        	return gp2;
-//        } else
-//            return super.displayedcolorindex;
-//   }
-    
     public Paint getItemLabelPaint(final int row, final int column)
     {
     	CategoryPlot plot = getPlot ();
@@ -257,6 +295,46 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
     
 }
 
+class BkfxItemLabelGeneratorForCjeZhanBi extends BkfxItemLabelGenerator 
+{
+	public BkfxItemLabelGeneratorForCjeZhanBi ()
+	{
+		super (new DecimalFormat("%#0.000"));
+	}
+	@Override
+	public String generateColumnLabel(CategoryDataset dataset, int arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String generateLabel(CategoryDataset dataset, int row, int column) {
+		String selected =  dataset.getColumnKey(column).toString();
+		
+    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+//    	if(selecteddate.equals(LocalDate.parse("2018-11-16"))) {
+//    		String result2 = "";
+//    	}
+    	
+		Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
+		
+		String result = "";
+		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
+			NumberFormat nf = this.getNumberFormat();
+			result =  nf.format(dataset.getValue(row, column));
+		} 
+		
+		return result;
+	}
+
+	@Override
+	public String generateRowLabel(CategoryDataset arg0, int arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}
+
 class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarToolTipGenerator 
 {
 	public String generateToolTip(CategoryDataset dataset, int row, int column)  
@@ -266,7 +344,7 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
     	 
 		
 		
-		Double curzhanbidata = (Double)dataset.getValue(row, column);  //’º±»
+		Double curzhanbidata = (Double)dataset.getValue(row, column);  //Âç†ÊØî
 		if(curzhanbidata == null)
 			return null;
 
@@ -284,44 +362,52 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 			}
 			
 			
-			String htmlstring = selected.toString() + "<br />";
+			String htmlstring = "";
 			org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-			org.jsoup.select.Elements content = doc.select("body");
-			
-			DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
-			try {
-//				tooltip = tooltip +  "’º±»" + decimalformate.format(curzhanbidata) ;
-				content.append("’º±»" + decimalformate.format(curzhanbidata) + "<br />" );
-			} catch (java.lang.IllegalArgumentException e ) {
-//				tooltip = tooltip  +  "’º±»NULL";
-				content.append("’º±»’º±»NULL" + "<br />" );
-			}
-//			try {
-//				tooltip = tooltip +   "’º±»±‰ªØ("	+ decimalformate.format(zhanbigrowthrate) +  ")";
-//			} catch (java.lang.IllegalArgumentException e ) {
-//				tooltip = tooltip  +  "’º±»±‰ªØ(NULL)";
-//			}
-			try {
-//				tooltip = tooltip +  "’º±»MaxWk=" + maxweek.toString() ;
-				content.append("’º±»MaxWk=" + maxweek.toString() + "<br />" );
-			} catch (java.lang.IllegalArgumentException e ) {
-//				tooltip = tooltip + "’º±»MaxWk=NULL";
-				content.append("’º±»MaxWk=NULL"  + "<br />" );
-			}
-			try {
-//				tooltip = tooltip +  "’º±»MinWk=" + minweek.toString() ;
-				content.append("’º±»MinWk=" + minweek.toString() + "<br />" );
-			} catch (java.lang.IllegalArgumentException e ) {
-//				tooltip = tooltip + "’º±»MinWk=NULL";
-				content.append("’º±»MinWk=NULL" + "<br />" );
-			}
-			try {
-//				tooltip = tooltip +  "HSL=" + hsl.toString() ;
-				content.append("HSL=" + hsl.toString()  + "<br />" );
-			} catch (java.lang.IllegalArgumentException e ) {
+			Elements body = doc.getElementsByTag("body");
+			for(Element elbody : body) {
+				 org.jsoup.nodes.Element dl = elbody.appendElement("dl");
+				 
+				 org.jsoup.nodes.Element li5 = dl.appendElement("li");
+				 li5.appendText(selecteddate.toString()); 
 				
-			} catch (java.lang.NullPointerException ex) {
+				String htmltext = null;
 				
+				try {
+					DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
+					htmltext = "Âç†ÊØî" + decimalformate.format(curzhanbidata) ;
+				} catch (java.lang.IllegalArgumentException e ) {
+					htmltext = "Âç†ÊØîÂç†ÊØîNULL" ;
+				}
+				org.jsoup.nodes.Element li1 = dl.appendElement("li");
+				li1.appendText(htmltext);
+				 
+				try {
+					 htmltext = "Âç†ÊØîMaxWk=" + maxweek.toString() ;
+				} catch (java.lang.IllegalArgumentException e ) {
+					htmltext = "Âç†ÊØîMaxWk=NULL"  ;
+				}
+				 org.jsoup.nodes.Element li2 = dl.appendElement("li");
+				 li2.appendText(htmltext);
+				 
+				try {
+					htmltext = "Âç†ÊØîMinWk=" + minweek.toString() ;
+				} catch (java.lang.IllegalArgumentException e ) {
+					htmltext = "Âç†ÊØîMinWk=NULL" ;
+				}
+				 org.jsoup.nodes.Element li3 = dl.appendElement("li");
+				 li3.appendText(htmltext);
+				 
+				try {
+//					DecimalFormat decimalformate = new DecimalFormat("%.3f");
+					htmltext = "HSL=" + String.format("%.3f", hsl);
+				} catch (java.lang.IllegalArgumentException e ) {
+					htmltext = "HSL=NULL";
+				} catch (java.lang.NullPointerException ex) {
+					htmltext = "HSL=NULL";
+				}
+				org.jsoup.nodes.Element li4 = dl.appendElement("li");
+				li4.appendText(htmltext);
 			}
 			
 			htmlstring = doc.toString();

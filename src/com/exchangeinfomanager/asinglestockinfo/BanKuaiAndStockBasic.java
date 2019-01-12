@@ -133,7 +133,11 @@ public interface BanKuaiAndStockBasic
 		/*
 		 * 
 		 */
-		TimeSeries getRangeChengJiaoEr (LocalDate requiredstart,LocalDate requiredend);
+//		TimeSeries getRangeChengJiaoEr (LocalDate requiredstart,LocalDate requiredend);
+		/*
+		 * 
+		 */
+//		TimeSeries getChengJiaoEr ();
 		/*
 		 * 
 		 */

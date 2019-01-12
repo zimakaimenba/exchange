@@ -4,8 +4,13 @@
 package com.exchangeinfomanager.gui.subgui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -15,7 +20,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JEditorPane;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
@@ -24,6 +31,7 @@ import javax.swing.text.Element;
 
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.google.common.collect.Multimap;
@@ -35,7 +43,7 @@ public class BanKuaiListEditorPane extends JEditorPane
 	{
 		super ();
 		this.setEditable(false);
-		this.setContentType("text/html");
+		this.setContentType("text/html;charset=utf-8");
 		
 		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		selectstring = "";
@@ -46,13 +54,59 @@ public class BanKuaiListEditorPane extends JEditorPane
 	private String selectstring;
 	private BanKuaiAndChanYeLian2 bkcyl;
 	public static final String URLSELECTED_PROPERTY = "urlselected";
-
+	public static final String EXPORTCSV_PROPERTY = "exporttocsv";
+	JPopupMenu jPopupMenue = new JPopupMenu();
+	JMenuItem menuItemclear = new JMenuItem("清空内容"); 
+	JMenuItem menuItemgcsv = new JMenuItem("导出到CSV");
 	/*
 	 * 
 	 */
 	public void resetSelectedBanKuai ()
 	{
 		this.selectstring = "";
+	}
+	/*
+	 * 
+	 */
+	public void displayNodeSelectedInfo (String selectinfo)
+	{
+		org.jsoup.nodes.Document selectdoc = Jsoup.parse(selectinfo);
+		org.jsoup.select.Elements selectbody = selectdoc.select("body");
+		String bodystr = null;
+		for(org.jsoup.nodes.Element body : selectbody) {
+			bodystr = body.text();
+			org.jsoup.select.Elements dls = body.select("dl");
+			for(org.jsoup.nodes.Element dl : dls) {
+				
+//				org.jsoup.nodes.Attributes attrs = new org.jsoup.nodes.Attributes();
+//			    attrs.put("size", "5");
+			    org.jsoup.nodes.Element font = new org.jsoup.nodes.Element("Font");
+			    font.attr("size", "3");
+			    
+			    dl.appendChild(font);
+			    
+//			    atrs.put("id", "div1");
+			}
+//			String dltext = dl.text();
+//			System.out.println(dltext);
+		}
+		String head = selectbody.get(0).text();
+		
+		
+		org.jsoup.nodes.Document tflddoc = Jsoup.parse(this.getText());
+		org.jsoup.select.Elements content = tflddoc.select("body");
+		content.append("<font size=\"3\">" + selectbody + "</font>");
+		
+		String htmlstring = tflddoc.toString();
+		this.setText(htmlstring);
+//		try {
+//			this.setPage(htmlstring);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		
 	}
 	/*
 	 * 
@@ -121,6 +175,48 @@ public class BanKuaiListEditorPane extends JEditorPane
 	
 	private void createEvents() 
 	{
+		
+//		menuItemgcsv.setEnabled(false);
+		jPopupMenue.add(menuItemgcsv);
+		jPopupMenue.add(menuItemclear);
+		
+		menuItemgcsv.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	exportContentsToCsv ();
+            }
+        });
+		
+		menuItemclear.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	clearPaneContents ();
+            }
+        });
+
+ 
+		this.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				//System.out.println("this is the test");
+				
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+                  
+              } else if (e.getButton() == MouseEvent.BUTTON3) {
+            	  showpopupMenu (e);
+
+              }
+				
+			}
+			
+		});
+
+		
 		//为个股板块信息的hyperlink注册时间  http://www.javalobby.org/java/forums/t19716.html
 		 ActionMap actionMap = new ActionMap(); 
 	     actionMap.put("openBanKuaiAndChanYeLianDialog", new AbstractAction (){
@@ -131,6 +227,31 @@ public class BanKuaiListEditorPane extends JEditorPane
 	     }); 
 	     
 	     this.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
+	}
+	/*
+	 * 
+	 */
+	protected void clearPaneContents()
+	{
+		this.setText("");
+	}
+	/*
+	 * 
+	 */
+	protected void exportContentsToCsv() 
+	{
+		String htmlstring = this.getText();
+		
+//		PropertyChangeEvent evt = new PropertyChangeEvent(this, EXPORTCSV_PROPERTY, "",  htmlstring );
+		this.firePropertyChange(EXPORTCSV_PROPERTY, "", htmlstring);
+	}
+	/*
+	 * 
+	 */
+	protected void showpopupMenu(MouseEvent e) 
+	{
+		jPopupMenue.show(this, e.getX(),   e.getY());
+		
 	}
 	protected void formateHyperLink(HyperlinkEvent hle) 
 	{

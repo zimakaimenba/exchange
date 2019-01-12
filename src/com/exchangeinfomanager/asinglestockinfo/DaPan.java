@@ -150,11 +150,11 @@ public class DaPan extends BkChanYeLianTreeNode
 			return null;
 		}
 
-		@Override
-		public TimeSeries getRangeChengJiaoEr(LocalDate requiredstart, LocalDate requiredend) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+//		@Override
+//		public TimeSeries getRangeChengJiaoEr(LocalDate requiredstart, LocalDate requiredend) {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
 
 		@Override
 		public TimeSeries getRangeChengJiaoErZhanBi(LocalDate requiredstart, LocalDate requiredend) {
@@ -200,6 +200,12 @@ public class DaPan extends BkChanYeLianTreeNode
 
 		@Override
 		public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public TimeSeries getChengJiaoEr() {
 			// TODO Auto-generated method stub
 			return null;
 		}

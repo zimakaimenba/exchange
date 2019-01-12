@@ -3,12 +3,20 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Paint;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 
 import org.apache.log4j.Logger;
+import org.jfree.chart.labels.CategoryItemLabelGenerator;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.DefaultCategoryItemRenderer;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
@@ -21,6 +29,19 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	public BanKuaiFengXiCategoryBarRenderer() 
 	{
 		super ();
+		
+		this.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
+        this.setItemLabelAnchorOffset(5);
+        this.setItemLabelsVisible(true);
+        this.setBaseItemLabelsVisible(true);
+        this.setMaximumBarWidth(.5);
+        this.setMinimumBarLength(.5);
+        this.setItemMargin(-2);
+        
+//        BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
+//		this.setBaseItemLabelGenerator(labelgenerator);
+		this.setBaseItemLabelsVisible(true);
+		
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarRenderer.class);
@@ -33,7 +54,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	protected BkChanYeLianTreeNode node;
 	protected CategoryDataset chartdataset;
 	protected NodeXPeriodDataBasic nodexdata;
-	protected Color displayedcolorindex;
+	protected Color displayedcolumncolorindex;
 	/*
 	 * 单个个股用这个
 	 */
@@ -42,6 +63,9 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 		this.nodexdata = nodexdata1;
 		BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();
     	tooltipgenerator.setDisplayNodeXPeriod(nodexdata1);
+    	
+    	BkfxItemLabelGenerator labelgenerator = (BkfxItemLabelGenerator)this.getBaseItemLabelGenerator();
+    	labelgenerator.setDisplayNodeXPeriod(nodexdata1);
 	}
 	/*
 	 * 
@@ -52,6 +76,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 			this.shouldcolumnlast = this.shouldcolumn;
 			this.shouldcolumn = column;
 		}
+		
     }
 	/*
 	 * 
@@ -68,13 +93,15 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
     public void setDisplayMaxwkLevel (int maxl) 
     {
     	this.displayedmaxwklevel = maxl;
+    	BkfxItemLabelGenerator lbg = (BkfxItemLabelGenerator)this.getBaseItemLabelGenerator();
+    	lbg.setDisplayedMaxWkLevel(maxl);
     }
     /*
      * 用户可以自定义显示颜色
      */
 	public void setBarDisplayedColor(Color colorindex) 
 	{
-		this.displayedcolorindex = colorindex;
+		this.displayedcolumncolorindex = colorindex;
 	}
 	/*
 	 * (non-Javadoc)
@@ -83,7 +110,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	public Paint getItemPaint(final int row, final int column) 
     {
 		 GradientPaint notwholeweekcolor = new GradientPaint(
-		            0.0f, 0.0f, displayedcolorindex, 
+		            0.0f, 0.0f, displayedcolumncolorindex, 
 		            0.0f, 0.0f, new Color(64, 0, 0)
 		        );
 		 GradientPaint shouldcolumnlastnotwholeweekcolor = new GradientPaint(
@@ -118,17 +145,42 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	        else  if(exchangesdaynumber != 5) {
 	        	return notwholeweekcolor;
 	        } else
-	            return displayedcolorindex;
-		 
-//	    if(column == shouldcolumnlast)
-//	    	return Color.blue.darker();
-//	    else if(column == shouldcolumn)
-//	    	return new Color (51,153,255);
-//        else  if(exchangesdaynumber != 5) {
-//        	return notwholeweekcolor;
-//        } else
-//            return displayedcolorindex;
+	            return displayedcolumncolorindex;
    }
  
 
+}
+
+abstract class  BkfxItemLabelGenerator extends StandardCategoryItemLabelGenerator 
+{
+
+	protected BkChanYeLianTreeNode node;
+	protected NodeXPeriodDataBasic nodexdata;
+	protected int displayedmaxwklevel ;
+//	String decimalformate;
+	public BkfxItemLabelGenerator (DecimalFormat decimalFormat)
+	{
+		super ("{2}",decimalFormat);
+	}
+	@Override
+	abstract public String generateColumnLabel(CategoryDataset dataset, int arg1) ;
+
+	@Override
+	abstract public String generateLabel(CategoryDataset dataset, int row, int column) ;
+
+	@Override
+	abstract public String generateRowLabel(CategoryDataset arg0, int arg1) ;
+	
+	public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    {
+    	this.node = curdisplayednode;
+    }
+    public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
+    {
+		this.nodexdata = nodexdata1;
+	}
+    public void setDisplayedMaxWkLevel (int maxwk)
+    {
+    	this.displayedmaxwklevel = maxwk;
+    }
 }

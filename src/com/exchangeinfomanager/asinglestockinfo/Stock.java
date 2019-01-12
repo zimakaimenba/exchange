@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.ohlc.OHLCItem;
@@ -45,7 +46,8 @@ public class Stock extends BkChanYeLianTreeNode {
 		
 	}
 	
-	private String checklistXml;
+	private Boolean hasreviewedtoday; //在板块分析的时候设置这个标志，这样当天如果已经review过该个股，就可以节省时间
+//	private String checklistXml;
 	private static Logger logger = Logger.getLogger(Stock.class);
 	
 //	private Multimap<String> chiCangAccountNameList; //持有该股票的所有账户的名字
@@ -67,6 +69,17 @@ public class Stock extends BkChanYeLianTreeNode {
 //		else 
 //			return null;
 //	}
+	public void setHasReviewedToday ()
+	{
+		this.hasreviewedtoday = true;
+	}
+	public Boolean wetherHasReiewedToday ()
+	{
+		if(this.hasreviewedtoday == null)
+			return false;
+		else
+			return this.hasreviewedtoday;
+	}
 	
 	public void addNewChiCangAccount (AccountInfoBasic acnt)
 	{
@@ -100,18 +113,18 @@ public class Stock extends BkChanYeLianTreeNode {
 		return new  ArrayList<String>(chiCangAccounts.keySet());
 	}
 
-	/**
-	 * @return the checklistXml
-	 */
-	public String getChecklistXml() {
-		return checklistXml;
-	}
-	/**
-	 * @param checklistXml the checklistXml to set
-	 */
-	public void setChecklistXml(String checklistXml) {
-		this.checklistXml = checklistXml;
-	}
+//	/**
+//	 * @return the checklistXml
+//	 */
+//	public String getChecklistXml() {
+//		return checklistXml;
+//	}
+//	/**
+//	 * @param checklistXml the checklistXml to set
+//	 */
+//	public void setChecklistXml(String checklistXml) {
+//		this.checklistXml = checklistXml;
+//	}
 
 	/*
 	 * 
@@ -215,6 +228,7 @@ public class Stock extends BkChanYeLianTreeNode {
 			stockzongshizhi = new TimeSeries(nodeperiodtype1);
 			periodhighestzhangdiefu = new TimeSeries(nodeperiodtype1);
 			periodlowestzhangdiefu = new TimeSeries(nodeperiodtype1);
+			stockgzjl = new TimeSeries(nodeperiodtype1);
 		}
 		
 		private  TimeSeries stockhuanshoulv; //换手率
@@ -222,6 +236,33 @@ public class Stock extends BkChanYeLianTreeNode {
 		private  TimeSeries stockzongshizhi; //总市值
 		private  TimeSeries periodhighestzhangdiefu; //最高涨幅
 		private  TimeSeries periodlowestzhangdiefu; //最高涨幅
+		private  TimeSeries stockgzjl; //关注记录
+		
+		/*
+		 * (non-Javadoc)
+		 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
+		 */
+		public Integer hasGzjlInPeriod (LocalDate requireddate,int difference)
+		{
+			TimeSeriesDataItem gzjlitem = stockgzjl.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			if(gzjlitem == null)
+				return null;
+			
+			Integer value = (Integer)gzjlitem.getValue();
+			return value;
+		}
+		/*
+		 * 
+		 */
+		public void addGzjlToPeriod (RegularTimePeriod period,Integer fxjg) //1代表加入关注，0代表移除关注
+		{
+			try {
+				stockgzjl.add(period,fxjg);
+//				 addOrUpdate()
+			} catch (org.jfree.data.general.SeriesException e) {
+//				e.printStackTrace();
+			}
+		}
 		/*
 		* (non-Javadoc)
 		* @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem)

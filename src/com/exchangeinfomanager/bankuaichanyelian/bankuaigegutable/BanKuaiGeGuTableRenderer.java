@@ -64,7 +64,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    
 	    if(stock.wetherHasReiewedToday()) {
         	Font defaultFont = this.getFont();
-        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+        	Font font = new Font(defaultFont.getName(), Font.BOLD + Font.ITALIC,defaultFont.getSize());
         	comp.setFont(font);
         }
 	    

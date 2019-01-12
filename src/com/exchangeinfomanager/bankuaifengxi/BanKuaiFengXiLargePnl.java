@@ -65,6 +65,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //	private BanKuaiDbOperation bkdbopt;
 	private LocalDate displayedenddate;
 	private AllCurrentTdxBKAndStoksTree allbksks;
+	private Boolean exportuserselectedinfotocsv;
 
 	public BanKuaiFengXiLargePnl (BkChanYeLianTreeNode nodebkbelonged, BkChanYeLianTreeNode node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period)
 	{
@@ -91,6 +92,15 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	
 	private void createEvents() 
 	{
+		tfldselectedmsg.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+
+                if (evt.getPropertyName().equals(BanKuaiListEditorPane.EXPORTCSV_PROPERTY)) 
+                	exportuserselectedinfotocsv = true;
+            }
+		});
+
 		nodekpnl.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
@@ -185,10 +195,15 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
                     
-					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+            		org.jsoup.select.Elements body = doc.select("body");
+            		org.jsoup.select.Elements dl = body.select("dl");
+            		org.jsoup.select.Elements li = dl.get(0).select("li");
+            		String selecteddate = li.get(0).text();
+            		LocalDate datekey = LocalDate.parse(selecteddate);
     				
-    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				setUserSelectedColumnMessage(tooltip);
+    				
+    				setUserSelectedColumnMessage(selectedinfo);
 
     				nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
     				nodecombinedpnl.highLightSpecificBarColumn(datekey);
@@ -203,13 +218,18 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
                     
-					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-    				
-    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				setUserSelectedColumnMessage(tooltip);
-    				
-    				nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
+                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+            		org.jsoup.select.Elements body = doc.select("body");
+            		org.jsoup.select.Elements dl = body.select("dl");
+            		org.jsoup.select.Elements li = dl.get(0).select("li");
+            		String selecteddate = li.get(0).text();
+            		LocalDate datekey = LocalDate.parse(selecteddate);
+            		nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
     				nodekpnl.highLightSpecificBarColumn(datekey);
+    				
+    				setUserSelectedColumnMessage(selectedinfo);
+    				
+    				
                 }
             }
         });
@@ -220,19 +240,36 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	 */
 	private void setUserSelectedColumnMessage(String selttooltips) 
 	{
+		tfldselectedmsg.displayNodeSelectedInfo (selttooltips);
 //		String allstring = selttooltips + "\n" + "*----------------------*" + "\n";
 //		
 //		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
 //		tfldselectedmsg.setCaretPosition(0);
 		
-		String htmlstring = "";
-		org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
-		org.jsoup.select.Elements content = doc.select("body");
-		content.append("<font size=\"3\">" + selttooltips + "</font>");
+//		String htmlstring = "";
+//		org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
+//		org.jsoup.select.Elements content = doc.select("body");
+//		content.append("<p><font size=\"3\">" + selttooltips + "</font></p>");
+//		
+//		
+//		htmlstring = doc.toString();
+//		tfldselectedmsg.setText(htmlstring);
+	}
+	/*
+	 * 用户选择了导出CSV，把信息传递到上一级才有意义，否则就是NULL 
+	 */
+	public String getUserSelectedColumnMessage( )
+	{
+		if(exportuserselectedinfotocsv) {
+			org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
+//			org.jsoup.select.Elements content = doc.select("body");
+//			String text = content.text();
+//			return text;
+			
+			return doc.toString();
+		}
 		
-		
-		htmlstring = doc.toString();
-		tfldselectedmsg.setText(htmlstring);
+		return null;
 	}
 
 	private void updateData(BkChanYeLianTreeNode nodebkbelogned, BkChanYeLianTreeNode node, LocalDate displayedstartdate1, LocalDate displayedenddate1,
@@ -292,7 +329,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //		tfldselectedmsg.setLineWrap(true);
 		JScrollPane scrollPaneuserselctmsg = new JScrollPane (); 
 		JScrollBar bar = scrollPaneuserselctmsg.getHorizontalScrollBar();
-		tfldselectedmsg.setPreferredSize(new Dimension(150, 0));
+		
+		tfldselectedmsg.setPreferredSize(new Dimension(150, 500));
 		
 		scrollPaneuserselctmsg.setViewportView(tfldselectedmsg);
 

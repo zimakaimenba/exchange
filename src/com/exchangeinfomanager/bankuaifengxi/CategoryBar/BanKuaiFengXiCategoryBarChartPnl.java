@@ -10,12 +10,14 @@ import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
-
+import org.jfree.chart.annotations.CategoryPointerAnnotation;
+import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 
 import org.jfree.chart.entity.CategoryItemEntity;
+import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.plot.CategoryMarker;
@@ -28,6 +30,7 @@ import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
@@ -40,6 +43,7 @@ import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.google.common.base.Strings;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -97,6 +101,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
 	protected BkChanYeLianTreeNode curdisplayednode;	
 	protected String globeperiod = "WEEK";
+	protected int shoulddisplayedmonthnum;
+	
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
 	protected DefaultCategoryDataset barchartdataset ;
@@ -105,7 +111,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	private List<CategoryMarker> categorymarkerlist;
 	
 	private SystemConfigration sysconfig;
-	protected int shoulddisplayedmonthnum;
+	
 //	private BanKuaiDbOperation bkdbopt;
 	
 //	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
@@ -114,7 +120,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public static final String MOUSEDOUBLECLICK_PROPERTY = "mousedoubleclick";
 	protected boolean selectchanged;
 	private String tooltipselected;
-	private LocalDate dateselected;
+	protected LocalDate dateselected;
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
@@ -206,12 +212,18 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		if(barchartdataset != null)
 			barchartdataset.clear();
 		
-		this.chartPanel.removeAll();
-		
 		for(CategoryMarker marker : this.categorymarkerlist) {
 			this.plot.removeDomainMarker(marker);
 		}
 		this.categorymarkerlist.clear();
+		
+//		List<CategoryPointerAnnotation> pointerlist = this.plot.getAnnotations();
+//		for(CategoryPointerAnnotation pointer : pointerlist) 
+//			this.plot.removeAnnotation(pointer);
+		
+		this.plot.clearAnnotations();
+		
+		this.chartPanel.removeAll();
 		
 		this.barchart.fireChartChanged();//必须有这句
 	}
@@ -322,8 +334,11 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
      */
     public void setDisplayMaxwkLevel  (int maxl) 
     {
+    	
     	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel(maxl);
-    	 barchart.fireChartChanged();//必须有这句
+    	BkfxItemLabelGenerator itemlabelg = (BkfxItemLabelGenerator)((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).getBaseItemLabelGenerator();
+    	itemlabelg.setDisplayedMaxWkLevel(maxl);
+    	barchart.fireChartChanged();//必须有这句
     }
 
 	/*
@@ -331,28 +346,47 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	 */
 	public void setCurSelectedBarInfo (LocalDate newdate,String selectedtooltip) 
 	{
-        String oldText = this.dateselected + this.tooltipselected;
+//        String oldText = this.dateselected + this.tooltipselected;
         this.dateselected = newdate ;
-        this.tooltipselected =  this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + selectedtooltip;
-        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
+        
+        String outputhtml = "";
+        org.jsoup.nodes.Document outputdoc = Jsoup.parse(outputhtml);
+        org.jsoup.select.Elements outputcontent = outputdoc.select("body");
+        for(org.jsoup.nodes.Element outputbody : outputcontent) {
+        	org.jsoup.nodes.Element div = outputbody.appendElement("div");
+        	org.jsoup.nodes.Element nodecode = div.appendElement("nodecode");
+    		nodecode.appendText(this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName());
+    		
+    		org.jsoup.nodes.Element nodetype = div.appendElement("nodetype");
+    		nodetype.appendText(String.valueOf(this.curdisplayednode.getType() ) );
+    				
+    		org.jsoup.nodes.Document doc = Jsoup.parse(selectedtooltip);
+    		org.jsoup.select.Elements lis = doc.select("dl");
+    		
+//    			org.jsoup.select.Elements lis = body.select("dl");
+    			for(org.jsoup.nodes.Element li : lis) {
+    				div.appendChild(li);
+    			}
+    		
+        }
+        
+        
+		String htmlstring = outputdoc.toString();
+		
+		PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  htmlstring );
         pcs.firePropertyChange(evt);
     }
 	/*
 	 * 
 	 */
-	public String getToolTipSelected ()
-	{
-		if(tooltipselected != null)
-			return this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + tooltipselected;
-		else
-			return null;
-	}
+	abstract public String getToolTipSelected ();
+	
 	/*
 	 * 
 	 */
-    public ChartPanel getChartPanel() {
-        return chartPanel;
-    }
+//    public ChartPanel getChartPanel() {
+//        return chartPanel;
+//    }
     
 	private JMenuItem mntmFenXiJiLu;
     @SuppressWarnings("deprecation")
@@ -367,16 +401,16 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		//bar parts
 //    	https://www.youtube.com/watch?v=YV80Titt9Q4
 //    	BarRenderer renderer = new BarRenderer ();
-    	BanKuaiFengXiCategoryBarRenderer renderer = new BanKuaiFengXiCategoryBarRenderer ();
+//    	BanKuaiFengXiCategoryBarRenderer renderer = new BanKuaiFengXiCategoryBarRenderer ();
 //        DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 //        renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
-        renderer.setItemLabelAnchorOffset(5);
-        renderer.setItemLabelsVisible(true);
-        renderer.setBaseItemLabelsVisible(true);
-        renderer.setMaximumBarWidth(.5);
-        renderer.setMinimumBarLength(.5);
-        renderer.setItemMargin(-2);
+//        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
+//        renderer.setItemLabelAnchorOffset(5);
+//        renderer.setItemLabelsVisible(true);
+//        renderer.setBaseItemLabelsVisible(true);
+//        renderer.setMaximumBarWidth(.5);
+//        renderer.setMinimumBarLength(.5);
+//        renderer.setItemMargin(-2);
         
         barchartdataset = new DefaultCategoryDataset(); 
         
@@ -387,7 +421,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        LegendTitle legend = new LegendTitle(plot); 
 //        legend.setPosition(RectangleEdge.TOP); 
         plot.setDataset(barchartdataset); 
-        plot.setRenderer(renderer); 
+//        plot.setRenderer(renderer); 
         plot.setRangeAxis(new NumberAxis(""));
         plot.setRangePannable(true);
 

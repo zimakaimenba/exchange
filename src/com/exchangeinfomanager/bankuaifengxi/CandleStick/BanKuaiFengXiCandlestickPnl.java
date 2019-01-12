@@ -100,11 +100,15 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanelDataChangedListener,BarChartPanelHightLightColumnListener
 {
 
+	
+
+
 	public BanKuaiFengXiCandlestickPnl() 
 	{
 		super ();
 		super.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
+		sysconfig = SystemConfigration.getInstance();
 		 createChartPanel();
 		 createEvents ();
 	}
@@ -113,6 +117,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickPnl.class);
 	public static final String ZHISHU_PROPERTY = "combinedzhishu";
+	private SystemConfigration sysconfig;
 	protected BkChanYeLianTreeNode curdisplayednode;
 
 	private OHLCSeries ohlcSeries;
@@ -145,7 +150,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			date = date.plus(difference,ChronoUnit.MONTHS);
 		
 		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		candlestickChart.setNotify(false);
 		this.resetDate();
@@ -178,7 +183,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		setNodeCandleStickDate ( node,  requirestart,  requireend, period , 0);
 		setNodeCandleStickDate ( superbk,  requirestart,  requireend, period , 1);
 		
-		setPanelTitle ( node, requirestart, requirestart);
+		setPanelTitle ( node, requirestart, requireend);
 	}
 	/*
 	 * 
@@ -194,12 +199,12 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 					date = date.plus(difference,ChronoUnit.MONTHS);
 				
 		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		updatedDate (superbk, node, requirestart,requireend,period);
 	}
 	/*
-	 * 
+	 * 个股和板块的K线可以重叠显示 
 	 */
 	private void setNodeCandleStickDate(BkChanYeLianTreeNode node, LocalDate requirestart, LocalDate requireend,
 			String period, int indexofseries) 
@@ -548,9 +553,12 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		candlestickDataset.removeAllSeries();
 		((BanKuaiFengXiCandlestickRenderer)candlestickChart.getXYPlot().getRenderer()).setHighLightKTimeRange (null,null);
-		List<XYPointerAnnotation> pointerlist = candlestickChart.getXYPlot().getAnnotations();
-		for(XYPointerAnnotation pointer : pointerlist) 
-			candlestickChart.getXYPlot().removeAnnotation(pointer);
+		
+//		List<XYPointerAnnotation> pointerlist = candlestickChart.getXYPlot().getAnnotations();
+//		for(XYPointerAnnotation pointer : pointerlist) 
+//			candlestickChart.getXYPlot().removeAnnotation(pointer);
+		
+		candlestickChart.getXYPlot().clearAnnotations();
 		
 		dapancandlestickDataset.removeAllSeries();
 		

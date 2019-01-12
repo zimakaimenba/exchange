@@ -64,10 +64,10 @@ public class StockCalendar extends JCalendar {
         //每月固定信息，用于记录长期月度重复信息,显示在Cal星期的上部
         MeetingService meetingServicewholemonth = new DBMeetingService ( );
     	LabelService labelServicewholemonth = new DBLabelService ();
-        cachewholemonth = new Cache("000000",meetingServicewholemonth, labelServicewholemonth,LocalDate.now(),LocalDate.now().minusMonths(6));
+        cachewholemonth = new Cache("HEADLINE",meetingServicewholemonth, labelServicewholemonth,null,null);
         this.wholemonthview = new WholeMonthNewsView (meetingServicewholemonth, cachewholemonth);
 
-	    this.initHeaderPanel();
+	    this.initHeaderPanel(); //
 	    this.initViewDeck();
 	    this.initJFrame();
 
@@ -93,7 +93,8 @@ public class StockCalendar extends JCalendar {
 
     
 
-    private void initJFrame() {
+    private void initJFrame() 
+    {
     	GridBagLayout gbl = new GridBagLayout(); 
         this.setLayout(gbl);
 //        所有布局必须按从上到下，从左到右顺序
@@ -126,7 +127,8 @@ public class StockCalendar extends JCalendar {
         layout.show(viewDeck, currentView.getName());
     }
 
-    private void initHeaderPanel() {
+    private void initHeaderPanel() 
+    {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20,20));
         headerPanel.setLayout(new GridLayout(1, 2));
         JPanel buttonsPanel = JPanelFactory.createFixedSizePanel();

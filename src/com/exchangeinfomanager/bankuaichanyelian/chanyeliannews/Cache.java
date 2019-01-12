@@ -69,8 +69,13 @@ public class Cache {
      */
     public Collection<InsertedMeeting> produceMeetings(LocalDate firstdayofmonth) 
     {
-    	if(firstdayofmonth.isAfter(this.cashestartdate) && firstdayofmonth.isBefore(this.casheenddate))
+    	//cash只选择初始一年的新闻，如果超过这个范围需要重新从数据库中选择数据
+    	try{
+    		if(firstdayofmonth.isAfter(this.cashestartdate) && firstdayofmonth.isBefore(this.casheenddate))
+        		return this.meetings;
+    	} catch (java.lang.NullPointerException e) { //每月head新闻是一次都找出来的，不设置限制
     		return this.meetings;
+    	}
     	
     	//可能用户选择的日期已经超过了cash内存的新闻的最早日期，要从新选择新闻
     	if(firstdayofmonth.isBefore(this.cashestartdate)) {

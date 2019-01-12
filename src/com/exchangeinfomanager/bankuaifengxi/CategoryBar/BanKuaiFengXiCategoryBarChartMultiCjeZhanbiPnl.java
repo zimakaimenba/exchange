@@ -186,6 +186,11 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbtoupleveldpmax);
 		this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰
 	}
+	@Override
+	public String getToolTipSelected() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
 /*
@@ -196,6 +201,6 @@ class CustomMultiCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRende
 	public CustomMultiCategroyRendererForZhanBi ()
 	{
 		super ();
-		super.displayedcolorindex = Color.RED.darker();
+		super.displayedcolumncolorindex = Color.RED.darker();
 	}
 }

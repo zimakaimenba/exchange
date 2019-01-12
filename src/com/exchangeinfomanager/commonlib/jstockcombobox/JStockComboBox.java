@@ -1,26 +1,44 @@
-package com.exchangeinfomanager.gui.subgui;
+
+package com.exchangeinfomanager.commonlib.jstockcombobox;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.ListCellRenderer;
+//import javax.swing.ListCellRenderer;
+import javax.swing.DefaultListCellRenderer;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
+import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class JStockComboBox extends  JComboBox<String>
 {
@@ -29,30 +47,40 @@ public class JStockComboBox extends  JComboBox<String>
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private SystemConfigration sysconfig;
 
 	public JStockComboBox() 
 	{
 		super();
 		createEvents ();
 		this.setEditable(true);
-		this.setForeground(Color.RED);
+		this.setRenderer(new JStockComboBoxRenderer());
+//		this.setForeground(Color.RED);
 		bkdbopt = new BanKuaiDbOperation ();
+		sysconfig = SystemConfigration.getInstance();
 	}
 	public JStockComboBox(int onlyselecttype) //用户可以指定只选择从数据库中读出某种类型的node
 	{
 		super();
-		createEvents ();
+		
+		this.setRenderer(new JStockComboBoxRenderer());
 		this.setEditable(true);
-		this.setForeground(Color.RED);
+//		this.setForeground(Color.RED);
 		this.bkdbopt = new BanKuaiDbOperation ();
+		sysconfig = SystemConfigration.getInstance();
 		this.onlyselectnodetype = onlyselecttype;
+		
+		createEvents ();
+		
 	}
 
 	private BanKuaiDbOperation bkdbopt;
 	private BkChanYeLianTreeNode nodeshouldbedisplayed;
 	private Integer onlyselectnodetype;
+	 
 
 	/*
+
 	 * 
 	 */
 	public BkChanYeLianTreeNode getUserInputNode ()
@@ -68,28 +96,35 @@ public class JStockComboBox extends  JComboBox<String>
 		String stockcode = stock.getMyOwnCode();
 		String stocname = stock.getMyOwnName();
 
-		preSearch(stock);
+		preSearch(stock.getMyOwnCode(),BanKuaiAndStockBasic.TDXGG);
 		updateStockCombox(stockcode+stocname);
 		return nodeshouldbedisplayed;
 	}
 	public BkChanYeLianTreeNode updateUserSelectedNode (BanKuai bk)
 	{
 		this.nodeshouldbedisplayed = bk;
+		
 		String bkcode = bk.getMyOwnCode();
 		String bkname = bk.getMyOwnName();
+		preSearch(bk.getMyOwnCode(),BanKuaiAndStockBasic.TDXBK);
 		updateStockCombox(bkcode+bkname);
 		return this.nodeshouldbedisplayed;
 	}
 	/*
 	 * 
 	 */
-	public BkChanYeLianTreeNode updateUserSelectedNode (String stockcode)
+	public BkChanYeLianTreeNode updateUserSelectedNode (String stockcode,Integer nodetype)
 	{
 //		this.addItem(stockcode+stocname);
 //		this.setSelectedItem(stockcode);
-		preSearch(stockcode);
-		updateStockCombox();
-		return nodeshouldbedisplayed;
+		preSearch(stockcode,nodetype);
+//		String tmp = formatStockCode( (String)this.getEditor().getItem() );//有可能是原来输入过的，要把代码选择出来。
+		if(nodeshouldbedisplayed != null) {
+			updateStockCombox(stockcode);
+			return nodeshouldbedisplayed;
+		} else
+			return null;
+		
 	}
 	/*
 	 * 
@@ -106,8 +141,18 @@ public class JStockComboBox extends  JComboBox<String>
 			if(this.nodeshouldbedisplayed != null && nodecode.equals( this.nodeshouldbedisplayed.getMyOwnCode() ) )
 				return;
 			
-			preSearch(nodecode);
-			updateStockCombox();
+			if(this.onlyselectnodetype != null) { //用户指定了只要什么类型的node
+				preSearch(nodecode,this.onlyselectnodetype);
+				if(nodeshouldbedisplayed != null && nodeshouldbedisplayed.getType() == this.onlyselectnodetype )
+					updateStockCombox(nodecode);
+				else 
+					nodeshouldbedisplayed = null; //不是用户指定的类型，直接NULL
+			} else {
+				preSearch(nodecode,-1);
+				if(nodeshouldbedisplayed != null)
+					updateStockCombox(nodecode);
+			}
+			
 		} catch(java.lang.NullPointerException ex)	{
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(null, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
@@ -120,16 +165,17 @@ public class JStockComboBox extends  JComboBox<String>
 	/*
 	 * 获取用户输入的个股的基本信息 
 	 */
-	private void preSearch(Stock stock) 
-	{
-		nodeshouldbedisplayed = bkdbopt.getStockBasicInfo (stock);
-		nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
-	}
+//	private void preSearch(Stock stock) 
+//	{
+//		nodeshouldbedisplayed = bkdbopt.getStockBasicInfo (stock);
+//		nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
+//	}
 	/*
 	 * 获取用户code的板块或个股的基本信息 
 	 */
-	private void preSearch(String nodecode) 
+	private void preSearch(String nodecode,Integer nodetype) 
 	{
+		nodeshouldbedisplayed = null;
 		 ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (nodecode);
 		 if(nodeslist.size() == 0) {
 			 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
@@ -137,9 +183,9 @@ public class JStockComboBox extends  JComboBox<String>
 		 }
 		 
 		 if(nodeslist.size()>1) { 
-			 if(this.onlyselectnodetype != null) { //用户指定了只要什么类型的node
+			 if(nodetype != -1) { //用户指定了只要什么类型的node
 				 for( BkChanYeLianTreeNode tmpnode : nodeslist) 
-					 if(tmpnode.getType() == this.onlyselectnodetype) {
+					 if(tmpnode.getType() == nodetype) {
 						 nodeshouldbedisplayed = tmpnode;
 						 break;
 					 }
@@ -160,7 +206,7 @@ public class JStockComboBox extends  JComboBox<String>
 		 } else
 			 nodeshouldbedisplayed = nodeslist.get(0);
 		 
-		 if(nodeshouldbedisplayed.getType() == 6) { //是个股
+		 if(nodeshouldbedisplayed.getType() == BanKuaiAndStockBasic.TDXGG) { //是个股
 //					if(accountschicangconfig.isSystemChiCang(stockcode)) {
 //						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
 //					} 
@@ -178,6 +224,24 @@ public class JStockComboBox extends  JComboBox<String>
 	
 	private void createEvents() 
 	{
+		JPopupMenu jPopupMenue = new JPopupMenu();
+		JMenuItem menuItemguanzhu = new JMenuItem("同步近期关注个股"); 
+		JMenuItem menuItemgchicang = new JMenuItem("同步持仓");
+		menuItemgchicang.setEnabled(false);
+		jPopupMenue.add(menuItemguanzhu);
+		jPopupMenue.add(menuItemgchicang);
+		if(this.onlyselectnodetype != null && this.onlyselectnodetype == BanKuaiAndStockBasic.TDXBK ) {
+			menuItemguanzhu.setEnabled(false);
+		}
+		
+		menuItemguanzhu.addActionListener(new ActionListener() {
+
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	sysnRecentGuanZhu ();
+	            }
+	        });
+		 
 		this.getEditor().getEditorComponent().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
@@ -186,7 +250,14 @@ public class JStockComboBox extends  JComboBox<String>
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				setEditorToNull ();
+				if (e.getButton() == MouseEvent.BUTTON1) {
+                  setEditorToNull ();
+              } else if (e.getButton() == MouseEvent.BUTTON3) {
+              
+            	  jPopupMenue.show(getEditor().getEditorComponent(), e.getX(),   e.getY());
+              	
+              }
+				
 			}
 			
 		});
@@ -196,35 +267,42 @@ public class JStockComboBox extends  JComboBox<String>
 			{
 				if(e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
-					statChangeActions ();
+//					statChangeActions ();
 				}
 			}
 			
 		});
 		
-//		this.addItemListener(new ItemListener() 
-//		{
-//			public void itemStateChanged(ItemEvent e)
-//			{
-//				if(e.getStateChange() == ItemEvent.SELECTED) {
-//					
-////					statChangeActions ();
-//					
-//				}
-//				
-//				if(e.getStateChange() == ItemEvent.DESELECTED) {
-//				
-//				}
-//			}
-//						
-//		});
-		
+	
 	}
 	
+	private void sysnRecentGuanZhu() 
+	{
+		
+		DateRangeSelectPnl datachoose = new DateRangeSelectPnl (); 
+		JOptionPane.showMessageDialog(null, datachoose,"选择关注个股的时间段", JOptionPane.OK_CANCEL_OPTION);
+		
+		LocalDate searchstart = datachoose.getDatachoosestart();
+		LocalDate searchend = datachoose.getDatachooseend();
+		
+		String zdyguanzhubkname = sysconfig.getCurZdyBanKuaiOfGuanZhuGeGu ();
+		Set<String> result = bkdbopt.sysnRecentGuanZhuGeGu (zdyguanzhubkname,searchstart,searchend);
+		for(String geguname : result ) {
+			this.updateUserSelectedNode (geguname,BanKuaiAndStockBasic.TDXGG);
+		}
+		
+		((JStockComboBoxRenderer)this.getRenderer()).setGuanZhuGeGuList(result);
+	}
+	/*
+	 * 
+	 */
 	private void setEditorToNull() 
 	{
 		this.getEditor().setItem("");
 	}
+	/*
+	 * 
+	 */
 	private boolean checkCodeInputFormat(String stockcode) 
 	{
 		// TODO Auto-generated method stub
@@ -279,9 +357,14 @@ public class JStockComboBox extends  JComboBox<String>
 	   	  	  
 	   	  	  
 	   	  	  if (isaddItem){
-	  			  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
-	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
-	  			  this.setSelectedIndex(0);
+	   	  		  try{
+	   	  			tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
+		  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
+		  			  this.setSelectedIndex(0);
+	   	  		  } catch (java.lang.NullPointerException e) {
+	   	  			  
+	   	  		  }
+	  			  
 	   	  	  }
 //	   	  	  if(updateItem >= 0) {
 //	   	  		  this.removeItemAt(updateItem);
@@ -293,11 +376,13 @@ public class JStockComboBox extends  JComboBox<String>
 	   		
 	   	  }
 	}
-	private void updateStockCombox() 
-	{
-		String tmp = formatStockCode( (String)this.getEditor().getItem() );//有可能是原来输入过的，要把代码选择出来。
-		updateStockCombox (tmp);
-	}
+//	private void updateStockCombox() 
+//	{
+//		String tmp = formatStockCode( (String)this.getEditor().getItem() );//有可能是原来输入过的，要把代码选择出来。
+//		updateStockCombox (tmp);
+//	}
 
 
 }
+
+

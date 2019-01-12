@@ -50,17 +50,37 @@ public final class StockCalendarAndNewDbOperation {
 	{
 		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
 		
-		String sqlquerystat;
+		String timerangesql = null ;
+		if(startdate == null && enddate != null) {
+			timerangesql = "WHERE 录入日期  < '" + enddate + "' \r\n" ;
+		} else if(startdate != null && enddate == null) {
+			timerangesql = "WHERE 录入日期 > '" + startdate + "' \r\n" ;
+		} else if(startdate != null && enddate != null) {
+			timerangesql = " WHERE 录入日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
+		}
+		
+		String sqlquerystat = null;
 		if("ALL".equals(bankuaiid.toUpperCase()) ) 
-			sqlquerystat = "SELECT * FROM 商业新闻   WHERE 录入日期  BETWEEN '" + startdate + "' AND '" + enddate 
-							+ "' ORDER BY 录入日期 DESC"
+			sqlquerystat = "SELECT * FROM 商业新闻  \r\n"
+							+ timerangesql + "\r\n" 
+							+ " AND 关联板块 not like '%rrrrrr%' \r\n"  //不包含强势板块和弱势板块的新闻
+							+ " AND 关联板块 not like '%qqqqqq%'  \r\n"
+							+ " ORDER BY 录入日期 DESC"
 							;
+		else if("HEADLINE".equals(bankuaiid.toUpperCase()) ) //长期新闻和强弱势板块个股
+			sqlquerystat = "SELECT * FROM 商业新闻   "
+							+ " WHERE ( 关联板块 like '%" + "000000" +  "%' \r\n"
+							+ " OR 关联板块  like '%rrrrrr%' \r\n"
+							+ " OR 关联板块  like '%qqqqqq%' ) \r\n" 
+					+ " ORDER BY  录入日期 DESC"
+					;
 		else
 			sqlquerystat = "SELECT * FROM 商业新闻   "
-					+ " WHERE 录入日期  BETWEEN '" + startdate + "' AND '" + enddate + "'"
-					+ " AND 关联板块 like '%" + bankuaiid.trim() +  "%' ORDER BY  录入日期 DESC"
+					+ timerangesql
+					+ " AND ( 关联板块 like '%" + bankuaiid.trim() +  "%' ) \r\n"
+					+ " ORDER BY  录入日期 DESC"
 					;
-		
+
 		CachedRowSetImpl result = null;
 		try {
 			result = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -78,7 +98,12 @@ public final class StockCalendarAndNewDbOperation {
 	            
 	            InsertedMeeting newmeeting = new InsertedMeeting(
 		                new Meeting(title, start,  description, location, new HashSet<InsertedMeeting.Label>(),slackurl,ownercodes), meetingID);
-	            newmeeting.setCurrentownercode(bankuaiid);
+	            if("HEADLINE".equals(bankuaiid.toUpperCase()) ) { //HEADLINE 包括000000 ，有可能是强势板块或弱势板块
+	            	newmeeting.setCurrentownercode(ownercodes.substring(0,ownercodes.length()-1));
+	            }
+	            else 
+	            	newmeeting.setCurrentownercode(bankuaiid);
+	            
 	            meetings.add(newmeeting);
    		 	}
    		 

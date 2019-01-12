@@ -69,6 +69,8 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.ui.RectangleEdge;
 import org.jsoup.Jsoup;
+import org.jsoup.parser.Tag;
+import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
@@ -107,10 +109,10 @@ import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePn
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
+import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
-import com.exchangeinfomanager.gui.subgui.JStockComboBox;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
@@ -172,7 +174,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JTabbedPane;
-import javax.swing.JComboBox;
+
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.SystemColor;
@@ -187,6 +189,8 @@ import javax.swing.JTree;
 
 public class BanKuaiFengXi extends JDialog {
 
+	
+
 	/**
 	 * Create the dialog.
 	 * @param bkcyl2 
@@ -198,6 +202,7 @@ public class BanKuaiFengXi extends JDialog {
 		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
+		this.nodeinfotocsv = new NodeInfoToCsv ();
 		
 		initializeGui ();
 		createEvents ();
@@ -238,7 +243,8 @@ public class BanKuaiFengXi extends JDialog {
 	private BanKuaiPaiXuTask bkfxtask;
 	private ArrayList<ExportCondition> exportcond;
 	private String globeperiod;
-	private GeGuShiZhiFenXi ggszfx;	
+//	private GeGuShiZhiFenXi ggszfx;	
+	private NodeInfoToCsv nodeinfotocsv;
 	
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelbankuaidatachangelisteners;
@@ -315,7 +321,7 @@ public class BanKuaiFengXi extends JDialog {
 			childnode = (BanKuai)this.allbksks.getBanKuai(((BanKuai)childnode), curselectdate,period);
 			
 			BanKuai.BanKuaiNodeXPeriodData bkxdata = (BanKuai.BanKuaiNodeXPeriodData)childnode.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
-			if(bkxdata.hasRecordInThePeriod(curselectdate, 0) != null )//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+			if(bkxdata.hasRecordInThePeriod(curselectdate, 0) )//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 				((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai(((BanKuai)childnode));
     		
     		//显示大盘成交量
@@ -529,8 +535,8 @@ public class BanKuaiFengXi extends JDialog {
 		            } catch (final CancellationException e) {
 		            	try {
 							exporttask.get();
-						} catch (InterruptedException | ExecutionException e1) {
-							e1.printStackTrace();
+						} catch (InterruptedException | ExecutionException | CancellationException e1) {
+//							e1.printStackTrace();
 						}
 		            	progressBarExport.setIndeterminate(false);
 		            	progressBarExport.setValue(0);
@@ -597,7 +603,7 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPanegegu.setTitleAt(4, "选定周+1");
 		tabbedPanegegu.setTitleAt(5, "选定周+2");
 
-		cbxshizhifx.setSelected(false);
+//		cbxshizhifx.setSelected(false);
 		
 		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).deleteAllRows();
@@ -680,10 +686,10 @@ public class BanKuaiFengXi extends JDialog {
 			
 			//板块日线K线走势，目前K线走势和成交量是分开的，所以调用时候要特别小心，以后会合并
 			NodeXPeriodDataBasic bkrecords = selectedbk.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
-			LocalDate requirestart = bkrecords.getRecordsStartDate();
-			LocalDate requireend  = bkrecords.getRecordsEndDate();
+//			LocalDate requirestart = bkrecords.getRecordsStartDate();
+//			LocalDate requireend  = bkrecords.getRecordsEndDate();
 			selectedbk = allbksks.getBanKuaiKXian(selectedbk,curselectdate,StockGivenPeriodDataItem.DAY);
-			paneldayCandle.updatedDate(selectedbk,requirestart,requireend,StockGivenPeriodDataItem.DAY);
+			paneldayCandle.updatedDate(selectedbk,curselectdate,0,StockGivenPeriodDataItem.DAY);
 			paneldayCandle.displayRangeHighLowValue(true);
 		}
 	}
@@ -809,13 +815,36 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void setUserSelectedColumnMessage(String selttooltips) 
 	{
-		String htmlstring = "";
-		org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
-		org.jsoup.select.Elements content = doc.select("body");
-		content.append("<font size=\"3\">" + selttooltips + "</font>");
-		
-		htmlstring = doc.toString();
-		tfldselectedmsg.setText(htmlstring);
+		tfldselectedmsg.displayNodeSelectedInfo (selttooltips);
+//		org.jsoup.nodes.Document selectdoc = Jsoup.parse(selttooltips);
+//		org.jsoup.select.Elements selectbody = selectdoc.select("body");
+//		String bodystr = null;
+//		for(org.jsoup.nodes.Element body : selectbody) {
+//			bodystr = body.text();
+//			org.jsoup.select.Elements dls = body.select("dl");
+//			for(org.jsoup.nodes.Element dl : dls) {
+//				
+////				org.jsoup.nodes.Attributes attrs = new org.jsoup.nodes.Attributes();
+////			    attrs.put("size", "5");
+//			    org.jsoup.nodes.Element font = new org.jsoup.nodes.Element("Font");
+//			    font.attr("size", "3");
+//			    
+//			    dl.appendChild(font);
+//			    
+////			    atrs.put("id", "div1");
+//			}
+////			String dltext = dl.text();
+////			System.out.println(dltext);
+//		}
+//		String head = selectbody.get(0).text();
+//		
+//		
+//		org.jsoup.nodes.Document tflddoc = Jsoup.parse(tfldselectedmsg.getText());
+//		org.jsoup.select.Elements content = tflddoc.select("body");
+//		content.append("<font size=\"3\">" + selectbody + "</font>");
+//		
+//		String htmlstring = tflddoc.toString();
+//		tfldselectedmsg.setText(htmlstring);
 	}
 	/*
 	 * 
@@ -865,6 +894,44 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void createEvents() 
 	{
+		btnexportcsv.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				startupExportToCsv ();
+			}
+		});
+		
+		tfldselectedmsg.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+
+                if (evt.getPropertyName().equals(BanKuaiListEditorPane.EXPORTCSV_PROPERTY)) {
+                	String html = (String) evt.getNewValue();
+                	
+                	org.jsoup.nodes.Document doc = Jsoup.parse(html);
+            		org.jsoup.select.Elements divs = doc.select("div");
+            		for(org.jsoup.nodes.Element div : divs) {
+            			org.jsoup.select.Elements nodecodes = div.select("nodecode");
+            			String nodecodename = nodecodes.get(0).text();
+            			String nodecode = nodecodename.substring(0,6);
+            			
+            			org.jsoup.select.Elements nodetype = div.select("nodetype");
+            			
+            			org.jsoup.select.Elements lis = div.select("li");
+            			String data = lis.get(0).text();
+            			if(Integer.parseInt(nodetype.text() ) == BanKuaiAndStockBasic.TDXGG) 
+            					exportAllStockToCsv(nodecode+data);
+            			else
+            				exportAllBanKuaiToCsv (nodecode+data);
+//            			
+            			
+            		}
+                }
+            }
+		});
+
+		
+		
 		paneldayCandle.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
@@ -912,23 +979,36 @@ public class BanKuaiFengXi extends JDialog {
                 } 
              }
         });
-		lblshcje.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-//				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//				DaPan dapan = (DaPan)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000000",BanKuaiAndStockBasic.DAPAN);
-//				displayNodeLargerPeriodData (dapan,curselectdate);
-			}
-		});
-		lblszcje.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-//				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//				DaPan dapan = (DaPan)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000000",BanKuaiAndStockBasic.DAPAN);
-//				displayNodeLargerPeriodData (dapan,curselectdate);
-			}
-		});
-		
+//		lblshcje.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) {
+////				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+////				DaPan dapan = (DaPan)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000000",BanKuaiAndStockBasic.DAPAN);
+////				displayNodeLargerPeriodData (dapan,curselectdate);
+//			}
+//		});
+//		lblszcje.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) {
+////				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+////				DaPan dapan = (DaPan)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000000",BanKuaiAndStockBasic.DAPAN);
+////				displayNodeLargerPeriodData (dapan,curselectdate);
+//			}
+//		});
+		menuItemsiglebktocsv.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	exportAllBanKuaiToCsv("single");
+            	
+            }
+        });
+		menuItemsiglestocktocsv.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	exportAllStockToCsv("single");
+            }
+        });
+
         menuItemliutong.addActionListener(new ActionListener() {
 
             @Override
@@ -959,6 +1039,45 @@ public class BanKuaiFengXi extends JDialog {
             }
         });
 
+        menuItemstocktocsv.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	exportAllStockToCsv ("all");
+            }
+
+			
+        });
+        menuItembktocsv.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	exportAllBanKuaiToCsv ("all");
+            }
+        });
+
+        tabbedPanebk.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                if (e.getButton() == MouseEvent.BUTTON1) {
+//                    pane.setSelectedComponent(panel);
+                } else if (e.getButton() == MouseEvent.BUTTON3) {
+//                    JPopupMenu jPopupMenu = new JPopupMenu();
+//                   
+//                    jPopupMenu.add(menuItemzongshizhi);
+//                    menuItemzongshizhi.setEnabled(false);
+//                    jPopupMenu.add(menuItemliutong);
+//                    jPopupMenu.add(menuItemchengjiaoer);
+                    
+                	if(tabbedPanebk.getSelectedIndex() == 0)
+                		jPopupMenuoftabbedpanebk.show(tabbedPanebk, e.getX(),   e.getY());
+                }
+            }
+
+        });
+
         
 		tabbedPanegegu.addMouseListener(new MouseAdapter() {
 
@@ -982,21 +1101,15 @@ public class BanKuaiFengXi extends JDialog {
 
         });
 		
-		cbxshizhifx.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) 
-			{
-			}
-		});
-		
-		btnshizhifx.addMouseListener(new MouseAdapter() {
-			
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				startupGeGuShiZhiFenXi (true);
-				
-			}
-		});
+//		btnshizhifx.addMouseListener(new MouseAdapter() {
+//			
+//
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) {
+//				startupGeGuShiZhiFenXi (true);
+//				
+//			}
+//		});
 		
 		menuItemRmvNodeFmFile.addActionListener(new ActionListener() {
 			@Override
@@ -1086,11 +1199,19 @@ public class BanKuaiFengXi extends JDialog {
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
                     
-					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+            		org.jsoup.select.Elements body = doc.select("body");
+            		org.jsoup.select.Elements dl = body.select("dl");
+            		org.jsoup.select.Elements li = dl.get(0).select("li");
+            		String selecteddate = li.get(0).text();
+            		LocalDate datekey = LocalDate.parse(selecteddate);
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
-    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				setUserSelectedColumnMessage(tooltip);
+    				
+//    				org.jsoup.select.Elements content = doc.select("html");
+    				
+//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
+    				setUserSelectedColumnMessage(selectedinfo);
     				
     				if(bkcur.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股， 
     					LocalDate selectdate = CommonUtility.formateStringToDate(datekey.toString());
@@ -1130,11 +1251,15 @@ public class BanKuaiFengXi extends JDialog {
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
                     
-					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
+                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+            		org.jsoup.select.Elements body = doc.select("body");
+            		org.jsoup.select.Elements dl = body.select("dl");
+            		org.jsoup.select.Elements li = dl.get(0).select("li");
+            		String selecteddate = li.get(0).text();
+            		LocalDate datekey = LocalDate.parse(selecteddate);
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
-    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-    				setUserSelectedColumnMessage(tooltip);
+    				setUserSelectedColumnMessage(selectedinfo);
     				
 //    				if(cbxshizhifx.isSelected()) { //显示市值排名
 //						dispalyStockShiZhiFengXiResult (selectstock,datekey);
@@ -1389,7 +1514,7 @@ public class BanKuaiFengXi extends JDialog {
 							return;
 					
 					BkChanYeLianTreeNode userinputnode = cbxsearchbk.getUserInputNode();
-					if(userinputnode.getType() == BanKuaiAndStockBasic.TDXGG ) { //如果用户输入查出的是板块，
+					if(userinputnode == null ) { //如果用户输入查出的是板块，
 						JOptionPane.showMessageDialog(null,"不是板块代码，重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
 						return;
 					}
@@ -1426,13 +1551,15 @@ public class BanKuaiFengXi extends JDialog {
 				if(arg0.getStateChange() == ItemEvent.SELECTED) {
 					BkChanYeLianTreeNode userinputnode = cbxstockcode.getUserInputNode();
 					String nodecode;
-					if(userinputnode == null) { //可能是输入的字母没有找到
+					if(userinputnode == null) { 
 						nodecode = cbxstockcode.getSelectedItem().toString();
+						JOptionPane.showMessageDialog(null,"不是个股代码，重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
+						return;
 					} else {
-						if(userinputnode.getType() == BanKuaiAndStockBasic.TDXBK ) { //如果用户输入查出的是板块，
-							JOptionPane.showMessageDialog(null,"不是个股代码，重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
-							return;
-						}
+//						if(userinputnode.getType() == BanKuaiAndStockBasic.TDXBK ) { //如果用户输入查出的是板块，
+//							JOptionPane.showMessageDialog(null,"不是个股代码，重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
+//							return;
+//						}
 							
 						nodecode = userinputnode.getMyOwnCode();
 						try{ //如果用户选择的和上次选择的个股一样，不重复做板块查找
@@ -1732,10 +1859,71 @@ public class BanKuaiFengXi extends JDialog {
 				setCursor(hourglassCursor2);
 //				Toolkit.getDefaultToolkit().beep();
 				SystemAudioPlayed.playSound();
-				//装配每日模型文件
+
 			}
 		});
 	}
+	/*
+	 * 
+	 */
+	protected void exportAllStockToCsv(String type) 
+	{
+		btnexportcsv.setEnabled(true);
+		
+		if(type.toLowerCase().equals("all")) {
+			int rowcount = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount();
+			for(int i=0;i<rowcount;i++) {
+				StockOfBanKuai stock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStock(i);
+				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				nodeinfotocsv.addNodeToCsvList(stock.getStock(), curselectdate, curselectdate);
+			}
+		} else if(type.toLowerCase().equals("single") ) {
+			int row = tableGuGuZhanBiInBk.getSelectedRow();
+			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
+			StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+			NodeXPeriodDataBasic nodexdata = selectstock.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+			LocalDate nodestart = nodexdata.getRecordsStartDate();
+			LocalDate nodeend = nodexdata.getRecordsEndDate();
+			nodeinfotocsv.addNodeToCsvList(selectstock.getStock(), nodestart, nodeend);
+		} else {
+			String stockcode = type.substring(0,6);
+			String date = type.substring(6);
+			Stock stock = (Stock) this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(stockcode, BanKuaiAndStockBasic.TDXGG);
+			nodeinfotocsv.addNodeToCsvList(stock, LocalDate.parse(date), LocalDate.parse(date));
+		}
+	}
+	/*
+	 * 
+	 */
+	protected void exportAllBanKuaiToCsv(String type) 
+	{
+		btnexportcsv.setEnabled(true);
+		
+		if(type.toLowerCase().equals("all")) {
+			int rowcount = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getRowCount();
+			for(int i=0;i<rowcount;i++) {
+				BanKuai bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuai(i);
+				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				nodeinfotocsv.addNodeToCsvList( bk, curselectdate, curselectdate);
+			}
+		} else if(type.toLowerCase().equals("single") ) {
+			int row = tableBkZhanBi.getSelectedRow();
+			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+			BanKuai bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+			NodeXPeriodDataBasic nodexdata = bk.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+			LocalDate nodestart = nodexdata.getRecordsStartDate();
+			LocalDate nodeend = nodexdata.getRecordsEndDate();
+			nodeinfotocsv.addNodeToCsvList( bk, nodestart, nodeend);
+		} else {
+			String stockcode = type.substring(0,6);
+			String date = type.substring(6);
+			BanKuai bk = (BanKuai) this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(stockcode, BanKuaiAndStockBasic.TDXBK);
+			nodeinfotocsv.addNodeToCsvList(bk, LocalDate.parse(date), LocalDate.parse(date));
+		}
+	}
+	/*
+	 * 
+	 */
 	protected void performActionsForGeGuTablesAfterUserSelected(StockOfBanKuai selectstock,BanKuaiGeGuTable selectedGeguTable) 
 	{
 			Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
@@ -1773,54 +1961,43 @@ public class BanKuaiFengXi extends JDialog {
 		
 	}
 
-	protected void dispalyStockShiZhiFengXiResult(StockOfBanKuai selectstock, LocalDate curselectdate) 
-	{
-		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-		setCursor(hourglassCursor);
-		
-		String displayedresult;
-		if(ggszfx == null) {
-			startupGeGuShiZhiFenXi (false);
-			displayedresult = ggszfx.getStockShiZhiDuiBiFenXiResult (selectstock.getMyOwnCode(),curselectdate);
-		} else 
-			displayedresult = ggszfx.getStockShiZhiDuiBiFenXiResult (selectstock.getMyOwnCode(),curselectdate);
-		
-		
-		setUserSelectedColumnMessage (displayedresult);
-		
-		hourglassCursor = null;
-		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-		setCursor(hourglassCursor2);
-	}
+//	protected void dispalyStockShiZhiFengXiResult(StockOfBanKuai selectstock, LocalDate curselectdate) 
+//	{
+//		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+//		setCursor(hourglassCursor);
+//		
+//		String displayedresult;
+//		if(ggszfx == null) {
+//			startupGeGuShiZhiFenXi (false);
+//			displayedresult = ggszfx.getStockShiZhiDuiBiFenXiResult (selectstock.getMyOwnCode(),curselectdate);
+//		} else 
+//			displayedresult = ggszfx.getStockShiZhiDuiBiFenXiResult (selectstock.getMyOwnCode(),curselectdate);
+//		
+//		
+//		setUserSelectedColumnMessage (displayedresult);
+//		
+//		hourglassCursor = null;
+//		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+//		setCursor(hourglassCursor2);
+//	}
 
 	/*
 	 * 
 	 */
-	protected void startupGeGuShiZhiFenXi(boolean showthedialog) 
+	protected void startupExportToCsv() 
 	{
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);
 		
-		if(ggszfx == null) {
-			ggszfx = new GeGuShiZhiFenXi ();
-			ggszfx.setModal(false);
-			ggszfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		}
+		JOptionPane.showMessageDialog(null, nodeinfotocsv,  "导出数据到CSV", JOptionPane.OK_CANCEL_OPTION);
+		nodeinfotocsv.clearCsvDataSet();
 		
-		if(showthedialog) {
-			if(!ggszfx.isVisible() ) {
-				ggszfx.setVisible(true);
-			} 
-			
-			ggszfx.toFront();
-		}
-			
-		
+		btnexportcsv.setEnabled(false);
 		
 		hourglassCursor = null;
 		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 		setCursor(hourglassCursor2);
-		
+//		
 	}
 
 	/*
@@ -1920,12 +2097,15 @@ public class BanKuaiFengXi extends JDialog {
 //		long end=System.currentTimeMillis(); //获取结束时间
 //		logger.debug("程序运行时间： "+(end-start)+"ms");
 		
+		String user = largeinfo.getUserSelectedColumnMessage ();
+		
 		largeinfo = null;
 		System.gc();
 	}
 	/*
 	 * 每周都要导出的条件在这里设置，一次设置节约时间
 	 */
+	
 	protected void initializeNormalExportConditions()
 	{
 		if( exportcond == null)
@@ -2353,10 +2533,9 @@ public class BanKuaiFengXi extends JDialog {
 	private JScrollPane scrollPaneuserselctmsg;
 	private PaoMaDeng2 pnl_paomd;
 	private JTabbedPane tabbedPanebk;
-	private JButton btnexportmodelgegu;
+	private JButton btnexportcsv;
 	private Action exportCancelAction;
 	private Action bkfxCancelAction;
-	private JProgressBar progressBarExport;
 	private JCheckBox cbxbkmaxwk;
 	private JTextField tfldbkmaxwk;
 	private JTextField tfldcjemaxwk;
@@ -2373,14 +2552,21 @@ public class BanKuaiFengXi extends JDialog {
 	private JCheckBox cbxhuanshoulv;
 	private BanKuaiAndStockTree cyltree;
 	private JMenuItem menuItemRmvNodeFmFile;
-	private JButton btnshizhifx;
-	private JCheckBox cbxshizhifx;
+	private JButton btnexportmodelgegu;
+	
+	private JTextField tfldshowcjemax;
+	
 	private JPopupMenu jPopupMenuoftabbedpane;
 	private JMenuItem menuItemliutong ; //系统默认按流通市值排名
 	private JMenuItem menuItemzongshizhi ;
 	private JMenuItem menuItemchengjiaoer ;
-	private JTextField tfldshowcjemax;
+	private JMenuItem menuItemstocktocsv ;
 	
+	private JPopupMenu jPopupMenuoftabbedpanebk;
+	private JMenuItem menuItembktocsv ; //系统默认按流通市值排名
+	private JMenuItem menuItemsiglestocktocsv;
+	private JProgressBar progressBarExport;
+	private JMenuItem menuItemsiglebktocsv;
 	
 	private void initializeGui() {
 		
@@ -2418,19 +2604,19 @@ public class BanKuaiFengXi extends JDialog {
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 382, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(18)
-							.addComponent(panel, 0, 0, Short.MAX_VALUE)))
+							.addComponent(panel, 0, 0, Short.MAX_VALUE))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 382, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(scrollPanestockbk, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(paneldayCandle, GroupLayout.DEFAULT_SIZE, 911, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(scrollPaneuserselctmsg, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))
-						.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE)
-						.addComponent(scrollPanestockbk, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE))
+						.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE))
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(14)
@@ -2449,23 +2635,25 @@ public class BanKuaiFengXi extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(paneldayCandle, GroupLayout.PREFERRED_SIZE, 260, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPaneuserselctmsg, GroupLayout.PREFERRED_SIZE, 260, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-							.addGroup(gl_contentPanel.createSequentialGroup()
-								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_contentPanel.createSequentialGroup()
-										.addGap(167)
-										.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 596, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(scrollPanestockbk, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE))
-									.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 854, GroupLayout.PREFERRED_SIZE)))
-							.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-								.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 311, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(panelLastWkGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 309, GroupLayout.PREFERRED_SIZE)))))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addGap(173)
+									.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 596, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(scrollPanestockbk, GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 831, GroupLayout.PREFERRED_SIZE))))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 311, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(panelLastWkGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 309, GroupLayout.PREFERRED_SIZE)))
+					.addGap(34))
 		);
 		
 		panelselectwkgeguzhanbi = new BanKuaiFengXiPieChartCjePnl(0);
@@ -2484,15 +2672,9 @@ public class BanKuaiFengXi extends JDialog {
 		pnllastestggcjlzhanbi.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		tabbedPane.addTab("\u677F\u5757\u5F53\u5468\u6210\u4EA4\u91CF\u4E2A\u80A1\u5360\u6BD4", null, pnllastestggcjlzhanbi, null);
 		
-//		tfldselectedmsg = new JTextArea();
 		tfldselectedmsg = new BanKuaiListEditorPane ();
 		scrollPaneuserselctmsg.setViewportView(tfldselectedmsg);
-//		tfldselectedmsg.setLineWrap(true);
-		
-		
 		tfldselectedmsg.setEditable(false);
-//		tfldselectedmsg.setColumns(10);
-//		panelbkcje.setBarDisplayedColor(Color.CYAN);
 		
 		panelbkwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl();
 		panelbkwkzhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -2533,9 +2715,9 @@ public class BanKuaiFengXi extends JDialog {
 		tabbedPanegegu = new JTabbedPane(JTabbedPane.TOP);
 		
 		tabbedPanebk = new JTabbedPane(JTabbedPane.TOP);
-		cbxstockcode = new JStockComboBox(6);
+		cbxstockcode = new JStockComboBox(BanKuaiAndStockBasic.TDXGG);
 		
-		cbxsearchbk = new JStockComboBox(4);
+		cbxsearchbk = new JStockComboBox(BanKuaiAndStockBasic.TDXBK);
 
 		cbxsearchbk.setEditable(true);
 		
@@ -2567,9 +2749,9 @@ public class BanKuaiFengXi extends JDialog {
 		 };
 		btnexportmodelgegu = new JButton(exportCancelAction);
 		
-		progressBarExport = new JProgressBar();
-		progressBarExport.setValue(0);
-        progressBarExport.setStringPainted(true);
+		btnexportcsv = new JButton();
+		btnexportcsv.setText("\u5BFC\u51FA\u5230CSV");
+		btnexportcsv.setEnabled(false);
 		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
@@ -2584,16 +2766,14 @@ public class BanKuaiFengXi extends JDialog {
 							.addComponent(cbxstockcode, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
 							.addContainerGap())
 						.addGroup(gl_panel_1.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
-								.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING, false)
+								.addGroup(gl_panel_1.createSequentialGroup()
 									.addComponent(cbxsearchbk, 0, 0, Short.MAX_VALUE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnexportmodelgegu)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(progressBarExport, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
-									.addGap(17))
-								.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+									.addComponent(btnexportcsv)
+									.addGap(141))
+								.addGroup(gl_panel_1.createSequentialGroup()
 									.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
 										.addComponent(tabbedPanebk, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
 										.addComponent(tabbedPanegegu, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
@@ -2605,8 +2785,7 @@ public class BanKuaiFengXi extends JDialog {
 					.addContainerGap()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 						.addComponent(cbxsearchbk, GroupLayout.PREFERRED_SIZE, 29, Short.MAX_VALUE)
-						.addComponent(btnexportmodelgegu, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
-						.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE))
+						.addComponent(btnexportcsv, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(tabbedPanebk, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -2661,8 +2840,7 @@ public class BanKuaiFengXi extends JDialog {
 
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
-		menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
-		tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRmvNodeFmFile);
+		
 		
 		JScrollPane scrollPanexuandingminusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
@@ -2901,15 +3079,14 @@ public class BanKuaiFengXi extends JDialog {
 			tfldhuanshoulv.setText("30");
 			tfldhuanshoulv.setColumns(10);
 			
-			btnshizhifx = new JButton("\u8BE6\u7EC6\u5E02\u503C\u5206\u6790");
-			
-			
-			cbxshizhifx = new JCheckBox("\u8F93\u51FA\u5E02\u503C\u5206\u6790\u7ED3\u679C");
+//			btnexportmodelgegu = new JButton("\u5BFC\u51FA\u6761\u4EF6\u4E2A\u80A1");
 			
 			tfldshowcjemax = new JTextField();
 			tfldshowcjemax.setColumns(10);
 			
-			
+			progressBarExport = new JProgressBar();
+			progressBarExport.setValue(0);
+	        progressBarExport.setStringPainted(true);
 			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
@@ -2951,13 +3128,13 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btnChosPasFile)
+						.addGap(18)
+						.addComponent(btnexportmodelgegu)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(cbxshizhifx)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnshizhifx)
-						.addGap(39)
+						.addComponent(progressBarExport, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)
+						.addGap(18)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
-						.addGap(1638)
+						.addGap(1670)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
 						.addGap(337))
 			);
@@ -2966,7 +3143,9 @@ public class BanKuaiFengXi extends JDialog {
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addContainerGap()
 						.addGroup(gl_buttonPane.createParallelGroup(Alignment.TRAILING)
-							.addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+							.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+								.addComponent(okButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 							.addGroup(gl_buttonPane.createSequentialGroup()
 								.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
 									.addComponent(cbxhuanshoulv)
@@ -2991,11 +3170,13 @@ public class BanKuaiFengXi extends JDialog {
 								.addContainerGap())
 							.addGroup(gl_buttonPane.createSequentialGroup()
 								.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-									.addComponent(btnChosPasFile, GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-									.addComponent(cbxshizhifx)
-									.addComponent(btnshizhifx)
-									.addComponent(okButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(btnChosPasFile, GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+									.addComponent(btnexportmodelgegu))
 								.addContainerGap())))
+					.addGroup(gl_buttonPane.createSequentialGroup()
+						.addGap(19)
+						.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+						.addGap(10))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}
@@ -3042,12 +3223,28 @@ public class BanKuaiFengXi extends JDialog {
 		menuItemliutong = new JMenuItem(" 按流通市值排名"); 
 		menuItemzongshizhi = new JMenuItem("按总市值排名");
 		menuItemchengjiaoer = new JMenuItem("X 按成交额排名"); //系统默认按成交额排名
+		menuItemstocktocsv = new JMenuItem("导出所有个股到CSV");
 //      
 		jPopupMenuoftabbedpane.add(menuItemzongshizhi);
        menuItemzongshizhi.setEnabled(false);
        jPopupMenuoftabbedpane.add(menuItemliutong);
        jPopupMenuoftabbedpane.add(menuItemchengjiaoer);
-
+       jPopupMenuoftabbedpane.add(menuItemstocktocsv);
+       
+       jPopupMenuoftabbedpanebk = new JPopupMenu();
+       menuItembktocsv = new JMenuItem("导出所有板块到CSV");
+       jPopupMenuoftabbedpanebk.add(menuItembktocsv);
+       
+       menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
+       tableBkZhanBi.getPopupMenu().add(menuItemsiglebktocsv);
+       
+       menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
+       menuItemRmvNodeFmFile.setEnabled(false);
+       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRmvNodeFmFile);
+		
+       menuItemsiglestocktocsv = new JMenuItem("导出个股到CSV");
+       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsiglestocktocsv);
+       
 	}
 	/*
 	 * 根据星期几已经本周几个交易日自动设置成交量的值
@@ -3600,8 +3797,8 @@ public class BanKuaiFengXi extends JDialog {
 	    {
 	    	try {
 				get();
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
+			} catch (InterruptedException | ExecutionException | CancellationException e) {
+//				e.printStackTrace();
 			}
 	      
 //	    	Toolkit.getDefaultToolkit().beep();

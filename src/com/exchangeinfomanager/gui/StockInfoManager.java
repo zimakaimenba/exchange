@@ -22,6 +22,7 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
+import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.Search.SearchDialog;
 //import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
@@ -31,6 +32,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
@@ -46,7 +48,7 @@ import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
-
+import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JTextArea;
@@ -118,7 +120,6 @@ import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
-import com.exchangeinfomanager.gui.subgui.JStockComboBox;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -212,7 +213,7 @@ public class StockInfoManager
 				System.exit(0);
 		}
 		
-		accountschicangconfig = new AccountAndChiCangConfiguration ();
+		accountschicangconfig = AccountAndChiCangConfiguration.getInstance();
 		acntdbopt = new AccountDbOperation();
 		bkdbopt = new BanKuaiDbOperation ();
 		
@@ -264,6 +265,8 @@ public class StockInfoManager
 		} catch (java.lang.NullPointerException e) {
 			
 		}
+		
+		((JStockComboBoxRenderer)cBxstockcode.getRenderer()).setChiCangGeGuList(new HashSet<String> (tmpchicangname));
 	}
 	private void initializePaoMaDeng() 
 	{
@@ -340,29 +343,29 @@ public class StockInfoManager
 					displayStockNews ();
 					displayStockSuoShuBanKuai ();
 					setKuaiSuGui (stockcode);
-					if(buychklstdialog!= null ) {
-						displayChecklistsItemsToGui ();
-					}
+//					if(buychklstdialog!= null ) {
+//						displayChecklistsItemsToGui ();
+//					}
 				 } 
 				enableGuiEditable();
 		}
 	
-	private void initlizedBuyCheckListTreeDialog ()
-	{
-		if(buychklstdialog == null ) {
-			try {
-				buychklstdialog = new BuyCheckListTreeDialog (this,nodeshouldbedisplayed.getMyOwnCode(),((Stock)nodeshouldbedisplayed).getChecklistXml());
-			} catch (java.lang.NullPointerException ex) {
-				buychklstdialog = new BuyCheckListTreeDialog (this,null,null);
-			}
-		} else {
-			
-		}
-				
-		if(!buychklstdialog.isVisible() ) 
-			 buychklstdialog.setVisible(true);
-		buychklstdialog.toFront();
-	}
+//	private void initlizedBuyCheckListTreeDialog ()
+//	{
+//		if(buychklstdialog == null ) {
+//			try {
+//				buychklstdialog = new BuyCheckListTreeDialog (this,nodeshouldbedisplayed.getMyOwnCode(),((Stock)nodeshouldbedisplayed).getChecklistXml());
+//			} catch (java.lang.NullPointerException ex) {
+//				buychklstdialog = new BuyCheckListTreeDialog (this,null,null);
+//			}
+//		} else {
+//			
+//		}
+//				
+//		if(!buychklstdialog.isVisible() ) 
+//			 buychklstdialog.setVisible(true);
+//		buychklstdialog.toFront();
+//	}
 	/*
 	 * 
 	 */
@@ -373,7 +376,7 @@ public class StockInfoManager
 		
 		int row = tblzhongdiangz.getSelectedRow();
 		if(row <0) {
-			JOptionPane.showMessageDialog(null,"没有记录被选中！","Warning",JOptionPane.WARNING_MESSAGE);
+//			JOptionPane.showMessageDialog(null,"没有记录被选中！","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 		int modelRow = tblzhongdiangz.convertRowIndexToModel(row);
@@ -543,7 +546,8 @@ public class StockInfoManager
 				if(e.getStateChange() == ItemEvent.SELECTED) {
 					
 					nodeshouldbedisplayed = cBxstockcode.getUserInputNode();
-					preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
+					if(nodeshouldbedisplayed != null)
+						preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
 				}
 				
 				if(e.getStateChange() == ItemEvent.DESELECTED) {
@@ -738,7 +742,7 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				initlizedBuyCheckListTreeDialog ();
+//				initlizedBuyCheckListTreeDialog ();
 			}
 		});
 		
@@ -1481,7 +1485,7 @@ public class StockInfoManager
 				if(!btngengxinxx.isEnabled())
 					return;
 				setGuiInfoToDatabase();
-				setCkLstTreeInfoToDatabase ();
+//				setCkLstTreeInfoToDatabase ();
 				
 				//setZdgzMrmcInfoToDB();
 			}
@@ -1732,7 +1736,7 @@ public class StockInfoManager
 			int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
 			
 			if(autoIncKeyFromApi > 0) {
-				cBxstockcode.updateUserSelectedNode(kspanel.getStockcode());
+				cBxstockcode.updateUserSelectedNode(kspanel.getStockcode(),BanKuaiAndStockBasic.TDXGG);
 				preUpdateSearchResultToGui(kspanel.getStockcode());
 //				updateStockCombox();
 				
@@ -1950,45 +1954,45 @@ public class StockInfoManager
 	/*
 	 * Display checklist Items to Gui
 	 */
-	private void displayChecklistsItemsToGui() 
-	{
-		//ASingleStockSubInfoCheckListsTreeInfo checklistinfo = new ASingleStockSubInfoCheckListsTreeInfo ( (String)cBxstockcode.getSelectedItem() ); 
-//		checklisttree.setChecklistsitems(stockchklst.getChecklistsitems());
-//		checklisttree.setStockcode(stockchklst.getStockcode());
-//		checklisttree.epdTree(true);
-//		checklisttree.updateUI();
-		try {
-//			if(buychklstdialog.isVisible() ) {
-//				 logger.debug("dialog v");
-//				 buychklstdialog.refreshTreeGui(stockchklst.getStockcode(), stockchklst.getChecklistsitems());
-//			}
-			 buychklstdialog.refreshTreeGui(nodeshouldbedisplayed.getMyOwnCode(), ((Stock)nodeshouldbedisplayed).getChecklistXml());
-			
-		}catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-		}
-		
-	}
-
-	protected void setCkLstTreeInfoToDatabase() 
-	{
-		if(buychklstdialog == null)
-			return;
-    
-	    String tmpchecklist = buychklstdialog.getChkLstItemsTiCai() 
-	    					+ buychklstdialog.getChkLstItemsGuDong()
-	    					+ buychklstdialog.getChkLstItemsCaiWu()
-	    					+ buychklstdialog.getChkLstItemsJiShu()
-	    					+ buychklstdialog.getChkLstItemsZhenChe()
-	    					;
-	    String tmpupdatedate = buychklstdialog.getChkLstUpdatedDate();
-	    if(tmpchecklist != null) {
-	    	((Stock)nodeshouldbedisplayed).setChecklistXml(tmpupdatedate + tmpchecklist);
-	    	bkdbopt.updateChecklistsitemsToDb((Stock)nodeshouldbedisplayed);
-	    }
-	    	
-	    buychklstdialog.refreshTreeGui(cBxstockcode.getSelectedItem().toString(),tmpupdatedate + tmpchecklist);
-	}
+//	private void displayChecklistsItemsToGui() 
+//	{
+//		//ASingleStockSubInfoCheckListsTreeInfo checklistinfo = new ASingleStockSubInfoCheckListsTreeInfo ( (String)cBxstockcode.getSelectedItem() ); 
+////		checklisttree.setChecklistsitems(stockchklst.getChecklistsitems());
+////		checklisttree.setStockcode(stockchklst.getStockcode());
+////		checklisttree.epdTree(true);
+////		checklisttree.updateUI();
+//		try {
+////			if(buychklstdialog.isVisible() ) {
+////				 logger.debug("dialog v");
+////				 buychklstdialog.refreshTreeGui(stockchklst.getStockcode(), stockchklst.getChecklistsitems());
+////			}
+//			 buychklstdialog.refreshTreeGui(nodeshouldbedisplayed.getMyOwnCode(), ((Stock)nodeshouldbedisplayed).getChecklistXml());
+//			
+//		}catch (java.lang.NullPointerException e) {
+//			e.printStackTrace();
+//		}
+//		
+//	}
+//
+//	protected void setCkLstTreeInfoToDatabase() 
+//	{
+//		if(buychklstdialog == null)
+//			return;
+//    
+//	    String tmpchecklist = buychklstdialog.getChkLstItemsTiCai() 
+//	    					+ buychklstdialog.getChkLstItemsGuDong()
+//	    					+ buychklstdialog.getChkLstItemsCaiWu()
+//	    					+ buychklstdialog.getChkLstItemsJiShu()
+//	    					+ buychklstdialog.getChkLstItemsZhenChe()
+//	    					;
+//	    String tmpupdatedate = buychklstdialog.getChkLstUpdatedDate();
+//	    if(tmpchecklist != null) {
+//	    	((Stock)nodeshouldbedisplayed).setChecklistXml(tmpupdatedate + tmpchecklist);
+//	    	bkdbopt.updateChecklistsitemsToDb((Stock)nodeshouldbedisplayed);
+//	    }
+//	    	
+//	    buychklstdialog.refreshTreeGui(cBxstockcode.getSelectedItem().toString(),tmpupdatedate + tmpchecklist);
+//	}
 	
 	private void initializeNetWorkOperation(String stockname) 
 	{
@@ -2043,8 +2047,11 @@ public class StockInfoManager
 				} catch(java.lang.NullPointerException e) {
 					dateChsgainian.setDate(null);
 				}
-				
-				txtfldquanshangpj.setText(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingji());
+				try {
+					txtfldquanshangpj.setText(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingji());
+				} catch(java.lang.NullPointerException e) {
+					txtfldquanshangpj.setText("");
+				}
 				try {
 					dateChsquanshang.setDate(Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingjidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 				} catch(java.lang.NullPointerException e) {

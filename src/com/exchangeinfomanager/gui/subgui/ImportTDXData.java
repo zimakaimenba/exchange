@@ -190,7 +190,7 @@ public class ImportTDXData extends JDialog {
 		        	tfldresult.append(line+"\n");
 		        }
 			} catch (IOException e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
 			}
 		}
@@ -387,6 +387,13 @@ public class ImportTDXData extends JDialog {
 
 	private void createEvents() 
 	{
+		pnlZdy.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				chbxdaorutdxzdybk.setSelected(true);
+			}
+		});
+		
 		btnchecksync.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -437,6 +444,7 @@ public class ImportTDXData extends JDialog {
 						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()
 						&& !cbximportdzhguquan.isSelected()
 						&& !ckbxnetease.isSelected() 
+						&& !chbxdaorutdxzdybk.isSelected() 
 						) {
 					JOptionPane.showMessageDialog(null,"请选择需要导入的项目！");
 					return;
@@ -663,6 +671,7 @@ public class ImportTDXData extends JDialog {
 		);
 		
 		pnlZdy = new JPanel();
+		
 		//scrollPane_1.setPreferredSize(scrollPane_1.getPreferredSize());
 		scrollPane_1.setViewportView(pnlZdy);
 		//pnlZdy.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5)); WrapLayout

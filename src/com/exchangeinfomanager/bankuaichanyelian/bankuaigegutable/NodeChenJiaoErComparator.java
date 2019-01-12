@@ -29,22 +29,18 @@ class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode>
     	if(node1.getType() == BanKuaiAndStockBasic.BKGEGU) {
     		Stock node1stock = ((StockOfBanKuai)node1).getStock();
     		cje1 = (node1stock.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
-    	} else 
-    	{
+    	} else {
     		cje1 = (node1.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
     	}
+    	
     	if(node2.getType() == BanKuaiAndStockBasic.BKGEGU){
     		Stock node2stock = ((StockOfBanKuai)node2).getStock();
             cje2 = (node2stock.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
             
-    	}  else {
+    	} else {
     		cje2 = (node2.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
     	}
-    	
-    	
-        
-    	    
-        
+       
         try{
         	return cje2.compareTo(cje1);
         } catch (java.lang.NullPointerException e) {

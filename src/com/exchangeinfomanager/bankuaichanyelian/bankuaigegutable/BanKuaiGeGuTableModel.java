@@ -55,6 +55,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		this.curbk = bankuai;
 		this.showwknum = wknum;
 		this.period = period;
+		
 		entryList = null;
 		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );	
 		
