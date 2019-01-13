@@ -2217,7 +2217,6 @@ public class BanKuaiFengXi extends JDialog {
 				}
 				btnaddexportcond.setText(String.valueOf(curconditionnum));
 	}
-
 	/*
 	 * 
 	 */

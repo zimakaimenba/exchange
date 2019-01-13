@@ -260,7 +260,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	 */
 	public String getUserSelectedColumnMessage( )
 	{
-		if(exportuserselectedinfotocsv) {
+		if(exportuserselectedinfotocsv != null && exportuserselectedinfotocsv == true) {
 			org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
 //			org.jsoup.select.Elements content = doc.select("body");
 //			String text = content.text();

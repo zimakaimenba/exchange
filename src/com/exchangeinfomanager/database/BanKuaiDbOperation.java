@@ -3665,7 +3665,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	public File refreshTDXZDYBanKuai (HashMap<String, String> neededimportedzdybkmap)
+	public File refreshTDXZDYBanKuai (Map<String, String> neededimportedzdybkmap)
 	{
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步通达信自定义板块报告.txt");
@@ -3690,7 +3690,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 更新自定义板块和个股的对应关系
 	 */
-	private File refreshTDXZiDingYiBanKuaiToGeGu (HashMap<String, String> neededimportedzdybkmap, File tmprecordfile) 
+	private File refreshTDXZiDingYiBanKuaiToGeGu (Map<String, String> neededimportedzdybkmap, File tmprecordfile) 
 	{
 		Set<String> neededimportzdybknames = neededimportedzdybkmap.keySet(); 
 		//Set<String> curzdybknames = this.getZdyBkSet ();
