@@ -36,13 +36,14 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
-public class BanKuaiInfoTable extends JTable 
+public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxDataValueListener
 {
 	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
@@ -167,8 +168,23 @@ public class BanKuaiInfoTable extends JTable
 				 }
 
 	}
-
-
+	@Override
+	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl) 
+	{
+//		((BanKuaiInfoTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
+//		((BanKuaiInfoTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
+//		((BanKuaiInfoTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
+//		((BanKuaiInfoTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
+//		((BanKuaiInfoTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
+		
+		this.repaint();
+	}
+	@Override
+	public void hightLightFxValues(Integer cjezbtoupleveldpmaxwk, Double cjemin, Double cjemax, Integer cjemaxwk,
+			Double shoowhsl) {
+		// TODO Auto-generated method stub
+		
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#prepareRenderer(javax.swing.table.TableCellRenderer, int, int)
@@ -215,8 +231,7 @@ public class BanKuaiInfoTable extends JTable
 	        
 	        //为不同情况突出显示不同的颜色
 	        Color foreground, background = Color.white;
-	        
-	        
+
 	        if( col == 1 && !bktype.equals(BanKuai.NOGGWITHSELFCJL) ) {
 	        	TreeRelated tmptreerelated = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BanKuaiAndStockBasic.TDXBK).getNodeTreerelated();
 //	        	TreeRelated tmptreerelated = bankuai.getNodeTreerelated (); 
@@ -249,6 +264,7 @@ public class BanKuaiInfoTable extends JTable
 	        
 	        return comp;
 	}
+	
 		
 //		public String getToolTipText(MouseEvent e) 
 //		{
@@ -264,8 +280,5 @@ public class BanKuaiInfoTable extends JTable
 //            }
 //            return tip;
 //        } 
-	
-
-	
 
 }

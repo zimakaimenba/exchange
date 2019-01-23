@@ -122,7 +122,7 @@ public interface BanKuaiAndStockBasic
 		 */
 		Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai (LocalDate requireddate,int difference);
 		/*
-		 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率
+		 * 计算成交额变化贡献率，即成交额的变化占整个上级板块成交额增长量的比率
 		 */
 		Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (LocalDate requireddate,int difference);
 		/*
@@ -166,6 +166,8 @@ public interface BanKuaiAndStockBasic
 		 * 一次性计算所有数据
 		 */
 //		ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);
+
+	
 	}
 	
 }

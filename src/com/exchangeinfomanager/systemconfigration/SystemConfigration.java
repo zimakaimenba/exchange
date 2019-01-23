@@ -331,6 +331,23 @@ public class SystemConfigration
 	 /*
 	  * 
 	  */
+	 public String getTdxFenXiReportFile ()
+	 {
+		 String path = this.getSystemInstalledPath() + "/reports/TDX个股分析报告.txt";
+		 
+		 if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
+			 try {
+				java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }
+		 return path; 
+	 }
+	 /*
+	  * 
+	  */
 	 public String getTdxZdgzReportFile ()
 	 {
 		 String path = this.getSystemInstalledPath() + "/reports/TDX重点关注历史报告.txt";

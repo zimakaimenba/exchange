@@ -340,14 +340,15 @@ public class StockInfoManager
 						displayAccountTableToGui ();
 //						displaySellBuyZdgzInfoToGui ();
 					}
-					displayStockNews ();
 					displayStockSuoShuBanKuai ();
 					setKuaiSuGui (stockcode);
 //					if(buychklstdialog!= null ) {
 //						displayChecklistsItemsToGui ();
 //					}
 				 } 
-				enableGuiEditable();
+				 
+				 displayBanKuaiAndStockNews (); //显示板块和个股新闻
+				 enableGuiEditable();
 		}
 	
 //	private void initlizedBuyCheckListTreeDialog ()
@@ -1601,8 +1602,9 @@ public class StockInfoManager
 			public void actionPerformed(ActionEvent e) 
 			{			
 				String jbmexportresult = TDXFormatedOpt.stockJiBenMianToReports();
-				String zdgzexportresult = TDXFormatedOpt.stockZdgzReports ();
+				String nodefenxiportresult = TDXFormatedOpt.stockAndBanKuaiFenXiReports ();
 				String xmlexportresult = TDXFormatedOpt.parseChanYeLianXmlToTDXReport();
+				String zdgzexportresult = TDXFormatedOpt.getStockZdgzInfo ();
 				
 				if(Strings.isNullOrEmpty(xmlexportresult) && Strings.isNullOrEmpty(jbmexportresult) && Strings.isNullOrEmpty(zdgzexportresult) ) {
 					int exchangeresult = JOptionPane.showConfirmDialog(null, "报表生成失败，请检查原因！","报表完毕", JOptionPane.OK_CANCEL_OPTION);
@@ -1616,6 +1618,8 @@ public class StockInfoManager
 					reportsummary = reportsummary + "基本面报表生成失败。";
 				if(Strings.isNullOrEmpty(zdgzexportresult)) 
 					reportsummary = reportsummary + "重点关注报表生成失败。";
+				if(Strings.isNullOrEmpty(nodefenxiportresult))
+					reportsummary = reportsummary + "分析结果报表生成失败。";
 				
 				int exchangeresult = JOptionPane.showConfirmDialog(null, reportsummary + "其他报表生成成功，是否打开报表目录？","报表完毕", JOptionPane.OK_CANCEL_OPTION);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
@@ -1913,7 +1917,7 @@ public class StockInfoManager
 	     
 	}
 	
-	private void displayStockNews()
+	private void displayBanKuaiAndStockNews()
 	{
 		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
 		editorPanenodeinfo.displayChanYeLianNewsHtml (nodeshouldbedisplayed);

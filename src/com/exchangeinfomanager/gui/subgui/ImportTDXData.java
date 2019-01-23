@@ -339,9 +339,9 @@ public class ImportTDXData extends JDialog {
 		}
 		
 		//用户同步完个股和板块成交量后，要update一下板块的类型，以便后用
-		if(chbxdaorutdxsysbkvol.isSelected()  
-			&& cbxImportSzGeGuVol.isSelected() 
-			&& cbxImportShGeGuVol.isSelected()  ) {
+		if(chbxdaorutdxsysbkvol.isSelected() && chbxdaorutdxsysbkvol.isEnabled()  
+			&& cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled() 
+			&& cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled()) {
 			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
 		}
 		//导入网易的股票的数据,主要是换手率/市值等数据，

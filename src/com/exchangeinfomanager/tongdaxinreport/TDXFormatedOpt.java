@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -73,67 +74,97 @@ public class TDXFormatedOpt {
 	/*
 	 *生成重点关注的通达信代码 
 	 */
-	public static boolean parseZdgzBkToTDXCode(HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap)
+	public  static String getStockZdgzInfo()
 	{
-		Iterator<String> bankuaidaleiname = zdgzbkmap.keySet().iterator();
-
-		File tmpfilefoler = Files.createTempDir();
-		File tongdaxinfile = new File(tmpfilefoler + "通达信重点关注代码.txt");
-	
+		ConnectDataBase connectdb = ConnectDataBase.getInstance();
+		SystemConfigration sysconfig = SystemConfigration.getInstance();
 		
-		boolean runresult = false;
-		try	{
-			if(tongdaxinfile.exists())
-			{
-				tongdaxinfile.delete();
-				tongdaxinfile.createNewFile();
+		 File filezdgz = new File( sysconfig.getTdxZdgzReportFile() );
+		 try {
+				if (filezdgz.exists()) {
+					filezdgz.delete();
+					filezdgz.createNewFile();
+				} else
+					filezdgz.createNewFile();
+		 } catch (java.io.IOException e) {
+			 filezdgz.getParentFile().mkdirs(); //目录不存在，先创建目录
+				try {
+					filezdgz.createNewFile();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				filezdgz.delete();
+				return null;
 			}
-			else
-				tongdaxinfile.createNewFile();
-		} catch(Exception e) {	
-			e.printStackTrace();
+		
+		Map<String,String> stockresult = new HashMap<String,String> ();
+		String sqlquerystat = "SELECT * FROM 股票通达信自定义板块对应表  WHERE 加入时间 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) + 300 ) DAY ) ORDER BY 加入时间  DESC";
+		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+		try {
+			while(rs.next()) {
+				String formatedstockcode = rs.getString("股票代码");
+//				if(formatedstockcode.trim().equals("000000")) // 000000不需要导出
+//					continue;
+				
+				java.sql.Date jrdate = rs.getDate("加入时间");
+//				LocalDate ljrdate = jrdate.toLocalDate(); 
+				
+				java.sql.Date ycdate = rs.getDate("移除时间");
+				
+//				LocalDate lycdate = ycdate.toLocalDate();
+				
+				String stockzdgz;
+				try {
+					stockzdgz = stockresult.get(formatedstockcode);
+					stockzdgz = stockzdgz.trim() + "[" + jrdate.toLocalDate().toString() + "加入关注" + "]";
+				} catch ( java.lang.NullPointerException e) {
+					stockzdgz = "[" + jrdate.toLocalDate().toString() + "加入关注" + "]";
+				}
+				
+				
+				try {
+					stockzdgz = stockzdgz + "[" + ycdate.toString() + "移出关注" + "]";
+				} catch ( java.lang.NullPointerException e) {
+					
+				}
+				
+				stockresult.put(formatedstockcode, stockzdgz);
+			}
+				
+		} catch (SQLException e) {
+				e.printStackTrace();
+		}  finally {
+			    	if(rs != null)
+						try {
+							rs.close();
+							rs = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
 		}
-			
-			int nullsteps =0 ; //通达信代码中，有内容的板块在前，无内容的板块自动被注释
-			while(bankuaidaleiname.hasNext())
-			{
-				String siglebkname = bankuaidaleiname.next().toString() ;
-		   		ArrayList<BkChanYeLianTreeNode> tmpgzbklist = zdgzbkmap.get(siglebkname);
-		   		String result = "";
-		   		try {
-			   		for(BkChanYeLianTreeNode tmpgz:tmpgzbklist) {
-			   			if(tmpgz.isOfficallySelected() ) {
-			   				String chanyelian =  tmpgz.getNodeCurLocatedChanYeLianByName();
-			        		String seltime = tmpgz.getSelectedToZdgzTime();
-			        		result =  result + chanyelian + "(" + seltime +")" + "  |  ";
-			   			}
-		        	}
-		   		} catch (Exception e) { 
-		   			
-		   		}
+		
 
-        		try {
-					Files.append( formatedWholeContents(nullsteps,"股票池"+siglebkname,result) + System.getProperty("line.separator") ,tongdaxinfile,charset);
+		for (Map.Entry<String, String> entry : stockresult.entrySet()) {
+			String formatedstockcode = entry.getKey();
+			String result = entry.getValue();
+			
+			if(!Strings.isNullOrEmpty(result)  ) {
+				String lineformatedgainiantx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode, result );
+				try {
+					Files.append(lineformatedgainiantx,filezdgz, charset);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-        		
-        		if(!result.isEmpty()) {
-        			nullsteps ++;
-        		} 
 			}
-			runresult = true;
-
-			try {
-				String cmd = "rundll32 url.dll,FileProtocolHandler " + tongdaxinfile.getAbsolutePath();
-				Process p  = Runtime.getRuntime().exec(cmd);
-				p.waitFor();
-			} catch (Exception e1) 
-			{
-				e1.printStackTrace();
-			}
+			
+		}
 		
-		return runresult;
+		
+		stockresult = null;
+		
+		return filezdgz.getParent();
 	}
 	/*
 	 * 
@@ -226,14 +257,14 @@ public class TDXFormatedOpt {
 		return cylreport.getParent();
 	}
 	/*
-	 * 重点关注记录信息
+	 * 板块个股分析记录信息，是存在操作记录重点关注 表的。 现在关注历史是通过自定义表找出来的。
 	 */
-	public static String stockZdgzReports ()
+	public static String stockAndBanKuaiFenXiReports ()
 	{
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
 		SystemConfigration sysconfig = SystemConfigration.getInstance();
 		
-		 File filezdgz = new File( sysconfig.getTdxZdgzReportFile() );
+		 File filezdgz = new File( sysconfig.getTdxFenXiReportFile() );
 		 try {
 				if (filezdgz.exists()) {
 					filezdgz.delete();
@@ -306,6 +337,8 @@ public class TDXFormatedOpt {
 			}
 			
 		}
+		
+		
 		
 		treemap = null;
 		stockcodeset = null;

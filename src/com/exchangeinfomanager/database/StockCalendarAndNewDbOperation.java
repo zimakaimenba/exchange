@@ -63,8 +63,8 @@ public final class StockCalendarAndNewDbOperation {
 		if("ALL".equals(bankuaiid.toUpperCase()) ) 
 			sqlquerystat = "SELECT * FROM 商业新闻  \r\n"
 							+ timerangesql + "\r\n" 
-							+ " AND 关联板块 not like '%rrrrrr%' \r\n"  //不包含强势板块和弱势板块的新闻
-							+ " AND 关联板块 not like '%qqqqqq%'  \r\n"
+//							+ " AND 关联板块 not like '%rrrrrr%' \r\n"  //不包含强势板块和弱势板块的新闻
+//							+ " AND 关联板块 not like '%qqqqqq%'  \r\n"
 							+ " ORDER BY 录入日期 DESC"
 							;
 		else if("HEADLINE".equals(bankuaiid.toUpperCase()) ) //长期新闻和强弱势板块个股
@@ -98,8 +98,14 @@ public final class StockCalendarAndNewDbOperation {
 	            
 	            InsertedMeeting newmeeting = new InsertedMeeting(
 		                new Meeting(title, start,  description, location, new HashSet<InsertedMeeting.Label>(),slackurl,ownercodes), meetingID);
+	            
 	            if("HEADLINE".equals(bankuaiid.toUpperCase()) ) { //HEADLINE 包括000000 ，有可能是强势板块或弱势板块
-	            	newmeeting.setCurrentownercode(ownercodes.substring(0,ownercodes.length()-1));
+	            	if(ownercodes.contains("rrrrrr"))
+	            		newmeeting.setCurrentownercode("rrrrrr");
+	            	else if(ownercodes.contains("qqqqqq"))
+	            		newmeeting.setCurrentownercode("qqqqqq");
+	            	else
+	            		newmeeting.setCurrentownercode("000000");
 	            }
 	            else 
 	            	newmeeting.setCurrentownercode(bankuaiid);

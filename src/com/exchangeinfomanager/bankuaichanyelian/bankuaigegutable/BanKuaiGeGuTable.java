@@ -170,6 +170,11 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		
 		this.repaint();
 	}
+	@Override
+	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
+		// TODO Auto-generated method stub
+		
+	}
 	
     public String getToolTipText(MouseEvent e) {
         String tip = null;
@@ -178,7 +183,10 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
         int colIndex = columnAtPoint(p);
 
         try {
-            tip = getValueAt(rowIndex, colIndex).toString();
+        	if(colIndex == 2) { //权重column的tip要具体
+        		tip = "5:主业且不亏损,\n\r 4:主业并亏损,\n\r3:营收占比很大,\n\r2:营收占比很小,\n\r1:营收占比几乎没有概念阶段,\n\r0:毫无关系";
+        	} else
+        		tip = getValueAt(rowIndex, colIndex).toString();
         } catch (RuntimeException e1) {
             //catch null pointer exception if mouse is over an empty line
         }
@@ -420,11 +428,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		}
 	}
 
-	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 
 

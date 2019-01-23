@@ -8,6 +8,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +51,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Label;
 import java.awt.Dialog.ModalityType;
 
 public class ChanYeLianNewsPanel extends JDialog  
@@ -59,6 +61,7 @@ public class ChanYeLianNewsPanel extends JDialog
 	    protected static final int PADDING = 20;
 	    protected static final int TITLE_SIZE = 40;
 	    protected static final int TITLE_FONT_SIZE = 20;
+		private MeetingService curmeetingService;
 	/**
 	 * Create the panel.
 	 */
@@ -71,7 +74,7 @@ public class ChanYeLianNewsPanel extends JDialog
         Cache cacheAll = new Cache("ALL",allmeetingService, alllabelService,LocalDate.now().minusWeeks(10),LocalDate.now());
         panelallnews = new ChanYeLianGeGuNews(allmeetingService,cacheAll,"10周内所有新闻");
         
-        MeetingService curmeetingService = new DBMeetingService ();
+        curmeetingService = new DBMeetingService ();
     	LabelService curlabelService = new DBLabelService ();
         Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService,LocalDate.now().minusWeeks(10),LocalDate.now());
         panelgegunews = new ChanYeLianGeGuNews(curmeetingService,cachecurnode,curnodecode + "10周内个股新闻");
@@ -86,11 +89,30 @@ public class ChanYeLianNewsPanel extends JDialog
 	private ChanYeLianGeGuNews panelallnews;
 	private JButton addnewstogegu;
 	private JPanel centerPanel;
+	private JButton deletenewstogegu;
 	private static Logger logger = Logger.getLogger(ChanYeLianNewsPanel.class);
 	
+	private class RemoveController extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            super.mouseClicked(e);
+            try {
+            	InsertedMeeting upmeeting = panelgegunews.getCurSelectedNews ();
+            	upmeeting.removeMeetingSpecficOwner (myowncode);
+            	curmeetingService.updateMeeting(upmeeting);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            } 
+            setVisible(false);
+        }
+    }
 
 	private void createEvents() 
 	{
+		
+		deletenewstogegu.addMouseListener(new RemoveController() );
+		
 		addnewstogegu.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) {
@@ -111,7 +133,10 @@ public class ChanYeLianNewsPanel extends JDialog
         this.centerPanel.add(panelgegunews);
         this.centerPanel.add(Box.createVerticalStrut(5));
         JPanel p = JPanelFactory.createPanel(new FlowLayout(FlowLayout.RIGHT));
+        deletenewstogegu = new JButton("从当前前个股/板块删除");
         addnewstogegu = new JButton("添加到当前个股/板块");
+        p.add(deletenewstogegu);
+        p.add(new Label("                       "));
         p.add(addnewstogegu);
         this.centerPanel.add(p);
         this.centerPanel.add(Box.createVerticalStrut(5));

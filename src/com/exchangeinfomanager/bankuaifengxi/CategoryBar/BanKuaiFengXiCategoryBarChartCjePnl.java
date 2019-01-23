@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.swing.border.TitledBorder;
 
@@ -322,9 +323,12 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
     	}
     		
     	DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
+    	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+    	percentFormat.setMinimumFractionDigits(1);
 		
 		//显示成交额是多少周最大
 		Integer maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
+		Double changerate = nodexdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(selecteddate,0);
 		
 		String htmlstring = "";
 		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
@@ -340,6 +344,13 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 			 
 			 org.jsoup.nodes.Element li2 = dl.appendElement("li");
 			 li2.appendText("成交额MaxWk=" + maxwk);
+			 
+			 org.jsoup.nodes.Element li4 = dl.appendElement("li");
+			 try{
+				 li4.appendText("成交额变化贡献率" + percentFormat.format (changerate) );
+			 } catch (java.lang.IllegalArgumentException e) {
+				 li4.appendText("成交额变化贡献率NULL" );
+			 }
 		}
 		
 		htmlstring = doc.toString();

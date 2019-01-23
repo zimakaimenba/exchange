@@ -113,6 +113,7 @@ public class ChanYeLianGeGuNews extends View
 		int  model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
 		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(model_row);
 		
+//		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
 		return selectednews;
 		
 	}
@@ -130,8 +131,14 @@ public class ChanYeLianGeGuNews extends View
         		 if (arg0.getClickCount() == 2) {
 				 
 					 int row = tableCurCylNews.getSelectedRow();
+						if(row <0) {
+							JOptionPane.showMessageDialog(null,"请选择一条新闻！","Warning",JOptionPane.WARNING_MESSAGE);
+							return ;
+						}
+						
+//						int model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
 
-					  InsertedMeeting stocknews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
+					  InsertedMeeting stocknews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(model_row);
 					  Optional<InsertedMeeting> meeting = getCache().produceMeetings()
                               .stream()
                               .filter(m -> m.getID() == Integer.valueOf(stocknews.getID()))

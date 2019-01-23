@@ -93,7 +93,8 @@ public class DaPan extends BkChanYeLianTreeNode
 			NodeXPeriodDataBasic shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
 			Double szcurrecord = shenzhenperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
 			
-			return szcurrecord + shcurrecord ;
+			dapanchaer = szcurrecord + shcurrecord ;
+			return dapanchaer ;
 		}
 
 		@Override
@@ -145,9 +146,22 @@ public class DaPan extends BkChanYeLianTreeNode
 		}
 
 		@Override
-		public Double getChengJiaoEr(LocalDate requireddate, int difference) {
-			// TODO Auto-generated method stub
-			return null;
+		public Double getChengJiaoEr(LocalDate requireddate, int difference) 
+		{
+			String recordsperiod = getNodeperiodtype();
+			NodeXPeriodDataBasic shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+			Double shcurrecord = shanghaiperiodrecords.getChengJiaoEr(requireddate,difference);
+			
+			NodeXPeriodDataBasic shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
+			Double szcurrecord = shenzhenperiodrecords.getChengJiaoEr(requireddate,difference);
+			
+			Double dapancje = null;
+			try {
+			 dapancje = shcurrecord + szcurrecord;
+			} catch (java.lang.NullPointerException e) {
+				System.out.println(requireddate);
+			}
+			return dapancje;
 		}
 
 //		@Override
@@ -177,7 +191,7 @@ public class DaPan extends BkChanYeLianTreeNode
 		@Override
 		public Boolean hasFxjgInPeriod(LocalDate requireddate, int difference) {
 			// TODO Auto-generated method stub
-			return null;
+			return false;
 		}
 
 		@Override
@@ -193,9 +207,12 @@ public class DaPan extends BkChanYeLianTreeNode
 		}
 
 		@Override
-		public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate, int difference) {
-			// TODO Auto-generated method stub
-			return null;
+		public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate, int difference) 
+		{
+			String recordsperiod = getNodeperiodtype();
+			NodeXPeriodDataBasic shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+			Integer exchangedays = shanghaiperiodrecords.getExchangeDaysNumberForthePeriod(requireddate,difference);
+			return exchangedays;
 		}
 
 		@Override
@@ -204,11 +221,11 @@ public class DaPan extends BkChanYeLianTreeNode
 			return null;
 		}
 
-		@Override
-		public TimeSeries getChengJiaoEr() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+//		@Override
+//		public TimeSeries getChengJiaoEr() {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
 
 
 	}

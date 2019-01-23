@@ -43,6 +43,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
@@ -76,7 +77,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //		this.displayenddate = displayedenddate1;
 //		this.displayperiod = period;
 //		this.bkdbopt = new BanKuaiDbOperation ();
-		createGui ();
+		createGui (nodebkbelonged);
 		createEvents ();
 
 		this.displayedstartdate = displayedstartdate1;
@@ -307,7 +308,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private BanKuaiFengXiCandlestickPnl nodekpnl;
 	private JPopupMenu saveImage;
 	private JMenuItem mntmsaveimage; 
-	private void createGui() 
+	private void createGui(BkChanYeLianTreeNode nodebkbelonged) 
 	{
 		this.setLayout(new BorderLayout());
 
@@ -318,8 +319,13 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.setPreferredSize(new Dimension(1640, 705)); //设置显示框的大小
 		
 		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical");
-		this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
-		this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());
+		if(nodebkbelonged.getType() == BanKuaiAndStockBasic.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
+			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
+			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());
+		} else if(nodebkbelonged.getType() == BanKuaiAndStockBasic.DAPAN) {//如果上级node是大盘，显示是大盘的成交量
+			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
+			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
+		}
 		
 		this.centerPanel.add(this.nodecombinedpnl);
 		this.centerPanel.add(this.nodebkcjezblargepnl);

@@ -220,7 +220,7 @@ public class WholeMonthNewsView extends View
             	
             } else { // 强势 弱势板块
             	
-            	if ( mDate.getYear() == super.getDate().getYear()  && mDate.getMonth().equals(super.getDate().getMonth())  ) {
+            	if ( mDate.getYear() == super.getDate().getYear()  && mDate.getMonth().equals(super.getDate().getMonth())  ) { //强势 弱势板块 需要年月相等即可 
                     if (m.getLabels().isEmpty()) {
                         JLabel label = new JLabel(m.getTitle());
                         label.setToolTipText(m.getTitle() );

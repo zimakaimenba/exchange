@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.ToolTipManager;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
@@ -54,6 +55,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -265,7 +267,17 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	    }
     	    @Override
 			public void chartMouseMoved(ChartMouseEvent arg0) {
+    	    	ToolTipManager.sharedInstance().setDismissDelay(60000); //让tooltips显示时间延长
 			}
+    	    
+//    	    public void mouseEntered(MouseEvent me) {
+//    	        ToolTipManager.sharedInstance().setDismissDelay(60000); //让tooltips显示时间延长
+//    	    }
+//
+//    	    private final int defaultDismissTimeout = ToolTipManager.sharedInstance().getDismissDelay();
+//    	    public void mouseExited(MouseEvent me) {
+//    	        ToolTipManager.sharedInstance().setDismissDelay(defaultDismissTimeout);
+//    	    }
 
     	});
     	
@@ -476,12 +488,20 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis
     		LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
     		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
     		
+    		try{
     		if(nodexdata == null)
     			return Color.black;
     		else if(nodexdata.hasFxjgInPeriod(selecteddate, 0)) 
         		return Color.magenta.darker();
         	else 
         		return Color.black;
+    		} catch (java.lang.NullPointerException e) {
+    			System.out.println(period);
+    			return Color.black;
+    			
+    		}
+//    		return null;
+    		
     	}
     }
     
