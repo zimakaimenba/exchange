@@ -25,11 +25,12 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.toedter.calendar.IDateEditor;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
-public class JStockCalendarDateChooser extends JDateChooser implements PopupMenuListener
+public class JStockCalendarDateChooser extends JLocalDateChooser implements PopupMenuListener
 {
 
 	

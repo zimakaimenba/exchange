@@ -173,13 +173,13 @@ public class JStockComboBox extends  JComboBox<String>
 	/*
 	 * 获取用户code的板块或个股的基本信息 
 	 */
-	private void preSearch(String nodecode,Integer nodetype) 
+	private Integer preSearch(String nodecode,Integer nodetype) 
 	{
 		nodeshouldbedisplayed = null;
 		 ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (nodecode);
 		 if(nodeslist.size() == 0) {
 			 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
-			 return;
+			 return null;
 		 }
 		 
 		 if(nodeslist.size()>1) { 
@@ -194,7 +194,7 @@ public class JStockComboBox extends  JComboBox<String>
 				 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
 				 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
 				 if(exchangeresult == JOptionPane.CANCEL_OPTION)
-						return;
+						return null;
 				 
 				 try {
 					 int userselected = userselection.getUserSelection();
@@ -219,7 +219,9 @@ public class JStockComboBox extends  JComboBox<String>
 //					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
 					
 //					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
-		 }				
+		 }	
+		 
+		 return 1;
 	}
 	
 	private void createEvents() 

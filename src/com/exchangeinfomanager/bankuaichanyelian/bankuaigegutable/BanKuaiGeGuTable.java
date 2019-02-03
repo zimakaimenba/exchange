@@ -40,6 +40,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
+import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
@@ -184,7 +185,16 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 
         try {
         	if(colIndex == 2) { //权重column的tip要具体
-        		tip = "5:主业且不亏损,\n\r 4:主业并亏损,\n\r3:营收占比很大,\n\r2:营收占比很小,\n\r1:营收占比几乎没有概念阶段,\n\r0:毫无关系";
+				org.jsoup.nodes.Document doc = Jsoup.parse("");
+				org.jsoup.select.Elements content = doc.select("body");
+				content.append( "5:主业且不亏损<br>" );
+				content.append( "4:主业且亏损<br>" );
+				content.append( "3:营收占比很大<br>" );
+				content.append( "2:营收占比很小<br>" );
+				content.append( "1:营收占比几乎没有概念阶段<br>" );
+				content.append( "0:毫无关系<br>" );
+				
+				tip = doc.toString();
         	} else
         		tip = getValueAt(rowIndex, colIndex).toString();
         } catch (RuntimeException e1) {
@@ -192,6 +202,9 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
         }
 
         return tip;
+        
+        
+        
     }
 	
 	private void createEvents() 

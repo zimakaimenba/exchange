@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.TableCellListener;
+import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
@@ -549,6 +550,9 @@ public class StockInfoManager
 					nodeshouldbedisplayed = cBxstockcode.getUserInputNode();
 					if(nodeshouldbedisplayed != null)
 						preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
+					else {
+						clearGuiDispalyedInfo ();
+					}
 				}
 				
 				if(e.getStateChange() == ItemEvent.DESELECTED) {
@@ -1308,19 +1312,30 @@ public class StockInfoManager
 				
 				if (SwingUtilities.isRightMouseButton(event))
 			    {
-			     Toolkit toolkit = Toolkit.getDefaultToolkit();
-			     Clipboard clipboard = toolkit.getSystemClipboard();
-			     try {
-			      String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			      //logger.debug(result);
-			      txtareafumianxx.insert(result, txtareafumianxx.getCaretPosition());
-			      txtareafumianxx.insert("  ", txtareafumianxx.getCaretPosition());
-			      btngengxinxx.setEnabled(true);
-			      dateChsefumian.setDate(new Date());
-			     } catch(Exception e) {
-			      logger.debug(e);
-			     }
-			     
+					Toolkit toolkit = Toolkit.getDefaultToolkit();
+				     Clipboard clipboard = toolkit.getSystemClipboard();
+				     
+					if(dateChsefumian.getLocalDate() == null || dateChsefumian.getLocalDate().equals(LocalDate.now())) { //如果是对当天的信息进行修改
+						 
+					     try {
+					      String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+					      txtareafumianxx.insert(result, txtareafumianxx.getCaretPosition());
+					      txtareafumianxx.insert("  ", txtareafumianxx.getCaretPosition());
+					     } catch(Exception e) {
+					      logger.debug(e);
+					     }
+					} else { //如果是对过去的信息进行修改，要把日期加上
+					     try {
+					      String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+					      
+					      String curtext = "[" + dateChsefumian.getLocalDate().toString() + txtareafumianxx.getText() + "]";
+					      txtareafumianxx.setText(result + "  " +curtext); 
+					     } catch(Exception e) {
+					      logger.debug(e);
+					     }
+					}
+					btngengxinxx.setEnabled(true);
+				    dateChsefumian.setDate(new Date());
 			    }
 			}
 		});
@@ -1450,27 +1465,34 @@ public class StockInfoManager
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{	
-				String stockcode = null;
-				try	{
-					stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
-					preUpdateSearchResultToGui(stockcode);
-					
-//					if(!checkCodeInputFormat(stockcode)) {
-//						logger.debug("股票代码有误");
-//						JOptionPane.showMessageDialog(null,"股票代码有误！");
-//						return;
-//					}else {
-//						preUpdateSearchResultToGui(stockcode);
-//					}
-				}catch(java.lang.NullPointerException e)	{
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(frame, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
-					return;
-				}catch(java.lang.StringIndexOutOfBoundsException ex2) {
-					ex2.printStackTrace();
-					JOptionPane.showMessageDialog(null,"股票代码有误！");
-					return;
+				nodeshouldbedisplayed = cBxstockcode.getUserInputNode();
+				if(nodeshouldbedisplayed != null)
+					preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
+				else {
+					clearGuiDispalyedInfo ();
 				}
+				
+//				String stockcode = null;
+//				try	{
+//					stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+//					preUpdateSearchResultToGui(stockcode);
+//					
+////					if(!checkCodeInputFormat(stockcode)) {
+////						logger.debug("股票代码有误");
+////						JOptionPane.showMessageDialog(null,"股票代码有误！");
+////						return;
+////					}else {
+////						preUpdateSearchResultToGui(stockcode);
+////					}
+//				}catch(java.lang.NullPointerException e)	{
+//					e.printStackTrace();
+//					JOptionPane.showMessageDialog(frame, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
+//					return;
+//				}catch(java.lang.StringIndexOutOfBoundsException ex2) {
+//					ex2.printStackTrace();
+//					JOptionPane.showMessageDialog(null,"股票代码有误！");
+//					return;
+//				}
 			}
 
 				
@@ -1950,7 +1972,7 @@ public class StockInfoManager
 			ArrayList<AccountInfoBasic> accountsnamelist = new ArrayList<AccountInfoBasic>(accountsnamemap.values());
 			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountsnamelist,tmpstockcode );
 		} else
-			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).removeAllRows();
+			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).deleteAllRows();
 		
 	}
 
@@ -2112,6 +2134,9 @@ public class StockInfoManager
 		((DefaultTableModel)tblzhongdiangz.getModel()).setRowCount(0);
 		//tableStockAccountsInfo.setModel( new DefaultTableModel()  );
 		((AccountsInfoTableModel)(tableStockAccountsInfo.getModel())).deleteAllRows();
+		
+		
+		kspanel.resetInput ();
 				
 //		editorPaneBanKuai.setText("");
 //		panelZhanBi.resetDate();
@@ -2309,9 +2334,9 @@ public class StockInfoManager
 	private JButton btngengxinxx;
 	private JTextArea txtareagainiants;
 	private JTextArea txtareafumianxx;
-	private JDateChooser dateChsefumian;
-	private JDateChooser dateChsquanshang;
-	private JDateChooser dateChsgainian;
+	private JLocalDateChooser dateChsefumian;
+	private JLocalDateChooser dateChsquanshang;
+	private JLocalDateChooser dateChsgainian;
 	private JMenuItem menuItemTongdaxinbb;
 	private JMenuBar menuBar;
 	private JLabel lblStatusBarOperationIndicatior;
@@ -2678,7 +2703,7 @@ public class StockInfoManager
 	
 		
 		JLabel lblstockinfo = new JLabel("\u6982\u5FF5\u63D0\u793A");
-		dateChsgainian = new JDateChooser();
+		dateChsgainian = new JLocalDateChooser();
 		dateChsgainian.setEnabled(false);
 		
 		JScrollPane scrollPanegainian = new JScrollPane();
@@ -2695,7 +2720,7 @@ public class StockInfoManager
 		txtareagainiants.setLineWrap(true);
 		
 		JLabel lblfumianxiaoxi = new JLabel("\u8D1F\u9762\u6D88\u606F");
-		dateChsefumian = new JDateChooser();
+		dateChsefumian = new JLocalDateChooser();
 		dateChsefumian.setEnabled(false);
 		
 		JScrollPane scrollPanefumian = new JScrollPane();
@@ -2710,7 +2735,7 @@ public class StockInfoManager
 		
 		JLabel lblquanshangpj = new JLabel("\u5238\u5546\u8BC4\u7EA7\u63D0\u793A");
 		
-		dateChsquanshang = new JDateChooser();
+		dateChsquanshang = new JLocalDateChooser();
 		dateChsquanshang.setEnabled(false);
 		
 		txtfldquanshangpj = new JTextField();
@@ -3331,25 +3356,19 @@ class AccountsInfoTableModel extends DefaultTableModel
 	    
 	    public void deleteAllRows()
 	    {
-//	    	if(this.accountslist == null)
-//				 return ;
-//			 else 
-//				 accountslist.clear();
-	    	int rowCount = this.getRowCount();
-	    	//Remove rows one by one from the end of the table
-//	    	for (int i = rowCount - 1; i >= 0; i--) {
-	    	    
-	    	
-	    	this.fireTableDataChanged();
-	    }
-	    
-	    public void removeAllRows ()
-	    {
 	    	if(accountslist != null) {
 	    		this.accountslist.clear();
 		    	this.fireTableDataChanged();
 	    	}
-	    	
 	    }
+	    
+//	    public void removeAllRows ()
+//	    {
+//	    	if(accountslist != null) {
+//	    		this.accountslist.clear();
+//		    	this.fireTableDataChanged();
+//	    	}
+//	    	
+//	    }
 }
 

@@ -214,15 +214,17 @@ public class BanKuaiFengXi extends JDialog {
 		DayOfWeek dayofweek = LocalDate.now().getDayOfWeek();
 		if(dayofweek.equals(DayOfWeek.SUNDAY) ) {
 			 LocalDate saturday = LocalDate.now().minus(1,ChronoUnit.DAYS);
-			 ZoneId zone = ZoneId.systemDefault();
-			 Instant instant = saturday.atStartOfDay().atZone(zone).toInstant();
-			 this.dateChooser.setDate(Date.from(instant));
+//			 ZoneId zone = ZoneId.systemDefault();
+//			 Instant instant = saturday.atStartOfDay().atZone(zone).toInstant();
+//			 this.dateChooser.setDate(Date.from(instant));
+			 this.dateChooser.setLocalDate(saturday);
 			 
 		} else if(dayofweek.equals(DayOfWeek.MONDAY) && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <19 ) {
 			LocalDate saturday = LocalDate.now().minus(2,ChronoUnit.DAYS);
-			 ZoneId zone = ZoneId.systemDefault();
-			 Instant instant = saturday.atStartOfDay().atZone(zone).toInstant();
-			 this.dateChooser.setDate(Date.from(instant));
+//			 ZoneId zone = ZoneId.systemDefault();
+//			 Instant instant = saturday.atStartOfDay().atZone(zone).toInstant();
+//			 this.dateChooser.setDate(Date.from(instant));
+			this.dateChooser.setLocalDate(saturday);
 			 
 		} else
 			this.dateChooser.setDate(new Date ());
@@ -298,7 +300,7 @@ public class BanKuaiFengXi extends JDialog {
 //		setCursor(hourglassCursor);
 		
 		this.globeperiod = period;
-    	LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    	LocalDate curselectdate = dateChooser.getLocalDate(); //dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     	
     	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbksks.getAllBkStocksTree().getModel().getRoot();
 		int bankuaicount = allbksks.getAllBkStocksTree().getModel().getChildCount(treeroot);
@@ -362,7 +364,7 @@ public class BanKuaiFengXi extends JDialog {
 	private void initializeBanKuaiZhanBiByGrowthRate2 (String period)
 	{
 		this.globeperiod = period;
-    	LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    	LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     	
     	bkfxtask = new BanKuaiPaiXuTask(this.allbksks,  curselectdate,period);
     	bkfxtask.addPropertyChangeListener(new PropertyChangeListener() {
@@ -377,7 +379,7 @@ public class BanKuaiFengXi extends JDialog {
 		          switch ((StateValue) event.getNewValue()) {
 		          case DONE:
 		        	bkfxCancelAction.putValue(Action.NAME, "重置");
-		        	LocalDate cursettingdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		        	LocalDate cursettingdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		        	if(cursettingdate.equals(LocalDate.now())) 
 		        		btnresetdate.setEnabled(false);
 		        	
@@ -470,7 +472,7 @@ public class BanKuaiFengXi extends JDialog {
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 				return;
 		
-		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		String dateshowinfilename = null;
 		if(globeperiod == null  || globeperiod.equals(StockGivenPeriodDataItem.WEEK))
 			dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
@@ -641,7 +643,7 @@ public class BanKuaiFengXi extends JDialog {
 		
 		LocalDate curselectdate = null;
 		try{
-			curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		} catch (java.lang.NullPointerException e) {
 			JOptionPane.showMessageDialog(null,"日期有误！","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
@@ -756,7 +758,7 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void refreshGeGuFengXiResult (StockOfBanKuai stock)
 	{
-			LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 			barchartpanelstockofbankuaidatachangelisteners.forEach(l -> l.updatedDate(stock, curselectdate, 0,globeperiod));
 	}
@@ -767,7 +769,7 @@ public class BanKuaiFengXi extends JDialog {
 	{
 		selectstock.setHasReviewedToday();
 		
-		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 //		LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
 //		LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
@@ -783,7 +785,7 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void refreshTDXGeGuAndBanKuaiKXian (StockOfBanKuai selectstock,BanKuai bankuai)
 	{
-		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
@@ -1215,7 +1217,7 @@ public class BanKuaiFengXi extends JDialog {
     				
     				if(bkcur.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股， 
     					LocalDate selectdate = CommonUtility.formateStringToDate(datekey.toString());
-    					LocalDate cursetdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    					LocalDate cursetdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     					if(!CommonUtility.isInSameWeek(selectdate,cursetdate) ) {
     						panelselectwkgeguzhanbi.setBanKuaiCjeNeededDisplay(bkcur,Integer.parseInt(tfldweight.getText() ), selectdate ,globeperiod );
         					
@@ -1599,9 +1601,10 @@ public class BanKuaiFengXi extends JDialog {
 		btnsixmonthbefore.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				LocalDate startday = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate startday = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				LocalDate requirestart = startday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange()-4,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 				dateChooser.setDate(Date.from(requirestart.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
+				
 				
 	    		lastselecteddate = requirestart;
 	    		
@@ -1615,7 +1618,7 @@ public class BanKuaiFengXi extends JDialog {
 				if(!btnsixmonthafter.isEnabled())
 					return ;
 				
-				LocalDate startday = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate startday = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				LocalDate requirestart = startday.with(DayOfWeek.SATURDAY).plus(sysconfig.banKuaiFengXiMonthRange()-4,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 				dateChooser.setDate(Date.from(requirestart.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
     		
@@ -1874,7 +1877,7 @@ public class BanKuaiFengXi extends JDialog {
 			int rowcount = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount();
 			for(int i=0;i<rowcount;i++) {
 				StockOfBanKuai stock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStock(i);
-				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				nodeinfotocsv.addNodeToCsvList(stock.getStock(), curselectdate, curselectdate);
 			}
 		} else if(type.toLowerCase().equals("single") ) {
@@ -1903,7 +1906,7 @@ public class BanKuaiFengXi extends JDialog {
 			int rowcount = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getRowCount();
 			for(int i=0;i<rowcount;i++) {
 				BanKuai bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuai(i);
-				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				nodeinfotocsv.addNodeToCsvList( bk, curselectdate, curselectdate);
 			}
 		} else if(type.toLowerCase().equals("single") ) {
@@ -2044,7 +2047,7 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	protected void displayNodeLargerPeriodData(BkChanYeLianTreeNode node, LocalDate datekey) 
 	{
-		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate requireend = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		LocalDate requirestart = requireend.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
@@ -2131,21 +2134,6 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	protected void initializeExportConditions() 
 	{
-//		String exportbk = null;
-//		String msg =  "导出条件是否限定在仅当前板块起作用？";
-//		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "添加导出条件", JOptionPane.OK_CANCEL_OPTION);
-//		if(exchangeresult == JOptionPane.OK_OPTION) { //有一些板块，如次新股，可能导出条件比较特殊，可以单独设置
-//			int row = tableBkZhanBi.getSelectedRow();
-//			if(row <0) {
-//				JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
-//				return;
-//			}
-//			
-//			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-//			BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-//			exportbk = selectedbk.getMyOwnCode();
-//		}
-
 		String exportcjelevel = null;
 		String exportdpmaxwklevel = null;
 		String exportbkmaxwklevel = null;
@@ -2298,7 +2286,7 @@ public class BanKuaiFengXi extends JDialog {
 					ckboxparsefile.setSelected(false);
 					return;
 			}
-			LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			if(!curselectdate.equals(localDate) ) {
 				ZoneId zone = ZoneId.systemDefault();
 				Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
