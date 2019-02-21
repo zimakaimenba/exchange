@@ -2849,7 +2849,7 @@ public class BanKuaiDbOperation
 				 		;
 			 } else { //概念风格行业指数板块
 				 //from WQW
-				 sqlquerystat1 = "select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , "+ bktypetable + ".`股票权重`\r\n" + 
+				 sqlquerystat1 = "select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , "+ bktypetable + ".`股票权重` , "+ bktypetable + ".`板块龙头`\r\n" + 
 					 		"          from "+ bktypetable + ", a股\r\n" + 
 					 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`  AND a股.`已退市` IS NULL \r\n" + 
 					 		
@@ -2885,6 +2885,9 @@ public class BanKuaiDbOperation
 					StockOfBanKuai bkofst = new StockOfBanKuai(currentbk,tmpstock);
 					Integer weight = rs1.getInt("股票权重");
 					bkofst.setStockQuanZhong(weight);
+					
+					Boolean longtou = rs1.getBoolean("板块龙头");
+					bkofst.setBkLongTou(longtou);
 					
 					currentbk.addNewBanKuaiGeGu(bkofst);
 				}
@@ -3588,6 +3591,27 @@ public class BanKuaiDbOperation
 		return tmprecordfile;
 	}
 	/*
+	 * 
+	 */
+	public void setBanKuaiLongTou (BanKuai bankuai, String stockcode,Boolean longtouornot)
+	{
+		String bkcode = bankuai.getMyOwnCode();
+		HashMap<String, String> actiontables = this.getActionRelatedTables(bankuai, stockcode);
+		String bktypetable = actiontables.get("股票板块对应表");
+//		String bkorzsvoltable = actiontables.get("板块每日交易量表");
+//		String bknametable = actiontables.get("板块指数名称表");
+		
+		String sqlupdatestat = "UPDATE " + bktypetable  + " SET 板块龙头 = " +  longtouornot  + 
+				" WHERE 板块代码 = '" + bkcode + 
+				"' AND 股票代码 = '" + stockcode + "'" +
+				"  AND  ISNULL(移除时间)"
+				;
+		logger.debug(sqlupdatestat);
+		connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		
+		actiontables = null;
+	}
+	/*
 	 * 修改板块中某个个股的权重
 	 */
 	public void setStockWeightInBanKuai(BanKuai bankuai, String bkname, String stockcode, int weight) 
@@ -3595,8 +3619,9 @@ public class BanKuaiDbOperation
 		String bkcode = bankuai.getMyOwnCode();
 		HashMap<String, String> actiontables = this.getActionRelatedTables(bankuai, stockcode);
 		String bktypetable = actiontables.get("股票板块对应表");
-		String bkorzsvoltable = actiontables.get("板块每日交易量表");
-		String bknametable = actiontables.get("板块指数名称表");
+//		String bkorzsvoltable = actiontables.get("板块每日交易量表");
+//		String bknametable = actiontables.get("板块指数名称表");
+		
 		String sqlupdatestat = "UPDATE " + bktypetable  + " SET 股票权重 = " +  weight  + 
 				" WHERE 板块代码 = '" + bkcode + 
 				"' AND 股票代码 = '" + stockcode + "'" +

@@ -68,9 +68,9 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         	comp.setFont(font);
         }
 	    
-	    Color foreground, background = Color.white;
+	    Color foreground = Color.BLACK, background = Color.white;
 
-	    if( col == 1 ) {
+	    if( col == 1 ) { //个股名称
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
 	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreerelated();
     	
@@ -79,7 +79,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    		background = Color.ORANGE;  
 	    	else
 		    		background = Color.white;
-	    	} 
+	    	
+	    	if(stockofbank.isBkLongTou())
+	    		foreground = Color.RED;
+	    	else 
+	    		foreground = Color.BLACK;
+	    } 
 
 	    //突出达到用户标准的股票
 	    if( col == 4 && value != null ) { //成交额>=
@@ -135,6 +140,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    }
  
     	comp.setBackground(background);
+    	comp.setForeground(foreground);
     	
 	    if(table.isRowSelected(row) && col == 0 ) {
 	    	comp.setBackground(Color.blue);

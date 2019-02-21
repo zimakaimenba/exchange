@@ -41,6 +41,19 @@ public class StockOfBanKuai extends BkChanYeLianTreeNode
 	private BanKuai bankuai;
 	private Stock stock;
 	private Integer quanzhong;
+	private Boolean isbklongtou;
+	
+	public Boolean isBkLongTou ()
+	{
+		if(this.isbklongtou == null)
+			return false;
+		else
+			return this.isbklongtou;
+	}
+	public void setBkLongTou (Boolean isbklongtou1)
+	{
+		this.isbklongtou = isbklongtou1; 
+	}
 	
 	public void setStockQuanZhong (Integer quanzhong)
 	{

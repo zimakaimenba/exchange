@@ -2156,7 +2156,12 @@ public class BanKuaiFengXi extends JDialog {
 		
 		ExportCondition expc = new ExportCondition (exportcjelevel,exportcjemaxwklevel,exportdpmaxwklevel,exportbkmaxwklevel,exporthsl,null);
 		
-		ExtraExportConditions extraexportcondition = new ExtraExportConditions ();
+		ExtraExportConditions extraexportcondition;
+		if(exportcjelevel == null && exportdpmaxwklevel == null)
+			extraexportcondition = new ExtraExportConditions (true);
+		else
+			extraexportcondition = new ExtraExportConditions (false);
+		
 		int extraresult = JOptionPane.showConfirmDialog(null,extraexportcondition , "附加导出条件:", JOptionPane.OK_CANCEL_OPTION);
 		if(extraresult == JOptionPane.OK_OPTION) { //其他导出条件 
 			expc.setExportSTStocks ( extraexportcondition.shouldExportSTStocks() );
@@ -2895,6 +2900,7 @@ public class BanKuaiFengXi extends JDialog {
 		 };
 		
 		btnresetdate = new JButton(bkfxCancelAction);
+		btnresetdate.setText("\u4ECA\u5929");
 //		btnresetdate.setEnabled(false);
 		
 		btnsixmonthbefore = new JButton("<");
@@ -3276,27 +3282,40 @@ public class BanKuaiFengXi extends JDialog {
 //			this.setTooltips ();
 		}
 		
-		private Boolean shouldnotexportststocks;
-		private Double havedayangxianundercertainchenjiaoer;
-		private Double settingcje;
+		private Boolean shouldnotexportSTstocks;
+		
+		private Boolean havedayangxianundercertainchenjiaoer;
+		private Double  cjelevelundercertainchenjiaoeforyangxian;
+		private Double  dayangxianundercertainchenjiaoer;
+		
+		private Boolean havelianxufundercertainchenjiaoer;
+		private Double  cjelevelundercertainchenjiaoeforlianxu;
+		private Double  fanglianglevelundercertainchenjiaoer;
+		
+		private Double settingcjemax;
 		private Double settingcjemin;
 		private Integer settindpgmaxwk;
 		private Integer settinbkgmaxwk;
 		private Integer settingcjemaxwk;
 		private Double setSettinghsl;
+		
 		private String settingbk;
+		
 		private String tooltips = "";
 
+		//
 		public void setHaveDaYangXianUnderCertainChenJiaoEr (double shouldHaveDaYangXianUnderCertainChenJiaoEr) 
 		{
 			this.havedayangxianundercertainchenjiaoer = shouldHaveDaYangXianUnderCertainChenJiaoEr;
 			if(shouldHaveDaYangXianUnderCertainChenJiaoEr > 0.0)
 				this.tooltips = this.tooltips + "成交量小于" + shouldHaveDaYangXianUnderCertainChenJiaoEr +  "必须有5%大阳线。";
 		}
+		//
 		public Double shouldHaveDaYangXianUnderCertainChenJiaoEr ()
 		{
 			return this.havedayangxianundercertainchenjiaoer * 100000000;
 		}
+		//
 		public void setExportSTStocks(boolean shouldNotExportSTStocks) 
 		{
 			this.shouldnotexportststocks = shouldNotExportSTStocks;
@@ -3307,8 +3326,8 @@ public class BanKuaiFengXi extends JDialog {
 		{
 			return this.shouldnotexportststocks;
 		}
-
-		private void setSettingbk(String exportbk) 
+		//
+		public void setSettingbk(String exportbk) 
 		{
 			if(exportbk != null ) {
 				this.settingbk = exportbk;
@@ -3320,36 +3339,12 @@ public class BanKuaiFengXi extends JDialog {
 		{
 			return this.settingbk;
 		}
-//		private void setTooltips() 
-//		{
-//			this.tooltips = this.tooltips + "</br>";
-//		}
+		//
 		public String getTooltips ()
 		{
 			return this.tooltips + "</br>";
 		}
-		public Double getSettingcje() {
-			return settingcje * 100000000;
-		}
-		private void setSettingcje(String exportcjelevel) {
-			if(exportcjelevel != null) {
-				this.settingcje = Double.parseDouble( exportcjelevel );
-				this.tooltips = this.tooltips + "成交额<=" + settingcje + "亿";
-			}
-			else
-				this.settingcje = -10000000000000000.0;
-		}
-		public Double getSettingcjemin() {
-			return settingcjemin * 100000000;
-		}
-		private void setSettingcjemin(String exportcjelevel) {
-			if(exportcjelevel != null) {
-				this.settingcjemin = Double.parseDouble( exportcjelevel );
-				this.tooltips = this.tooltips + "成交额>=" + settingcjemin + "亿";
-			}
-			else
-				this.settingcjemin = -10000000000000000.0;
-		}
+		//
 		public Integer getSettindpgmaxwk() {
 			return settindpgmaxwk;
 		}
@@ -3361,6 +3356,7 @@ public class BanKuaiFengXi extends JDialog {
 			else
 				this.settindpgmaxwk = -100000000;
 		}
+		//
 		public Integer getSettinbkgmaxwk() {
 			return settinbkgmaxwk;
 		}
@@ -3372,6 +3368,7 @@ public class BanKuaiFengXi extends JDialog {
 			else
 				this.settinbkgmaxwk = -100000000;
 		}
+		//
 		public Integer getSettingcjemaxwk() {
 			return settingcjemaxwk;
 		}
@@ -3383,7 +3380,33 @@ public class BanKuaiFengXi extends JDialog {
 			else
 				this.settingcjemaxwk = -100000000;
 		}
-		private void setSettinghsl(String exporthsl) 
+		//成交额的范围
+		public Double getSettingcjemin() {
+			return settingcjemin * 100000000;
+		}
+		public Double getSettingCjeMax() 
+		{
+			return settingcjemax * 100000000;
+		}
+		public void setChenJiaoEr (String exportcjelevelmin, String exportcjelevelmax)
+		{
+			if(exportcjelevelmin != null) {
+				this.settingcjemin = Double.parseDouble( exportcjelevelmin );
+				this.tooltips = this.tooltips + "成交额>=" + settingcjemin + "亿";
+			}
+			else
+				this.settingcjemin = -10000000000000000.0;
+			
+			if(exportcjelevelmax != null) {
+				this.settingcjemax = Double.parseDouble( exportcjelevelmax );
+				this.tooltips = this.tooltips + "成交额<=" + settingcjemax + "";
+			}
+			else
+				this.settingcjemax = 1000000000000000.0;
+			
+		}
+		//换手率
+		public void setSettinghsl(String exporthsl) 
 		{
 			if(exporthsl != null) {
 				this.setSettinghsl = Double.parseDouble(exporthsl);

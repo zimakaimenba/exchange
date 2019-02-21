@@ -165,6 +165,16 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
         if( bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {
         //读出该板块当前所有的个股，读出的是本周在该板块内存在的所有个股，而不是当天在该板块存在的个股
 	  	     LocalDate curselectdate = LocalDate.now();
+	  	 //每周日一是新的一周开始，因为还没有导入数据，会显示为没有数据，所以把时间调整到上一周六
+		 		DayOfWeek dayofweek = LocalDate.now().getDayOfWeek();
+		 		if(dayofweek.equals(DayOfWeek.SUNDAY) ) {
+		 			 LocalDate saturday = LocalDate.now().minus(1,ChronoUnit.DAYS);
+		 			curselectdate = saturday;
+		 		} else if(dayofweek.equals(DayOfWeek.MONDAY) && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <19 ) {
+		 			LocalDate saturday = LocalDate.now().minus(2,ChronoUnit.DAYS);
+		 			curselectdate = saturday;
+		 		}
+		 		
 	  	     bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), curselectdate,StockGivenPeriodDataItem.WEEK);
 	  	     bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,StockGivenPeriodDataItem.WEEK);
 	  	     

@@ -100,6 +100,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 //	private JMenuItem menuItemReDian;
 	private JMenuItem menuItemQuanZhong;
 	private JMenuItem menuItemGeguInfo;
+	private JMenuItem menuItemLongTou;
 	private StockCalendarAndNewDbOperation newsdbopt;
 	private BanKuaiDbOperation bkdbopt;
 	private JPopupMenu popupMenuGeguNews;
@@ -117,8 +118,11 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		menuItemAddGz = new JMenuItem("个股分析");
 //		menuItemReDian = new JMenuItem("标记龙头个股");
 		menuItemQuanZhong = new JMenuItem("设置股票板块权重");
-		popupMenuGeguNews.add(menuItemAddNews);
+		menuItemLongTou = new JMenuItem("设为/取消板块龙头");
+		
 		popupMenuGeguNews.add(menuItemQuanZhong);
+		popupMenuGeguNews.add(menuItemLongTou);
+		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemAddGz);
 		popupMenuGeguNews.add(menuItemGeguInfo);
 //		popupMenuGeguNews.add(menuItemReDian);
@@ -187,12 +191,9 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
         	if(colIndex == 2) { //权重column的tip要具体
 				org.jsoup.nodes.Document doc = Jsoup.parse("");
 				org.jsoup.select.Elements content = doc.select("body");
-				content.append( "5:主业且不亏损<br>" );
-				content.append( "4:主业且亏损<br>" );
-				content.append( "3:营收占比很大<br>" );
-				content.append( "2:营收占比很小<br>" );
-				content.append( "1:营收占比几乎没有概念阶段<br>" );
-				content.append( "0:毫无关系<br>" );
+				content.append( "10~1 ：占主业营收比重<br>" );
+				content.append( "0 : 营收占比几乎没有概念阶段<br>" );
+				content.append( "-1 : 毫无关系<br>" );
 				
 				tip = doc.toString();
         	} else
@@ -229,6 +230,17 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 			
 		});
 		
+		menuItemLongTou.addActionListener(new ActionListener() {
+			@Override
+
+			public void actionPerformed(ActionEvent evt) {
+
+				setBanKuaiLongTou ();
+			}
+			
+		});
+
+		
 //		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
 		menuItemQuanZhong.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -264,6 +276,23 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	}
 	
 	
+	protected void setBanKuaiLongTou() 
+	{
+		int row = this.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
+	
+		stockofbankuai.setBkLongTou(!stockofbankuai.isBkLongTou());
+
+		BanKuai bk = ((BanKuaiGeGuTableModel)this.getModel()).getCurDispalyBandKuai();
+		bkdbopt.setBanKuaiLongTou (bk,stockofbankuai.getMyOwnCode(),stockofbankuai.isBkLongTou());
+	}
+
 	protected void showGeGuInfoWin() 
 	{
 		 int  view_row = this.getSelectedRow();
@@ -396,14 +425,13 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(modelRow);
 		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (modelRow);
 		
-		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重,权重值不能超过5！\n\r"
-											+ "5:主业且不亏损,\n\r 4:主业并亏损,\n\r3:营收占比很大,\n\r2:营收占比很小,\n\r1:营收占比几乎没有概念阶段,\n\r0:毫无关系"
+		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重！\n\r"
+											+ "10~1 ：占主业营收比重,\n\r 0 : 营收占比几乎没有概念阶段,\n\r -1 : 毫无关系"
 				,weight);
 		try {
 			int newweight = Integer.parseInt(weightresult);
-			if(newweight>5)
-				JOptionPane.showMessageDialog(null,"权重值不能超过5！\n\r"
-												+ "5:主业且不亏损,4:主业并亏损,3:营收占比很大,2:营收占比很小,1:营收占比几乎没有概念阶段,0:毫无关系"	
+			if(newweight> 10 || newweight < -1)
+				JOptionPane.showMessageDialog(null,"权重值范围10 ~ -1！\n\r"
 						,"Warning",JOptionPane.WARNING_MESSAGE);
 			
 			if(weight != newweight) {

@@ -767,7 +767,7 @@ public class StockInfoManager
 		
 		tfdCustom.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyPressed(KeyEvent arg0) 
+			public void keyTyped(KeyEvent arg0) 
 			{
 				btngengxinxx.setEnabled(true);
 			}
@@ -775,7 +775,7 @@ public class StockInfoManager
 		
 		tfdJingZhengDuiShou.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyPressed(KeyEvent arg0) 
+			public void keyTyped(KeyEvent arg0) 
 			{
 				btngengxinxx.setEnabled(true);
 			}

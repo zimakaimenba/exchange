@@ -68,7 +68,7 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
 
             GetNewsFromHtml	 showhtmldialog = new GetNewsFromHtml (getMeeting());
             
-            int exchangeresult = JOptionPane.showConfirmDialog(null, showhtmldialog ,"报表完毕", JOptionPane.OK_CANCEL_OPTION);
+            int exchangeresult = JOptionPane.showConfirmDialog(null, showhtmldialog ,"设置新闻", JOptionPane.OK_CANCEL_OPTION);
 			if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 //        			SystemAudioPlayed.playSound();
