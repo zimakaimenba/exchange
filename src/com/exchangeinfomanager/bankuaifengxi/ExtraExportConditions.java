@@ -127,25 +127,46 @@ class ExtraExportConditions extends JPanel
 			return false;
 		
 	}
-	/*
-	 * 
-	 */
-	public double getDaYangXianUnderCertainChenJiaoEr ()
+	public Double getCjeLevelUnderCertainChenJiaoErOfDaYangXian ()
 	{
 		if(cbxShiZhilevelyangxian.isSelected()) {
 			return Double.parseDouble(tfldshizhilevelyangxian.getText() );
 		} else
 			return -1.0;
 	}
+	public Integer getYangXianLevelUnderCertainChenJiaoErofDaYangXian ()
+	{
+		if(cbxShiZhilevelyangxian.isSelected()) {
+			return Integer.parseInt(tfldyangxian.getText());
+		} else
+			return 0;
+		
+	}
 	/*
 	 * 
 	 */
-	public double shouldHaveLianXuFangLiangUnderCertainChenJiaoEr ()
+	public Boolean shouldHaveFangLiangUnderCertainChenJiaoEr ()
+	{
+		if(chckbxshizhilevellianxu.isSelected())
+			return true;
+		else
+			return false;
+				
+	}
+	public Double getCjeLevelUnderCertainChenJiaoErOfLianXuFangLiang ()
 	{
 		if(chckbxshizhilevellianxu.isSelected()) {
-			return Double.parseDouble(tfldwkyangxian.getText() );
+			return Double.parseDouble(tfldshizhilevellianxu.getText() );
 		} else
 			return -1.0;
+		
+	}
+	public Integer getLianXuFangLianLevelUnderCertainChenJiaoErOfFangLiang ()
+	{
+		if(chckbxshizhilevellianxu.isSelected()) 
+			return Integer.parseInt(tfldwkyangxian.getText());
+		else
+			return 0;
 		
 	}
 }
