@@ -3586,8 +3586,8 @@ public class BanKuaiFengXi extends JDialog {
 			Double cjeleveloflianxufl = expc.getCjeLevelUnderCertaincChenJiaoErOfLianXuFangLiang();
 			Integer lianxuleveloflianxufl = expc.getFangLiangLevelUnderCertainChenJiaoEr();
 			
-//			if(settindpgmaxwk <0) // 用户没有设置maxdpwk;
-//				return 30;
+			if(settindpgmaxwk <0) // 用户没有设置maxdpwk;
+				return 30;
 			
 			if(settinbkgmaxwk >0 ) //用户设置了板块内部的比较，要用另外的方法
 				return 30;
