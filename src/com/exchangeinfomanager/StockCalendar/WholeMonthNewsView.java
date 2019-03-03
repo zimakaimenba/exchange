@@ -112,7 +112,6 @@ public class WholeMonthNewsView extends View
            	JScrollPane sclpruoshibk = new JScrollPane ();
            	JPanel pnlruoshibk = new JPanel();
            	pnlruoshibk.setName(firstDayInMonth  + "rrrrrr");
-           	
            	pnlruoshibk.setLayout(new BorderLayout());
            	pnlruoshibk.setBackground(color);
            	pnlruoshibk.addMouseListener(new QiangRuoBkStockController());
@@ -127,10 +126,30 @@ public class WholeMonthNewsView extends View
             
            	pnlruoshibk.setBackground(color);
            	sclpruoshibk.setViewportView (pnlruoshibk);
+           	
+           	//最近应该关注板块
+           	JScrollPane sclpguanzhubk = new JScrollPane ();
+           	JPanel pnlpguanzhubk = new JPanel();
+           	pnlpguanzhubk.setName(firstDayInMonth  + "gzgzgz");
+           	pnlpguanzhubk.setLayout(new BorderLayout());
+           	pnlpguanzhubk.setBackground(color);
+           	pnlpguanzhubk.addMouseListener(new QiangRuoBkStockController());
+           	
+           	JLabel guanzhubkLabel = new JLabel("近期关注板块个股(谈股论金)");
+           	guanzhubkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
+           	guanzhubkLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 5));
+           	guanzhubkLabel.setBackground(ColorScheme.BACKGROUND);
+           	guanzhubkLabel.setOpaque(true);
+           	
+           	pnlpguanzhubk.add(guanzhubkLabel, BorderLayout.NORTH);
+           	pnlpguanzhubk.add(JPanelFactory.createPanel(new WrapLayout(WrapLayout.LEFT, 5, 5)), BorderLayout.CENTER); //中间用来显示信息的panel
+           	pnlpguanzhubk.setBackground(color);
+           	sclpguanzhubk.setViewportView (pnlpguanzhubk);
 
             this.wholemonthpnl.add(sclpmonthnews);
             this.wholemonthpnl.add(sclpqiangshibk);
             this.wholemonthpnl.add(sclpruoshibk);
+            this.wholemonthpnl.add(sclpguanzhubk);
 //            JPanel calendar2 = new JPanel();
 //            JPanel calendar3 = new JPanel();
 //            this.calendar.add(calendar2);
@@ -185,7 +204,7 @@ public class WholeMonthNewsView extends View
             String actioncode = m.getCurrentownercode();
             LocalDate firstDayInMonth = mDate.withDayOfMonth(1);
             
-            if(actioncode.equals("000000")) {
+            if(actioncode.equals("000000")) { // 每月固定新闻
             	
             	if (mDate.getMonth().equals(super.getDate().getMonth())  ) {
                     if (m.getLabels().isEmpty()) {
@@ -218,7 +237,9 @@ public class WholeMonthNewsView extends View
                     }
                 }
             	
-            } else { // 强势 弱势板块
+            } 
+            else
+            if(actioncode.equals("qqqqqq") || actioncode.equals("rrrrrr") || actioncode.equals("gzgzgz") ) { // 强势 弱势 关注板块
             	
             	if ( mDate.getYear() == super.getDate().getYear()  && mDate.getMonth().equals(super.getDate().getMonth())  ) { //强势 弱势板块 需要年月相等即可 
                     if (m.getLabels().isEmpty()) {
@@ -250,7 +271,12 @@ public class WholeMonthNewsView extends View
                     }
                 }
             	
-            }
+            } 
+//            else
+//            if(actioncode.equals("guanzhu") ) {
+//            	
+//            }
+            
         }
 
         this.wholemonthpnl.validate();
@@ -297,11 +323,15 @@ public class WholeMonthNewsView extends View
             LocalDate mDate = LocalDate.parse(pnlnamedate);
             
             String pnltype = panel.getName().substring(10);
-            String meetingname ;
+            String meetingname = null ;
             if(pnltype.equals("qqqqqq"))
             	meetingname = "强势板块";
             else
+            if(pnltype.equals("rrrrrr"))
             	meetingname = "弱势板块";
+            else
+            if(pnltype.equals("gzgzgz"))
+            	meetingname = "关注板块个股";
             	
 //            LocalDateTime dateTime = LocalDateTime.of(mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth(), 8, 0);
         	if (e.getClickCount() == 1) { //获取选择的日期

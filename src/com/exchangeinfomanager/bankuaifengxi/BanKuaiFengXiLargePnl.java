@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
@@ -97,8 +98,15 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
             public void propertyChange(PropertyChangeEvent evt) {
 
-                if (evt.getPropertyName().equals(BanKuaiListEditorPane.EXPORTCSV_PROPERTY)) 
-                	exportuserselectedinfotocsv = true;
+                if (evt.getPropertyName().equals(BanKuaiListEditorPane.EXPORTCSV_PROPERTY)) {
+        			//如果是从tfldselectedmsg导出CSV，当前不能和从板块和个股导出CSV一起用，时间线的问题还没有解决方案
+//                	int extraresult = JOptionPane.showConfirmDialog(null,"要导出到CSV，当前导出CSV的设置都将被清空，是否继续？" , "Warning", JOptionPane.OK_CANCEL_OPTION);
+//            		if(extraresult == JOptionPane.CANCEL_OPTION)
+//            			return;
+            	
+            		exportuserselectedinfotocsv = true;
+                }
+                	
             }
 		});
 
@@ -267,7 +275,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //			String text = content.text();
 //			return text;
 			
-			return doc.toString();
+//			return doc.toString();
+			exportuserselectedinfotocsv = false;
+			return tfldselectedmsg.getText();
 		}
 		
 		return null;

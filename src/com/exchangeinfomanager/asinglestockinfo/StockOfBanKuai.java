@@ -186,17 +186,17 @@ public class StockOfBanKuai extends BkChanYeLianTreeNode
 		@Override
 		public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
 			// TODO Auto-generated method stub
-			return null;
+			return -1;
 		}
 		@Override
 		public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
 			// TODO Auto-generated method stub
-			return null;
+			return -1;
 		}
 		@Override
 		public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
 			// TODO Auto-generated method stub
-			return null;
+			return -1;
 		}
 	}
 }

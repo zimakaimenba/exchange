@@ -103,6 +103,7 @@ public class MonthView extends View
             panel.setBackground(color);
             
             scrollpane.setViewportView (panel);
+            scrollpane.getVerticalScrollBar().setValue(scrollpane.getVerticalScrollBar().getMaximum());
 
             this.calendar.add(scrollpane);
         }
@@ -248,14 +249,5 @@ public class MonthView extends View
     	
     	ggfx = null;
 	}
-    
-
-
-//	@Override
-//	public void actionPerformed(ActionEvent arg0) 
-//	{
-//		// TODO Auto-generated method stub
-//		
-//	}
 
 }

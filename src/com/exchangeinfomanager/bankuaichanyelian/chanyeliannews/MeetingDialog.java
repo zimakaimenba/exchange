@@ -7,6 +7,8 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.Dialog.ModalityType;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -47,10 +49,104 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.cache = cache;
         this.createUI();
         this.createCenterPanel();
-
+        this.createEvent ();
     }
 
-    public JPanel getNewsPanel ()
+    private void createEvent() 
+    {
+    	newsownersField.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent event) {
+				
+				if (SwingUtilities.isRightMouseButton(event)) {
+					Toolkit toolkit = Toolkit.getDefaultToolkit();
+					Clipboard clipboard = toolkit.getSystemClipboard();
+					try	{
+						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+						newsownersField.setText(newsownersField.getText() + result);
+						
+					}catch(Exception ex)	{
+						
+					}
+				}
+			}
+		});
+    	
+    	titleField.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent event) {
+				
+				if (SwingUtilities.isRightMouseButton(event)) {
+					Toolkit toolkit = Toolkit.getDefaultToolkit();
+					Clipboard clipboard = toolkit.getSystemClipboard();
+					try	{
+						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+						titleField.setText(titleField.getText() + result);
+						
+					}catch(Exception ex)	{
+						
+					}
+				}
+			}
+		});
+    	
+    	locationField.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent event) {
+				
+				if (SwingUtilities.isRightMouseButton(event)) {
+					Toolkit toolkit = Toolkit.getDefaultToolkit();
+					Clipboard clipboard = toolkit.getSystemClipboard();
+					try	{
+						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+						locationField.setText(locationField.getText() + result);
+						
+					}catch(Exception ex)	{
+						
+					}
+				}
+			}
+		});
+    	
+    	descriptionArea.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent event) {
+				
+				if (SwingUtilities.isRightMouseButton(event)) {
+					Toolkit toolkit = Toolkit.getDefaultToolkit();
+					Clipboard clipboard = toolkit.getSystemClipboard();
+					try	{
+						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+						descriptionArea.setText(descriptionArea.getText() + result);
+						
+					}catch(Exception ex)	{
+						
+					}
+				}
+			}
+		});
+    	
+    	slackurlField.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent event) {
+				
+				if (SwingUtilities.isRightMouseButton(event)) {
+					Toolkit toolkit = Toolkit.getDefaultToolkit();
+					Clipboard clipboard = toolkit.getSystemClipboard();
+					try	{
+						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+						slackurlField.setText(slackurlField.getText() + result);
+						
+					}catch(Exception ex)	{
+						
+					}
+				}
+			}
+		});
+		
+	}
+
+	public JPanel getNewsPanel ()
     {
     	return this.centerPanel;
     }

@@ -64,14 +64,16 @@ public final class StockCalendarAndNewDbOperation {
 			sqlquerystat = "SELECT * FROM 商业新闻  \r\n"
 							+ timerangesql + "\r\n" 
 //							+ " AND 关联板块 not like '%rrrrrr%' \r\n"  //不包含强势板块和弱势板块的新闻
-//							+ " AND 关联板块 not like '%qqqqqq%'  \r\n"
+							+ " AND 关联板块 not like '%gzgzgz%'  \r\n"
 							+ " ORDER BY 录入日期 DESC"
 							;
-		else if("HEADLINE".equals(bankuaiid.toUpperCase()) ) //长期新闻和强弱势板块个股
+		else if("HEADLINE".equals(bankuaiid.toUpperCase()) ) //长期新闻和强弱势板块个股,每月关注板块
 			sqlquerystat = "SELECT * FROM 商业新闻   "
 							+ " WHERE ( 关联板块 like '%" + "000000" +  "%' \r\n"
 							+ " OR 关联板块  like '%rrrrrr%' \r\n"
-							+ " OR 关联板块  like '%qqqqqq%' ) \r\n" 
+							+ " OR 关联板块  like '%qqqqqq%' \r\n"
+							+ " OR 关联板块  like '%gzgzgz%' \r\n"
+							+ ") \r\n" 
 					+ " ORDER BY  录入日期 DESC"
 					;
 		else
@@ -102,10 +104,15 @@ public final class StockCalendarAndNewDbOperation {
 	            if("HEADLINE".equals(bankuaiid.toUpperCase()) ) { //HEADLINE 包括000000 ，有可能是强势板块或弱势板块
 	            	if(ownercodes.contains("rrrrrr"))
 	            		newmeeting.setCurrentownercode("rrrrrr");
-	            	else if(ownercodes.contains("qqqqqq"))
+	            	else 
+	            	if(ownercodes.contains("qqqqqq"))
 	            		newmeeting.setCurrentownercode("qqqqqq");
 	            	else
+	            	if(ownercodes.contains("000000"))
 	            		newmeeting.setCurrentownercode("000000");
+	            	else
+	            	if(ownercodes.contains("gzgzgz"))
+		            	newmeeting.setCurrentownercode("gzgzgz");
 	            }
 	            else 
 	            	newmeeting.setCurrentownercode(bankuaiid);

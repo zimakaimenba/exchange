@@ -2886,8 +2886,13 @@ public class BanKuaiDbOperation
 					Integer weight = rs1.getInt("股票权重");
 					bkofst.setStockQuanZhong(weight);
 					
-					Boolean longtou = rs1.getBoolean("板块龙头");
-					bkofst.setBkLongTou(longtou);
+					try{
+						Boolean longtou = rs1.getBoolean("板块龙头");
+						bkofst.setBkLongTou(longtou);
+					} catch (java.sql.SQLException e) {
+//						e.printStackTrace();
+						bkofst.setBkLongTou(false);
+					}
 					
 					currentbk.addNewBanKuaiGeGu(bkofst);
 				}

@@ -707,7 +707,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 					tablebkgegu.setRowSelectionInterval(rowindex, rowindex);
 					tablebkgegu.scrollRectToVisible(new Rectangle(tablebkgegu.getCellRect(rowindex, 0, true)));
 				} else 	{
-					JOptionPane.showMessageDialog(null,"股票/板块代码有误或名称拼音有误！","Warning", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null,"股票/板块代码有误！","Warning", JOptionPane.WARNING_MESSAGE);
 				}
 
 			}
@@ -1657,7 +1657,11 @@ class BanKuanOrStoksListTableModel extends DefaultTableModel
 	}
 	public int getNodeLineIndex (String nodeid)
 	{
-		return bkstkscodelist.indexOf(nodeid);
+		try {
+			return bkstkscodelist.indexOf(nodeid);
+		} catch (java.lang.NullPointerException e ) {
+			return -1;
+		}
 	}
 	public String getStockName(int row) 
 	{

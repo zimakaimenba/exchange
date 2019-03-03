@@ -40,11 +40,13 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
@@ -310,25 +312,37 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	
     	Double curcje = (Double)dataset.getValue(row, column);
-    	String danwei = "";
-    	if(curcje >= 100000000) {
-    		curcje = curcje / 100000000;
-    		danwei = "亿";
-    	}  	else if(curcje >= 10000000 && curcje <100000000) {
-    		curcje = curcje / 10000000;
-    		danwei = "千万";
-    	}  	else if(curcje >= 1000000 && curcje <10000000) {
-    		curcje = curcje / 1000000;
-    		danwei = "百万";
-    	}
+    	String cjedanwei = getNumberChineseDanWei(curcje);
+    	curcje = formateCjeToShort (curcje);
+//    	if(curcje >= 100000000) {
+//    		curcje = curcje / 100000000;
+//    		danwei = "亿";
+//    	}  	else if(curcje >= 10000000 && curcje <100000000) {
+//    		curcje = curcje / 10000000;
+//    		danwei = "千万";
+//    	}  	else if(curcje >= 1000000 && curcje <10000000) {
+//    		curcje = curcje / 1000000;
+//    		danwei = "百万";
+//    	}
     		
     	DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
     	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
     	percentFormat.setMinimumFractionDigits(1);
 		
-		//显示成交额是多少周最大
-		Integer maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
-		Double changerate = nodexdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(selecteddate,0);
+		Integer maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);//显示成交额是多少周最大
+		Double changerate = nodexdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(selecteddate,0);//成交额大盘变化贡献率
+		
+		Double liutongshizhi = null; String liutongshizhidanwei = null;
+		if(super.node.getType() == BanKuaiAndStockBasic.TDXGG) {
+			liutongshizhi = ((StockNodeXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(selecteddate, 0);
+			if(liutongshizhi == null) {
+				liutongshizhidanwei = "";
+			} else {
+				liutongshizhidanwei = getNumberChineseDanWei(liutongshizhi);
+				liutongshizhi = formateCjeToShort (liutongshizhi);
+			}
+			
+		}
 		
 		String htmlstring = "";
 		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
@@ -340,20 +354,74 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 			 li3.appendText(selecteddate.toString());
 			 
 			 org.jsoup.nodes.Element li = dl.appendElement("li");
-			 li.appendText("成交额" + decimalformate.format(curcje) + danwei);
+			 li.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
 			 
 			 org.jsoup.nodes.Element li2 = dl.appendElement("li");
 			 li2.appendText("成交额MaxWk=" + maxwk);
 			 
 			 org.jsoup.nodes.Element li4 = dl.appendElement("li");
 			 try{
-				 li4.appendText("成交额变化贡献率" + percentFormat.format (changerate) );
+				 li4.appendText("成交额大盘变化贡献率" + percentFormat.format (changerate) );
 			 } catch (java.lang.IllegalArgumentException e) {
-				 li4.appendText("成交额变化贡献率NULL" );
+				 li4.appendText("成交额大盘变化贡献率NULL" );
+			 }
+			 
+			 if(super.node.getType() == BanKuaiAndStockBasic.TDXGG) {
+				 org.jsoup.nodes.Element li5 = dl.appendElement("li");
+				 try{
+					 li5.appendText("流通周平均市值" + decimalformate.format(liutongshizhi) + liutongshizhidanwei );
+				 } catch (java.lang.IllegalArgumentException e) {
+					 li5.appendText("流通周平均市值=NULL");
+				 }
 			 }
 		}
 		
 		htmlstring = doc.toString();
 		return htmlstring;
     }
+	
+	private Double formateCjeToShort(Double curcje) 
+	{
+		if(curcje >= 100000000) {
+			curcje = curcje / 100000000;
+    		
+    	}  	else if(curcje >= 10000000 && curcje <100000000) {
+    		curcje = curcje / 10000000;
+    		
+    	}  	else if(curcje >= 1000000 && curcje <10000000) {
+    		curcje = curcje / 1000000;
+    		
+    	} else if(curcje >= 100000 && curcje <1000000) {
+    		curcje = curcje / 100000;
+    		
+    	} else if(curcje >= 10000 && curcje <100000) {
+    		curcje = curcje / 10000;
+    		
+    	}
+		return curcje;
+	}
+
+	private String getNumberChineseDanWei (Double number) 
+	{
+		String danwei = "";
+    	if(number >= 100000000) {
+//    		number = number / 100000000;
+    		danwei = "亿";
+    	}  	else if(number >= 10000000 && number <100000000) {
+//    		number = number / 10000000;
+    		danwei = "千万";
+    	}  	else if(number >= 1000000 && number <10000000) {
+//    		number = number / 1000000;
+    		danwei = "百万";
+    	} else if(number >= 100000 && number <1000000) {
+//    		number = number / 100000;
+    		danwei = "十万";
+    	} else if(number >= 10000 && number <100000) {
+//    		number = number / 10000;
+    		danwei = "万";
+    	}
+    	
+    	return danwei;
+		
+	}
 }
