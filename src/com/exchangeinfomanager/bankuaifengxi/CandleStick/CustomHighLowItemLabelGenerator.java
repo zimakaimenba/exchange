@@ -13,7 +13,8 @@ import org.jfree.data.xy.XYDataset;
  *
  */
 @SuppressWarnings("serial")
-public class CustomHighLowItemLabelGenerator extends HighLowItemLabelGenerator {
+public class CustomHighLowItemLabelGenerator extends HighLowItemLabelGenerator 
+{
 
 	/** The date formatter. */
 	private DateFormat dateFormatter;

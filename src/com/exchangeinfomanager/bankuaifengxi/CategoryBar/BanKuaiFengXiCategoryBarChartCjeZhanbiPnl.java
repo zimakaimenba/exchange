@@ -57,18 +57,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		super ();
 
 		super.plot.setRenderer(new CustomCategroyRendererForZhanBi() );
-		
-//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
-//		
-//		CustomCategroyToolTipGeneratorForZhanBi custotooltip = new CustomCategroyToolTipGeneratorForZhanBi();
-//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
-		
-//		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelsVisible(true);
-		
-//		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
-//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(labelgenerator);
+	
 		
         //line part
 //        linechartdataset = new DefaultCategoryDataset();
@@ -232,7 +221,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	}
 	@Override
 	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Integer cjezbtouplevelbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,
-			Double shoowhsl) {
+			Double shoowhsl,Double ltszmin,Double ltszmax) {
 		// TODO Auto-generated method stub
 		
 	}

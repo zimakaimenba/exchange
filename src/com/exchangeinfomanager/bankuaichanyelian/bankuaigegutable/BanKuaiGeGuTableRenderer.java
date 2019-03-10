@@ -19,6 +19,7 @@ import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriod
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
+import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 
 public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer 
@@ -84,7 +85,20 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		foreground = Color.RED;
 	    	else 
 	    		foreground = Color.BLACK;
-	    } 
+	    } else if( col ==3) { //流通市值
+	    	Double ltszmin = tablemodel.getDisplayLiuTongShiZhiMin() ;
+		    Double ltszmax = tablemodel.getDisplayLiuTongShiZhiMax() ;
+		    
+		    LocalDate requireddate = tablemodel.getShowCurDate();
+		    String period = tablemodel.getCurDisplayPeriod();
+		    StockNodeXPeriodData nodexdata = (StockNodeXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+		    Double curltsz = nodexdata.getSpecificTimeLiuTongShiZhi(requireddate, 0);
+		    if( curltsz >= ltszmin && curltsz <= ltszmax ) 
+		    	background = Color.MAGENTA ;
+		    else
+		    	background = Color.white;
+	    	
+	    }
 
 	    //突出达到用户标准的股票
 	    if( col == 4 && value != null ) { //成交额>=

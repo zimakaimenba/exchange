@@ -97,7 +97,6 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportCondition;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
@@ -398,16 +397,16 @@ public class BanKuaiFengXi extends JDialog {
 		        	btnsixmonthbefore.setEnabled(true);
 		        	btnsixmonthafter.setEnabled(true);
 		        	tableBkZhanBi.setEnabled(true);
-		        	btnexportmodelgegu.setEnabled(true);
+//		        	btnexportmodelgegu.setEnabled(true);
 		        	tableGuGuZhanBiInBk.setEnabled(true);
 		        	ckbxggquanzhong.setEnabled(true);
 		        	ckboxshowcje.setEnabled(true);
 		        	ckbxdpmaxwk.setEnabled(true);
-		        	ckbkmaxwk.setEnabled(true);
+		        	chkliutongsz.setEnabled(true);
 		        	ckbxcjemaxwk.setEnabled(true);
 		        	ckboxparsefile.setEnabled(true);
 		        	btnaddexportcond.setEnabled(true);
-		        	btnClear.setEnabled(true);
+//		        	btnClear.setEnabled(true);
 		        	editorPanebankuai.setEnabled(true);
 		        		
 		            try {
@@ -434,16 +433,16 @@ public class BanKuaiFengXi extends JDialog {
 		        	  btnsixmonthbefore.setEnabled(false);
 		        	  btnsixmonthafter.setEnabled(false);
 		        	  tableBkZhanBi.setEnabled(false);
-		        	  btnexportmodelgegu.setEnabled(false);
+//		        	  btnexportmodelgegu.setEnabled(false);
 		        	  tableGuGuZhanBiInBk.setEnabled(false);
 		        	  ckbxggquanzhong.setEnabled(false);
 		        	  ckboxshowcje.setEnabled(false);
 		        	  ckbxdpmaxwk.setEnabled(false);
-		        	  ckbkmaxwk.setEnabled(false);
+		        	  chkliutongsz.setEnabled(false);
 		        	  ckbxcjemaxwk.setEnabled(false);
 		        	  ckboxparsefile.setEnabled(false);
 		        	  btnaddexportcond.setEnabled(false);
-		        	  btnClear.setEnabled(false);
+//		        	  btnClear.setEnabled(false);
 		        	  editorPanebankuai.setEnabled(false);
 		        	  btnresetdate.setEnabled(true);
 		        	  
@@ -468,7 +467,7 @@ public class BanKuaiFengXi extends JDialog {
 		
 		
 		if(exportcond == null || exportcond.size() == 0) {
-			if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !ckbkmaxwk.isSelected() && !ckbxcjemaxwk.isSelected()){
+			if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !chkliutongsz.isSelected() && !ckbxcjemaxwk.isSelected()){
 				JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
 				return;
 			} else if(exportcond == null) { //用户设置条件后可能直接点击导出，而没有先点击加入，这里是统一界面的行为
@@ -521,7 +520,8 @@ public class BanKuaiFengXi extends JDialog {
 		        switch (eventexport.getPropertyName()) {
 		        case "progress":
 		        	progressBarExport.setIndeterminate(false);
-		        	progressBarExport.setString("正在导出..." + (Integer) eventexport.getNewValue() + "%");
+		        	progressBarExport.setString("正在导出..." + (Integer) eventexport.getNewValue() + "%(,点击取消导出)");
+		        	progressBarExport.setToolTipText("点击取消导出");
 		          break;
 		        case "state":
 		          switch ((StateValue) eventexport.getNewValue()) {
@@ -554,6 +554,7 @@ public class BanKuaiFengXi extends JDialog {
 		            	progressBarExport.setIndeterminate(false);
 		            	progressBarExport.setValue(0);
 		            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
+		            	progressBarExport.setString("导出设置条件个股");
 		            } catch (final Exception e) {
 //		              JOptionPane.showMessageDialog(Application.this, "The search process failed", "Search Words",
 //		                  JOptionPane.ERROR_MESSAGE);
@@ -703,7 +704,7 @@ public class BanKuaiFengXi extends JDialog {
 //			LocalDate requireend  = bkrecords.getRecordsEndDate();
 			selectedbk = allbksks.getBanKuaiKXian(selectedbk,curselectdate,StockGivenPeriodDataItem.DAY);
 			paneldayCandle.updatedDate(selectedbk,curselectdate,0,StockGivenPeriodDataItem.DAY);
-			paneldayCandle.displayRangeHighLowValue(true);
+			paneldayCandle.displayQueKou(false);
 		}
 	}
 	/*
@@ -810,8 +811,9 @@ public class BanKuaiFengXi extends JDialog {
 		this.allbksks.getDaPanKXian (curselectdate,StockGivenPeriodDataItem.DAY); 
 //		paneldayCandle.resetDate();
 //		paneldayCandle.updatedDate(stock,requirestart,requireend,StockGivenPeriodDataItem.DAY);
+		paneldayCandle.displayQueKou(true);
 		paneldayCandle.updatedDate(bankuai,stock,requirestart,requireend,StockGivenPeriodDataItem.DAY);
-		paneldayCandle.displayRangeHighLowValue(true);
+		
 		
 		
 	}
@@ -864,15 +866,15 @@ public class BanKuaiFengXi extends JDialog {
 	 */
 	private void refreshBanKuaiGeGuTableHightLight ()
 	{
-		Integer cjemaxwk; Integer bkmaxwk;Integer dpmaxwk ; Double showcjemin ;Double showcjemax;Double showhsl;
+		Integer cjemaxwk; Integer bkmaxwk;Integer dpmaxwk ; Double showcjemin ;Double showcjemax;Double showhsl;Double showltszmax;Double showltszmin;
 		if(ckbxcjemaxwk.isSelected() ) {
 			cjemaxwk = Integer.parseInt(tfldcjemaxwk.getText() );
 		} else
 			cjemaxwk = null;
-		if(ckbkmaxwk.isSelected() ) {
-			bkmaxwk = Integer.parseInt(tfldbkmaxwk.getText() );
-		} else
-			bkmaxwk= null;
+//		if(chkliutongsz.isSelected() ) {
+//			bkmaxwk = Integer.parseInt(tfldltszmin.getText() );
+//		} else
+			bkmaxwk= null; //目前不适用bkmaxwk
 		if(ckbxdpmaxwk.isSelected() ) {
 			dpmaxwk = Integer.parseInt(tflddisplaydpmaxwk.getText() );
 		} else
@@ -895,8 +897,22 @@ public class BanKuaiFengXi extends JDialog {
 			showhsl = Double.parseDouble( tfldhuanshoulv.getText() ) ;
 		else 
 			showhsl = null;
+		if(chkliutongsz.isSelected()) {
+			if( !Strings.isNullOrEmpty(tfldltszmin.getText()) ) {
+				showltszmin = Double.parseDouble( tfldltszmin.getText() ) * 100000000;
+			} else
+				showltszmin = null;
+			
+			if( !Strings.isNullOrEmpty(tfldltszmax.getText()) ) {
+				showltszmax = Double.parseDouble( tfldltszmax.getText() ) * 100000000;
+			} else
+				showltszmax = null;
+		} else {
+			showltszmin = null;
+			showltszmax = null;
+		}
 		
-		bkfxhighlightvaluesoftableslisteners.forEach(l -> l.hightLightFxValues(dpmaxwk, bkmaxwk,showcjemin, showcjemax, cjemaxwk,showhsl) );
+		bkfxhighlightvaluesoftableslisteners.forEach(l -> l.hightLightFxValues(dpmaxwk, bkmaxwk,showcjemin, showcjemax, cjemaxwk,showhsl,showltszmin,showltszmax) );
 		//对于panel来说，hightLightFxValues第一个参数不能用，因为panel 都是 节点对她的上级的占比
 		panelGgDpCjeZhanBi.hightLightFxValues(dpmaxwk, showcjemin, showcjemax,cjemaxwk,showhsl);
 		panelbkwkzhanbi.hightLightFxValues(dpmaxwk, showcjemin,showcjemax, cjemaxwk,showhsl);
@@ -1226,6 +1242,15 @@ public class BanKuaiFengXi extends JDialog {
         					
         					//显示选中周股票占比增加率排名等
         					refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
+        					//把用户当前选定的个股找出来
+        					int stockrow = tableGuGuZhanBiInBk.getSelectedRow();
+        					if(stockrow <0) 
+        						return;
+        					 
+        					int stockmodelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(stockrow);
+        					StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (stockmodelRow);
+       						performActionsForGeGuTablesAfterUserSelected (selectstock,tableGuGuZhanBiInBk);
+        					
     					}
     					
     				}
@@ -1289,46 +1314,44 @@ public class BanKuaiFengXi extends JDialog {
 			}
 		});
 		
-		btnClear.addMouseListener(new MouseAdapter() 
-		{
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if( exportcond != null) { 
-					exportcond.clear();
-					
-					btnaddexportcond.setText(String.valueOf(0));
-					btnaddexportcond.setToolTipText("<html>导出条件设置<br></html>");
-				}
-			}
-		});
-		
 		//添加导出条件
 		btnaddexportcond.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				
-//				if( exportcond == null)
-//					exportcond = new ArrayList<ExportCondition> ();
-				
-				if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !ckbkmaxwk.isSelected() && !ckbxcjemaxwk.isSelected()){
-					JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-					return;
-				} 
-				
-				initializeExportConditions ();
+				if(SwingUtilities.isLeftMouseButton(arg0) ) {
+					
+					if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !chkliutongsz.isSelected() && !ckbxcjemaxwk.isSelected()){
+						JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
+						return;
+					} 
+					
+					initializeExportConditions ();
+					
+				} else if (SwingUtilities.isRightMouseButton(arg0)) {
+					if( exportcond != null) { 
+						exportcond.clear();
+						
+						btnaddexportcond.setText(String.valueOf(0));
+						btnaddexportcond.setToolTipText("<html>导出条件设置(鼠标右键删除设置)<br></html>");
+					}
+					
+				} else if (SwingUtilities.isMiddleMouseButton(arg0)) {
+					
+				}
+		
 			}
 		});
 		
 		//突出显示个股WK部分
-		tfldbkmaxwk.addActionListener(new AbstractAction() {
+		tfldltszmin.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent arg0) {
-				if( Strings.isNullOrEmpty(tfldbkmaxwk.getText() )) {
+				if( Strings.isNullOrEmpty(tfldltszmin.getText() )) {
 					JOptionPane.showMessageDialog(null,"请设置突出显示板块MaxWk！");
 					ckbxdpmaxwk.setSelected(false);
 					return;
 				}
-				if(ckbkmaxwk.isSelected() ) {
+				if(chkliutongsz.isSelected() ) {
 					refreshBanKuaiGeGuTableHightLight ();
 				}
 			}
@@ -1357,12 +1380,12 @@ public class BanKuaiFengXi extends JDialog {
 				refreshBanKuaiGeGuTableHightLight ();
 			}
 		});
-		ckbkmaxwk.addMouseListener(new MouseAdapter() {
+		chkliutongsz.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if( Strings.isNullOrEmpty(tfldbkmaxwk.getText() )) {
-					JOptionPane.showMessageDialog(null,"请设置突出显示板块MaxWk！");
-					ckbkmaxwk.setSelected(false);
+				if( Strings.isNullOrEmpty(tfldltszmin.getText()) && Strings.isNullOrEmpty(tfldltszmax.getText()) ) {
+					JOptionPane.showMessageDialog(null,"请设置流通市值区间！");
+					chkliutongsz.setSelected(false);
 					return;
 				}
 				refreshBanKuaiGeGuTableHightLight ();
@@ -1578,6 +1601,8 @@ public class BanKuaiFengXi extends JDialog {
 						} catch (java.lang.NullPointerException e) {
 							e.printStackTrace();
 //							cbxstockcode.updateUserSelectedNode (selectstock.getStock());
+						} catch (java.lang.StringIndexOutOfBoundsException e) {
+							logger.debug((String)combxstockcode.getSelectedItem());
 						}
 //						displayStockSuoShuBanKuai((Stock)userinputnode);
 					}
@@ -1590,6 +1615,9 @@ public class BanKuaiFengXi extends JDialog {
 //						tableGuGuZhanBiInBk.getSelectionModel().clearSelection() ; //把当前在table中选择取消，以免用户觉得已经找到
 						//既然取消了table中的个股，就需要把几个图表的信息清楚，否则用户再去双击这些图表，会出现问题。
 						
+//						panelGgDpCjeZhanBi.resetDate();
+//						paneldayCandle.resetDate();
+					} else { //在当前表就有的话，就把相关PANEL清空
 //						panelGgDpCjeZhanBi.resetDate();
 //						paneldayCandle.resetDate();
 					}
@@ -1710,7 +1738,9 @@ public class BanKuaiFengXi extends JDialog {
     					setCursor(hourglassCursor2);
     					
     					SystemAudioPlayed.playSound();
-    				}		
+    				} else {
+    					JOptionPane.showMessageDialog(null,"该板块设置为不显示在板块列表中，请在 ‘重点关注与产业链’ 变更设置！","Warning",JOptionPane.WARNING_MESSAGE);
+    				}
             	}
             }
         });
@@ -1830,14 +1860,6 @@ public class BanKuaiFengXi extends JDialog {
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }
-			}
-		});
-		
-		btnChosPasFile.addMouseListener(new MouseAdapter() 
-		{
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				chooseParsedFile (null);
 			}
 		});
 		
@@ -1981,11 +2003,13 @@ public class BanKuaiFengXi extends JDialog {
 			clearTheGuiBeforDisplayNewInfoSection3 ();
 			tabbedPanebk.setSelectedIndex(1);
 			
+			findInputedNodeInTable (selectstock.getMyOwnCode());
 			hightlightSpecificSector (selectstock); //餅圖
 			refreshGeGuFengXiResult (selectstock); //个股对板块的数据
 			refreshTDXGeGuZhanBi (selectstock.getStock()); //个股对大盘数据
 			refreshTDXGeGuAndBanKuaiKXian (selectstock, selectstock.getBanKuai() ); //个股对板块的K线
 			displayStockCurrentFxResult (selectedGeguTable);
+			
 			
 //			cbxshizhifx.setSelected(false);
 			
@@ -2183,8 +2207,8 @@ public class BanKuaiFengXi extends JDialog {
 		}
 		if(ckbxdpmaxwk.isSelected())
 			exportdpmaxwklevel = tflddisplaydpmaxwk.getText();
-		if(ckbkmaxwk.isSelected())
-			exportbkmaxwklevel = tfldbkmaxwk.getText();
+		if(chkliutongsz.isSelected())
+			exportbkmaxwklevel = tfldltszmin.getText();
 		if(ckbxcjemaxwk.isSelected())
 			exportcjemaxwklevel = tfldcjemaxwk.getText();
 		if(ckbxhuanshoulv.isSelected())
@@ -2391,7 +2415,6 @@ public class BanKuaiFengXi extends JDialog {
 					tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
 					
 					//在当前表就有的话，就把相关PANEL清空
-					
 					panelGgDpCjeZhanBi.resetDate();
 					paneldayCandle.resetDate();
 				}
@@ -2402,7 +2425,7 @@ public class BanKuaiFengXi extends JDialog {
 		if( ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
 			rowindex = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex <0) {
-				notfound = true;
+//				notfound = true;
 			} else {
 				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
 				int curselectrow = tablexuandingzhou.getSelectedRow();
@@ -2417,7 +2440,7 @@ public class BanKuaiFengXi extends JDialog {
 		if( ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
 			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex <0) {
-				notfound = true;
+//				notfound = true;
 			} else {
 				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
 				int curselectrow = tablexuandingminusone.getSelectedRow();
@@ -2432,7 +2455,7 @@ public class BanKuaiFengXi extends JDialog {
 		if( ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
 			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex <0) {
-				notfound = true;
+//				notfound = true;
 			} else {
 				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
 				int curselectrow = tablexuandingminustwo.getSelectedRow();
@@ -2461,7 +2484,7 @@ public class BanKuaiFengXi extends JDialog {
 		if(((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel() ).getRowCount() >0 ) {
 			rowindex = ((BanKuaiGeGuTableModel)tablexuandingplustwo.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex <0) {
-				notfound = true;
+//				notfound = true;
 			} else {
 				int modelRow = tablexuandingplustwo.convertRowIndexToView(rowindex);
 				int curselectrow = tablexuandingplustwo.getSelectedRow();
@@ -2567,7 +2590,6 @@ public class BanKuaiFengXi extends JDialog {
 //	private JTextArea tfldselectedmsg;
 	private BanKuaiListEditorPane tfldselectedmsg;
 	private JStockComboBox combxsearchbk;
-	private JButton btnChosPasFile;
 	private JCheckBox ckboxshowcje;
 	private JCheckBox ckboxparsefile;
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
@@ -2585,8 +2607,8 @@ public class BanKuaiFengXi extends JDialog {
 	private JButton btnexportcsv;
 	private Action exportCancelAction;
 	private Action bkfxCancelAction;
-	private JCheckBox ckbkmaxwk;
-	private JTextField tfldbkmaxwk;
+	private JCheckBox chkliutongsz;
+	private JTextField tfldltszmin;
 	private JTextField tfldcjemaxwk;
 	private JCheckBox ckbxcjemaxwk;
 	
@@ -2594,14 +2616,12 @@ public class BanKuaiFengXi extends JDialog {
 	private JTabbedPane tabbedPane_1;
 	
 	private JButton btnaddexportcond;
-	private JButton btnClear;
 	private JProgressBar progressBarsys;
 	private JCheckBox ckbxggquanzhong;
 	private JTextField tfldhuanshoulv;
 	private JCheckBox ckbxhuanshoulv;
 	private BanKuaiAndStockTree cyltree;
 	private JMenuItem menuItemRmvNodeFmFile;
-	private JButton btnexportmodelgegu;
 	
 	private JTextField tfldshowcjemax;
 	
@@ -2616,6 +2636,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JMenuItem menuItemsiglestocktocsv;
 	private JProgressBar progressBarExport;
 	private JMenuItem menuItemsiglebktocsv;
+	private JTextField tfldltszmax;
 	
 	private void initializeGui() {
 		
@@ -2797,7 +2818,6 @@ public class BanKuaiFengXi extends JDialog {
 		        }
 		      }
 		 };
-		btnexportmodelgegu = new JButton(exportCancelAction);
 		
 		btnexportcsv = new JButton();
 		btnexportcsv.setText("\u5BFC\u51FA\u5230CSV");
@@ -3065,6 +3085,7 @@ public class BanKuaiFengXi extends JDialog {
 	
 			
 			tfldshowcje = new JTextField();
+			tfldshowcje.setText("2.8");
 			tfldshowcje.setForeground(Color.BLUE);
 			tfldshowcje.setColumns(10);
 			this.setHighLightChenJiaoEr ();
@@ -3079,9 +3100,6 @@ public class BanKuaiFengXi extends JDialog {
 			tfldparsedfile.setColumns(10);
 			tfldparsedfile.setToolTipText(tfldparsedfile.getText());
 			
-			btnChosPasFile = new JButton("\u9009\u62E9\u6587\u4EF6");
-			btnChosPasFile.setForeground(Color.ORANGE);
-			
 			ckbxdpmaxwk = new JCheckBox("\u7A81\u51FADPMAXWK>=");
 			
 			ckbxdpmaxwk.setForeground(Color.RED);
@@ -3091,17 +3109,15 @@ public class BanKuaiFengXi extends JDialog {
 			tflddisplaydpmaxwk.setText("4");
 			tflddisplaydpmaxwk.setColumns(10);
 			
-			ckbkmaxwk = new JCheckBox("\u7A81\u51FABKMAXWK>=");
-			ckbkmaxwk.setBackground(Color.WHITE);
+			chkliutongsz = new JCheckBox("\u7A81\u51FA\u6D41\u901A\u5E02\u503C(\u4EBF)");
+			chkliutongsz.setBackground(Color.WHITE);
 			
-			ckbkmaxwk.setForeground(Color.MAGENTA);
-			ckbkmaxwk.setEnabled(false);
+			chkliutongsz.setForeground(Color.MAGENTA);
 			
-			tfldbkmaxwk = new JTextField();
-			tfldbkmaxwk.setEnabled(false);
-			tfldbkmaxwk.setForeground(Color.MAGENTA);
-			tfldbkmaxwk.setText("5");
-			tfldbkmaxwk.setColumns(10);
+			tfldltszmin = new JTextField();
+			tfldltszmin.setForeground(Color.MAGENTA);
+			tfldltszmin.setText("30");
+			tfldltszmin.setColumns(10);
 			
 			ckbxcjemaxwk = new JCheckBox("\u7A81\u51FA\u6210\u4EA4\u989DMAXWK>=");
 			ckbxcjemaxwk.setForeground(Color.CYAN);
@@ -3121,9 +3137,6 @@ public class BanKuaiFengXi extends JDialog {
 			
 			btnaddexportcond.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/add-circular-outlined-button.png")));
 			
-			btnClear = new JButton("");
-			btnClear.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/delete.png")));
-			
 			ckbxhuanshoulv = new JCheckBox("\u7A81\u51FA\u6362\u624B\u7387>=");
 			ckbxhuanshoulv.setForeground(Color.BLUE);
 			
@@ -3137,8 +3150,34 @@ public class BanKuaiFengXi extends JDialog {
 			tfldshowcjemax.setColumns(10);
 			
 			progressBarExport = new JProgressBar();
-			progressBarExport.setValue(0);
+			progressBarExport.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+					if (exporttask == null) { 
+			        	exportBanKuaiWithGeGuOnCondition2();
+//			        	String msg =  "导出常规条件设置个股还是导出当前设置个股？选择“确定”将导出常规条件设置个股。";
+//				  		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "导出选择", JOptionPane.OK_CANCEL_OPTION);
+//				  		if(exchangeresult == JOptionPane.CANCEL_OPTION) //用户选择导出当前设置 
+//				  			exportBanKuaiWithGeGuOnCondition2();
+//				  		else { //用户选择导出常规设置
+//				  			initializeNormalExportConditions ();
+//				  			exportBanKuaiWithGeGuOnCondition2();
+//				  		}
+				  			
+			        } else {
+			        	exporttask.cancel(true);
+			        }
+				}
+			});
+//			progressBarExport.setValue(0);
+			progressBarExport.setString("点击导出条件个股");
+			progressBarExport.setToolTipText("点击导出条件个股");
 	        progressBarExport.setStringPainted(true);
+			
+			tfldltszmax = new JTextField();
+			tfldltszmax.setText("300");
+			tfldltszmax.setForeground(Color.MAGENTA);
+			tfldltszmax.setColumns(10);
 			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
@@ -3147,8 +3186,8 @@ public class BanKuaiFengXi extends JDialog {
 						.addContainerGap()
 						.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnClear, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(progressBarExport, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(ckbxggquanzhong)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
@@ -3163,9 +3202,11 @@ public class BanKuaiFengXi extends JDialog {
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(tflddisplaydpmaxwk, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(ckbkmaxwk)
-						.addGap(12)
-						.addComponent(tfldbkmaxwk, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
+						.addComponent(chkliutongsz)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(tfldltszmin, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(tfldltszmax, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(ckbxcjemaxwk)
 						.addPreferredGap(ComponentPlacement.RELATED)
@@ -3178,13 +3219,7 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(ckboxparsefile)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnChosPasFile)
-						.addGap(18)
-						.addComponent(btnexportmodelgegu)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(progressBarExport, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)
-						.addGap(18)
+						.addGap(324)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
 						.addGap(1670)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
@@ -3205,30 +3240,22 @@ public class BanKuaiFengXi extends JDialog {
 										.addComponent(tfldhuanshoulv, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(ckboxparsefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 									.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-										.addComponent(btnClear)
 										.addComponent(ckbxggquanzhong, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(ckboxshowcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(tfldshowcje, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(ckbxdpmaxwk, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(tflddisplaydpmaxwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(ckbkmaxwk)
-										.addComponent(tfldbkmaxwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(chkliutongsz)
+										.addComponent(tfldltszmin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(ckbxcjemaxwk)
 										.addComponent(tfldcjemaxwk, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
 										.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-										.addComponent(tfldshowcjemax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+										.addComponent(tfldshowcjemax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(tfldltszmax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
 									.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap())
-							.addGroup(gl_buttonPane.createSequentialGroup()
-								.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-									.addComponent(btnChosPasFile, GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
-									.addComponent(btnexportmodelgegu))
 								.addContainerGap())))
-					.addGroup(gl_buttonPane.createSequentialGroup()
-						.addGap(19)
-						.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-						.addGap(10))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}
@@ -3328,244 +3355,7 @@ public class BanKuaiFengXi extends JDialog {
 		
 	}
 	
-	public class ExportCondition 
-	{
-//		public ExportCondition (String exportcjelevel, String exportcjemaxwklevel, String exportdpmaxwklevel, String exportbkmaxwklevel,String exporthsl,String exportbk)
-		public ExportCondition ()
-		{
-//			this.setSettingbk(exportbk);
-//			this.setSettindpgmaxwk(exportdpmaxwklevel);
-//			this.setSettinbkgmaxwk(exportbkmaxwklevel);
-//			this.setSettingcje(exportcjelevel);
-//			this.setSettingcjemaxwk(exportcjemaxwklevel);
-//			this.setSettinghsl(exporthsl);
-			
-//			this.setTooltips ();
-		}
-		
-		private Boolean shouldnotexportSTstocks;
-		
-		private Boolean havedayangxianundercertainchenjiaoer;
-		private Double  cjelevelundercertainchenjiaoeforyangxian;
-		private Double  dayangxianundercertainchenjiaoer;
-		
-		private Boolean havelianxufundercertainchenjiaoer;
-		private Double  cjelevelundercertainchenjiaoeforlianxu;
-		private Integer fanglianglevelundercertainchenjiaoer;
-		
-		private Double settingcjemax;
-		private Double settingcjemin;
-		private Integer settindpgmaxwk;
-		private Integer settinbkgmaxwk;
-		private Integer settingcjemaxwk;
-		private Double settinghsl;
-		
-		private String settingbk;
-		
-		private String tooltips = "";
-
-		//
-		public void setHaveDaYangXianUnderCertainChenJiaoEr (Boolean shouldhaveyangxian, Double cjelevelundercertainchenjiaoeforyangxian, Double dayangxianundercertainchenjiaoer) 
-		{
-			this.havedayangxianundercertainchenjiaoer = shouldhaveyangxian;
-			if(this.havedayangxianundercertainchenjiaoer) {
-				this.cjelevelundercertainchenjiaoeforyangxian =  cjelevelundercertainchenjiaoeforyangxian;
-				this.dayangxianundercertainchenjiaoer  = dayangxianundercertainchenjiaoer;
-				
-				this.tooltips = this.tooltips + "成交量小于" + this.cjelevelundercertainchenjiaoeforyangxian +  "亿,必须有" + this.dayangxianundercertainchenjiaoer + "%大阳线。";
-			} else {
-//				this.tooltips = this.tooltips + "成交量小于" + shouldHaveDaYangXianUnderCertainChenJiaoEr +  "必须有5%大阳线。";
-			}
-			
-				
-		}
-		public Boolean shouldHaveDaYangXianUnderCertainChenJiaoEr ()
-		{
-			if(havedayangxianundercertainchenjiaoer == null) 
-				return false;
-			else
-				return this.havedayangxianundercertainchenjiaoer;
-		}
-		public Double getCjeLevelUnderCertaincChenJiaoErOfBigYangXian ()
-		{
-			if(cjelevelundercertainchenjiaoeforyangxian == null)
-				return -1.0;
-			else
-				return this.cjelevelundercertainchenjiaoeforyangxian * 100000000;
-		}
-		public Double getDaYangXianUnderCertainChenJiaoEr ()
-		{
-			if(this.dayangxianundercertainchenjiaoer == null)
-				return -1.0;
-			else
-				return this.dayangxianundercertainchenjiaoer;
-		}
-		//
-		public void setLianXuFangLiangUnderCertainChenJiaoEr (Boolean shouldhavelianxu, Double cjelevelundercertainchenjiaoeforlianxu, Integer fllevelundercertainchenjiaoer) 
-		{
-			this.havelianxufundercertainchenjiaoer = shouldhavelianxu;
-			if(this.havelianxufundercertainchenjiaoer) {
-				this.cjelevelundercertainchenjiaoeforlianxu =  cjelevelundercertainchenjiaoeforlianxu;
-				this.fanglianglevelundercertainchenjiaoer  = fllevelundercertainchenjiaoer;
-				
-				this.tooltips = this.tooltips + "或成交量小于" + this.cjelevelundercertainchenjiaoeforlianxu +  "亿，必须有" + this.fanglianglevelundercertainchenjiaoer + "周放量。";
-			} else {
-//				this.tooltips = this.tooltips + "成交量小于" + shouldHaveDaYangXianUnderCertainChenJiaoEr +  "必须有5%大阳线。";
-			}
-			
-				
-		}
-		public Boolean shouldHaveLianXuFangLangUnderCertainChenJiaoEr ()
-		{
-			if(havelianxufundercertainchenjiaoer == null)
-				return false;
-			else
-				return this.havelianxufundercertainchenjiaoer;
-		}
-		public Double getCjeLevelUnderCertaincChenJiaoErOfLianXuFangLiang ()
-		{
-			if(cjelevelundercertainchenjiaoeforlianxu == null)
-				return -1.0;
-			else
-				return this.cjelevelundercertainchenjiaoeforlianxu * 100000000;
-		}
-		public Integer getFangLiangLevelUnderCertainChenJiaoEr ()
-		{
-			if(fanglianglevelundercertainchenjiaoer == null)
-				return -1;
-			else
-				return this.fanglianglevelundercertainchenjiaoer;
-		}
-		//
-		public void setExportSTStocks(boolean shouldNotExportSTStocks) 
-		{
-			this.shouldnotexportSTstocks = shouldNotExportSTStocks;
-			if(this.shouldnotexportSTstocks)
-				this.tooltips = this.tooltips + "不导出ST个股。";
-		}
-		public Boolean shouldNotExportSTStocks()
-		{
-			return this.shouldnotexportSTstocks;
-		}
-		//
-		public void setSettingBanKuai(String exportbk) 
-		{
-			if(exportbk != null ) {
-				this.settingbk = exportbk;
-				this.tooltips = this.tooltips + "限定在板块" + settingbk + "内。";
-			} 
-			
-		}
-		public String getSettingbk()
-		{
-			if(settingbk == null)
-				return null;
-			else
-				return this.settingbk;
-		}
-		//
-		public String getTooltips ()
-		{
-			return this.tooltips + "</br>";
-		}
-		//
-		public Integer getSettinDpmaxwk() 
-		{
-			if(settindpgmaxwk == null )
-				return -1;
-			else
-				return settindpgmaxwk;
-		}
-		private void setSettinDpmaxwk(String exportdpmaxwklevel) {
-			if(exportdpmaxwklevel != null) {
-				this.settindpgmaxwk = Integer.parseInt( exportdpmaxwklevel );
-				this.tooltips = this.tooltips + "大盘MAXWK>=" +  settindpgmaxwk + "周";
-			}
-			else
-				this.settindpgmaxwk = -1;
-		}
-		//
-		public Integer getSettinBkmaxwk() 
-		{
-			if(settinbkgmaxwk == null)
-				return -1;
-			else
-				return settinbkgmaxwk;
-		}
-		private void setSettinBkmaxwk(String exportbkmaxwklevel) {
-			if(exportbkmaxwklevel != null) {
-				this.settinbkgmaxwk = Integer.parseInt( exportbkmaxwklevel );
-				this.tooltips = this.tooltips + "板块MAXWK>=" + settinbkgmaxwk + "周";
-			}
-			else
-				this.settinbkgmaxwk = -1;
-		}
-		//
-		public Integer getSettingCjemaxwk()
-		{
-			if(settingcjemaxwk == null)
-				return -1;
-			else
-				return settingcjemaxwk;
-		}
-		private void setSettingCjemaxwk(String exportcjemaxwklevel) {
-			if(exportcjemaxwklevel != null) {
-				this.settingcjemaxwk = Integer.parseInt( exportcjemaxwklevel );
-				this.tooltips = this.tooltips + "成交额MAXWK>=" + settingcjemaxwk + "周";
-			}
-			else
-				this.settingcjemaxwk = -1;
-		}
-		//成交额的范围
-		public Double getSettingCjemin()
-		{
-			if(this.settingcjemin == null)
-				return -1.0;
-			else
-				return settingcjemin * 100000000;
-		}
-		public Double getSettingCjeMax() 
-		{
-			if(settingcjemax == null)
-				return 1000000000000.0;
-			else
-				return settingcjemax * 100000000;
-		}
-		public void setChenJiaoEr (String exportcjelevelmin, String exportcjelevelmax)
-		{
-			if(exportcjelevelmin != null) {
-				this.settingcjemin = Double.parseDouble( exportcjelevelmin );
-				this.tooltips = this.tooltips + "成交额>=" + settingcjemin + "亿;";
-			}
-			else
-				this.settingcjemin = -1.0;
-			
-			if(exportcjelevelmax != null) {
-				this.settingcjemax = Double.parseDouble( exportcjelevelmax );
-				this.tooltips = this.tooltips + "成交额<=" + settingcjemax + "亿。";
-			}
-			else
-				this.settingcjemax = 1000000000000000.0;
-			
-		}
-		//换手率
-		public void setSettingHsl(String exporthsl) 
-		{
-			if(exporthsl != null) {
-				this.settinghsl = Double.parseDouble(exporthsl);
-				this.tooltips = this.tooltips + "换手率>=" + exporthsl + "%";
-			} else
-				this.settinghsl = -1.0;
-		}
-		public Double getSettingHsl ()
-		{
-			if(this.settinghsl == null)
-				return -1.0;
-			else
-				return this.settinghsl;
-		}
-	}
-	/*
+		/*
 	 * 閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷烽敓缂寸尨鎷锋椂澶敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹涓閿熸枻鎷烽敓绔鎷蜂笓閿熻剼杈炬嫹閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹GUI閿熺潾鍑ゆ嫹浣块敓鏂ゆ嫹
 	 * http://www.javacreed.com/swing-worker-example/
 	 * https://github.com/javacreed/swing-worker-example/blob/master/src/main/java/com/javacreed/examples/swing/worker/part3/Application.java

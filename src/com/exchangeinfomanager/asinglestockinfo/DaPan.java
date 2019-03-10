@@ -221,6 +221,12 @@ public class DaPan extends BkChanYeLianTreeNode
 			return null;
 		}
 
+		@Override
+		public OHLCSeries getOHLCData() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 //		@Override
 //		public TimeSeries getChengJiaoEr() {
 //			// TODO Auto-generated method stub

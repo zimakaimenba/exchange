@@ -2,12 +2,11 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.data.category.CategoryDataset;
-import org.jsoup.Jsoup;
+//import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportCondition;
+//import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 
 public class BanKuaiFengXiCategoryBarToolTipGenerator implements CategoryToolTipGenerator 
 {

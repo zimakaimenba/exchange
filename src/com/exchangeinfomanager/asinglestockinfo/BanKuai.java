@@ -2,37 +2,41 @@ package com.exchangeinfomanager.asinglestockinfo;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.WeekFields;
+//import java.time.Period;
+//import java.time.ZoneId;
+//import java.time.temporal.ChronoUnit;
+//import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-import java.util.Date;
+//import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
+//import java.util.List;
+//import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
+//import java.util.Random;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.time.TimeSeries;
+//import org.apache.log4j.Logger;
+//import org.jfree.data.category.DefaultCategoryDataset;
+//import org.jfree.data.general.DefaultPieDataset;
+//import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.data.time.Week;
+//import org.jfree.data.time.Week;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportCondition;
-import com.exchangeinfomanager.commonlib.CommonUtility;
+//import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+//import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+//import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
+//import com.exchangeinfomanager.commonlib.CommonUtility;
 
 public class BanKuai extends BkChanYeLianTreeNode
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	public static String  HASGGWITHSELFCJL = "HASGGWITHSELFCJL" , HASGGNOSELFCJL = "HASGGNOSELFCJL"
 						, NOGGWITHSELFCJL = "NOGGWITHSELFCJL" , NOGGNOSELFCJL = "NOGGNOSELFCJL"; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据
 	

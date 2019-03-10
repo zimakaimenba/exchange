@@ -499,6 +499,13 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode implements  Ba
 			/*
 			 * 
 			 */
+			public OHLCSeries getOHLCData ()
+			{
+				return this.stockohlc;
+			}
+			/*
+			 * 
+			 */
 			public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend)
 			{
 				OHLCSeries tmpohlc = new OHLCSeries ("Kxian");

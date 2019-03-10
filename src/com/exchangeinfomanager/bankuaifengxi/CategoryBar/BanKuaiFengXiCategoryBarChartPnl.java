@@ -40,7 +40,6 @@ import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi.ExportCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -96,8 +95,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		
 		sysconfig = SystemConfigration.getInstance();
 		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
-		
-//		bkdbopt = new BanKuaiDbOperation ();
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
@@ -111,12 +108,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected DefaultCategoryDataset linechartdataset;
 	protected JFreeChart barchart;
 	private List<CategoryMarker> categorymarkerlist;
-	
+	protected boolean displayhuibuquekou;
 	private SystemConfigration sysconfig;
-	
-//	private BanKuaiDbOperation bkdbopt;
-	
-//	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
 	
 	public static final String SELECTED_PROPERTY = "selected";
 	public static final String MOUSEDOUBLECLICK_PROPERTY = "mousedoubleclick";
@@ -392,7 +385,16 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	 * 
 	 */
 	abstract public String getToolTipSelected ();
-	
+	/*
+	 * 
+	 */
+	public void displayQueKou (boolean display)
+	{
+		if(display)
+			this.displayhuibuquekou = true;
+		else 
+			this.displayhuibuquekou = false;
+	}
 	/*
 	 * 
 	 */

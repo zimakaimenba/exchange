@@ -160,7 +160,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		sortKeys = null;
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl) 
+	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double showltszmin,Double showltszmax) 
 	{
 //		if(cjezbbkmax != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
@@ -172,6 +172,8 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
 //		if(showhsl != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
+			
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
 		
 		this.repaint();
 	}

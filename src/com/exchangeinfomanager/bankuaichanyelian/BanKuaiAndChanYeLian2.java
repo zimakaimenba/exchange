@@ -370,17 +370,24 @@ public class BanKuaiAndChanYeLian2
 		
 		for(String bkcode : bkcodeset) {
 			BkChanYeLianTreeNode foundbk = this.treechanyelian.getSpecificNodeByHypyOrCode(bkcode, BanKuaiAndStockBasic.TDXBK);
-			TreeNode[] bkpath = foundbk.getPath();
-			BkChanYeLianTreeNode gpcbelonged = (BkChanYeLianTreeNode) bkpath[1];
-			String gpccode = gpcbelonged.getMyOwnCode();
-			if(!gpccode.toUpperCase().equals("GPC999")) {//其他
-				if(!gpccode.toUpperCase().equals("GPC014")) 
-					tmpsuoshudalei.put(bkcode, gpcbelonged.getMyOwnName());
-				else { //弱势远离的是否要特别标注
-					tmpsuoshudalei.put(bkcode, gpcbelonged.getMyOwnName());
-					tmpsuoshudalei.put(bkcode, "GREEN");
+			try {
+				TreeNode[] bkpath = foundbk.getPath();
+				BkChanYeLianTreeNode gpcbelonged = (BkChanYeLianTreeNode) bkpath[1];
+				String gpccode = gpcbelonged.getMyOwnCode();
+				if(!gpccode.toUpperCase().equals("GPC999")) {//其他
+					if(!gpccode.toUpperCase().equals("GPC014")) 
+						tmpsuoshudalei.put(bkcode, gpcbelonged.getMyOwnName());
+					else { //弱势远离的是否要特别标注
+						tmpsuoshudalei.put(bkcode, gpcbelonged.getMyOwnName());
+						tmpsuoshudalei.put(bkcode, "GREEN");
+					}
 				}
+			} catch (java.lang.NullPointerException e) {
+//				e.printStackTrace();
+				
 			}
+			
+			
 		}
 		
 		if(tmpsuoshudalei.size() == 0)

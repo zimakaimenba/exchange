@@ -17,6 +17,7 @@ import java.beans.PropertyVetoException;
 import java.text.AttributedString;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -28,7 +29,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
@@ -82,11 +85,13 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.DaPan;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
+import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -99,10 +104,6 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 @SuppressWarnings("serial")
 public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanelDataChangedListener,BarChartPanelHightLightColumnListener
 {
-
-	
-
-
 	public BanKuaiFengXiCandlestickPnl() 
 	{
 		super ();
@@ -136,6 +137,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	private DateAxis dayAxis;
 	private JMenuItem mntmbankuai;
 	private JMenuItem mntmzhishu;
+	private boolean displayhuibuquekou;
 
 	
 	@Override
@@ -155,8 +157,10 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.setNotify(false);
 		this.resetDate();
 		
-//		setNodeCandleStickDate ( node,  requirestart,  requireend, period);
 		setNodeCandleStickDate ( node,  requirestart,  requireend, period , 0);
+		
+		if(node.getType() == BanKuaiAndStockBasic.TDXGG && this.displayhuibuquekou )
+			displayQueKouToChart ();
 		
 		setPanelTitle ( node, requirestart, requirestart);
 	}
@@ -165,13 +169,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.setNotify(false);
 		this.resetDate();
 		
-//		setNodeCandleStickDate ( node,  startdate,  enddate, period);
 		setNodeCandleStickDate ( node,  startdate,  enddate, period , 0);
+		
+		if(node.getType() == BanKuaiAndStockBasic.TDXGG && this.displayhuibuquekou )
+			displayQueKouToChart ();
 		
 		setPanelTitle ( node, startdate, enddate);
 	}
 	/*
-	 * 
+	 * node和上级板块同时显示
 	 */
 	public void updatedDate(BkChanYeLianTreeNode superbk, BkChanYeLianTreeNode node, LocalDate requirestart, LocalDate requireend ,String period)
 	{
@@ -182,6 +188,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		setNodeCandleStickDate ( node,  requirestart,  requireend, period , 0);
 		setNodeCandleStickDate ( superbk,  requirestart,  requireend, period , 1);
+		
+		if(node.getType() == BanKuaiAndStockBasic.TDXGG && this.displayhuibuquekou )
+			displayQueKouToChart ();
 		
 		setPanelTitle ( node, requirestart, requireend);
 	}
@@ -209,6 +218,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	private void setNodeCandleStickDate(BkChanYeLianTreeNode node, LocalDate requirestart, LocalDate requireend,
 			String period, int indexofseries) 
 	{
+		this.curdisplayednode = node;
 		// TODO Auto-generated method stub
 		OHLCSeries tmpohlcSeries ;
 		OHLCSeriesCollection tmpcandlestickDataset;
@@ -257,13 +267,156 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         tmpohlcSeries.setNotify(false);
         tmpcandlestickDataset.setNotify(false);
         candlestickChart.setNotify(false);
-		
 	}
 	/*
 	 * 
 	 */
-	public void displayRangeHighLowValue (boolean display) 
+	private List<QueKou> queKouTongJi ()
 	{
+		List<QueKou> qklist = new ArrayList<QueKou> ();
+		
+//		NodeXPeriodDataBasic nodexdata = curdisplayednode.getNodeXPeroidData(period);
+//		OHLCSeries nodeohlc = nodexdata.getOHLCData();
+		for(int j=1;j < ohlcSeries.getItemCount();j++) {
+			
+			OHLCItem kxiandatacurwk = (OHLCItem) ohlcSeries.getDataItem(j);
+			RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
+			LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			
+			OHLCItem kxiandatalastwk = (OHLCItem) ohlcSeries.getDataItem(j-1);
+			
+			Double curhigh = kxiandatacurwk.getHighValue();
+			Double curlow = kxiandatacurwk.getLowValue();
+
+			Iterator itr = qklist.iterator(); 
+			while (itr.hasNext()) 
+			{ 
+				QueKou tmpqk = (QueKou)itr.next();
+				if (!tmpqk.isQueKouHuiBu() ) {
+					String huibuinfo = tmpqk.checkQueKouHuiBu(curstart,curlow, curhigh);
+					if(tmpqk.isQueKouHuiBu() && !tmpqk.shouldUpdatedInDb())
+						itr.remove(); 
+				}
+			} 
+			
+			//看看有没有产生新的缺口
+			double lasthigh = kxiandatalastwk.getHighValue();
+			double lastlow = kxiandatalastwk.getLowValue();
+			
+			Boolean tiaokongup = false; Boolean tiaokongdown = false;
+			if(curlow > lasthigh) {
+				Double newqkup = curlow;
+				Double newqkdown = lasthigh;
+				QueKou newqk = new QueKou (this.curdisplayednode.getMyOwnCode(),curstart,newqkdown,newqkup,true);
+				qklist.add(0, newqk);
+			}
+			else 
+			if(curhigh < lastlow) {
+				Double newqkup = lastlow;
+				Double newqkdown = curhigh;
+				QueKou newqk = new QueKou (this.curdisplayednode.getMyOwnCode(),curstart,newqkdown,newqkup,false);
+				qklist.add(0, newqk);
+			}
+		}
+		
+		return qklist;
+	}
+	/*
+	 * 
+	 */
+	private void displayQueKouToChart ()
+	{
+		ohlcSeries.setNotify(false);
+        candlestickDataset.setNotify(false);
+        candlestickChart.setNotify(false);
+        
+		if(ohlcSeries == null || ohlcSeries.getItemCount() == 0)
+			return ;
+
+		List<QueKou> qklist = queKouTongJi ();
+		for(QueKou tmpqk : qklist) {
+			LocalDate qkdate = tmpqk.getQueKouDate();
+			LocalDate qkhuidate = tmpqk.getQueKouHuiBuDate();
+			if(qkhuidate == null)
+				continue;
+			
+			java.sql.Date sqlqkdate = null;
+			try {
+				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+				 sqlqkdate = new java.sql.Date(format.parse(qkdate.toString()).getTime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			org.jfree.data.time.Day qkday = new org.jfree.data.time.Day (sqlqkdate);
+			
+			java.sql.Date sqlqkhbdate = null;
+			try {
+				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+				 sqlqkhbdate = new java.sql.Date(format.parse(qkhuidate.toString()).getTime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			org.jfree.data.time.Day qkhbday = new org.jfree.data.time.Day (sqlqkhbdate);
+			
+			Double qkup = tmpqk.getQueKouUp();
+			//draw annotation
+	        try {
+		        double millisonemonth = qkday.getFirstMillisecond();
+		        XYPointerAnnotation pointeronemonth = new XYPointerAnnotation(String.valueOf(qkup), millisonemonth, qkup, 0 );
+		        pointeronemonth.setBaseRadius(0.0);
+		        pointeronemonth.setTipRadius(25.0);
+		        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
+		        pointeronemonth.setPaint(Color.CYAN);
+		        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
+				candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
+	        } catch (java.lang.NullPointerException e) {
+	        }
+	        
+	        try {
+		        double millisonemonth = qkhbday.getFirstMillisecond();
+		        XYPointerAnnotation pointeronemonth = new XYPointerAnnotation("回补", millisonemonth, qkup, 0 );
+		        pointeronemonth.setBaseRadius(0.0);
+		        pointeronemonth.setTipRadius(25.0);
+		        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
+		        pointeronemonth.setPaint(Color.YELLOW);
+		        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
+				candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
+	        } catch (java.lang.NullPointerException e) {
+	        }
+			
+		}
+		
+		 ohlcSeries.setNotify(true);
+	     candlestickDataset.setNotify(true);
+	     candlestickChart.setNotify(true);
+	     ohlcSeries.setNotify(false);
+	     candlestickDataset.setNotify(false);
+	     candlestickChart.setNotify(false);
+	}
+	/*
+	 * 
+	 */
+	public void displayQueKou (boolean display)
+	{
+		if(display)
+			this.displayhuibuquekou = true;
+		else {
+			this.displayhuibuquekou = false;
+			
+			List<XYPointerAnnotation> pointerlist = candlestickChart.getXYPlot().getAnnotations();
+			for(XYPointerAnnotation pointer : pointerlist) 
+				candlestickChart.getXYPlot().removeAnnotation(pointer);
+			return;
+		}
+			
+	}
+	/*
+	 * 显示某个阶段的最大最小值，现在不用了
+	 */
+	private void displayRangeHighLowValue (boolean display) 
+	{
+		
 		ohlcSeries.setNotify(false);
         candlestickDataset.setNotify(false);
         candlestickChart.setNotify(false);
@@ -305,7 +458,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	        pointeronemonth.setBaseRadius(0.0);
 	        pointeronemonth.setTipRadius(25.0);
 	        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
-	        pointeronemonth.setPaint(Color.YELLOW);
+	        pointeronemonth.setPaint(Color.CYAN);
 	        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
 			candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
         } catch (java.lang.NullPointerException e) {
@@ -601,6 +754,14 @@ class BanKuaiFengXiCandlestickZhiShuRenderer extends CandlestickRenderer
 	public BanKuaiFengXiCandlestickZhiShuRenderer ()
 	{
 		super ();
+		
+		DateFormat dateFormatter =  new SimpleDateFormat("yyyy-MM-dd");
+		NumberFormat numberFormatter = NumberFormat.getInstance(Locale.CHINA);;
+		CustomHighLowItemLabelGenerator tooltipgenerator = new CustomHighLowItemLabelGenerator (dateFormatter,numberFormatter);
+		this.setBaseToolTipGenerator(tooltipgenerator);
+		
+		this.setBaseItemLabelGenerator(tooltipgenerator);
+		this.setBaseItemLabelsVisible(true);
 	}
 	
 	private final Paint  colorZhiShu = Color.GRAY.darker();
@@ -667,7 +828,7 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
         setUpPaint(colorUnknown); // use unknown color if error
         setDownPaint(colorUnknown); // use unknown color if error
         super.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_AVERAGE); //CandlestickRenderer.WIDTHMETHOD_AVERAGE,
-        super.setBaseToolTipGenerator(null);
+//        super.setBaseToolTipGenerator(null);
 //        super.setUseOutlinePaint(true);
 	}
 	

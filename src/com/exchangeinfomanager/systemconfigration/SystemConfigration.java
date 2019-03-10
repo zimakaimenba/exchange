@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -935,6 +936,24 @@ public class SystemConfigration
 		{
 			// TODO Auto-generated method stub
 			return "模型验证";
+		}
+		/*
+		 * 
+		 */
+		public String getCsvPathOfExportedTDXVOLFiles()
+		{
+			String path = this.systeminstalledpath + "dailydata/tdxexportedtxtfilestocsv/" ;
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					 Path parpath = Paths.get(path) ;
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			return path;
+			
 		}
 
 }

@@ -1686,23 +1686,23 @@ public class StockInfoManager
 
 	protected void showGeGuShiZhiFenXi() 
 	{
-		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-		this.frame.setCursor(hourglassCursor);
-		
-		GeGuShiZhiFenXi ggszfx = new GeGuShiZhiFenXi ();
-		ggszfx.setModal(false);
-		ggszfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-		if(!ggszfx.isVisible() ) {
-			ggszfx.setVisible(true);
-		} 
-		
-		ggszfx.toFront();
-		
-		hourglassCursor = null;
-		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-		this.frame.setCursor(hourglassCursor2);
-		SystemAudioPlayed.playSound();
+//		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+//		this.frame.setCursor(hourglassCursor);
+//		
+//		GeGuShiZhiFenXi ggszfx = new GeGuShiZhiFenXi ();
+//		ggszfx.setModal(false);
+//		ggszfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//
+//		if(!ggszfx.isVisible() ) {
+//			ggszfx.setVisible(true);
+//		} 
+//		
+//		ggszfx.toFront();
+//		
+//		hourglassCursor = null;
+//		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+//		this.frame.setCursor(hourglassCursor2);
+//		SystemAudioPlayed.playSound();
 		
 	}
 	public BanKuaiFengXi getBanKuaiFengXi ()

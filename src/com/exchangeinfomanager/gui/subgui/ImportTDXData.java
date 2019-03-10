@@ -10,6 +10,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
+import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -89,10 +93,10 @@ public class ImportTDXData extends JDialog {
 	JCheckBox[] zdybkckbxs;
 	Map<String, String> zdybkmap; //从tdx得到的自定义板块设置
 	Map<String, String> zdybkmapfromfile; //从用户选择的文件直接得到的自定义板块设置
-	
-
 	private SystemConfigration sysconfig;
-	BanKuaiDbOperation bkdbopt;
+	private AllCurrentTdxBKAndStoksTree allbksks;
+	private BanKuaiAndChanYeLian2 bkcyl;
+	private BanKuaiDbOperation bkdbopt;
 	
 	private void formateGui() 
 	{
@@ -342,8 +346,20 @@ public class ImportTDXData extends JDialog {
 		if(chbxdaorutdxsysbkvol.isSelected() && chbxdaorutdxsysbkvol.isEnabled()  
 			&& cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled() 
 			&& cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled()) {
+			
 			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
 		}
+		//用户同步完个股和板块成交量后，要把个股的TXT转为CSV FILE，这是因为复权问题，因为数据库存放的是当前的成交数据，如果发生复权，前面所有的OHLC都会改变，
+		//重新把数据库中的数据改写一遍成本很高，所以个股每天的OHLC数据直接从复权的TXT转化的CSV中读取。这里先把TXT 都转为CSV，存放到指定位置
+//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbksks.getAllBkStocksTree().getModel().getRoot();
+//		int bankuaicount = allbksks.getAllBkStocksTree().getModel().getChildCount(treeroot);
+//		for(int i=0;i< bankuaicount; i++) {
+//			
+//			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbksks.getAllBkStocksTree().getModel().getChild(treeroot, i);
+//			if(childnode.getType() != BanKuaiAndStockBasic.TDXBK) 
+//				continue;
+//		}
+		
 		//导入网易的股票的数据,主要是换手率/市值等数据，
 		if(ckbxnetease.isSelected() && ckbxnetease.isEnabled()) { 
 			try {

@@ -124,8 +124,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     
                     if(zhishuinfo.toLowerCase().equals("bankuaizhisu") ) {
       
+//                    	nodekpnl.displayQueKou(true);
                 		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,StockGivenPeriodDataItem.DAY);
-                		nodekpnl.displayRangeHighLowValue(true);
+                		
                 		
                 		
                     } else if(zhishuinfo.toLowerCase().equals("dapanzhishu") ) {
@@ -142,8 +143,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     		zhishubk = cybdpbankuai;
                     	}
                     	
+//                    	nodekpnl.displayQueKou(true);
                     	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,StockGivenPeriodDataItem.DAY);
-                		nodekpnl.displayRangeHighLowValue(true);
+                		
                     	
                     }
 
@@ -323,6 +325,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.setLayout(new BorderLayout());
 
 		this.nodekpnl = new BanKuaiFengXiCandlestickPnl ();
+		this.nodekpnl.displayQueKou(true);
 //		this.centerPanel = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical");
 		this.centerPanel = new JPanel ();
 		this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.Y_AXIS));

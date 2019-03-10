@@ -124,23 +124,8 @@ public class AllCurrentTdxBKAndStoksTree
 		bankuai = this.getBanKuai (bankuai,requiredrecordsday,period);
 		return bankuai;
 	}
-	/*
-	 * 
-	 */
-	public BanKuai getBanKuaiKXian (String bkcode,LocalDate requiredrecordsday,String period)
-	{
-		BanKuai stock = (BanKuai)this.treecyl.getSpecificNodeByHypyOrCode(bkcode,BanKuaiAndStockBasic.TDXGG);
-		stock = (BanKuai) this.getNodeKXian(stock, requiredrecordsday, period);
-		return stock;
-	}
-	/*
-	 * 
-	 */
-	public BanKuai getBanKuaiKXian (BanKuai bankuai,LocalDate requiredrecordsday,String period)
-	{
-		bankuai = (BanKuai) this.getNodeKXian(bankuai, requiredrecordsday, period);
-		return bankuai;
-	}
+
+	
 	/*
 	 * 只要是在整个时间周期内都曾经是该板块的个股，板块都会存入 
 	 */
@@ -239,9 +224,9 @@ public class AllCurrentTdxBKAndStoksTree
 		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
 		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);
 		
-		shdpbankuai = (BanKuai) this.getNodeKXian(shdpbankuai, requiredrecordsday, period);
-		szdpbankuai = (BanKuai) this.getNodeKXian(szdpbankuai, requiredrecordsday, period);
-		cybdpbankuai = (BanKuai) this.getNodeKXian(cybdpbankuai, requiredrecordsday, period);
+		shdpbankuai = (BanKuai) this.getBanKuaiKXian(shdpbankuai, requiredrecordsday, period);
+		szdpbankuai = (BanKuai) this.getBanKuaiKXian(szdpbankuai, requiredrecordsday, period);
+		cybdpbankuai = (BanKuai) this.getBanKuaiKXian(cybdpbankuai, requiredrecordsday, period);
 		
 	}
 	/*
@@ -363,6 +348,59 @@ public class AllCurrentTdxBKAndStoksTree
 
 		return null;
 	}
+	
+	/*
+	 *板块的K线走势， 直接从数据库中读取数据，和个股不一样
+	 */
+	public BanKuai getBanKuaiKXian (String bkcode,LocalDate requiredrecordsday,String period)
+	{
+		BanKuai stock = (BanKuai)this.treecyl.getSpecificNodeByHypyOrCode(bkcode,BanKuaiAndStockBasic.TDXGG);
+		stock = (BanKuai) this.getBanKuaiKXian(stock, requiredrecordsday, period);
+		return stock;
+	}
+	/*
+	 *板块的K线走势，直接从数据库中读取数据 ，和个股不一样
+	 */
+	public BanKuai getBanKuaiKXian (BanKuai bk,LocalDate requiredrecordsday,String period) 
+	{
+		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		
+		try{
+			
+			NodeXPeriodDataBasic stockxdata = bk.getNodeXPeroidData(period);
+			LocalDate nodestartday = stockxdata.getRecordsStartDate();
+			LocalDate nodeendday = stockxdata.getRecordsEndDate();
+			
+			if(nodestartday == null || nodeendday == null) { //还没有数据，直接找
+				bk = bkdbopt.getBanKuaiKXianZouShi (bk,requirestart,requireend,period);
+			} else {
+				HashMap<String,LocalDate> startend = null ;
+				if(period.equals(StockGivenPeriodDataItem.WEEK))
+					startend = nodeWeekTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
+				else if(period.equals(StockGivenPeriodDataItem.DAY)) 
+					startend = nodeDayTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
+				else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
+					;
+				 
+				LocalDate searchstart,searchend,position;
+				if(!startend.isEmpty()) {
+					searchstart = startend.get("searchstart"); 
+					searchend = startend.get("searchend");
+
+					bk = bkdbopt.getBanKuaiKXianZouShi (bk,searchstart,searchend,period);
+				}
+				
+				startend = null;
+			}
+		} catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
+		}
+		
+		return bk;
+		
+	}
+	
 	/*
 	 * 独立个股的指定周期的占比
 	 */
@@ -424,21 +462,30 @@ public class AllCurrentTdxBKAndStoksTree
 		return stock;
 	}
 	/*
-	 * 该函数为每一个独立个股设置制定周期的K线数据
+	 * 
 	 */
-	private BkChanYeLianTreeNode getNodeKXian (BkChanYeLianTreeNode bkorstock,LocalDate requiredrecordsday,String period) 
+	public Stock getStockKXian (String stockcode,LocalDate requiredrecordsday,String period)
+	{
+		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
+		stock = (Stock) this.getStockKXian(stock, requiredrecordsday, period);
+		return stock;
+	}
+	/*
+	 * 个股的K线从CSV里面读取
+	 */
+	public Stock getStockKXian (Stock stock,LocalDate requiredrecordsday,String period)
 	{
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		try{
 			
-			NodeXPeriodDataBasic stockxdata = bkorstock.getNodeXPeroidData(period);
+			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
 			LocalDate nodestartday = stockxdata.getRecordsStartDate();
 			LocalDate nodeendday = stockxdata.getRecordsEndDate();
 			
 			if(nodestartday == null || nodeendday == null) { //还没有数据，直接找
-				bkorstock = bkdbopt.getNodeKXianZouShi (bkorstock,requirestart,requireend,period);
+				stock = (Stock)bkdbopt.getStockKXianZouShiFromCsv (stock,requirestart,requireend,period);
 			} else {
 				HashMap<String,LocalDate> startend = null ;
 				if(period.equals(StockGivenPeriodDataItem.WEEK))
@@ -453,7 +500,7 @@ public class AllCurrentTdxBKAndStoksTree
 					searchstart = startend.get("searchstart"); 
 					searchend = startend.get("searchend");
 
-					bkorstock = bkdbopt.getNodeKXianZouShi (bkorstock,searchstart,searchend,period);
+					stock = (Stock)bkdbopt.getStockKXianZouShiFromCsv (stock,searchstart,searchend,period);
 				}
 				
 				startend = null;
@@ -462,61 +509,7 @@ public class AllCurrentTdxBKAndStoksTree
 			e.printStackTrace();
 		}
 		
-		return bkorstock;
-		
-	}
-	/*
-	 * 
-	 */
-	public Stock getStockKXian (String stockcode,LocalDate requiredrecordsday,String period)
-	{
-		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
-		stock = (Stock) this.getNodeKXian(stock, requiredrecordsday, period);
 		return stock;
-	}
-	/*
-	 * 
-	 */
-	public Stock getStockKXian (Stock stock,LocalDate requiredrecordsday,String period)
-	{
-		stock = (Stock) this.getNodeKXian(stock, requiredrecordsday, period);
-		return stock;
-		
-//		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
-//		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-//		
-//		try{
-//			
-//			NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
-//			LocalDate nodestartday = stockxdata.getRecordsStartDate();
-//			LocalDate nodeendday = stockxdata.getRecordsEndDate();
-//			
-//			if(nodestartday == null || nodeendday == null) { //还没有数据，直接找
-//				stock = (Stock)bkdbopt.getNodeKXianZouShi (stock,requirestart,requireend,period);
-//			} else {
-//				HashMap<String,LocalDate> startend = null ;
-//				if(period.equals(StockGivenPeriodDataItem.WEEK))
-//					startend = nodeWeekTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-//				else if(period.equals(StockGivenPeriodDataItem.DAY)) 
-//					startend = nodeDayTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-//				else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
-//					;
-//				 
-//				LocalDate searchstart,searchend,position;
-//				if(!startend.isEmpty()) {
-//					searchstart = startend.get("searchstart"); 
-//					searchend = startend.get("searchend");
-//
-//					stock = (Stock)bkdbopt.getNodeKXianZouShi (stock,searchstart,searchend,period);
-//				}
-//				
-//				startend = null;
-//			}
-//		} catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		return stock;
 	}
 
 

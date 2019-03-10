@@ -23,6 +23,7 @@ import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
+import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -48,7 +49,10 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private Integer cjezbbkmaxwk = 10000000;
 	private String period;
 	private Double huanshoulv = 1000000.0;
+	private Double showltszmin;
+	private Double showltszmax;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
+	private ExportCondition expcond;
 
 	public void refresh (BanKuai bankuai,LocalDate wknum,String period)
 	{
@@ -71,7 +75,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		try{
 			Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,period) );
 		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		
 		this.fireTableDataChanged();
@@ -464,6 +468,40 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		public Double getDisplayHuanShouLv ()
 		{
 			return this.huanshoulv;
+		}
+		public void setDisplayLiuTongShiZhi(Double ltszmin, Double ltszmax)
+		{
+			if(ltszmin != null && ltszmax == null) {
+				this.showltszmin  = ltszmin;
+				this.showltszmax = 10000000000000.0;
+			} else
+			if(ltszmax != null && ltszmin == null) {
+				this.showltszmin  = 0.0;
+				this.showltszmax  = ltszmax;
+			} else
+			if(ltszmax != null && ltszmin != null) {
+				this.showltszmin  = ltszmin;
+				this.showltszmax  = ltszmax;
+			} else
+			if(ltszmin == null && ltszmax == null) {
+				this.showltszmin = 10000000000000.0;
+				this.showltszmax = 10000000000000.0;
+			}
+			
+		}
+		public Double getDisplayLiuTongShiZhiMin ()
+		{
+			if(this.showltszmin != null)
+				return this.showltszmin ;
+			else
+				return 10000000000000.0;
+		}
+		public Double getDisplayLiuTongShiZhiMax ()
+		{
+			if(this.showltszmax != null)
+				return this.showltszmax ;
+			else
+				return 10000000000000.0;
 		}
 		
 

@@ -64,7 +64,7 @@ public final class StockCalendarAndNewDbOperation {
 			sqlquerystat = "SELECT * FROM 商业新闻  \r\n"
 							+ timerangesql + "\r\n" 
 //							+ " AND 关联板块 not like '%rrrrrr%' \r\n"  //不包含强势板块和弱势板块的新闻
-							+ " AND 关联板块 not like '%gzgzgz%'  \r\n"
+//							+ " AND 关联板块 not like '%gzgzgz%'  \r\n" //不包含日常关注板块
 							+ " ORDER BY 录入日期 DESC"
 							;
 		else if("HEADLINE".equals(bankuaiid.toUpperCase()) ) //长期新闻和强弱势板块个股,每月关注板块

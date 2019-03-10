@@ -320,7 +320,8 @@ public class WholeMonthNewsView extends View
         	super.mouseClicked(e);
             JPanel panel = (JPanel) e.getSource();
             String pnlnamedate = panel.getName().substring(0, 10);
-            LocalDate mDate = LocalDate.parse(pnlnamedate);
+//            LocalDate mDate = LocalDate.parse(pnlnamedate);
+            LocalDate mDate = LocalDate.now();
             
             String pnltype = panel.getName().substring(10);
             String meetingname = null ;
