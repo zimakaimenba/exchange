@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.nodes.operations;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
@@ -12,7 +12,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-public class TreeTransferHandler extends TransferHandler {
+class TreeTransferHandler extends TransferHandler 
+{
     
     private DataFlavor nodeFlavor;
     private static Logger logger = Logger.getLogger(TreeTransferHandler.class);

@@ -15,12 +15,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai.StockOfBanKuaiTreeRelated;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
+
 
 public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer 
 {
@@ -73,7 +73,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 
 	    if( col == 1 ) { //¸ö¹ÉÃû³Æ
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
-	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreerelated();
+	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreeRelated();
     	
 	 		Boolean isin = stofbktree.isInBanKuaiFengXiResultFileForSpecificDate(requireddate);
 	    	if(isin != null && isin  ) 

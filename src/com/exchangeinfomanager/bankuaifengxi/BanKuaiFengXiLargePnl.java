@@ -34,12 +34,6 @@ import javax.swing.JTextArea;
 
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
@@ -50,6 +44,11 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 /*
@@ -57,9 +56,9 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
  */
 public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHightLightColumnListener
 {
-	private BkChanYeLianTreeNode displaynode;
+	private TDXNodes displaynode;
 	private SystemConfigration sysconfig;
-	private BkChanYeLianTreeNode nodebankuai;
+	private TDXNodes nodebankuai;
 	private LocalDate displayedstartdate;
 //	private LocalDate displaystartdate;
 //	private LocalDate displayenddate;
@@ -69,7 +68,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private AllCurrentTdxBKAndStoksTree allbksks;
 	private Boolean exportuserselectedinfotocsv;
 
-	public BanKuaiFengXiLargePnl (BkChanYeLianTreeNode nodebkbelonged, BkChanYeLianTreeNode node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period)
+	public BanKuaiFengXiLargePnl (TDXNodes nodebkbelonged, TDXNodes node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period)
 	{
 		this.nodebankuai = nodebkbelonged;
 		this.displaynode = node;
@@ -118,33 +117,33 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     @SuppressWarnings("unchecked")
                     String zhishuinfo = evt.getNewValue().toString();
                     
-                    if(displaynode.getType() != BanKuaiAndStockBasic.BKGEGU && displaynode.getType() != BanKuaiAndStockBasic.TDXGG) {
+                    if(displaynode.getType() != BkChanYeLianTreeNode.BKGEGU && displaynode.getType() != BkChanYeLianTreeNode.TDXGG) {
                     	return;
                     }
                     
                     if(zhishuinfo.toLowerCase().equals("bankuaizhisu") ) {
       
 //                    	nodekpnl.displayQueKou(true);
-                		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,StockGivenPeriodDataItem.DAY);
+                		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,TDXNodeGivenPeriodDataItem.DAY);
                 		
                 		
                 		
                     } else if(zhishuinfo.toLowerCase().equals("dapanzhishu") ) {
                     	BanKuai zhishubk = null;
                     	if(displaynode.getMyOwnCode().startsWith("6") ) {
-                    		BanKuai shdpbankuai = (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
+                    		BanKuai shdpbankuai = (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
                     		zhishubk = shdpbankuai;
                     	} else if(displaynode.getMyOwnCode().startsWith("3")) {
-                    		BanKuai szdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
+                    		BanKuai szdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
                     		zhishubk = szdpbankuai;
                     	} else{
                     		
-                    		BanKuai cybdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);     
+                    		BanKuai cybdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);     
                     		zhishubk = cybdpbankuai;
                     	}
                     	
 //                    	nodekpnl.displayQueKou(true);
-                    	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,StockGivenPeriodDataItem.DAY);
+                    	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,TDXNodeGivenPeriodDataItem.DAY);
                 		
                     	
                     }
@@ -285,7 +284,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		return null;
 	}
 
-	private void updateData(BkChanYeLianTreeNode nodebkbelogned, BkChanYeLianTreeNode node, LocalDate displayedstartdate1, LocalDate displayedenddate1,
+	private void updateData(TDXNodes nodebkbelogned, TDXNodes node, LocalDate displayedstartdate1, LocalDate displayedenddate1,
 			String period) 
 	{
 //		centerPanel.updatedDate(node, displayedstartdate1,displayedenddate1, period);
@@ -293,7 +292,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 			this.nodebkcjezblargepnl.updatedDate(nodebkbelogned, displayedstartdate1, displayedenddate1, period);
 		
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
-		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  StockGivenPeriodDataItem.DAY);
+		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  TDXNodeGivenPeriodDataItem.DAY);
 	}
 	
 	@Override
@@ -332,10 +331,10 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.setPreferredSize(new Dimension(1640, 705)); //设置显示框的大小
 		
 		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical");
-		if(nodebkbelonged.getType() == BanKuaiAndStockBasic.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
+		if(nodebkbelonged.getType() == BkChanYeLianTreeNode.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
 			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());
-		} else if(nodebkbelonged.getType() == BanKuaiAndStockBasic.DAPAN) {//如果上级node是大盘，显示是大盘的成交量
+		} else if(nodebkbelonged.getType() == BkChanYeLianTreeNode.DAPAN) {//如果上级node是大盘，显示是大盘的成交量
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
 			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
 		}

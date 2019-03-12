@@ -34,16 +34,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.github.cjwizard.WizardPage;
 
@@ -77,11 +76,11 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 
 		LocalDate upstartdate = displaydate.minus(30,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		LocalDate upenddate = displaydate.minus(16,ChronoUnit.WEEKS).with(DayOfWeek.SATURDAY);
-		pnlup.updatedMultiDate(zhishulist, upstartdate, upenddate, StockGivenPeriodDataItem.WEEK);
+		pnlup.updatedMultiDate(zhishulist, upstartdate, upenddate, TDXNodeGivenPeriodDataItem.WEEK);
 		
 		LocalDate dwnstartdate = displaydate.minus(15,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		LocalDate dwnenddate = displaydate.with(DayOfWeek.SATURDAY);
-		pnldown.updatedMultiDate(zhishulist, dwnstartdate, dwnenddate, StockGivenPeriodDataItem.WEEK);
+		pnldown.updatedMultiDate(zhishulist, dwnstartdate, dwnenddate, TDXNodeGivenPeriodDataItem.WEEK);
 	}
 	/*
 	 * 
@@ -130,7 +129,7 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 			public void mouseClicked(MouseEvent arg0) {
 				String zhishucode = tfldbkcode.getText();
 				if( Pattern.matches("\\d{6}$",zhishucode)   ) {
-					BanKuai bknode = (BanKuai)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(zhishucode, BanKuaiAndStockBasic.TDXBK);
+					BanKuai bknode = (BanKuai)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(zhishucode, BkChanYeLianTreeNode.TDXBK);
 					if(bknode !=null) {
 						((DaPanTableModel)tablebk.getModel()).addNewZhiShu(bknode);
 						
@@ -391,7 +390,7 @@ class DaPanTableModel extends AbstractTableModel
 		this.dapanzhishu = new ArrayList<BkChanYeLianTreeNode>();
 		for( ZdgzItem zhishuitem :  zhishulist) {
 			String zhishucode  = zhishuitem.getValue();
-			BanKuai dapanitem = allbksks.getBanKuai(zhishucode, this.showdate, StockGivenPeriodDataItem.WEEK);
+			BanKuai dapanitem = allbksks.getBanKuai(zhishucode, this.showdate, TDXNodeGivenPeriodDataItem.WEEK);
 			this.dapanzhishu.add(dapanitem);
 		}
 		
@@ -459,11 +458,11 @@ class DaPanTableModel extends AbstractTableModel
                 value = zhishuname;
                 break;
             case 2:
-            	NodeXPeriodDataBasic zhishunodexdate = dapanitem.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+            	NodeXPeriodDataBasic zhishunodexdate = dapanitem.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
                 value = zhishunodexdate.getChengJiaoEr(this.showdate, 0);
                 break;
             case 3:
-            	zhishunodexdate = dapanitem.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+            	zhishunodexdate = dapanitem.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
                 value = zhishunodexdate.getChenJiaoErZhanBi(showdate, 0);
                 break;
 	    	}

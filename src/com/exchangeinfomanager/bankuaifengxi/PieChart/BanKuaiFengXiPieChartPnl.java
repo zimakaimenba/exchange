@@ -26,9 +26,11 @@ import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.google.common.io.Files;
 
 public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements BarChartPanelDataChangedListener
@@ -60,7 +62,7 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements BarChar
 	protected PiePlot pieplot;
 	protected Comparable lasthightlightKey = null; //用于客户设置突出的section
 	protected DefaultPieDataset piechartdataset;
-	protected BanKuai curdisplaybk;
+	protected TDXNodes curdisplaybk;
 //	private SystemConfigration sysconfig;
 	
 	@SuppressWarnings("deprecation")

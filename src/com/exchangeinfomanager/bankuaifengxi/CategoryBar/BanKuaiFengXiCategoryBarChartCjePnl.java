@@ -50,18 +50,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.DaPan;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
+
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
-import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBarChartPnl 
@@ -84,18 +84,18 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 //		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
 //		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelGenerator(labelgenerator);
 	}
-	public void updatedDate (BkChanYeLianTreeNode node, LocalDate date, int difference,String period)
+	public void updatedDate (TDXNodes node, LocalDate date, int difference,String period)
 	{
-		if(period.equals(StockGivenPeriodDataItem.DAY))
+		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
 			date = date.plus(difference,ChronoUnit.DAYS);
-		else if(period.equals(StockGivenPeriodDataItem.WEEK))
+		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 			date = date.plus(difference,ChronoUnit.WEEKS);
-		else if(period.equals(StockGivenPeriodDataItem.MONTH))
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
 			date = date.plus(difference,ChronoUnit.MONTHS);
 			
 		setBanKuaiJiaoYiEr(node,date,period);
 	}
-	public void updatedDate (BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate,String period)
+	public void updatedDate (TDXNodes node, LocalDate startdate, LocalDate enddate,String period)
 	{
 		this.setBanKuaiJiaoYiEr (node,startdate,enddate,period);
 	}
@@ -104,7 +104,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 板块按周相对于某板块的交易额
 	 */
-	public void setBanKuaiJiaoYiEr (BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period)
+	public void setBanKuaiJiaoYiEr (TDXNodes node, LocalDate displayedenddate1,String period)
 	{
 		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
@@ -114,7 +114,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	public void setBanKuaiJiaoYiEr (BkChanYeLianTreeNode node,LocalDate startdate,LocalDate enddate,String period)
+	public void setBanKuaiJiaoYiEr (TDXNodes node,LocalDate startdate,LocalDate enddate,String period)
 	{
 		this.curdisplayednode = node;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
@@ -125,7 +125,12 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 */
 	private void displayDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period) 
 	{
-		DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
+		DaPan dapan;
+		if(super.curdisplayednode.getType() == BkChanYeLianTreeNode.BKGEGU) {
+			BanKuai bk = ((StockOfBanKuai)super.curdisplayednode).getBanKuai();
+			dapan = (DaPan)bk.getRoot();
+		} else
+			dapan = (DaPan)(this.curdisplayednode.getRoot());
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
@@ -157,11 +162,11 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				} 
 			}
 			
-			if(period.equals(StockGivenPeriodDataItem.WEEK))
+			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(StockGivenPeriodDataItem.DAY))
+			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
 				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(StockGivenPeriodDataItem.MONTH))
+			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
@@ -176,7 +181,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 //	{
 //		List<QueKou> qklist = new ArrayList<QueKou> ();
 //		
-//		NodeXPeriodDataBasic nodexdata = super.curdisplayednode.getNodeXPeroidData(StockGivenPeriodDataItem.DAY);
+//		NodeXPeriodDataBasic nodexdata = super.curdisplayednode.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
 //		OHLCSeries nodeohlc = nodexdata.getOHLCData();
 //		for(int j=1;j < ohlcSeries.getItemCount();j++) {
 //			
@@ -300,6 +305,9 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 */
 	private void xiuShiGuiAfterDispalyDate (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, String period)
 	{
+		if(highestHigh == 0.0)
+			return;
+		
 		CustomRendererForCje cjerender = (CustomRendererForCje) super.plot.getRenderer(); 
 		cjerender.setDisplayNode(this.curdisplayednode);
 		cjerender.setDisplayNodeXPeriod (nodexdata);
@@ -420,11 +428,13 @@ class BkfxItemLabelGeneratorForCje extends BkfxItemLabelGenerator
 		String selected =  dataset.getColumnKey(column).toString();
 		
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-//    	if(selecteddate.equals(LocalDate.parse("2018-11-16"))) {
-//    		String result2 = "";
-//    	}
-    	
-		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
+
+    	Integer maxweek;
+    	try{
+    		maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
+    	} catch ( java.lang.NullPointerException e) {
+    		return null;
+    	}
 		
 		String result = "";
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
@@ -470,11 +480,17 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
     	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
     	percentFormat.setMinimumFractionDigits(4);
 		
-		Integer maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);//显示成交额是多少周最大
-		Double changerate = nodexdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(selecteddate,0);//成交额大盘变化贡献率
+    	Integer maxwk;
+    	try{
+    		maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);//显示成交额是多少周最大
+    	} catch (java.lang.NullPointerException e) {
+    		return null;
+    	}
+		DaPan dapan = (DaPan)  super.node.getRoot();
+		Double changerate = nodexdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(dapan,selecteddate,0);//成交额大盘变化贡献率
 		
 		Double liutongshizhi = null; String liutongshizhidanwei = null;
-		if(super.node.getType() == BanKuaiAndStockBasic.TDXGG) {
+		if(super.node.getType() == BkChanYeLianTreeNode.TDXGG) {
 			liutongshizhi = ((StockNodeXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(selecteddate, 0);
 			if(liutongshizhi == null) {
 				liutongshizhidanwei = "";
@@ -507,7 +523,7 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 				 li4.appendText("成交额大盘变化贡献率NULL" );
 			 }
 			 
-			 if(super.node.getType() == BanKuaiAndStockBasic.TDXGG) {
+			 if(super.node.getType() == BkChanYeLianTreeNode.TDXGG) {
 				 org.jsoup.nodes.Element li5 = dl.appendElement("li");
 				 try{
 					 li5.appendText("流通周平均市值" + decimalformate.format(liutongshizhi) + liutongshizhidanwei );

@@ -31,9 +31,9 @@ import javax.swing.text.Element;
 
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
+
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
+import com.exchangeinfomanager.nodes.Stock;
 import com.google.common.collect.Multimap;
 
 

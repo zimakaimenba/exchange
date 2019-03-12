@@ -11,7 +11,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JList;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 import javax.swing.JScrollPane;
 

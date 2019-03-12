@@ -32,13 +32,13 @@ import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+
 import com.exchangeinfomanager.commonlib.MultilineTableCell;
 import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.github.cjwizard.WizardPage;
 import com.github.cjwizard.WizardSettings;
@@ -79,7 +79,7 @@ public class GeGuWeeklyFengXi extends WeeklyFenXiWizardPage
 		super(title,description,displaynode2,selectdate2,fxmlhandler);
 		
 		//确保只有个股才用这个类，板块和大盘不可以用。
-		if(displaynode.getType() == BanKuaiAndStockBasic.DAPAN /*|| displaynode.getType() == BanKuaiAndStockBasic.TDXBK*/)
+		if(displaynode.getType() == BkChanYeLianTreeNode.DAPAN /*|| displaynode.getType() == BkChanYeLianTreeNode.TDXBK*/)
 			return;
 		
 		initializGui ();

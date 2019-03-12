@@ -10,16 +10,13 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.HanYuPinYing;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai.BanKuaiNodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.HanYuPinYing;
+import com.exchangeinfomanager.nodes.nodexdata.BanKuaiNodeXPeriodData;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+
 
 public class BanKuaiInfoTableModel extends DefaultTableModel 
 {
@@ -33,19 +30,18 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	LocalDate showzhbiwknum;
 	private String curperiod;
 	private int difference;
-//	private ArrayList<ExportCondition> initialzedcon;
 	
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTableModel.class);
 	
 	/*
 	 * 
 	 */
-	public void refresh  (LocalDate curselectdate,int difference2, String period, ArrayList<ExportCondition> initializeconditon1)
+	public void refresh  (LocalDate curselectdate,int difference2, String period)
 	{
 		this.showzhbiwknum = curselectdate;
 		this.difference = difference2;
 		this.curperiod = period;
-//		this.initialzedcon = initializeconditon1;
+
 		try{
 			if(entryList != null) //按成交额排序
 				Collections.sort(entryList, new NodeChenJiaoErComparator(showzhbiwknum,difference,curperiod) );
@@ -94,13 +90,19 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    		return null;
 	    	
 	    	BanKuai bankuai = null;
+	    	DaPan dapan = null;
 	    	try {
 	    		bankuai = entryList.get( rowIndex );
+	    		dapan = (DaPan)bankuai.getRoot();
 	    	} catch (java.lang.IndexOutOfBoundsException e) {
 	    		e.printStackTrace();
 	    		return null;
 	    	}
 	    	NodeXPeriodDataBasic bkxdata = (BanKuaiNodeXPeriodData)bankuai.getNodeXPeroidData(this.curperiod);
+	    	logger.debug(bankuai.getMyOwnName() + bankuai.getMyOwnCode() );
+	    	
+//	    	if(bankuai.getMyOwnCode().equals("159932"))
+//	    		logger.debug("可能错误");
 	    	
 	    	Object value = "??";
 	    	switch (columnIndex) {
@@ -131,7 +133,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	
             	break;
             case 4:
-            	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(showzhbiwknum,0);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
+            	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(dapan,showzhbiwknum,0);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
             	value = cjegrowthrate;
             	
             	cjegrowthrate = null;
@@ -141,6 +143,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	break;
             case 5:
             	Integer cjemaxwk = bkxdata.getChenJiaoErMaxWeekOfSuperBanKuai(showzhbiwknum,0);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
+            	
             	value = cjemaxwk;
             	
             	cjemaxwk = null;
@@ -152,6 +155,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	if(bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) {
             		Integer chengjiaoerpaiming = this.entryList.indexOf(bankuai) + 1;
             		value = chengjiaoerpaiming;
+            		
             	} else 
             		value = -5000;
             	

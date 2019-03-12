@@ -29,11 +29,6 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
@@ -41,6 +36,10 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
+import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxDataValueListener
@@ -233,10 +232,10 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        Color foreground, background = Color.white;
 
 	        if( col == 1 && !bktype.equals(BanKuai.NOGGWITHSELFCJL) ) {
-	        	TreeRelated tmptreerelated = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BanKuaiAndStockBasic.TDXBK).getNodeTreerelated();
+	        	NodesTreeRelated tmptreerelated = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK).getNodeTreeRelated();
 //	        	TreeRelated tmptreerelated = bankuai.getNodeTreerelated (); 
-	        	Integer patchfilestocknum = ((BanKuai.BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (curdate);
-	        	Boolean selfisin = ((BanKuai.BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (curdate);
+	        	Integer patchfilestocknum = ((BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (curdate);
+	        	Boolean selfisin = ((BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (curdate);
 	        	 
 	        	if(patchfilestocknum != null && patchfilestocknum > 0 )
 		        	background = Color.ORANGE;

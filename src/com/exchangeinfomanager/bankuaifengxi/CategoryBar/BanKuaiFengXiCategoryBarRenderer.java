@@ -18,10 +18,10 @@ import org.jfree.chart.renderer.category.DefaultCategoryItemRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.TextAnchor;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 
 public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 {
@@ -51,7 +51,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
     protected int shouldcolumnlast = -2;
     protected int displayedmaxwklevel = 4;
     private String barCharType;
-	protected BkChanYeLianTreeNode node;
+	protected TDXNodes node;
 	protected CategoryDataset chartdataset;
 	protected NodeXPeriodDataBasic nodexdata;
 	protected Color displayedcolumncolorindex;
@@ -81,7 +81,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	/*
 	 * 
 	 */
-    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    public void setDisplayNode (TDXNodes curdisplayednode) 
     {
     	this.node = curdisplayednode;
     	BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();

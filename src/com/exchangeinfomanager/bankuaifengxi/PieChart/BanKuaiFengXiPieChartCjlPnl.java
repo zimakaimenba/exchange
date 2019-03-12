@@ -67,16 +67,15 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 import org.w3c.dom.events.MouseEvent;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.ChenJiaoZhanBiInGivenPeriod;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
@@ -91,13 +90,13 @@ public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl implem
 		super ();
 	}
 	
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference, String period)
+	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period)
 	{
-		if(period.equals(ChenJiaoZhanBiInGivenPeriod.DAY))
+		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
 			date = date.plus(difference,ChronoUnit.DAYS);
-		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.WEEK))
+		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 			date = date.plus(difference,ChronoUnit.WEEKS);
-		else if(period.equals(ChenJiaoZhanBiInGivenPeriod.MONTH))
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
 			date = date.plus(difference,ChronoUnit.MONTHS);
 		
 		setBanKuaiCjeNeededDisplay((BanKuai)node,10,date,period);
@@ -121,7 +120,7 @@ public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl implem
     		
     		//找到对应周的数据
     		NodeXPeriodDataBasic stockxdataforbk = tmpstock.getNodeXPeroidData(period);
-    		ChenJiaoZhanBiInGivenPeriod tmprecord = stockxdataforbk.getSpecficRecord(weeknumber,0);
+    		TDXNodeGivenPeriodDataItem tmprecord = stockxdataforbk.getSpecficRecord(weeknumber,0);
     		if(tmprecord != null) {
     			double cje = tmprecord.getMyownchengjiaoliang();
        	    	if(stockname != null)
@@ -134,6 +133,12 @@ public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl implem
     	pieplot.setDataset(piechartdataset);
 //		createCjeDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
 		setPanelTitle ("成交额占比");
+		
+	}
+
+	@Override
+	public void updatedDate(TDXNodes node, LocalDate startdate, LocalDate enddate, String period) {
+		// TODO Auto-generated method stub
 		
 	}
 

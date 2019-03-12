@@ -27,7 +27,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+
 import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXiXmlHandler;
 import com.exchangeinfomanager.bankuaifengxi.ai.ZdgzItem;
 import com.exchangeinfomanager.database.ConnectDataBase;

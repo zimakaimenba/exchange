@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.nodes.operations;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -12,9 +12,9 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
-
-
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;;
 
 public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer 
 {
@@ -50,10 +50,10 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         Integer patchfilestocknum = 0; Boolean selfisin = false;
 	         if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
 	        	 LocalDate diswk = ((BanKuaiAndStockTree)tree).getCurrentDisplayedWk ();
-	        	 TreeRelated tmptreerelated = ((BkChanYeLianTreeNode)value).getNodeTreerelated (); 
-	        	 patchfilestocknum = ((BanKuai.BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (diswk);
+	        	 NodesTreeRelated tmptreerelated = ((BkChanYeLianTreeNode)value).getNodeTreeRelated (); 
+	        	 patchfilestocknum = ((BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (diswk);
 	        	 
-	        	 selfisin = ((BanKuai.BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (diswk);
+	        	 selfisin = ((BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (diswk);
 	         }
 	         
 	         if( patchfilestocknum != null  && patchfilestocknum > 0) {

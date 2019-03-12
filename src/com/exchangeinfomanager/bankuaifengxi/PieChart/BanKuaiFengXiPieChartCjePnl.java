@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
@@ -67,16 +68,14 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 import org.w3c.dom.events.MouseEvent;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
-import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
@@ -94,28 +93,29 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl implem
 		this.pianyiliang = pianyiliang;
 	}
 	
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference,String period)
+	public void updatedDate(TDXNodes node, LocalDate date, int difference,String period)
 	{
-		if(period.equals(StockGivenPeriodDataItem.DAY))
+		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
 			date = date.plus(difference+pianyiliang,ChronoUnit.DAYS);
-		else if(period.equals(StockGivenPeriodDataItem.WEEK))
+		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 			date = date.plus(difference+this.pianyiliang,ChronoUnit.WEEKS);
-		else if(period.equals(StockGivenPeriodDataItem.MONTH))
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
 			date = date.plus(difference+this.pianyiliang,ChronoUnit.MONTHS);
 		
-		setBanKuaiCjeNeededDisplay((BanKuai)node,10,date,period);
+		setBanKuaiCjeNeededDisplay(node,10,date,period);
 	}
 	@Override
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate, String period) {
+	public void updatedDate(TDXNodes node, LocalDate startdate, LocalDate enddate, String period) {
 		// TODO Auto-generated method stub
 	}
 	
-	public void setBanKuaiCjeNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber, String period) 
+	public void setBanKuaiCjeNeededDisplay (TDXNodes bankuai,int weightgate,LocalDate weeknumber, String period) 
 	{
 		this.curdisplaybk = bankuai;
 		this.displayedweeknumber = weeknumber;
 		
-		ArrayList<StockOfBanKuai> tmpallbkge = bankuai.getAllCurrentBanKuaiGeGu();
+//		ArrayList<StockOfBanKuai> tmpallbkge = ((BanKuai)bankuai).getAllCurrentBanKuaiGeGu();
+		Set<StockOfBanKuai> tmpallbkge = ((BanKuai)bankuai).getSpecificPeriodBanKuaiGeGu (weeknumber,0,period);
 		
 //		piechartdataset = new DefaultPieDataset();
 		piechartdataset.clear();

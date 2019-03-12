@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.nodes.nodexdata;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,9 +14,9 @@ import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
-public class StockGivenPeriodDataItem extends OHLCItem
+public class TDXNodeGivenPeriodDataItem extends OHLCItem
 {											  
-	public StockGivenPeriodDataItem(String nodecode,String datatype,RegularTimePeriod period,
+	public TDXNodeGivenPeriodDataItem(String nodecode,String datatype,RegularTimePeriod period,
 			double open, double high, double low, double close,double myamount,double myvolumne,
 			Double huanshoulv,Double zongshizhi,Double liutongshizhi
 			) 
@@ -31,9 +31,9 @@ public class StockGivenPeriodDataItem extends OHLCItem
 		this.zongshizhi = zongshizhi;
 		this.liutongshizhi = liutongshizhi;
 		
-		if( datatype.toUpperCase().equals(StockGivenPeriodDataItem.DAY)
-				|| datatype.toUpperCase().equals(StockGivenPeriodDataItem.WEEK)
-				|| datatype.toUpperCase().equals(StockGivenPeriodDataItem.SIXTYMINUTES))
+		if( datatype.toUpperCase().equals(TDXNodeGivenPeriodDataItem.DAY)
+				|| datatype.toUpperCase().equals(TDXNodeGivenPeriodDataItem.WEEK)
+				|| datatype.toUpperCase().equals(TDXNodeGivenPeriodDataItem.SIXTYMINUTES))
 			this.dataperiodtype = datatype;
 		else
 			this.dataperiodtype = null;

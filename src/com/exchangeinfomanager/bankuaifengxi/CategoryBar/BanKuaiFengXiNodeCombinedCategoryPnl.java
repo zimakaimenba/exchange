@@ -25,8 +25,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
@@ -37,6 +36,8 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeLargePeriodChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
 
 public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel 
 		implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener,PropertyChangeListener
@@ -87,7 +88,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	/*
 	 * 
 	 */
-	public BkChanYeLianTreeNode getCurDisplayedNode ()
+	public TDXNodes getCurDisplayedNode ()
 	{
 		return this.curdisplayednode;
 	}
@@ -109,19 +110,19 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	
 	}
 
-	private BkChanYeLianTreeNode curdisplayednode;
+	private TDXNodes curdisplayednode;
 	private BanKuaiFengXiCategoryBarChartPnl cjelargepnl;
 	private BanKuaiFengXiCategoryBarChartPnl cjezblargepnl;
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
 	
 	@Override
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference, String period) 
+	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period) 
 	{
 		this.curdisplayednode = node;
 		cjelargepnl.updatedDate(node, date, difference, period);
 		cjezblargepnl.updatedDate(node, date, difference, period);
 	}
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate startdate,LocalDate enddate,String period) 
+	public void updatedDate(TDXNodes node, LocalDate startdate,LocalDate enddate,String period) 
 	{
 		this.curdisplayednode = node;
 		cjelargepnl.updatedDate(node, startdate,enddate, period);

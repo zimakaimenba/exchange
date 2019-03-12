@@ -15,15 +15,15 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.HanYuPinYing;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.HanYuPinYing;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.nodexdata.StockOfBanKuaiNodeXPeriodData;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -33,18 +33,15 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		super ();
 	}
 	
-//	String[] jtableTitleStrings = { "代码", "名称","权重","板块成交额贡献","板块占比增长率","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
-	String[] jtableTitleStrings = { "代码", "名称","权重","高级排序排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
-	BanKuai curbk;
+	private String[] jtableTitleStrings = { "代码", "名称","权重","高级排序排名","大盘成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
+	private BanKuai curbk;
 	private ArrayList<StockOfBanKuai> entryList;
 	private LocalDate showwknum;
-//	private int curdisplayrow = -1;
-//	private Stock curdisplaystock;
-//	private HashSet<String> stockcodeinparsefile;
+
 	private Double showcjemin = 1000000000000.0;
 	private Double showcjemax = 1000000000000.0;
 	private Integer cjemaxwk = 10000000;
-//	private Boolean showparsedfile = false;
+
 	private Integer cjezbdpmaxwk = 10000000;
 	private Integer cjezbbkmaxwk = 10000000;
 	private String period;
@@ -155,6 +152,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		    NodeXPeriodDataBasic stockxdataforbk = curdisplaystockofbankuai.getNodeXPeroidData(period);
 
 		    Stock stock = curdisplaystockofbankuai.getStock();
+		    DaPan dapan = (DaPan)stock.getRoot();
 		    NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
 
 		    Object value = "??";
@@ -198,8 +196,8 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	stockxdata = null;
             	
             	break;
-            case 4: // "板块成交额贡献",
-            	Double cjechangegrowthrate = ((StockOfBanKuai.StockOfBanKuaiNodeXPeriodData)stockxdataforbk).getChenJiaoErChangeGrowthRateOfSuperBanKuai(showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
+            case 4: // "大盘成交额贡献",
+            	Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(dapan,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
             	value = cjechangegrowthrate;
             	
 //            	cjechangegrowthrate = null;

@@ -36,14 +36,12 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.DaPan;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,7 +75,7 @@ public abstract  class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel implem
 	private Integer curselectbarindex;
 	
     @SuppressWarnings("deprecation")
-	public BanKuaiFengXiBarLargePeriodChartPnl(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
+	public BanKuaiFengXiBarLargePeriodChartPnl(TDXNodes node, LocalDate displayedenddate1, String period) 
     {
     	this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -152,7 +150,7 @@ public abstract  class BanKuaiFengXiBarLargePeriodChartPnl extends JPanel implem
     {
     	((CustomXYBarRenderer)mainPlot.getRenderer()).setHighLightMaxWeekNumber(maxwk);
     }
-    private XYDataset getDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1, String period) 
+    private XYDataset getDataset(TDXNodes node, LocalDate displayedenddate1, String period) 
     {
     	this.curdisplayednode = node;
 		TimeSeriesCollection dataset = new TimeSeriesCollection();

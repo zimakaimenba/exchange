@@ -18,7 +18,6 @@ import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportOpts.MoneyFlowRecordsProcessorZhaoShang;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountPuTong;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 

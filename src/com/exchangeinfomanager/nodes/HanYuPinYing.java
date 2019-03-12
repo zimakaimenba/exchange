@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.nodes;
 
 import org.apache.log4j.Logger;
 

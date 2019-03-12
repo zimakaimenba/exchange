@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.nodes.operations;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;

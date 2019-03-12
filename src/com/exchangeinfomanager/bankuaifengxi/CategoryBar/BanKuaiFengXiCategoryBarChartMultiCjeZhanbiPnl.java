@@ -23,13 +23,12 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.Week;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.DaPan;
-import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 
 public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl
 {
@@ -71,11 +70,11 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 	 */
 	public void updatedMultiDate (List<BkChanYeLianTreeNode> nodelist, LocalDate date, int difference, String period)
 	{
-		if(period.equals(StockGivenPeriodDataItem.DAY))
+		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
 			date = date.plus(difference,ChronoUnit.DAYS);
-		else if(period.equals(StockGivenPeriodDataItem.WEEK))
+		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 			date = date.plus(difference,ChronoUnit.WEEKS);
-		else if(period.equals(StockGivenPeriodDataItem.MONTH))
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
 			date = date.plus(difference,ChronoUnit.MONTHS);
 			
 //		setNodeCjeZhanBi(node,date,period);
@@ -93,9 +92,9 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		barchartdataset.clear();
 		
 		for(BkChanYeLianTreeNode node : nodelist) {
-			super.curdisplayednode = node;
+			super.curdisplayednode = (TDXNodes) node;
 			super.globeperiod = period;
-			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+			NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(period);
 			
 			displayDataToGui (nodexdata,startdate,enddate,period);
 		}
@@ -133,11 +132,11 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 				} 
 			}
 			
-			if(period.equals(StockGivenPeriodDataItem.WEEK))
+			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(StockGivenPeriodDataItem.DAY))
+			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
 				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(StockGivenPeriodDataItem.MONTH))
+			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
@@ -171,12 +170,12 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		
 	}
 	@Override
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate date, int difference, String period) {
+	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period) {
 		// TODO Auto-generated method stub
 		
 	}
 	@Override
-	public void updatedDate(BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate, String period) {
+	public void updatedDate(TDXNodes node, LocalDate startdate, LocalDate enddate, String period) {
 		// TODO Auto-generated method stub
 		
 	}

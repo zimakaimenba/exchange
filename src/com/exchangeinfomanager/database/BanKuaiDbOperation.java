@@ -68,19 +68,18 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.ZhongDianGuanZhu;
-import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
-import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
@@ -117,22 +116,12 @@ public class BanKuaiDbOperation
 	{
 		connectdb = ConnectDataBase.getInstance();
 		sysconfig = SystemConfigration.getInstance();
-//		initializeDb ();
-//		initialzieSysconf ();
 	}
 	
 	private  ConnectDataBase connectdb;
 	private  SystemConfigration sysconfig;
 	private static Logger logger = Logger.getLogger(BanKuaiDbOperation.class);
 
-//	private void initializeDb() 
-//	{
-//		
-//	}
-//	private void initialzieSysconf ()
-//	{
-//		
-//	}
 	/*
 	 * 
 	 */
@@ -295,7 +284,7 @@ public class BanKuaiDbOperation
 			}
 		}
 		
-		BkChanYeLianTreeNode.NodeJiBenMian nodejbm = tmpnode.getNodeJiBenMian();
+		NodeJiBenMian nodejbm = tmpnode.getNodeJiBenMian();
 		
 		try {
 			java.util.Date gainiantishidate = rs.getDate("概念时间");
@@ -2836,7 +2825,7 @@ public class BanKuaiDbOperation
 		return actiontables;
 	}
 	/*
-	 * 找出某个时间点 行业/概念/风格/指数 通达信某个板块的所有个股及权重,不找成交额
+	 * 找出某个时间点 行业/概念/风格/指数 通达信某个板块的所有个股及权重,不找成交额,存放在系统的两个树的BanKuaiAndStockTree,来反应板块和个股的关系。
 	 */
 	public BanKuai getTDXBanKuaiGeGuOfHyGnFg(BanKuai currentbk,LocalDate selecteddatestart , LocalDate selecteddateend, BanKuaiAndStockTree treeallstocks)
 	{
@@ -2898,7 +2887,7 @@ public class BanKuaiDbOperation
 					tmpstockname = "";
 				}
 				
-				Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BanKuaiAndStockBasic.TDXGG);
+				Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BkChanYeLianTreeNode.TDXGG);
 				if(tmpstock != null) {
 					StockOfBanKuai bkofst = new StockOfBanKuai(currentbk,tmpstock);
 					Integer weight = rs1.getInt("股票权重");
@@ -3008,9 +2997,9 @@ public class BanKuaiDbOperation
 	 */
 	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
-		if(period.equals(StockGivenPeriodDataItem.DAY)) //调用日线查询函数
+		if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
-		else if(period.equals(StockGivenPeriodDataItem.MONTH)) //调用月线查询函数
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
 		NodeXPeriodDataBasic nodewkperioddata = bankuai.getNodeXPeroidData(period);
@@ -3097,7 +3086,7 @@ public class BanKuaiDbOperation
 				Double dapancjl = rs.getDouble("大盘周交易量");
 				int exchangedaysnumber = rs.getInt("JILUTIAOSHU");
 				
-				StockGivenPeriodDataItem bkperiodrecord = new StockGivenPeriodDataItem( bkcode, StockGivenPeriodDataItem.WEEK,
+				TDXNodeGivenPeriodDataItem bkperiodrecord = new TDXNodeGivenPeriodDataItem( bkcode, TDXNodeGivenPeriodDataItem.WEEK,
 						wknum, 0.0, 0.0,  0.0,  0.0, bankuaicje, bankuaicjl,null,null,null);
 				
 				bkperiodrecord.setRecordsDayofEndofWeek(lastdayofweek);
@@ -3144,12 +3133,12 @@ public class BanKuaiDbOperation
 	 */
 	public StockOfBanKuai getGeGuZhanBiOfBanKuai(BanKuai bankuai, StockOfBanKuai stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
-		if(period.equals(StockGivenPeriodDataItem.DAY)) //调用日线查询函数
+		if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
-		else if(period.equals(StockGivenPeriodDataItem.MONTH)) //调用月线查询函数
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
-		NodeXPeriodDataBasic nodedayperioddata = bankuai.getStockXPeriodDataForABanKuai(stock.getMyOwnCode(),period);
+		NodeXPeriodDataBasic nodedayperioddata = bankuai.getBanKuaiGeGu(stock.getMyOwnCode()).getNodeXPeroidData(period);
 		
 		String stockcode = stock.getMyOwnCode();
 		
@@ -3228,7 +3217,7 @@ public class BanKuaiDbOperation
 				java.sql.Date  lastdayofweek = rsfg.getDate("EndOfWeekDate");
 				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 				
-				StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( stockcode, StockGivenPeriodDataItem.WEEK, recordwk, 
+				TDXNodeGivenPeriodDataItem stokofbkrecord = new TDXNodeGivenPeriodDataItem( stockcode, TDXNodeGivenPeriodDataItem.WEEK, recordwk, 
 						  0.0,  0.0,  0.0,  0.0, stcokcje, stcokcjl,null,null,null);
 				
 				stokofbkrecord.setRecordsDayofEndofWeek(lastdayofweek);
@@ -3270,9 +3259,9 @@ public class BanKuaiDbOperation
 	 */
 	public Stock getStockZhanBi(Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{	
-		if(period.equals(StockGivenPeriodDataItem.DAY)) //调用日线查询函数
+		if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
-		else if(period.equals(StockGivenPeriodDataItem.MONTH)) //调用月线查询函数
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
 		StockNodeXPeriodData nodewkperioddata = (StockNodeXPeriodData)stock.getNodeXPeroidData(period);
@@ -3389,7 +3378,7 @@ public class BanKuaiDbOperation
 				double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅");
 				int exchengdaysnumber = rs.getInt("JILUTIAOSHU");
 
-				StockGivenPeriodDataItem stokrecord = new StockGivenPeriodDataItem( stockcode, period, recordwk, 
+				TDXNodeGivenPeriodDataItem stokrecord = new TDXNodeGivenPeriodDataItem( stockcode, period, recordwk, 
 						  0.0,  0.0,  0.0,  0.0, bankuaicje, bankuaicjl,huanshoulv,pingjunzongshizhi,pingjunliutongshizhi);
 				
 				stokrecord.setRecordsDayofEndofWeek(lastdayofweek);
@@ -3488,7 +3477,7 @@ public class BanKuaiDbOperation
 				String cjl = linevalue[5];
 				String cje = linevalue[6];
 				 
-				 StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( stockcode, period, recordwk, 
+				 TDXNodeGivenPeriodDataItem stokofbkrecord = new TDXNodeGivenPeriodDataItem( stockcode, period, recordwk, 
 						 Double.parseDouble(open),  Double.parseDouble(high),  Double.parseDouble(low),  Double.parseDouble(close), Double.parseDouble(cje), Double.parseDouble(cjl),null,null,null);
 				 
 				 stokofbkrecord.setRecordsDayofEndofWeek(sqldate);
@@ -3507,19 +3496,19 @@ public class BanKuaiDbOperation
 	 */
 	public BanKuai getBanKuaiKXianZouShi(BanKuai bk, LocalDate nodestartday, LocalDate nodeendday, String period) 
 	{//本函数初始是开发为日周期的K线数据，
-		if(period.equals(StockGivenPeriodDataItem.WEEK)) //调用周线查询函数
+		if(period.equals(TDXNodeGivenPeriodDataItem.WEEK)) //调用周线查询函数
 			; 
-		else if(period.equals(StockGivenPeriodDataItem.MONTH)) //调用月线查询函数
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
 		HashMap<String, String> actiontables;
 		String searchtable = null;
-		if(bk.getType() == BanKuaiAndStockBasic.TDXBK) {
+		if(bk.getType() == BkChanYeLianTreeNode.TDXBK) {
 			actiontables = this.getActionRelatedTables ((BanKuai)bk,null);
 			searchtable = actiontables.get("板块每日交易量表");
 		} 
 //		else
-//		if(bk.getType() == BanKuaiAndStockBasic.TDXGG) {
+//		if(bk.getType() == BkChanYeLianTreeNode.TDXGG) {
 //			actiontables = this.getActionRelatedTables (null,bk.getMyOwnCode());
 //			searchtable = actiontables.get("股票每日交易量表");
 //		}
@@ -3554,7 +3543,7 @@ public class BanKuaiDbOperation
 				 java.sql.Date actiondate = rsfx.getDate("交易日期");
 				 org.jfree.data.time.Day recordwk = new org.jfree.data.time.Day (actiondate);
 				 
-				 StockGivenPeriodDataItem stokofbkrecord = new StockGivenPeriodDataItem( nodecode, period, recordwk, 
+				 TDXNodeGivenPeriodDataItem stokofbkrecord = new TDXNodeGivenPeriodDataItem( nodecode, period, recordwk, 
 						 open,  high,  low,  close, cje, cjl,null,null,null);
 				 
 				 stokofbkrecord.setRecordsDayofEndofWeek(actiondate);
@@ -4068,7 +4057,7 @@ public class BanKuaiDbOperation
 		public BkChanYeLianTreeNode getZdgzMrmcZdgzYingKuiFromDB (BkChanYeLianTreeNode stockbasicinfo)
 		{
 			String sqlquerystat;
-			if(stockbasicinfo.getType() == BanKuaiAndStockBasic.TDXGG || stockbasicinfo.getType() == BanKuaiAndStockBasic.BKGEGU) 
+			if(stockbasicinfo.getType() == BkChanYeLianTreeNode.TDXGG || stockbasicinfo.getType() == BkChanYeLianTreeNode.BKGEGU) 
 				sqlquerystat = getZdgzMrmcYingKuiSQLForStock (stockbasicinfo);
 			else //板块和个股是不一样的，板块没有买入卖出信息
 				sqlquerystat = getZdgzMrmcYingKuiSQLForBanKuai (stockbasicinfo);
@@ -6517,81 +6506,81 @@ public class BanKuaiDbOperation
 			return namelist;
 		}
 		/*
-		 * 
+		 * 缺口，原来是要放在数据库里面的，现在发现不合适，还是在程序运行时候实时统计
 		 */
-		public List<QueKou> getNodeQueKouInfo(String nodecode) 
-		{
-			List<QueKou> qklist = new ArrayList<QueKou> ();
-			
-			CachedRowSetImpl rspd = null;
-			try {
-				String sqlquerystat = "SELECT * FROM 缺口统计表 " 
-						   + " WHERE 股票代码 = '" + nodecode + "'"  
-						   + " ISNULL(回补日期) "
-						  ;
-	
-			    	logger.debug(sqlquerystat);
-			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
-			    	
-			        while(rspd.next())  {
-			        	Integer dbid = rspd.getInt("ID");
-			        	Double qkup =  rspd.getDouble("缺口上限");
-			        	Double qkdown =  rspd.getDouble("缺口下限");
-			        	Boolean type = rspd.getBoolean("缺口类型");
-			        	java.sql.Date qkdate = rspd.getDate("产生日期");
-			        	QueKou qk = new QueKou (nodecode,qkdate.toLocalDate(),qkdown,qkup,type);
-			        	qk.setDbId(dbid);
-			        	
-			        	qklist.add(qk);
-			        }
-			} catch(java.lang.NullPointerException e){ 
-			    	e.printStackTrace();
-			} catch (SQLException e) {
-			    	e.printStackTrace();
-			} catch(Exception e){
-			    	e.printStackTrace();
-			} finally {
-			    	if(rspd != null)
-						try {
-							rspd.close();
-							rspd = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-			}
-
-			return qklist;
-		}
+//		public List<QueKou> getNodeQueKouInfo(String nodecode) 
+//		{
+//			List<QueKou> qklist = new ArrayList<QueKou> ();
+//			
+//			CachedRowSetImpl rspd = null;
+//			try {
+//				String sqlquerystat = "SELECT * FROM 缺口统计表 " 
+//						   + " WHERE 股票代码 = '" + nodecode + "'"  
+//						   + " ISNULL(回补日期) "
+//						  ;
+//	
+//			    	logger.debug(sqlquerystat);
+//			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+//			    	
+//			        while(rspd.next())  {
+//			        	Integer dbid = rspd.getInt("ID");
+//			        	Double qkup =  rspd.getDouble("缺口上限");
+//			        	Double qkdown =  rspd.getDouble("缺口下限");
+//			        	Boolean type = rspd.getBoolean("缺口类型");
+//			        	java.sql.Date qkdate = rspd.getDate("产生日期");
+//			        	QueKou qk = new QueKou (nodecode,qkdate.toLocalDate(),qkdown,qkup,type);
+////			        	qk.setDbId(dbid);
+//			        	
+//			        	qklist.add(qk);
+//			        }
+//			} catch(java.lang.NullPointerException e){ 
+//			    	e.printStackTrace();
+//			} catch (SQLException e) {
+//			    	e.printStackTrace();
+//			} catch(Exception e){
+//			    	e.printStackTrace();
+//			} finally {
+//			    	if(rspd != null)
+//						try {
+//							rspd.close();
+//							rspd = null;
+//						} catch (SQLException e) {
+//							e.printStackTrace();
+//						}
+//			}
+//
+//			return qklist;
+//		}
 		/*
 		 * 
 		 */
-		public void updateNodeQueKouInfo (List<QueKou> qklist )
-		{
-			for(QueKou tmpqk : qklist) {
-				if(tmpqk.shouldUpdatedInDb() ) {
-					Double qkup = tmpqk.getQueKouUp();  
-		        	Double qkdown =  tmpqk.getQueKouDown();
-		        	Boolean type = tmpqk.getQueKouLeiXing();
-		        	LocalDate qkdate = tmpqk.getQueKouDate();
-		        	LocalDate huidate = tmpqk.getQueKouHuiBuDate();
-		        	
-		        	int quhubudays = 0;
-		        	try {
-		        		Period diff = Period.between(qkdate, huidate);
-		        		quhubudays = diff.getDays();
-		        	} catch (java.lang.NullPointerException e) {
-		        		
-		        	}
-		    		if(quhubudays >= 15) { //updated
-		    			
-		    		}
-		    		else { //delete
-		    			
-		    		}
-				}
-				
-			}
-		}
+//		public void updateNodeQueKouInfo (List<QueKou> qklist )
+//		{
+//			for(QueKou tmpqk : qklist) {
+//				if(tmpqk.shouldUpdatedInDb() ) {
+//					Double qkup = tmpqk.getQueKouUp();  
+//		        	Double qkdown =  tmpqk.getQueKouDown();
+//		        	Boolean type = tmpqk.getQueKouLeiXing();
+//		        	LocalDate qkdate = tmpqk.getQueKouDate();
+//		        	LocalDate huidate = tmpqk.getQueKouHuiBuDate();
+//		        	
+//		        	int quhubudays = 0;
+//		        	try {
+//		        		Period diff = Period.between(qkdate, huidate);
+//		        		quhubudays = diff.getDays();
+//		        	} catch (java.lang.NullPointerException e) {
+//		        		
+//		        	}
+//		    		if(quhubudays >= 15) { //updated
+//		    			
+//		    		}
+//		    		else { //delete
+//		    			
+//		    		}
+//				}
+//				
+//			}
+//		}
 		
 
 		

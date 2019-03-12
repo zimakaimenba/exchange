@@ -2,7 +2,7 @@ package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
+
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
@@ -10,6 +10,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.WrapLayout;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -239,7 +240,7 @@ public class MonthView extends View
 	 */
 	private void showWeeklyFenXiWizardDialog(String nodeshouldbedisplayed, LocalDate selectdate) 
 	{
-		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( nodeshouldbedisplayed,BanKuaiAndStockBasic.DAPAN,selectdate);
+		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( nodeshouldbedisplayed,BkChanYeLianTreeNode.DAPAN,selectdate);
     	ggfx.setSize(new Dimension(1400, 800));
     	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
     	ggfx.setLocationRelativeTo(null);

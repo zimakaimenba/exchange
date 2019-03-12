@@ -31,13 +31,6 @@ import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeet
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportQuanShangJiaoYiRecords;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.DaPan;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
@@ -123,6 +116,11 @@ import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 
@@ -468,7 +466,7 @@ public class StockInfoManager
     				else
     					return;
     				
-    				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), StockGivenPeriodDataItem.WEEK);
+    				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), TDXNodeGivenPeriodDataItem.WEEK);
     				editorPanenodeinfo.displayNodeAllInfo(bankuai);
             		
             	}
@@ -485,7 +483,7 @@ public class StockInfoManager
 //				else
 //					return;
 //				
-//				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), StockGivenPeriodDataItem.WEEK);
+//				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), TDXNodeGivenPeriodDataItem.WEEK);
 //				editorPanenodeinfo.displayNodeAllInfo(bankuai);
 //			}
 //		});
@@ -1762,7 +1760,7 @@ public class StockInfoManager
 			int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
 			
 			if(autoIncKeyFromApi > 0) {
-				cBxstockcode.updateUserSelectedNode(kspanel.getStockcode(),BanKuaiAndStockBasic.TDXGG);
+				cBxstockcode.updateUserSelectedNode(kspanel.getStockcode(),BkChanYeLianTreeNode.TDXGG);
 				preUpdateSearchResultToGui(kspanel.getStockcode());
 //				updateStockCombox();
 				
@@ -2402,7 +2400,7 @@ public class StockInfoManager
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(StockInfoManager.class.getResource("/images/Adobe_Stock_Photos_256px_1124397_easyicon.net.png")));
 		frame.getContentPane().setEnabled(false);
 				
-		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u7406");
+		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u74066");
 		frame.setBounds(100, 100, 845, 921);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

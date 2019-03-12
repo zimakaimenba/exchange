@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.nodes.operations;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -8,12 +8,20 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.ConnectDataBase;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-
+/*
+ * 
+ */
 public class AllCurrentTdxBKAndStoksTree 
 {
 	private AllCurrentTdxBKAndStoksTree ()
@@ -45,12 +53,13 @@ public class AllCurrentTdxBKAndStoksTree
 	
 	private void initializeAllStocksTree() 
 	{
+		
 		DaPan alltopNode = new DaPan("000000","两交易所");
 		
 		ArrayList<Stock> allstocks = bkdbopt.getAllStocks ();
 		for (Stock stock : allstocks ) {
 		    alltopNode.add(stock);
-//		    logger.debug(stock.getMyOwnCode() + "类型" + stock.getType());
+
 		}
 		
 		ArrayList<BanKuai> allbkandzs = bkdbopt.getTDXBanKuaiList ("all");
@@ -71,10 +80,9 @@ public class AllCurrentTdxBKAndStoksTree
 	public void setupDaPan ()
 	{
 		DaPan treeallstockrootdapan = (DaPan)treecyl.getModel().getRoot();
-		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
-		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
-		treeallstockrootdapan.setShangHai(shdpbankuai);
-		treeallstockrootdapan.setShenZhen(szdpbankuai);
+		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
+		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+		treeallstockrootdapan.setDaPanContents(shdpbankuai,szdpbankuai);
 	}
 	
 	/*
@@ -86,18 +94,18 @@ public class AllCurrentTdxBKAndStoksTree
 		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getRecordsEndDate();
 		
 		LocalDate requireend = requiredrecordsday.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		LocalDate requirestart = requiredrecordsday.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		//判断时间的相关关系，以便决定是否需要到数据库中查询新纪录
 		if(bkstartday == null || bkendday == null) { //还没有数据，直接找
 			bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,requirestart,requireend,period);
 		} else	{
 			HashMap<String,LocalDate> startend = null;
-			if(period.equals(StockGivenPeriodDataItem.WEEK))
+			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 				startend = nodeWeekTimeStampRelation (bkstartday,bkendday,requirestart,requireend);
-			else if(period.equals(StockGivenPeriodDataItem.DAY)) //暂时没开发
+			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //暂时没开发
 				;
-			else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
+			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //暂时没开发
 				;
 			
 			if(!startend.isEmpty()) {
@@ -117,7 +125,7 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public BanKuai getBanKuai (String bkcode,LocalDate requiredrecordsday,String period) 
 	{
-		BanKuai bankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode(bkcode,BanKuaiAndStockBasic.TDXBK);
+		BanKuai bankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
 		if(bankuai == null)
 			return null;
 		
@@ -168,11 +176,11 @@ public class AllCurrentTdxBKAndStoksTree
 //			bkdbopt.getStockZhanBi (stock.getStock(), bkstartday, bkendday,period);
 		} else {
 			HashMap<String,LocalDate> startend = null;
-			if(period.equals(StockGivenPeriodDataItem.WEEK))
+			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 				startend = nodeWeekTimeStampRelation (stockstartday,stockendday,bkstartday,bkendday);
-			else if(period.equals(StockGivenPeriodDataItem.DAY)) //暂时没开发
+			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //暂时没开发
 				;
-			else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
+			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //暂时没开发
 				;
 			
 			if(!startend.isEmpty()) {
@@ -203,7 +211,7 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public StockOfBanKuai getGeGuOfBanKuai(String bkcode, String stockcode,String period) 
 	{
-		BanKuai bankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode(bkcode,BanKuaiAndStockBasic.TDXBK);
+		BanKuai bankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
 		if(bankuai == null)
 			return null;
 		
@@ -220,9 +228,9 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public void getDaPanKXian (LocalDate requiredrecordsday,String period)
 	{
-		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
-		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
-		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);
+		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
+		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
 		
 		shdpbankuai = (BanKuai) this.getBanKuaiKXian(shdpbankuai, requiredrecordsday, period);
 		szdpbankuai = (BanKuai) this.getBanKuaiKXian(szdpbankuai, requiredrecordsday, period);
@@ -234,9 +242,9 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public void getDaPan (LocalDate requiredrecordsday,String period)
 	{
-		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BanKuaiAndStockBasic.TDXBK);
-		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BanKuaiAndStockBasic.TDXBK);
-		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BanKuaiAndStockBasic.TDXBK);
+		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
+		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
 		
 		NodeXPeriodDataBasic shdpnodexdata = shdpbankuai.getNodeXPeroidData(period);
 		LocalDate bkstartday = shdpnodexdata.getRecordsStartDate();
@@ -254,11 +262,11 @@ public class AllCurrentTdxBKAndStoksTree
 			cybdpbankuai = bkdbopt.getBanKuaiZhanBi (szdpbankuai,requirestart,requireend,period);
 		} else	{
 			HashMap<String,LocalDate> startend = null;
-			if(period.equals(StockGivenPeriodDataItem.WEEK))
+			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 				startend = nodeWeekTimeStampRelation (bkstartday,bkendday,requirestart,requireend);
-			else if(period.equals(StockGivenPeriodDataItem.DAY)) //暂时没开发
+			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //暂时没开发
 				;
-			else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
+			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //暂时没开发
 				;
 			
 			LocalDate searchstart,searchend,position;
@@ -354,7 +362,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public BanKuai getBanKuaiKXian (String bkcode,LocalDate requiredrecordsday,String period)
 	{
-		BanKuai stock = (BanKuai)this.treecyl.getSpecificNodeByHypyOrCode(bkcode,BanKuaiAndStockBasic.TDXGG);
+		BanKuai stock = (BanKuai)this.treecyl.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXGG);
 		stock = (BanKuai) this.getBanKuaiKXian(stock, requiredrecordsday, period);
 		return stock;
 	}
@@ -376,11 +384,11 @@ public class AllCurrentTdxBKAndStoksTree
 				bk = bkdbopt.getBanKuaiKXianZouShi (bk,requirestart,requireend,period);
 			} else {
 				HashMap<String,LocalDate> startend = null ;
-				if(period.equals(StockGivenPeriodDataItem.WEEK))
+				if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 					startend = nodeWeekTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-				else if(period.equals(StockGivenPeriodDataItem.DAY)) 
+				else if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) 
 					startend = nodeDayTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-				else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
+				else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //暂时没开发
 					;
 				 
 				LocalDate searchstart,searchend,position;
@@ -406,7 +414,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public Stock getStock (String stockcode,LocalDate requiredrecordsday,String period)
 	{
-		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
+		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BkChanYeLianTreeNode.TDXGG);
 		if(stock == null)
 			return null;
 		
@@ -466,7 +474,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public Stock getStockKXian (String stockcode,LocalDate requiredrecordsday,String period)
 	{
-		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BanKuaiAndStockBasic.TDXGG);
+		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BkChanYeLianTreeNode.TDXGG);
 		stock = (Stock) this.getStockKXian(stock, requiredrecordsday, period);
 		return stock;
 	}
@@ -488,11 +496,11 @@ public class AllCurrentTdxBKAndStoksTree
 				stock = (Stock)bkdbopt.getStockKXianZouShiFromCsv (stock,requirestart,requireend,period);
 			} else {
 				HashMap<String,LocalDate> startend = null ;
-				if(period.equals(StockGivenPeriodDataItem.WEEK))
+				if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 					startend = nodeWeekTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-				else if(period.equals(StockGivenPeriodDataItem.DAY)) 
+				else if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) 
 					startend = nodeDayTimeStampRelation (nodestartday,nodeendday,requirestart,requireend);
-				else if(period.equals(StockGivenPeriodDataItem.MONTH)) //暂时没开发
+				else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //暂时没开发
 					;
 				 
 				LocalDate searchstart,searchend,position;

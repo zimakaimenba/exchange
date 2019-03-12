@@ -10,12 +10,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
@@ -155,9 +153,9 @@ public class ImportTDXData extends JDialog {
 //		if(cbxtdxdrawing.isSelected()) { //通达信划线数据
 //			bkdbopt.refreshTDXDrawingFile ();
 //		}
-		if(cbximportdzhguquan.isSelected() && cbximportdzhguquan.isEnabled()) { //导入大智慧的个股股权信息
+		if(ckbxquekoutongji.isSelected() && ckbxquekoutongji.isEnabled()) { //导入大智慧的个股股权信息
 //			File resulttmpfilesys = bkdbopt.refreshDZHStockGuQuan ();
-			cbximportdzhguquan.setEnabled(false);
+			ckbxquekoutongji.setEnabled(false);
 		}
 		
 		//从通达信中导入股票曾用名和现用名的信息
@@ -540,7 +538,7 @@ public class ImportTDXData extends JDialog {
 				if(!chbxdaorutdxsysbk.isSelected() && !cbximporttdxgeguinfo.isSelected() 
 						&& !chbxdaorutdxsysbkvol.isSelected() && !cbxImportShGeGuVol.isSelected() 
 						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()
-						&& !cbximportdzhguquan.isSelected()
+						&& !ckbxquekoutongji.isSelected()
 						&& !ckbxnetease.isSelected() 
 						&& !chbxdaorutdxzdybk.isSelected() 
 						&& !cbximportzdyfromout.isSelected()
@@ -622,7 +620,7 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox cbxImportShGeGuVol;
 	private JCheckBox chbxselectall;
 	private JButton btnchecksync;
-	private JCheckBox cbximportdzhguquan;
+	private JCheckBox ckbxquekoutongji;
 	private JCheckBox ckbxnetease;
 	private JComboBox cbximportoptions;
 	private JLabel lblstatus;
@@ -669,8 +667,16 @@ public class ImportTDXData extends JDialog {
 		
 		JProgressBar progressBar_5 = new JProgressBar();
 		
-		cbximportdzhguquan = new JCheckBox("\u5BFC\u5165\u5927\u667A\u6167\u4E2A\u80A1\u80A1\u6743\u4FE1\u606F");
-		cbximportdzhguquan.setEnabled(false);
+		ckbxquekoutongji = new JCheckBox("\u7EDF\u8BA1\u4E2A\u80A1\u7F3A\u53E3");
+		ckbxquekoutongji.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(ckbxquekoutongji.isSelected()) {
+					
+				}
+			}
+		});
+		ckbxquekoutongji.setEnabled(false);
 		
 		ckbxnetease = new JCheckBox("\u5BFC\u5165\u7F51\u6613\u8D22\u7ECF\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F\uFF08\u6362\u624B\u7387/\u5E02\u503C\u7B49\uFF09");
 		
@@ -693,7 +699,7 @@ public class ImportTDXData extends JDialog {
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(cbximportdzhguquan)
+						.addComponent(ckbxquekoutongji)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 								.addComponent(lblstatus, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
@@ -781,7 +787,7 @@ public class ImportTDXData extends JDialog {
 						.addComponent(ckbxnetease)
 						.addComponent(cbximportoptions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(9)
-					.addComponent(cbximportdzhguquan)
+					.addComponent(ckbxquekoutongji)
 					.addGap(18)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 214, GroupLayout.PREFERRED_SIZE)
 					.addGap(17)

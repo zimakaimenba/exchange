@@ -28,17 +28,17 @@ import org.jfree.data.time.Week;
 
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.Stock.StockNodeXPeriodData;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ExportToCsvFile;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -175,9 +175,9 @@ public class NodeInfoToCsv extends JPanel
 	 */
 //	public void addNodeToCsvList (BkChanYeLianTreeNode node, LocalDate requireddatestart, LocalDate requireddateend)
 //	{
-//		if(node.getType() == BanKuaiAndStockBasic.TDXBK) {
+//		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
 //			addBanKuaiToCsvList (node,requireddatestart,requireddateend);
-//		} else if(node.getType() == BanKuaiAndStockBasic.TDXGG) {
+//		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
 //			addStockToCsvList (node,requireddatestart,requireddateend);
 //		}
 //		
@@ -296,7 +296,7 @@ public class NodeInfoToCsv extends JPanel
 //		}
 //		
 //		//和node当前记录的启末日期比较
-//		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+//		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
 //		LocalDate nodestart = nodexdata.getRecordsStartDate();
 //		LocalDate nodeend = nodexdata.getRecordsEndDate();
 //		if(nodestart.isAfter(startend.get("searchstart")))
@@ -352,14 +352,14 @@ public class NodeInfoToCsv extends JPanel
 	protected void appendRequiredBankuai() 
 	{
 		if(cbxappendmorebk.isSelected()) {
-			BkChanYeLianTreeNode node = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("880471", BanKuaiAndStockBasic.TDXBK );
-			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+			BkChanYeLianTreeNode node = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("880471", BkChanYeLianTreeNode.TDXBK );
+			NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
 			LocalDate curstart = nodexdata.getRecordsStartDate();
 			LocalDate curend = nodexdata.getRecordsEndDate();
 			this.addNodeToCsvList (node,curstart,curend);
 			
-			node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("880472", BanKuaiAndStockBasic.TDXBK );
-			nodexdata = node.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+			node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("880472", BkChanYeLianTreeNode.TDXBK );
+			nodexdata = ((TDXNodes)node).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
 			curstart = nodexdata.getRecordsStartDate();
 			curend = nodexdata.getRecordsEndDate();
 			this.addNodeToCsvList (node,curstart,curend);
@@ -380,7 +380,7 @@ public class NodeInfoToCsv extends JPanel
 		for(BkChanYeLianTreeNode node : keysets) {
 			
 			node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType() );
-			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+			NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
 			
 			Collection<Interval> nodetimeframes = nodetimeframeMultimap.get(node);
 			for(Interval timerange : nodetimeframes) {
@@ -398,7 +398,7 @@ public class NodeInfoToCsv extends JPanel
 						
 						Double hsl = null;
 						Double ltsz = null;
-						if(node.getType() == BanKuaiAndStockBasic.TDXBK) {
+						if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
 							hsl = null;
 							ltsz = null;
 						} else {
@@ -446,8 +446,8 @@ public class NodeInfoToCsv extends JPanel
 //			LocalDate curstart = LocalDate.parse(curnodedate.get(0));
 //			LocalDate curend = LocalDate.parse(curnodedate.get(1));
 //			
-//			BkChanYeLianTreeNode node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BanKuaiAndStockBasic.TDXBK );
-//			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+//			BkChanYeLianTreeNode node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK );
+//			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
 //			LocalDate tmpdate = curstart;
 //			do  {
 //				Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);
@@ -474,8 +474,8 @@ public class NodeInfoToCsv extends JPanel
 //			LocalDate curstart = LocalDate.parse(curnodedate.get(0));
 //			LocalDate curend = LocalDate.parse(curnodedate.get(1));
 //			
-//			BkChanYeLianTreeNode node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BanKuaiAndStockBasic.TDXGG );
-//			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(StockGivenPeriodDataItem.WEEK);
+//			BkChanYeLianTreeNode node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG );
+//			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
 //			LocalDate tmpdate = curstart;
 //			do  {
 //				Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);

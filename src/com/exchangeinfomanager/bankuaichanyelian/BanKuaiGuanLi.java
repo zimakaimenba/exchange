@@ -17,18 +17,16 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JTreeTable.AbstractTreeTableModel;
 import com.exchangeinfomanager.commonlib.JTreeTable.JTreeTable;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Ordering;
 import com.opencsv.CSVWriter;
@@ -371,7 +369,7 @@ class BanKuaiDetailTableModel extends AbstractTreeTableModel
          case 1:
              return ((BkChanYeLianTreeNode)node).getMyOwnName();
          case 2:
-        	 if ( ((BkChanYeLianTreeNode)node).getType() == BanKuaiAndStockBasic.TDXBK  )
+        	 if ( ((BkChanYeLianTreeNode)node).getType() == BkChanYeLianTreeNode.TDXBK  )
         		 return ((BanKuai)node).getBanKuaiLeiXing();
         	 else 
         		 return "";

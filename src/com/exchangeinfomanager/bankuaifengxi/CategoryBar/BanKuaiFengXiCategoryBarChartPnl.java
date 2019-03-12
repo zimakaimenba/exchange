@@ -33,15 +33,17 @@ import org.jfree.ui.TextAnchor;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
 
@@ -98,7 +100,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
-	protected BkChanYeLianTreeNode curdisplayednode;	
+	protected TDXNodes curdisplayednode;	
 	protected String globeperiod = "WEEK";
 	protected int shoulddisplayedmonthnum;
 	
@@ -488,7 +490,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis
     		return Color.black;
     	else {
     		LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
-    		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+    		NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(period);
     		
     		try{
     		if(nodexdata == null)

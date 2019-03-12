@@ -13,12 +13,12 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
+
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.github.cjwizard.APageFactory;
 import com.github.cjwizard.StackWizardSettings;
 import com.github.cjwizard.WizardContainer;
@@ -40,7 +40,7 @@ public class WeeklyFenXiWizard  extends JDialog {
 			AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 			displaygegunode = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecodeshouldbedisplayed, nodetype);
 			
-			dapan = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000000", BanKuaiAndStockBasic.DAPAN);
+			dapan = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
 			
 			setupWizard ();
 		}
@@ -243,7 +243,7 @@ public class WeeklyFenXiWizard  extends JDialog {
 	         // WizardPage:
 	         WizardPage page;
 	         
-	         if(displaygegunode.getType() == BanKuaiAndStockBasic.DAPAN /*|| displaygegunode.getType() == BanKuaiAndStockBasic.TDXBK*/)
+	         if(displaygegunode.getType() == BkChanYeLianTreeNode.DAPAN /*|| displaygegunode.getType() == BkChanYeLianTreeNode.TDXBK*/)
 	        	 page = pageszhishu[path.size()];
 	         else
 	        	 page = pages[path.size()];
@@ -260,7 +260,7 @@ public class WeeklyFenXiWizard  extends JDialog {
 	       */
 	      public void saveFenXiResult ()
 	      {
-	    	  if(displaygegunode.getType() == BanKuaiAndStockBasic.DAPAN /*|| displaygegunode.getType() == BanKuaiAndStockBasic.TDXBK*/) {
+	    	  if(displaygegunode.getType() == BkChanYeLianTreeNode.DAPAN /*|| displaygegunode.getType() == BkChanYeLianTreeNode.TDXBK*/) {
 	    		  dpcontroller.saveFenXiResult();
 	    	  }
 	    	  else {

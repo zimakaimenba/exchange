@@ -35,17 +35,15 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockTree;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.DaPan;
-import com.exchangeinfomanager.asinglestockinfo.GuPiaoChi;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
-import com.exchangeinfomanager.asinglestockinfo.StockOfBanKuai;
-import com.exchangeinfomanager.asinglestockinfo.SubBanKuai;
-import com.exchangeinfomanager.asinglestockinfo.SubGuPiaoChi;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.GuPiaoChi;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.SubBanKuai;
+import com.exchangeinfomanager.nodes.SubGuPiaoChi;
+import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -165,26 +163,26 @@ class ChanYeLianXMLHandler
 				   String nodetypestr = element.attributeValue("Type").trim();
 				   Integer nodetype = Integer.parseInt(nodetypestr ); 
 				   
-				   if(BanKuaiAndStockBasic.GPC == nodetype ) { //是股票池
+				   if(BkChanYeLianTreeNode.GPC == nodetype ) { //是股票池
 					   bkowncode = element.attributeValue("gpccode"); 
 					   bkname = element.attributeValue("gpcname");
 					   
 					   parentsleaf = new GuPiaoChi(bkowncode,bkname);
 				   } else
-				   if(BanKuaiAndStockBasic.SUBGPC == nodetype ) { //是股票池
+				   if(BkChanYeLianTreeNode.SUBGPC == nodetype ) { //是股票池
 					   bkowncode = element.attributeValue("subgpccode"); 
 					   bkname = element.attributeValue("subgpcname");
 					   
 					   parentsleaf = new SubGuPiaoChi(bkowncode,bkname);
 				   } else
-				   if(BanKuaiAndStockBasic.TDXBK == nodetype ) { //是通达信板块  
+				   if(BkChanYeLianTreeNode.TDXBK == nodetype ) { //是通达信板块  
 					   bkowncode = element.attributeValue("bkcode");
 					   bkname = element.attributeValue("bkname");
 					   suoshubkcode = bkowncode;
 					 
 					   parentsleaf = new BanKuai(bkowncode,bkname);
 				   } else
-				   if(BanKuaiAndStockBasic.SUBBK == nodetype ) {//是自定义子板块
+				   if(BkChanYeLianTreeNode.SUBBK == nodetype ) {//是自定义子板块
 					   bkname = element.attributeValue("subbkname");
 					   bkowncode = element.attributeValue("subbkcode");
 					   suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
@@ -193,7 +191,7 @@ class ChanYeLianXMLHandler
 					    topNode.add(parentsleaf);
 					   
 				   } else 
-				   if(BanKuaiAndStockBasic.TDXGG == nodetype) {//是个股
+				   if(BkChanYeLianTreeNode.TDXGG == nodetype) {//是个股
 					   bkname = element.attributeValue("geguname");
 					   bkowncode = element.attributeValue("gegucode");
 					   
@@ -215,7 +213,7 @@ class ChanYeLianXMLHandler
 		for(String newbkcode:newBanKuaiFromDb) {
 			logger.debug("XML将要中加入" + newbkcode);
 			try {
-			        		BanKuai parentsleaf = (BanKuai)treeallstocks.getSpecificNodeByHypyOrCode(newbkcode,BanKuaiAndStockBasic.TDXBK);
+			        		BanKuai parentsleaf = (BanKuai)treeallstocks.getSpecificNodeByHypyOrCode(newbkcode,BkChanYeLianTreeNode.TDXBK);
 			        		
 							topNode.add(parentsleaf);
 							
@@ -354,7 +352,7 @@ class ChanYeLianXMLHandler
 				
 	            treeChild = (BkChanYeLianTreeNode) child.nextElement();
 	            
-	            if(treeChild.getNodeTreerelated().shouldBeRemovedWhenSaveXml()) //应该删除的节点，该节点以下的所有节点都不保存
+	            if(treeChild.getNodeTreeRelated().shouldBeRemovedWhenSaveXml()) //应该删除的节点，该节点以下的所有节点都不保存
 	            	continue;
 	            
 	            String tmpbkcode = treeChild.getMyOwnCode() ;
@@ -394,7 +392,7 @@ class ChanYeLianXMLHandler
 		        	cylchildele = cylparentele.addElement("SubBanKuai");
 		        	cylchildele.addAttribute("subbkcode", tmpbkcode  );
 		        	cylchildele.addAttribute("subbkname", tmpname);
-		        	String suoshubkcode = treeChild.getNodeTreerelated().getChanYeLianSuoShuTdxBanKuaiName();
+		        	String suoshubkcode = treeChild.getNodeTreeRelated().getChanYeLianSuoShuTdxBanKuaiName();
 		            cylchildele.addAttribute("suoshubkcode", suoshubkcode  ); 
 		            cylchildele.addAttribute("Type", status);
 		            

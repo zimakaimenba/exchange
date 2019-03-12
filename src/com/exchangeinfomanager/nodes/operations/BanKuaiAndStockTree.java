@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.nodes.operations;
 
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -27,13 +27,14 @@ import org.apache.log4j.Logger;
 
 import javax.swing.tree.TreeNode;
 
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.TreeRelated;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI2;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -157,7 +158,7 @@ public class BanKuaiAndStockTree extends JTree
 	 */
 	private void treeTreeCollapsed(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeCollapsed
         if (!ignoreExpansion)
-        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreerelated().setExpansion(false);
+        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreeRelated().setExpansion(false);
     }
 	/*
 	 * 
@@ -166,7 +167,7 @@ public class BanKuaiAndStockTree extends JTree
         if (!ignoreExpansion ) 
         	try {
         		BkChanYeLianTreeNode node = ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent());
-        		TreeRelated treerelatd = node.getNodeTreerelated();
+        		NodesTreeRelated treerelatd = node.getNodeTreeRelated();
         		treerelatd.setExpansion(true);
         	} catch(java.lang.NullPointerException  e) {
 //        		e.printStackTrace();
@@ -360,7 +361,7 @@ public class BanKuaiAndStockTree extends JTree
 //	            		JOptionPane.showMessageDialog(null,"所选为通达信板块，无法删除！","Warning",JOptionPane.WARNING_MESSAGE);
 //	            		return false;
 //	            	}
-//	            	if(child.getNodetreerelated().getInZdgzOfficalCount()>0 || child.getNodetreerelated().getInZdgzCandidateCount()>0) {
+//	            	if(child.getNodeTreeRelated().getInZdgzOfficalCount()>0 || child.getNodeTreeRelated().getInZdgzCandidateCount()>0) {
 //	            		JOptionPane.showMessageDialog(null,"所选产业链是关注股票池候选或正式选择，请先在关注股票池中移除后再删除！","Warning",JOptionPane.WARNING_MESSAGE);
 //	            		return false;
 //	            	}
@@ -372,7 +373,7 @@ public class BanKuaiAndStockTree extends JTree
 	                    int childIndex = parent.getIndex(child);
 	                    parent.remove(child);
 	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
-	                    if (parent.getChildCount()==0) parent.getNodeTreerelated().setExpansion(false);
+	                    if (parent.getChildCount()==0) parent.getNodeTreeRelated().setExpansion(false);
 	                }
 	      }
 	            
@@ -432,9 +433,9 @@ public class BanKuaiAndStockTree extends JTree
 	    	
 	    	if(childnodecode.equals(cyltreepathlist.get(0)  ) ) {
     			if(officallsltopt)
-    				childNode.getNodeTreerelated().increaseZdgzOfficalCount();
+    				childNode.getNodeTreeRelated().increaseZdgzOfficalCount();
 	    		
-    			childNode.getNodeTreerelated().increaseZdgzCandidateCount();
+    			childNode.getNodeTreeRelated().increaseZdgzCandidateCount();
 	    			
 	    		DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
 	    		treemodel.nodeChanged(childNode);
@@ -442,8 +443,8 @@ public class BanKuaiAndStockTree extends JTree
 	    		cyltreepathlist.remove(0);
 	    		
 	    		if(cyltreepathlist.size() == 0) {
-	    			childNode.getNodeTreerelated().setOfficallySelected(officallsltopt);
-	    			childNode.getNodeTreerelated().setSelectedToZdgzTime(addedtime);
+	    			childNode.getNodeTreeRelated().setOfficallySelected(officallsltopt);
+	    			childNode.getNodeTreeRelated().setSelectedToZdgzTime(addedtime);
 	    			
 	    			expectedNode = childNode;
 	    			break;
@@ -465,16 +466,16 @@ public class BanKuaiAndStockTree extends JTree
 	public void removeZdgzBkCylInfoFromTreeNode(BkChanYeLianTreeNode childNode,boolean stillkeepincandidate) 
 	{
 		 TreeNode[] nodepath = childNode.getPath();
-		 Boolean isofficallselected = childNode.getNodetreerelated().isOfficallySelected();
+		 Boolean isofficallselected = childNode.getNodeTreeRelated().isOfficallySelected();
 		 
 		 DefaultTreeModel model = (DefaultTreeModel) this.getModel();
 		 TreeNode[] tempath = model.getPathToRoot(childNode);
 		 for(int j=1;j<tempath.length;j++ ) {
 		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
 		    	if(isofficallselected) 
-		    		parentnode.getNodetreerelated().decreaseZdgzOfficalCount();
+		    		parentnode.getNodeTreeRelated().decreaseZdgzOfficalCount();
 		    	if(!stillkeepincandidate) //只是从offical移除，candidate还有就不用加
-		    		parentnode.getNodetreerelated().decreasedgzCandidateCount();
+		    		parentnode.getNodeTreeRelated().decreasedgzCandidateCount();
 		    	
 		    	model.nodeChanged(parentnode);
 		 }
@@ -486,7 +487,7 @@ public class BanKuaiAndStockTree extends JTree
 	public void addZdgzBkCylInfoToTreeNode(BkChanYeLianTreeNode childNode, boolean hasbeenincandidate)  
 	{
 		 TreeNode[] nodepath = childNode.getPath();
-		 Boolean isofficallselected = childNode.getNodetreerelated().isOfficallySelected();
+		 Boolean isofficallselected = childNode.getNodeTreeRelated().isOfficallySelected();
 		 
 //		 DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
 		 
@@ -495,9 +496,9 @@ public class BanKuaiAndStockTree extends JTree
 		 for(int j=1;j<tempath.length;j++ ) {
 		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
 		    	if(isofficallselected) 
-		    		parentnode.getNodetreerelated().increaseZdgzOfficalCount();
+		    		parentnode.getNodeTreeRelated().increaseZdgzOfficalCount();
 		    	if(!hasbeenincandidate) //如果已经在候选里面，cand count就不用加
-		    		parentnode.getNodetreerelated().increaseZdgzCandidateCount();	
+		    		parentnode.getNodeTreeRelated().increaseZdgzCandidateCount();	
 		    	
 		    	model.nodeChanged(parentnode);
 		 }

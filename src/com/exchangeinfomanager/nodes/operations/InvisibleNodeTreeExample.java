@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.asinglestockinfo;
+package com.exchangeinfomanager.nodes.operations;
 
 //Example from http://www.crionics.com/products/opensource/faq/swing_ex/SwingExamples.html
 //http://www.java2s.com/Code/Java/Swing-Components/InvisibleNodeTreeExample.htm
@@ -32,7 +32,7 @@ import javax.swing.tree.TreePath;
 /**
 * @version 1.0 01/12/99
 */
-public class InvisibleNodeTreeExample extends JFrame {
+class InvisibleNodeTreeExample extends JFrame {
 public InvisibleNodeTreeExample() {
  super("InvisibleNode TreeExample");
 

@@ -2,15 +2,15 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.data.category.CategoryDataset;
-//import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-//import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+
 
 public class BanKuaiFengXiCategoryBarToolTipGenerator implements CategoryToolTipGenerator 
 {
-	protected BkChanYeLianTreeNode node;
+	protected TDXNodes node;
 //  private static Logger logger = Logger.getLogger(CustomToolTipGeneratorForChenJiaoEr.class);
 	protected NodeXPeriodDataBasic nodexdata;
 
@@ -20,7 +20,7 @@ public class BanKuaiFengXiCategoryBarToolTipGenerator implements CategoryToolTip
 		return null;
 	}
 	
-    public void setDisplayNode (BkChanYeLianTreeNode curdisplayednode) 
+    public void setDisplayNode (TDXNodes curdisplayednode) 
     {
     	this.node = curdisplayednode;
     }

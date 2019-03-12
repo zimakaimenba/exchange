@@ -25,13 +25,16 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleEdge;
 
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic;
+
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+
 
 public class BanKuaiFengXiBarCjeLargePeriodChartPnl extends BanKuaiFengXiBarLargePeriodChartPnl
 {
-	public BanKuaiFengXiBarCjeLargePeriodChartPnl (BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period)
+	public BanKuaiFengXiBarCjeLargePeriodChartPnl (TDXNodes node, LocalDate displayedenddate1,String period)
 	{
 		super (node,displayedenddate1,period);
 		((CustomXYBarRenderer)super.mainPlot.getRenderer()).setBarPainter(new CustomXYBarCjePainter());
@@ -46,8 +49,8 @@ public class BanKuaiFengXiBarCjeLargePeriodChartPnl extends BanKuaiFengXiBarLarg
 		mainPlot.setDataset(dataset);
 		super.chart.setNotify(true);
 	}
-	@Override
-    protected XYDataset updateDataset(BkChanYeLianTreeNode node, LocalDate displayedenddate1,String period) 
+
+    protected XYDataset updateDataset(TDXNodes node, LocalDate displayedenddate1,String period) 
     {
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
     	LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);

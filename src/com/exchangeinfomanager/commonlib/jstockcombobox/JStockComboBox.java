@@ -31,13 +31,13 @@ import javax.swing.ListCellRenderer;
 //import javax.swing.ListCellRenderer;
 import javax.swing.DefaultListCellRenderer;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
+
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class JStockComboBox extends  JComboBox<String>
@@ -96,7 +96,7 @@ public class JStockComboBox extends  JComboBox<String>
 		String stockcode = stock.getMyOwnCode();
 		String stocname = stock.getMyOwnName();
 
-		preSearch(stock.getMyOwnCode(),BanKuaiAndStockBasic.TDXGG);
+		preSearch(stock.getMyOwnCode(),BkChanYeLianTreeNode.TDXGG);
 		updateStockCombox(stockcode+stocname);
 		return nodeshouldbedisplayed;
 	}
@@ -106,7 +106,7 @@ public class JStockComboBox extends  JComboBox<String>
 		
 		String bkcode = bk.getMyOwnCode();
 		String bkname = bk.getMyOwnName();
-		preSearch(bk.getMyOwnCode(),BanKuaiAndStockBasic.TDXBK);
+		preSearch(bk.getMyOwnCode(),BkChanYeLianTreeNode.TDXBK);
 		updateStockCombox(bkcode+bkname);
 		return this.nodeshouldbedisplayed;
 	}
@@ -206,7 +206,7 @@ public class JStockComboBox extends  JComboBox<String>
 		 } else
 			 nodeshouldbedisplayed = nodeslist.get(0);
 		 
-		 if(nodeshouldbedisplayed.getType() == BanKuaiAndStockBasic.TDXGG) { //是个股
+		 if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG) { //是个股
 //					if(accountschicangconfig.isSystemChiCang(stockcode)) {
 //						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
 //					} 
@@ -232,7 +232,7 @@ public class JStockComboBox extends  JComboBox<String>
 		menuItemgchicang.setEnabled(false);
 		jPopupMenue.add(menuItemguanzhu);
 		jPopupMenue.add(menuItemgchicang);
-		if(this.onlyselectnodetype != null && this.onlyselectnodetype == BanKuaiAndStockBasic.TDXBK ) {
+		if(this.onlyselectnodetype != null && this.onlyselectnodetype == BkChanYeLianTreeNode.TDXBK ) {
 			menuItemguanzhu.setEnabled(false);
 		}
 		
@@ -290,7 +290,7 @@ public class JStockComboBox extends  JComboBox<String>
 		String zdyguanzhubkname = sysconfig.getCurZdyBanKuaiOfGuanZhuGeGu ();
 		Set<String> result = bkdbopt.sysnRecentGuanZhuGeGu (zdyguanzhubkname,searchstart,searchend);
 		for(String geguname : result ) {
-			this.updateUserSelectedNode (geguname,BanKuaiAndStockBasic.TDXGG);
+			this.updateUserSelectedNode (geguname,BkChanYeLianTreeNode.TDXGG);
 		}
 		
 		((JStockComboBoxRenderer)this.getRenderer()).setGuanZhuGeGuList(result);

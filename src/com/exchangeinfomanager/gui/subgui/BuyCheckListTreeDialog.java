@@ -22,9 +22,6 @@ import javax.swing.border.EmptyBorder;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 
-import com.exchangeinfomanager.checkboxtree.CheckBoxTree;
-import com.exchangeinfomanager.checkboxtree.CheckBoxTreeNode;
-import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;

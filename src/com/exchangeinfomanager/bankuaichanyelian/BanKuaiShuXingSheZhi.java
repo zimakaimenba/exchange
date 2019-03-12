@@ -14,15 +14,15 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.BanKuai;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import net.miginfocom.swing.MigLayout;
+
 
 public class BanKuaiShuXingSheZhi extends JPanel {
 
@@ -73,7 +73,7 @@ public class BanKuaiShuXingSheZhi extends JPanel {
 	{
 		this.settingnode = node;
 		
-		if(settingnode.getType() == BanKuaiAndStockBasic.TDXBK) {
+		if(settingnode.getType() == BkChanYeLianTreeNode.TDXBK) {
 			
 			cbxnotimport.setEnabled(true);
 			cbxnotbkfx.setEnabled(true);
@@ -126,7 +126,7 @@ public class BanKuaiShuXingSheZhi extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				
-				if(settingnode.getType() == BanKuaiAndStockBasic.TDXBK) {
+				if(settingnode.getType() == BkChanYeLianTreeNode.TDXBK) {
 					
 					bkdbopt.updateBanKuaiExportGephiBkfxOperation (settingnode.getMyOwnCode(),!cbxnotimport.isSelected(),
 																!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected(),
