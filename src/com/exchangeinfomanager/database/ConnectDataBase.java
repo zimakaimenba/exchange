@@ -3,6 +3,7 @@ import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.*;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
+import com.mysql.jdbc.MysqlDataTruncation;
 import com.sun.rowset.CachedRowSetImpl;
 
 import java.sql.*;
@@ -152,7 +153,7 @@ public class ConnectDataBase
 		}
 
 		
-		public int sqlUpdateStatExecute(HashMap<String,String> sqlstatementmap)
+		public int sqlUpdateStatExecute(HashMap<String,String> sqlstatementmap) throws SQLException
 		{
 			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
 			String sqlstatement = sqlstatementmap.get("mysql");
@@ -170,9 +171,10 @@ public class ConnectDataBase
 			int autoIncKeyFromApi = -1;
 			autoIncKeyFromApi = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
 			
+			
 			return autoIncKeyFromApi;
 		}
-		public int sqlUpdateStatExecute(String sqlstatement)
+		public int sqlUpdateStatExecute(String sqlstatement) throws SQLException
 		{
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
@@ -189,7 +191,7 @@ public class ConnectDataBase
 			return autoIncKeyFromApi;
 		}
 		
-		public int sqlInsertStatExecute(HashMap<String,String> sqlstatementmap) 
+		public int sqlInsertStatExecute(HashMap<String,String> sqlstatementmap) throws SQLException
 		{
 			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
 			String sqlstatement = sqlstatementmap.get("mysql");
@@ -210,7 +212,7 @@ public class ConnectDataBase
 			return result;
 			
 		}
-		public int sqlInsertStatExecute(String sqlstatement) 
+		public int sqlInsertStatExecute(String sqlstatement) throws SQLException
 		{
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
@@ -227,7 +229,7 @@ public class ConnectDataBase
 			return result;
 		}
 		
-		public int sqlDeleteStatExecute(HashMap<String,String> sqlstatementmap) 
+		public int sqlDeleteStatExecute(HashMap<String,String> sqlstatementmap) throws SQLException
 		{
 			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
 			String sqlstatement = sqlstatementmap.get("mysql");
@@ -247,7 +249,7 @@ public class ConnectDataBase
 			
 			return result;
 		}
-		public int sqlDeleteStatExecute(String sqlstatement) 
+		public int sqlDeleteStatExecute(String sqlstatement) throws SQLException
 		{
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
@@ -466,7 +468,7 @@ class DataBaseConnection
 	}
 	
 	
-	public int sqlUpdateStatExecute(String sqlstatement)
+	public int sqlUpdateStatExecute(String sqlstatement) throws SQLException
 	{
 		int autoIncKeyFromApi = -1;
 		ResultSet rs = null;
@@ -483,12 +485,7 @@ class DataBaseConnection
 			    }
 			 if (autoIncKeyFromApi>0) {  
 				 logger.debug("更新数据库成功");
-//                System.out.println("更新数据库成功");  
             }
-		} catch(SQLException e)	{	
-//			autoIncKeyFromApi = 0;
-//			System.out.println("出错SQL是:" + sqlstatement );
-			e.printStackTrace();  
 		} finally {
 			if(rs!=null)
 				try {
@@ -509,7 +506,7 @@ class DataBaseConnection
 		return autoIncKeyFromApi;
 	}
 
-	public int sqlInsertStatExecute(String sqlinsertstat) 
+	public int sqlInsertStatExecute(String sqlinsertstat) throws SQLException
 	{
 		int result =0;
 		result = sqlUpdateStatExecute(sqlinsertstat);
@@ -517,7 +514,7 @@ class DataBaseConnection
 		return result;
 		
 	}
-	public int sqlDeleteStatExecute(String sqldeletestat) 
+	public int sqlDeleteStatExecute(String sqldeletestat) throws SQLException
 	{
 		int result =0;
 		result = sqlUpdateStatExecute(sqldeletestat);

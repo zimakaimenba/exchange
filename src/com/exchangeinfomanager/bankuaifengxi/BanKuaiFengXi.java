@@ -184,10 +184,8 @@ import javax.swing.SwingWorker.StateValue;
 import javax.swing.JProgressBar;
 import javax.swing.JTree;
 
-public class BanKuaiFengXi extends JDialog {
-
-	
-
+public class BanKuaiFengXi extends JDialog 
+{
 	/**
 	 * Create the dialog.
 	 * @param bkcyl2 
@@ -1420,7 +1418,10 @@ public class BanKuaiFengXi extends JDialog {
 						Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 						setCursor(hourglassCursor);
 						
-						chooseParsedFile (null);
+						if(Strings.isNullOrEmpty(tfldparsedfile.getText() ) )
+							chooseParsedFile (null);
+						else
+							chooseParsedFile (tfldparsedfile.getText() );
 						
 						hourglassCursor = null;
 						Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -1428,16 +1429,16 @@ public class BanKuaiFengXi extends JDialog {
 					}
 				}
 			
-				if(!ckboxparsefile.isSelected()) {
-					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-					setCursor(hourglassCursor);
-					
-					ckboxparsefile.setSelected(true);
-					
-					hourglassCursor = null;
-					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-					setCursor(hourglassCursor2);
-				}
+//				if(!ckboxparsefile.isSelected()) {
+//					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+//					setCursor(hourglassCursor);
+//					
+//					ckboxparsefile.setSelected(true);
+//					
+//					hourglassCursor = null;
+//					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+//					setCursor(hourglassCursor2);
+//				}
 			}
 		});
 		
@@ -2633,6 +2634,7 @@ public class BanKuaiFengXi extends JDialog {
 	private JProgressBar progressBarExport;
 	private JMenuItem menuItemsiglebktocsv;
 	private JTextField tfldltszmax;
+	private JCheckBox chbxquekou;
 	
 	private void initializeGui() {
 		
@@ -3092,7 +3094,6 @@ public class BanKuaiFengXi extends JDialog {
 			
 			tfldparsedfile = new JTextField();
 			tfldparsedfile.setForeground(Color.ORANGE);
-			tfldparsedfile.setEditable(false);
 			tfldparsedfile.setColumns(10);
 			tfldparsedfile.setToolTipText(tfldparsedfile.getText());
 			
@@ -3175,6 +3176,9 @@ public class BanKuaiFengXi extends JDialog {
 			tfldltszmax.setForeground(Color.MAGENTA);
 			tfldltszmax.setColumns(10);
 			
+			chbxquekou = new JCheckBox("\u7A81\u51FA\u56DE\u8865\u4E0B\u8DF3\u7F3A\u53E3");
+			chbxquekou.setForeground(Color.PINK);
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -3215,7 +3219,9 @@ public class BanKuaiFengXi extends JDialog {
 						.addComponent(ckboxparsefile)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
-						.addGap(324)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(chbxquekou)
+						.addGap(219)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
 						.addGap(1670)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
@@ -3249,7 +3255,8 @@ public class BanKuaiFengXi extends JDialog {
 										.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
 										.addComponent(tfldshowcjemax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(tfldltszmax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
+										.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+										.addComponent(chbxquekou))
 									.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
 								.addContainerGap())))
 			);
@@ -3499,7 +3506,7 @@ public class BanKuaiFengXi extends JDialog {
 				NodeXPeriodDataBasic nodexdata = ((TDXNodes)childnode).getNodeXPeroidData(period);
 				 //板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 				// 同时刚上市的新股也不考虑
-				if( nodexdata.hasRecordInThePeriod(selectiondate,0) && !((StockNodeXPeriodData)nodexdata).isVeryVeryNewXinStock()   ) {
+				if( nodexdata.hasRecordInThePeriod(selectiondate,0) && !((Stock)childnode).isVeryVeryNewXinStock()   ) {
 					
 						Double recordcje = nodexdata.getChengJiaoEr(selectiondate, 0);
 						Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate,0);
@@ -3625,11 +3632,10 @@ public class BanKuaiFengXi extends JDialog {
 						 
 						 
 						 Stock ggstock = stockofbankuai.getStock();
-						 NodeXPeriodDataBasic stockxdata = ggstock.getNodeXPeroidData(globeperiod);
-						 
-						 if( ((StockNodeXPeriodData)stockxdata).isVeryVeryNewXinStock() ) // 刚上市的新股也不考虑
+						 if( !((Stock)ggstock).isVeryVeryNewXinStock() ) // 刚上市的新股也不考虑
 							 continue;
 						 
+						 NodeXPeriodDataBasic stockxdata = ggstock.getNodeXPeroidData(globeperiod);
 						 Integer recordmaxdpwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selectiondate,0);
 						 Integer recordmaxcjewk = stockxdata.getChenJiaoErMaxWeekOfSuperBanKuai(selectiondate,0);
 						 Double recordhsl = ((StockNodeXPeriodData)stockxdata).getSpecificTimeHuanShouLv(selectiondate, 0);

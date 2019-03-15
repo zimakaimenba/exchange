@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
+import com.exchangeinfomanager.commonlib.DayCounter;
+
 public class QueKou 
 {
-//	private Integer dbid;
+	private Integer dbid;
 	private String nodecode;
 	private LocalDate quekoudate;
 	private LocalDate huibudate;
@@ -14,6 +16,8 @@ public class QueKou
 	private Double quekouup;
 	private Boolean quekouleixing ;
 	private Boolean shouldstoreindb;
+	private Double shoupanjia;
+	
 	
 	public QueKou (String nodecode,LocalDate quekoudate, Double down, Double up,Boolean qkleixing)
 	{
@@ -24,19 +28,35 @@ public class QueKou
 		this.quekouleixing = qkleixing;
 		this.shouldstoreindb = true;
 	}
-	
-//	public void setDbId (int id) {
-//		this.dbid = id;
-//	}
-//	public Integer getDbId ()
-//	{
-//		if(this.dbid == null)
-//			return null;
-//		else
-//			return this.dbid;
-//	}
+	public String getNodeCode ()
+	{
+		return this.nodecode;
+	}
+	public void setDbId (int id) 
+	{
+		this.dbid = id;
+		this.shouldstoreindb = false; //有dbid，默认为一般不会变化，不需要重新存储到数据库
+	}
+	public Integer getDbId ()
+	{
+		if(this.dbid == null)
+			return null;
+		else
+			return this.dbid;
+	}
+	public void setShouPanJia (Double spj)
+	{
+		this.shoupanjia = spj;
+	}
+	public Double getShouPanJia ()
+	{
+		return this.shoupanjia;
+	}
 	public LocalDate getQueKouDate() {
 		return quekoudate;
+	}
+	public void setQueKouHuiBuDate(LocalDate hbdate) {
+		this.huibudate = hbdate;
 	}
 	public LocalDate getQueKouHuiBuDate() {
 		return huibudate;
@@ -48,7 +68,14 @@ public class QueKou
 	public Double getQueKouUp() {
 		return quekouup;
 	}
-	
+	/*
+	 * 计算回补缺口的日期数
+	 */
+	public Integer getQueKouHuiBuDaysNumber ()
+	{
+		int range = DayCounter.bestDaysBetweenIngoreWeekEnd(quekoudate, huibudate);
+		return range;
+	}
 	public Boolean getQueKouLeiXing ()
 	{
 		if(quekouleixing != null)
@@ -98,14 +125,9 @@ public class QueKou
 	private void setHuiBuInfo(LocalDate checkdate) 
 	{
 		huibudate = checkdate;
-		
-		if(ChronoUnit.DAYS.between(quekoudate,huibudate ) >= 17 )
-			this.shouldstoreindb = true;
-		else
-			this.shouldstoreindb = false;
-		
+		this.shouldstoreindb = true;
 	}
-
+	
 	public Boolean isQueKouHuiBu ()
 	{
 		if(this.huibudate != null)
@@ -113,9 +135,12 @@ public class QueKou
 		else
 			return false;
 	}
-	public Boolean shouldUpdatedInDb ()
+	public Boolean shouldUpdatedToDb ()
 	{
-		return this.shouldstoreindb;
+		if(this.shouldstoreindb == null)
+			return false;
+		else
+			return this.shouldstoreindb;
 	}
 	
 }

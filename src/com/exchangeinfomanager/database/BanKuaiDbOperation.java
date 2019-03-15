@@ -67,14 +67,19 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.ohlc.OHLCItem;
+import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.ZhongDianGuanZhu;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.DayCounter;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
@@ -97,6 +102,7 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mysql.jdbc.MysqlDataTruncation;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
@@ -725,8 +731,15 @@ public class BanKuaiDbOperation
 	   						+ " 指数所属交易所 = " + " '" + bkcjs.trim() + "'" 
 	   						;
 	        	   logger.debug(sqlinsertstat);
-	   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-//				}
+	   				try {
+						int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+					} catch (MysqlDataTruncation e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1170,7 +1183,16 @@ public class BanKuaiDbOperation
 						;
 	 		logger.debug(sqlupdatestat);
 	 		@SuppressWarnings("unused")
-	 		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+			int autoIncKeyFromApi;
+			try {
+				autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+			} catch (MysqlDataTruncation e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	 		
 	 		//再增加一条记录
 //		 	String sqlinsertstat = "INSERT INTO  股票通达信行业板块对应表(股票代码,行业板块,对应TDXSWID,股票权重) values ("
@@ -1185,7 +1207,15 @@ public class BanKuaiDbOperation
 			+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stocknewTDXSWID + "'"
 			;
 			logger.debug(sqlinsertstat);
-			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			try {
+				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (MysqlDataTruncation e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		
 	}
 	
@@ -1716,7 +1746,15 @@ public class BanKuaiDbOperation
 						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
 						 				;
          	   logger.debug(sqldeletetstat);
-	   			int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+	   			try {
+					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	   			
 //	   			//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
 //	    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
@@ -1861,32 +1899,73 @@ public class BanKuaiDbOperation
 						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
 						 				;
          	   logger.debug(sqldeletetstat);
-	   			int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+	   			int autoIncKeyFromApi;
+				try {
+					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e4) {
+					// TODO Auto-generated catch block
+					e4.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	   			
 	   			//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
 	    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
 						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 						;
 				logger.debug(sqldeletetstat);
-				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				try {
+					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
 						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 						;
 				logger.debug(sqldeletetstat);
-				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				try {
+					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
 						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
 						;
 				logger.debug(sqldeletetstat);
-				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				try {
+					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				sqldeletetstat = "DELETE  FROM 产业链子板块列表"
 						+ " WHERE 所属通达信板块=" + "'"  + oldbkcode.trim() + "'"
 						;
 				logger.debug(sqldeletetstat);
-				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				try {
+					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			 }
 		 }
 		 differencebankuaiold = null;
@@ -1902,8 +1981,9 @@ public class BanKuaiDbOperation
 	{
 		ArrayList<Stock> tmpsysbankuailiebiaoinfo = new ArrayList<Stock> ();
 
-		String sqlquerystat = "SELECT 股票代码,股票名称,已退市,所属交易所 FROM A股"									
-							   ;   
+		String sqlquerystat = "SELECT 股票代码,股票名称,已退市,所属交易所,股票通达信基本面信息对应表.`上市日期SSDATE`"
+				+ " FROM A股 LEFT JOIN 股票通达信基本面信息对应表 ON 股票通达信基本面信息对应表.`股票代码GPDM` = a股.`股票代码`"									
+				;   
 		logger.debug(sqlquerystat);
 		CachedRowSetImpl rs = null;
 	    try {  
@@ -1914,6 +1994,11 @@ public class BanKuaiDbOperation
 	        	if(!rs.getBoolean("已退市")) {
 	        		tmpbk = new Stock (rs.getString("股票代码"),rs.getString("股票名称"));
 	        		tmpbk.setSuoShuJiaoYiSuo(rs.getString("所属交易所"));
+	        		try{
+	        			tmpbk.getNodeJiBenMian().setShangShiRiQi(rs.getDate("上市日期SSDATE").toLocalDate() );
+	        		} catch (java.lang.NullPointerException e) {
+	        			
+	        		}
 		        	tmpsysbankuailiebiaoinfo.add(tmpbk);
 	        	} else {
 	        		logger.debug(rs.getString("股票代码") + "已经退市");
@@ -2110,7 +2195,16 @@ public class BanKuaiDbOperation
 								+ ")"
 								;
 		logger.debug(sqlinsertstat);
-		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		int autoIncKeyFromApi;
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		} catch (MysqlDataTruncation e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		sqlinsertstat = "INSERT INTO  产业链板块子板块对应表(通达信板块代码,子板块代码) values ("
 				+ "'" + tdxbk.trim() + "'" + ","
@@ -2118,7 +2212,15 @@ public class BanKuaiDbOperation
 				+ ")"
 				;
 		logger.debug(sqlinsertstat);
-		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		} catch (MysqlDataTruncation e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 
 		cursubbks = null;
@@ -2297,17 +2399,41 @@ public class BanKuaiDbOperation
 			if(bktype != null) {
 				String sqlupdatequery = "UPDATE 通达信板块列表 SET 板块类型描述 = " + "'" + bktype +"'" + " WHERE 板块ID = '" + bkcode + "'";
 				logger.debug(sqlupdatequery);
-			    connectdb.sqlUpdateStatExecute(sqlupdatequery);
+			    try {
+					connectdb.sqlUpdateStatExecute(sqlupdatequery);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			if(bktype.equals(BanKuai.NOGGWITHSELFCJL)  ||  bktype.equals(BanKuai.NOGGNOSELFCJL)) { //没有个股的板块肯定不导出到gephi
 				String sqlupdatequery = "UPDATE 通达信板块列表 SET 导出Gephi = false WHERE 板块ID = '" + bkcode + "'";
 				logger.debug(sqlupdatequery);
-			    connectdb.sqlUpdateStatExecute(sqlupdatequery);
+			    try {
+					connectdb.sqlUpdateStatExecute(sqlupdatequery);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			if(  bktype.equals(BanKuai.NOGGNOSELFCJL)) { //没有个股没有成交量的板块肯定不做板块分析
 				String sqlupdatequery = "UPDATE 通达信板块列表 SET 板块分析 = false WHERE 板块ID = '" + bkcode + "'";
 				logger.debug(sqlupdatequery);
-			    connectdb.sqlUpdateStatExecute(sqlupdatequery);
+			    try {
+					connectdb.sqlUpdateStatExecute(sqlupdatequery);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 				
 
@@ -3709,7 +3835,15 @@ public class BanKuaiDbOperation
 				"  AND  ISNULL(移除时间)"
 				;
 		logger.debug(sqlupdatestat);
-		connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		try {
+			connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		} catch (MysqlDataTruncation e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		actiontables = null;
 	}
@@ -3730,7 +3864,15 @@ public class BanKuaiDbOperation
 				"  AND  ISNULL(移除时间)"
 				;
 		logger.debug(sqlupdatestat);
-		connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		try {
+			connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		} catch (MysqlDataTruncation e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		actiontables = null;
 	}
@@ -3873,8 +4015,16 @@ public class BanKuaiDbOperation
    						+ ")"
    						;
    				//logger.debug(sqlinsertstat);
-   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-   				//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
+   				try {
+					int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+   				
    			}
    		    differencebankuainew = null;
    		 
@@ -3889,8 +4039,16 @@ public class BanKuaiDbOperation
 						+ "  AND isnull(移除时间)"
 						;
    	        	//logger.debug(sqldeletetstat);
-   	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqlupdatestat);
-   	    		//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
+   	    		try {
+					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqlupdatestat);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
    	        }
    	        
    	     differencebankuaiold = null;
@@ -4022,8 +4180,16 @@ public class BanKuaiDbOperation
 						+ ")"
 						;
 				//logger.debug(sqlinsertstat);
-				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-				//tfldresult.append("加入：" + str.trim() + " " + gupiaoheader + "\n");
+				try {
+					int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
 		    differencebankuainew = null;
 		    
@@ -4034,14 +4200,31 @@ public class BanKuaiDbOperation
 	        							+ " WHERE 板块名称=" + "'" + str.trim() + "'" 
 	        							;
 	        	//logger.debug(sqldeletetstat);
-	    		int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-	    		//tfldresult.append("删除：" + str.trim() + " " + gupiaoheader + "\n");
+	    		int autoIncKeyFromApi;
+				try {
+					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 	    		
 	    		sqldeletetstat = "DELETE  FROM 股票通达信自定义板块对应表 "
 						+ " WHERE 自定义板块=" + "'" + str.trim() + "'" 
 						;
 				//logger.debug(sqldeletetstat);
-				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				try {
+					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	        }
 	        differencebankuaiold = null;
 	        
@@ -4368,7 +4551,7 @@ public class BanKuaiDbOperation
 		/*
 		 * 
 		 */
-		public boolean updateStockNewInfoToDb(BkChanYeLianTreeNode nodeshouldbedisplayed) 
+		public Boolean updateStockNewInfoToDb(BkChanYeLianTreeNode nodeshouldbedisplayed) 
 		{
 			String dategainiants = null;
 			
@@ -4415,9 +4598,17 @@ public class BanKuaiDbOperation
 				 sqlstatmap.put("mysql", sqlupdatestat);
 				 //logger.debug(sqlupdatestat);
 				 
-				 if( connectdb.sqlUpdateStatExecute(sqlupdatestat) !=0)
-					 return true;
-				 else return false;
+				 try {
+					if( connectdb.sqlUpdateStatExecute(sqlupdatestat) !=0)
+						 return true;
+					 else return false;
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			 } else { //是板块
 				 HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
 				 String actiontable =  "通达信板块列表";
@@ -4438,10 +4629,20 @@ public class BanKuaiDbOperation
 							;
 				 //logger.debug(sqlinsertstat); 
 				 sqlstatmap.put("mysql", sqlinsertstat);
-				 if( connectdb.sqlUpdateStatExecute(sqlinsertstat) !=0 ) {
-					 return true;
-				 } else return false;
+				 try {
+					if( connectdb.sqlUpdateStatExecute(sqlinsertstat) !=0 ) {
+						 return true;
+					 } else return false;
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			 }
+			 
+			 return null;
 		}
 
 
@@ -4843,7 +5044,15 @@ public class BanKuaiDbOperation
 						+ " WHERE 股票代码=" + stockcode
 						;
 			 logger.debug(sqlupdatestat);
-			 connectdb.sqlUpdateStatExecute(sqlupdatestat);
+			 try {
+				connectdb.sqlUpdateStatExecute(sqlupdatestat);
+			} catch (MysqlDataTruncation e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}
 
@@ -5017,12 +5226,18 @@ public class BanKuaiDbOperation
 	                int dy = Integer.parseInt(jbminfomap.get("DY").toString() );
 	                int hy = Integer.parseInt(jbminfomap.get("HY").toString() );
 	                int zbnb = Integer.parseInt(jbminfomap.get("ZBNB").toString() );
+	                LocalDate shangshidate = null;
+	                try {
+	                	 shangshidate = LocalDate.parse(jbminfomap.get("SSDATE").toString(),formatter );
+	                } catch (java.time.format.DateTimeParseException e) {
+	                	shangshidate = LocalDate.parse("1992-01-01");
+	                }
 	                
 	                 sqlinsetstat = "INSERT INTO 股票通达信基本面信息对应表 (股票代码GPDM, 总股本ZGB,更新日期GXRQ, GJG,FQRFRG,法人股FRG,B股BG,H股HG,流通A股LTAG,每股收益ZGG,"
 	                														+  "ZPG,总资产ZZC,流动资产LDZC,固定资产GDZC,无形资产WXZC,股东人数CQTZ,流动负债LDFZ,少数股权CQFZ,"
 	                														+ "公积金ZBGJJ,净资产JZC,主营收益ZYSY,营业成本ZYLY,应收帐款QTLY,营业利润YYLY,投资收益TZSY,"
 	                														+ "经营现金流BTSY,总现金流YYWSZ,存货SNSYTZ,利润总额LYZE,税后利润SHLY,净利润JLY,"
-	                														+ "未分配利益WFPLY,净资产TZMGJZ,地域DY,行业HY,ZBNB) "
+	                														+ "未分配利益WFPLY,净资产TZMGJZ,地域DY,行业HY,ZBNB,上市日期SSDATE) "
 	                		              		+ "VALUES("
 	                		              		+ "'" + stockcode + "'" +","
 	                		              		+ zgb +","
@@ -5059,7 +5274,8 @@ public class BanKuaiDbOperation
 			                					+ tzmgjz +","
 			                					+ dy +","
 			                					+ hy +","
-			                					+ zbnb
+			                					+ zbnb +","
+			                					+ "'" + shangshidate +"'" 
 	                		              		+ ")"
 	                		              		+ " ON DUPLICATE KEY UPDATE "
 	                        					+ " 总股本ZGB=" + zgb +","
@@ -5096,7 +5312,9 @@ public class BanKuaiDbOperation
 	                        					+ " 净资产TZMGJZ=" + tzmgjz +","
 	                        					+ " 地域DY=" + dy +","
 	                        					+ " 行业HY=" + hy +","
-	                        					+ " ZBNB=" + zbnb
+	                        					+ " ZBNB=" + zbnb +" ,"
+	                        					+ " 上市日期SSDATE= '" + shangshidate + "'"
+	                        					
 	                        					; 
 	              logger.debug(sqlinsetstat);
 	              connectdb.sqlUpdateStatExecute(sqlinsetstat);
@@ -5150,7 +5368,15 @@ public class BanKuaiDbOperation
 								" WHERE 板块ID='" + nodecode + "'"
 								;
 			logger.debug(sqlupdatestat);
-	   		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+	   		try {
+				int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+			} catch (MysqlDataTruncation e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		/*
 		 * 导入网易股票行情接口的数据，
@@ -5335,7 +5561,15 @@ public class BanKuaiDbOperation
 						                					" AND 代码= '" + stockcode + "'"
 						                					;
 						                logger.debug(sqlupdate);
-									    int result = connectdb.sqlUpdateStatExecute(sqlupdate);
+									    try {
+											int result = connectdb.sqlUpdateStatExecute(sqlupdate);
+										} catch (MysqlDataTruncation e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (SQLException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
 									    
 									    Files.append(stockcode + "导入网易数据成功！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 									    
@@ -6250,7 +6484,16 @@ public class BanKuaiDbOperation
 											+ ")"
 									;
 			logger.debug(sqlinsertstat);
-			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			int autoIncKeyFromApi;
+			try {
+				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (MysqlDataTruncation e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			sqlinsertstat = "INSERT INTO  产业链板块州板块国对应表(板块州代码,板块国代码) values ("
 									+ "'" + nodecode.trim() + "'" + ","
@@ -6258,7 +6501,15 @@ public class BanKuaiDbOperation
 									+ ")"
 									;
 			logger.debug(sqlinsertstat);
-			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			try {
+				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (MysqlDataTruncation e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			cursubbks = null;
 			return subgpccode;
@@ -6402,7 +6653,16 @@ public class BanKuaiDbOperation
 					+ ")"
 					;
 			logger.debug(sqlinsertstat);
-			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			int autoIncKeyFromApi = 0;
+			try {
+				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (MysqlDataTruncation e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return autoIncKeyFromApi;
 		}
 		/*
@@ -6506,82 +6766,396 @@ public class BanKuaiDbOperation
 			return namelist;
 		}
 		/*
-		 * 缺口，原来是要放在数据库里面的，现在发现不合适，还是在程序运行时候实时统计
+		 * 缺口
 		 */
-//		public List<QueKou> getNodeQueKouInfo(String nodecode) 
-//		{
-//			List<QueKou> qklist = new ArrayList<QueKou> ();
-//			
-//			CachedRowSetImpl rspd = null;
-//			try {
-//				String sqlquerystat = "SELECT * FROM 缺口统计表 " 
-//						   + " WHERE 股票代码 = '" + nodecode + "'"  
+		public List<QueKou> getNodeQueKouDbInfo(String nodecode) 
+		{
+			List<QueKou> qklist = new ArrayList<QueKou> ();
+			
+			CachedRowSetImpl rspd = null;
+			try {
+				String sqlquerystat = "SELECT * FROM 缺口统计表 " 
+						   + " WHERE 股票代码 = '" + nodecode + "'"
+						   + " Order By 产生日期  Desc "
 //						   + " ISNULL(回补日期) "
-//						  ;
-//	
-//			    	logger.debug(sqlquerystat);
-//			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
-//			    	
-//			        while(rspd.next())  {
-//			        	Integer dbid = rspd.getInt("ID");
-//			        	Double qkup =  rspd.getDouble("缺口上限");
-//			        	Double qkdown =  rspd.getDouble("缺口下限");
-//			        	Boolean type = rspd.getBoolean("缺口类型");
-//			        	java.sql.Date qkdate = rspd.getDate("产生日期");
-//			        	QueKou qk = new QueKou (nodecode,qkdate.toLocalDate(),qkdown,qkup,type);
-////			        	qk.setDbId(dbid);
-//			        	
-//			        	qklist.add(qk);
-//			        }
-//			} catch(java.lang.NullPointerException e){ 
-//			    	e.printStackTrace();
-//			} catch (SQLException e) {
-//			    	e.printStackTrace();
-//			} catch(Exception e){
-//			    	e.printStackTrace();
-//			} finally {
-//			    	if(rspd != null)
-//						try {
-//							rspd.close();
-//							rspd = null;
-//						} catch (SQLException e) {
-//							e.printStackTrace();
-//						}
-//			}
-//
-//			return qklist;
-//		}
+						  ;
+	
+			    	logger.debug(sqlquerystat);
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			        while(rspd.next())  {
+			        	Integer dbid = rspd.getInt("ID");
+			        	Double qkup =  rspd.getDouble("缺口上限");
+			        	Double qkdown =  rspd.getDouble("缺口下限");
+			        	Boolean type = rspd.getBoolean("缺口类型");
+			        	java.sql.Date qkdate = rspd.getDate("产生日期");
+			        	QueKou qk = new QueKou (nodecode,qkdate.toLocalDate(),qkdown,qkup,type);
+			        	
+			        	
+			        	Double shoupanjia = rspd.getDouble("产生收盘价");
+			        	java.sql.Date hbdate = rspd.getDate("回补日期");
+			        	
+			        	qk.setDbId(dbid);
+			        	qk.setShouPanJia(shoupanjia);
+			        	try{
+			        		qk.setQueKouHuiBuDate(hbdate.toLocalDate() );
+			        	} catch (java.lang.NullPointerException e) {
+			        		
+			        	}
+			        	
+			        	qklist.add(qk);
+			        }
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+
+			return qklist;
+		}
+		/*
+		 * 重新统计个股缺口
+		 */
+		public void tDXNodeQueKouInfo(TDXNodes childnode, LocalDate lastestcheckdate) 
+		{
+			
+			List<QueKou> qklist = this.getNodeQueKouDbInfo (childnode.getMyOwnCode());
+			
+			childnode = this.getStockKXianZouShiFromCsv ((Stock)childnode, LocalDate.parse("1990-01-01"), LocalDate.now(),TDXNodeGivenPeriodDataItem.DAY);
+			if( ((Stock)childnode).isVeryVeryNewXinStock() ) //新股的缺口不考虑
+				return;
+			
+			//判断个股是否复权了，如果复权，需要从新从记录起始统计缺口
+			boolean resetallquekou = false;
+			try {
+				QueKou lastestqk = qklist.get(0);
+				LocalDate qkdate = lastestqk.getQueKouDate();
+				Double shoupanjia = lastestqk.getShouPanJia();
+				
+				
+				NodeXPeriodDataBasic stockxdate = ((Stock)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
+				OHLCItem ohlcdate = stockxdate.getSpecificDateOHLCData(qkdate, 0);
+				Double curclose = ohlcdate.getCloseValue();
+				if( !curclose.equals(shoupanjia) )
+					resetallquekou = true;
+			} catch (java.lang.IndexOutOfBoundsException e) {
+//				e.printStackTrace();
+				resetallquekou = true;
+			}
+			
+			if(resetallquekou) {
+				qklist =  checkQueKouForAGivenPeriod ( (Stock)childnode, LocalDate.parse("1990-01-01"), LocalDate.now() ,null);
+			} else {
+//				QueKou tmpqk =  qklist.get(0);
+//				LocalDate newstartdate ;
+//				if(tmpqk.isQueKouHuiBu()) //如果最新缺口已经回补，那肯定至少到回补日期都是检查过的。
+//					newstartdate = tmpqk.getQueKouHuiBuDate().plusDays(1);
+//				else
+//					newstartdate =  tmpqk.getQueKouDate().plusDays(1);
+				
+				qklist = checkQueKouForAGivenPeriod ( (Stock)childnode,lastestcheckdate, LocalDate.now(),qklist );
+//				qklist = checkQueKouForAGivenPeriod ( (Stock)childnode,LocalDate.parse("2018-01-01" ), LocalDate.now(),qklist );
+			}
+			
+			//set to db
+			if(resetallquekou) {
+				CachedRowSetImpl rspd = null;
+				try {
+					String sqldeletestat = "DELETE  FROM 缺口统计表 " 
+							  + " WHERE 股票代码 = '" + childnode.getMyOwnCode() + "'"  
+							  ;
+					int result = connectdb.sqlDeleteStatExecute(sqldeletestat);
+					
+					updateNodeQueKouInfoToDb (qklist);
+
+				} catch(java.lang.NullPointerException e){ 
+				    	e.printStackTrace();
+				} catch(Exception e){
+				    	e.printStackTrace();
+				} finally {
+				    	if(rspd != null)
+							try {
+								rspd.close();
+								rspd = null;
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+				}
+		
+			}	else {
+				updateNodeQueKouInfoToDb (qklist);
+
+			}
+			
+		}
+		private List<QueKou> checkQueKouForAGivenPeriod (TDXNodes childnode,LocalDate startdate, LocalDate enddate, List<QueKou> qklist )
+		{
+			
+			try{
+				NodeJiBenMian tmpnodejbm = childnode.getNodeJiBenMian();
+				LocalDate shangshiriqi = tmpnodejbm.getShangShiRiQi(); //新股不统计
+				if(DayCounter.bestDaysBetweenIngoreWeekEnd(shangshiriqi, startdate) <=15 ) 
+					return null;
+				
+			} catch(java.lang.NullPointerException e) {
+				
+			}
+			
+			
+			if(qklist == null)
+				qklist = new ArrayList<QueKou> ();
+			
+			NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
+			OHLCSeries nodeohlc = nodexdata.getOHLCData();
+			for(int j=1;j < nodeohlc.getItemCount();j++) {
+				
+				OHLCItem kxiandatacurwk = (OHLCItem) nodeohlc.getDataItem(j);
+				RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
+				LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				
+				if(curstart.isBefore(startdate) || curstart.isAfter(enddate))
+					continue;
+				
+				OHLCItem kxiandatalastwk = (OHLCItem) nodeohlc.getDataItem(j-1);
+				
+				Double curhigh = kxiandatacurwk.getHighValue();
+				Double curlow = kxiandatacurwk.getLowValue();
+				Double curclose = kxiandatacurwk.getCloseValue();
+				
+				Iterator itr = qklist.iterator(); 
+				while (itr.hasNext()) 
+				{ 
+					QueKou tmpqk = (QueKou)itr.next();
+					if (!tmpqk.isQueKouHuiBu() ) {
+						String huibuinfo = tmpqk.checkQueKouHuiBu(curstart,curlow, curhigh);
+					}
+				} 
+				
+				//看看有没有产生新的缺口
+				double lasthigh = kxiandatalastwk.getHighValue();
+				double lastlow = kxiandatalastwk.getLowValue();
+				
+				Boolean tiaokongup = false; Boolean tiaokongdown = false;
+				if(curlow > lasthigh) {
+					Double newqkup = curlow;
+					Double newqkdown = lasthigh;
+					QueKou newqk = new QueKou (childnode.getMyOwnCode(),curstart,newqkdown,newqkup,true);
+					newqk.setShouPanJia(curclose);
+					
+					qklist.add(0, newqk);
+				}
+				else 
+				if(curhigh < lastlow) {
+					Double newqkup = lastlow;
+					Double newqkdown = curhigh;
+					QueKou newqk = new QueKou (childnode.getMyOwnCode(),curstart,newqkdown,newqkup,false);
+					newqk.setShouPanJia(curclose);
+					
+					qklist.add(0, newqk);
+				}
+			}
+			
+			return qklist;
+		}
 		/*
 		 * 
 		 */
-//		public void updateNodeQueKouInfo (List<QueKou> qklist )
-//		{
-//			for(QueKou tmpqk : qklist) {
-//				if(tmpqk.shouldUpdatedInDb() ) {
-//					Double qkup = tmpqk.getQueKouUp();  
-//		        	Double qkdown =  tmpqk.getQueKouDown();
-//		        	Boolean type = tmpqk.getQueKouLeiXing();
-//		        	LocalDate qkdate = tmpqk.getQueKouDate();
-//		        	LocalDate huidate = tmpqk.getQueKouHuiBuDate();
-//		        	
-//		        	int quhubudays = 0;
-//		        	try {
-//		        		Period diff = Period.between(qkdate, huidate);
-//		        		quhubudays = diff.getDays();
-//		        	} catch (java.lang.NullPointerException e) {
-//		        		
-//		        	}
-//		    		if(quhubudays >= 15) { //updated
-//		    			
-//		    		}
-//		    		else { //delete
-//		    			
-//		    		}
-//				}
-//				
-//			}
-//		}
-		
+		public Boolean updateNodeQueKouInfoToDb (List<QueKou> qklist )
+		{
+			if(qklist == null)
+				return null;
+			
+			for(QueKou tmpqk : qklist) {
+				
+        		if(!tmpqk.shouldUpdatedToDb())
+        			continue;
+        		
+					String nodecode = tmpqk.getNodeCode ();
+					Double qkup = tmpqk.getQueKouUp();  
+		        	Double qkdown =  tmpqk.getQueKouDown();
+		        	Boolean type = tmpqk.getQueKouLeiXing();
+		        	LocalDate qkdate = tmpqk.getQueKouDate();
+		        	LocalDate huidate = tmpqk.getQueKouHuiBuDate();
+		        	String sqlhuibupart ;
+		        	Double shoupanjia = tmpqk.getShouPanJia();
+		        	
+		        	try {
+		        		String sqlinsertstat;
+		        		if(huidate == null) {
+		        			 sqlinsertstat = "INSERT INTO 缺口统计表(股票代码,产生日期,缺口上限,缺口下限,缺口类型,回补日期,产生收盘价) VALUES ("
+			   						+ "'" + nodecode.trim() + "'" + ","
+			        				+ "'" + qkdate + "'," 
+			   						+ qkup + ","
+			   						+ qkdown + ","
+			   						+ type + ","
+			   						+ null +  ","
+			   						+ shoupanjia + ")"
+			   						+ " ON DUPLICATE KEY UPDATE "
+			   						+ " 回补日期 =" + null + "," 
+			   						+ " 缺口上限 =" + qkup + ","
+			   						+ " 缺口下限 =" + qkdown  + ","
+			   						+ " 产生收盘价 = " + shoupanjia + ","
+			        				+ " 缺口类型 = " + type
+			   						;
+		        		} else {
+		        			 sqlinsertstat = "INSERT INTO 缺口统计表(股票代码,产生日期,缺口上限,缺口下限,缺口类型,回补日期,产生收盘价) VALUES ("
+			   						+ "'" + nodecode.trim() + "'" + ","
+			        				+ "'" + qkdate + "'," 
+			   						+ qkup + ","
+			   						+ qkdown + ","
+			   						+ type + ","
+			   						+ "'" + huidate  + "'," 
+			   						+ shoupanjia + ")"
+			   						+ " ON DUPLICATE KEY UPDATE "
+			   						+ " 回补日期 =" + " '" + huidate + "'," 
+			   						+ " 缺口上限 =" + qkup + ","
+			   						+ " 缺口下限 =" + qkdown  + ","
+			   						+ " 产生收盘价 = " + shoupanjia + ","
+			        				+ " 缺口类型 = " + type
+			   						;
+		        			
+		        		}
+		        		
+								
+		   				logger.debug(sqlinsertstat);
+		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		   					        		
+					} catch(java.lang.NullPointerException e){ 
+					    	e.printStackTrace();
+					} catch(Exception e){
+					    	e.printStackTrace();
+					} finally {
+					}
+
+				
+				
+			}
+			
+			return true;
+		}
+		public LocalDate getLatestTDXNodeQueKouDate() 
+		{
+			Set<String> namelist = new HashSet<String> ();
+			CachedRowSetImpl rspd = null;
+			try {
+				String sqlquerystat = "SELECT  GREATEST (a.maxqk, a.maxhb ) AS MAXDATE "
+						+ "FROM ( SELECT MAX(产生日期) AS maxqk, MAX(回补日期) AS maxhb	FROM 缺口统计表	"
+						+ ") a"
+						;
+			    	logger.debug(sqlquerystat);
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			    	java.sql.Date maxdate = null;
+			        while(rspd.next())  {
+			        	 maxdate =  rspd.getDate("MAXDATE");
+			        }
+			        
+			        return maxdate.toLocalDate();
+			        
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+			
+			return null;
+		}
+		/*
+		 * 
+		 */
+		public void getTDXNodesQueKouTimeRangTongJIResult (Set<TDXNodes> tdxnodes)
+		{
+			String sqlquerystring = 
+					"SELECT a.FOfWk,a.EOfWk,a.OpenDownQueKou,a.SmallDown,a.MiddleDown,a.LargeDown,a.OpenUpQueKou,a.SmallUP,a.MiddleUP,a.LargeUP,"
+					+ "      a.HuiBuDownQueKou,a.HuiBuupQueKou   \r\n"
+					+ "FROM  \r\n"
+					+ "(SELECT t1.FOfWk,t1.EOfWk,  \r\n"
+					+ "t1.OpenDownQueKou,t1.SmallDown,t1.MiddleDown,t1.LargeDown,t1.OpenUpQueKou,t1.SmallUP,t1.MiddleUP,t1.LargeUP,   \r\n"
+					+ "t2.HuiBuDownQueKou,t2.HuiBuupQueKou  \r\n"
+					+ "FROM (  \r\n"
+					+ "	select DATE(产生日期 + INTERVAL (1 - DAYOFWEEK(产生日期)) DAY) as FOfWk,  \r\n"
+					+ "            DATE(产生日期 + INTERVAL (6 - DAYOFWEEK(产生日期)) DAY) as EOfWk,  \r\n"
+					+ "            产生日期, 回补日期,  \r\n"
+					+ "				sum(case when 缺口类型 = FALSE then 1 else 0 end) AS OpenDownQueKou,  \r\n"
+					+ "				sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallDown,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleDown,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeDown,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE  then 1 else 0 end) AS OpenUpQueKou,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  <= 5   ) THEN 1 ELSE 0 END) AS SmallUP,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleUP,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeUP  \r\n" 
+					+ "	FROM 缺口统计表  \r\n"
+					+ "	WHERE 股票代码 = '000001'  \r\n"
+					+ "	group by YEAR(产生日期), WEEK(产生日期)) t1  \r\n"
+					+ "LEFT JOIN (  \r\n"
+					+ "	SELECT   \r\n"
+					+ "    DATE(回补日期 + INTERVAL (1 - DAYOFWEEK(回补日期)) DAY) as FOfWk,  \r\n"
+					+ "    DATE( 回补日期 + INTERVAL (6 - DAYOFWEEK( 回补日期)) DAY) as EOfWk,  \r\n"
+					+ "    产生日期,  回补日期,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuDownQueKou,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuupQueKou  \r\n"
+					+ "	FROM 缺口统计表  \r\n"
+					+ " WHERE 股票代码 = '000001'  \r\n"
+					+ "	group by  year(回补日期),week(回补日期)  \r\n"
+					+ ") t2 ON t1.EOfWk = t2.EOfWk  \r\n"
+					+ " \r\n"
+					+ "UNION  \r\n"
+					+ " \r\n"
+					+ "SELECT t2.FOfWk,t2.EOfWk,t1.OpenDownQueKou,t1.SmallDown,t1.MiddleDown,t1.LargeDown,t1.OpenUpQueKou,t1.SmallUP,t1.MiddleUP,t1.LargeUP,  \r\n"
+					+ "     t2.HuiBuDownQueKou,t2.HuiBuupQueKou  \r\n"
+					+ " FROM (  \r\n"
+					+ "	SELECT DATE(产生日期 + INTERVAL (1 - DAYOFWEEK(产生日期)) DAY) as FOfWk,  \r\n"
+					+ "            DATE(产生日期 + INTERVAL (6 - DAYOFWEEK(产生日期)) DAY) as EOfWk,  \r\n"
+					+ "           产生日期, 回补日期,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE then 1 else 0 end) AS OpenDownQueKou,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallDown,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleDown,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeDown,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE  then 1 else 0 end) AS OpenUpQueKou,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallUP,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleUP,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeUP  \r\n"
+					+ "	FROM 缺口统计表  \r\n"
+					+ "	WHERE 股票代码 = '000001'  \r\n"
+					+ "	group by YEAR(产生日期), WEEK(产生日期)  \r\n"
+					+ ") t1  \r\n"
+					+ "RIGHT JOIN (  \r\n"
+					+ "	select    DATE(回补日期 + INTERVAL (1 - DAYOFWEEK(回补日期)) DAY) as FOfWk,  \r\n"
+					+ "    DATE( 回补日期 + INTERVAL (6 - DAYOFWEEK( 回补日期)) DAY) as EOfWk,  \r\n"
+					+ "    产生日期,  回补日期,  \r\n" 
+					+ "	sum(case when 缺口类型 = FALSE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuDownQueKou,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuupQueKou  \r\n"
+					+ "	FROM 缺口统计表  \r\n"
+					+ "	WHERE 股票代码 = '000001'   \r\n"
+					+ "	group by  year(回补日期),week(回补日期)  \r\n"
+					+ ") t2 ON t1.EOfWk = t2.EOfWk  \r\n"
+					+ ")a  \r\n"
+					+ "Order By a.EOfWk    \r\n"
+					;
+			
+			
+		}
 
 		
 }

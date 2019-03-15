@@ -164,7 +164,13 @@ public class AccountDbOperation
 				;
 		sqlstatmap.put("mysql", sqlinsertstat);
 		
-		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+		int autoIncKeyFromApi = 0;
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return autoIncKeyFromApi;
 	}
@@ -178,7 +184,12 @@ public class AccountDbOperation
 				+ " WHERE 账户名称=" + "'" + accountname.trim() + "'" 
 				;
 		//logger.dubug(sqlupdatestat);
-		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		try {
+			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -190,7 +201,12 @@ public class AccountDbOperation
 				+ " WHERE 账户名称=" + "'" + accountname.trim() + "'" 
 				;
 		//logger.dubug(sqlupdatestat);
-		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		try {
+			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void updateTotalUsedXianjianToDb(String accountname, double totoalusedxianjing) 
@@ -202,7 +218,12 @@ public class AccountDbOperation
 				+ " WHERE 账户名称=" + "'" + accountname.trim() + "'" 
 				;
 		//logger.dubug(sqlupdatestat);
-		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		try {
+			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -215,7 +236,12 @@ public class AccountDbOperation
 				+ " WHERE 账户名称=" + "'" + accountname.trim() + "'" 
 				;
 		//logger.dubug(sqlupdatestat);
-		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		try {
+			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -230,7 +256,13 @@ public class AccountDbOperation
 				+ " AND 买卖账号=" + "'" + stockaccount + "'"
 				;
 		//logger.dubug(sqliupdatestat);
-		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
+		int autoIncKeyFromApi = 0;
+		try {
+			autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return autoIncKeyFromApi;
 	}
 
@@ -628,7 +660,13 @@ public class AccountDbOperation
 				+ ")"
 				;
 		sqlstatmap.put("mysql", sqlinsertstat);
-		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+		int autoIncKeyFromApi = 0;
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		//更新买卖数据库中profit的ID，
 		String actiontable = this.getActionTableName (subaccount); 
@@ -638,7 +676,12 @@ public class AccountDbOperation
 						+ " WHERE ID=" + maimaidatabaseid
 						;
 		//logger.dubug(sqliupdatestat);
-		connectdb.sqlUpdateStatExecute(sqliupdatestat);
+		try {
+			connectdb.sqlUpdateStatExecute(sqliupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return autoIncKeyFromApi;
 		
@@ -713,8 +756,13 @@ public class AccountDbOperation
 				+ " WHERE ID=" + databaseid
 				;
 		//logger.dubug(sqliupdatestat);
-		@SuppressWarnings("unused")
-		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
+		try {
+			@SuppressWarnings("unused")
+			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 			
 		return stocknumberpricepanel;
@@ -790,7 +838,12 @@ public class AccountDbOperation
 				+ ")"
 				;
 		//logger.dubug(sqlinsertstat);  
-		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return autoIncKeyFromApi;
 	}
@@ -819,7 +872,12 @@ public class AccountDbOperation
 				+ ")"
 				;
 		//logger.dubug(sqlinsertstat);  
-		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return autoIncKeyFromApi;
 	}
@@ -861,7 +919,12 @@ public class AccountDbOperation
 						+ " WHERE 账户名称=" + "'" + tmpactname.trim() + "'" 
 						;
 				logger.debug(sqlupdatestat);
-				int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+				try {
+					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				this.setNewRzrqAccountsToDb (tmpactid,  tmpactname,  tmpselected, tmprzrq, tmprzrqid,tmpsuoshuquanshang);
 				
@@ -884,7 +947,13 @@ public class AccountDbOperation
 				+ ")"
 				;
 		logger.debug(sqlinsertstat);
-			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			int autoIncKeyFromApi = 0;
+			try {
+				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if(autoIncKeyFromApi <0) return -1;
 			
 			String cashaccountname = tmpactname.trim() + "- 现金账户";
@@ -898,7 +967,12 @@ public class AccountDbOperation
 					+ ")"
 					;
 			logger.debug(sqlinsertstat);
-			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			try {
+				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if(autoIncKeyFromApi <0) return -1;
 		
 		
@@ -926,7 +1000,13 @@ public class AccountDbOperation
 				+ ")"
 				;
 		//logger.dubug(sqlinsertstat);
-		int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		int autoIncKeyFromApi = 0;
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(autoIncKeyFromApi <0) return -1;
 		
 		subaccountname = tmpactname + "- 融资子账户";
@@ -944,7 +1024,12 @@ public class AccountDbOperation
 				+ ")"
 				;
 		//logger.dubug(sqlinsertstat);
-		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(autoIncKeyFromApi <0) return -1;
 		
 		subaccountname = tmpactname + "- 融券子账户";
@@ -962,7 +1047,12 @@ public class AccountDbOperation
 				+ ")"
 				;
 		//logger.dubug(sqlinsertstat);
-		autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		try {
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(autoIncKeyFromApi <0) return -1;
 		
 
@@ -989,7 +1079,12 @@ public class AccountDbOperation
 				+ " WHERE 账户名称=" + "'" + acntname.trim() + "'" 
 				;
 		logger.debug(sqlupdatestat);
-		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		try {
+			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	/*
 	 * 设置现金账户的现金额
@@ -1006,7 +1101,13 @@ public class AccountDbOperation
 				+ " WHERE 账户名称=" + "'" + actionaccountname + "'"
 				;
 		logger.debug(sqliupdatestat);
-		int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
+		int autoIncKeyFromApi = 0;
+		try {
+			autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return autoIncKeyFromApi;
 		
@@ -1074,14 +1175,25 @@ public class AccountDbOperation
 					+ " WHERE ID=" + databaseid
 					;
 			//logger.dubug(sqliupdatestat);
-			@SuppressWarnings("unused")
-			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
+			try {
+				@SuppressWarnings("unused")
+				int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqliupdatestat);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		} else { //异表需要删除 + insert
 			String sqldelstat = "DELETE  FROM " + actionoldtable
 								+ " WHERE ID=" + databaseid
 								;
-			int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldelstat);
+			int autoIncKeyFromApi;
+			try {
+				autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldelstat);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			if(maimaisign)
 				autoIncKeyFromApi = this.setBuyExchangeRelatedActions( stocknumberpricepanel  );

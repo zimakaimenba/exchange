@@ -160,7 +160,7 @@ public class BanKuaiAndChanYeLian2
             	Boolean bkselfinparsedfile = this.bkfxrfxmlhandler.getBanKuaiFxSelfMatchModelOfSepecificDate (tmpbkcode, localDate);
   
 				if(setnum != null && setnum > 0) {
-					BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
+					BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
 					if(bkselfinparsedfile)
 						treerelated.setSelfIsMatchModel (localDate);
 	    			treerelated.setStocksNumInParsedFile (localDate,  setnum);

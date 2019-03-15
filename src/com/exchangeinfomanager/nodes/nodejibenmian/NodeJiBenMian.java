@@ -9,7 +9,7 @@ public class NodeJiBenMian
 //				nodejbm = this;
 //				this.myowncode = nodecode;
 			}
-			
+			private LocalDate shangshiriqi ;
 			private String myowncode;
 			private LocalDate gainiantishidate;
 			private String gainiantishi;
@@ -24,6 +24,17 @@ public class NodeJiBenMian
 			private String suoshujiaoyisuo;
 			private Object[][] zdgzmrmcykRecords ;
 			
+			public void setShangShiRiQi (LocalDate ssrq)
+			{
+				this.shangshiriqi = ssrq;
+			}
+			public LocalDate getShangShiRiQi ()
+			{
+				if(this.shangshiriqi == null)
+					return LocalDate.parse("1990-01-01");
+				else
+					return this.shangshiriqi ;
+			}
 			public String getMyowncode() {
 				return myowncode;
 			}

@@ -11,8 +11,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
+import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets.SetView;
@@ -66,6 +72,8 @@ import java.awt.GridBagLayout;
 import java.awt.Color;
 
 import org.apache.commons.io.FileUtils;
+import org.jfree.data.time.ohlc.OHLCItem;
+
 import javax.swing.DefaultComboBoxModel;
 
 public class ImportTDXData extends JDialog {
@@ -78,7 +86,8 @@ public class ImportTDXData extends JDialog {
 	public ImportTDXData() 
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
-		sysconfig = SystemConfigration.getInstance(); 
+		this.sysconfig = SystemConfigration.getInstance(); 
+		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 		initializeGui ();
 
 		iniiazlizeZdyGui ();
@@ -150,11 +159,9 @@ public class ImportTDXData extends JDialog {
 
 	private void partThatCanImportDuringWork ()
 	{
-//		if(cbxtdxdrawing.isSelected()) { //通达信划线数据
-//			bkdbopt.refreshTDXDrawingFile ();
-//		}
-		if(ckbxquekoutongji.isSelected() && ckbxquekoutongji.isEnabled()) { //导入大智慧的个股股权信息
-//			File resulttmpfilesys = bkdbopt.refreshDZHStockGuQuan ();
+
+		if(ckbxquekoutongji.isSelected() && ckbxquekoutongji.isEnabled()) { 
+			queKouTongJi ();
 			ckbxquekoutongji.setEnabled(false);
 		}
 		
@@ -401,29 +408,54 @@ public class ImportTDXData extends JDialog {
 		
 
 	}
-
-	private void importEastMoneyExportFile()
+	
+	private void queKouTongJi ()
 	{
-		String parsedpath = sysconfig.getEastMoneyDownloadedFilePath ();
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		chooser.setCurrentDirectory(new File(parsedpath) );
+//		ArrayList<Stock> allstocks = bkdbopt.getAllStocks ();
+//		for (Stock stock : allstocks ) {
+//		    
+//
+//		}
 		
-		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-		    
-		    String linuxpath;
-		    if(chooser.getSelectedFile().isDirectory())
-		    	linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-		    else
-		    	linuxpath = (chooser.getSelectedFile()).toString().replace('\\', '/');
-		    
-		    File emfile = chooser.getSelectedFile();
-		    bkdbopt.importEastMoneyStockData (emfile);
-
+		LocalDate lastestdate = bkdbopt.getLatestTDXNodeQueKouDate ();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbksks.getAllBkStocksTree().getModel().getRoot();
+		int bankuaicount = allbksks.getAllBkStocksTree().getModel().getChildCount(treeroot);
+        
+		for(int i=0;i< bankuaicount; i++) {
+			
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbksks.getAllBkStocksTree().getModel().getChild(treeroot, i);
+			if(childnode.getType() != BkChanYeLianTreeNode.TDXGG) 
+				continue;
+			
+			
+			bkdbopt.tDXNodeQueKouInfo((TDXNodes) childnode , lastestdate.plusDays(1));
 		}
-		
-		
+
+
 	}
+
+//	private void importEastMoneyExportFile()
+//	{
+//		String parsedpath = sysconfig.getEastMoneyDownloadedFilePath ();
+//		JFileChooser chooser = new JFileChooser();
+//		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+//		chooser.setCurrentDirectory(new File(parsedpath) );
+//		
+//		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+//		    
+//		    String linuxpath;
+//		    if(chooser.getSelectedFile().isDirectory())
+//		    	linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+//		    else
+//		    	linuxpath = (chooser.getSelectedFile()).toString().replace('\\', '/');
+//		    
+//		    File emfile = chooser.getSelectedFile();
+//		    bkdbopt.importEastMoneyStockData (emfile);
+//
+//		}
+//		
+//		
+//	}
 	/*
 	 * 
 	 */
@@ -461,6 +493,8 @@ public class ImportTDXData extends JDialog {
 
 	private void createEvents() 
 	{
+		
+		
 		cbximportzdyfromout.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -535,18 +569,18 @@ public class ImportTDXData extends JDialog {
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				if(!chbxdaorutdxsysbk.isSelected() && !cbximporttdxgeguinfo.isSelected() 
-						&& !chbxdaorutdxsysbkvol.isSelected() && !cbxImportShGeGuVol.isSelected() 
-						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()
-						&& !ckbxquekoutongji.isSelected()
-						&& !ckbxnetease.isSelected() 
-						&& !chbxdaorutdxzdybk.isSelected() 
-						&& !cbximportzdyfromout.isSelected()
-						) {
-					JOptionPane.showMessageDialog(null,"请选择需要导入的项目！");
-					return;
-					
-				}
+//				if(!chbxdaorutdxsysbk.isSelected() && !cbximporttdxgeguinfo.isSelected() 
+//						&& !chbxdaorutdxsysbkvol.isSelected() && !cbxImportShGeGuVol.isSelected() 
+//						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()
+//						&& !ckbxquekoutongji.isSelected()
+//						&& !ckbxnetease.isSelected() 
+//						&& !chbxdaorutdxzdybk.isSelected() 
+//						&& !cbximportzdyfromout.isSelected()
+//						) {
+//					JOptionPane.showMessageDialog(null,"请选择需要导入的项目！");
+//					return;
+//					
+//				}
 				//
 				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() 
 						||cbxImportShGeGuVol.isSelected() || cbxImportSzGeGuVol.isSelected() 
@@ -668,15 +702,6 @@ public class ImportTDXData extends JDialog {
 		JProgressBar progressBar_5 = new JProgressBar();
 		
 		ckbxquekoutongji = new JCheckBox("\u7EDF\u8BA1\u4E2A\u80A1\u7F3A\u53E3");
-		ckbxquekoutongji.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if(ckbxquekoutongji.isSelected()) {
-					
-				}
-			}
-		});
-		ckbxquekoutongji.setEnabled(false);
 		
 		ckbxnetease = new JCheckBox("\u5BFC\u5165\u7F51\u6613\u8D22\u7ECF\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F\uFF08\u6362\u624B\u7387/\u5E02\u503C\u7B49\uFF09");
 		
