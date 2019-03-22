@@ -50,7 +50,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-
+import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
@@ -59,6 +59,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
@@ -70,19 +71,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	public BanKuaiFengXiCategoryBarChartCjePnl() 
 	{
 		super ();
-		super.plot.setRenderer(new CustomRendererForCje() );
-		
-//		((CustomRendererForCje) plot.getRenderer()).setBarPainter(new StandardBarPainter());
-//		
-//		CustomCategoryToolTipGeneratorForChenJiaoEr custotooltip = new CustomCategoryToolTipGeneratorForChenJiaoEr();
-//		((CustomRendererForCje) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
-//		
-////		DecimalFormat decimalformate = new DecimalFormat(",###");//("#0.000");
-////		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-////		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelsVisible(true);
-//		
-//		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
-//		((CustomRendererForCje) plot.getRenderer()).setBaseItemLabelGenerator(labelgenerator);
+		super.plot.setRenderer(0,new CustomRendererForCje() );
 	}
 	public void updatedDate (TDXNodes node, LocalDate date, int difference,String period)
 	{
@@ -138,29 +127,46 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		barchartdataset.clear();
 		super.barchart.setNotify(false);
 		
-		double highestHigh =0.0; //设置显示范围
+		double highestHigh =0.0; int downqkmax = 0;//设置显示范围
 		
-//		TimeSeries rangecje = nodexdata.getRangeChengJiaoEr(startdate, enddate);
-//		TimeSeries rangecje =  nodexdata.getChengJiaoEr ();
 		LocalDate tmpdate = requirestart;
 		do  {
 			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
-//				org.jfree.data.time.Week tmpwk = new Week(Date.from(tmpdate.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
-//			TimeSeriesDataItem cjerecord = rangecje.getDataItem(tmpwk);
-//			tmpwk = null;
 			Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);
+			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 			if(cje != null) {
-//				double cje = cjerecord.getValue().doubleValue();
-				
-				barchartdataset.setValue(cje,"占比",tmpdate.with(DayOfWeek.FRIDAY));
+				barchartdataset.setValue(cje,"占比", wkfriday);
 				
 				if(cje > highestHigh)
 					highestHigh = cje;
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
-					barchartdataset.setValue(0.0,"占比",tmpdate);
+					barchartdataset.setValue(0.0,"占比",wkfriday);
 				} 
 			}
+			
+			//QueKou Line Part
+			if(super.curdisplayednode.getType() != BkChanYeLianTreeNode.DAPAN) {
+				Integer opneupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
+				Integer opendownquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
+				Integer huibuupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
+				Integer huibudowquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
+				 
+				if(opendownquekou != null) {
+					super.linechartdataset.setValue(opendownquekou, "QueKouOpenDown", wkfriday );
+					if (opendownquekou > downqkmax)
+						downqkmax = opendownquekou ;
+				}	else
+					super.linechartdataset.setValue(0, "QueKouOpenDown", wkfriday );
+				
+				if(huibuupquekou != null) {
+					super.linechartdataset.setValue(huibuupquekou, "QueKouHuiBuUpQk", wkfriday );
+					if (huibuupquekou > downqkmax)
+						downqkmax = huibuupquekou ;
+				}	else
+					super.linechartdataset.setValue(0, "QueKouHuiBuUpQk", wkfriday );
+			}
+			
 			
 			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
@@ -172,175 +178,75 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 
 		super.barchart.setNotify(true);
-		xiuShiGuiAfterDispalyDate (nodexdata,requirestart,requireend,highestHigh,period);
+		xiuShiGuiAfterDispalyDate (nodexdata,requirestart,requireend,highestHigh,downqkmax,period);
 	}
 	/*
 	 * 
 	 */
-//	private List<QueKou> queKouTongJi ()
-//	{
-//		List<QueKou> qklist = new ArrayList<QueKou> ();
-//		
-//		NodeXPeriodDataBasic nodexdata = super.curdisplayednode.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
-//		OHLCSeries nodeohlc = nodexdata.getOHLCData();
-//		for(int j=1;j < ohlcSeries.getItemCount();j++) {
-//			
-//			OHLCItem kxiandatacurwk = (OHLCItem) ohlcSeries.getDataItem(j);
-//			RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
-//			LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			
-//			OHLCItem kxiandatalastwk = (OHLCItem) ohlcSeries.getDataItem(j-1);
-//			
-//			Double curhigh = kxiandatacurwk.getHighValue();
-//			Double curlow = kxiandatacurwk.getLowValue();
-//
-//			Iterator itr = qklist.iterator(); 
-//			while (itr.hasNext()) 
-//			{ 
-//				QueKou tmpqk = (QueKou)itr.next();
-//				if (!tmpqk.isQueKouHuiBu() ) {
-//					String huibuinfo = tmpqk.checkQueKouHuiBu(curstart,curlow, curhigh);
-//					if(tmpqk.isQueKouHuiBu() && !tmpqk.shouldUpdatedInDb())
-//						itr.remove(); 
-//				}
-//			} 
-//			
-//			//看看有没有产生新的缺口
-//			double lasthigh = kxiandatalastwk.getHighValue();
-//			double lastlow = kxiandatalastwk.getLowValue();
-//			
-//			Boolean tiaokongup = false; Boolean tiaokongdown = false;
-//			if(curlow > lasthigh) {
-//				Double newqkup = curlow;
-//				Double newqkdown = lasthigh;
-//				QueKou newqk = new QueKou (this.curdisplayednode.getMyOwnCode(),curstart,newqkdown,newqkup,true);
-//				qklist.add(0, newqk);
-//			}
-//			else 
-//			if(curhigh < lastlow) {
-//				Double newqkup = lastlow;
-//				Double newqkdown = curhigh;
-//				QueKou newqk = new QueKou (this.curdisplayednode.getMyOwnCode(),curstart,newqkdown,newqkup,false);
-//				qklist.add(0, newqk);
-//			}
-//		}
-//		
-//		return qklist;
-//	}
-//	/*
-//	 * 
-//	 */
-//	private void displayQueKouToChart ()
-//	{
-//		ohlcSeries.setNotify(false);
-//        candlestickDataset.setNotify(false);
-//        candlestickChart.setNotify(false);
-//        
-//		if(ohlcSeries == null || ohlcSeries.getItemCount() == 0)
-//			return ;
-//
-//		List<QueKou> qklist = queKouTongJi ();
-//		for(QueKou tmpqk : qklist) {
-//			LocalDate qkdate = tmpqk.getQueKouDate();
-//			LocalDate qkhuidate = tmpqk.getQueKouHuiBuDate();
-//			if(qkhuidate == null)
-//				continue;
-//			
-//			java.sql.Date sqlqkdate = null;
-//			try {
-//				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-//				 sqlqkdate = new java.sql.Date(format.parse(qkdate.toString()).getTime());
-//			} catch (ParseException e) {
-//				e.printStackTrace();
-//			}
-//			org.jfree.data.time.Day qkday = new org.jfree.data.time.Day (sqlqkdate);
-//			
-//			java.sql.Date sqlqkhbdate = null;
-//			try {
-//				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-//				 sqlqkhbdate = new java.sql.Date(format.parse(qkhuidate.toString()).getTime());
-//			} catch (ParseException e) {
-//				e.printStackTrace();
-//			}
-//			org.jfree.data.time.Day qkhbday = new org.jfree.data.time.Day (sqlqkhbdate);
-//			
-//			Double qkup = tmpqk.getQueKouUp();
-//			//draw annotation
-//	        try {
-//		        double millisonemonth = qkday.getFirstMillisecond();
-//		        XYPointerAnnotation pointeronemonth = new XYPointerAnnotation(String.valueOf(qkup), millisonemonth, qkup, 0 );
-//		        pointeronemonth.setBaseRadius(0.0);
-//		        pointeronemonth.setTipRadius(25.0);
-//		        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
-//		        pointeronemonth.setPaint(Color.CYAN);
-//		        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
-//				candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
-//	        } catch (java.lang.NullPointerException e) {
-//	        }
-//	        
-//	        try {
-//		        double millisonemonth = qkhbday.getFirstMillisecond();
-//		        XYPointerAnnotation pointeronemonth = new XYPointerAnnotation("回补", millisonemonth, qkup, 0 );
-//		        pointeronemonth.setBaseRadius(0.0);
-//		        pointeronemonth.setTipRadius(25.0);
-//		        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
-//		        pointeronemonth.setPaint(Color.YELLOW);
-//		        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
-//				candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
-//	        } catch (java.lang.NullPointerException e) {
-//	        }
-//			
-//		}
-//		
-//		 ohlcSeries.setNotify(true);
-//	     candlestickDataset.setNotify(true);
-//	     candlestickChart.setNotify(true);
-//	     ohlcSeries.setNotify(false);
-//	     candlestickDataset.setNotify(false);
-//	     candlestickChart.setNotify(false);
-//	}
-	/*
-	 * 
-	 */
-	private void xiuShiGuiAfterDispalyDate (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, String period)
+	private void xiuShiGuiAfterDispalyDate (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, int downqkmax, String period)
 	{
 		if(highestHigh == 0.0)
 			return;
 		
-		CustomRendererForCje cjerender = (CustomRendererForCje) super.plot.getRenderer(); 
+		CustomRendererForCje cjerender = (CustomRendererForCje) super.plot.getRenderer(0); 
 		cjerender.setDisplayNode(this.curdisplayednode);
 		cjerender.setDisplayNodeXPeriod (nodexdata);
 			
-		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
+		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis(0);
 		axis.setDisplayNode(this.curdisplayednode,period);
 		
 		try{
-			super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
+			super.plot.getRangeAxis(0).setRange(0, highestHigh*1.12);
 		} catch(java.lang.IllegalArgumentException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			super.plot.getRangeAxis(0).setRange(0, 1);
 		}
-	
+		
+		try{
+			super.plot.getRangeAxis(3).setRange(0, downqkmax*1.12);
+		} catch(java.lang.IllegalArgumentException e) {
+			super.plot.getRangeAxis(3).setRange(0, 1);
+//			super.linechartdataset.clear();
+//			e.printStackTrace();
+			
+		}
+		
+		super.plot.getRenderer(3).setSeriesPaint(0, new Color(0,102,0) );
+		super.plot.getRenderer(3).setSeriesPaint(1, new Color(102,255,102) );
+		
 		setPanelTitle ("成交额",enddate);
 		super.decorateXaxisWithYearOrMonth("year".trim());
 	}
 	/*
 	 * 
 	 */
+//	@Override
+//	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk
+//									,Double showhsl,Double ltszmin,Double ltszmax) 
+//	{
+//		
+//	}
+//	@Override
+//	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin,Double cjemax, Integer cjemaxwk, Double shoowhsl) {
+//		// TODO Auto-generated method stub
+//		if(cjemaxwk != null) {
+//			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemaxwk);
+//			this.barchart.fireChartChanged();//必须有这句
+//		}
+//		
+//	}
 	@Override
-	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk
-									,Double showhsl,Double ltszmin,Double ltszmax) 
-	{
+	public void hightLightFxValues(ExportCondition expc) {
+		Integer cjezbtoupleveldpmax = expc.getSettinDpmaxwk();
+		Double cjemin = expc.getSettingCjemin();
+		Double cjemax = expc.getSettingCjeMax();
+		Integer cjemaxwk = expc.getSettingCjemaxwk();
+		Double shoowhsl = expc.getSettingHsl();
 		
-	}
-	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin,Double cjemax, Integer cjemaxwk, Double shoowhsl) {
-		// TODO Auto-generated method stub
 		if(cjemaxwk != null) {
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemaxwk);
 			this.barchart.fireChartChanged();//必须有这句
 		}
-		
 	}
 	/*
 	 * 
@@ -357,6 +263,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		
 		return tooltips;
 	}
+
 }
 
 class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer 
@@ -498,7 +405,6 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 				liutongshizhidanwei = getNumberChineseDanWei(liutongshizhi);
 				liutongshizhi = formateCjeToShort (liutongshizhi);
 			}
-			
 		}
 		
 		String htmlstring = "";
@@ -531,6 +437,31 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 					 li5.appendText("流通周平均市值=NULL");
 				 }
 			 }
+			 
+			 if(super.node.getType() == BkChanYeLianTreeNode.TDXGG || super.node.getType() == BkChanYeLianTreeNode.TDXBK ) {
+				 Integer opneupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenUp(selecteddate, 0);
+				 if( opneupquekou != null) {
+					 org.jsoup.nodes.Element li6 = dl.appendElement("li");
+					 li6.appendText("缺口OpenUp =" + opneupquekou);
+				 }
+				 Integer opendownquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenDown(selecteddate, 0);
+				 if( opendownquekou != null) {
+					 org.jsoup.nodes.Element li7 = dl.appendElement("li");
+					 li7.appendText("缺口OpenDown =" + opendownquekou);
+				 }
+				 Integer huibuupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(selecteddate, 0);
+				 if( huibuupquekou != null) {
+					 org.jsoup.nodes.Element li8 = dl.appendElement("li");
+					 li8.appendText("缺口HuiBuUp =" + huibuupquekou );
+				 }
+				 Integer huibudowquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(selecteddate, 0);
+				 if( huibudowquekou != null) {
+					 org.jsoup.nodes.Element li9 = dl.appendElement("li");
+					 li9.appendText("缺口HuiBuDown =" + huibudowquekou );
+				 }
+			 }
+			 
+			 
 		}
 		
 		htmlstring = doc.toString();

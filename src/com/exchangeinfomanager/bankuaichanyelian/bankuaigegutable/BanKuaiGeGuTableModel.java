@@ -38,24 +38,33 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private ArrayList<StockOfBanKuai> entryList;
 	private LocalDate showwknum;
 
-	private Double showcjemin = 1000000000000.0;
-	private Double showcjemax = 1000000000000.0;
-	private Integer cjemaxwk = 10000000;
+	private Double showcjemin ;
+	private Double showcjemax ;
+	private Integer cjemaxwk ;
 
-	private Integer cjezbdpmaxwk = 10000000;
-	private Integer cjezbbkmaxwk = 10000000;
+	private Integer cjezbdpmaxwk ;
+	private Integer cjezbbkmaxwk ;
 	private String period;
-	private Double huanshoulv = 1000000.0;
+	private Double huanshoulv ;
 	private Double showltszmin;
 	private Double showltszmax;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
-	private ExportCondition expcond;
+//	private ExportCondition expcond;
+	private Boolean showhuibudownquekou;
 
 	public void refresh (BanKuai bankuai,LocalDate wknum,String period)
 	{
 		this.curbk = bankuai;
 		this.showwknum = wknum;
 		this.period = period;
+		
+		this.setDisplayChenJiaoEr(null, null);
+		this.setDisplayCjeBKMaxWk(null);
+		this.setDisplayCjeDPMaxWk(null);
+		this.setDisplayHuanShouLv(null);
+		this.setDisplayCjeMaxWk(null);
+		this.setDisplayLiuTongShiZhi(null, null);
+		this.setHighLightHuiBuDownQueKou(false);
 		
 		entryList = null;
 		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );	
@@ -369,11 +378,6 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		    	this.fireTableDataChanged();
 	    	}
 	    }
-
-//		public HashSet<String> getStockInParseFile() 
-//		{
-//			return curbk.getNodeTreerelated().getParseFileStockSet();
-//		}
 		
 		//设置突出显示成交额阀值
 		public void setDisplayChenJiaoEr (Double cjemin, Double cjemax)
@@ -398,6 +402,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		public Double getDisplayChenJiaoErMin ()
 		{
 			return this.showcjemin ;
+			
 		}
 		public Double getDisplayChenJiaoErMax ()
 		{
@@ -500,6 +505,15 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 				return this.showltszmax ;
 			else
 				return 10000000000000.0;
+		}
+		public void setHighLightHuiBuDownQueKou(Boolean showhuibudownquekou1) 
+		{
+			this.showhuibudownquekou = showhuibudownquekou1;
+			
+		}
+		public Boolean shouldHighlightHuiBuDownQueKou ()
+		{
+			return this.showhuibudownquekou;
 		}
 		
 

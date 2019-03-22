@@ -23,6 +23,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.Week;
 
+import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
@@ -165,10 +166,17 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 	 * 
 	 */
 	@Override
-	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double ltszmin,Double ltszmax) 
+	public void hightLightFxValues(ExportCondition expc) 
 	{
+		Integer cjezbtoupleveldpmax = expc.getSettinDpmaxwk();
+		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbtoupleveldpmax);
+		this.barchart.fireChartChanged();//必须有这句
 		
 	}
+//	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double ltszmin,Double ltszmax) 
+//	{
+//		
+//	}
 	@Override
 	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period) {
 		// TODO Auto-generated method stub
@@ -179,12 +187,12 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
-		// TODO Auto-generated method stub
-		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbtoupleveldpmax);
-		this.barchart.fireChartChanged();//必须有这句
-	}
+//	@Override
+//	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
+//		// TODO Auto-generated method stub
+//		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbtoupleveldpmax);
+//		this.barchart.fireChartChanged();//必须有这句
+//	}
 	@Override
 	public String getToolTipSelected() {
 		// TODO Auto-generated method stub

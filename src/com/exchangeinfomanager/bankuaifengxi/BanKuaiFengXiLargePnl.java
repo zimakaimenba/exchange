@@ -208,7 +208,13 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
             		org.jsoup.select.Elements body = doc.select("body");
             		org.jsoup.select.Elements dl = body.select("dl");
-            		org.jsoup.select.Elements li = dl.get(0).select("li");
+            		org.jsoup.select.Elements li;
+            		try {
+            			 li = dl.get(0).select("li");
+            		} catch (java.lang.IndexOutOfBoundsException e) {
+            			return;
+            		}
+            		
             		String selecteddate = li.get(0).text();
             		LocalDate datekey = LocalDate.parse(selecteddate);
     				
@@ -348,7 +354,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		JScrollPane scrollPaneuserselctmsg = new JScrollPane (); 
 		JScrollBar bar = scrollPaneuserselctmsg.getHorizontalScrollBar();
 		
-		tfldselectedmsg.setPreferredSize(new Dimension(150, 500));
+//		tfldselectedmsg.setPreferredSize(new Dimension(150, 500));
+		scrollPaneuserselctmsg.setPreferredSize(new Dimension(150, 500));
 		
 		scrollPaneuserselctmsg.setViewportView(tfldselectedmsg);
 
@@ -367,7 +374,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
 	}
 
-	private static void addPopup(Component component, final JPopupMenu popup) 
+	private  void addPopup(Component component, final JPopupMenu popup) 
 	{
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {

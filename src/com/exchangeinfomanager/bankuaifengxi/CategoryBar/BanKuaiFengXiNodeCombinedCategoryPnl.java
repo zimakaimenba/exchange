@@ -1,9 +1,12 @@
 package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -13,7 +16,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -30,6 +35,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTab
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
+import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
@@ -75,6 +81,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		createEvents();
 	}
 	
+	
 	public static final String SELECTED_PROPERTY = "selected";
 	protected boolean selectchanged;
 	private String tooltipselected;
@@ -85,6 +92,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
+	
 	/*
 	 * 
 	 */
@@ -92,28 +100,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	{
 		return this.curdisplayednode;
 	}
-	/*
-	 * 
-	 */
-	private void createGui() 
-	{
-		if(this.horizonlayout)
-			this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		else
-			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		cjelargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
-		this.add(cjelargepnl);
-		
-		cjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
-		this.add(cjezblargepnl);
 	
-	}
-
-	private TDXNodes curdisplayednode;
-	private BanKuaiFengXiCategoryBarChartPnl cjelargepnl;
-	private BanKuaiFengXiCategoryBarChartPnl cjezblargepnl;
-	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
+		
 	
 	@Override
 	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period) 
@@ -134,15 +122,12 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selecteddate));
 	}
 	@Override
-	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double ltszmin,Double ltszmax) {
-		
+	public void hightLightFxValues(ExportCondition expc) 
+	{
+		cjezblargepnl.hightLightFxValues(expc) ;
+		cjelargepnl.hightLightFxValues(expc) ;
 	}
-	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax,Integer cjemaxwk, Double shoowhsl) {
-		cjezblargepnl.hightLightFxValues(cjezbtoupleveldpmax, cjemin, cjemax,cjemaxwk,shoowhsl) ;
-		cjelargepnl.hightLightFxValues(cjezbtoupleveldpmax, cjemin, cjemax,cjemaxwk,shoowhsl) ;
-		
-	}
+
 	@Override
 	public void highLightSpecificBarColumn(Integer columnindex) 
 	{
@@ -162,74 +147,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	 */
 	private void createEvents ()
 	{
-//		this.addPropertyChangeListener(new PropertyChangeListener() {
-//			@Override
-//			 public void propertyChange(PropertyChangeEvent evt)  
-//			 {
-//				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-//					String selectedinfo = evt.getNewValue().toString();
-//                    
-//					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-//    				
-//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-//    				setCurSelectedBarInfo (datekey,tooltip);
-//					
-//				} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
-//					
-//				}
-//			 }
-//		
-//		});
-		
-//		cjelargepnl.addPropertyChangeListener(new PropertyChangeListener() {
-//			@Override
-//			 public void propertyChange(PropertyChangeEvent evt)  
-//			 {
-//				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-//					String selectedinfo = evt.getNewValue().toString();
-//                    
-//					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-//    				
-//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-//    				setCurSelectedBarInfo (datekey,tooltip);
-//				}
-//			}
-//		});
-//		cjezblargepnl.addPropertyChangeListener(new PropertyChangeListener() {
-//			@Override
-//			 public void propertyChange(PropertyChangeEvent evt)  
-//			 {
-//				if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-//					String selectedinfo = evt.getNewValue().toString();
-//                    
-//					LocalDate datekey = LocalDate.parse(selectedinfo.substring(0, 10));
-//    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-//    				
-//    				String tooltip = selectedinfo.substring(10,selectedinfo.length());
-//    				setCurSelectedBarInfo (datekey,tooltip);
-//				}
-//			}
-//		});
+
 	}
-	/*
-	 * 
-	 */
-//	public void setCurSelectedBarInfo (LocalDate newdate,String selectedtooltip) 
-//	{
-//        String oldText = this.dateselected + this.tooltipselected;
-//        this.dateselected = newdate ;
-////        try {
-////        	this.tooltipselected =  this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName() + ": " + selectedtooltip;
-////        } catch (java.lang.NullPointerException e) {
-//////        	e.printStackTrace();
-////        	this.tooltipselected =  "个股代码/名称NULL"  + ": " + selectedtooltip;
-////        }
-////        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
-//        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.tooltipselected );
-//        pcs.firePropertyChange(evt);
-//    }
 	@Override
 	public void propertyChange(PropertyChangeEvent evt)
 	{
@@ -241,7 +160,13 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
             org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
     		org.jsoup.select.Elements content = doc.select("body");
     		org.jsoup.select.Elements dl = content.select("dl");
-    		org.jsoup.select.Elements li = dl.get(0).select("li");
+    		org.jsoup.select.Elements li;
+    		try {
+    			 li = dl.get(0).select("li");
+    		} catch (java.lang.IndexOutOfBoundsException e) {
+    			return ;
+    		}
+    		
     		String selecteddate = li.get(0).text();
     		LocalDate datekey = LocalDate.parse(selecteddate);
     		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
@@ -301,5 +226,66 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		}
 		
 	}
+	
+	private TDXNodes curdisplayednode;
+	private BanKuaiFengXiCategoryBarChartPnl cjelargepnl;
+	private BanKuaiFengXiCategoryBarChartPnl cjezblargepnl;
+	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
+	private JPopupMenu quekouImage;
+	private JMenuItem mntmqkopenup;
+	private JMenuItem mntmqkopendown;
+	private JMenuItem mntmqkhuibuup;
+	private JMenuItem mntmqkhuibudown;
+	/*
+	 * 
+	 */
+	private void createGui() 
+	{
+		if(this.horizonlayout)
+			this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		else
+			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		cjelargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
+		this.add(cjelargepnl);
+		
+		cjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
+		this.add(cjezblargepnl);
+		
+//		quekouImage = new JPopupMenu ();
+//		addPopup(this, quekouImage);
+		
+//		mntmqkopenup = new JMenuItem("统计新开向上跳空缺口");
+//		mntmqkopendown = new JMenuItem("统计新开向下跳空缺口");
+//		mntmqkhuibuup = new JMenuItem("统计回补上跳空缺口");
+//		mntmqkhuibudown = new JMenuItem("统计回补下跳空缺口");
+//		quekouImage.add(mntmqkopenup);
+//		quekouImage.add(mntmqkopendown);
+//		quekouImage.add(mntmqkhuibuup);
+//		quekouImage.add(mntmqkhuibudown);
+
+//		this.setComponentPopupMenu(quekouImage);
+
+	
+	}
+	private  void addPopup(Component component, final JPopupMenu popup) 
+	{
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+	}
+
 
 }

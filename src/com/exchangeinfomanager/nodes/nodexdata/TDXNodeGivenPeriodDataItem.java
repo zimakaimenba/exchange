@@ -16,6 +16,10 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 
 public class TDXNodeGivenPeriodDataItem extends OHLCItem
 {											  
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public TDXNodeGivenPeriodDataItem(String nodecode,String datatype,RegularTimePeriod period,
 			double open, double high, double low, double close,double myamount,double myvolumne,
 			Double huanshoulv,Double zongshizhi,Double liutongshizhi

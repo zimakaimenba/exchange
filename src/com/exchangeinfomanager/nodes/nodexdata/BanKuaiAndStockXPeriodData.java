@@ -32,25 +32,30 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	{
 		this.nodecode = nodecode;
 		this.nodeperiodtype = nodeperiodtype1;
-		stockohlc = new OHLCSeries(nodeperiodtype1);
-		stockamo = new TimeSeries(nodeperiodtype1);
-		stockvol = new TimeSeries(nodeperiodtype1);;
-		stockamozhanbi = new TimeSeries(nodeperiodtype1);
-		stockvolzhanbi = new TimeSeries(nodeperiodtype1);
-		stockfxjg = new TimeSeries(nodeperiodtype1);
-		stockexchangedaysnumber = new TimeSeries(nodeperiodtype1);
+		nodeohlc = new OHLCSeries(nodeperiodtype1);
+		nodeamo = new TimeSeries(nodeperiodtype1);
+		nodevol = new TimeSeries(nodeperiodtype1);;
+		nodeamozhanbi = new TimeSeries(nodeperiodtype1);
+		nodevolzhanbi = new TimeSeries(nodeperiodtype1);
+		
+		nodeexchangedaysnumber = new TimeSeries(nodeperiodtype1);
 	}
 	
 	private Logger logger = Logger.getLogger(BanKuaiAndStockXPeriodData.class);
 
 	private String nodeperiodtype;
-	protected OHLCSeries stockohlc; //每锟秸成斤拷锟斤拷OHLC
-	protected TimeSeries stockamo; //锟缴斤拷锟斤拷
-	protected TimeSeries stockvol; //锟缴斤拷锟斤拷
-	protected TimeSeries stockamozhanbi; //锟缴斤拷锟斤拷占锟斤拷
-	protected TimeSeries stockvolzhanbi; //锟缴斤拷锟斤拷占锟斤拷
-	protected TimeSeries stockfxjg; //锟斤拷锟斤拷锟斤拷锟�
-	protected TimeSeries stockexchangedaysnumber ; //锟斤拷锟节的斤拷锟斤拷锟秸ｏ拷锟斤拷每锟斤拷锟叫硷拷锟届交锟阶ｏ拷只锟斤拷锟芥不锟斤拷5锟斤拷模锟�
+	protected OHLCSeries nodeohlc; //每锟秸成斤拷锟斤拷OHLC
+	protected TimeSeries nodeamo; //锟缴斤拷锟斤拷
+	protected TimeSeries nodevol; //锟缴斤拷锟斤拷
+	protected TimeSeries nodeamozhanbi; //锟缴斤拷锟斤拷占锟斤拷
+	protected TimeSeries nodevolzhanbi; //锟缴斤拷锟斤拷占锟斤拷
+	protected TimeSeries nodefxjg; //
+	protected TimeSeries nodeexchangedaysnumber ; //
+	 // 缺口的统计结果，不直接存放缺口的原因是已经有ohlc了，可以计算出缺口，如果再专门存放缺口list有点重复，不如存放缺口统计数据
+	protected TimeSeries nodeqktjopenup;
+	protected TimeSeries nodeqktjhuibuup;
+	protected TimeSeries nodeqktjopendown;
+	protected TimeSeries nodeqktjhuibudown;
 
 	public String getNodeCode ()
 	{
@@ -60,31 +65,31 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	public void addNewXPeriodData (TDXNodeGivenPeriodDataItem kdata)
 	{
 		try {
-			stockohlc.setNotify(false);
-			stockohlc.add(kdata);
+			nodeohlc.setNotify(false);
+			nodeohlc.add(kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
 			logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 		}
 		
 		try {
-			stockamo.setNotify(false);
-			stockamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
-//			stockvol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
+			nodeamo.setNotify(false);
+			nodeamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
+//			nodevol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
 			if(kdata.getCjeZhanBi() != null) {
-				stockamozhanbi.setNotify(false);
-				stockamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi(),false);
+				nodeamozhanbi.setNotify(false);
+				nodeamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi(),false);
 			}
 //			if(kdata.getCjlZhanBi() != null)
-//				stockvolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
+//				nodevolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
 			logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //			e.printStackTrace();
 		}
 		
 		try{
-			stockexchangedaysnumber.setNotify(false);
+			nodeexchangedaysnumber.setNotify(false);
 			if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //5锟斤拷锟斤拷默锟较的ｏ拷锟斤拷全锟斤拷锟矫达拷
-				stockexchangedaysnumber.add(kdata.getPeriod(),kdata.getExchangeDaysNumber(),false);
+				nodeexchangedaysnumber.add(kdata.getPeriod(),kdata.getExchangeDaysNumber(),false);
 			
 		} catch (org.jfree.data.general.SeriesException e) {
 			logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
@@ -98,7 +103,10 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public Boolean hasFxjgInPeriod (LocalDate requireddate,int difference)
 	{
-		TimeSeriesDataItem fxjgitem = stockfxjg.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(nodefxjg == null)
+			return false;
+		
+		TimeSeriesDataItem fxjgitem = nodefxjg.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 		if(fxjgitem == null)
 			return false;
 		else
@@ -109,8 +117,11 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public void addFxjgToPeriod (RegularTimePeriod period,Integer fxjg)
 	{
+		if(nodefxjg == null)
+			nodefxjg = new TimeSeries(this.nodeperiodtype);
+		
 		try {
-			stockfxjg.add(period,fxjg);
+			nodefxjg.add(period,fxjg);
 //			 addOrUpdate()
 		} catch (org.jfree.data.general.SeriesException e) {
 //			e.printStackTrace();
@@ -119,9 +130,111 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	/*
 	 * 
 	 */
+	public void addQueKouTongJiJieGuo (LocalDate qkdate,Integer nodeqktjopenup1,Integer nodeqktjhuibuup1,Integer nodeqktjopendown1,Integer nodeqktjhuibudown1)
+	{
+		
+		if( nodeqktjopenup == null)
+			nodeqktjopenup = new TimeSeries(this.nodeperiodtype);
+		
+		if( nodeqktjhuibuup == null)
+			nodeqktjhuibuup = new TimeSeries(this.nodeperiodtype);
+		
+		if( nodeqktjopendown == null)
+			nodeqktjopendown = new TimeSeries(this.nodeperiodtype);
+		
+		if( nodeqktjhuibudown == null)
+			nodeqktjhuibudown = new TimeSeries(this.nodeperiodtype);
+		
+		RegularTimePeriod period = getJFreeChartFormateTimePeriod(qkdate,0);
+		try {
+			if(nodeqktjopenup1 != null && nodeqktjopenup1 !=0 )
+				nodeqktjopenup.add(period,nodeqktjopenup1);
+//			 addOrUpdate()
+		} catch (org.jfree.data.general.SeriesException e) {
+//			e.printStackTrace();
+		}
+		
+		try {
+			if(nodeqktjhuibuup1 != null && nodeqktjhuibuup1 !=0 )
+				nodeqktjhuibuup.add(period,nodeqktjhuibuup1);
+//			 addOrUpdate()
+		} catch (org.jfree.data.general.SeriesException e) {
+//			e.printStackTrace();
+		}
+		
+		try {
+			if(nodeqktjopendown1 != null && nodeqktjopendown1 !=0 )
+				nodeqktjopendown.add(period,nodeqktjopendown1);
+//			 addOrUpdate()
+		} catch (org.jfree.data.general.SeriesException e) {
+//			e.printStackTrace();
+		}
+		
+		try {
+			if(nodeqktjhuibudown1 != null && nodeqktjhuibudown1 !=0 )
+				nodeqktjhuibudown.add(period,nodeqktjhuibudown1);
+//			 addOrUpdate()
+		} catch (org.jfree.data.general.SeriesException e) {
+//			e.printStackTrace();
+		}
+	}
+	/*
+	 * 
+	 */
+	public Integer getQueKouTongJiOpenUp (LocalDate requireddate, Integer difference)
+	{
+		if(this.nodeqktjopenup == null)
+			return null;
+		
+		TimeSeriesDataItem qktjitem = nodeqktjopenup.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(qktjitem == null)
+			return null;
+		else
+			 return (Integer)qktjitem.getValue(); 
+		
+	}
+	public Integer getQueKouTongJiOpenDown (LocalDate requireddate, Integer difference)
+	{
+		if(this.nodeqktjopendown == null)
+			return null;
+		
+		TimeSeriesDataItem qktjitem = nodeqktjopendown.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(qktjitem == null)
+			return null;
+		else
+			 return (Integer)qktjitem.getValue(); 
+		
+	}
+	public Integer getQueKouTongJiHuiBuUp (LocalDate requireddate, Integer difference)
+	{
+		if(this.nodeqktjhuibuup == null)
+			return null;
+		
+		TimeSeriesDataItem qktjitem = nodeqktjhuibuup.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(qktjitem == null)
+			return null;
+		else
+			 return (Integer)qktjitem.getValue(); 
+		
+	}
+	public Integer getQueKouTongJiHuiBuDown (LocalDate requireddate, Integer difference)
+	{
+		if(this.nodeqktjhuibudown == null)
+			return null;
+		
+		TimeSeriesDataItem qktjitem = nodeqktjhuibudown.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(qktjitem == null)
+			return null;
+		else
+			 return (Integer)qktjitem.getValue(); 
+		
+	}
+	/*
+	 * 
+	 */
 	public OHLCSeries getOHLCData ()
 	{
-		return this.stockohlc;
+		return this.nodeohlc;
 	}
 	/*
 	 * 
@@ -129,14 +242,14 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend)
 	{
 		OHLCSeries tmpohlc = new OHLCSeries ("Kxian");
-		int itemcount = this.stockohlc.getItemCount();
+		int itemcount = this.nodeohlc.getItemCount();
 		for(int i=0;i<itemcount;i++) {
-			RegularTimePeriod dataitemp = this.stockohlc.getPeriod(i);
+			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
 			LocalDate startd = dataitemp.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			LocalDate endd = dataitemp.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			
 			if( (startd.isAfter(requiredstart) || startd.equals(requiredstart) )  && ( endd.isBefore(requiredend) || endd.equals(requiredend) ))
-				tmpohlc.add( (OHLCItem) this.stockohlc.getDataItem(i) );
+				tmpohlc.add( (OHLCItem) this.nodeohlc.getDataItem(i) );
 		}
 		
 		return tmpohlc;
@@ -147,11 +260,11 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public OHLCItem getSpecificDateOHLCData (LocalDate requireddate,int difference)
 	{
-		int itemcount = this.stockohlc.getItemCount();
+		int itemcount = this.nodeohlc.getItemCount();
 		for(int i=0;i<itemcount;i++) {
-			RegularTimePeriod dataitemp = this.stockohlc.getPeriod(i);
+			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
 			if(dataitemp.equals(this.getJFreeChartFormateTimePeriod(requireddate,0)) )
-				return (OHLCItem) this.stockohlc.getDataItem(i);
+				return (OHLCItem) this.nodeohlc.getDataItem(i);
 		}
 		
 		return null;
@@ -168,7 +281,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 //	public TimeSeries getChengJiaoEr ()
 //	{
-//		return stockamo; //锟缴斤拷锟斤拷
+//		return nodeamo; //锟缴斤拷锟斤拷
 //	}
 	/*
 	 * 
@@ -178,7 +291,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 //		RegularTimePeriod start = this.getJFreeChartFormateTimePeriod(requiredstart,0);
 //		RegularTimePeriod end = this.getJFreeChartFormateTimePeriod(requiredend,0);
 //		try {
-//			return this.stockamo.createCopy( start,  end);
+//			return this.nodeamo.createCopy( start,  end);
 //		} catch (CloneNotSupportedException e) {
 //			e.printStackTrace();
 //			return null;
@@ -192,7 +305,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		RegularTimePeriod start = this.getJFreeChartFormateTimePeriod(requiredstart,0);
 		RegularTimePeriod end = this.getJFreeChartFormateTimePeriod(requiredend,0);
 		try {
-			return this.stockamozhanbi.createCopy( start,  end);
+			return this.nodeamozhanbi.createCopy( start,  end);
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;
@@ -203,12 +316,12 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public Double getChenJiaoErZhanBi (LocalDate requireddate,int difference)
 	{
-		if(stockohlc == null)
+		if(nodeohlc == null)
 			return null;
 		
 		TimeSeriesDataItem curcjlrecord = null;
 //		if(difference >=0 )
-			curcjlrecord = stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			curcjlrecord = nodeamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 		
 		if( curcjlrecord == null) 
 			return null;
@@ -223,7 +336,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		
 		TimeSeriesDataItem curcjlrecord = null;
 //		if(difference >=0 )
-			curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 		
 		if( curcjlrecord == null) 
 			return null;
@@ -236,11 +349,11 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public LocalDate getRecordsStartDate ()
 	{
-		if(stockamo.getItemCount() == 0)
+		if(nodeamo.getItemCount() == 0)
 			return null;
 //		
-//		RegularTimePeriod firstperiod = stockohlc.getPeriod(0);
-		RegularTimePeriod firstperiod = stockamo.getTimePeriod( 0);
+//		RegularTimePeriod firstperiod = nodeohlc.getPeriod(0);
+		RegularTimePeriod firstperiod = nodeamo.getTimePeriod( 0);
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
@@ -254,13 +367,13 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public LocalDate getRecordsEndDate ()
 	{
-		if(stockamo.getItemCount() == 0)
+		if(nodeamo.getItemCount() == 0)
 			return null;
 		
-//		int itemcount = stockohlc.getItemCount();
-//		RegularTimePeriod firstperiod = stockohlc.getPeriod(itemcount-1);
-		int itemcount = stockamo.getItemCount();
-		RegularTimePeriod firstperiod = stockamo.getTimePeriod( itemcount - 1 );
+//		int itemcount = nodeohlc.getItemCount();
+//		RegularTimePeriod firstperiod = nodeohlc.getPeriod(itemcount-1);
+		int itemcount = nodeamo.getItemCount();
+		RegularTimePeriod firstperiod = nodeamo.getTimePeriod( itemcount - 1 );
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
@@ -273,10 +386,10 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public Boolean hasRecordInThePeriod (LocalDate requireddate, int difference) 
 	{
-		if(stockohlc == null)
+		if(nodeohlc == null)
 			return null;
 	
-		 TimeSeriesDataItem stockamovaule = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		 TimeSeriesDataItem stockamovaule = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
 		 if(stockamovaule != null)
 			 return true;
 		 else
@@ -290,63 +403,68 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 
 	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate,int difference)
 	{
-		if(stockohlc == null)
+		if(nodeohlc == null)
 			return null;
 		
-		TimeSeriesDataItem curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
 		if( curcjlrecord == null) 
 			return null;
 		
-		int index = stockamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
+		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
 //		DaPan dapan = (DaPan)getRoot();
 //		while ( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) {  //上周可能大盘修饰
 //			index --;
 //		}
-		
-		TimeSeriesDataItem lastcjlrecord = stockamo.getDataItem( index -1 );
-		if(lastcjlrecord == null) //休市前还是空，说明要是新板块。板块没有停牌的
-			return null;
-		
-		Double curcje = curcjlrecord.getValue().doubleValue();
-		Double lastcje = lastcjlrecord.getValue().doubleValue();
-		
-		return curcje - lastcje;
+		try{
+			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( index -1 );
+			if(lastcjlrecord == null) //休市前还是空，说明要是新板块。板块没有停牌的
+				return null;
+			
+			Double curcje = curcjlrecord.getValue().doubleValue();
+			Double lastcje = lastcjlrecord.getValue().doubleValue();
+			
+			return curcje - lastcje;
+		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+			return 100.0;
+		}
+
 	}
 	/*
 	 * 锟斤拷锟较硷拷锟斤拷锟侥成斤拷锟斤拷占锟斤拷锟斤拷锟斤拷
 	 */
 	public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
-		TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 		if( curcjlrecord == null) 
 			return null;
 		
-		int index = stockamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
+		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
 		
-//		DaPan dapan = (DaPan)getRoot();
-//		while ( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000) { //上周可能大盘修饰 
-//			index --;
-//		}
-		
-		TimeSeriesDataItem lastcjlrecord = stockamozhanbi.getDataItem( index -1  );
-		if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
-			logger.debug(getNodeCode() + "可能是一个新个股或板块");
+		try {
+			TimeSeriesDataItem lastcjlrecord = nodeamozhanbi.getDataItem( index -1  );
+			if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
+				logger.debug(getNodeCode() + "可能是一个新个股或板块");
+				return 100.0;
+			}
+			
+			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
+			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
+			Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
+			logger.debug(getNodeCode() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
+			
+			return zhanbigrowthrate;
+			
+		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 			return 100.0;
 		}
-		
-		Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
-		Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
-		Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-		logger.debug(getNodeCode() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
-		
-		return zhanbigrowthrate;
+
 	}
 	/*
 	 * 
 	 */
 	protected RegularTimePeriod getJFreeChartFormateTimePeriod (LocalDate requireddate,int difference) 
 	{
-		String nodeperiod = getNodeperiodtype();
+		String nodeperiod = this.getNodeperiodtype();
 		LocalDate expectedate = null;
 		RegularTimePeriod period = null;
 		if(nodeperiod.equals(TDXNodeGivenPeriodDataItem.WEEK)) { //锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷荩锟街灰拷锟斤拷锟斤拷锟斤拷锟酵拷锟斤拷锟斤拷煞锟斤拷锟�
@@ -364,19 +482,19 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	@Override
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
-		TimeSeriesDataItem curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 		if( curcjlrecord == null) 
 			return null;
 		
 		Double curcje = curcjlrecord.getValue().doubleValue();
-		int itemcount = stockamo.getItemCount();
+		int itemcount = nodeamo.getItemCount();
 		int maxweek = 0;
 		
-		int index = stockamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
 		
 		for(int i = index-1;i >=0; i--) {
 			
-			TimeSeriesDataItem lastcjlrecord = stockamo.getDataItem( i );
+			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( i );
 			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
 				return maxweek;
 			
@@ -394,19 +512,19 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
-		TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 		if( curcjlrecord == null) 
 			return null;
 					
 		Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
 		
-		int index = stockamozhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+		int index = nodeamozhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
 		
 		int maxweek = 0;
 		for(int i = index - 1; i >= 0; i--) {
 			
 			
-			TimeSeriesDataItem lastcjlrecord = stockamozhanbi.getDataItem( i );
+			TimeSeriesDataItem lastcjlrecord = nodeamozhanbi.getDataItem( i );
 			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
 				return maxweek;
 
@@ -424,19 +542,19 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate,int difference)
 	{
-		if(stockohlc == null)
+		if(nodeohlc == null)
 			return null;
 		
-		TimeSeriesDataItem curcjlrecord = this.stockamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 		if( curcjlrecord == null) 
 			return null;
 
 		Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
 		
-		int index = stockamozhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+		int index = nodeamozhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
 		int minweek = 0;
 		for(int i = index -1; i >= 0; i --) {
-			TimeSeriesDataItem lastcjlrecord = stockamozhanbi.getDataItem( i );
+			TimeSeriesDataItem lastcjlrecord = nodeamozhanbi.getDataItem( i );
 			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
 				return minweek;
 
@@ -454,7 +572,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 */
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (TDXNodes superbk, LocalDate requireddate,int difference) 
 	{
-		TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
 		if( curcjlrecord == null) 
 			return null;
 		
@@ -467,9 +585,9 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		}
 		
 		TimeSeriesDataItem lastcjlrecord = null;
-		int index = this.stockamo.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		int index = this.nodeamo.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
 		try{
-			lastcjlrecord = stockamo.getDataItem( index - 1);
+			lastcjlrecord = nodeamo.getDataItem( index - 1);
 		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 			logger.debug("index = 0，无法判断");
 			return 100.0;
@@ -496,10 +614,10 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	  */
 	 public Integer getExchangeDaysNumberForthePeriod (LocalDate requireddate,int difference)
 	 {
-		 if(stockexchangedaysnumber == null)
+		 if(nodeexchangedaysnumber == null)
 			 return null;
 		 
-		 TimeSeriesDataItem curdaynumberrecord = this.stockexchangedaysnumber.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		 TimeSeriesDataItem curdaynumberrecord = this.nodeexchangedaysnumber.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
 		 if( curdaynumberrecord == null) 
 				return 5;
 		 else

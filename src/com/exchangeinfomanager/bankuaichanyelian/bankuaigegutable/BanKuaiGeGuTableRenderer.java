@@ -15,8 +15,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
@@ -62,6 +64,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    int modelRow = table.convertRowIndexToModel(row);
 	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
 	    Stock stock = stockofbank.getStock();
+	    BanKuai bankuai = stockofbank.getBanKuai();
 	    
 	    if(stock.wetherHasReiewedToday()) {
         	Font defaultFont = this.getFont();
@@ -98,11 +101,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    else
 		    	background = Color.white;
 	    	
-	    }
-
-	    //突出达到用户标准的股票
-	    if( col == 4 && value != null ) { //成交额>=
-//	    	BanKuai bk = tablemodel.getCurDispalyBandKuai ();
+	    } else  if( col == 4 && value != null ) { //成交额>=
 		    Double cjemin = tablemodel.getDisplayChenJiaoErMin ();
 		    Double cjemax = tablemodel.getDisplayChenJiaoErMax ();
 		    
@@ -114,7 +113,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	background = Color.yellow ;
 		    else
 		    	background = Color.white;
-	    } else   if( col == 5  && value != null  ) { //突出显示bkMAXWK>=的个股
+	    } else if( col == 5  && value != null  ) { //突出显示bkMAXWK>=的个股
 	    	int bkmaxwk;
 	    	try {
 	    		 bkmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
@@ -127,6 +126,23 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		 background = Color.magenta ;
 	    	 else 
 	    		 background = Color.white ;
+	    } else if(col == 6   && value != null) { //突出回补缺口
+	    	
+		    Boolean hlqk = tablemodel.shouldHighlightHuiBuDownQueKou();
+		    if(!hlqk)
+		    	background = Color.white ;
+		    else {
+		    	LocalDate requireddate = tablemodel.getShowCurDate();
+			    String period = tablemodel.getCurDisplayPeriod();
+		    	BanKuaiAndStockXPeriodData nodexdata = (BanKuaiAndStockXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(requireddate, 0);
+			    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(requireddate, 0);
+			    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  )
+			    	 background = Color.PINK ;
+		    	 else 
+		    		 background = Color.white ;
+		    }
+		    
 	    } else  if( col == 7   && value != null  ) { 	    //突出显示dpMAXWK>=的个股
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
 	    	

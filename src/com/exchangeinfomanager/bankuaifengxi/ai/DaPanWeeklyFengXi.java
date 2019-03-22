@@ -384,13 +384,14 @@ class DaPanTableModel extends AbstractTableModel
 		this.zdgzinfo = zdgzinfo2;
 		
 		this.showdate = showdate2;
+		LocalDate requirestart = this.showdate.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		ArrayList<ZdgzItem> zhishulist = zdgzinfo.getDapanZhiShuLists();
 		AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 		this.dapanzhishu = new ArrayList<BkChanYeLianTreeNode>();
 		for( ZdgzItem zhishuitem :  zhishulist) {
 			String zhishucode  = zhishuitem.getValue();
-			BanKuai dapanitem = allbksks.getBanKuai(zhishucode, this.showdate, TDXNodeGivenPeriodDataItem.WEEK);
+			BanKuai dapanitem = allbksks.getBanKuai(zhishucode, requirestart,this.showdate, TDXNodeGivenPeriodDataItem.WEEK);
 			this.dapanzhishu.add(dapanitem);
 		}
 		

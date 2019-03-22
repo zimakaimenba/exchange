@@ -81,6 +81,7 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
+import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
@@ -3005,7 +3006,9 @@ public class BanKuaiDbOperation
 			 
 			 while(rs1.next()) {  
 				String tmpstockcode = rs1.getString("股票代码");
-				
+				if(currentbk.getBanKuaiGeGu(tmpstockcode) != null ) //已经有了
+					continue;
+					
 				String tmpstockname;
 				try {
 					tmpstockname = rs1.getString("股票名称"); //"股票名称"
@@ -3015,6 +3018,7 @@ public class BanKuaiDbOperation
 				
 				Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BkChanYeLianTreeNode.TDXGG);
 				if(tmpstock != null) {
+					
 					StockOfBanKuai bkofst = new StockOfBanKuai(currentbk,tmpstock);
 					Integer weight = rs1.getInt("股票权重");
 					bkofst.setStockQuanZhong(weight);
@@ -3026,6 +3030,7 @@ public class BanKuaiDbOperation
 //						e.printStackTrace();
 						bkofst.setBkLongTou(false);
 					}
+					
 					
 					currentbk.addNewBanKuaiGeGu(bkofst);
 				}
@@ -3257,16 +3262,17 @@ public class BanKuaiDbOperation
 	/*
 	 * 股票对板块的按周占比
 	 */
-	public StockOfBanKuai getGeGuZhanBiOfBanKuai(BanKuai bankuai, StockOfBanKuai stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+	public StockOfBanKuai getGeGuZhanBiOfBanKuai(BanKuai bankuai, StockOfBanKuai stockofbk,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
 		if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
 		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
-		NodeXPeriodDataBasic nodedayperioddata = bankuai.getBanKuaiGeGu(stock.getMyOwnCode()).getNodeXPeroidData(period);
+//		StockOfBanKuai stockofbk = bankuai.getBanKuaiGeGu(stock.getMyOwnCode());
+		NodeXPeriodDataBasic nodedayperioddata = stockofbk.getNodeXPeroidData(period);
 		
-		String stockcode = stock.getMyOwnCode();
+		String stockcode = stockofbk.getMyOwnCode();
 		
 		HashMap<String, String> actiontables = this.getActionRelatedTables(bankuai,stockcode);
 		String stockvsbktable = actiontables.get("股票板块对应表");
@@ -3281,7 +3287,7 @@ public class BanKuaiDbOperation
 		if(stockvsbktable.trim().equals("股票通达信基本面信息对应表") ) { //找地域板块
 			String dycode = actiontables.get("地域代码");
 			sqlquerystat = "";
-			return stock;
+			return stockofbk;
 		 } else { //概念风格行业指数板块
 			 //包括成交额和 成交量的SQL
 		 sqlquerystat = "SELECT Y.year, Y.week,Y.EndOfWeekDate, Y.股票代码, Y.板块代码, Y.stock_amount, Y.stock_vol, Y.`股票权重` ,Y.`股票名称`,\r\n" + 
@@ -3322,9 +3328,10 @@ public class BanKuaiDbOperation
 				"order by Y.year, Y.week"
 				;
 		 }
-//		logger.debug(sqlquerystat);
+		
 		try{
-			logger.debug("为个股" + stock.getMyOwnCode()  + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bankuai.getMyOwnCode() + "的占比数据！");
+			logger.debug(sqlquerystat);
+			logger.debug("为个股" + stockofbk.getMyOwnCode()  + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "在" + bankuai.getMyOwnCode() + "的占比数据！");
 		} catch (java.lang.NullPointerException e) {
 			
 		}
@@ -3377,7 +3384,7 @@ public class BanKuaiDbOperation
 		
 //		this.getStockZhanBi (stock.getStock(), selecteddatestart, selecteddateend,addposition,period);
 		
-		return stock;
+		return stockofbk;
 
 	}
 	/*
@@ -7084,76 +7091,287 @@ public class BanKuaiDbOperation
 		/*
 		 * 
 		 */
-		public void getTDXNodesQueKouTimeRangTongJIResult (Set<TDXNodes> tdxnodes)
+		public Stock getStockQueKouTimeRangTongJIResult (Stock stock,LocalDate startdate,LocalDate enddate, String period)
 		{
-			String sqlquerystring = 
-					"SELECT a.FOfWk,a.EOfWk,a.OpenDownQueKou,a.SmallDown,a.MiddleDown,a.LargeDown,a.OpenUpQueKou,a.SmallUP,a.MiddleUP,a.LargeUP,"
-					+ "      a.HuiBuDownQueKou,a.HuiBuupQueKou   \r\n"
-					+ "FROM  \r\n"
-					+ "(SELECT t1.FOfWk,t1.EOfWk,  \r\n"
-					+ "t1.OpenDownQueKou,t1.SmallDown,t1.MiddleDown,t1.LargeDown,t1.OpenUpQueKou,t1.SmallUP,t1.MiddleUP,t1.LargeUP,   \r\n"
-					+ "t2.HuiBuDownQueKou,t2.HuiBuupQueKou  \r\n"
-					+ "FROM (  \r\n"
-					+ "	select DATE(产生日期 + INTERVAL (1 - DAYOFWEEK(产生日期)) DAY) as FOfWk,  \r\n"
-					+ "            DATE(产生日期 + INTERVAL (6 - DAYOFWEEK(产生日期)) DAY) as EOfWk,  \r\n"
-					+ "            产生日期, 回补日期,  \r\n"
-					+ "				sum(case when 缺口类型 = FALSE then 1 else 0 end) AS OpenDownQueKou,  \r\n"
-					+ "				sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallDown,  \r\n"
-					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleDown,  \r\n"
-					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeDown,  \r\n"
+			String sqlquerystring = "SELECT a.FOfWk,a.EOfWk,a.OpenDownQueKou,a.SmallDown,a.MiddleDown,a.LargeDown,a.OpenUpQueKou,a.SmallUP,a.MiddleUP,a.LargeUP, \r\n"
+					+ "     a.HuiBuDownQueKou,a.HuiBuupQueKou \r\n"
+					+ "FROM ( \r\n"
+					+ "SELECT t2.FOfWk,t2.EOfWk,t1.OpenDownQueKou,t1.SmallDown,t1.MiddleDown,t1.LargeDown,t1.OpenUpQueKou,t1.SmallUP,t1.MiddleUP,t1.LargeUP, \r\n"
+					+ "      t2.HuiBuDownQueKou,t2.HuiBuupQueKou \r\n"
+					+ " FROM \r\n"
+					+ "(SELECT DATE(产生日期 + INTERVAL (1 - DAYOFWEEK(产生日期)) DAY) as FOfWk, \r\n"
+					+ "            DATE(产生日期 + INTERVAL (6 - DAYOFWEEK(产生日期)) DAY) as EOfWk, \r\n"
+					+ "            产生日期, 回补日期, \r\n"
+					+ "	SUM(CASE WHEN 缺口类型 = FALSE then 1 else 0 end) AS OpenDownQueKou, \r\n"
+					+ "	SUM(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallDown,\r\n"
+					+ "	SUM(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleDown, \r\n"
+					+ "	SUM(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeDown, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE  then 1 else 0 end) AS OpenUpQueKou, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  <= 5   ) THEN 1 ELSE 0 END) AS SmallUP, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleUP, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeUP \r\n"
+					+ "	FROM 缺口统计表   \r\n"
+					+ " WHERE 缺口统计表.股票代码 = '" + stock.getMyOwnCode() + "'  \r\n"
+					+ "    AND 缺口统计表.`产生日期` >='" + startdate + "' AND 缺口统计表.`产生日期` <= ' " + enddate + "' \r\n"
+					+ "	group by YEAR(产生日期), WEEK(产生日期) \r\n"
+					+ "    ) t1"
+					
+					+ "    RIGHT JOIN \r\n"
+					
+					+ "   ( select DATE( ifnull(缺口统计表.`回补日期`, '2099-12-31') + INTERVAL (1 - DAYOFWEEK( ifnull(缺口统计表.`回补日期`, '2099-12-31')  )) DAY) as FOfWk,"
+					+ "     DATE(  ifnull(缺口统计表.`回补日期`, '2099-12-31') + INTERVAL (6 - DAYOFWEEK( ifnull(缺口统计表.`回补日期`, '2099-12-31') )) DAY) as EOfWk,"
+					+ "      产生日期, 回补日期,"
+					+ "	sum(case when 缺口类型 = FALSE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuDownQueKou,"
+					+ "	sum(case when 缺口类型 = TRUE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuupQueKou"
+					+ ""
+					+ "	FROM 缺口统计表   \r\n"
+					+ " WHERE 缺口统计表.股票代码 = '" + stock.getMyOwnCode() + "'  \r\n"
+					+ "    AND 缺口统计表.`产生日期` >='" + startdate + "' AND 缺口统计表.`产生日期` <= ' " + enddate + "' \r\n"
+					+ "    AND 回补日期 IS NOT NULl  \r\n"
+					+ "	group by YEAR(ifnull(缺口统计表.`回补日期`, '2099-12-31')), WEEK(ifnull(缺口统计表.`回补日期`, '2099-12-31'))  \r\n"
+					+ "    ) t2 ON  t1.EOfWk = t2.EOfWk  \r\n"
+					+ "\r\n"
+					+ "    UNION \r\n"
+					+ "\r\n"
+					+ "   Select t1.FOfWk,t1.EOfWk,t1.OpenDownQueKou,t1.SmallDown,t1.MiddleDown,t1.LargeDown,t1.OpenUpQueKou,t1.SmallUP,t1.MiddleUP,t1.LargeUP, \r\n"
+					+ "	   t2.HuiBuDownQueKou,t2.HuiBuupQueKou \r\n"
+					+ "from \r\n"
+					+ "(select DATE(产生日期 + INTERVAL (1 - DAYOFWEEK(产生日期)) DAY) as FOfWk, \r\n"
+					+ "            DATE(产生日期 + INTERVAL (6 - DAYOFWEEK(产生日期)) DAY) as EOfWk, \r\n"
+					+ "            产生日期, 回补日期, \r\n"
+					+ "	sum(case when 缺口类型 = FALSE then 1 else 0 end) AS OpenDownQueKou, \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallDown, \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleDown, \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeDown, \r\n"
 					+ "	sum(case when 缺口类型 = TRUE  then 1 else 0 end) AS OpenUpQueKou,  \r\n"
-					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  <= 5   ) THEN 1 ELSE 0 END) AS SmallUP,  \r\n"
-					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleUP,  \r\n"
-					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeUP  \r\n" 
-					+ "	FROM 缺口统计表  \r\n"
-					+ "	WHERE 股票代码 = '000001'  \r\n"
-					+ "	group by YEAR(产生日期), WEEK(产生日期)) t1  \r\n"
-					+ "LEFT JOIN (  \r\n"
-					+ "	SELECT   \r\n"
-					+ "    DATE(回补日期 + INTERVAL (1 - DAYOFWEEK(回补日期)) DAY) as FOfWk,  \r\n"
-					+ "    DATE( 回补日期 + INTERVAL (6 - DAYOFWEEK( 回补日期)) DAY) as EOfWk,  \r\n"
-					+ "    产生日期,  回补日期,  \r\n"
-					+ "	sum(case when 缺口类型 = FALSE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuDownQueKou,  \r\n"
-					+ "	sum(case when 缺口类型 = TRUE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuupQueKou  \r\n"
-					+ "	FROM 缺口统计表  \r\n"
-					+ " WHERE 股票代码 = '000001'  \r\n"
-					+ "	group by  year(回补日期),week(回补日期)  \r\n"
-					+ ") t2 ON t1.EOfWk = t2.EOfWk  \r\n"
-					+ " \r\n"
-					+ "UNION  \r\n"
-					+ " \r\n"
-					+ "SELECT t2.FOfWk,t2.EOfWk,t1.OpenDownQueKou,t1.SmallDown,t1.MiddleDown,t1.LargeDown,t1.OpenUpQueKou,t1.SmallUP,t1.MiddleUP,t1.LargeUP,  \r\n"
-					+ "     t2.HuiBuDownQueKou,t2.HuiBuupQueKou  \r\n"
-					+ " FROM (  \r\n"
-					+ "	SELECT DATE(产生日期 + INTERVAL (1 - DAYOFWEEK(产生日期)) DAY) as FOfWk,  \r\n"
-					+ "            DATE(产生日期 + INTERVAL (6 - DAYOFWEEK(产生日期)) DAY) as EOfWk,  \r\n"
-					+ "           产生日期, 回补日期,  \r\n"
-					+ "	sum(case when 缺口类型 = FALSE then 1 else 0 end) AS OpenDownQueKou,  \r\n"
-					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallDown,  \r\n"
-					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleDown,  \r\n"
-					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeDown,  \r\n"
-					+ "	sum(case when 缺口类型 = TRUE  then 1 else 0 end) AS OpenUpQueKou,  \r\n"
-					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallUP,  \r\n"
+					+ " sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  <= 5   ) THEN 1 ELSE 0 END) AS SmallUP,  \r\n"
 					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleUP,  \r\n"
 					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeUP  \r\n"
-					+ "	FROM 缺口统计表  \r\n"
-					+ "	WHERE 股票代码 = '000001'  \r\n"
-					+ "	group by YEAR(产生日期), WEEK(产生日期)  \r\n"
-					+ ") t1  \r\n"
-					+ "RIGHT JOIN (  \r\n"
-					+ "	select    DATE(回补日期 + INTERVAL (1 - DAYOFWEEK(回补日期)) DAY) as FOfWk,  \r\n"
-					+ "    DATE( 回补日期 + INTERVAL (6 - DAYOFWEEK( 回补日期)) DAY) as EOfWk,  \r\n"
-					+ "    产生日期,  回补日期,  \r\n" 
-					+ "	sum(case when 缺口类型 = FALSE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuDownQueKou,  \r\n"
-					+ "	sum(case when 缺口类型 = TRUE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuupQueKou  \r\n"
-					+ "	FROM 缺口统计表  \r\n"
-					+ "	WHERE 股票代码 = '000001'   \r\n"
-					+ "	group by  year(回补日期),week(回补日期)  \r\n"
-					+ ") t2 ON t1.EOfWk = t2.EOfWk  \r\n"
-					+ ")a  \r\n"
-					+ "Order By a.EOfWk    \r\n"
+					+ "	FROM 缺口统计表   \r\n"
+					+ " WHERE 缺口统计表.股票代码 = '" + stock.getMyOwnCode() + "'  \r\n"
+					+ "    AND 缺口统计表.`产生日期` >='" + startdate + "' AND 缺口统计表.`产生日期` <= ' " + enddate + "' \r\n"
+					+ "	GROUP BY YEAR(产生日期), WEEK(产生日期) \r\n"
+					+ "    ) t1 \r\n"
+					+ "    LEFT JOIN  \r\n"
+					+ "  ( select DATE( ifnull(缺口统计表.`回补日期`, '2099-12-31') + INTERVAL (1 - DAYOFWEEK( ifnull(缺口统计表.`回补日期`, '2099-12-31')  )) DAY) as FOfWk,  \r\n"
+					+ "       DATE(  ifnull(缺口统计表.`回补日期`, '2099-12-31') + INTERVAL (6 - DAYOFWEEK( ifnull(缺口统计表.`回补日期`, '2099-12-31') )) DAY) as EOfWk,  \r\n"
+					+ "         产生日期, 回补日期,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuDownQueKou, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuupQueKou \r\n"
+					+ "	FROM 缺口统计表   \r\n"
+					+ " WHERE 缺口统计表.股票代码 = '" + stock.getMyOwnCode() + "'  \r\n"
+					+ "    AND 缺口统计表.`产生日期` >='" + startdate + "' AND 缺口统计表.`产生日期` <= ' " + enddate + "' \r\n"
+					+ "    AND 回补日期 IS NOT NULl  \r\n"
+					+ "	group by YEAR(ifnull(缺口统计表.`回补日期`, '2099-12-31')), WEEK(ifnull(缺口统计表.`回补日期`, '2099-12-31')) \r\n"
+					+ "    ) t2 ON  t1.EOfWk = t2.EOfWk \r\n"
+					+ "  ) a \r\n"
+					+ "  Order By a.EOfWk   \r\n"
 					;
 			
+			logger.debug(sqlquerystring);
+			
+			BanKuaiAndStockXPeriodData nodexdate = (BanKuaiAndStockXPeriodData)stock.getNodeXPeroidData(period); //统计板块周线出现多少缺口
+			CachedRowSetImpl rspd = null;
+			try {
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystring);
+			    	
+			        while(rspd.next())  {
+			        	 java.sql.Date qkdate =  rspd.getDate("EOfWk");
+			        	 Integer OpenDownQueKou = rspd.getInt("OpenDownQueKou");
+			        	 Integer SmallDown = rspd.getInt("SmallDown");
+			        	 Integer MiddleDown = rspd.getInt("MiddleDown");
+			        	 Integer LargeDown = rspd.getInt("LargeDown");
+			        	 Integer OpenUpQueKou = rspd.getInt("OpenUpQueKou");
+			        	 Integer SmallUP = rspd.getInt("SmallUP");
+			        	 Integer MiddleUP = rspd.getInt("MiddleUP");
+			        	 Integer LargeUP = rspd.getInt("LargeUP");
+			        	 Integer HuiBuDownQueKou = rspd.getInt("HuiBuDownQueKou");
+			        	 Integer HuiBuupQueKou = rspd.getInt("HuiBuupQueKou");
+			        	 
+			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou);
+			        	 
+			        }
+			        
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+			
+			return stock;
+		}
+		/*
+		 * 
+		 */
+		public BanKuai getStocksInBanKuaiQueKouTimeRangTongJIResult (BanKuai bankuai,LocalDate startdate,LocalDate enddate, String period)
+		{
+			//统计的是板块内部stock的缺口数目，没有个股的回避
+			if( bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) ||  bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) 
+				return bankuai;
+			
+			HashMap<String, String> actiontables = this.getActionRelatedTables(bankuai,null);
+			String bktypetable = actiontables.get("股票板块对应表");
+			String bknametable = actiontables.get("板块指数名称表");
+			
+//			ArrayList<StockOfBanKuai> allbkgg = bankuai.getAllCurrentBanKuaiGeGu ();
+//			if(allbkgg == null)
+//				return bankuai;
+//			
+//			String sqlgegulist = "	WHERE ( ";
+//			for(int i=0;i<allbkgg.size();i++) {
+//				StockOfBanKuai bkgg = allbkgg.get(i);
+//				if(i != allbkgg.size() -1 )
+//					sqlgegulist = sqlgegulist + "  缺口统计表.股票代码 = '" + bkgg.getMyOwnCode() + "'  OR  ";
+//				else
+//					sqlgegulist = sqlgegulist + "  缺口统计表.股票代码 = '" + bkgg.getMyOwnCode() + "' ";
+//			}
+//			sqlgegulist = sqlgegulist + ") \r\n";
+			
+			String sqlquerystring = "SELECT a.FOfWk,a.EOfWk,a.OpenDownQueKou,a.SmallDown,a.MiddleDown,a.LargeDown,a.OpenUpQueKou,a.SmallUP,a.MiddleUP,a.LargeUP, \r\n"
+					+ "     a.HuiBuDownQueKou,a.HuiBuupQueKou \r\n"
+					+ "FROM ( \r\n"
+					+ "SELECT t2.FOfWk,t2.EOfWk,t1.OpenDownQueKou,t1.SmallDown,t1.MiddleDown,t1.LargeDown,t1.OpenUpQueKou,t1.SmallUP,t1.MiddleUP,t1.LargeUP, \r\n"
+					+ "      t2.HuiBuDownQueKou,t2.HuiBuupQueKou \r\n"
+					+ " FROM \r\n"
+					+ "(SELECT DATE(产生日期 + INTERVAL (1 - DAYOFWEEK(产生日期)) DAY) as FOfWk, \r\n"
+					+ "            DATE(产生日期 + INTERVAL (6 - DAYOFWEEK(产生日期)) DAY) as EOfWk, \r\n"
+					+ "            产生日期, 回补日期, \r\n"
+					+ "	SUM(CASE WHEN 缺口类型 = FALSE then 1 else 0 end) AS OpenDownQueKou, \r\n"
+					+ "	SUM(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallDown,\r\n"
+					+ "	SUM(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleDown, \r\n"
+					+ "	SUM(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeDown, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE  then 1 else 0 end) AS OpenUpQueKou, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  <= 5   ) THEN 1 ELSE 0 END) AS SmallUP, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleUP, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeUP \r\n"
+					+ "	FROM 缺口统计表 , " + bktypetable  + "\r\n"
+//					+ sqlgegulist
+					+ "    WHERE " + bktypetable  + ".`板块代码` = " + bankuai.getMyOwnCode()
+					+ "    AND 缺口统计表.股票代码 = " + bktypetable  + ".股票代码 \r\n"
+					+ "    AND DATE( 缺口统计表.`产生日期`) >= DATE (" + bktypetable  + ".`加入时间`) \r\n"
+					+ "    AND 缺口统计表.`产生日期` <  ifnull(" + bktypetable  + ".`移除时间`, '2099-12-31') \r\n"
+					+ "    AND 缺口统计表.`产生日期` >='" + startdate + "' AND 缺口统计表.`产生日期` <= ' " + enddate + "' \r\n"
+					+ "	group by YEAR(产生日期), WEEK(产生日期) \r\n"
+					+ "    ) t1"
+					
+					+ "    RIGHT JOIN \r\n"
+					
+					+ "   ( select DATE( ifnull(缺口统计表.`回补日期`, '2099-12-31') + INTERVAL (1 - DAYOFWEEK( ifnull(缺口统计表.`回补日期`, '2099-12-31')  )) DAY) as FOfWk,"
+					+ "     DATE(  ifnull(缺口统计表.`回补日期`, '2099-12-31') + INTERVAL (6 - DAYOFWEEK( ifnull(缺口统计表.`回补日期`, '2099-12-31') )) DAY) as EOfWk,"
+					+ "      产生日期, 回补日期,"
+					+ "	sum(case when 缺口类型 = FALSE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuDownQueKou,"
+					+ "	sum(case when 缺口类型 = TRUE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuupQueKou"
+					+ ""
+					+ "	FROM 缺口统计表 , " + bktypetable  + "\r\n"
+//					+ 	sqlgegulist
+					+ "    WHERE " + bktypetable  + ".`板块代码` = " + bankuai.getMyOwnCode()
+					+ "    AND 缺口统计表.股票代码 = " + bktypetable  + ".股票代码 \r\n"
+					+ "    AND DATE( 缺口统计表.`产生日期`) >= DATE (" + bktypetable  + ".`加入时间`) \r\n"
+					+ "    AND 缺口统计表.`产生日期` <  ifnull(" + bktypetable  + ".`移除时间`, '2099-12-31') \r\n"
+					+ "    AND 缺口统计表.`产生日期` >='" + startdate + "' AND 缺口统计表.`产生日期` <= ' " + enddate + "' \r\n"
+					+ "    AND 回补日期 IS NOT NULl  \r\n"
+					+ "	group by YEAR(ifnull(缺口统计表.`回补日期`, '2099-12-31')), WEEK(ifnull(缺口统计表.`回补日期`, '2099-12-31'))  \r\n"
+					+ "    ) t2 ON  t1.EOfWk = t2.EOfWk  \r\n"
+					+ "\r\n"
+					+ "    UNION \r\n"
+					+ "\r\n"
+					+ "   Select t1.FOfWk,t1.EOfWk,t1.OpenDownQueKou,t1.SmallDown,t1.MiddleDown,t1.LargeDown,t1.OpenUpQueKou,t1.SmallUP,t1.MiddleUP,t1.LargeUP, \r\n"
+					+ "	   t2.HuiBuDownQueKou,t2.HuiBuupQueKou \r\n"
+					+ "from \r\n"
+					+ "(select DATE(产生日期 + INTERVAL (1 - DAYOFWEEK(产生日期)) DAY) as FOfWk, \r\n"
+					+ "            DATE(产生日期 + INTERVAL (6 - DAYOFWEEK(产生日期)) DAY) as EOfWk, \r\n"
+					+ "            产生日期, 回补日期, \r\n"
+					+ "	sum(case when 缺口类型 = FALSE then 1 else 0 end) AS OpenDownQueKou, \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  <= 5  ) THEN 1 ELSE 0 END) AS SmallDown, \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleDown, \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeDown, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE  then 1 else 0 end) AS OpenUpQueKou,  \r\n"
+					+ " sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  <= 5   ) THEN 1 ELSE 0 END) AS SmallUP,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  > 5  AND DATEDIFF(回补日期,产生日期) <10   ) THEN 1 ELSE 0 END) AS MiddleUP,  \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND (DATEDIFF(回补日期,产生日期)  >= 10    OR 回补日期 IS NULL) THEN 1 ELSE 0 END) AS LargeUP  \r\n"
+					+ "	FROM 缺口统计表 , " + bktypetable  + "\r\n"
+//					+ sqlgegulist
+					+ "    WHERE " + bktypetable  + ".`板块代码` = " + bankuai.getMyOwnCode()
+					+ "    AND 缺口统计表.股票代码 = " + bktypetable  + ".股票代码  \r\n"
+					+ "    AND DATE( 缺口统计表.`产生日期`) >= DATE (" + bktypetable  + ".`加入时间`)  \r\n"
+					+ "   	AND 缺口统计表.`产生日期` <  ifnull(" + bktypetable  + ".`移除时间`, '2099-12-31')  \r\n"
+					+ "    AND 缺口统计表.`产生日期` >='" + startdate + "' AND 缺口统计表.`产生日期` <= ' " + enddate + "' \r\n"
+					+ "	GROUP BY YEAR(产生日期), WEEK(产生日期) \r\n"
+					+ "    ) t1 \r\n"
+					+ "    LEFT JOIN  \r\n"
+					+ "  ( select DATE( ifnull(缺口统计表.`回补日期`, '2099-12-31') + INTERVAL (1 - DAYOFWEEK( ifnull(缺口统计表.`回补日期`, '2099-12-31')  )) DAY) as FOfWk,  \r\n"
+					+ "       DATE(  ifnull(缺口统计表.`回补日期`, '2099-12-31') + INTERVAL (6 - DAYOFWEEK( ifnull(缺口统计表.`回补日期`, '2099-12-31') )) DAY) as EOfWk,  \r\n"
+					+ "         产生日期, 回补日期,  \r\n"
+					+ "	sum(case when 缺口类型 = FALSE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuDownQueKou, \r\n"
+					+ "	sum(case when 缺口类型 = TRUE AND 回补日期 IS NOT NULL then 1 else 0 end) AS HuiBuupQueKou \r\n"
+					+ "	FROM 缺口统计表 , " + bktypetable  + "\r\n"
+//					+ sqlgegulist
+					+ "    WHERE " + bktypetable  + ".`板块代码` = " + bankuai.getMyOwnCode()
+					+ "    AND 缺口统计表.股票代码 = " + bktypetable  + ".股票代码 \r\n"
+					+ "    AND DATE( 缺口统计表.`产生日期`) >= DATE (" + bktypetable  + ".`加入时间`) \r\n"
+					+ "    AND 缺口统计表.`产生日期` <  ifnull(" + bktypetable  + ".`移除时间`, '2099-12-31') \r\n"
+					+ "    AND 缺口统计表.`产生日期` >='" + startdate + "' AND 缺口统计表.`产生日期` <= ' " + enddate + "' \r\n"
+					+ "    AND 回补日期 IS NOT NULl  \r\n"
+					+ "	group by YEAR(ifnull(缺口统计表.`回补日期`, '2099-12-31')), WEEK(ifnull(缺口统计表.`回补日期`, '2099-12-31')) \r\n"
+					+ "    ) t2 ON  t1.EOfWk = t2.EOfWk \r\n"
+					+ "  ) a \r\n"
+					+ "  Order By a.EOfWk   \r\n"
+					;
+			
+			logger.debug(sqlquerystring);
+//			if(bankuai.getMyOwnCode().equals("880472") || bankuai.getMyOwnCode().equals("880506") || bankuai.getMyOwnCode().equals("880319"))
+//				logger.debug("time to debug");
+				
+			
+			BanKuaiAndStockXPeriodData nodexdate = (BanKuaiAndStockXPeriodData)bankuai.getNodeXPeroidData(period); //统计板块周线出现多少缺口
+			CachedRowSetImpl rspd = null;
+			try {
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystring);
+			    	
+			        while(rspd.next())  {
+			        	 java.sql.Date qkdate =  rspd.getDate("EOfWk");
+			        	 Integer OpenDownQueKou = rspd.getInt("OpenDownQueKou");
+			        	 Integer SmallDown = rspd.getInt("SmallDown");
+			        	 Integer MiddleDown = rspd.getInt("MiddleDown");
+			        	 Integer LargeDown = rspd.getInt("LargeDown");
+			        	 Integer OpenUpQueKou = rspd.getInt("OpenUpQueKou");
+			        	 Integer SmallUP = rspd.getInt("SmallUP");
+			        	 Integer MiddleUP = rspd.getInt("MiddleUP");
+			        	 Integer LargeUP = rspd.getInt("LargeUP");
+			        	 Integer HuiBuDownQueKou = rspd.getInt("HuiBuDownQueKou");
+			        	 Integer HuiBuupQueKou = rspd.getInt("HuiBuupQueKou");
+			        	 
+			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou);
+			        	 
+			        }
+			        
+			} catch(java.lang.NullPointerException e){ 
+			    	e.printStackTrace();
+			} catch (SQLException e) {
+			    	e.printStackTrace();
+			} catch(Exception e){
+			    	e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {
+							rspd.close();
+							rspd = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+			}
+			
+			return bankuai;
 			
 		}
 

@@ -16,13 +16,16 @@ import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
-
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.CategoryItemEntity;
 import org.jfree.chart.entity.ChartEntity;
+
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -107,7 +110,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
 	protected DefaultCategoryDataset barchartdataset ;
-	protected DefaultCategoryDataset linechartdataset;
+//	protected DefaultCategoryDataset linechartdataset;
 	protected JFreeChart barchart;
 	private List<CategoryMarker> categorymarkerlist;
 	protected boolean displayhuibuquekou;
@@ -208,6 +211,9 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	{
 		if(barchartdataset != null)
 			barchartdataset.clear();
+		
+		if(linechartdataset != null)
+			linechartdataset.clear();
 		
 		for(CategoryMarker marker : this.categorymarkerlist) {
 			this.plot.removeDomainMarker(marker);
@@ -405,6 +411,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //    }
     
 	private JMenuItem mntmFenXiJiLu;
+	protected DefaultCategoryDataset linechartdataset;
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
@@ -436,12 +443,30 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        plot.setRangeGridlinePaint(Color.white);
 //        LegendTitle legend = new LegendTitle(plot); 
 //        legend.setPosition(RectangleEdge.TOP); 
-        plot.setDataset(barchartdataset); 
-//        plot.setRenderer(renderer); 
-        plot.setRangeAxis(new NumberAxis(""));
+        plot.setDataset(0,barchartdataset); 
+//        
+        plot.setRangeAxis(0,new NumberAxis(""));
         plot.setRangePannable(true);
 
-        plot.setDomainAxis(new CategoryLabelCustomizableCategoryAxis(""));
+        CategoryLabelCustomizableCategoryAxis domainaxis = new CategoryLabelCustomizableCategoryAxis("");
+        plot.setDomainAxis(domainaxis);
+        
+        //line part,for QueKou
+        linechartdataset = new DefaultCategoryDataset();  
+        BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
+        plot.setDataset(3, linechartdataset);
+        plot.setRenderer(3, linerenderer);
+        ValueAxis rangeAxis2 = new NumberAxis("");
+        plot.setRangeAxis(3, rangeAxis2);
+//        plot.setDomainAxis(3, domainaxis);
+        
+        plot.mapDatasetToRangeAxis(0, 0);
+		plot.mapDatasetToRangeAxis(3, 3);
+		
+//		plot.mapDatasetToDomainAxis(0, 0);
+//		plot.mapDatasetToDomainAxis(3, 0);
+		
+		plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
         //
         barchart = new JFreeChart(plot);  
         barchart.removeLegend();
@@ -456,9 +481,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
         
-        JPopupMenu popupMenu = new JPopupMenu();
+//        JPopupMenu popupMenu = new JPopupMenu();
 		mntmFenXiJiLu = new JMenuItem("分析记录");
-//		popupMenu.add(mntmNewMenuItem);
+//		mntmqkopenup = new JMenuItem("统计新开向上跳空缺口");
+//		mntmqkopendown = new JMenuItem("统计新开向下跳空缺口");
+//		mntmqkhuibuup = new JMenuItem("统计回补上跳空缺口");
+//		mntmqkhuibudown = new JMenuItem("统计回补下跳空缺口");
+		
 		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
 		
 		this.categorymarkerlist = new ArrayList<> ();
@@ -518,11 +547,3 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis
 /*
  * 
  */
-class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
-{
-	public BanKuaiFengXiCategoryLineRenderer ()
-	{
-		super ();
-	}
-	
-}

@@ -466,7 +466,8 @@ public class StockInfoManager
     				else
     					return;
     				
-    				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), TDXNodeGivenPeriodDataItem.WEEK);
+            		LocalDate requirestart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+    				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, requirestart, LocalDate.now(), TDXNodeGivenPeriodDataItem.WEEK);
     				editorPanenodeinfo.displayNodeAllInfo(bankuai);
             		
             	}

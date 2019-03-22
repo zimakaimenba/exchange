@@ -2,19 +2,13 @@ package com.exchangeinfomanager.bankuaifengxi;
 
 public class ExportCondition 
 {
-//	public ExportCondition (String exportcjelevel, String exportcjemaxwklevel, String exportdpmaxwklevel, String exportbkmaxwklevel,String exporthsl,String exportbk)
+
+	
+
 	public ExportCondition ()
 	{
-//		this.setSettingbk(exportbk);
-//		this.setSettindpgmaxwk(exportdpmaxwklevel);
-//		this.setSettinbkgmaxwk(exportbkmaxwklevel);
-//		this.setSettingcje(exportcjelevel);
-//		this.setSettingcjemaxwk(exportcjemaxwklevel);
-//		this.setSettinghsl(exporthsl);
-		
-//		this.setTooltips ();
 	}
-	
+
 	private Boolean shouldnotexportSTstocks;
 	
 	private Boolean havedayangxianundercertainchenjiaoer;
@@ -25,6 +19,7 @@ public class ExportCondition
 	private Double  cjelevelundercertainchenjiaoeforlianxu;
 	private Integer fanglianglevelundercertainchenjiaoer;
 	
+	//下面这些变量，有2个地方使用，界面突出显示和导出，标准不一，直接返回原始数据，由客户自己处理
 	private Double seetingltszmax;
 	private Double seetingltszmin;
 	private Double settingcjemax;
@@ -33,10 +28,12 @@ public class ExportCondition
 	private Integer settinbkgmaxwk;
 	private Integer settingcjemaxwk;
 	private Double settinghsl;
-	
 	private String settingbk;
 	
 	private String tooltips = "";
+
+	private boolean huibudownquekou;
+	
 
 	//
 	public void setHaveDaYangXianUnderCertainChenJiaoEr (Boolean shouldhaveyangxian, Double cjelevelundercertainchenjiaoeforyangxian, Double dayangxianundercertainchenjiaoer) 
@@ -145,26 +142,21 @@ public class ExportCondition
 	//
 	public Integer getSettinDpmaxwk() 
 	{
-		if(settindpgmaxwk == null )
-			return -1;
-		else
-			return settindpgmaxwk;
+		return settindpgmaxwk;
 	}
+	
 	public void setSettinDpmaxwk(String exportdpmaxwklevel) {
 		if(exportdpmaxwklevel != null) {
 			this.settindpgmaxwk = Integer.parseInt( exportdpmaxwklevel );
 			this.tooltips = this.tooltips + "大盘MAXWK>=" +  settindpgmaxwk + "周";
 		}
 		else
-			this.settindpgmaxwk = -1;
+			this.settindpgmaxwk = null;
 	}
 	//
 	public Integer getSettinBkmaxwk() 
 	{
-		if(settinbkgmaxwk == null)
-			return -1;
-		else
-			return settinbkgmaxwk;
+		return settinbkgmaxwk;
 	}
 	private void setSettinBkmaxwk(String exportbkmaxwklevel) {
 		if(exportbkmaxwklevel != null) {
@@ -172,15 +164,12 @@ public class ExportCondition
 			this.tooltips = this.tooltips + "板块MAXWK>=" + settinbkgmaxwk + "周";
 		}
 		else
-			this.settinbkgmaxwk = -1;
+			this.settinbkgmaxwk = null;
 	}
 	//
 	public Integer getSettingCjemaxwk()
 	{
-		if(settingcjemaxwk == null)
-			return -1;
-		else
-			return settingcjemaxwk;
+		return settingcjemaxwk;
 	}
 	public void setSettingCjemaxwk(String exportcjemaxwklevel) {
 		if(exportcjemaxwklevel != null) {
@@ -188,23 +177,25 @@ public class ExportCondition
 			this.tooltips = this.tooltips + "成交额MAXWK>=" + settingcjemaxwk + "周";
 		}
 		else
-			this.settingcjemaxwk = -1;
+			this.settingcjemaxwk = null;
 	}
 	//成交额的范围
 	public Double getSettingCjemin()
 	{
-		if(this.settingcjemin == null)
-			return -1.0;
-		else
+		try{
 			return settingcjemin * 100000000;
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		}
 	}
 	//
 	public Double getSettingCjeMax() 
 	{
-		if(settingcjemax == null)
-			return 1000000000000.0;
-		else
+		try{
 			return settingcjemax * 100000000;
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		}
 	}
 	//
 	public void setChenJiaoEr (String exportcjelevelmin, String exportcjelevelmax)
@@ -214,32 +205,28 @@ public class ExportCondition
 			this.tooltips = this.tooltips + "成交额>=" + settingcjemin + "亿;";
 		}
 		else
-			this.settingcjemin = -1.0;
+			this.settingcjemin = null;
 		
 		if(exportcjelevelmax != null) {
 			this.settingcjemax = Double.parseDouble( exportcjelevelmax );
 			this.tooltips = this.tooltips + "成交额<=" + settingcjemax + "亿。";
 		}
-		else
-			this.settingcjemax = 1000000000000000.0;
+		else 
+			this.settingcjemax = null;
 		
 	}
 	//换手率
+	public Double getSettingHsl ()
+	{
+		return this.settinghsl;
+	}
 	public void setSettingHsl(String exporthsl) 
 	{
 		if(exporthsl != null) {
 			this.settinghsl = Double.parseDouble(exporthsl);
 			this.tooltips = this.tooltips + "换手率>=" + exporthsl + "%";
 		} else
-			this.settinghsl = -1.0;
-	}
-	//
-	public Double getSettingHsl ()
-	{
-		if(this.settinghsl == null)
-			return -1.0;
-		else
-			return this.settinghsl;
+			this.settinghsl = null;
 	}
 	//
 	public void setLiuTongShiZhi (String exportltszlevelmin, String exportltszlevelmax)
@@ -249,27 +236,39 @@ public class ExportCondition
 			this.tooltips = this.tooltips + "流通市值>=" + seetingltszmin + "亿;";
 		}
 		else
-			this.settingcjemin = -1.0;
+			this.seetingltszmin = null;
 		
 		if(exportltszlevelmax != null) {
 			this.seetingltszmax = Double.parseDouble( exportltszlevelmax );
 			this.tooltips = this.tooltips + "流通市值<=" + seetingltszmax + "亿。";
 		}
 		else
-			this.settingcjemax = 1000000000000000.0;
+			this.seetingltszmax = null ;
 	}
 	public Double getLiuTongShiZhiMin ()
 	{
-		if(seetingltszmin != null)
-			return this.seetingltszmin;
-		else
-			return -1.0;
+		try {
+			return this.seetingltszmin * 100000000;
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		}
 	}
 	public Double getLiuTongShiZhiMax ()
 	{
-		if(seetingltszmin != null)
-			return this.seetingltszmax;
-		else
-			return -10000000000000000.0;
+		try {
+			return this.seetingltszmax * 100000000;
+		} catch (java.lang.NullPointerException e) {
+			return null;
+		}
+		
+	}
+	//
+	public void setDisplayHuiBuDownQueKou(boolean huibudownquekou1)
+	{
+		this.huibudownquekou = huibudownquekou1;
+	}
+	public Boolean shouldHighLightHuiBuDownQueKou  ()
+	{
+		return this.huibudownquekou ;
 	}
 }

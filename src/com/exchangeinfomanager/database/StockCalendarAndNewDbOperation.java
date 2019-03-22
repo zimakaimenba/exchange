@@ -198,7 +198,7 @@ public final class StockCalendarAndNewDbOperation {
 		String newsownercode = meeting.getNewsownercodes();
 		LocalDate newdate = meeting.getStart();
     	String title = meeting.getTitle();
-    	String description = meeting.getDescription();
+    	String description = meeting.getDescription().replace("'", " ");
     	String keywords = meeting.getLocation();
     	String slackurl = meeting.getSlackUrl();
     	

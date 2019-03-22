@@ -32,7 +32,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 		
 		this.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,TextAnchor.HALF_ASCENT_CENTER));
         this.setItemLabelAnchorOffset(5);
-        this.setItemLabelsVisible(true);
+//        this.setItemLabelsVisible(true);
         this.setBaseItemLabelsVisible(true);
         this.setMaximumBarWidth(.5);
         this.setMinimumBarLength(.5);
@@ -40,7 +40,6 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
         
 //        BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
 //		this.setBaseItemLabelGenerator(labelgenerator);
-		this.setBaseItemLabelsVisible(true);
 		
 	}
 	

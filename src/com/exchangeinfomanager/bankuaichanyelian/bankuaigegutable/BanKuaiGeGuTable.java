@@ -47,6 +47,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPa
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
+import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.ToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -129,16 +130,24 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 				
 		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
-	
+	/*
+	 * 
+	 */
 	public JPopupMenu getPopupMenu ()
 	{
 		return this.popupMenuGeguNews;
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.swing.JTable#getCellRenderer(int, int)
+	 */
 	public TableCellRenderer getCellRenderer(int row, int column) 
 	{
 		return renderer;
 	}
+	/*
+	 * 
+	 */
 	public void sortByParsedFile ()
 	{
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
@@ -148,6 +157,9 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
 	}
+	/*
+	 * 
+	 */
 	public void sortByZhanBiGrowthRate ()
 	{
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
@@ -159,29 +171,55 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		
 		sortKeys = null;
 	}
+
+//	@Override
+//	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double showltszmin,Double showltszmax) 
+//	{
+////		if(cjezbbkmax != null)
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
+////		if(cjemaxwk != null )
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
+////		if(cjezbdpmax != null)
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
+////		if(cjemin != null || cjemax != null)
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
+////		if(showhsl != null)
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
+//			
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
+//		
+//		this.repaint();
+//	}
 	@Override
-	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double showltszmin,Double showltszmax) 
+	public void hightLightFxValues(ExportCondition expc) 
 	{
-//		if(cjezbbkmax != null)
+		Integer cjezbbkmax = expc.getSettinBkmaxwk();
+		Integer cjemaxwk = expc.getSettingCjemaxwk();
+		Integer cjezbdpmax = expc.getSettinDpmaxwk();
+		Double cjemin = expc.getSettingCjemin();
+		Double cjemax = expc.getSettingCjeMax();
+		Double showhsl = expc.getSettingHsl();
+		Double showltszmax = expc.getLiuTongShiZhiMax();
+		Double showltszmin = expc.getLiuTongShiZhiMin();
+		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
+		
+		
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
-//		if(cjemaxwk != null )
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
-//		if(cjezbdpmax != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
-//		if(cjemin != null || cjemax != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
-//		if(showhsl != null)
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
-			
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
+			((BanKuaiGeGuTableModel)this.getModel()).setHighLightHuiBuDownQueKou(showhuibudownquekou);
 		
 		this.repaint();
-	}
-	@Override
-	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
-		// TODO Auto-generated method stub
 		
 	}
+//	@Override
+//	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 	
     public String getToolTipText(MouseEvent e) {
         String tip = null;
@@ -470,6 +508,8 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		   model.removeRow(i); 
 		}
 	}
+
+
 
 	
 

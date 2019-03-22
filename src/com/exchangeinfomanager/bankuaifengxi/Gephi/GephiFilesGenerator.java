@@ -17,14 +17,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.exchangeinfomanager.asinglestockinfo.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.asinglestockinfo.BanKuai;
-import com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic;
-import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.asinglestockinfo.Stock;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -142,7 +141,7 @@ public class GephiFilesGenerator
 		String nodecode = cylnode.getMyOwnCode();
 		String nodename = cylnode.getMyOwnName();
 
-		if (cylnode.getType() == BanKuaiAndStockBasic.TDXBK) {
+		if (cylnode.getType() == BkChanYeLianTreeNode.TDXBK) {
 			String[] ss = {nodecode, nodename, "板块", "", ""};
 			return ss;
 		}	else{

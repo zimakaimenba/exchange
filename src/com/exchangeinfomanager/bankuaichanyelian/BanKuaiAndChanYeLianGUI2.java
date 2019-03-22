@@ -163,7 +163,8 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 		BanKuai bankuai = (BanKuai)bkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(parent.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
         if( bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {
         //读出该板块当前所有的个股，读出的是本周在该板块内存在的所有个股，而不是当天在该板块存在的个股
-	  	     LocalDate curselectdate = LocalDate.now();
+	  	   LocalDate curselectdate = LocalDate.now();
+	  	   LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 	  	 //每周日一是新的一周开始，因为还没有导入数据，会显示为没有数据，所以把时间调整到上一周六
 		 		DayOfWeek dayofweek = LocalDate.now().getDayOfWeek();
 		 		if(dayofweek.equals(DayOfWeek.SUNDAY) ) {
@@ -174,7 +175,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 		 			curselectdate = saturday;
 		 		}
 		 		
-	  	     bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
+	  	     bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), requirestart,curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
 	  	     bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,TDXNodeGivenPeriodDataItem.WEEK);
 	  	     
 	  	     Set<StockOfBanKuai> allbkge = bankuai.getSpecificPeriodBanKuaiGeGu(curselectdate,0,TDXNodeGivenPeriodDataItem.WEEK);
@@ -216,6 +217,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 	        if( bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {
 	        //读出该板块当前所有的个股，读出的是本周在该板块内存在的所有个股，而不是当天在该板块存在的个股
 		  	     LocalDate curselectdate = LocalDate.now();
+		  	   LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		  	 //每周日一是新的一周开始，因为还没有导入数据，会显示为没有数据，所以把时间调整到上一周六
 		 		DayOfWeek dayofweek = LocalDate.now().getDayOfWeek();
 		 		if(dayofweek.equals(DayOfWeek.SUNDAY) ) {
@@ -226,7 +228,7 @@ public class BanKuaiAndChanYeLianGUI2 <T extends BanKuaiAndChanYeLian2> extends 
 		 			curselectdate = saturday;
 		 		} 
 		 		
-		  	     bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
+		  	     bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), requirestart, curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
 		  	     bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,TDXNodeGivenPeriodDataItem.WEEK);
 		  	     
 		  	     Set<StockOfBanKuai> allbkge = bankuai.getSpecificPeriodBanKuaiGeGu(curselectdate,0,TDXNodeGivenPeriodDataItem.WEEK);
@@ -1587,7 +1589,7 @@ class ZdgzBanKuaiDetailXmlTableModel extends AbstractTableModel
             					seltime = gznode.getNodeTreeRelated().getSelectedToZdgzTime();
             				result = result + chanyelian + "(" + seltime +")" + " | " + " ";
             				
-            				if(gznode.gettreerelated().getParseFileStockSet() != null && gznode.getNodeTreeRelated().getParseFileStockSet().size() > 0)
+            				if(gznode.getNodeTreeRelated().getParseFileStockSet() != null && gznode.getNodeTreeRelated().getParseFileStockSet().size() > 0)
             					foundstockinparsefile = true;
             				else
             					foundstockinparsefile = false;

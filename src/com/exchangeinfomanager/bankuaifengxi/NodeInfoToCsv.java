@@ -35,12 +35,14 @@ import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
@@ -81,18 +83,12 @@ public class NodeInfoToCsv extends JPanel
 		
 		initializeGui ();
 		createEvents ();
-//		bknodetimerange = new HashMap<String,String> ();
-//		stocknodetimerange = new HashMap<String,String> ();
 		nodecontentArrayList = new ArrayList<String[]> ();
 		
 		nodetimeframeMultimap = ArrayListMultimap.create(); 
 	}
-//	private HashMap<String , String> bknodetimerange ;
-//	private HashMap<String , String> stocknodetimerange ;
+	
 	private List<String[]> nodecontentArrayList ;
-//	private HashMap<String , List<String>> stocknodetimemap ;
-	
-	
 	private Multimap<BkChanYeLianTreeNode,Interval> nodetimeframeMultimap;
 	
 	/*
@@ -111,115 +107,7 @@ public class NodeInfoToCsv extends JPanel
 
 	    return unionInterval;
 	}
-	
-//	private void addStockToCsvStockMap(BkChanYeLianTreeNode node, LocalDate requireddatestart,LocalDate requireddateend) 
-//	{
-//		List<String> nodedateinlist = this.stocknodetimemap.get(node.getMyOwnCode());
-//		if(nodedateinlist == null) {
-//			List<String> stocktimerangelist = new ArrayList<String> ();
-//			if(requireddatestart.equals(requireddateend)) {
-//				String result = requireddatestart.toString() + "|" + requireddateend.toString();
-//				stocktimerangelist.add(requireddatestart.toString());
-//			} else {
-//				String result = requireddatestart.toString() + "|" + requireddateend.toString();
-//				stocktimerangelist.add(result);
-//			}
-//			this.stocknodetimemap.put(node.getMyOwnCode(), stocktimerangelist);
-//			
-//		} else {
-//			Boolean shouldadddate = false;
-//			for(String timerange : nodedateinlist) {
-//				if(timerange.contains("|")) {
-//					List<String> curnodedate = Splitter.on("|").omitEmptyStrings().splitToList(timerange);
-//					LocalDate curstart = LocalDate.parse(curnodedate.get(0));
-//					LocalDate curend = LocalDate.parse(curnodedate.get(1));
-//					if(requireddatestart.equals(requireddateend)) {
-//						
-//					} else {
-//						HashMap<String, LocalDate> tmpdatemap = nodeWeekTimeStampRelation(node, curstart,curend,requireddatestart,requireddateend);
-//						String result = tmpdatemap.get("searchstart").toString() + "|" + tmpdatemap.get("searchend").toString();
-//						
-//					}
-//				} else {
-//					
-//				}
-//			}
-//		}
-//		
-//		//guava
-//		Interval newtimeinterval = new Interval (requireddatestart.toEpochDay(),requireddateend.toEpochDay());
-//		
-//		Collection<Interval> nodetimeframes = nodetimeframeMultimap.get(node);
-//		Boolean timeintervalchange = false;
-//		Interval finalinterval = null;
-//		for(Interval timerange : nodetimeframes) {
-//			 
-//			if(timerange.overlap(newtimeinterval) != null) {
-//				timeintervalchange = true;
-//				finalinterval = unionInterval (timerange,newtimeinterval);
-////				nodetimeframeMultimap.remove(node, timerange);
-//				break;
-//			}
-//		} 
-//		
-//		if(timeintervalchange) {
-//			nodetimeframeMultimap.removeAll(node);
-//			nodetimeframeMultimap.put(node, finalinterval);
-//		} else {
-//			nodetimeframeMultimap.put(node, newtimeinterval);
-//		}
-//		
-//	}
-	/*
-	 * 
-	 */
-//	public void addNodeToCsvList (BkChanYeLianTreeNode node, LocalDate requireddatestart, LocalDate requireddateend)
-//	{
-//		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
-//			addBanKuaiToCsvList (node,requireddatestart,requireddateend);
-//		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
-//			addStockToCsvList (node,requireddatestart,requireddateend);
-//		}
-//		
-//	}
-//	private void addBanKuaiToCsvList(BkChanYeLianTreeNode node, LocalDate requireddatestart, LocalDate requireddateend) 
-//	{
-//		String nodedateinmap = this.bknodetimerange.get(node.getMyOwnCode());
-//		if(nodedateinmap == null) {
-//			String result = requireddatestart.toString() + "|" + requireddateend.toString();
-//			this.bknodetimerange.put(node.getMyOwnCode(), result);
-//		} else {
-//			List<String> curnodedate = Splitter.on("|").omitEmptyStrings().splitToList(nodedateinmap);
-//			LocalDate curstart = LocalDate.parse(curnodedate.get(0));
-//			LocalDate curend = LocalDate.parse(curnodedate.get(1));
-//			HashMap<String, LocalDate> tmpdatemap = nodeWeekTimeStampRelation(node, curstart,curend,requireddatestart,requireddateend);
-//			String result = tmpdatemap.get("searchstart").toString() + "|" + tmpdatemap.get("searchend").toString();
-//			this.bknodetimerange.put(node.getMyOwnCode(), result);
-//		}
-		
-		//guava
-//				Interval newtimeinterval = new Interval (requireddatestart.toEpochDay(),requireddateend.toEpochDay());
-//				
-//				Collection<Interval> nodetimeframes = nodetimeframeMultimap.get(node);
-//				Boolean timeintervalchange = false;
-//				Interval finalinterval = null;
-//				for(Interval timerange : nodetimeframes) {
-//					 
-//					if(timerange.overlap(newtimeinterval) != null) {
-//						timeintervalchange = true;
-//						finalinterval = unionInterval (timerange,newtimeinterval);
-////						nodetimeframeMultimap.remove(node, timerange);
-//						break;
-//					}
-//				} 
-//				
-//				if(timeintervalchange) {
-//					nodetimeframeMultimap.removeAll(node);
-//					nodetimeframeMultimap.put(node, finalinterval);
-//				} else {
-//					nodetimeframeMultimap.put(node, newtimeinterval);
-//				}
-//	}
+
 	public void addNodeToCsvList(BkChanYeLianTreeNode node, LocalDate requireddatestart,LocalDate requireddateend) 
 	{
 				Long requireddatestarttime = requireddatestart.atStartOfDay().toInstant(ZoneOffset.of("+8")).toEpochMilli() ;
@@ -253,60 +141,7 @@ public class NodeInfoToCsv extends JPanel
 				}
 		
 	}
-	/*
-	 * 确定时间点直接的关系
-	 */
-//	private  HashMap<String, LocalDate> nodeWeekTimeStampRelation (BkChanYeLianTreeNode node,LocalDate curstart,LocalDate curend, LocalDate requiredstart, LocalDate requiredend) 
-//	{
-//		HashMap<String,LocalDate> startend = new HashMap<String,LocalDate> (); 
-//		
-//		if(  CommonUtility.isInSameWeek(curstart,requiredstart) &&  CommonUtility.isInSameWeek(requiredend,curend)    ) {//数据完整
-//			startend.put("searchstart", requiredstart);
-//			startend.put("searchend",  curend);
-////			return startend;
-//		}	
-//		else if( (requiredstart.isAfter(curstart) || requiredstart.isEqual(curstart) ) && (requiredend.isBefore(curend) || requiredend.isEqual(curend) ) ) {  //数据完整
-//			startend.put("searchstart", requiredstart);
-//			startend.put("searchend",  requiredend);
-////			return startend;
-//		}
-//		else if( !CommonUtility.isInSameWeek(curstart,requiredstart)  && requiredstart.isBefore(curstart) //部分完整1,前缺失
-//				&& (requiredend.isBefore(curend) || CommonUtility.isInSameWeek(requiredend,curend) )    ) {
-//			LocalDate searchstart,searchend;
-////			searchstart = requiredstart; 
-////			searchend = curstart.with(DayOfWeek.SATURDAY).minus(1,ChronoUnit.WEEKS);
-//			startend.put("searchstart", requiredstart);
-//			startend.put("searchend",  curend);
-////			return startend;
-//		}
-//		else if ( (CommonUtility.isInSameWeek(curstart,requiredstart) || requiredstart.isAfter(curstart) )  //部分完整2，后缺失
-//				&& requiredend.isAfter(curend) &&  !CommonUtility.isInSameWeek(requiredend,curend)    ) {
-//			LocalDate searchstart,searchend;
-////			searchstart = curend.with(DayOfWeek.MONDAY).plus(1,ChronoUnit.WEEKS); 
-////			searchend = requiredend;
-//			startend.put("searchstart", curstart);
-//			startend.put("searchend", requiredend);
-////			return startend;
-//		}
-//		else if( requiredstart.isBefore(curstart) && requiredend.isAfter(curend)  ) {//部分完整3， 前后双缺失，这种情况目前的设置似乎不可能发生，暂时不写
-////			logger.info("部分完整3， 前后双缺失!");
-//			startend.put("searchstart", requiredstart);
-//			startend.put("searchend", requiredend);
-////			return startend;
-//		}
-//		
-//		//和node当前记录的启末日期比较
-//		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-//		LocalDate nodestart = nodexdata.getRecordsStartDate();
-//		LocalDate nodeend = nodexdata.getRecordsEndDate();
-//		if(nodestart.isAfter(startend.get("searchstart")))
-//			startend.put("searchstart", nodestart);
-//		if(nodeend.isBefore(startend.get("searchend")))
-//			startend.put("searchend", nodeend);
-//
-//		return startend;
-//	}
-	
+		
 	public void clearCsvDataSet ()
 	{
 //		bknodetimerange.clear();
@@ -370,7 +205,9 @@ public class NodeInfoToCsv extends JPanel
 	 */
 	protected File exportToCsvFile() 
 	{
-		String[] csvheader = {"Id","Name","Date","ChenJiaoEr","CjeZhanBi","CjeMaxWk","CjeZhanbiMaxWk","CjeZhanbiMinWk","HuanShouLv","LiuTongShiZhi"};
+		String[] csvheader = {"Id","Name","Date",
+								"ChenJiaoEr","CjeZhanBi","CjeMaxWk","CjeZhanbiMaxWk","CjeZhanbiMinWk","HuanShouLv","LiuTongShiZhi",
+								"OpenUpQueKou","HuiBuDownQueKou","OpenDownQueKou","HuiBuUpQueKou"};
 		
 		
 		ExportToCsvFile etcsv = new ExportToCsvFile ();
@@ -406,7 +243,26 @@ public class NodeInfoToCsv extends JPanel
 							ltsz = ((StockNodeXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);;
 						}
 						
-						unifiedAddingCsvData (node.getMyOwnCode(),node.getMyOwnName(),tmpdate,cje,cjezb,cjemaxwk,cjezbmaxwk,cjezbminwk,hsl,ltsz);
+						Integer opneupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
+						Integer opendownquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
+						Integer huibuupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
+						Integer huibudowquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);
+						
+						String[] csvline = {	"'" + node.getMyOwnCode() + "'", node.getMyOwnName(), tmpdate.with(DayOfWeek.FRIDAY).toString(),
+								cje.toString(),cjezb.toString(),
+								cjemaxwk.toString(),cjezbmaxwk.toString(),cjezbminwk.toString(),
+								formateOutputValueString (hsl) ,
+								formateOutputValueString (ltsz),
+								formateOutputValueString (opneupquekou),
+								formateOutputValueString (huibudowquekou),
+								formateOutputValueString (opendownquekou),
+								formateOutputValueString (huibuupquekou)
+								
+								};
+		
+						nodecontentArrayList.add(csvline);
+//						unifiedAddingCsvData (node.getMyOwnCode(),node.getMyOwnName(),tmpdate,cje,cjezb,cjemaxwk,cjezbmaxwk,cjezbminwk,hsl,ltsz,
+//								opneupquekou,huibudowquekou,opendownquekou,huibuupquekou);
 					} 
 					
 					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
@@ -427,100 +283,34 @@ public class NodeInfoToCsv extends JPanel
 		etcsv = null;
 		return csvfile;
 	}
-
-	/*
-	 * 
-	 */
-//	protected File exportToCsvFile() 
-//	{
-//		String[] csvheader = {"Id","Name","Date","ChenJiaoEr","CjeZhanBi","CjeMaxWk","CjeZhanbiMaxWk","CjeZhanbiMinWk","HuanShouLv","LiuTongShiZhi"};
-//		
-//		
-//		ExportToCsvFile etcsv = new ExportToCsvFile ();
-//		//
-//		for(Map.Entry<String, String> entry : bknodetimerange.entrySet() ) {
-//			String nodecode = entry.getKey();
-//			String daterange = entry.getValue();
-//			
-//			List<String> curnodedate = Splitter.on("|").omitEmptyStrings().splitToList(daterange);
-//			LocalDate curstart = LocalDate.parse(curnodedate.get(0));
-//			LocalDate curend = LocalDate.parse(curnodedate.get(1));
-//			
-//			BkChanYeLianTreeNode node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK );
-//			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-//			LocalDate tmpdate = curstart;
-//			do  {
-//				Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);
-//				if(cje != null) {
-//					Integer cjemaxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(tmpdate,0);
-//					Double cjezb = nodexdata.getChenJiaoErZhanBi(tmpdate, 0);
-//					Integer cjezbmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(tmpdate, 0);
-//					Integer cjezbminwk = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(tmpdate, 0);
-//					Double hsl = null;
-//					Double ltsz = null;
-//					
-//					unifiedAddingCsvData (node.getMyOwnCode(),node.getMyOwnName(),tmpdate,cje,cjezb,cjemaxwk,cjezbmaxwk,cjezbminwk,hsl,ltsz);
-//				} 
-//				
-//				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-//			} while (tmpdate.isBefore( curend) || tmpdate.isEqual(curend));
-//		}
-//		//
-//		for(Map.Entry<String, String> entry : stocknodetimerange.entrySet() ) {
-//			String nodecode = entry.getKey();
-//			String daterange = entry.getValue();
-//			
-//			List<String> curnodedate = Splitter.on("|").omitEmptyStrings().splitToList(daterange);
-//			LocalDate curstart = LocalDate.parse(curnodedate.get(0));
-//			LocalDate curend = LocalDate.parse(curnodedate.get(1));
-//			
-//			BkChanYeLianTreeNode node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG );
-//			NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-//			LocalDate tmpdate = curstart;
-//			do  {
-//				Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);
-//				if(cje != null) {
-//					Integer cjemaxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(tmpdate,0);
-//					Double cjezb = nodexdata.getChenJiaoErZhanBi(tmpdate, 0);
-//					Integer cjezbmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(tmpdate, 0);
-//					Integer cjezbminwk = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(tmpdate, 0);
-//					Double hsl = ((StockNodeXPeriodData)nodexdata).getSpecificTimeHuanShouLv(tmpdate, 0);
-//					Double ltsz = ((StockNodeXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);;
-//					
-//					unifiedAddingCsvData (node.getMyOwnCode(),node.getMyOwnName(),tmpdate,cje,cjezb,cjemaxwk,cjezbmaxwk,cjezbminwk,hsl,ltsz);
-//					
-//				} 
-//				
-//				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-//			} while (tmpdate.isBefore( curend) || tmpdate.isEqual(curend));
-//
-//		}
-//		
-//				
-//		//
-//		String parsedpath = this.sysconfig.getNodeExportCsvFilePath ();
-//		String csvfilepath = parsedpath + "信息导出" 
-//							+ LocalDate.now().toString().replace("-", "")
-//							+ ".csv"
-//							;
-//		File csvfile = etcsv.exportToCsvFile(csvfilepath,csvheader, nodecontentArrayList);
-//		
-//		etcsv = null;
-//		return csvfile;
-//	}
-		
 		
 	private void unifiedAddingCsvData(String nodecode, String nodename, LocalDate tmpdate, 
-			Double cje, Double cjezb, Integer cjemaxwk, Integer cjezbmaxwk, Integer cjezbminwk, Double hsl, Double liutongshizhi) 
+			Double cje, Double cjezb, Integer cjemaxwk, Integer cjezbmaxwk, Integer cjezbminwk, Double hsl, Double liutongshizhi, 
+			Integer openupquekou , Integer huibudowquekou, Integer opendownquekou, Integer huibuupquekou ) 
 	{
+		
 		//代码必须加“‘”，否则导出后000前缀会消失，很麻烦
 		String[] csvline = {	"'" + nodecode + "'", nodename,tmpdate.with(DayOfWeek.FRIDAY).toString(),
 								cje.toString(),cjezb.toString(),
 								cjemaxwk.toString(),cjezbmaxwk.toString(),cjezbminwk.toString(),
-								String.valueOf(hsl),
-								String.valueOf(liutongshizhi)
+								formateOutputValueString (hsl) ,
+								formateOutputValueString (liutongshizhi),
+								formateOutputValueString (openupquekou),
+								formateOutputValueString (huibudowquekou),
+								formateOutputValueString (opendownquekou),
+								formateOutputValueString (huibuupquekou)
+								
 								};
+		
 		nodecontentArrayList.add(csvline);
+	}
+	private String formateOutputValueString (Number value)
+	{
+		String output = "0";
+		if( value != null)
+			output = String.valueOf(value);
+		
+		return output;
 	}
 	
 	
