@@ -103,13 +103,14 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	
 		
 	
+//	@Override
+//	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period) 
+//	{
+//		this.curdisplayednode = node;
+//		cjelargepnl.updatedDate(node, date, difference, period);
+//		cjezblargepnl.updatedDate(node, date, difference, period);
+//	}
 	@Override
-	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period) 
-	{
-		this.curdisplayednode = node;
-		cjelargepnl.updatedDate(node, date, difference, period);
-		cjezblargepnl.updatedDate(node, date, difference, period);
-	}
 	public void updatedDate(TDXNodes node, LocalDate startdate,LocalDate enddate,String period) 
 	{
 		this.curdisplayednode = node;

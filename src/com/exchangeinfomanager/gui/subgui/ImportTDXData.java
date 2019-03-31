@@ -348,22 +348,11 @@ public class ImportTDXData extends JDialog {
 		}
 		
 		//用户同步完个股和板块成交量后，要update一下板块的类型，以便后用
-		if(chbxdaorutdxsysbkvol.isSelected() && chbxdaorutdxsysbkvol.isEnabled()  
-			&& cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled() 
-			&& cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled()) {
+		if(chbxdaorutdxsysbkvol.isSelected()  || chbxdaorutdxsysbk.isSelected()  ) {
 			
 			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
 		}
-		//用户同步完个股和板块成交量后，要把个股的TXT转为CSV FILE，这是因为复权问题，因为数据库存放的是当前的成交数据，如果发生复权，前面所有的OHLC都会改变，
-		//重新把数据库中的数据改写一遍成本很高，所以个股每天的OHLC数据直接从复权的TXT转化的CSV中读取。这里先把TXT 都转为CSV，存放到指定位置
-//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbksks.getAllBkStocksTree().getModel().getRoot();
-//		int bankuaicount = allbksks.getAllBkStocksTree().getModel().getChildCount(treeroot);
-//		for(int i=0;i< bankuaicount; i++) {
-//			
-//			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbksks.getAllBkStocksTree().getModel().getChild(treeroot, i);
-//			if(childnode.getType() != BanKuaiAndStockBasic.TDXBK) 
-//				continue;
-//		}
+		
 		
 		//导入网易的股票的数据,主要是换手率/市值等数据，
 		if(ckbxnetease.isSelected() && ckbxnetease.isEnabled()) { 
@@ -544,6 +533,7 @@ public class ImportTDXData extends JDialog {
 					cbxImportSzGeGuVol.setSelected(true);
 					cbxImportShGeGuVol.setSelected(true);
 					ckbxnetease.setSelected(true);
+					ckbxquekoutongji.setSelected(true);
 					
 					//曾用名和现用名一周只要更新一次，周五即可
 					Calendar cal = Calendar.getInstance();
@@ -561,6 +551,7 @@ public class ImportTDXData extends JDialog {
 					cbxImportSzGeGuVol.setSelected(false);
 					cbxImportShGeGuVol.setSelected(false);
 					ckbxnetease.setSelected(false);
+					ckbxquekoutongji.setSelected(false);
 				}
 			}
 		});
@@ -569,19 +560,7 @@ public class ImportTDXData extends JDialog {
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-//				if(!chbxdaorutdxsysbk.isSelected() && !cbximporttdxgeguinfo.isSelected() 
-//						&& !chbxdaorutdxsysbkvol.isSelected() && !cbxImportShGeGuVol.isSelected() 
-//						&& !cbxImportSzGeGuVol.isSelected() && !chbximportcym.isSelected()
-//						&& !ckbxquekoutongji.isSelected()
-//						&& !ckbxnetease.isSelected() 
-//						&& !chbxdaorutdxzdybk.isSelected() 
-//						&& !cbximportzdyfromout.isSelected()
-//						) {
-//					JOptionPane.showMessageDialog(null,"请选择需要导入的项目！");
-//					return;
-//					
-//				}
-				//
+				
 				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() 
 						||cbxImportShGeGuVol.isSelected() || cbxImportSzGeGuVol.isSelected() 
 						|| ckbxnetease.isSelected()
@@ -664,7 +643,7 @@ public class ImportTDXData extends JDialog {
 	private void initializeGui() 
 	{
 		setTitle("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
-		setBounds(100, 100, 605, 802);
+		setBounds(100, 100, 763, 802);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.NORTH);

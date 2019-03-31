@@ -569,7 +569,9 @@ public class BanKuaiDbOperation
                while (dis.read(itemBuf2, 0, sigbk) != -1) {
             	   //板块名称
             	   String gupiaoheader = (new String(itemBuf2,0,9)).trim();
-            	   logger.debug(gupiaoheader);
+//            	   logger.debug(gupiaoheader);
+//            	   if(gupiaoheader.equals("工业大麻") || gupiaoheader.equals("880704"))
+//            		   logger.debug("time to test");
             	   
             	   //板块个股
                    String gupiaolist =new String(itemBuf2,12,sigbk-12);
@@ -1282,7 +1284,9 @@ public class BanKuaiDbOperation
                while (dis.read(itemBuf2, 0, sigbk) != -1) {
             	   //板块名称
             	   String gupiaoheader = (new String(itemBuf2,0,9)).trim();
-            	   logger.debug(gupiaoheader);
+//            	   logger.debug(gupiaoheader);
+//            	   if(gupiaoheader.equals("工业大麻") || gupiaoheader.equals("880704"))
+//            		   logger.debug("time to test");
             	   
             	   //板块个股
                    String gupiaolist =new String(itemBuf2,12,sigbk-12);
@@ -1687,8 +1691,8 @@ public class BanKuaiDbOperation
             	   if( !(zhishucode.startsWith("000") || zhishucode.startsWith("880") || zhishucode.startsWith("999") ))
             		   continue;
             	   
-//            	   if(zhishucode.equals("880890"))
-//            		   logger.debug("880890 arrived");
+//            	   if(zhishucode.equals("880704"))
+//            		   logger.debug("880704 arrived");
             	   
             	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
             	   String zhishuname = null;
@@ -2356,6 +2360,8 @@ public class BanKuaiDbOperation
 
 		    String bkcode = bankuai.getMyOwnCode();
 		    String bkcys = bankuai.getSuoShuJiaoYiSuo();
+//		    if(bkcode.equals("880704"))
+//		    	logger.debug("time to debug");
 		    
 		    String cjltablename;
 			if(bkcys.toLowerCase().equals("sh"))
@@ -2895,7 +2901,7 @@ public class BanKuaiDbOperation
 						CachedRowSetImpl rsdy = null;
 						int dy = -1;
 						try {
-							String diyusqlquerystat = "SELECT 对应TDXSWID  FROM 通达信板块列表 WHERE 板块id = '" + bkcode + "'" ;
+							String diyusqlquerystat = "SELECT *  FROM 通达信板块列表 WHERE 板块id = '" + bkcode + "'" ;
 //							logger.debug(diyusqlquerystat);
 							 rsdy = connectdb.sqlQueryStatExecute(diyusqlquerystat);
 							 while(rsdy.next()) {
@@ -3814,8 +3820,8 @@ public class BanKuaiDbOperation
 				
 				//用户同步完个股和板块成交量后，要把个股的TXT转为CSV FILE，这是因为复权问题，因为数据库存放的是当前的成交数据，如果发生复权，前面所有的OHLC都会改变，
 				//重新把数据库中的数据改写一遍成本很高，所以个股每天的OHLC数据直接从复权的TXT转化的CSV中读取。这里先把TXT 都转为CSV，存放到指定位置
-//				if(newdataimported != null && newdataimported) {
-				if(true) {
+				if(newdataimported != null && newdataimported) {
+//				if(true) {
 					String csvfilepath = sysconfig.getCsvPathOfExportedTDXVOLFiles();
 					
 					cttc.convertTxtFileToCsv(exportath + "/" + bkfilename, csvfilepath + bkfilename.replace("TXT", "CSV"));
@@ -4073,7 +4079,7 @@ public class BanKuaiDbOperation
 	public HashMap<String, String> getTDXZiDingYiBanKuaiList ()
 	{
 		File file = new File(sysconfig.getTDXSysZDYBanKuaiFile () );
-		 
+		logger.debug(sysconfig.getTDXSysZDYBanKuaiFile ());
 		 if(!file.exists() ) {
 			 logger.debug("Zdy BanKuai File not exist");
 			 return null;
@@ -7216,12 +7222,16 @@ public class BanKuaiDbOperation
 		public BanKuai getStocksInBanKuaiQueKouTimeRangTongJIResult (BanKuai bankuai,LocalDate startdate,LocalDate enddate, String period)
 		{
 			//统计的是板块内部stock的缺口数目，没有个股的回避
-			if( bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) ||  bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) 
+			if( bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+					||  bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)
+					|| bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)
+			) 
 				return bankuai;
 			
 			HashMap<String, String> actiontables = this.getActionRelatedTables(bankuai,null);
 			String bktypetable = actiontables.get("股票板块对应表");
 			String bknametable = actiontables.get("板块指数名称表");
+
 			
 //			ArrayList<StockOfBanKuai> allbkgg = bankuai.getAllCurrentBanKuaiGeGu ();
 //			if(allbkgg == null)

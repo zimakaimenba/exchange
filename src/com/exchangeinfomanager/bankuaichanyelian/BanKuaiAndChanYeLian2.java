@@ -251,13 +251,13 @@ public class BanKuaiAndChanYeLian2
             	//不管有没有，板块和个股都必须设置，这样可以把上一个XML的信息抹去
             	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
 	    		BanKuaiTreeRelated treerelated = null;
-				treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreerelated ();
+				treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
     			treerelated.setStocksNumInParsedFile (localDate,intersectionbankuai.size());
             	if(bkinfile.contains(tmpbkcode))
             		treerelated.setSelfIsMatchModel(localDate);
 
 				for(StockOfBanKuai stkofbk : curbkallbkset ) {
-					StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkofbk.getNodeTreerelated();
+					StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkofbk.getNodeTreeRelated();
 					if( intersectionbankuai.contains(stkofbk.getMyOwnCode() ) ) 
 						stofbktree.setStocksNumInParsedFile (localDate,true);
 					else

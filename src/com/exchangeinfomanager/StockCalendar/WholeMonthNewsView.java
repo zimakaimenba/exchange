@@ -26,6 +26,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting.Label;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -60,7 +61,9 @@ public class WholeMonthNewsView extends View
       super.add(Box.createVerticalStrut(10));
       super.add(this.wholemonthpnl,BorderLayout.CENTER);
     }
-
+    /*
+     * 初始化monthview的新闻
+     */
     private LocalDate initView() 
     {
         this.wholemonthpnl.removeAll();
@@ -68,14 +71,14 @@ public class WholeMonthNewsView extends View
         LocalDate firstDayInMonth = super.getDate().withDayOfMonth(1);
        	JScrollPane sclpmonthnews = new JScrollPane ();
        	JPanel pnlmonthnews = new JPanel();
-       	pnlmonthnews.setName(firstDayInMonth + "000000");
+       	pnlmonthnews.setName(firstDayInMonth + "wwwwww");
         
         Color color = null;
 //        if (firstDayInMonth.getMonth().equals(super.getDate().getMonth()) ) {
                 color = ColorScheme.BACKGROUND;
 
                 pnlmonthnews.setLayout(new BorderLayout());
-                pnlmonthnews.addMouseListener(new WholeMonthNewsController());
+                pnlmonthnews.addMouseListener(new WholeMonthNewsController(Meeting.CHANGQIJILU));
                 
                 JLabel newscontentsLabel = new JLabel(String.valueOf(firstDayInMonth.getMonth()));
                 newscontentsLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -97,7 +100,7 @@ public class WholeMonthNewsView extends View
            	
            	pnlqiangshibk.setLayout(new BorderLayout());
            	pnlqiangshibk.setBackground(color);
-           	pnlqiangshibk.addMouseListener(new QiangRuoBkStockController());
+           	pnlqiangshibk.addMouseListener(new WholeMonthNewsController(Meeting.QIANSHI));
             
             JLabel qiangshibkLabel = new JLabel("强势板块/个股");
             qiangshibkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -114,7 +117,7 @@ public class WholeMonthNewsView extends View
            	pnlruoshibk.setName(firstDayInMonth  + "rrrrrr");
            	pnlruoshibk.setLayout(new BorderLayout());
            	pnlruoshibk.setBackground(color);
-           	pnlruoshibk.addMouseListener(new QiangRuoBkStockController());
+           	pnlruoshibk.addMouseListener(new WholeMonthNewsController(Meeting.RUOSHI));
            	
            	JLabel ruoshibkLabel = new JLabel("弱势板块/个股");
            	ruoshibkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -133,7 +136,7 @@ public class WholeMonthNewsView extends View
            	pnlpguanzhubk.setName(firstDayInMonth  + "gzgzgz");
            	pnlpguanzhubk.setLayout(new BorderLayout());
            	pnlpguanzhubk.setBackground(color);
-           	pnlpguanzhubk.addMouseListener(new QiangRuoBkStockController());
+           	pnlpguanzhubk.addMouseListener(new WholeMonthNewsController(Meeting.JINQIGUANZHU));
            	
            	JLabel guanzhubkLabel = new JLabel("近期关注板块个股(谈股论金)");
            	guanzhubkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -158,7 +161,7 @@ public class WholeMonthNewsView extends View
             return firstDayInMonth;
     }
     /*
-     * 
+     * //每月新闻只要月一致就可以
      */
     private JPanel getWholeMonthNewsPanel(String actiondateandcode) 
     {
@@ -174,9 +177,18 @@ public class WholeMonthNewsView extends View
         }
         return null;
     }
+    /*
+     * //要年月一致
+     */
     private JPanel getQiangRuoShiPanel(String actiondateandcode) 
     {
-  	
+    	if(actiondateandcode.contains("qqqqqq"))
+    		actiondateandcode = "qqqqqq";
+    	else if(actiondateandcode.contains("rrrrrr"))
+    		actiondateandcode = "rrrrrr";
+    	else if(actiondateandcode.contains("gzgzgz"))
+    		actiondateandcode = "gzgzgz";
+    	
         for (Component day1 : this.wholemonthpnl.getComponents() ) {
         	Component day = ((JScrollPane)day1).getViewport().getView();
 //        	String componentname = day.getName();
@@ -191,6 +203,11 @@ public class WholeMonthNewsView extends View
     }
 
     @Override
+    /*
+     * (non-Javadoc)
+     * @see com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener#onMeetingChange(com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache)
+     * 更新所有month view的新闻
+     */
     public void onMeetingChange(Cache cache) 
     {
     	LocalDate firstdayofmonth = this.initView();
@@ -201,35 +218,37 @@ public class WholeMonthNewsView extends View
         
         for (InsertedMeeting m : meetings) {
             LocalDate mDate = m.getStart();
-            String actioncode = m.getCurrentownercode();
+            String actioncode = m.getNewsOwnerCodes();
             LocalDate firstDayInMonth = mDate.withDayOfMonth(1);
             
-            if(actioncode.equals("000000")) { // 每月固定新闻
+            if(m.getMeetingType() == Meeting.CHANGQIJILU) { // 每月固定新闻
             	
             	if (mDate.getMonth().equals(super.getDate().getMonth())  ) {
                     if (m.getLabels().isEmpty()) {
-                        JLabel label = new JLabel(m.getTitle());
-                        label.setToolTipText(m.getTitle() );
-                        label.setOpaque(true);
-                        label.setName(String.valueOf(m.getID()));
-                        label.addMouseListener(new MeetingController());
-                        label.setForeground(ColorScheme.BLACK_FONT);
-                        label.setBackground(ColorScheme.GREY_WHITER_DARKER);
-                        label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
+                    	JLabel label = getFormatedLabelForNoneLabel (m);
+//                        JLabel label = new JLabel(m.getTitle());
+//                        label.setToolTipText(m.getTitle() );
+//                        label.setOpaque(true);
+//                        label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
+//                        label.addMouseListener(new MeetingController());
+//                        label.setForeground(ColorScheme.BLACK_FONT);
+//                        label.setBackground(ColorScheme.GREY_WHITER_DARKER);
+//                        label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
                        	this.getWholeMonthNewsPanel(actioncode).add(label);
                        	
                         continue;
                     }
                     for (Meeting.Label l : labels) {
                         if (l.isActive() && m.getLabels().contains(l)) {
-                            JLabel label = new JLabel(m.getTitle());
-                            label.setToolTipText(m.getTitle() );
-                            label.setOpaque(true);
-                            label.setName(String.valueOf(m.getID()));
-                            label.addMouseListener(new MeetingController());
-                            label.setForeground(Color.BLACK);
-                            label.setBackground(l.getColor());
-                            label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
+                        	JLabel label = getFormatedLabelForWithLabels (m,l);
+//                            JLabel label = new JLabel(m.getTitle());
+//                            label.setToolTipText(m.getTitle() );
+//                            label.setOpaque(true);
+//                            label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
+//                            label.addMouseListener(new MeetingController());
+//                            label.setForeground(Color.BLACK);
+//                            label.setBackground(l.getColor());
+//                            label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
                            	this.getWholeMonthNewsPanel(actioncode).add(label);
                            	
                             break;
@@ -237,45 +256,91 @@ public class WholeMonthNewsView extends View
                     }
                 }
             	
-            } 
-            else
-            if(actioncode.equals("qqqqqq") || actioncode.equals("rrrrrr") || actioncode.equals("gzgzgz") ) { // 强势 弱势 关注板块
+            } else if(m.getMeetingType() == Meeting.JINQIGUANZHU) { // 关注板块
             	
             	if ( mDate.getYear() == super.getDate().getYear()  && mDate.getMonth().equals(super.getDate().getMonth())  ) { //强势 弱势板块 需要年月相等即可 
                     if (m.getLabels().isEmpty()) {
-                        JLabel label = new JLabel(m.getTitle());
-                        label.setToolTipText(m.getTitle() );
-                        label.setOpaque(true);
-                        label.setName(String.valueOf(m.getID()));
-                        label.addMouseListener(new MeetingController());
-                        label.setForeground(ColorScheme.BLACK_FONT);
-                        label.setBackground(ColorScheme.GREY_WHITER_DARKER);
-                        label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
-                        this.getQiangRuoShiPanel(actioncode).add(label);
+                    	JLabel label = getFormatedLabelForNoneLabel (m);
+                        try{
+                        	this.getQiangRuoShiPanel(actioncode).add(label);
+                        } catch (java.lang.NullPointerException e) {
+                        	e.printStackTrace();
+                        }
                         
                         continue;
                     }
                     for (Meeting.Label l : labels) {
                         if (l.isActive() && m.getLabels().contains(l)) {
-                            JLabel label = new JLabel(m.getTitle());
-                            label.setToolTipText(m.getTitle() );
-                            label.setOpaque(true);
-                            label.setName(String.valueOf(m.getID()));
-                            label.addMouseListener(new MeetingController());
-                            label.setForeground(Color.BLACK);
-                            label.setBackground(l.getColor());
-                            label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
-                            this.getQiangRuoShiPanel(actioncode).add(label);
+                        	JLabel label = getFormatedLabelForWithLabels (m,l);
+                            try {
+                            	this.getQiangRuoShiPanel(actioncode).add(label);
+                            } catch (java.lang.NullPointerException e) {
+                            	e.printStackTrace();
+                            }
+                            
                             break;
                         }
                     }
                 }
             	
-            } 
-//            else
-//            if(actioncode.equals("guanzhu") ) {
-//            	
-//            }
+            } else if(m.getMeetingType() == Meeting.QIANSHI  ) { // 强势 弱势 关注板块
+            	String searchingpnlid = "qqqqqq";
+
+            	if ( mDate.getYear() == super.getDate().getYear()  && mDate.getMonth().equals(super.getDate().getMonth())  ) { //强势 弱势板块 需要年月相等即可 
+                        if (m.getLabels().isEmpty()) {
+                        	JLabel label = getFormatedLabelForNoneLabel (m);
+                            try{
+                            	this.getQiangRuoShiPanel(searchingpnlid).add(label);
+                            } catch (java.lang.NullPointerException e) {
+                            	e.printStackTrace();
+                            }
+                            
+                            continue;
+                        }
+                        for (Meeting.Label l : labels) {
+                            if (l.isActive() && m.getLabels().contains(l)) {
+                            	JLabel label = getFormatedLabelForWithLabels (m,l);
+                                try {
+                                	this.getQiangRuoShiPanel(searchingpnlid).add(label);
+                                } catch (java.lang.NullPointerException e) {
+                                	e.printStackTrace();
+                                }
+                                
+                                break;
+                            }
+                        }
+                    }
+                	
+                } else if(m.getMeetingType() == Meeting.RUOSHI  ) { // 强势 弱势 关注板块
+                    	String searchingpnlid = "rrrrrr";
+                        	
+                        	if ( mDate.getYear() == super.getDate().getYear()  && mDate.getMonth().equals(super.getDate().getMonth())  ) { //强势 弱势板块 需要年月相等即可 
+                                if (m.getLabels().isEmpty()) {
+                                	JLabel label = getFormatedLabelForNoneLabel (m);
+                                    try{
+                                    	this.getQiangRuoShiPanel(searchingpnlid).add(label);
+                                    } catch (java.lang.NullPointerException e) {
+                                    	e.printStackTrace();
+                                    }
+                                    
+                                    continue;
+                                }
+                                for (Meeting.Label l : labels) {
+                                    if (l.isActive() && m.getLabels().contains(l)) {
+                                    	JLabel label = getFormatedLabelForWithLabels (m,l);
+                                        try {
+                                        	this.getQiangRuoShiPanel(searchingpnlid).add(label);
+                                        } catch (java.lang.NullPointerException e) {
+                                        	e.printStackTrace();
+                                        }
+                                        
+                                        break;
+                                    }
+                                }
+                            }
+                        	
+                        } 
+
             
         }
 
@@ -283,71 +348,127 @@ public class WholeMonthNewsView extends View
         this.wholemonthpnl.repaint();
     }
 
-    @Override
+    private JLabel getFormatedLabelForWithLabels(InsertedMeeting m, Label l) 
+    {
+    	JLabel label = new JLabel(m.getTitle());
+        label.setToolTipText(m.getTitle() );
+        label.setOpaque(true);
+        label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
+        label.addMouseListener(new MeetingController());
+        label.setForeground(Color.BLACK);
+        label.setBackground(l.getColor());
+        label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
+        
+		return label;
+	}
+
+	private JLabel getFormatedLabelForNoneLabel(InsertedMeeting m) 
+    {
+    	JLabel label = new JLabel(m.getTitle());
+        label.setToolTipText(m.getTitle() );
+        label.setOpaque(true);
+        label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
+        label.addMouseListener(new MeetingController());
+        label.setForeground(ColorScheme.BLACK_FONT);
+        label.setBackground(ColorScheme.GREY_WHITER_DARKER);
+        label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
+        
+		return label;
+	}
+
+	@Override
     public void onLabelChange(Cache cache) {
         this.onMeetingChange(cache);
     }
 
     private class WholeMonthNewsController extends MouseAdapter 
     { 
+    	private int meetingtype;
+    	
+    	WholeMonthNewsController (int meetingtype)
+    	{
+    		this.meetingtype = meetingtype;
+    	}
         @Override
         public void mouseClicked(MouseEvent e) {
         	
         	super.mouseClicked(e);
             JPanel panel = (JPanel) e.getSource();
-            LocalDate mDate = LocalDate.parse(panel.getName().substring(0, 10));
-            LocalDateTime dateTime = LocalDateTime.of(mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth(), 8, 0);
-            
-            
-        	if (e.getClickCount() == 1) { //获取选择的日期
-//        		setDate (mDate);
-        	}
-        	
-        	if (e.getClickCount() == 2) { //增加一个新的meeting
-                Meeting meeting = new Meeting("长期记录",mDate,
-                     "描述", "关键词", new HashSet<>(),"SlackURL","000000");
-                getCreateDialog().setMeeting(meeting);
-                getCreateDialog().setVisible(true);
-        	}
-            
-        }
-    }
-    private class QiangRuoBkStockController extends MouseAdapter 
-    { 
-        @Override
-        public void mouseClicked(MouseEvent e) {
-        	
-        	super.mouseClicked(e);
-            JPanel panel = (JPanel) e.getSource();
-            String pnlnamedate = panel.getName().substring(0, 10);
-//            LocalDate mDate = LocalDate.parse(pnlnamedate);
-            LocalDate mDate = LocalDate.now();
-            
-            String pnltype = panel.getName().substring(10);
-            String meetingname = null ;
-            if(pnltype.equals("qqqqqq"))
-            	meetingname = "强势板块";
-            else
-            if(pnltype.equals("rrrrrr"))
-            	meetingname = "弱势板块";
-            else
-            if(pnltype.equals("gzgzgz"))
-            	meetingname = "关注板块个股";
-            	
+            LocalDate mDate = LocalDate.now();//.parse(panel.getName().substring(0, 10));
 //            LocalDateTime dateTime = LocalDateTime.of(mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth(), 8, 0);
-        	if (e.getClickCount() == 1) { //获取选择的日期
+            
+            
+//        	if (e.getClickCount() == 1) { //获取选择的日期
 //        		setDate (mDate);
-        	}
+//        	}
         	
         	if (e.getClickCount() == 2) { //增加一个新的meeting
-                Meeting meeting = new Meeting(meetingname,mDate,
-                     "描述", "关键词", new HashSet<>(),"SlackURL",pnltype);
+        		
+        		String title = null;String owner = null; String keywords = null;
+        		if(this.meetingtype == Meeting.CHANGQIJILU) {
+        			title = "长期记录";
+        			owner = "wwwwww";
+        			keywords = "关键词";
+        		} else if(this.meetingtype == Meeting.QIANSHI) {
+        			title = "强势个股板块";
+        			owner = "";
+        			keywords = "强势个股板块";
+        		}  else if(this.meetingtype == Meeting.RUOSHI) {
+        			title = "弱势个股板块";
+        			owner = "";
+        			keywords = "弱势个股板块"; 
+        		} else if(this.meetingtype == Meeting.JINQIGUANZHU) {
+        			title = "近期关注";
+        			owner = "gzgzgz";
+        			keywords = "近期关注"; 
+        		}  
+        		
+        		
+        		
+                Meeting meeting = new Meeting(title, mDate,
+                     "描述", keywords, new HashSet<>(),"SlackURL",owner,this.meetingtype);
                 getCreateDialog().setMeeting(meeting);
                 getCreateDialog().setVisible(true);
         	}
             
         }
     }
+//    private class QiangRuoBkStockController extends MouseAdapter 
+//    { 
+//        @Override
+//        public void mouseClicked(MouseEvent e) {
+//        	
+//         	super.mouseClicked(e);
+//            JPanel panel = (JPanel) e.getSource();
+//            String pnlnamedate = panel.getName().substring(0, 10);
+////            LocalDate mDate = LocalDate.parse(pnlnamedate);
+//            LocalDate mDate = LocalDate.now();
+//            
+//            String pnltype = panel.getName().substring(10);
+//            String meetingname = null ;
+//            if(pnltype.equals("qqqqqq"))
+//            	meetingname = "强势板块/个股";
+//            else
+//            if(pnltype.equals("rrrrrr"))
+//            	meetingname = "弱势板块/个股";
+//            else
+//            if(pnltype.equals("gzgzgz"))
+//            	meetingname = "关注板块个股";
+//            	
+////            LocalDateTime dateTime = LocalDateTime.of(mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth(), 8, 0);
+//        	if (e.getClickCount() == 1) { //获取选择的日期
+////        		setDate (mDate);
+//        	}
+//        	
+//        	if (e.getClickCount() == 2) { //增加一个新的meeting
+//                Meeting meeting = new Meeting(meetingname,mDate,
+//                     "描述", pnltype, new HashSet<>(),"SlackURL",pnltype,Meeting.QIANGRUO);
+//                getCreateDialog().setMeeting(meeting);
+//                getCreateDialog().setVisible(true);
+//        	}
+//            
+//        }
+//    }
 
 	
     private class MeetingController extends MouseAdapter 
@@ -356,17 +477,34 @@ public class WholeMonthNewsView extends View
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             JLabel label = (JLabel) e.getSource();
-            Optional<InsertedMeeting> meeting = getCache().produceMeetings()
-                                                  .stream()
-                                                  .filter(m -> m.getID() == Integer.valueOf(label.getName()))
-                                                  .findFirst();
+            String labelname = label.getName();
+            Meeting meeting;
+            Collection<InsertedMeeting> meetingslist = getCache().produceMeetings();
+            for(InsertedMeeting m : meetingslist) {
+            	String searchname = String.valueOf(m.getMeetingType()  ) + String.valueOf(m.getID() );
+            	
+				if(searchname.equals(labelname)) {
+            		JLabel source = (JLabel) e.getSource();
+//                    String title = source.getText();
+//                    LocalDate date = LocalDate.parse(source.getParent().getParent().getName());
+                    
 
-            if (meeting.isPresent()) {
-                JLabel source = (JLabel) e.getSource();
-//                LocalDate date = LocalDate.parse(source.getParent().getParent().getName());
-                getModifyDialog().setMeeting(meeting.get());
-                getModifyDialog().setVisible(true);
+                    	getModifyDialog().setMeeting(m);
+                        getModifyDialog().setVisible(true);
+                    
+            	}
             }
+//            Optional<InsertedMeeting> meeting = getCache().produceMeetings()
+//                                                  .stream()
+//                                                  .filter(m -> m.getID() == Integer.valueOf(label.getName()))
+//                                                  .findFirst();
+//
+//            if (meeting.isPresent()) {
+//                JLabel source = (JLabel) e.getSource();
+////                LocalDate date = LocalDate.parse(source.getParent().getParent().getName());
+//                getModifyDialog().setMeeting(meeting.get());
+//                getModifyDialog().setVisible(true);
+//            }
         }
 
     }

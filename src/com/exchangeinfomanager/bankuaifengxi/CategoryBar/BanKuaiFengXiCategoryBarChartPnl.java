@@ -282,15 +282,25 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 
     	});
     	
-    	mntmFenXiJiLu.addActionListener(new ActionListener() {
+    	mntmHideBars.addActionListener(new ActionListener() {
 			@Override
 
 			public void actionPerformed(ActionEvent evt) 
 			{
-				if(curdisplayednode == null)
-					return;
 				
-				String bkcode = curdisplayednode.getMyOwnCode();
+			}
+    	});
+
+    	
+//    	mntmFenXiJiLu.addActionListener(new ActionListener() {
+//			@Override
+//
+//			public void actionPerformed(ActionEvent evt) 
+//			{
+//				if(curdisplayednode == null)
+//					return;
+//				
+//				String bkcode = curdisplayednode.getMyOwnCode();
 //				JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"分析结果" ); 
 //				LocalDate curselectdate = CommonUtility.formateStringToDate( getCurSelectedBarDate ().toString() );
 //				jiarujihua.setJiaRuDate (curselectdate);
@@ -301,9 +311,9 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
 //				
 //				jiarujihua = null;
-			}
-			
-		});
+//			}
+//			
+//		});
     }
     /*
      * 用户可以定义显示的颜色
@@ -321,11 +331,17 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	if(selecteddate == null)
     		return;
     	
-    	int cindex = barchartdataset.getColumnIndex(selecteddate) ;
-    	if(cindex == -1)
+    	int indexforbar = this.barchartdataset.getColumnIndex(selecteddate) ;
+    	if(indexforbar == -1)
     		return ;
     	
-    	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setBarColumnShouldChangeColor(cindex);
+    	int indexforline = this.linechartdataset.getColumnIndex(selecteddate) ;
+    	if(indexforline == -1)
+    		return ;
+    	
+    	
+    	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer(0)).setBarColumnShouldChangeColor(indexforbar);
+    	((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(3)).setBarColumnShouldChangeColor(indexforline);
     	
         this.dateselected = selecteddate;
         this.barchart.fireChartChanged();//必须有这句
@@ -412,6 +428,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     
 	private JMenuItem mntmFenXiJiLu;
 	protected DefaultCategoryDataset linechartdataset;
+	protected JMenuItem mntmHideBars;
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
@@ -482,13 +499,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         this.add(chartPanel);
         
 //        JPopupMenu popupMenu = new JPopupMenu();
-		mntmFenXiJiLu = new JMenuItem("分析记录");
+//		mntmFenXiJiLu = new JMenuItem("分析记录");
 //		mntmqkopenup = new JMenuItem("统计新开向上跳空缺口");
 //		mntmqkopendown = new JMenuItem("统计新开向下跳空缺口");
 //		mntmqkhuibuup = new JMenuItem("统计回补上跳空缺口");
 //		mntmqkhuibudown = new JMenuItem("统计回补下跳空缺口");
-		
-		chartPanel.getPopupMenu().add(mntmFenXiJiLu);
+        mntmHideBars = new JMenuItem("隐藏占比数据");
+		chartPanel.getPopupMenu().add(mntmHideBars);
 		
 		this.categorymarkerlist = new ArrayList<> ();
    }
@@ -529,7 +546,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis
         	else 
         		return Color.black;
     		} catch (java.lang.NullPointerException e) {
-    			System.out.println(period);
+//    			System.out.println(period);
     			return Color.black;
     			
     		}

@@ -2,6 +2,9 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
@@ -15,6 +18,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
@@ -41,15 +45,18 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     protected Cache cache;
     protected MeetingService meetingService;
     protected LabelListDialog labelListDialog;
+    BanKuaiDbOperation bkdbopt;
 
     private T meeting;
 
     public MeetingDialog(MeetingService meetingService, Cache cache) {
         this.meetingService = meetingService;
         this.cache = cache;
+        this.bkdbopt = new BanKuaiDbOperation ();
         this.createUI();
         this.createCenterPanel();
         this.createEvent ();
+        
     }
 
     private void createEvent() 
@@ -160,61 +167,13 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.descriptionArea = JTextFactory.createTextArea();
         this.descriptionArea.setLineWrap(true);
         this.startTimeChooser = new JDateChooser();
-//        startTimeChooser.setDate(new Date() );
+
         this.centerPanel = new JPanel();
 //        this.dateLabel = JLabelFactory.createLabel("", ColorScheme.PINK_DARK, SwingConstants.CENTER, TITLE_FONT_SIZE);
         this.labelListDialog = new LabelListDialog();
     }
 
-//    private void createCenterPanel2() 
-//    {
-//    	this.centerPanel = JPanelFactory.createFixedSizePanel(1200, HEIGHT, PADDING);
-//        this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.X_AXIS));
-//        
-//        JPanel pnl1 = JPanelFactory.createFixedSizePanel(WIDTH, HEIGHT, 0);
-//        pnl1.setLayout(new BoxLayout(pnl1, BoxLayout.PAGE_AXIS));
-//        this.centerPanel.add(pnl1);
-//        
-//        JPanel p = JPanelFactory.createPanel(new FlowLayout(FlowLayout.CENTER));
-//        pnl1.add(p);
-//        pnl1.add(Box.createVerticalStrut(PADDING));
-//        pnl1.add(this.titleField);
-//        pnl1.add(Box.createVerticalStrut(30));
-//        pnl1.add(this.getTimeChooser());
-//        pnl1.add(Box.createVerticalStrut(10));
-//
-//        JPanel labelPanel = JPanelFactory.createFixedSizePanel(new GridLayout(1, 2));
-//        labelPanel.add(new JLabel("设置 labels: "));
-//        labelButton = JLabelFactory.createButton("Labels");
-//        labelButton.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                super.mouseClicked(e);
-//                labelListDialog.display();
-//            }
-//        });
-//
-//        labelPanel.add(labelButton);
-//        pnl1.add(labelPanel);
-//
-//        pnl1.add(Box.createVerticalStrut(PADDING));
-//        pnl1.add(this.locationField);
-//        pnl1.add(Box.createVerticalStrut(10));
-//        pnl1.add(this.slackurlField);
-//        pnl1.add(Box.createVerticalStrut(10));
-//        JScrollPane despane = new JScrollPane ();
-//        despane.setAutoscrolls(true);
-//        despane.setViewportView(this.descriptionArea);
-//        pnl1.add(despane);
-//        pnl1.add(Box.createVerticalStrut(PADDING));
-//        
-//        
-//        JPanel pnl2 = JPanelFactory.createFixedSizePanel(600, HEIGHT, 0);
-//        pnl2.setLayout(new BoxLayout(pnl2, BoxLayout.PAGE_AXIS));
-//        this.centerPanel.add(pnl2);
-//
-//    	
-//    }
+
     private void createCenterPanel() {
         this.centerPanel = JPanelFactory.createFixedSizePanel(WIDTH, HEIGHT, PADDING);
         this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.PAGE_AXIS));
@@ -223,7 +182,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.centerPanel.add(p);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
         this.centerPanel.add(this.newsownersField);
-        this.newsownersField.setEnabled(false);
+//        this.newsownersField.setEnabled(false);
         this.centerPanel.add(this.titleField);
         this.centerPanel.add(Box.createVerticalStrut(30));
         this.centerPanel.add(this.getTimeChooser());
@@ -278,8 +237,8 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 //        }
         
         titleField.setText(meeting.getTitle());
-        newsownersField.setText(meeting.getNewsownercodes());
-        locationField.setText(meeting.getLocation());
+        newsownersField.setText(meeting.getNewsOwnerCodes());
+        locationField.setText(meeting.getKeyWords());
         descriptionArea.setText(meeting.getDescription());
         startTimeChooser.setDate(Date.from(meeting.getStart().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
         slackurlField.setText(meeting.getSlackUrl());
@@ -289,9 +248,45 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 
     public T getMeeting() 
     {
+    	if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI) { //指数和板块有时候代码重叠，强弱如果输入的重叠的话，要用户明确是个股还是板块
+    		String nodecode = newsownersField.getText ();
+    		if(nodecode.length() == 6) { 
+    			
+    			ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (nodecode);
+    			BkChanYeLianTreeNode nodeshouldbedisplayed;
+            	if(nodeslist.size() == 0) {
+        			 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
+        			 return null;
+        		 } else if(nodeslist.size() >1 ) {
+        			 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
+                 	
+            		 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
+            		 if(exchangeresult == JOptionPane.CANCEL_OPTION)
+            				return null;
+            		 
+            		 
+            		 try {
+            			 int userselected = userselection.getUserSelection();
+            			 nodeshouldbedisplayed = nodeslist.get(userselected);
+            		 } catch (java.lang.ArrayIndexOutOfBoundsException e) { //用户没有选择直接回车的情况
+            			 nodeshouldbedisplayed = nodeslist.get(0);
+            		 }
+        		 } else
+        			  nodeshouldbedisplayed = nodeslist.get(0);
+				
+				if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXBK )
+					newsownersField.setText(nodecode + "bk");
+				else if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG )
+					newsownersField.setText(nodecode + "gg");
+    		}
+    		
+    	}
+		
+		 
+    	meeting.setNewsOwnerCodes(newsownersField.getText());
         meeting.setTitle(titleField.getText());
         meeting.setStart(startTimeChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() );
-        meeting.setLocation(locationField.getText());
+        meeting.setKeyWords(locationField.getText());
         meeting.setDescription(descriptionArea.getText());
         meeting.setSlackUrl(slackurlField.getText());
 //        System.out.println(meeting.getNewsownercodes());

@@ -127,7 +127,7 @@ public class GetNewsFromHtml extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				String selectedtext = taraSelectedText.getText();
-				meeting.setLocation(meeting.getLocation() + " " + selectedtext);
+				meeting.setKeyWords(meeting.getKeyWords() + " " + selectedtext);
 				
 				taraSelectedText.setText("…Ë÷√≥…π¶");
 			}

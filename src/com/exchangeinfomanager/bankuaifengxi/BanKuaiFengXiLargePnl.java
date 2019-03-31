@@ -46,6 +46,8 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
@@ -59,12 +61,12 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private TDXNodes displaynode;
 	private SystemConfigration sysconfig;
 	private TDXNodes nodebankuai;
-	private LocalDate displayedstartdate;
+//	private LocalDate displayedstartdate;
 //	private LocalDate displaystartdate;
 //	private LocalDate displayenddate;
 //	private String displayperiod;
 //	private BanKuaiDbOperation bkdbopt;
-	private LocalDate displayedenddate;
+//	private LocalDate displayedenddate;
 	private AllCurrentTdxBKAndStoksTree allbksks;
 	private Boolean exportuserselectedinfotocsv;
 
@@ -80,8 +82,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		createGui (nodebkbelonged);
 		createEvents ();
 
-		this.displayedstartdate = displayedstartdate1;
-		this.displayedenddate = displayedenddate1;
+//		this.displayedstartdate = displayedstartdate1;
+//		this.displayedenddate = displayedenddate1;
 		updateData (nodebkbelonged, node,displayedstartdate1,displayedenddate1,period);
 	}
 	
@@ -90,7 +92,46 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		sysconfig = SystemConfigration.getInstance();
 		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 	}
-	
+	/*
+	 * 板块和个股的K线，可以同时显示，用以对比研究
+	 */
+	private void refreshTDXGeGuAndBanKuaiKXian (TDXNodes selectnode,TDXNodes superbankuai)
+	{
+		LocalDate requireend = nodekpnl.getDispalyEndDate();
+		LocalDate requirestart = nodekpnl.getDispalyStartDate();
+		
+		TDXNodes tmpnode = null;
+		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
+			selectnode = allbksks.getStock((Stock)selectnode,requirestart,requireend,TDXNodeGivenPeriodDataItem.WEEK);
+			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
+			this.allbksks.syncStockData((Stock)selectnode);
+			
+			tmpnode = selectnode;
+		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
+			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, requirestart,requireend, TDXNodeGivenPeriodDataItem.WEEK);
+			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
+			
+			tmpnode = selectnode;
+		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
+			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),requirestart,requireend,TDXNodeGivenPeriodDataItem.WEEK);
+			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
+			
+			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
+		}
+		
+		 if(superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
+			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, requirestart,requireend, TDXNodeGivenPeriodDataItem.WEEK);
+			 this.allbksks.syncBanKuaiData( (BanKuai)superbankuai);
+		 }
+		
+		
+		this.allbksks.getDaPanKXian (requirestart,requireend,TDXNodeGivenPeriodDataItem.DAY); 
+
+		nodekpnl.updatedDate(superbankuai,tmpnode,requirestart,requireend,TDXNodeGivenPeriodDataItem.DAY);
+	}
+	/*
+	 * 
+	 */
 	private void createEvents() 
 	{
 		tfldselectedmsg.addPropertyChangeListener(new PropertyChangeListener() {
@@ -117,33 +158,30 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     @SuppressWarnings("unchecked")
                     String zhishuinfo = evt.getNewValue().toString();
                     
-                    if(displaynode.getType() != BkChanYeLianTreeNode.BKGEGU && displaynode.getType() != BkChanYeLianTreeNode.TDXGG) {
-                    	return;
-                    }
-                    
                     if(zhishuinfo.toLowerCase().equals("bankuaizhisu") ) {
       
 //                    	nodekpnl.displayQueKou(true);
-                		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,TDXNodeGivenPeriodDataItem.DAY);
+//                		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,TDXNodeGivenPeriodDataItem.DAY);
                 		
+                		nodekpnl.displayQueKou(true);
+                    	refreshTDXGeGuAndBanKuaiKXian ( displaynode, nodebankuai );
                 		
                 		
                     } else if(zhishuinfo.toLowerCase().equals("dapanzhishu") ) {
-                    	BanKuai zhishubk = null;
-                    	if(displaynode.getMyOwnCode().startsWith("6") ) {
-                    		BanKuai shdpbankuai = (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
-                    		zhishubk = shdpbankuai;
-                    	} else if(displaynode.getMyOwnCode().startsWith("3")) {
-                    		BanKuai szdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
-                    		zhishubk = szdpbankuai;
-                    	} else{
-                    		
-                    		BanKuai cybdpbankuai = (BanKuai)  allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);     
-                    		zhishubk = cybdpbankuai;
-                    	}
+                    	String danpanzhishu = JOptionPane.showInputDialog(null,"请输入叠加的大盘指数", "999999");
+                    	BanKuai zhishubk =  (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(danpanzhishu.toLowerCase(),BkChanYeLianTreeNode.TDXBK);
+                    	if(zhishubk == null)  {
+        					JOptionPane.showMessageDialog(null,"指数代码有误！","Warning",JOptionPane.WARNING_MESSAGE);
+        					return;
+        				}
+
+                    	if(nodekpnl.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG || nodekpnl.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU )
+                    		nodekpnl.displayQueKou(true);
+                    	else
+                    		nodekpnl.displayQueKou(false);
                     	
-//                    	nodekpnl.displayQueKou(true);
-                    	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,TDXNodeGivenPeriodDataItem.DAY);
+                    	refreshTDXGeGuAndBanKuaiKXian ( displaynode, zhishubk );
+//                    	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,TDXNodeGivenPeriodDataItem.DAY);
                 		
                     	
                     }

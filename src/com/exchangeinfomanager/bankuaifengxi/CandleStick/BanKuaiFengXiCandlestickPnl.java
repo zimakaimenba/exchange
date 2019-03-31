@@ -36,6 +36,7 @@ import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
@@ -115,7 +116,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		super ();
 		super.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 		 createChartPanel();
 		 createEvents ();
 	}
@@ -124,8 +125,10 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickPnl.class);
 	public static final String ZHISHU_PROPERTY = "combinedzhishu";
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	protected TDXNodes curdisplayednode;
+	protected TDXNodes curdisplayedsupernode;
+	protected String globeperiod;
 
 	private OHLCSeries ohlcSeries;
 	private OHLCSeriesCollection candlestickDataset;
@@ -142,45 +145,52 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 
 	private DateAxis dayAxis;
 	private JMenuItem mntmbankuai;
+//	private JMenuItem mntmshzhishu;
+//	private JMenuItem mntmszzhishu;
+//	private JMenuItem mntmcybzhishu;
 	private JMenuItem mntmzhishu;
 	private boolean displayhuibuquekou;
 
+	public TDXNodes getCurDisplayedNode ()
+	{
+		return this.curdisplayednode;
+	}
+	public LocalDate getDispalyStartDate ()
+	{
+		OHLCItem kxiandatacurwk = (OHLCItem) ohlcSeries.getDataItem(0);
+		RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
+		LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//		LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		return curstart;
+	}
+	public LocalDate getDispalyEndDate ()
+	{
+		OHLCItem kxiandatacurwk = (OHLCItem) ohlcSeries.getDataItem(ohlcSeries.getItemCount()-1);
+		RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
+		LocalDate curend = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//		LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		return curend;
+	}
 	
 	@Override
-	public void updatedDate(TDXNodes node, LocalDate date, int difference,String period) 
-	{
-		// TODO Auto-generated method stub
-		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
-			date = date.plus(difference,ChronoUnit.DAYS);
-		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
-			date = date.plus(difference,ChronoUnit.WEEKS);
-		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
-			date = date.plus(difference,ChronoUnit.MONTHS);
-		
-		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		
-		candlestickChart.setNotify(false);
-		this.resetDate();
-		
-		setNodeCandleStickDate ( node,  requirestart,  requireend, period , 0);
-		
-		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
-			displayQueKouToChart ();
-		
-		setPanelTitle ( node, requirestart, requirestart);
-	}
 	public void updatedDate(TDXNodes node, LocalDate startdate, LocalDate enddate,String period) 
 	{
 		candlestickChart.setNotify(false);
 		this.resetDate();
 		
+		this.curdisplayednode = node;
+		this.globeperiod = period;
 		setNodeCandleStickDate ( node,  startdate,  enddate, period , 0);
 		
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
 			displayQueKouToChart ();
 		
-		setPanelTitle ( node, startdate, enddate);
+		if(this.checkDatesShunXu (startdate,enddate) )
+			setPanelTitle ( node, startdate, enddate);
+		else
+			setPanelTitle ( node,  enddate,startdate);
 	}
 	/*
 	 * node和上级板块同时显示
@@ -188,6 +198,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	public void updatedDate(TDXNodes superbk, TDXNodes node, LocalDate requirestart, LocalDate requireend ,String period)
 	{
 		this.curdisplayednode = node;
+		this.curdisplayedsupernode = superbk;
+		this.globeperiod = period;
 		
 		candlestickChart.setNotify(false);
 		this.resetDate();
@@ -203,20 +215,10 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	/*
 	 * 
 	 */
-	public void updatedDate(TDXNodes superbk, TDXNodes node, LocalDate date, int difference,String period)
+	public void chongdieZhiShu (TDXNodes superzhishu, String period)
 	{
-		// TODO Auto-generated method stub
-		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
-					date = date.plus(difference,ChronoUnit.DAYS);
-		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
-					date = date.plus(difference,ChronoUnit.WEEKS);
-		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
-					date = date.plus(difference,ChronoUnit.MONTHS);
-				
-		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		
-		updatedDate (superbk, node, requirestart,requireend,period);
+		//计算当前node显示的时间范围
+		RegularTimePeriod ohlcdate = ( (OHLCItem)ohlcSeries.getDataItem(0) ).getPeriod();
 	}
 	/*
 	 * 个股和板块的K线可以重叠显示 
@@ -224,7 +226,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	private void setNodeCandleStickDate(TDXNodes node, LocalDate requirestart, LocalDate requireend,
 			String period, int indexofseries) 
 	{
-		this.curdisplayednode = node;
 		// TODO Auto-generated method stub
 		OHLCSeries tmpohlcSeries ;
 		OHLCSeriesCollection tmpcandlestickDataset;
@@ -273,6 +274,16 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         tmpohlcSeries.setNotify(false);
         tmpcandlestickDataset.setNotify(false);
         candlestickChart.setNotify(false);
+	}
+	/*
+	 * 
+	 */
+	private Boolean checkDatesShunXu (LocalDate date1, LocalDate date2) 
+	{
+		if (date1.isBefore(date2))
+			return true;
+		else
+			return false;
 	}
 	/*
 	 * 
@@ -627,7 +638,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		mntmbankuai.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mntmbankuai.setText("X 叠加板块指数");
-				mntmzhishu.setText("叠加所属大盘指数");
+				mntmzhishu.setText("叠加指定大盘指数");
 				combinedZhiShuKXian ("bankuaizhisu");
 			}
 		});
@@ -635,7 +646,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		mntmzhishu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mntmbankuai.setText("叠加板块指数");
-				mntmzhishu.setText("X 叠加所属大盘指数");
+				mntmzhishu.setText("X 叠加指定大盘指数");
 				combinedZhiShuKXian ("dapanzhishu");
 			}
 		});
@@ -645,6 +656,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	{
 //		PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
 //        this.firePropertyChange(evt);
+		
+//		String danpanzhishu = JOptionPane.showInputDialog(null,"请输入叠加的大盘指数","叠加指数", JOptionPane.QUESTION_MESSAGE);
 		try {
 			this.firePropertyChange(ZHISHU_PROPERTY, "", zhishu);
 		} catch (Exception e) {
@@ -725,7 +738,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 //		JPopupMenu popupMenu = new JPopupMenu();
 		mntmbankuai = new JMenuItem("叠加板块指数");
-		mntmzhishu = new JMenuItem("叠加所属大盘指数");
+		mntmzhishu = new JMenuItem("叠加指定大盘指数");
 //			popupMenu.add(mntmNewMenuItem);
 		chartPanel.getPopupMenu().add(mntmbankuai);
 		chartPanel.getPopupMenu().add(mntmzhishu);

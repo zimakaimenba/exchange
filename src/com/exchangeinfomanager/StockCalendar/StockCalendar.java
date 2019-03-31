@@ -7,6 +7,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
+import com.exchangeinfomanager.gui.StockInfoManager;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
@@ -42,30 +43,33 @@ public class StockCalendar extends JCalendar {
     private JPanel sidebar;
     private JPanel viewDeck = JPanelFactory.createPanel(layout);
     private LocalDate date = LocalDate.now();
-//    private LocalDate date = super.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     private JLabel dateLabel = new JLabel();
     private JPanel currentView;
 	private Cache cache;
-//    private View currentView;
 	private Cache cachewholemonth;
+	private SettingOfDisplayNewsArea settingsofnewsdisplay;
     
     public StockCalendar ()
     {
     	super ();
     	
     	//所有过去一年的新闻，
+    	settingsofnewsdisplay = new SettingOfDisplayNewsArea ();
+    	
     	MeetingService meetingService = new DBMeetingService ( );
     	LabelService labelService = new DBLabelService ();
         cache = new Cache("ALL",meetingService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
-        this.monthView = new MonthView(meetingService, cache);
+        
+        this.monthView = new MonthView(meetingService, cache,settingsofnewsdisplay);
         this.yearView = new YearView(meetingService, cache);
-        this.sidebar = new Sidebar(labelService, cache);
+        this.sidebar = new Sidebar(meetingService,labelService, cache);
         
         //每月固定信息，用于记录长期月度重复信息,显示在Cal星期的上部
-        MeetingService meetingServicewholemonth = new DBMeetingService ( );
-    	LabelService labelServicewholemonth = new DBLabelService ();
-        cachewholemonth = new Cache("HEADLINE",meetingServicewholemonth, labelServicewholemonth,null,null);
-        this.wholemonthview = new WholeMonthNewsView (meetingServicewholemonth, cachewholemonth);
+//        MeetingService meetingServicewholemonth = new DBMeetingService ( );
+//    	LabelService labelServicewholemonth = new DBLabelService ();
+//        cachewholemonth = new Cache("HEADLINE",meetingServicewholemonth, labelServicewholemonth,null,null);
+//        this.wholemonthview = new WholeMonthNewsView (meetingServicewholemonth, cachewholemonth);
+        this.wholemonthview = new WholeMonthNewsView (meetingService, cache);
 
 	    this.initHeaderPanel(); //
 	    this.initViewDeck();
@@ -146,6 +150,14 @@ public class StockCalendar extends JCalendar {
 
         JLabel year = JLabelFactory.createButton("Year");
         year.addMouseListener(new ViewController(yearView));
+        
+        JLabel setting = JLabelFactory.createButton("", 40);
+        setting.setToolTipText("设置显示新闻范围");
+//        setting.setText("");
+        setting.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/gear-black-shape.png")));
+        setting.addMouseListener(new settingController ());
+        
+        
 
         dateLabel = new JLabel(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
         dateLabel.setForeground(ColorScheme.BLACK_FONT);
@@ -160,6 +172,7 @@ public class StockCalendar extends JCalendar {
         JPanel viewPanel = JPanelFactory.createPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         viewPanel.add(month);
         viewPanel.add(year);
+        viewPanel.add(setting);
 
         this.headerPanel.add(tempPanel);
         this.headerPanel.add(viewPanel);
@@ -176,7 +189,26 @@ public class StockCalendar extends JCalendar {
 //			firePropertyChange("date", evt.getOldValue(), evt.getNewValue());
 //		} 
 //	}
-   
+   /*
+    * 用户更改设置
+    */
+    private class settingController extends MouseAdapter 
+    {
+    	@Override
+        public void mouseClicked(MouseEvent e) {
+    		
+    		int exchangeresult = JOptionPane.showConfirmDialog(null, settingsofnewsdisplay, "新闻显示设置", JOptionPane.OK_CANCEL_OPTION);
+			
+			if(exchangeresult == JOptionPane.CANCEL_OPTION)
+				return;
+			
+			firePropertyChange("day", 0, dateLabel);
+			
+    	}
+    }
+    /*
+     * 
+     */
     private class ViewController extends MouseAdapter {
 
         private JPanel view;
@@ -197,7 +229,9 @@ public class StockCalendar extends JCalendar {
     }
 
 
-
+    /*
+     * 
+     */
     private class TemporalController extends MouseAdapter {
 
         private int action;

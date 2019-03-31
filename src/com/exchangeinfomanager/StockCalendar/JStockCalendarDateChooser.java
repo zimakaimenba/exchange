@@ -42,7 +42,8 @@ public class JStockCalendarDateChooser extends JLocalDateChooser implements Popu
        this(jcal,null,null,null);
        this.stockcal = jcal;
 	}
-	StockCalendar stockcalendar;
+	
+//	StockCalendar stockcalendar;
 	private ChangeListener changeListener;
 	
 	/**

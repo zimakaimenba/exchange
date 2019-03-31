@@ -625,4 +625,23 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		 
 	 }
 	 
+	 public Integer getLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk)
+	 {
+		 	
+		 	int recordnum = this.nodeohlc.getItemCount();
+			int lianxu = 0;
+			for(int wkindex = 0;wkindex > (0 - recordnum) ; wkindex--) { 
+				Integer recordmaxbkwklast = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(requireddate,wkindex);
+				if( recordmaxbkwklast != null && recordmaxbkwklast >= settindpgmaxwk) 
+					lianxu ++;
+				else if( recordmaxbkwklast != null && recordmaxbkwklast < settindpgmaxwk)
+					return lianxu;
+//				else if(recordmaxbkwklast == null )
+//						;
+			}
+			
+			return -1;
+
+	 }
+	 	 
  } //END OF 

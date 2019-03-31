@@ -232,4 +232,10 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 		return null;
 	}
 
+	@Override
+	public Integer getLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

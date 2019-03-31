@@ -105,6 +105,11 @@ public interface NodeXPeriodDataBasic
 	 * 一次性计算所有数据
 	 */
 //	ChenJiaoZhanBiInGivenPeriod getNodeFengXiResultForSpecificDate (LocalDate requireddate);
+	/*
+	 * 
+	 */
+	public Integer getLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk);
+	
 
 
 }

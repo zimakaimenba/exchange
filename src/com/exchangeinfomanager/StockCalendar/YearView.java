@@ -180,7 +180,7 @@ public class YearView extends View {
             
             if (e.getClickCount() == 2) { //获取选择的日期
             	Meeting meeting = new Meeting("新闻标题",mDate,
-                        "描述", "关键词", new HashSet<>(),"SlackURL","000000");
+                        "描述", "关键词", new HashSet<>(),"SlackURL","000000",Meeting.DAPANNEWS);
                     getCreateDialog().setMeeting(meeting);
                     getCreateDialog().setVisible(true);
             }

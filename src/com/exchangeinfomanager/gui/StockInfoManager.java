@@ -349,23 +349,6 @@ public class StockInfoManager
 				 displayBanKuaiAndStockNews (); //显示板块和个股新闻
 				 enableGuiEditable();
 		}
-	
-//	private void initlizedBuyCheckListTreeDialog ()
-//	{
-//		if(buychklstdialog == null ) {
-//			try {
-//				buychklstdialog = new BuyCheckListTreeDialog (this,nodeshouldbedisplayed.getMyOwnCode(),((Stock)nodeshouldbedisplayed).getChecklistXml());
-//			} catch (java.lang.NullPointerException ex) {
-//				buychklstdialog = new BuyCheckListTreeDialog (this,null,null);
-//			}
-//		} else {
-//			
-//		}
-//				
-//		if(!buychklstdialog.isVisible() ) 
-//			 buychklstdialog.setVisible(true);
-//		buychklstdialog.toFront();
-//	}
 	/*
 	 * 
 	 */

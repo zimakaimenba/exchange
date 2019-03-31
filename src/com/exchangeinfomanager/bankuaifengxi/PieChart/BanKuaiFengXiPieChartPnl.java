@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi.PieChart;
 import java.awt.Font;
 import java.io.File;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
@@ -28,12 +29,14 @@ import org.jfree.data.general.PieDataset;
 
 
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
+import com.exchangeinfomanager.bankuaifengxi.PieChartPanelDataChangedListener;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.google.common.io.Files;
 
-public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements BarChartPanelDataChangedListener
+public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements PieChartPanelDataChangedListener
 {
 
 	public BanKuaiFengXiPieChartPnl ()
@@ -64,6 +67,8 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements BarChar
 	protected DefaultPieDataset piechartdataset;
 	protected TDXNodes curdisplaybk;
 //	private SystemConfigration sysconfig;
+	
+	
 	
 	@SuppressWarnings("deprecation")
 	private void createChartPanel() 

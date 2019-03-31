@@ -14,24 +14,37 @@ public class Meeting {
     private LocalDate start;
     private String title;
     private String description;
-    private String brief; //keywrods
+    private String keywords; //keywrods
     private String slackUrl;
     protected String newsownercodes;
-    private String currentownercode;
+    private int meetingtype;
+    public static int  CHANGQIJILU = 2, DAPANNEWS = 3, WKZONGJIE = 4, QIANSHI = 8, RUOSHI = 5, ZHISHUDATE = 7, JINQIGUANZHU = 6;
 
     private Collection<InsertedMeeting.Label> labels;
 
-    public Meeting(String title, LocalDate start, String description, String brief2, Collection<InsertedMeeting.Label> labels,String slackUrl,String ownercodes) {
+    public Meeting(String title, LocalDate start, String description, String keywords, 
+    		Collection<InsertedMeeting.Label> labels,String slackUrl,String ownercodes,int meetingtype)
+    {
         this.setStart(start);
         this.setTitle(title);
         this.setDescription(description);
-        this.setLocation(brief2);
+        this.setKeyWords(keywords);
         this.labels = new HashSet<>(labels);
         this.setSlackUrl(slackUrl);
-        this.setNewsownercodes(ownercodes);
+        this.setNewsOwnerCodes(ownercodes);
+        this.setMeetingType (meetingtype);
     }
 
-    public Collection<InsertedMeeting.Label> getLabels() {
+    public void setMeetingType(int meetingtype)
+    {
+		this.meetingtype = meetingtype;
+	}
+    public int getMeetingType ()
+    {
+    	return this.meetingtype;
+    }
+
+	public Collection<InsertedMeeting.Label> getLabels() {
         return this.labels;
     }
 
@@ -52,20 +65,20 @@ public class Meeting {
     	return this.slackUrl;
     }
 
-    public void setCurrentownercode (String curcodes)
-    {
-    	this.currentownercode = curcodes;
-    }
-    public String getCurrentownercode ()
-    {
-    	return this.currentownercode;
-    }
-    public void setNewsownercodes (String ownercodes)
+//    public void setCurrentownercode (String curcodes)
+//    {
+//    	this.currentownercode = curcodes;
+//    }
+//    public String getCurrentownercode ()
+//    {
+//    	return this.currentownercode;
+//    }
+    public void setNewsOwnerCodes (String ownercodes)
     {
   		this.newsownercodes = ownercodes;
     }
     
-    public String getNewsownercodes ()
+    public String getNewsOwnerCodes ()
     {
     	return this.newsownercodes;
     }
@@ -87,18 +100,18 @@ public class Meeting {
     }
 
     //keywords
-    public String getLocation() {
-        return brief;
+    public String getKeyWords () {
+        return keywords;
     }
 
-    public void setLocation(String location) {
-        this.brief = location;
+    public void setKeyWords(String keywords) {
+        this.keywords = keywords;
     }
 
     @Override
     public String toString() {
-        return String.format("title: %s, start: %s, end: %s, description: %s, location: %s", getTitle(), getStart(),
-             getDescription(), getLocation());
+        return String.format("title: %s, start: %s, end: %s, description: %s, keywords: %s", getTitle(), getStart(),
+             getDescription(), getKeyWords());
     }
 
     @Override
@@ -116,7 +129,7 @@ public class Meeting {
             return false;
         if (!description.equals(meeting.description))
             return false;
-        if (!brief.equals(meeting.brief))
+        if (!keywords.equals(meeting.keywords))
             return false;
 
         return true;
@@ -124,14 +137,26 @@ public class Meeting {
 
     @Override
     public int hashCode() {
-        int result = start.hashCode();
-        result = 31 * result + title.hashCode();
-        result = 31 * result + description.hashCode();
-        try {
-        	result = 31 * result + brief.hashCode();
-        } catch(java.lang.NullPointerException e ) {
-        	
-        }
+    	int result = 0;
+    	
+    		
+	    		result = start.hashCode();
+	            result = 31 * result + title.hashCode();
+	            try{
+	            	result = 31 * result + description.hashCode();
+	            } catch (java.lang.NullPointerException e) {
+//	        		e.printStackTrace();
+	        		result = 31 * result + "".hashCode();
+	        	}
+	            try{
+	            	result = 31 * result + keywords.hashCode();
+	            } catch (java.lang.NullPointerException e) {
+//	        		e.printStackTrace();
+	        		result = 31 * result + "".hashCode();
+	        	}
+            
+    	
+        
         return result;
     }
 

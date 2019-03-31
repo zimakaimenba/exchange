@@ -58,7 +58,7 @@ public class SystemConfigration
 	private String bkparsestoredpath;
 	private int setSoftWareMode; //设定系统模式，有2种，基本数据和通达信同步数据。
 	private String datatablesfromserver;
-	private String gephifileexportparth;
+	private String tdxzdybkpath;
 	public static int MODELSERVER=0, MODELCLIENT=1, MODELSERVERCLIENT=2;
 	private int givenperiodofmonth;
 	private int zhanbifengxizhouqi; //成交量占比分析周期
@@ -140,8 +140,8 @@ public class SystemConfigration
 			Element eletbkparsefile = xmlroot.element("bankuaiparsefilepah");
 			this.bkparsestoredpath = eletbkparsefile.getText();
 			
-			Element gephifilepath = xmlroot.element("gephifilepath");
-			this.gephifileexportparth = gephifilepath.getText();
+			Element tdxzdyfilepath = xmlroot.element("tdxzdybkpath");
+			this.tdxzdybkpath = tdxzdyfilepath.getText();
 			
 			
 			Element zhanbifengxizhouqi = xmlroot.element("zhanbifengxizhouqi");
@@ -622,7 +622,11 @@ public class SystemConfigration
 		 */
 		public String getTDXSysZDYBanKuaiFile ()
 		{
-			return this.getTDXInstalledLocation() + "T0002/blocknew/blocknew.cfg";
+//			return this.getTDXInstalledLocation() + "T0002/blocknew/blocknew.cfg";
+//			return "\\\\jeffauas\\blocknew\\blocknew.cfg";
+			return this.tdxzdybkpath + "blocknew.cfg";
+			
+//			"\\\\Comp-1\\FileIO\\Stop.txt"
 		}
 		public String getTDXSysAllBanKuaiFile() 
 		{

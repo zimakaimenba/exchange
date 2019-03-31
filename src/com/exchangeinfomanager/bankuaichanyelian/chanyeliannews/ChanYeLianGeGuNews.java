@@ -83,7 +83,7 @@ public class ChanYeLianGeGuNews extends View
 			newsbelogns = "999999";
 		
 		Meeting meeting = new Meeting("新闻标题",LocalDate.now(),
-                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns);
+                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.DAPANNEWS);
         getCreateDialog().setMeeting(meeting);
         getCreateDialog().setVisible(true);
 		

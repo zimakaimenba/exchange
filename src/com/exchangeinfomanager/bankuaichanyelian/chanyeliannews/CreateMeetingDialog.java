@@ -47,7 +47,7 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
             		JOptionPane.showMessageDialog(null,"新闻标题过长！");
             		setVisible(true);
             	} else { 
-            		meetingService.createMeeting(getMeeting());
+            		meetingService.createMeeting(mt);
             		setVisible(false);
             	}
             } catch (com.mysql.jdbc.MysqlDataTruncation e2) {

@@ -2,6 +2,8 @@ package com.exchangeinfomanager.StockCalendar;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DialogFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
@@ -10,6 +12,8 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JTextFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelDialog;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.toedter.calendar.JCalendar;
 
 
@@ -19,15 +23,18 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Optional;
 
 @SuppressWarnings("all")
-public class Sidebar extends JPanel implements CacheListener {
+public class Sidebar extends View implements CacheListener {
 
     private LabelService labelService;
     private JPanel labels;
     private JLabel colorButton;
     private JLabel createLabel;
+    private JLabel createMilestoneDateForZhiShu;
 
     private JTextField nameField;
     private LabelDialog modifyLabelDialog;
@@ -35,7 +42,8 @@ public class Sidebar extends JPanel implements CacheListener {
     private Cache cache;
 	private JScrollPane labelsscrollpane;
 
-    public Sidebar(LabelService labelService, Cache cache) {
+    public Sidebar(MeetingService meetingService, LabelService labelService, Cache cache) {
+    	super (meetingService,cache);
         this.labelService = labelService;
         this.cache = cache;
         this.createLabelDialog = DialogFactory.createLabelDialog(labelService);
@@ -49,7 +57,7 @@ public class Sidebar extends JPanel implements CacheListener {
     private void initUI() {
         this.labels = JPanelFactory.createPanel();
         this.createLabel = JLabelFactory.createButton("New label");
-        
+        this.createMilestoneDateForZhiShu = JLabelFactory.createButton("指数关键日期");
         this.colorButton = JLabelFactory.createLabel("", 40, 30);
         this.nameField = JTextFactory.createTextField();
     }
@@ -72,9 +80,14 @@ public class Sidebar extends JPanel implements CacheListener {
         super.add(Box.createVerticalStrut(5));
 
         JPanel createLabelPanel = JPanelFactory.createFixedSizePanel(new BorderLayout());
-        this.createLabel.addMouseListener(new CreateController());
+        this.createLabel.addMouseListener(new CreateNewLabelController());
         createLabelPanel.add(this.createLabel, BorderLayout.CENTER);
         super.add(createLabelPanel);
+        
+        JPanel createDapanDatePanel = JPanelFactory.createFixedSizePanel(new BorderLayout());
+        this.createMilestoneDateForZhiShu.addMouseListener(new CreateDapanMileStoneDateController());
+        createDapanDatePanel.add(this.createMilestoneDateForZhiShu, BorderLayout.CENTER);
+        super.add(createDapanDatePanel);
         
         
     }
@@ -101,7 +114,7 @@ public class Sidebar extends JPanel implements CacheListener {
             name.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, ColorScheme.GREY_LINE));
 
             JLabel option = JLabelFactory.createButton("*", 20);
-            option.addMouseListener(new ModifyController());
+            option.addMouseListener(new ModifyLabelController());
             mPanel.add(name, BorderLayout.CENTER);
             mPanel.add(option, BorderLayout.LINE_END);
             labels.add(mPanel);
@@ -134,7 +147,7 @@ public class Sidebar extends JPanel implements CacheListener {
         }
     }
 
-    private class CreateController extends MouseAdapter {
+    private class CreateNewLabelController extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
@@ -143,8 +156,45 @@ public class Sidebar extends JPanel implements CacheListener {
         }
     }
 
+    private class CreateDapanMileStoneDateController extends MouseAdapter {
+         
+//    	MeetingService meetingService;
+//		private MeetingDialog createDialog;
+//		private MeetingDialog modifyDialog;
 
-    private class ModifyController extends MouseAdapter {
+		@Override
+        public void mouseClicked(MouseEvent e) {
+            super.mouseClicked(e);
+            
+//            ZhiShuMilestoneDatePanel zsdate = new ZhiShuMilestoneDatePanel ();
+//            JOptionPane.showMessageDialog(null, zsdate, "设置指数特别关注日期", JOptionPane.OK_CANCEL_OPTION);
+//            
+//            zsdate.getZhiShuCode();
+//            zsdate.getZhiShuMilestoneDate();
+//            zsdate.getZhiShuMilestoneShuoming();
+//            MeetingService meetingService = new DBMeetingService ( );
+//        	LabelService labelService = new DBLabelService ();
+//            cache = new Cache("ALL",meetingService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+//                        this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
+//            this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
+//            
+//            Meeting meeting = new Meeting("设置指数关键日期",LocalDate.now(),
+//                    "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
+//            
+//            getCreateDialog().setMeeting(meeting);
+//            getCreateDialog().setVisible(true);
+//            createDialog.setMeeting(meeting);
+//            createDialog.setVisible(true);
+            
+            Meeting meeting = new Meeting("设置指数关键日期",LocalDate.now(),
+                  "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
+            		
+               getCreateDialog().setMeeting(meeting);
+               getCreateDialog().setVisible(true);
+        }
+    }
+
+    private class ModifyLabelController extends MouseAdapter {
 
         @Override
         public void mouseClicked(MouseEvent e) {

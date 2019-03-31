@@ -80,21 +80,21 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode, java.time.LocalDate, int, java.lang.String)
 	 * 升级占比数据
 	 */
-	public void updatedDate (TDXNodes node, LocalDate date, int difference, String period)
-	{
-		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
-			date = date.plus(difference,ChronoUnit.DAYS);
-		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
-			date = date.plus(difference,ChronoUnit.WEEKS);
-		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
-			date = date.plus(difference,ChronoUnit.MONTHS);
-			
-//		setNodeCjeZhanBi(node,date,period);
-		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		
-		this.updatedDate (node,requirestart,requireend,period);
-	}
+//	public void updatedDate (TDXNodes node, LocalDate date, int difference, String period)
+//	{
+//		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+//			date = date.plus(difference,ChronoUnit.DAYS);
+//		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+//			date = date.plus(difference,ChronoUnit.WEEKS);
+//		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+//			date = date.plus(difference,ChronoUnit.MONTHS);
+//			
+////		setNodeCjeZhanBi(node,date,period);
+//		LocalDate requireend = date.with(DayOfWeek.SATURDAY);
+//		LocalDate requirestart = date.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+//		
+//		this.updatedDate (node,requirestart,requireend,period);
+//	}
 	public void updatedDate (TDXNodes node, LocalDate startdate, LocalDate enddate,String period)
 	{
 //		this.setNodeCjeZhanBi (node,startdate,enddate,period);
@@ -133,7 +133,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 
 		super.barchart.setNotify(false);
 		
-		double highestHigh =0.0; int upqkmax =0;//设置显示范围
+		double highestHigh =0.0; int qkmax =0;//设置显示范围
 	
 		LocalDate tmpdate = requirestart;
 		do {
@@ -184,17 +184,24 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			 
 			if(opneupquekou != null) {
 				super.linechartdataset.setValue(opneupquekou, "QueKouOpenUp", wkfriday );
-				if (opneupquekou > upqkmax)
-					upqkmax = opneupquekou ;
+				if (opneupquekou > qkmax)
+					qkmax = opneupquekou ;
 			}	else
 				super.linechartdataset.setValue(0, "QueKouOpenUp", wkfriday );
 			
 			if(huibudowquekou != null) {
 				super.linechartdataset.setValue(huibudowquekou, "QueKouHuiBuDownQk", wkfriday );
-				if (huibudowquekou > upqkmax)
-					upqkmax = huibudowquekou ;
+				if (huibudowquekou > qkmax)
+					qkmax = huibudowquekou ;
 			}	else
 				super.linechartdataset.setValue(0, "QueKouHuiBuDownQk", wkfriday );
+			
+			if(opendownquekou != null && opendownquekou > qkmax) 
+				qkmax = opendownquekou;
+			if(huibuupquekou != null && huibuupquekou >qkmax)
+				qkmax = huibuupquekou;
+
+			
 			
 			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
@@ -208,7 +215,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		setPanelTitle ("成交额" + period + curdisplayednode.getMyOwnCode(),requireend);
 		
 		super.barchart.setNotify(true);
-		operationAfterDataSetup (nodexdata,requirestart,requireend,highestHigh,upqkmax,period);
+		operationAfterDataSetup (nodexdata,requirestart,requireend,highestHigh,qkmax,period);
 	}
 	/*
 	 * 突出显示一些预先设置
@@ -237,7 +244,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		try{
 			super.plot.getRangeAxis(3).setRange(0, upqkmax*1.12);
 		} catch (java.lang.IllegalArgumentException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			super.plot.getRangeAxis(3).setRange(0, 1);
 //			super.linechartdataset.clear();
 		}
@@ -421,38 +428,48 @@ class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarTo
 				try {
 					DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
 					htmltext = "占比" + decimalformate.format(curzhanbidata) ;
+					
+					org.jsoup.nodes.Element li1 = dl.appendElement("li");
+					li1.appendText(htmltext);
 				} catch (java.lang.IllegalArgumentException e ) {
-					htmltext = "占比占比NULL" ;
+//					htmltext = "占比占比NULL" ;
 				}
-				org.jsoup.nodes.Element li1 = dl.appendElement("li");
-				li1.appendText(htmltext);
+				
 				 
 				try {
 					 htmltext = "占比MaxWk=" + maxweek.toString() ;
+					 
+					 org.jsoup.nodes.Element li2 = dl.appendElement("li");
+					 li2.appendText(htmltext);
 				} catch (java.lang.IllegalArgumentException e ) {
-					htmltext = "占比MaxWk=NULL"  ;
+//					htmltext = "占比MaxWk=NULL"  ;
 				}
-				 org.jsoup.nodes.Element li2 = dl.appendElement("li");
-				 li2.appendText(htmltext);
+				 
 				 
 				try {
 					htmltext = "占比MinWk=" + minweek.toString() ;
+					org.jsoup.nodes.Element li3 = dl.appendElement("li");
+					 li3.appendText(htmltext);
 				} catch (java.lang.IllegalArgumentException e ) {
-					htmltext = "占比MinWk=NULL" ;
+//					htmltext = "占比MinWk=NULL" ;
 				}
-				 org.jsoup.nodes.Element li3 = dl.appendElement("li");
-				 li3.appendText(htmltext);
+				 
 				 
 				try {
 //					DecimalFormat decimalformate = new DecimalFormat("%.3f");
-					htmltext = "HSL=" + String.format("%.3f", hsl);
+					if(hsl != null) {
+						htmltext = "HSL=" + String.format("%.3f", hsl);
+						
+						org.jsoup.nodes.Element li4 = dl.appendElement("li");
+						li4.appendText(htmltext);
+					}
+					
 				} catch (java.lang.IllegalArgumentException e ) {
-					htmltext = "HSL=NULL";
+//					htmltext = "HSL=NULL";
 				} catch (java.lang.NullPointerException ex) {
-					htmltext = "HSL=NULL";
+//					htmltext = "HSL=NULL";
 				}
-				org.jsoup.nodes.Element li4 = dl.appendElement("li");
-				li4.appendText(htmltext);
+				
 			}
 			
 			htmlstring = doc.toString();

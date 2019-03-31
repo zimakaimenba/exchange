@@ -11,7 +11,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
  */
 public interface BarChartPanelDataChangedListener 
 {
-	public void updatedDate (TDXNodes node, LocalDate date, int difference,String period);
+//	public void updatedDate (TDXNodes node, LocalDate date, int difference,String period);
 	public void updatedDate (TDXNodes node, LocalDate startdate, LocalDate enddate,String period);
 
 }

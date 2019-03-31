@@ -113,7 +113,7 @@ public class SystemSetting extends JDialog
 			Element elebkparsefile = xmlroot.element("bankuaiparsefilepah");
 			if(elebkparsefile != null ) {
 				String text = elebkparsefile.getText();
-				tfldparsefilepath.setText(text);
+				tfldzdyfilepath.setText(text);
 			}
 			
 			Element elezbfxzq = xmlroot.element("zhanbifengxizhouqi");
@@ -123,10 +123,10 @@ public class SystemSetting extends JDialog
 			}
 			
 			
-			Element elegephi = xmlroot.element("gephifilepath");
-			if(elegephi != null) {
-				String text = elegephi.getText();
-				tfldgephi.setText(text);
+			Element eletdxzdybkpath = xmlroot.element("tdxzdybkpath");
+			if(eletdxzdybkpath != null) {
+				String text = eletdxzdybkpath.getText();
+				tfldzdyfilepath.setText(text);
 			}
 			
 			Element eleprivate = xmlroot.element("privatemode");
@@ -263,7 +263,7 @@ public class SystemSetting extends JDialog
 			}
 		});
 		
-		btnchsparsefilepath.addMouseListener(new MouseAdapter() {
+		btnzdyselect.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				setBanKuaiParseFileInstalledPath ();
@@ -505,10 +505,10 @@ public class SystemSetting extends JDialog
 				eletdx.setText( toUNIXpath(tfldTDXInstalledPath.getText() ) );
 				
 				Element eletbkparsefile = rootele.addElement("bankuaiparsefilepah");
-				eletbkparsefile.setText( toUNIXpath(tfldparsefilepath.getText() ) );
+				eletbkparsefile.setText( toUNIXpath(tfldzdyfilepath.getText() ) );
 				
-				Element elegephi = rootele.addElement("gephifilepath");
-				elegephi.setText(toUNIXpath(tfldgephi.getText()));
+				Element eletdxzdybkpath = rootele.addElement("tdxzdybkpath");
+				eletdxzdybkpath.setText(toUNIXpath(tfldzdyfilepath.getText()));
 				
 				Element zhanbifengxizhouqi = rootele.addElement("zhanbifengxizhouqi");
 				zhanbifengxizhouqi.setText(tfldzhanbizhouqi.getText());
@@ -691,7 +691,7 @@ public class SystemSetting extends JDialog
 		    logger.debug(chooser.getSelectedFile());
 		    String linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
 		    logger.debug(linuxpath);
-		    tfldparsefilepath.setText(linuxpath);
+		    tfldzdyfilepath.setText(linuxpath);
 		}
 		
 	}
@@ -773,15 +773,13 @@ public class SystemSetting extends JDialog
 	private JButton btnrmteditdb;
 	private JButton btnrmtadd;
 	private JButton btndelrmtdbs;
-	private JTextField tfldparsefilepath;
-	private JButton btnchsparsefilepath;
+	private JTextField tfldzdyfilepath;
+	private JButton btnzdyselect;
 	private JTextField tfldzhanbizhouqi;
 	private JCheckBox cbxprivatemode;
-	private JLabel lblGephi;
-	private JTextField tfldgephi;
-	private JButton btngephi;
 	private JTextField tfldpythonptah;
 	private JButton btnchoosepython;
+	private JCheckBox ckbxzdy;
 	private void initializeGui() 
 	{
 		setTitle("\u7CFB\u7EDF\u8BBE\u7F6E");
@@ -841,16 +839,16 @@ public class SystemSetting extends JDialog
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
-		JLabel label_1 = new JLabel("\u7CFB\u7EDF\u63D0\u793A\u97F3\u6587\u4EF6");
+		JLabel label_1 = new JLabel("");
 		
-		tfldparsefilepath = new JTextField();
-		tfldparsefilepath.setEditable(false);
-		tfldparsefilepath.setColumns(10);
+		tfldzdyfilepath = new JTextField();
+		tfldzdyfilepath.setText("\\\\jeffauas\\\\blocknew");
+		tfldzdyfilepath.setEditable(false);
+		tfldzdyfilepath.setColumns(10);
 		
-		btnchsparsefilepath = new JButton("");
-		btnchsparsefilepath.setEnabled(false);
+		btnzdyselect = new JButton("");
 		
-		btnchsparsefilepath.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		btnzdyselect.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		
 		JLabel label_2 = new JLabel("\u6210\u4EA4\u5360\u6BD4\u5206\u6790\u5468\u671F\u8DE8\u5EA6(\u6708)");
 		
@@ -859,15 +857,6 @@ public class SystemSetting extends JDialog
 		tfldzhanbizhouqi.setColumns(10);
 		
 		cbxprivatemode = new JCheckBox("\u9690\u79C1\u6A21\u5F0F");
-		
-		lblGephi = new JLabel("Gephi\u6587\u4EF6\u5B58\u653E\u8DEF\u5F84");
-		
-		tfldgephi = new JTextField();
-		tfldgephi.setEnabled(false);
-		tfldgephi.setColumns(10);
-		
-		btngephi = new JButton("");
-		btngephi.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		
 		JLabel lblPythonInterpreter = new JLabel(" Python Interpreter\u8DEF\u5F84");
 		
@@ -879,6 +868,9 @@ public class SystemSetting extends JDialog
 		btnchoosepython = new JButton("");
 		
 		btnchoosepython.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		
+		ckbxzdy = new JCheckBox("\u81EA\u5B9A\u4E49\u677F\u5757\u8DEF\u5F84");
+		ckbxzdy.setSelected(true);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -906,12 +898,7 @@ public class SystemSetting extends JDialog
 												.addComponent(lblNewLabel)
 												.addPreferredGap(ComponentPlacement.RELATED)
 												.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 453, GroupLayout.PREFERRED_SIZE))
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(label_2)
-												.addPreferredGap(ComponentPlacement.UNRELATED)
-												.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
 											.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)
-											.addComponent(cbxprivatemode)
 											.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
 												.addGroup(gl_contentPanel.createSequentialGroup()
 													.addComponent(label)
@@ -931,30 +918,31 @@ public class SystemSetting extends JDialog
 													.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
 												.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE))
 											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+													.addComponent(cbxprivatemode)
 													.addGroup(gl_contentPanel.createSequentialGroup()
-														.addPreferredGap(ComponentPlacement.RELATED)
 														.addComponent(lblPythonInterpreter)
 														.addPreferredGap(ComponentPlacement.UNRELATED)
-														.addComponent(tfldpythonptah))
-													.addGroup(gl_contentPanel.createSequentialGroup()
-														.addComponent(lblGephi)
-														.addPreferredGap(ComponentPlacement.RELATED)
-														.addComponent(tfldgephi, GroupLayout.PREFERRED_SIZE, 364, GroupLayout.PREFERRED_SIZE)))
-												.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-													.addGroup(gl_contentPanel.createSequentialGroup()
-														.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-														.addComponent(btnchoosepython))
-													.addGroup(gl_contentPanel.createSequentialGroup()
-														.addPreferredGap(ComponentPlacement.RELATED)
-														.addComponent(btngephi)))))
+														.addComponent(tfldpythonptah)
+														.addGap(18)
+														.addComponent(btnchoosepython)
+														.addGap(116)))))
 										.addPreferredGap(ComponentPlacement.RELATED))
 									.addGroup(gl_contentPanel.createSequentialGroup()
 										.addComponent(label_1)
-										.addPreferredGap(ComponentPlacement.UNRELATED)
-										.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(btnchsparsefilepath))))
+										.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+											.addGroup(gl_contentPanel.createSequentialGroup()
+												.addComponent(label_2)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+											.addGroup(gl_contentPanel.createSequentialGroup()
+												.addComponent(ckbxzdy)
+												.addGap(18)
+												.addComponent(tfldzdyfilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(btnzdyselect))))))
 							.addGap(494))))
 		);
 		gl_contentPanel.setVerticalGroup(
@@ -977,50 +965,43 @@ public class SystemSetting extends JDialog
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 							.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-							.addComponent(tfldparsefilepath, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE))
-						.addComponent(btnchsparsefilepath))
-					.addGap(18)
+							.addComponent(tfldzdyfilepath, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+							.addComponent(ckbxzdy))
+						.addComponent(btnzdyselect))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+						.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(16)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblGephi, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-								.addComponent(tfldgephi, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
-							.addGap(6)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 								.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblPythonInterpreter)
-								.addComponent(btnchoosepython))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-								.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-						.addComponent(btngephi))
-					.addGap(18)
-					.addComponent(saveButton)
+								.addComponent(lblPythonInterpreter))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(cbxprivatemode)
+							.addGap(16)
+							.addComponent(saveButton))
+						.addComponent(btnchoosepython))
 					.addGap(8)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(cbxprivatemode)
-							.addGap(295))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(btnEditDb)
-								.addComponent(btmaddnewdb)
-								.addComponent(btndeletedbs)
-								.addComponent(lblNewLabel_2))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-									.addComponent(label)
-									.addComponent(btndelrmtdbs))
-								.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-									.addComponent(btnrmteditdb)
-									.addComponent(btnrmtadd)))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)))
+						.addComponent(btnEditDb)
+						.addComponent(btmaddnewdb)
+						.addComponent(btndeletedbs)
+						.addComponent(lblNewLabel_2))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+							.addComponent(label)
+							.addComponent(btndelrmtdbs))
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+							.addComponent(btnrmteditdb)
+							.addComponent(btnrmtadd)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
 					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
 					.addGap(35))
 		);

@@ -5,6 +5,7 @@ package com.exchangeinfomanager.StockCalendar;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DialogFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.toedter.calendar.JDayChooser;
@@ -48,6 +49,12 @@ public abstract class View extends JPanel implements CacheListener
         this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
         this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
     }
+    
+//    public View(MeetingService meetingService,LabelService labelService, Cache cache) {
+//    	this.cache = cache;
+//        this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
+//        this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
+//    }
 
     /**
      * Accessor for the create meeting dialog.

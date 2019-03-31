@@ -145,11 +145,18 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    
 	    } else  if( col == 7   && value != null  ) { 	    //突出显示dpMAXWK>=的个股
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
-	    	
 	    	int fazhi = tablemodel.getDisplayCjeDPMaxWk();
-	    	 if( dpmaxwk >=fazhi )
-	    		 background = Color.red ;
-	    	 else 
+	    	
+	    	LocalDate requireddate = tablemodel.getShowCurDate();
+		    String period = tablemodel.getCurDisplayPeriod();
+	    	BanKuaiAndStockXPeriodData nodexdata = (BanKuaiAndStockXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+	    	Integer lianxuflnum = nodexdata.getLianXuFangLiangPeriodNumber (requireddate,0,fazhi);
+	    	 
+	    	if(dpmaxwk >=fazhi &&  lianxuflnum >=2 ) //连续放量
+	    		background = new Color(102,0,0) ;
+	    	else if( dpmaxwk >=fazhi &&  lianxuflnum <2 )
+	    		 background = new Color(255,0,0) ;
+	    	else 
 	    		 background = Color.white ;
 	    }else  if( col == 8  && value != null ) { //突出显示CjeMAXWK>=的个股
 	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 8).toString() );

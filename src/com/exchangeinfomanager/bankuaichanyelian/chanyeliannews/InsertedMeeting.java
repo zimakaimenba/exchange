@@ -6,8 +6,8 @@ public class InsertedMeeting extends Meeting {
     private int id;
 
     public InsertedMeeting(Meeting meeting, int id) {
-        super(meeting.getTitle(), meeting.getStart(),  meeting.getDescription(), meeting.getLocation(),
-            meeting.getLabels(),meeting.getSlackUrl(),meeting.getNewsownercodes());
+        super(meeting.getTitle(), meeting.getStart(),  meeting.getDescription(), meeting.getKeyWords(),
+            meeting.getLabels(),meeting.getSlackUrl(),meeting.getNewsOwnerCodes(),meeting.getMeetingType());
         this.setID(id);
     }
 
@@ -20,14 +20,14 @@ public class InsertedMeeting extends Meeting {
     }
 
     public Meeting getMeeting() {
-        return new Meeting(getTitle(), getStart(),  getDescription(), getLocation(), getLabels(),getSlackUrl(),getNewsownercodes());
+        return new Meeting(getTitle(), getStart(),  getDescription(), getKeyWords(), getLabels(),getSlackUrl(),getNewsOwnerCodes(),getMeetingType());
     }
 
     public void setMeeting(Meeting meeting) {
         setTitle(meeting.getTitle());
         setStart(meeting.getStart());
         setDescription(meeting.getDescription());
-        setLocation(meeting.getLocation());
+        setKeyWords(meeting.getKeyWords());
         setSlackUrl(meeting.getSlackUrl());
         getLabels().clear();
         getLabels().addAll(meeting.getLabels());
