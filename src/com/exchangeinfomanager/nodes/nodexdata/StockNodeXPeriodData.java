@@ -124,7 +124,7 @@ public class StockNodeXPeriodData extends BanKuaiAndStockXPeriodData
 			
 			return curhsl;
 		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return null;
 		}
 		

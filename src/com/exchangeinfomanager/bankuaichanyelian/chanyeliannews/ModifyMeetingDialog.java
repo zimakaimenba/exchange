@@ -8,12 +8,13 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 @SuppressWarnings("all")
-public class ModifyMeetingDialog extends MeetingDialog<InsertedMeeting> {
+public class ModifyMeetingDialog extends MeetingDialog<InsertedMeeting> 
+{
 
-    public ModifyMeetingDialog(MeetingService meetingService, Cache cache) {
+    public ModifyMeetingDialog(MeetingService meetingService, Cache cache) 
+    {
         super(meetingService, cache);
         super.setTitle("ÐÞ¸Ä");
-        super.startTimeChooser.setEnabled(false);
 
         // let's create delete and update buttons
         JLabel deleteButton = JLabelFactory.createPinkButton("É¾³ý");
@@ -34,6 +35,33 @@ public class ModifyMeetingDialog extends MeetingDialog<InsertedMeeting> {
         layoutPanel.add(updateButton);
         this.centerPanel.add(layoutPanel);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
+    }
+    
+    public Boolean setMeeting(InsertedMeeting meeting)
+    {
+    	super.setMeeting( meeting);
+    	
+    	if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI  ) {
+        	titleField.setEnabled(false);
+        	locationField.setEnabled(false);
+        	slackurlField.setEnabled(false);
+        	
+        	newsownersField.setEnabled(false);
+        } else if(meeting.getMeetingType() == Meeting.ZHISHUDATE ) {
+        	titleField.setEnabled(false);
+        	locationField.setEnabled(false);
+        	slackurlField.setEnabled(false);
+        	
+        	newsownersField.setEnabled(false);
+        } else {
+        	newsownersField.setEnabled(false);
+        	
+        	titleField.setEnabled(true);
+        	locationField.setEnabled(true);
+        	slackurlField.setEnabled(true);
+        }
+        
+        return true;
     }
 
     private class DeleteController extends MouseAdapter {
@@ -63,21 +91,5 @@ public class ModifyMeetingDialog extends MeetingDialog<InsertedMeeting> {
             setVisible(false);
         }
     }
-//    private class RemoveController extends MouseAdapter {
-//
-//        @Override
-//        public void mouseClicked(MouseEvent e) {
-//            super.mouseClicked(e);
-//            try {
-//            	InsertedMeeting upmeeting = getMeeting();
-//            	String curowner = upmeeting.getCurrentownercode() ;
-//            	upmeeting.removeMeetingSpecficOwner (curowner);
-//            	
-//                meetingService.updateMeeting(upmeeting);
-//            } catch (SQLException e1) {
-//                e1.printStackTrace();
-//            } 
-//            setVisible(false);
-//        }
-//    }
+
 }

@@ -1,4 +1,3 @@
-
 package com.exchangeinfomanager.commonlib.jstockcombobox;
 
 import java.awt.Color;
@@ -42,7 +41,6 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class JStockComboBox extends  JComboBox<String>
 {
-
 	/**
 	 * 
 	 */

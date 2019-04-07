@@ -96,10 +96,14 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    String period = tablemodel.getCurDisplayPeriod();
 		    StockNodeXPeriodData nodexdata = (StockNodeXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		    Double curltsz = nodexdata.getSpecificTimeLiuTongShiZhi(requireddate, 0);
-		    if( curltsz >= ltszmin && curltsz <= ltszmax ) 
-		    	background = Color.MAGENTA ;
-		    else
+		    try {
+			    if( curltsz >= ltszmin && curltsz <= ltszmax ) 
+			    	background = Color.MAGENTA ;
+			    else
+			    	background = Color.white;
+		    } catch (java.lang.NullPointerException e) {
 		    	background = Color.white;
+		    }
 	    	
 	    } else  if( col == 4 && value != null ) { //³É½»¶î>=
 		    Double cjemin = tablemodel.getDisplayChenJiaoErMin ();

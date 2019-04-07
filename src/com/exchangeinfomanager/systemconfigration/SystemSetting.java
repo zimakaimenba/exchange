@@ -568,8 +568,8 @@ public class SystemSetting extends JDialog
 				OutputFormat format = OutputFormat.createPrettyPrint();
 				format.setEncoding("GBK");    // 指定XML编码        
 				try {
-					XMLWriter writer = new XMLWriter(new FileOutputStream(systemxmlfile),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
-						writer.write(document); //输出到文件  
+					XMLWriter writer = new XMLWriter(new FileOutputStream(systemxmlfile),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件
+					writer.write(document); //输出到文件  
 						//writer.flush();
 						writer.close();
 						//return true;

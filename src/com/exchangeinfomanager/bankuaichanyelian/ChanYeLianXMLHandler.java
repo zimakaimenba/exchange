@@ -108,7 +108,7 @@ class ChanYeLianXMLHandler
 	private BanKuaiDbOperation bkopt;
 	
 	private Document cylxmldoc;
-	Element cylxmlroot = null;
+	Element cylxmlroot ;
 	private Document ggcylxmldocument;
 	private Element ggcylxmlroot;
 	private boolean hasXmlRevised = false;
@@ -191,7 +191,7 @@ class ChanYeLianXMLHandler
 					    topNode.add(parentsleaf);
 					   
 				   } else 
-				   if(BkChanYeLianTreeNode.TDXGG == nodetype) {//是个股
+				   if(BkChanYeLianTreeNode.TDXGG == nodetype || BkChanYeLianTreeNode.BKGEGU == nodetype) {//是个股
 					   bkname = element.attributeValue("geguname");
 					   bkowncode = element.attributeValue("gegucode");
 					   
@@ -317,7 +317,9 @@ class ChanYeLianXMLHandler
 			format.setEncoding("GBK");    // 指定XML编码        
 			//保存产业链XML
 			try {
-				XMLWriter writer = new XMLWriter(new FileOutputStream(bankuaichanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件  
+				XMLWriter writer = new XMLWriter(new FileOutputStream(bankuaichanyelianxml),format); // 输出全部原始数据，并用它生成新的我们需要的XML文件
+				String test = cyldocument.getText();
+				
 					writer.write(cyldocument); //输出到文件  
 					//writer.flush();
 					writer.close();

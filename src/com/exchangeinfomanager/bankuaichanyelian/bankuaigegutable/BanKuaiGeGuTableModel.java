@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -67,7 +68,18 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		this.setHighLightHuiBuDownQueKou(false);
 		
 		entryList = null;
-		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );	
+		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );
+		
+		 Iterator itr = entryList.iterator(); 
+	     while (itr.hasNext())      { //把停牌的剔除，以免出问题
+	    	 StockOfBanKuai sob = (StockOfBanKuai) itr.next();
+	    	 Stock stock = sob.getStock();
+			 NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
+	    	 
+	    	 Double cje = ((StockNodeXPeriodData)stockxdata).getChengJiaoEr(showwknum, 0);
+	    	 if(cje == null)
+	    		 itr.remove();
+	     } 
 		
 		sortTableByChenJiaoEr ();
     	
@@ -96,6 +108,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 			Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,period) );
 			this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
 			logger.debug("表位空，表排序出错");
 		}
 		

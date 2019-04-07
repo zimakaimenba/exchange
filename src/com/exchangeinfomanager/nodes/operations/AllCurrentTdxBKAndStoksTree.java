@@ -159,16 +159,18 @@ public class AllCurrentTdxBKAndStoksTree
 		
 		//同步板块的个股
 		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,treecyl);
-		ArrayList<StockOfBanKuai> allbkgg = bankuai.getAllCurrentBanKuaiGeGu();
-		for(StockOfBanKuai stockofbk : allbkgg)   {
-    		  stockofbk = this.getGeGuOfBanKuai(bankuai, stockofbk,period );
-//    		  Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockofbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXGG);
-    		  Stock stock = this.getStock(stockofbk.getMyOwnCode(), bkstartday, bkendday, period);
-		}
+//		ArrayList<StockOfBanKuai> allbkgg = bankuai.getAllCurrentBanKuaiGeGu();
+//		
+//		for(StockOfBanKuai stockofbk : allbkgg)   {
+//			
+//    		  stockofbk = this.getGeGuOfBanKuai(bankuai, stockofbk,period );
+////    		  Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockofbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXGG);
+//    		  Stock stock = this.getStock(stockofbk.getMyOwnCode(), bkstartday, bkendday, period);
+//		}
 		
 		return bankuai;
 	}
-	private StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, StockOfBanKuai stockofbk,String period)
+	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, StockOfBanKuai stockofbk,String period)
 	{
 		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getRecordsStartDate();
 		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getRecordsEndDate();
@@ -624,9 +626,10 @@ public class AllCurrentTdxBKAndStoksTree
 		LocalDate bkstartday = stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK).getRecordsStartDate();
 		LocalDate bkendday = stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK).getRecordsEndDate();
 		
-		this.getStockKXian(stock, bkstartday, bkendday, TDXNodeGivenPeriodDataItem.DAY);
-		this.getStockQueKouInfo(stock, bkstartday, bkendday, TDXNodeGivenPeriodDataItem.WEEK);
-		
+		if(bkstartday != null) {
+			this.getStockKXian(stock, bkstartday, bkendday, TDXNodeGivenPeriodDataItem.DAY);
+			this.getStockQueKouInfo(stock, bkstartday, bkendday, TDXNodeGivenPeriodDataItem.WEEK);
+		} 
 	}
 
 	

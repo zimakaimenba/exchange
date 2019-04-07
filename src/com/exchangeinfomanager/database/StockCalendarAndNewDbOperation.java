@@ -23,7 +23,8 @@ import org.apache.log4j.Logger;
  * Class for accessing database.
  */
 @SuppressWarnings("all")
-public final class StockCalendarAndNewDbOperation {
+public final class StockCalendarAndNewDbOperation 
+{
 
     private static Logger logger = Logger.getLogger(StockCalendarAndNewDbOperation.class);
 
@@ -45,7 +46,64 @@ public final class StockCalendarAndNewDbOperation {
 	{
 		sysconfig = SystemConfigration.getInstance();
 	}
-	
+	/*
+	 * 
+	 */
+	public Collection<InsertedMeeting> getZhiShuKeyDates (LocalDate startdate, LocalDate enddate)
+	{
+		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
+		
+		 //找出指数关键日期  
+		CachedRowSetImpl rspd = null;
+		try {
+			String sqlquerystat;
+			
+			if(startdate != null)
+				sqlquerystat = "SELECT * FROM 指数关键日期表 \r\n"
+	//	        		+ "WHERE 日期 BETWEEN '" + startdate + "' AND '" + enddate + "'";
+		        		;
+			else
+				sqlquerystat = "SELECT * FROM 指数关键日期表 \r\n"
+		        		+ "WHERE 日期 BETWEEN '" + startdate + "' AND '" + enddate + "'";
+		        		;
+
+	     logger.debug(sqlquerystat);
+		 rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+		 while(rspd.next())  {
+			 int meetingID = rspd.getInt("id");
+			 String nodecode = rspd.getString("代码");
+		     java.sql.Date recorddate = rspd.getDate("日期"); 
+	         LocalDate start = recorddate.toLocalDate();
+	         String shuoming = rspd.getString("说明");
+	         
+	         InsertedMeeting newmeeting = new InsertedMeeting(
+		                new Meeting("指数关键日期:"+ nodecode, start,  shuoming, "指数关键日期", new HashSet<InsertedMeeting.Label>(),null,nodecode,Meeting.ZHISHUDATE), meetingID);
+	         meetings.add(newmeeting);
+		 }
+			
+		 }catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    }  finally {
+	    	if(rspd != null)
+				try {
+					rspd.close();
+					rspd = null;
+					
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+	    
+		 
+		 return meetings;
+	}
+	/*
+	 * 
+	 */
 	public Collection<InsertedMeeting> getBanKuaiRelatedNews(String bankuaiid,LocalDate startdate, LocalDate enddate) 
 	{
 		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
@@ -174,23 +232,25 @@ public final class StockCalendarAndNewDbOperation {
 				 }
 				 
 				 //找出指数关键日期  
-				 rspd = null;
-			     sqlquerystat = "SELECT * FROM 指数关键日期表 \r\n"
-			        		+ "WHERE 日期 BETWEEN '" + startdate + "' AND '" + enddate + "'";
-			        		;
-			     logger.debug(sqlquerystat);
-				 rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
-				 while(rspd.next())  {
-					 int meetingID = rspd.getInt("id");
-					 String nodecode = rspd.getString("代码");
-				     java.sql.Date recorddate = rspd.getDate("日期"); 
-			         LocalDate start = recorddate.toLocalDate();
-			         String shuoming = rspd.getString("说明");
-			         
-			         InsertedMeeting newmeeting = new InsertedMeeting(
-				                new Meeting("指数关键日期", start,  shuoming, "指数关键日期", new HashSet<InsertedMeeting.Label>(),null,nodecode,Meeting.ZHISHUDATE), meetingID);
-			         meetings.add(newmeeting);
-				 }
+				meetings.addAll( this.getZhiShuKeyDates (startdate, enddate) );
+				
+//				 rspd = null;
+//			     sqlquerystat = "SELECT * FROM 指数关键日期表 \r\n"
+//			        		+ "WHERE 日期 BETWEEN '" + startdate + "' AND '" + enddate + "'";
+//			        		;
+//			     logger.debug(sqlquerystat);
+//				 rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+//				 while(rspd.next())  {
+//					 int meetingID = rspd.getInt("id");
+//					 String nodecode = rspd.getString("代码");
+//				     java.sql.Date recorddate = rspd.getDate("日期"); 
+//			         LocalDate start = recorddate.toLocalDate();
+//			         String shuoming = rspd.getString("说明");
+//			         
+//			         InsertedMeeting newmeeting = new InsertedMeeting(
+//				                new Meeting("指数关键日期:"+ nodecode, start,  shuoming, "指数关键日期", new HashSet<InsertedMeeting.Label>(),null,nodecode,Meeting.ZHISHUDATE), meetingID);
+//			         meetings.add(newmeeting);
+//				 }
 				 
    		 }
    		
@@ -401,7 +461,8 @@ public final class StockCalendarAndNewDbOperation {
 	{
 		InsertedMeeting deletedMeeting = null;
         
-		if(meeting.getMeetingType() == Meeting.DAPANNEWS) {
+		if(meeting.getMeetingType() == Meeting.DAPANNEWS || meeting.getMeetingType() == Meeting.CHANGQIJILU 
+				|| meeting.getMeetingType() == Meeting.JINQIGUANZHU ) {
 			int newsid = meeting.getID();
 	    	
 			
@@ -433,7 +494,7 @@ public final class StockCalendarAndNewDbOperation {
 	    	
 			
 				try {
-					String deletestat = "DELETE  FROM 强弱势板块个股表  WHERE news_id =" + newsid;
+					String deletestat = "DELETE  FROM 强弱势板块个股表  WHERE id =" + newsid;
 					logger.debug(deletestat);
 					connectdb.sqlDeleteStatExecute (deletestat);
 
@@ -458,7 +519,7 @@ public final class StockCalendarAndNewDbOperation {
 	    	
 			
 				try {
-					String deletestat = "DELETE  FROM 指数关键日期表  WHERE news_id =" + newsid;
+					String deletestat = "DELETE  FROM 指数关键日期表  WHERE id =" + newsid;
 					logger.debug(deletestat);
 					connectdb.sqlDeleteStatExecute (deletestat);
 
@@ -564,7 +625,8 @@ public final class StockCalendarAndNewDbOperation {
     		
     	}
     	
-    	if(meeting.getMeetingType() == Meeting.DAPANNEWS) {
+    	if(meeting.getMeetingType() == Meeting.DAPANNEWS || meeting.getMeetingType() == Meeting.CHANGQIJILU
+    			|| meeting.getMeetingType() == Meeting.JINQIGUANZHU ) {
     		try {
 
         		String sqlupatestatement =  "UPDATE 商业新闻  SET 录入日期 = '" + starttime + "', "

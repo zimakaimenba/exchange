@@ -29,11 +29,14 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.GuPiaoChi;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.SubBanKuai;
+import com.exchangeinfomanager.nodes.SubGuPiaoChi;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
+import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
@@ -86,14 +89,10 @@ public class BanKuaiAndChanYeLian2
 		this.allbkstocks = AllCurrentTdxBKAndStoksTree.getInstance();
 
 		this.cylxmhandler = new ChanYeLianXMLHandler ();
-//		this.zdgzbkxmlhandler = new TwelveZhongDianGuanZhuXmlHandler ();
 		this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
 	
 		treechanyelian = cylxmhandler.getBkChanYeLianXMLTree();
 		updatedChanYeLianTree (allbkstocks);
-		
-//		zdgzbkmap = zdgzbkxmlhandler.getZdgzBanKuaiFromXmlAndUpatedToCylTree(treechanyelian);
-		
 	}
 	// 单例实现  
 	 public static BanKuaiAndChanYeLian2 getInstance ()
@@ -111,12 +110,8 @@ public class BanKuaiAndChanYeLian2
 	private BkfxWeeklyFileResultXmlHandler bkfxrfxmlhandler;
 	private AllCurrentTdxBKAndStoksTree allbkstocks;
 	protected SystemConfigration sysconfig;
-//	protected HashMap<String, ArrayList<BkChanYeLianTreeNode>> zdgzbkmap;
 	protected ChanYeLianXMLHandler cylxmhandler;
-//	protected TwelveZhongDianGuanZhuXmlHandler zdgzbkxmlhandler;
     protected BanKuaiAndStockTree treechanyelian;
-//    protected BkChanYeLianTree treeallstocks;
-//    protected BkChanYeLianTree treeallbankuaiandhisstocks;
     private BanKuaiDbOperation bkdbopt;
 
 	/*
@@ -126,12 +121,14 @@ public class BanKuaiAndChanYeLian2
 	{
 		bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (xmlfile);
 		
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.treechanyelian.getModel().getRoot();
+		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.treechanyelian.getModel();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+		
 		patchParsedResultXmlToTrees(treeroot,localDate);
 		
 		this.treechanyelian.setCurrentDisplayedWk (localDate);
-		DefaultTreeModel treeModel = (DefaultTreeModel) treechanyelian.getModel();
-		treeModel.reload();
+		
+		treeModel.reload(treeroot);
 	}
 	/*
 	 * 
@@ -188,13 +185,13 @@ public class BanKuaiAndChanYeLian2
     		return;
 		
     	List<String> readparsefileLines = null;
-		try {
+		try { //读出个股
 			readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetStocksProcessor ());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		List<String> readparsefilegetbkLines = null;
-		try {
+		try {//读出板块
 			readparsefilegetbkLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetBanKuaisProcessor ());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -202,16 +199,18 @@ public class BanKuaiAndChanYeLian2
 		
 		HashSet<String> stockinfile = new HashSet<String> (readparsefileLines);
 		HashSet<String> bkinfile = new HashSet<String> (readparsefilegetbkLines);
-		this.bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (null);
+		this.bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (null); //为存储XML准备XML文件
+		
 		//现在产业链树上标记个股的数量
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.treechanyelian.getModel().getRoot();
+		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.treechanyelian.getModel();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
 		patchParsedFileToTrees(treeroot,selectiondate,stockinfile,bkinfile);
 		
 		this.bkfxrfxmlhandler.saveXmlFileForBkfxWeeklyFile(weeklyfilename);
 
 		this.treechanyelian.setCurrentDisplayedWk (selectiondate);
-		DefaultTreeModel treeModel = (DefaultTreeModel) treechanyelian.getModel();
-		treeModel.reload();
+		
+		treeModel.reload(treeroot);
 		
 		readparsefileLines = null;
 		readparsefilegetbkLines = null;
@@ -220,7 +219,7 @@ public class BanKuaiAndChanYeLian2
 		parsefile = null;
 	}
 	/*
-	 * 
+	 * 读出个股和板块并附加到产业链树上
 	 */
 	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot,LocalDate localDate, HashSet<String> stockinfile, HashSet<String> bkinfile)
 	{
@@ -250,18 +249,15 @@ public class BanKuaiAndChanYeLian2
             	
             	//不管有没有，板块和个股都必须设置，这样可以把上一个XML的信息抹去
             	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
-	    		BanKuaiTreeRelated treerelated = null;
-				treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
+	    		BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
     			treerelated.setStocksNumInParsedFile (localDate,intersectionbankuai.size());
             	if(bkinfile.contains(tmpbkcode))
             		treerelated.setSelfIsMatchModel(localDate);
-
+            	//设置个股是否在分析文件中
 				for(StockOfBanKuai stkofbk : curbkallbkset ) {
 					StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkofbk.getNodeTreeRelated();
 					if( intersectionbankuai.contains(stkofbk.getMyOwnCode() ) ) 
 						stofbktree.setStocksNumInParsedFile (localDate,true);
-					else
-						stofbktree.setStocksNumInParsedFile (localDate,false);
 				}
 
 				//信息存入XML
@@ -294,7 +290,10 @@ public class BanKuaiAndChanYeLian2
 	private void updatedChanYeLianTree(AllCurrentTdxBKAndStoksTree allbkstocks)
 	{
 		// 先保证12个股票池XML和数据库一致
-		HashMap<String,String> gpcindb = bkdbopt.getGuPiaoChi ();
+		Set<BkChanYeLianTreeNode> gpcindb = bkdbopt.getGuPiaoChi ();
+		Set<String> gpcnameindb = new HashSet<String> ();
+		for(BkChanYeLianTreeNode tmpnode : gpcindb)
+			gpcnameindb.add(tmpnode.getMyOwnCode());
 		
 		InvisibleTreeModel ml = (InvisibleTreeModel)this.treechanyelian.getModel();
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)(ml.getRoot());
@@ -305,17 +304,24 @@ public class BanKuaiAndChanYeLian2
 			gpcintree.add(childnode.getMyOwnCode());
 		}
 		
-		SetView<String> differencegpc = Sets.difference(gpcindb.keySet(), gpcintree );
+		SetView<String> differencegpc = Sets.difference(gpcnameindb, gpcintree );
 		for (String gpccode : differencegpc) {
-			GuPiaoChi newpgc = new GuPiaoChi(gpccode,gpcindb.get(gpccode));
-			treeroot.add(newpgc);
+			for(BkChanYeLianTreeNode tmpnode : gpcindb) {
+				if(tmpnode.getMyOwnCode().equals(gpccode)) {
+					treeroot.add(tmpnode);
+					break;
+				}
+			}
+			
+			
 		}
 		differencegpc = null;
 		gpcintree = null;
+		gpcnameindb = null;
 		
 		//保证板块一致，所有应该删除的板块都删除，名字一致，缺少的板块都放到其他部分
-		HashSet<String> cyltreebkset = this.treechanyelian.getSpecificTypeNodesCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
-	    HashSet<String> allbks = allbkstocks.getAllBkStocksTree().getSpecificTypeNodesCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
+		Set<String> cyltreebkset = this.treechanyelian.getSpecificTypeNodesCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
+	    Set<String> allbks = allbkstocks.getAllBkStocksTree().getSpecificTypeNodesCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
 
 //	    DefaultTreeModel model = (DefaultTreeModel) treechanyelian.getModel();
 	    SetView<String> differencebkold = Sets.difference(cyltreebkset, allbks ); //应该删除的
@@ -352,9 +358,24 @@ public class BanKuaiAndChanYeLian2
 	/*
 	 * 保存产业链树到XML
 	 */
-	public boolean saveChanYeLianTreeToXML (BkChanYeLianTreeNode treerootnode)
+	public boolean saveChanYeLianTreeToXML ()
 	{
-		cylxmhandler.saveTreeToChanYeLianXML(treerootnode);
+		if(this.getBkChanYeLianTree().shouldSaveTreeToXml() ) {
+			
+			InvisibleTreeModel treeModel = (InvisibleTreeModel)this.getBkChanYeLianTree().getModel();
+			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+			if( cylxmhandler.saveTreeToChanYeLianXML(treeroot) ) {
+				
+//				JOptionPane.showMessageDialog(null, "保存产业链XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
+			
+//			if( !zdgzbkxmlhandler.saveAllZdgzbkToXml () ) {
+//				JOptionPane.showMessageDialog(null, "保存重点关注股票池XML失败！请查找原因。","Warning", JOptionPane.WARNING_MESSAGE);
+//				return false;
+//			}
+		}
+		
 		return true;
 	}
 	/*
@@ -382,8 +403,6 @@ public class BanKuaiAndChanYeLian2
 //				e.printStackTrace();
 				
 			}
-			
-			
 		}
 		
 		if(tmpsuoshudalei.size() == 0)
@@ -406,8 +425,184 @@ public class BanKuaiAndChanYeLian2
 	{
 		return cylxmhandler.getGeGuChanYeLian(stockcode);
 	}
+    /*
+     * 
+     */
+    public void addNewNode(BkChanYeLianTreeNode newNode, int direction)
+	{
+		if (this.treechanyelian.getSelectionCount() == 1) {
+			
+			 if( newNode.getType() == BkChanYeLianTreeNode.TDXBK ) { 
+				//把在"其他"里的该个股找出来, 同时在数据库更新该板块”导出到分析文件的状态“，用户必须在树删除该节点后才可以更改状态，否则必须导出到分析文件
+				BanKuai bkinallbkst = (BanKuai) allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newNode.getMyOwnCode(),BkChanYeLianTreeNode.TDXBK);
+				((BanKuai)bkinallbkst).setExportTowWlyFile(true);
+				
+				bkdbopt.updateBanKuaiExportGephiBkfxOperation (bkinallbkst.getMyOwnCode(),bkinallbkst.isImportdailytradingdata(),
+						bkinallbkst.isExporttogehpi(), bkinallbkst.isShowinbkfxgui(),
+						bkinallbkst.isShowincyltree(),bkinallbkst.isExportTowWlyFile()
+						);
+			} 
+			
+			if( newNode.getType() == BkChanYeLianTreeNode.SUBGPC) { 
+//				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
+//				if(parent.getType() == BkChanYeLianTreeNode.GPC)
+					direction = BanKuaiAndChanYeLianGUI2.RIGHT; //板块国只能加在GPC板块州的下面
+//				else if(parent.getType() == BkChanYeLianTreeNode.SUBGPC)
+//					direction = BanKuaiAndChanYeLianGUI2.DOWN;
+			} else
+			if( newNode.getType() == BkChanYeLianTreeNode.SUBBK) { 
+//				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
+//				if(parent.getType() == BkChanYeLianTreeNode.GPC)
+					direction = BanKuaiAndChanYeLianGUI2.RIGHT; //子板块只能加在板块的下面
+//				else if(parent.getType() == BkChanYeLianTreeNode.SUBGPC)
+//					direction = BanKuaiAndChanYeLianGUI2.DOWN;
+			} else
+			if( newNode.getType() == BkChanYeLianTreeNode.TDXBK) { 
+				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
+				if(parent.getType() == BkChanYeLianTreeNode.GPC)
+					direction = BanKuaiAndChanYeLianGUI2.RIGHT; //板块只能加在GPC板块州的下面
+				else if(parent.getType() == BkChanYeLianTreeNode.TDXBK)
+					direction = BanKuaiAndChanYeLianGUI2.DOWN; //板块不能加在板块下一级
+			} else
+			if( newNode.getType() == BkChanYeLianTreeNode.BKGEGU || newNode.getType() == BkChanYeLianTreeNode.TDXGG) {
+				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
+				if(parent.getType() == BkChanYeLianTreeNode.TDXBK)
+					direction = BanKuaiAndChanYeLianGUI2.RIGHT; //个股只能加在板块的下面
+				else if( parent.getType() == BkChanYeLianTreeNode.BKGEGU  ||  parent.getType() == BkChanYeLianTreeNode.TDXGG) { //父节点是个股不可以加
+//					logger.debug("父节点是个股，不能有子板块");
+                	direction = BanKuaiAndChanYeLianGUI2.UP;
+				}
+			}
+			
+            if (direction == BanKuaiAndChanYeLianGUI2.RIGHT){
+            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
+                
+                boolean enableoperation = treechanyelian.checkNodeDuplicate (parent,newNode);
+            	if( enableoperation ) {
+                		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
+                		return;
+                } 
+            	
+            	parent.add(newNode);
+            	try {
+            		NodesTreeRelated tree = parent.getNodeTreeRelated();
+            		tree.setExpansion(true);
+            	} catch(java.lang.NullPointerException e) {
+//            		e.printStackTrace();
+            	}
+            } 
+            
+            if (direction != BanKuaiAndChanYeLianGUI2.RIGHT){
+            	BkChanYeLianTreeNode currentNode = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
+            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) currentNode.getParent();
+                
+                boolean enableoperation = treechanyelian.checkNodeDuplicate (parent,newNode);
+            	if( enableoperation ) {
+                		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
+                		return;
+                }
+                
+                int childIndex = parent.getIndex(currentNode);
+                if (direction == BanKuaiAndChanYeLianGUI2.DOWN) 
+                	parent.insert(newNode, childIndex+1);
+                else if (direction == BanKuaiAndChanYeLianGUI2.UP) 
+                	parent.insert(newNode, childIndex);
+            }
 
+            InvisibleTreeModel treeModel = (InvisibleTreeModel)this.treechanyelian.getModel();
+    		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+            treeModel.nodesWereInserted(newNode.getParent(), new int[] {newNode.getParent().getIndex(newNode)});
+            
+			treeModel.reload(treeroot);
+			
+			treechanyelian.setSelectionPath(new TreePath(((BkChanYeLianTreeNode)newNode.getParent()).getPath()));
+			treechanyelian.scrollPathToVisible( new TreePath(newNode.getPath()));
+
+        }
+	}
+    /*
+     * 
+     */
+	public boolean deleteNodes(BkChanYeLianTreeNode delNode) 
+	{
+		if(delNode.getMyOwnCode().equals("GPC999"))
+			return false;
+		
+		BkChanYeLianTreeNode recylenode = treechanyelian.getSpecificNodeByHypyOrCode("GPC999", BkChanYeLianTreeNode.GPC); //其他，所有不在重点关注的都放到其他里面
+		
+		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.treechanyelian.getModel();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+		
+		if (treechanyelian.getSelectionCount() > 0){
+	            TreePath[] treePaths = treechanyelian.getSelectionPaths();
+	            treechanyelian.sortPaths(treechanyelian,treePaths);
+	            int topRow = treechanyelian.getRowForPath(treePaths[0]);
+	            for (TreePath path : treePaths){
+	            	BkChanYeLianTreeNode child = (BkChanYeLianTreeNode) path.getLastPathComponent();
+
+	            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) child.getParent();
+	                if (parent != null){
+	                    int childIndex = parent.getIndex(child);
+	                    if(child.getType() == BkChanYeLianTreeNode.SUBGPC) { 
+	                    	int nodechildcount = child.getChildCount();
+	                    	if(nodechildcount >0 ) { //SUBGPC只能链接板块，如果有板块，要move 到其他
+	                    		for(int i=0;i <nodechildcount; i++) {
+	                    			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.treechanyelian.getModel().getChild(child, 0);
+	                    			recylenode.add(childnode);
+	                    		}
+	                    	}
+	                    	parent.remove(child);	
+	                    }  else if(child.getType() == BkChanYeLianTreeNode.TDXBK) { //move 到其他
+		            		recylenode.add(child);
+		            	} else
+		            		parent.remove(child);
+	                    
+	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
+	                    if (parent.getChildCount() == 0) 
+	                    	parent.getNodeTreeRelated().setExpansion(false);
+	                }
+	            }
+	            
+	            if (treechanyelian.getVisibleRowCount() > 0) 
+	            	treechanyelian.setSelectionRow(topRow);
+	   }
 	
+	   treeModel.reload(treeroot);
+	   return true;
+	}
+	/*
+	 * 
+	 */
+	public List<BkChanYeLianTreeNode> getSubGuPiaoChi (String gpccode) 
+	{
+		 List<BkChanYeLianTreeNode> tmpsubbk = bkdbopt.getSubGuPiaoChi (gpccode);
+		 return tmpsubbk;
+	}
+	/*
+	 * 
+	 */
+	public List<BkChanYeLianTreeNode> getSubBanKuai (String bkcode) 
+	{
+		 List<BkChanYeLianTreeNode> tmpsubbk = bkdbopt.getSubBanKuai (bkcode);
+		 return tmpsubbk;
+	}
+	public BkChanYeLianTreeNode addNewSubGuoPiaoChi(String parent, String newsubgpc)
+	{
+		BkChanYeLianTreeNode newnode = bkdbopt.addNewSubGuoPiaoChi(parent, newsubgpc);
+		return newnode;
+	}
+	public BkChanYeLianTreeNode addNewSubBanKuai(String parent, String newsubbk) 
+	{
+		BkChanYeLianTreeNode newnode = bkdbopt.addNewSubBanKuai(parent, newsubbk);
+		return newnode;
+	}
+	public void openChanYeLianXmlInWinSystem()
+	{
+		this.cylxmhandler.openChanYeLianXmlInWinSystem ();
+		
+	}
+	
+
 	
 
 }

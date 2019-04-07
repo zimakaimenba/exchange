@@ -71,14 +71,18 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiShuXingSheZhi;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.ZhongDianGuanZhu;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.DayCounter;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.GuPiaoChi;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.SubBanKuai;
+import com.exchangeinfomanager.nodes.SubGuPiaoChi;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
@@ -2083,22 +2087,15 @@ public class BanKuaiDbOperation
 		
 		String sqlquerystat;
 		if(!jys.toLowerCase().equals("all"))
-			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述,导出Gephi,导入交易数据,板块分析,产业链树   FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
+			 sqlquerystat = "SELECT *   FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
 		else
-			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述,导出Gephi,导入交易数据,板块分析,产业链树   FROM 通达信板块列表 	"  ;
+			 sqlquerystat = "SELECT *   FROM 通达信板块列表 	"  ;
 		logger.debug(sqlquerystat);
 		CachedRowSetImpl rs = null;
 	    try {  
 	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-	    	
-	        rs.last();  
-	        int rows = rs.getRow();  
-//	        data = new Object[rows][];    
-//	        int columnCount = 3;//列数  
-	        rs.first();  
-	        //int k = 0;  
-	        //while(rs.next())
-	        for(int j=0;j<rows;j++) {  
+	        while(rs.next()) {
+ 
 	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称") );
 	        	tmpbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
 	        	tmpbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
@@ -2107,10 +2104,9 @@ public class BanKuaiDbOperation
 	        	tmpbk.setImportdailytradingdata(rs.getBoolean("导入交易数据"));
 	        	tmpbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
 	        	tmpbk.setShowincyltree(rs.getBoolean("产业链树"));
+	        	tmpbk.setExportTowWlyFile(rs.getBoolean("周分析文件"));
 	        	
 	        	tmpsysbankuailiebiaoinfo.add(tmpbk);
-	        	
-	            rs.next();
 	        }
 	        
 	    }catch(java.lang.NullPointerException e){ 
@@ -2134,7 +2130,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 找出某通达信板块的所有子板块，为板块产业链
 	 */
-	public HashMap<String,String> getSubBanKuai(String tdxbk) 
+	public List<BkChanYeLianTreeNode> getSubBanKuai(String tdxbk) 
 	{
 		String sqlquerystat = "SELECT 产业链子板块列表.`子板块代码`, 产业链子板块列表.`子板块名称`" + 
 				" FROM 产业链子板块列表" +
@@ -2144,19 +2140,18 @@ public class BanKuaiDbOperation
 				" ORDER BY 产业链子板块列表.`子板块代码`" 
 				; 
 		logger.debug(sqlquerystat);
-		HashMap<String,String> tmpsubbklist = new HashMap<String,String> ();
+		
+		List<BkChanYeLianTreeNode> sublist = new ArrayList<BkChanYeLianTreeNode> ();
 		CachedRowSetImpl rs = null;
 		try {  
 			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			
-			rs.last();  
-			int rows = rs.getRow();  
-			rs.first();  
-			for(int j=0;j<rows;j++) {  
+			while(rs.next() ) {  
 				String tmpbkcode = rs.getString("子板块代码");
 				String tmpbkname = rs.getString("子板块名称");
-				tmpsubbklist.put(tmpbkcode,tmpbkname);
-				rs.next();
+				
+				BkChanYeLianTreeNode subbk = new SubBanKuai (tmpbkcode,tmpbkname) ;
+				sublist.add(subbk);
 			}
 		
 		}catch(java.lang.NullPointerException e){ 
@@ -2174,19 +2169,21 @@ public class BanKuaiDbOperation
 					e.printStackTrace();
 				}
 	    }  
-		return tmpsubbklist;
+		return sublist;
 	}
 	
 	/*
 	 * 当前只能加不能删除
 	 */
-	public String addNewSubBanKuai(String tdxbk,String newsubbk) 
+	public BkChanYeLianTreeNode addNewSubBanKuai(String tdxbk,String newsubbk) 
 	{
-		HashMap<String, String> cursubbks = this.getSubBanKuai(tdxbk);
-		int cursize = cursubbks.size();
-		if(cursubbks.containsValue(newsubbk)) 
-			return null;
+		List<BkChanYeLianTreeNode> cursubbks = this.getSubBanKuai(tdxbk);
+		for(BkChanYeLianTreeNode tmpnode : cursubbks) {
+			if(tmpnode.getMyOwnName().equals(newsubbk)) 
+				return null;
+		}
 		
+		int cursize = cursubbks.size();
 		String subcylcode;
 		if(cursize+1 >= 10)
 			subcylcode = tdxbk + String.valueOf(cursize+1);
@@ -2229,7 +2226,8 @@ public class BanKuaiDbOperation
 
 
 		cursubbks = null;
-		return subcylcode;
+		SubBanKuai subbk = new SubBanKuai (subcylcode,newsubbk); 
+		return subbk;
 		
 	}
 	/*
@@ -2972,8 +2970,8 @@ public class BanKuaiDbOperation
 			return currentbk;
 		}
 		
-		String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart).trim();
-		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend).trim();
+//		String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart).trim();
+//		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend).trim();
 
 		ArrayList<Stock> gegumap = new ArrayList<Stock> ();
 		
@@ -2989,13 +2987,15 @@ public class BanKuaiDbOperation
 				 		;
 			 } else { //概念风格行业指数板块
 				 //from WQW
-				 sqlquerystat1 = "select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , "+ bktypetable + ".`股票权重` , "+ bktypetable + ".`板块龙头`\r\n" + 
-					 		"          from "+ bktypetable + ", a股\r\n" + 
+				 sqlquerystat1 = "select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , \r\n"
+						 			+ bktypetable + ".`股票权重` , "+ bktypetable + ".`板块龙头`, \r\n "
+						 			+ bktypetable + ".`加入时间`, " + bktypetable + ".`移除时间`  \r\n"
+						 			+ " from "+ bktypetable + ", a股\r\n" + 
 					 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`  AND a股.`已退市` IS NULL \r\n" + 
 					 		
-					 		"and (  (  Date("+ bktypetable + ".`加入时间`) between '" +  formatedstartdate + "'  and '" +  formatedenddate + "')\r\n" + 
-					 		"           		 or( ifnull("+ bktypetable + ".`移除时间`, '2099-12-31') between '" +  formatedstartdate + "'  and '" +  formatedenddate + "')\r\n" + 
-					 		"           		 or( Date("+ bktypetable + ".`加入时间`) <= '" +  formatedstartdate + "' and ifnull(" + bktypetable + ".`移除时间`, '2099-12-31') >= '" +  formatedenddate + "' )\r\n" + 
+					 		"and (  (  Date("+ bktypetable + ".`加入时间`) between '" +  selecteddatestart + "'  and '" +  selecteddateend + "')\r\n" + 
+					 		"           		 or( ifnull("+ bktypetable + ".`移除时间`, '2099-12-31') between '" +  selecteddatestart + "'  and '" +  selecteddateend + "')\r\n" + 
+					 		"           		 or( Date("+ bktypetable + ".`加入时间`) <= '" +  selecteddatestart + "' and ifnull(" + bktypetable + ".`移除时间`, '2099-12-31') >= '" +  selecteddateend + "' )\r\n" + 
 					 		"			  )" +
 //					 		"           and '" +  formatedstartdate + "' >= Date("+ bktypetable + ".`加入时间`)\r\n" + 
 //					 		"           and '" +  formatedenddate + "' <  ifnull("+ bktypetable + ".`移除时间`, '2099-12-31')\r\n" + 
@@ -3004,10 +3004,11 @@ public class BanKuaiDbOperation
 					 		"           and "+ bktypetable + ".`板块代码` =  '" + currentbkcode + "'\r\n" + 
 					 		"         \r\n" + 
 					 		"         group by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码`\r\n" + 
-					 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` ";
+					 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` "
+					 		;
 			 }
 //			 logger.debug(sqlquerystat1);
-			 logger.debug("给板块" + currentbk.getMyOwnCode() + currentbk.getMyOwnName() + "寻找从" + formatedstartdate.toString() + "到" + formatedenddate.toString() + "时间段内的个股！");
+			 logger.debug("给板块" + currentbk.getMyOwnCode() + currentbk.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "时间段内的个股！");
 			 rs1 = connectdb.sqlQueryStatExecute(sqlquerystat1);
 			 
 			 while(rs1.next()) {  
@@ -3037,6 +3038,14 @@ public class BanKuaiDbOperation
 						bkofst.setBkLongTou(false);
 					}
 					
+					LocalDate joindate = rs1.getDate("加入时间").toLocalDate();
+					bkofst.setJoinBanKuaiDate(joindate);
+					try {
+						LocalDate leftdate = rs1.getDate("移除时间").toLocalDate();
+						bkofst.setLeftBanKuaiDate(leftdate);
+					} catch (java.lang.NullPointerException e) {
+						
+					}
 					
 					currentbk.addNewBanKuaiGeGu(bkofst);
 				}
@@ -3597,6 +3606,15 @@ public class BanKuaiDbOperation
 				} catch (java.time.format.DateTimeParseException e) {
 					break;
 				}
+				try {
+					if(curlinedate.isBefore(nodestartday) || curlinedate.isAfter(nodeendday) )
+						continue;
+					
+				} catch (java.lang.NullPointerException e) {
+//					e.printStackTrace();
+					continue;
+				}
+				// 为生成ohlc的时间做处理
 				java.sql.Date sqldate = null;
 				try {
 					DateFormat format = new SimpleDateFormat("ddMMyyyy", Locale.CHINA);
@@ -3605,10 +3623,7 @@ public class BanKuaiDbOperation
 					e.printStackTrace();
 				}
 				org.jfree.data.time.Day recordwk = new org.jfree.data.time.Day (sqldate);
-				
-				if(curlinedate.isBefore(nodestartday) || curlinedate.isAfter(nodeendday) )
-					continue;
-				
+					
 				String open = linevalue[1];
 				String high = linevalue[2];
 				String low = linevalue[3];
@@ -5371,13 +5386,15 @@ public class BanKuaiDbOperation
 		/*
 		 * 设置板块的属性: 是否导入数据，是否出现在板块分析界面中，是否导出到Gephi
 		 */
-		public void updateBanKuaiExportGephiBkfxOperation(String nodecode, boolean importdailydata, boolean exporttogephi, boolean showinbkfx,boolean showincyltree)
+		public void updateBanKuaiExportGephiBkfxOperation(String nodecode, boolean importdailydata, boolean exporttogephi, 
+				boolean showinbkfx,boolean showincyltree, boolean exporttowkfile)
 		{
 			String sqlupdatestat = "UPDATE 通达信板块列表 SET " +
 								" 导入交易数据=" + importdailydata  + "," +
 								" 导出Gephi=" + exporttogephi +  ","  +
 								" 板块分析=" + showinbkfx +  ","  +
-								" 产业链树=" + showincyltree + 
+								" 产业链树=" + showincyltree + ","  +
+								" 周分析文件 = " + exporttowkfile +
 								" WHERE 板块ID='" + nodecode + "'"
 								;
 			logger.debug(sqlupdatestat);
@@ -5391,6 +5408,15 @@ public class BanKuaiDbOperation
 				e.printStackTrace();
 			}
 		}
+//		public void updateBanKuaiExportGephiBkfxOperation(BanKuaiShuXingSheZhi banKuaiShuXingSheZhi)
+//		{
+//			
+//			.getMyOwnCode(),!cbxnotimport.isSelected(),
+//			!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected(),
+//			!cbxnotshowincyltree.isSelected(),
+//			!chkbxnotexportwklyfile.isSelected()
+//			
+//		}
 		/*
 		 * 导入网易股票行情接口的数据，
 		 */
@@ -6391,9 +6417,9 @@ public class BanKuaiDbOperation
 		/*
 		 * 股票池/板块州
 		 */
-		public HashMap<String, String> getGuPiaoChi() 
+		public Set<BkChanYeLianTreeNode> getGuPiaoChi() 
 		{
-			HashMap<String,String> gpcindb = new HashMap<String,String> ();
+			Set<BkChanYeLianTreeNode> gpcindb = new HashSet<BkChanYeLianTreeNode> ();
 			boolean hasbkcode = true;
             CachedRowSetImpl rspd = null; 
             
@@ -6408,7 +6434,8 @@ public class BanKuaiDbOperation
 			        while(rspd.next())  {
 			        	String bkzcode = rspd.getString("板块州代码");
 			        	String bkzname = rspd.getString("板块州名称");
-			        	gpcindb.put(bkzcode, bkzname);
+			        	GuPiaoChi gpc = new GuPiaoChi (bkzcode,bkzname);
+			        	gpcindb.add(gpc);
 			        }
 			       
 			} catch(java.lang.NullPointerException e){ 
@@ -6432,12 +6459,13 @@ public class BanKuaiDbOperation
 		/*
 		 * 股票池对应的子股票池/板块国
 		 */
-		public HashMap<String, String> getSubGuPiaoChi(String gpccode) 
+		public List<BkChanYeLianTreeNode> getSubGuPiaoChi(String gpccode) 
 		{
-			HashMap<String,String> gpcindb = new HashMap<String,String> ();
+			
 			boolean hasbkcode = true;
             CachedRowSetImpl rspd = null; 
             
+            List<BkChanYeLianTreeNode> subpgcset = new ArrayList<BkChanYeLianTreeNode> ();
 			try {
 				   String sqlquerystat = "SELECT 产业链板块国列表.`板块国代码`,产业链板块国列表.`板块国名称`" + 
 										" FROM 产业链板块国列表" +
@@ -6454,7 +6482,8 @@ public class BanKuaiDbOperation
 			        while(rspd.next())  {
 			        	String bkzcode = rspd.getString("板块国代码");
 			        	String bkzname = rspd.getString("板块国名称");
-			        	gpcindb.put(bkzcode, bkzname);
+			        	SubGuPiaoChi subgpc = new SubGuPiaoChi (bkzcode,bkzname); 
+			        	subpgcset.add(subgpc);
 			        }
 			       
 			} catch(java.lang.NullPointerException e){ 
@@ -6473,18 +6502,20 @@ public class BanKuaiDbOperation
 						}
 			}
 	
-			return gpcindb;
+			return subpgcset;
 		}
 		/*
 		 * 
 		 */
-		public String addNewSubGuoPiaoChi(String nodecode, String subnodename) 
+		public BkChanYeLianTreeNode addNewSubGuoPiaoChi(String nodecode, String subnodename) 
 		{
-			HashMap<String, String> cursubbks = this.getSubGuPiaoChi(nodecode);
-			int cursize = cursubbks.size();
-			if(cursubbks.containsValue(subnodename.trim())) 
-				return null;
+			List<BkChanYeLianTreeNode> cursubbks = this.getSubGuPiaoChi(nodecode);
+			for(BkChanYeLianTreeNode tmpnode : cursubbks ) {
+				if(tmpnode.equals(subnodename.trim() ) ) 
+					return null;
+			}
 			
+			int cursize = cursubbks.size();
 			String subgpccode;
 			if(cursize+1 >= 10)
 				subgpccode = nodecode + String.valueOf(cursize+1);
@@ -6525,7 +6556,9 @@ public class BanKuaiDbOperation
 			}
 			
 			cursubbks = null;
-			return subgpccode;
+			
+			BkChanYeLianTreeNode subnode = new SubGuPiaoChi (subgpccode,subnodename);
+			return subnode;
 		}
 		/*
 		 * 
@@ -6864,6 +6897,8 @@ public class BanKuaiDbOperation
 			} catch (java.lang.IndexOutOfBoundsException e) {
 //				e.printStackTrace();
 				resetallquekou = true;
+			} catch (java.lang.NullPointerException e) {
+				resetallquekou = false;
 			}
 			
 			if(resetallquekou) {
@@ -7384,6 +7419,7 @@ public class BanKuaiDbOperation
 			return bankuai;
 			
 		}
+		
 
 		
 }

@@ -222,6 +222,7 @@ public class Meeting {
 
         @Override
         public int hashCode() {
+        	
             int result = color.hashCode();
             result = 31 * result + name.hashCode();
             result = 31 * result + (active ? 1 : 0);

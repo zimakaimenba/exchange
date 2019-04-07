@@ -42,6 +42,7 @@ public class SettingOfDisplayNewsArea extends JPanel
 		chkbxmonthnews.setSelected(true);
 		
 		chxbxqiangruo = new JCheckBox("\u663E\u793A\u5F3A\u5F31\u52BF\u677F\u5757\u4E2A\u80A1");
+		chxbxqiangruo.setSelected(true);
 		
 		chkbxjingqiguanzhu = new JCheckBox("\u663E\u793A\u8FD1\u671F\u5173\u6CE8");
 		chkbxjingqiguanzhu.setSelected(true);

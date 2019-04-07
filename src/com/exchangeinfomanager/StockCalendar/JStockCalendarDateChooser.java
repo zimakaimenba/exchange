@@ -81,8 +81,8 @@ public class JStockCalendarDateChooser extends JLocalDateChooser implements Popu
 
 	@Override
 	public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {
-		Date changedate = super.lastSelectedDate;
-		stockcal.refreshNews ();
+//		Date changedate = super.lastSelectedDate;
+//		stockcal.refreshNews ();
 		
 	}
 

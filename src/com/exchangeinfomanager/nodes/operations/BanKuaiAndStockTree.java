@@ -343,6 +343,7 @@ public class BanKuaiAndStockTree extends JTree
 //                }
 //                this.scrollPathToVisible(new TreePath(node.getPath()));
 //	}
+	
 	/*
 	 * 
 	 */
@@ -356,20 +357,8 @@ public class BanKuaiAndStockTree extends JTree
 	    int topRow = this.getRowForPath(treePaths[0]);
 	    for (TreePath path : treePaths) {
 	            	BkChanYeLianTreeNode child = (BkChanYeLianTreeNode) path.getLastPathComponent();
-	            	
-//	            	if(child.getType() == BkChanYeLianTreeNode.TDXBK) {
-//	            		JOptionPane.showMessageDialog(null,"所选为通达信板块，无法删除！","Warning",JOptionPane.WARNING_MESSAGE);
-//	            		return false;
-//	            	}
-//	            	if(child.getNodeTreeRelated().getInZdgzOfficalCount()>0 || child.getNodeTreeRelated().getInZdgzCandidateCount()>0) {
-//	            		JOptionPane.showMessageDialog(null,"所选产业链是关注股票池候选或正式选择，请先在关注股票池中移除后再删除！","Warning",JOptionPane.WARNING_MESSAGE);
-//	            		return false;
-//	            	}
-	            		
-	            	
 	            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) child.getParent();
 	                if (parent != null){
-	                    
 	                    int childIndex = parent.getIndex(child);
 	                    parent.remove(child);
 	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
@@ -400,110 +389,110 @@ public class BanKuaiAndStockTree extends JTree
 	/*
 	 * 找到XMl的产业链对应的树节点
 	 */
-	public BkChanYeLianTreeNode updateZdgzInfoToBkCylTreeNode(String bkcyl, String addedtime, boolean officallselect) 
-	{
-		//[TongDaXinBanKuaiAndZhiShu, 染料涂料, 浙江, 300192科斯伍德]
-		//[TongDaXinBanKuaiAndZhiShu, 染料涂料, 浙江, 600352浙江龙盛]
-		//bkcyl = "TongDaXinBanKuaiAndZhiShu->" + bkcyl;
-		ArrayList<String> cyltreepathlist = getFormatedBanKuaiChanYeLian (bkcyl);
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
-		
-		BkChanYeLianTreeNode expectNode = updatedZdgzInfoBkCylTreeNodeOneByOne2 (treeroot,cyltreepathlist,addedtime,officallselect);
-		
-		return expectNode;
-	}
+//	public BkChanYeLianTreeNode updateZdgzInfoToBkCylTreeNode(String bkcyl, String addedtime, boolean officallselect) 
+//	{
+//		//[TongDaXinBanKuaiAndZhiShu, 染料涂料, 浙江, 300192科斯伍德]
+//		//[TongDaXinBanKuaiAndZhiShu, 染料涂料, 浙江, 600352浙江龙盛]
+//		//bkcyl = "TongDaXinBanKuaiAndZhiShu->" + bkcyl;
+//		ArrayList<String> cyltreepathlist = getFormatedBanKuaiChanYeLian (bkcyl);
+//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+//		
+//		BkChanYeLianTreeNode expectNode = updatedZdgzInfoBkCylTreeNodeOneByOne2 (treeroot,cyltreepathlist,addedtime,officallselect);
+//		
+//		return expectNode;
+//	}
 	/*
 	 * 
 	 */
-	private BkChanYeLianTreeNode updatedZdgzInfoBkCylTreeNodeOneByOne2 (BkChanYeLianTreeNode node, List<String> cyltreepathlist, String addedtime, boolean officallsltopt)
-	{
-		BkChanYeLianTreeNode expectedNode = null;
-//		if(cyltreepathlist.size() == 0)
-//			return;
+//	private BkChanYeLianTreeNode updatedZdgzInfoBkCylTreeNodeOneByOne2 (BkChanYeLianTreeNode node, List<String> cyltreepathlist, String addedtime, boolean officallsltopt)
+//	{
+//		BkChanYeLianTreeNode expectedNode = null;
+////		if(cyltreepathlist.size() == 0)
+////			return;
+//		
+//		int childCount = node.getChildCount();
+// 	    for (int i = 0; i < childCount; i++) {
+//	    	if(cyltreepathlist.size() == 0)
+//				return expectedNode;
+//
+//	    	BkChanYeLianTreeNode childNode = (BkChanYeLianTreeNode) node.getChildAt(i);
+//	    	String childnodecode = childNode.getMyOwnCode(); 
+//	    	if(childNode.getType() == BkChanYeLianTreeNode.TDXBK && !childnodecode.equals(cyltreepathlist.get(0))  )
+//	    		continue;
+//	    	
+//	    	if(childnodecode.equals(cyltreepathlist.get(0)  ) ) {
+//    			if(officallsltopt)
+//    				childNode.getNodeTreeRelated().increaseZdgzOfficalCount();
+//	    		
+//    			childNode.getNodeTreeRelated().increaseZdgzCandidateCount();
+//	    			
+//	    		DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
+//	    		treemodel.nodeChanged(childNode);
+//	    		
+//	    		cyltreepathlist.remove(0);
+//	    		
+//	    		if(cyltreepathlist.size() == 0) {
+//	    			childNode.getNodeTreeRelated().setOfficallySelected(officallsltopt);
+//	    			childNode.getNodeTreeRelated().setSelectedToZdgzTime(addedtime);
+//	    			
+//	    			expectedNode = childNode;
+//	    			break;
+//	    		}
+//	    	}
+//	    	
+//	    	
+//	        if (childNode.getChildCount() > 0 && cyltreepathlist.size()>0 ) {
+//	        	expectedNode = updatedZdgzInfoBkCylTreeNodeOneByOne2(childNode,cyltreepathlist,addedtime,officallsltopt);
+//	        } 
+//	    }
+// 	    
+// 	    return expectedNode;
 		
-		int childCount = node.getChildCount();
- 	    for (int i = 0; i < childCount; i++) {
-	    	if(cyltreepathlist.size() == 0)
-				return expectedNode;
-
-	    	BkChanYeLianTreeNode childNode = (BkChanYeLianTreeNode) node.getChildAt(i);
-	    	String childnodecode = childNode.getMyOwnCode(); 
-	    	if(childNode.getType() == BkChanYeLianTreeNode.TDXBK && !childnodecode.equals(cyltreepathlist.get(0))  )
-	    		continue;
-	    	
-	    	if(childnodecode.equals(cyltreepathlist.get(0)  ) ) {
-    			if(officallsltopt)
-    				childNode.getNodeTreeRelated().increaseZdgzOfficalCount();
-	    		
-    			childNode.getNodeTreeRelated().increaseZdgzCandidateCount();
-	    			
-	    		DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
-	    		treemodel.nodeChanged(childNode);
-	    		
-	    		cyltreepathlist.remove(0);
-	    		
-	    		if(cyltreepathlist.size() == 0) {
-	    			childNode.getNodeTreeRelated().setOfficallySelected(officallsltopt);
-	    			childNode.getNodeTreeRelated().setSelectedToZdgzTime(addedtime);
-	    			
-	    			expectedNode = childNode;
-	    			break;
-	    		}
-	    	}
-	    	
-	    	
-	        if (childNode.getChildCount() > 0 && cyltreepathlist.size()>0 ) {
-	        	expectedNode = updatedZdgzInfoBkCylTreeNodeOneByOne2(childNode,cyltreepathlist,addedtime,officallsltopt);
-	        } 
-	    }
- 	    
- 	    return expectedNode;
-		
-	}
-	/*
-	 * 
-	 */
-	public void removeZdgzBkCylInfoFromTreeNode(BkChanYeLianTreeNode childNode,boolean stillkeepincandidate) 
-	{
-		 TreeNode[] nodepath = childNode.getPath();
-		 Boolean isofficallselected = childNode.getNodeTreeRelated().isOfficallySelected();
-		 
-		 DefaultTreeModel model = (DefaultTreeModel) this.getModel();
-		 TreeNode[] tempath = model.getPathToRoot(childNode);
-		 for(int j=1;j<tempath.length;j++ ) {
-		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
-		    	if(isofficallselected) 
-		    		parentnode.getNodeTreeRelated().decreaseZdgzOfficalCount();
-		    	if(!stillkeepincandidate) //只是从offical移除，candidate还有就不用加
-		    		parentnode.getNodeTreeRelated().decreasedgzCandidateCount();
-		    	
-		    	model.nodeChanged(parentnode);
-		 }
-		
-	}
-	/*
-	 * 
-	 */
-	public void addZdgzBkCylInfoToTreeNode(BkChanYeLianTreeNode childNode, boolean hasbeenincandidate)  
-	{
-		 TreeNode[] nodepath = childNode.getPath();
-		 Boolean isofficallselected = childNode.getNodeTreeRelated().isOfficallySelected();
-		 
-//		 DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
-		 
-		 DefaultTreeModel model = (DefaultTreeModel) this.getModel();
-		 TreeNode[] tempath = model.getPathToRoot(childNode);
-		 for(int j=1;j<tempath.length;j++ ) {
-		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
-		    	if(isofficallselected) 
-		    		parentnode.getNodeTreeRelated().increaseZdgzOfficalCount();
-		    	if(!hasbeenincandidate) //如果已经在候选里面，cand count就不用加
-		    		parentnode.getNodeTreeRelated().increaseZdgzCandidateCount();	
-		    	
-		    	model.nodeChanged(parentnode);
-		 }
-		
-	}
+//	}
+//	/*
+//	 * 
+//	 */
+//	public void removeZdgzBkCylInfoFromTreeNode(BkChanYeLianTreeNode childNode,boolean stillkeepincandidate) 
+//	{
+//		 TreeNode[] nodepath = childNode.getPath();
+//		 Boolean isofficallselected = childNode.getNodeTreeRelated().isOfficallySelected();
+//		 
+//		 DefaultTreeModel model = (DefaultTreeModel) this.getModel();
+//		 TreeNode[] tempath = model.getPathToRoot(childNode);
+//		 for(int j=1;j<tempath.length;j++ ) {
+//		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
+//		    	if(isofficallselected) 
+//		    		parentnode.getNodeTreeRelated().decreaseZdgzOfficalCount();
+//		    	if(!stillkeepincandidate) //只是从offical移除，candidate还有就不用加
+//		    		parentnode.getNodeTreeRelated().decreasedgzCandidateCount();
+//		    	
+//		    	model.nodeChanged(parentnode);
+//		 }
+//		
+//	}
+//	/*
+//	 * 
+//	 */
+//	public void addZdgzBkCylInfoToTreeNode(BkChanYeLianTreeNode childNode, boolean hasbeenincandidate)  
+//	{
+//		 TreeNode[] nodepath = childNode.getPath();
+//		 Boolean isofficallselected = childNode.getNodeTreeRelated().isOfficallySelected();
+//		 
+////		 DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
+//		 
+//		 DefaultTreeModel model = (DefaultTreeModel) this.getModel();
+//		 TreeNode[] tempath = model.getPathToRoot(childNode);
+//		 for(int j=1;j<tempath.length;j++ ) {
+//		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
+//		    	if(isofficallselected) 
+//		    		parentnode.getNodeTreeRelated().increaseZdgzOfficalCount();
+//		    	if(!hasbeenincandidate) //如果已经在候选里面，cand count就不用加
+//		    		parentnode.getNodeTreeRelated().increaseZdgzCandidateCount();	
+//		    	
+//		    	model.nodeChanged(parentnode);
+//		 }
+//		
+//	}
 	/*
 	 * 找到指定节点的位置
 	 */
@@ -560,12 +549,10 @@ public class BanKuaiAndStockTree extends JTree
 	/*
 	 * 找到nodecode下所有requirenodetype的节点名称
 	 */
-	public HashSet<String> getSpecificTypeNodesCodesSet (String nodecode, int nodetype, int requirenodetype)
+	public Set<String> getSpecificTypeNodesCodesSet (String nodecode, int nodetype, int requirenodetype)
 	{
-		HashSet<String> nodesset = new HashSet<String> ();
+		Set<String> nodesset = new HashSet<String> ();
 		
-//    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
-    	
 		BkChanYeLianTreeNode treeroot = this.getSpecificNodeByHypyOrCode(nodecode, nodetype);
 		
 		if(treeroot == null)

@@ -3281,7 +3281,7 @@ class AccountsInfoTableModel extends DefaultTableModel
             case 1:
             	NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(); 
             	
-                value = currencyFormat.format(0-tmpstkcc.getChicangchenben()); //因为成本为负
+                value = currencyFormat.format(0 - tmpstkcc.getChicangchenben()); //因为成本为负
 
                 break;
             case 2:

@@ -215,7 +215,15 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        	comp.setFont(font);
 	        }
 	        
+	      //为不同情况突出显示不同的颜色
+	        Color foreground = super.getForeground(), background = Color.white;
+	        if(!bankuai.isExportTowWlyFile() )
+        		foreground = Color.GRAY;
+	        
 	        //更改显示
+	        if (comp instanceof JLabel && col == 0) {
+	        	
+	        } else
 	        if (comp instanceof JLabel && (col == 2 ||  col == 4)) {
             	String value =  ((JLabel)comp).getText();
             	if(value == null || value.length() == 0)
@@ -234,11 +242,7 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 					e.printStackTrace();
 				}
             	((JLabel)comp).setText(valuepect);
-	        }
-	        
-	        //为不同情况突出显示不同的颜色
-	        Color foreground, background = Color.white;
-
+	        } else
 	        if( col == 1 && !bktype.equals(BanKuai.NOGGWITHSELFCJL) ) {
 	        	NodesTreeRelated tmptreerelated = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK).getNodeTreeRelated();
 //	        	TreeRelated tmptreerelated = bankuai.getNodeTreerelated (); 
@@ -266,8 +270,10 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 //		        	background = Color.white;
 //	        }
 	        
-	        if (!this.isRowSelected(row)) 
-		    	comp.setBackground(background);
+	        if (!this.isRowSelected(row)) {
+	        	comp.setBackground(background);
+	        	comp.setForeground(foreground);
+	        }
 	        
 	        return comp;
 	}

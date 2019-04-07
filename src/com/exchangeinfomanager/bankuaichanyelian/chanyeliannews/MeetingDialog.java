@@ -45,7 +45,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     protected Cache cache;
     protected MeetingService meetingService;
     protected LabelListDialog labelListDialog;
-    BanKuaiDbOperation bkdbopt;
+    private BanKuaiDbOperation bkdbopt;
 
     private T meeting;
 
@@ -182,7 +182,6 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.centerPanel.add(p);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
         this.centerPanel.add(this.newsownersField);
-//        this.newsownersField.setEnabled(false);
         this.centerPanel.add(this.titleField);
         this.centerPanel.add(Box.createVerticalStrut(30));
         this.centerPanel.add(this.getTimeChooser());
@@ -231,11 +230,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     public Boolean setMeeting(T meeting)  
     {
         this.meeting = meeting;
-        
-//        if( meeting.getTitle().length() >50) {
-//        	return -1;
-//        }
-        
+
         titleField.setText(meeting.getTitle());
         newsownersField.setText(meeting.getNewsOwnerCodes());
         locationField.setText(meeting.getKeyWords());
@@ -292,10 +287,6 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 //        System.out.println(meeting.getNewsownercodes());
         return meeting;
     }
-
-//    private LocalDate toLocalDate(Instant instant) {
-//        return LocalDate.from(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
-//    }
 
     private LocalTime toLocalTime(Instant instant) {
         return LocalTime.from(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));

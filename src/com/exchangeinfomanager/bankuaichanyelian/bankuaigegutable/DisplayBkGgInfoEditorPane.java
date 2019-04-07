@@ -70,7 +70,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
     		String title = cylnew.getTitle();
     		String newdate = cylnew.getStart().toString(); 
     		String slackurl = cylnew.getSlackUrl();
-    		String keywords = cylnew.getLocation();
+    		String keywords = cylnew.getKeyWords();
     		if(slackurl != null && !slackurl.isEmpty() )	    		
     			content.append( "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
     		else

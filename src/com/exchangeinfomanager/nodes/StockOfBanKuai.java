@@ -38,10 +38,24 @@ public class StockOfBanKuai extends TDXNodes
 	
 //	private static Logger logger = Logger.getLogger(StockOfBanKuai.class);
 	private BanKuai bankuai;
+	private LocalDate joindate;
+	private LocalDate leftdate;
 	private Stock stock;
 	private Integer quanzhong;
 	private Boolean isbklongtou;
 	
+	public LocalDate getJoinBanKuaiDate() {
+		return joindate;
+	}
+	public void setJoinBanKuaiDate(LocalDate joindate) {
+		this.joindate = joindate;
+	}
+	public LocalDate getLeftBanKuaiDate() {
+		return leftdate;
+	}
+	public void setLeftBanKuaiDate(LocalDate leftdate) {
+		this.leftdate = leftdate;
+	}
 	public Boolean isBkLongTou ()
 	{
 		if(this.isbklongtou == null)

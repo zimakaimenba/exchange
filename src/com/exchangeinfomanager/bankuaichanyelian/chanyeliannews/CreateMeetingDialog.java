@@ -14,7 +14,7 @@ import java.sql.SQLException;
 @SuppressWarnings("all")
 public class CreateMeetingDialog extends MeetingDialog<Meeting> {
 
-    private Meeting meeting;
+//    private Meeting meeting;
 
     public CreateMeetingDialog(MeetingService meetingService, Cache cache) {
         super(meetingService, cache);
@@ -33,8 +33,35 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
         layoutPanel.add(createFromURLButton);
         this.centerPanel.add(layoutPanel);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
+
     }
 
+    public Boolean setMeeting(Meeting meeting)
+    {
+    	super.setMeeting( meeting);
+    	
+    	if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI  ) {
+    		newsownersField.setEnabled(true);
+    		
+        	titleField.setEnabled(false);
+        	locationField.setEnabled(false);
+        	slackurlField.setEnabled(false);
+        } else if(meeting.getMeetingType() == Meeting.ZHISHUDATE ) {
+        	titleField.setEnabled(false);
+        	locationField.setEnabled(false);
+        	slackurlField.setEnabled(false);
+        } else if(meeting.getMeetingType() == Meeting.CHANGQIJILU || meeting.getMeetingType() == Meeting.DAPANNEWS 
+        		|| meeting.getMeetingType() == Meeting.JINQIGUANZHU) {
+        	newsownersField.setEnabled(false);
+        	
+        	titleField.setEnabled(true);
+        	locationField.setEnabled(true);
+        	slackurlField.setEnabled(true);
+        	
+        }
+        
+        return true;
+    }
     private class CreateController extends MouseAdapter {
 
         @Override

@@ -21,6 +21,8 @@ class ExtraExportConditions extends JPanel
 	private JTextField tfldshizhilevellianxu;
 	private JTextField tfldwkyangxian;
 	private JCheckBox chckbxshizhilevellianxu;
+	private JCheckBox chkbxexportallbk;
+	private JCheckBox chkbxonlystock;
 
 	/**
 	 * Create the panel.
@@ -28,21 +30,27 @@ class ExtraExportConditions extends JPanel
 	public ExtraExportConditions() 
 	{
 		initializeGui ();
-//		if(enablecjesetting) {
-//			cbxShiZhilevelyangxian.setEnabled(true);
-//			chckbxshizhilevellianxu.setEnabled(true);
-//			tfldshizhilevelyangxian.setEnabled(true);
-//			tfldyangxian.setEnabled(true);
-//			tfldshizhilevellianxu.setEnabled(true);
-//			tfldwkyangxian.setEnabled(true);
-//		}
 		
 		createEvents ();
-		
-		
 	}
 	private void createEvents() 
 	{
+
+		
+		chkbxexportallbk.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if( chkbxexportallbk.isSelected() ) {
+					cbxOnlyCurBk.setSelected(false);
+					cbxOnlyCurBk.setEnabled(false);
+				} else {
+					cbxOnlyCurBk.setSelected(false);
+					cbxOnlyCurBk.setEnabled(true);
+				}
+			}
+				
+		});
+		
 		cbxOnlyCurBk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -55,6 +63,9 @@ class ExtraExportConditions extends JPanel
 					tfldyangxian.setEnabled(false);
 					tfldshizhilevellianxu.setEnabled(false);
 					tfldwkyangxian.setEnabled(false);
+					
+					chkbxexportallbk.setEnabled(false);
+					chkbxexportallbk.setSelected(false);
 				} else {
 					cbxShiZhilevelyangxian.setEnabled(true);
 					cbxShiZhilevelyangxian.setSelected(true);
@@ -64,6 +75,9 @@ class ExtraExportConditions extends JPanel
 					tfldyangxian.setEnabled(true);
 					tfldshizhilevellianxu.setEnabled(true);
 					tfldwkyangxian.setEnabled(true);
+					
+					chkbxexportallbk.setEnabled(true);
+					chkbxexportallbk.setSelected(true);
 				}
 			}
 		});
@@ -87,6 +101,7 @@ class ExtraExportConditions extends JPanel
 		JLabel label = new JLabel("\u4EBF,\u5FC5\u987B\u6709");
 		
 		cbxOnlyCurBk = new JCheckBox("\u5BFC\u51FA\u6761\u4EF6\u4EC5\u9650\u5F53\u524D\u677F\u5757");
+		cbxOnlyCurBk.setEnabled(false);
 		
 		
 		tfldyangxian = new JTextField();
@@ -109,21 +124,36 @@ class ExtraExportConditions extends JPanel
 		tfldwkyangxian.setColumns(10);
 		
 		JLabel lblNewLabel_1 = new JLabel("\u5468\u653E\u91CF");
-		setLayout(new MigLayout("", "[121px][10px][14px][6px][46px][54px][12px][18px][20px][28px][36px]", "[23px][23px][23px][23px]"));
-		add(cbxExceptSt, "cell 0 3,alignx left,aligny top");
-		add(chckbxshizhilevellianxu, "cell 0 2 3 1,alignx left,aligny top");
-		add(tfldshizhilevellianxu, "cell 4 2,growx,aligny top");
-		add(cbxShiZhilevelyangxian, "cell 0 1,alignx left,aligny top");
-		add(tfldshizhilevelyangxian, "cell 2 1 3 1,alignx left,aligny center");
-		add(label, "cell 5 1,alignx left,aligny center");
-		add(tfldyangxian, "cell 7 1 3 1,alignx left,aligny center");
-		add(label_1, "cell 10 1,alignx center,aligny center");
-		add(lblNewLabel, "cell 5 2 3 1,alignx left,aligny center");
-		add(tfldwkyangxian, "cell 8 2 2 1,growx,aligny top");
-		add(lblNewLabel_1, "cell 10 2,alignx left,aligny top");
-		add(cbxOnlyCurBk, "cell 0 0 3 1,alignx left,aligny top");
-
+		setLayout(new MigLayout("", "[121px][10px][14px][6px][46px][54px][12px][18px][20px][28px][36px]", "[][23px][][][23px][23px][23px]"));
 		
+		chkbxexportallbk = new JCheckBox("\u5BFC\u51FA\u5168\u90E8\u677F\u5757(\u677F\u5757\u5BFC\u51FA\u8BBE\u7F6E\u65E0\u6548)");
+		chkbxexportallbk.setSelected(true);
+		add(chkbxexportallbk, "cell 0 0");
+		
+		chkbxonlystock = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\u7684\u4E2A\u80A1\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757");
+		add(chkbxonlystock, "cell 0 3");
+		add(cbxExceptSt, "cell 0 6,alignx left,aligny top");
+		add(chckbxshizhilevellianxu, "cell 0 5 3 1,alignx left,aligny top");
+		add(tfldshizhilevellianxu, "cell 3 5 2 1,growx,aligny top");
+		add(cbxShiZhilevelyangxian, "cell 0 4,alignx left,aligny top");
+		add(tfldshizhilevelyangxian, "cell 3 4 2 1,alignx left,aligny center");
+		add(label, "cell 5 4,alignx left,aligny center");
+		add(tfldyangxian, "cell 7 4 3 1,alignx left,aligny center");
+		add(label_1, "cell 10 4,alignx center,aligny center");
+		add(lblNewLabel, "cell 5 5 3 1,alignx left,aligny center");
+		add(tfldwkyangxian, "cell 8 5 2 1,growx,aligny top");
+		add(lblNewLabel_1, "cell 10 5,alignx left,aligny top");
+		add(cbxOnlyCurBk, "cell 0 1 3 1,alignx left,aligny top");
+	}
+	/*
+	 * 
+	 */
+	public boolean shouldOnlyExportStocksNotBanKuai ()
+	{
+		if( chkbxonlystock.isSelected() )
+			return true;
+		else
+			return false;
 	}
 	/*
 	 * 
@@ -141,6 +171,13 @@ class ExtraExportConditions extends JPanel
 	public boolean shouldExportSTStocks ()
 	{
 		if(cbxExceptSt.isSelected() )
+			return true;
+		else
+			return false;
+	}
+	public boolean shouldExportAllBanKuai ()
+	{
+		if( chkbxexportallbk.isSelected() )
 			return true;
 		else
 			return false;

@@ -3,18 +3,16 @@ package com.exchangeinfomanager.bankuaifengxi;
 public class ExportCondition 
 {
 
-	
-
 	public ExportCondition ()
 	{
+		extracon = new ExtraExportConditions ();
 	}
-
-	private Boolean shouldnotexportSTstocks;
+	private  ExtraExportConditions extracon;
 	
+	private Boolean shouldnotexportSTstocks;
 	private Boolean havedayangxianundercertainchenjiaoer;
 	private Double  cjelevelundercertainchenjiaoeforyangxian;
 	private Double  dayangxianundercertainchenjiaoer;
-	
 	private Boolean havelianxufundercertainchenjiaoer;
 	private Double  cjelevelundercertainchenjiaoeforlianxu;
 	private Integer fanglianglevelundercertainchenjiaoer;
@@ -34,99 +32,116 @@ public class ExportCondition
 
 	private boolean huibudownquekou;
 	
-
-	//
-	public void setHaveDaYangXianUnderCertainChenJiaoEr (Boolean shouldhaveyangxian, Double cjelevelundercertainchenjiaoeforyangxian, Double dayangxianundercertainchenjiaoer) 
+	public ExtraExportConditions getExtraExportConditions ()
 	{
-		this.havedayangxianundercertainchenjiaoer = shouldhaveyangxian;
-		if(this.havedayangxianundercertainchenjiaoer) {
-			this.cjelevelundercertainchenjiaoeforyangxian =  cjelevelundercertainchenjiaoeforyangxian;
-			this.dayangxianundercertainchenjiaoer  = dayangxianundercertainchenjiaoer;
-			
-			this.tooltips = this.tooltips + "成交量小于" + this.cjelevelundercertainchenjiaoeforyangxian +  "亿,必须有" + this.dayangxianundercertainchenjiaoer + "%大阳线。";
-		} else {
-//			this.tooltips = this.tooltips + "成交量小于" + shouldHaveDaYangXianUnderCertainChenJiaoEr +  "必须有5%大阳线。";
-		}
-		
-			
+		return this.extracon;
 	}
+	/*
+	 * 
+	 */
 	public Boolean shouldHaveDaYangXianUnderCertainChenJiaoEr ()
 	{
-		if(havedayangxianundercertainchenjiaoer == null) 
-			return false;
+		Boolean should = extracon.shouldHaveDaYangXianUnderCertainChenJiaoEr();
+		if(should) {
+			this.tooltips = this.tooltips + "成交量小于" + this.getCjeLevelUnderCertaincChenJiaoErOfBigYangXian() +  ",必须有" + this.getDaYangXianUnderCertainChenJiaoEr () + "%大阳线。";
+			return true;
+		}
 		else
-			return this.havedayangxianundercertainchenjiaoer;
+			return false;
+//		if(havedayangxianundercertainchenjiaoer == null) 
+//			return false;
+//		else
+//			return this.havedayangxianundercertainchenjiaoer;
 	}
+	//
 	public Double getCjeLevelUnderCertaincChenJiaoErOfBigYangXian ()
 	{
-		if(cjelevelundercertainchenjiaoeforyangxian == null)
+		Double cje = extracon.getCjeLevelUnderCertainChenJiaoErOfDaYangXian() ;
+		if(cje == null)
 			return -1.0;
 		else
-			return this.cjelevelundercertainchenjiaoeforyangxian * 100000000;
+			return cje * 100000000;
 	}
+	//
 	public Double getDaYangXianUnderCertainChenJiaoEr ()
 	{
-		if(this.dayangxianundercertainchenjiaoer == null)
+		Double dyxlevel = extracon.getYangXianLevelUnderCertainChenJiaoErofDaYangXian();
+		
+		if(dyxlevel == null)
 			return -1.0;
 		else
-			return this.dayangxianundercertainchenjiaoer;
+			return dyxlevel;
 	}
-	//
-	public void setLianXuFangLiangUnderCertainChenJiaoEr (Boolean shouldhavelianxu, Double cjelevelundercertainchenjiaoeforlianxu, Integer fllevelundercertainchenjiaoer) 
-	{
-		this.havelianxufundercertainchenjiaoer = shouldhavelianxu;
-		if(this.havelianxufundercertainchenjiaoer) {
-			this.cjelevelundercertainchenjiaoeforlianxu =  cjelevelundercertainchenjiaoeforlianxu;
-			this.fanglianglevelundercertainchenjiaoer  = fllevelundercertainchenjiaoer;
-			
-			this.tooltips = this.tooltips + "或成交量小于" + this.cjelevelundercertainchenjiaoeforlianxu +  "亿，必须有" + this.fanglianglevelundercertainchenjiaoer + "周放量。";
-		} else {
-//			this.tooltips = this.tooltips + "成交量小于" + shouldHaveDaYangXianUnderCertainChenJiaoEr +  "必须有5%大阳线。";
-		}
-		
-			
-	}
+	/*
+	 * 
+	 */
 	public Boolean shouldHaveLianXuFangLangUnderCertainChenJiaoEr ()
 	{
-		if(havelianxufundercertainchenjiaoer == null)
+		Boolean should = extracon.shouldHaveFangLiangUnderCertainChenJiaoEr(); 
+		if( should ) {
+			this.tooltips = this.tooltips + "或成交量小于" + this.getCjeLevelUnderCertaincChenJiaoErOfLianXuFangLiang() +  "，必须有" 
+							+ this.getFangLiangLevelUnderCertainChenJiaoEr()  + "周放量。";
+			return true;
+		} else 
 			return false;
-		else
-			return this.havelianxufundercertainchenjiaoer;
-	}
-	public Double getCjeLevelUnderCertaincChenJiaoErOfLianXuFangLiang ()
-	{
-		if(cjelevelundercertainchenjiaoeforlianxu == null)
-			return -1.0;
-		else
-			return this.cjelevelundercertainchenjiaoeforlianxu * 100000000;
-	}
-	public Integer getFangLiangLevelUnderCertainChenJiaoEr ()
-	{
-		if(fanglianglevelundercertainchenjiaoer == null)
-			return -1;
-		else
-			return this.fanglianglevelundercertainchenjiaoer;
-	}
-	//
-	public void setExportSTStocks(boolean shouldNotExportSTStocks) 
-	{
-		this.shouldnotexportSTstocks = shouldNotExportSTStocks;
-		if(this.shouldnotexportSTstocks)
-			this.tooltips = this.tooltips + "不导出ST个股。";
-	}
-	public Boolean shouldNotExportSTStocks()
-	{
-		return this.shouldnotexportSTstocks;
-	}
-	//
-	public void setSettingBanKuai(String exportbk) 
-	{
-		if(exportbk != null ) {
-			this.settingbk = exportbk;
-			this.tooltips = this.tooltips + "限定在板块" + settingbk + "内。";
-		} 
 		
 	}
+	//
+	public Double getCjeLevelUnderCertaincChenJiaoErOfLianXuFangLiang ()
+	{
+		Double cje = extracon.getCjeLevelUnderCertainChenJiaoErOfLianXuFangLiang();
+		if(cje == null)
+			return -1.0;
+		else
+			return cje * 100000000;
+	}
+	//
+	public Integer getFangLiangLevelUnderCertainChenJiaoEr ()
+	{
+		Integer flwklevel = extracon.getLianXuFangLianLevelUnderCertainChenJiaoErOfFangLiang();
+		if(flwklevel == null)
+			return -1;
+		else
+			return flwklevel;
+	}
+	//
+//	public void setExportSTStocks(boolean shouldNotExportSTStocks) 
+//	{
+//		this.shouldnotexportSTstocks = shouldNotExportSTStocks;
+//		if(this.shouldnotexportSTstocks)
+//			this.tooltips = this.tooltips + "不导出ST个股。";
+//	}
+	public Boolean shouldNotExportSTStocks()
+	{
+		boolean should = extracon.shouldExportSTStocks();
+		if(should ) {
+			this.tooltips = this.tooltips + "不导出ST个股。";
+			return true;
+		} else
+			return false;
+	}
+	/*
+	 * 
+	 */
+	public boolean shouldOnlyExportCurrentBankuai ()
+	{
+		if(extracon.shouldOnlyExportCurrentBankuai() ) 
+			return true;
+		else
+			return false;
+	}
+	public void setSettingBanKuai(String exportbk) 
+	{
+		if(extracon.shouldOnlyExportCurrentBankuai() ) {
+			if(exportbk != null ) {
+				this.settingbk = exportbk;
+				this.tooltips = this.tooltips + "限定在板块" + settingbk + "内。";
+			}
+		}
+	}
+	/*
+	 * 
+	 */
 	public String getSettingbk()
 	{
 		if(settingbk == null)
@@ -271,4 +286,19 @@ public class ExportCondition
 	{
 		return this.huibudownquekou ;
 	}
+	/*
+	 * 
+	 */
+	public boolean shouldExportAllBanKuai ()
+	{
+		return extracon.shouldExportAllBanKuai ();
+	}
+	/*
+	 * 
+	 */
+	public boolean shouldOnlyExportStocksNotBanKuai ()
+	{
+		return extracon.shouldOnlyExportStocksNotBanKuai();
+	}
+	
 }

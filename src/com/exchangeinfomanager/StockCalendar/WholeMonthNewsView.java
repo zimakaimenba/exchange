@@ -395,9 +395,7 @@ public class WholeMonthNewsView extends View
         	super.mouseClicked(e);
             JPanel panel = (JPanel) e.getSource();
             LocalDate mDate = LocalDate.now();//.parse(panel.getName().substring(0, 10));
-//            LocalDateTime dateTime = LocalDateTime.of(mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth(), 8, 0);
-            
-            
+ 
 //        	if (e.getClickCount() == 1) { //获取选择的日期
 //        		setDate (mDate);
 //        	}
@@ -433,43 +431,6 @@ public class WholeMonthNewsView extends View
             
         }
     }
-//    private class QiangRuoBkStockController extends MouseAdapter 
-//    { 
-//        @Override
-//        public void mouseClicked(MouseEvent e) {
-//        	
-//         	super.mouseClicked(e);
-//            JPanel panel = (JPanel) e.getSource();
-//            String pnlnamedate = panel.getName().substring(0, 10);
-////            LocalDate mDate = LocalDate.parse(pnlnamedate);
-//            LocalDate mDate = LocalDate.now();
-//            
-//            String pnltype = panel.getName().substring(10);
-//            String meetingname = null ;
-//            if(pnltype.equals("qqqqqq"))
-//            	meetingname = "强势板块/个股";
-//            else
-//            if(pnltype.equals("rrrrrr"))
-//            	meetingname = "弱势板块/个股";
-//            else
-//            if(pnltype.equals("gzgzgz"))
-//            	meetingname = "关注板块个股";
-//            	
-////            LocalDateTime dateTime = LocalDateTime.of(mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth(), 8, 0);
-//        	if (e.getClickCount() == 1) { //获取选择的日期
-////        		setDate (mDate);
-//        	}
-//        	
-//        	if (e.getClickCount() == 2) { //增加一个新的meeting
-//                Meeting meeting = new Meeting(meetingname,mDate,
-//                     "描述", pnltype, new HashSet<>(),"SlackURL",pnltype,Meeting.QIANGRUO);
-//                getCreateDialog().setMeeting(meeting);
-//                getCreateDialog().setVisible(true);
-//        	}
-//            
-//        }
-//    }
-
 	
     private class MeetingController extends MouseAdapter 
     {
@@ -478,22 +439,20 @@ public class WholeMonthNewsView extends View
             super.mouseClicked(e);
             JLabel label = (JLabel) e.getSource();
             String labelname = label.getName();
-            Meeting meeting;
+            Meeting meeting = null;
             Collection<InsertedMeeting> meetingslist = getCache().produceMeetings();
             for(InsertedMeeting m : meetingslist) {
             	String searchname = String.valueOf(m.getMeetingType()  ) + String.valueOf(m.getID() );
             	
 				if(searchname.equals(labelname)) {
-            		JLabel source = (JLabel) e.getSource();
-//                    String title = source.getText();
-//                    LocalDate date = LocalDate.parse(source.getParent().getParent().getName());
-                    
-
-                    	getModifyDialog().setMeeting(m);
-                        getModifyDialog().setVisible(true);
-                    
+					meeting = m;
+					break;
             	}
             }
+            
+            getModifyDialog().setMeeting(meeting);
+            getModifyDialog().setVisible(true);
+            
 //            Optional<InsertedMeeting> meeting = getCache().produceMeetings()
 //                                                  .stream()
 //                                                  .filter(m -> m.getID() == Integer.valueOf(label.getName()))

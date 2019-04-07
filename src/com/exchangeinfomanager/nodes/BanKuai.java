@@ -54,16 +54,25 @@ public class BanKuai extends TDXNodes
 //	private static Logger logger = Logger.getLogger(BanKuai.class);
 //	private HashMap<String, Stock> allbkge;
 	private String bankuaileixing; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据 
-	private boolean exporttogehpi = true;
-	private boolean importdailytradingdata = true;
-	private boolean showinbkfxgui = true;
-	private boolean showincyltree = true;
+	private Boolean exporttogehpi = true;
+	private Boolean importdailytradingdata = true;
+	private Boolean showinbkfxgui = true;
+	private Boolean showincyltree = true;
+	private Boolean exporttowklyfile ;
 	private ArrayList<StockOfBanKuai> stockofbklist; //存放所有的个股
 
-//	public  TreeRelated getNodeTreeRelated ()
-//	{
-//		return super.nodetreerelated;
-//	}
+	public  Boolean isExportTowWlyFile ()
+	{
+		if(exporttowklyfile == null)
+			return true;
+		else
+			return this.exporttowklyfile;
+	}
+	public void setExportTowWlyFile (Boolean exporttofile)
+	{
+			this.exporttowklyfile = exporttofile;
+	}
+	
 	public Boolean isShowincyltree () {
 		return this.showincyltree;
 	}
@@ -169,29 +178,22 @@ public class BanKuai extends TDXNodes
 	public Set<StockOfBanKuai> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference,String period) 
 	{
 		HashSet<StockOfBanKuai> result = new HashSet<StockOfBanKuai> ();
-		
-//		if (this.getChildCount() >= 0) {
-//            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-//            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
-//            	if(childnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
-//            		NodeXPeriodDataBasic stockxperioddata = ((TDXNodes)childnode).getNodeXPeroidData(period);
-//                    if(stockxperioddata != null) {
-//                    	 Boolean records = stockxperioddata.hasRecordInThePeriod(requireddate, difference);
-//      				  if(records )
-//      					  result.add((StockOfBanKuai)childnode);
-//                    }
-//            	}
-//            }
-//        }
-//		return result;
-		
+
 		for(StockOfBanKuai stockofbk : this.stockofbklist) {
-			NodeXPeriodDataBasic stockxperioddata = stockofbk.getNodeXPeroidData(period);
-            if(stockxperioddata != null) {
-            	 Boolean records = stockxperioddata.hasRecordInThePeriod(requireddate, difference);
-				  if(records )
-					  result.add(stockofbk);
-            }
+//			NodeXPeriodDataBasic stockxperioddata = stockofbk.getNodeXPeroidData(period);
+//            if(stockxperioddata != null) {
+//            	 Boolean records = stockxperioddata.hasRecordInThePeriod(requireddate, difference);
+//				  if(records )
+//					  result.add(stockofbk);
+//            }
+			LocalDate joindate = stockofbk.getJoinBanKuaiDate();
+			LocalDate leftdate = stockofbk.getLeftBanKuaiDate();
+			
+			if(requireddate.isAfter(joindate)) {
+				if(leftdate == null || requireddate.isBefore(leftdate))
+					result.add(stockofbk);
+			}
+			
 		}
 		
 		return result;

@@ -134,9 +134,9 @@ public class MonthView extends View
     {
     	LocalDate firstdayofmonth = this.initView();
     	
+    	
         Collection<InsertedMeeting> meetings = cache.produceMeetings(firstdayofmonth);
         Collection<InsertedMeeting.Label> labels = cache.produceLabels();
-
         
         for (InsertedMeeting m : meetings) {
         	
@@ -188,29 +188,29 @@ public class MonthView extends View
     	if( settingsofnewsdisplay.shouldDisplayAllExtraNews() )
     		return true;
     	
-    	String ownersid = m.getNewsOwnerCodes();
-    	if(ownersid.contains("gzgzgz") ) {
+//    	String ownersid = m.getNewsOwnerCodes();
+    	if(m.getMeetingType() == Meeting.JINQIGUANZHU ) {
     		if( settingsofnewsdisplay.shouldDisplayGuanZhuNews() )
     			return true;
     		else
     			return false;
     	}
     	
-    	if(ownersid.contains("qqqqqq") || ownersid.contains("rrrrrr") ) {
+    	if(m.getMeetingType() == Meeting.QIANSHI || m.getMeetingType() == Meeting.RUOSHI ) {
     		if( settingsofnewsdisplay.shouldDisplayQiangRuoNews() )
     			return true;
     		else
     			return false;
     	}
     	
-    	if(ownersid.contains("wwwwww")  ) {
+    	if(m.getMeetingType() == Meeting.CHANGQIJILU  ) {
     		if( settingsofnewsdisplay.shouldDisplayMonthNews() )
     			return true;
     		else
     			return false;
     	}
 		
-    	if(ownersid.contains("zdzdzd")  ) {
+    	if(m.getMeetingType() == Meeting.ZHISHUDATE  ) {
     		if( settingsofnewsdisplay.shouldDisplayZhishuDate() )
     			return true;
     		else
@@ -230,8 +230,7 @@ public class MonthView extends View
     { 
         @Override
         public void mouseClicked(MouseEvent e) {
-        	
-        	super.mouseClicked(e);
+               	super.mouseClicked(e);
             JPanel panel = (JPanel) e.getSource();
             LocalDate mDate = LocalDate.parse(panel.getName());
             LocalDateTime dateTime = LocalDateTime.of(mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth(), 8, 0);
@@ -263,24 +262,27 @@ public class MonthView extends View
 //                                                  .stream()
 //                                                  .filter(   label.getName().equals(m -> (m.getMeetingType() + m.getID() )) )
 //                                                  .findFirst();
-            Meeting meeting;
+            Meeting meeting = null;
             Collection<InsertedMeeting> meetingslist = getCache().produceMeetings();
             for(InsertedMeeting m : meetingslist) {
             	String searchname = String.valueOf(m.getMeetingType()  ) + String.valueOf(m.getID() );
             	if(searchname.equals(labelname)) {
-            		JLabel source = (JLabel) e.getSource();
-                    String title = source.getText();
-                    LocalDate date = LocalDate.parse(source.getParent().getParent().getName());
-                    
-//                    InsertedMeeting selectedmeeting = meeting.get();
-//                    String owner = selectedmeeting.getNewsOwnerCodes();
-                    if( m.getMeetingType() == Meeting.WKZONGJIE ) { //说明是大盘一周总结，内容是XML，用DaPanWeeklyFengXi显示内容
-                    	showWeeklyFenXiWizardDialog  ("000000",date);
-                    } else {
-                    	getModifyDialog().setMeeting(m);
-                        getModifyDialog().setVisible(true);
-                    }
+            		meeting = m;
+            		break;
             	}
+            }
+            
+//            JLabel source = (JLabel) e.getSource();
+            String title = label.getText();
+            LocalDate date = LocalDate.parse(label.getParent().getParent().getName());
+            
+//            InsertedMeeting selectedmeeting = meeting.get();
+//            String owner = selectedmeeting.getNewsOwnerCodes();
+            if( meeting.getMeetingType() == Meeting.WKZONGJIE ) { //说明是大盘一周总结，内容是XML，用DaPanWeeklyFengXi显示内容
+            	showWeeklyFenXiWizardDialog  ("000000",date);
+            } else {
+            	getModifyDialog().setMeeting(meeting);
+                getModifyDialog().setVisible(true);
             }
             
             

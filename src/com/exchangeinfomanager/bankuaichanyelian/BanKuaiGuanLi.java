@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 
 import javax.swing.JButton;
@@ -17,6 +18,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.exchangeinfomanager.StockCalendar.ColorScheme;
+import com.exchangeinfomanager.StockCalendar.GBC;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JTreeTable.AbstractTreeTableModel;
 import com.exchangeinfomanager.commonlib.JTreeTable.JTreeTable;
@@ -51,6 +55,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import java.awt.event.KeyAdapter;
@@ -68,10 +74,15 @@ import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.UIManager;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
@@ -100,10 +111,10 @@ public class BanKuaiGuanLi extends JDialog
 		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
 		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		
-		initializeGui ();
+		initializeGui2 ();
 		createEvents ();
 
-//		initializeTDXBanKuaiLists ();
+		initializeTDXBanKuaiLists ();
 	}
 
 	private StockInfoManager stockInfoManager;	
@@ -135,8 +146,8 @@ public class BanKuaiGuanLi extends JDialog
 
 	private void createEvents() 
 	{
-		tfldsearchsysbk.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+//		tfldsearchsysbk.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
 //				String nodeid = tfldsearchsysbk.getText().trim();
 //				int rowindex = ((BanKuaiDetailTableModel)(tableSysBk.getModel())).getNodeLineIndex(nodeid);
 //				
@@ -146,8 +157,8 @@ public class BanKuaiGuanLi extends JDialog
 //				} else 	{
 //					JOptionPane.showMessageDialog(null,"股票/板块代码有误或名称拼音有误！","Warning", JOptionPane.WARNING_MESSAGE);
 //				}
-			}
-		});
+//			}
+//		});
 		
 		tableSysBk.addMouseListener(new MouseAdapter() {
 			@Override
@@ -170,17 +181,18 @@ public class BanKuaiGuanLi extends JDialog
 			}
 		});
 		
-		okButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) 
-			{
-				bkcylpnl.saveCylXmlAndZdgzXml();
-				dispose ();
-			}
-		});
+//		okButton.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) 
+//			{
+//				bkcylpnl.saveCylXmlAndZdgzXml();
+//				dispose ();
+//			}
+//		});
 		
 	}
 
+	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JButton okButton;
 	private JTreeTable tableSysBk;
 	private final JPanel contentPanel = new JPanel();
@@ -191,7 +203,78 @@ public class BanKuaiGuanLi extends JDialog
 	private BanKuaiAndChanYeLianGUI2 bkcylpnl;
 	private JTextField tfldsearchsysbk;
 	private BanKuaiShuXingSheZhi panelsetting;
+	private JMenuBar menuBar;
 	
+	private void initializeGui2() 
+	{
+		setTitle("\u901A\u8FBE\u4FE1\u677F\u5757/\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E");
+		setBounds(100, 100, 1576, 988);
+		getContentPane().setLayout(new BorderLayout());
+		
+		JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new BorderLayout ());
+		layoutPanel.setBackground(ColorScheme.BACKGROUND);
+		layoutPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 0));
+		this.add(layoutPanel);
+		
+		 JPanel allbkskpnl = JPanelFactory.createPanel();
+		 allbkskpnl.setLayout(new FlowLayout() );
+		 allbkskpnl.setPreferredSize(new Dimension(200, 988));
+
+		 JPanel searchpnl = JPanelFactory.createFixedSizePanel(new FlowLayout ());
+		 searchpnl.setPreferredSize(new Dimension(200, 38));
+			tfldsearchsysbk = new JTextField();
+			tfldsearchsysbk.setColumns(8);
+			JButton btnsearchsysbk = new JButton("\u67E5\u627E\u677F\u5757");
+			searchpnl.add(tfldsearchsysbk);
+			searchpnl.add(btnsearchsysbk);
+			allbkskpnl.add(searchpnl);
+			
+			
+		 JScrollPane scrollPanesysbk = new JScrollPane ();
+//			初始化jtreetable
+			BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree());
+//			JTable tableSysBk = new JTable();
+			tableSysBk = new JTreeTable(treetablemodel) {
+
+				private static final long serialVersionUID = 1L;
+
+				public String getToolTipText(MouseEvent e) {
+	                String tip = null;
+	                java.awt.Point p = e.getPoint();
+	                int rowIndex = rowAtPoint(p);
+	                int colIndex = columnAtPoint(p);
+
+	                try {
+	                    tip = getValueAt(rowIndex, colIndex).toString();
+	                } catch (RuntimeException e1) {
+	                    //catch null pointer exception if mouse is over an empty line
+	                }
+
+	                return tip;
+	            }
+			};
+		scrollPanesysbk.setViewportView(tableSysBk);
+		scrollPanesysbk.setPreferredSize(new Dimension(200, 615));
+		allbkskpnl.add(scrollPanesysbk);
+		
+		panelsetting = new BanKuaiShuXingSheZhi();
+		allbkskpnl.add( panelsetting);
+		
+		layoutPanel.add(allbkskpnl, BorderLayout.WEST);
+		
+		
+		bkcylpnl = new BanKuaiAndChanYeLianGUI2(bkcyl,stockInfoManager,allbkstks) ;
+		layoutPanel.add(bkcylpnl, BorderLayout.CENTER);
+		
+		menuBar = new JMenuBar();
+		menuBar.setBorderPainted(false);
+		this.setJMenuBar(menuBar);
+		
+		JMenu menuOperationList = new JMenu("\u64CD\u4F5C");
+		buttonGroup.add(menuOperationList);
+		menuBar.add(menuOperationList);
+		 
+	}
 	private void initializeGui()
 	{
 		setTitle("\u901A\u8FBE\u4FE1\u677F\u5757/\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E");
@@ -239,8 +322,8 @@ public class BanKuaiGuanLi extends JDialog
 				.addGroup(gl_panelSys.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panelSys.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)
 						.addComponent(panelsetting, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_panelSys.createParallelGroup(Alignment.TRAILING, false)
 							.addGroup(gl_panelSys.createSequentialGroup()
 								.addComponent(tfldsearchsysbk)
@@ -259,10 +342,10 @@ public class BanKuaiGuanLi extends JDialog
 						.addComponent(tfldsearchsysbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnsearchsysbk))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 582, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrollPanesysbk, GroupLayout.PREFERRED_SIZE, 536, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(panelsetting, GroupLayout.PREFERRED_SIZE, 168, GroupLayout.PREFERRED_SIZE)
-					.addGap(11))
+					.addComponent(panelsetting, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap())
 		);
 		
 		cyltree = this.bkcyl.getBkChanYeLianTree();
@@ -270,8 +353,8 @@ public class BanKuaiGuanLi extends JDialog
 		
 //		初始化jtreetable
 		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree());
-//		JTable tableSysBk1 = new JTable();
-		tableSysBk = new JTreeTable(treetablemodel){
+//		JTable tableSysBk = new JTable();
+		tableSysBk = new JTreeTable(treetablemodel) {
 
 			private static final long serialVersionUID = 1L;
 
