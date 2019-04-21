@@ -116,17 +116,16 @@ public class BanKuaiShuXingSheZhi extends JPanel
 		chkbxnotexportwklyfile.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if(chkbxnotexportwklyfile.isSelected()) {
-					Set<String> codeet = new HashSet<String> ();
-					codeet.add(settingnode.getMyOwnCode());
-					Multimap<?, ?> result = cyltree.checkBanKuaiSuoSuTwelveDaLei (codeet );
-					if(result != null && result.size() > 0) {
+				Set<String> codeet = new HashSet<String> ();
+				codeet.add(settingnode.getMyOwnCode());
+				Multimap<?, ?> result = cyltree.checkBanKuaiSuoSuTwelveDaLei (codeet );
+				
+				if(result != null && result.size() > 0) {
 						chkbxnotexportwklyfile.setSelected(false);
 						JOptionPane.showMessageDialog(null,"该板块在重大关注中。\r\n 请先在重点关注中删除该板块再改变板块分析设置!","Warning",JOptionPane.WARNING_MESSAGE);
+						chkbxnotexportwklyfile.setSelected(  !((BanKuai)settingnode).isExportTowWlyFile()  );
 						return;
-					}
 				}
-				
 			}
 		});
 		

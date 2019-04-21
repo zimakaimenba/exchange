@@ -2,6 +2,8 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
+
+import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -33,10 +35,10 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     protected static final int TITLE_FONT_SIZE = 20;
 
     protected static final DateTimeFormatter LABEL_DATE = DateTimeFormatter.ofPattern("dd MMM uuuu");
-    protected JTextField newsownersField;
-    protected JTextField titleField;
-    protected JTextField locationField; 
-    protected JTextField slackurlField;
+    protected JUpdatedTextField newsownersField;
+    protected JUpdatedTextField titleField;
+    protected JUpdatedTextField locationField; 
+    protected JUpdatedTextField slackurlField;
     protected JTextArea descriptionArea;
     protected JDateChooser startTimeChooser;
     protected JPanel centerPanel;
@@ -61,59 +63,59 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 
     private void createEvent() 
     {
-    	newsownersField.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent event) {
-				
-				if (SwingUtilities.isRightMouseButton(event)) {
-					Toolkit toolkit = Toolkit.getDefaultToolkit();
-					Clipboard clipboard = toolkit.getSystemClipboard();
-					try	{
-						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-						newsownersField.setText(newsownersField.getText() + result);
-						
-					}catch(Exception ex)	{
-						
-					}
-				}
-			}
-		});
+//    	newsownersField.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mousePressed(MouseEvent event) {
+//				
+//				if (SwingUtilities.isRightMouseButton(event)) {
+//					Toolkit toolkit = Toolkit.getDefaultToolkit();
+//					Clipboard clipboard = toolkit.getSystemClipboard();
+//					try	{
+//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+//						newsownersField.setText(newsownersField.getText() + result);
+//						
+//					}catch(Exception ex)	{
+//						
+//					}
+//				}
+//			}
+//		});
     	
-    	titleField.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent event) {
-				
-				if (SwingUtilities.isRightMouseButton(event)) {
-					Toolkit toolkit = Toolkit.getDefaultToolkit();
-					Clipboard clipboard = toolkit.getSystemClipboard();
-					try	{
-						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-						titleField.setText(titleField.getText() + result);
-						
-					}catch(Exception ex)	{
-						
-					}
-				}
-			}
-		});
-    	
-    	locationField.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent event) {
-				
-				if (SwingUtilities.isRightMouseButton(event)) {
-					Toolkit toolkit = Toolkit.getDefaultToolkit();
-					Clipboard clipboard = toolkit.getSystemClipboard();
-					try	{
-						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-						locationField.setText(locationField.getText() + result);
-						
-					}catch(Exception ex)	{
-						
-					}
-				}
-			}
-		});
+//    	titleField.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mousePressed(MouseEvent event) {
+//				
+//				if (SwingUtilities.isRightMouseButton(event)) {
+//					Toolkit toolkit = Toolkit.getDefaultToolkit();
+//					Clipboard clipboard = toolkit.getSystemClipboard();
+//					try	{
+//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+//						titleField.setText(titleField.getText() + result);
+//						
+//					}catch(Exception ex)	{
+//						
+//					}
+//				}
+//			}
+//		});
+//    	
+//    	locationField.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mousePressed(MouseEvent event) {
+//				
+//				if (SwingUtilities.isRightMouseButton(event)) {
+//					Toolkit toolkit = Toolkit.getDefaultToolkit();
+//					Clipboard clipboard = toolkit.getSystemClipboard();
+//					try	{
+//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+//						locationField.setText(locationField.getText() + result);
+//						
+//					}catch(Exception ex)	{
+//						
+//					}
+//				}
+//			}
+//		});
     	
     	descriptionArea.addMouseListener(new MouseAdapter() {
 			@Override
@@ -132,24 +134,24 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 				}
 			}
 		});
-    	
-    	slackurlField.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent event) {
-				
-				if (SwingUtilities.isRightMouseButton(event)) {
-					Toolkit toolkit = Toolkit.getDefaultToolkit();
-					Clipboard clipboard = toolkit.getSystemClipboard();
-					try	{
-						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-						slackurlField.setText(slackurlField.getText() + result);
-						
-					}catch(Exception ex)	{
-						
-					}
-				}
-			}
-		});
+//    	
+//    	slackurlField.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mousePressed(MouseEvent event) {
+//				
+//				if (SwingUtilities.isRightMouseButton(event)) {
+//					Toolkit toolkit = Toolkit.getDefaultToolkit();
+//					Clipboard clipboard = toolkit.getSystemClipboard();
+//					try	{
+//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+//						slackurlField.setText(slackurlField.getText() + result);
+//						
+//					}catch(Exception ex)	{
+//						
+//					}
+//				}
+//			}
+//		});
 		
 	}
 
@@ -160,10 +162,14 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     
     private void createUI() 
     {
-    	this.newsownersField = JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
-        this.titleField = JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
-        this.locationField = JTextFactory.createTextField();
-        this.slackurlField = JTextFactory.createTextField();
+    	this.newsownersField = (JUpdatedTextField) JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
+    	this.newsownersField.setMouseLeftClearEnabled(false);
+        this.titleField = (JUpdatedTextField) JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
+        this.titleField.setMouseLeftClearEnabled(false);
+        this.locationField = (JUpdatedTextField) JTextFactory.createTextField();
+        this.locationField.setMouseLeftClearEnabled(false);
+        this.slackurlField = (JUpdatedTextField) JTextFactory.createTextField();
+        this.slackurlField.setMouseLeftClearEnabled(false);
         this.descriptionArea = JTextFactory.createTextArea();
         this.descriptionArea.setLineWrap(true);
         this.startTimeChooser = new JDateChooser();

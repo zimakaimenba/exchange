@@ -5,6 +5,7 @@ import javax.swing.*;
 import javax.swing.border.MatteBorder;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
+import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 
 import java.awt.*;
 
@@ -38,7 +39,7 @@ public class JTextFactory {
     }
 
     private static JTextField getTextField(Color bg, Color fg, Color bd, int pw, int ph, int mw, int mh, Font f) {
-        JTextField field = new JTextField();
+        JTextField field = new JUpdatedTextField();
         field.setPreferredSize(new Dimension(ph, ph));
         field.setMaximumSize(new Dimension(mw, mh));
         field.setBorder(new MatteBorder(1, 1, 1, 1, bd));

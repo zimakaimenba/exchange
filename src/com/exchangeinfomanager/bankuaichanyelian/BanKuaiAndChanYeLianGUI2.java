@@ -57,6 +57,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
+import com.exchangeinfomanager.commonlib.JUpdatedField;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -451,11 +452,12 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 	  			return;
 	  		}
 	  		
-	  		 BkChanYeLianTreeNode subcode = ((BkChanYeLianTreeNodeListTableModel)(tablebkgegu.getModel())).getNode(row);
+	  		BkChanYeLianTreeNode subcode = ((BkChanYeLianTreeNodeListTableModel)(tablebkgegu.getModel())).getNode(row);
 	  		
 //	  		BkChanYeLianTreeNode nodestock = this.bkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode("880472", BkChanYeLianTreeNode.TDXBK);
-			BanKuai bkinallbkst = (BanKuai) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(subcode.getMyOwnCode(),subcode.getType());
-	  		this.bkcyl.addNewNode (bkinallbkst,direction);
+//			BanKuai bkinallbkst = (BanKuai) bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(subcode.getMyOwnCode(),subcode.getType());
+//	  		this.bkcyl.addNewNode (bkinallbkst,direction);
+	  		this.bkcyl.addNewNode (subcode,direction);
 	   }
 	/*
     * 产业链树上定位用户选择的板块，只选择到板块一级，子板块不找
@@ -513,12 +515,7 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 			}
 		});
 		
-		tfldfindbk.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				tfldfindbk.setText("");
-			}
-		});
+	
 		
 		/*
 		 * 查找板块
@@ -620,8 +617,8 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 		
 	}
 	private JTable tablebkgegu;
-	private JTextField tfldfindbk;
-	private JTextField tfldfindgegu;
+	private JUpdatedField tfldfindbk;
+	private JUpdatedField tfldfindgegu;
 	private JButton deleteButton;
 	private JButton btnfindbk;
 	private JButton btnfindgegu;
@@ -681,12 +678,12 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 		deleteButton = new JButton("\u5220\u9664\u8282\u70B9");
 		deleteButton.setIcon(null);
 		
-		tfldfindbk = new JTextField();
+		tfldfindbk = new JUpdatedField();
 		tfldfindbk.setColumns(10);
 		
 		btnfindbk = new JButton("\u5B9A\u4F4D\u677F\u5757");
 		
-		tfldfindgegu = new JTextField();
+		tfldfindgegu = new JUpdatedField();
 		tfldfindgegu.setColumns(10);
 		
 		btnfindgegu = new JButton("\u5B9A\u4F4D\u4E2A\u80A1");

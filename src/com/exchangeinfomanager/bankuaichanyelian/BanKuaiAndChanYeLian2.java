@@ -117,6 +117,10 @@ public class BanKuaiAndChanYeLian2
 	/*
 	 * XML存在
 	 */
+//    public void patchWeeklyBanKuaiFengXiXmlFileToCylTree(BkChanYeLianTreeNode treeroot,File xmlfile, LocalDate localDate)
+//    {
+//    	patchParsedResultXmlToTrees(treeroot,localDate);
+//    }
 	public void patchWeeklyBanKuaiFengXiXmlFileToCylTree(File xmlfile, LocalDate localDate)
 	{
 		bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (xmlfile);
@@ -432,17 +436,6 @@ public class BanKuaiAndChanYeLian2
 	{
 		if (this.treechanyelian.getSelectionCount() == 1) {
 			
-			 if( newNode.getType() == BkChanYeLianTreeNode.TDXBK ) { 
-				//把在"其他"里的该个股找出来, 同时在数据库更新该板块”导出到分析文件的状态“，用户必须在树删除该节点后才可以更改状态，否则必须导出到分析文件
-				BanKuai bkinallbkst = (BanKuai) allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newNode.getMyOwnCode(),BkChanYeLianTreeNode.TDXBK);
-				((BanKuai)bkinallbkst).setExportTowWlyFile(true);
-				
-				bkdbopt.updateBanKuaiExportGephiBkfxOperation (bkinallbkst.getMyOwnCode(),bkinallbkst.isImportdailytradingdata(),
-						bkinallbkst.isExporttogehpi(), bkinallbkst.isShowinbkfxgui(),
-						bkinallbkst.isShowincyltree(),bkinallbkst.isExportTowWlyFile()
-						);
-			} 
-			
 			if( newNode.getType() == BkChanYeLianTreeNode.SUBGPC) { 
 //				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
 //				if(parent.getType() == BkChanYeLianTreeNode.GPC)
@@ -490,6 +483,11 @@ public class BanKuaiAndChanYeLian2
             	} catch(java.lang.NullPointerException e) {
 //            		e.printStackTrace();
             	}
+            	
+            	if( newNode.getType() == BkChanYeLianTreeNode.TDXBK ) {
+            		this.updateBanKuaiExportGephiBkfxOperation (parent,newNode);
+    			}
+            	
             } 
             
             if (direction != BanKuaiAndChanYeLianGUI2.RIGHT){
@@ -507,6 +505,10 @@ public class BanKuaiAndChanYeLian2
                 	parent.insert(newNode, childIndex+1);
                 else if (direction == BanKuaiAndChanYeLianGUI2.UP) 
                 	parent.insert(newNode, childIndex);
+                
+                if( newNode.getType() == BkChanYeLianTreeNode.TDXBK ) {
+            		this.updateBanKuaiExportGephiBkfxOperation (parent,newNode);
+    			}
             }
 
             InvisibleTreeModel treeModel = (InvisibleTreeModel)this.treechanyelian.getModel();
@@ -520,7 +522,39 @@ public class BanKuaiAndChanYeLian2
 
         }
 	}
-    /*
+    private void updateBanKuaiExportGephiBkfxOperation(BkChanYeLianTreeNode parent, BkChanYeLianTreeNode newNode) 
+    {
+    	try {
+			TreeNode[] bkpath = newNode.getPath();
+			BkChanYeLianTreeNode gpcbelonged = (BkChanYeLianTreeNode) bkpath[1];
+			String gpccode = gpcbelonged.getMyOwnCode();
+			if( !gpccode.toUpperCase().equals("GPC999") ) {//其他
+				if(!gpccode.toUpperCase().equals("GPC014")) {
+					//把在"其他"里的该个股找出来, 同时在数据库更新该板块”导出到分析文件的状态“，用户必须在树删除该节点后才可以更改状态，否则必须导出到分析文件
+					BanKuai bkinallbkst = (BanKuai) allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newNode.getMyOwnCode(),BkChanYeLianTreeNode.TDXBK);
+					((BanKuai)bkinallbkst).setExportTowWlyFile(true);
+					
+					bkdbopt.updateBanKuaiExportGephiBkfxOperation (bkinallbkst.getMyOwnCode(),bkinallbkst.isImportdailytradingdata(),
+							bkinallbkst.isExporttogehpi(), bkinallbkst.isShowinbkfxgui(),
+							bkinallbkst.isShowincyltree(),bkinallbkst.isExportTowWlyFile()
+							);
+				} else { //弱势远离的是否要特别标注
+					//把在"其他"里的该个股找出来, 同时在数据库更新该板块”导出到分析文件的状态“，用户必须在树删除该节点后才可以更改状态，否则必须导出到分析文件
+					BanKuai bkinallbkst = (BanKuai) allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newNode.getMyOwnCode(),BkChanYeLianTreeNode.TDXBK);
+					((BanKuai)bkinallbkst).setExportTowWlyFile(false);
+					
+					bkdbopt.updateBanKuaiExportGephiBkfxOperation (bkinallbkst.getMyOwnCode(),bkinallbkst.isImportdailytradingdata(),
+							bkinallbkst.isExporttogehpi(), bkinallbkst.isShowinbkfxgui(),
+							bkinallbkst.isShowincyltree(),bkinallbkst.isExportTowWlyFile()
+							);
+				}
+			}
+		} catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
+			
+		}
+	}
+	/*
      * 
      */
 	public boolean deleteNodes(BkChanYeLianTreeNode delNode) 

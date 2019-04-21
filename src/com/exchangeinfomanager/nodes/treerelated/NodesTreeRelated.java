@@ -46,47 +46,7 @@ public class NodesTreeRelated
 	        return expanded;
 	    }
 	    
-//	    public void increaseZdgzOfficalCount ()
-//	    {
-//	    	inzdgzofficalcount ++;
-////	    	logger.debug(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
-//	    }
-//	    public void decreaseZdgzOfficalCount ()
-//	    {
-//	    	inzdgzofficalcount --;
-//	    	if(inzdgzofficalcount == 0 )
-//	    		isofficallyselected = false;
-////	    	logger.debug(this.getUserObject().toString() + "node offical count = " + inzdgzofficalcount);
-//	    }
-//	    
-//	    public void increaseZdgzCandidateCount ()
-//	    {
-//	    	inzdgzcandidatecount ++;
-////	    	logger.debug(this.getUserObject().toString() +"node cand count = " + inzdgzcandidatecount);
-//	    }
-//	    public void decreasedgzCandidateCount ()
-//	    {
-//	    	inzdgzcandidatecount --;
-////	    	logger.debug(this.getUserObject().toString() + "node cand count = " + inzdgzcandidatecount);
-//	    }
-//	    public int getInZdgzOfficalCount ()
-//	    {
-//	    	return inzdgzofficalcount;
-//	    	
-//	    }
-//	    public int getInZdgzCandidateCount ()
-//	    {
-//	    	return inzdgzcandidatecount; 
-//	    }
-//	    public void setOfficallySelected (boolean ofslt)
-//		{
-//			this.isofficallyselected = ofslt;
-//		}
-//		public boolean isOfficallySelected ()
-//		{
-//			return this.isofficallyselected;
-//		}
-//		
+
 		/**
 		 * @return the tdxbk
 		 */

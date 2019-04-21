@@ -189,8 +189,8 @@ public class BanKuai extends TDXNodes
 			LocalDate joindate = stockofbk.getJoinBanKuaiDate();
 			LocalDate leftdate = stockofbk.getLeftBanKuaiDate();
 			
-			if(requireddate.isAfter(joindate)) {
-				if(leftdate == null || requireddate.isBefore(leftdate))
+			if(requireddate.isAfter(joindate) || requireddate.equals(joindate) ) {
+				if(leftdate == null || requireddate.isBefore(leftdate) )
 					result.add(stockofbk);
 			}
 			

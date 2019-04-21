@@ -100,6 +100,11 @@ public class MonthView extends View
                 panel.add(dayLabel, BorderLayout.PAGE_START);
                 panel.add(JPanelFactory.createPanel(new WrapLayout(WrapLayout.LEFT, 5, 5)), BorderLayout.CENTER);
                 
+//                JPanel newpnl = new JPanel ();
+//                newpnl.setLayout( new BoxLayout(newpnl, BoxLayout.Y_AXIS) );
+//                panel.add(newpnl, BorderLayout.CENTER);
+                
+                
             } else {
                 color = ColorScheme.GREY_WHITER;
             }

@@ -70,6 +70,27 @@ public class BanKuaiAndStockTree extends JTree
 //		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
 	
+	public BanKuaiAndStockTree (InvisibleTreeModel bkcylmodel,String treeid)
+	{
+		super ();
+		
+		this.treeid = treeid;
+		
+		
+		bkcylmodel.activateFilter(true);
+		this.setModel(bkcylmodel);
+		
+		this.createEvents(this);
+		
+		this.setDragEnabled(true);
+		this.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
+		this.setEditable(true);
+		this.setCellRenderer(new BkChanYeLianTreeCellRenderer());
+		this.setRootVisible(false);
+		this.setTransferHandler(new TreeTransferHandler());
+		
+	}
+	
 	private static Logger logger = Logger.getLogger(BanKuaiAndStockTree.class);
 	private String treeid; //系统要用到两棵cyltree，用ID来区分
 	
