@@ -170,6 +170,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.locationField.setMouseLeftClearEnabled(false);
         this.slackurlField = (JUpdatedTextField) JTextFactory.createTextField();
         this.slackurlField.setMouseLeftClearEnabled(false);
+        this.slackurlField.setMouseRightPasteEnabled(true, JUpdatedTextField.PASTEWITHCLEAR);
         this.descriptionArea = JTextFactory.createTextArea();
         this.descriptionArea.setLineWrap(true);
         this.startTimeChooser = new JDateChooser();

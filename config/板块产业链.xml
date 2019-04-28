@@ -2,47 +2,36 @@
 
 <两交易所>
   <GuPiaoChi gpccode="GPC008" gpcname="港美联动" Type="8"/>
-  <GuPiaoChi gpccode="GPC009" gpcname="券商参券" Type="8"/>
-  <GuPiaoChi gpccode="GPC006" gpcname="涨价和业绩反转" Type="8"/>
-  <GuPiaoChi gpccode="GPC007" gpcname="次新股" Type="8">
-    <BanKuai bkcode="880529" bkname="次新股" Type="4"/>
+  <GuPiaoChi gpccode="GPC009" gpcname="券商参券" Type="8">
+    <BanKuai bkcode="880472" bkname="证券" Type="4"/>
   </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC999" gpcname="其他" Type="8">
+    <BanKuai bkcode="880330" bkname="化纤" Type="4">
+      <SubBanKuai subbkcode="88033001" subbkname="涤纶长丝" suoshubkcode="GPC999" Type="5">
+        <gegu gegucode="600527" geguname="江南高纤" Type="6"/>
+        <gegu gegucode="002015" geguname="霞客环保" Type="6"/>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="88033002" subbkname="PTA" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+  </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC006" gpcname="涨价和业绩反转" Type="8"/>
+  <GuPiaoChi gpccode="GPC007" gpcname="次新股" Type="8"/>
   <GuPiaoChi gpccode="GPC004" gpcname="黑天鹅受益" Type="8"/>
   <GuPiaoChi gpccode="GPC005" gpcname="前热点余热" Type="8"/>
   <GuPiaoChi gpccode="GPC002" gpcname="重组收购" Type="8">
-    <BanKuai bkcode="880574" bkname="苹果概念" Type="4">
-      <SubBanKuai subbkcode="8805741" subbkname="SIP模组" suoshubkcode="GPC002" Type="5"/>
-      <SubBanKuai subbkcode="8805743" subbkname="光摄像头" suoshubkcode="GPC002" Type="5"/>
-      <SubBanKuai subbkcode="8805742" subbkname="摄像头" suoshubkcode="GPC002" Type="5"/>
-      <SubBanKuai subbkcode="8805745" subbkname="镜头" suoshubkcode="GPC002" Type="5"/>
-      <SubBanKuai subbkcode="8805744" subbkname="光摄像头模组" suoshubkcode="GPC002" Type="5"/>
+    <BanKuai bkcode="880461" bkname="水运" Type="4">
+      <gegu gegucode="600026" geguname="中远海能" Type="6"/>
     </BanKuai>
   </GuPiaoChi>
-  <GuPiaoChi gpccode="GPC013" gpcname="国新政策" Type="8"/>
-  <GuPiaoChi gpccode="GPC003" gpcname="稳定白马" Type="8"/>
-  <GuPiaoChi gpccode="GPC011" gpcname="成长和概念" Type="8">
-    <SubGuPiaoChi subgpccode="GPC01101" subgpcname="信息产业" Type="9">
-      <BanKuai bkcode="880945" bkname="OLED概念" Type="4"/>
-      <BanKuai bkcode="880946" bkname="区块链" Type="4">
-        <gegu gegucode="002517" geguname="恺英网络" Type="6"/>
-      </BanKuai>
-    </SubGuPiaoChi>
+  <GuPiaoChi gpccode="GPC013" gpcname="国新政策" Type="8">
+    <BanKuai bkcode="880454" bkname="水务" Type="4">
+      <gegu gegucode="600168" geguname="武汉控股" Type="7"/>
+    </BanKuai>
   </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC003" gpcname="稳定白马" Type="8"/>
+  <GuPiaoChi gpccode="GPC014" gpcname="弱势远离" Type="8"/>
+  <GuPiaoChi gpccode="GPC011" gpcname="成长和概念" Type="8"/>
   <GuPiaoChi gpccode="GPC001" gpcname="超跌反弹" Type="8"/>
   <GuPiaoChi gpccode="GPC012" gpcname="特定时间重大事件" Type="8"/>
   <GuPiaoChi gpccode="GPC010" gpcname="题材转业绩" Type="8"/>
-  <GuPiaoChi gpccode="GPC999" gpcname="其他" Type="8">
-    <BanKuai bkcode="880461" bkname="水运" Type="4">
-      <gegu gegucode="600428" geguname="中远海特" Type="6"/>
-    </BanKuai>
-    <BanKuai bkcode="880336" bkname="化工原料" Type="4">
-      <SubBanKuai subbkcode="8803361" subbkname="OLED" suoshubkcode="GPC014" Type="5"/>
-      <SubBanKuai subbkcode="8803362" subbkname="水汽阻隔膜" suoshubkcode="GPC014" Type="5">
-        <SubBanKuai subbkcode="8803364" subbkname="甲醇" suoshubkcode="GPC014" Type="5"/>
-      </SubBanKuai>
-    </BanKuai>
-  </GuPiaoChi>
-  <GuPiaoChi gpccode="GPC015" gpcname="弱势远离" Type="8">
-    <BanKuai bkcode="880897" bkname="本月解禁" Type="4"/>
-  </GuPiaoChi>
 </两交易所>

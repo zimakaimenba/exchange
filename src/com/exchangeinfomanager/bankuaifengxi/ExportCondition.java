@@ -31,6 +31,8 @@ public class ExportCondition
 	private String tooltips = "";
 
 	private boolean huibudownquekou;
+
+	private Integer settindpgminwk;
 	
 	public ExtraExportConditions getExtraExportConditions ()
 	{
@@ -159,8 +161,19 @@ public class ExportCondition
 	{
 		return settindpgmaxwk;
 	}
-	
-	public void setSettinDpmaxwk(String exportdpmaxwklevel) {
+	public void setSettinDpminwk(String exportdpminwklevel) 
+	{
+		if(exportdpminwklevel != null) {
+			this.settindpgminwk = Integer.parseInt(exportdpminwklevel );
+		} else
+			this.settindpgminwk = null;
+	}
+	public Integer getSettingDpminwk ()
+	{
+		return this.settindpgminwk;
+	}
+	public void setSettinDpmaxwk(String exportdpmaxwklevel) 
+	{
 		if(exportdpmaxwklevel != null) {
 			this.settindpgmaxwk = Integer.parseInt( exportdpmaxwklevel );
 			this.tooltips = this.tooltips + "¥Û≈ÃMAXWK>=" +  settindpgmaxwk + "÷‹";
@@ -300,5 +313,6 @@ public class ExportCondition
 	{
 		return extracon.shouldOnlyExportStocksNotBanKuai();
 	}
+	
 	
 }

@@ -3464,8 +3464,8 @@ public class BanKuaiDbOperation
 				"		AND T.WORKDAY BETWEEN'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
 				" GROUP BY year(t.workday),week(t.workday)"
 				;
-							
-	//	logger.debug(sqlquerystat); 
+				
+		
 		try {
 			logger.debug("为板块" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
 		} catch (java.lang.NullPointerException e) {
@@ -3561,6 +3561,114 @@ public class BanKuaiDbOperation
 	    }
 
 		return stock;
+	}
+	/*
+	 * 这个函数计算出某个不固定周期个股和大盘的占比数据
+	 */
+	public TDXNodeGivenPeriodDataItem getStockZhanBiByDaysPeriod(Stock stock,LocalDate formatedstartdate,LocalDate formatedenddate,String period)
+	{
+		if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //调用日线查询函数
+			; 
+		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
+			;
+		
+		StockNodeXPeriodData nodewkperioddata = (StockNodeXPeriodData)stock.getNodeXPeroidData(period);
+	
+		String stockcode = stock.getMyOwnCode();
+		String bkcjltable;
+		if(stockcode.startsWith("6"))
+			bkcjltable = "通达信上交所股票每日交易信息";
+		else
+			bkcjltable = "通达信深交所股票每日交易信息";
+	
+		
+		String sqlquerystat = "SELECT  M.BKCODE AS BKCODE, '" + formatedstartdate + "','" + formatedenddate + "'," +
+				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比, \r\n" +
+				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
+				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU , M.周最大涨跌幅,M.周最小涨跌幅      \r\n" +
+				 
+				"FROM\r\n" + 
+				"(\r\n" + 
+				"select  通达信板块每日交易信息.`交易日期` as workday, DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
+				"from 通达信板块每日交易信息\r\n" + 
+				"WHERE 代码 = '999999'\r\n" + 
+				"AND  通达信板块每日交易信息.`交易日期` BETWEEN'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
+				"\r\n" + 
+				"UNION ALL\r\n" + 
+				"\r\n" + 
+				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
+				"from 通达信交易所指数每日交易信息\r\n" + 
+				"where 代码 = '399001'\r\n" + 
+				"AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
+				") T,\r\n" + 
+				"\r\n" + 
+				"(select " + bkcjltable + ".`代码` AS BKCODE, " 
+						+ " sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
+						+ " sum( " + bkcjltable + ".`成交量`) AS 板块周交易量,  \r\n"
+						+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
+						+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
+						+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
+						+ "  count(1) as JILUTIAOSHU ,\r\n"
+						+ "max(" + bkcjltable + ".`涨跌幅`) as 周最大涨跌幅, \r\n"
+						+ "min(" + bkcjltable + ".`涨跌幅`) as 周最小涨跌幅 \r\n"
+						+ " from " + bkcjltable + "\r\n" +  
+				"where 代码 = '" + stockcode + "'\r\n" + 
+				"AND " + bkcjltable + ".`交易日期` BETWEEN'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
+				") M\r\n"  
+				;
+		logger.debug(sqlquerystat); 
+		//交易数据
+		CachedRowSetImpl rs = null;
+		TDXNodeGivenPeriodDataItem stokrecord = null;
+		try{
+				rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+				while(rs.next()) {
+					double bankuaicje = rs.getDouble("板块周交易额");
+					double dapancje = rs.getDouble("大盘周交易额");
+					java.sql.Date lastdayofweek = rs.getDate(formatedstartdate.toString());
+					org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
+					double bankuaicjl = rs.getDouble("板块周交易量");
+					double dapancjl = rs.getDouble("大盘周交易量");
+					double huanshoulv = rs.getDouble("板块周换手率");
+					double pingjunzongshizhi = rs.getDouble("周平均总市值");
+					double pingjunliutongshizhi = rs.getDouble("周平均流通市值");
+					double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅");
+					double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅");
+					int exchengdaysnumber = rs.getInt("JILUTIAOSHU");
+		
+					stokrecord = new TDXNodeGivenPeriodDataItem( stockcode, period, recordwk, 
+							  0.0,  0.0,  0.0,  0.0, bankuaicje, bankuaicjl,huanshoulv,pingjunzongshizhi,pingjunliutongshizhi);
+					
+					stokrecord.setRecordsDayofEndofWeek(lastdayofweek);
+					stokrecord.setUpLevelChengJiaoEr(dapancje);
+					stokrecord.setUplevelchengjiaoliang(dapancjl);
+					stokrecord.setPeriodhighestzhangdiefu(periodhighestzhangdiefu);
+					stokrecord.setPeriodlowestzhangdiefu(periodlowestzhangdiefu);
+					stokrecord.setExchangeDaysNumber(exchengdaysnumber);
+					
+					nodewkperioddata.addNewXPeriodData(stokrecord);
+					
+					stokrecord = null;
+				}
+			}catch(java.lang.NullPointerException e){ 
+		    	e.printStackTrace();
+		    } catch(Exception e){
+		    	e.printStackTrace();
+		    }  finally {
+		    	try {
+					rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		    	
+		    	bkcjltable = null;
+		    	nodewkperioddata = null; 
+		    }
+
+		return stokrecord;
 	}
 	/*
 	 * 对于个股，存在复权问题，一旦复权，数据库中存放的每日交易数据就不准确。所以每日交易数据还是从TDX导出的TXT里面读取比较准确。

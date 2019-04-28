@@ -38,6 +38,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
         this.setMinimumBarLength(.5);
         this.setItemMargin(-2);
         
+        
 //        BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
 //		this.setBaseItemLabelGenerator(labelgenerator);
 		
@@ -48,7 +49,8 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 //	private Paint[] colors;
     protected int shouldcolumn = -1;
     protected int shouldcolumnlast = -2;
-    protected int displayedmaxwklevel = 4;
+    protected int displayedmaxwklevel ;
+    protected int displayedminwklevel ;
     private String barCharType;
 	protected TDXNodes node;
 	protected CategoryDataset chartdataset;
@@ -95,6 +97,13 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
     	BkfxItemLabelGenerator lbg = (BkfxItemLabelGenerator)this.getBaseItemLabelGenerator();
     	lbg.setDisplayedMaxWkLevel(maxl);
     }
+    public void setDisplayMinwkLevel(Integer cjezbdporbkmin)
+    {
+    	this.displayedminwklevel = cjezbdporbkmin;
+    	BkfxItemLabelGenerator lbg = (BkfxItemLabelGenerator)this.getBaseItemLabelGenerator();
+    	lbg.setDisplayedMinWkLevel(cjezbdporbkmin);
+		
+	}
     /*
      * 用户可以自定义显示颜色
      */
@@ -146,6 +155,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	        } else
 	            return displayedcolumncolorindex;
    }
+	
  
 
 }
@@ -155,7 +165,8 @@ abstract class  BkfxItemLabelGenerator extends StandardCategoryItemLabelGenerato
 
 	protected BkChanYeLianTreeNode node;
 	protected NodeXPeriodDataBasic nodexdata;
-	protected int displayedmaxwklevel ;
+	protected int displayedmaxwklevel;
+	protected int displayedminwklevel;
 //	String decimalformate;
 	public BkfxItemLabelGenerator (DecimalFormat decimalFormat)
 	{
@@ -181,5 +192,9 @@ abstract class  BkfxItemLabelGenerator extends StandardCategoryItemLabelGenerato
     public void setDisplayedMaxWkLevel (int maxwk)
     {
     	this.displayedmaxwklevel = maxwk;
+    }
+    public void setDisplayedMinWkLevel (int minwk)
+    {
+    	this.displayedminwklevel = minwk;
     }
 }

@@ -2,20 +2,10 @@ package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,56 +13,22 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.regex.Pattern;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartMouseEvent;
-import org.jfree.chart.ChartMouseListener;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.StandardChartTheme;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PiePlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.title.LegendTitle;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.time.TimeSeries;
-import org.jfree.ui.RectangleEdge;
 import org.jsoup.Jsoup;
-import org.jsoup.parser.Tag;
-import org.jsoup.select.Elements;
-
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
@@ -81,15 +37,10 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjlZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
-import com.exchangeinfomanager.bankuaifengxi.Gephi.GephiFilesGenerator;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -109,7 +60,6 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.nodexdata.BanKuaiNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
@@ -117,16 +67,8 @@ import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
-
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
@@ -135,19 +77,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
-import net.miginfocom.swing.MigLayout;
-
 import javax.swing.JScrollPane;
-import com.toedter.components.JLocaleChooser;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JCheckBox;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -160,44 +95,34 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.beans.PropertyChangeEvent;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-
 import java.awt.event.MouseAdapter;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
-import java.awt.GridLayout;
-import javax.swing.border.MatteBorder;
-import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.UIManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BoxLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JTabbedPane;
-
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
-
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.SwingWorker.StateValue;
 import javax.swing.JProgressBar;
-import javax.swing.JTree;
+
 
 public class BanKuaiFengXi extends JDialog 
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Create the dialog.
 	 * @param bkcyl2 
@@ -1440,6 +1365,17 @@ public class BanKuaiFengXi extends JDialog
 				refreshBanKuaiGeGuTableHightLight ();
 			}
 		});
+		chckbxdpminwk.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if( Strings.isNullOrEmpty(tflddpminwk.getText())  ) {
+					JOptionPane.showMessageDialog(null,"请设置DPMINWK！");
+					chckbxdpminwk.setSelected(false);
+					return;
+				}
+				refreshBanKuaiGeGuTableHightLight ();
+			}
+		});
 		chkliutongsz.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -2308,6 +2244,7 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private ExportCondition setExportMainConditionBasedOnUserSelection (ExportCondition expc)
 	{
+		
 		if(ckbxcjemaxwk.isSelected() ) {
 //			cjemaxwk = Integer.parseInt(tfldcjemaxwk.getText() );
 			expc.setSettingCjemaxwk(tfldcjemaxwk.getText());
@@ -2319,6 +2256,10 @@ public class BanKuaiFengXi extends JDialog
 			expc.setSettinDpmaxwk(tflddisplaydpmaxwk.getText() );
 		} else
 			expc.setSettinDpmaxwk(null );
+		if(chckbxdpminwk.isSelected() ) {
+			expc.setSettinDpminwk (tflddpminwk.getText());
+		} else
+			expc.setSettinDpminwk (null);
 		
 		if(ckboxshowcje.isSelected()) {
 			String showcjemin; String showcjemax;
@@ -2468,16 +2409,20 @@ public class BanKuaiFengXi extends JDialog
 			LocalDate localDate = null;
 			try{
 					 localDate = LocalDate.parse(filenamedate, formatter);
+					 int exchangeresult = JOptionPane.showConfirmDialog(null,"文件指定日期是" + localDate + "。是否更改到该日期？", "是否更改日期？", JOptionPane.OK_CANCEL_OPTION);
+					 if(exchangeresult != JOptionPane.CANCEL_OPTION) {
+						 LocalDate curselectdate = dateChooser.getLocalDate();
+							if(!curselectdate.equals(localDate) ) {
+								ZoneId zone = ZoneId.systemDefault();
+								Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
+								this.dateChooser.setDate(Date.from(instant));
+							}
+					 }
 			} catch (java.time.format.DateTimeParseException e) {
 					tfldparsedfile.setText("文件名未标明日期，作为本周文件处理！");
 					localDate = dateChooser.getLocalDate();
 			}
-			LocalDate curselectdate = dateChooser.getLocalDate();
-			if(!curselectdate.equals(localDate) ) {
-				ZoneId zone = ZoneId.systemDefault();
-				Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
-				this.dateChooser.setDate(Date.from(instant));
-			}
+			
 			
 			ckboxparsefile.setSelected(true);
 			tfldparsedfile.setText(filename);
@@ -2743,6 +2688,8 @@ public class BanKuaiFengXi extends JDialog
 	private JCheckBox chbxquekou;
 	private JLabel lblcybcje;
 	private JLabel lbl50cje;
+	private JTextField tflddpminwk;
+	private JCheckBox chckbxdpminwk;
 	
 	private void initializeGui() {
 		
@@ -3314,6 +3261,13 @@ public class BanKuaiFengXi extends JDialog
 			
 			chbxquekou.setForeground(Color.PINK);
 			
+			chckbxdpminwk = new JCheckBox("\u7A81\u51FADPMINWK>=");
+			chckbxdpminwk.setForeground(Color.GREEN);
+			
+			tflddpminwk = new JTextField();
+			tflddpminwk.setText("6");
+			tflddpminwk.setColumns(10);
+			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -3337,6 +3291,10 @@ public class BanKuaiFengXi extends JDialog
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(tflddisplaydpmaxwk, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(chckbxdpminwk)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(tflddpminwk, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+						.addGap(43)
 						.addComponent(chkliutongsz)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addComponent(tfldltszmin, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
@@ -3351,12 +3309,12 @@ public class BanKuaiFengXi extends JDialog
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(tfldhuanshoulv, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(chbxquekou)
+						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(ckboxparsefile)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(chbxquekou)
-						.addGap(219)
+						.addGap(348)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
 						.addGap(1670)
 						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
@@ -3375,7 +3333,8 @@ public class BanKuaiFengXi extends JDialog
 									.addComponent(ckbxhuanshoulv)
 									.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 										.addComponent(tfldhuanshoulv, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(ckboxparsefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addComponent(ckboxparsefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(chbxquekou))
 									.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
 										.addComponent(ckbxggquanzhong, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -3391,7 +3350,8 @@ public class BanKuaiFengXi extends JDialog
 										.addComponent(tfldshowcjemax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(tfldltszmax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-										.addComponent(chbxquekou))
+										.addComponent(chckbxdpminwk)
+										.addComponent(tflddpminwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 									.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
 								.addContainerGap())))
 			);

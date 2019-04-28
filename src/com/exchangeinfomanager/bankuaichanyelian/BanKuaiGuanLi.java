@@ -22,7 +22,7 @@ import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.StockCalendar.GBC;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.commonlib.JUpdatedField;
+import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.JTreeTable.AbstractTreeTableModel;
 import com.exchangeinfomanager.commonlib.JTreeTable.JTreeTable;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -202,7 +202,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JTable tableZdy;
 	private BanKuaiAndStockTree cyltree;
 	private BanKuaiAndChanYeLianGUI2 bkcylpnl;
-	private JUpdatedField tfldsearchsysbk;
+	private JUpdatedTextField tfldsearchsysbk;
 	private BanKuaiShuXingSheZhi panelsetting;
 	private JMenuBar menuBar;
 	
@@ -223,7 +223,7 @@ public class BanKuaiGuanLi extends JDialog
 
 		 JPanel searchpnl = JPanelFactory.createFixedSizePanel(new FlowLayout ());
 		 searchpnl.setPreferredSize(new Dimension(200, 38));
-			tfldsearchsysbk = new JUpdatedField();
+			tfldsearchsysbk = new JUpdatedTextField();
 			tfldsearchsysbk.setColumns(8);
 			JButton btnsearchsysbk = new JButton("\u67E5\u627E\u677F\u5757");
 			searchpnl.add(tfldsearchsysbk);
@@ -311,7 +311,7 @@ public class BanKuaiGuanLi extends JDialog
 		panelsetting = new BanKuaiShuXingSheZhi();
 		
 		
-		tfldsearchsysbk = new JUpdatedField();
+		tfldsearchsysbk = new JUpdatedTextField();
 		tfldsearchsysbk.setColumns(10);
 		
 		JButton btnsearchsysbk = new JButton("\u67E5\u627E\u677F\u5757");

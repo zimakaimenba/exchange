@@ -9,6 +9,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
+import com.exchangeinfomanager.commonlib.JMultiLineToolTip;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
@@ -153,8 +154,9 @@ public class MonthView extends View
             if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
             	
                 if (m.getLabels().isEmpty()) {
-                    JLabel label = new JLabel(m.getTitle());
-                    label.setToolTipText(m.getTitle() );
+                	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
+                    
+                    label.setToolTipText( getLabelToolTipText(m) );
                     label.setOpaque(true);
                     label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()));
                     label.addMouseListener(new ReviseMeetingController());
@@ -168,8 +170,8 @@ public class MonthView extends View
                 
                 for (Meeting.Label l : labels) {
                     if (l.isActive() && m.getLabels().contains(l)) {
-                        JLabel label = new JLabel(m.getTitle());
-                        label.setToolTipText(m.getTitle() );
+                    	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
+                        label.setToolTipText(getLabelToolTipText(m) );
                         label.setOpaque(true);
                         label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()));
                         label.addMouseListener(new ReviseMeetingController());
@@ -188,6 +190,7 @@ public class MonthView extends View
         this.calendar.repaint();
     }
 
+    
     private Boolean shouldDisplayNews(InsertedMeeting m) 
     {
     	if( settingsofnewsdisplay.shouldDisplayAllExtraNews() )

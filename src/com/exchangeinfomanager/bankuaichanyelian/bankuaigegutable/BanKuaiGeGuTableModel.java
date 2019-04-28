@@ -52,6 +52,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
 //	private ExportCondition expcond;
 	private Boolean showhuibudownquekou;
+	private Integer cjezbdpminwk;
 
 	public void refresh (BanKuai bankuai,LocalDate wknum,String period)
 	{
@@ -61,7 +62,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		
 		this.setDisplayChenJiaoEr(null, null);
 		this.setDisplayCjeBKMaxWk(null);
-		this.setDisplayCjeDPMaxWk(null);
+		this.setDisplayCjeZhanBiDPMaxMinWk(null,null);
 		this.setDisplayHuanShouLv(null);
 		this.setDisplayCjeMaxWk(null);
 		this.setDisplayLiuTongShiZhi(null, null);
@@ -252,8 +253,16 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
             	
                 break;
             case 7:
-            	Integer dpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek(); 
-            	value = dpmaxwk;
+            	Integer dpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+            	if(dpmaxwk > 0) {
+            		value = dpmaxwk;
+            		break;
+            	} else	if(dpmaxwk == 0) {
+            		Integer dpminwk = stockxdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
+            		value = 0 - dpminwk;
+            		break;
+            	}
+            	
             	
 //            	dpmaxwk = null;
 //            	curdisplaystockofbankuai = null;
@@ -443,16 +452,25 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //			return this.showparsedfile ;
 //		}
 		//设置成交额dpMAXWK阀值
-		public void setDisplayCjeDPMaxWk (Integer bkmax)
+		public void setDisplayCjeZhanBiDPMaxMinWk (Integer bkmax, Integer bkmin)
 		{
 			if(bkmax != null)
 				this.cjezbdpmaxwk = bkmax;
 			else
 				cjezbdpmaxwk = 10000000;
+			
+			if(bkmin != null)
+				this.cjezbdpminwk = bkmin;
+			else
+				cjezbdpminwk = 10000000;
 		}
-		public Integer getDisplayCjeDPMaxWk ()
+		public Integer getDisplayCjeZhanBiDPMaxWk ()
 		{
 			return this.cjezbdpmaxwk;
+		}
+		public Integer getDisplayCjeZhanBiDPMinWk ()
+		{
+			return this.cjezbdpminwk;
 		}
 		//设置bkMAXWK阀值
 		public void setDisplayCjeBKMaxWk (Integer bkmax)

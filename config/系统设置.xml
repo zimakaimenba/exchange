@@ -2,8 +2,8 @@
 
 <SystemSettings>
   <tdxpah>E:/stock/zd_zszq/</tdxpah>
-  <bankuaiparsefilepah>D:/temp/</bankuaiparsefilepah>
-  <gephifilepath>E:/stock/zd_zszq/</gephifilepath>
+  <bankuaiparsefilepah>//jeffauas/blocknew/</bankuaiparsefilepah>
+  <tdxzdybkpath>//jeffauas/blocknew/</tdxzdybkpath>
   <zhanbifengxizhouqi>9</zhanbifengxizhouqi>
   <privatemode>false</privatemode>
   <pythoninterper>C:/Users/Administrator.WIN7U-20140921O/Anaconda3</pythoninterper>

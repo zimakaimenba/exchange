@@ -102,7 +102,7 @@ public class WholeMonthNewsView extends View
            	pnlqiangshibk.setBackground(color);
            	pnlqiangshibk.addMouseListener(new WholeMonthNewsController(Meeting.QIANSHI));
             
-            JLabel qiangshibkLabel = new JLabel("强势板块/个股");
+           	JUpdatedLabel qiangshibkLabel = new JUpdatedLabel("强势板块/个股");
             qiangshibkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
             qiangshibkLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 5));
             qiangshibkLabel.setBackground(ColorScheme.BACKGROUND);
@@ -119,7 +119,7 @@ public class WholeMonthNewsView extends View
            	pnlruoshibk.setBackground(color);
            	pnlruoshibk.addMouseListener(new WholeMonthNewsController(Meeting.RUOSHI));
            	
-           	JLabel ruoshibkLabel = new JLabel("弱势板块/个股");
+           	JUpdatedLabel ruoshibkLabel = new JUpdatedLabel("弱势板块/个股");
            	ruoshibkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
            	ruoshibkLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 5));
            	ruoshibkLabel.setBackground(ColorScheme.BACKGROUND);
@@ -138,7 +138,7 @@ public class WholeMonthNewsView extends View
            	pnlpguanzhubk.setBackground(color);
            	pnlpguanzhubk.addMouseListener(new WholeMonthNewsController(Meeting.JINQIGUANZHU));
            	
-           	JLabel guanzhubkLabel = new JLabel("近期关注板块个股(谈股论金)");
+           	JUpdatedLabel guanzhubkLabel = new JUpdatedLabel("近期关注板块个股(谈股论金)");
            	guanzhubkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
            	guanzhubkLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 5));
            	guanzhubkLabel.setBackground(ColorScheme.BACKGROUND);
@@ -225,7 +225,7 @@ public class WholeMonthNewsView extends View
             	
             	if (mDate.getMonth().equals(super.getDate().getMonth())  ) {
                     if (m.getLabels().isEmpty()) {
-                    	JLabel label = getFormatedLabelForNoneLabel (m);
+                    	JUpdatedLabel label = getFormatedLabelForNoneLabel (m);
 //                        JLabel label = new JLabel(m.getTitle());
 //                        label.setToolTipText(m.getTitle() );
 //                        label.setOpaque(true);
@@ -240,7 +240,7 @@ public class WholeMonthNewsView extends View
                     }
                     for (Meeting.Label l : labels) {
                         if (l.isActive() && m.getLabels().contains(l)) {
-                        	JLabel label = getFormatedLabelForWithLabels (m,l);
+                        	JUpdatedLabel label = getFormatedLabelForWithLabels (m,l);
 //                            JLabel label = new JLabel(m.getTitle());
 //                            label.setToolTipText(m.getTitle() );
 //                            label.setOpaque(true);
@@ -348,9 +348,9 @@ public class WholeMonthNewsView extends View
         this.wholemonthpnl.repaint();
     }
 
-    private JLabel getFormatedLabelForWithLabels(InsertedMeeting m, Label l) 
+    private JUpdatedLabel getFormatedLabelForWithLabels(InsertedMeeting m, Label l) 
     {
-    	JLabel label = new JLabel(m.getTitle());
+    	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
         label.setToolTipText(m.getTitle() );
         label.setOpaque(true);
         label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
@@ -362,9 +362,9 @@ public class WholeMonthNewsView extends View
 		return label;
 	}
 
-	private JLabel getFormatedLabelForNoneLabel(InsertedMeeting m) 
+	private JUpdatedLabel getFormatedLabelForNoneLabel(InsertedMeeting m) 
     {
-    	JLabel label = new JLabel(m.getTitle());
+		JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
         label.setToolTipText(m.getTitle() );
         label.setOpaque(true);
         label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );

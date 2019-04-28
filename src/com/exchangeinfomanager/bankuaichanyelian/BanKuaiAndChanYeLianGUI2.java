@@ -57,7 +57,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
-import com.exchangeinfomanager.commonlib.JUpdatedField;
+import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -617,8 +617,8 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 		
 	}
 	private JTable tablebkgegu;
-	private JUpdatedField tfldfindbk;
-	private JUpdatedField tfldfindgegu;
+	private JUpdatedTextField tfldfindbk;
+	private JUpdatedTextField tfldfindgegu;
 	private JButton deleteButton;
 	private JButton btnfindbk;
 	private JButton btnfindgegu;
@@ -678,12 +678,12 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 		deleteButton = new JButton("\u5220\u9664\u8282\u70B9");
 		deleteButton.setIcon(null);
 		
-		tfldfindbk = new JUpdatedField();
+		tfldfindbk = new JUpdatedTextField();
 		tfldfindbk.setColumns(10);
 		
 		btnfindbk = new JButton("\u5B9A\u4F4D\u677F\u5757");
 		
-		tfldfindgegu = new JUpdatedField();
+		tfldfindgegu = new JUpdatedTextField();
 		tfldfindgegu.setColumns(10);
 		
 		btnfindgegu = new JButton("\u5B9A\u4F4D\u4E2A\u80A1");

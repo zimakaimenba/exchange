@@ -196,6 +196,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		Integer cjezbbkmax = expc.getSettinBkmaxwk();
 		Integer cjemaxwk = expc.getSettingCjemaxwk();
 		Integer cjezbdpmax = expc.getSettinDpmaxwk();
+		Integer cjezbdpmin = expc.getSettingDpminwk();
 		Double cjemin = expc.getSettingCjemin();
 		Double cjemax = expc.getSettingCjeMax();
 		Double showhsl = expc.getSettingHsl();
@@ -206,7 +207,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeZhanBiDPMaxMinWk (cjezbdpmax,cjezbdpmin);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);

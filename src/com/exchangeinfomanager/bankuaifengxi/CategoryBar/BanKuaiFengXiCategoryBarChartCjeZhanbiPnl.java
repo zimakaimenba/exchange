@@ -271,6 +271,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	public void hightLightFxValues(ExportCondition expc) 
 	{
 		Integer cjezbdporbkmax = expc.getSettinDpmaxwk();
+		Integer cjezbdporbkmin = expc.getSettingDpminwk();
 		Double cjemin = expc.getSettingCjemin();
 		Double cjemax = expc.getSettingCjeMax();
 		Integer cjemaxwk = expc.getSettingCjemaxwk();
@@ -280,7 +281,10 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbdporbkmax);
 			this.barchart.fireChartChanged();//必须有这句
 		}
-		
+		if(cjezbdporbkmin != null) {
+			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMinwkLevel (cjezbdporbkmin);
+			this.barchart.fireChartChanged();//必须有这句
+		}
 	}
 //	@Override
 //	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Integer cjezbtouplevelbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,
@@ -312,6 +316,7 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
     public CustomCategroyRendererForZhanBi() {
         super();
         super.displayedmaxwklevel = 4;
+        super.displayedminwklevel = 8;
         super.displayedcolumncolorindex = Color.RED.darker();
         
         this.setBarPainter(new StandardBarPainter());
@@ -326,8 +331,8 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
 		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGeneratorForCjeZhanBi ();
 		this.setBaseItemLabelGenerator(labelgenerator);
 		this.setBaseItemLabelsVisible(true);
-		
-		labelgenerator.setDisplayedMaxWkLevel(this.displayedmaxwklevel);
+		labelgenerator.setDisplayedMaxWkLevel(super.displayedmaxwklevel);
+		labelgenerator.setDisplayedMinWkLevel(super.displayedminwklevel);
     }
 
     public Paint getItemLabelPaint(final int row, final int column)
@@ -338,10 +343,13 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
 
     	Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
-
+    	Integer minweek = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(selecteddate,0);
+    	
 		if(maxweek != null  && maxweek >= super.displayedmaxwklevel)
 			return Color.MAGENTA;
-		else 
+		else if (minweek != null && minweek != 0 && minweek >=  super.displayedminwklevel)
+			return Color.GREEN;
+		else
 			return Color.black;
     }
     
@@ -369,12 +377,16 @@ class BkfxItemLabelGeneratorForCjeZhanBi extends BkfxItemLabelGenerator
 //    	}
     	
 		Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
+		Integer minweek = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(selecteddate,0);
 		
 		String result = "";
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
 			NumberFormat nf = this.getNumberFormat();
 			result =  nf.format(dataset.getValue(row, column));
-		} 
+		} else if (minweek != null && minweek != 0 && minweek >=  super.displayedminwklevel) {
+			NumberFormat nf = this.getNumberFormat();
+			result =  nf.format(dataset.getValue(row, column));
+		}
 		
 		return result;
 	}
