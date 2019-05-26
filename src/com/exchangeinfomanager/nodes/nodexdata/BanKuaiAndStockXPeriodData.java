@@ -56,7 +56,15 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	protected TimeSeries nodeqktjhuibuup;
 	protected TimeSeries nodeqktjopendown;
 	protected TimeSeries nodeqktjhuibudown;
-
+	//均线
+	protected TimeSeries nodema5;
+	protected TimeSeries nodema10;
+	protected TimeSeries nodema20;
+	protected TimeSeries nodema30;
+	protected TimeSeries nodema60;
+	protected TimeSeries nodema120;
+	protected TimeSeries nodema250;
+	
 	public String getNodeCode ()
 	{
 		return this.nodecode;
@@ -265,6 +273,21 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
 			if(dataitemp.equals(this.getJFreeChartFormateTimePeriod(requireddate,0)) )
 				return (OHLCItem) this.nodeohlc.getDataItem(i);
+		}
+		
+		return null;
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getSpecificDateOHLCData(java.time.LocalDate, int)
+	 */
+	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate,int difference)
+	{
+		int itemcount = this.nodeohlc.getItemCount();
+		for(int i=0;i<itemcount;i++) {
+			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
+			if(dataitemp.equals(this.getJFreeChartFormateTimePeriod(requireddate,0)) )
+				return i;
 		}
 		
 		return null;
@@ -624,7 +647,11 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 			 return curdaynumberrecord.getValue().intValue();
 		 
 	 }
-	 
+	 /*
+	  * (non-Javadoc)
+	  * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getLianXuFangLiangPeriodNumber(java.time.LocalDate, int, int)
+	  * 计算连续放指定的量的周期数
+	  */
 	 public Integer getLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk)
 	 {
 		 	
@@ -642,6 +669,294 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 			
 			return -1;
 
+	 }
+	 /*
+	  * 
+	  */
+	 public Double[] getNodeAmoMA (LocalDate  requireddate,int difference)
+	 {
+		 RegularTimePeriod period = getJFreeChartFormateTimePeriod(requireddate,difference);
+		 Double ma5;Double ma10;Double ma20;Double ma30;Double ma60;Double ma120;Double ma250;
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema5.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma5 = calculateAmoMA (5,requireddate,difference);
+				 if(ma5 != null)
+					 this.nodema5.add(period,ma5);
+			 } else
+				ma5 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema5 = new TimeSeries(this.nodeperiodtype);
+			 	ma5 = calculateAmoMA (5,requireddate,difference);
+			 	if(ma5 != null)
+			 		this.nodema5.add(period,ma5);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema10.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma10 = calculateAmoMA (10,requireddate,difference);
+				 if(ma10 != null)
+					 this.nodema10.add(period,ma10);
+			 } else
+				ma10 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema10 = new TimeSeries(this.nodeperiodtype);
+			 	ma10 = calculateAmoMA (10,requireddate,difference);
+			 	if(ma10 != null)
+			 		this.nodema10.add(period,ma10);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema20.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma20 = calculateAmoMA (20,requireddate,difference);
+				 if(ma20 != null)
+					 this.nodema20.add(period,ma20);
+			 } else
+				ma20 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema20 = new TimeSeries(this.nodeperiodtype);
+			 	ma20 = calculateAmoMA (20,requireddate,difference);
+			 	if(ma20 != null)
+			 		this.nodema20.add(period,ma20);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema30.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma30 = calculateAmoMA (30,requireddate,difference);
+				 if(ma30 != null)
+					 this.nodema30.add(period,ma30);
+			 } else
+				ma30 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema30 = new TimeSeries(this.nodeperiodtype);
+			 	ma30 = calculateAmoMA (30,requireddate,difference);
+			 	if(ma30 != null)
+			 		this.nodema30.add(period,ma30);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema60.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma60 = calculateAmoMA (60,requireddate,difference);
+				 if(ma60 != null)
+					 this.nodema60.add(period,ma60);
+			 } else
+				ma60 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema60 = new TimeSeries(this.nodeperiodtype);
+			 	ma60 = calculateAmoMA (60,requireddate,difference);
+			 	if(ma60 != null)
+			 		this.nodema60.add(period,ma60);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema120.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma120 = calculateAmoMA (120,requireddate,difference);
+				 if(ma120 != null)
+					 this.nodema120.add(period,ma120);
+			 } else
+				ma120 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema120 = new TimeSeries(this.nodeperiodtype);
+			 	ma120 = calculateAmoMA (120,requireddate,difference);
+			 	if(ma120 != null)
+			 		this.nodema120.add(period,ma120);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema250.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma250 = calculateAmoMA (250,requireddate,difference);
+				 if(ma250 != null)
+					 this.nodema250.add(period,ma250);
+			 } else
+				ma250 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema250 = new TimeSeries(this.nodeperiodtype);
+			 	ma250 = calculateAmoMA (250,requireddate,difference);
+			 	if(ma250 != null)
+			 		this.nodema250.add(period,ma250);
+		 }
+		 
+		 Double ma[] = {ma5,ma10,ma20,ma30,ma60,ma120,ma250};
+		 return ma;
+		 
+	 }
+	 private Double calculateAmoMA (Integer manum,LocalDate  requireddate,int difference)
+	 {
+		 RegularTimePeriod period = getJFreeChartFormateTimePeriod(requireddate,difference);
+		 
+		 LocalDate expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
+		 DayOfWeek dayofweek = expectedate.getDayOfWeek();
+		 if(dayofweek.equals(DayOfWeek.SUNDAY) ) {
+			 requireddate = expectedate.minus(2,ChronoUnit.DAYS);
+		 } else if(dayofweek.equals(DayOfWeek.SATURDAY) ) {
+			 requireddate = expectedate.minus(1,ChronoUnit.DAYS);
+		 }
+		 
+		 Integer indexofrc = this.nodeamo.getIndex(period);
+		 if(indexofrc < manum -1 )
+				return null;
+		
+//		 TimeSeriesDataItem curcjlrecord = null;
+//		 curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+//			
+//		 if( curcjlrecord == null) 
+//				return null;
+//		 else
+//				return curcjlrecord.getValue().doubleValue();
+		 
+		
+		Double ohlcsum = 0.0;
+		for(int i=0;i<manum;i++) {
+			TimeSeriesDataItem data = (TimeSeriesDataItem) this.nodeamo.getDataItem(indexofrc -i);
+			ohlcsum = ohlcsum + (Double)data.getValue().doubleValue();
+		}
+		
+		Double result = ohlcsum / manum;
+		return result;
+	 } 
+	 /*
+	  * 
+	  */
+	 public Double[] getNodeOhlcMA (LocalDate  requireddate,int difference)
+	 {
+		 RegularTimePeriod period = getJFreeChartFormateTimePeriod(requireddate,difference);
+		 Double ma5;Double ma10;Double ma20;Double ma30;Double ma60;Double ma120;Double ma250;
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema5.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma5 = calculateOhlcMA (5,requireddate,difference);
+				 if(ma5 != null)
+					 this.nodema5.add(period,ma5);
+			 } else
+				ma5 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema5 = new TimeSeries(this.nodeperiodtype);
+			 	ma5 = calculateOhlcMA (5,requireddate,difference);
+			 	if(ma5 != null)
+			 		this.nodema5.add(period,ma5);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema10.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma10 = calculateOhlcMA (10,requireddate,difference);
+				 if(ma10 != null)
+					 this.nodema10.add(period,ma10);
+			 } else
+				ma10 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema10 = new TimeSeries(this.nodeperiodtype);
+			 	ma10 = calculateOhlcMA (10,requireddate,difference);
+			 	if(ma10 != null)
+			 		this.nodema10.add(period,ma10);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema20.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma20 = calculateOhlcMA (20,requireddate,difference);
+				 if(ma20 != null)
+					 this.nodema20.add(period,ma20);
+			 } else
+				ma20 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema20 = new TimeSeries(this.nodeperiodtype);
+			 	ma20 = calculateOhlcMA (20,requireddate,difference);
+			 	if(ma20 != null)
+			 		this.nodema20.add(period,ma20);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema30.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma30 = calculateOhlcMA (30,requireddate,difference);
+				 if(ma30 != null)
+					 this.nodema30.add(period,ma30);
+			 } else
+				ma30 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema30 = new TimeSeries(this.nodeperiodtype);
+			 	ma30 = calculateOhlcMA (30,requireddate,difference);
+			 	if(ma30 != null)
+			 		this.nodema30.add(period,ma30);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema60.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma60 = calculateOhlcMA (60,requireddate,difference);
+				 if(ma60 != null)
+					 this.nodema60.add(period,ma60);
+			 } else
+				ma60 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema60 = new TimeSeries(this.nodeperiodtype);
+			 	ma60 = calculateOhlcMA (60,requireddate,difference);
+			 	if(ma60 != null)
+			 		this.nodema60.add(period,ma60);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema120.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma120 = calculateOhlcMA (120,requireddate,difference);
+				 if(ma120 != null)
+					 this.nodema120.add(period,ma120);
+			 } else
+				ma120 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema120 = new TimeSeries(this.nodeperiodtype);
+			 	ma120 = calculateOhlcMA (120,requireddate,difference);
+			 	if(ma120 != null)
+			 		this.nodema120.add(period,ma120);
+		 }
+		 
+		 try {
+			 TimeSeriesDataItem qktjitem = this.nodema250.getDataItem(period );
+			 if(qktjitem == null) {
+				 ma250 = calculateOhlcMA (250,requireddate,difference);
+				 if(ma250 != null)
+					 this.nodema250.add(period,ma250);
+			 } else
+				ma250 = (Double)qktjitem.getValue(); 
+		 } catch (java.lang.NullPointerException e) {
+			 	nodema250 = new TimeSeries(this.nodeperiodtype);
+			 	ma250 = calculateOhlcMA (250,requireddate,difference);
+			 	if(ma250 != null)
+			 		this.nodema250.add(period,ma250);
+		 }
+		 
+		 Double ma[] = {ma5,ma10,ma20,ma30,ma60,ma120,ma250};
+		 return ma;
+	 }
+	 private Double calculateOhlcMA (Integer manum,LocalDate  requireddate,int difference)
+	 {
+		 LocalDate expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
+		 DayOfWeek dayofweek = expectedate.getDayOfWeek();
+		 if(dayofweek.equals(DayOfWeek.SUNDAY) ) {
+			 requireddate = expectedate.minus(2,ChronoUnit.DAYS);
+		 } else if(dayofweek.equals(DayOfWeek.SATURDAY) ) {
+			 requireddate = expectedate.minus(1,ChronoUnit.DAYS);
+		 } 
+		
+		 Integer indexofrc = this.getIndexOfSpecificDateOHLCData(requireddate, 0);
+		if(indexofrc < manum -1 )
+			return null;
+		
+		Double ohlcsum = 0.0;
+		for(int i=0;i<manum;i++) {
+			OHLCItem data = (OHLCItem) this.nodeohlc.getDataItem(indexofrc -i);
+			ohlcsum = ohlcsum + (Double)data.getCloseValue();
+		}
+		
+		Double result = ohlcsum / manum;
+		return result;
 	 }
 	 	 
  } //END OF 

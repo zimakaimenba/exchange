@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
@@ -30,6 +31,8 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting.Label;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 /**
  * 
  * @author Administrator
@@ -40,14 +43,17 @@ public class WholeMonthNewsView extends View
 {
 	private static Logger logger = Logger.getLogger(WholeMonthNewsView.class);
 	private JPanel wholemonthpnl = new JPanel(); //
+	
 //    private JLabel dateLabel = new JLabel();
 
     public WholeMonthNewsView(MeetingService meetingService, Cache cache) 
     {
         super(meetingService, cache);
-
+        
         cache.addCacheListener(this);
         this.onMeetingChange(cache);
+        
+        
         this.initMonthView();
     }
 
@@ -78,7 +84,7 @@ public class WholeMonthNewsView extends View
                 color = ColorScheme.BACKGROUND;
 
                 pnlmonthnews.setLayout(new BorderLayout());
-                pnlmonthnews.addMouseListener(new WholeMonthNewsController(Meeting.CHANGQIJILU));
+                pnlmonthnews.addMouseListener(new WholeMonthNewsController(Meeting.CHANGQIJILU, firstDayInMonth));
                 
                 JLabel newscontentsLabel = new JLabel(String.valueOf(firstDayInMonth.getMonth()));
                 newscontentsLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -100,7 +106,7 @@ public class WholeMonthNewsView extends View
            	
            	pnlqiangshibk.setLayout(new BorderLayout());
            	pnlqiangshibk.setBackground(color);
-           	pnlqiangshibk.addMouseListener(new WholeMonthNewsController(Meeting.QIANSHI));
+           	pnlqiangshibk.addMouseListener(new WholeMonthNewsController(Meeting.QIANSHI, firstDayInMonth));
             
            	JUpdatedLabel qiangshibkLabel = new JUpdatedLabel("强势板块/个股");
             qiangshibkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -117,7 +123,7 @@ public class WholeMonthNewsView extends View
            	pnlruoshibk.setName(firstDayInMonth  + "rrrrrr");
            	pnlruoshibk.setLayout(new BorderLayout());
            	pnlruoshibk.setBackground(color);
-           	pnlruoshibk.addMouseListener(new WholeMonthNewsController(Meeting.RUOSHI));
+           	pnlruoshibk.addMouseListener(new WholeMonthNewsController(Meeting.RUOSHI, firstDayInMonth));
            	
            	JUpdatedLabel ruoshibkLabel = new JUpdatedLabel("弱势板块/个股");
            	ruoshibkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -136,7 +142,7 @@ public class WholeMonthNewsView extends View
            	pnlpguanzhubk.setName(firstDayInMonth  + "gzgzgz");
            	pnlpguanzhubk.setLayout(new BorderLayout());
            	pnlpguanzhubk.setBackground(color);
-           	pnlpguanzhubk.addMouseListener(new WholeMonthNewsController(Meeting.JINQIGUANZHU));
+           	pnlpguanzhubk.addMouseListener(new WholeMonthNewsController(Meeting.JINQIGUANZHU, firstDayInMonth));
            	
            	JUpdatedLabel guanzhubkLabel = new JUpdatedLabel("近期关注板块个股(谈股论金)");
            	guanzhubkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -219,7 +225,7 @@ public class WholeMonthNewsView extends View
         for (InsertedMeeting m : meetings) {
             LocalDate mDate = m.getStart();
             String actioncode = m.getNewsOwnerCodes();
-            LocalDate firstDayInMonth = mDate.withDayOfMonth(1);
+//            LocalDate firstDayInMonth = mDate.withDayOfMonth(1);
             
             if(m.getMeetingType() == Meeting.CHANGQIJILU) { // 每月固定新闻
             	
@@ -351,7 +357,7 @@ public class WholeMonthNewsView extends View
     private JUpdatedLabel getFormatedLabelForWithLabels(InsertedMeeting m, Label l) 
     {
     	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
-        label.setToolTipText(m.getTitle() );
+        label.setToolTipText( getLabelToolTipText(m) );
         label.setOpaque(true);
         label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
         label.addMouseListener(new MeetingController());
@@ -365,7 +371,7 @@ public class WholeMonthNewsView extends View
 	private JUpdatedLabel getFormatedLabelForNoneLabel(InsertedMeeting m) 
     {
 		JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
-        label.setToolTipText(m.getTitle() );
+        label.setToolTipText( getLabelToolTipText(m) );
         label.setOpaque(true);
         label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
         label.addMouseListener(new MeetingController());
@@ -384,8 +390,9 @@ public class WholeMonthNewsView extends View
     private class WholeMonthNewsController extends MouseAdapter 
     { 
     	private int meetingtype;
+//    	private LocalDate createdate ;
     	
-    	WholeMonthNewsController (int meetingtype)
+    	WholeMonthNewsController (int meetingtype, LocalDate monthbelonged)
     	{
     		this.meetingtype = meetingtype;
     	}
@@ -394,8 +401,14 @@ public class WholeMonthNewsView extends View
         	
         	super.mouseClicked(e);
             JPanel panel = (JPanel) e.getSource();
-            LocalDate mDate = LocalDate.now();//.parse(panel.getName().substring(0, 10));
- 
+            LocalDate mDate ;
+            LocalDate pnldate = LocalDate.parse(panel.getName().substring(0, 10));
+            if ( pnldate.getMonth().equals(LocalDate.now().getMonth() ) )
+            	mDate = LocalDate.now();
+            else
+            	mDate = pnldate;
+
+            
 //        	if (e.getClickCount() == 1) { //获取选择的日期
 //        		setDate (mDate);
 //        	}
@@ -421,10 +434,20 @@ public class WholeMonthNewsView extends View
         			keywords = "近期关注"; 
         		}  
         		
-        		
+        		//Set up description of all GPC
+        		String descriptions = "";
+        		BanKuaiAndStockTree cyltree = BanKuaiAndChanYeLian2.getInstance().getBkChanYeLianTree();
+        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+    			for(int i=0;i< bankuaicount; i++) {
+    				
+    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+    				String nodename = childnode.getMyOwnName();
+    				String nodecode = childnode.getMyOwnCode();
+    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+    			}
         		
                 Meeting meeting = new Meeting(title, mDate,
-                     "描述", keywords, new HashSet<>(),"SlackURL",owner,this.meetingtype);
+                		descriptions, keywords, new HashSet<>(),"URL",owner,this.meetingtype);
                 getCreateDialog().setMeeting(meeting);
                 getCreateDialog().setVisible(true);
         	}

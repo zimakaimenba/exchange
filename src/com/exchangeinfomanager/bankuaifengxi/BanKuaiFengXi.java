@@ -29,6 +29,9 @@ import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 import org.jfree.data.time.TimeSeries;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
@@ -45,6 +48,7 @@ import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePn
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
+import com.exchangeinfomanager.commonlib.jstockcombobox.DateRangeSelectPnl;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -57,6 +61,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.BanKuaiNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
@@ -483,8 +488,7 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void exportBanKuaiWithGeGuOnCondition2 ()
 	{
-		
-		
+	
 		if(exportcond == null || exportcond.size() == 0) {
 			if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !chkliutongsz.isSelected() && !ckbxcjemaxwk.isSelected()){
 				JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
@@ -800,7 +804,9 @@ public class BanKuaiFengXi extends JDialog
 
 		paneldayCandle.updatedDate(superbankuai,tmpnode,this.getSettingRangeDate(curselectdate, "basic"),requireend,TDXNodeGivenPeriodDataItem.DAY);
 		
-
+//		BanKuaiAndStockXPeriodData stockdaydata = (BanKuaiAndStockXPeriodData) selectnode.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
+//		Double[] madata = stockdaydata.getNodeOhlcMA(this.dateChooser.getLocalDate(), 0);
+//		System.out.println(madata[0]);
 	}
 	/*
 	 * 
@@ -1011,6 +1017,13 @@ public class BanKuaiFengXi extends JDialog
             @Override
             public void actionPerformed(ActionEvent e) {
             	exportAllStockToCsv("single");
+            }
+        });
+		
+		menuItemnonfixperiod.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	calStockNoneFixPeriodDpMinWk ();
             }
         });
 
@@ -1891,6 +1904,64 @@ public class BanKuaiFengXi extends JDialog
 		});
 	}
 	/*
+	 * 对不确定周期计算占比，以周占比作为比较对象
+	 */
+	protected void calStockNoneFixPeriodDpMinWk() 
+	{
+		DateRangeSelectPnl datachoose = new DateRangeSelectPnl (1); 
+		JOptionPane.showMessageDialog(null, datachoose,"选择时间段", JOptionPane.OK_CANCEL_OPTION);
+		
+		LocalDate searchstart = datachoose.getDatachoosestart();
+		LocalDate searchend = datachoose.getDatachooseend();
+		
+		int ggrow = tableGuGuZhanBiInBk.getSelectedRow();
+		if(ggrow <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个股票！","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		int ggmodelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(ggrow);
+		StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
+
+		
+		Number[] result = this.allbksks.getTDXNodeNoneFixPeriodDpMinWk(selectstock.getStock(), searchstart, searchend);
+		Double zhanbi = (Double) result[0];
+		Integer dpzbresult = (Integer) result[1];
+		
+		String htmlstring = "";
+		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+		Elements body = doc.getElementsByTag("body");
+		for(Element elbody : body) {
+//			org.jsoup.nodes.Element htmldiv = elbody.appendElement("div");
+//			org.jsoup.select.Elements divnodecodename = content.select("nodecode");
+//    		org.jsoup.select.Elements nodetype = content.select("nodetype");
+//			htmldiv.appendChild( selectstock.getStock().getMyOwnName() );
+//			htmldiv.appendChild( nodetype.get(0) );
+			
+			 org.jsoup.nodes.Element dl = elbody.appendElement("dl");
+			 
+			 org.jsoup.nodes.Element li3 = dl.appendElement("li");
+			 li3.appendText(searchstart.toString());
+			 
+			 org.jsoup.nodes.Element li1 = dl.appendElement("li");
+			 org.jsoup.nodes.Element li4 = dl.appendElement("li");
+			 if(dpzbresult == null) 
+				 li1.appendText("占比MinWk=数据不完整无法计算" );
+			 else if(dpzbresult<0 ) {
+				 li1.appendText("占比MaxWk=0" );
+				 li4.appendText("占比MinWk=" + dpzbresult);
+			 } else if(dpzbresult>0) {
+				 li1.appendText("占比MaxWk=" + dpzbresult);
+				 li4.appendText("占比MinWk=0" );
+			 }
+			 
+			 DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
+			 org.jsoup.nodes.Element li2 = dl.appendElement("li");
+			 li2.appendText("占比" + decimalformate.format(zhanbi) );
+		}
+		
+		setUserSelectedColumnMessage (doc.toString());
+	}
+	/*
 	 * 导出用户选择的node的单独信息到CSV
 	 */
 	protected void exportUserSelectedNodeInfoToCsv(String html)
@@ -2690,6 +2761,7 @@ public class BanKuaiFengXi extends JDialog
 	private JLabel lbl50cje;
 	private JTextField tflddpminwk;
 	private JCheckBox chckbxdpminwk;
+	private JMenuItem menuItemnonfixperiod;
 	
 	private void initializeGui() {
 		
@@ -3265,7 +3337,7 @@ public class BanKuaiFengXi extends JDialog
 			chckbxdpminwk.setForeground(Color.GREEN);
 			
 			tflddpminwk = new JTextField();
-			tflddpminwk.setText("6");
+			tflddpminwk.setText("8");
 			tflddpminwk.setColumns(10);
 			
 			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
@@ -3421,6 +3493,9 @@ public class BanKuaiFengXi extends JDialog
 		
        menuItemsiglestocktocsv = new JMenuItem("导出个股到CSV");
        tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsiglestocktocsv);
+       
+       menuItemnonfixperiod = new JMenuItem("不定周期DPM??WK");
+       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemnonfixperiod);
        
 	}
 	/*

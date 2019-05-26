@@ -35,7 +35,8 @@ public class DateRangeSelectPnl extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public DateRangeSelectPnl() {
+	public DateRangeSelectPnl(Integer wknum) 
+	{
 		
 		sysconfig = SystemConfigration.getInstance();
 		
@@ -47,7 +48,7 @@ public class DateRangeSelectPnl extends JPanel {
 		
 		datachooseend = new JLocalDateChooser();
 		
-		LocalDate searchstart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		LocalDate searchstart = LocalDate.now().with(DayOfWeek.MONDAY).minus(wknum,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		datachoosestart.setLocalDate(searchstart);
 		
 		datachooseend.setLocalDate(LocalDate.now());

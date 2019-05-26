@@ -3565,14 +3565,14 @@ public class BanKuaiDbOperation
 	/*
 	 * 这个函数计算出某个不固定周期个股和大盘的占比数据
 	 */
-	public TDXNodeGivenPeriodDataItem getStockZhanBiByDaysPeriod(Stock stock,LocalDate formatedstartdate,LocalDate formatedenddate,String period)
+	public TDXNodeGivenPeriodDataItem getStockNoFixPerioidZhanBiByWeek(Stock stock,LocalDate formatedstartdate,LocalDate formatedenddate,String period)
 	{
 		if(period.equals(TDXNodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
 		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
-		StockNodeXPeriodData nodewkperioddata = (StockNodeXPeriodData)stock.getNodeXPeroidData(period);
+//		StockNodeXPeriodData nodewkperioddata = (StockNodeXPeriodData)stock.getNodeXPeroidData(period);
 	
 		String stockcode = stock.getMyOwnCode();
 		String bkcjltable;
@@ -3582,7 +3582,7 @@ public class BanKuaiDbOperation
 			bkcjltable = "通达信深交所股票每日交易信息";
 	
 		
-		String sqlquerystat = "SELECT  M.BKCODE AS BKCODE, '" + formatedstartdate + "','" + formatedenddate + "'," +
+		String sqlquerystat = "SELECT  M.BKCODE AS BKCODE, '" + formatedstartdate + "' AS STARTDAY, '" + formatedenddate + "' AS ENDDAY , " +
 				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比, \r\n" +
 				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
 				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU , M.周最大涨跌幅,M.周最小涨跌幅      \r\n" +
@@ -3627,7 +3627,8 @@ public class BanKuaiDbOperation
 				while(rs.next()) {
 					double bankuaicje = rs.getDouble("板块周交易额");
 					double dapancje = rs.getDouble("大盘周交易额");
-					java.sql.Date lastdayofweek = rs.getDate(formatedstartdate.toString());
+//					java.sql.Date lastdayofweek = rs.getDate("STARTDAY");
+					java.sql.Date lastdayofweek =  java.sql.Date.valueOf(formatedstartdate);
 					org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 					double bankuaicjl = rs.getDouble("板块周交易量");
 					double dapancjl = rs.getDouble("大盘周交易量");
@@ -3641,16 +3642,16 @@ public class BanKuaiDbOperation
 					stokrecord = new TDXNodeGivenPeriodDataItem( stockcode, period, recordwk, 
 							  0.0,  0.0,  0.0,  0.0, bankuaicje, bankuaicjl,huanshoulv,pingjunzongshizhi,pingjunliutongshizhi);
 					
-					stokrecord.setRecordsDayofEndofWeek(lastdayofweek);
+//					stokrecord.setRecordsDayofEndofWeek(lastdayofweek);
 					stokrecord.setUpLevelChengJiaoEr(dapancje);
 					stokrecord.setUplevelchengjiaoliang(dapancjl);
 					stokrecord.setPeriodhighestzhangdiefu(periodhighestzhangdiefu);
 					stokrecord.setPeriodlowestzhangdiefu(periodlowestzhangdiefu);
 					stokrecord.setExchangeDaysNumber(exchengdaysnumber);
 					
-					nodewkperioddata.addNewXPeriodData(stokrecord);
+//					nodewkperioddata.addNewXPeriodData(stokrecord);
 					
-					stokrecord = null;
+					
 				}
 			}catch(java.lang.NullPointerException e){ 
 		    	e.printStackTrace();
@@ -3665,7 +3666,7 @@ public class BanKuaiDbOperation
 				}
 		    	
 		    	bkcjltable = null;
-		    	nodewkperioddata = null; 
+//		    	nodewkperioddata = null; 
 		    }
 
 		return stokrecord;

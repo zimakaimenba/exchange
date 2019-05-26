@@ -105,8 +105,6 @@ public class BanKuaiListEditorPane extends JEditorPane
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		
-		
 	}
 	/*
 	 * 

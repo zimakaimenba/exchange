@@ -40,11 +40,11 @@ public class Cache {
     }
     public void refreshNews ()
     {
-    	if(true) {
-    		
-    		this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
-        	this.listeners.forEach(l -> l.onMeetingChange(this));
-    	}
+//    	if(true) {
+//    		
+//    		this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
+//        	this.listeners.forEach(l -> l.onMeetingChange(this));
+//    	}
     }
     
     public String getNodeCode ()

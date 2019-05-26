@@ -16,6 +16,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
@@ -301,8 +302,71 @@ public class AllCurrentTdxBKAndStoksTree
 			this.getStockKXian(stock, bkstartday, bkendday, TDXNodeGivenPeriodDataItem.DAY);
 			this.getStockQueKouInfo(stock, bkstartday, bkendday, TDXNodeGivenPeriodDataItem.WEEK);
 		} 
+		
+		
 	}
 
+	public  Number[] getTDXNodeNoneFixPeriodDpMinWk (Stock stock, LocalDate requiredstartday, LocalDate requiredendday)
+	{
+//		if(node.getType() == BkChanYeLianTreeNode.TDXBK )
+//			this.getBanKuai((BanKuai)node, requiredstartday, requiredendday, TDXNodeGivenPeriodDataItem.WEEK);
+//		else if(node.getType() == BkChanYeLianTreeNode.TDXGG ||  node.getType() == BkChanYeLianTreeNode.BKGEGU)
+//			this.getStock((Stock)node, requiredstartday, requiredendday, TDXNodeGivenPeriodDataItem.WEEK);
+		
+		TDXNodeGivenPeriodDataItem dataresult = bkdbopt.getStockNoFixPerioidZhanBiByWeek (stock,requiredstartday,requiredendday,TDXNodeGivenPeriodDataItem.WEEK);
+		Double zhanbi = dataresult.getCjeZhanBi();
+		
+		NodeXPeriodDataBasic nodexdate = stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+		LocalDate recordstart = nodexdate.getRecordsStartDate();
+		LocalDate recordend = nodexdate.getRecordsEndDate();
+		LocalDate tmpdate = requiredstartday.minusWeeks(1).with(DayOfWeek.FRIDAY);
+		 
+		if(tmpdate.isBefore(recordstart)) {
+			Number[] zhanbiresult = {zhanbi, null};
+			return zhanbiresult;
+		}
+			 
+		
+		Integer dpminwk = 0; Integer dpmaxwk = 0;
+		while (tmpdate.isAfter(recordstart) ) {
+			Double tmpzb = nodexdate.getChenJiaoErZhanBi(tmpdate, 0);
+			
+			try {
+				if(tmpzb >= zhanbi) {
+					dpminwk ++;
+					tmpdate = tmpdate.minusWeeks(1).with(DayOfWeek.FRIDAY);
+				} else if(tmpzb < zhanbi) {
+					break;
+				}
+			} catch (java.lang.NullPointerException e) {
+				tmpdate = tmpdate.minusWeeks(1).with(DayOfWeek.FRIDAY);
+
+			}
+		}
+		tmpdate = requiredstartday.minusWeeks(1).with(DayOfWeek.FRIDAY);
+		while (tmpdate.isAfter(recordstart) ) {
+			Double tmpzb = nodexdate.getChenJiaoErZhanBi(tmpdate, 0);
+			try {
+				if(tmpzb < zhanbi) {
+					dpmaxwk ++;
+					tmpdate = tmpdate.minusWeeks(1).with(DayOfWeek.FRIDAY);
+				} else if(tmpzb >= zhanbi) {
+					break;
+				}
+			} catch (java.lang.NullPointerException e) {
+				tmpdate = tmpdate.minusWeeks(1).with(DayOfWeek.FRIDAY);
+			}
+		}
+		
+		Integer zbresult;
+		if(dpminwk != 0)
+			zbresult = 0 - dpminwk;
+		else
+			zbresult = dpmaxwk;
+		Number[] zhanbiresult = {zhanbi,zbresult};
+		return zhanbiresult;
+				
+	}
 	
 
 }

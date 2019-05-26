@@ -279,7 +279,7 @@ public class JStockComboBox extends  JComboBox<String>
 	private void sysnRecentGuanZhu() 
 	{
 		
-		DateRangeSelectPnl datachoose = new DateRangeSelectPnl (); 
+		DateRangeSelectPnl datachoose = new DateRangeSelectPnl (24); 
 		JOptionPane.showMessageDialog(null, datachoose,"选择关注个股的时间段", JOptionPane.OK_CANCEL_OPTION);
 		
 		LocalDate searchstart = datachoose.getDatachoosestart();

@@ -508,12 +508,17 @@ public class ImportTDXData extends JDialog {
 						lblstatus.setText("交易日9:00-16:35期间不可以导入和成交量相关信息！");
 					}
 				} else {
-					chbxdaorutdxsysbk.setSelected(true);
-					cbximporttdxgeguinfo.setSelected(true);
-					chbxdaorutdxsysbkvol.setSelected(true);
-					cbxImportShGeGuVol.setSelected(true);
-					cbxImportSzGeGuVol.setSelected(true);
-					ckbxnetease.setSelected(true);
+					String msg =  "交易时段导入交易数据可能导致数据缺失！\n是否继续？";
+					int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导入？", JOptionPane.OK_CANCEL_OPTION);
+					if(exchangeresult == JOptionPane.CANCEL_OPTION)
+							return;
+					
+//					chbxdaorutdxsysbk.setSelected(true);
+//					cbximporttdxgeguinfo.setSelected(true);
+//					chbxdaorutdxsysbkvol.setSelected(true);
+//					cbxImportShGeGuVol.setSelected(true);
+//					cbxImportSzGeGuVol.setSelected(true);
+//					ckbxnetease.setSelected(true);
 					
 					chbxdaorutdxsysbk.setEnabled(true);
 					cbximporttdxgeguinfo.setEnabled(true);
@@ -521,6 +526,8 @@ public class ImportTDXData extends JDialog {
 					cbxImportShGeGuVol.setEnabled(true);
 					cbxImportSzGeGuVol.setEnabled(true);
 					ckbxnetease.setEnabled(true);
+					
+					lblstatus.setText("交易日9:00-16:35期间导入成交量相关信息可能导致数据缺失！");
 				}
 				
 			}
@@ -603,22 +610,23 @@ public class ImportTDXData extends JDialog {
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				
-				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() 
-						||cbxImportShGeGuVol.isSelected() || cbxImportSzGeGuVol.isSelected() 
-						|| ckbxnetease.isSelected()
-						) {
-					LocalTime tdytime = LocalTime.now(); //如果是在交易时间导入数据的话，当天的数据还没有，所以要判断一下
-					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
-//					int hour = cal.get(Calendar.HOUR_OF_DAY);
-					int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;
-					if( (wkday<=5 && wkday>=1) && (tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(16, 35, 0)) <0)  ) {
-						JOptionPane.showMessageDialog(null,"涉及通达信成交量数据同步，请在交易日16:35收盘后至次日9点前从通达信导出数据后再导入本系统。" + "\n" 
-												+ "成交量导入终止，其他操作继续。");
-						formateGui ();
-					} else
-						partThatHasBeImportAfterWsork();
-				}
+//				if(chbxdaorutdxsysbk.isSelected() || cbximporttdxgeguinfo.isSelected() || chbxdaorutdxsysbkvol.isSelected() 
+//						||cbxImportShGeGuVol.isSelected() || cbxImportSzGeGuVol.isSelected() 
+//						|| ckbxnetease.isSelected()
+//						) {
+//					LocalTime tdytime = LocalTime.now(); //如果是在交易时间导入数据的话，当天的数据还没有，所以要判断一下
+//					Calendar cal = Calendar.getInstance();//可以对每个时间域单独修改
+////					int hour = cal.get(Calendar.HOUR_OF_DAY);
+//					int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;
+//					if( (wkday<=5 && wkday>=1) && (tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(16, 35, 0)) <0)  ) {
+//						JOptionPane.showMessageDialog(null,"涉及通达信成交量数据同步，请在交易日16:35收盘后至次日9点前从通达信导出数据后再导入本系统。" + "\n" 
+//												+ "成交量导入终止，其他操作继续。");
+//						formateGui ();
+//					} else
+//						partThatHasBeImportAfterWsork();
+//				}
 				
+				partThatHasBeImportAfterWsork();
 				partThatCanImportDuringWork ();
 				
 				lblstatus.setText("同步结束");
