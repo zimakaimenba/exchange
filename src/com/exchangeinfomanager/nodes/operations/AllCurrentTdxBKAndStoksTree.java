@@ -289,7 +289,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public Stock getStockKXian (Stock stock,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-		stock = (Stock)bkdbopt.getStockKXianZouShiFromCsv (stock,requiredstartday,requiredendday,period);
+		stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (stock,requiredstartday,requiredendday,period);
 				
 		return stock;
 	}
