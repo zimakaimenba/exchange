@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
+
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Paint;
@@ -45,11 +46,11 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
 
 public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl
 {
@@ -177,10 +178,10 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			}
 
 			//QueKou Line Part
-			Integer opneupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
-			Integer opendownquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
-			Integer huibuupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
-			Integer huibudowquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
+			Integer opneupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
+			Integer opendownquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
+			Integer huibuupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
+			Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
 			 
 			if(opneupquekou != null) {
 				super.linechartdataset.setValue(opneupquekou, "QueKouOpenUp", wkfriday );

@@ -136,13 +136,13 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 	}
 
 	@Override
-	public LocalDate getRecordsStartDate() {
+	public LocalDate getAmoRecordsStartDate() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public LocalDate getRecordsEndDate() {
+	public LocalDate getAmoRecordsEndDate() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -202,11 +202,11 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 		return null;
 	}
 
-	@Override
-	public OHLCSeries getRangeOHLCData(LocalDate requiredstart, LocalDate requiredend) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public OHLCSeries getRangeOHLCData(LocalDate requiredstart, LocalDate requiredend) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public OHLCItem getSpecificDateOHLCData(LocalDate requireddate, int difference) {
@@ -234,6 +234,18 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 
 	@Override
 	public Integer getLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDate getKXxianRecordsStartDate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDate getKXxianRecordsEndDate() {
 		// TODO Auto-generated method stub
 		return null;
 	}

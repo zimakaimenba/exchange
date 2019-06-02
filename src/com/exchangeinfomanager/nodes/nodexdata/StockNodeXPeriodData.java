@@ -12,7 +12,7 @@ import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
 
-public class StockNodeXPeriodData extends BanKuaiAndStockXPeriodData
+public class StockNodeXPeriodData extends TDXNodesXPeriodData
 {
 	public StockNodeXPeriodData (String nodecode, String nodeperiodtype1) 
 	{
@@ -25,7 +25,7 @@ public class StockNodeXPeriodData extends BanKuaiAndStockXPeriodData
 		periodlowestzhangdiefu = new TimeSeries(nodeperiodtype1);
 	}
 	
-	private Logger logger = Logger.getLogger(BanKuaiAndStockXPeriodData.class);
+	private Logger logger = Logger.getLogger(StockNodeXPeriodData.class);
 	
 	private  TimeSeries stockhuanshoulv; //换手率
 	private  TimeSeries stockliutongshizhi; //流通市值

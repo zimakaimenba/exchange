@@ -235,34 +235,53 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			String period, int indexofseries) 
 	{
 		// TODO Auto-generated method stub
-		OHLCSeries tmpohlcSeries ;
+		OHLCSeries tmpohlcSeries =  new OHLCSeries ("Kxian"); ;
 		OHLCSeriesCollection tmpcandlestickDataset;
-//		if(indexofseries == 0) {
-			tmpcandlestickDataset = (OHLCSeriesCollection)candlestickChart.getXYPlot().getDataset(indexofseries);
-//			tmpohlcSeries = tmpcandlestickDataset.getSeries(indexofseries);
-//		}
-		
+		tmpcandlestickDataset = (OHLCSeriesCollection)candlestickChart.getXYPlot().getDataset(indexofseries);
+			
+		tmpohlcSeries.setNotify(false);
+		tmpcandlestickDataset.setNotify(false);
+			
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
-		tmpohlcSeries = nodexdata.getRangeOHLCData(requirestart, requireend);
-		
+		LocalDate tmpdate = requirestart;
+		double lowestLow =10000.0;  double highestHigh = 0.0;
+		do  {
+			OHLCItem tmpohlic = nodexdata.getSpecificDateOHLCData(tmpdate, 0);
+			if(tmpohlic == null) {
+				if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+				
+				continue;
+			}
+				
+			tmpohlcSeries.add(tmpohlic);
+			
+			Double low = tmpohlic.getLowValue();
+			Double high = tmpohlic.getHighValue();
+			
+			if(low < lowestLow && low !=0) {//股价不可能为0，为0，说明停牌，无需计算
+				lowestLow = low;
+			}
+			if(high > highestHigh && high !=0) {
+				highestHigh = high;
+			}
+			
+			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			
+		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
 		
-		double lowestLow =10000.0;  double highestHigh = 0.0; 
-		
-		int itemcount = tmpohlcSeries.getItemCount();
-		for(int i=0;i<itemcount;i++) {
-//				RegularTimePeriod dataitemp = ohlcSeries.getPeriod(i);
-				Double low = ( (OHLCItem)tmpohlcSeries.getDataItem(i) ).getLowValue();
-				Double high = ( (OHLCItem)tmpohlcSeries.getDataItem(i) ).getHighValue();
-				
-				if(low < lowestLow && low !=0) {//股价不可能为0，为0，说明停牌，无需计算
-					lowestLow = low;
-				}
-				if(high > highestHigh && high !=0) {
-					highestHigh = high;
-				}
-		}
 		try {
 			candlestickChart.getXYPlot().getRangeAxis(indexofseries).setRange(lowestLow*0.98, highestHigh*1.02);
 		} catch (java.lang.IllegalArgumentException e ) {

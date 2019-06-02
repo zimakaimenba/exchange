@@ -18,9 +18,9 @@ import org.apache.log4j.Logger;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 
 
@@ -138,7 +138,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    else {
 		    	LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
-		    	BanKuaiAndStockXPeriodData nodexdata = (BanKuaiAndStockXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+		    	TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 			    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(requireddate, 0);
 			    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(requireddate, 0);
 			    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  )
@@ -153,7 +153,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	if(dpmaxwk > 0 ) {
 	    		LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
-		    	BanKuaiAndStockXPeriodData nodexdata = (BanKuaiAndStockXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		    	Integer lianxuflnum = nodexdata.getLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
 		    	 
 		    	if(dpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) //连续放量,深色显示

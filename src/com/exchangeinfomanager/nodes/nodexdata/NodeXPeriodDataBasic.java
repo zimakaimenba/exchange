@@ -24,11 +24,10 @@ public interface NodeXPeriodDataBasic
 	
 	 void addNewXPeriodData (TDXNodeGivenPeriodDataItem kdata);
 
-	 LocalDate getRecordsStartDate ();
-	/*
-	 * 
-	 */
-	LocalDate getRecordsEndDate ();
+	 LocalDate getAmoRecordsStartDate ();
+	 LocalDate getAmoRecordsEndDate ();
+	 LocalDate getKXxianRecordsStartDate ();
+	 LocalDate getKXxianRecordsEndDate ();
 	
 	Boolean hasRecordInThePeriod (LocalDate requireddate, int difference); 
 	/*
@@ -84,7 +83,7 @@ public interface NodeXPeriodDataBasic
 	/*
 	 * 
 	 */
-	public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend);
+//	public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend);
 	/*
 	 * 
 	 */

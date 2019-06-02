@@ -59,7 +59,6 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.BanKuaiAndStockXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
@@ -136,10 +135,10 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			
 			//QueKou Line Part
 			if(super.curdisplayednode.getType() != BkChanYeLianTreeNode.DAPAN) {
-				Integer opneupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
-				Integer opendownquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
-				Integer huibuupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
-				Integer huibudowquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
+				Integer opneupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
+				Integer opendownquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
+				Integer huibuupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
+				Integer huibudowquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
 				 
 				if(opendownquekou != null) {
 					super.linechartdataset.setValue(opendownquekou, "QueKouOpenDown", wkfriday );
@@ -439,22 +438,22 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 			 }
 			 
 			 if(super.node.getType() == BkChanYeLianTreeNode.TDXGG || super.node.getType() == BkChanYeLianTreeNode.TDXBK ) {
-				 Integer opneupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenUp(selecteddate, 0);
+				 Integer opneupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenUp(selecteddate, 0);
 				 if( opneupquekou != null) {
 					 org.jsoup.nodes.Element li6 = dl.appendElement("li");
 					 li6.appendText("缺口OpenUp =" + opneupquekou);
 				 }
-				 Integer opendownquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiOpenDown(selecteddate, 0);
+				 Integer opendownquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenDown(selecteddate, 0);
 				 if( opendownquekou != null) {
 					 org.jsoup.nodes.Element li7 = dl.appendElement("li");
 					 li7.appendText("缺口OpenDown =" + opendownquekou);
 				 }
-				 Integer huibuupquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(selecteddate, 0);
+				 Integer huibuupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(selecteddate, 0);
 				 if( huibuupquekou != null) {
 					 org.jsoup.nodes.Element li8 = dl.appendElement("li");
 					 li8.appendText("缺口HuiBuUp =" + huibuupquekou );
 				 }
-				 Integer huibudowquekou = ( (BanKuaiAndStockXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(selecteddate, 0);
+				 Integer huibudowquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(selecteddate, 0);
 				 if( huibudowquekou != null) {
 					 org.jsoup.nodes.Element li9 = dl.appendElement("li");
 					 li9.appendText("缺口HuiBuDown =" + huibudowquekou );

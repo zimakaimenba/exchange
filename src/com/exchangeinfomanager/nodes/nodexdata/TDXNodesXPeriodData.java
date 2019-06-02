@@ -24,11 +24,11 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 /*
  * 某锟斤拷时锟斤拷锟斤拷锟节硷拷录锟斤拷锟斤拷丶锟斤拷锟�
  */
- public abstract class BanKuaiAndStockXPeriodData implements NodeXPeriodDataBasic
+ public abstract class TDXNodesXPeriodData implements NodeXPeriodDataBasic
  {
 	private String nodecode;
 
-	public BanKuaiAndStockXPeriodData (String nodecode,String nodeperiodtype1)
+	public TDXNodesXPeriodData (String nodecode,String nodeperiodtype1)
 	{
 		this.nodecode = nodecode;
 		this.nodeperiodtype = nodeperiodtype1;
@@ -41,7 +41,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		nodeexchangedaysnumber = new TimeSeries(nodeperiodtype1);
 	}
 	
-	private Logger logger = Logger.getLogger(BanKuaiAndStockXPeriodData.class);
+	private Logger logger = Logger.getLogger(TDXNodesXPeriodData.class);
 
 	private String nodeperiodtype;
 	protected OHLCSeries nodeohlc; //每锟秸成斤拷锟斤拷OHLC
@@ -247,21 +247,21 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	/*
 	 * 
 	 */
-	public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend)
-	{
-		OHLCSeries tmpohlc = new OHLCSeries ("Kxian");
-		int itemcount = this.nodeohlc.getItemCount();
-		for(int i=0;i<itemcount;i++) {
-			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-			LocalDate startd = dataitemp.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			LocalDate endd = dataitemp.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			
-			if( (startd.isAfter(requiredstart) || startd.equals(requiredstart) )  && ( endd.isBefore(requiredend) || endd.equals(requiredend) ))
-				tmpohlc.add( (OHLCItem) this.nodeohlc.getDataItem(i) );
-		}
-		
-		return tmpohlc;
-	}
+//	public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend)
+//	{
+//		OHLCSeries tmpohlc = new OHLCSeries ("Kxian");
+//		int itemcount = this.nodeohlc.getItemCount();
+//		for(int i=0;i<itemcount;i++) {
+//			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
+//			LocalDate startd = dataitemp.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//			LocalDate endd = dataitemp.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//			
+//			if( (startd.isAfter(requiredstart) || startd.equals(requiredstart) )  && ( endd.isBefore(requiredend) || endd.equals(requiredend) ))
+//				tmpohlc.add( (OHLCItem) this.nodeohlc.getDataItem(i) );
+//		}
+//		
+//		return tmpohlc;
+//	}
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getOHLCData(java.time.LocalDate, int)
@@ -370,7 +370,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getRecordsStartDate()
 	 */
-	public LocalDate getRecordsStartDate ()
+	public LocalDate getAmoRecordsStartDate ()
 	{
 		if(nodeamo.getItemCount() == 0)
 			return null;
@@ -380,15 +380,20 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
-		TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
-		LocalDate mondayday = startdate.with(fieldUS, 2);
+		if(this.nodeperiodtype == TDXNodeGivenPeriodDataItem.WEEK) {
+			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
+			LocalDate mondayday = startdate.with(fieldUS, 2);
+			return mondayday;
+		} else if(this.nodeperiodtype == TDXNodeGivenPeriodDataItem.DAY) {
+			return startdate;
+		}
 		
-		return mondayday;
+		return null;
 	}
 	/*
 	 * 
 	 */
-	public LocalDate getRecordsEndDate ()
+	public LocalDate getAmoRecordsEndDate ()
 	{
 		if(nodeamo.getItemCount() == 0)
 			return null;
@@ -400,8 +405,59 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
-		LocalDate saturday = enddate.with(DayOfWeek.SATURDAY);
-		return saturday;
+		if(this.nodeperiodtype == TDXNodeGivenPeriodDataItem.WEEK) {
+			LocalDate saturday = enddate.with(DayOfWeek.SATURDAY);
+			return saturday;
+		} else if(this.nodeperiodtype == TDXNodeGivenPeriodDataItem.DAY) {
+			return enddate;
+		}
+		
+		return null;
+		
+	}
+	public LocalDate getKXxianRecordsStartDate ()
+	{
+		if(this.nodeohlc.getItemCount() == 0)
+			return null;
+		
+//		int itemcount = nodeohlc.getItemCount();
+//		RegularTimePeriod firstperiod = nodeohlc.getPeriod(itemcount-1);
+		int itemcount = nodeohlc.getItemCount();
+		RegularTimePeriod firstperiod = nodeohlc.getPeriod(0);
+		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+	
+		if(this.nodeperiodtype == TDXNodeGivenPeriodDataItem.WEEK) {
+			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
+			LocalDate mondayday = startdate.with(fieldUS, 2);
+			return mondayday;
+		} else if(this.nodeperiodtype == TDXNodeGivenPeriodDataItem.DAY) {
+			return startdate;
+		}
+		
+		return null;
+		
+	}
+	public LocalDate getKXxianRecordsEndDate ()
+	{
+		if(this.nodeohlc.getItemCount() == 0)
+			return null;
+		
+//		int itemcount = nodeohlc.getItemCount();
+//		RegularTimePeriod firstperiod = nodeohlc.getPeriod(itemcount-1);
+		int itemcount = nodeohlc.getItemCount();
+		RegularTimePeriod firstperiod = nodeohlc.getPeriod(itemcount-1);
+		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+	
+		if(this.nodeperiodtype == TDXNodeGivenPeriodDataItem.WEEK) {
+			LocalDate saturday = enddate.with(DayOfWeek.SATURDAY);
+			return saturday;
+		} else if(this.nodeperiodtype == TDXNodeGivenPeriodDataItem.DAY) {
+			return enddate;
+		}
+		
+		return null;
 	}
 	/*
 	 * (non-Javadoc)
