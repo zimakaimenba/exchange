@@ -13,6 +13,7 @@ import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
@@ -51,20 +52,22 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	/**
 	 * Create the panel.
 	 */
-//	public BanKuaiFengXiNodeCombinedCategoryPnl(BkChanYeLianTreeNode curdisplayednode,String horizonorvertical) 
 	public BanKuaiFengXiNodeCombinedCategoryPnl(String horizonorvertical)
 	{
-//		this.curdisplayednode =  curdisplayednode;
 		if(horizonorvertical != null && horizonorvertical.toLowerCase().equals("horizon"))
 			this.horizonlayout = true;
 		else 
 			this.horizonlayout = false;
+		
+//		this.pnltype = cjeorcjl;
 		
 		initializeSystem ();
 	}
 	public BanKuaiFengXiNodeCombinedCategoryPnl()
 	{
 		this.horizonlayout = false;
+//		this.pnltype = cjeorcjl;
+		
 		initializeSystem ();
 	}
 	private void initializeSystem ()
@@ -87,6 +90,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	private String tooltipselected;
 	private LocalDate dateselected;
 	private boolean horizonlayout;
+	private String pnltype = "CJE"; //cje or cjl pnl?
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -101,15 +105,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		return this.curdisplayednode;
 	}
 	
-		
-	
-//	@Override
-//	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period) 
-//	{
-//		this.curdisplayednode = node;
-//		cjelargepnl.updatedDate(node, date, difference, period);
-//		cjezblargepnl.updatedDate(node, date, difference, period);
-//	}
+
 	@Override
 	public void updatedDate(TDXNodes node, LocalDate startdate,LocalDate enddate,String period) 
 	{
@@ -142,6 +138,14 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		cjezblargepnl.resetDate();
 		cjelargepnl.resetDate();
 	}
+	/*
+	 * 
+	 */
+	public void setAllowDrawAnnoation (Boolean allowdraw)
+	{
+		cjezblargepnl.setAllowDrawAnnoation(allowdraw);
+		cjelargepnl.setAllowDrawAnnoation(allowdraw);
+	}
 
 	/*
 	 * 
@@ -154,6 +158,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	public void propertyChange(PropertyChangeEvent evt)
 	{
 		if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+			
 			String selectedinfo = evt.getNewValue().toString();
             if(selectedinfo.equals("test"))
             	return;
@@ -171,6 +176,12 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
     		String selecteddate = li.get(0).text();
     		LocalDate datekey = LocalDate.parse(selecteddate);
     		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+    		//特别标记点击的日期，这样界面上看比较清晰
+    		if(cjezblargepnl.isAllowDrawAnnoation()) {
+				cjezblargepnl.setAnnotations(datekey);
+				cjelargepnl.setAnnotations(datekey);
+			}
+    		
     		
     		//把两个panel的HTML信息组合成一个HTML向上级界面分发
     		org.jsoup.select.Elements divnodecodename = content.select("nodecode");
@@ -217,12 +228,12 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
     		PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", html );
             pcs.firePropertyChange(evtnew);
     		
-//			setCurSelectedBarInfo (datekey,tooltip);
+
 			
 		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
 			String selectedinfo = evt.getNewValue().toString();
 			
-//			PropertyChangeEvent evt2 = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
+
 	        pcs.firePropertyChange(evt);
 		}
 		
@@ -247,11 +258,21 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		else
 			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		cjelargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
-		this.add(cjelargepnl);
+		if(this.pnltype.toUpperCase().equals("CJE")) {
+			cjelargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
+			this.add(cjelargepnl);
+			
+			cjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
+			this.add(cjezblargepnl);
+		} else if(this.pnltype.toUpperCase().equals("CJL")) {
+			cjelargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
+			this.add(cjelargepnl);
+			
+			cjezblargepnl = new BanKuaiFengXiCategoryBarChartCjlZhanbiPnl ();
+			this.add(cjezblargepnl);
+		} 
 		
-		cjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
-		this.add(cjezblargepnl);
+		
 		
 //		quekouImage = new JPopupMenu ();
 //		addPopup(this, quekouImage);

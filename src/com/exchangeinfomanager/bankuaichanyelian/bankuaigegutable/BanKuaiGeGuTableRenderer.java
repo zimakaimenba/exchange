@@ -37,12 +37,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
 	{
-//		{ "代码", "名称","权重","流通市值排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
+//		{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
 		
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    String valuepect = "";
-	    if (comp instanceof JLabel && (col == 4 || col == 6)) { //用百分比显示
+	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { //用百分比显示
 
 	    	try {
         		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
@@ -88,7 +88,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		foreground = Color.RED;
 	    	else 
 	    		foreground = Color.BLACK;
-	    } else if( col ==3) { //流通市值
+	    } else if( col == 2) { //流通市值
 	    	Double ltszmin = tablemodel.getDisplayLiuTongShiZhiMin() ;
 		    Double ltszmax = tablemodel.getDisplayLiuTongShiZhiMax() ;
 		    
@@ -117,20 +117,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	background = Color.yellow ;
 		    else
 		    	background = Color.white;
-	    } else if( col == 5  && value != null  ) { //突出显示bkMAXWK>=的个股
-	    	int bkmaxwk;
-	    	try {
-	    		 bkmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
-	    	} catch (java.lang.NullPointerException e) {
-	    		 bkmaxwk = -1;
-	    	}
-	    	
-	    	int fazhi = tablemodel.getDisplayCjeBKMaxWk();
-	    	 if(bkmaxwk >= fazhi )
-	    		 background = Color.magenta ;
-	    	 else 
-	    		 background = Color.white ;
-	    } else if(col == 6   && value != null) { //突出回补缺口
+	    }  else if(col == 3   && value != null) { //突出回补缺口
 	    	
 		    Boolean hlqk = tablemodel.shouldHighlightHuiBuDownQueKou();
 		    if(!hlqk)
@@ -147,46 +134,51 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    		 background = Color.white ;
 		    }
 		    
-	    } else  if( col == 7   && value != null  ) { 	    //突出显示dpMAXWK>=的个股
-	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
+	    } else  if( col == 5    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股
+	    	int cjedpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
 	    	int maxfazhi = tablemodel.getDisplayCjeZhanBiDPMaxWk();
-	    	if(dpmaxwk > 0 ) {
+	    	if(cjedpmaxwk > 0 ) {
 	    		LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
 			    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-		    	Integer lianxuflnum = nodexdata.getLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
+		    	Integer lianxuflnum = nodexdata.getCjeLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
 		    	 
-		    	if(dpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) //连续放量,深色显示
+		    	if(cjedpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) //连续放量,深色显示
 		    		background = new Color(102,0,0) ;
-		    	else if( dpmaxwk >= maxfazhi &&  lianxuflnum <2 )
+		    	else if( cjedpmaxwk >= maxfazhi &&  lianxuflnum <2 )
 		    		 background = new Color(255,0,0) ;
 		    	else 
 		    		 background = Color.white ;
 	    	} else {
 	    		int minfazhi = 0 - tablemodel.getDisplayCjeZhanBiDPMinWk(); //min都用负数表示
-	    		if(dpmaxwk <= minfazhi)
+	    		if(cjedpmaxwk <= minfazhi)
 	    			background = Color.GREEN ;
 	    		else
 	    			background = Color.white ;
 	    		
-	    	}
-	    	
-	    }else  if( col == 8  && value != null ) { //突出显示CjeMAXWK>=的个股
-	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 8).toString() );
-	    	
-	    	int fazhi = tablemodel.getDisplayCjeMaxWk();
-	    	 if( dpmaxwk >=fazhi )
-	    		 background = Color.CYAN ;
-	    	 else 
-	    		 background = Color.white ;
-	    } else   if( col == 9 && value != null  ) {	    //突出换手率
-	    	double hsl = Double.parseDouble( tablemodel.getValueAt(modelRow, 9).toString() );
-	    	
-	    	double shouldhsl = tablemodel.getDisplayHuanShouLv();
-	    	if(hsl >= shouldhsl)
-	    		 background = Color.BLUE.brighter() ;
-	    	 else 
-	    		 background = Color.white ;
+	    	} 
+	    } else  if( col == 7   && value != null  ) { 	    //突出显示cjldpMAXWK>=的个股
+		    	int cjldpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
+		    	int maxfazhi = tablemodel.getDisplayCjeZhanBiDPMaxWk();
+		    	if(cjldpmaxwk > 0 ) {
+		    		LocalDate requireddate = tablemodel.getShowCurDate();
+				    String period = tablemodel.getCurDisplayPeriod();
+				    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			    	Integer lianxuflnum = nodexdata.getCjlLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
+			    	 
+			    	if(cjldpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) //连续放量,深色显示
+			    		background = new Color(102,0,0) ;
+			    	else if( cjldpmaxwk >= maxfazhi &&  lianxuflnum <2 )
+			    		 background = new Color(255,0,0) ;
+			    	else 
+			    		 background = Color.white ;
+		    	} else {
+		    		int minfazhi = 0 - tablemodel.getDisplayCjeZhanBiDPMinWk(); //min都用负数表示
+		    		if(cjldpmaxwk <= minfazhi)
+		    			background = Color.GREEN ;
+		    		else
+		    			background = Color.white ;
+		    	}
 	    }
  
     	comp.setBackground(background);

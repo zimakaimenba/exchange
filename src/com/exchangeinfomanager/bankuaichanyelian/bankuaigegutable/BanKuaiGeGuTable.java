@@ -58,11 +58,11 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
-public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxDataValueListener
+public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable 
 { 
 	public BanKuaiGeGuTable (StockInfoManager stockmanager1)
 	{
-		super ();
+		super (stockmanager1);
 		
 		BanKuaiGeGuTableModel bkgegumapmdl = new BanKuaiGeGuTableModel();
 		this.setModel(bkgegumapmdl);
@@ -84,59 +84,22 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 //		sorter.setSortKeys(sortKeys);
 //		sorter.sort();
 		
-		this.bkdbopt = new BanKuaiDbOperation ();
-		this.newsdbopt = new StockCalendarAndNewDbOperation ();
-		this.stockmanager = stockmanager1;
-		
-		createMenu ();
-		createEvents ();
 	}
 	
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);
-	private StockInfoManager stockmanager;
-	private BanKuaiGeGuTableRenderer renderer;
-	private JMenuItem menuItemAddNews;
-	private JMenuItem menuItemAddGz;
-//	private JMenuItem menuItemReDian;
-	private JMenuItem menuItemQuanZhong;
-	private JMenuItem menuItemGeguInfo;
-	private JMenuItem menuItemLongTou;
-	private StockCalendarAndNewDbOperation newsdbopt;
-	private BanKuaiDbOperation bkdbopt;
-	private JPopupMenu popupMenuGeguNews;
-
-//	public void addNewMenuItem (JMenuItem newmenuitem)
-//	{
-//		this.popupMenuGeguNews.add(newmenuitem);
-//	}
 	
-	private void createMenu() 
-	{
-		popupMenuGeguNews = new JPopupMenu();
-		menuItemGeguInfo = new JMenuItem("个股信息");
-		menuItemAddNews = new JMenuItem("添加个股新闻");
-		menuItemAddGz = new JMenuItem("个股分析");
-//		menuItemReDian = new JMenuItem("标记龙头个股");
-		menuItemQuanZhong = new JMenuItem("设置股票板块权重");
-		menuItemLongTou = new JMenuItem("设为/取消板块龙头");
+	private BanKuaiGeGuTableRenderer renderer;
+
 		
-		popupMenuGeguNews.add(menuItemQuanZhong);
-		popupMenuGeguNews.add(menuItemLongTou);
-		popupMenuGeguNews.add(menuItemAddNews);
-		popupMenuGeguNews.add(menuItemAddGz);
-		popupMenuGeguNews.add(menuItemGeguInfo);
-//		popupMenuGeguNews.add(menuItemReDian);
-				
-		this.setComponentPopupMenu(popupMenuGeguNews);
-	}
-	/*
-	 * 
-	 */
-	public JPopupMenu getPopupMenu ()
-	{
-		return this.popupMenuGeguNews;
-	}
+
+//	/*
+//	 * 
+//	 */
+//	public JPopupMenu getPopupMenu ()
+//	{
+//		return this.popupMenuGeguNews;
+//	}
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#getCellRenderer(int, int)
@@ -145,51 +108,7 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 	{
 		return renderer;
 	}
-	/*
-	 * 
-	 */
-	public void sortByParsedFile ()
-	{
-		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 6; //优先排序占比增长
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-	}
-	/*
-	 * 
-	 */
-	public void sortByZhanBiGrowthRate ()
-	{
-		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 4; //优先排序占比增长
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-		
-		sortKeys = null;
-	}
 
-//	@Override
-//	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double showltszmin,Double showltszmax) 
-//	{
-////		if(cjezbbkmax != null)
-//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
-////		if(cjemaxwk != null )
-//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
-////		if(cjezbdpmax != null)
-//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
-////		if(cjemin != null || cjemax != null)
-//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
-////		if(showhsl != null)
-//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
-//			
-//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
-//		
-//		this.repaint();
-//	}
 	@Override
 	public void hightLightFxValues(ExportCondition expc) 
 	{
@@ -216,302 +135,33 @@ public class BanKuaiGeGuTable extends JTable implements BarChartHightLightFxData
 		this.repaint();
 		
 	}
-//	@Override
-//	public void hightLightFxValues(Integer cjezbtoupleveldpmax, Double cjemin, Double cjemax, Integer cjemaxwk, Double shoowhsl) {
-//		// TODO Auto-generated method stub
-//		
-//	}
 	
-    public String getToolTipText(MouseEvent e) {
-        String tip = null;
-        java.awt.Point p = e.getPoint();
-        int rowIndex = rowAtPoint(p);
-        int colIndex = columnAtPoint(p);
-
-        try {
-        	if(colIndex == 2) { //权重column的tip要具体
-				org.jsoup.nodes.Document doc = Jsoup.parse("");
-				org.jsoup.select.Elements content = doc.select("body");
-				content.append( "10~1 ：占主业营收比重<br>" );
-				content.append( "0 : 营收占比几乎没有概念阶段<br>" );
-				content.append( "-1 : 毫无关系<br>" );
-				
-				tip = doc.toString();
-        	} else
-        		tip = getValueAt(rowIndex, colIndex).toString();
-        } catch (RuntimeException e1) {
-            //catch null pointer exception if mouse is over an empty line
-        }
-
-        return tip;
-        
-        
-        
-    }
-	
-	private void createEvents() 
-	{
-		menuItemGeguInfo.addActionListener(new ActionListener() {
-			@Override
-
-			public void actionPerformed(ActionEvent evt) {
-
-				showGeGuInfoWin ();
-			}
-			
-		});
-		
-		menuItemAddNews.addActionListener(new ActionListener() {
-			@Override
-
-			public void actionPerformed(ActionEvent evt) {
-
-				addGeGuNews ();
-			}
-			
-		});
-		
-		menuItemLongTou.addActionListener(new ActionListener() {
-			@Override
-
-			public void actionPerformed(ActionEvent evt) {
-
-				setBanKuaiLongTou ();
-			}
-			
-		});
-
-		
-//		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
-		menuItemQuanZhong.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				setGeGuWeightInBanKuai ();
-			}
-			
-		});
-		
-		menuItemAddGz.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				addGuanZhu ();
-			}
-			
-		});
-		
-//		menuItemReDian.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent evt) {
-//				addReDian();
-//			}
-//			
-//		});
-		
-		
-		this.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent arg0) 
-        	{
-        		tableMouseClickActions (arg0);
-        	}
-        });
-
-		
-	}
-	
-	
-	protected void setBanKuaiLongTou() 
-	{
-		int row = this.getSelectedRow();
-		if(row <0) {
-			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		
-		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
-	
-		stockofbankuai.setBkLongTou(!stockofbankuai.isBkLongTou());
-
-		BanKuai bk = ((BanKuaiGeGuTableModel)this.getModel()).getCurDispalyBandKuai();
-		bkdbopt.setBanKuaiLongTou (bk,stockofbankuai.getMyOwnCode(),stockofbankuai.isBkLongTou());
-	}
-
-	protected void showGeGuInfoWin() 
-	{
-		 int  view_row = this.getSelectedRow();
-		 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
-		 
-		 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
-		 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
-		 this.stockmanager.preUpdateSearchResultToGui(stockcode);
-		 this.stockmanager.toFront();
-	}
-
-	private void tableMouseClickActions (MouseEvent arg0)
-	{
-
-        		 int  view_row = this.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
-				 int  view_col = this.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
-				 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
-				 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-				 
-        		if (arg0.getClickCount() == 1) {
-        		}
-        		 if (arg0.getClickCount() == 2) {
-//					 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
-//					 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
-//					 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
-//					 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-
-        			 //int column = tblSearchResult.getSelectedColumn();
-					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
-					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
-//					 logger.debug(stockcode);
-					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
-					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
-					 this.stockmanager.toFront();
-				 }
-
-	}
+//    public String getToolTipText(MouseEvent e) {
+//        String tip = null;
+//        java.awt.Point p = e.getPoint();
+//        int rowIndex = rowAtPoint(p);
+//        int colIndex = columnAtPoint(p);
 //
-//	protected void addReDian() 
-//	{
-//		int row = this.getSelectedRow();
-//		if(row <0) {
-//			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
-//		
-//		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-////		 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-//		
-//		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (model_row);
-//		
-//		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"龙头个股" ); 
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "龙头个股", JOptionPane.OK_CANCEL_OPTION);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-//		
-////		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-//		InsertedMeeting insetmeeting = newsdbopt.setReDianBanKuaiLongTouGeGuToShangYeXinWen(jiarujihua);
-//		
-//	}
-	/*
-	 * 
-	 */
-	protected void addGuanZhu() 
-	{
-		int row = this.getSelectedRow();
-		if(row <0) {
-			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		
-		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
-
-		LocalDate fxdate = ((BanKuaiGeGuTableModel)this.getModel()).getShowCurDate();
-		
-		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-		setCursor(hourglassCursor);
-		
-		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( stockofbankuai.getStock(),fxdate);
-    	ggfx.setSize(new Dimension(1400, 800));
-    	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
-    	ggfx.setLocationRelativeTo(null);
-    	
-    	Toolkit.getDefaultToolkit().beep();
-    	
-    	if(!ggfx.isVisible() ) 
-    		ggfx.setVisible(true);
-    	ggfx.toFront();
-    	
-    	ggfx = null;
-    	
-    	Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-		setCursor(hourglassCursor2);
-	
-	}
-	
-	protected void addGeGuNews() 
-	{
-		int row = this.getSelectedRow();
-		if(row <0) {
-			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		
-		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (model_row);
-		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-		cylnews.setVisible(true);
-//		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加个股新闻", JOptionPane.OK_CANCEL_OPTION);
-//		System.out.print(exchangeresult);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-		
-//		bkdbopt.newsdbopt(stockcode, cylnews.getInputedNews());
-	}
-	/*
-     * 设置该板块个股的权重
-     */
-	private void setGeGuWeightInBanKuai()
-    {
-		int row = this.getSelectedRow();
-		if(row < 0)
-			return;
-		int modelRow = this.convertRowIndexToModel(row);
-		
-//		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
-		BanKuai bkcode = ((BanKuaiGeGuTableModel)this.getModel()).getCurDispalyBandKuai();
-		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(modelRow);
-		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (modelRow);
-		
-		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重！\n\r"
-											+ "10~1 ：占主业营收比重,\n\r 0 : 营收占比几乎没有概念阶段,\n\r -1 : 毫无关系"
-				,weight);
-		try {
-			int newweight = Integer.parseInt(weightresult);
-			if(newweight> 10 || newweight < -1)
-				JOptionPane.showMessageDialog(null,"权重值范围10 ~ -1！\n\r"
-						,"Warning",JOptionPane.WARNING_MESSAGE);
-			
-			if(weight != newweight) {
-				bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
-				( (BanKuaiGeGuTableModel)this.getModel() ).setStockCurWeight (modelRow,newweight);
-			}
-		} catch (java.lang.NumberFormatException e) {
-			return;
-		}
-	}
-	
-//	public void hideZhanBiColumn (int hidecolumn) 
-//	{
-//		TableColumnModel tcm = this.getColumnModel();
-//		if(hidecolumn >1) {
-//			//在板块分析界面不需要3个column
-//			this.removeColumn(tcm.getColumn(3));
-//			this.removeColumn(tcm.getColumn(3));
-//			this.removeColumn(tcm.getColumn(3));
-//			this.removeColumn(tcm.getColumn(3));
+//        try {
+//        	if(colIndex == 2) { //权重column的tip要具体
+//				org.jsoup.nodes.Document doc = Jsoup.parse("");
+//				org.jsoup.select.Elements content = doc.select("body");
+//				content.append( "10~1 ：占主业营收比重<br>" );
+//				content.append( "0 : 营收占比几乎没有概念阶段<br>" );
+//				content.append( "-1 : 毫无关系<br>" );
+//				
+//				tip = doc.toString();
+//        	} else
+//        		tip = getValueAt(rowIndex, colIndex).toString();
+//        } catch (RuntimeException e1) {
+//            //catch null pointer exception if mouse is over an empty line
+//        }
 //
-//		} 
-////		else if (hidecolumn == 1) {
-////			this.removeColumn(tcm.getColumn(6));
-////		}
-//	}
-	
-	public void removeRows () 
-	{
-		BanKuaiGeGuTableModel model = (BanKuaiGeGuTableModel)this.getModel(); 
-		int rows = model.getRowCount(); 
-		for(int i = rows - 1; i >=0; i--)
-		{
-		   model.removeRow(i); 
-		}
-	}
-
-
-
+//        return tip;
+//        
+//        
+//        
+//    }
 	
 
 

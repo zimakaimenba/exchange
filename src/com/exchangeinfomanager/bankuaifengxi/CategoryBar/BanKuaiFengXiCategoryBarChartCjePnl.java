@@ -93,7 +93,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 */
 	public void setBanKuaiJiaoYiEr (TDXNodes node,LocalDate startdate,LocalDate enddate,String period)
 	{
-		this.curdisplayednode = node;
+		super.setCurDisplayNode( node );
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
 		displayDataToGui (nodexdata,startdate,enddate,period);
 	}
@@ -103,11 +103,11 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	private void displayDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period) 
 	{
 		DaPan dapan;
-		if(super.curdisplayednode.getType() == BkChanYeLianTreeNode.BKGEGU) {
-			BanKuai bk = ((StockOfBanKuai)super.curdisplayednode).getBanKuai();
+		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
+			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
 			dapan = (DaPan)bk.getRoot();
 		} else
-			dapan = (DaPan)(this.curdisplayednode.getRoot());
+			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
@@ -123,18 +123,18 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);
 			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 			if(cje != null) {
-				barchartdataset.setValue(cje,"占比", wkfriday);
+				barchartdataset.setValue(cje,super.getRowKey(), wkfriday);
 				
 				if(cje > highestHigh)
 					highestHigh = cje;
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
-					barchartdataset.setValue(0.0,"占比",wkfriday);
+					barchartdataset.setValue(0.0,super.getRowKey(),wkfriday);
 				} 
 			}
 			
 			//QueKou Line Part
-			if(super.curdisplayednode.getType() != BkChanYeLianTreeNode.DAPAN) {
+			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
 				Integer opneupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
 				Integer opendownquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
 				Integer huibuupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
@@ -182,11 +182,11 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			return;
 		
 		CustomRendererForCje cjerender = (CustomRendererForCje) super.plot.getRenderer(0); 
-		cjerender.setDisplayNode(this.curdisplayednode);
+		cjerender.setDisplayNode(this.getCurDisplayedNode() );
 		cjerender.setDisplayNodeXPeriod (nodexdata);
 			
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis(0);
-		axis.setDisplayNode(this.curdisplayednode,period);
+		axis.setDisplayNode(this.getCurDisplayedNode(),period);
 		
 		try{
 			super.plot.getRangeAxis(0).setRange(0, highestHigh*1.12);

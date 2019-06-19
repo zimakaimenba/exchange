@@ -1965,8 +1965,22 @@ public class BanKuaiDbOperation
 					e.printStackTrace();
 				}
 				
-				sqldeletetstat = "DELETE  FROM 产业链子板块列表"
-						+ " WHERE 所属通达信板块=" + "'"  + oldbkcode.trim() + "'"
+				sqldeletetstat = "DELETE 产业链子板块列表"
+						+ "	FROM 产业链子板块列表"
+						+ "INNER JOIN 产业链板块子板块对应表 ON 产业链子板块列表.子板块代码 = 产业链板块子板块对应表.子板块代码"
+						;
+				logger.debug(sqldeletetstat);
+				try {
+					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+				} catch (MysqlDataTruncation e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				sqldeletetstat = "DELETE  FROM 产业链板块子板块对应表"
+						+ " WHERE 通达信板块代码 =" + "'"  + oldbkcode.trim() + "'"
 						;
 				logger.debug(sqldeletetstat);
 				try {
@@ -3713,12 +3727,11 @@ public class BanKuaiDbOperation
 			e.printStackTrace();
 		}
 		
-		
-		
-		LocalDate lastdaydate = requiredstartday.with(fieldCH, 6); //
-		OHLCSeries nodenewohlc = new OHLCSeries("TEMPK");
-		 
+
 		try {
+			LocalDate lastdaydate = requiredstartday.with(fieldCH, 6); //
+			OHLCSeries nodenewohlc = new OHLCSeries("TEMPK");
+			
 			String [] linevalue ;
 			while ( (linevalue = stockcsvreader.readNext())!=null ) {
 				String recordsdate = linevalue[0];
@@ -3761,9 +3774,6 @@ public class BanKuaiDbOperation
 				 stokofbkrecord.setRecordsDayofEndofWeek(sqldate);
 				 nodedayperioddata.addNewXPeriodData(stokofbkrecord);
 				 
-				 if(stock.getMyOwnCode().equals("600030") && curlinedate.equals(LocalDate.parse("2018-12-24") ) )
-						 System.out.println("test");
-				 
 				 //计算周线OHLC数据
 				 WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
 				 int lastdayweekNumber = lastdaydate.get(weekFields.weekOfWeekBasedYear());
@@ -3778,13 +3788,20 @@ public class BanKuaiDbOperation
 					 nodenewohlc = new OHLCSeries("TEMPK");
 					 lastdaydate = curlinedate.with(DayOfWeek.FRIDAY);
 					 nodenewohlc.add(stokofbkrecord);
+					 stokofbkrecord = null;
 				 }
 					 
 			}
+			 //目前算法最后一周要跳出循环后才能计算
+			this.getTDXNodesWeeklyKXianZouShi(stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+			
+			nodenewohlc = null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 		
 		return stock;
 
@@ -3871,22 +3888,14 @@ public class BanKuaiDbOperation
 			actiontables = this.getActionRelatedTables ((BanKuai)bk,null);
 			searchtable = actiontables.get("板块每日交易量表");
 		} 
-//		else
-//		if(bk.getType() == BkChanYeLianTreeNode.TDXGG) {
-//			actiontables = this.getActionRelatedTables (null,bk.getMyOwnCode());
-//			searchtable = actiontables.get("股票每日交易量表");
-//		}
 		
+		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
+		nodestartday = nodestartday.with(fieldCH, 1); //确保K线总是显示完整得一周
+		nodeendday = nodeendday.with(fieldCH, 7);
 		
 		NodeXPeriodDataBasic nodedayperioddata = bk.getNodeXPeroidData(period);
 		
 		String nodecode = bk.getMyOwnCode();
-//		String jys = bkorstock.getSuoShuJiaoYiSuo();
-//		String searchtable;
-//		if(jys.toLowerCase().equals("sh"))
-//			searchtable = "通达信上交所股票每日交易信息";
-//		else
-//			searchtable = "通达信深交所股票每日交易信息";
 		
 		String sqlquerystat = "SELECT *  FROM " + searchtable + " \r\n" + 
 				"WHERE 代码='" + nodecode + "'" + "\r\n" + 
@@ -3894,6 +3903,8 @@ public class BanKuaiDbOperation
 				;
 		
 		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
+		LocalDate lastdaydate = nodestartday.with(fieldCH, 6); //
+		OHLCSeries nodenewohlc = new OHLCSeries("TEMPK");
 		try {  
 			 rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
 			
@@ -3913,8 +3924,31 @@ public class BanKuaiDbOperation
 				 stokofbkrecord.setRecordsDayofEndofWeek(actiondate);
 				 nodedayperioddata.addNewXPeriodData(stokofbkrecord);
 				 
+				 //计算周线OHLC数据
+				 WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
+				 int lastdayweekNumber = lastdaydate.get(weekFields.weekOfWeekBasedYear());
+				 int curweekNumber = actiondate.toLocalDate().get(weekFields.weekOfWeekBasedYear());
+				 if(lastdayweekNumber == curweekNumber) {
+					 try{
+						 nodenewohlc.add(stokofbkrecord);
+					 } catch (java.lang.IllegalArgumentException e) {
+						 e.printStackTrace();
+					 }
+				 } else {
+					 //换周了，计算上一周周线OHLC 数据
+					 this.getTDXNodesWeeklyKXianZouShi(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+					 
+					 nodenewohlc = null;
+					 nodenewohlc = new OHLCSeries("TEMPK");
+					 lastdaydate = actiondate.toLocalDate().with(DayOfWeek.FRIDAY);
+					 nodenewohlc.add(stokofbkrecord);
+				 }
+				 
 				 stokofbkrecord = null;
 			 }
+			 //目前算法最后一周要跳出循环后才能计算
+			 this.getTDXNodesWeeklyKXianZouShi(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+				
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();
 //			logger.debug( "数据库连接为NULL!");
@@ -3931,6 +3965,7 @@ public class BanKuaiDbOperation
 			}
 			rsfx = null;
 			searchtable = null;
+			nodenewohlc = null;
 		}
 
 		return bk;

@@ -25,7 +25,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		super ();
 	}
 	
-	String[] jtableTitleStrings = { "板块代码", "板块名称","占比增长率","占比MaxWk","成交额增长贡献率","CjeMaxWk","成交额排名"};
+	String[] jtableTitleStrings = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"};
 	List<BanKuai> entryList;
 	LocalDate showzhbiwknum;
 	private String curperiod;
@@ -55,14 +55,16 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	{
 		return this.showzhbiwknum;
 	}
-	public void addBanKuai (BanKuai bankuai)
+	public void addBanKuai ( BanKuai bankuai)
 	{
 		if(entryList == null)
 			entryList = new ArrayList<BanKuai> ();
-		else
-			entryList.add(bankuai);
 		
-		
+		entryList.add(bankuai);
+	}
+	public void addBanKuai ( List<BanKuai> bankuaiwithcje)
+	{
+		entryList = bankuaiwithcje;
 	}
 	
 	 public int getRowCount() 
@@ -114,7 +116,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	String thisbkname = bankuai.getMyOwnName();
             	value = thisbkname;
             	break;
-            case 2: //"板块代码", "板块名称","占比增长率","MaxWeek","成交额增长贡献率"
+            case 2: //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
             	Double zhanbigrowthrate = bkxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum,0);// fxjg.getGgBkCjeZhanbiGrowthRate();
             	value = zhanbigrowthrate;
             	
@@ -123,17 +125,34 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	bankuai = null;
             			
             	break;
-            case 3:
-            	Integer maxweek = bkxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showzhbiwknum,0);// fxjg.getGgBkCjeZhanbiMaxweek();
-            	value = maxweek;
+            case 3: //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
+            	Double zhanbi = bkxdata.getChenJiaoErZhanBi(showzhbiwknum, 0);
+            	value = zhanbi;
             	
-            	maxweek = null;
+            	zhanbi = null;
             	bkxdata = null;
             	bankuai = null;
             	
             	break;
             case 4:
-            	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(dapan,showzhbiwknum,0);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
+            	Double cjlzhanbigrowthrate = bkxdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum,0);
+            	value = cjlzhanbigrowthrate;
+            	
+            	cjlzhanbigrowthrate = null;
+            	bkxdata = null;
+            	bankuai = null;
+            	break;
+            case 5:
+            	Double cjlzhanbi = bkxdata.getChenJiaoLiangZhanBi(showzhbiwknum, 0);
+            	value = cjlzhanbi;
+            	
+            	cjlzhanbi = null;
+            	bkxdata = null;
+            	bankuai = null;
+            	
+            	break;
+            case 6:
+            	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(dapan,showzhbiwknum,0);
             	value = cjegrowthrate;
             	
             	cjegrowthrate = null;
@@ -141,17 +160,8 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	bankuai = null;
             	
             	break;
-            case 5:
-            	Integer cjemaxwk = bkxdata.getChenJiaoErMaxWeekOfSuperBanKuai(showzhbiwknum,0);// fxjg.getGgBkCjeGrowthRateToSuperBanKuaiCjeGrowth();
-            	
-            	value = cjemaxwk;
-            	
-            	cjemaxwk = null;
-            	bkxdata = null;
-            	bankuai = null;
-            	
-            	break;
-            case 6: 
+
+            case 7: 
             	if(bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) {
             		Integer chengjiaoerpaiming = this.entryList.indexOf(bankuai) + 1;
             		value = chengjiaoerpaiming;
@@ -169,7 +179,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
      public Class<?> getColumnClass(int columnIndex) {
 		      Class clazz = String.class;
 		      switch (columnIndex) {
-		      case 0:
+		      case 0://"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
 		    	  clazz = String.class;
 		    	  break;
 		        case 1:
@@ -179,15 +189,18 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			          clazz = Double.class;
 			          break;
 		        case 3:
-			          clazz = Integer.class;
+			          clazz = Double.class;
 			          break;
 		        case 4:
 			          clazz = Double.class;
 			          break;
 		        case 5:
-			          clazz = Integer.class;
+			          clazz = Double.class;
 			          break;
 		        case 6:
+			          clazz = Double.class;
+			          break;
+		        case 7:
 		        	clazz = Integer.class;
 			          break;		
 		      }

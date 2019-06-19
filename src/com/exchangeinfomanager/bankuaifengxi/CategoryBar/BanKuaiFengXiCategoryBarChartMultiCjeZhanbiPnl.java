@@ -93,7 +93,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		barchartdataset.clear();
 		
 		for(BkChanYeLianTreeNode node : nodelist) {
-			super.curdisplayednode = (TDXNodes) node;
+			super.setCurDisplayNode( (TDXNodes) node );
 			super.globeperiod = period;
 			NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(period);
 			
@@ -105,7 +105,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 	 */
 	private void displayDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period)
 	{
-		DaPan dapan = (DaPan)this.curdisplayednode.getRoot();
+		DaPan dapan = (DaPan)this.getCurDisplayedNode().getRoot();
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.MONDAY);
@@ -123,13 +123,13 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 			tmpwk = null;
 			if(cjerecord != null) {
 				double cjezb = cjerecord.getValue().doubleValue();
-				barchartdataset.setValue(cjezb,curdisplayednode.getMyOwnCode(),tmpdate.with(DayOfWeek.FRIDAY));
+				barchartdataset.setValue(cjezb,super.getRowKey(),tmpdate.with(DayOfWeek.FRIDAY));
 				
 				if(cjezb > highestHigh)
 					highestHigh = cjezb;
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
-					barchartdataset.setValue(0.0,curdisplayednode.getMyOwnCode(),tmpdate);
+					barchartdataset.setValue(0.0,super.getRowKey(),tmpdate);
 				} 
 			}
 			
@@ -142,7 +142,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
-		setPanelTitle ("成交额" + period + curdisplayednode.getMyOwnCode(),requireend);
+		setPanelTitle ("成交额" + period + super.getCurDisplayedNode().getMyOwnCode(),requireend);
 		
 		super.barchart.setNotify(true);
 		operationAfterDataSetup (nodexdata,requirestart,requireend,highestHigh,period);
@@ -158,7 +158,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		
 		//如有分析结果，ticklable显示红色
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
-		axis.setDisplayNode(this.curdisplayednode,period);
+		axis.setDisplayNode(this.getCurDisplayedNode(),period);
 		
 //		super.plot.getRangeAxis().setRange(0, highestHigh*1.12);
 	}
@@ -173,15 +173,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		this.barchart.fireChartChanged();//必须有这句
 		
 	}
-//	public void hightLightFxValues(Integer cjezdpkmax,Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double ltszmin,Double ltszmax) 
-//	{
-//		
-//	}
-	@Override
-	public void updatedDate(TDXNodes node, LocalDate date, int difference, String period) {
-		// TODO Auto-generated method stub
-		
-	}
+
 	@Override
 	public void updatedDate(TDXNodes node, LocalDate startdate, LocalDate enddate, String period) {
 		// TODO Auto-generated method stub

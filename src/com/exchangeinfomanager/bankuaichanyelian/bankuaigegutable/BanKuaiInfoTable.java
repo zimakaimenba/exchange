@@ -59,7 +59,6 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 		super ();
 		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel ();
 		this.setModel(bkmodel);
-//		this.allbkgg = AllCurrentTdxBKAndStoksTree.getInstance();
 		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		
 		this.createEvents ();
@@ -72,7 +71,6 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	    header.setToolTipText("Default ToolTip TEXT");
 	    this.setTableHeader(header);
 	    
-//		this.bkdbopt = new BanKuaiDbOperation ();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.stockmanager = stockmanager1;
 	}
@@ -168,23 +166,6 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 				 }
 
 	}
-//	@Override
-//	public void hightLightFxValues(Integer cjezbdpmax, Integer cjezbbkmax, Double cjemin, Double cjemax, Integer cjemaxwk,Double showhsl,Double ltszmin,Double ltszmax) 
-//	{
-////		((BanKuaiInfoTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
-////		((BanKuaiInfoTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
-////		((BanKuaiInfoTableModel)this.getModel()).setDisplayCjeDPMaxWk (cjezbdpmax);
-////		((BanKuaiInfoTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
-////		((BanKuaiInfoTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
-//		
-////		this.repaint();
-//	}
-//	@Override
-//	public void hightLightFxValues(Integer cjezbtoupleveldpmaxwk, Double cjemin, Double cjemax, Integer cjemaxwk,
-//			Double shoowhsl) {
-//		// TODO Auto-generated method stub
-//		
-//	}
 	@Override
 	public void hightLightFxValues(ExportCondition expc) 
 	{
@@ -223,8 +204,8 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        //更改显示
 	        if (comp instanceof JLabel && col == 0) {
 	        	
-	        } else
-	        if (comp instanceof JLabel && (col == 2 ||  col == 4)) {
+	        } else  //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
+	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||  col == 4 ||  col == 5 ||  col == 6  )) {
             	String value =  ((JLabel)comp).getText();
             	if(value == null || value.length() == 0)
             		return null;
@@ -263,12 +244,7 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 //		         }
 	        }
 	        
-//	        if(col == 2 || col == 3 || col == 4 ) {
-//	        	if(bankuai.getNodeTreerelated().getInZdgzCandidateCount() >0 || bankuai.getNodeTreerelated().getInZdgzOfficalCount() >0)
-//	        		background = Color.RED;
-//		        else
-//		        	background = Color.white;
-//	        }
+
 	        
 	        if (!this.isRowSelected(row)) {
 	        	comp.setBackground(background);

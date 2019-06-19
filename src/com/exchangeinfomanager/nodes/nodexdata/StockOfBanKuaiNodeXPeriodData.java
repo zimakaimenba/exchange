@@ -233,11 +233,15 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 	}
 
 	@Override
-	public Integer getLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
+	public Integer getCjeLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	@Override
+	public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	@Override
 	public LocalDate getKXxianRecordsStartDate() {
 		// TODO Auto-generated method stub
@@ -249,5 +253,55 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,
+			int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getChengJiaoLiang(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getChenJiaoLiangZhanBi(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 
 }

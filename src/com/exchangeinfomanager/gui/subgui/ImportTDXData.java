@@ -242,9 +242,9 @@ public class ImportTDXData extends JDialog {
 				        	tfldresult.append(line+"\n");
 				        }
 					} catch (IOException e) {
-						e.printStackTrace();
+//						e.printStackTrace();
 					} catch (java.lang.NullPointerException e) {
-					}
+					} 
 					
 					cbximporttdxgeguinfo.setEnabled(false);
 		 }

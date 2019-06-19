@@ -65,7 +65,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -73,6 +76,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -103,9 +107,12 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
-	protected TDXNodes curdisplayednode;	
+	private TDXNodes curdisplayednode;	
 	protected String globeperiod = "WEEK";
 	protected int shoulddisplayedmonthnum;
+	private String rowKey;
+	private Boolean allowdrawannoation;
+	
 	
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
@@ -113,6 +120,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //	protected DefaultCategoryDataset linechartdataset;
 	protected JFreeChart barchart;
 	private List<CategoryMarker> categorymarkerlist;
+	
 	protected boolean displayhuibuquekou;
 	private SystemConfigration sysconfig;
 	
@@ -128,6 +136,36 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	/*
 	 * 
 	 */
+	public void setAllowDrawAnnoation (Boolean allowornot)
+	{
+		this.allowdrawannoation = allowornot;
+	}
+	public Boolean isAllowDrawAnnoation ()
+	{
+		if(this.allowdrawannoation == null)
+			return false;
+		else
+			return this.allowdrawannoation ;
+	}
+	/*
+	 * 
+	 */
+	protected void setCurDisplayNode (TDXNodes curdisplayednode1) 
+	{
+		 curdisplayednode = curdisplayednode1;
+		 this.rowKey = this.curdisplayednode.getMyOwnCode();
+	}
+	public TDXNodes getCurDisplayedNode ()
+	{
+		return this.curdisplayednode;
+	}
+	protected String getRowKey ()
+	{
+		return this.curdisplayednode.getMyOwnCode();
+	}
+	/*
+	 * 
+	 */
 	public void setDaZiJinValueMarker (double d)
 	{
 		ValueMarker marker = new ValueMarker (d);
@@ -135,6 +173,35 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
 		marker.setPaint(Color.BLACK);
 		this.plot.addRangeMarker(marker);
+	}
+	/*
+	 * 
+	 */
+	public void setAnnotations (LocalDate columnkey )
+	{
+	     //特别标记选定的周，作用在界面上操作后会体会出来。
+        plot.clearAnnotations();
+        if(isAllowDrawAnnoation ())
+        	markASpecificColumn (columnkey,"选定周");
+		
+	}
+	/*
+	 *特别标记某个日期 
+	 */
+	protected void markASpecificColumn (LocalDate markdate,String markstring)
+	{
+		Number dvalue = barchartdataset.getValue( this.getRowKey(), markdate );
+        try {
+	        
+	        CategoryPointerAnnotation pointeronemonth = new CategoryPointerAnnotation(markstring, markdate, dvalue.doubleValue() , 180 );
+//	        pointeronemonth.setBaseRadius(0.0);
+//	        pointeronemonth.setTipRadius(25.0);
+	        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
+	        pointeronemonth.setPaint(Color.BLACK);
+	        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
+			this.plot.addAnnotation(pointeronemonth);
+        } catch (java.lang.NullPointerException e) {
+        }
 	}
 	/*
 	 * 区分出bar的年份或者月份
@@ -200,13 +267,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	/*
 	 * 
 	 */
-	public BkChanYeLianTreeNode getCurDisplayedNode ()
-	{
-		return this.curdisplayednode;
-	}
-	/*
-	 * 
-	 */
 	public void resetDate ()
 	{
 		if(barchartdataset != null)
@@ -224,12 +284,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //		for(CategoryPointerAnnotation pointer : pointerlist) 
 //			this.plot.removeAnnotation(pointer);
 		
+//		if(!this.isAllowDrawAnnoation())
 		this.plot.clearAnnotations();
 		
 		this.chartPanel.removeAll();
 		
 		this.barchart.fireChartChanged();//必须有这句
 	}
+	
    /*
     * 
     */
@@ -257,7 +319,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
             	        String selectedtooltip = xyitem.getToolTipText();
             	        
             	        setCurSelectedBarInfo (columnkey,selectedtooltip);
-//            	        highLightSpecificBarColumn (columnkey);
+            	        
+            	   
 
             	        selectchanged = true;
         	    	} catch ( java.lang.ClassCastException e ) {
@@ -270,26 +333,16 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			public void chartMouseMoved(ChartMouseEvent arg0) {
     	    	ToolTipManager.sharedInstance().setDismissDelay(60000); //让tooltips显示时间延长
 			}
-    	    
-//    	    public void mouseEntered(MouseEvent me) {
-//    	        ToolTipManager.sharedInstance().setDismissDelay(60000); //让tooltips显示时间延长
-//    	    }
-//
-//    	    private final int defaultDismissTimeout = ToolTipManager.sharedInstance().getDismissDelay();
-//    	    public void mouseExited(MouseEvent me) {
-//    	        ToolTipManager.sharedInstance().setDismissDelay(defaultDismissTimeout);
-//    	    }
-
     	});
     	
-    	mntmHideBars.addActionListener(new ActionListener() {
-			@Override
-
-			public void actionPerformed(ActionEvent evt) 
-			{
-				
-			}
-    	});
+//    	mntmHideBars.addActionListener(new ActionListener() {
+//			@Override
+//
+//			public void actionPerformed(ActionEvent evt) 
+//			{
+//				
+//			}
+//    	});
 
     	
 //    	mntmFenXiJiLu.addActionListener(new ActionListener() {
@@ -344,6 +397,9 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(3)).setBarColumnShouldChangeColor(indexforline);
     	
         this.dateselected = selecteddate;
+        //特别标记选定的周，作用在界面上操作后会体会出来。
+//        plot.clearAnnotations();
+        
         this.barchart.fireChartChanged();//必须有这句
     }
     @Override
@@ -398,7 +454,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     			}
     		
         }
-        
         
 		String htmlstring = outputdoc.toString();
 		
@@ -504,8 +559,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //		mntmqkopendown = new JMenuItem("统计新开向下跳空缺口");
 //		mntmqkhuibuup = new JMenuItem("统计回补上跳空缺口");
 //		mntmqkhuibudown = new JMenuItem("统计回补下跳空缺口");
-        mntmHideBars = new JMenuItem("隐藏占比数据");
-		chartPanel.getPopupMenu().add(mntmHideBars);
+//        mntmHideBars = new JMenuItem("隐藏占比数据");
+//		chartPanel.getPopupMenu().add(mntmHideBars);
 		
 		this.categorymarkerlist = new ArrayList<> ();
    }

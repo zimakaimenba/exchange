@@ -57,13 +57,21 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	protected TimeSeries nodeqktjopendown;
 	protected TimeSeries nodeqktjhuibudown;
 	//均线
-	protected TimeSeries nodema5;
-	protected TimeSeries nodema10;
-	protected TimeSeries nodema20;
-	protected TimeSeries nodema30;
-	protected TimeSeries nodema60;
-	protected TimeSeries nodema120;
-	protected TimeSeries nodema250;
+	protected TimeSeries nodeohlcma5;
+	protected TimeSeries nodeohlcma10;
+	protected TimeSeries nodeohlcma20;
+	protected TimeSeries nodeohlcma30;
+	protected TimeSeries nodeohlcma60;
+	protected TimeSeries nodeohlcma120;
+	protected TimeSeries nodeohlcma250;
+	
+	protected TimeSeries nodeamoma5;
+	protected TimeSeries nodeamoma10;
+	protected TimeSeries nodeamoma20;
+	protected TimeSeries nodeamoma30;
+	protected TimeSeries nodeamoma60;
+	protected TimeSeries nodeamoma120;
+	protected TimeSeries nodeamoma250;
 	
 	public String getNodeCode ()
 	{
@@ -82,10 +90,12 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		try {
 			nodeamo.setNotify(false);
 			nodeamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
-//			nodevol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
+			nodevol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
 			if(kdata.getCjeZhanBi() != null) {
 				nodeamozhanbi.setNotify(false);
 				nodeamozhanbi.add(kdata.getPeriod(),kdata.getCjeZhanBi(),false);
+				nodevolzhanbi.setNotify(false);
+				nodevolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
 			}
 //			if(kdata.getCjlZhanBi() != null)
 //				nodevolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
@@ -299,13 +309,6 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	public String getNodeperiodtype() {
 		return nodeperiodtype;
 	}
-	/*
-	 * 
-	 */
-//	public TimeSeries getChengJiaoEr ()
-//	{
-//		return nodeamo; //锟缴斤拷锟斤拷
-//	}
 	/*
 	 * 
 	 */
@@ -708,7 +711,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	  * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getLianXuFangLiangPeriodNumber(java.time.LocalDate, int, int)
 	  * 计算连续放指定的量的周期数
 	  */
-	 public Integer getLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk)
+	 public Integer getCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk)
 	 {
 		 	
 		 	int recordnum = this.nodeohlc.getItemCount();
@@ -734,108 +737,108 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		 RegularTimePeriod period = getJFreeChartFormateTimePeriod(requireddate,difference);
 		 Double ma5;Double ma10;Double ma20;Double ma30;Double ma60;Double ma120;Double ma250;
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema5.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeamoma5.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma5 = calculateAmoMA (5,requireddate,difference);
 				 if(ma5 != null)
-					 this.nodema5.add(period,ma5);
+					 this.nodeamoma5.add(period,ma5);
 			 } else
 				ma5 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema5 = new TimeSeries(this.nodeperiodtype);
+			 	nodeamoma5 = new TimeSeries(this.nodeperiodtype);
 			 	ma5 = calculateAmoMA (5,requireddate,difference);
 			 	if(ma5 != null)
-			 		this.nodema5.add(period,ma5);
+			 		this.nodeamoma5.add(period,ma5);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema10.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeamoma10.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma10 = calculateAmoMA (10,requireddate,difference);
 				 if(ma10 != null)
-					 this.nodema10.add(period,ma10);
+					 this.nodeamoma10.add(period,ma10);
 			 } else
 				ma10 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema10 = new TimeSeries(this.nodeperiodtype);
+			 	nodeamoma10 = new TimeSeries(this.nodeperiodtype);
 			 	ma10 = calculateAmoMA (10,requireddate,difference);
 			 	if(ma10 != null)
-			 		this.nodema10.add(period,ma10);
+			 		this.nodeamoma10.add(period,ma10);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema20.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeamoma20.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma20 = calculateAmoMA (20,requireddate,difference);
 				 if(ma20 != null)
-					 this.nodema20.add(period,ma20);
+					 this.nodeamoma20.add(period,ma20);
 			 } else
 				ma20 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema20 = new TimeSeries(this.nodeperiodtype);
+			 	nodeamoma20 = new TimeSeries(this.nodeperiodtype);
 			 	ma20 = calculateAmoMA (20,requireddate,difference);
 			 	if(ma20 != null)
-			 		this.nodema20.add(period,ma20);
+			 		this.nodeamoma20.add(period,ma20);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema30.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeamoma30.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma30 = calculateAmoMA (30,requireddate,difference);
 				 if(ma30 != null)
-					 this.nodema30.add(period,ma30);
+					 this.nodeamoma30.add(period,ma30);
 			 } else
 				ma30 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema30 = new TimeSeries(this.nodeperiodtype);
+			 	nodeamoma30 = new TimeSeries(this.nodeperiodtype);
 			 	ma30 = calculateAmoMA (30,requireddate,difference);
 			 	if(ma30 != null)
-			 		this.nodema30.add(period,ma30);
+			 		this.nodeamoma30.add(period,ma30);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema60.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeamoma60.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma60 = calculateAmoMA (60,requireddate,difference);
 				 if(ma60 != null)
-					 this.nodema60.add(period,ma60);
+					 this.nodeamoma60.add(period,ma60);
 			 } else
 				ma60 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema60 = new TimeSeries(this.nodeperiodtype);
+			 	nodeamoma60 = new TimeSeries(this.nodeperiodtype);
 			 	ma60 = calculateAmoMA (60,requireddate,difference);
 			 	if(ma60 != null)
-			 		this.nodema60.add(period,ma60);
+			 		this.nodeamoma60.add(period,ma60);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema120.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeamoma120.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma120 = calculateAmoMA (120,requireddate,difference);
 				 if(ma120 != null)
-					 this.nodema120.add(period,ma120);
+					 this.nodeamoma120.add(period,ma120);
 			 } else
 				ma120 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema120 = new TimeSeries(this.nodeperiodtype);
+			 	nodeamoma120 = new TimeSeries(this.nodeperiodtype);
 			 	ma120 = calculateAmoMA (120,requireddate,difference);
 			 	if(ma120 != null)
-			 		this.nodema120.add(period,ma120);
+			 		this.nodeamoma120.add(period,ma120);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema250.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeamoma250.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma250 = calculateAmoMA (250,requireddate,difference);
 				 if(ma250 != null)
-					 this.nodema250.add(period,ma250);
+					 this.nodeamoma250.add(period,ma250);
 			 } else
 				ma250 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema250 = new TimeSeries(this.nodeperiodtype);
+			 	nodeamoma250 = new TimeSeries(this.nodeperiodtype);
 			 	ma250 = calculateAmoMA (250,requireddate,difference);
 			 	if(ma250 != null)
-			 		this.nodema250.add(period,ma250);
+			 		this.nodeamoma250.add(period,ma250);
 		 }
 		 
 		 Double ma[] = {ma5,ma10,ma20,ma30,ma60,ma120,ma250};
@@ -858,15 +861,6 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		 if(indexofrc < manum -1 )
 				return null;
 		
-//		 TimeSeriesDataItem curcjlrecord = null;
-//		 curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//			
-//		 if( curcjlrecord == null) 
-//				return null;
-//		 else
-//				return curcjlrecord.getValue().doubleValue();
-		 
-		
 		Double ohlcsum = 0.0;
 		for(int i=0;i<manum;i++) {
 			TimeSeriesDataItem data = (TimeSeriesDataItem) this.nodeamo.getDataItem(indexofrc -i);
@@ -884,108 +878,108 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		 RegularTimePeriod period = getJFreeChartFormateTimePeriod(requireddate,difference);
 		 Double ma5;Double ma10;Double ma20;Double ma30;Double ma60;Double ma120;Double ma250;
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema5.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeohlcma5.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma5 = calculateOhlcMA (5,requireddate,difference);
 				 if(ma5 != null)
-					 this.nodema5.add(period,ma5);
+					 this.nodeohlcma5.add(period,ma5);
 			 } else
 				ma5 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema5 = new TimeSeries(this.nodeperiodtype);
+			 	nodeohlcma5 = new TimeSeries(this.nodeperiodtype);
 			 	ma5 = calculateOhlcMA (5,requireddate,difference);
 			 	if(ma5 != null)
-			 		this.nodema5.add(period,ma5);
+			 		this.nodeohlcma5.add(period,ma5);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema10.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeohlcma10.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma10 = calculateOhlcMA (10,requireddate,difference);
 				 if(ma10 != null)
-					 this.nodema10.add(period,ma10);
+					 this.nodeohlcma10.add(period,ma10);
 			 } else
 				ma10 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema10 = new TimeSeries(this.nodeperiodtype);
+			 	nodeohlcma10 = new TimeSeries(this.nodeperiodtype);
 			 	ma10 = calculateOhlcMA (10,requireddate,difference);
 			 	if(ma10 != null)
-			 		this.nodema10.add(period,ma10);
+			 		this.nodeohlcma10.add(period,ma10);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema20.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeohlcma20.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma20 = calculateOhlcMA (20,requireddate,difference);
 				 if(ma20 != null)
-					 this.nodema20.add(period,ma20);
+					 this.nodeohlcma20.add(period,ma20);
 			 } else
 				ma20 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema20 = new TimeSeries(this.nodeperiodtype);
+			 	nodeohlcma20 = new TimeSeries(this.nodeperiodtype);
 			 	ma20 = calculateOhlcMA (20,requireddate,difference);
 			 	if(ma20 != null)
-			 		this.nodema20.add(period,ma20);
+			 		this.nodeohlcma20.add(period,ma20);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema30.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeohlcma30.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma30 = calculateOhlcMA (30,requireddate,difference);
 				 if(ma30 != null)
-					 this.nodema30.add(period,ma30);
+					 this.nodeohlcma30.add(period,ma30);
 			 } else
 				ma30 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema30 = new TimeSeries(this.nodeperiodtype);
+			 	nodeohlcma30 = new TimeSeries(this.nodeperiodtype);
 			 	ma30 = calculateOhlcMA (30,requireddate,difference);
 			 	if(ma30 != null)
-			 		this.nodema30.add(period,ma30);
+			 		this.nodeohlcma30.add(period,ma30);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema60.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeohlcma60.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma60 = calculateOhlcMA (60,requireddate,difference);
 				 if(ma60 != null)
-					 this.nodema60.add(period,ma60);
+					 this.nodeohlcma60.add(period,ma60);
 			 } else
 				ma60 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema60 = new TimeSeries(this.nodeperiodtype);
+			 	nodeohlcma60 = new TimeSeries(this.nodeperiodtype);
 			 	ma60 = calculateOhlcMA (60,requireddate,difference);
 			 	if(ma60 != null)
-			 		this.nodema60.add(period,ma60);
+			 		this.nodeohlcma60.add(period,ma60);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema120.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeohlcma120.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma120 = calculateOhlcMA (120,requireddate,difference);
 				 if(ma120 != null)
-					 this.nodema120.add(period,ma120);
+					 this.nodeohlcma120.add(period,ma120);
 			 } else
 				ma120 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema120 = new TimeSeries(this.nodeperiodtype);
+			 	nodeohlcma120 = new TimeSeries(this.nodeperiodtype);
 			 	ma120 = calculateOhlcMA (120,requireddate,difference);
 			 	if(ma120 != null)
-			 		this.nodema120.add(period,ma120);
+			 		this.nodeohlcma120.add(period,ma120);
 		 }
 		 
 		 try {
-			 TimeSeriesDataItem qktjitem = this.nodema250.getDataItem(period );
+			 TimeSeriesDataItem qktjitem = this.nodeohlcma250.getDataItem(period );
 			 if(qktjitem == null) {
 				 ma250 = calculateOhlcMA (250,requireddate,difference);
 				 if(ma250 != null)
-					 this.nodema250.add(period,ma250);
+					 this.nodeohlcma250.add(period,ma250);
 			 } else
 				ma250 = (Double)qktjitem.getValue(); 
 		 } catch (java.lang.NullPointerException e) {
-			 	nodema250 = new TimeSeries(this.nodeperiodtype);
+			 	nodeohlcma250 = new TimeSeries(this.nodeperiodtype);
 			 	ma250 = calculateOhlcMA (250,requireddate,difference);
 			 	if(ma250 != null)
-			 		this.nodema250.add(period,ma250);
+			 		this.nodeohlcma250.add(period,ma250);
 		 }
 		 
 		 Double ma[] = {ma5,ma10,ma20,ma30,ma60,ma120,ma250};
@@ -1014,5 +1008,239 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		Double result = ohlcsum / manum;
 		return result;
 	 }
+	 
+		@Override
+		public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) 
+		{
+			int recordnum = this.nodeohlc.getItemCount();
+			int lianxu = 0;
+			for(int wkindex = 0;wkindex > (0 - recordnum) ; wkindex--) { 
+				Integer recordmaxbkwklast = this.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(requireddate,wkindex);
+				if( recordmaxbkwklast != null && recordmaxbkwklast >= settindpgmaxwk) 
+					lianxu ++;
+				else if( recordmaxbkwklast != null && recordmaxbkwklast < settindpgmaxwk)
+					return lianxu;
+//				else if(recordmaxbkwklast == null )
+//						;
+			}
+			
+			return -1;
+		}
+
+		@Override
+		public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
+		{
+			if(nodeohlc == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			if( curcjlrecord == null) 
+				return null;
+			
+			int index = nodevol.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
+//			DaPan dapan = (DaPan)getRoot();
+//			while ( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) {  //上周可能大盘修饰
+//				index --;
+//			}
+			try{
+				TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( index -1 );
+				if(lastcjlrecord == null) //休市前还是空，说明要是新板块。板块没有停牌的
+					return null;
+				
+				Double curcje = curcjlrecord.getValue().doubleValue();
+				Double lastcje = lastcjlrecord.getValue().doubleValue();
+				
+				return curcje - lastcje;
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+				return 100.0;
+			}
+		}
+
+		@Override
+		public Double getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) 
+		{
+			TimeSeriesDataItem curcjlrecord = this.nodevolzhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			if( curcjlrecord == null) 
+				return null;
+			
+			int index = nodevol.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
+			
+			try {
+				TimeSeriesDataItem lastcjlrecord = nodevolzhanbi.getDataItem( index -1  );
+				if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
+					logger.debug(getNodeCode() + "可能是一个新个股或板块");
+					return 100.0;
+				}
+				
+				Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
+				Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
+				Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
+				logger.debug(getNodeCode() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
+				
+				return zhanbigrowthrate;
+				
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+				return 100.0;
+			}
+
+		}
+
+		@Override
+		public Integer getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
+		{
+			TimeSeriesDataItem curcjlrecord = this.nodevolzhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			if( curcjlrecord == null) 
+				return null;
+						
+			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
+			
+			int index = nodevolzhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+			
+			int maxweek = 0;
+			for(int i = index - 1; i >= 0; i--) {
+				
+				
+				TimeSeriesDataItem lastcjlrecord = nodevolzhanbi.getDataItem( i );
+				if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+					return maxweek;
+
+				Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
+				if(curzhanbiratio > lastzhanbiratio)
+					maxweek ++;
+				else
+					break;
+			}
+			
+			return maxweek;
+		}
+
+		@Override
+		public Integer getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
+		{
+			if(nodeohlc == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = this.nodevolzhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			if( curcjlrecord == null) 
+				return null;
+
+			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
+			
+			int index = nodevolzhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+			int minweek = 0;
+			for(int i = index -1; i >= 0; i --) {
+				TimeSeriesDataItem lastcjlrecord = nodevolzhanbi.getDataItem( i );
+				if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+					return minweek;
+
+				Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
+				if(curzhanbiratio < lastzhanbiratio)
+					minweek ++;
+				else
+					break;
+			}
+			
+			return minweek;
+		}
+
+		@Override
+		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,	int difference) 
+		{
+			TimeSeriesDataItem curcjlrecord = this.nodevol.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			if( curcjlrecord == null) 
+				return null;
+			
+			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
+			String nodept = getNodeperiodtype();
+			NodeXPeriodDataBasic bkxdata = superbk.getNodeXPeroidData(nodept);
+			Double bkcjediff = bkxdata.getChenJiaoLiangDifferenceWithLastPeriod(requireddate,difference);
+									   
+			if( bkcjediff == null || bkcjediff < 0   ) {//板块缩量，
+				return -100.0;
+			}
+			
+			TimeSeriesDataItem lastcjlrecord = null;
+			int index = this.nodevol.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			try{
+				lastcjlrecord = nodevol.getDataItem( index - 1);
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+				logger.debug("index = 0，无法判断");
+				return 100.0;
+//				e.printStackTrace();
+			}
+			if(lastcjlrecord == null) { //休市前还是空，说明是停牌后复牌了
+				try {
+				Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
+				return curggcje/bkcjediff;
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			Double curcje = curcjlrecord.getValue().doubleValue();
+			Double lastcje = lastcjlrecord.getValue().doubleValue();
+			Double cjechange = curcje - lastcje; //个股成交量的变化
+			
+			return cjechange/bkcjediff;
+		}
+
+		@Override
+		public Integer getChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
+		{
+			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			if( curcjlrecord == null) 
+				return null;
+			
+			Double curcje = curcjlrecord.getValue().doubleValue();
+			int itemcount = nodevol.getItemCount();
+			int maxweek = 0;
+			
+			int index = nodevol.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+			
+			for(int i = index-1;i >=0; i--) {
+				
+				TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( i );
+				if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+					return maxweek;
+				
+				Double lastcje = lastcjlrecord.getValue().doubleValue();
+				if(curcje > lastcje)
+					maxweek ++;
+				else
+					break;
+			}
+
+			return maxweek;
+		}
+		
+		@Override
+		public Double getChengJiaoLiang(LocalDate requireddate, int difference) 
+		{
+			TimeSeriesDataItem curcjlrecord = null;
+//			if(difference >=0 )
+				curcjlrecord = nodevol.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			
+			if( curcjlrecord == null) 
+				return null;
+			else
+				return curcjlrecord.getValue().doubleValue();
+		}
+
+		@Override
+		public Double getChenJiaoLiangZhanBi(LocalDate requireddate, int difference) 
+		{
+			if(nodeohlc == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = null;
+//			if(difference >=0 )
+				curcjlrecord = nodevolzhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			
+			if( curcjlrecord == null) 
+				return null;
+			else
+				return curcjlrecord.getValue().doubleValue();
+		}
+
 	 	 
  } //END OF 

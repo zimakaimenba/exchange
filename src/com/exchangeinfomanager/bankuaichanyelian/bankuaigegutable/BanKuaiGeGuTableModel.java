@@ -28,37 +28,14 @@ import com.exchangeinfomanager.nodes.nodexdata.StockOfBanKuaiNodeXPeriodData;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
-public class BanKuaiGeGuTableModel extends DefaultTableModel 
+public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel 
 {
-	BanKuaiGeGuTableModel () {
-		super ();
-	}
-	
-	private String[] jtableTitleStrings = { "代码", "名称","权重","高级排序排名","大盘成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
-	private BanKuai curbk;
-	private ArrayList<StockOfBanKuai> entryList;
-	private LocalDate showwknum;
-
-	private Double showcjemin ;
-	private Double showcjemax ;
-	private Integer cjemaxwk ;
-
-	private Integer cjezbdpmaxwk ;
-	private Integer cjezbbkmaxwk ;
-	private String period;
-	private Double huanshoulv ;
-	private Double showltszmin;
-	private Double showltszmax;
-	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
-//	private ExportCondition expcond;
-	private Boolean showhuibudownquekou;
-	private Integer cjezbdpminwk;
-
-	public void refresh (BanKuai bankuai,LocalDate wknum,String period)
+	BanKuaiGeGuTableModel () 
 	{
-		this.curbk = bankuai;
-		this.showwknum = wknum;
-		this.period = period;
+		super ();
+		
+		String[] jtableTitleStrings = { "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+		super.setTableHeader(jtableTitleStrings);
 		
 		this.setDisplayChenJiaoEr(null, null);
 		this.setDisplayCjeBKMaxWk(null);
@@ -67,101 +44,21 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		this.setDisplayCjeMaxWk(null);
 		this.setDisplayLiuTongShiZhi(null, null);
 		this.setHighLightHuiBuDownQueKou(false);
-		
-		entryList = null;
-		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );
-		
-		 Iterator itr = entryList.iterator(); 
-	     while (itr.hasNext())      { //把停牌的剔除，以免出问题
-	    	 StockOfBanKuai sob = (StockOfBanKuai) itr.next();
-	    	 Stock stock = sob.getStock();
-			 NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
-	    	 
-	    	 Double cje = ((StockNodeXPeriodData)stockxdata).getChengJiaoEr(showwknum, 0);
-	    	 if(cje == null)
-	    		 itr.remove();
-	     } 
-		
-		sortTableByChenJiaoEr ();
-    	
-    	this.fireTableDataChanged();
 	}
-	/*
-	 * 
-	 */
-	public void sortTableByLiuTongShiZhi ()
-	{
-		try{
-			Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,period) );
-		} catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-		}
-		
-		this.fireTableDataChanged();
-	}
-	public void sortTableByZongShiZhi ()
-	{
-		
-	}
-	public void sortTableByChenJiaoEr ()
-	{
-		try{
-			Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,period) );
-			this.fireTableDataChanged();
-		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-			logger.debug("表位空，表排序出错");
-		}
-		
-	}
-	/*
-	 * 
-	 */
-	public String[] getTableHeader ()
-	{
-		return this.jtableTitleStrings;
-	}
-	/*
-	 * 
-	 */
-	public BanKuai getCurDispalyBandKuai ()
-	{
-		return this.curbk;
-	}
-	/*
-	 * 
-	 */
-	public int getStockCurWeight(int rowIndex) 
-	{
-		int weight = (Integer)this.getValueAt(rowIndex, 2);
-		return weight;
-	}
-	/*
-	   * 
-	   */
-	  public void setStockCurWeight(int row, int newweight) 
-	  {
-		  if(entryList.isEmpty())
-	    		return ;
-		  
-		  StockOfBanKuai stock = entryList.get(row);
-		  String stockcode = stock.getMyOwnCode();
-	      curbk.setGeGuSuoShuBanKuaiWeight(stockcode,newweight);
-		  this.fireTableDataChanged();
-	  }
-	 public int getRowCount() 
-	 {
-		 if(entryList == null)
-			 return 0;
-		 else 
-			 return entryList.size();
-	 }
 
-	    @Override
-	    public int getColumnCount() 
-	    {
-	        return jtableTitleStrings.length;
-	    } 
+	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
+	
+	private Double showcjemin ;
+	private Double showcjemax ;
+	private Integer cjemaxwk ;
+	private Integer cjezbdpmaxwk ;
+	private Integer cjezbbkmaxwk ;
+	private Double huanshoulv ;
+	private Double showltszmin;
+	private Double showltszmax;
+	private Boolean showhuibudownquekou;
+	private Integer cjezbdpminwk;
+
 	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
@@ -180,7 +77,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 
 		    Object value = "??";
 	    	switch (columnIndex) {
-            case 0:
+            case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
             	bkcode = curdisplaystockofbankuai.getMyOwnCode();
                 value = bkcode;
                 
@@ -193,22 +90,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	thisbkname = null;
             	
             	break;
-            case 2: //权重
-            	Integer stockweight =  curbk.getGeGuSuoShuBanKuaiWeight(stockcode);
-            	try {
-            		value = (Integer)stockweight;
-            	} catch (java.lang.NullPointerException e) {
-            		value = 0;
-            	}
-            	
-//            	stockweight = null;
-//            	curdisplaystockofbankuai = null;
-//            	stockxdataforbk = null;
-//            	stock = null;
-//            	stockxdata = null;
-            	
-            	break;
-            case 3://{ "代码", "名称","权重","流通市值排名",
+            case 2://{ "代码", "名称","权重","流通市值排名",
             	Integer paiming = this.entryList.indexOf(curdisplaystockofbankuai) + 1;
             	value = paiming;
             	
@@ -219,8 +101,8 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	stockxdata = null;
             	
             	break;
-            case 4: // "大盘成交额贡献",
-            	Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(dapan,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
+            case 3: // "板块成交额贡献",
+            	Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
             	value = cjechangegrowthrate;
             	
 //            	cjechangegrowthrate = null;
@@ -230,18 +112,7 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	stockxdata = null;
             	
             	break;
-            case 5: //  "BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
-            	Integer bkmaxweek =  stockxdataforbk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//fxrecord.getGgbkzhanbigrowthrate(); 
-            	value = bkmaxweek;
-            	
-//            	maxweek = null;
-//            	curdisplaystockofbankuai = null;
-//            	stockxdataforbk = null;
-//            	stock = null;
-//            	stockxdata = null;
-            	
-            	break;
-            case 6://"大盘占比增长率","DpMaxWk","CjeMaxWk"};
+            case 4://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
             	Double cjedpgrowthrate = stockxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
             	value = cjedpgrowthrate;
             	
@@ -252,14 +123,14 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	stockxdata = null;
             	
                 break;
-            case 7:
-            	Integer dpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
-            	if(dpmaxwk > 0) {
-            		value = dpmaxwk;
+            case 5:
+            	Integer cjedpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+            	if(cjedpmaxwk > 0) {
+            		value = cjedpmaxwk;
             		break;
-            	} else	if(dpmaxwk == 0) {
-            		Integer dpminwk = stockxdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
-            		value = 0 - dpminwk;
+            	} else	if(cjedpmaxwk == 0) {
+            		Integer cjedpminwk = stockxdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
+            		value = 0 - cjedpminwk;
             		break;
             	}
             	
@@ -271,22 +142,36 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 //            	stockxdata = null;
             	
                 break;
-           case 8:
-            	Integer cjemaxwk = stockxdata.getChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgbkcjemaxweek(); 
-            	value = cjemaxwk;
+            case 6://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+            	Double cjldpgrowthrate = stockxdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
+            	value = cjldpgrowthrate;
             	
-//            	cjemaxwk = null;
+//            	cjedpgrowthrate = null;
 //            	curdisplaystockofbankuai = null;
 //            	stockxdataforbk = null;
 //            	stock = null;
 //            	stockxdata = null;
             	
                 break;
-           case 9: 
-        	   Double hsl = ((StockNodeXPeriodData)stockxdata).getSpecificTimeHuanShouLv(showwknum, 0);
-        	   value = hsl;
-
-        	   break;
+            case 7:
+            	Integer cjldpmaxwk = stockxdata.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+            	if(cjldpmaxwk > 0) {
+            		value = cjldpmaxwk;
+            		break;
+            	} else	if(cjldpmaxwk == 0) {
+            		Integer cjldpminwk = stockxdata.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
+            		value = 0 - cjldpminwk;
+            		break;
+            	}
+            	
+            	
+//            	dpmaxwk = null;
+//            	curdisplaystockofbankuai = null;
+//            	stockxdataforbk = null;
+//            	stock = null;
+//            	stockxdata = null;
+            	
+                break;
 	    	}
 	    	
 	    	return value;
@@ -297,110 +182,38 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 	   * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
 	   * //for sorting http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 	   */
-	    //{ "代码", "名称","权重","流通市值排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
-      public Class<?> getColumnClass(int columnIndex) { //{ "代码", "名称","权重","占比增长率","MAX","成交额贡献"};
+      public Class<?> getColumnClass(int columnIndex) { 
 		      Class clazz = String.class;
 		      switch (columnIndex) {
-		      case 0:
+		      case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
 		    	  clazz = String.class;
 		    	  break;
 		        case 1:
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = String.class;
+			          clazz = Integer.class;
 			          break;
 		        case 3:
-			          clazz = Integer.class;
+			          clazz = Double.class;
 			          break;
 		        case 4:
 			          clazz = Double.class;
 			          break;
 		        case 5:
-			          clazz = Integer.class;
+		        	  clazz = Integer.class;
 			          break;
 		        case 6:
-		        	  clazz = Double.class;
+			          clazz = Double.class;
 			          break;
 		        case 7:
 			          clazz = Integer.class;
 			          break;
-		        case 8:
-			          clazz = Integer.class;
-			          break;
-		        case 9:
-			          clazz = Double.class;
-			          break;    
 		      }
 		      
 		      return clazz;
 	 }
 	    
-	    public String getColumnName(int column) { 
-	    	return jtableTitleStrings[column];
-	    }//设置表格列名 
-		
-
-	    public boolean isCellEditable(int row,int column) {
-	    	return false;
-		}
-	    public String getStockCode (int row) 
-	    {
-	    	return (String)this.getValueAt(row,0);
-	    }
-	    public String getStockName (int row) 
-	    {
-	    	return (String)this.getValueAt(row,1);
-	    } 
-	    public String getStockWeight (int row) 
-	    {
-	    	return (String)this.getValueAt(row,2);
-	    } 
-	    public StockOfBanKuai getStock (int row)
-	    {
-	    	return this.entryList.get(row);
-	    }
-	    public void deleteAllRows ()
-	    {	
-	    	if(this.entryList == null)
-				 return ;
-			 else 
-				 entryList.clear();
-	    	this.fireTableDataChanged();
-	    }
-	    public int getStockRowIndex (String neededfindstring) 
-	    {
-	    		int index = -1;
-	    		HanYuPinYing hypy = new HanYuPinYing ();
-	    		
-	    		for(int i=0;i<this.getRowCount();i++) {
-	    			String stockcode = (String)this.getValueAt(i, 0);
-	    			String stockname = (String)this.getValueAt(i,1); 
-	    			if(stockcode.trim().equals(neededfindstring) ) {
-	    				index = i;
-	    				break;
-	    			}
-	    			
-	    			if(stockname == null)
-	    				continue;
-	    			String namehypy = hypy.getBanKuaiNameOfPinYin(stockname );
-			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
-			   			index = i;
-			   			break;
-			   		}
-	    		}
-	   		
-	   		return index;
-	    }
-
-	    public void removeAllRows ()
-	    {
-	    	if(entryList != null) {
-	    		this.entryList.clear();
-		    	this.fireTableDataChanged();
-	    	}
-	    }
-		
 		//设置突出显示成交额阀值
 		public void setDisplayChenJiaoEr (Double cjemin, Double cjemax)
 		{
@@ -549,27 +362,3 @@ public class BanKuaiGeGuTableModel extends DefaultTableModel
 		
 
 }
-/*
- * 按流通市值对个股排序
- */
-class NodeLiuTongShiZhiComparator implements Comparator<StockOfBanKuai> {
-	private String period;
-	private LocalDate compareDate;
-	private int difference;
-	public NodeLiuTongShiZhiComparator (LocalDate compareDate, int difference, String period )
-	{
-		this.period = period;
-		this.compareDate = compareDate;
-		this.difference = difference;
-	}
-    public int compare(StockOfBanKuai node1, StockOfBanKuai node2) {
-    	Stock stock1 = node1.getStock();
-    	Stock stock2 = node2.getStock();
-    	
-        Double cje1 = ((StockNodeXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference) ;
-        Double cje2 = ((StockNodeXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference);
-        
-        return cje2.compareTo(cje1);
-    }
-}
-
