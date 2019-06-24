@@ -261,6 +261,12 @@ public class DaPanNodeXPeriodData implements NodeXPeriodDataBasic
 		return null;
 	}
 
+	@Override
+	public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 //	@Override
 //	public void addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem kdata) {
 //		// TODO Auto-generated method stub

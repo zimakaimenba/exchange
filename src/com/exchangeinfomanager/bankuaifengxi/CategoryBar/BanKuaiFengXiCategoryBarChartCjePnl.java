@@ -93,8 +93,9 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 */
 	public void setBanKuaiJiaoYiEr (TDXNodes node,LocalDate startdate,LocalDate enddate,String period)
 	{
-		super.setCurDisplayNode( node );
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+		super.setCurDisplayNode( node,period );
+		
 		displayDataToGui (nodexdata,startdate,enddate,period);
 	}
 	/*

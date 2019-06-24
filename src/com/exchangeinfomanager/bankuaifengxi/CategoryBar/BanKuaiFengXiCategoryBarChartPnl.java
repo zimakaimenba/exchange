@@ -129,6 +129,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected boolean selectchanged;
 	private String tooltipselected;
 	protected LocalDate dateselected;
+	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
@@ -150,10 +151,18 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	/*
 	 * 
 	 */
-	protected void setCurDisplayNode (TDXNodes curdisplayednode1) 
+	protected void setCurDisplayNode (TDXNodes curdisplayednode1, String period) 
 	{
-		 curdisplayednode = curdisplayednode1;
-		 this.rowKey = this.curdisplayednode.getMyOwnCode();
+		this.curdisplayednode = curdisplayednode1;
+		this.rowKey = this.curdisplayednode.getMyOwnCode();
+		 
+		BanKuaiFengXiCategoryBarRenderer render = (BanKuaiFengXiCategoryBarRenderer)plot.getRenderer();
+		render.setDisplayNode(this.curdisplayednode);
+		
+		NodeXPeriodDataBasic nodexdata = this.curdisplayednode.getNodeXPeroidData(period);
+		render.setDisplayNodeXPeriod(nodexdata);
+		
+		
 	}
 	public TDXNodes getCurDisplayedNode ()
 	{
@@ -385,16 +394,12 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     		return;
     	
     	int indexforbar = this.barchartdataset.getColumnIndex(selecteddate) ;
-    	if(indexforbar == -1)
-    		return ;
+    	if(indexforbar != -1)
+    		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer(0)).setBarColumnShouldChangeColor(indexforbar);
     	
     	int indexforline = this.linechartdataset.getColumnIndex(selecteddate) ;
-    	if(indexforline == -1)
-    		return ;
-    	
-    	
-    	((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer(0)).setBarColumnShouldChangeColor(indexforbar);
-    	((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(3)).setBarColumnShouldChangeColor(indexforline);
+    	if(indexforline != -1)
+    		((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(3)).setBarColumnShouldChangeColor(indexforline);
     	
         this.dateselected = selecteddate;
         //特别标记选定的周，作用在界面上操作后会体会出来。
@@ -434,30 +439,31 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        String oldText = this.dateselected + this.tooltipselected;
         this.dateselected = newdate ;
         
-        String outputhtml = "";
-        org.jsoup.nodes.Document outputdoc = Jsoup.parse(outputhtml);
-        org.jsoup.select.Elements outputcontent = outputdoc.select("body");
-        for(org.jsoup.nodes.Element outputbody : outputcontent) {
-        	org.jsoup.nodes.Element div = outputbody.appendElement("div");
-        	org.jsoup.nodes.Element nodecode = div.appendElement("nodecode");
-    		nodecode.appendText(this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName());
-    		
-    		org.jsoup.nodes.Element nodetype = div.appendElement("nodetype");
-    		nodetype.appendText(String.valueOf(this.curdisplayednode.getType() ) );
-    				
-    		org.jsoup.nodes.Document doc = Jsoup.parse(selectedtooltip);
-    		org.jsoup.select.Elements lis = doc.select("dl");
-    		
-//    			org.jsoup.select.Elements lis = body.select("dl");
-    			for(org.jsoup.nodes.Element li : lis) {
-    				div.appendChild(li);
-    			}
-    		
-        }
-        
-		String htmlstring = outputdoc.toString();
+//        String outputhtml = "";
+//        org.jsoup.nodes.Document outputdoc = Jsoup.parse(outputhtml);
+//        org.jsoup.select.Elements outputcontent = outputdoc.select("body");
+//        for(org.jsoup.nodes.Element outputbody : outputcontent) {
+//        	org.jsoup.nodes.Element div = outputbody.appendElement("div");
+//        	org.jsoup.nodes.Element nodecode = div.appendElement("nodecode");
+//    		nodecode.appendText(this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName());
+//    		
+//    		org.jsoup.nodes.Element nodetype = div.appendElement("nodetype");
+//    		nodetype.appendText(String.valueOf(this.curdisplayednode.getType() ) );
+//    				
+//    		org.jsoup.nodes.Document doc = Jsoup.parse(selectedtooltip);
+//    		org.jsoup.select.Elements lis = doc.select("dl");
+//    		
+////    			org.jsoup.select.Elements lis = body.select("dl");
+//    			for(org.jsoup.nodes.Element li : lis) {
+//    				div.appendChild(li);
+//    			}
+//    		
+//        }
+//        
+//		String htmlstring = outputdoc.toString();
 		
-		PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  htmlstring );
+//		PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  htmlstring );
+        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  this.dateselected );
         pcs.firePropertyChange(evt);
     }
 	/*

@@ -1965,7 +1965,7 @@ public class BanKuaiDbOperation
 					e.printStackTrace();
 				}
 				
-				sqldeletetstat = "DELETE 产业链子板块列表"
+				sqldeletetstat = "DELETE 产业链子板块列表 "
 						+ "	FROM 产业链子板块列表"
 						+ "INNER JOIN 产业链板块子板块对应表 ON 产业链子板块列表.子板块代码 = 产业链板块子板块对应表.子板块代码"
 						;

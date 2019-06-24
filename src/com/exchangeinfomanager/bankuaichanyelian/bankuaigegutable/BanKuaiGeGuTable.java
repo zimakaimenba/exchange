@@ -136,12 +136,12 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 		
 	}
 	
-//    public String getToolTipText(MouseEvent e) {
-//        String tip = null;
-//        java.awt.Point p = e.getPoint();
-//        int rowIndex = rowAtPoint(p);
-//        int colIndex = columnAtPoint(p);
-//
+    public String getToolTipText(MouseEvent e) {
+        String tip = null;
+        java.awt.Point p = e.getPoint();
+        int rowIndex = rowAtPoint(p);
+        int colIndex = columnAtPoint(p);
+
 //        try {
 //        	if(colIndex == 2) { //权重column的tip要具体
 //				org.jsoup.nodes.Document doc = Jsoup.parse("");
@@ -156,12 +156,12 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 //        } catch (RuntimeException e1) {
 //            //catch null pointer exception if mouse is over an empty line
 //        }
-//
-//        return tip;
-//        
-//        
-//        
-//    }
+
+        return tip;
+        
+        
+        
+    }
 	
 
 

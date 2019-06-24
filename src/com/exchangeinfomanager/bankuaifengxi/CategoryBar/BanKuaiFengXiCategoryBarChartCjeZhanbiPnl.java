@@ -59,7 +59,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	{
 		super ();
 
-		super.plot.setRenderer(0,new CustomCategroyRendererForZhanBi() );
+		super.plot.setRenderer(0,new CustomCategroyRendererForCjeZhanBi() );
 	
 		
 		
@@ -84,7 +84,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 //		this.setNodeCjeZhanBi (node,startdate,enddate,period);
 		barchartdataset.clear();
 		
-		super.setCurDisplayNode(node );
+		super.setCurDisplayNode(node,period );
 		super.globeperiod = period;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
 		
@@ -93,7 +93,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 //		CustomCategroyRendererForZhanBi render = (CustomCategroyRendererForZhanBi)super.plot.getRenderer();
 //		render.setDisplayNode(this.curdisplayednode);
 //		render.setDisplayNodeXPeriod (nodexdata);
-//		
+		
 //		//如有分析结果，ticklable显示红色
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
 		axis.setDisplayNode(this.getCurDisplayedNode(),period);
@@ -209,7 +209,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		if(highestHigh == 0.0)
 			return;
 		
-		CustomCategroyRendererForZhanBi render = (CustomCategroyRendererForZhanBi)super.plot.getRenderer();
+		BanKuaiFengXiCategoryBarRenderer render = (BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer();
 		render.setDisplayNode(this.getCurDisplayedNode());
 		render.setDisplayNodeXPeriod (nodexdata);
 		
@@ -267,8 +267,8 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	{
 		int indexx = barchartdataset.getColumnIndex(super.dateselected);
 		
-		CustomCategroyToolTipGeneratorForZhanBi ttpg = 	
-		(CustomCategroyToolTipGeneratorForZhanBi)(((CustomCategroyRendererForZhanBi) plot.getRenderer()).getBaseToolTipGenerator());
+		BanKuaiFengXiCategoryBarToolTipGenerator ttpg = 	
+		(CustomCategroyToolTipGeneratorForCjeZhanBi)(((CustomCategroyRendererForCjeZhanBi) plot.getRenderer()).getBaseToolTipGenerator());
 		
 		String tooltips = ttpg.generateToolTip(super.barchartdataset, 0, indexx);
 		
@@ -279,11 +279,12 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 /*
  * 
  */
-class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer 
+class CustomCategroyRendererForCjeZhanBi extends BanKuaiFengXiCategoryBarRenderer 
 {
 	private static final long serialVersionUID = 1L;
    
-    public CustomCategroyRendererForZhanBi() {
+    public CustomCategroyRendererForCjeZhanBi () 
+    {
         super();
         super.displayedmaxwklevel = 4;
         super.displayedminwklevel = 8;
@@ -291,7 +292,7 @@ class CustomCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRenderer
         
         this.setBarPainter(new StandardBarPainter());
 		
-		CustomCategroyToolTipGeneratorForZhanBi custotooltip = new CustomCategroyToolTipGeneratorForZhanBi();
+        BanKuaiFengXiCategoryBarToolTipGenerator custotooltip = new CustomCategroyToolTipGeneratorForCjeZhanBi();
 		this.setBaseToolTipGenerator(custotooltip);
 		
 //		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
@@ -369,7 +370,7 @@ class BkfxItemLabelGeneratorForCjeZhanBi extends BkfxItemLabelGenerator
 	
 }
 
-class CustomCategroyToolTipGeneratorForZhanBi extends BanKuaiFengXiCategoryBarToolTipGenerator 
+class CustomCategroyToolTipGeneratorForCjeZhanBi extends BanKuaiFengXiCategoryBarToolTipGenerator 
 {
 	public String generateToolTip(CategoryDataset dataset, int row, int column)  
     {

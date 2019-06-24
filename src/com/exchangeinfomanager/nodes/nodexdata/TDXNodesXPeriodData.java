@@ -1,5 +1,7 @@
 package com.exchangeinfomanager.nodes.nodexdata;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -15,7 +17,13 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 
 
@@ -89,6 +97,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		
 		try {
 			nodeamo.setNotify(false);
+			nodevol.setNotify(false);
 			nodeamo.add(kdata.getPeriod(),kdata.getMyOwnChengJiaoEr(),false);
 			nodevol.add(kdata.getPeriod(),kdata.getMyownchengjiaoliang(),false);
 			if(kdata.getCjeZhanBi() != null) {
@@ -1240,6 +1249,178 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 				return null;
 			else
 				return curcjlrecord.getValue().doubleValue();
+		}
+		/*
+		 * (non-Javadoc)
+		 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getNodeXDataInHtml(java.time.LocalDate, int)
+		 */
+		@Override
+		public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) 
+		{
+			Double curcje = this.getChengJiaoEr(requireddate, 0);
+	    	String cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(curcje);
+	    	curcje = FormatDoubleToShort.formateDoubleToShort (curcje);
+	    		
+	    	Integer cjemaxwk = null;
+	    	try{
+	    		cjemaxwk = this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大
+	    	} catch (java.lang.NullPointerException e) {
+	    		
+	    	}
+	    	Integer cjeminwk = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate, 0);
+	    	
+			Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//成交额大盘变化贡献率
+			Double curcjezhanbidata = this.getChenJiaoErZhanBi(requireddate, 0);  //占比
+			Integer cjemaxweek = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(requireddate,0);//nodefx.getGgbkzhanbimaxweek();
+			Integer cjeminweek = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate,0);
+
+			Double curcjl = this.getChengJiaoLiang(requireddate, 0);
+	    	String cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(curcjl);
+	    	curcjl = FormatDoubleToShort.formateDoubleToShort (curcjl);
+	    		
+	    	Integer cjlmaxwk = null;
+	    	try{
+	    		cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
+	    	} catch (java.lang.NullPointerException e) {
+	    		
+	    	}
+	    	Integer cjlminwk = null;
+	    	try{
+	    		cjlminwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
+	    	} catch (java.lang.NullPointerException e) {
+	    		
+	    	}
+	    	Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate, 0);
+			Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
+			
+			Integer cjlzbmaxwk = this.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(requireddate, 0);
+			Integer cjlzbminwk = this.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(requireddate, 0);
+			
+			DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
+	    	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+	    	percentFormat.setMinimumFractionDigits(4);
+				
+			String htmlstring = "";
+			org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+			Elements body = doc.getElementsByTag("body");
+			for(Element elbody : body) {
+				org.jsoup.nodes.Element dl = elbody.appendElement("dl");
+				 
+				 org.jsoup.nodes.Element lidate = dl.appendElement("li");
+				 lidate.appendText(requireddate.toString());
+				 
+				 org.jsoup.nodes.Element licje = dl.appendElement("li");
+				 licje.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
+				 
+				 if(cjemaxwk>0) {
+					 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
+					 licjemaxwk.appendText("成交额MaxWk=" + cjemaxwk);
+				 } else {
+					 org.jsoup.nodes.Element licjeminwk = dl.appendElement("li");
+					 licjeminwk.appendText("成交额MinWk=" + (0-cjeminwk) );
+				 }
+				 
+				 try{
+					 htmlstring = "成交额大盘变化贡献率" + percentFormat.format (cjechangerate) ;
+					 
+					 org.jsoup.nodes.Element licjechangerate = dl.appendElement("li");
+					 licjechangerate.appendText(htmlstring);
+				 } catch (java.lang.IllegalArgumentException e) {
+//					 li4.appendText("成交额大盘变化贡献率NULL" );
+				 }
+
+				try {
+					DecimalFormat decimalformate2 = new DecimalFormat("%#0.00000");
+					org.jsoup.nodes.Element licjezb = dl.appendElement("li");
+					licjezb.appendText( "成交额占比" + decimalformate2.format(curcjezhanbidata)  );
+				} catch (java.lang.IllegalArgumentException e ) {
+//					htmltext = "占比占比NULL" ;
+				}
+				
+				if(cjemaxweek > 0) {
+					try {
+						 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
+						 licjemaxwk.appendText( "CJE占比MaxWk=" + cjemaxweek.toString()  );
+					} catch (java.lang.IllegalArgumentException e ) {
+//						htmltext = "占比MaxWk=NULL"  ;
+					}
+				} else {
+					try {
+						 org.jsoup.nodes.Element licjeminwk = dl.appendElement("li");
+						 licjeminwk.appendText( "CJE占比MinWk=" + cjeminweek.toString()  );
+					} catch (java.lang.IllegalArgumentException e ) {
+//						htmltext = "占比MaxWk=NULL"  ;
+					}
+				}
+				 
+				 org.jsoup.nodes.Element licjl = dl.appendElement("li");
+				 licjl.appendText("成交量" + decimalformate.format(curcjl) + cjldanwei);
+				 
+				 if(cjlmaxwk>0) {
+					 org.jsoup.nodes.Element licjlmaxwk = dl.appendElement("li");
+					 licjlmaxwk.appendText("成交量MaxWk=" + cjlmaxwk);
+				 } else {
+					 org.jsoup.nodes.Element licjlminwk = dl.appendElement("li");
+					 licjlminwk.appendText("成交量MinWk=" + (0-cjlminwk) );
+				 }
+				 
+				 try{
+					 org.jsoup.nodes.Element licjlchangerate = dl.appendElement("li");
+					 licjlchangerate.appendText( "成交量大盘变化贡献率" + percentFormat.format (cjlchangerate)  );
+				 } catch (java.lang.IllegalArgumentException e) {
+//					 li4.appendText("成交额大盘变化贡献率NULL" );
+				 }
+
+				try {
+					DecimalFormat decimalformate2 = new DecimalFormat("%#0.00000");
+					org.jsoup.nodes.Element licjlzb = dl.appendElement("li");
+					licjlzb.appendText( "成交量占比" + decimalformate2.format(cjlzhanbidata)  );
+				} catch (java.lang.IllegalArgumentException e ) {
+//					htmltext = "占比占比NULL" ;
+				}
+				
+				if(cjlzbmaxwk > 0) {
+					try {
+						 org.jsoup.nodes.Element licjlmaxwk = dl.appendElement("li");
+						 licjlmaxwk.appendText( "CJL占比MaxWk=" + cjlzbmaxwk.toString()  );
+					} catch (java.lang.IllegalArgumentException e ) {
+//						htmltext = "占比MaxWk=NULL"  ;
+					}
+				} else {
+					try {
+						 org.jsoup.nodes.Element licjlminwk = dl.appendElement("li");
+						 licjlminwk.appendText( "CJL占比MinWk=" + cjlzbminwk.toString()  );
+					} catch (java.lang.IllegalArgumentException e ) {
+//						htmltext = "占比MaxWk=NULL"  ;
+					}
+				}
+
+	 
+					 Integer opneupquekou = this.getQueKouTongJiOpenUp(requireddate, 0);
+					 if( opneupquekou != null) {
+						 org.jsoup.nodes.Element li6 = dl.appendElement("li");
+						 li6.appendText("缺口OpenUp =" + opneupquekou);
+					 }
+					 Integer opendownquekou = this.getQueKouTongJiOpenDown(requireddate, 0);
+					 if( opendownquekou != null) {
+						 org.jsoup.nodes.Element li7 = dl.appendElement("li");
+						 li7.appendText("缺口OpenDown =" + opendownquekou);
+					 }
+					 Integer huibuupquekou = this.getQueKouTongJiHuiBuUp(requireddate, 0);
+					 if( huibuupquekou != null) {
+						 org.jsoup.nodes.Element li8 = dl.appendElement("li");
+						 li8.appendText("缺口HuiBuUp =" + huibuupquekou );
+					 }
+					 Integer huibudowquekou = this.getQueKouTongJiHuiBuDown(requireddate, 0);
+					 if( huibudowquekou != null) {
+						 org.jsoup.nodes.Element li9 = dl.appendElement("li");
+						 li9.appendText("缺口HuiBuDown =" + huibudowquekou );
+					 }
+				 
+				
+			}
+			
+			return doc.toString();
 		}
 
 	 	 

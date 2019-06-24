@@ -51,22 +51,23 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 {
 	/**
 	 * Create the panel.
+	 * @param cjeorcjl 
 	 */
-	public BanKuaiFengXiNodeCombinedCategoryPnl(String horizonorvertical)
+	public BanKuaiFengXiNodeCombinedCategoryPnl(String horizonorvertical, String cjeorcjl)
 	{
 		if(horizonorvertical != null && horizonorvertical.toLowerCase().equals("horizon"))
 			this.horizonlayout = true;
 		else 
 			this.horizonlayout = false;
 		
-//		this.pnltype = cjeorcjl;
+		this.pnltype = cjeorcjl;
 		
 		initializeSystem ();
 	}
-	public BanKuaiFengXiNodeCombinedCategoryPnl()
+	public BanKuaiFengXiNodeCombinedCategoryPnl(String cjeorcjl)
 	{
 		this.horizonlayout = false;
-//		this.pnltype = cjeorcjl;
+		this.pnltype = cjeorcjl;
 		
 		initializeSystem ();
 	}
@@ -74,12 +75,17 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	{
 		createGui ();
 		
-		chartpanelhighlightlisteners = new HashSet<BarChartPanelHightLightColumnListener> ();
-		chartpanelhighlightlisteners.add(cjelargepnl);
-		chartpanelhighlightlisteners.add(cjezblargepnl);
+//		if(this.pnltype.toUpperCase().equals("CJE")) {
+			chartpanelhighlightlisteners = new HashSet<BarChartPanelHightLightColumnListener> ();
+			chartpanelhighlightlisteners.add(cjelargepnl);
+			chartpanelhighlightlisteners.add(cjezblargepnl);
+			
+			cjelargepnl.addPropertyChangeListener(this);
+			cjezblargepnl.addPropertyChangeListener(this);
+			
 		
-		cjelargepnl.addPropertyChangeListener(this);
-		cjezblargepnl.addPropertyChangeListener(this);
+		
+		
 		
 		createEvents();
 	}
@@ -160,73 +166,78 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
 			
 			String selectedinfo = evt.getNewValue().toString();
-            if(selectedinfo.equals("test"))
-            	return;
+			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(LocalDate.parse(selectedinfo) ) );
+			PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", selectedinfo );
+			pcs.firePropertyChange(evtnew);
+			
+			
+//            if(selectedinfo.equals("test"))
+//            	return;
             
-            org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
-    		org.jsoup.select.Elements content = doc.select("body");
-    		org.jsoup.select.Elements dl = content.select("dl");
-    		org.jsoup.select.Elements li;
-    		try {
-    			 li = dl.get(0).select("li");
-    		} catch (java.lang.IndexOutOfBoundsException e) {
-    			return ;
-    		}
-    		
-    		String selecteddate = li.get(0).text();
-    		LocalDate datekey = LocalDate.parse(selecteddate);
-    		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-    		//特别标记点击的日期，这样界面上看比较清晰
-    		if(cjezblargepnl.isAllowDrawAnnoation()) {
-				cjezblargepnl.setAnnotations(datekey);
-				cjelargepnl.setAnnotations(datekey);
-			}
-    		
-    		
-    		//把两个panel的HTML信息组合成一个HTML向上级界面分发
-    		org.jsoup.select.Elements divnodecodename = content.select("nodecode");
-    		org.jsoup.select.Elements nodetype = content.select("nodetype");
-    		
-    		String cjettp = cjelargepnl.getToolTipSelected ();
-    		org.jsoup.nodes.Document cjedoc = Jsoup.parse(cjettp);
-    		org.jsoup.select.Elements cjecontent = cjedoc.select("body");
-    		org.jsoup.select.Elements cjedl = cjedoc.select("dl");
-    		org.jsoup.select.Elements cjeli = cjedoc.select("li");
-    		
-    		
-    		String cjezbttp = cjezblargepnl.getToolTipSelected ();
-    		org.jsoup.nodes.Document cjezbdoc = Jsoup.parse(cjezbttp);
-    		org.jsoup.select.Elements cjezbcontent = cjezbdoc.select("body");
-    		org.jsoup.select.Elements cjezbdl = cjezbdoc.select("dl");
-    		org.jsoup.select.Elements cjezbli = cjezbdoc.select("li");
-    		
-    		
-    		String html = "";
-    		org.jsoup.nodes.Document htmldoc = Jsoup.parse(html);
-    		org.jsoup.select.Elements htmlcontent = htmldoc.select("body");
-    		for(org.jsoup.nodes.Element htmlbody : htmlcontent) {
-    			org.jsoup.nodes.Element htmldiv = htmlbody.appendElement("div");
-    			htmldiv.appendChild( divnodecodename.get(0) );
-    			htmldiv.appendChild( nodetype.get(0) );
-    			
-    			org.jsoup.nodes.Element htmldl = htmldiv.appendElement("dl");
-   			 
-	   			 org.jsoup.nodes.Element lidate = htmldl.appendElement("li");
-	   			 lidate.appendText(selecteddate.toString());
-	   			 
-	   			 for(int i=1;i<cjeli.size();i++) {
-	   				org.jsoup.nodes.Element htmlcjeli = cjeli.get(i);
-	   				htmldl.appendChild(htmlcjeli);
-	   			 }
-	   			for(int i=1;i<cjezbli.size();i++) { 
-	   				org.jsoup.nodes.Element htmlcjezbli = cjezbli.get(i); 
-	   				htmldl.appendChild(htmlcjezbli);
-	   			 }
-	   			 
-    		}
-    		html = htmldoc.toString();
-    		PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", html );
-            pcs.firePropertyChange(evtnew);
+//          org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+//    		org.jsoup.select.Elements content = doc.select("body");
+//    		org.jsoup.select.Elements dl = content.select("dl");
+//    		org.jsoup.select.Elements li;
+//    		try {
+//    			 li = dl.get(0).select("li");
+//    		} catch (java.lang.IndexOutOfBoundsException e) {
+//    			return ;
+//    		}
+//    		
+//    		String selecteddate = li.get(0).text();
+//    		LocalDate datekey = LocalDate.parse(selecteddate);
+//    		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+//    		//特别标记点击的日期，这样界面上看比较清晰
+//    		if(cjezblargepnl.isAllowDrawAnnoation()) {
+//				cjezblargepnl.setAnnotations(datekey);
+//				cjelargepnl.setAnnotations(datekey);
+//			}
+//    		
+//    		
+//    		//把两个panel的HTML信息组合成一个HTML向上级界面分发
+//    		org.jsoup.select.Elements divnodecodename = content.select("nodecode");
+//    		org.jsoup.select.Elements nodetype = content.select("nodetype");
+//    		
+//    		String cjettp = cjelargepnl.getToolTipSelected ();
+//    		org.jsoup.nodes.Document cjedoc = Jsoup.parse(cjettp);
+//    		org.jsoup.select.Elements cjecontent = cjedoc.select("body");
+//    		org.jsoup.select.Elements cjedl = cjedoc.select("dl");
+//    		org.jsoup.select.Elements cjeli = cjedoc.select("li");
+//    		
+//    		
+//    		String cjezbttp = cjezblargepnl.getToolTipSelected ();
+//    		org.jsoup.nodes.Document cjezbdoc = Jsoup.parse(cjezbttp);
+//    		org.jsoup.select.Elements cjezbcontent = cjezbdoc.select("body");
+//    		org.jsoup.select.Elements cjezbdl = cjezbdoc.select("dl");
+//    		org.jsoup.select.Elements cjezbli = cjezbdoc.select("li");
+//    		
+//    		
+//    		String html = "";
+//    		org.jsoup.nodes.Document htmldoc = Jsoup.parse(html);
+//    		org.jsoup.select.Elements htmlcontent = htmldoc.select("body");
+//    		for(org.jsoup.nodes.Element htmlbody : htmlcontent) {
+//    			org.jsoup.nodes.Element htmldiv = htmlbody.appendElement("div");
+//    			htmldiv.appendChild( divnodecodename.get(0) );
+//    			htmldiv.appendChild( nodetype.get(0) );
+//    			
+//    			org.jsoup.nodes.Element htmldl = htmldiv.appendElement("dl");
+//   			 
+//	   			 org.jsoup.nodes.Element lidate = htmldl.appendElement("li");
+//	   			 lidate.appendText(selecteddate.toString());
+//	   			 
+//	   			 for(int i=1;i<cjeli.size();i++) {
+//	   				org.jsoup.nodes.Element htmlcjeli = cjeli.get(i);
+//	   				htmldl.appendChild(htmlcjeli);
+//	   			 }
+//	   			for(int i=1;i<cjezbli.size();i++) { 
+//	   				org.jsoup.nodes.Element htmlcjezbli = cjezbli.get(i); 
+//	   				htmldl.appendChild(htmlcjezbli);
+//	   			 }
+//	   			 
+//    		}
+//    		html = htmldoc.toString();
+//    		PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", html );
+//            pcs.firePropertyChange(evtnew);
     		
 
 			
@@ -265,7 +276,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			cjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
 			this.add(cjezblargepnl);
 		} else if(this.pnltype.toUpperCase().equals("CJL")) {
-			cjelargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
+			cjelargepnl = new BanKuaiFengXiCategoryBarChartCjlPnl ();
 			this.add(cjelargepnl);
 			
 			cjezblargepnl = new BanKuaiFengXiCategoryBarChartCjlZhanbiPnl ();

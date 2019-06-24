@@ -127,7 +127,10 @@ public interface NodeXPeriodDataBasic
 	 */
 	public Integer getCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk);
 	public Integer getCjlLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk);
+	/*
+	 * 
+	 */
+	public String getNodeXDataInHtml (TDXNodes superbk,LocalDate requireddate,int difference);
 	
-
 
 }

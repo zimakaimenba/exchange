@@ -2384,7 +2384,7 @@ public class StockInfoManager
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(StockInfoManager.class.getResource("/images/Adobe_Stock_Photos_256px_1124397_easyicon.net.png")));
 		frame.getContentPane().setEnabled(false);
 				
-		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u74067");
+		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u74068");
 		frame.setBounds(100, 100, 845, 921);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

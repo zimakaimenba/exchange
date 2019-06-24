@@ -302,6 +302,12 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }

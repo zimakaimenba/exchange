@@ -52,6 +52,7 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombin
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.jstockcombobox.DateRangeSelectPnl;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
@@ -246,6 +247,7 @@ public class BanKuaiFengXi extends JDialog
 		this.bkfxhighlightvaluesoftableslisteners = new HashSet<>();
 		
 		barchartpanelbankuaidatachangelisteners.add(panelbkwkcjezhanbi);
+		barchartpanelbankuaidatachangelisteners.add(pnlbkwkcjlzhanbi);
 		//板块pie chart
 		piechartpanelbankuaidatachangelisteners.add(pnllastestggzhanbi);
 		piechartpanelbankuaidatachangelisteners.add(panelLastWkGeGuZhanBi);
@@ -260,6 +262,7 @@ public class BanKuaiFengXi extends JDialog
 		chartpanelhighlightlisteners.add(panelbkwkcjezhanbi);
 		chartpanelhighlightlisteners.add(paneldayCandle);
 		chartpanelhighlightlisteners.add(panelggdpcjlwkzhanbi);
+		chartpanelhighlightlisteners.add(pnlbkwkcjlzhanbi);
 		
 		//同步几个表要highlight的数据
 		bkfxhighlightvaluesoftableslisteners.add(tableGuGuZhanBiInBk);
@@ -860,38 +863,12 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 显示用户点击bar column后应该提示的信息
 	 */
-	private void setUserSelectedColumnMessage(String selttooltips) 
+	private void setUserSelectedColumnMessage(TDXNodes node,String seldate) 
 	{
-		tfldselectedmsg.displayNodeSelectedInfo (selttooltips);
-//		org.jsoup.nodes.Document selectdoc = Jsoup.parse(selttooltips);
-//		org.jsoup.select.Elements selectbody = selectdoc.select("body");
-//		String bodystr = null;
-//		for(org.jsoup.nodes.Element body : selectbody) {
-//			bodystr = body.text();
-//			org.jsoup.select.Elements dls = body.select("dl");
-//			for(org.jsoup.nodes.Element dl : dls) {
-//				
-////				org.jsoup.nodes.Attributes attrs = new org.jsoup.nodes.Attributes();
-////			    attrs.put("size", "5");
-//			    org.jsoup.nodes.Element font = new org.jsoup.nodes.Element("Font");
-//			    font.attr("size", "3");
-//			    
-//			    dl.appendChild(font);
-//			    
-////			    atrs.put("id", "div1");
-//			}
-////			String dltext = dl.text();
-////			System.out.println(dltext);
-//		}
-//		String head = selectbody.get(0).text();
-//		
-//		
-//		org.jsoup.nodes.Document tflddoc = Jsoup.parse(tfldselectedmsg.getText());
-//		org.jsoup.select.Elements content = tflddoc.select("body");
-//		content.append("<font size=\"3\">" + selectbody + "</font>");
-//		
-//		String htmlstring = tflddoc.toString();
-//		tfldselectedmsg.setText(htmlstring);
+//    	LocalDate selecteddate = LocalDate.parse(seldate);
+//    	NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(this.globeperiod);
+    	String htmlstring = node.getNodeXPeroidDataInHtml(LocalDate.parse(seldate),this.globeperiod);
+		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
 	}
 	
 	private void updateBkcylTree ()
@@ -1232,6 +1209,45 @@ public class BanKuaiFengXi extends JDialog
             }
         });
 
+		pnlbkwkcjlzhanbi.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) 
+			{
+				int rowbk = tableBkZhanBi.getSelectedRow();
+				if(rowbk <0) 
+					return;
+				
+				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+				setCursor(hourglassCursor);
+
+				int modelRow = tableBkZhanBi.convertRowIndexToModel(rowbk);
+				BanKuai bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+				
+				
+
+                if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+                    @SuppressWarnings("unchecked")
+                    String selectedinfo = evt.getNewValue().toString();
+                    
+                    refreshAfterUserSelectBanKuaiColumn (bkcur,selectedinfo);
+                    
+                } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
+                	String datekey = evt.getNewValue().toString();
+                	try{
+                		displayNodeLargerPeriodData (bkcur,LocalDate.parse(datekey));
+                	} catch (java.time.format.DateTimeParseException e) {
+                		displayNodeLargerPeriodData (bkcur,null);
+                	}
+                }
+                
+                SystemAudioPlayed.playSound();
+                
+                hourglassCursor = null;
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+				setCursor(hourglassCursor2);
+
+			}
+		});
+		
 		panelbkwkcjezhanbi.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
@@ -1269,6 +1285,49 @@ public class BanKuaiFengXi extends JDialog
 				setCursor(hourglassCursor2);
             }
         });
+		
+		panelggdpcjlwkzhanbi.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				
+//				StockOfBanKuai selectstock = null;
+//				int stockrow = tableGuGuZhanBiInBk.getSelectedRow();
+//				if(stockrow != -1) {
+//					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(stockrow);
+//					selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+//				}
+				
+				Stock selectstock = (Stock) panelGgDpCjeZhanBi.getCurDisplayedNode ();
+
+                if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+                    @SuppressWarnings("unchecked")
+                    String selectedinfo = evt.getNewValue().toString();
+                    
+//                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+//            		org.jsoup.select.Elements body = doc.select("body");
+//            		org.jsoup.select.Elements dl = body.select("dl");
+//            		org.jsoup.select.Elements li = dl.get(0).select("li");
+//            		String selecteddate = li.get(0).text();
+            		LocalDate datekey = LocalDate.parse(selectedinfo);
+    				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+    				
+    				setUserSelectedColumnMessage(selectstock, selectedinfo);
+    				
+//    				if(cbxshizhifx.isSelected()) { //显示市值排名
+//						dispalyStockShiZhiFengXiResult (selectstock,datekey);
+//					};
+					
+//					SystemAudioPlayed.playSound();
+                } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
+                	String datekey = evt.getNewValue().toString();
+       	        	try{
+                		displayNodeLargerPeriodData (selectstock,LocalDate.parse(datekey));
+                	} catch (java.time.format.DateTimeParseException e) {
+                		displayNodeLargerPeriodData (selectstock,null);
+                	}
+                }
+			}
+		});
+		
 		panelGgDpCjeZhanBi.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
@@ -1286,15 +1345,15 @@ public class BanKuaiFengXi extends JDialog
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
                     
-                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
-            		org.jsoup.select.Elements body = doc.select("body");
-            		org.jsoup.select.Elements dl = body.select("dl");
-            		org.jsoup.select.Elements li = dl.get(0).select("li");
-            		String selecteddate = li.get(0).text();
-            		LocalDate datekey = LocalDate.parse(selecteddate);
+//                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+//            		org.jsoup.select.Elements body = doc.select("body");
+//            		org.jsoup.select.Elements dl = body.select("dl");
+//            		org.jsoup.select.Elements li = dl.get(0).select("li");
+//            		String selecteddate = li.get(0).text();
+            		LocalDate datekey = LocalDate.parse(selectedinfo);
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
-    				setUserSelectedColumnMessage(selectedinfo);
+    				setUserSelectedColumnMessage(selectstock, selectedinfo);
     				
 //    				if(cbxshizhifx.isSelected()) { //显示市值排名
 //						dispalyStockShiZhiFengXiResult (selectstock,datekey);
@@ -1918,12 +1977,12 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void refreshAfterUserSelectBanKuaiColumn (BanKuai bkcur, String selectedinfo) 
 	{
-		org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
- 		org.jsoup.select.Elements body = doc.select("body");
- 		org.jsoup.select.Elements dl = body.select("dl");
- 		org.jsoup.select.Elements li = dl.get(0).select("li");
- 		String selecteddate = li.get(0).text();
- 		LocalDate datekey = LocalDate.parse(selecteddate);
+//		org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+// 		org.jsoup.select.Elements body = doc.select("body");
+// 		org.jsoup.select.Elements dl = body.select("dl");
+// 		org.jsoup.select.Elements li = dl.get(0).select("li");
+// 		String selecteddate = li.get(0).text();
+ 		LocalDate datekey = LocalDate.parse(selectedinfo);
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
 			
 			//选定周的板块排名情况
@@ -1974,7 +2033,7 @@ public class BanKuaiFengXi extends JDialog
 			}
 			
 			//
-			setUserSelectedColumnMessage(selectedinfo);
+			setUserSelectedColumnMessage(bkcur,selectedinfo);
 		
 	}
 	/*
@@ -2033,7 +2092,7 @@ public class BanKuaiFengXi extends JDialog
 			 li2.appendText("占比" + decimalformate.format(zhanbi) );
 		}
 		
-		setUserSelectedColumnMessage (doc.toString());
+		setUserSelectedColumnMessage (selectstock.getStock(),doc.toString());
 	}
 	/*
 	 * 导出用户选择的node的单独信息到CSV
@@ -2907,7 +2966,7 @@ public class BanKuaiFengXi extends JDialog
 	private JCheckBox chckbxdpminwk;
 	private JMenuItem menuItemnonfixperiod;
 	private JScrollPane scrollPane_1;
-	private BanKuaiFengXiCategoryBarChartCjlZhanbiPnl pnlbkwkcjlzhanbi;
+	private BanKuaiFengXiNodeCombinedCategoryPnl pnlbkwkcjlzhanbi;
 	private JTabbedPane tabbedPanebkzb;
 	
 	
@@ -3021,12 +3080,16 @@ public class BanKuaiFengXi extends JDialog
 		
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
 		
-		panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl();
+		panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
 		panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
 		
+		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
 		
-		panelggbkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl();
+		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
+		
+		
+		panelggbkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u677F\u5757\u989D\u5360\u6BD4", null, panelggbkcjezhanbi, null);
 		
 		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
@@ -3049,16 +3112,14 @@ public class BanKuaiFengXi extends JDialog
 					.addContainerGap())
 		);
 		
-		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl();
+		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
 		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
 		panelbkwkcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelbkwkcjezhanbi.setAllowDrawAnnoation(true);
 		
-		pnlbkwkcjlzhanbi = new BanKuaiFengXiCategoryBarChartCjlZhanbiPnl();
-		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
+		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
 		
-		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl();
-		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
+		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
 		panel_2.setLayout(gl_panel_2);
 		
 		tabbedPanegegu = new JTabbedPane(JTabbedPane.TOP);

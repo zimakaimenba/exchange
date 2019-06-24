@@ -93,7 +93,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		barchartdataset.clear();
 		
 		for(BkChanYeLianTreeNode node : nodelist) {
-			super.setCurDisplayNode( (TDXNodes) node );
+			super.setCurDisplayNode( (TDXNodes) node,period );
 			super.globeperiod = period;
 			NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(period);
 			

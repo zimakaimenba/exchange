@@ -1,8 +1,13 @@
 package com.exchangeinfomanager.nodes.nodexdata;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Locale;
 
+import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.TDXNodes;
 
 import org.apache.log4j.Logger;
 import org.jfree.data.time.RegularTimePeriod;
@@ -10,6 +15,9 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 
 public class StockNodeXPeriodData extends TDXNodesXPeriodData
@@ -192,6 +200,52 @@ public class StockNodeXPeriodData extends TDXNodesXPeriodData
 			return null;
 		}
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getNodeXDataInHtml(java.time.LocalDate, int)
+	 */
+	@Override
+	public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) 
+	{
+		String datahtml = super.getNodeXDataInHtml(superbk,requireddate,difference);
+		
+		org.jsoup.nodes.Document doc = Jsoup.parse(datahtml);
+		org.jsoup.select.Elements content = doc.select("body");
+		org.jsoup.select.Elements dl = content.select("dl");
+		
+		
+		Double liutongshizhi = null; String liutongshizhidanwei = null;
+		liutongshizhi = this.getSpecificTimeLiuTongShiZhi(requireddate, 0);
+		if(liutongshizhi != null) {
+				liutongshizhidanwei = FormatDoubleToShort.getNumberChineseDanWei(liutongshizhi);
+				liutongshizhi = FormatDoubleToShort.formateDoubleToShort( liutongshizhi);
+		}
+    	try{
+    		DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
+        	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+        	percentFormat.setMinimumFractionDigits(4);
+			org.jsoup.nodes.Element li5 =  dl.get(0).appendElement("li");
+			li5.appendText( "流通周平均市值" + decimalformate.format(liutongshizhi) + liutongshizhidanwei );
+		} catch (java.lang.IllegalArgumentException e) {
+		}
+			 
+		Double hsl = null ;
+		hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);	 
+		try {
+				DecimalFormat decimalformate2 = new DecimalFormat("%.3f");
+				if(hsl != null) {
+					org.jsoup.nodes.Element li4 = dl.get(0).appendElement("li");
+					li4.appendText( "换手率" + String.format("%.3f", hsl) );
+				}
+				
+			} catch (java.lang.IllegalArgumentException e ) {
+
+			} catch (java.lang.NullPointerException ex) {
+
+			}
+		
+		return doc.toString();
+	}
+
 
 }
