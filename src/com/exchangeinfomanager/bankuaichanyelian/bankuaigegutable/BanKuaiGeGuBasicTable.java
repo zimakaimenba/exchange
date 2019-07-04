@@ -39,14 +39,13 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 	public BanKuaiGeGuBasicTable (StockInfoManager stockmanager1)
 	{
 		super ();
-		
-		
-				this.bkdbopt = new BanKuaiDbOperation ();
-				this.newsdbopt = new StockCalendarAndNewDbOperation ();
-				this.stockmanager = stockmanager1;
+
+		this.bkdbopt = new BanKuaiDbOperation ();
+		this.newsdbopt = new StockCalendarAndNewDbOperation ();
+		this.stockmanager = stockmanager1;
 				
-				createMenu ();
-				createEvents ();
+		createMenu ();
+		createEvents ();
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);

@@ -60,7 +60,19 @@ public class BanKuai extends TDXNodes
 	private Boolean showincyltree = true;
 	private Boolean exporttowklyfile ;
 	private ArrayList<StockOfBanKuai> stockofbklist; //存放所有的个股
-
+	private Set<String> socialfriends;
+	
+	public void addSocialFriends (String friend)
+	{
+		if(socialfriends == null)
+			socialfriends = new HashSet<String> ();
+		
+		socialfriends.add(friend);
+	}
+	public Set<String> getSocialFriendsSet ()
+	{
+		return this.socialfriends;
+	}
 	public  Boolean isExportTowWlyFile ()
 	{
 		if(exporttowklyfile == null)
@@ -156,8 +168,9 @@ public class BanKuai extends TDXNodes
 	}
 	 /**
 	 * @return the tmpallbkge
+	 * 
 	 */
-	public ArrayList<StockOfBanKuai> getAllCurrentBanKuaiGeGu() 
+	public ArrayList<StockOfBanKuai> getAllGeGuOfBanKuaiInHistory() 
 	{
 //		ArrayList<StockOfBanKuai> stocklist = new ArrayList<StockOfBanKuai> ();
 //		int childcount = this.getChildCount();
@@ -186,13 +199,10 @@ public class BanKuai extends TDXNodes
 //				  if(records )
 //					  result.add(stockofbk);
 //            }
-			LocalDate joindate = stockofbk.getJoinBanKuaiDate();
-			LocalDate leftdate = stockofbk.getLeftBanKuaiDate();
-			
-			if(requireddate.isAfter(joindate) || requireddate.equals(joindate) ) {
-				if(leftdate == null || requireddate.isBefore(leftdate) )
+		
+			if(stockofbk.isInBanKuaiAtSpecificDate(requireddate)) 
 					result.add(stockofbk);
-			}
+			
 			
 		}
 		

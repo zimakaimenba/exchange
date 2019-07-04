@@ -9,13 +9,13 @@ public class ExportCondition
 	}
 	private  ExtraExportConditions extracon;
 	
-	private Boolean shouldnotexportSTstocks;
-	private Boolean havedayangxianundercertainchenjiaoer;
-	private Double  cjelevelundercertainchenjiaoeforyangxian;
-	private Double  dayangxianundercertainchenjiaoer;
-	private Boolean havelianxufundercertainchenjiaoer;
-	private Double  cjelevelundercertainchenjiaoeforlianxu;
-	private Integer fanglianglevelundercertainchenjiaoer;
+//	private Boolean shouldnotexportSTstocks;
+//	private Boolean havedayangxianundercertainchenjiaoer;
+//	private Double  cjelevelundercertainchenjiaoeforyangxian;
+//	private Double  dayangxianundercertainchenjiaoer;
+//	private Boolean havelianxufundercertainchenjiaoer;
+//	private Double  cjelevelundercertainchenjiaoeforlianxu;
+//	private Integer fanglianglevelundercertainchenjiaoer;
 	
 	//下面这些变量，有2个地方使用，界面突出显示和导出，标准不一，直接返回原始数据，由客户自己处理
 	private Double seetingltszmax;
@@ -113,6 +113,11 @@ public class ExportCondition
 //		if(this.shouldnotexportSTstocks)
 //			this.tooltips = this.tooltips + "不导出ST个股。";
 //	}
+	public Boolean shouldOnlyExportBanKuaiOfZhanBiUp ()
+	{
+		boolean should = extracon.shouldOnlyExportBanKuaiOfZhanBiUp();
+		return should;
+	}
 	public Boolean shouldNotExportSTStocks()
 	{
 		boolean should = extracon.shouldExportSTStocks();
@@ -182,7 +187,7 @@ public class ExportCondition
 			this.settindpgmaxwk = null;
 	}
 	//
-	public Integer getSettinBkmaxwk() 
+	private Integer getSettinBkmaxwk() 
 	{
 		return settinbkgmaxwk;
 	}

@@ -125,16 +125,19 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
                 break;
             case 5:
             	Integer cjedpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
-            	if(cjedpmaxwk > 0) {
-            		value = cjedpmaxwk;
-            		break;
-            	} else	if(cjedpmaxwk == 0) {
-            		Integer cjedpminwk = stockxdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
-            		value = 0 - cjedpminwk;
-            		break;
+            	try{
+            		if(cjedpmaxwk > 0) {
+                		value = cjedpmaxwk;
+                		break;
+                	} else	if(cjedpmaxwk == 0) {
+                		Integer cjedpminwk = stockxdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
+                		value = 0 - cjedpminwk;
+                		break;
+                	}
+            	} catch (java.lang.NullPointerException e) {
+            		e.printStackTrace();
+            		logger.info("");
             	}
-            	
-            	
 //            	dpmaxwk = null;
 //            	curdisplaystockofbankuai = null;
 //            	stockxdataforbk = null;
@@ -286,7 +289,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 			return this.cjezbdpminwk;
 		}
 		//…Ë÷√bkMAXWK∑ß÷µ
-		public void setDisplayCjeBKMaxWk (Integer bkmax)
+		private void setDisplayCjeBKMaxWk (Integer bkmax)
 		{
 			if(bkmax != null)
 				this.cjezbbkmaxwk = bkmax;

@@ -198,8 +198,11 @@ public class AllCurrentTdxBKAndStoksTree
 		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getAmoRecordsStartDate();
 		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getAmoRecordsEndDate();
 		
-		if(bkstartday == null || bkendday == null) 
-			return bankuai;
+		if(bkstartday == null || bkendday == null)  {
+			bkstartday = CommonUtility.getSettingRangeDate(LocalDate.now(), "middle");
+			bkendday = LocalDate.now();
+//			return bankuai;
+		}
 		
 		//同步板块的个股
 		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,treecyl);

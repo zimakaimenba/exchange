@@ -69,11 +69,13 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //	private LocalDate displayedenddate;
 	private AllCurrentTdxBKAndStoksTree allbksks;
 	private Boolean exportuserselectedinfotocsv;
+	private String globeperiod;
 
 	public BanKuaiFengXiLargePnl (TDXNodes nodebkbelonged, TDXNodes node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period)
 	{
 		this.nodebankuai = nodebkbelonged;
 		this.displaynode = node;
+		this.globeperiod = period;
 		initialzieSysconf ();
 //		this.displaystartdate = displayedstartdate1;
 //		this.displayenddate = displayedenddate1;
@@ -272,12 +274,12 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
                     
-                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
-            		org.jsoup.select.Elements body = doc.select("body");
-            		org.jsoup.select.Elements dl = body.select("dl");
-            		org.jsoup.select.Elements li = dl.get(0).select("li");
-            		String selecteddate = li.get(0).text();
-            		LocalDate datekey = LocalDate.parse(selecteddate);
+//                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
+//            		org.jsoup.select.Elements body = doc.select("body");
+//            		org.jsoup.select.Elements dl = body.select("dl");
+//            		org.jsoup.select.Elements li = dl.get(0).select("li");
+//            		String selecteddate = li.get(0).text();
+            		LocalDate datekey = LocalDate.parse(selectedinfo);
             		nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
     				nodekpnl.highLightSpecificBarColumn(datekey);
     				
@@ -294,7 +296,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	 */
 	private void setUserSelectedColumnMessage(String selttooltips) 
 	{
-		tfldselectedmsg.displayNodeSelectedInfo (selttooltips);
+		String htmlstring = this.displaynode.getNodeXPeroidDataInHtml(LocalDate.parse(selttooltips),this.globeperiod);
+		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
+		
 //		String allstring = selttooltips + "\n" + "*----------------------*" + "\n";
 //		
 //		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
@@ -374,7 +378,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.Y_AXIS));
 		this.centerPanel.setPreferredSize(new Dimension(1640, 705)); //设置显示框的大小
 		
-		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical");
+		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical","CJE");
 		if(nodebkbelonged.getType() == BkChanYeLianTreeNode.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
 			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());

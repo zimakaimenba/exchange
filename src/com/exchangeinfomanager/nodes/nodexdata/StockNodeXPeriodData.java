@@ -160,12 +160,14 @@ public class StockNodeXPeriodData extends TDXNodesXPeriodData
 	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
 	{
 		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+//		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(LocalDate.parse("2019-01-04"),difference));
 		Double curhzdf = null ;
 		try {
 			curhzdf = curhighzdfrecord.getValue().doubleValue();
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info(" ");
+//			e.printStackTrace();
+			logger.info( super.getNodeCode() + ":" + requireddate + difference    + "周没有数据，可能是停牌" );
+			return null;
 		}
 		
 		return curhzdf;

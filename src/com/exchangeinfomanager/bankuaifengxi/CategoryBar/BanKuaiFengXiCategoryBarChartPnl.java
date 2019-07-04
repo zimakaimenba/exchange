@@ -192,7 +192,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         plot.clearAnnotations();
         if(isAllowDrawAnnoation ())
         	markASpecificColumn (columnkey,"选定周");
-		
 	}
 	/*
 	 *特别标记某个日期 

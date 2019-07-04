@@ -167,6 +167,11 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			String selectedinfo = evt.getNewValue().toString();
 			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(LocalDate.parse(selectedinfo) ) );
+    		//特别标记点击的日期，这样界面上看比较清晰
+    		if(cjezblargepnl.isAllowDrawAnnoation()) {
+				cjezblargepnl.setAnnotations( LocalDate.parse(selectedinfo)  );
+				cjelargepnl.setAnnotations( LocalDate.parse(selectedinfo)  );
+			}
 			PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", selectedinfo );
 			pcs.firePropertyChange(evtnew);
 			

@@ -3,6 +3,7 @@ package com.exchangeinfomanager.nodes.nodexdata;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -71,6 +72,7 @@ public class TDXNodeGivenPeriodDataItem extends OHLCItem
 	
 	private double ggbkcjedifference; //个股的成交额本周期和合理的上周期的差额
 	private Integer exchangedaysnumber; //个股板块每周的交易日数目
+	
 	/**
 	 * @return the myowncode
 	 */

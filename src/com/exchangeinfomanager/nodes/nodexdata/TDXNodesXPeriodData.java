@@ -560,10 +560,14 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		RegularTimePeriod period = null;
 		if(nodeperiod.equals(TDXNodeGivenPeriodDataItem.WEEK)) { //锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷荩锟街灰拷锟斤拷锟斤拷锟斤拷锟酵拷锟斤拷锟斤拷煞锟斤拷锟�
 			expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-			period = new org.jfree.data.time.Week (Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
+			period = new org.jfree.data.time.Week (lastdayofweek);
+//			period = new org.jfree.data.time.Week (Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 		} else if(nodeperiod.equals(TDXNodeGivenPeriodDataItem.DAY)) { //锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷荩锟斤拷锟斤拷锟斤拷锟酵拷趴煞锟斤拷锟�
 			expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
-			period = new org.jfree.data.time.Day(Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
+			period = new org.jfree.data.time.Day (lastdayofweek);
+//			period = new org.jfree.data.time.Day(Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 		}  else if(nodeperiod.equals(TDXNodeGivenPeriodDataItem.MONTH)) { //锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷荩锟斤拷锟斤拷锟斤拷锟酵拷趴煞锟斤拷锟�
 			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
 		}

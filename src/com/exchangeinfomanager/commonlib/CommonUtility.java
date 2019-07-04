@@ -3,10 +3,12 @@ package com.exchangeinfomanager.commonlib;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.IsoFields;
 import java.time.temporal.WeekFields;
 import java.util.Calendar;
@@ -14,13 +16,35 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 public class CommonUtility {
 
 	public CommonUtility() 
 	{
-		
+		 
 	}
+	
+	
+	/*
+	 * 
+	 */
+	public static LocalDate getSettingRangeDate (LocalDate curselectdate, String rangelevel)
+	{
+		SystemConfigration sysconfig = SystemConfigration.getInstance();
 
+		LocalDate requirestart = null ;
+		
+		if(rangelevel.toLowerCase().equals("basic"))
+			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() ,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		else if(rangelevel.toLowerCase().equals("middle"))
+			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(1,ChronoUnit.YEARS).with(DayOfWeek.MONDAY);
+		else if(rangelevel.toLowerCase().equals("large"))
+			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(3,ChronoUnit.YEARS).with(DayOfWeek.MONDAY);
+		
+		return requirestart;
+	}
+	
 	public static String formatDateYYYY_MM_DD_HHMMSS(LocalDateTime tmpdate)
 	{
 		try {

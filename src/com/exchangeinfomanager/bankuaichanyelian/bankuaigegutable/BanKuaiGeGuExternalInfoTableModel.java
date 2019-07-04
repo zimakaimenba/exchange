@@ -224,7 +224,7 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 			return this.cjezbdpminwk;
 		}
 		//…Ë÷√bkMAXWK∑ß÷µ
-		public void setDisplayCjeBKMaxWk (Integer bkmax)
+		private void setDisplayCjeBKMaxWk (Integer bkmax)
 		{
 			if(bkmax != null)
 				this.cjezbbkmaxwk = bkmax;

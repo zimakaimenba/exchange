@@ -39,15 +39,15 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		super ();
 
 		super.plot.setRenderer(new CustomMultiCategroyRendererForZhanBi() );
-		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
-		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelsVisible(true);
+//		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
+//		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
+//		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setBaseItemLabelsVisible(true);
 		
 		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setBarPainter(new StandardBarPainter());
 		
-//		CustomCategroyToolTipGeneratorForZhanBi custotooltip = new CustomCategroyToolTipGeneratorForZhanBi();
-//		((CustomCategroyRendererForZhanBi) plot.getRenderer()).setSeriesToolTipGenerator(0,custotooltip);
-//		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
+		CustomCategroyToolTipGeneratorForCjeZhanBi custotooltip = new CustomCategroyToolTipGeneratorForCjeZhanBi();
+		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setSeriesToolTipGenerator(0,custotooltip);
+		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
 		
         //line part
         linechartdataset = new DefaultCategoryDataset();
@@ -201,5 +201,9 @@ class CustomMultiCategroyRendererForZhanBi extends BanKuaiFengXiCategoryBarRende
 	{
 		super ();
 		super.displayedcolumncolorindex = Color.RED.darker();
+		
+		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGeneratorForCjeZhanBi ();
+		this.setBaseItemLabelGenerator(labelgenerator);
+		this.setBaseItemLabelsVisible(true);
 	}
 }

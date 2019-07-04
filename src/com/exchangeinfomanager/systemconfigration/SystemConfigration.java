@@ -959,6 +959,37 @@ public class SystemConfigration
 			return path;
 			
 		}
+		/*
+		 * 
+		 */
+		public Boolean isShangHaiStock (String nodecode)
+		{
+			if(nodecode.startsWith("600") || nodecode.startsWith("688") ||  nodecode.startsWith("603") || nodecode.startsWith("601") )
+				return true;
+			else
+				return false;
+		}
+		public Boolean isShangHaiZhiShu (String nodecode)
+		{
+			if(nodecode.startsWith("000") || nodecode.startsWith("880") || nodecode.startsWith("999")  )
+				return true;
+			else
+				return false;
+		}
+		public Boolean isShenZhengStock (String nodecode)
+		{
+			if(nodecode.startsWith("000") || nodecode.startsWith("300") || nodecode.startsWith("001") || nodecode.startsWith("002"))
+				return true;
+			else
+				return false;
+		}
+		public Boolean isShenZhengZhiShu (String nodecode)
+		{
+			if(nodecode.startsWith("399") || nodecode.startsWith("159") )
+				return true;
+			else
+				return false;
+		}
 
 }
 

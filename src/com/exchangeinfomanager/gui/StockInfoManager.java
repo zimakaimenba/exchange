@@ -2243,7 +2243,7 @@ public class StockInfoManager
 //	}
 	
 	
-	private static void addPopup(Component component, final JPopupMenu popup) 
+	private  void addPopup(Component component, final JPopupMenu popup) 
 	{
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {

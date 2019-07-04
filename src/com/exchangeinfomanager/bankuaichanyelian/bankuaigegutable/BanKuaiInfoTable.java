@@ -28,6 +28,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
@@ -39,6 +40,8 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -201,8 +204,19 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        if(!bankuai.isExportTowWlyFile() )
         		foreground = Color.GRAY;
 	        
-	        //更改显示
-	        if (comp instanceof JLabel && col == 0) {
+	        if (comp instanceof JLabel && col == 7) {
+	        	NodeXPeriodDataBasic nodexdata = bankuai.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
+	        	if(weekohlc != null) {
+	        		double close = weekohlc.getCloseValue();
+	        		double open = weekohlc.getOpenValue();
+	        		if(close!= 0.0 && open >= close)
+	        			background = Color.GREEN;
+			        else if(close!= 0.0 && open < close)
+			        	background = Color.RED;
+			        else
+			        	background = Color.WHITE;
+	        	}
 	        	
 	        } else  //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
 	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||  col == 4 ||  col == 5 ||  col == 6  )) {
@@ -244,13 +258,12 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 //		         }
 	        }
 	        
+	       comp.setBackground(background);
+	       comp.setForeground(foreground);
 
-	        
-	        if (!this.isRowSelected(row)) {
-	        	comp.setBackground(background);
-	        	comp.setForeground(foreground);
-	        }
-	        
+	       if(this.isRowSelected(row) && col == 0 ) {
+		    	comp.setBackground(Color.blue);
+		    }
 	        return comp;
 	}
 

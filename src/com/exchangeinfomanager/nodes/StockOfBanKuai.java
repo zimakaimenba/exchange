@@ -7,9 +7,12 @@ import java.time.temporal.WeekFields;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
 import com.exchangeinfomanager.nodes.nodexdata.StockOfBanKuaiNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
@@ -38,24 +41,46 @@ public class StockOfBanKuai extends TDXNodes
 	
 //	private static Logger logger = Logger.getLogger(StockOfBanKuai.class);
 	private BanKuai bankuai;
-	private LocalDate joindate;
-	private LocalDate leftdate;
+//	private LocalDate joindate;
+//	private LocalDate leftdate;
 	private Stock stock;
 	private Integer quanzhong;
 	private Boolean isbklongtou;
+	private Set<Interval> inAndOutBanKuaiInterval ; 
 	
-	public LocalDate getJoinBanKuaiDate() {
-		return joindate;
+	public void addInAndOutBanKuaiInterval (Interval newitvl)
+	{
+		if(this.inAndOutBanKuaiInterval == null) 
+			this.inAndOutBanKuaiInterval = new HashSet<Interval> ();
+
+		this.inAndOutBanKuaiInterval.add(newitvl);
 	}
-	public void setJoinBanKuaiDate(LocalDate joindate) {
-		this.joindate = joindate;
+	public Boolean isInBanKuaiAtSpecificDate (LocalDate checkdate) 
+	{
+		Boolean inbk = false;
+		for(Interval tmpintvl : this.inAndOutBanKuaiInterval) {
+			DateTime checkdt= new DateTime(checkdate.getYear(), checkdate.getMonthValue(), checkdate.getDayOfMonth(), 0, 0, 0, 0);
+			if (tmpintvl.contains(checkdt) || tmpintvl.getEnd().isEqual(checkdt)) {
+				inbk = true;
+				break;
+			}
+		}
+		
+		return inbk;
 	}
-	public LocalDate getLeftBanKuaiDate() {
-		return leftdate;
-	}
-	public void setLeftBanKuaiDate(LocalDate leftdate) {
-		this.leftdate = leftdate;
-	}
+	
+//	public LocalDate getJoinBanKuaiDate() {
+//		return joindate;
+//	}
+//	public void setJoinBanKuaiDate(LocalDate joindate) {
+//		this.joindate = joindate;
+//	}
+//	public LocalDate getLeftBanKuaiDate() {
+//		return leftdate;
+//	}
+//	public void setLeftBanKuaiDate(LocalDate leftdate) {
+//		this.leftdate = leftdate;
+//	}
 	public Boolean isBkLongTou ()
 	{
 		if(this.isbklongtou == null)

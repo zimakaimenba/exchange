@@ -72,7 +72,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 		//http://esus.com/creating-a-jtable-with-headers-with-jtooltips/
 		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
 	    header.setToolTipStrings(bkgegumapmdl.getTableHeader());
-	    header.setToolTipText("Default ToolTip TEXT");
+//	    header.setToolTipText("Default ToolTip TEXT");
 	    this.setTableHeader(header);
 		
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
@@ -112,7 +112,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 	@Override
 	public void hightLightFxValues(ExportCondition expc) 
 	{
-		Integer cjezbbkmax = expc.getSettinBkmaxwk();
+//		Integer cjezbbkmax = expc.getSettinBkmaxwk();
 		Integer cjemaxwk = expc.getSettingCjemaxwk();
 		Integer cjezbdpmax = expc.getSettinDpmaxwk();
 		Integer cjezbdpmin = expc.getSettingDpminwk();
@@ -124,7 +124,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
 		
 		
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeZhanBiDPMaxMinWk (cjezbdpmax,cjezbdpmin);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
@@ -141,7 +141,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
         int colIndex = columnAtPoint(p);
-
+        tip =  getValueAt(rowIndex, colIndex).toString();
 //        try {
 //        	if(colIndex == 2) { //权重column的tip要具体
 //				org.jsoup.nodes.Document doc = Jsoup.parse("");

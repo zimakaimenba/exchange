@@ -68,7 +68,7 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 	@Override
 	public void hightLightFxValues(ExportCondition expc) 
 	{
-		Integer cjezbbkmax = expc.getSettinBkmaxwk();
+//		Integer cjezbbkmax = expc.getSettinBkmaxwk();
 		Integer cjemaxwk = expc.getSettingCjemaxwk();
 		Integer cjezbdpmax = expc.getSettinDpmaxwk();
 		Integer cjezbdpmin = expc.getSettingDpminwk();
@@ -80,7 +80,7 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
 		
 		
-			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
+//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
 			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
 			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeZhanBiDPMaxMinWk (cjezbdpmax,cjezbdpmin);
 			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);

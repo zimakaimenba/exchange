@@ -1695,7 +1695,8 @@ public class BanKuaiDbOperation
 //            			   || zhishucode.startsWith("50") || zhishucode.startsWith("51") || zhishucode.startsWith("52") 
 //            			   || zhishucode.startsWith("75") || zhishucode.startsWith("73") || zhishucode.startsWith("78") || zhishucode.startsWith("79")
 //            			   || zhishucode.startsWith("90"))
-            	   if( !(zhishucode.startsWith("000") || zhishucode.startsWith("880") || zhishucode.startsWith("999") ))
+//            	   if( !(zhishucode.startsWith("000") || zhishucode.startsWith("880") || zhishucode.startsWith("999") ))
+            	   if( ! sysconfig.isShangHaiZhiShu(zhishucode))
             		   continue;
             	   
 //            	   if(zhishucode.equals("880704"))
@@ -1851,7 +1852,8 @@ public class BanKuaiDbOperation
 //            			   ||zhishucode.startsWith("200")
 //            			   ||zhishucode.startsWith("395")
 //            			)
-            	   if(! (zhishucode.startsWith("399") || zhishucode.startsWith("159") ) )
+//            	   if(! (zhishucode.startsWith("399") || zhishucode.startsWith("159") ) )
+            	   if(! sysconfig.isShenZhengZhiShu(zhishucode))
             		   continue;
             	   
             	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
@@ -1966,8 +1968,8 @@ public class BanKuaiDbOperation
 				}
 				
 				sqldeletetstat = "DELETE 产业链子板块列表 "
-						+ "	FROM 产业链子板块列表"
-						+ "INNER JOIN 产业链板块子板块对应表 ON 产业链子板块列表.子板块代码 = 产业链板块子板块对应表.子板块代码"
+						+ "	FROM 产业链子板块列表 "
+						+ " INNER JOIN 产业链板块子板块对应表 ON 产业链子板块列表.子板块代码 = 产业链板块子板块对应表.子板块代码"
 						;
 				logger.debug(sqldeletetstat);
 				try {
@@ -2963,7 +2965,8 @@ public class BanKuaiDbOperation
 		if(!Strings.isNullOrEmpty(stockcode)) {
 				String gegucjltable;
 				// TODO Auto-generated method stub
-				if(stockcode.startsWith("6"))
+//				if(stockcode.startsWith("6"))
+				if(sysconfig.isShangHaiStock(stockcode))
 					gegucjltable = "通达信上交所股票每日交易信息";
 				else
 					gegucjltable = "通达信深交所股票每日交易信息";
@@ -3019,20 +3022,19 @@ public class BanKuaiDbOperation
 					 		
 					 		
 					 		"           and "+ bktypetable + ".`板块代码` =  '" + currentbkcode + "'\r\n" + 
-					 		"         \r\n" + 
-					 		"         group by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码`\r\n" + 
-					 		"         order by "+ bktypetable + ".`股票代码`, "+ bktypetable + ".`板块代码` "
+					 		"         \r\n"  
 					 		;
 			 }
 //			 logger.debug(sqlquerystat1);
 			 logger.debug("给板块" + currentbk.getMyOwnCode() + currentbk.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "时间段内的个股！");
 			 rs1 = connectdb.sqlQueryStatExecute(sqlquerystat1);
 			 
+//			 ArrayList<StockOfBanKuai> allcurstkofbk = currentbk.getAllGeGuOfBanKuaiInHistory ();
 			 while(rs1.next()) {  
 				String tmpstockcode = rs1.getString("股票代码");
-				if(currentbk.getBanKuaiGeGu(tmpstockcode) != null ) //已经有了
-					continue;
-					
+//				if(tmpstockcode.equals("603259"))
+//					logger.debug("test");
+
 				String tmpstockname;
 				try {
 					tmpstockname = rs1.getString("股票名称"); //"股票名称"
@@ -3040,42 +3042,52 @@ public class BanKuaiDbOperation
 					tmpstockname = "";
 				}
 				
-				Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BkChanYeLianTreeNode.TDXGG);
-				if(tmpstock != null) {
-					
-					StockOfBanKuai bkofst = new StockOfBanKuai(currentbk,tmpstock);
-					Integer weight = rs1.getInt("股票权重");
-					bkofst.setStockQuanZhong(weight);
-					
-					try{
-						Boolean longtou = rs1.getBoolean("板块龙头");
-						bkofst.setBkLongTou(longtou);
-					} catch (java.sql.SQLException e) {
-//						e.printStackTrace();
-						bkofst.setBkLongTou(false);
-					}
-					
-					LocalDate joindate = rs1.getDate("加入时间").toLocalDate();
-					bkofst.setJoinBanKuaiDate(joindate);
-					try {
-						LocalDate leftdate = rs1.getDate("移除时间").toLocalDate();
-						bkofst.setLeftBanKuaiDate(leftdate);
-					} catch (java.lang.NullPointerException e) {
+				Integer weight = rs1.getInt("股票权重");
+				
+				Boolean longtou;
+				try{
+					longtou = rs1.getBoolean("板块龙头");
+				} catch (java.sql.SQLException e) {
+//					e.printStackTrace();
+					longtou = false;
+				}
+				
+				LocalDate joindate = rs1.getDate("加入时间").toLocalDate();
+				LocalDate leftdate;
+				try {
+					leftdate = rs1.getDate("移除时间").toLocalDate().with(DayOfWeek.FRIDAY); //周线都是以周五为计算的，任何个股移出都调整到周五
+				} catch (java.lang.NullPointerException e) {
+					leftdate = LocalDate.parse("3000-01-01");
+				}
+				DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
+				DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
+				Interval joinleftinterval = new Interval(joindt, leftdt);
+				
+				if(currentbk.getBanKuaiGeGu(tmpstockcode) != null ) {//已经有了
+					StockOfBanKuai bkofst = currentbk.getBanKuaiGeGu(tmpstockcode);
+					bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
+				} else {
+					Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BkChanYeLianTreeNode.TDXGG);
+					if(tmpstock != null) {
 						
+						StockOfBanKuai bkofst = new StockOfBanKuai(currentbk,tmpstock);
+						bkofst.setStockQuanZhong(weight);
+						bkofst.setBkLongTou(longtou);
+						bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
+						
+						currentbk.addNewBanKuaiGeGu(bkofst);
 					}
-					
-					currentbk.addNewBanKuaiGeGu(bkofst);
 				}
 			}
 				
-			}catch(java.lang.NullPointerException e){ 
+		}catch(java.lang.NullPointerException e){ 
 				e.printStackTrace();
 //				logger.debug( "数据库连接为NULL!");
-			} catch (SQLException e) {
+		} catch (SQLException e) {
 				e.printStackTrace();
-			}catch(Exception e){
+		}catch(Exception e){
 				e.printStackTrace();
-			} finally {
+		} finally {
 				try {
 					if(rs1 != null)
 						rs1.close();
@@ -3083,7 +3095,7 @@ public class BanKuaiDbOperation
 					e.printStackTrace();
 				}
 				rs1 = null;
-			}
+		}
 		
 		return currentbk;
 	}
@@ -3433,7 +3445,8 @@ public class BanKuaiDbOperation
 	
 		String stockcode = stock.getMyOwnCode();
 		String bkcjltable;
-		if(stockcode.startsWith("6"))
+//		if(stockcode.startsWith("6"))
+		if(sysconfig.isShangHaiStock(stockcode))
 			bkcjltable = "通达信上交所股票每日交易信息";
 		else
 			bkcjltable = "通达信深交所股票每日交易信息";
@@ -3442,7 +3455,7 @@ public class BanKuaiDbOperation
 		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend);
 		
 		//包含成交量和成交额的SQL
-		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
+		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday,1) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
 				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比, \r\n" +
 				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
 				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU , M.周最大涨跌幅,M.周最小涨跌幅      \r\n" +
@@ -3484,7 +3497,7 @@ public class BanKuaiDbOperation
 				
 		
 		try {
-			logger.debug("为板块" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
+			logger.debug("为板块:" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
 		} catch (java.lang.NullPointerException e) {
 			e.printStackTrace();
 		}
@@ -3593,7 +3606,8 @@ public class BanKuaiDbOperation
 	
 		String stockcode = stock.getMyOwnCode();
 		String bkcjltable;
-		if(stockcode.startsWith("6"))
+//		if(stockcode.startsWith("6"))
+		if( sysconfig.isShangHaiStock(stockcode) )
 			bkcjltable = "通达信上交所股票每日交易信息";
 		else
 			bkcjltable = "通达信深交所股票每日交易信息";
@@ -3731,14 +3745,20 @@ public class BanKuaiDbOperation
 		try {
 			LocalDate lastdaydate = requiredstartday.with(fieldCH, 6); //
 			OHLCSeries nodenewohlc = new OHLCSeries("TEMPK");
+			int linenumber =0;
 			
 			String [] linevalue ;
 			while ( (linevalue = stockcsvreader.readNext())!=null ) {
+				linenumber ++;
+				
 				String recordsdate = linevalue[0];
 				LocalDate curlinedate;
 				try {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
 					curlinedate = LocalDate.parse(recordsdate, formatter);
+					
+					if(linenumber == 1) //计算第一行的日期，给周K线的计算使用
+						lastdaydate = curlinedate.with(fieldCH, 6); //
 				} catch (java.time.format.DateTimeParseException e) {
 					break;
 				}
@@ -3779,7 +3799,7 @@ public class BanKuaiDbOperation
 				 int lastdayweekNumber = lastdaydate.get(weekFields.weekOfWeekBasedYear());
 				 int curweekNumber = curlinedate.get(weekFields.weekOfWeekBasedYear());
 				 if(lastdayweekNumber == curweekNumber) {
-					 nodenewohlc.add(stokofbkrecord);
+					 nodenewohlc.add(stokofbkrecord); //先把本周的日线数据存储起来，等待后面处理
 				 } else {
 					 //换周了，计算上一周周线OHLC 数据
 					 this.getTDXNodesWeeklyKXianZouShi(stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
@@ -3808,8 +3828,12 @@ public class BanKuaiDbOperation
 	}
 	private TDXNodes getTDXNodesWeeklyKXianZouShi (TDXNodes tdxnode, LocalDate friday, OHLCSeries nodenewohlc)
 	{
-		TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData) tdxnode.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+		int newcount = nodenewohlc.getItemCount();
+		if(newcount == 0)
+			return tdxnode;
 		
+		TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData) tdxnode.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+		//在前面处理周线成交量等数据的时候，已经存了OHLC的数据，都是0，现在要把这个数据找到，是情况处理
 		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
 		if(spcohlcdataindex != null) {
 			OHLCItem wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
@@ -3818,21 +3842,19 @@ public class BanKuaiDbOperation
 				wkohlcdata.getLowValue() == 0 &&
 				wkohlcdata.getOpenValue() == 0) ) 
 			{
-				return tdxnode;
+				return tdxnode; //都不是0，说明正确的数据已经在前面找出来了，直接退出。
 			}
-		} else {
-			
-		}
+		} 
 		
-		try { 
+		try { //都是0，就把原来的数据移除，然后把新数据放进去
 			if(spcohlcdataindex != null) 
 				nodexdata.getOHLCData().remove(spcohlcdataindex.intValue());
+			
 		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 			e.printStackTrace();
 		}
 		
 		Double weeklyopen = null;
-		int newcount = nodenewohlc.getItemCount();
 		try{
 			OHLCItem newohlcdata0 = (OHLCItem) nodenewohlc.getDataItem(0);
 			weeklyopen = newohlcdata0.getOpenValue();
@@ -3999,9 +4021,11 @@ public class BanKuaiDbOperation
 		    	rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	while(rsdm.next()) {
 		    		 String ggcode = rsdm.getString("股票代码"); //mOST_RECENT_TIME
-		    		 if( (ggcode.startsWith("00") || ggcode.startsWith("30") ) && jiaoyisuo.toLowerCase().equals("sz")) //只存深市股票
+//		    		 if( (ggcode.startsWith("00") || ggcode.startsWith("30") ) && jiaoyisuo.toLowerCase().equals("sz")) //只存深市股票
+		    		 if( sysconfig.isShenZhengStock(ggcode) && jiaoyisuo.toLowerCase().equals("sz") )
 		    			 allgegucode.add(ggcode);
-		    		 else if( (ggcode.startsWith("6") ) && jiaoyisuo.toLowerCase().equals("sh") ) //只存沪市股票
+//		    		 else if( (ggcode.startsWith("6") ) && jiaoyisuo.toLowerCase().equals("sh") ) //只存沪市股票
+		    		 else if ( sysconfig.isShangHaiStock(ggcode)  && jiaoyisuo.toLowerCase().equals("sh") )
 		    			 allgegucode.add(ggcode);
 		    	}
 		    } catch(java.lang.NullPointerException e) { 
@@ -5099,7 +5123,8 @@ public class BanKuaiDbOperation
 	            	   String zhishucode = zhishuline.trim().substring(0, 6);
 	            	   logger.debug(zhishucode);
 	            	   
-	            	   if(  !zhishucode.startsWith("000") && !zhishucode.startsWith("001") && !zhishucode.startsWith("002") && !zhishucode.startsWith("300"))
+//	            	   if(  !zhishucode.startsWith("000") && !zhishucode.startsWith("001") && !zhishucode.startsWith("002") && !zhishucode.startsWith("300"))
+	            	   if( !sysconfig.isShenZhengStock(zhishucode) )
 	            		   continue;
 	            	   
 	            	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
@@ -5115,8 +5140,9 @@ public class BanKuaiDbOperation
 	            			   List<String> tmplinepartnamelist2 = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(2).trim());
 	            			   zhishuname = zhishuname + tmplinepartnamelist2.get(0).trim();
 	            			   } catch (java.lang.IndexOutOfBoundsException e) {
-	            				   e.printStackTrace();
+//	            				   e.printStackTrace();
 	            				   logger.debug(tmplinelist + "出错");
+	            				   
 	            			   }
 	            		   }
 	            			   
@@ -5188,7 +5214,8 @@ public class BanKuaiDbOperation
 	            	   String zhishucode = zhishuline.trim().substring(0, 6);
 //	            	   logger.debug(zhishucode);
 	            	   
-	            	   if(  !(zhishucode.startsWith("60") ) )
+//	            	   if(  !(zhishucode.startsWith("60") ) )
+	            	   if( ! sysconfig.isShangHaiStock(zhishucode) )
 	            		   continue;
 	            	   
 	            	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
@@ -5453,7 +5480,8 @@ public class BanKuaiDbOperation
 	                Map<String, Object> jbminfomap = rec.toMap();
 	                String stockcode = jbminfomap.get("GPDM").toString();
 	                String datavalueindb = jbminfomap.get("GXRQ").toString() ;
-	                if( !(stockcode.startsWith("00") || stockcode.startsWith("30") || stockcode.startsWith("60") ) 
+//	                if( !( stockcode.startsWith("00") || stockcode.startsWith("30") || stockcode.startsWith("60") )
+	                if( ! (sysconfig.isShangHaiStock(stockcode) || sysconfig.isShenZhengStock(stockcode) )
 	                		|| stockcode.equals("000003") 
 	                		|| datavalueindb.equals("0") )
 	                	continue;
@@ -5603,7 +5631,8 @@ public class BanKuaiDbOperation
 	                int insertresult = connectdb.sqlInsertStatExecute(sqlinsetstat);
 	                if(insertresult >0) {
 	                	String jys;
-	                	if(stockcode.startsWith("60"))
+//	                	if(stockcode.startsWith("60"))
+	                	if( sysconfig.isShangHaiStock(stockcode) )
 	                		jys = "SH";
 	                	else
 	                		jys = "SZ";

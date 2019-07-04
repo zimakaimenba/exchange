@@ -53,14 +53,23 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );
 		
 		 Iterator itr = entryList.iterator(); 
-	     while (itr.hasNext())      { //把停牌的剔除，以免出问题
+	     while (itr.hasNext())      { 
 	    	 StockOfBanKuai sob = (StockOfBanKuai) itr.next();
-	    	 Stock stock = sob.getStock();
-			 NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
-	    	 
-	    	 Double cje = ((StockNodeXPeriodData)stockxdata).getChengJiaoEr(showwknum, 0);
-	    	 if(cje == null)
+//	    	 if(sob.getMyOwnCode().equals("603259"))
+//	    		 logger.debug("test ?");
+    	 
+	    	 if( !sob.isInBanKuaiAtSpecificDate(showwknum)  ) { //确认当前还在板块内
 	    		 itr.remove();
+	    	 } else { //把停牌的个股的剔除，以免出问题
+		    	 Stock stock = sob.getStock();
+				 NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
+		    	 
+		    	 Double cje = ((StockNodeXPeriodData)stockxdata).getChengJiaoEr(showwknum, 0);
+		    	 if(cje == null)
+		    		 itr.remove();
+	    	 }
+	    	 
+
 	     } 
 		
 		sortTableByChenJiaoEr ();

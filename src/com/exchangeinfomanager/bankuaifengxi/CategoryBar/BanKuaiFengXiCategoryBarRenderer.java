@@ -85,8 +85,15 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
     public void setDisplayNode (TDXNodes curdisplayednode) 
     {
     	this.node = curdisplayednode;
-    	BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();
-    	tooltipgenerator.setDisplayNode(curdisplayednode);
+    	
+    	try {
+    		BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();
+    		tooltipgenerator.setDisplayNode(curdisplayednode);
+    	} catch (java.lang.NullPointerException e) {
+    		e.printStackTrace();
+    		return;
+    	}
+    	
     }
     /*
      * 

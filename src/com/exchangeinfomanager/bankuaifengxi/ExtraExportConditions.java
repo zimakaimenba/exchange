@@ -23,6 +23,9 @@ class ExtraExportConditions extends JPanel
 	private JCheckBox chckbxshizhilevellianxu;
 	private JCheckBox chkbxexportallbk;
 	private JCheckBox chkbxonlystock;
+	private JCheckBox chkbxzhbiup;
+	private JLabel lblNewLabel_2;
+	private JLabel label_2;
 
 	/**
 	 * Create the panel.
@@ -35,6 +38,24 @@ class ExtraExportConditions extends JPanel
 	}
 	private void createEvents() 
 	{
+		chkbxzhbiup.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if( chkbxzhbiup.isSelected() ) {
+					cbxOnlyCurBk.setSelected(false);
+					cbxOnlyCurBk.setEnabled(false);
+					
+					chkbxexportallbk.setSelected(false);
+					chkbxexportallbk.setEnabled(false);
+				} else {
+					cbxOnlyCurBk.setSelected(false);
+					cbxOnlyCurBk.setEnabled(true);
+					
+					chkbxexportallbk.setSelected(false);
+					chkbxexportallbk.setEnabled(true);
+				}
+			}
+		});
 
 		
 		chkbxexportallbk.addMouseListener(new MouseAdapter() {
@@ -43,9 +64,15 @@ class ExtraExportConditions extends JPanel
 				if( chkbxexportallbk.isSelected() ) {
 					cbxOnlyCurBk.setSelected(false);
 					cbxOnlyCurBk.setEnabled(false);
+					
+					chkbxzhbiup.setSelected(false);
+					chkbxzhbiup.setEnabled(false);
 				} else {
 					cbxOnlyCurBk.setSelected(false);
 					cbxOnlyCurBk.setEnabled(true);
+					
+					chkbxzhbiup.setSelected(false);
+					chkbxzhbiup.setEnabled(true);
 				}
 			}
 				
@@ -66,6 +93,9 @@ class ExtraExportConditions extends JPanel
 					
 					chkbxexportallbk.setEnabled(false);
 					chkbxexportallbk.setSelected(false);
+					
+					chkbxzhbiup.setEnabled(false);
+					chkbxzhbiup.setSelected(false);
 				} else {
 					cbxShiZhilevelyangxian.setEnabled(true);
 					cbxShiZhilevelyangxian.setSelected(true);
@@ -77,7 +107,10 @@ class ExtraExportConditions extends JPanel
 					tfldwkyangxian.setEnabled(true);
 					
 					chkbxexportallbk.setEnabled(true);
-					chkbxexportallbk.setSelected(true);
+					chkbxexportallbk.setSelected(false);
+					
+					chkbxzhbiup.setEnabled(true);
+					chkbxzhbiup.setSelected(false);
 				}
 			}
 		});
@@ -124,26 +157,37 @@ class ExtraExportConditions extends JPanel
 		tfldwkyangxian.setColumns(10);
 		
 		JLabel lblNewLabel_1 = new JLabel("\u5468\u653E\u91CF");
-		setLayout(new MigLayout("", "[121px][10px][14px][6px][46px][54px][12px][18px][20px][28px][36px]", "[][23px][][][23px][23px][23px]"));
 		
 		chkbxexportallbk = new JCheckBox("\u5BFC\u51FA\u5168\u90E8\u677F\u5757(\u677F\u5757\u5BFC\u51FA\u8BBE\u7F6E\u65E0\u6548)");
 		chkbxexportallbk.setSelected(true);
-		add(chkbxexportallbk, "cell 0 0");
+		
+		chkbxzhbiup = new JCheckBox("\u4EC5\u5BFC\u51FA\u6210\u4EA4\u989D/\u6210\u4EA4\u91CF\u5360\u6BD4\u73AF\u6BD4\u4E0A\u5347\u7684\u677F\u5757(\u677F\u5757\u8BBE\u7F6E\u65E0\u6548)");
+		
+		chkbxzhbiup.setEnabled(false);
 		
 		chkbxonlystock = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\u7684\u4E2A\u80A1\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757");
-		add(chkbxonlystock, "cell 0 3");
-		add(cbxExceptSt, "cell 0 6,alignx left,aligny top");
-		add(chckbxshizhilevellianxu, "cell 0 5 3 1,alignx left,aligny top");
-		add(tfldshizhilevellianxu, "cell 3 5 2 1,growx,aligny top");
-		add(cbxShiZhilevelyangxian, "cell 0 4,alignx left,aligny top");
-		add(tfldshizhilevelyangxian, "cell 3 4 2 1,alignx left,aligny center");
-		add(label, "cell 5 4,alignx left,aligny center");
-		add(tfldyangxian, "cell 7 4 3 1,alignx left,aligny center");
-		add(label_1, "cell 10 4,alignx center,aligny center");
-		add(lblNewLabel, "cell 5 5 3 1,alignx left,aligny center");
-		add(tfldwkyangxian, "cell 8 5 2 1,growx,aligny top");
-		add(lblNewLabel_1, "cell 10 5,alignx left,aligny top");
-		add(cbxOnlyCurBk, "cell 0 1 3 1,alignx left,aligny top");
+		setLayout(new MigLayout("", "[205px][48px][17px][8px][54px][20px][10px][8px][26px][36px]", "[23px][23px][23px][23px][][23px][23px][][23px]"));
+		add(chkbxexportallbk, "cell 0 0,alignx left,aligny top");
+		add(cbxOnlyCurBk, "cell 0 1,alignx left,aligny top");
+		add(chkbxzhbiup, "cell 0 2 5 1,alignx left,aligny top");
+		add(chkbxonlystock, "cell 0 3,alignx left,aligny top");
+		
+		lblNewLabel_2 = new JLabel("-----------------------");
+		add(lblNewLabel_2, "cell 0 4");
+		add(cbxShiZhilevelyangxian, "cell 0 5,alignx left,aligny top");
+		add(tfldshizhilevelyangxian, "cell 1 5 2 1,growx,aligny center");
+		add(label, "cell 4 5,alignx left,aligny center");
+		add(tfldyangxian, "cell 6 5 3 1,growx,aligny center");
+		add(label_1, "cell 9 5,alignx center,aligny center");
+		add(chckbxshizhilevellianxu, "cell 0 6,alignx left,aligny top");
+		add(tfldshizhilevellianxu, "cell 1 6 2 1,growx,aligny top");
+		add(lblNewLabel, "cell 4 6 3 1,alignx left,aligny center");
+		add(tfldwkyangxian, "cell 8 6,growx,aligny top");
+		add(lblNewLabel_1, "cell 9 6,alignx left,aligny top");
+		
+		label_2 = new JLabel("-----------------------");
+		add(label_2, "cell 0 7");
+		add(cbxExceptSt, "cell 0 8,alignx left,aligny top");
 	}
 	/*
 	 * 
@@ -178,6 +222,13 @@ class ExtraExportConditions extends JPanel
 	public boolean shouldExportAllBanKuai ()
 	{
 		if( chkbxexportallbk.isSelected() )
+			return true;
+		else
+			return false;
+	}
+	public Boolean shouldOnlyExportBanKuaiOfZhanBiUp ()
+	{
+		if(chkbxzhbiup.isSelected())
 			return true;
 		else
 			return false;
