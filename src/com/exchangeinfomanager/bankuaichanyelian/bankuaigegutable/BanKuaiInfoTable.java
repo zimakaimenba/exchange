@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -22,6 +24,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -29,6 +35,9 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 import org.jfree.data.time.ohlc.OHLCItem;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
@@ -93,21 +102,74 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#getToolTipText(java.awt.event.MouseEvent)
 	 */
-    public String getToolTipText(MouseEvent e) {
+    public String getToolTipText(MouseEvent e) 
+    {
+ 
+	        
         String tip = null;
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
         int colIndex = columnAtPoint(p);
+        
+      	 BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
+	     if(tablemodel.getRowCount() == 0) {
+	        	return null;
+	      }
+	        
+	     LocalDate curdate = tablemodel.getCurDisplayedDate();
+	        
+	     int modelRow = convertRowIndexToModel(rowIndex);
+	     BanKuai bankuai = tablemodel.getBanKuai(modelRow);
+	     Set<String> socialset = bankuai.getSocialFriendsSet();
 
-        try {
-            tip = getValueAt(rowIndex, colIndex).toString();
-        } catch (RuntimeException e1) {
-            //catch null pointer exception if mouse is over an empty line
-        }
+	     if(colIndex != 1) {
+	    	 try {
+	             tip = getValueAt(rowIndex, colIndex).toString();
+	         } catch (RuntimeException e1) {
+	             //catch null pointer exception if mouse is over an empty line
+	         }
+	     } else { //显示所有好友的结果
+	    	tip = createHtmlTipsOfSocailFriends(socialset); 
+	     }
+        
 
         return tip;
     }
     
+	private String createHtmlTipsOfSocailFriends(Set<String> socialset) 
+	{
+		String html = "";
+		org.jsoup.nodes.Document doc = Jsoup.parse(html);
+			Elements body = doc.getElementsByTag("body");
+			for(Element elbody : body) {
+				 org.jsoup.nodes.Element tableel = elbody.appendElement("table");
+				 
+				 org.jsoup.nodes.Element trel = tableel.appendElement("tr");
+				 org.jsoup.nodes.Element thel1 = tableel.appendElement("th");
+				 thel1.appendText("板块名称"); 
+				
+				
+		}
+		for(String friend : socialset) {
+			 BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
+			 int rowindex = tablemodel.getBanKuaiRowIndex (friend);
+			 
+			 String frbkname = (String) this.getValueAt(rowindex, 1);
+			 Double cjezbchangerate = (Double)this.getValueAt(rowindex, 2);
+			 Double cjlzbchangrate = (Double)this.getValueAt(rowindex, 4);
+    		 
+    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+ 	    	 percentFormat.setMinimumFractionDigits(1);
+        	 String cjezbchangeratepect = percentFormat.format (cjezbchangerate );
+        	 String cjlbchangeratepect = percentFormat.format (cjlzbchangrate );
+        	 
+        	
+ 			
+		}
+		
+		KK
+		return html;
+	}
 	private void createEvents ()
 	{
 		this.addMouseListener(new MouseAdapter() {
@@ -180,13 +242,20 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#prepareRenderer(javax.swing.table.TableCellRenderer, int, int)
 	 */
+	private Border outside = new MatteBorder(1, 0, 1, 0, Color.RED);
+	private Border inside = new EmptyBorder(0, 1, 0, 1);
+	private Border highlight = new CompoundBorder(outside, inside);
+	
 	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-			 
+		
 	        Component comp = super.prepareRenderer(renderer, row, col);
+	        JComponent jc = (JComponent)comp;
+	        
 	        BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
 	        if(tablemodel.getRowCount() == 0) {
 	        	return null;
 	        }
+	        
 	        LocalDate curdate = tablemodel.getCurDisplayedDate();
 	        
 	        int modelRow = convertRowIndexToModel(row);
@@ -199,11 +268,18 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        	comp.setFont(font);
 	        }
 	        
+	        Set<String> socialset = bankuai.getSocialFriendsSet();
+	        
 	      //为不同情况突出显示不同的颜色
 	        Color foreground = super.getForeground(), background = Color.white;
 	        if(!bankuai.isExportTowWlyFile() )
         		foreground = Color.GRAY;
-	        
+	        if (col == 0 && comp instanceof JLabel  ) {
+	        	String socialbkcode =  ((JLabel)comp).getText().trim();
+	        	if(socialset.contains(socialbkcode)) {
+	        		jc.setBorder( highlight );
+	        	}
+	        } else
 	        if (comp instanceof JLabel && col == 7) {
 	        	NodeXPeriodDataBasic nodexdata = bankuai.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
 	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
@@ -267,20 +343,5 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        return comp;
 	}
 
-		
-//		public String getToolTipText(MouseEvent e) 
-//		{
-//            String tip = null;
-//            java.awt.Point p = e.getPoint();
-//            int rowIndex = rowAtPoint(p);
-//            int colIndex = columnAtPoint(p);
-//
-//            try {
-//                tip = getValueAt(rowIndex, colIndex).toString();
-//            } catch (RuntimeException e1) {
-//            	e1.printStackTrace();
-//            }
-//            return tip;
-//        } 
 
 }

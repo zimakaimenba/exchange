@@ -17,12 +17,15 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.StockCalendar.GBC;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuExternalInfoTableModel;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -89,6 +92,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -103,7 +107,10 @@ import java.awt.Dimension;
 
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
+
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import javax.swing.JTree;
@@ -127,10 +134,10 @@ public class BanKuaiGuanLi extends JDialog
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.stockInfoManager = stockInfoManager2;
 		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
-		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
+//		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		
 		initializeGui2 ();
-		
+		initializeBaiKuaiOfNoGeGuWithSelfCJLTree ();
 		createEvents ();
 
 //		initializeTDXBanKuaiLists ();
@@ -142,15 +149,41 @@ public class BanKuaiGuanLi extends JDialog
 //	private HashMap<String,BanKuai> sysbankuailist ; 
 	private SystemConfigration sysconfig;
 	private BanKuaiAndChanYeLian2 bkcyl;
+	private BanKuaiAndStockTree treebkonlynoggwithselfcjl;
 
-	private void initializeTDXBanKuaiLists() 
+//	private void initializeTDXBanKuaiLists() 
+//	{
+//		DefaultTreeModel treeModel = (DefaultTreeModel)this.allbkstks.getAllBkStocksTree().getModel();
+//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+//		
+//		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree(),"ALL");
+//	}
+
+	private void initializeBaiKuaiOfNoGeGuWithSelfCJLTree() 
 	{
-		DefaultTreeModel treeModel = (DefaultTreeModel)this.allbkstks.getAllBkStocksTree().getModel();
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
 		
-		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree(),"ALL");
-	}
+		
+		
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstks.getAllBkStocksTree().getModel().getRoot();
+        int bankuaicount = this.allbkstks.getAllBkStocksTree().getModel().getChildCount(treeroot);
+		
+		
+        DaPan alltopNode = new DaPan("000000","两交易所");
+        
+	
+		for(int i=0;i< bankuaicount; i++) {
+			
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbkstks.getAllBkStocksTree().getModel().getChild(treeroot, i);
+			if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
+				continue;
+			
+			if(  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
+				alltopNode.add(childnode);
+		} 
 
+		treebkonlynoggwithselfcjl = new BanKuaiAndStockTree(alltopNode,"ONLYBANKUAINOGGNOSELFCJL");
+		
+	}
 
 	private void createEvents() 
 	{
@@ -167,6 +200,27 @@ public class BanKuaiGuanLi extends JDialog
 //				}
 //			}
 //		});
+		
+		menuItemSocialFriend.addActionListener(new ActionListener() {
+			@Override
+
+			public void actionPerformed(ActionEvent evt) {
+				
+				int row = tableBkfriends.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				int  model_row = tableBkfriends.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+				BanKuai friend = ((BanKuaiSocialFriendsTableModel) tableBkfriends.getModel()).geSocialtBanKuai(model_row);
+				BanKuai mainnode = ((BanKuaiSocialFriendsTableModel) tableBkfriends.getModel()).getMainBanKuai();
+				updateNodeSocialFriend (mainnode, friend);
+				
+				tableBkfriends.repaint();
+			}
+			
+		});
 		
 		tableSysBk.addMouseListener(new MouseAdapter() {
 			@Override
@@ -199,6 +253,20 @@ public class BanKuaiGuanLi extends JDialog
 			}
 		});
 	}
+
+	protected void updateNodeSocialFriend(BanKuai mainnode, BanKuai friend)
+	{
+		bkdbopt.updateNodeSocialFriendShips (mainnode,friend);
+		
+//		Set<String> friendset = mainnode.getSocialFriendsSet();
+//		if( friendset.contains(friend.getMyOwnCode() ) ) { //已经是朋友了要取消
+//			bkdbopt.updateNodeSocialFriendShips (mainnode,friend);
+//		} else { //不是朋友，要加入
+//			kk
+//		}
+		
+	}
+
 
 	protected void bankuaiSelectedSocialOperations(BanKuai selectnode) 
 	{
@@ -250,6 +318,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JTable tableBkfriends;
 	private JTable tablebkgegu;
 	private JMenuItem menuItemSocialFriend;
+	private JTreeTable tablenoggbk;
 	
 	private void initializeGui2() 
 	{
@@ -295,6 +364,35 @@ public class BanKuaiGuanLi extends JDialog
 	                return tip;
 	            }
 				
+				/*
+				 * (non-Javadoc)
+				 * @see javax.swing.JTable#prepareRenderer(javax.swing.table.TableCellRenderer, int, int)
+				 */
+				private Border outside = new MatteBorder(1, 0, 1, 0, Color.RED);
+				private Border inside = new EmptyBorder(0, 1, 0, 1);
+				private Border highlight = new CompoundBorder(outside, inside);
+				
+				public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+			 
+				        Component comp = super.prepareRenderer(renderer, row, col);
+				        JComponent jc = (JComponent)comp;
+				        BanKuaiSocialFriendsTableModel tablemodel = (BanKuaiSocialFriendsTableModel)this.getModel(); 
+				        if(tablemodel.getRowCount() == 0) {
+				        	return null;
+				        }
+				        
+				        BanKuai mainbankuai = tablemodel.getMainBanKuai();
+				        Set<String> socialset = mainbankuai.getSocialFriendsSet();
+				        
+				        if (col == 0 && comp instanceof JLabel  ) {
+				        	String socialbkcode =  ((JLabel)comp).getText();
+				        	if(socialset.contains(socialbkcode)) {
+				        		jc.setBorder( highlight );
+				        	}
+				        }
+				        
+						return comp;
+				}
 				
 			};
 		scrollPanebkfriends.setViewportView(tableBkfriends);
@@ -305,6 +403,32 @@ public class BanKuaiGuanLi extends JDialog
 		menuItemSocialFriend = new JMenuItem("设置/取消好友关系");
 		popupMenu.add(menuItemSocialFriend);
 
+		JScrollPane scrollPanenoggbk = new JScrollPane (); //no个股表
+		BanKuaiDetailTableModel ggbktreetablemodel = new BanKuaiDetailTableModel ( treebkonlynoggwithselfcjl );
+//		JTable tableSysBk = new JTable();
+		tablenoggbk = new JTreeTable(ggbktreetablemodel) {
+
+			private static final long serialVersionUID = 1L;
+
+			public String getToolTipText(MouseEvent e) {
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+
+                try {
+                    tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {
+                    //catch null pointer exception if mouse is over an empty line
+                }
+
+                return tip;
+            }
+		};
+		scrollPanenoggbk.setViewportView(tableSysBk);
+//		scrollPanesysbk.setPreferredSize(new Dimension(200, 615));
+		allbkfriendspnl.add(scrollPanenoggbk);
+		this.addPopup (tablenoggbk,popupMenu);
 		
 		JScrollPane scrollPanebkgegu = new JScrollPane (); //bankuai's 个股
 		BkChanYeLianTreeNodeListTableModel bkstmodel = new BkChanYeLianTreeNodeListTableModel ();
@@ -348,7 +472,7 @@ public class BanKuaiGuanLi extends JDialog
 			
 		 JScrollPane scrollPanesysbk = new JScrollPane (); //
 //			初始化jtreetable
-			BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree(),"ALL");
+			BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree() );
 //			JTable tableSysBk = new JTable();
 			tableSysBk = new JTreeTable(treetablemodel) {
 
@@ -422,12 +546,12 @@ public class BanKuaiGuanLi extends JDialog
 class BanKuaiDetailTableModel extends AbstractTreeTableModel 
 {
 	String[] jtableTitleStrings = { "板块ID","板块名称","板块类型"};
-	private String displaytype;
+//	private String displaytype;
 	
-	BanKuaiDetailTableModel (BanKuaiAndStockTree cyltree,String displaytype1)
+	BanKuaiDetailTableModel (BanKuaiAndStockTree cyltree)
 	{
 		super (  (BkChanYeLianTreeNode)cyltree.getModel().getRoot() );
-		this.displaytype = displaytype1;
+//		this.displaytype = displaytype1;
 	}
 
 	@Override
@@ -607,45 +731,45 @@ class BanKuaiSocialFriendsTableModel extends DefaultTableModel
 	    public boolean isCellEditable(int row,int column) {
 	    	return false;
 		}
-	    public String getMainBanKuaiCode ()
+	    public  BanKuai getMainBanKuai ()
 	    {
-	    	return this.mainbankuai.getMyOwnCode();
+	    	return this.mainbankuai;
 	    }
-	    public String getSocalBanKuaiCode (int row) 
-	    {
-	    	return (String)this.getValueAt(row,0);
-	    }
-	    public String getSocialBanKuaiName (int row) 
-	    {
-	    	return (String)this.getValueAt(row,1);
-	    } 
+//	    public String getSocalBanKuaiCode (int row) 
+//	    {
+//	    	return (String)this.getValueAt(row,0);
+//	    }
+//	    public String getSocialBanKuaiName (int row) 
+//	    {
+//	    	return (String)this.getValueAt(row,1);
+//	    } 
 	    public BanKuai geSocialtBanKuai (int row)
 	    {
 	    	return this.entryList.get(row);
 	    }
 
-	    public int getBanKuaiRowIndex (String neededfindstring) 
-	    {
-	    		int index = -1;
-	    		HanYuPinYing hypy = new HanYuPinYing ();
-	    		
-	    		for(int i=0;i<this.getRowCount();i++) {
-	    			String bkcode = (String)this.getValueAt(i, 0);
-	    			String bkname = (String)this.getValueAt(i,1); 
-	    			if(bkcode.trim().equals(neededfindstring) ) {
-	    				index = i;
-	    				break;
-	    			}
-
-	    			String namehypy = hypy.getBanKuaiNameOfPinYin(bkname );
-			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
-			   			index = i;
-			   			break;
-			   		}
-	    		}
-	    	hypy = null;
-	   		return index;
-	    }
+//	    public int getBanKuaiRowIndex (String neededfindstring) 
+//	    {
+//	    		int index = -1;
+//	    		HanYuPinYing hypy = new HanYuPinYing ();
+//	    		
+//	    		for(int i=0;i<this.getRowCount();i++) {
+//	    			String bkcode = (String)this.getValueAt(i, 0);
+//	    			String bkname = (String)this.getValueAt(i,1); 
+//	    			if(bkcode.trim().equals(neededfindstring) ) {
+//	    				index = i;
+//	    				break;
+//	    			}
+//
+//	    			String namehypy = hypy.getBanKuaiNameOfPinYin(bkname );
+//			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
+//			   			index = i;
+//			   			break;
+//			   		}
+//	    		}
+//	    	hypy = null;
+//	   		return index;
+//	    }
 
 		public String[] getTableHeader() 
 		{

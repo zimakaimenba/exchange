@@ -64,7 +64,7 @@ public class BanKuaiAndStockTree extends JTree
 		this.setEditable(true);
 		this.setCellRenderer(new BkChanYeLianTreeCellRenderer());
 		this.setRootVisible(false);
-		this.setTransferHandler(new TreeTransferHandler());
+		this.setTransferHandler(new TreeTransferHandler() );
 		
 //		BanKuaiPopUpMenu popupMenuGeguNews = new BanKuaiPopUpMenuForTree(this);
 //		this.setComponentPopupMenu(popupMenuGeguNews);

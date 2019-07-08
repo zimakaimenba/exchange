@@ -7693,6 +7693,46 @@ public class BanKuaiDbOperation
 			return bankuai;
 			
 		}
+		public Boolean updateNodeSocialFriendShips(BanKuai mainnode, BanKuai friend)
+		{
+			Set<String> friendset = mainnode.getSocialFriendsSet();
+			String friendcode = friend.getMyOwnCode();
+			
+			if( friendset.contains(friendcode ) ) { //已经是朋友了要取消
+				String sqlupdatestat = "";
+				try {
+					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+					
+					
+	   
+				} catch(java.lang.NullPointerException e){ 
+				    	e.printStackTrace();
+				} catch(Exception e){
+				    	e.printStackTrace();
+				} finally {
+				    
+				}
+				
+				friendset.remove(friendcode );
+			} else { //不是朋友，要加入
+				String sqlinsertstat = "";
+				try {
+					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlinsertstat);
+
+				} catch(java.lang.NullPointerException e){ 
+				    	e.printStackTrace();
+				} catch(Exception e){
+				    	e.printStackTrace();
+				} finally {
+				    
+				}
+				
+				friendset.add(friendcode );
+			}
+
+			
+		
+		}
 		
 
 		
