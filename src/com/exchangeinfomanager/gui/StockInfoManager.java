@@ -2,6 +2,7 @@ package com.exchangeinfomanager.gui;
 
 
 import java.awt.EventQueue;
+
 import static org.junit.Assert.assertEquals;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -180,6 +181,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
 
+import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
+
 
 public class StockInfoManager 
 {
@@ -256,8 +259,10 @@ public class StockInfoManager
 		ArrayList<String> tmpchicangname = accountschicangconfig.getStockChiCangName();
 		cBxstockcode.removeAllItems();
 		for(String tmpsgstockcodename:tmpchicangname) {
+			BkChanYeLianTreeNode tmpstock = allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpsgstockcodename.substring(0, 6), BkChanYeLianTreeNode.TDXGG);
+			( (JStockComboBoxModel)cBxstockcode.getModel() ).addElement(tmpstock);
 
-			cBxstockcode.addItem(tmpsgstockcodename );
+//			cBxstockcode.addItem(tmpsgstockcodename );
 		}
 		try {
 			kspanel.setStockcode(cBxstockcode.getSelectedItem().toString().substring(0, 6));
@@ -528,13 +533,13 @@ public class StockInfoManager
 			public void itemStateChanged(ItemEvent e) 
 			{
 				if(e.getStateChange() == ItemEvent.SELECTED) {
-					
+
 					nodeshouldbedisplayed = cBxstockcode.getUserInputNode();
 					if(nodeshouldbedisplayed != null)
 						preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
-					else {
+					else 
 						clearGuiDispalyedInfo ();
-					}
+					
 				}
 				
 				if(e.getStateChange() == ItemEvent.DESELECTED) {
@@ -1009,8 +1014,8 @@ public class StockInfoManager
 					saveKuaiSuJiLuJiaoYi ();
 					return ;
 				}
-					
-				BuyStockNumberPrice stocknumberpricepanel = new BuyStockNumberPrice ( formatStockCode((String)cBxstockcode.getSelectedItem()),accountschicangconfig,true);
+				BkChanYeLianTreeNode buynode = 	(BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
+				BuyStockNumberPrice stocknumberpricepanel = new BuyStockNumberPrice ( buynode.getMyOwnCode(),accountschicangconfig,true);
 				int exchangeresult = JOptionPane.showConfirmDialog(null, stocknumberpricepanel, "买入交易细节", JOptionPane.OK_CANCEL_OPTION);
 				System.out.print(exchangeresult);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
@@ -1048,7 +1053,8 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				BuyStockNumberPrice stocknumberpricepanel = new BuyStockNumberPrice ( formatStockCode((String)cBxstockcode.getSelectedItem()),accountschicangconfig,false);
+				BkChanYeLianTreeNode sellnode = (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
+				BuyStockNumberPrice stocknumberpricepanel = new BuyStockNumberPrice (  sellnode.getMyOwnCode() ,accountschicangconfig,false);
 				int exchangeresult = JOptionPane.showConfirmDialog(null, stocknumberpricepanel, "卖出交易细节", JOptionPane.OK_CANCEL_OPTION);
 				System.out.print(exchangeresult);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
@@ -1442,18 +1448,18 @@ public class StockInfoManager
 			 }
 		});
 		
-		btnSearchCode.addMouseListener(new MouseAdapter() 
-		{
-			@Override
-			public void mouseClicked(MouseEvent arg0) 
-			{	
-				nodeshouldbedisplayed = cBxstockcode.getUserInputNode();
-				if(nodeshouldbedisplayed != null)
-					preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
-				else {
-					clearGuiDispalyedInfo ();
-				}
-				
+//		btnSearchCode.addMouseListener(new MouseAdapter() 
+//		{
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) 
+//			{	
+//				nodeshouldbedisplayed = cBxstockcode.getUserInputNode();
+//				if(nodeshouldbedisplayed != null)
+//					preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
+//				else {
+//					clearGuiDispalyedInfo ();
+//				}
+//				
 //				String stockcode = null;
 //				try	{
 //					stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
@@ -1475,11 +1481,8 @@ public class StockInfoManager
 //					JOptionPane.showMessageDialog(null,"股票代码有误！");
 //					return;
 //				}
-			}
-
-				
-			
-		});
+//			}
+//		});
 
 		
 		btngengxinxx.addMouseListener(new MouseAdapter() 
@@ -1777,7 +1780,7 @@ public class StockInfoManager
 
 	protected void refreshChiCangAccountPanel ()
 	{
-		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem()); 
+//		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem()); 
 
 		displayAccountTableToGui ();
 	}
@@ -1923,7 +1926,7 @@ public class StockInfoManager
 	
 	private void displayBanKuaiAndStockNews()
 	{
-		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+//		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
 		editorPanenodeinfo.displayChanYeLianNewsHtml (nodeshouldbedisplayed);
 	}
 

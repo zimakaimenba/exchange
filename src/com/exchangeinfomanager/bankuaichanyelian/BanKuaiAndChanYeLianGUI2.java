@@ -233,9 +233,9 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 		
 		//显示所有不在自己范围内的板块
 		List<BkChanYeLianTreeNode> tmpbknobelongs = new ArrayList<BkChanYeLianTreeNode> ();
-		Set<String> nodebkset = this.bkcyl.getBkChanYeLianTree().getSpecificTypeNodesCodesSet (node.getMyOwnCode(),BkChanYeLianTreeNode.SUBGPC,BkChanYeLianTreeNode.TDXBK);
+		Set<String> nodebkset = this.bkcyl.getBkChanYeLianTree().getSpecificTypeNodesSubCodesSet (node.getMyOwnCode(),BkChanYeLianTreeNode.SUBGPC,BkChanYeLianTreeNode.TDXBK);
 		if(nodebkset != null) {
-			Set<String> allbkstset = this.bkstk.getAllBkStocksTree().getSpecificTypeNodesCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
+			Set<String> allbkstset = this.bkstk.getAllBkStocksTree().getSpecificTypeNodesSubCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
 			SetView<String> differencebk = Sets.difference(allbkstset,nodebkset ); //应该删除的
 			 
 			for(String bkcode : differencebk) {
@@ -266,8 +266,8 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 		((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).refresh( tmpsubgpc );
 		
 		//显示所有不在自己范围内的板块
-		Set<String> nodebkset = this.bkcyl.getBkChanYeLianTree().getSpecificTypeNodesCodesSet (node.getMyOwnCode(),BkChanYeLianTreeNode.GPC,BkChanYeLianTreeNode.TDXBK);
-		Set<String> allbkstset = this.bkstk.getAllBkStocksTree().getSpecificTypeNodesCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
+		Set<String> nodebkset = this.bkcyl.getBkChanYeLianTree().getSpecificTypeNodesSubCodesSet (node.getMyOwnCode(),BkChanYeLianTreeNode.GPC,BkChanYeLianTreeNode.TDXBK);
+		Set<String> allbkstset = this.bkstk.getAllBkStocksTree().getSpecificTypeNodesSubCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
 		SetView<String> differencebk = Sets.difference(allbkstset,nodebkset ); 
 		List<BkChanYeLianTreeNode> tmpbknobelongs = new ArrayList<BkChanYeLianTreeNode> (); 
 		for(String bkcode : differencebk) {
@@ -1037,14 +1037,14 @@ class BkChanYeLianTreeNodeListTableModel extends DefaultTableModel
 	 }
 	 
 	 public void deleteAllRows()
-	    {
+	 {
 	    	if(this.nodelist == null)
 				 return ;
 			 else 
 				 nodelist.clear();
 	    	
 	    	this.fireTableDataChanged();
-	    }
+	  }
 
 }
 

@@ -92,6 +92,7 @@ import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
@@ -126,14 +127,18 @@ import net.sf.json.JSONObject;
 
 public class BanKuaiDbOperation 
 {
+	
+
 	public BanKuaiDbOperation() 
 	{
 		connectdb = ConnectDataBase.getInstance();
 		sysconfig = SystemConfigration.getInstance();
+		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 	}
 	
 	private  ConnectDataBase connectdb;
 	private  SystemConfigration sysconfig;
+	private AllCurrentTdxBKAndStoksTree allbksks;
 	private static Logger logger = Logger.getLogger(BanKuaiDbOperation.class);
 
 	/*
@@ -171,14 +176,31 @@ public class BanKuaiDbOperation
 		String bkcode = bkbasicinfo.getMyOwnCode();
 		CachedRowSetImpl rsagu = null;
 		try {
-			 String sqlquerystat= "select 板块名称, 概念时间,概念板块提醒,负面消息时间,负面消息,券商评级时间,券商评级提醒,正相关及客户,负相关及竞争对手,客户,竞争对手 from 通达信板块列表  where 板块ID = '" + bkcode +"' \r\n"  
-//			 		"union\r\n" + 
-//			 		"select 板块名称,概念时间,概念板块提醒,负面消息时间,负面消息,券商评级时间,券商评级提醒,正相关及客户,负相关及竞争对手,客户,竞争对手 from 通达信交易所指数列表  where 板块ID = '" + bkcode + "' " 
-					 			;
-			 logger.debug(sqlquerystat);
+			 String sqlquerystat = "select 板块名称, 概念时间,概念板块提醒,负面消息时间,负面消息,券商评级时间,券商评级提醒,正相关及客户,负相关及竞争对手,客户,竞争对手 "
+			 		+ " FROM 通达信板块列表  B "
+//					+ " RIGHT JOIN 通达信板块社交关系表 F ON (F.板块左 = m.板块ID OR F.板块右 = m.板块ID)  "
+			 		+ "WHERE B.板块ID = '" + bkcode +"' \r\n"  
+		 			;
+			logger.debug(sqlquerystat);
 			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rsagu.next())
 				setSingleNodeInfo (bkbasicinfo,rsagu);
+			
+			
+			sqlquerystat = "SELECT * FROM 通达信板块社交关系表 F"
+					+ " WHERE (F.板块左 = '" + bkcode + "' OR F.板块右 = '" + bkcode + "')"
+					;
+			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
+			while(rsagu.next()) {
+				String friendcodeleft = rsagu.getString("板块左"); 
+				String friendcoderight = rsagu.getString("板块右");
+				if(!friendcodeleft.equals(bkcode))
+					bkbasicinfo.addSocialFriends(friendcodeleft);
+				if(!friendcoderight.equals(bkcode))
+					bkbasicinfo.addSocialFriends(friendcoderight);
+				
+			}
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -218,31 +240,37 @@ public class BanKuaiDbOperation
 		        	BkChanYeLianTreeNode tmpnode = null;
 		        	
 		        	if(rs.getString("type").equals("gegu")) {
-		        		tmpnode = new Stock(nodecode,stockname);
 		        		
-		        		sqlquerystat= "SELECT * FROM A股   WHERE 股票代码 =" +"'" + nodecode +"'" ;
-		        		CachedRowSetImpl rsagu = null;
-		    			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
-		    			
-		    			while(rsagu.next())
-		    				setSingleNodeInfo(tmpnode,rsagu);
-		    			
-		    			rsagu.close();
-		    			rsagu = null;
-		        	}
-		        	else {
-		        		tmpnode = new BanKuai(nodecode,stockname);
-		        		String searchtable = rs.getString("tablename");
+		        		tmpnode = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
 		        		
-		        		sqlquerystat= "SELECT * FROM " +  searchtable  + "  WHERE 板块ID =" +"'" + nodecode +"'" ;
-		        		CachedRowSetImpl rsagu = null;
-		    			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
-		    			
-		    			while(rsagu.next())
-		    				setSingleNodeInfo(tmpnode,rsagu);
-		    			
-		    			rsagu.close();
-		    			rsagu = null;
+		        		this.getStockBasicInfo((Stock)tmpnode );
+		        		
+//		        		sqlquerystat= "SELECT * FROM A股   WHERE 股票代码 =" +"'" + nodecode +"'" ;
+//		        		CachedRowSetImpl rsagu = null;
+//		    			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
+//		    			
+//		    			while(rsagu.next())
+//		    				setSingleNodeInfo(tmpnode,rsagu);
+//		    			
+//		    			rsagu.close();
+//		    			rsagu = null;
+		        	} else {
+		        		
+//		        		tmpnode = new BanKuai(nodecode,stockname);
+//		        		String searchtable = rs.getString("tablename");
+		        		
+		        		tmpnode = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
+		        		this.getBanKuaiBasicInfo( (BanKuai)tmpnode );
+
+//		        		sqlquerystat= "SELECT * FROM 通达信板块列表  WHERE 板块ID =" +"'" + nodecode +"'" ;
+//		        		CachedRowSetImpl rsagu = null;
+//		    			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
+//		    			
+//		    			while(rsagu.next())
+//		    				setSingleNodeInfo(tmpnode,rsagu);
+//		    			
+//		    			rsagu.close();
+//		    			rsagu = null;
 		        	}
 		        	
 		        	nodenamelist.add(tmpnode);
@@ -263,6 +291,7 @@ public class BanKuaiDbOperation
 						e.printStackTrace();
 					}
 		    }
+		
 		return nodenamelist;
 	}
 
@@ -7699,12 +7728,16 @@ public class BanKuaiDbOperation
 			String friendcode = friend.getMyOwnCode();
 			
 			if( friendset.contains(friendcode ) ) { //已经是朋友了要取消
-				String sqlupdatestat = "";
+				String sqlupdatestat = "DELETE FROM 通达信板块社交关系表  "
+						+ " WHERE ( "
+						+ "( '板块左' = '" + mainnode.getMyOwnCode() + "'"
+						+ " AND '板块右' = '" + friend.getMyOwnCode() + "') " 
+						+ " OR "
+						+ "( '板块右' = '" + mainnode.getMyOwnCode() + "'"
+						+ " AND '板块左' = '" + friend.getMyOwnCode() + "') ) "
+						;
 				try {
 					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
-					
-					
-	   
 				} catch(java.lang.NullPointerException e){ 
 				    	e.printStackTrace();
 				} catch(Exception e){
@@ -7715,7 +7748,11 @@ public class BanKuaiDbOperation
 				
 				friendset.remove(friendcode );
 			} else { //不是朋友，要加入
-				String sqlinsertstat = "";
+				String sqlinsertstat =  "INSERT INTO  通达信板块社交关系表(板块左,板块右) values ("
+   						+ " '" + mainnode.getMyOwnCode() + "'" + ","
+   						+ " '" + friend.getMyOwnCode() + "'" 
+   						+ ")"
+   						;
 				try {
 					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlinsertstat);
 
@@ -7729,6 +7766,7 @@ public class BanKuaiDbOperation
 				
 				friendset.add(friendcode );
 			}
+			return null;
 
 			
 		

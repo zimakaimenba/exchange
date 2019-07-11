@@ -71,7 +71,12 @@ public class BanKuai extends TDXNodes
 	}
 	public Set<String> getSocialFriendsSet ()
 	{
+		if(this.socialfriends == null)
+			this.socialfriends = new HashSet<String> ();
+		
 		return this.socialfriends;
+		
+			
 	}
 	public  Boolean isExportTowWlyFile ()
 	{

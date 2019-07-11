@@ -21,7 +21,7 @@ public class DaPan extends TDXNodes
 
 	public DaPan(String dapcode, String dapanname) 
 	{
-		super("000000","╢Сел");
+		super(dapcode,"╢Сел");
 		super.nodetype = BkChanYeLianTreeNode.DAPAN;
 		
 		super.nodetreerelated = new NodesTreeRelated (this);

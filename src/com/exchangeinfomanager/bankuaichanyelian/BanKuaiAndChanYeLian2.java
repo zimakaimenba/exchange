@@ -324,8 +324,8 @@ public class BanKuaiAndChanYeLian2
 		gpcnameindb = null;
 		
 		//保证板块一致，所有应该删除的板块都删除，名字一致，缺少的板块都放到其他部分
-		Set<String> cyltreebkset = this.treechanyelian.getSpecificTypeNodesCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
-	    Set<String> allbks = allbkstocks.getAllBkStocksTree().getSpecificTypeNodesCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
+		Set<String> cyltreebkset = this.treechanyelian.getSpecificTypeNodesSubCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
+	    Set<String> allbks = allbkstocks.getAllBkStocksTree().getSpecificTypeNodesSubCodesSet ("000000",BkChanYeLianTreeNode.DAPAN,BkChanYeLianTreeNode.TDXBK);
 
 //	    DefaultTreeModel model = (DefaultTreeModel) treechanyelian.getModel();
 	    SetView<String> differencebkold = Sets.difference(cyltreebkset, allbks ); //应该删除的

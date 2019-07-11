@@ -43,8 +43,7 @@ public class JStockComboBoxRenderer extends  DefaultListCellRenderer
     public Component getListCellRendererComponent(JList list, Object value,
         int index, boolean isSelected, boolean cellHasFocus) {
     	
-      Component c = super.getListCellRendererComponent(list, value,
-          index, isSelected, cellHasFocus);
+      Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
       
       String stockcode;
       if(value.toString().length() >6)
@@ -53,17 +52,17 @@ public class JStockComboBoxRenderer extends  DefaultListCellRenderer
 			stockcode = value.toString();
       
       if (this.guanzhugegulist != null && (this.guanzhugegulist.contains(stockcode) || this.guanzhugegulist.contains(value.toString()) )) {
-        c.setBackground(Color.gray.brighter());
+        comp.setBackground(Color.gray.brighter());
 //        c = super.getListCellRendererComponent(list, value, index, isSelected,
 //            cellHasFocus);
       } else
-    	  c.setBackground(Color.WHITE);
+    	  comp.setBackground(Color.WHITE);
       
       if(this.chicanggegulist !=null && (this.chicanggegulist.contains(stockcode) || this.chicanggegulist.contains(value.toString()) )) {
-    	  c.setForeground(Color.red);
+    	  comp.setForeground(Color.red);
       } else
-    	  c.setForeground(Color.BLACK);
+    	  comp.setForeground(Color.BLACK);
       
-      return c;
+      return comp;
     }
 }

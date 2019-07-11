@@ -62,7 +62,6 @@ public class AccountAndChiCangConfiguration
 
 		initializeAccounts ();
 		initiazlizeStockChiCang ();
-//		initiazlizeTodayOpt ();
 	}
 	
 	 public static AccountAndChiCangConfiguration getInstance ()

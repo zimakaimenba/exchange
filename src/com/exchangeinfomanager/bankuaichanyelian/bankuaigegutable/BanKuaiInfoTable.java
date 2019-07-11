@@ -24,6 +24,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -129,46 +130,64 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	             //catch null pointer exception if mouse is over an empty line
 	         }
 	     } else { //显示所有好友的结果
-	    	tip = createHtmlTipsOfSocailFriends(socialset); 
+	    	 if(socialset.isEmpty())
+	    		 tip = getValueAt(rowIndex, colIndex).toString();
+	    	 else
+	    		 tip = createHtmlTipsOfSocailFriends(bankuai, socialset); 
 	     }
         
 
         return tip;
     }
     
-	private String createHtmlTipsOfSocailFriends(Set<String> socialset) 
+	private String createHtmlTipsOfSocailFriends(BanKuai bankuai, Set<String> socialset) 
 	{
 		String html = "";
 		org.jsoup.nodes.Document doc = Jsoup.parse(html);
-			Elements body = doc.getElementsByTag("body");
-			for(Element elbody : body) {
+		Elements body = doc.getElementsByTag("body");
+		for(Element elbody : body) {
 				 org.jsoup.nodes.Element tableel = elbody.appendElement("table");
+				 tableel.attr("border", "1");
 				 
-				 org.jsoup.nodes.Element trel = tableel.appendElement("tr");
-				 org.jsoup.nodes.Element thel1 = tableel.appendElement("th");
-				 thel1.appendText("板块名称"); 
-				
-				
-		}
-		for(String friend : socialset) {
-			 BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
-			 int rowindex = tablemodel.getBanKuaiRowIndex (friend);
-			 
-			 String frbkname = (String) this.getValueAt(rowindex, 1);
-			 Double cjezbchangerate = (Double)this.getValueAt(rowindex, 2);
-			 Double cjlzbchangrate = (Double)this.getValueAt(rowindex, 4);
-    		 
-    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
- 	    	 percentFormat.setMinimumFractionDigits(1);
-        	 String cjezbchangeratepect = percentFormat.format (cjezbchangerate );
-        	 String cjlbchangeratepect = percentFormat.format (cjlzbchangrate );
-        	 
-        	
+				 org.jsoup.nodes.Element trelheader = tableel.appendElement("tr");
+				 org.jsoup.nodes.Element thel1 = trelheader.appendElement("th");
+				 thel1.appendText("好友板块"); 
+				 org.jsoup.nodes.Element thel2 = trelheader.appendElement("th");
+				 thel2.appendText("CJE占比增长率");
+				 org.jsoup.nodes.Element thel3 = trelheader.appendElement("th");
+				 thel3.appendText("CJL占比增长率");
+		
+				for(String friend : socialset) {
+					 BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
+					 int rowIndex = tablemodel.getBanKuaiRowIndex (friend);
+					 if(rowIndex == -1)
+						 continue;
+					 int modelRow = this.convertRowIndexToView(rowIndex);
+
+					 String frbkcode = (String) this.getValueAt(modelRow, 0);
+					 String frbkname = (String) this.getValueAt(modelRow, 1);
+					 Double cjezbchangerate = (Double)this.getValueAt(modelRow, 2);
+					 Double cjlzbchangrate = (Double)this.getValueAt(modelRow, 4);
+		    		 
+		    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+		 	    	 percentFormat.setMinimumFractionDigits(1);
+		        	 String cjezbchangeratepect = percentFormat.format (cjezbchangerate );
+		        	 String cjlbchangeratepect = percentFormat.format (cjlzbchangrate );
+		        	 
+		        	 org.jsoup.nodes.Element trelline = tableel.appendElement("tr");
+					 org.jsoup.nodes.Element tdel1 = trelline.appendElement("td");
+					 tdel1.appendText(frbkcode + frbkname); 
+					 org.jsoup.nodes.Element tdel2 = trelline.appendElement("td");
+					 tdel2.appendText(cjezbchangeratepect);
+					 org.jsoup.nodes.Element tdel3 = trelline.appendElement("td");
+					 tdel3.appendText(cjlbchangeratepect);
+		        	 
+				}	 
  			
 		}
 		
-		KK
-		return html;
+		 
+		return doc.toString();
 	}
 	private void createEvents ()
 	{
@@ -178,6 +197,11 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
         	{
         		tableMouseClickActions (arg0);
         	}
+        	
+        	public void mouseEntered(MouseEvent me) {
+        	    ToolTipManager.sharedInstance().setDismissDelay(60000);
+        	}
+
         });
 		
 		popupMenuGeguNews = new BanKuaiPopUpMenuForTable(this.stockmanager,this);
@@ -268,18 +292,23 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        	comp.setFont(font);
 	        }
 	        
-	        Set<String> socialset = bankuai.getSocialFriendsSet();
+	       
 	        
 	      //为不同情况突出显示不同的颜色
 	        Color foreground = super.getForeground(), background = Color.white;
 	        if(!bankuai.isExportTowWlyFile() )
         		foreground = Color.GRAY;
-	        if (col == 0 && comp instanceof JLabel  ) {
-	        	String socialbkcode =  ((JLabel)comp).getText().trim();
-	        	if(socialset.contains(socialbkcode)) {
-	        		jc.setBorder( highlight );
-	        	}
-	        } else
+	        
+	        int rowcurselected = this.getSelectedRow();
+	        if(rowcurselected != -1) {
+	        	int modelRowcurselected = this.convertRowIndexToModel(rowcurselected);
+				BanKuai bkcurselected = ((BanKuaiInfoTableModel)this.getModel()).getBanKuai(modelRowcurselected);
+		        Set<String> socialset = bkcurselected.getSocialFriendsSet();
+		        String bkcode =   bankuai.getMyOwnCode();
+		        if(socialset.contains(bkcode)) 
+		        	jc.setBorder( highlight );
+	        }
+	       
 	        if (comp instanceof JLabel && col == 7) {
 	        	NodeXPeriodDataBasic nodexdata = bankuai.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
 	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);

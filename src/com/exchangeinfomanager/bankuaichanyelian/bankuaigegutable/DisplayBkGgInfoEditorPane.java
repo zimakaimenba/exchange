@@ -88,14 +88,14 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
     public void  displayNodeBasicInfo(BkChanYeLianTreeNode curselectedbknode)
     {
     	String curselectedbknodename = curselectedbknode.getMyOwnName();
-	       	String curbknodecode = curselectedbknode.getMyOwnCode();
+	      	String curbknodecode = curselectedbknode.getMyOwnCode();
 	       	int type = curselectedbknode.getType();
 	       	
-	       	if(type == 4 ) {
-	       		curselectedbknode = bkdbopt.getBanKuaiBasicInfo((BanKuai)curselectedbknode) ;
-	       	} else if(type == 6) {
-	       		curselectedbknode = bkdbopt.getStockBasicInfo((Stock)curselectedbknode) ;
-	       	}
+//	       	if(type == 4 ) {
+//	       		curselectedbknode = bkdbopt.getBanKuaiBasicInfo( (BanKuai)curselectedbknode) ;
+//	       	} else if(type == 6) {
+//	       		curselectedbknode = bkdbopt.getStockBasicInfo( (Stock)curselectedbknode) ;
+//	       	}
 	       	
 	       String htmlstring = this.getText();
 	       org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);

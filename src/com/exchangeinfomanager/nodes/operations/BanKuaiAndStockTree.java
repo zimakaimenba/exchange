@@ -54,7 +54,7 @@ public class BanKuaiAndStockTree extends JTree
 		this.treeid = treeid;
 		
 		InvisibleTreeModel ml = new InvisibleTreeModel(bkcylrootnode);
-		ml.activateFilter(true);
+		ml.activateFilter(false);
 		this.setModel(ml);
 		
 		this.createEvents(this);
@@ -570,7 +570,7 @@ public class BanKuaiAndStockTree extends JTree
 	/*
 	 * 找到nodecode下所有requirenodetype的节点名称
 	 */
-	public Set<String> getSpecificTypeNodesCodesSet (String nodecode, int nodetype, int requirenodetype)
+	public Set<String> getSpecificTypeNodesSubCodesSet (String nodecode, int nodetype, int requirenodetype)
 	{
 		Set<String> nodesset = new HashSet<String> ();
 		

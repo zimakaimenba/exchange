@@ -117,8 +117,12 @@ public class Stock extends TDXNodes {
 	/**
 	 * @return the suoShuBanKuai
 	 */
-	public HashMap<String,String> getGeGuCurSuoShuTDXSysBanKuaiList() {
-		return suoShuCurSysBanKuai;
+	public HashMap<String,String> getGeGuCurSuoShuTDXSysBanKuaiList() 
+	{
+		if( this.suoShuCurSysBanKuai == null)
+			return new HashMap<String,String> ();
+		else
+			return suoShuCurSysBanKuai;
 	}
 
 	/**
