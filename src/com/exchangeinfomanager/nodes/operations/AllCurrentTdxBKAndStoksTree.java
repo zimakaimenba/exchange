@@ -25,6 +25,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 /*
  * 
@@ -57,22 +58,24 @@ public class AllCurrentTdxBKAndStoksTree
 	private BanKuaiDbOperation bkdbopt;
 	private BanKuaiAndStockTree treecyl;
 	private SystemConfigration sysconfig;
+
+	
 	
 	private void initializeAllStocksTree() 
 	{
 		
 		DaPan alltopNode = new DaPan("000000","两交易所");
 		
-		ArrayList<Stock> allstocks = bkdbopt.getAllStocks ();
-		for (Stock stock : allstocks ) {
-		    alltopNode.add(stock);
-
-		}
-		
 		ArrayList<BanKuai> allbkandzs = bkdbopt.getTDXBanKuaiList ("all");
 		for (BanKuai bankuai : allbkandzs ) {
 		    alltopNode.add(bankuai);
 //		    logger.debug(bankuai.getMyOwnCode()+ "类型" + bankuai.getType());
+		}
+		
+		ArrayList<Stock> allstocks = bkdbopt.getAllStocks ();
+		for (Stock stock : allstocks ) {
+		    alltopNode.add(stock);
+
 		}
 
 		treecyl = new BanKuaiAndStockTree(alltopNode,"ALLBKSTOCKS");
@@ -106,8 +109,11 @@ public class AllCurrentTdxBKAndStoksTree
 		
 		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
 				(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),nodedayperioddata.getAmoRecordsEndDate());
-		if(timeintervallist == null)
+		if(timeintervallist == null) {
+//			System.out.println("tet beging");
 			return bankuai;
+			
+		}
 		
 		for(Interval tmpinterval : timeintervallist) {
 				DateTime newstartdt = tmpinterval.getStart();
@@ -143,10 +149,6 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public BanKuai getBanKuaiKXian (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-//		bk = bkdbopt.getBanKuaiKXianZouShi (bk,requiredstartday,requiredendday,period);
-//		
-//		return bk;
-		
 		NodeXPeriodDataBasic nodedayperioddata = bk.getNodeXPeroidData(period);
 		if(nodedayperioddata.getKXxianRecordsStartDate() == null) {
 			bk = bkdbopt.getBanKuaiKXianZouShi (bk,requiredstartday,requiredendday,period);
@@ -175,10 +177,28 @@ public class AllCurrentTdxBKAndStoksTree
 		bankuai = (BanKuai) this.getBanKuaiQueKouInfo(bankuai, requiredrecordsday, requiredendday, period);
 		return bankuai;
 	}
-	public BanKuai getBanKuaiQueKouInfo (BanKuai bk,LocalDate requiredrecordsday,LocalDate requiredendday,String period)
+	public BanKuai getBanKuaiQueKouInfo (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-		bk = bkdbopt.getStocksInBanKuaiQueKouTimeRangTongJIResult (bk,requiredrecordsday,requiredendday,period);
+		NodeXPeriodDataBasic nodedayperioddata = bk.getNodeXPeroidData(period);
+		if(nodedayperioddata.getQueKouRecordsStartDate() == null) {
+			bk = bkdbopt.getStocksInBanKuaiQueKouTimeRangTongJIResult (bk,requiredstartday,requiredendday,period);
+			return bk;
+		}
 		
+		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+				(requiredstartday,requiredendday,nodedayperioddata.getQueKouRecordsStartDate(),nodedayperioddata.getQueKouRecordsEndDate()  );
+		if(timeintervallist == null)
+			return bk;
+		
+		for(Interval tmpinterval : timeintervallist) {
+				DateTime newstartdt = tmpinterval.getStart();
+				DateTime newenddt = tmpinterval.getEnd();
+				
+				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
+				bk = bkdbopt.getStocksInBanKuaiQueKouTimeRangTongJIResult (bk,requiredstartday,requiredendday,period);
+		}
 		return bk;
 	}
 	public void syncBanKuaiData (BanKuai bk)
@@ -255,8 +275,6 @@ public class AllCurrentTdxBKAndStoksTree
 
 		return stock;
 	}
-
-
 	/*
 	 * 
 	 */
@@ -340,9 +358,28 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public Stock getStockQueKouInfo (Stock stock,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-		stock = bkdbopt.getStockQueKouTimeRangTongJIResult (stock,requiredstartday,requiredendday,period);
+		NodeXPeriodDataBasic nodedayperioddata = stock.getNodeXPeroidData(period);
+		if(nodedayperioddata.getQueKouRecordsStartDate() == null) {
+			stock = bkdbopt.getStockQueKouTimeRangTongJIResult (stock,requiredstartday,requiredendday,period);
+			return stock;
+		}
 		
+		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+				(requiredstartday,requiredendday,nodedayperioddata.getQueKouRecordsStartDate(),nodedayperioddata.getQueKouRecordsEndDate());
+		if(timeintervallist == null)
+			return stock;
+		
+		for(Interval tmpinterval : timeintervallist) {
+				DateTime newstartdt = tmpinterval.getStart();
+				DateTime newenddt = tmpinterval.getEnd();
+				
+				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
+				stock = bkdbopt.getStockQueKouTimeRangTongJIResult (stock,requiredstartday,requiredendday,period);
+		}
 		return stock;
+
 	}
 	/*
 	 * 
@@ -428,16 +465,19 @@ public class AllCurrentTdxBKAndStoksTree
 					result.add(resultintervalpart1);
 				if(resultintervalpart2 != null)
 					result.add(resultintervalpart2);
-				return result;
+//				return result;
 			}
 			if(requiredinterval.abuts(nodeinterval)) {
 				result.add(requiredinterval);
-				 return result;
+//				 return result;
 			}
 			Interval gapinterval = requiredinterval.gap(nodeinterval);
-			if(gapinterval != null)
+			if(gapinterval != null) {
+				result.add(requiredinterval);
 				result.add(gapinterval);
-				return result;
+			}
+			
+			return result;
 	}
 	/*
 	 * 

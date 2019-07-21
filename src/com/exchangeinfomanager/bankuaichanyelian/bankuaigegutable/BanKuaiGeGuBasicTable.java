@@ -46,22 +46,24 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 				
 		createMenu ();
 		createEvents ();
+		
+//		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//		this.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(30);
+//		this.getColumnModel().getColumn(0).setPreferredWidth(10);
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);
 	
-	private StockCalendarAndNewDbOperation newsdbopt;
-	private BanKuaiDbOperation bkdbopt;
-	private StockInfoManager stockmanager;
+	protected StockCalendarAndNewDbOperation newsdbopt;
+	protected BanKuaiDbOperation bkdbopt;
+	protected StockInfoManager stockmanager;
 	private static final long serialVersionUID = 1L;
 
-	private JMenuItem menuItemAddNews;
-	private JMenuItem menuItemAddGz;
-//	private JMenuItem menuItemReDian;
-	private JMenuItem menuItemQuanZhong;
-	private JMenuItem menuItemGeguInfo;
-	private JMenuItem menuItemLongTou;
-	private JPopupMenu popupMenuGeguNews;
+	protected JMenuItem menuItemAddNews;
+	protected JMenuItem menuItemAddGz;
+	protected JMenuItem menuItemGeguInfo;
+	protected JMenuItem menuItemLongTou;
+	protected JPopupMenu popupMenuGeguNews;
 	
 	/*
 	 * 
@@ -104,16 +106,12 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 		menuItemGeguInfo = new JMenuItem("个股信息");
 		menuItemAddNews = new JMenuItem("添加个股新闻");
 		menuItemAddGz = new JMenuItem("个股分析");
-//		menuItemReDian = new JMenuItem("标记龙头个股");
-		menuItemQuanZhong = new JMenuItem("设置股票板块权重");
 		menuItemLongTou = new JMenuItem("设为/取消板块龙头");
 		
-		popupMenuGeguNews.add(menuItemQuanZhong);
 		popupMenuGeguNews.add(menuItemLongTou);
 		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemAddGz);
 		popupMenuGeguNews.add(menuItemGeguInfo);
-//		popupMenuGeguNews.add(menuItemReDian);
 				
 		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
@@ -149,15 +147,6 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 			}
 			
 		});
-
-		
-//		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
-		menuItemQuanZhong.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				setGeGuWeightInBanKuai ();
-			}
-			
-		});
 		
 		menuItemAddGz.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -165,14 +154,6 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 			}
 			
 		});
-		
-//		menuItemReDian.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent evt) {
-//				addReDian();
-//			}
-//			
-//		});
-		
 		
 		this.addMouseListener(new MouseAdapter() {
         	@Override
@@ -207,9 +188,8 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 		 int  view_row = this.getSelectedRow();
 		 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
 		 
-		 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
-		 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
-		 this.stockmanager.preUpdateSearchResultToGui(stockcode);
+		 StockOfBanKuai stockofbk = ((BanKuaiGeGuBasicTableModel)this.getModel()).getStock(model_row);
+		 this.stockmanager.getcBxstockcode().updateUserSelectedNode(stockofbk.getStock() );
 		 this.stockmanager.toFront();
 	}
 
@@ -239,29 +219,6 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 				 }
 
 	}
-//
-//	protected void addReDian() 
-//	{
-//		int row = this.getSelectedRow();
-//		if(row <0) {
-//			JOptionPane.showMessageDialog(null,"请选择一个股票","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
-//		
-//		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-////		 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-//		
-//		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (model_row);
-//		
-//		JiaRuJiHua jiarujihua = new JiaRuJiHua (stockcode,"龙头个股" ); 
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "龙头个股", JOptionPane.OK_CANCEL_OPTION);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-//		
-////		int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-//		InsertedMeeting insetmeeting = newsdbopt.setReDianBanKuaiLongTouGeGuToShangYeXinWen(jiarujihua);
-//		
-//	}
 	/*
 	 * 
 	 */
@@ -316,41 +273,41 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 //		System.out.print(exchangeresult);
 //		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 //			return;
-		
+//		
 //		bkdbopt.newsdbopt(stockcode, cylnews.getInputedNews());
 	}
-	/*
-     * 设置该板块个股的权重
-     */
-	private void setGeGuWeightInBanKuai()
-    {
-		int row = this.getSelectedRow();
-		if(row < 0)
-			return;
-		int modelRow = this.convertRowIndexToModel(row);
-		
-//		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
-		BanKuai bkcode = ((BanKuaiGeGuTableModel)this.getModel()).getCurDispalyBandKuai();
-		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(modelRow);
-		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (modelRow);
-		
-		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重！\n\r"
-											+ "10~1 ：占主业营收比重,\n\r 0 : 营收占比几乎没有概念阶段,\n\r -1 : 毫无关系"
-				,weight);
-		try {
-			int newweight = Integer.parseInt(weightresult);
-			if(newweight> 10 || newweight < -1)
-				JOptionPane.showMessageDialog(null,"权重值范围10 ~ -1！\n\r"
-						,"Warning",JOptionPane.WARNING_MESSAGE);
-			
-			if(weight != newweight) {
-				bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
-				( (BanKuaiGeGuTableModel)this.getModel() ).setStockCurWeight (modelRow,newweight);
-			}
-		} catch (java.lang.NumberFormatException e) {
-			return;
-		}
-	}
+//	/*
+//     * 设置该板块个股的权重
+//     */
+//	private void setGeGuWeightInBanKuai()
+//    {
+//		int row = this.getSelectedRow();
+//		if(row < 0)
+//			return;
+//		int modelRow = this.convertRowIndexToModel(row);
+//		
+////		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
+//		BanKuai bkcode = ((BanKuaiGeGuTableModel)this.getModel()).getCurDispalyBandKuai();
+//		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(modelRow);
+//		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (modelRow);
+//		
+//		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重！\n\r"
+//											+ "10~1 ：占主业营收比重,\n\r 0 : 营收占比几乎没有概念阶段,\n\r -1 : 毫无关系"
+//				,weight);
+//		try {
+//			int newweight = Integer.parseInt(weightresult);
+//			if(newweight> 10 || newweight < -1)
+//				JOptionPane.showMessageDialog(null,"权重值范围10 ~ -1！\n\r"
+//						,"Warning",JOptionPane.WARNING_MESSAGE);
+//			
+//			if(weight != newweight) {
+//				bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
+//				( (BanKuaiGeGuTableModel)this.getModel() ).setStockCurWeight (modelRow,newweight);
+//			}
+//		} catch (java.lang.NumberFormatException e) {
+//			return;
+//		}
+//	}
 	
 //	public void hideZhanBiColumn (int hidecolumn) 
 //	{

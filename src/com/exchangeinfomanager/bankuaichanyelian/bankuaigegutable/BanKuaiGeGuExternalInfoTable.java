@@ -3,6 +3,8 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -10,6 +12,8 @@ import java.time.LocalDate;
 import java.util.Locale;
 
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -60,11 +64,60 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 //		sorter.setSortKeys(sortKeys);
 //		sorter.sort();
 		
+		menuItemQuanZhong = new JMenuItem("设置股票板块权重");
+		popupMenuGeguNews.add(menuItemQuanZhong);
+		
+//		this.setComponentPopupMenu(popupMenuGeguNews);
+		
+		createEvents ();
 
 	}
 	
 	private BanKuaiGeGuTableRenderer renderer;
+	private JMenuItem menuItemQuanZhong;
 
+	private void createEvents ()
+	{
+		menuItemQuanZhong.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				setGeGuWeightInBanKuai ();
+			}
+			
+		});
+		
+	}
+	/*
+     * 设置该板块个股的权重
+     */
+	private void setGeGuWeightInBanKuai()
+    {
+		int row = this.getSelectedRow();
+		if(row < 0)
+			return;
+		int modelRow = this.convertRowIndexToModel(row);
+		
+//		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
+		BanKuai bkcode = ((BanKuaiGeGuExternalInfoTableModel)this.getModel()).getCurDispalyBandKuai();
+		String stockcode = ((BanKuaiGeGuExternalInfoTableModel)(this.getModel())).getStockCode(modelRow);
+		int weight = ((BanKuaiGeGuExternalInfoTableModel)(this.getModel())).getStockCurWeight (modelRow);
+		
+		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重！\n\r"
+											+ "10~1 ：占主业营收比重,\n\r 0 : 营收占比几乎没有概念阶段,\n\r -1 : 毫无关系"
+				,weight);
+		try {
+			int newweight = Integer.parseInt(weightresult);
+			if(newweight> 10 || newweight < -1)
+				JOptionPane.showMessageDialog(null,"权重值范围10 ~ -1！\n\r"
+						,"Warning",JOptionPane.WARNING_MESSAGE);
+			
+			if(weight != newweight) {
+				bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
+				( (BanKuaiGeGuExternalInfoTableModel)this.getModel() ).setStockCurWeight (modelRow,newweight);
+			}
+		} catch (java.lang.NumberFormatException e) {
+			return;
+		}
+	}
 	@Override
 	public void hightLightFxValues(ExportCondition expc) 
 	{

@@ -70,10 +70,10 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 //		this.setDefaultRenderer(Object.class, this.renderer );
 		
 		//http://esus.com/creating-a-jtable-with-headers-with-jtooltips/
-		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
-	    header.setToolTipStrings(bkgegumapmdl.getTableHeader());
+//		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
+//	    header.setToolTipStrings(bkgegumapmdl.getTableHeader());
 //	    header.setToolTipText("Default ToolTip TEXT");
-	    this.setTableHeader(header);
+//	    this.setTableHeader(header);
 		
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
@@ -84,22 +84,27 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 //		sorter.setSortKeys(sortKeys);
 //		sorter.sort();
 		
+		this.getColumnModel().getColumn(1).setPreferredWidth(110);
+		this.getColumnModel().getColumn(2).setPreferredWidth(30);
+		this.getColumnModel().getColumn(5).setPreferredWidth(40);
+		this.getColumnModel().getColumn(7).setPreferredWidth(40);
+		
+//		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+//		headerRenderer.setBackground(new Color(239, 198, 46));
+//
+//		for (int i = 0; i < myJTable.getModel().getColumnCount(); i++) {
+//		        this.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+//		}
+		
+		
+		
 	}
 	
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);
 	
 	private BanKuaiGeGuTableRenderer renderer;
-
-		
-
-//	/*
-//	 * 
-//	 */
-//	public JPopupMenu getPopupMenu ()
-//	{
-//		return this.popupMenuGeguNews;
-//	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#getCellRenderer(int, int)
@@ -108,6 +113,23 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 	{
 		return renderer;
 	}
+	
+	//Implement table header tool tips.
+	String[] jtableTitleStringsTooltips = { "代码", "名称(是否包含在分析文件)","高级排序排名(流通市值)",
+			"板块成交额贡献(跳空缺口)","大盘CJEZB增长率(成交额区间)","CJEDpMaxWk(突出DPMAXWK)","大盘CJLZB增长率(大于指定均线)","CJLDpMaxWk(突出DPMAXWK)"};
+    protected JTableHeader createDefaultTableHeader() 
+    {
+        return new JTableHeader(columnModel) {
+            public String getToolTipText(MouseEvent e) {
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+                int index = columnModel.getColumnIndexAtX(p.x);
+                int realIndex = 
+                        columnModel.getColumn(index).getModelIndex();
+                return jtableTitleStringsTooltips[realIndex];
+            }
+        };
+    }
 
 	@Override
 	public void hightLightFxValues(ExportCondition expc) 
@@ -122,6 +144,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 		Double showltszmax = expc.getLiuTongShiZhiMax();
 		Double showltszmin = expc.getLiuTongShiZhiMin();
 		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
+		Integer displaymanumber = expc.getSettingMA();
 		
 		
 //			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
@@ -131,6 +154,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
 			((BanKuaiGeGuTableModel)this.getModel()).setHighLightHuiBuDownQueKou(showhuibudownquekou);
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayMA(displaymanumber);
 		
 		this.repaint();
 		
@@ -158,9 +182,6 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 //        }
 
         return tip;
-        
-        
-        
     }
 	
 

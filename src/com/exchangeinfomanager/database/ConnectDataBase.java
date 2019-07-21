@@ -37,7 +37,7 @@ public class ConnectDataBase
 		 
 		 private static Logger logger = Logger.getLogger(ConnectDataBase.class);
 		 DataBaseConnection localcon;
-		 DataBaseConnection remotcon;
+//		 DataBaseConnection remotcon;
 		 SystemConfigration sysconfig = null;
 //		 String[] rmtservertable = {"股票通达信交易所指数对应表","股票通达信概念板块对应表","股票通达信行业板块对应表","股票通达信风格板块对应表",
 //				 					"通达信交易所指数列表","通达信交易所指数每日交易信息","通达信板块列表","通达信板块每日交易信息","产业链子板块列表"};	
@@ -53,24 +53,24 @@ public class ConnectDataBase
 		{
 			sysconfig = SystemConfigration.getInstance();
 			CurDataBase localcurdb = sysconfig.getCurrentDatabaseSource ();
-			CurDataBase rmtcurdb = sysconfig.getRemoteCurrentDatabaseSource();
+//			CurDataBase rmtcurdb = sysconfig.getRemoteCurrentDatabaseSource();
 			
 			localcon = new DataBaseConnection (localcurdb);
 			String localconstr = localcurdb.getDataBaseConStr ().trim().toLowerCase();
-			String rmtconstr = rmtcurdb.getDataBaseConStr().trim().toLowerCase();
-			if(localconstr.equals(rmtconstr))
-				remotcon = localcon;
-			else 
-				remotcon = new DataBaseConnection (rmtcurdb); 
+//			String rmtconstr = rmtcurdb.getDataBaseConStr().trim().toLowerCase();
+//			if(localconstr.equals(rmtconstr))
+//				remotcon = localcon;
+//			else 
+//				remotcon = new DataBaseConnection (rmtcurdb); 
 			
 			boolean localconnect = localcon.isDatabaseconnected();
-			boolean rmtconnect = remotcon.isDatabaseconnected();
-			if(localconnect == true && rmtconnect == true)
-				sysconfig.setSoftWareMode (sysconfig.MODELSERVERCLIENT);
-			else if(localconnect == false && rmtconnect == true) 
-				sysconfig.setSoftWareMode (sysconfig.MODELSERVER);
-			else if(localconnect == true && rmtconnect == false) 
-				sysconfig.setSoftWareMode (sysconfig.MODELCLIENT);
+//			boolean rmtconnect = remotcon.isDatabaseconnected();
+//			if(localconnect == true && rmtconnect == true)
+//				sysconfig.setSoftWareMode (sysconfig.MODELSERVERCLIENT);
+//			else if(localconnect == false && rmtconnect == true) 
+//				sysconfig.setSoftWareMode (sysconfig.MODELSERVER);
+//			else if(localconnect == true && rmtconnect == false) 
+//				sysconfig.setSoftWareMode (sysconfig.MODELCLIENT);
 			
 		}
 		
@@ -82,13 +82,13 @@ public class ConnectDataBase
 			else 
 				return false;
 		}
-		public boolean isRemoteDatabaseconnected() 
-		{
-			if(remotcon.isDatabaseconnected() == true)
-				return true;
-			else 
-				return false;
-		}
+//		public boolean isRemoteDatabaseconnected() 
+//		{
+//			if(remotcon.isDatabaseconnected() == true)
+//				return true;
+//			else 
+//				return false;
+//		}
 
 		public void closeConnectedDb()
 		{
@@ -96,8 +96,8 @@ public class ConnectDataBase
 					if(localcon != null)
 						localcon.closeConnectedDb();
 					
-					if(remotcon != null)
-						remotcon.closeConnectedDb();
+//					if(remotcon != null)
+//						remotcon.closeConnectedDb();
 				}catch(Exception ex) {
 					ex.printStackTrace();
 				}
@@ -121,10 +121,10 @@ public class ConnectDataBase
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 
 			DataBaseConnection tmpdbcon;
-			if(exectrmtcon == true) {
-				tmpdbcon = remotcon;
-			}
-			else 
+//			if(exectrmtcon == true) {
+//				tmpdbcon = remotcon;
+//			}
+//			else 
 				tmpdbcon = localcon;
 
 			//在相应的数据库连接执行数据
@@ -140,10 +140,10 @@ public class ConnectDataBase
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 
 			DataBaseConnection tmpdbcon;
-			if(exectrmtcon == true) {
-				tmpdbcon = remotcon;
-			}
-			else 
+//			if(exectrmtcon == true) {
+//				tmpdbcon = remotcon;
+//			}
+//			else 
 				tmpdbcon = localcon;
 
 			//在相应的数据库连接执行数据
@@ -160,10 +160,10 @@ public class ConnectDataBase
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
 			DataBaseConnection tmpdbcon;
-			if(exectrmtcon == true) {
-				tmpdbcon = remotcon;
-			}
-			else 
+//			if(exectrmtcon == true) {
+//				tmpdbcon = remotcon;
+//			}
+//			else 
 				tmpdbcon = localcon;
 			
 			String dbtype = tmpdbcon.getDatabaseType();
@@ -179,10 +179,10 @@ public class ConnectDataBase
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
 			DataBaseConnection tmpdbcon;
-			if(exectrmtcon == true) {
-				tmpdbcon = remotcon;
-			}
-			else 
+//			if(exectrmtcon == true) {
+//				tmpdbcon = remotcon;
+//			}
+//			else 
 				tmpdbcon = localcon;
 			
 			int autoIncKeyFromApi = -1;
@@ -198,10 +198,10 @@ public class ConnectDataBase
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
 			DataBaseConnection tmpdbcon;
-			if(exectrmtcon == true) {
-				tmpdbcon = remotcon;
-			}
-			else 
+//			if(exectrmtcon == true) {
+//				tmpdbcon = remotcon;
+//			}
+//			else 
 				tmpdbcon = localcon;
 			
 			String dbtype = tmpdbcon.getDatabaseType();
@@ -217,10 +217,10 @@ public class ConnectDataBase
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
 			DataBaseConnection tmpdbcon;
-			if(exectrmtcon == true) {
-				tmpdbcon = remotcon;
-			}
-			else 
+//			if(exectrmtcon == true) {
+//				tmpdbcon = remotcon;
+//			}
+//			else 
 				tmpdbcon = localcon;
 			
 			int result = 0; 
@@ -236,10 +236,10 @@ public class ConnectDataBase
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
 			DataBaseConnection tmpdbcon;
-			if(exectrmtcon == true) {
-				tmpdbcon = remotcon;
-			}
-			else 
+//			if(exectrmtcon == true) {
+//				tmpdbcon = remotcon;
+//			}
+//			else 
 				tmpdbcon = localcon;
 			
 			String dbtype = tmpdbcon.getDatabaseType();
@@ -254,10 +254,10 @@ public class ConnectDataBase
 			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 			
 			DataBaseConnection tmpdbcon;
-			if(exectrmtcon == true) {
-				tmpdbcon = remotcon;
-			}
-			else 
+//			if(exectrmtcon == true) {
+//				tmpdbcon = remotcon;
+//			}
+//			else 
 				tmpdbcon = localcon;
 			
 			int result = 0; 
@@ -270,18 +270,18 @@ public class ConnectDataBase
 		{
 			return localcon.getDatabaseType();
 		}
-		public String getRemoteDatabaseType() 
-		{
-			return remotcon.getDatabaseType();
-		}
+//		public String getRemoteDatabaseType() 
+//		{
+//			return remotcon.getDatabaseType();
+//		}
 		public String getLocalDatabaseName(String string) 
 		{
 			return localcon.getDatabaseName(string);
 		}
-		public String getRemoteDatabaseName(String shortorfull) 
-		{
-			return remotcon.getDatabaseName(shortorfull);
-		}
+//		public String getRemoteDatabaseName(String shortorfull) 
+//		{
+//			return remotcon.getDatabaseName(shortorfull);
+//		}
 //		public String[] getTDXDataSysRelatedTablesNames ()
 //		{
 //			return rmtservertable;

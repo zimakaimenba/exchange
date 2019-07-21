@@ -14,12 +14,14 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 
@@ -179,6 +181,34 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    		else
 		    			background = Color.white ;
 		    	}
+	    } else if( col == 6   && value != null) { //突出MA,默认为大于
+	    	Integer displayma = tablemodel.getDisplayMA();
+	    	if (displayma == -1) 
+	    		background = Color.white ;
+	    	else {
+	    		LocalDate requireddate = tablemodel.getShowCurDate();
+			    String period = tablemodel.getCurDisplayPeriod();
+	    		TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period); //目前用周线数据，因为日线数据比较复杂 ，用户选择的日子可能不是交易日，可能是停牌日，换算负责 //TDXNodeGivenPeriodDataItem.DAY
+	    		OHLCItem ohlcdata = nodexdata.getSpecificDateOHLCData(requireddate, 0);
+	    		if(ohlcdata != null) { //没有停牌
+	    			Double close = (Double)ohlcdata.getCloseValue(); 
+	    			
+				    Double[] maresult = nodexdata.getNodeOhlcMA(requireddate, 0);
+				    Double madisplayed = 100000.0;
+				    if(displayma == 250) //日线250对应周线60
+				    	madisplayed = maresult[4];
+				    else if(displayma == 120) //日线250对应周线60
+				    	madisplayed = maresult[3];
+				    else if(displayma == 60) //日线250对应周线60
+				    	madisplayed = maresult[1];
+				    
+				    if( madisplayed != null && close >= madisplayed  )
+				    	background = new Color(0,153,153) ;
+		    		else
+		    			background = Color.white ;
+	    		}
+	    	}
+	    		
 	    }
  
     	comp.setBackground(background);

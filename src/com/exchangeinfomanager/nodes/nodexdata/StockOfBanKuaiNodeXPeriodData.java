@@ -308,6 +308,18 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public LocalDate getQueKouRecordsStartDate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDate getQueKouRecordsEndDate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }

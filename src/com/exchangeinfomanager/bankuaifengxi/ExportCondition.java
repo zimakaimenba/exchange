@@ -1,5 +1,9 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+
 public class ExportCondition 
 {
 
@@ -33,7 +37,23 @@ public class ExportCondition
 	private boolean huibudownquekou;
 
 	private Integer settindpgminwk;
+
+	private Integer settingma;
 	
+	public Boolean checkTDXNodeMatchedCurConditons (TDXNodes node, String period)
+	{
+		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
+			if ( this.shouldOnlyExportStocksNotBanKuai() )
+				return false;
+			
+			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+					 ||  ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
+					 ||  ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
+				return false;
+		}
+			
+		return null;
+	}
 	public ExtraExportConditions getExtraExportConditions ()
 	{
 		return this.extracon;
@@ -248,11 +268,24 @@ public class ExportCondition
 			this.settingcjemax = null;
 		
 	}
+	public void setSettingMA(String ma)
+	{
+		if(ma != null ) {
+			this.settingma = Integer.parseInt(ma);
+		} else
+			this.settingma = null;
+	}
+	public Integer getSettingMA()
+	{
+		return this.settingma;
+		
+	}
 	//换手率
 	public Double getSettingHsl ()
 	{
 		return this.settinghsl;
 	}
+	
 	public void setSettingHsl(String exporthsl) 
 	{
 		if(exporthsl != null) {
@@ -318,6 +351,7 @@ public class ExportCondition
 	{
 		return extracon.shouldOnlyExportStocksNotBanKuai();
 	}
+	
 	
 	
 }

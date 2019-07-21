@@ -29,13 +29,6 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	{
 		this.suoshujiaoyisuo = jys;
 	}
-
-//	public void addNewXPeriodData (TDXNodeGivenPeriodDataItem kdata,String period)
-//	{
-//		NodeXPeriodDataBasic nodexdata = this.getNodeXPeroidData(period);
-//		nodexdata.addNewXPeriodData(kdata);
-//	}
-	
 	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
 	{
 		if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))

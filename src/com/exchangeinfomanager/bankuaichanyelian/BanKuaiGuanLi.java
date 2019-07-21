@@ -182,9 +182,10 @@ public class BanKuaiGuanLi extends JDialog
 				if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
 					continue;
 				
-				if(  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL)  ) {//有些指数是没有个股和成交量的，不列入比较范围
+				String bkleixing = ((BanKuai)childnode).getBanKuaiLeiXing(); 
+				if(  bkleixing.equals(BanKuai.NOGGWITHSELFCJL) || bkleixing.equals(BanKuai.HASGGWITHSELFCJL)  ) {//有些指数是没有个股和成交量的，不列入比较范围
 					BanKuai newbk = new BanKuai (childnode.getMyOwnCode(),childnode.getMyOwnName());
-					newbk.setBanKuaiLeiXing(BanKuai.NOGGWITHSELFCJL);
+					newbk.setBanKuaiLeiXing(bkleixing);
 					alltopNode.add(newbk);
 				}
 			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
@@ -465,10 +466,10 @@ public class BanKuaiGuanLi extends JDialog
 		this.addPopup (tableBkfriends,popupMenusocial);
 		menuItemSocialFriend = new JMenuItem("设置/取消好友关系");
 		popupMenusocial.add(menuItemSocialFriend);
-		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel> (tableBkfriends.getModel() );
-		tableBkfriends.setRowSorter(sorter);
+		TableRowSorter<TableModel> sorterofbkfriends = new TableRowSorter<TableModel> (tableBkfriends.getModel() );
+		tableBkfriends.setRowSorter(sorterofbkfriends);
 
-		JScrollPane scrollPanenoggbk = new JScrollPane (); //没有个股的板块列表
+		JScrollPane scrollPanenoggbk = new JScrollPane (); //板块列表
 		BanKuaiDetailTableModel ggbktreetablemodel = new BanKuaiDetailTableModel ( treebkonlynoggwithselfcjl );
 //		JTable tableSysBk = new JTable();
 		tablenoggbk = new JTreeTable(ggbktreetablemodel) {
@@ -523,6 +524,8 @@ public class BanKuaiGuanLi extends JDialog
 		        return comp;
 			}
 		};
+		TableRowSorter<TableModel> sorterofnoggbk = new TableRowSorter<TableModel>(tablenoggbk.getModel());
+		tablenoggbk.setRowSorter(sorterofnoggbk);
 		scrollPanenoggbk.setViewportView(tablenoggbk);
 //		scrollPanesysbk.setPreferredSize(new Dimension(200, 615));
 		allbkfriendspnl.add(scrollPanenoggbk);
@@ -578,7 +581,7 @@ public class BanKuaiGuanLi extends JDialog
 			BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree() );
 //			JTable tableSysBk = new JTable();
 			tableSysBk = new JTreeTable(treetablemodel) {
-
+				
 				private static final long serialVersionUID = 1L;
 
 				public String getToolTipText(MouseEvent e) 
@@ -619,6 +622,8 @@ public class BanKuaiGuanLi extends JDialog
 				
 
 			};
+		TableRowSorter<TableModel> sorterofsysbk = new TableRowSorter<TableModel>(tableSysBk.getModel());
+		tableSysBk.setRowSorter(sorterofsysbk);
 		scrollPanesysbk.setViewportView(tableSysBk);
 		scrollPanesysbk.setPreferredSize(new Dimension(200, 615));
 		allbkskpnl.add(scrollPanesysbk);

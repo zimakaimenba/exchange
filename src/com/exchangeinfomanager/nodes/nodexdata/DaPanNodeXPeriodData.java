@@ -113,7 +113,7 @@ public class DaPanNodeXPeriodData implements NodeXPeriodDataBasic
 		try {
 		 dapancje = shcurrecord + szcurrecord;
 		} catch (java.lang.NullPointerException e) {
-			System.out.println(requireddate);
+//			System.out.println(requireddate);
 		}
 		return dapancje;
 	}
@@ -263,6 +263,18 @@ public class DaPanNodeXPeriodData implements NodeXPeriodDataBasic
 
 	@Override
 	public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDate getQueKouRecordsStartDate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDate getQueKouRecordsEndDate() {
 		// TODO Auto-generated method stub
 		return null;
 	}

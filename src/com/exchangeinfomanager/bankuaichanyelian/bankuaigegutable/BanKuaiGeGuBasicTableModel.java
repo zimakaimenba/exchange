@@ -79,6 +79,17 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	/*
 	 * 
 	 */
+	public LocalDate getShowCurDate ()
+	{
+		return this.showwknum;
+	}
+	public String getCurDisplayPeriod ()
+	{
+		return this.period;
+	}
+	/*
+	 * 
+	 */
 	public void sortTableByLiuTongShiZhi ()
 	{
 		try{

@@ -198,9 +198,6 @@ public class SystemSetting extends JDialog
 				 
 				 rmtcurdbmap.put( elementdbs.attributeValue("dbsname"), tmpdb);
 			 }
-			 
-			((DatabaseSourceTableModel)tablermt.getModel()).refresh(rmtcurdbmap );
-			((DatabaseSourceTableModel)tablermt.getModel()).fireTableDataChanged();
 			
 			 
 		} catch (DocumentException e) {
@@ -270,86 +267,6 @@ public class SystemSetting extends JDialog
 			}
 		});
 		
-		btnrmteditdb.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) 
-			{
-				int row = tablermt.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择数据源","Warning",JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				
-				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)tablermt.getModel()).getDbsAtRow(row);
-				String dbnewname = tmpcur.getCurDataBaseName();
-				
-				int exchangeresult = JOptionPane.showConfirmDialog(null, tmpcur, "修改数据源", JOptionPane.OK_CANCEL_OPTION);
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-
-				rmtcurdbmap.put( dbnewname, tmpcur );
-				
-				((DatabaseSourceTableModel)tablermt.getModel()).refresh(rmtcurdbmap );
-				((DatabaseSourceTableModel)tablermt.getModel()).fireTableDataChanged();
-				
-				saveButton.setEnabled(true);
-
-			}
-		});
-		btnrmtadd.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) 
-			{
-				String dbnewname = JOptionPane.showInputDialog(null,"请输入新的数据库源名:","加入数据库源", JOptionPane.QUESTION_MESSAGE);
-				KeyStroke escapeStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0); 
-				if(rmtcurdbmap.keySet().contains(dbnewname)) {
-					JOptionPane.showMessageDialog(null,"数据库源名重复！");
-					return;
-				}
-				
-				
-				CurDataBase addnewsr = new CurDataBase (dbnewname);
-				int exchangeresult = JOptionPane.showConfirmDialog(null, addnewsr, "加入数据源", JOptionPane.OK_CANCEL_OPTION);
-				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-				
-				logger.debug(addnewsr.getCurDataBaseName());
-				rmtcurdbmap.put( dbnewname, addnewsr );
-				
-				((DatabaseSourceTableModel)tablermt.getModel()).refresh(rmtcurdbmap );
-				((DatabaseSourceTableModel)tablermt.getModel()).fireTableDataChanged();
-				
-				saveButton.setEnabled(true);
-			}
-		});
-		btndelrmtdbs.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) 
-			{
-				int row = tablermt.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择数据源","Warning",JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				
-				int n = JOptionPane.showConfirmDialog(null, "确认删除该数据源?", "删除数据源",JOptionPane.YES_NO_OPTION);//i=0/1
-				if(n == 1)
-					return;
-				
-				((DatabaseSourceTableModel)tablermt.getModel()).deleteRow(row);
-				
-//				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
-//				
-//				String dbsdeleted = tmpcur.getCurDataBaseName (); 
-//				curdbmap.remove(dbsdeleted);
-//				
-//				((DatabaseSourceTableModel)table.getModel()).refresh(curdbmap );
-				((DatabaseSourceTableModel)tablermt.getModel()).fireTableDataChanged();
-				
-				saveButton.setEnabled(true);
-			}
-		});
-		
 		
 		
 		btnEditDb.addMouseListener(new MouseAdapter() {
@@ -392,25 +309,6 @@ public class SystemSetting extends JDialog
 			}
 
 			
-		});
-		
-		tablermt.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) 
-			{
-				int row = tablermt.getSelectedRow();
-				int column = tablermt.getSelectedColumn();
-				
-				
-				if(column !=0)
-					return;
-				
-				Object tmp = ((DatabaseSourceTableModel)tablermt.getModel()).getValueAt(row, column);
-				logger.debug(tmp);
-				 ((DatabaseSourceTableModel)tablermt.getModel()).setValueAt(row, column);
-//				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
-//				String dbsdeleted = tmpcur.getCurDataBaseName ();
-			}
 		});
 		
 		tablelocal.addMouseListener(new MouseAdapter() {
@@ -730,10 +628,7 @@ public class SystemSetting extends JDialog
 			txtareacheckresult.append("必须为基本信息选择一个数据库连接源！" + "\n");
 			sucessfail = false;
 		}
-		if(   ((DatabaseSourceTableModel)tablermt.getModel()).getCurSelectedDbs().trim().isEmpty() ) {
-			txtareacheckresult.append("必须为通达信同步数据选择一个数据库连接源！" + "\n");
-			sucessfail = false;
-		}
+		
 		
 		if(!new File (tfldSysInstallPath.getText() + "买入checklist政策.xml").exists() ) {
 			txtareacheckresult.append("买入checklist政策.xml在安装目录下没用找到，将不能显示！" + "\n");
@@ -769,10 +664,6 @@ public class SystemSetting extends JDialog
 	private JButton saveButton;
 	private JButton okButton;
 	private JTextArea txtareacheckresult;
-	private JTable tablermt;
-	private JButton btnrmteditdb;
-	private JButton btnrmtadd;
-	private JButton btndelrmtdbs;
 	private JTextField tfldzdyfilepath;
 	private JButton btnzdyselect;
 	private JTextField tfldzhanbizhouqi;
@@ -806,7 +697,7 @@ public class SystemSetting extends JDialog
 		btnChosTDXDict = new JButton("");
 		btnChosTDXDict.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		
-		JLabel lblNewLabel_2 = new JLabel("\u57FA\u672C\u4FE1\u606F\u6570\u636E\u6E90\u5217\u8868");
+		JLabel lblNewLabel_2 = new JLabel("\u6570\u636E\u6E90\u5217\u8868");
 		
 		btnEditDb = new JButton("");
 		btnEditDb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
@@ -822,22 +713,6 @@ public class SystemSetting extends JDialog
 		saveButton = new JButton("");
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		
-		JLabel label = new JLabel("\u901A\u8FBE\u4FE1\u540C\u6B65\u6570\u636E\u6570\u636E\u6E90\u5217\u8868");
-		
-		btnrmteditdb = new JButton("");
-		
-		btnrmteditdb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
-		
-		btnrmtadd = new JButton("");
-		
-		btnrmtadd.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/add_24px_1181422_easyicon.net.png")));
-		
-		btndelrmtdbs = new JButton("");
-		
-		btndelrmtdbs.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/minus_red20.png")));
-		
-		JScrollPane scrollPane = new JScrollPane();
 		
 		JLabel label_1 = new JLabel("");
 		
@@ -878,71 +753,55 @@ public class SystemSetting extends JDialog
 					.addGap(26)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(saveButton)
+							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
 							.addContainerGap())
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(saveButton)
 								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED))
+									.addComponent(lblNewLabel_1)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(btnChosTDXDict))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(lblNewLabel)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 453, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_contentPanel.createSequentialGroup()
-										.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(lblNewLabel_1)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
-												.addPreferredGap(ComponentPlacement.UNRELATED)
-												.addComponent(btnChosTDXDict))
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(lblNewLabel)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 453, GroupLayout.PREFERRED_SIZE))
-											.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)
-											.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-												.addGroup(gl_contentPanel.createSequentialGroup()
-													.addComponent(label)
-													.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-													.addComponent(btnrmteditdb)
-													.addPreferredGap(ComponentPlacement.UNRELATED)
-													.addComponent(btnrmtadd)
-													.addPreferredGap(ComponentPlacement.RELATED)
-													.addComponent(btndelrmtdbs))
-												.addGroup(gl_contentPanel.createSequentialGroup()
-													.addComponent(lblNewLabel_2)
-													.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-													.addComponent(btnEditDb)
-													.addPreferredGap(ComponentPlacement.RELATED)
-													.addComponent(btmaddnewdb)
-													.addPreferredGap(ComponentPlacement.RELATED)
-													.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
-												.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE))
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-													.addComponent(cbxprivatemode)
-													.addGroup(gl_contentPanel.createSequentialGroup()
-														.addComponent(lblPythonInterpreter)
-														.addPreferredGap(ComponentPlacement.UNRELATED)
-														.addComponent(tfldpythonptah)
-														.addGap(18)
-														.addComponent(btnchoosepython)
-														.addGap(116)))))
-										.addPreferredGap(ComponentPlacement.RELATED))
-									.addGroup(gl_contentPanel.createSequentialGroup()
-										.addComponent(label_1)
+										.addComponent(lblNewLabel_2)
+										.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnEditDb)
 										.addPreferredGap(ComponentPlacement.RELATED)
-										.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(label_2)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(ckbxzdy)
-												.addGap(18)
-												.addComponent(tfldzdyfilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(btnzdyselect))))))
+										.addComponent(btmaddnewdb)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
+									.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addComponent(cbxprivatemode)
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addComponent(lblPythonInterpreter)
+											.addPreferredGap(ComponentPlacement.UNRELATED)
+											.addComponent(tfldpythonptah, 190, 190, 190)
+											.addGap(18)
+											.addComponent(btnchoosepython))))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(label_1)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addComponent(label_2)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addComponent(ckbxzdy)
+											.addGap(18)
+											.addComponent(tfldzdyfilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btnzdyselect)))))
 							.addGap(494))))
 		);
 		gl_contentPanel.setVerticalGroup(
@@ -991,42 +850,12 @@ public class SystemSetting extends JDialog
 						.addComponent(lblNewLabel_2))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-							.addComponent(label)
-							.addComponent(btndelrmtdbs))
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-							.addComponent(btnrmteditdb)
-							.addComponent(btnrmtadd)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
+					.addGap(28)
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 235, GroupLayout.PREFERRED_SIZE)
 					.addGap(35))
 		);
 		
 		DatabaseSourceTableModel rmttablemode = new DatabaseSourceTableModel( null );
-		tablermt =  new  JTable(rmttablemode){
-			private static final long serialVersionUID = 1L;
-
-			public String getToolTipText(MouseEvent e) {
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                    //catch null pointer exception if mouse is over an empty line
-                }
-
-                return tip;
-            }
-		};
-		
-		scrollPane.setViewportView(tablermt);
 		
 		txtareacheckresult = new JTextArea();
 		txtareacheckresult.setEditable(false);

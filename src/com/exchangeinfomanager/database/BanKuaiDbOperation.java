@@ -3081,7 +3081,13 @@ public class BanKuaiDbOperation
 					longtou = false;
 				}
 				
-				LocalDate joindate = rs1.getDate("加入时间").toLocalDate();
+				LocalDate joindate = null;
+				try{
+					joindate = rs1.getDate("加入时间").toLocalDate();
+				} catch (java.sql.SQLException ex1) {
+					continue; //
+//					ex1.printStackTrace();
+				}
 				LocalDate leftdate;
 				try {
 					leftdate = rs1.getDate("移除时间").toLocalDate().with(DayOfWeek.FRIDAY); //周线都是以周五为计算的，任何个股移出都调整到周五
@@ -3849,9 +3855,7 @@ public class BanKuaiDbOperation
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+
 		return stock;
 
 	}
@@ -4296,8 +4300,12 @@ public class BanKuaiDbOperation
 			List<String> readLines = null;
 			try {
 				readLines = Files.readLines(zdybk,Charsets.UTF_8,new TDXBanKuaiFielProcessor ());
+			} catch (java.io.FileNotFoundException e) {
+				logger.info("自定义板块文件没有找到，导入自定义板块失败！");
+				return null;
 			} catch (IOException e) {
 				e.printStackTrace();
+				return null;
 			}
 			Set<String> stocknamesnew = new HashSet<String>(readLines);
 			
@@ -7177,7 +7185,8 @@ public class BanKuaiDbOperation
 		 */
 		public void tDXNodeQueKouInfo(TDXNodes childnode, LocalDate lastestcheckdate) 
 		{
-			
+			if(childnode.getMyOwnCode().equals("300017"))
+				logger.debug("test started");
 			List<QueKou> qklist = this.getNodeQueKouDbInfo (childnode.getMyOwnCode());
 			
 			childnode = this.getStockDailyKXianZouShiFromCsv ((Stock)childnode, LocalDate.parse("1990-01-01"), LocalDate.now(),TDXNodeGivenPeriodDataItem.DAY);
@@ -7251,17 +7260,8 @@ public class BanKuaiDbOperation
 		}
 		private List<QueKou> checkQueKouForAGivenPeriod (TDXNodes childnode,LocalDate startdate, LocalDate enddate, List<QueKou> qklist )
 		{
-			
-			try{
-				NodeJiBenMian tmpnodejbm = childnode.getNodeJiBenMian();
-				LocalDate shangshiriqi = tmpnodejbm.getShangShiRiQi(); //新股不统计
-				if(DayCounter.bestDaysBetweenIngoreWeekEnd(shangshiriqi, startdate) <=15 ) 
-					return null;
-				
-			} catch(java.lang.NullPointerException e) {
-				
-			}
-			
+			if(  ((Stock)childnode).isVeryVeryNewXinStock()  )
+				return null;
 			
 			if(qklist == null)
 				qklist = new ArrayList<QueKou> ();
@@ -7519,8 +7519,11 @@ public class BanKuaiDbOperation
 			try {
 			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystring);
 			    	
-			        while(rspd.next())  {
-			        	 java.sql.Date qkdate =  rspd.getDate("EOfWk");
+			    	rspd.last();  
+   			        int rows = rspd.getRow();  
+   			        rspd.first();  
+   			        for(int j=0;j<rows;j++) {
+	   			         java.sql.Date qkdate =  rspd.getDate("EOfWk");
 			        	 Integer OpenDownQueKou = rspd.getInt("OpenDownQueKou");
 			        	 Integer SmallDown = rspd.getInt("SmallDown");
 			        	 Integer MiddleDown = rspd.getInt("MiddleDown");
@@ -7532,9 +7535,42 @@ public class BanKuaiDbOperation
 			        	 Integer HuiBuDownQueKou = rspd.getInt("HuiBuDownQueKou");
 			        	 Integer HuiBuupQueKou = rspd.getInt("HuiBuupQueKou");
 			        	 
+			        	 if(OpenUpQueKou == 0 )
+			        		 OpenUpQueKou = null;
+			        	 if(HuiBuupQueKou == 0)
+			        		 HuiBuupQueKou = null;
+			        	 if(OpenDownQueKou == 0)
+			        		 OpenDownQueKou = null;
+			        	 if(HuiBuDownQueKou == 0)
+			        		 HuiBuDownQueKou = null;
+			        	 
+			        	 if(j == 0 && !qkdate.equals(startdate) ) { //特别标记完整的openupquekou的起始日期，用于获得缺口统计的起始时间
+			        		 nodexdate.addQueKouTongJiJieGuo ( startdate, 0, null, null, null);
+			        	 }  else if(j == (rows-1) && !qkdate.equals(enddate))  //特别标记完整的openupquekou的结束日期，用于获得缺口统计的结束时间
+			        		 nodexdate.addQueKouTongJiJieGuo ( enddate, 0, null, null, null);
+			        	 
 			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou);
 			        	 
-			        }
+			        	 rspd.next();
+   			        	
+   			        }
+			    	
+//			        while(rspd.next())  {
+//			        	 java.sql.Date qkdate =  rspd.getDate("EOfWk");
+//			        	 Integer OpenDownQueKou = rspd.getInt("OpenDownQueKou");
+//			        	 Integer SmallDown = rspd.getInt("SmallDown");
+//			        	 Integer MiddleDown = rspd.getInt("MiddleDown");
+//			        	 Integer LargeDown = rspd.getInt("LargeDown");
+//			        	 Integer OpenUpQueKou = rspd.getInt("OpenUpQueKou");
+//			        	 Integer SmallUP = rspd.getInt("SmallUP");
+//			        	 Integer MiddleUP = rspd.getInt("MiddleUP");
+//			        	 Integer LargeUP = rspd.getInt("LargeUP");
+//			        	 Integer HuiBuDownQueKou = rspd.getInt("HuiBuDownQueKou");
+//			        	 Integer HuiBuupQueKou = rspd.getInt("HuiBuupQueKou");
+//			        	 
+//			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou);
+//			        	 
+//			        }
 			        
 			} catch(java.lang.NullPointerException e){ 
 			    	e.printStackTrace();
@@ -7686,8 +7722,11 @@ public class BanKuaiDbOperation
 			try {
 			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystring);
 			    	
-			        while(rspd.next())  {
-			        	 java.sql.Date qkdate =  rspd.getDate("EOfWk");
+			    	rspd.last();  
+   			        int rows = rspd.getRow();  
+   			        rspd.first();  
+   			        for(int j=0;j<rows;j++) {
+	   			         java.sql.Date qkdate =  rspd.getDate("EOfWk");
 			        	 Integer OpenDownQueKou = rspd.getInt("OpenDownQueKou");
 			        	 Integer SmallDown = rspd.getInt("SmallDown");
 			        	 Integer MiddleDown = rspd.getInt("MiddleDown");
@@ -7699,9 +7738,26 @@ public class BanKuaiDbOperation
 			        	 Integer HuiBuDownQueKou = rspd.getInt("HuiBuDownQueKou");
 			        	 Integer HuiBuupQueKou = rspd.getInt("HuiBuupQueKou");
 			        	 
+			        	 if(OpenUpQueKou == 0 )
+			        		 OpenUpQueKou = null;
+			        	 if(HuiBuupQueKou == 0)
+			        		 HuiBuupQueKou = null;
+			        	 if(OpenDownQueKou == 0)
+			        		 OpenDownQueKou = null;
+			        	 if(HuiBuDownQueKou == 0)
+			        		 HuiBuDownQueKou = null;
+			        	 
+			        	 
+			        	 if(j == 0 && !qkdate.equals(startdate) ) { //特别标记完整的openupquekou的起始日期，用于获得缺口统计的起始时间
+			        		 nodexdate.addQueKouTongJiJieGuo ( startdate, 0, null, null, null);
+			        	 }  else if(j == (rows-1) && !qkdate.equals(enddate))  //特别标记完整的openupquekou的结束日期，用于获得缺口统计的结束时间
+			        		 nodexdate.addQueKouTongJiJieGuo ( enddate, 0, null, null, null);
+			        	 
 			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou);
 			        	 
-			        }
+			        	 rspd.next();
+   			        	
+   			        }
 			        
 			} catch(java.lang.NullPointerException e){ 
 			    	e.printStackTrace();

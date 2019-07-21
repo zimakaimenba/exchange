@@ -149,7 +149,7 @@ public class StockNodeXPeriodData extends TDXNodesXPeriodData
 			curzsz = curzszrecord.getValue().doubleValue();
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.info(" ");
+			
 		}
 		
 		return curzsz;
@@ -221,15 +221,20 @@ public class StockNodeXPeriodData extends TDXNodesXPeriodData
 		if(liutongshizhi != null) {
 				liutongshizhidanwei = FormatDoubleToShort.getNumberChineseDanWei(liutongshizhi);
 				liutongshizhi = FormatDoubleToShort.formateDoubleToShort( liutongshizhi);
+				
+				try{
+		    		DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
+		        	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+		        	percentFormat.setMinimumFractionDigits(4);
+					org.jsoup.nodes.Element li5 =  dl.get(0).appendElement("li");
+					li5.appendText( "流通周平均市值" + decimalformate.format(liutongshizhi) + liutongshizhidanwei );
+				} catch (java.lang.IllegalArgumentException e) {
+					
+				} catch (java.lang.IndexOutOfBoundsException e) {
+					e.printStackTrace();
+				}
 		}
-    	try{
-    		DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
-        	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-        	percentFormat.setMinimumFractionDigits(4);
-			org.jsoup.nodes.Element li5 =  dl.get(0).appendElement("li");
-			li5.appendText( "流通周平均市值" + decimalformate.format(liutongshizhi) + liutongshizhidanwei );
-		} catch (java.lang.IllegalArgumentException e) {
-		}
+    	
 			 
 		Double hsl = null ;
 		hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);	 

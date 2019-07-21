@@ -176,29 +176,29 @@ public class SystemConfigration
 				}
 			}
 			//远程数据库信息
-			Element elermtsorce = xmlroot.element("serverdatabasesources");
-			Iterator itrmt = elermtsorce.elementIterator();
-			while (itrmt.hasNext()) 
-			{
-				Element tmpelement = (Element) itrmt.next();
-				String cursel = tmpelement.attributeValue("curselecteddbs");
-				if(tmpelement.attributeValue("curselecteddbs").equals("yes")) {
-					rmtcurdb = new CurDataBase (tmpelement.attributeValue("dbsname") );
-					logger.debug( tmpelement.getText() );
-					logger.debug(tmpelement.attributeValue("user") );
-					logger.debug( tmpelement.attributeValue("password") );
-					logger.debug( tmpelement.attributeValue("databasetype").trim()  ) ;
-					
-					if(tmpelement.getText().trim().equals(curdbs.getCurDatabaseType() ) )
-						rmtcurdb = curdbs;
-					else {
-						rmtcurdb.setDataBaseConStr (tmpelement.getText() );
-						rmtcurdb.setUser (tmpelement.attributeValue("user").trim() );
-						rmtcurdb.setPassWord (tmpelement.attributeValue("password").trim() );
-						rmtcurdb.setCurDatabaseType(tmpelement.attributeValue("databasetype").trim());
-					}
-				}
-			}
+//			Element elermtsorce = xmlroot.element("serverdatabasesources");
+//			Iterator itrmt = elermtsorce.elementIterator();
+//			while (itrmt.hasNext()) 
+//			{
+//				Element tmpelement = (Element) itrmt.next();
+//				String cursel = tmpelement.attributeValue("curselecteddbs");
+//				if(tmpelement.attributeValue("curselecteddbs").equals("yes")) {
+//					rmtcurdb = new CurDataBase (tmpelement.attributeValue("dbsname") );
+//					logger.debug( tmpelement.getText() );
+//					logger.debug(tmpelement.attributeValue("user") );
+//					logger.debug( tmpelement.attributeValue("password") );
+//					logger.debug( tmpelement.attributeValue("databasetype").trim()  ) ;
+//					
+//					if(tmpelement.getText().trim().equals(curdbs.getCurDatabaseType() ) )
+//						rmtcurdb = curdbs;
+//					else {
+//						rmtcurdb.setDataBaseConStr (tmpelement.getText() );
+//						rmtcurdb.setUser (tmpelement.attributeValue("user").trim() );
+//						rmtcurdb.setPassWord (tmpelement.attributeValue("password").trim() );
+//						rmtcurdb.setCurDatabaseType(tmpelement.attributeValue("databasetype").trim());
+//					}
+//				}
+//			}
 			
 //			//哪些数据从server读取
 //			Element elermtdatatablefromserver = xmlroot.element("tablesfromserver");

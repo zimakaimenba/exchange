@@ -264,12 +264,12 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		String nodecode = curdisplayednode.getMyOwnCode();
 		String nodename = curdisplayednode.getMyOwnName();
 		
-		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS);
+//		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
+//		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS);
 
-		String tooltip = "\"" + nodecode + nodename + "\"" + type 
-				+ "从" + CommonUtility.formatDateYYYY_MM_DD(requirestart) 
-				+ "到" + CommonUtility.formatDateYYYY_MM_DD(requireend);
+//		String tooltip = "\"" + nodecode + nodename + "\"" + type 
+//				+ "从" + CommonUtility.formatDateYYYY_MM_DD(requirestart) 
+//				+ "到" + CommonUtility.formatDateYYYY_MM_DD(requireend);
     	this.setToolTipText(nodecode+ nodename );
 	}
 	/*

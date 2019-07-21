@@ -35,6 +35,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 		super ();
 		
 		String[] jtableTitleStrings = { "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+		
 		super.setTableHeader(jtableTitleStrings);
 		
 		this.setDisplayChenJiaoEr(null, null);
@@ -58,6 +59,8 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	private Double showltszmax;
 	private Boolean showhuibudownquekou;
 	private Integer cjezbdpminwk;
+
+	private Integer displayma;
 
 	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
@@ -300,14 +303,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 		{
 			return this.cjezbbkmaxwk;
 		}
-		public LocalDate getShowCurDate ()
-		{
-			return this.showwknum;
-		}
-		public String getCurDisplayPeriod ()
-		{
-			return this.period;
-		}
+
 		public void setDisplayHuanShouLv (Double hsl)
 		{
 			if(hsl != null)
@@ -361,6 +357,19 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 		public Boolean shouldHighlightHuiBuDownQueKou ()
 		{
 			return this.showhuibudownquekou;
+		}
+
+		public void setDisplayMA(Integer displaymanumber)
+		{
+			this.displayma = displaymanumber;
+			
+		}
+		public Integer getDisplayMA ()
+		{
+			if(displayma != null)
+				return this.displayma;
+			else
+				 return -1;
 		}
 		
 

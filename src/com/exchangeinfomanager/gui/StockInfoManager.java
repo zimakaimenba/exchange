@@ -202,18 +202,22 @@ public class StockInfoManager
 		sysconfig = SystemConfigration.getInstance();
 		connectdb = ConnectDataBase.getInstance();
 		boolean localconnect = connectdb.isLocalDatabaseconnected();
-		boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
-		if(localconnect == true && rmtconnect == true) {
-			;
+		if(localconnect == false) {
+			JOptionPane.showMessageDialog(null,"数据库连接都失败！再见！");
+			System.exit(0);
 		}
-		else if(localconnect == false && rmtconnect == true) {
-				JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
-		} else if(localconnect == true && rmtconnect == false) {
-				JOptionPane.showMessageDialog(null,"仅基本数据可用！");
-		} else{
-				JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
-				System.exit(0);
-		}
+//		boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
+//		if(localconnect == true && rmtconnect == true) {
+//			;
+//		}
+//		else if(localconnect == false && rmtconnect == true) {
+//				JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
+//		} else if(localconnect == true && rmtconnect == false) {
+//				JOptionPane.showMessageDialog(null,"仅基本数据可用！");
+//		} else{
+//				JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
+//				System.exit(0);
+//		}
 		
 		accountschicangconfig = AccountAndChiCangConfiguration.getInstance();
 		acntdbopt = new AccountDbOperation();
@@ -294,12 +298,12 @@ public class StockInfoManager
 		{
 			boolean localconnect = false;
 			boolean rmtconnect = false;
-			if(connectdb.isRemoteDatabaseconnected()){
-				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
-				lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText()+ connectdb.getRemoteDatabaseName("full")+"数据库已连接");
-				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
-				rmtconnect = true;
-			}
+//			if(connectdb.isRemoteDatabaseconnected()){
+//				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
+//				lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText()+ connectdb.getRemoteDatabaseName("full")+"数据库已连接");
+//				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
+//				rmtconnect = true;
+//			}
 			
 			if(connectdb.isLocalDatabaseconnected()){
 				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
@@ -307,6 +311,12 @@ public class StockInfoManager
 				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
 				localconnect = true;
 			}
+		}
+		public void preUpdateSearchResultToGui(BkChanYeLianTreeNode node)
+		{
+			nodeshouldbedisplayed = node;
+			String stockcode = nodeshouldbedisplayed.getMyOwnCode();
+			preUpdateSearchResultToGui (stockcode);
 		}
 		/*
 		 * 
@@ -423,14 +433,6 @@ public class StockInfoManager
         		tableMouseClickActions (arg0);
         	}
         });
-
-	
-
-		menuItemfxwjfx.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				showGeGuShiZhiFenXi ();
-			}
-		});
 		
 		btnyituishi.addMouseListener(new MouseAdapter() {
 			@Override
@@ -1200,28 +1202,28 @@ public class StockInfoManager
 		/*
 		 * 
 		 */
-		mntmOpenRmtDb.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) 
-			{
-				String dbfile = null;
-				switch (connectdb.getRemoteDatabaseType().toLowerCase() ) {
-				case "mysql":    dbfile = "D:\\tools\\HeidiSQL\\heidisql.exe";
-					break;
-				case "access":  dbfile = connectdb.getLocalDatabaseName("full");
-					break;
-				}
-				try {
-					String cmd = "rundll32 url.dll,FileProtocolHandler " + dbfile;
-					logger.debug(cmd);
-					Process p  = Runtime.getRuntime().exec(cmd);
-					p.waitFor();
-				}catch (Exception e1){
-					e1.printStackTrace();
-				}
-				
-			}
-		});
+//		mntmOpenRmtDb.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) 
+//			{
+//				String dbfile = null;
+//				switch (connectdb.getRemoteDatabaseType().toLowerCase() ) {
+//				case "mysql":    dbfile = "D:\\tools\\HeidiSQL\\heidisql.exe";
+//					break;
+//				case "access":  dbfile = connectdb.getLocalDatabaseName("full");
+//					break;
+//				}
+//				try {
+//					String cmd = "rundll32 url.dll,FileProtocolHandler " + dbfile;
+//					logger.debug(cmd);
+//					Process p  = Runtime.getRuntime().exec(cmd);
+//					p.waitFor();
+//				}catch (Exception e1){
+//					e1.printStackTrace();
+//				}
+//				
+//			}
+//		});
 		
 //		menuOpenDailyReport.addMouseListener(new MouseAdapter() 
 //		{
@@ -1641,55 +1643,6 @@ public class StockInfoManager
 			}
 		});
 }
-	
-//	public void updateTableAfterZdgz(JiaRuJiHua jiarujihua) 
-//	{
-//		String stockcode = jiarujihua.getStockCode().trim();
-//		if(  !stockcode.equals(formatStockCode((String)cBxstockcode.getSelectedItem()))  )
-//			return;
-//		
-//		Integer autoIncKeyFromApi = jiarujihua.getDbRecordsId();
-//		
-//		if(autoIncKeyFromApi >0 && !sysconfig.getPrivateModeSetting() ) {
-//			DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
-//			//String stockcode = jiarujihua.getStockCode();		
-//			String addedday = CommonUtility.formatDateYYYY_MM_DD_HHMMSS( LocalDateTime.now() );
-//			String zdgzsign = "加入关注";
-//			String shuoming = "";
-//			if(jiarujihua.isMingRiJiHua()) {
-//				zdgzsign = "明日计划";
-//				shuoming = jiarujihua.getJiHuaLeiXing() + "(价格" + jiarujihua.getJiHuaJiaGe() + ")(" +  jiarujihua.getJiHuaShuoMing();
-//			} else
-//				shuoming =  jiarujihua.getJiHuaShuoMing();
-//			
-//			Object[] tableData = new Object[] { addedday, zdgzsign,  shuoming,autoIncKeyFromApi," ","操作记录重点关注"};
-//			tableModel.insertRow(0, tableData);
-//			tblzhongdiangz.setEditingColumn(3);
-//		}
-//	}
-
-
-	protected void showGeGuShiZhiFenXi() 
-	{
-//		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-//		this.frame.setCursor(hourglassCursor);
-//		
-//		GeGuShiZhiFenXi ggszfx = new GeGuShiZhiFenXi ();
-//		ggszfx.setModal(false);
-//		ggszfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//
-//		if(!ggszfx.isVisible() ) {
-//			ggszfx.setVisible(true);
-//		} 
-//		
-//		ggszfx.toFront();
-//		
-//		hourglassCursor = null;
-//		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-//		this.frame.setCursor(hourglassCursor2);
-//		SystemAudioPlayed.playSound();
-		
-	}
 	public BanKuaiFengXi getBanKuaiFengXi ()
 	{
 			return bkfx;
@@ -2368,13 +2321,11 @@ public class StockInfoManager
 	private JMenuItem menuItemChanYeLian;
 	private JMenuItem menuItemSysSet;
 	private JMenuItem menuItemimportrecords;
-	private JMenuItem mntmOpenRmtDb;
 //	private BkChanYeLianTree tree_1;
 	private JButton btndetailfx;
 	private JMenuItem menuItembkfx;
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JButton btnyituishi;
-	private JMenuItem menuItemfxwjfx;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -3104,10 +3055,6 @@ public class StockInfoManager
 		
 		menuOperationList.add(menuItembkfx);
 		
-		menuItemfxwjfx = new JMenuItem("\u4E2A\u80A1\u5E02\u503C\u5206\u6790");
-		menuItemfxwjfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis_23.570881226054px_1202840_easyicon.net.png")));
-		menuOperationList.add(menuItemfxwjfx);
-		
 		menuItemimportrecords = new JMenuItem("\u5BFC\u5165\u4EA4\u6613\u8BB0\u5F55");
 		menuItemimportrecords.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/import.png")));
 		
@@ -3118,14 +3065,9 @@ public class StockInfoManager
 		
 		menuOperationList.add(mntmNewMenuItem_1);
 		
-		mntmopenlcldbfile = new JMenuItem("\u6253\u5F00\u57FA\u672C\u6570\u636E\u6570\u636E\u5E93");
+		mntmopenlcldbfile = new JMenuItem("\u6253\u5F00\u6570\u636E\u5E93");
 		mntmopenlcldbfile.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/open24.png")));
 		menuOperationList.add(mntmopenlcldbfile);
-		
-		mntmOpenRmtDb = new JMenuItem("\u6253\u5F00\u901A\u8FBE\u4FE1\u540C\u6B65\u6570\u636E\u6570\u636E\u5E93");
-		mntmOpenRmtDb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/open24.png")));
-		
-		menuOperationList.add(mntmOpenRmtDb);
 		
 		JMenu menuConfigration = new JMenu("\u76F8\u5173\u8BBE\u7F6E");
 		menuBar.add(menuConfigration);
@@ -3175,7 +3117,7 @@ public class StockInfoManager
 //		searchdialog.setModal(false);
 	}
 	
-	public JComboBox<String> getcBxstockcode() 
+	public JStockComboBox getcBxstockcode() 
 	{
 		return cBxstockcode;
 	}

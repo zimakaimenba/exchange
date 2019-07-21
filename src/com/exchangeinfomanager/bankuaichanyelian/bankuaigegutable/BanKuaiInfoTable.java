@@ -30,6 +30,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -75,17 +76,22 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		
 		this.createEvents ();
+		
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
 		this.sortByZhanBiGrowthRate ();
 		
-		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
-	    header.setToolTipStrings(bkmodel.getTableHeader());
-	    header.setToolTipText("Default ToolTip TEXT");
-	    this.setTableHeader(header);
+//		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
+//	    header.setToolTipStrings(bkmodel.getTableHeader());
+//	    header.setToolTipText("Default ToolTip TEXT");
+//	    this.setTableHeader(header);
 	    
 		this.sysconfig = SystemConfigration.getInstance();
 		this.stockmanager = stockmanager1;
+		
+//		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		this.getColumnModel().getColumn(1).setPreferredWidth(115);
+//		this.getColumnModel().getColumn(2).setPreferredWidth(35);
 	}
 	/*
 	 * 
@@ -139,6 +145,22 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 
         return tip;
     }
+    
+  //Implement table header tool tips.
+  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名(突出周线阳线阴线)"};
+      protected JTableHeader createDefaultTableHeader() 
+      {
+          return new JTableHeader(columnModel) {
+              public String getToolTipText(MouseEvent e) {
+                  String tip = null;
+                  java.awt.Point p = e.getPoint();
+                  int index = columnModel.getColumnIndexAtX(p.x);
+                  int realIndex = 
+                          columnModel.getColumn(index).getModelIndex();
+                  return jtableTitleStringsTooltips[realIndex];
+              }
+          };
+      }
     
 	private String createHtmlTipsOfSocailFriends(BanKuai bankuai, Set<String> socialset) 
 	{

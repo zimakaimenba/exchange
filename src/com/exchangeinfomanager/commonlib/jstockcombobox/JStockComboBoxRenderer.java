@@ -15,18 +15,9 @@ public class JStockComboBoxRenderer extends  DefaultListCellRenderer
     private Set<String> chicanggegulist;
     
 
-    public JStockComboBoxRenderer( ) {
-//      this.defaultRenderer = defaultRenderer;
+    public JStockComboBoxRenderer( ) 
+    {
     	super ();
-      
-//      guanzhugegulist = new HashSet<String> ();
-//      chicanggegulist = new HashSet<String> ();
-      
-//      guanzhugegulist.add("000001");
-//      guanzhugegulist.add("603693");
-//      
-//      
-//      chicanggegulist.add("603693");
     }
 
     public void setGuanZhuGeGuList(Set<String> guanzhugegulist)

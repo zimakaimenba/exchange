@@ -24,6 +24,8 @@ public interface NodeXPeriodDataBasic
 	 LocalDate getAmoRecordsEndDate ();
 	 LocalDate getKXxianRecordsStartDate ();
 	 LocalDate getKXxianRecordsEndDate ();
+	 LocalDate getQueKouRecordsStartDate ();
+	 LocalDate getQueKouRecordsEndDate ();
 	
 	 Boolean hasRecordInThePeriod (LocalDate requireddate, int difference); 
 	

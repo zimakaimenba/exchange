@@ -224,8 +224,10 @@ public class BanKuaiAndChanYeLian2
 	}
 	/*
 	 * 读出个股和板块并附加到产业链树上
+	 * 参数HashSet<String> stockinfile ：每周导出文件里面所有的个股
+	 * HashSet<String> bkinfile ：每周导出文件里面所有的板块
 	 */
-	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot,LocalDate localDate, HashSet<String> stockinfile, HashSet<String> bkinfile)
+	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot, LocalDate localDate, HashSet<String> stockinfile, HashSet<String> bkinfile)
 	{
 		BkChanYeLianTreeNode treeChild;
 		
@@ -244,6 +246,9 @@ public class BanKuaiAndChanYeLian2
             			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) //有些指数是没有个股不列入比较范围
 					continue;
 
+            	if( !nodeinallbktree.isShowinbkfxgui() ) //有些板块不会被显示分析表中，也就不用做个股分析
+            		continue;
+            	
             	nodeinallbktree = this.allbkstocks.getAllGeGuOfBanKuai(nodeinallbktree, TDXNodeGivenPeriodDataItem.WEEK);
             	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,TDXNodeGivenPeriodDataItem.WEEK);
             	HashSet<String> stkofbkset = new HashSet<String>  ();

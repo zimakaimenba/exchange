@@ -175,7 +175,7 @@ public class YearView extends View {
             LocalDate mDate = LocalDate.parse(panel.getName());
             
             if (e.getClickCount() == 1) { //获取选择的日期
-            	System.out.println(mDate.toString());
+//            	System.out.println(mDate.toString());
             }
             
             if (e.getClickCount() == 2) { //获取选择的日期

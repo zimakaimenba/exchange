@@ -209,7 +209,7 @@ class TwelveZhongDianGuanZhuXmlHandler
         Element rootele = documenttosave.addElement("ZhongDianGuanZhuanBanKuaiDetail");//Ìí¼ÓÎÄµµ¸ù
         
         for(String dastr:gzbkdetailmap.keySet() ) {
-        	System.out.print(dastr);
+//        	System.out.print(dastr);
         	Element bkele = rootele.addElement("DaLeiBanKuai");
 			bkele.addAttribute("daleiname",dastr);
         	

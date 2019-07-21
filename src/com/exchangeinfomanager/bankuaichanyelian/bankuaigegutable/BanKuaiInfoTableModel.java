@@ -21,8 +21,11 @@ import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 public class BanKuaiInfoTableModel extends DefaultTableModel 
 {
 
-	public BanKuaiInfoTableModel() {
+	public BanKuaiInfoTableModel() 
+	{
 		super ();
+		
+		
 	}
 	
 	String[] jtableTitleStrings = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"};

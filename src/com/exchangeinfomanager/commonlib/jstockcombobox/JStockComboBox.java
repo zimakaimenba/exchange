@@ -26,6 +26,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
@@ -248,16 +249,24 @@ public class JStockComboBox extends  JComboBox<String>
 			
 		});
 		
-		this.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+		this.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() 
+		{
 			public void keyPressed(KeyEvent  e)
 			{
 				if(e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
-					String nodecode = formatStockCode( (String)getEditor().getItem() );
+					String nodecode = null;
+					try{
+						String inputtext = ( (JTextField)getEditor().getEditorComponent()).getText();
+//						nodecode = formatStockCode( (String)getEditor().getItem() );
+						nodecode = formatStockCode( inputtext );
+						
+					} catch (java.lang.ClassCastException ex) {
+						ex.printStackTrace();
+					}
 					Integer result = ((JStockComboBoxModel)getModel()).hasTheNode (nodecode);
 					if(result == -1) 
 						updateUserSelectedNode (nodecode,onlyselectnodetype);
-					
 				}
 			}
 			
