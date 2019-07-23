@@ -24,6 +24,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
@@ -55,11 +56,11 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodData.class);
 
 	private String nodeperiodtype;
-	protected OHLCSeries nodeohlc; //每锟秸成斤拷锟斤拷OHLC
-	protected TimeSeries nodeamo; //锟缴斤拷锟斤拷
-	protected TimeSeries nodevol; //锟缴斤拷锟斤拷
-	protected TimeSeries nodeamozhanbi; //锟缴斤拷锟斤拷占锟斤拷
-	protected TimeSeries nodevolzhanbi; //锟缴斤拷锟斤拷占锟斤拷
+	protected OHLCSeries nodeohlc; 
+	protected TimeSeries nodeamo; 
+	protected TimeSeries nodevol; 
+	protected TimeSeries nodeamozhanbi; 
+	protected TimeSeries nodevolzhanbi; 
 	protected TimeSeries nodefxjg; //
 	protected TimeSeries nodeexchangedaysnumber ; //
 	 // 缺口的统计结果，不直接存放缺口的原因是已经有ohlc了，可以计算出缺口，如果再专门存放缺口list有点重复，不如存放缺口统计数据
@@ -67,6 +68,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	protected TimeSeries nodeqktjhuibuup;
 	protected TimeSeries nodeqktjopendown;
 	protected TimeSeries nodeqktjhuibudown;
+	protected List<QueKou> qklist;
 	//均线
 	protected TimeSeries nodeohlcma5;
 	protected TimeSeries nodeohlcma10;
@@ -83,6 +85,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	protected TimeSeries nodeamoma60;
 	protected TimeSeries nodeamoma120;
 	protected TimeSeries nodeamoma250;
+	
 	
 	public String getNodeCode ()
 	{
@@ -160,7 +163,20 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	/*
 	 * 
 	 */
-	public void addQueKouTongJiJieGuo (LocalDate qkdate,Integer nodeqktjopenup1,Integer nodeqktjhuibuup1,Integer nodeqktjopendown1,Integer nodeqktjhuibudown1)
+	public void resetQueKouTongJiJieGuo ()
+	{
+		if(nodeqktjopenup != null)
+			nodeqktjopenup.clear();
+		if(nodeqktjhuibuup != null)
+			nodeqktjhuibuup.clear();
+		if(nodeqktjopendown != null)
+			nodeqktjopendown.clear();
+		if(nodeqktjhuibudown != null)
+			nodeqktjhuibudown.clear();
+	}
+	public void addQueKouTongJiJieGuo (LocalDate qkdate,
+			Integer nodeqktjopenup1,Integer nodeqktjhuibuup1,Integer nodeqktjopendown1,Integer nodeqktjhuibudown1,
+			Boolean addbasedoncurdata)
 	{
 		
 		if( nodeqktjopenup == null)
@@ -178,35 +194,81 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		RegularTimePeriod period = getJFreeChartFormateTimePeriod(qkdate,0);
 		try {
 			if(nodeqktjopenup1 != null  )
-				nodeqktjopenup.add(period,nodeqktjopenup1);
-//			 addOrUpdate()
+			if(addbasedoncurdata) {
+				TimeSeriesDataItem dataitem = nodeqktjopenup.getDataItem(period);
+				if(dataitem == null) 
+					nodeqktjopenup.add(period,nodeqktjopenup1);
+				else {
+					int count = dataitem.getValue().intValue();
+					nodeqktjopenup.addOrUpdate(period, count + nodeqktjopenup1);
+				}
+			} else
+				nodeqktjopenup.addOrUpdate(period,nodeqktjopenup1);
+
 		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 		
 		try {
 			if(nodeqktjhuibuup1 != null && nodeqktjhuibuup1 !=0 )
-				nodeqktjhuibuup.add(period,nodeqktjhuibuup1);
-//			 addOrUpdate()
+			if(addbasedoncurdata) {
+				TimeSeriesDataItem dataitem = nodeqktjhuibuup.getDataItem(period);
+				if(dataitem == null)
+					nodeqktjhuibuup.add(period,nodeqktjhuibuup1);
+				else {
+					int count = dataitem.getValue().intValue();
+					nodeqktjhuibuup.addOrUpdate(period, count + nodeqktjhuibuup1);
+				}
+					
+			} else
+				nodeqktjhuibuup.addOrUpdate(period,nodeqktjhuibuup1);
 		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 		
 		try {
 			if(nodeqktjopendown1 != null && nodeqktjopendown1 !=0 )
-				nodeqktjopendown.add(period,nodeqktjopendown1);
-//			 addOrUpdate()
+			if(addbasedoncurdata) {
+				TimeSeriesDataItem dataitem = nodeqktjopendown.getDataItem(period);
+				if(dataitem == null)
+					nodeqktjopendown.add(period,nodeqktjopendown1);
+				else {
+					int count = dataitem.getValue().intValue();
+					nodeqktjopendown.addOrUpdate(period, count + nodeqktjopendown1);
+				}
+					
+			} else
+				nodeqktjopendown.addOrUpdate(period,nodeqktjopendown1);
+
 		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 		
 		try {
 			if(nodeqktjhuibudown1 != null && nodeqktjhuibudown1 !=0 )
-				nodeqktjhuibudown.add(period,nodeqktjhuibudown1);
-//			 addOrUpdate()
+			if(addbasedoncurdata) {
+				TimeSeriesDataItem dataitem = nodeqktjhuibudown.getDataItem(period);
+				if(dataitem == null)
+					nodeqktjhuibudown.add(period,nodeqktjhuibudown1);
+				else {
+					int count = dataitem.getValue().intValue();
+					nodeqktjhuibudown.addOrUpdate(period, count + 1);
+				}
+					
+			} else
+				nodeqktjhuibudown.addOrUpdate(period,nodeqktjhuibudown1);
+
 		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
+	}
+	public List<QueKou> getPeriodQueKou ()
+	{
+		return this.qklist;
+	}
+	public void setPeriodQueKou (List<QueKou> qkl)
+	{
+		this.qklist = qkl;
 	}
 	/*
 	 * 
@@ -220,7 +282,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		if(qktjitem == null)
 			return null;
 		else
-			 return (Integer)qktjitem.getValue(); 
+			 return (Integer)qktjitem.getValue().intValue(); 
 		
 	}
 	public Integer getQueKouTongJiOpenDown (LocalDate requireddate, Integer difference)
@@ -232,7 +294,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		if(qktjitem == null)
 			return null;
 		else
-			 return (Integer)qktjitem.getValue(); 
+			 return (Integer)qktjitem.getValue().intValue(); 
 		
 	}
 	public Integer getQueKouTongJiHuiBuUp (LocalDate requireddate, Integer difference)
@@ -244,7 +306,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		if(qktjitem == null)
 			return null;
 		else
-			 return (Integer)qktjitem.getValue(); 
+			 return (Integer)qktjitem.getValue().intValue(); 
 		
 	}
 	public Integer getQueKouTongJiHuiBuDown (LocalDate requireddate, Integer difference)
@@ -256,8 +318,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		if(qktjitem == null)
 			return null;
 		else
-			 return (Integer)qktjitem.getValue(); 
-		
+			 return qktjitem.getValue().intValue(); 
 	}
 	
 	/*
@@ -452,7 +513,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	}
 	public  LocalDate  getQueKouRecordsEndDate ()
 	{ 
-		if(nodeqktjopenup.getItemCount() == 0)
+		if(nodeqktjopenup == null || nodeqktjopenup.getItemCount() == 0)
 			return null;
 
 		int itemcount = nodeqktjopenup.getItemCount();

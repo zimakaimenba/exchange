@@ -128,7 +128,7 @@ public class QueKou
 		this.shouldstoreindb = true;
 	}
 	
-	public Boolean isQueKouHuiBu ()
+	public Boolean hasQueKouHuiBu ()
 	{
 		if(this.huibudate != null)
 			return true;

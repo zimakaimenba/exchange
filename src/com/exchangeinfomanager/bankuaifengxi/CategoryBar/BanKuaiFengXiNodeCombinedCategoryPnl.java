@@ -23,6 +23,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.TitledBorder;
 
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -115,6 +116,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	@Override
 	public void updatedDate(TDXNodes node, LocalDate startdate,LocalDate enddate,String period) 
 	{
+		this.setBorder(new TitledBorder(null, node.getMyOwnCode()+node.getMyOwnName(), TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		this.curdisplayednode = node;
 		cjelargepnl.updatedDate(node, startdate,enddate, period);
 		cjezblargepnl.updatedDate(node, startdate,enddate, period);

@@ -139,16 +139,7 @@ public class CommonUtility {
 			return true;
 		else 
 			return false;
-//		else if(year1 == year2 && weeknumber1 > weeknumber2)
-//			return 1;
-//		else if(year1 == year2 && weeknumber1 < weeknumber2)
-//			return -1;
-//		else if(year1 > year2 )
-//			return 1;
-//		else if(year1 < year2 )
-//			return -1;
-//		
-//		return null;
+
 	}
 	
 //	public static Date getDateFromYearAndWeek (int weeknum)

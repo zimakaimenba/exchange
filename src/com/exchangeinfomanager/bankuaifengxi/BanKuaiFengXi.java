@@ -236,7 +236,6 @@ public class BanKuaiFengXi extends JDialog
 		barchartpanelstockdatachangelisteners.add(panelggdpcjlwkzhanbi);
 		//用户点击bar chart的一个column, highlight bar chart
 		chartpanelhighlightlisteners.add(panelGgDpCjeZhanBi);
-		chartpanelhighlightlisteners.add(panelggbkcjezhanbi);
 		chartpanelhighlightlisteners.add(panelbkwkcjezhanbi);
 		chartpanelhighlightlisteners.add(paneldayCandle);
 		chartpanelhighlightlisteners.add(panelggdpcjlwkzhanbi);
@@ -373,7 +372,7 @@ public class BanKuaiFengXi extends JDialog
 		//对于panel来说，hightLightFxValues第一个参数不能用，因为panel 都是 节点对她的上级的占比
 		panelGgDpCjeZhanBi.hightLightFxValues(displayexpc);
 		panelbkwkcjezhanbi.hightLightFxValues(displayexpc);
-		panelggbkcjezhanbi.hightLightFxValues(displayexpc);
+		
 
 	}
 	/*
@@ -391,7 +390,7 @@ public class BanKuaiFengXi extends JDialog
 			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		} catch (java.lang.NullPointerException e) {
 			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
-			logger.debug("");
+//			logger.debug("");
 			return;
 		}
 //		this.allbksks.syncBanKuaiData (selectedbk); //减少一次查询数据的请求，节约时间
@@ -401,10 +400,10 @@ public class BanKuaiFengXi extends JDialog
 		paneldayCandle.displayQueKou(false);
 		refreshKXianOfTDXNodeWithSuperBanKuai ( selectedbk, zhishubk );
 		
-		//板块自身占比
-		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
-			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
-		}
+//		//板块自身占比
+//		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
+//			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
+//		}
 		
 		//更新板块所属个股
 		if(selectedbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
@@ -422,6 +421,8 @@ public class BanKuaiFengXi extends JDialog
 		    	 }
         		
 			}
+			//有了个股的缺口数据，就可以统计板块的缺口数据了
+			allbksks.getBanKuaiQueKouInfo(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate, globeperiod);
 			
 			//如果板块的分析结果个股数目>0，则要把符合条件的个股标记好
 			BkChanYeLianTreeNode nodeincyltree = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(selectedbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
@@ -451,12 +452,17 @@ public class BanKuaiFengXi extends JDialog
 			}
 		}
 		
+		//板块自身占比
+		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
+			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
+		}
+		
 		Integer rowindex = ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel() ).getBanKuaiRowIndex(selectedbk.getMyOwnCode());
 		if(rowindex >0) {
 				int modelRow = tableselectedwkbkzb.convertRowIndexToView(rowindex);
 				tableselectedwkbkzb.setRowSelectionInterval(modelRow, modelRow);
 				tableselectedwkbkzb.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
-			}
+		}
 	}
 	/*
 	 * 几个表显示用户在选择周个股占比增长率排名等
@@ -764,7 +770,7 @@ public class BanKuaiFengXi extends JDialog
 	private void clearTheGuiBeforDisplayNewInfoSection3 ()
 	{
 		tabbedPanegeguzhanbi.setSelectedIndex(0);
-		panelggbkcjezhanbi.resetDate();
+		
 		panelGgDpCjeZhanBi.resetDate();
 		
 		panelggdpcjlwkzhanbi.resetDate();
@@ -1362,13 +1368,6 @@ public class BanKuaiFengXi extends JDialog
                 }
             }
         });
-		
-		panelggbkcjezhanbi.addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			 public void propertyChange(PropertyChangeEvent evt)   
-			{
-			}
-		});
 		
 		//添加导出条件
 		btnaddexportcond.addMouseListener(new MouseAdapter() {
@@ -2830,7 +2829,6 @@ public class BanKuaiFengXi extends JDialog
 		
 	}
 	private BanKuaiFengXiNodeCombinedCategoryPnl panelbkwkcjezhanbi;
-	private BanKuaiFengXiNodeCombinedCategoryPnl panelggbkcjezhanbi;
 	private BanKuaiFengXiPieChartCjePnl pnllastestggzhanbi;
 	private BanKuaiFengXiPieChartCjePnl panelLastWkGeGuZhanBi;
 	private BanKuaiFengXiPieChartCjePnl panelselectwkgeguzhanbi;
@@ -3048,10 +3046,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		
-		
-		panelggbkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
-		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u677F\u5757\u989D\u5360\u6BD4", null, panelggbkcjezhanbi, null);
-		
 		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
@@ -3074,7 +3068,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
 		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
-		panelbkwkcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		panelbkwkcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelbkwkcjezhanbi.setAllowDrawAnnoation(true);
 		
 		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");

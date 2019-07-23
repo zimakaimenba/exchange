@@ -337,9 +337,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			while (itr.hasNext()) 
 			{ 
 				QueKou tmpqk = (QueKou)itr.next();
-				if (!tmpqk.isQueKouHuiBu() ) {
+				if (!tmpqk.hasQueKouHuiBu() ) {
 					String huibuinfo = tmpqk.checkQueKouHuiBu(curstart,curlow, curhigh);
-					if(tmpqk.isQueKouHuiBu() && tmpqk.getQueKouHuiBuDaysNumber() <= 5  )
+					if(tmpqk.hasQueKouHuiBu() && tmpqk.getQueKouHuiBuDaysNumber() <= 5  )
 						itr.remove(); 
 				}
 			} 

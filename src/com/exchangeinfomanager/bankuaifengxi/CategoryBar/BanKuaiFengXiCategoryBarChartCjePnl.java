@@ -134,7 +134,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				} 
 			}
 			
-			//QueKou Line Part
+			//È±¿Ú Line Part
 			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
 				Integer opneupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
 				Integer opendownquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);

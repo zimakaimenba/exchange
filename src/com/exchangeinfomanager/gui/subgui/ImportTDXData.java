@@ -160,15 +160,15 @@ public class ImportTDXData extends JDialog {
 	private void partThatCanImportDuringWork ()
 	{
 
-		if(ckbxquekoutongji.isSelected() && ckbxquekoutongji.isEnabled()) { 
-			
-			System.out.println("缺口统计开始.....");
-			long start=System.currentTimeMillis(); //获取开始时间
-			queKouTongJi ();
-			long end=System.currentTimeMillis(); //获取结束时间
-			System.out.println("导入股票的基本面信息结束。" + "导入耗费时间： "+(end-start)+"ms.......");
-			ckbxquekoutongji.setEnabled(false);
-		}
+//		if(ckbxquekoutongji.isSelected() && ckbxquekoutongji.isEnabled()) { 
+//			
+//			System.out.println("缺口统计开始.....");
+//			long start=System.currentTimeMillis(); //获取开始时间
+//			queKouTongJi ();
+//			long end=System.currentTimeMillis(); //获取结束时间
+//			System.out.println("导入股票的基本面信息结束。" + "导入耗费时间： "+(end-start)+"ms.......");
+//			ckbxquekoutongji.setEnabled(false);
+//		}
 		
 		//从通达信中导入股票曾用名和现用名的信息
 		if(chbximportcym.isSelected() && chbximportcym.isEnabled())	{
@@ -446,33 +446,33 @@ public class ImportTDXData extends JDialog {
 
 	}
 	
-	private void queKouTongJi ()
-	{
-//		ArrayList<Stock> allstocks = bkdbopt.getAllStocks ();
-//		for (Stock stock : allstocks ) {
-//		    
-//
+//	private void queKouTongJi ()
+//	{
+////		ArrayList<Stock> allstocks = bkdbopt.getAllStocks ();
+////		for (Stock stock : allstocks ) {
+////		    
+////
+////		}
+//		
+//		LocalDate lastestdate = bkdbopt.getLatestTDXNodeQueKouDate ();
+//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbksks.getAllBkStocksTree().getModel().getRoot();
+//		int bankuaicount = allbksks.getAllBkStocksTree().getModel().getChildCount(treeroot);
+//        
+////		TDXNodes childnode1 = (TDXNodes) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("300017", BkChanYeLianTreeNode.TDXGG);
+////		bkdbopt.tDXNodeQueKouInfo((TDXNodes) childnode1 , lastestdate.plusDays(1));
+//		
+//		for(int i=0;i< bankuaicount; i++) {
+//			
+//			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbksks.getAllBkStocksTree().getModel().getChild(treeroot, i);
+//			if(childnode.getType() != BkChanYeLianTreeNode.TDXGG) 
+//				continue;
+//			
+//		
+//			bkdbopt.tDXNodeQueKouInfo((TDXNodes) childnode , lastestdate.plusDays(1));
 //		}
-		
-		LocalDate lastestdate = bkdbopt.getLatestTDXNodeQueKouDate ();
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbksks.getAllBkStocksTree().getModel().getRoot();
-		int bankuaicount = allbksks.getAllBkStocksTree().getModel().getChildCount(treeroot);
-        
-//		TDXNodes childnode1 = (TDXNodes) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("300017", BkChanYeLianTreeNode.TDXGG);
-//		bkdbopt.tDXNodeQueKouInfo((TDXNodes) childnode1 , lastestdate.plusDays(1));
-		
-		for(int i=0;i< bankuaicount; i++) {
-			
-			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbksks.getAllBkStocksTree().getModel().getChild(treeroot, i);
-			if(childnode.getType() != BkChanYeLianTreeNode.TDXGG) 
-				continue;
-			
-		
-			bkdbopt.tDXNodeQueKouInfo((TDXNodes) childnode , lastestdate.plusDays(1));
-		}
-
-
-	}
+//
+//
+//	}
 
 //	private void importEastMoneyExportFile()
 //	{
@@ -633,7 +633,7 @@ public class ImportTDXData extends JDialog {
 					cbxImportSzGeGuVol.setSelected(true);
 					cbxImportShGeGuVol.setSelected(true);
 					ckbxnetease.setSelected(true);
-					ckbxquekoutongji.setSelected(true);
+
 					
 					//曾用名和现用名一周只要更新一次，周五即可
 					Calendar cal = Calendar.getInstance();
@@ -651,7 +651,6 @@ public class ImportTDXData extends JDialog {
 					cbxImportSzGeGuVol.setSelected(false);
 					cbxImportShGeGuVol.setSelected(false);
 					ckbxnetease.setSelected(false);
-					ckbxquekoutongji.setSelected(false);
 				}
 			}
 		});
@@ -734,7 +733,6 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox cbxImportShGeGuVol;
 	private JCheckBox chbxselectall;
 	private JButton btnchecksync;
-	private JCheckBox ckbxquekoutongji;
 	private JCheckBox ckbxnetease;
 	private JComboBox cbximportoptions;
 	private JLabel lblstatus;
@@ -780,8 +778,6 @@ public class ImportTDXData extends JDialog {
 		
 		JProgressBar progressBar_4 = new JProgressBar();
 		
-		ckbxquekoutongji = new JCheckBox("\u7EDF\u8BA1\u4E2A\u80A1\u7F3A\u53E3");
-		
 		ckbxnetease = new JCheckBox("\u5BFC\u5165\u7F51\u6613\u8D22\u7ECF\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F\uFF08\u6362\u624B\u7387/\u5E02\u503C\u7B49\uFF09");
 		
 		cbximportoptions = new JComboBox();
@@ -808,52 +804,47 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(ckbxquekoutongji)
+								.addComponent(chkbxforenotimportatwork)
 								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(chkbxforenotimportatwork)
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(cbximporttdxgeguinfo)
-											.addGap(18)
-											.addComponent(progressBar_1, GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE))
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(chbximportcym)
-											.addGap(18)
-											.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE))
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(chbxdaorutdxsysbk)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(pbarbankuai, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
-										.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(chbxdaorutdxsysbkvol)
-												.addGap(12)
-												.addComponent(progressBar_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(cbxImportSzGeGuVol)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(cbxImportShGeGuVol)
-												.addPreferredGap(ComponentPlacement.UNRELATED)
-												.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-											.addGroup(gl_contentPanel.createSequentialGroup()
-												.addComponent(ckbxnetease)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(cbximportoptions, 0, 0, Short.MAX_VALUE))
-											.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE))
-										.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-											.addComponent(scrollPane_1, Alignment.LEADING)
-											.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-												.addComponent(chbxdaorutdxzdybk)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(cbximportzdyfromout)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(tfldoutzdyfile, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-									.addGap(130)))
-							.addContainerGap())
+									.addComponent(cbximporttdxgeguinfo)
+									.addGap(18)
+									.addComponent(progressBar_1, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(chbximportcym)
+									.addGap(18)
+									.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(chbxdaorutdxsysbk)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(pbarbankuai, GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE))
+								.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addComponent(chbxdaorutdxsysbkvol)
+										.addGap(12)
+										.addComponent(progressBar_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addComponent(cbxImportSzGeGuVol)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addComponent(cbxImportShGeGuVol)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addGroup(gl_contentPanel.createSequentialGroup()
+										.addComponent(ckbxnetease)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(cbximportoptions, 0, 0, Short.MAX_VALUE))
+									.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(chbxdaorutdxzdybk)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(cbximportzdyfromout)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfldoutzdyfile, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE))
+							.addGap(130))
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(lblstatus, GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
+							.addComponent(lblstatus, GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
 							.addGap(453))))
 		);
 		gl_contentPanel.setVerticalGroup(
@@ -894,9 +885,7 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(ckbxnetease)
 						.addComponent(cbximportoptions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(9)
-					.addComponent(ckbxquekoutongji)
-					.addGap(18)
+					.addGap(50)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 214, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chkbxforenotimportatwork)

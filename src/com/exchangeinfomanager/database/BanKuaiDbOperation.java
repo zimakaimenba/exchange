@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -7125,140 +7126,140 @@ public class BanKuaiDbOperation
 		/*
 		 * 缺口
 		 */
-		public List<QueKou> getNodeQueKouDbInfo(String nodecode) 
-		{
-			List<QueKou> qklist = new ArrayList<QueKou> ();
-			
-			CachedRowSetImpl rspd = null;
-			try {
-				String sqlquerystat = "SELECT * FROM 缺口统计表 " 
-						   + " WHERE 股票代码 = '" + nodecode + "'"
-						   + " Order By 产生日期  Desc "
-//						   + " ISNULL(回补日期) "
-						  ;
-	
-			    	logger.debug(sqlquerystat);
-			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
-			    	
-			        while(rspd.next())  {
-			        	Integer dbid = rspd.getInt("ID");
-			        	Double qkup =  rspd.getDouble("缺口上限");
-			        	Double qkdown =  rspd.getDouble("缺口下限");
-			        	Boolean type = rspd.getBoolean("缺口类型");
-			        	java.sql.Date qkdate = rspd.getDate("产生日期");
-			        	QueKou qk = new QueKou (nodecode,qkdate.toLocalDate(),qkdown,qkup,type);
-			        	
-			        	
-			        	Double shoupanjia = rspd.getDouble("产生收盘价");
-			        	java.sql.Date hbdate = rspd.getDate("回补日期");
-			        	
-			        	qk.setDbId(dbid);
-			        	qk.setShouPanJia(shoupanjia);
-			        	try{
-			        		qk.setQueKouHuiBuDate(hbdate.toLocalDate() );
-			        	} catch (java.lang.NullPointerException e) {
-			        		
-			        	}
-			        	
-			        	qklist.add(qk);
-			        }
-			} catch(java.lang.NullPointerException e){ 
-			    	e.printStackTrace();
-			} catch (SQLException e) {
-			    	e.printStackTrace();
-			} catch(Exception e){
-			    	e.printStackTrace();
-			} finally {
-			    	if(rspd != null)
-						try {
-							rspd.close();
-							rspd = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-			}
-
-			return qklist;
-		}
+//		public List<QueKou> getNodeQueKouDbInfo(String nodecode) 
+//		{
+//			List<QueKou> qklist = new ArrayList<QueKou> ();
+//			
+//			CachedRowSetImpl rspd = null;
+//			try {
+//				String sqlquerystat = "SELECT * FROM 缺口统计表 " 
+//						   + " WHERE 股票代码 = '" + nodecode + "'"
+//						   + " Order By 产生日期  Desc "
+////						   + " ISNULL(回补日期) "
+//						  ;
+//	
+//			    	logger.debug(sqlquerystat);
+//			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+//			    	
+//			        while(rspd.next())  {
+//			        	Integer dbid = rspd.getInt("ID");
+//			        	Double qkup =  rspd.getDouble("缺口上限");
+//			        	Double qkdown =  rspd.getDouble("缺口下限");
+//			        	Boolean type = rspd.getBoolean("缺口类型");
+//			        	java.sql.Date qkdate = rspd.getDate("产生日期");
+//			        	QueKou qk = new QueKou (nodecode,qkdate.toLocalDate(),qkdown,qkup,type);
+//			        	
+//			        	
+//			        	Double shoupanjia = rspd.getDouble("产生收盘价");
+//			        	java.sql.Date hbdate = rspd.getDate("回补日期");
+//			        	
+//			        	qk.setDbId(dbid);
+//			        	qk.setShouPanJia(shoupanjia);
+//			        	try{
+//			        		qk.setQueKouHuiBuDate(hbdate.toLocalDate() );
+//			        	} catch (java.lang.NullPointerException e) {
+//			        		
+//			        	}
+//			        	
+//			        	qklist.add(qk);
+//			        }
+//			} catch(java.lang.NullPointerException e){ 
+//			    	e.printStackTrace();
+//			} catch (SQLException e) {
+//			    	e.printStackTrace();
+//			} catch(Exception e){
+//			    	e.printStackTrace();
+//			} finally {
+//			    	if(rspd != null)
+//						try {
+//							rspd.close();
+//							rspd = null;
+//						} catch (SQLException e) {
+//							e.printStackTrace();
+//						}
+//			}
+//
+//			return qklist;
+//		}
 		/*
-		 * 重新统计个股缺口
+		 * 重新统计个股缺口,
 		 */
-		public void tDXNodeQueKouInfo(TDXNodes childnode, LocalDate lastestcheckdate) 
-		{
-			if(childnode.getMyOwnCode().equals("300017"))
-				logger.debug("test started");
-			List<QueKou> qklist = this.getNodeQueKouDbInfo (childnode.getMyOwnCode());
-			
-			childnode = this.getStockDailyKXianZouShiFromCsv ((Stock)childnode, LocalDate.parse("1990-01-01"), LocalDate.now(),TDXNodeGivenPeriodDataItem.DAY);
-			if( ((Stock)childnode).isVeryVeryNewXinStock() ) //新股的缺口不考虑
-				return;
-			
-			//判断个股是否复权了，如果复权，需要从新从记录起始统计缺口
-			boolean resetallquekou = false;
-			try {
-				QueKou lastestqk = qklist.get(0);
-				LocalDate qkdate = lastestqk.getQueKouDate();
-				Double shoupanjia = lastestqk.getShouPanJia();
-				
-				
-				NodeXPeriodDataBasic stockxdate = ((Stock)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
-				OHLCItem ohlcdate = stockxdate.getSpecificDateOHLCData(qkdate, 0);
-				Double curclose = ohlcdate.getCloseValue();
-				if( !curclose.equals(shoupanjia) )
-					resetallquekou = true;
-			} catch (java.lang.IndexOutOfBoundsException e) {
-//				e.printStackTrace();
-				resetallquekou = true;
-			} catch (java.lang.NullPointerException e) {
-				resetallquekou = false;
-			}
-			
-			if(resetallquekou) {
-				qklist =  checkQueKouForAGivenPeriod ( (Stock)childnode, LocalDate.parse("1990-01-01"), LocalDate.now() ,null);
-			} else {
-//				QueKou tmpqk =  qklist.get(0);
-//				LocalDate newstartdate ;
-//				if(tmpqk.isQueKouHuiBu()) //如果最新缺口已经回补，那肯定至少到回补日期都是检查过的。
-//					newstartdate = tmpqk.getQueKouHuiBuDate().plusDays(1);
-//				else
-//					newstartdate =  tmpqk.getQueKouDate().plusDays(1);
-				
-				qklist = checkQueKouForAGivenPeriod ( (Stock)childnode,lastestcheckdate, LocalDate.now(),qklist );
-//				qklist = checkQueKouForAGivenPeriod ( (Stock)childnode,LocalDate.parse("2018-01-01" ), LocalDate.now(),qklist );
-			}
-			
-			//set to db
-			if(resetallquekou) {
-				CachedRowSetImpl rspd = null;
-				try {
-					String sqldeletestat = "DELETE  FROM 缺口统计表 " 
-							  + " WHERE 股票代码 = '" + childnode.getMyOwnCode() + "'"  
-							  ;
-					int result = connectdb.sqlDeleteStatExecute(sqldeletestat);
-					
-					updateNodeQueKouInfoToDb (qklist);
-
-				} catch(java.lang.NullPointerException e){ 
-				    	e.printStackTrace();
-				} catch(Exception e){
-				    	e.printStackTrace();
-				} finally {
-				    	if(rspd != null)
-							try {
-								rspd.close();
-								rspd = null;
-							} catch (SQLException e) {
-								e.printStackTrace();
-							}
-				}
-		
-			}	else {
-				updateNodeQueKouInfoToDb (qklist);
-
-			}
-			
-		}
-		private List<QueKou> checkQueKouForAGivenPeriod (TDXNodes childnode,LocalDate startdate, LocalDate enddate, List<QueKou> qklist )
+//		public void tDXNodeQueKouInfo(TDXNodes childnode, LocalDate lastestcheckdate) 
+//		{
+//			if(childnode.getMyOwnCode().equals("300017"))
+//				logger.debug("test started");
+//			List<QueKou> qklist = this.getNodeQueKouDbInfo (childnode.getMyOwnCode());
+//			
+//			childnode = this.getStockDailyKXianZouShiFromCsv ((Stock)childnode, LocalDate.parse("1990-01-01"), LocalDate.now(),TDXNodeGivenPeriodDataItem.DAY);
+//			if( ((Stock)childnode).isVeryVeryNewXinStock() ) //新股的缺口不考虑
+//				return;
+//			
+//			//判断个股是否复权了，如果复权，需要从新从记录起始统计缺口
+//			boolean resetallquekou = false;
+//			try {
+//				QueKou lastestqk = qklist.get(0);
+//				LocalDate qkdate = lastestqk.getQueKouDate();
+//				Double shoupanjia = lastestqk.getShouPanJia();
+//				
+//				
+//				NodeXPeriodDataBasic stockxdate = ((Stock)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
+//				OHLCItem ohlcdate = stockxdate.getSpecificDateOHLCData(qkdate, 0);
+//				Double curclose = ohlcdate.getCloseValue();
+//				if( !curclose.equals(shoupanjia) )
+//					resetallquekou = true;
+//			} catch (java.lang.IndexOutOfBoundsException e) {
+////				e.printStackTrace();
+//				resetallquekou = true;
+//			} catch (java.lang.NullPointerException e) {
+//				resetallquekou = false;
+//			}
+//			
+//			if(resetallquekou) {
+//				qklist =  checkQueKouForAGivenPeriod ( (Stock)childnode, LocalDate.parse("1990-01-01"), LocalDate.now() ,null);
+//			} else {
+////				QueKou tmpqk =  qklist.get(0);
+////				LocalDate newstartdate ;
+////				if(tmpqk.isQueKouHuiBu()) //如果最新缺口已经回补，那肯定至少到回补日期都是检查过的。
+////					newstartdate = tmpqk.getQueKouHuiBuDate().plusDays(1);
+////				else
+////					newstartdate =  tmpqk.getQueKouDate().plusDays(1);
+//				
+//				qklist = checkQueKouForAGivenPeriod ( (Stock)childnode,lastestcheckdate, LocalDate.now(),qklist );
+////				qklist = checkQueKouForAGivenPeriod ( (Stock)childnode,LocalDate.parse("2018-01-01" ), LocalDate.now(),qklist );
+//			}
+//			
+//			//set to db
+//			if(resetallquekou) {
+//				CachedRowSetImpl rspd = null;
+//				try {
+//					String sqldeletestat = "DELETE  FROM 缺口统计表 " 
+//							  + " WHERE 股票代码 = '" + childnode.getMyOwnCode() + "'"  
+//							  ;
+//					int result = connectdb.sqlDeleteStatExecute(sqldeletestat);
+//					
+//					updateNodeQueKouInfoToDb (qklist);
+//
+//				} catch(java.lang.NullPointerException e){ 
+//				    	e.printStackTrace();
+//				} catch(Exception e){
+//				    	e.printStackTrace();
+//				} finally {
+//				    	if(rspd != null)
+//							try {
+//								rspd.close();
+//								rspd = null;
+//							} catch (SQLException e) {
+//								e.printStackTrace();
+//							}
+//				}
+//		
+//			}	else {
+//				updateNodeQueKouInfoToDb (qklist);
+//
+//			}
+//			
+//		}
+		private List<QueKou> checkQueKouForAGivenPeriod (TDXNodes childnode,LocalDate startdate, LocalDate enddate, List<QueKou> qklist, String period )
 		{
 			if(  ((Stock)childnode).isVeryVeryNewXinStock()  )
 				return null;
@@ -7266,8 +7267,9 @@ public class BanKuaiDbOperation
 			if(qklist == null)
 				qklist = new ArrayList<QueKou> ();
 			
-			NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
+			NodeXPeriodDataBasic nodexdata = childnode.getNodeXPeroidData(period);
 			OHLCSeries nodeohlc = nodexdata.getOHLCData();
+			List<QueKou> newquekou = new ArrayList<QueKou> ();
 			for(int j=1;j < nodeohlc.getItemCount();j++) {
 				
 				OHLCItem kxiandatacurwk = (OHLCItem) nodeohlc.getDataItem(j);
@@ -7275,46 +7277,64 @@ public class BanKuaiDbOperation
 				LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				
-				if(curstart.isBefore(startdate) || curstart.isAfter(enddate))
-					continue;
-				
-				OHLCItem kxiandatalastwk = (OHLCItem) nodeohlc.getDataItem(j-1);
-				
 				Double curhigh = kxiandatacurwk.getHighValue();
 				Double curlow = kxiandatacurwk.getLowValue();
 				Double curclose = kxiandatacurwk.getCloseValue();
 				
-				Iterator itr = qklist.iterator(); 
-				while (itr.hasNext()) 
-				{ 
-					QueKou tmpqk = (QueKou)itr.next();
-					if (!tmpqk.isQueKouHuiBu() ) {
-						String huibuinfo = tmpqk.checkQueKouHuiBu(curstart,curlow, curhigh);
+				if(curstart.isBefore(startdate) || curstart.isAfter(enddate)) { //对于不在要求检查范围内的日线数据，只做检查是否补当前缺口用
+					
+					Iterator itr = qklist.iterator(); 
+					while (itr.hasNext()) 
+					{ 
+						QueKou tmpqk = (QueKou)itr.next();
+						LocalDate tmpqkdate = tmpqk.getQueKouDate();
+						if(tmpqkdate.isAfter(curstart))
+							continue;
+						
+						if (!tmpqk.hasQueKouHuiBu() ) {
+							String huibuinfo = tmpqk.checkQueKouHuiBu(curstart,curlow, curhigh);
+						}
 					}
-				} 
-				
-				//看看有没有产生新的缺口
-				double lasthigh = kxiandatalastwk.getHighValue();
-				double lastlow = kxiandatalastwk.getLowValue();
-				
-				Boolean tiaokongup = false; Boolean tiaokongdown = false;
-				if(curlow > lasthigh) {
-					Double newqkup = curlow;
-					Double newqkdown = lasthigh;
-					QueKou newqk = new QueKou (childnode.getMyOwnCode(),curstart,newqkdown,newqkup,true);
-					newqk.setShouPanJia(curclose);
+				} else { //在要求查找范围内的，除了查找是否补缺口，还要看是否产生新缺口
+
+					Iterator itr = qklist.iterator(); 
+					while (itr.hasNext()) 
+					{ 
+						QueKou tmpqk = (QueKou)itr.next();
+						LocalDate tmpqkdate = tmpqk.getQueKouDate();
+						if(tmpqkdate.isAfter(curstart))
+							continue;
+						
+						if (!tmpqk.hasQueKouHuiBu() ) {
+							String huibuinfo = tmpqk.checkQueKouHuiBu(curstart,curlow, curhigh);
+						}
+					} 
 					
-					qklist.add(0, newqk);
-				}
-				else 
-				if(curhigh < lastlow) {
-					Double newqkup = lastlow;
-					Double newqkdown = curhigh;
-					QueKou newqk = new QueKou (childnode.getMyOwnCode(),curstart,newqkdown,newqkup,false);
-					newqk.setShouPanJia(curclose);
+					//看看有没有产生新的缺口
+					OHLCItem kxiandatalastwk = (OHLCItem) nodeohlc.getDataItem(j-1);
+					double lasthigh = kxiandatalastwk.getHighValue();
+					double lastlow = kxiandatalastwk.getLowValue();
 					
-					qklist.add(0, newqk);
+					Boolean tiaokongup = false; Boolean tiaokongdown = false;
+					if(curlow > lasthigh) {
+						Double newqkup = curlow;
+						Double newqkdown = lasthigh;
+						QueKou newqk = new QueKou (childnode.getMyOwnCode(),curstart,newqkdown,newqkup,true);
+						newqk.setShouPanJia(curclose);
+						
+						qklist.add(0, newqk);
+					}
+					else 
+					if(curhigh < lastlow) {
+						Double newqkup = lastlow;
+						Double newqkdown = curhigh;
+						QueKou newqk = new QueKou (childnode.getMyOwnCode(),curstart,newqkdown,newqkup,false);
+						newqk.setShouPanJia(curclose);
+						
+						qklist.add(0, newqk);
+					}
 				}
+
 			}
 			
 			return qklist;
@@ -7433,9 +7453,40 @@ public class BanKuaiDbOperation
 			return null;
 		}
 		/*
-		 * 
+		 *从个股日线数据直接计算出缺口信息 
 		 */
-		public Stock getStockQueKouTimeRangTongJIResult (Stock stock,LocalDate startdate,LocalDate enddate, String period)
+		public Stock getStockDailyQueKouAnalysisResult (Stock stock,LocalDate requiredstartday,LocalDate requiredendday, String period)
+		{
+			if( ((Stock)stock).isVeryVeryNewXinStock() ) //新股的缺口不考虑
+				return stock;
+			
+			NodeXPeriodDataBasic stockdailyxdate = stock.getNodeXPeroidData(period);
+			List<QueKou> qklist = ( (TDXNodesXPeriodData)stockdailyxdate ).getPeriodQueKou();
+			
+			qklist = checkQueKouForAGivenPeriod ( stock, requiredstartday, requiredendday,qklist,TDXNodeGivenPeriodDataItem.DAY );
+			Collections.sort(qklist, new NodeLocalDateComparator() );
+			( (TDXNodesXPeriodData)stockdailyxdate ).setPeriodQueKou(qklist);
+			
+			
+//			//标记缺口统计的时间，
+//			NodeXPeriodDataBasic stockxwkdate = stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+//			LocalDate qkstartdate = qklist.get(0).getQueKouDate();
+//			LocalDate qkenddate = qklist.get(qklist.size() -1 ).getQueKouDate();
+//			 if(!qkstartdate.equals(requiredstartday) && requiredstartday.isBefore(qkstartdate)) { //特别标记完整的openupquekou的起始日期，用于获得缺口统计的起始时间
+//				 ( (TDXNodesXPeriodData)stockxwkdate ).addQueKouTongJiJieGuo ( requiredstartday, -1, null, null, null,true);
+//			 }  
+//			 if(!qkenddate.equals(requiredendday)  && requiredendday.isAfter(qkenddate) )  //特别标记完整的openupquekou的结束日期，用于获得缺口统计的结束时间
+//       		 ( (TDXNodesXPeriodData)stockxwkdate ).addQueKouTongJiJieGuo ( requiredendday, -1, null, null, null,true);
+			
+			
+			 
+			 return stock;
+			
+		}
+		/*
+		 *从数据库中读取个股 缺口统计信息 , 废弃
+		 */
+		private Stock getStockQueKouTimeRangTongJIResult (Stock stock,LocalDate startdate,LocalDate enddate, String period)
 		{
 			String sqlquerystring = "SELECT a.FOfWk,a.EOfWk,a.OpenDownQueKou,a.SmallDown,a.MiddleDown,a.LargeDown,a.OpenUpQueKou,a.SmallUP,a.MiddleUP,a.LargeUP, \r\n"
 					+ "     a.HuiBuDownQueKou,a.HuiBuupQueKou \r\n"
@@ -7545,11 +7596,11 @@ public class BanKuaiDbOperation
 			        		 HuiBuDownQueKou = null;
 			        	 
 			        	 if(j == 0 && !qkdate.equals(startdate) ) { //特别标记完整的openupquekou的起始日期，用于获得缺口统计的起始时间
-			        		 nodexdate.addQueKouTongJiJieGuo ( startdate, 0, null, null, null);
+			        		 nodexdate.addQueKouTongJiJieGuo ( startdate, 0, null, null, null,false);
 			        	 }  else if(j == (rows-1) && !qkdate.equals(enddate))  //特别标记完整的openupquekou的结束日期，用于获得缺口统计的结束时间
-			        		 nodexdate.addQueKouTongJiJieGuo ( enddate, 0, null, null, null);
+			        		 nodexdate.addQueKouTongJiJieGuo ( enddate, 0, null, null, null,false);
 			        	 
-			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou);
+			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou,false);
 			        	 
 			        	 rspd.next();
    			        	
@@ -7591,9 +7642,9 @@ public class BanKuaiDbOperation
 			return stock;
 		}
 		/*
-		 * 
+		 * 从数据库中同步板块的缺口信息。废弃
 		 */
-		public BanKuai getStocksInBanKuaiQueKouTimeRangTongJIResult (BanKuai bankuai,LocalDate startdate,LocalDate enddate, String period)
+		private BanKuai getStocksInBanKuaiQueKouTimeRangTongJIResult (BanKuai bankuai,LocalDate startdate,LocalDate enddate, String period)
 		{
 			//统计的是板块内部stock的缺口数目，没有个股的回避
 			if( bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
@@ -7749,11 +7800,11 @@ public class BanKuaiDbOperation
 			        	 
 			        	 
 			        	 if(j == 0 && !qkdate.equals(startdate) ) { //特别标记完整的openupquekou的起始日期，用于获得缺口统计的起始时间
-			        		 nodexdate.addQueKouTongJiJieGuo ( startdate, 0, null, null, null);
+			        		 nodexdate.addQueKouTongJiJieGuo ( startdate, 0, null, null, null,false);
 			        	 }  else if(j == (rows-1) && !qkdate.equals(enddate))  //特别标记完整的openupquekou的结束日期，用于获得缺口统计的结束时间
-			        		 nodexdate.addQueKouTongJiJieGuo ( enddate, 0, null, null, null);
+			        		 nodexdate.addQueKouTongJiJieGuo ( enddate, 0, null, null, null,false);
 			        	 
-			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou);
+			        	 nodexdate.addQueKouTongJiJieGuo ( qkdate.toLocalDate(), OpenUpQueKou, HuiBuupQueKou, OpenDownQueKou, HuiBuDownQueKou,false);
 			        	 
 			        	 rspd.next();
    			        	
@@ -7778,6 +7829,9 @@ public class BanKuaiDbOperation
 			return bankuai;
 			
 		}
+		/*
+		 * 
+		 */
 		public Boolean updateNodeSocialFriendShips(BanKuai mainnode, BanKuai friend)
 		{
 			Set<String> friendset = mainnode.getSocialFriendsSet();
@@ -7855,6 +7909,27 @@ class TDXBanKuaiFielProcessor implements LineProcessor<List<String>>
     @Override
     public List<String> getResult() {
         return stocklists;
+    }
+}
+
+class NodeLocalDateComparator implements Comparator<QueKou> 
+{
+	public NodeLocalDateComparator ()
+	{
+	}
+    public int compare(QueKou qk1, QueKou qk2) 
+    {
+    	LocalDate qk1date = qk1.getQueKouDate();
+    	LocalDate qk2date = qk2.getQueKouDate();
+       
+        try{
+        	if(qk1date.isBefore(qk2date))
+        		return -1;
+        	else
+        		return 1;
+        } catch (java.lang.NullPointerException e) {
+        	return -1;
+        }
     }
 }
 
