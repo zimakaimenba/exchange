@@ -210,7 +210,8 @@ public class BanKuaiGuanLi extends JDialog
 					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
+				int  model_row = tableSysBk.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(model_row, 0) );
 				
 				if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK  ) {
 					String bkleixing = ((BanKuai) selectnode).getBanKuaiLeiXing(); 
@@ -233,12 +234,13 @@ public class BanKuaiGuanLi extends JDialog
 					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-				BkChanYeLianTreeNode friend = (BkChanYeLianTreeNode) ( tablenoggbk.getModel().getValueAt(row, 0) );
+				int  model_row = tablenoggbk.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+				BkChanYeLianTreeNode friend = (BkChanYeLianTreeNode) ( tablenoggbk.getModel().getValueAt(model_row, 0) );
 				
 				
 				row = tableSysBk.getSelectedRow();
-				int column = tableSysBk.getSelectedColumn();
-				BkChanYeLianTreeNode mainnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
+				model_row = tableSysBk.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+				BkChanYeLianTreeNode mainnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(model_row, 0) );
 				
 				if(!mainnode.getMyOwnCode().equals(friend.getMyOwnCode()  ) ) {
 					updateNodeSocialFriend ( (BanKuai)mainnode, (BanKuai)friend);
@@ -263,7 +265,9 @@ public class BanKuaiGuanLi extends JDialog
 				
 				int  model_row = tableBkfriends.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
 				BanKuai friend = ((BanKuaiSocialFriendsTableModel) tableBkfriends.getModel()).geSocialtBanKuai(model_row);
+				
 				BanKuai mainnode = ((BanKuaiSocialFriendsTableModel) tableBkfriends.getModel()).getMainBanKuai();
+				
 				updateNodeSocialFriend (mainnode, friend);
 				
 				tableBkfriends.repaint();

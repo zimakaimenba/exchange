@@ -154,6 +154,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected void setCurDisplayNode (TDXNodes curdisplayednode1, String period) 
 	{
 		this.curdisplayednode = curdisplayednode1;
+		this.globeperiod = period;
 		this.rowKey = this.curdisplayednode.getMyOwnCode();
 		 
 		BanKuaiFengXiCategoryBarRenderer render = (BanKuaiFengXiCategoryBarRenderer)plot.getRenderer();
@@ -489,6 +490,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	private JMenuItem mntmFenXiJiLu;
 	protected DefaultCategoryDataset linechartdataset;
 	protected JMenuItem mntmHideBars;
+	private JMenuItem mntmHideQueKouData;
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
@@ -564,12 +566,20 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //		mntmqkopendown = new JMenuItem("统计新开向下跳空缺口");
 //		mntmqkhuibuup = new JMenuItem("统计回补上跳空缺口");
 //		mntmqkhuibudown = new JMenuItem("统计回补下跳空缺口");
-//        mntmHideBars = new JMenuItem("隐藏占比数据");
-//		chartPanel.getPopupMenu().add(mntmHideBars);
+        mntmHideBars = new JMenuItem("隐藏占比数据");
+        mntmHideBars.setEnabled(false);
+        mntmHideQueKouData = new JMenuItem("隐藏缺口数据");
+        mntmHideQueKouData.setEnabled(false);
+		chartPanel.getPopupMenu().add(mntmHideBars);
+		chartPanel.getPopupMenu().add(mntmHideQueKouData);
 		
 		this.categorymarkerlist = new ArrayList<> ();
    }
  
+    protected  JPopupMenu getPopupMenu() 
+    {
+    	return chartPanel.getPopupMenu();
+    }
     
 }
 

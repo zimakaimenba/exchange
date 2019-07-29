@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +51,36 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		this.displayNodeBasicInfo(curselectedbknodecode);
 		this.displayNodeZdgzMrMcZdgzYingKuiInfo (curselectedbknodecode);
 	}
-	
+	/*
+	 * 
+	 */
+	public void displayAllNewsOfSpecificWeek (LocalDate displayeddate)
+	{
+		LocalDate monday = displayeddate.with( DayOfWeek.MONDAY );
+		LocalDate sunday = displayeddate.with( DayOfWeek.SUNDAY );
+		Collection<InsertedMeeting> curnewlist = newsdbopt.getBanKuaiRelatedNews("000000",monday,sunday);
+		
+		String htmlstring = this.getText();
+		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+//		 logger.debug(doc.toString());
+		 org.jsoup.select.Elements content = doc.select("body");
+		       
+		content.append( "<h4>周新闻:" + monday + "到" + sunday + "</h4>");
+		for(InsertedMeeting cylnew : curnewlist ) {
+	   		String title = cylnew.getTitle();
+	   		String newdate = cylnew.getStart().toString(); 
+	   		String slackurl = cylnew.getSlackUrl();
+	   		String keywords = cylnew.getKeyWords();
+	   		if(slackurl != null && !slackurl.isEmpty() )	    		
+	   			content.append( "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
+	   		else
+	   			content.append( "<p>" + newdate  + title + "</p> ");
+	   		//notesPane.setText("<a href=\"http://www.google.com/finance?q=NYSE:C\">C</a>, <a href=\"http://www.google.com/finance?q=NASDAQ:MSFT\">MSFT</a>");
+		}
+   	
+	   	htmlstring = doc.toString();
+	   	this.setText(htmlstring);
+	}
 	 /*
      * 显示板块新闻连接
      */
@@ -65,7 +95,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 //		 logger.debug(doc.toString());
 		 org.jsoup.select.Elements content = doc.select("body");
 		       
-		content.append( "<h4>板块"+ curselectedbknodecode + curselectedbknodename + "相关新闻</h4>");
+		content.append( "<h4>\""+ curselectedbknodecode + curselectedbknodename + "\"相关新闻</h4>");
     	for(InsertedMeeting cylnew : curnewlist ) {
     		String title = cylnew.getTitle();
     		String newdate = cylnew.getStart().toString(); 
@@ -87,8 +117,8 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
      */
     public void  displayNodeBasicInfo(BkChanYeLianTreeNode curselectedbknode)
     {
-    	String curselectedbknodename = curselectedbknode.getMyOwnName();
-	      	String curbknodecode = curselectedbknode.getMyOwnCode();
+    		String curselectedbknodename = curselectedbknode.getMyOwnName();
+	     	String curbknodecode = curselectedbknode.getMyOwnCode();
 	       	int type = curselectedbknode.getType();
 	       	
 //	       	if(type == 4 ) {
@@ -102,7 +132,8 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 //	       logger.debug(doc.toString());
 	       org.jsoup.select.Elements content = doc.select("body"); 
 	       
-	       content.append("<h4>板块基本信息</h4>");
+	       String header = "<h4>\""+ curbknodecode + curselectedbknodename + "\"基本信息</h4>"; 
+	       content.append(header);
 	       
 	       		if(!Strings.isNullOrEmpty( curselectedbknode.getNodeJiBenMian().getGainiantishi() ) ) 
 				try {
@@ -151,7 +182,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 //	       logger.debug(doc.toString());
 	       org.jsoup.select.Elements content = doc.select("body"); 
 	       
-	       content.append("<h4>板块关注分析信息</h4>");
+	       content.append("<h4>\""+ curbknodecode + curselectedbknodename + "\"关注分析信息</h4>");
 	       Object[][] sellbuyObjects = (curselectedbknode).getNodeJiBenMian().getZdgzMrmcZdgzYingKuiRecords();
 	       for(int i=0;i<sellbuyObjects.length;i++) {
 	    	   String output = "";

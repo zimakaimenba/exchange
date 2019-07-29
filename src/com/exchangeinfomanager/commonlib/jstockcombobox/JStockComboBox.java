@@ -74,9 +74,15 @@ public class JStockComboBox extends  JComboBox<String>
 	private void generalSetup() 
 	{
 		this.setEditable(true);
-		this.setRenderer(new JStockComboBoxRenderer());
+		
 		this.setModel( new JStockComboBoxModel () );
-//		this.setForeground(Color.RED);
+		
+		this.setRenderer(new JStockComboBoxNodeRenderer());
+	    this.setEditor(new JStockComboBoxEditor());
+	     
+//		this.setRenderer(new JStockComboBoxRenderer());
+		
+
 		bkdbopt = new BanKuaiDbOperation ();
 		sysconfig = SystemConfigration.getInstance();
 //		allbkstock = AllCurrentTdxBKAndStoksTree.getInstance();
@@ -85,19 +91,15 @@ public class JStockComboBox extends  JComboBox<String>
 	}
 
 	private BanKuaiDbOperation bkdbopt;
-//	private BkChanYeLianTreeNode nodeshouldbedisplayed;
 	private Integer onlyselectnodetype;
 	/*
 	 * 
 	 */
 	public BkChanYeLianTreeNode getUserInputNode ()
 	{
-//		Object item = this.getEditor().getItem();
 		Object selectitem = ((JStockComboBoxModel)this.getModel()).getSelectedItem(); 
 		BkChanYeLianTreeNode nodeshouldbedisplayed = (BkChanYeLianTreeNode) selectitem;
 		nodeshouldbedisplayed = preSearch( nodeshouldbedisplayed.getMyOwnCode(), onlyselectnodetype);
-		
-//		this.revalidate();
 		
 		return nodeshouldbedisplayed;
 	}
@@ -106,33 +108,24 @@ public class JStockComboBox extends  JComboBox<String>
 	 */
 	public BkChanYeLianTreeNode updateUserSelectedNode (Stock stock)
 	{
-//		this.nodeshouldbedisplayed = stock;
-
 		preSearch(stock.getMyOwnCode(),BkChanYeLianTreeNode.TDXGG);
 		
 		Integer alreadyin = ((JStockComboBoxModel)getModel()).hasTheNode(stock.getMyOwnCode());
 		if(alreadyin == -1) {
 			((JStockComboBoxModel)getModel()).addElement( stock );
-			((JStockComboBoxModel)getModel()).setSelectedItem(stock.getMyOwnCode() + stock.getMyOwnName() );
-			
-//			this.revalidate();
+			((JStockComboBoxModel)getModel()).setSelectedItem(stock);
 		}
 		return stock;
 	}
 	public BkChanYeLianTreeNode updateUserSelectedNode (BanKuai bk)
 	{
-//		this.nodeshouldbedisplayed = bk;
-		
 		preSearch(bk.getMyOwnCode(),BkChanYeLianTreeNode.TDXBK);
 		
 		Integer alreadyin = ((JStockComboBoxModel)getModel()).hasTheNode(bk.getMyOwnCode());
 		if(alreadyin == -1) {
 			((JStockComboBoxModel)getModel()).addElement( bk );
-			((JStockComboBoxModel)getModel()).setSelectedItem(bk.getMyOwnCode() + bk.getMyOwnName() );
-			
-//			this.revalidate();
+			((JStockComboBoxModel)getModel()).setSelectedItem(bk );
 		}
-
 		return bk;
 	}
 	/*
@@ -143,14 +136,11 @@ public class JStockComboBox extends  JComboBox<String>
 		BkChanYeLianTreeNode nodeshouldbedisplayed = preSearch (nodecode,nodetype);
 		if(nodeshouldbedisplayed != null) {
 			((JStockComboBoxModel)getModel()).addElement( nodeshouldbedisplayed );
-			((JStockComboBoxModel)getModel()).setSelectedItem(nodeshouldbedisplayed.getMyOwnCode() + nodeshouldbedisplayed.getMyOwnName() );
-			
-//			this.revalidate();
+			((JStockComboBoxModel)getModel()).setSelectedItem(nodeshouldbedisplayed);
+
 			return nodeshouldbedisplayed;
 		} else
 			return null;
-		
-		
 	}
 	/*
 	 * 获取用户code的板块或个股的基本信息 
@@ -265,8 +255,11 @@ public class JStockComboBox extends  JComboBox<String>
 						ex.printStackTrace();
 					}
 					Integer result = ((JStockComboBoxModel)getModel()).hasTheNode (nodecode);
-					if(result == -1) 
-						updateUserSelectedNode (nodecode,onlyselectnodetype);
+					BkChanYeLianTreeNode node;
+					if(result == -1) {
+						node = updateUserSelectedNode (nodecode,onlyselectnodetype);
+//						((javax.swing.JTextField ) (getEditor().getEditorComponent() ) ).setText(node.getMyOwnCode()+node.getMyOwnName());
+					}
 				}
 			}
 			
@@ -302,7 +295,7 @@ public class JStockComboBox extends  JComboBox<String>
 			this.updateUserSelectedNode (geguname,BkChanYeLianTreeNode.TDXGG);
 		}
 		
-		((JStockComboBoxRenderer)this.getRenderer()).setGuanZhuGeGuList(result);
+		((JStockComboBoxNodeRenderer)this.getRenderer()).setGuanZhuGeGuList(result);
 	}
 	/*
 	 * 

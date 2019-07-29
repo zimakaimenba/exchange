@@ -85,7 +85,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		barchartdataset.clear();
 		
 		super.setCurDisplayNode(node,period );
-		super.globeperiod = period;
+//		super.globeperiod = period;
 		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
 		
 		displayDataToGui (nodexdata,startdate,enddate,period);

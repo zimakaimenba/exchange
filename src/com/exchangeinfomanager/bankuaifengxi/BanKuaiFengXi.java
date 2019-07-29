@@ -1022,6 +1022,19 @@ public class BanKuaiFengXi extends JDialog
             }
         });
 		
+		menuItemnonshowselectbkinfo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	if( menuItemnonshowselectbkinfo.getText().contains("X") ) {
+            		menuItemnonshowselectbkinfo.setText("选择同时计算该周分析数据");
+            		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
+            	} else {
+            		menuItemnonshowselectbkinfo.setText("X选择同时计算该周分析数据");
+            		panelbkwkcjezhanbi.setAllowDrawAnnoation(true);
+            	}
+            }
+        });
+		
 		menuItemnonfixperiod.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1258,13 +1271,10 @@ public class BanKuaiFengXi extends JDialog
 
 				int modelRow = tableBkZhanBi.convertRowIndexToModel(rowbk);
 				BanKuai bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-				
-				
 
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
-                    
                     refreshAfterUserSelectBanKuaiColumn (bkcur,selectedinfo);
                     
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
@@ -1276,7 +1286,7 @@ public class BanKuaiFengXi extends JDialog
                 	}
                 }
                 
-                SystemAudioPlayed.playSound();
+//                SystemAudioPlayed.playSound();
                 
                 hourglassCursor = null;
 				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -1982,6 +1992,15 @@ public class BanKuaiFengXi extends JDialog
 // 		String selecteddate = li.get(0).text();
  		LocalDate datekey = LocalDate.parse(selectedinfo);
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+		
+		editorPanenodeinfo.displayAllNewsOfSpecificWeek (datekey);
+		
+		setUserSelectedColumnMessage(bkcur,selectedinfo);
+
+
+		//根据设置，显示选定周分析数据
+		if(!menuItemnonshowselectbkinfo.getText().contains("X"))
+			return;
 			
 			//选定周的板块排名情况
 			LocalDate selectdate = CommonUtility.formateStringToDate(datekey.toString());
@@ -2033,10 +2052,7 @@ public class BanKuaiFengXi extends JDialog
 				
 			}
 			
-//			tableselectedwkbkzb.repaint();
-			//
-			setUserSelectedColumnMessage(bkcur,selectedinfo);
-		
+			SystemAudioPlayed.playSound();
 	}
 	/*
 	 * 对不确定周期计算占比，以周占比作为比较对象
@@ -2786,7 +2802,10 @@ public class BanKuaiFengXi extends JDialog
 //		editorPanebkinfo.setText("");
 //		editorPanebkinfo.displayNodeAllInfo(selectedbk);
 //		editorPanenodeinfo.setText("");
+		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (false);
+		editorPanenodeinfo.displayAllNewsOfSpecificWeek (this.dateChooser.getLocalDate());
 		editorPanenodeinfo.displayNodeAllInfo(selectedbk);
+		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (true);
 	}
 	/*
 	 * 跑马灯
@@ -2926,6 +2945,7 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiFengXiNodeCombinedCategoryPnl pnlbkwkcjlzhanbi;
 	private JTabbedPane tabbedPanebkzb;
 	private JButton btnmoresetting;
+	private JMenuItem menuItemnonshowselectbkinfo;
 	
 	
 	private void initializeGui() {
@@ -3069,7 +3089,7 @@ public class BanKuaiFengXi extends JDialog
 		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
 		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
 //		panelbkwkcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelbkwkcjezhanbi.setAllowDrawAnnoation(true);
+		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
 		
 		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
 		
@@ -3391,7 +3411,7 @@ public class BanKuaiFengXi extends JDialog
 	
 			
 			tfldshowcje = new JTextField();
-			tfldshowcje.setText("2.8");
+			tfldshowcje.setText("2.18");
 			tfldshowcje.setForeground(Color.BLUE);
 			tfldshowcje.setColumns(10);
 //			this.setHighLightChenJiaoEr ();
@@ -3600,12 +3620,12 @@ public class BanKuaiFengXi extends JDialog
 			buttonPane.setLayout(gl_buttonPane);
 		}
 		
-		hideUselessTableColumns ();
+		reFormatGui ();
 	}
 	/*
 	 * 个股表里的板块占比MAX暂时不用，先隐藏
 	 */
-	private void hideUselessTableColumns ()
+	private void reFormatGui ()
 	{
 //		tableGuGuZhanBiInBk.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
 //		tableGuGuZhanBiInBk.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
@@ -3666,6 +3686,11 @@ public class BanKuaiFengXi extends JDialog
        
        menuItemnonfixperiod = new JMenuItem("不定周期DPM??WK");
        tableGuGuZhanBiInBk.getPopupMenu().add(menuItemnonfixperiod);
+       
+       menuItemnonshowselectbkinfo = new JMenuItem("同时计算选定周分析数据");
+       panelbkwkcjezhanbi.addMenuItem (menuItemnonshowselectbkinfo,null);
+       
+       
        
 	}
 	/*

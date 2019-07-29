@@ -74,7 +74,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		barchartdataset.clear();
 		
 		super.setCurDisplayNode(node,period );
-		super.globeperiod = period;
+//		super.globeperiod = period;
 //		BanKuaiFengXiCategoryBarRenderer render = (BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer();
 //		render.setDisplayNode(node);
 		

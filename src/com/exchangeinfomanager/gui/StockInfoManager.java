@@ -43,7 +43,7 @@ import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
-import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxRenderer;
+import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxNodeRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JTextArea;
@@ -274,7 +274,8 @@ public class StockInfoManager
 			
 		}
 		
-		((JStockComboBoxRenderer)cBxstockcode.getRenderer()).setChiCangGeGuList(new HashSet<String> (tmpchicangname));
+//		((JStockComboBoxRenderer)cBxstockcode.getRenderer()).setChiCangGeGuList(new HashSet<String> (tmpchicangname));
+		((JStockComboBoxNodeRenderer)cBxstockcode.getRenderer()).setChiCangGeGuList(new HashSet<String> (tmpchicangname));
 	}
 	private void initializePaoMaDeng() 
 	{

@@ -762,7 +762,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		return minweek;
 	}
 	/*
-	 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率，板块和个股都是相对于大盘
+	 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率，
 	 */
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (TDXNodes superbk, LocalDate requireddate,int difference) 
 	{
@@ -783,11 +783,11 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		try{
 			lastcjlrecord = nodeamo.getDataItem( index - 1);
 		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-			logger.debug("index = 0，无法判断");
-			return 100.0;
+			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
+//			return 100.0; //一般不会查到记录的第一周，多数发生这种情况是新股第一周，所以默认为新股第一周
 //			e.printStackTrace();
 		}
-		if(lastcjlrecord == null) { //休市前还是空，说明是停牌后复牌了
+		if(lastcjlrecord == null) { //说明是停牌后复牌了，或者新股
 			try {
 			Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
 			return curggcje/bkcjediff;

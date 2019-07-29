@@ -111,7 +111,18 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	{
 		return this.curdisplayednode;
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.nodes.TDXNodes, java.time.LocalDate, java.time.LocalDate, java.lang.String)
+	 */
+	public void addMenuItem (JMenuItem menuitem,String position)
+	{
+		if(position == null) {
+			cjezblargepnl.getPopupMenu().add(menuitem);
+//			cjelargepnl.getPopupMenu().add(menuitem);
+			
+		}
+	}
 
 	@Override
 	public void updatedDate(TDXNodes node, LocalDate startdate,LocalDate enddate,String period) 

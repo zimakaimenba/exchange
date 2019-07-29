@@ -30,10 +30,13 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	  }
 	  public Object getElementAt(int index) 
 	  {
-		  String nodecode = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) nodelist.get(index)).getMyOwnCode();
-		  String nodename = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) nodelist.get(index)).getMyOwnName();
-	      
-		  return nodecode + nodename;
+//		  String nodecode = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) nodelist.get(index)).getMyOwnCode();
+//		  String nodename = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) nodelist.get(index)).getMyOwnName();
+//	      
+//		  return nodecode + nodename;
+		  
+		  com.exchangeinfomanager.nodes.BkChanYeLianTreeNode selected =  (com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) (nodelist.get(index));
+		  return selected;
 	  }
 
 	  public int getSize() 
@@ -48,13 +51,21 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	  {
 		  for(BkChanYeLianTreeNode tmpnode : nodelist) {
 			  String tmpnodecode = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnCode()
-					  				+ ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnName()
+//					  				+ ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnName()
 					  				;
-			  
-			  if( tmpnodecode.equals( anItem   )  ){
-				  selection = tmpnode;
-				  break;
+			  try {
+				  String itemcode = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) anItem).getMyOwnCode();
+				  if(tmpnodecode.equals(itemcode)) {
+					  selection = tmpnode;
+					  break;
+				  }
+			  } catch (java.lang.ClassCastException e) {
+				  if(tmpnodecode.equals(anItem.toString())) {
+					  selection = tmpnode;
+					  break;
+				  }
 			  }
+			  
 		  }
 		 
 		  this.fireIntervalAdded(this, nodelist.size(), nodelist.size());
@@ -65,6 +76,7 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	  public Object getSelectedItem() 
 	  {
 	    return selection; // to add the selection to the combo box
+	    
 	  }
 
 	public Integer hasTheNode(String nodecode) 

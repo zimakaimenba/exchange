@@ -94,7 +94,7 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		
 		for(BkChanYeLianTreeNode node : nodelist) {
 			super.setCurDisplayNode( (TDXNodes) node,period );
-			super.globeperiod = period;
+//			super.globeperiod = period;
 			NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(period);
 			
 			displayDataToGui (nodexdata,startdate,enddate,period);
