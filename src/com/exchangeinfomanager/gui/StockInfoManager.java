@@ -64,6 +64,10 @@ import com.toedter.calendar.JDateChooser;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -1183,6 +1187,18 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
+//				ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+//		        Map<String, Object> vars = new HashMap<String, Object>();
+//		        vars.put("x", 3);
+//		        vars.put("y", 2);
+//		        vars.put("z", 1);
+//		        try {
+//					System.out.println("result = "+engine.eval("(x > y && y > z) && z>x", new SimpleBindings(vars)));
+//				} catch (ScriptException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+		        
 				String dbfile = null;
 				switch (connectdb.getLocalDatabaseType().toLowerCase() ) {
 				case "mysql":    dbfile = "D:\\tools\\HeidiSQL\\heidisql.exe";

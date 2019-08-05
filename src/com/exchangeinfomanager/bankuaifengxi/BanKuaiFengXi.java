@@ -2220,9 +2220,14 @@ public class BanKuaiFengXi extends JDialog
 			findInputedNodeInTable (selectstock.getMyOwnCode());
 			hightlightSpecificSector (selectstock); //餅圖
 //			refreshGeGuFengXiResult (selectstock); //个股对板块的数据
+			
 			paneldayCandle.displayQueKou(true);
 			refreshKXianOfTDXNodeWithSuperBanKuai (selectstock, selectstock.getBanKuai() ); //个股对板块的K线
+			
 			refreshTDXGeGuZhanBi (selectstock.getStock()); //个股对大盘数据
+			//同步板块和个股高亮的日期
+			LocalDate curselecteddate = panelbkwkcjezhanbi.getCurSelectedDate();
+			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(curselecteddate));
 			
 			displayStockCurrentFxResult (selectedGeguTable);
 			
@@ -2489,9 +2494,9 @@ public class BanKuaiFengXi extends JDialog
 	private ExportCondition setExportMainConditionBasedOnUserSelection (ExportCondition expc)
 	{
 		if(ckbxma.isSelected() ) {
-			expc.setSettingMA(tfldweight.getText());
+			expc.setSettingMAFormula(tfldweight.getText());
 		} else
-			expc.setSettingMA(null);
+			expc.setSettingMAFormula(null);
 	
 		if(ckbxcjemaxwk.isSelected() ) {
 //			cjemaxwk = Integer.parseInt(tfldcjemaxwk.getText() );
@@ -2659,12 +2664,14 @@ public class BanKuaiFengXi extends JDialog
 					 localDate = LocalDate.parse(filenamedate, formatter);
 					 int exchangeresult = JOptionPane.showConfirmDialog(null,"文件指定日期是" + localDate + "。是否更改到该日期？", "是否更改日期？", JOptionPane.OK_CANCEL_OPTION);
 					 if(exchangeresult != JOptionPane.CANCEL_OPTION) {
-						 LocalDate curselectdate = dateChooser.getLocalDate();
+						 	LocalDate curselectdate = dateChooser.getLocalDate();
 							if(!curselectdate.equals(localDate) ) {
 								ZoneId zone = ZoneId.systemDefault();
 								Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
 								this.dateChooser.setDate(Date.from(instant));
 							}
+					 } else { //用户可以作为本周文件
+						 localDate = dateChooser.getLocalDate();
 					 }
 			} catch (java.time.format.DateTimeParseException e) {
 					tfldparsedfile.setText("文件名未标明日期，作为本周文件处理！");
@@ -3395,16 +3402,18 @@ public class BanKuaiFengXi extends JDialog
 				cancelButton.setActionCommand("Cancel");
 			}
 			
-			ckbxma = new JCheckBox("\u7A81\u51FA>=MA");
+			ckbxma = new JCheckBox("\u7A81\u51FAMA");
+			ckbxma.setSelected(true);
 			ckbxma.setForeground(new Color(0,153,153) );
 			
 			
 			tfldweight = new JTextField();
 			tfldweight.setForeground(new Color(0,153,153) );
-			tfldweight.setText("250");
+			tfldweight.setText(">=250");
 			tfldweight.setColumns(10);
 			
 			ckboxshowcje = new JCheckBox("\u7A81\u51FA\u6210\u4EA4\u989D\u533A\u95F4(\u4EBF)");
+			ckboxshowcje.setSelected(true);
 			ckboxshowcje.setBackground(Color.LIGHT_GRAY);
 			ckboxshowcje.setForeground(Color.YELLOW);
 			
@@ -3535,12 +3544,12 @@ public class BanKuaiFengXi extends JDialog
 						.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(progressBarExport, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)
-						.addGap(51)
+						.addGap(18)
 						.addComponent(btnmoresetting, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(ckbxma)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, 54, GroupLayout.PREFERRED_SIZE)
 						.addGap(18)
 						.addComponent(ckboxshowcje)
 						.addPreferredGap(ComponentPlacement.RELATED)
@@ -3585,37 +3594,41 @@ public class BanKuaiFengXi extends JDialog
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
 						.addContainerGap()
-						.addGroup(gl_buttonPane.createParallelGroup(Alignment.TRAILING)
-							.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
-								.addComponent(okButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
 							.addGroup(gl_buttonPane.createSequentialGroup()
-								.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
-									.addComponent(ckbxhuanshoulv)
-									.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-										.addComponent(tfldhuanshoulv, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(ckboxparsefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(chbxquekou))
-									.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
-										.addComponent(ckbxma, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(ckboxshowcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(tfldshowcje, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(ckbxdpmaxwk, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(tflddisplaydpmaxwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(chkliutongsz)
-										.addComponent(tfldltszmin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(ckbxcjemaxwk)
-										.addComponent(tfldcjemaxwk, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-										.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-										.addComponent(tfldshowcjemax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(tfldltszmax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-										.addComponent(chckbxdpminwk)
-										.addComponent(tflddpminwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnmoresetting)
-										.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-									.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap())))
+								.addGap(6)
+								.addComponent(btnmoresetting)
+								.addContainerGap())
+							.addGroup(gl_buttonPane.createParallelGroup(Alignment.TRAILING)
+								.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
+									.addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+									.addComponent(okButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+								.addGroup(gl_buttonPane.createSequentialGroup()
+									.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
+										.addComponent(ckbxhuanshoulv)
+										.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
+											.addComponent(tfldhuanshoulv, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(ckboxparsefile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+											.addComponent(chbxquekou))
+										.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
+											.addComponent(ckboxshowcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+											.addComponent(tfldshowcje, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(ckbxdpmaxwk, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+											.addComponent(tflddisplaydpmaxwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(chkliutongsz)
+											.addComponent(tfldltszmin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(ckbxcjemaxwk)
+											.addComponent(tfldcjemaxwk, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+											.addComponent(tfldparsedfile, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+											.addComponent(tfldshowcjemax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(tfldltszmax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(progressBarExport, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+											.addComponent(chckbxdpminwk)
+											.addComponent(tflddpminwk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(tfldweight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(ckbxma, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addComponent(btnaddexportcond, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+									.addContainerGap()))))
 			);
 			buttonPane.setLayout(gl_buttonPane);
 		}

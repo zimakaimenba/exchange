@@ -2398,15 +2398,30 @@ public class BanKuaiDbOperation
 	}
 	/*
 	 * 在用户导入成交量后，要更新板块的类型，// 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据
+	 * 每周做一次就可以，否则太耗时间
 	 */
 	public void refreshTDXSystemBanKuaiLeiXing () 
 	{
-		 ArrayList<BanKuai> curallbk = this.getTDXBanKuaiList("all");
-
+		ArrayList<BanKuai> curallbk = this.getTDXBanKuaiList("all");
+		 
 		for ( BanKuai bankuai : curallbk) {
 
-		    String bkcode = bankuai.getMyOwnCode();
-		    String bkcys = bankuai.getSuoShuJiaoYiSuo();
+
+		    String leixing = bankuai.getBanKuaiLeiXing();
+		    if(leixing != null && leixing.equals(BanKuai.HASGGWITHSELFCJL) ) { //最完整的板块类型，不用在更新了
+		    	continue;
+		    }
+		    
+		    if(leixing != null && (leixing.equals(BanKuai.HASGGNOSELFCJL) ||  leixing.equals(BanKuai.NOGGWITHSELFCJL) || leixing.equals(BanKuai.NOGGNOSELFCJL) ) ) {
+		    	DayOfWeek dayofweek = LocalDate.now().getDayOfWeek();
+				if(!dayofweek.equals(DayOfWeek.FRIDAY) && !dayofweek.equals(DayOfWeek.SATURDAY) && !dayofweek.equals(DayOfWeek.SUNDAY) ) { //对这些板块一周检查一次就可以
+					continue ;
+				}
+		    }
+		    
+		    //只有新板块，就是板块类型为NULL的每天要升级 
+			 String bkcode = bankuai.getMyOwnCode();
+			 String bkcys = bankuai.getSuoShuJiaoYiSuo();
 //		    if(bkcode.equals("880704"))
 //		    	logger.debug("time to debug");
 		    

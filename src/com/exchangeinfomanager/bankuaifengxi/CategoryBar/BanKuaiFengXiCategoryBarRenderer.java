@@ -51,7 +51,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
     protected int shouldcolumnlast = -2;
     protected int displayedmaxwklevel ;
     protected int displayedminwklevel ;
-    private String barCharType;
+//    private String barCharType;
 	protected TDXNodes node;
 	protected CategoryDataset chartdataset;
 	protected NodeXPeriodDataBasic nodexdata;
@@ -79,6 +79,11 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 		}
 		
     }
+	public void resetBarColumnShouldChangeColor ()
+	{
+		this.shouldcolumn = -1;
+	    this.shouldcolumnlast = -2;
+	}
 	/*
 	 * 
 	 */

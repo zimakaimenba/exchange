@@ -26,6 +26,7 @@ class ExtraExportConditions extends JPanel
 	private JCheckBox chkbxzhbiup;
 	private JLabel lblNewLabel_2;
 	private JLabel label_2;
+	private JCheckBox chckbxexportyangxiangegu;
 
 	/**
 	 * Create the panel.
@@ -166,28 +167,41 @@ class ExtraExportConditions extends JPanel
 		chkbxzhbiup.setEnabled(false);
 		
 		chkbxonlystock = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\u7684\u4E2A\u80A1\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757");
-		setLayout(new MigLayout("", "[205px][48px][17px][8px][54px][20px][10px][8px][26px][36px]", "[23px][23px][23px][23px][][23px][23px][][23px]"));
+		setLayout(new MigLayout("", "[205px][48px][17px][8px][54px][20px][10px][8px][26px][36px]", "[23px][23px][23px][23px][][][23px][23px][][23px]"));
 		add(chkbxexportallbk, "cell 0 0,alignx left,aligny top");
 		add(cbxOnlyCurBk, "cell 0 1,alignx left,aligny top");
 		add(chkbxzhbiup, "cell 0 2 5 1,alignx left,aligny top");
 		add(chkbxonlystock, "cell 0 3,alignx left,aligny top");
 		
+		chckbxexportyangxiangegu = new JCheckBox("\u4EC5\u5BFC\u51FA\u5468\u7EBF\u9633\u7EBF\u4E2A\u80A1");
+		add(chckbxexportyangxiangegu, "cell 0 4");
+		
 		lblNewLabel_2 = new JLabel("-----------------------");
-		add(lblNewLabel_2, "cell 0 4");
-		add(cbxShiZhilevelyangxian, "cell 0 5,alignx left,aligny top");
-		add(tfldshizhilevelyangxian, "cell 1 5 2 1,growx,aligny center");
-		add(label, "cell 4 5,alignx left,aligny center");
-		add(tfldyangxian, "cell 6 5 3 1,growx,aligny center");
-		add(label_1, "cell 9 5,alignx center,aligny center");
-		add(chckbxshizhilevellianxu, "cell 0 6,alignx left,aligny top");
-		add(tfldshizhilevellianxu, "cell 1 6 2 1,growx,aligny top");
-		add(lblNewLabel, "cell 4 6 3 1,alignx left,aligny center");
-		add(tfldwkyangxian, "cell 8 6,growx,aligny top");
-		add(lblNewLabel_1, "cell 9 6,alignx left,aligny top");
+		add(lblNewLabel_2, "cell 0 5");
+		add(cbxShiZhilevelyangxian, "cell 0 6,alignx left,aligny top");
+		add(tfldshizhilevelyangxian, "cell 1 6 2 1,growx,aligny center");
+		add(label, "cell 4 6,alignx left,aligny center");
+		add(tfldyangxian, "cell 6 6 3 1,growx,aligny center");
+		add(label_1, "cell 9 6,alignx center,aligny center");
+		add(chckbxshizhilevellianxu, "cell 0 7,alignx left,aligny top");
+		add(tfldshizhilevellianxu, "cell 1 7 2 1,growx,aligny top");
+		add(lblNewLabel, "cell 4 7 3 1,alignx left,aligny center");
+		add(tfldwkyangxian, "cell 8 7,growx,aligny top");
+		add(lblNewLabel_1, "cell 9 7,alignx left,aligny top");
 		
 		label_2 = new JLabel("-----------------------");
-		add(label_2, "cell 0 7");
-		add(cbxExceptSt, "cell 0 8,alignx left,aligny top");
+		add(label_2, "cell 0 8");
+		add(cbxExceptSt, "cell 0 9,alignx left,aligny top");
+	}
+	/*
+	 * 
+	 */
+	public Boolean shouldOnlyExportStocksWithWkYangXian ()
+	{
+		if(chckbxexportyangxiangegu.isSelected())
+			return true;
+		else 
+			return false;
 	}
 	/*
 	 * 

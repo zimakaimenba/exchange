@@ -60,7 +60,8 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	private Boolean showhuibudownquekou;
 	private Integer cjezbdpminwk;
 
-	private Integer displayma;
+//	private Integer displayma;
+	private String displaymaformula;
 
 	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
@@ -358,18 +359,18 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 		{
 			return this.showhuibudownquekou;
 		}
-
-		public void setDisplayMA(Integer displaymanumber)
+		
+		public void setDisplayMAFormula(String displayma)
 		{
-			this.displayma = displaymanumber;
+			this.displaymaformula = displayma;
 			
 		}
-		public Integer getDisplayMA ()
+		public String getDisplayMAFormula ()
 		{
-			if(displayma != null)
-				return this.displayma;
+			if(displaymaformula != null)
+				return this.displaymaformula;
 			else
-				 return -1;
+				 return null;
 		}
 		
 

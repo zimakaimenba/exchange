@@ -115,7 +115,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 	}
 	
 	//Implement table header tool tips.
-	String[] jtableTitleStringsTooltips = { "代码", "名称(是否包含在分析文件)","高级排序排名(流通市值)",
+	String[] jtableTitleStringsTooltips = { "代码(周阳线阴线)", "名称(是否包含在分析文件)","高级排序排名(流通市值)",
 			"板块成交额贡献(跳空缺口)","大盘CJEZB增长率(成交额区间)","CJEDpMaxWk(突出DPMAXWK)","大盘CJLZB增长率(大于指定均线)","CJLDpMaxWk(突出DPMAXWK)"};
     protected JTableHeader createDefaultTableHeader() 
     {
@@ -144,7 +144,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 		Double showltszmax = expc.getLiuTongShiZhiMax();
 		Double showltszmin = expc.getLiuTongShiZhiMin();
 		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
-		Integer displaymanumber = expc.getSettingMA();
+		String displayma = expc.getSettingMAFormula();
 		
 		
 //			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
@@ -154,7 +154,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
 			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
 			((BanKuaiGeGuTableModel)this.getModel()).setHighLightHuiBuDownQueKou(showhuibudownquekou);
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayMA(displaymanumber);
+			((BanKuaiGeGuTableModel)this.getModel()).setDisplayMAFormula(displayma);
 		
 		this.repaint();
 		

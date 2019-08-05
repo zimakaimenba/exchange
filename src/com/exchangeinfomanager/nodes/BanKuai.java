@@ -135,7 +135,8 @@ public class BanKuai extends TDXNodes
 	public void setBanKuaiLeiXing (String leixing)
 	{
 		if(leixing == null)
-			this.bankuaileixing = this.NOGGNOSELFCJL;
+			this.bankuaileixing = null;
+//			this.bankuaileixing = this.NOGGNOSELFCJL;
 		else
 		if(leixing.equals(this.HASGGNOSELFCJL) || leixing.equals(this.HASGGWITHSELFCJL) || leixing.equals(this.NOGGWITHSELFCJL) || leixing.equals(this.NOGGNOSELFCJL) ) {
 			this.bankuaileixing = leixing;

@@ -105,14 +105,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		sysconfig = SystemConfigration.getInstance();
 		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
 	}
-	
+
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
 	private TDXNodes curdisplayednode;	
 	protected String globeperiod = "WEEK";
 	protected int shoulddisplayedmonthnum;
 	private String rowKey;
 	private Boolean allowdrawannoation;
-	
 	
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
@@ -127,7 +126,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public static final String SELECTED_PROPERTY = "selected";
 	public static final String MOUSEDOUBLECLICK_PROPERTY = "mousedoubleclick";
 	protected boolean selectchanged;
-	private String tooltipselected;
+//	private String tooltipselected;
 	protected LocalDate dateselected;
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
@@ -147,6 +146,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			return false;
 		else
 			return this.allowdrawannoation ;
+	}
+	/*
+	 * 
+	 */
+	public LocalDate getCurSelectedDate ()
+	{
+		return this.dateselected;
 	}
 	/*
 	 * 
@@ -298,6 +304,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		
 		this.chartPanel.removeAll();
 		
+		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer(0)).resetBarColumnShouldChangeColor();
+		
 		this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰
 	}
 	
@@ -392,6 +400,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     {
     	if(selecteddate == null)
     		return;
+//    	this.dateselected = null;
     	
     	int indexforbar = this.barchartdataset.getColumnIndex(selecteddate) ;
     	if(indexforbar != -1)

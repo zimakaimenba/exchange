@@ -1,5 +1,14 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -38,9 +47,13 @@ public class ExportCondition
 
 	private Integer settindpgminwk;
 
-	private Integer settingma;
+//	private Integer settingma;
+	private String settingmaformula;
 	
-	public Boolean checkTDXNodeMatchedCurConditons (TDXNodes node, String period)
+	/*
+	 * 
+	 */
+	public Boolean checkTDXNodeMatchedCurSettingConditons (TDXNodes node, String period)
 	{
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
 			if ( this.shouldOnlyExportStocksNotBanKuai() )
@@ -54,6 +67,9 @@ public class ExportCondition
 			
 		return null;
 	}
+	/*
+	 * 
+	 */
 	public ExtraExportConditions getExtraExportConditions ()
 	{
 		return this.extracon;
@@ -268,18 +284,45 @@ public class ExportCondition
 			this.settingcjemax = null;
 		
 	}
-	public void setSettingMA(String ma)
+	/*
+	 * 
+	 */
+	public void setSettingMAFormula (String maformula) //>250 && <60 &&>10
 	{
-		if(ma != null ) {
-			this.settingma = Integer.parseInt(ma);
-		} else
-			this.settingma = null;
-	}
-	public Integer getSettingMA()
-	{
-		return this.settingma;
+//		if( Pattern.matches("\\d{6}$",maformula)  || Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$",maformula) )
+//			return ;
+		maformula = maformula.replace(">", "x>");
+		maformula = maformula.replace("<", "x<");
+		this.settingmaformula = maformula;
 		
+//		ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+//        Map<String, Object> vars = new HashMap<String, Object>();
+//        vars.put("x", 3);
+//        vars.put("y", 2);
+//        vars.put("z", 1);
+//        try {
+//			System.out.println("result = "+engine.eval("(x > y && y > z) || x>z", new SimpleBindings(vars)));
+//		} catch (ScriptException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
+	public String getSettingMAFormula ()
+	{
+		return this.settingmaformula;
+	}
+//	public void setSettingMA(String ma)
+//	{
+//		if(ma != null ) {
+//			this.settingma = Integer.parseInt(ma);
+//		} else
+//			this.settingma = null;
+//	}
+//	public Integer getSettingMA()
+//	{
+//		return this.settingma;
+//		
+//	}
 	//ªª ÷¬ 
 	public Double getSettingHsl ()
 	{
@@ -351,7 +394,4 @@ public class ExportCondition
 	{
 		return extracon.shouldOnlyExportStocksNotBanKuai();
 	}
-	
-	
-	
 }

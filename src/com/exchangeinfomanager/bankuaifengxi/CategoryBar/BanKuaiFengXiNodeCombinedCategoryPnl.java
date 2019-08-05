@@ -103,7 +103,13 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
-	
+	/*
+	 * 
+	 */
+	public LocalDate getCurSelectedDate ()
+	{
+		return cjezblargepnl.getCurSelectedDate ();
+	}
 	/*
 	 * 
 	 */

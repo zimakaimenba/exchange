@@ -6,9 +6,15 @@ import java.awt.Font;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -182,27 +188,29 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    			background = Color.white ;
 		    	}
 	    } else if( col == 6   && value != null) { //突出MA,默认为大于
-	    	Integer displayma = tablemodel.getDisplayMA();
-	    	if (displayma == -1) 
+	    	String displayma = tablemodel.getDisplayMAFormula();
+	    	if (displayma == null) 
 	    		background = Color.white ;
 	    	else {
 	    		LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
-	    		TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period); //目前用周线数据，因为日线数据比较复杂 ，用户选择的日子可能不是交易日，可能是停牌日，换算负责 //TDXNodeGivenPeriodDataItem.DAY
+	    		TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period); //目前用周线数据，因为日线数据比较复杂 ，用户选择的日子可能不是交易日，可能是停牌日，换算复杂 //TDXNodeGivenPeriodDataItem.DAY
 	    		OHLCItem ohlcdata = nodexdata.getSpecificDateOHLCData(requireddate, 0);
 	    		if(ohlcdata != null) { //没有停牌
 	    			Double close = (Double)ohlcdata.getCloseValue(); 
 	    			
 				    Double[] maresult = nodexdata.getNodeOhlcMA(requireddate, 0);
-				    Double madisplayed = 100000.0;
-				    if(displayma == 250) //日线250对应周线60
-				    	madisplayed = maresult[4];
-				    else if(displayma == 120) //日线250对应周线60
-				    	madisplayed = maresult[3];
-				    else if(displayma == 60) //日线250对应周线60
-				    	madisplayed = maresult[1];
 				    
-				    if( madisplayed != null && close >= madisplayed  )
+				    Boolean result = checkCloseComparingToMAsettings (close,maresult,displayma);
+//				    Double madisplayed = 100000.0;
+//				    if(displayma == 250) //日线250对应周线60
+//				    	madisplayed = maresult[4];
+//				    else if(displayma == 120) //日线250对应周线60
+//				    	madisplayed = maresult[3];
+//				    else if(displayma == 60) //日线250对应周线60
+//				    	madisplayed = maresult[1];
+				    
+				    if( result != null && result)
 				    	background = new Color(0,153,153) ;
 		    		else
 		    			background = Color.white ;
@@ -215,10 +223,48 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
     	comp.setForeground(foreground);
     	
 	    if(table.isRowSelected(row) && col == 0 ) {
-	    	comp.setBackground(Color.blue);
+	    	LocalDate requireddate = tablemodel.getShowCurDate();
+		    String period = tablemodel.getCurDisplayPeriod();
+		    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);
+		    OHLCItem ohlcdata = nodexdata.getSpecificDateOHLCData(requireddate, 0);
+		    double open = ohlcdata.getOpenValue();
+		    double close = ohlcdata.getCloseValue();
+		    if(close >= open)
+		    	comp.setBackground(Color.RED);
+		    else
+		    	comp.setBackground(Color.GREEN);
 	    }
 	    
 	    return comp;
+	}
+	
+	private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula)
+	{
+		
+		if(maformula.contains("250") )//日线250对应周线60
+			maformula = maformula.replace("250",  maresult[4].toString() ) ;
+	    if(maformula.contains("120") )//日线250对应周线60
+	    	maformula = maformula.replace("120",  maresult[3].toString() ) ;
+	    if(maformula.contains("60") ) //日线250对应周线60
+	    	maformula = maformula.replace("60",  maresult[1].toString() ) ;
+		
+		
+		ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+	      Map<String, Object> vars = new HashMap<String, Object>();
+	      vars.put("x", close);
+//	      vars.put("y", 2);
+//	      vars.put("z", 1);
+      try {
+    	  Boolean result = (Boolean)engine.eval(maformula, new SimpleBindings(vars));
+		  System.out.println("result = "+ result);
+		  return result;
+		} catch (ScriptException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+      
+
 	}
 	
 }
