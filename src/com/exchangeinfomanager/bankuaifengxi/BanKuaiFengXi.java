@@ -3408,6 +3408,7 @@ public class BanKuaiFengXi extends JDialog
 			
 			
 			tfldweight = new JTextField();
+			tfldweight.setToolTipText("\u4F8B\uFF1A(>=250 && <60) || >30");
 			tfldweight.setForeground(new Color(0,153,153) );
 			tfldweight.setText(">=250");
 			tfldweight.setColumns(10);

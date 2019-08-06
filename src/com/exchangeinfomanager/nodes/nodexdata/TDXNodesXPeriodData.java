@@ -1037,7 +1037,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 	 {
 		 Integer junxiancanshu[] = null ;
 		 if(this.nodeperiodtype.equals(TDXNodeGivenPeriodDataItem.WEEK) ) 
-			 junxiancanshu = new Integer[]{1,2,4,6,12,24,55};
+			 junxiancanshu = new Integer[]{5,10,20,30,60,120,250};
 		 else if(this.nodeperiodtype.equals( TDXNodeGivenPeriodDataItem.DAY ) )
 			 junxiancanshu = new Integer[]{5,10,20,30,60,120,250};
 		 

@@ -289,40 +289,40 @@ public class ExportCondition
 	 */
 	public void setSettingMAFormula (String maformula) //>250 && <60 &&>10
 	{
+		if(maformula == null ) {
+			this.settingmaformula = maformula;
+			return;
+		}
+			
+		//应该有正则表达式检查，现在不做
 //		if( Pattern.matches("\\d{6}$",maformula)  || Pattern.matches("\\d{6}[\u4E00-\u9FA5A-Za-z0-9_]+$",maformula) )
 //			return ;
+		
 		maformula = maformula.replace(">", "x>");
 		maformula = maformula.replace("<", "x<");
+		
+		if(maformula.contains(">250") || maformula.contains(">=250") || maformula.contains("<250") )//日线250对应周线60
+			maformula = maformula.replace("250", "\'250\'"  ) ;
+	    if(maformula.contains(">120") || maformula.contains(">=120") || maformula.contains("<120") )//日线250对应周线60
+	    	maformula = maformula.replace("120", "\'120\'" ) ;
+	    if(maformula.contains(">60") || maformula.contains(">=60") || maformula.contains("<60") ) //日线250对应周线60
+	    	maformula = maformula.replace("60", "\'60\'"   ) ;
+	    if(maformula.contains(">30") || maformula.contains(">=30") || maformula.contains("<30") ) //日线250对应周线60
+	    	maformula = maformula.replace("30", "\'30\'"  ) ;
+	    if(maformula.contains(">20") || maformula.contains(">=20") || maformula.contains("<20") ) //日线250对应周线60
+	    	maformula = maformula.replace("20", "\'20\'"  ) ;
+	    if(maformula.contains(">10") || maformula.contains(">=10") || maformula.contains("<10") ) //日线250对应周线60
+	    	maformula = maformula.replace("10", "\'10\'"  ) ;
+	    if(maformula.contains(">5") || maformula.contains(">=5") || maformula.contains("<5") ) //日线250对应周线60
+	    	maformula = maformula.replace("5","\'5\'"   ) ;
+		
 		this.settingmaformula = maformula;
 		
-//		ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
-//        Map<String, Object> vars = new HashMap<String, Object>();
-//        vars.put("x", 3);
-//        vars.put("y", 2);
-//        vars.put("z", 1);
-//        try {
-//			System.out.println("result = "+engine.eval("(x > y && y > z) || x>z", new SimpleBindings(vars)));
-//		} catch (ScriptException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 	public String getSettingMAFormula ()
 	{
 		return this.settingmaformula;
 	}
-//	public void setSettingMA(String ma)
-//	{
-//		if(ma != null ) {
-//			this.settingma = Integer.parseInt(ma);
-//		} else
-//			this.settingma = null;
-//	}
-//	public Integer getSettingMA()
-//	{
-//		return this.settingma;
-//		
-//	}
 	//换手率
 	public Double getSettingHsl ()
 	{
