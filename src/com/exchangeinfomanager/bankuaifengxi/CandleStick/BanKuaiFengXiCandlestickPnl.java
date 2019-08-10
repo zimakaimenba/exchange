@@ -31,9 +31,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
@@ -158,6 +160,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	private JMenuItem mntmzhishu;
 	private boolean displayhuibuquekou;
 	private JMenuItem mntmguanjiandate;
+	
+//	private HashMap<LocalDate, String> zhishuguanjianriqi; //指数关键日期
+	private List<ValueMarker> categorymarkerlist; //指数关键日期的marker
 
 	public TDXNodes getCurDisplayedNode ()
 	{
@@ -192,6 +197,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		this.globeperiod = period;
 		setNodeCandleStickDate ( node,  startdate,  enddate, period , 0);
 		
+//		displayZhiShuGuanJianRiQi ();
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
 			displayQueKouToChart ();
 		
@@ -199,7 +205,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			setPanelTitle ( node, startdate, enddate);
 		else
 			setPanelTitle ( node,  enddate,startdate);
+		
+		candlestickChart.setNotify(true);
 	}
+	/*
+	 * 
+	 */
+	
 	/*
 	 * node和上级板块同时显示
 	 */
@@ -215,6 +227,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		setNodeCandleStickDate ( node,  requirestart,  requireend, period , 0);
 		setNodeCandleStickDate ( superbk,  requirestart,  requireend, period , 1);
 		
+
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
 			displayQueKouToChart ();
 		
@@ -223,11 +236,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	/*
 	 * 
 	 */
-	public void chongdieZhiShu (TDXNodes superzhishu, String period)
-	{
-		//计算当前node显示的时间范围
-		RegularTimePeriod ohlcdate = ( (OHLCItem)ohlcSeries.getDataItem(0) ).getPeriod();
-	}
+//	public void chongdieZhiShu (TDXNodes superzhishu, String period)
+//	{
+//		//计算当前node显示的时间范围
+//		RegularTimePeriod ohlcdate = ( (OHLCItem)ohlcSeries.getDataItem(0) ).getPeriod();
+//	}
 	/*
 	 * 个股和板块的K线可以重叠显示 
 	 */
@@ -428,6 +441,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
 				candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
 	        } catch (java.lang.NullPointerException e) {
+	        	e.printStackTrace();
 	        }
 	        
 	        try {
@@ -443,8 +457,32 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
 				candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
 	        } catch (java.lang.NullPointerException e) {
+	        	e.printStackTrace();
 	        }
-			
+	        
+//	        try{
+//		        double millisonemonth = qkhbday.getFirstMillisecond();
+//		        ValueMarker marker = new  ValueMarker(millisonemonth);  // position is the value on the axis
+//				marker.setPaint(Color.YELLOW);
+//				float[] dashPattern = { 6, 2 };
+//				marker.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
+//				marker.setAlpha(0.5f);
+//				marker.setLabelAnchor(RectangleAnchor.TOP);
+//				marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
+//				marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
+//				marker.setLabel( "testestesttestest" ); // see JavaDoc for labels, colors, strokes
+//				marker.setLabelPaint(Color.YELLOW);
+//	//			candlestickChart.getXYPlot().addDomainMarker(marker,Layer.FOREGROUND);
+//				candlestickChart.getXYPlot().addDomainMarker(marker);
+//				
+//				categorymarkerlist.add(marker);
+//				
+//				
+//	    } catch (java.lang.NullPointerException e) {
+//	        	e.printStackTrace();
+//	    }
+	        
+	 
 		}
 		
 		 ohlcSeries.setNotify(true);
@@ -485,47 +523,56 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		this.candlestickChart.getXYPlot().addRangeMarker(1, marker,Layer.BACKGROUND);
 	}
 	/*
-	 * 
+	 * 指数关键日期
 	 */
-	public void updateZhiShuKeyDates(Collection<InsertedMeeting> zhishukeylists) 
-	{
-		java.sql.Date sqlqkdate = null;
-		try {
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-			 sqlqkdate = new java.sql.Date(format.parse("2019-02-26".toString()).getTime());
-		} catch (ParseException e) {
-			e.printStackTrace();
+	public void updateZhiShuKeyDates( Collection<InsertedMeeting> zhishukeylists ) 
+	{     
+		 ohlcSeries.setNotify(true);
+	     candlestickDataset.setNotify(true);
+	     candlestickChart.setNotify(true);
+	     ohlcSeries.setNotify(true);
+	     candlestickDataset.setNotify(true);
+	     candlestickChart.setNotify(true);
+	     
+		for (InsertedMeeting tmpmeeting: zhishukeylists ) {
+			LocalDate zhishudate = tmpmeeting.getStart();
+			if(zhishudate.isBefore(this.getDispalyStartDate()) || zhishudate.isAfter(this.getDispalyEndDate() ))
+				continue;
+			
+			java.sql.Date sqlqkhbdate = null;
+			try {
+				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+				 sqlqkhbdate = new java.sql.Date(format.parse(zhishudate.toString()).getTime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			org.jfree.data.time.Day qkhbday = new org.jfree.data.time.Day (sqlqkhbdate);
+			
+		    try{
+			        double millisonemonth = qkhbday.getFirstMillisecond();
+			        ValueMarker marker = new  ValueMarker(millisonemonth);  // position is the value on the axis
+					marker.setPaint(Color.CYAN.brighter());
+					float[] dashPattern = { 6, 2 };
+					marker.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
+					marker.setAlpha(0.5f);
+					marker.setLabelAnchor(RectangleAnchor.TOP);
+					marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
+					marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
+//					marker.setLabel( tmpmeeting.getDescription() ); // see JavaDoc for labels, colors, strokes
+					marker.setLabelPaint(Color.YELLOW);
+					
+					candlestickChart.getXYPlot().addDomainMarker(marker);
+					
+					categorymarkerlist.add(marker);
+					
+					
+		    } catch (java.lang.NullPointerException e) {
+		        	e.printStackTrace();
+		    } 
 		}
-		org.jfree.data.time.Day qkday = new org.jfree.data.time.Day (sqlqkdate);
-		
-		CategoryMarker marker = new CategoryMarker(qkday);  // position is the value on the axis
-		marker.setPaint(Color.MAGENTA);
-		marker.setAlpha(0.5f);
-		marker.setLabelAnchor(RectangleAnchor.TOP);
-		marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
-		marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
-//		marker.setLabel(String.valueOf(curyear)); // see JavaDoc for labels, colors, strokes
-		marker.setDrawAsLine(true);
-		this.candlestickChart.getXYPlot().addDomainMarker(marker,Layer.FOREGROUND);
-//		this.categorymarkerlist.add(marker);
-		
-      try {
-        double millisonemonth = qkday.getFirstMillisecond();
-        XYPointerAnnotation pointeronemonth = new XYPointerAnnotation(String.valueOf("test"), millisonemonth, 2998, 0 );
-        pointeronemonth.setBaseRadius(0.0);
-        pointeronemonth.setTipRadius(25.0);
-        pointeronemonth.setFont(new Font("SansSerif", Font.BOLD, 9));
-        pointeronemonth.setPaint(Color.CYAN);
-        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
-		candlestickChart.getXYPlot().addAnnotation(pointeronemonth);
-		
-		
-		setDaZiJinValueMarker (millisonemonth);
-    } catch (java.lang.NullPointerException e) {
-    }
-      
     
-		
+		candlestickChart.fireChartChanged();
+//		this.repaint();
 	}
 	/*
 	 * 显示某个阶段的最大最小值，现在不用了
@@ -824,6 +871,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		chartPanel.getPopupMenu().add(mntmbankuai);
 		chartPanel.getPopupMenu().add(mntmzhishu);
 		chartPanel.getPopupMenu().add(mntmguanjiandate);
+		
+		this.categorymarkerlist = new ArrayList<> ();
 			
 		this.add(chartPanel);
 	}
@@ -858,6 +907,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.getXYPlot().clearAnnotations();
 		
 		dapancandlestickDataset.removeAllSeries();
+		
+		for(ValueMarker marker : this.categorymarkerlist) {
+			candlestickChart.getXYPlot().removeDomainMarker(marker);
+		}
+		this.categorymarkerlist.clear();
 		
 		chartPanel.removeAll();
 		this.setPanelTitle(null, null, null);

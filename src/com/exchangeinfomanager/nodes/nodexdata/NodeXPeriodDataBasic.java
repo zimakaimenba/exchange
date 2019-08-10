@@ -133,6 +133,9 @@ public interface NodeXPeriodDataBasic
 	 * 
 	 */
 	public String getNodeXDataInHtml (TDXNodes superbk,LocalDate requireddate,int difference);
-	
+	/*
+	 * 
+	 */
+	public Boolean checkCloseComparingToMAFormula (String maformula, LocalDate requireddate, int difference);
 
 }

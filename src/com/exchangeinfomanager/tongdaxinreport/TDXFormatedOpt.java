@@ -59,12 +59,12 @@ public class TDXFormatedOpt {
 		return result;
 	}
 	
-	public static String formateToTDXWaiBuShuJuLine(String stockcode, String geguchanyelian)
+	private static String formateToTDXWaiBuShuJuLine(String stockcode, String geguchanyelian)
 	{
 		return TDXFormatedOpt.formateStockCodeForTDX(stockcode) + "  |  " + geguchanyelian +  " | " + "1.000" + System.getProperty("line.separator");
 	}
 	
-	public static String formateToTDXWaiBuShuJuLine(String bkcode, String geguchanyelian,String cysid)
+	private static  String formateToTDXWaiBuShuJuLine(String bkcode, String geguchanyelian,String cysid)
 	{
 		if(cysid.toLowerCase().equals("sh"))
 			return "1|"  +  bkcode.trim() + "  |  " + geguchanyelian +  " | " + "1.000" + System.getProperty("line.separator");
@@ -72,32 +72,142 @@ public class TDXFormatedOpt {
 			return "0|"  +  bkcode.trim() + "  |  " + geguchanyelian +  " | " + "1.000" + System.getProperty("line.separator");
 	}
 	/*
+	 * 
+	 */
+	public static Boolean parserZhiShuGuanJianRiQiToTDXCode ()
+	{
+		File tmpfilefoler = Files.createTempDir();
+		File tongdaxinfile = new File(tmpfilefoler + "指数关键日期.txt");
+		
+		ConnectDataBase connectdb = ConnectDataBase.getInstance();
+		
+		String sqlquerystat = "SELECT * FROM 指数关键日期表";
+		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+		try {
+			while (rs.next()) {
+				String zhishucode = rs.getString("代码").trim();
+				LocalDate date = rs.getDate("日期").toLocalDate();
+				String zhishushuoming = rs.getString("说明");
+				
+				String colorcode;
+				if(zhishucode.equals("999999")) 
+					colorcode = "COLOR80FFFF";
+				else if(zhishucode.equals("000016")) 
+					colorcode = "COLORFF8000";
+				else if(zhishucode.equals("399006")) 
+					colorcode = "COLORFF80FF";
+				else
+					colorcode = "COLOR80FFFF";
+				//DRAWSL(DATE = 1190506  ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF ; {2000亿加税}
+				String result = "DRAWSL(DATE =   " 
+								 + String.valueOf(Integer.parseInt(date.toString().replace("-", "") ) - 19000000)
+								 + "   ,CLOSE,10000,1000,2) LINETHICK1 " + colorcode + "; "
+								 + "{" + zhishucode + zhishushuoming + "}"
+								 ;
+				
+				
+				try {
+					Files.append( result + System.getProperty("line.separator") ,tongdaxinfile,charset);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}  finally {
+			    	if(rs != null)
+						try {
+							rs.close();
+							rs = null;
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+		}
+		
+		try {
+			String cmd = "rundll32 url.dll,FileProtocolHandler " + tongdaxinfile.getAbsolutePath();
+			Process p  = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+		} catch (Exception e1) 	{
+			e1.printStackTrace();
+		}
+		
+		return true;
+	}
+	/*
+	 * 
+	 */
+//	public static boolean parseZdgzBkToTDXCode(HashMap<String, ArrayList<GuanZhuBanKuaiInfo>> zdgzbkmap)
+//	{
+//		Iterator<String> bankuaidaleiname = zdgzbkmap.keySet().iterator();
+//
+//		File tmpfilefoler = Files.createTempDir();
+//		File tongdaxinfile = new File(tmpfilefoler + "通达信重点关注代码.txt");
+//	
+//		
+//		boolean runresult = false;
+//		try	{
+//			if(tongdaxinfile.exists())
+//			{
+//				tongdaxinfile.delete();
+//				tongdaxinfile.createNewFile();
+//			}
+//			else
+//				tongdaxinfile.createNewFile();
+//		} catch(Exception e) {	
+//			e.printStackTrace();
+//		}
+//			
+//			int nullsteps =0 ; //通达信代码中，有内容的板块在前，无内容的板块自动被注释
+//			while(bankuaidaleiname.hasNext())
+//			{
+//				String siglebkname = bankuaidaleiname.next().toString() ;
+//		   		ArrayList<GuanZhuBanKuaiInfo> tmpgzbklist = zdgzbkmap.get(siglebkname);
+//		   		String result = "";
+//		   		try {
+//			   		for(GuanZhuBanKuaiInfo tmpgz:tmpgzbklist) {
+//			   			if(tmpgz.isOfficallySelected() ) {
+//			   				String chanyelian =  tmpgz.getBkchanyelian();
+//			        		String seltime = tmpgz.getSelectedtime();
+//			        		result =  result + chanyelian + "(" + seltime +")" + "  |  ";
+//			   			}
+//		        	}
+//		   		} catch (Exception e) { 
+//		   			
+//		   		}
+//
+//        		try {
+//					Files.append( formatedWholeContents(nullsteps,"股票池"+siglebkname,result) + System.getProperty("line.separator") ,tongdaxinfile,charset);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//        		
+//        		if(!result.isEmpty()) {
+//        			nullsteps ++;
+//        		} 
+//			}
+//			runresult = true;
+//
+//			try {
+//				String cmd = "rundll32 url.dll,FileProtocolHandler " + tongdaxinfile.getAbsolutePath();
+//				Process p  = Runtime.getRuntime().exec(cmd);
+//				p.waitFor();
+//			} catch (Exception e1) 
+//			{
+//				e1.printStackTrace();
+//			}
+//		
+//		return runresult;
+//	}
+	/*
 	 *生成重点关注的通达信代码 
 	 */
 	public  static String getStockZdgzInfo()
 	{
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
-		SystemConfigration sysconfig = SystemConfigration.getInstance();
 		
-		 File filezdgz = new File( sysconfig.getTdxZdgzReportFile() );
-		 try {
-				if (filezdgz.exists()) {
-					filezdgz.delete();
-					filezdgz.createNewFile();
-				} else
-					filezdgz.createNewFile();
-		 } catch (java.io.IOException e) {
-			 filezdgz.getParentFile().mkdirs(); //目录不存在，先创建目录
-				try {
-					filezdgz.createNewFile();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				filezdgz.delete();
-				return null;
-			}
 		
 		Map<String,String> stockresult = new HashMap<String,String> ();
 		String sqlquerystat = "SELECT * FROM 股票通达信自定义板块对应表  WHERE 加入时间 > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) + 300 ) DAY ) ORDER BY 加入时间  DESC";
@@ -145,6 +255,27 @@ public class TDXFormatedOpt {
 						}
 		}
 		
+		SystemConfigration sysconfig = SystemConfigration.getInstance();
+		
+		 File filezdgz = new File( sysconfig.getTdxZdgzReportFile() );
+		 try {
+				if (filezdgz.exists()) {
+					filezdgz.delete();
+					filezdgz.createNewFile();
+				} else
+					filezdgz.createNewFile();
+		 } catch (java.io.IOException e) {
+			 filezdgz.getParentFile().mkdirs(); //目录不存在，先创建目录
+				try {
+					filezdgz.createNewFile();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				filezdgz.delete();
+				return null;
+			}
 
 		for (Map.Entry<String, String> entry : stockresult.entrySet()) {
 			String formatedstockcode = entry.getKey();
@@ -509,7 +640,7 @@ public class TDXFormatedOpt {
 						result = result + Strings.nullToEmpty("") + " " + rsbk.getString("券商评级提醒");
 					}
 				if(!Strings.isNullOrEmpty(result)  ) {
-					String lineformatedgainiantx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, result, "sh" );
+					String lineformatedgainiantx = formateToTDXWaiBuShuJuLine(formatedbkcode, result, "sh" );
 					try {
 						Files.append(lineformatedgainiantx,filegnts, charset);
 					} catch (IOException e) {

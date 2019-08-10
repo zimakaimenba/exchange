@@ -10,6 +10,10 @@ import javax.swing.JLabel;
 import net.miginfocom.swing.MigLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JComboBox;
 
 class ExtraExportConditions extends JPanel 
 {
@@ -27,7 +31,11 @@ class ExtraExportConditions extends JPanel
 	private JLabel lblNewLabel_2;
 	private JLabel label_2;
 	private JCheckBox chckbxexportyangxiangegu;
+	private JCheckBox chkbxexporbkallowedinsetting;
+	private JTextField tfldwkyingxiandayu;
+	private JLabel label_3;
 
+	private List<JCheckBox> huchixuanze; //互斥意味着其中一个选了，其他都不惜不选
 	/**
 	 * Create the panel.
 	 */
@@ -35,26 +43,42 @@ class ExtraExportConditions extends JPanel
 	{
 		initializeGui ();
 		
+		huchixuanze = new ArrayList<JCheckBox> ();
+		huchixuanze.add(cbxOnlyCurBk);
+		huchixuanze.add(chkbxexportallbk);
+		huchixuanze.add(chkbxzhbiup);
+		huchixuanze.add(chkbxexporbkallowedinsetting);
+		
 		createEvents ();
+		
+		
+	}
+	/*
+	 * 
+	 */
+	private void huchiOperationsForJCheckBox (JCheckBox selectedjchb)
+	{
+		for(JCheckBox tmpjchb : huchixuanze) {
+			if( !tmpjchb.getText().equals(selectedjchb.getText()) ) {
+				if(selectedjchb.isSelected()) {
+					tmpjchb.setSelected(false);
+					tmpjchb.setEnabled(false);
+				} else {
+					tmpjchb.setSelected(false);
+					tmpjchb.setEnabled(true);
+				}
+				
+			}
+				
+		}
 	}
 	private void createEvents() 
 	{
 		chkbxzhbiup.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if( chkbxzhbiup.isSelected() ) {
-					cbxOnlyCurBk.setSelected(false);
-					cbxOnlyCurBk.setEnabled(false);
-					
-					chkbxexportallbk.setSelected(false);
-					chkbxexportallbk.setEnabled(false);
-				} else {
-					cbxOnlyCurBk.setSelected(false);
-					cbxOnlyCurBk.setEnabled(true);
-					
-					chkbxexportallbk.setSelected(false);
-					chkbxexportallbk.setEnabled(true);
-				}
+				
+				huchiOperationsForJCheckBox (chkbxzhbiup);
 			}
 		});
 
@@ -62,23 +86,17 @@ class ExtraExportConditions extends JPanel
 		chkbxexportallbk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if( chkbxexportallbk.isSelected() ) {
-					cbxOnlyCurBk.setSelected(false);
-					cbxOnlyCurBk.setEnabled(false);
-					
-					chkbxzhbiup.setSelected(false);
-					chkbxzhbiup.setEnabled(false);
-				} else {
-					cbxOnlyCurBk.setSelected(false);
-					cbxOnlyCurBk.setEnabled(true);
-					
-					chkbxzhbiup.setSelected(false);
-					chkbxzhbiup.setEnabled(true);
-				}
+
+				huchiOperationsForJCheckBox (chkbxexportallbk);
 			}
 				
 		});
-		
+		chkbxexporbkallowedinsetting.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				huchiOperationsForJCheckBox (chkbxexporbkallowedinsetting);
+			}
+		});
 		cbxOnlyCurBk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -92,11 +110,7 @@ class ExtraExportConditions extends JPanel
 					tfldshizhilevellianxu.setEnabled(false);
 					tfldwkyangxian.setEnabled(false);
 					
-					chkbxexportallbk.setEnabled(false);
-					chkbxexportallbk.setSelected(false);
-					
-					chkbxzhbiup.setEnabled(false);
-					chkbxzhbiup.setSelected(false);
+
 				} else {
 					cbxShiZhilevelyangxian.setEnabled(true);
 					cbxShiZhilevelyangxian.setSelected(true);
@@ -107,12 +121,9 @@ class ExtraExportConditions extends JPanel
 					tfldshizhilevellianxu.setEnabled(true);
 					tfldwkyangxian.setEnabled(true);
 					
-					chkbxexportallbk.setEnabled(true);
-					chkbxexportallbk.setSelected(false);
-					
-					chkbxzhbiup.setEnabled(true);
-					chkbxzhbiup.setSelected(false);
 				}
+				
+				huchiOperationsForJCheckBox (cbxOnlyCurBk);
 			}
 		});
 		
@@ -122,8 +133,6 @@ class ExtraExportConditions extends JPanel
 	 */
 	private void initializeGui() 
 	{
-		cbxExceptSt = new JCheckBox("\u4E0D\u5BFC\u51FAST\u4E2A\u80A1");
-		cbxExceptSt.setSelected(true);
 		
 		cbxShiZhilevelyangxian = new JCheckBox("\u4EA4\u6613\u989D\u5C0F\u4E8E\u8BBE\u5B9A\u503C");
 		cbxShiZhilevelyangxian.setSelected(true);
@@ -167,42 +176,58 @@ class ExtraExportConditions extends JPanel
 		chkbxzhbiup.setEnabled(false);
 		
 		chkbxonlystock = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\u7684\u4E2A\u80A1\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757");
-		setLayout(new MigLayout("", "[205px][48px][17px][8px][54px][20px][10px][8px][26px][36px]", "[23px][23px][23px][23px][][][23px][23px][][23px]"));
+		setLayout(new MigLayout("", "[205px,grow][48px,grow][17px][8px][54px][20px][10px][8px][26px][36px]", "[23px][][23px][23px][23px][][][23px][23px][][][][23px]"));
 		add(chkbxexportallbk, "cell 0 0,alignx left,aligny top");
-		add(cbxOnlyCurBk, "cell 0 1,alignx left,aligny top");
-		add(chkbxzhbiup, "cell 0 2 5 1,alignx left,aligny top");
-		add(chkbxonlystock, "cell 0 3,alignx left,aligny top");
 		
-		chckbxexportyangxiangegu = new JCheckBox("\u4EC5\u5BFC\u51FA\u5468\u7EBF\u9633\u7EBF\u4E2A\u80A1");
-		add(chckbxexportyangxiangegu, "cell 0 4");
+		chkbxexporbkallowedinsetting = new JCheckBox("\u5BFC\u51FA\u677F\u5757\u8BBE\u7F6E\u5141\u8BB8\u7684\u677F\u5757");
+		chkbxexporbkallowedinsetting.setEnabled(false);
+		add(chkbxexporbkallowedinsetting, "cell 0 1");
+		add(cbxOnlyCurBk, "cell 0 2,alignx left,aligny top");
+		add(chkbxzhbiup, "cell 0 3 5 1,alignx left,aligny top");
+		add(chkbxonlystock, "cell 0 4,alignx left,aligny top");
 		
 		lblNewLabel_2 = new JLabel("-----------------------");
 		add(lblNewLabel_2, "cell 0 5");
-		add(cbxShiZhilevelyangxian, "cell 0 6,alignx left,aligny top");
-		add(tfldshizhilevelyangxian, "cell 1 6 2 1,growx,aligny center");
-		add(label, "cell 4 6,alignx left,aligny center");
-		add(tfldyangxian, "cell 6 6 3 1,growx,aligny center");
-		add(label_1, "cell 9 6,alignx center,aligny center");
-		add(chckbxshizhilevellianxu, "cell 0 7,alignx left,aligny top");
-		add(tfldshizhilevellianxu, "cell 1 7 2 1,growx,aligny top");
-		add(lblNewLabel, "cell 4 7 3 1,alignx left,aligny center");
-		add(tfldwkyangxian, "cell 8 7,growx,aligny top");
-		add(lblNewLabel_1, "cell 9 7,alignx left,aligny top");
+		
+		chckbxexportyangxiangegu = new JCheckBox("\u4EC5\u5BFC\u51FA\u4E2A\u80A1\u5468\u7EBF\u9633\u7EBF\u6216\u5468\u7EBF\u9634\u7EBF\u4E0D\u5927\u4E8E");
+		add(chckbxexportyangxiangegu, "cell 0 6");
+		
+		tfldwkyingxiandayu = new JTextField();
+		tfldwkyingxiandayu.setText("-1.9");
+		add(tfldwkyingxiandayu, "cell 1 6,growx");
+		tfldwkyingxiandayu.setColumns(10);
+		
+		label_3 = new JLabel("%");
+		add(label_3, "cell 4 6");
+		add(cbxShiZhilevelyangxian, "cell 0 7,alignx left,aligny top");
+		add(tfldshizhilevelyangxian, "cell 1 7 2 1,growx,aligny center");
+		add(label, "cell 4 7,alignx left,aligny center");
+		add(tfldyangxian, "cell 6 7 3 1,growx,aligny center");
+		add(label_1, "cell 9 7,alignx center,aligny center");
+		add(chckbxshizhilevellianxu, "cell 0 8,alignx left,aligny top");
+		add(tfldshizhilevellianxu, "cell 1 8 2 1,growx,aligny top");
+		add(lblNewLabel, "cell 4 8 3 1,alignx left,aligny center");
+		add(tfldwkyangxian, "cell 8 8,growx,aligny top");
+		add(lblNewLabel_1, "cell 9 8,alignx left,aligny top");
+		cbxExceptSt = new JCheckBox("\u4E0D\u5BFC\u51FAST\u4E2A\u80A1");
+		cbxExceptSt.setSelected(true);
+		add(cbxExceptSt, "cell 0 9,alignx left,aligny top");
 		
 		label_2 = new JLabel("-----------------------");
-		add(label_2, "cell 0 8");
-		add(cbxExceptSt, "cell 0 9,alignx left,aligny top");
+		add(label_2, "flowy,cell 0 10");
 	}
 	/*
 	 * 
 	 */
-	public Boolean shouldOnlyExportStocksWithWkYangXian ()
+	public Double shouldOnlyExportStocksWithWkYangXian ()
 	{
-		if(chckbxexportyangxiangegu.isSelected())
-			return true;
+		if(chckbxexportyangxiangegu.isSelected()) {
+			return Double.parseDouble( tfldwkyingxiandayu.getText() ) / 100;
+		}
 		else 
-			return false;
+			return null;
 	}
+	
 	/*
 	 * 
 	 */
@@ -299,5 +324,12 @@ class ExtraExportConditions extends JPanel
 		else
 			return 0;
 		
+	}
+	public Boolean shouldOnlyExportBanKuaiAllowedInSetting ()
+	{
+		if(this.chkbxexporbkallowedinsetting.isSelected() )
+			return true;
+		else
+			return false;
 	}
 }

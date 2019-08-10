@@ -521,7 +521,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public Stock getStockKXian (Stock stock,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-		NodeXPeriodDataBasic nodedayperioddata = stock.getNodeXPeroidData(period);
+		NodeXPeriodDataBasic nodedayperioddata = stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
 		if(nodedayperioddata.getKXxianRecordsStartDate() == null) {
 			stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (stock,requiredstartday,requiredendday,period);
 			return stock;

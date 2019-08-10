@@ -25,7 +25,7 @@
   </GuPiaoChi>
   <GuPiaoChi gpccode="GPC013" gpcname="国新政策" Type="8">
     <BanKuai bkcode="880454" bkname="水务" Type="4">
-      <gegu gegucode="600168" geguname="武汉控股" Type="7"/>
+      <gegu gegucode="600168" geguname="武汉控股" Type="6"/>
     </BanKuai>
   </GuPiaoChi>
   <GuPiaoChi gpccode="GPC003" gpcname="稳定白马" Type="8"/>

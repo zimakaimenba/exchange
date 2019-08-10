@@ -3759,7 +3759,7 @@ public class BanKuaiDbOperation
 	public Stock getStockDailyKXianZouShiFromCsv (Stock stock, LocalDate requiredstartday, LocalDate requiredendday, String period)
 	{
 		//确定需要读取的时间跨度和现有的跨度的差异值，以免重复读取已经有的数据，节约时间
-		NodeXPeriodDataBasic nodedayperioddata = stock.getNodeXPeroidData(period);
+		NodeXPeriodDataBasic nodedayperioddata = stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
 		
 		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
 		requiredstartday = requiredstartday.with(fieldCH, 1); //确保K线总是显示完整得一周

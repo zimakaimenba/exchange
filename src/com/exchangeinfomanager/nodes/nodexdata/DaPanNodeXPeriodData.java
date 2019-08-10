@@ -279,6 +279,12 @@ public class DaPanNodeXPeriodData implements NodeXPeriodDataBasic
 		return null;
 	}
 
+	@Override
+	public Boolean checkCloseComparingToMAFormula(String maformula, LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 //	@Override
 //	public void addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem kdata) {
 //		// TODO Auto-generated method stub

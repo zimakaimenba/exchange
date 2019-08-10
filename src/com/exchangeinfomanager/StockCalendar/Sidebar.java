@@ -14,6 +14,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
+import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.toedter.calendar.JCalendar;
 
 
@@ -58,6 +59,7 @@ public class Sidebar extends View implements CacheListener {
         this.labels = JPanelFactory.createPanel();
         this.createLabel = JLabelFactory.createButton("New label");
         this.createMilestoneDateForZhiShu = JLabelFactory.createButton("指数关键日期");
+        this.createMilestoneDateForZhiShu.setToolTipText("点击右键生产指数关键日期通达信代码");
         this.colorButton = JLabelFactory.createLabel("", 40, 30);
         this.nameField = JTextFactory.createTextField();
     }
@@ -164,33 +166,18 @@ public class Sidebar extends View implements CacheListener {
 
 		@Override
         public void mouseClicked(MouseEvent e) {
-            super.mouseClicked(e);
-            
-//            ZhiShuMilestoneDatePanel zsdate = new ZhiShuMilestoneDatePanel ();
-//            JOptionPane.showMessageDialog(null, zsdate, "设置指数特别关注日期", JOptionPane.OK_CANCEL_OPTION);
-//            
-//            zsdate.getZhiShuCode();
-//            zsdate.getZhiShuMilestoneDate();
-//            zsdate.getZhiShuMilestoneShuoming();
-//            MeetingService meetingService = new DBMeetingService ( );
-//        	LabelService labelService = new DBLabelService ();
-//            cache = new Cache("ALL",meetingService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
-//                        this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
-//            this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
-//            
-//            Meeting meeting = new Meeting("设置指数关键日期",LocalDate.now(),
-//                    "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
-//            
-//            getCreateDialog().setMeeting(meeting);
-//            getCreateDialog().setVisible(true);
-//            createDialog.setMeeting(meeting);
-//            createDialog.setVisible(true);
-            
-            Meeting meeting = new Meeting("设置指数关键日期",LocalDate.now(),
-                  "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
-            		
-               getCreateDialog().setMeeting(meeting);
-               getCreateDialog().setVisible(true);
+			super.mouseClicked(e);
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				
+			      Meeting meeting = new Meeting("设置指数关键日期",LocalDate.now(),
+		                  "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
+		            		
+		               getCreateDialog().setMeeting(meeting);
+		               getCreateDialog().setVisible(true);
+		               
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+            	TDXFormatedOpt.parserZhiShuGuanJianRiQiToTDXCode();
+            }
         }
     }
 

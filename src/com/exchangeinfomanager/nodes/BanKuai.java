@@ -192,19 +192,13 @@ public class BanKuai extends TDXNodes
 		return this.stockofbklist;
     }
 	/*
-	 * 只锟斤拷锟斤拷指锟斤拷锟斤拷锟斤拷锟叫成斤拷锟斤拷锟侥革拷锟斤拷,锟叫成斤拷锟斤拷锟斤拷说锟斤拷锟斤拷锟斤拷锟角该帮拷锟侥革拷锟斤拷,没锟叫成斤拷锟斤拷说锟斤拷要锟斤拷锟窖撅拷锟斤拷锟角该帮拷锟侥革拷锟缴ｏ拷要锟斤拷锟斤拷锟斤拷停锟斤拷
+	 * 
 	 */
 	public Set<StockOfBanKuai> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference,String period) 
 	{
 		HashSet<StockOfBanKuai> result = new HashSet<StockOfBanKuai> ();
 
 		for(StockOfBanKuai stockofbk : this.stockofbklist) {
-//			NodeXPeriodDataBasic stockxperioddata = stockofbk.getNodeXPeroidData(period);
-//            if(stockxperioddata != null) {
-//            	 Boolean records = stockxperioddata.hasRecordInThePeriod(requireddate, difference);
-//				  if(records )
-//					  result.add(stockofbk);
-//            }
 		
 			if(stockofbk.isInBanKuaiAtSpecificDate(requireddate)) 
 					result.add(stockofbk);
@@ -215,7 +209,7 @@ public class BanKuai extends TDXNodes
 		return result;
 	}
 	/*
-	 * 锟斤拷锟侥骋伙拷锟斤拷锟斤拷锟�
+	 * 
 	 */
 	public StockOfBanKuai getBanKuaiGeGu (String stockcode)
 	{

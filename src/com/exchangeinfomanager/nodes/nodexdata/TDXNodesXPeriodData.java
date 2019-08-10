@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.nodes.nodexdata;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
@@ -30,6 +31,7 @@ import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
+import com.udojava.evalex.Expression;
 
 
 
@@ -123,6 +125,8 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 			nodeohlc.add(kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
 			logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+		} catch (java.lang.IllegalArgumentException e) {
+			e.printStackTrace();
 		}
 		
 		try {
@@ -353,24 +357,6 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		return this.nodeohlc;
 	}
 	/*
-	 * 
-	 */
-//	public OHLCSeries getRangeOHLCData (LocalDate requiredstart,LocalDate requiredend)
-//	{
-//		OHLCSeries tmpohlc = new OHLCSeries ("Kxian");
-//		int itemcount = this.nodeohlc.getItemCount();
-//		for(int i=0;i<itemcount;i++) {
-//			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-//			LocalDate startd = dataitemp.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			LocalDate endd = dataitemp.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			
-//			if( (startd.isAfter(requiredstart) || startd.equals(requiredstart) )  && ( endd.isBefore(requiredend) || endd.equals(requiredend) ))
-//				tmpohlc.add( (OHLCItem) this.nodeohlc.getDataItem(i) );
-//		}
-//		
-//		return tmpohlc;
-//	}
-	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getOHLCData(java.time.LocalDate, int)
 	 */
@@ -399,6 +385,23 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		}
 		
 		return null;
+	}
+	/*
+	 * 某天的涨跌幅
+	 */
+	public Double getSpecificOHLCZhangDieFu (LocalDate requireddate,int difference)
+	{
+		
+		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate, 0);
+		OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
+		double curclose = curohlc.getCloseValue();
+		
+		OHLCItem lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
+		double lastclose = lastholc.getCloseValue();
+		double zhangfu = (curclose - lastclose) / lastclose;
+		
+		return zhangfu;
+		
 	}
 	/*
 	 * (non-Javadoc)
@@ -1031,6 +1034,114 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 		return expectedate;
 	 }
 	 /*
+	  * (non-Javadoc)
+	  * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#checkCloseComparingToMAFormula(java.lang.String, java.time.LocalDate, int)
+	  */
+	 public Boolean checkCloseComparingToMAFormula (String maformula, LocalDate requireddate, int difference)
+	 {
+		 LocalDate tmpdate = requireddate.with(DayOfWeek.FRIDAY);
+		    
+		 OHLCItem ohlcdata;
+		 do { //日线数据比较复杂 ，用户选择的日子可能不是交易日，可能是停牌日，就直接算周五，如果周五没有数据，往前1天，直到有数据为止或本周结束
+		    	ohlcdata = this.getSpecificDateOHLCData(tmpdate, 0);
+		    	if(ohlcdata != null)  //没有停牌
+		    		break;
+		    	
+		    	tmpdate = tmpdate.minus(1,ChronoUnit.DAYS);
+		 } while (CommonUtility.isInSameWeek(requireddate, tmpdate) );
+		    
+		 if (ohlcdata != null) {
+		    	Double close = (Double)ohlcdata.getCloseValue();
+			    Double[] maresult = this.getNodeOhlcMA(tmpdate, 0);
+			    Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
+			    if( result != null )
+			    	return result;
+		 }
+		 
+		 return null;
+			
+	 }
+	 private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula)
+	 {
+			try{
+				if(maformula.contains(">\'250\'") || maformula.contains(">=\'250\'") || maformula.contains("<\'250\'") || maformula.contains("<=\'250\'") ) {
+					if (maresult[6] != null)
+						maformula = maformula.replace("\'250\'",  maresult[6].toString() ) ;
+					else
+						maformula = maformula.replace("\'250\'",  String.valueOf( 10000000000.0 ) ) ;
+				}
+			} catch (java.lang.NullPointerException e) {
+				e.printStackTrace();
+			}
+			
+		    if(maformula.contains(">\'120\'") || maformula.contains(">=\'120\'") || maformula.contains("<\'120\'") || maformula.contains("<=\'120\'")) {
+		    	if (maresult[5] != null)
+		    		maformula = maformula.replace("\'120\'",  maresult[5].toString() ) ;
+		    	else
+					maformula = maformula.replace("\'120\'",  String.valueOf( 10000000000.0 ) ) ;
+		    }
+		    
+		    if(maformula.contains(">\'60\'") || maformula.contains(">=\'60\'") || maformula.contains("<\'60\'") || maformula.contains("<=\'60\'") ) {
+		    	if(maresult[4] != null)
+		    		maformula = maformula.replace("\'60\'",  maresult[4].toString() ) ;
+		    	else
+					maformula = maformula.replace("\'60\'",  String.valueOf( 10000000000.0 ) ) ;
+		    }
+		    	
+		    
+		    if(maformula.contains(">\'30\'") || maformula.contains(">=\'30\'") || maformula.contains("<\'30\'") || maformula.contains("<=\'30\'") ) {
+		    	if(maresult[3] != null)
+		    		maformula = maformula.replace("\'30\'",  maresult[3].toString() ) ;
+		    	else
+					maformula = maformula.replace("\'30\'",  String.valueOf( 10000000000.0 ) ) ;
+		    }
+		    
+		    if(maformula.contains(">\'20\'") || maformula.contains(">=\'20\'") || maformula.contains("<\'20\'") || maformula.contains("<=\'20\'") ) {
+		    	if(maresult[2] != null)
+		    		maformula = maformula.replace("\'20\'",  maresult[2].toString() ) ;
+		    	else
+					maformula = maformula.replace("\'20\'",  String.valueOf( 10000000000.0 ) ) ;
+		    }
+		    
+		    if(maformula.contains(">\'10\'") || maformula.contains(">=\'10\'") || maformula.contains("<\'10\'") || maformula.contains("<=\'10\'")) {
+		    	if(maresult[1] != null)
+		    		maformula = maformula.replace("\'10\'",  maresult[1].toString() ) ;
+		    	else
+					maformula = maformula.replace("\'10\'",  String.valueOf( 10000000000.0 ) ) ;
+		    }
+		    
+		    if(maformula.contains(">\'5\'") || maformula.contains(">=\'5\'") || maformula.contains("<\'5\'") || maformula.contains("<=\'5\'") ) {
+		    	if(maresult[0] != null)
+		    		maformula = maformula.replace("\'5\'",  maresult[0].toString() ) ;
+		    	else
+					maformula = maformula.replace("\'5\'",  String.valueOf( 10000000000.0 ) ) ;
+		    }
+		    
+		    BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close)).eval(); //https://github.com/uklimaschewski/EvalEx
+		    String sesultstr = result1.toString();
+		    if(sesultstr.equals("0"))
+		    	return false;
+		    else 
+		    	return true;
+		    
+		    
+//			ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+//		      Map<String, Object> vars = new HashMap<String, Object>();
+//		      vars.put("x", close);
+////		      vars.put("y", 2);
+////		      vars.put("z", 1);
+//	      try {
+//	    	  Boolean result = (Boolean)engine.eval(maformula, new SimpleBindings(vars));
+//			  return result;
+//			} catch (ScriptException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				return null;
+//			}
+	      
+
+		}
+	 /*
 	  * 周线计算 1，2，4，6，12，24，55 对应日线5，10，20，30，60，120，250，
 	  */
 	 public Double[] getNodeOhlcMA (LocalDate  requireddate,int difference)
@@ -1588,6 +1699,8 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 			
 			return doc.toString();
 		}
+		
+		
 
 	 	 
  } //END OF 

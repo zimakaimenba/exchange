@@ -320,6 +320,12 @@ public class StockOfBanKuaiNodeXPeriodData implements NodeXPeriodDataBasic
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Boolean checkCloseComparingToMAFormula(String maformula, LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }

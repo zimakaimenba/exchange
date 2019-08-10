@@ -34,6 +34,7 @@ import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
+import com.google.common.base.Strings;
 import com.udojava.evalex.Expression;
 
 
@@ -195,28 +196,13 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    } else if( col == 6   && value != null) { //突出MA,默认为大于
 	    	String displayma = tablemodel.getDisplayMAFormula();
 	    	background = Color.white ;
-	    	if (displayma != null) {
+	    	if (!Strings.isNullOrEmpty(displayma)) {
 			    TDXNodesXPeriodData nodexdataday = (TDXNodesXPeriodData)stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
 			    
 			    LocalDate requireddate = tablemodel.getShowCurDate();
-			    LocalDate tmpdate = requireddate.with(DayOfWeek.FRIDAY);
-			    
-			    OHLCItem ohlcdata;
-			    do { //日线数据比较复杂 ，用户选择的日子可能不是交易日，可能是停牌日，就直接算周五，如果周五没有数据，往前1天，直到有数据为止或本周结束
-			    	ohlcdata = nodexdataday.getSpecificDateOHLCData(tmpdate, 0);
-			    	if(ohlcdata != null)  //没有停牌
-			    		break;
-			    	
-			    	tmpdate = tmpdate.minus(1,ChronoUnit.DAYS);
-			    } while (CommonUtility.isInSameWeek(requireddate, tmpdate) );
-			    
-			    if (ohlcdata != null) {
-			    	Double close = (Double)ohlcdata.getCloseValue();
-				    Double[] maresult = nodexdataday.getNodeOhlcMA(tmpdate, 0);
-				    Boolean result = checkCloseComparingToMAsettings (close,maresult,displayma);
-				    if( result != null && result)
-				    	background = new Color(0,153,153) ;
-			    }
+			    Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,requireddate,0);
+			    if( checkresult != null && checkresult)
+				    background = new Color(0,153,153) ;
 	    	}
 	    		
 	    }
@@ -240,85 +226,85 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    return comp;
 	}
 	
-	private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula)
-	{
-		try{
-			if(maformula.contains(">\'250\'") || maformula.contains(">=\'250\'") || maformula.contains("<\'250\'") || maformula.contains("<=\'250\'") ) {
-				if (maresult[6] != null)
-					maformula = maformula.replace("\'250\'",  maresult[6].toString() ) ;
-				else
-					maformula = maformula.replace("\'250\'",  String.valueOf( 10000000000.0 ) ) ;
-			}
-		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-		}
-		
-	    if(maformula.contains(">\'120\'") || maformula.contains(">=\'120\'") || maformula.contains("<\'120\'") || maformula.contains("<=\'120\'")) {
-	    	if (maresult[5] != null)
-	    		maformula = maformula.replace("\'120\'",  maresult[5].toString() ) ;
-	    	else
-				maformula = maformula.replace("\'120\'",  String.valueOf( 10000000000.0 ) ) ;
-	    }
-	    
-	    if(maformula.contains(">\'60\'") || maformula.contains(">=\'60\'") || maformula.contains("<\'60\'") || maformula.contains("<=\'60\'") ) {
-	    	if(maresult[4] != null)
-	    		maformula = maformula.replace("\'60\'",  maresult[4].toString() ) ;
-	    	else
-				maformula = maformula.replace("\'60\'",  String.valueOf( 10000000000.0 ) ) ;
-	    }
-	    	
-	    
-	    if(maformula.contains(">\'30\'") || maformula.contains(">=\'30\'") || maformula.contains("<\'30\'") || maformula.contains("<=\'30\'") ) {
-	    	if(maresult[3] != null)
-	    		maformula = maformula.replace("\'30\'",  maresult[3].toString() ) ;
-	    	else
-				maformula = maformula.replace("\'30\'",  String.valueOf( 10000000000.0 ) ) ;
-	    }
-	    
-	    if(maformula.contains(">\'20\'") || maformula.contains(">=\'20\'") || maformula.contains("<\'20\'") || maformula.contains("<=\'20\'") ) {
-	    	if(maresult[2] != null)
-	    		maformula = maformula.replace("\'20\'",  maresult[2].toString() ) ;
-	    	else
-				maformula = maformula.replace("\'20\'",  String.valueOf( 10000000000.0 ) ) ;
-	    }
-	    
-	    if(maformula.contains(">\'10\'") || maformula.contains(">=\'10\'") || maformula.contains("<\'10\'") || maformula.contains("<=\'10\'")) {
-	    	if(maresult[1] != null)
-	    		maformula = maformula.replace("\'10\'",  maresult[1].toString() ) ;
-	    	else
-				maformula = maformula.replace("\'10\'",  String.valueOf( 10000000000.0 ) ) ;
-	    }
-	    
-	    if(maformula.contains(">\'5\'") || maformula.contains(">=\'5\'") || maformula.contains("<\'5\'") || maformula.contains("<=\'5\'") ) {
-	    	if(maresult[0] != null)
-	    		maformula = maformula.replace("\'5\'",  maresult[0].toString() ) ;
-	    	else
-				maformula = maformula.replace("\'5\'",  String.valueOf( 10000000000.0 ) ) ;
-	    }
-	    
-	    BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close)).eval(); //https://github.com/uklimaschewski/EvalEx
-	    String sesultstr = result1.toString();
-	    if(sesultstr.equals("0"))
-	    	return false;
-	    else 
-	    	return true;
-	    
-	    
-//		ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
-//	      Map<String, Object> vars = new HashMap<String, Object>();
-//	      vars.put("x", close);
-////	      vars.put("y", 2);
-////	      vars.put("z", 1);
-//      try {
-//    	  Boolean result = (Boolean)engine.eval(maformula, new SimpleBindings(vars));
-//		  return result;
-//		} catch (ScriptException e) {
-//			// TODO Auto-generated catch block
+//	private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula)
+//	{
+//		try{
+//			if(maformula.contains(">\'250\'") || maformula.contains(">=\'250\'") || maformula.contains("<\'250\'") || maformula.contains("<=\'250\'") ) {
+//				if (maresult[6] != null)
+//					maformula = maformula.replace("\'250\'",  maresult[6].toString() ) ;
+//				else
+//					maformula = maformula.replace("\'250\'",  String.valueOf( 10000000000.0 ) ) ;
+//			}
+//		} catch (java.lang.NullPointerException e) {
 //			e.printStackTrace();
-//			return null;
 //		}
-      
-
-	}
+//		
+//	    if(maformula.contains(">\'120\'") || maformula.contains(">=\'120\'") || maformula.contains("<\'120\'") || maformula.contains("<=\'120\'")) {
+//	    	if (maresult[5] != null)
+//	    		maformula = maformula.replace("\'120\'",  maresult[5].toString() ) ;
+//	    	else
+//				maformula = maformula.replace("\'120\'",  String.valueOf( 10000000000.0 ) ) ;
+//	    }
+//	    
+//	    if(maformula.contains(">\'60\'") || maformula.contains(">=\'60\'") || maformula.contains("<\'60\'") || maformula.contains("<=\'60\'") ) {
+//	    	if(maresult[4] != null)
+//	    		maformula = maformula.replace("\'60\'",  maresult[4].toString() ) ;
+//	    	else
+//				maformula = maformula.replace("\'60\'",  String.valueOf( 10000000000.0 ) ) ;
+//	    }
+//	    	
+//	    
+//	    if(maformula.contains(">\'30\'") || maformula.contains(">=\'30\'") || maformula.contains("<\'30\'") || maformula.contains("<=\'30\'") ) {
+//	    	if(maresult[3] != null)
+//	    		maformula = maformula.replace("\'30\'",  maresult[3].toString() ) ;
+//	    	else
+//				maformula = maformula.replace("\'30\'",  String.valueOf( 10000000000.0 ) ) ;
+//	    }
+//	    
+//	    if(maformula.contains(">\'20\'") || maformula.contains(">=\'20\'") || maformula.contains("<\'20\'") || maformula.contains("<=\'20\'") ) {
+//	    	if(maresult[2] != null)
+//	    		maformula = maformula.replace("\'20\'",  maresult[2].toString() ) ;
+//	    	else
+//				maformula = maformula.replace("\'20\'",  String.valueOf( 10000000000.0 ) ) ;
+//	    }
+//	    
+//	    if(maformula.contains(">\'10\'") || maformula.contains(">=\'10\'") || maformula.contains("<\'10\'") || maformula.contains("<=\'10\'")) {
+//	    	if(maresult[1] != null)
+//	    		maformula = maformula.replace("\'10\'",  maresult[1].toString() ) ;
+//	    	else
+//				maformula = maformula.replace("\'10\'",  String.valueOf( 10000000000.0 ) ) ;
+//	    }
+//	    
+//	    if(maformula.contains(">\'5\'") || maformula.contains(">=\'5\'") || maformula.contains("<\'5\'") || maformula.contains("<=\'5\'") ) {
+//	    	if(maresult[0] != null)
+//	    		maformula = maformula.replace("\'5\'",  maresult[0].toString() ) ;
+//	    	else
+//				maformula = maformula.replace("\'5\'",  String.valueOf( 10000000000.0 ) ) ;
+//	    }
+//	    
+//	    BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close)).eval(); //https://github.com/uklimaschewski/EvalEx
+//	    String sesultstr = result1.toString();
+//	    if(sesultstr.equals("0"))
+//	    	return false;
+//	    else 
+//	    	return true;
+//	    
+//	    
+////		ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+////	      Map<String, Object> vars = new HashMap<String, Object>();
+////	      vars.put("x", close);
+//////	      vars.put("y", 2);
+//////	      vars.put("z", 1);
+////      try {
+////    	  Boolean result = (Boolean)engine.eval(maformula, new SimpleBindings(vars));
+////		  return result;
+////		} catch (ScriptException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////			return null;
+////		}
+//      
+//
+//	}
 	
 }

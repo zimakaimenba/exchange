@@ -58,7 +58,7 @@ public final class StockCalendarAndNewDbOperation
 		try {
 			String sqlquerystat;
 			
-			if(startdate != null)
+			if(startdate == null)
 				sqlquerystat = "SELECT * FROM 指数关键日期表 \r\n"
 	//	        		+ "WHERE 日期 BETWEEN '" + startdate + "' AND '" + enddate + "'";
 		        		;

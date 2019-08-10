@@ -62,7 +62,6 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		
 		String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//		 logger.debug(doc.toString());
 		 org.jsoup.select.Elements content = doc.select("body");
 		       
 		content.append( "<h4>周新闻:" + monday + "到" + sunday + "</h4>");
@@ -77,7 +76,16 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	   			content.append( "<p>" + newdate  + title + "</p> ");
 	   		//notesPane.setText("<a href=\"http://www.google.com/finance?q=NYSE:C\">C</a>, <a href=\"http://www.google.com/finance?q=NASDAQ:MSFT\">MSFT</a>");
 		}
-   	
+		//说明该周的指数关键日期
+		Collection<InsertedMeeting> curzhishuguanjianriqi = newsdbopt.getZhiShuKeyDates(monday, sunday);
+		content.append( "<h4>周指数关键日期:" + monday + "到" + sunday + "</h4>");
+		for(InsertedMeeting zsgjrq : curzhishuguanjianriqi ) {
+	   		String title = zsgjrq.getTitle();
+	   		String newdate = zsgjrq.getStart().toString();
+	   		String detail =zsgjrq.getDescription();
+   			content.append( "<p>" + newdate  + title + ",\"" + detail + "\"</p> ");
+		}
+		
 	   	htmlstring = doc.toString();
 	   	this.setText(htmlstring);
 	}
