@@ -23,7 +23,7 @@ import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
-import com.exchangeinfomanager.commonlib.ToolTipHeader;
+import com.exchangeinfomanager.commonlib.JTableToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -50,7 +50,7 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 		this.setModel(bkgegumapmdl);
 
 		//http://esus.com/creating-a-jtable-with-headers-with-jtooltips/
-		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
+		JTableToolTipHeader header = new JTableToolTipHeader(this.getColumnModel() );
 	    header.setToolTipStrings(bkgegumapmdl.getTableHeader());
 	    header.setToolTipText("Default ToolTip TEXT");
 	    this.setTableHeader(header);

@@ -139,6 +139,12 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
 		
 	}
 
+	@Override
+	public void updateDate(BanKuai selectedbk, LocalDate curselectdate, int i, String globeperiod) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
 

@@ -49,7 +49,6 @@ import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
-import com.exchangeinfomanager.commonlib.ToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;

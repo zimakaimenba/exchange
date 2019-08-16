@@ -916,6 +916,25 @@ public class SystemConfigration
 			 }
 			 return path; 
 		}
+		/*
+		 * 
+		 */
+		public String getBanKuaiFengXiReminderMartirxFile ()
+		{
+			String path = this.systeminstalledpath + "checklists/bankuaifengxiremindermatrix.xml";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path;
+		}
+		/*
+		 * 
+		 */
 		public String getGeGuFengXiWeeklyXmlMatrixFile() 
 		{
 			String path = this.systeminstalledpath + "checklists/gegufengximatrix.xml";

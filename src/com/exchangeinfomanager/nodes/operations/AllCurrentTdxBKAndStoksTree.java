@@ -193,7 +193,7 @@ public class AllCurrentTdxBKAndStoksTree
 			 
 			for(StockOfBanKuai stockofbk : allbkgg)   {
 				if( !stockofbk.isInBanKuaiAtSpecificDate(tmpdate)  )  //确认当前还在板块内
-					break;
+					continue;
 				
 				Stock stock = stockofbk.getStock();
 				NodeXPeriodDataBasic stockxdate = stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);

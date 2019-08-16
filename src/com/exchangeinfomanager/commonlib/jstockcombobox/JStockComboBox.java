@@ -248,7 +248,7 @@ public class JStockComboBox extends  JComboBox<String>
 					String nodecode = null;
 					try{
 						String inputtext = ( (JTextField)getEditor().getEditorComponent()).getText();
-//						nodecode = formatStockCode( (String)getEditor().getItem() );
+
 						nodecode = formatStockCode( inputtext );
 						
 					} catch (java.lang.ClassCastException ex) {
@@ -258,7 +258,7 @@ public class JStockComboBox extends  JComboBox<String>
 					BkChanYeLianTreeNode node;
 					if(result == -1) {
 						node = updateUserSelectedNode (nodecode,onlyselectnodetype);
-//						((javax.swing.JTextField ) (getEditor().getEditorComponent() ) ).setText(node.getMyOwnCode()+node.getMyOwnName());
+
 					}
 				}
 			}

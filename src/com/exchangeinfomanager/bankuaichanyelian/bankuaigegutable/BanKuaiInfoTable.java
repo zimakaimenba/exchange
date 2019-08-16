@@ -46,7 +46,6 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPa
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.commonlib.ToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -90,6 +89,7 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 		this.stockmanager = stockmanager1;
 		
 //		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		this.getColumnModel().getColumn(0).setPreferredWidth(105);
 		this.getColumnModel().getColumn(1).setPreferredWidth(115);
 //		this.getColumnModel().getColumn(2).setPreferredWidth(35);
 	}

@@ -123,22 +123,31 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		do {
 			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 			//ZhanBi Part
-			Double cjezb = nodexdata.getChenJiaoErZhanBi(tmpdate, 0);
+			Double cjezb = nodexdata.getChenJiaoErZhanBi(wkfriday, 0);
 			if(cjezb != null) {
 				barchartdataset.setValue(cjezb,super.getRowKey(),wkfriday );
 
 				if(cjezb > highestHigh)
 					highestHigh = cjezb;
 			} else {
-				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
+				if( !dapan.isDaPanXiuShi(wkfriday,0,period) ) {
 					cjezb = 0.0;
 					barchartdataset.setValue(0.0,super.getRowKey(),wkfriday );
-				} 
+				} else { //大盘休市
+					if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+						tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+					else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+						tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+					else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+						tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+					
+					continue;
+				}
 			}
 			
 			//对个股有关注记录的时候
 			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG) { //对个股有关注记录的时候
-					Integer gzjl = ((StockNodeXPeriodData)nodexdata).hasGzjlInPeriod(tmpdate, 0);
+					Integer gzjl = ((StockNodeXPeriodData)nodexdata).hasGzjlInPeriod(wkfriday, 0);
 					if(gzjl != null) {
 						double angle; Color paintcolor;String label;
 						if(gzjl == 1) {
@@ -161,10 +170,10 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			}
 
 			//QueKou Line Part
-			Integer opneupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
-			Integer opendownquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
-			Integer huibuupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
-			Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
+			Integer opneupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenUp(wkfriday, 0);
+			Integer opendownquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenDown(wkfriday, 0);
+			Integer huibuupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(wkfriday, 0);
+			Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(wkfriday, 0);	
 			 
 			if(opneupquekou != null) {
 				super.linechartdataset.setValue(opneupquekou, "QueKouOpenUp", wkfriday );

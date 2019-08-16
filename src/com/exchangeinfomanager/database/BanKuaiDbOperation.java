@@ -2053,7 +2053,9 @@ public class BanKuaiDbOperation
 	        		tmpbk = new Stock (rs.getString("股票代码"),rs.getString("股票名称"));
 	        		tmpbk.setSuoShuJiaoYiSuo(rs.getString("所属交易所"));
 	        		try{
-	        			tmpbk.getNodeJiBenMian().setShangShiRiQi(rs.getDate("上市日期SSDATE").toLocalDate() );
+	        			LocalDate shangshiriqi = rs.getDate("上市日期SSDATE").toLocalDate();
+	        			if(!shangshiriqi.equals(LocalDate.parse("1992-01-01"))) //通达信把所有暂时没有上市交易的股票上市日期都定义为1992-0101
+	        				tmpbk.getNodeJiBenMian().setShangShiRiQi( shangshiriqi );
 	        		} catch (java.lang.NullPointerException e) {
 	        			
 	        		}

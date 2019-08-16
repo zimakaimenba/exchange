@@ -10,9 +10,5 @@ package com.exchangeinfomanager.bankuaifengxi;
  */
 public interface BarChartHightLightFxDataValueListener 
 {
-//	void hightLightFxValues(Integer cjezbtoupleveldpmaxwk, Integer cjezbtouplevelbkmaxwk,  Double cjemin, 
-//							Double cjemax, Integer cjemaxwk,Double shoowhsl,Double ltszmin, Double ltszmax); //FOR TABLE
-//	void hightLightFxValues(Integer cjezbtoupleveldpmaxwk, Double cjemin, Double cjemax, Integer cjemaxwk,Double shoowhsl); //FOR PANEL
-	
 	void hightLightFxValues (ExportCondition expc);
 }

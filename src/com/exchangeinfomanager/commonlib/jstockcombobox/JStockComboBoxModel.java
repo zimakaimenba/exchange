@@ -86,6 +86,7 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 			  String nodefull = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnCode() ;
 			  if(nodefull.equals( nodecode   )  ) {
 				  selection = tmpnode;
+				  this.setSelectedItem(selection);
 				  return i;
 			  } else
 				  i++;

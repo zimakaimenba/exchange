@@ -87,7 +87,20 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         }
 	    
 	    Color foreground = Color.BLACK, background = Color.white;
-
+	    
+	    if( (table.isRowSelected(row) || stock.wetherHasReiewedToday() ) && col == 0 ) {
+	    	LocalDate requireddate = tablemodel.getShowCurDate();
+		    String period = tablemodel.getCurDisplayPeriod();
+		    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);
+		    OHLCItem ohlcdata = nodexdata.getSpecificDateOHLCData(requireddate, 0);
+		    double open = ohlcdata.getOpenValue();
+		    double close = ohlcdata.getCloseValue();
+		    if(close >= open)
+		    	background =  Color.RED;
+		    else
+		    	background = Color.GREEN;
+	    }
+	    
 	    if( col == 1 ) { //¸ö¹ÉÃû³Æ
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
 	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreeRelated();
@@ -206,22 +219,13 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	}
 	    		
 	    }
- 
+	    
+	    
+	    
     	comp.setBackground(background);
     	comp.setForeground(foreground);
     	
-	    if(table.isRowSelected(row) && col == 0 ) {
-	    	LocalDate requireddate = tablemodel.getShowCurDate();
-		    String period = tablemodel.getCurDisplayPeriod();
-		    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);
-		    OHLCItem ohlcdata = nodexdata.getSpecificDateOHLCData(requireddate, 0);
-		    double open = ohlcdata.getOpenValue();
-		    double close = ohlcdata.getCloseValue();
-		    if(close >= open)
-		    	comp.setBackground(Color.RED);
-		    else
-		    	comp.setBackground(Color.GREEN);
-	    }
+	    
 	    
 	    return comp;
 	}

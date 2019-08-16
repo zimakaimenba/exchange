@@ -38,6 +38,9 @@ public class Cache {
         this.refreshMeetings(nodecode,cashestartdate,casheenddate);
         this.refreshLabels();
     }
+    /*
+     * 
+     */
     public void refreshNews ()
     {
 //    	if(true) {

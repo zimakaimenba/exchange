@@ -105,7 +105,9 @@ public abstract class WeeklyFengXiXmlHandler
 			return;
 		}
 		
-		String zdgzinfo = bkopt.getBanKuaiOrStockZdgzInfo (curnodecode,currentdate);
+		String zdgzinfo = null;
+		if (curnodecode != null)
+			zdgzinfo = bkopt.getBanKuaiOrStockZdgzInfo (curnodecode,currentdate);
 		
 		if(!Strings.isNullOrEmpty(zdgzinfo)  ) {
 			try {

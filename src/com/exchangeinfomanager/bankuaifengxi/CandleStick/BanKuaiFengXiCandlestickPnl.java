@@ -154,14 +154,10 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 
 	private DateAxis dayAxis;
 	private JMenuItem mntmbankuai;
-//	private JMenuItem mntmshzhishu;
-//	private JMenuItem mntmszzhishu;
-//	private JMenuItem mntmcybzhishu;
 	private JMenuItem mntmzhishu;
 	private boolean displayhuibuquekou;
-	private JMenuItem mntmguanjiandate;
+
 	
-//	private HashMap<LocalDate, String> zhishuguanjianriqi; //指数关键日期
 	private List<ValueMarker> categorymarkerlist; //指数关键日期的marker
 
 	public TDXNodes getCurDisplayedNode ()
@@ -769,13 +765,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			}
 		});
 		
-		mntmguanjiandate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				mntmguanjiandate.setText("X 叠加指数关键日期");
-				combinedZhiShuKXian ("zhishuguanjianriqi");
-			}
-		});
+
 		
 	}
 	protected void combinedZhiShuKXian(String zhishu) 
@@ -866,11 +856,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 //		JPopupMenu popupMenu = new JPopupMenu();
 		mntmbankuai = new JMenuItem("叠加板块指数");
 		mntmzhishu = new JMenuItem("叠加指定大盘指数");
-		mntmguanjiandate = new JMenuItem("叠加指数关键日期");
-//			popupMenu.add(mntmNewMenuItem);
+
+
 		chartPanel.getPopupMenu().add(mntmbankuai);
 		chartPanel.getPopupMenu().add(mntmzhishu);
-		chartPanel.getPopupMenu().add(mntmguanjiandate);
+
 		
 		this.categorymarkerlist = new ArrayList<> ();
 			

@@ -5,11 +5,11 @@ import java.awt.event.MouseEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
-public class ToolTipHeader extends JTableHeader 
+public class JTableToolTipHeader extends JTableHeader 
 {
     String[] toolTips;
    
-    public ToolTipHeader(TableColumnModel model) {
+    public JTableToolTipHeader(TableColumnModel model) {
       super(model);
     }
      
