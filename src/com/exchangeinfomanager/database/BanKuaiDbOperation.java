@@ -3245,7 +3245,7 @@ public class BanKuaiDbOperation
 		
 		//包含成交量和成交额的SQL
 		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
-				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比,\r\n" +
+				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比,\r\n" +
 
 				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
 				"  M.JILUTIAOSHU  \r\n"+
@@ -3331,9 +3331,6 @@ public class BanKuaiDbOperation
 				wknum = null;
 				bankuaicjl = null;
 				dapancjl = null;
-
-
-				
 			}
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -3511,7 +3508,7 @@ public class BanKuaiDbOperation
 		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday,1) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
 				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS 占比, \r\n" +
 				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
-				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU , M.周最大涨跌幅,M.周最小涨跌幅      \r\n" +
+				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU , M.周最大涨跌幅,M.周最小涨跌幅   ,M.涨停,M.跌停        \r\n" +
 				 
 				"FROM\r\n" + 
 				"(\r\n" + 
@@ -3538,7 +3535,9 @@ public class BanKuaiDbOperation
 						+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
 						+ "  count(1) as JILUTIAOSHU ,\r\n"
 						+ "max(" + bkcjltable + ".`涨跌幅`) as 周最大涨跌幅, \r\n"
-						+ "min(" + bkcjltable + ".`涨跌幅`) as 周最小涨跌幅 \r\n"
+						+ "min(" + bkcjltable + ".`涨跌幅`) as 周最小涨跌幅, \r\n"
+						+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` >= 9.0,1,NULL) ) AS 涨停, \r\n"
+						+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` <= -9.0,1,NULL) ) AS 跌停  \r\n"
 						+ " from " + bkcjltable + "\r\n" +  
 				"where 代码 = '" + stockcode + "'\r\n" + 
 				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
@@ -3548,7 +3547,6 @@ public class BanKuaiDbOperation
 				" GROUP BY year(t.workday),week(t.workday)"
 				;
 				
-		
 		try {
 			logger.debug("为板块:" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
 		} catch (java.lang.NullPointerException e) {
@@ -3608,6 +3606,8 @@ public class BanKuaiDbOperation
 				double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅");
 				double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅");
 				int exchengdaysnumber = rs.getInt("JILUTIAOSHU");
+				int zhangtingnum = rs.getInt("涨停");
+				int dietingnum = rs.getInt("跌停");
 
 				TDXNodeGivenPeriodDataItem stokrecord = new TDXNodeGivenPeriodDataItem( stockcode, period, recordwk, 
 						  0.0,  0.0,  0.0,  0.0, bankuaicje, bankuaicjl,huanshoulv,pingjunzongshizhi,pingjunliutongshizhi);
@@ -3618,6 +3618,8 @@ public class BanKuaiDbOperation
 				stokrecord.setPeriodhighestzhangdiefu(periodhighestzhangdiefu);
 				stokrecord.setPeriodlowestzhangdiefu(periodlowestzhangdiefu);
 				stokrecord.setExchangeDaysNumber(exchengdaysnumber);
+				stokrecord.setZhangTingNumber(zhangtingnum);
+				stokrecord.setDieTingNumber(dietingnum);
 				
 				nodewkperioddata.addNewXPeriodData(stokrecord);
 				
@@ -7278,7 +7280,7 @@ public class BanKuaiDbOperation
 //		}
 		private List<QueKou> checkQueKouForAGivenPeriod (TDXNodes childnode,LocalDate startdate, LocalDate enddate, List<QueKou> qklist, String period )
 		{
-			if(  ((Stock)childnode).isVeryVeryNewXinStock()  )
+			if(  ((Stock)childnode).isVeryVeryNewXinStock(startdate)  )
 				return null;
 			
 			if(qklist == null)
@@ -7474,7 +7476,7 @@ public class BanKuaiDbOperation
 		 */
 		public Stock getStockDailyQueKouAnalysisResult (Stock stock,LocalDate requiredstartday,LocalDate requiredendday, String period)
 		{
-			if( ((Stock)stock).isVeryVeryNewXinStock() ) //新股的缺口不考虑
+			if( ((Stock)stock).isVeryVeryNewXinStock(requiredstartday) ) //新股的缺口不考虑
 				return stock;
 			
 			NodeXPeriodDataBasic stockdailyxdate = stock.getNodeXPeroidData(period);

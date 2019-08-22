@@ -264,7 +264,7 @@ public class ExportCondition
 
 		 }
 		
-		if( stock.isVeryVeryNewXinStock() ) // 刚上市的新股也不考虑
+		if( stock.isVeryVeryNewXinStock(exportdate) ) // 刚上市的新股也不考虑
 			 return false;
 		
 		NodeXPeriodDataBasic nodexdata = stock.getNodeXPeroidData(period);

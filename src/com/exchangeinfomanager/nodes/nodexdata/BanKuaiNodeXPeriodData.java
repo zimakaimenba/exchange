@@ -13,17 +13,10 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 
 
 
-public class BanKuaiNodeXPeriodData extends StockNodeXPeriodData 
+public class BanKuaiNodeXPeriodData extends TDXNodesXPeriodData 
 {
 		public BanKuaiNodeXPeriodData (String nodecode, String nodeperiodtype1)
 		{
 			super(nodecode,nodeperiodtype1);
 		}
-
-	
-		
-
-		
-
-
 }

@@ -33,6 +33,8 @@ public abstract class BanKuaiPopUpMenu extends JPopupMenu
 	protected BanKuaiDbOperation bkdbopt;
 //	private BanKuaiAndChanYeLian bkcyl;
 	protected StockCalendarAndNewDbOperation newsdbopt;
+//	protected JMenuItem menuItemQiangShi;
+//	protected JMenuItem menuItemRuoShi;
 
 	//因为板块有2种表现形式，树和表，所以争对2个形式做了两套
 	public BanKuaiPopUpMenu() 
@@ -52,11 +54,12 @@ public abstract class BanKuaiPopUpMenu extends JPopupMenu
 		menuItemAddNews = new JMenuItem("添加新闻");
 		menuItemAddToGz = new JMenuItem("板块分析");
 		menuItemSetting = new JMenuItem("板块设置");
-//		menuItemMakeLongTou = new JMenuItem("标记热点板块");
 		
-		this.add(menuItemAddNews);
+				this.add(menuItemSetting);
 		this.add(menuItemAddToGz);
-		this.add(menuItemSetting);
+		this.add(menuItemAddNews);
+//		this.add(menuItemQiangShi);
+//		this.add(menuItemRuoShi);
 		
 	}
 	/*

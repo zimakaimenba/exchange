@@ -72,6 +72,8 @@ public class TDXNodeGivenPeriodDataItem extends OHLCItem
 	
 	private double ggbkcjedifference; //个股的成交额本周期和合理的上周期的差额
 	private Integer exchangedaysnumber; //个股板块每周的交易日数目
+	private Integer zhangtingnumber;
+	private Integer dietingnumber;
 	
 	/**
 	 * @return the myowncode
@@ -317,6 +319,22 @@ public class TDXNodeGivenPeriodDataItem extends OHLCItem
 	public Integer getExchangeDaysNumber() {
 		// TODO Auto-generated method stub
 		return this.exchangedaysnumber;
+	}
+	public void setZhangTingNumber(Integer ztnum)
+	{
+		this.zhangtingnumber = ztnum;
+	}
+	public Integer getZhangTingNumber()
+	{
+		return this.zhangtingnumber ;
+	}
+	public void setDieTingNumber(Integer dtnum)
+	{
+		this.dietingnumber = dtnum;
+	}
+	public Integer getDieTingNumber()
+	{
+		return this.dietingnumber ;
 	}
 
 }

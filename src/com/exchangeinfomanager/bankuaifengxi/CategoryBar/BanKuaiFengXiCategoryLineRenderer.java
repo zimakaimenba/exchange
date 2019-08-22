@@ -21,6 +21,7 @@ class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 	private int shouldcolumnlast = -2;
 	private TDXNodes node;
 	private Color displayedcolumncolorindex;
+	
 	public BanKuaiFengXiCategoryLineRenderer ()
 	{
 		super ();

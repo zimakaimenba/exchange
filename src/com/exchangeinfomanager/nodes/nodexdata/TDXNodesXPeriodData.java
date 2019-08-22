@@ -89,6 +89,11 @@ import com.udojava.evalex.Expression;
 	protected TimeSeries nodeamoma120;
 	protected TimeSeries nodeamoma250;
 	
+	protected TimeSeries nodezhangtingnum;
+	protected TimeSeries nodedietingnum;
+	
+	
+	
 	private LocalDate firstdayinhistory; //可以知道历史记录起点在哪里
 	
 	
@@ -140,17 +145,31 @@ import com.udojava.evalex.Expression;
 				nodevolzhanbi.setNotify(false);
 				nodevolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
 			}
-//			if(kdata.getCjlZhanBi() != null)
-//				nodevolzhanbi.add(kdata.getPeriod(),kdata.getCjlZhanBi(),false);
+		} catch (org.jfree.data.general.SeriesException e) {
+			logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
+		}
+		
+		try{
+			nodeexchangedaysnumber.setNotify(false);
+			if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //
+				nodeexchangedaysnumber.add(kdata.getPeriod(),kdata.getExchangeDaysNumber(),false);
+			
 		} catch (org.jfree.data.general.SeriesException e) {
 			logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //			e.printStackTrace();
 		}
 		
-		try{
-			nodeexchangedaysnumber.setNotify(false);
-			if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //5锟斤拷锟斤拷默锟较的ｏ拷锟斤拷全锟斤拷锟矫达拷
-				nodeexchangedaysnumber.add(kdata.getPeriod(),kdata.getExchangeDaysNumber(),false);
+		try {
+			if(nodezhangtingnum == null)
+				nodezhangtingnum = new TimeSeries(this.nodeperiodtype);
+			if(nodedietingnum == null)
+				nodedietingnum = new TimeSeries(this.nodeperiodtype);
+			
+			if(kdata.getZhangTingNumber() != null && kdata.getZhangTingNumber() !=0)
+				nodezhangtingnum.add(kdata.getPeriod(), kdata.getZhangTingNumber());
+			
+			if(kdata.getDieTingNumber() != null && kdata.getDieTingNumber() !=0)
+				nodedietingnum.add(kdata.getPeriod(), kdata.getDieTingNumber());
 			
 		} catch (org.jfree.data.general.SeriesException e) {
 			logger.debug(kdata.getMyOwnCode() + kdata.getPeriod() + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
@@ -202,6 +221,55 @@ import com.udojava.evalex.Expression;
 		if(nodeqktjhuibudown != null)
 			nodeqktjhuibudown.clear();
 	}
+	/*
+	 * 
+	 */
+	public void addZhangDieTingTongJiJieGuo (LocalDate tjdate,Integer nodeztnum,Integer nodedtnum,Boolean addbasedoncurdata)
+	{
+		if( this.nodezhangtingnum == null)
+			this.nodezhangtingnum = new TimeSeries(this.nodeperiodtype);
+		
+		if( this.nodedietingnum == null)
+			this.nodedietingnum = new TimeSeries(this.nodeperiodtype);
+		
+		RegularTimePeriod period = getJFreeChartFormateTimePeriod(tjdate,0);
+		try {
+			if(nodeztnum != null  )
+			if(addbasedoncurdata) {
+				TimeSeriesDataItem dataitem = this.nodezhangtingnum.getDataItem(period);
+				if(dataitem == null) 
+					nodezhangtingnum.add(period,nodeztnum);
+				else {
+					int count = dataitem.getValue().intValue();
+					nodezhangtingnum.addOrUpdate(period, count + nodeztnum);
+				}
+			} else
+				nodezhangtingnum.addOrUpdate(period,nodeztnum);
+
+		} catch (org.jfree.data.general.SeriesException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			if(nodedtnum != null  )
+			if(addbasedoncurdata) {
+				TimeSeriesDataItem dataitem = this.nodedietingnum.getDataItem(period);
+				if(dataitem == null) 
+					nodedietingnum.add(period,nodedtnum);
+				else {
+					int count = dataitem.getValue().intValue();
+					nodedietingnum.addOrUpdate(period, count + nodedtnum);
+				}
+			} else
+				nodedietingnum.addOrUpdate(period,nodedtnum);
+
+		} catch (org.jfree.data.general.SeriesException e) {
+			e.printStackTrace();
+		}
+	}
+	/*
+	 * 参数addbasedoncurdata：true在现有的值上更新，false覆盖现有值
+	 */
 	public void addQueKouTongJiJieGuo (LocalDate qkdate,
 			Integer nodeqktjopenup1,Integer nodeqktjhuibuup1,Integer nodeqktjopendown1,Integer nodeqktjhuibudown1,
 			Boolean addbasedoncurdata)
@@ -221,7 +289,7 @@ import com.udojava.evalex.Expression;
 		
 		RegularTimePeriod period = getJFreeChartFormateTimePeriod(qkdate,0);
 		try {
-			if(nodeqktjopenup1 != null  )
+			if(nodeqktjopenup1 != null  ) //nodeqktjopenup1可以等于0，用来标记统计缺口的开始/结束时间
 			if(addbasedoncurdata) {
 				TimeSeriesDataItem dataitem = nodeqktjopenup.getDataItem(period);
 				if(dataitem == null) 
@@ -297,6 +365,33 @@ import com.udojava.evalex.Expression;
 	public void setPeriodQueKou (List<QueKou> qkl)
 	{
 		this.qklist = qkl;
+	}
+	/*
+	 * 
+	 */
+	public Integer getZhangTingTongJi (LocalDate requireddate, Integer difference)
+	{
+		if(this.nodezhangtingnum == null)
+			return null;
+		
+		TimeSeriesDataItem zttjitem = nodezhangtingnum.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(zttjitem == null)
+			return null;
+		else
+			 return (Integer)zttjitem.getValue().intValue();			
+					
+	}
+	public Integer getDieTingTongJi (LocalDate requireddate, Integer difference)
+	{
+		if(this.nodedietingnum == null)
+			return null;
+		
+		TimeSeriesDataItem dttjitem = nodedietingnum.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(dttjitem == null)
+			return null;
+		else
+			 return (Integer)dttjitem.getValue().intValue();			
+					
 	}
 	/*
 	 * 
@@ -1117,12 +1212,17 @@ import com.udojava.evalex.Expression;
 					maformula = maformula.replace("\'5\'",  String.valueOf( 10000000000.0 ) ) ;
 		    }
 		    
-		    BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close)).eval(); //https://github.com/uklimaschewski/EvalEx
-		    String sesultstr = result1.toString();
-		    if(sesultstr.equals("0"))
+		    try{
+		    	BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close)).eval(); //https://github.com/uklimaschewski/EvalEx
+		    	String sesultstr = result1.toString();
+			    if(sesultstr.equals("0"))
+			    	return false;
+			    else 
+			    	return true;
+		    } catch (com.udojava.evalex.Expression.ExpressionException e) {
 		    	return false;
-		    else 
-		    	return true;
+		    }
+		    
 		    
 		    
 //			ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
@@ -1692,6 +1792,18 @@ import com.udojava.evalex.Expression;
 					 if( huibudowquekou != null) {
 						 org.jsoup.nodes.Element li9 = dl.appendElement("li");
 						 li9.appendText("缺口HuiBuDown =" + huibudowquekou );
+					 }
+					 
+					 Integer zhangtingnum = this.getZhangTingTongJi(requireddate, 0);
+					 if(zhangtingnum != null) {
+						 org.jsoup.nodes.Element li10 = dl.appendElement("li");
+						 li10.appendText("涨停 =" + zhangtingnum );
+					 }
+					 
+					 Integer dietingnum = this.getDieTingTongJi(requireddate, 0);
+					 if(dietingnum != null) {
+						 org.jsoup.nodes.Element li11 = dl.appendElement("li");
+						 li11.appendText("跌停 =" + dietingnum );
 					 }
 				 
 				

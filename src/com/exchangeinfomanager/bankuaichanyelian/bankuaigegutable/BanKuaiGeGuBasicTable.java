@@ -63,6 +63,10 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 	protected JMenuItem menuItemGeguInfo;
 	protected JMenuItem menuItemLongTou;
 	protected JPopupMenu popupMenuGeguNews;
+
+//	private JMenuItem menuItemQiangShi;
+//
+//	private JMenuItem menuItemRuoShi;
 	
 	/*
 	 * 
@@ -107,11 +111,13 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 		menuItemAddGz = new JMenuItem("个股分析");
 		menuItemLongTou = new JMenuItem("设为/取消板块龙头");
 		
-		popupMenuGeguNews.add(menuItemLongTou);
+		
+		popupMenuGeguNews.add(menuItemGeguInfo);
 		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemAddGz);
-		popupMenuGeguNews.add(menuItemGeguInfo);
-				
+		popupMenuGeguNews.add(menuItemLongTou);
+		
+		
 		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
 	

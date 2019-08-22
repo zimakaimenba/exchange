@@ -100,6 +100,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	private String pnltype = "CJE"; //cje or cjl pnl?
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+	private String period;
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
@@ -135,6 +136,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	{
 		this.setBorder(new TitledBorder(null, node.getMyOwnCode()+node.getMyOwnName(), TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		this.curdisplayednode = node;
+		this.period = period;
+		
 		cjelargepnl.updatedDate(node, startdate,enddate, period);
 		cjezblargepnl.updatedDate(node, startdate,enddate, period);
 	}
@@ -182,6 +185,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	@Override
 	public void propertyChange(PropertyChangeEvent evt)
 	{
+		String evtpropertyname = evt.getPropertyName();
 		if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
 			
 			String selectedinfo = evt.getNewValue().toString();
@@ -194,82 +198,20 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", selectedinfo );
 			pcs.firePropertyChange(evtnew);
 			
-			
-//            if(selectedinfo.equals("test"))
-//            	return;
-            
-//          org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
-//    		org.jsoup.select.Elements content = doc.select("body");
-//    		org.jsoup.select.Elements dl = content.select("dl");
-//    		org.jsoup.select.Elements li;
-//    		try {
-//    			 li = dl.get(0).select("li");
-//    		} catch (java.lang.IndexOutOfBoundsException e) {
-//    			return ;
-//    		}
-//    		
-//    		String selecteddate = li.get(0).text();
-//    		LocalDate datekey = LocalDate.parse(selecteddate);
-//    		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-//    		//特别标记点击的日期，这样界面上看比较清晰
-//    		if(cjezblargepnl.isAllowDrawAnnoation()) {
-//				cjezblargepnl.setAnnotations(datekey);
-//				cjelargepnl.setAnnotations(datekey);
-//			}
-//    		
-//    		
-//    		//把两个panel的HTML信息组合成一个HTML向上级界面分发
-//    		org.jsoup.select.Elements divnodecodename = content.select("nodecode");
-//    		org.jsoup.select.Elements nodetype = content.select("nodetype");
-//    		
-//    		String cjettp = cjelargepnl.getToolTipSelected ();
-//    		org.jsoup.nodes.Document cjedoc = Jsoup.parse(cjettp);
-//    		org.jsoup.select.Elements cjecontent = cjedoc.select("body");
-//    		org.jsoup.select.Elements cjedl = cjedoc.select("dl");
-//    		org.jsoup.select.Elements cjeli = cjedoc.select("li");
-//    		
-//    		
-//    		String cjezbttp = cjezblargepnl.getToolTipSelected ();
-//    		org.jsoup.nodes.Document cjezbdoc = Jsoup.parse(cjezbttp);
-//    		org.jsoup.select.Elements cjezbcontent = cjezbdoc.select("body");
-//    		org.jsoup.select.Elements cjezbdl = cjezbdoc.select("dl");
-//    		org.jsoup.select.Elements cjezbli = cjezbdoc.select("li");
-//    		
-//    		
-//    		String html = "";
-//    		org.jsoup.nodes.Document htmldoc = Jsoup.parse(html);
-//    		org.jsoup.select.Elements htmlcontent = htmldoc.select("body");
-//    		for(org.jsoup.nodes.Element htmlbody : htmlcontent) {
-//    			org.jsoup.nodes.Element htmldiv = htmlbody.appendElement("div");
-//    			htmldiv.appendChild( divnodecodename.get(0) );
-//    			htmldiv.appendChild( nodetype.get(0) );
-//    			
-//    			org.jsoup.nodes.Element htmldl = htmldiv.appendElement("dl");
-//   			 
-//	   			 org.jsoup.nodes.Element lidate = htmldl.appendElement("li");
-//	   			 lidate.appendText(selecteddate.toString());
-//	   			 
-//	   			 for(int i=1;i<cjeli.size();i++) {
-//	   				org.jsoup.nodes.Element htmlcjeli = cjeli.get(i);
-//	   				htmldl.appendChild(htmlcjeli);
-//	   			 }
-//	   			for(int i=1;i<cjezbli.size();i++) { 
-//	   				org.jsoup.nodes.Element htmlcjezbli = cjezbli.get(i); 
-//	   				htmldl.appendChild(htmlcjezbli);
-//	   			 }
-//	   			 
-//    		}
-//    		html = htmldoc.toString();
-//    		PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", html );
-//            pcs.firePropertyChange(evtnew);
-    		
-
-			
 		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
-			String selectedinfo = evt.getNewValue().toString();
-			
-
 	        pcs.firePropertyChange(evt);
+		
+		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING ) ) {
+			cjelargepnl.resetLineDate ();
+			cjezblargepnl.resetLineDate();
+			((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayZhangDieTingLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).displayZhangDieTingLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+
+		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA ) ) {
+			cjelargepnl.resetLineDate ();
+			cjezblargepnl.resetLineDate();
+			((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
 		}
 		
 	}
@@ -278,11 +220,11 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	private BanKuaiFengXiCategoryBarChartPnl cjelargepnl;
 	private BanKuaiFengXiCategoryBarChartPnl cjezblargepnl;
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
-	private JPopupMenu quekouImage;
-	private JMenuItem mntmqkopenup;
-	private JMenuItem mntmqkopendown;
-	private JMenuItem mntmqkhuibuup;
-	private JMenuItem mntmqkhuibudown;
+//	private JPopupMenu quekouImage;
+//	private JMenuItem mntmqkopenup;
+//	private JMenuItem mntmqkopendown;
+//	private JMenuItem mntmqkhuibuup;
+//	private JMenuItem mntmqkhuibudown;
 	/*
 	 * 
 	 */

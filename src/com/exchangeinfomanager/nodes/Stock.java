@@ -177,7 +177,7 @@ public class Stock extends TDXNodes {
 	* (non-Javadoc)
 	* @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem)
 	*/
-	public Boolean isVeryVeryNewXinStock ()
+	public Boolean isVeryVeryNewXinStock (LocalDate checkdate)
 	{
 //		NodeXPeriodDataBasic stockxdata = this.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
 //		OHLCSeries ohlcdata = stockxdata.getOHLCData();
@@ -187,7 +187,7 @@ public class Stock extends TDXNodes {
 //			return false;
 		NodeJiBenMian tmpnodejbm = super.getNodeJiBenMian();
 		LocalDate shangshiriqi = tmpnodejbm.getShangShiRiQi();
-		if(com.exchangeinfomanager.commonlib.DayCounter.bestDaysBetweenIngoreWeekEnd(shangshiriqi, LocalDate.now()) <= 15)
+		if(com.exchangeinfomanager.commonlib.DayCounter.bestDaysBetweenIngoreWeekEnd(shangshiriqi, checkdate) <= 15)
 			return true;
 		else
 			return false;

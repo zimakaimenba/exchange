@@ -36,17 +36,19 @@ import org.jfree.ui.TextAnchor;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
-
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
-
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
 
@@ -75,6 +77,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -107,6 +110,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	}
 
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
+	
 	private TDXNodes curdisplayednode;	
 	protected String globeperiod = "WEEK";
 	protected int shoulddisplayedmonthnum;
@@ -125,6 +129,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	
 	public static final String SELECTED_PROPERTY = "selected";
 	public static final String MOUSEDOUBLECLICK_PROPERTY = "mousedoubleclick";
+	public static final String DISPLAYZHANGDIETING = "zhangdieting";
+	public static final String DISPLAYQUEKOUDATA = "quekou";
 	protected boolean selectchanged;
 //	private String tooltipselected;
 	protected LocalDate dateselected;
@@ -282,13 +288,21 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	/*
 	 * 
 	 */
+	public void resetLineDate ()
+	{
+		if(linequekouchartdataset != null)
+			linequekouchartdataset.clear();
+	}
 	public void resetDate ()
 	{
 		if(barchartdataset != null)
 			barchartdataset.clear();
 		
-		if(linechartdataset != null)
-			linechartdataset.clear();
+		if(linequekouchartdataset != null)
+			linequekouchartdataset.clear();
+		
+//		if(this.linezdtchartdataset != null)
+//			this.linezdtchartdataset.clear();
 		
 		for(CategoryMarker marker : this.categorymarkerlist) {
 			this.plot.removeDomainMarker(marker);
@@ -309,11 +323,49 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		this.barchart.fireChartChanged();//必须有这句
 	}
 	
-   /*
+	
+//	abstract Integer displayQueKouLineDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period);
+//	abstract Double displayBarDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period);
+//	abstract void xiuShiGuiAfterDispalyDate (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, int downqkmax, String period);
+
+	/*
     * 
     */
     private void createEvent ()
     {
+    	mntmHideZdt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+//				if(linequekouchartdataset != null)
+//					linequekouchartdataset.clear();
+				
+//				if(linezdtchartdataset != null)
+//					linezdtchartdataset.clear();
+				
+//				Comparable index0 = barchartdataset.getColumnKey(0);
+//				Comparable indexlast = barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
+				
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING, "", "zhangdieting" );
+	            pcs.firePropertyChange(evtzd);
+			}
+			
+		});
+    	mntmHideQueKouData.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+//				if(linequekouchartdataset != null)
+//					linequekouchartdataset.clear();
+				
+//				if(linezdtchartdataset != null)
+//					linezdtchartdataset.clear();
+				
+				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA, "", "quekou" );
+	            pcs.firePropertyChange(evtqk);
+		
+			}
+			
+		});
+    	
     	chartPanel.addChartMouseListener(new ChartMouseListener() {
 
     	    public void chartMouseClicked(ChartMouseEvent cme) {
@@ -341,6 +393,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 
             	        selectchanged = true;
         	    	} catch ( java.lang.ClassCastException e ) {
+//        	    		e.printStackTrace();
             	        selectchanged = false;
         	    	}
 
@@ -351,39 +404,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	    	ToolTipManager.sharedInstance().setDismissDelay(60000); //让tooltips显示时间延长
 			}
     	});
-    	
-//    	mntmHideBars.addActionListener(new ActionListener() {
-//			@Override
-//
-//			public void actionPerformed(ActionEvent evt) 
-//			{
-//				
-//			}
-//    	});
-
-    	
-//    	mntmFenXiJiLu.addActionListener(new ActionListener() {
-//			@Override
-//
-//			public void actionPerformed(ActionEvent evt) 
-//			{
-//				if(curdisplayednode == null)
-//					return;
-//				
-//				String bkcode = curdisplayednode.getMyOwnCode();
-//				JiaRuJiHua jiarujihua = new JiaRuJiHua ( bkcode,"分析结果" ); 
-//				LocalDate curselectdate = CommonUtility.formateStringToDate( getCurSelectedBarDate ().toString() );
-//				jiarujihua.setJiaRuDate (curselectdate);
-//				int exchangeresult = JOptionPane.showConfirmDialog(null, jiarujihua, "输入分析结果", JOptionPane.OK_CANCEL_OPTION);
-//				if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//					return;
-//				
-//				int autoIncKeyFromApi =	bkdbopt.setZdgzRelatedActions (jiarujihua);
-//				
-//				jiarujihua = null;
-//			}
-//			
-//		});
     }
     /*
      * 用户可以定义显示的颜色
@@ -406,9 +426,11 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	if(indexforbar != -1)
     		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer(0)).setBarColumnShouldChangeColor(indexforbar);
     	
-    	int indexforline = this.linechartdataset.getColumnIndex(selecteddate) ;
-    	if(indexforline != -1)
+    	int indexforline = this.linequekouchartdataset.getColumnIndex(selecteddate) ;
+    	if(indexforline != -1) {
     		((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(3)).setBarColumnShouldChangeColor(indexforline);
+//    		((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(4)).setBarColumnShouldChangeColor(indexforline);
+    	}
     	
         this.dateselected = selecteddate;
         //特别标记选定的周，作用在界面上操作后会体会出来。
@@ -448,30 +470,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        String oldText = this.dateselected + this.tooltipselected;
         this.dateselected = newdate ;
         
-//        String outputhtml = "";
-//        org.jsoup.nodes.Document outputdoc = Jsoup.parse(outputhtml);
-//        org.jsoup.select.Elements outputcontent = outputdoc.select("body");
-//        for(org.jsoup.nodes.Element outputbody : outputcontent) {
-//        	org.jsoup.nodes.Element div = outputbody.appendElement("div");
-//        	org.jsoup.nodes.Element nodecode = div.appendElement("nodecode");
-//    		nodecode.appendText(this.curdisplayednode.getMyOwnCode() + this.curdisplayednode.getMyOwnName());
-//    		
-//    		org.jsoup.nodes.Element nodetype = div.appendElement("nodetype");
-//    		nodetype.appendText(String.valueOf(this.curdisplayednode.getType() ) );
-//    				
-//    		org.jsoup.nodes.Document doc = Jsoup.parse(selectedtooltip);
-//    		org.jsoup.select.Elements lis = doc.select("dl");
-//    		
-////    			org.jsoup.select.Elements lis = body.select("dl");
-//    			for(org.jsoup.nodes.Element li : lis) {
-//    				div.appendChild(li);
-//    			}
-//    		
-//        }
-//        
-//		String htmlstring = outputdoc.toString();
-		
-//		PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  htmlstring );
+
         PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  this.dateselected );
         pcs.firePropertyChange(evt);
     }
@@ -489,17 +488,12 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		else 
 			this.displayhuibuquekou = false;
 	}
-	/*
-	 * 
-	 */
-//    public ChartPanel getChartPanel() {
-//        return chartPanel;
-//    }
     
-	private JMenuItem mntmFenXiJiLu;
-	protected DefaultCategoryDataset linechartdataset;
-	protected JMenuItem mntmHideBars;
-	private JMenuItem mntmHideQueKouData;
+//	private JMenuItem mntmFenXiJiLu;
+	protected DefaultCategoryDataset linequekouchartdataset;
+//	protected DefaultCategoryDataset linezdtchartdataset; //涨跌停
+	protected JMenuItem mntmHideZdt;
+	protected JMenuItem mntmHideQueKouData;
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
@@ -540,16 +534,22 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         plot.setDomainAxis(domainaxis);
         
         //line part,for QueKou
-        linechartdataset = new DefaultCategoryDataset();  
-        BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
-        plot.setDataset(3, linechartdataset);
-        plot.setRenderer(3, linerenderer);
+        linequekouchartdataset = new DefaultCategoryDataset();  
+        BanKuaiFengXiCategoryLineRenderer lineqkrenderer = new BanKuaiFengXiCategoryLineRenderer ();
+        plot.setDataset(3, linequekouchartdataset);
+        plot.setRenderer(3, lineqkrenderer);
         ValueAxis rangeAxis2 = new NumberAxis("");
         plot.setRangeAxis(3, rangeAxis2);
-//        plot.setDomainAxis(3, domainaxis);
-        
+
+//        linezdtchartdataset= new DefaultCategoryDataset();  
+//        BanKuaiFengXiCategoryLineRenderer linezdtrenderer = new BanKuaiFengXiCategoryLineRenderer ();
+//        plot.setDataset(4, linezdtchartdataset);
+//        plot.setRenderer(4, linezdtrenderer);
+//        plot.setRangeAxis(4, rangeAxis2);
+
         plot.mapDatasetToRangeAxis(0, 0);
 		plot.mapDatasetToRangeAxis(3, 3);
+//		plot.mapDatasetToRangeAxis(4, 3);
 		
 //		plot.mapDatasetToDomainAxis(0, 0);
 //		plot.mapDatasetToDomainAxis(3, 0);
@@ -575,11 +575,11 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //		mntmqkopendown = new JMenuItem("统计新开向下跳空缺口");
 //		mntmqkhuibuup = new JMenuItem("统计回补上跳空缺口");
 //		mntmqkhuibudown = new JMenuItem("统计回补下跳空缺口");
-        mntmHideBars = new JMenuItem("隐藏占比数据");
-        mntmHideBars.setEnabled(false);
-        mntmHideQueKouData = new JMenuItem("隐藏缺口数据");
-        mntmHideQueKouData.setEnabled(false);
-		chartPanel.getPopupMenu().add(mntmHideBars);
+        mntmHideZdt = new JMenuItem("突出涨跌停数据");
+//        mntmHideZdt.setEnabled(false);
+        mntmHideQueKouData = new JMenuItem("突出缺口数据");
+//        mntmHideQueKouData.setEnabled(false);
+		chartPanel.getPopupMenu().add(mntmHideZdt);
 		chartPanel.getPopupMenu().add(mntmHideQueKouData);
 		
 		this.categorymarkerlist = new ArrayList<> ();

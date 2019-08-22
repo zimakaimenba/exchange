@@ -46,6 +46,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjlZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
@@ -373,7 +374,7 @@ public class BanKuaiFengXi extends JDialog
 		tableBkZhanBi.repaint();
 		
 		String reminder = "提示: \n"
-						+ "1. 注意板块占比是否放量。"
+						+ "1. 注意板块占比是否放量。\n"
 						+ "2. 好友板块是否同时放量。"
 						;
 		showReminderMessage (reminder);
@@ -408,7 +409,6 @@ public class BanKuaiFengXi extends JDialog
 			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		} catch (java.lang.NullPointerException e) {
 			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
-//			logger.debug("");
 			return;
 		}
 //		this.allbksks.syncBanKuaiData (selectedbk); //减少一次查询数据的请求，节约时间
@@ -429,18 +429,17 @@ public class BanKuaiFengXi extends JDialog
 			selectedbk = allbksks.getAllGeGuOfBanKuai (selectedbk,period); //获取所有曾经是该板块的个股
 			ArrayList<StockOfBanKuai> allbkgg = selectedbk.getAllGeGuOfBanKuaiInHistory();
 			for(StockOfBanKuai stockofbk : allbkgg)   {
-//				if(stockofbk.getMyOwnCode().equals("603259"))
-//					logger.debug("test");
-
 //				stockofbk = allbksks.getGeGuOfBanKuai(selectedbk, stockofbk,period ); //板块个股的占比，如果需要看板块成绩额饼图需要这个，目前为了速度暂时不用
-		    	 if( stockofbk.isInBanKuaiAtSpecificDate(curselectdate)  ) { //确认当前还在板块内
+		    	if( stockofbk.isInBanKuaiAtSpecificDate(curselectdate)  ) { //确认当前还在板块内
 		    		 Stock stock = allbksks.getStock(stockofbk.getMyOwnCode(), CommonUtility.getSettingRangeDate(curselectdate,"large"),curselectdate, period);
-			    		allbksks.syncStockData(stock);
+			    	 allbksks.syncStockData(stock);
 		    	 }
         		
 			}
-			//有了个股的缺口数据，就可以统计板块的缺口数据了
+			//有了个股的缺口数据，就可以统计板块的缺口数据了,
 			allbksks.getBanKuaiQueKouInfo(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate, globeperiod);
+			//同时根据个股的涨跌停数据，统计板块的涨跌停数据
+			allbksks.getBanKuaiZhangDieTingInfo(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate, globeperiod);
 			
 			//如果板块的分析结果个股数目>0，则要把符合条件的个股标记好
 			BkChanYeLianTreeNode nodeincyltree = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(selectedbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
@@ -465,9 +464,9 @@ public class BanKuaiFengXi extends JDialog
 			tabbedPanegegu.setTitleAt(0, "当前周" + curselectdate);
 			
 			//显示2周的板块个股pie chart
-			for(PieChartPanelDataChangedListener tmplistener : piechartpanelbankuaidatachangelisteners) {
-				tmplistener.updateDate(selectedbk, curselectdate, 0,globeperiod);
-			}
+//			for(PieChartPanelDataChangedListener tmplistener : piechartpanelbankuaidatachangelisteners) {
+//				tmplistener.updateDate(selectedbk, curselectdate, 0,globeperiod);
+//			}
 		}
 		
 		//板块自身占比
@@ -874,13 +873,16 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void setUserSelectedColumnMessage(TDXNodes node,String seldate) 
 	{
-//    	LocalDate selecteddate = LocalDate.parse(seldate);
-//    	NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(this.globeperiod);
     	String htmlstring = node.getNodeXPeroidDataInHtml(LocalDate.parse(seldate),this.globeperiod);
 		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
 	}
+	private void setUserSelectedColumnMessage(String htmlstring) 
+	{
+//    	String htmlstring = node.getNodeXPeroidDataInHtml(LocalDate.parse(seldate),this.globeperiod);
+		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
+	}
 	/*
-	 * 
+	 * 用户点击几个地方，显示气泡提示信息
 	 */
 	private void showReminderMessage (String showmsg)
 	{
@@ -893,6 +895,169 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void createEvents() 
 	{
+		menuItemQiangShigg.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				int row = tableGuGuZhanBiInBk.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
+				StockOfBanKuai stock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+
+				
+        		String title = "强势个股板块";
+        		String owner = "";
+        		String keywords = "强势个股板块";
+        		LocalDate mDate = dateChooser.getLocalDate();
+        		int meetingtype = Meeting.QIANSHI;
+        		
+        		//Set up description of all GPC
+        		String descriptions = "";
+        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
+        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+    			for(int i=0;i< bankuaicount; i++) {
+    				
+    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+    				String nodename = childnode.getMyOwnName();
+    				String nodecode = childnode.getMyOwnCode();
+    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+    			}
+        		
+				
+				Meeting meeting = new Meeting(title, mDate,
+		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
+				meeting.setNewsOwnerCodes(stock.getMyOwnCode() + "gg"); //
+				newsdbopt.addBanKuaiNews(meeting);
+		
+			}
+			
+		});
+
+		menuItemRuoShigg.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				int row = tableGuGuZhanBiInBk.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
+				StockOfBanKuai stock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+
+				
+        		String title = "弱势个股板块";
+        		String owner = "";
+        		String keywords = "弱势个股板块"; 
+        		
+        		LocalDate mDate = dateChooser.getLocalDate();
+        		int meetingtype = Meeting.RUOSHI;
+        		
+        		//Set up description of all GPC
+        		String descriptions = "";
+        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
+        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+    			for(int i=0;i< bankuaicount; i++) {
+    				
+    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+    				String nodename = childnode.getMyOwnName();
+    				String nodecode = childnode.getMyOwnCode();
+    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+    			}
+        		
+				
+				Meeting meeting = new Meeting(title, mDate,
+		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
+				meeting.setNewsOwnerCodes(stock.getMyOwnCode() + "gg"); //
+				newsdbopt.addBanKuaiNews(meeting);
+        		
+			}
+			
+		});
+		   
+		menuItemQiangShibk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				int row = tableBkZhanBi.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int modelRow = tableBkZhanBi.convertRowIndexToModel(row); 
+				BanKuai bankuai = ((BanKuaiInfoTableModel) tableBkZhanBi.getModel()).getBanKuai(modelRow);
+
+				
+        		String title = "强势个股板块";
+        		String owner = "";
+        		String keywords = "强势个股板块";
+        		LocalDate mDate = dateChooser.getLocalDate();
+        		int meetingtype = Meeting.QIANSHI;
+        		
+        		//Set up description of all GPC
+        		String descriptions = "";
+        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
+        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+    			for(int i=0;i< bankuaicount; i++) {
+    				
+    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+    				String nodename = childnode.getMyOwnName();
+    				String nodecode = childnode.getMyOwnCode();
+    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+    			}
+        		
+				
+				Meeting meeting = new Meeting(title, mDate,
+		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
+				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); //
+				newsdbopt.addBanKuaiNews(meeting);
+		
+			}
+			
+		});
+
+		
+		menuItemRuoShibk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				int row = tableBkZhanBi.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int modelRow = tableBkZhanBi.convertRowIndexToModel(row); 
+				BanKuai bankuai = ((BanKuaiInfoTableModel) tableBkZhanBi.getModel()).getBanKuai(modelRow);
+
+				
+        		String title = "弱势个股板块";
+        		String owner = "";
+        		String keywords = "弱势个股板块"; 
+        		
+        		LocalDate mDate = dateChooser.getLocalDate();
+        		int meetingtype = Meeting.RUOSHI;
+        		
+        		//Set up description of all GPC
+        		String descriptions = "";
+        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
+        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+    			for(int i=0;i< bankuaicount; i++) {
+    				
+    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+    				String nodename = childnode.getMyOwnName();
+    				String nodecode = childnode.getMyOwnCode();
+    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+    			}
+        		
+				
+				Meeting meeting = new Meeting(title, mDate,
+		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
+				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); //
+				newsdbopt.addBanKuaiNews(meeting);
+        		
+			}
+			
+		});
+
 		
 		
 		((InvisibleTreeModel)bkcyl.getBkChanYeLianTree().getModel()).addTreeModelListener( new  TreeModelListener () {
@@ -1055,7 +1220,7 @@ public class BanKuaiFengXi extends JDialog
 		menuItemnonfixperiod.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	calStockNoneFixPeriodDpMinWk ();
+            	calStockNoneFixPeriodDpMXXWk ();
             }
         });
 
@@ -1158,32 +1323,32 @@ public class BanKuaiFengXi extends JDialog
 //			}
 //		});
 		
-		menuItemRmvNodeFmFile.addActionListener(new ActionListener() {
-			@Override
-
-			public void actionPerformed(ActionEvent evt) {
-//				int bkrow = tableBkZhanBi.getSelectedRow();
-//				if(bkrow <0) {
-//					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
-//					return;
-//				}
-				
-//				int bkmodelRow = tableBkZhanBi.convertRowIndexToModel(bkrow);
-//				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(bkmodelRow);
-				
-//				int ggrow = tableGuGuZhanBiInBk.getSelectedRow();
-//				if(ggrow <0) {
-//					JOptionPane.showMessageDialog(null,"请选择一个股票！","Warning",JOptionPane.WARNING_MESSAGE);
-//					return;
-//				}
-//				
-//				int ggmodelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(ggrow);
-//				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
+//		menuItemRmvNodeFmFile.addActionListener(new ActionListener() {
+//			@Override
 //
-//				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			}
-			
-		});
+//			public void actionPerformed(ActionEvent evt) {
+////				int bkrow = tableBkZhanBi.getSelectedRow();
+////				if(bkrow <0) {
+////					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+////					return;
+////				}
+//				
+////				int bkmodelRow = tableBkZhanBi.convertRowIndexToModel(bkrow);
+////				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(bkmodelRow);
+//				
+////				int ggrow = tableGuGuZhanBiInBk.getSelectedRow();
+////				if(ggrow <0) {
+////					JOptionPane.showMessageDialog(null,"请选择一个股票！","Warning",JOptionPane.WARNING_MESSAGE);
+////					return;
+////				}
+////				
+////				int ggmodelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(ggrow);
+////				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
+////
+////				LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//			}
+//			
+//		});
 		
 		cyltreecopy.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -2083,7 +2248,7 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 对不确定周期计算占比，以周占比作为比较对象
 	 */
-	protected void calStockNoneFixPeriodDpMinWk() 
+	protected void calStockNoneFixPeriodDpMXXWk() 
 	{
 		DateRangeSelectPnl datachoose = new DateRangeSelectPnl (1); 
 		JOptionPane.showMessageDialog(null, datachoose,"选择时间段", JOptionPane.OK_CANCEL_OPTION);
@@ -2136,7 +2301,7 @@ public class BanKuaiFengXi extends JDialog
 			 li2.appendText("占比" + decimalformate.format(zhanbi) );
 		}
 		
-		setUserSelectedColumnMessage (selectstock.getStock(),doc.toString());
+		setUserSelectedColumnMessage (doc.toString());
 	}
 	/*
 	 * 导出用户选择的node的单独信息到CSV
@@ -2981,6 +3146,10 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiFengXiNodeCombinedCategoryPnl pnlbkwkcjlzhanbi;
 	private JTabbedPane tabbedPanebkzb;
 	private JMenuItem menuItemnonshowselectbkinfo;
+	private JMenuItem menuItemQiangShibk;
+	private JMenuItem menuItemRuoShibk;
+	private JMenuItem menuItemQiangShigg;
+	private JMenuItem menuItemRuoShigg;
 	
 	
 	private void initializeGui() {
@@ -3700,12 +3869,21 @@ public class BanKuaiFengXi extends JDialog
        jPopupMenuoftabbedpanebk.add(menuItembktocsv);
        
        menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
-       tableBkZhanBi.getPopupMenu().add(menuItemsiglebktocsv);
+       menuItemQiangShibk = new JMenuItem("设为强势板块");
+	   menuItemRuoShibk = new JMenuItem("设为弱势板块");
+	   tableBkZhanBi.getPopupMenu().add(menuItemQiangShibk);
+	   tableBkZhanBi.getPopupMenu().add(menuItemRuoShibk);
+	   tableBkZhanBi.getPopupMenu().add(menuItemsiglebktocsv);
        
-       menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
-       menuItemRmvNodeFmFile.setEnabled(false);
-       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRmvNodeFmFile);
+//       menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
+//       menuItemRmvNodeFmFile.setEnabled(false);
+//       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRmvNodeFmFile);
 		
+	   menuItemQiangShigg = new JMenuItem("设为强势个股");
+	   menuItemRuoShigg = new JMenuItem("设为弱势个股");
+	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemQiangShigg);
+	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRuoShigg);
+	   
        menuItemsiglestocktocsv = new JMenuItem("导出个股到CSV");
        tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsiglestocktocsv);
        

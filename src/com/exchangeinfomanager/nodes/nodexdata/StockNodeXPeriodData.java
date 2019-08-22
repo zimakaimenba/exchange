@@ -84,21 +84,22 @@ public class StockNodeXPeriodData extends TDXNodesXPeriodData
 		
 		try {
 			stockhuanshoulv.setNotify(false);
-			stockhuanshoulv.add(kdata.getPeriod(),kdata.getHuanshoulv(),false);
+			if(kdata.getHuanshoulv() != null && kdata.getHuanshoulv() !=0.0 )
+				stockhuanshoulv.add(kdata.getPeriod(),kdata.getHuanshoulv(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-//			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
-//			e.printStackTrace();
 		} 
 		try {
 			stockliutongshizhi.setNotify(false);
-			stockliutongshizhi.add(kdata.getPeriod(),kdata.getLiutongshizhi(),false);
+			if(kdata.getLiutongshizhi() != null && kdata.getLiutongshizhi() !=  0.0 )
+				stockliutongshizhi.add(kdata.getPeriod(),kdata.getLiutongshizhi(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
 //			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
 //			e.printStackTrace();
 		}
 		try {	
 			stockzongshizhi.setNotify(false);
-			stockzongshizhi.add(kdata.getPeriod(),kdata.getZongshizhi(),false);
+			if( kdata.getZongshizhi() != null && kdata.getZongshizhi() != 0)
+				stockzongshizhi.add(kdata.getPeriod(),kdata.getZongshizhi(),false);
 			
 		} catch (org.jfree.data.general.SeriesException e) {
 //			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
@@ -106,7 +107,8 @@ public class StockNodeXPeriodData extends TDXNodesXPeriodData
 		}
 		try {	
 			periodhighestzhangdiefu.setNotify(false);
-			periodhighestzhangdiefu.add(kdata.getPeriod(),kdata.getPeriodhighestzhangdiefu(),false);
+			if( kdata.getPeriodhighestzhangdiefu() != null && kdata.getPeriodhighestzhangdiefu() != 0)
+				periodhighestzhangdiefu.add(kdata.getPeriod(),kdata.getPeriodhighestzhangdiefu(),false);
 			
 		} catch (org.jfree.data.general.SeriesException e) {
 //			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
@@ -114,7 +116,8 @@ public class StockNodeXPeriodData extends TDXNodesXPeriodData
 		}
 		try {	
 			periodlowestzhangdiefu.setNotify(false);
-			periodlowestzhangdiefu.add(kdata.getPeriod(),kdata.getPeriodlowestzhangdiefu(),false);
+			if( kdata.getPeriodlowestzhangdiefu() != null && kdata.getPeriodlowestzhangdiefu() != 0)
+				periodlowestzhangdiefu.add(kdata.getPeriod(), kdata.getPeriodlowestzhangdiefu(),false);
 			
 		} catch (org.jfree.data.general.SeriesException e) {
 //			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
