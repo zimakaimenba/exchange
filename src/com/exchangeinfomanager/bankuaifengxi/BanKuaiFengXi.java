@@ -135,6 +135,8 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuBas
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuBasicTableModel;
 import java.awt.Font;
 import java.awt.MouseInfo;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 
 public class BanKuaiFengXi extends JDialog 
@@ -361,7 +363,7 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void unifiedOperationsAfterUserSelectABanKuai (BanKuai selectedbk)
 	{
-		refreshCurentBanKuaiFengXiResult (selectedbk,globeperiod);
+		refreshCurentBanKuaiFengXiResult (selectedbk,globeperiod); //板块内个股的分析结果
 		
 		Integer alreadyin = ((JStockComboBoxModel)combxsearchbk.getModel()).hasTheNode(selectedbk.getMyOwnCode());
 		if(alreadyin == -1)
@@ -429,6 +431,9 @@ public class BanKuaiFengXi extends JDialog
 			selectedbk = allbksks.getAllGeGuOfBanKuai (selectedbk,period); //获取所有曾经是该板块的个股
 			ArrayList<StockOfBanKuai> allbkgg = selectedbk.getAllGeGuOfBanKuaiInHistory();
 			for(StockOfBanKuai stockofbk : allbkgg)   {
+				if(stockofbk.getMyOwnCode().equals("600812") )
+					logger.debug("tet start");
+				
 //				stockofbk = allbksks.getGeGuOfBanKuai(selectedbk, stockofbk,period ); //板块个股的占比，如果需要看板块成绩额饼图需要这个，目前为了速度暂时不用
 		    	if( stockofbk.isInBanKuaiAtSpecificDate(curselectdate)  ) { //确认当前还在板块内
 		    		 Stock stock = allbksks.getStock(stockofbk.getMyOwnCode(), CommonUtility.getSettingRangeDate(curselectdate,"large"),curselectdate, period);
@@ -1990,6 +1995,24 @@ public class BanKuaiFengXi extends JDialog
             	}
             }
         });
+		
+		tableGuGuZhanBiInBk.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) 
+			{
+//				if(e.getKeyCode() == KeyEvent.VK_UP) {
+//					int row = tableGuGuZhanBiInBk.getSelectedRow();
+//					if(row <0) {
+//						JOptionPane.showMessageDialog(null,"请选择一个股票！","Warning",JOptionPane.WARNING_MESSAGE);
+//						return;
+//					}
+//					
+//					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row -1 );
+//					StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+//					performActionsForGeGuTablesAfterUserSelected (selectstock,tableGuGuZhanBiInBk);
+//				}
+			}
+		});
 		/*
 		 * 
 		 */
@@ -3423,6 +3446,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		
 		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager);
+		
 //		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
 //		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);

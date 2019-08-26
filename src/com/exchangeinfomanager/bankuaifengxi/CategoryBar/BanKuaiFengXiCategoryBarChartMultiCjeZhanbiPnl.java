@@ -50,9 +50,9 @@ public class BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl extends BanKuaiFengX
 		((CustomMultiCategroyRendererForZhanBi) plot.getRenderer()).setBaseToolTipGenerator(custotooltip);
 		
         //line part
-        linechartdataset = new DefaultCategoryDataset();
+		linequekouchartdataset = new DefaultCategoryDataset();
         BanKuaiFengXiCategoryLineRenderer linerenderer = new BanKuaiFengXiCategoryLineRenderer ();
-        plot.setDataset(1, linechartdataset);
+        plot.setDataset(1, linequekouchartdataset);
         plot.setRenderer(1, linerenderer);
         ValueAxis rangeAxis2 = new NumberAxis("");
         plot.setRangeAxis(1, rangeAxis2);

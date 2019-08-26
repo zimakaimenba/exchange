@@ -17,7 +17,9 @@ public class HanYuPinYing {
 	private static Logger logger = Logger.getLogger(HanYuPinYing.class);
 	
 	public String getBanKuaiNameOfPinYin (String chinese)
-	 {
+	{
+//		if(chinese.contains("柳工茾"))
+//			logger.debug("test start");
 		 //logger.debug(chinese);
 		 //这部分获得全部拼音
 		 HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
@@ -36,8 +38,14 @@ public class HanYuPinYing {
 	        try {
 	            for (int i = 0; i < input.length; i++) {
 	                if (java.lang.Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) {
-	                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(input[i], format);
-	                    output += temp[0];
+	                	try{
+	                		String[] temp = PinyinHelper.toHanyuPinyinStringArray(input[i], format);
+	                		if(temp != null)
+	                			output += temp[0];
+	                	} catch (java.lang.NullPointerException e ) {
+	                		e.printStackTrace();
+	                	}
+	                    
 	                } else
 	                    output += java.lang.Character.toString(input[i]);
 	            }
@@ -47,7 +55,7 @@ public class HanYuPinYing {
 	       //logger.debug(output);
 	       
 	       //这部分获得首字母拼音
-	        StringBuffer pybf = new StringBuffer();  
+	       StringBuffer pybf = new StringBuffer();  
            char[] arr = chinese.toCharArray();  
            HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();  
            defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);  

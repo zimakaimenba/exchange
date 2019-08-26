@@ -153,10 +153,12 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 //				}	else
 //					super.linezdtchartdataset.setValue(0, "ZhangTing", wkfriday );
 				
-				if(dttj != null) {
+				if(dttj != null) { //确保右边坐标combined pnl显示同样的值
 					super.linequekouchartdataset.setValue(dttj, "DieTing", wkfriday );
 					if (dttj > zdtmax)
 						zdtmax = dttj ;
+					if (zttj != null  && zttj > zdtmax)
+						zdtmax = zttj;
 				}	else
 					super.linequekouchartdataset.setValue(0, "DieTing", wkfriday );
 				
@@ -271,7 +273,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				}	else
 					super.linequekouchartdataset.setValue(0, "QueKouHuiBuUpQk", wkfriday );
 				
-				if(opneupquekou != null && opneupquekou > qkmax) 
+				if(opneupquekou != null && opneupquekou > qkmax) //确保右边坐标combined pnl显示同样的值
 					qkmax = opneupquekou;
 				if(huibudowquekou != null && huibudowquekou >qkmax)
 					qkmax = huibudowquekou;

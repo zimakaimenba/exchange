@@ -5849,7 +5849,8 @@ public class BanKuaiDbOperation
 							savedfile.delete();
 						
 						FileUtils.copyURLToFile(URLink, savedfile,10000,10000); //http://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/FileUtils.html#copyURLToFile(java.net.URL,%20java.io.File)
-					
+					} catch (java.net.SocketTimeoutException e)  {
+						logger.info("获取" + stockcode + "网易数据超时！");
 					} catch ( IOException e) {
 						e.printStackTrace();
 					}finally {
@@ -5857,7 +5858,7 @@ public class BanKuaiDbOperation
 					}
 					//导入数据到数据库
 					if(!savedfile.exists()) {
-						System.out.println(stockcode + "似乎未能从网易得到"+ stockcode + "的数据文件，请检查！");
+						System.out.println(stockcode + "：似乎未能从网易得到"+ stockcode + "的数据文件，请检查！");
 						try {
 							Files.append(stockcode + "似乎未能从网易得到"+ stockcode + "的数据文件，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 						} catch (IOException e) {

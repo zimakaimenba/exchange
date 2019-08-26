@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
@@ -84,7 +85,7 @@ public class WholeMonthNewsView extends View
                 color = ColorScheme.BACKGROUND;
 
                 pnlmonthnews.setLayout(new BorderLayout());
-                pnlmonthnews.addMouseListener(new WholeMonthNewsController(Meeting.CHANGQIJILU, firstDayInMonth));
+                pnlmonthnews.addMouseListener(new WholeMonthCreateNewsController(Meeting.CHANGQIJILU, firstDayInMonth));
                 
                 JLabel newscontentsLabel = new JLabel(String.valueOf(firstDayInMonth.getMonth()));
                 newscontentsLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -106,7 +107,7 @@ public class WholeMonthNewsView extends View
            	
            	pnlqiangshibk.setLayout(new BorderLayout());
            	pnlqiangshibk.setBackground(color);
-           	pnlqiangshibk.addMouseListener(new WholeMonthNewsController(Meeting.QIANSHI, firstDayInMonth));
+           	pnlqiangshibk.addMouseListener(new WholeMonthCreateNewsController(Meeting.QIANSHI, firstDayInMonth));
             
            	JUpdatedLabel qiangshibkLabel = new JUpdatedLabel("强势板块/个股");
             qiangshibkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -123,7 +124,7 @@ public class WholeMonthNewsView extends View
            	pnlruoshibk.setName(firstDayInMonth  + "rrrrrr");
            	pnlruoshibk.setLayout(new BorderLayout());
            	pnlruoshibk.setBackground(color);
-           	pnlruoshibk.addMouseListener(new WholeMonthNewsController(Meeting.RUOSHI, firstDayInMonth));
+           	pnlruoshibk.addMouseListener(new WholeMonthCreateNewsController(Meeting.RUOSHI, firstDayInMonth));
            	
            	JUpdatedLabel ruoshibkLabel = new JUpdatedLabel("弱势板块/个股");
            	ruoshibkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -142,7 +143,7 @@ public class WholeMonthNewsView extends View
            	pnlpguanzhubk.setName(firstDayInMonth  + "gzgzgz");
            	pnlpguanzhubk.setLayout(new BorderLayout());
            	pnlpguanzhubk.setBackground(color);
-           	pnlpguanzhubk.addMouseListener(new WholeMonthNewsController(Meeting.JINQIGUANZHU, firstDayInMonth));
+           	pnlpguanzhubk.addMouseListener(new WholeMonthCreateNewsController(Meeting.JINQIGUANZHU, firstDayInMonth));
            	
            	JUpdatedLabel guanzhubkLabel = new JUpdatedLabel("近期关注板块个股(谈股论金)");
            	guanzhubkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
@@ -360,7 +361,7 @@ public class WholeMonthNewsView extends View
         label.setToolTipText( getLabelToolTipText(m) );
         label.setOpaque(true);
         label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
-        label.addMouseListener(new MeetingController());
+        label.addMouseListener(new ReviseMeetingController());
         label.setForeground(Color.BLACK);
         label.setBackground(l.getColor());
         label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
@@ -374,7 +375,7 @@ public class WholeMonthNewsView extends View
         label.setToolTipText( getLabelToolTipText(m) );
         label.setOpaque(true);
         label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
-        label.addMouseListener(new MeetingController());
+        label.addMouseListener(new ReviseMeetingController());
         label.setForeground(ColorScheme.BLACK_FONT);
         label.setBackground(ColorScheme.GREY_WHITER_DARKER);
         label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
@@ -387,12 +388,12 @@ public class WholeMonthNewsView extends View
         this.onMeetingChange(cache);
     }
 
-    private class WholeMonthNewsController extends MouseAdapter 
+    private class WholeMonthCreateNewsController extends MouseAdapter 
     { 
     	private int meetingtype;
 //    	private LocalDate createdate ;
     	
-    	WholeMonthNewsController (int meetingtype, LocalDate monthbelonged)
+    	WholeMonthCreateNewsController (int meetingtype, LocalDate monthbelonged)
     	{
     		this.meetingtype = meetingtype;
     	}
@@ -449,13 +450,14 @@ public class WholeMonthNewsView extends View
                 Meeting meeting = new Meeting(title, mDate,
                 		descriptions, keywords, new HashSet<>(),"URL",owner,this.meetingtype);
                 getCreateDialog().setMeeting(meeting);
+                getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 getCreateDialog().setVisible(true);
         	}
             
         }
     }
 	
-    private class MeetingController extends MouseAdapter 
+    private class ReviseMeetingController extends MouseAdapter 
     {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -474,6 +476,7 @@ public class WholeMonthNewsView extends View
             }
             
             getModifyDialog().setMeeting(meeting);
+            getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
             getModifyDialog().setVisible(true);
             
 //            Optional<InsertedMeeting> meeting = getCache().produceMeetings()

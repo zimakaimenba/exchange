@@ -212,6 +212,9 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			cjezblargepnl.resetLineDate();
 			((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
 			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.CLEARLINEDATA ) ) {
+			cjelargepnl.resetLineDate ();
+			cjezblargepnl.resetLineDate();
 		}
 		
 	}

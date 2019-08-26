@@ -23,6 +23,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.util.Integers;
 import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -88,17 +89,36 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    
 	    Color foreground = Color.BLACK, background = Color.white;
 	    
-	    if( (table.isRowSelected(row) || stock.wetherHasReiewedToday() ) && col == 0 ) {
+	    if( (table.isRowSelected(row) || stock.wetherHasReiewedToday() ) && col == 0 ) { //当前选择选择
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
 		    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);
-		    OHLCItem ohlcdata = nodexdata.getSpecificDateOHLCData(requireddate, 0);
-		    double open = ohlcdata.getOpenValue();
-		    double close = ohlcdata.getCloseValue();
-		    if(close >= open)
-		    	background =  Color.RED;
-		    else
+		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+	    
+		    if(zhangdiefu > 0 )
+		    	background = Color.RED;
+		    else if(zhangdiefu < 0 )
 		    	background = Color.GREEN;
+		    else
+		    	background = Color.WHITE;
+//		    //周线阳线
+//		    if(close >= closelast && zhangtingnum >0 && dieting == 0)
+//		    	background =  new Color(255,255,255);
+//		    else if(close >= closelast && dieting >0 && zhangtingnum >0)
+//		    	background = new Color(255,102,102);
+//		    else if(close >= closelast && dieting >0 && zhangtingnum == 0)
+//		    	background = new Color(255,128,0);
+//		    else if(close >= closelast && dieting == 0 && zhangtingnum ==0)
+//		    	background = new Color(255,153,153);
+//		    //周线阴线
+//		    else if(close < closelast && dieting == 0 && zhangtingnum >0)
+//		    	background = new Color(204,153,153)	;
+//		    else if(close < closelast && dieting >0 && zhangtingnum >0)
+//		    	background = new Color(128,255,0);
+//		    else if(close < closelast && dieting >0 && zhangtingnum ==0)
+//		    	background = new Color(0,153,0);
+//		    else if(close < closelast && dieting == 0 && zhangtingnum ==0)
+//		    	background = new Color(51,255,51);
 	    }
 	    
 	    if( col == 1 ) { //个股名称

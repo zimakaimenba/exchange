@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
+import java.awt.Font;
 
 public class BuyStockNumberPrice extends JPanel 
 {
@@ -290,6 +291,13 @@ public class BuyStockNumberPrice extends JPanel
 			}
 		});
 	}
+	public Boolean shouldOpenGeGuFenXi ()
+	{
+		if(chkbxgegufenxi.isSelected())
+			return true;
+		else
+			return false;
+	}
 	
 	private JLabel lblNewLabel_3;
 	private JTextField tfdShuoMing;
@@ -303,6 +311,7 @@ public class BuyStockNumberPrice extends JPanel
 	private JTextField tfldJiage;
 	private JCheckBox chckbxNewCheckBox;
 	private JLabel lbljiaoyidaima;
+	private JCheckBox chkbxgegufenxi;
 	private void initializeGui() 
 	{
 		lblNewLabel = new JLabel("\u4EA4\u6613\u8D26\u6237");
@@ -337,6 +346,9 @@ public class BuyStockNumberPrice extends JPanel
 		
 		lbljiaoyidaima = new JLabel("\u80A1\u7968\u4EE3\u7801");
 		
+		chkbxgegufenxi = new JCheckBox("\u540C\u65F6\u6253\u5F00\u4E2A\u80A1\u5206\u6790\u5DE5\u5177");
+		chkbxgegufenxi.setFont(new Font("ËÎÌו", Font.PLAIN, 11));
+		
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -344,41 +356,37 @@ public class BuyStockNumberPrice extends JPanel
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblNewLabel_1)
-							.addGap(1))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblNewLabel_3)
-							.addGap(1))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lbljiaoyidaima)
-								.addComponent(lblNewLabel))
-							.addGap(1))
-						.addComponent(chckbxNewCheckBox))
-					.addGap(1)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(3)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel_1)
+								.addComponent(lblNewLabel_3)
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+									.addComponent(lbljiaoyidaima)
+									.addComponent(lblNewLabel))
+								.addComponent(chckbxNewCheckBox))
+							.addGap(1)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(tfldJiage, GroupLayout.PREFERRED_SIZE, 82, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblNewLabel_2)
-									.addGap(18)
-									.addComponent(tfldGushu, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE))
-								.addComponent(cbxZhanghu, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE)
-								.addComponent(dChsActionDay, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE)
-								.addComponent(tfldStockCode, GroupLayout.PREFERRED_SIZE, 272, GroupLayout.PREFERRED_SIZE))
-							.addGap(73))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tfdShuoMing, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(30, Short.MAX_VALUE))
+									.addGap(3)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addComponent(tfldJiage, GroupLayout.PREFERRED_SIZE, 82, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(ComponentPlacement.UNRELATED)
+											.addComponent(lblNewLabel_2)
+											.addGap(18)
+											.addComponent(tfldGushu, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE))
+										.addComponent(cbxZhanghu, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE)
+										.addComponent(dChsActionDay, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE)
+										.addComponent(tfldStockCode, GroupLayout.PREFERRED_SIZE, 272, GroupLayout.PREFERRED_SIZE)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfdShuoMing, GroupLayout.PREFERRED_SIZE, 280, GroupLayout.PREFERRED_SIZE))))
+						.addComponent(chkbxgegufenxi))
+					.addContainerGap(107, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-					.addContainerGap(10, Short.MAX_VALUE)
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap(71, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addComponent(dChsActionDay, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
 						.addComponent(chckbxNewCheckBox))
@@ -390,26 +398,23 @@ public class BuyStockNumberPrice extends JPanel
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 						.addComponent(cbxZhanghu, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-					.addGap(4)
-					.addGroup(groupLayout.createSequentialGroup()
-						.addGap(7)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(lblNewLabel_1)
-							.addComponent(tfldJiage, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-							.addComponent(lblNewLabel_2)
-							.addComponent(tfldGushu, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)))
-					.addGap(4)
-					.addGroup(groupLayout.createSequentialGroup()
-						.addGap(8)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(lblNewLabel_3)
-							.addComponent(tfdShuoMing, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
-					.addGap(63))
+					.addGap(11)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel_1)
+						.addComponent(tfldJiage, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel_2)
+						.addComponent(tfldGushu, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
+					.addGap(12)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel_3)
+						.addComponent(tfdShuoMing, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(chkbxgegufenxi)
+					.addGap(38))
 		);
 		setLayout(groupLayout);
 
 	
 		
 	}
-	
 }

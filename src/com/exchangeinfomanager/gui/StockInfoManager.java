@@ -1015,7 +1015,8 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				showWeeklyFenXiWizardDialog (LocalDate.now());
+				if(kspanel.shouldOpenGeGuFenXi())
+					showWeeklyFenXiWizardDialog (LocalDate.now());
 				
 				if(kspanel.getJiaoyiGushu()>0 && kspanel.getJiaoyiJiage()>0) {
 					saveKuaiSuJiLuJiaoYi ();

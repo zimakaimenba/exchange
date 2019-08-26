@@ -305,7 +305,8 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
                             .toInstant(ZoneOffset.UTC);
     }
 
-    private class LabelListDialog extends JDialog {
+    private class LabelListDialog extends JDialog 
+    {
         JPanel centerPanel;
 
         private LabelListDialog() {
@@ -318,7 +319,8 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 
         }
 
-        void display() {
+        void display() 
+        {
             this.centerPanel.removeAll();
             Collection<InsertedMeeting.Label> labels = cache.produceLabels();
             for (InsertedMeeting.Label label : labels) {
@@ -378,6 +380,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
             });
 
             super.setMinimumSize(new Dimension(200, (int) this.centerPanel.getPreferredSize().getHeight() + 40));
+            super.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
             super.setVisible(true);
         }
     }

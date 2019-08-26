@@ -131,6 +131,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public static final String MOUSEDOUBLECLICK_PROPERTY = "mousedoubleclick";
 	public static final String DISPLAYZHANGDIETING = "zhangdieting";
 	public static final String DISPLAYQUEKOUDATA = "quekou";
+	public static final String CLEARLINEDATA = "clearlinedata";
 	protected boolean selectchanged;
 //	private String tooltipselected;
 	protected LocalDate dateselected;
@@ -301,6 +302,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		if(linequekouchartdataset != null)
 			linequekouchartdataset.clear();
 		
+		plot.getRangeAxis(3).setRange(0, 1.12);
+		
 //		if(this.linezdtchartdataset != null)
 //			this.linezdtchartdataset.clear();
 		
@@ -365,6 +368,22 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			}
 			
 		});
+    	mntmClearLineData.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+//				if(linequekouchartdataset != null)
+//					linequekouchartdataset.clear();
+				
+//				if(linezdtchartdataset != null)
+//					linezdtchartdataset.clear();
+				
+				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CLEARLINEDATA, "", "quekou" );
+	            pcs.firePropertyChange(evtqk);
+		
+			}
+			
+		});
+    	
     	
     	chartPanel.addChartMouseListener(new ChartMouseListener() {
 
@@ -494,6 +513,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //	protected DefaultCategoryDataset linezdtchartdataset; //涨跌停
 	protected JMenuItem mntmHideZdt;
 	protected JMenuItem mntmHideQueKouData;
+	protected JMenuItem mntmClearLineData;
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
@@ -578,9 +598,11 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         mntmHideZdt = new JMenuItem("突出涨跌停数据");
 //        mntmHideZdt.setEnabled(false);
         mntmHideQueKouData = new JMenuItem("突出缺口数据");
+        mntmClearLineData = new JMenuItem("仅显占比数据");
 //        mntmHideQueKouData.setEnabled(false);
 		chartPanel.getPopupMenu().add(mntmHideZdt);
 		chartPanel.getPopupMenu().add(mntmHideQueKouData);
+		chartPanel.getPopupMenu().add(mntmClearLineData);
 		
 		this.categorymarkerlist = new ArrayList<> ();
    }

@@ -34,7 +34,7 @@ public class DaPanNodeXPeriodData implements NodeXPeriodDataBasic
 	private BanKuai shenzhen;
 
 	/*
-	 * ����ָ�����ں������ڵĳɽ�����
+	 * 
 	 */
 	public Double getChengJiaoErDifferenceWithLastPeriod (LocalDate requireddate,int difference)
 	{
@@ -47,7 +47,12 @@ public class DaPanNodeXPeriodData implements NodeXPeriodDataBasic
 		NodeXPeriodDataBasic shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
 		Double szcurrecord = shenzhenperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
 		
-		dapanchaer = szcurrecord + shcurrecord ;
+		try{
+			dapanchaer = szcurrecord + shcurrecord ;
+		} catch (java.lang.NullPointerException e) {
+			dapanchaer = 0.0;
+			e.printStackTrace();
+		}
 		return dapanchaer ;
 	}
 

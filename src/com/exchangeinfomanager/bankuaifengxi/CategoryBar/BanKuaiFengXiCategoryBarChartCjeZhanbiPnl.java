@@ -149,21 +149,14 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 				Integer zttj = ( (TDXNodesXPeriodData) nodexdata).getZhangTingTongJi(tmpdate, 0);
 				Integer dttj = ( (TDXNodesXPeriodData) nodexdata).getDieTingTongJi(tmpdate, 0);
 				 
-				if(zttj != null) {
+				if(zttj != null) { //确保右边坐标combined pnl显示同样的值
 					super.linequekouchartdataset.setValue(zttj, "ZhangTing", wkfriday );
 					if (zttj > zdtmax)
 						zdtmax = zttj ;
+					if (dttj != null  && dttj > zdtmax)
+						zdtmax = dttj;
 				}	else
 					super.linequekouchartdataset.setValue(0, "ZhangTing", wkfriday );
-				
-//				if(dttj != null) {
-//					super.linequekouchartdataset.setValue(dttj, "DieTing", wkfriday );
-//					if (dttj > zdtmax)
-//						zdtmax = dttj ;
-//				}	else
-//					super.linequekouchartdataset.setValue(0, "DieTing", wkfriday );
-				
-			
 			}
 			
 			
@@ -222,7 +215,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			}	else
 				super.linequekouchartdataset.setValue(0, "QueKouHuiBuDownQk", wkfriday );
 			
-			if(opendownquekou != null && opendownquekou > qkmax) 
+			if(opendownquekou != null && opendownquekou > qkmax) //确保右边坐标combined pnl显示同样的值
 				qkmax = opendownquekou;
 			if(huibuupquekou != null && huibuupquekou >qkmax)
 				qkmax = huibuupquekou;

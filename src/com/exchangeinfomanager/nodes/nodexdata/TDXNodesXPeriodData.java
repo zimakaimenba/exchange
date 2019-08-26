@@ -1626,53 +1626,6 @@ import com.udojava.evalex.Expression;
 		@Override
 		public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) 
 		{
-			Double curcje = this.getChengJiaoEr(requireddate, 0);
-			String cjedanwei = null;
-			try{
-				cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(curcje);
-				curcje = FormatDoubleToShort.formateDoubleToShort (curcje);
-			} catch (java.lang.NullPointerException e) {
-//				e.printStackTrace();
-				logger.debug(this.nodecode + "在" + requireddate.toString() + "没有数据，可能停牌。");
-				return "";
-			}
-	    	
-	    		
-	    	Integer cjemaxwk = null;
-	    	try{
-	    		cjemaxwk = this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大
-	    	} catch (java.lang.NullPointerException e) {
-	    		
-	    	}
-	    	Integer cjeminwk = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate, 0);
-	    	
-			Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//成交额大盘变化贡献率
-			Double curcjezhanbidata = this.getChenJiaoErZhanBi(requireddate, 0);  //占比
-			Integer cjemaxweek = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(requireddate,0);//nodefx.getGgbkzhanbimaxweek();
-			Integer cjeminweek = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate,0);
-
-			Double curcjl = this.getChengJiaoLiang(requireddate, 0);
-	    	String cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(curcjl);
-	    	curcjl = FormatDoubleToShort.formateDoubleToShort (curcjl);
-	    		
-	    	Integer cjlmaxwk = null;
-	    	try{
-	    		cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
-	    	} catch (java.lang.NullPointerException e) {
-	    		
-	    	}
-	    	Integer cjlminwk = null;
-	    	try{
-	    		cjlminwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
-	    	} catch (java.lang.NullPointerException e) {
-	    		
-	    	}
-	    	Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate, 0);
-			Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
-			
-			Integer cjlzbmaxwk = this.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(requireddate, 0);
-			Integer cjlzbminwk = this.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(requireddate, 0);
-			
 			DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
 	    	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
 	    	percentFormat.setMinimumFractionDigits(4);
@@ -1684,89 +1637,164 @@ import com.udojava.evalex.Expression;
 				org.jsoup.nodes.Element dl = elbody.appendElement("dl");
 				 
 				 org.jsoup.nodes.Element lidate = dl.appendElement("li");
-				 lidate.appendText(requireddate.toString());
-				
-				 org.jsoup.nodes.Element licje = dl.appendElement("li");
-				 licje.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
+				 org.jsoup.nodes.Element fontdate = lidate.appendElement("font");
+				 fontdate.appendText(requireddate.toString());
+				 fontdate.attr("color", "#17202A");
 				 
+				 Double curcje = this.getChengJiaoEr(requireddate, 0);
+				 String cjedanwei = null;
+				 try{
+						cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(curcje);
+						curcje = FormatDoubleToShort.formateDoubleToShort (curcje);
+				 } catch (java.lang.NullPointerException e) {
+//						e.printStackTrace();
+						logger.debug(this.nodecode + "在" + requireddate.toString() + "没有数据，可能停牌。");
+						return "";
+				 }
+				 org.jsoup.nodes.Element licje = dl.appendElement("li");
+				 org.jsoup.nodes.Element fontcje = licje.appendElement("font");
+				 fontcje.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
+				 fontcje.attr("color", "#AF7AC5");
+				 
+				 Integer cjemaxwk = null;
+			     try{
+			    		cjemaxwk = this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大
+			     } catch (java.lang.NullPointerException e) {
+			    		
+			     }
+			     Integer cjeminwk = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate, 0);
 				 if(cjemaxwk>0) {
 					 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
-					 licjemaxwk.appendText("成交额MaxWk=" + cjemaxwk);
+					 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
+					 fontcjemaxwk.appendText("成交额MaxWk=" + cjemaxwk);
+					 fontcjemaxwk.attr("color", "#AF7AC5 ");
 				 } else {
 					 org.jsoup.nodes.Element licjeminwk = dl.appendElement("li");
-					 licjeminwk.appendText("成交额MinWk=" + (0-cjeminwk) );
+					 org.jsoup.nodes.Element fontcjeminwk = licjeminwk.appendElement("font");
+					 fontcjeminwk.appendText("成交额MinWk=" + (0-cjeminwk) );
+					 fontcjeminwk.attr("color", "#AF7AC5 ");
 				 }
 				 
 				 try{
-					 htmlstring = "成交额大盘变化贡献率" + percentFormat.format (cjechangerate) ;
-					 
-					 org.jsoup.nodes.Element licjechangerate = dl.appendElement("li");
-					 licjechangerate.appendText(htmlstring);
+					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//成交额大盘变化贡献率
+					 if(cjechangerate != -100.0) {
+						 htmlstring = "成交额大盘变化贡献率" + percentFormat.format (cjechangerate) ;
+						 org.jsoup.nodes.Element licjechangerate = dl.appendElement("li");
+						 org.jsoup.nodes.Element fontcjechangerate = licjechangerate.appendElement("font");
+						 fontcjechangerate.appendText(htmlstring);
+						 fontcjechangerate.attr("color", "#AF7AC5 ");
+					 }
 				 } catch (java.lang.IllegalArgumentException e) {
 //					 li4.appendText("成交额大盘变化贡献率NULL" );
 				 }
 
 				try {
+					Double curcjezhanbidata = this.getChenJiaoErZhanBi(requireddate, 0);  //占比
+					
 					DecimalFormat decimalformate2 = new DecimalFormat("%#0.00000");
 					org.jsoup.nodes.Element licjezb = dl.appendElement("li");
-					licjezb.appendText( "成交额占比" + decimalformate2.format(curcjezhanbidata)  );
+					org.jsoup.nodes.Element fontcjezb = licjezb.appendElement("font");
+					fontcjezb.appendText( "成交额占比" + decimalformate2.format(curcjezhanbidata)  );
+					fontcjezb.attr("color", "#17202A");
 				} catch (java.lang.IllegalArgumentException e ) {
 //					htmltext = "占比占比NULL" ;
 				}
 				
+				Integer cjemaxweek = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(requireddate,0);//nodefx.getGgbkzhanbimaxweek();
+				Integer cjeminweek = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate,0);
 				if(cjemaxweek > 0) {
 					try {
 						 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
-						 licjemaxwk.appendText( "CJE占比MaxWk=" + cjemaxweek.toString()  );
+						 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
+						 fontcjemaxwk.appendText( "成交额占比MaxWk=" + cjemaxweek.toString()  );
+						 fontcjemaxwk.attr("color", "#17202A");
 					} catch (java.lang.IllegalArgumentException e ) {
 //						htmltext = "占比MaxWk=NULL"  ;
 					}
 				} else {
 					try {
 						 org.jsoup.nodes.Element licjeminwk = dl.appendElement("li");
-						 licjeminwk.appendText( "CJE占比MinWk=" + cjeminweek.toString()  );
+						 org.jsoup.nodes.Element fontcjeminwk = licjeminwk.appendElement("font");
+						 fontcjeminwk.appendText( "成交额占比MinWk=" + cjeminweek.toString()  );
+						 fontcjeminwk.attr("color", "#17202A");  
 					} catch (java.lang.IllegalArgumentException e ) {
 //						htmltext = "占比MaxWk=NULL"  ;
 					}
 				}
-				 
+				 //
+				 Double curcjl = this.getChengJiaoLiang(requireddate, 0);
+		    	 String cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(curcjl);
+		    	 curcjl = FormatDoubleToShort.formateDoubleToShort (curcjl);
 				 org.jsoup.nodes.Element licjl = dl.appendElement("li");
-				 licjl.appendText("成交量" + decimalformate.format(curcjl) + cjldanwei);
-				 
+				 org.jsoup.nodes.Element fontcjl = licjl.appendElement("font");
+				 fontcjl.appendText("成交量" + decimalformate.format(curcjl) + cjldanwei);
+				 fontcjl.attr("color", "#641E16");
+				 //
+				 Integer cjlmaxwk = null;
+			     try{
+			    		cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
+			     } catch (java.lang.NullPointerException e) {
+			    		
+			     }
+			     Integer cjlminwk = null;
+			     try{
+			    		cjlminwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
+			     } catch (java.lang.NullPointerException e) {
+			    		
+			     }
 				 if(cjlmaxwk>0) {
 					 org.jsoup.nodes.Element licjlmaxwk = dl.appendElement("li");
-					 licjlmaxwk.appendText("成交量MaxWk=" + cjlmaxwk);
+					 org.jsoup.nodes.Element fontcjlmaxwk = licjlmaxwk.appendElement("font");
+					 fontcjlmaxwk.appendText("成交量MaxWk=" + cjlmaxwk);
+					 fontcjlmaxwk.attr("color", "#641E16");
 				 } else {
 					 org.jsoup.nodes.Element licjlminwk = dl.appendElement("li");
-					 licjlminwk.appendText("成交量MinWk=" + (0-cjlminwk) );
+					 org.jsoup.nodes.Element fontcjlminwk = licjlminwk.appendElement("font");
+					 fontcjlminwk.appendText("成交量MinWk=" + (0-cjlminwk) );
+					 fontcjlminwk.attr("color", "#641E16");
 				 }
-				 
+				 //
 				 try{
-					 org.jsoup.nodes.Element licjlchangerate = dl.appendElement("li");
-					 licjlchangerate.appendText( "成交量大盘变化贡献率" + percentFormat.format (cjlchangerate)  );
+					 Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
+					 if( cjlchangerate != -100.0) {
+						 org.jsoup.nodes.Element licjlchangerate = dl.appendElement("li");
+						 org.jsoup.nodes.Element fontcjlchangerate = licjlchangerate.appendElement("font");
+						 fontcjlchangerate.appendText( "成交量大盘变化贡献率" + percentFormat.format (cjlchangerate)  );
+						 fontcjlchangerate.attr("color", "#641E16");
+					 }
 				 } catch (java.lang.IllegalArgumentException e) {
 //					 li4.appendText("成交额大盘变化贡献率NULL" );
 				 }
 
 				try {
+					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate, 0);
+					
 					DecimalFormat decimalformate2 = new DecimalFormat("%#0.00000");
 					org.jsoup.nodes.Element licjlzb = dl.appendElement("li");
-					licjlzb.appendText( "成交量占比" + decimalformate2.format(cjlzhanbidata)  );
+					org.jsoup.nodes.Element fontzjlzb = licjlzb.appendElement("font");
+					fontzjlzb.appendText( "成交量占比" + decimalformate2.format(cjlzhanbidata)  );
+					fontzjlzb.attr("color", "#512E5F");
 				} catch (java.lang.IllegalArgumentException e ) {
 //					htmltext = "占比占比NULL" ;
 				}
 				
+				Integer cjlzbmaxwk = this.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(requireddate, 0);
+				Integer cjlzbminwk = this.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(requireddate, 0);
 				if(cjlzbmaxwk > 0) {
 					try {
 						 org.jsoup.nodes.Element licjlmaxwk = dl.appendElement("li");
-						 licjlmaxwk.appendText( "CJL占比MaxWk=" + cjlzbmaxwk.toString()  );
+						 org.jsoup.nodes.Element fontcjlmaxwk = licjlmaxwk.appendElement("font");
+						 fontcjlmaxwk.appendText( "成交量占比MaxWk=" + cjlzbmaxwk.toString()  );
+						 fontcjlmaxwk.attr("color", "#512E5F");
 					} catch (java.lang.IllegalArgumentException e ) {
 //						htmltext = "占比MaxWk=NULL"  ;
 					}
 				} else {
 					try {
 						 org.jsoup.nodes.Element licjlminwk = dl.appendElement("li");
-						 licjlminwk.appendText( "CJL占比MinWk=" + cjlzbminwk.toString()  );
+						 org.jsoup.nodes.Element fontcjlminwk = licjlminwk.appendElement("font");
+						 fontcjlminwk.appendText( "成交量占比MinWk=" + cjlzbminwk.toString()  );
+						 fontcjlminwk.attr("color", "#512E5F");
 					} catch (java.lang.IllegalArgumentException e ) {
 //						htmltext = "占比MaxWk=NULL"  ;
 					}
@@ -1776,34 +1804,46 @@ import com.udojava.evalex.Expression;
 					 Integer opneupquekou = this.getQueKouTongJiOpenUp(requireddate, 0);
 					 if( opneupquekou != null) {
 						 org.jsoup.nodes.Element li6 = dl.appendElement("li");
-						 li6.appendText("缺口OpenUp =" + opneupquekou);
+						 org.jsoup.nodes.Element font6 = li6.appendElement("font");
+						 font6.appendText("缺口OpenUp =" + opneupquekou);
+						 font6.attr("color", "#F39C12");
 					 }
 					 Integer opendownquekou = this.getQueKouTongJiOpenDown(requireddate, 0);
 					 if( opendownquekou != null) {
 						 org.jsoup.nodes.Element li7 = dl.appendElement("li");
-						 li7.appendText("缺口OpenDown =" + opendownquekou);
+						 org.jsoup.nodes.Element font7 = li7.appendElement("font");
+						 font7.appendText("缺口OpenDown =" + opendownquekou);
+						 font7.attr("color", "#F39C12");
 					 }
 					 Integer huibuupquekou = this.getQueKouTongJiHuiBuUp(requireddate, 0);
 					 if( huibuupquekou != null) {
 						 org.jsoup.nodes.Element li8 = dl.appendElement("li");
-						 li8.appendText("缺口HuiBuUp =" + huibuupquekou );
+						 org.jsoup.nodes.Element font8 = li8.appendElement("font");
+						 font8.appendText("缺口HuiBuUp =" + huibuupquekou );
+						 font8.attr("color", "#F39C12");
 					 }
 					 Integer huibudowquekou = this.getQueKouTongJiHuiBuDown(requireddate, 0);
 					 if( huibudowquekou != null) {
 						 org.jsoup.nodes.Element li9 = dl.appendElement("li");
-						 li9.appendText("缺口HuiBuDown =" + huibudowquekou );
+						 org.jsoup.nodes.Element font9= li9.appendElement("font");
+						 font9.appendText("缺口HuiBuDown =" + huibudowquekou );
+						 font9.attr("color", "#F39C12");
 					 }
 					 
 					 Integer zhangtingnum = this.getZhangTingTongJi(requireddate, 0);
 					 if(zhangtingnum != null) {
 						 org.jsoup.nodes.Element li10 = dl.appendElement("li");
-						 li10.appendText("涨停 =" + zhangtingnum );
+						 org.jsoup.nodes.Element font10 = li10.appendElement("font");
+						 font10.appendText("涨停 =" + zhangtingnum );
+						 font10.attr("color", "#1B2631");
 					 }
 					 
 					 Integer dietingnum = this.getDieTingTongJi(requireddate, 0);
 					 if(dietingnum != null) {
 						 org.jsoup.nodes.Element li11 = dl.appendElement("li");
-						 li11.appendText("跌停 =" + dietingnum );
+						 org.jsoup.nodes.Element font11 = li11.appendElement("font");
+						 font11.appendText("跌停 =" + dietingnum );
+						 font11.attr("color", "#1B2631");
 					 }
 				 
 				

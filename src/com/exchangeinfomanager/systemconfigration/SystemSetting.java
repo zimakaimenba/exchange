@@ -654,14 +654,13 @@ public class SystemSetting extends JDialog
 	private JLabel lblNewLabel;
 	private JTextField tfldSysInstallPath;
 	private JTextField tfldTDXInstalledPath;
-	private JTable table;
+//	private JTable table;
 	private JTable tablelocal;
 	private JButton btnEditDb;
 	private JButton btmaddnewdb;
 	private JButton btndeletedbs;
 	private JButton btnChosTDXDict;
 	private JScrollPane scrollPanelocal;
-	private JButton saveButton;
 	private JButton okButton;
 	private JTextArea txtareacheckresult;
 	private JTextField tfldzdyfilepath;
@@ -671,8 +670,10 @@ public class SystemSetting extends JDialog
 	private JTextField tfldpythonptah;
 	private JButton btnchoosepython;
 	private JCheckBox ckbxzdy;
+	private JButton saveButton;
 	private void initializeGui() 
 	{
+		saveButton = new JButton ();
 		setTitle("\u7CFB\u7EDF\u8BBE\u7F6E");
 		
 		setBounds(100, 100, 603, 854);
@@ -709,8 +710,6 @@ public class SystemSetting extends JDialog
 		btndeletedbs.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/minus_red.png")));
 		
 		scrollPanelocal = new JScrollPane();
-		
-		saveButton = new JButton("");
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		
@@ -757,7 +756,6 @@ public class SystemSetting extends JDialog
 							.addContainerGap())
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(saveButton)
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(lblNewLabel_1)
 									.addPreferredGap(ComponentPlacement.RELATED)
@@ -771,7 +769,7 @@ public class SystemSetting extends JDialog
 								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_contentPanel.createSequentialGroup()
 										.addComponent(lblNewLabel_2)
-										.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addPreferredGap(ComponentPlacement.RELATED, 274, Short.MAX_VALUE)
 										.addComponent(btnEditDb)
 										.addPreferredGap(ComponentPlacement.RELATED)
 										.addComponent(btmaddnewdb)
@@ -838,16 +836,14 @@ public class SystemSetting extends JDialog
 								.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
 								.addComponent(lblPythonInterpreter))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(cbxprivatemode)
-							.addGap(16)
-							.addComponent(saveButton))
+							.addComponent(cbxprivatemode))
 						.addComponent(btnchoosepython))
-					.addGap(8)
+					.addGap(58)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblNewLabel_2)
 						.addComponent(btnEditDb)
 						.addComponent(btmaddnewdb)
-						.addComponent(btndeletedbs)
-						.addComponent(lblNewLabel_2))
+						.addComponent(btndeletedbs))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
 					.addGap(28)
@@ -905,9 +901,6 @@ public class SystemSetting extends JDialog
 				buttonPane.add(cancelButton);
 			}
 		}
-		
-		saveButton.setOpaque(false);//
-		saveButton.setContentAreaFilled(false); //隐藏按钮的方法
 		
 		this.setLocationRelativeTo(null);
 	}
