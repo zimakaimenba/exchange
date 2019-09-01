@@ -152,7 +152,7 @@ public class StockNodeXPeriodData extends TDXNodesXPeriodData
 		try {
 			curzsz = curzszrecord.getValue().doubleValue();
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			
 		}
 		

@@ -345,7 +345,11 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 			        	background = Color.WHITE;
 	        	}
 	        	
-	        } else  //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
+	        } 
+	        if (comp instanceof JLabel && ( col == 3 ||   col == 5 ||  col == 6  )) {
+	        	background = new Color(51,204,255);
+	        }
+	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
 	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||  col == 4 ||  col == 5 ||  col == 6  )) {
             	String value =  ((JLabel)comp).getText();
             	if(value == null || value.length() == 0)
@@ -364,7 +368,7 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 					e.printStackTrace();
 				}
             	((JLabel)comp).setText(valuepect);
-	        } else
+	        } 
 	        if( col == 1 && !bktype.equals(BanKuai.NOGGWITHSELFCJL) ) {
 	        	NodesTreeRelated tmptreerelated = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK).getNodeTreeRelated();
 //	        	TreeRelated tmptreerelated = bankuai.getNodeTreerelated (); 

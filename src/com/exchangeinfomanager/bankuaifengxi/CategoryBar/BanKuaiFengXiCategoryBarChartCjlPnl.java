@@ -101,34 +101,6 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 				} 
 			}
 			
-			//QueKou Line Part
-//			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
-//				Integer opneupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
-//				Integer opendownquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
-//				Integer huibuupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
-//				Integer huibudowquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
-//				 
-//				if(opendownquekou != null) {
-//					super.linechartdataset.setValue(opendownquekou, "QueKouOpenDown", wkfriday );
-//					if (opendownquekou > qkmax)
-//						qkmax = opendownquekou ;
-//				}	else
-//					super.linechartdataset.setValue(0, "QueKouOpenDown", wkfriday );
-//				
-//				if(huibuupquekou != null) {
-//					super.linechartdataset.setValue(huibuupquekou, "QueKouHuiBuUpQk", wkfriday );
-//					if (huibuupquekou > qkmax)
-//						qkmax = huibuupquekou ;
-//				}	else
-//					super.linechartdataset.setValue(0, "QueKouHuiBuUpQk", wkfriday );
-//				
-//				if(opneupquekou != null && opneupquekou > qkmax) 
-//					qkmax = opneupquekou;
-//				if(huibudowquekou != null && huibudowquekou >qkmax)
-//					qkmax = huibudowquekou;
-//			}
-			
-			
 			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))

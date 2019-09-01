@@ -115,68 +115,18 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		do {
 			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 			//ZhanBi Part
-			Double cjezb = nodexdata.getChenJiaoErZhanBi(tmpdate, 0);
-			if(cjezb != null) {
-				barchartdataset.setValue(cjezb,super.getRowKey(),wkfriday );
+			Double cjlzb = nodexdata.getChenJiaoLiangZhanBi(tmpdate, 0);
+			if(cjlzb != null) {
+				barchartdataset.setValue(cjlzb,super.getRowKey(),wkfriday );
 
-				if(cjezb > highestHigh)
-					highestHigh = cjezb;
+				if(cjlzb > highestHigh)
+					highestHigh = cjlzb;
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
-					cjezb = 0.0;
+					cjlzb = 0.0;
 					barchartdataset.setValue(0.0,super.getRowKey(),wkfriday );
 				} 
 			}
-			
-//			//对个股有关注记录的时候
-//			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG) { //对个股有关注记录的时候
-//					Integer gzjl = ((StockNodeXPeriodData)nodexdata).hasGzjlInPeriod(tmpdate, 0);
-//					if(gzjl != null) {
-//						double angle; Color paintcolor;String label;
-//						if(gzjl == 1) {
-//							angle = 10 * Math.PI/4;
-//							paintcolor = Color.YELLOW;
-//							label = "jr";
-//						}	else {						
-//							angle = 10 * Math.PI/4;
-//							paintcolor = Color.YELLOW;
-//							label = "yc";
-//						}
-//						CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, wkfriday , cjezb, angle);
-//	//					cpa.setBaseRadius(0.0);
-//	//			        cpa.setTipRadius(25.0);
-//				        cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
-//				        cpa.setPaint(paintcolor);
-//				        cpa.setTextAnchor(TextAnchor.CENTER);
-//						super.plot.addAnnotation(cpa);
-//					}
-//			}
-
-//			//QueKou Line Part
-//			Integer opneupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
-//			Integer opendownquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
-//			Integer huibuupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
-//			Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
-//			 
-//			if(opneupquekou != null) {
-//				super.linechartdataset.setValue(opneupquekou, "QueKouOpenUp", wkfriday );
-//				if (opneupquekou > qkmax)
-//					qkmax = opneupquekou ;
-//			}	else
-//				super.linechartdataset.setValue(0, "QueKouOpenUp", wkfriday );
-//			
-//			if(huibudowquekou != null) {
-//				super.linechartdataset.setValue(huibudowquekou, "QueKouHuiBuDownQk", wkfriday );
-//				if (huibudowquekou > qkmax)
-//					qkmax = huibudowquekou ;
-//			}	else
-//				super.linechartdataset.setValue(0, "QueKouHuiBuDownQk", wkfriday );
-//			
-//			if(opendownquekou != null && opendownquekou > qkmax) 
-//				qkmax = opendownquekou;
-//			if(huibuupquekou != null && huibuupquekou >qkmax)
-//				qkmax = huibuupquekou;
-
 			
 			
 			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
@@ -304,8 +254,8 @@ class CustomCategroyRendererForCjlZhanBi extends BanKuaiFengXiCategoryBarRendere
 		String selected =  dataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
 
-    	Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
-    	Integer minweek = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(selecteddate,0);
+    	Integer maxweek = nodexdata.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
+    	Integer minweek = nodexdata.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(selecteddate,0);
     	
 		if(maxweek != null  && maxweek >= super.displayedmaxwklevel)
 			return Color.MAGENTA;

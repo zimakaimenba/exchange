@@ -252,6 +252,7 @@ public class MonthView extends View
                 Meeting meeting = new Meeting("新闻标题",mDate,
                      "描述", "关键词", new HashSet<>(),"SlackURL","000000",Meeting.DAPANNEWS);
                 getCreateDialog().setMeeting(meeting);
+                getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 getCreateDialog().setVisible(true);
         	}
             
@@ -290,6 +291,7 @@ public class MonthView extends View
             	showWeeklyFenXiWizardDialog  ("000000",date);
             } else {
             	getModifyDialog().setMeeting(meeting);
+            	getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 getModifyDialog().setVisible(true);
             }
             

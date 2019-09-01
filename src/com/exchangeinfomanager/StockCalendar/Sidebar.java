@@ -154,6 +154,7 @@ public class Sidebar extends View implements CacheListener {
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             createLabelDialog.setLabel(new Meeting.Label("New label", ColorScheme.ORANGE_LIGHT, true));
+            getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
             createLabelDialog.setVisible(true);
         }
     }
@@ -173,6 +174,7 @@ public class Sidebar extends View implements CacheListener {
 		                  "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
 		            		
 		               getCreateDialog().setMeeting(meeting);
+		               getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
 		               getCreateDialog().setVisible(true);
 		               
             } else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -190,6 +192,7 @@ public class Sidebar extends View implements CacheListener {
             Optional<InsertedMeeting.Label> label = cache.produceLabels().stream().filter(l -> l.getID() == id).findFirst();
             if (label.isPresent()) {
                 modifyLabelDialog.setLabel(label.get());
+                getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 modifyLabelDialog.setVisible(true);
             }
         }

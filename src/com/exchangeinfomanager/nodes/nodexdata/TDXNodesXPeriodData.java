@@ -1629,6 +1629,7 @@ import com.udojava.evalex.Expression;
 			DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
 	    	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
 	    	percentFormat.setMinimumFractionDigits(4);
+	    	DecimalFormat decimalformate2 = new DecimalFormat("%#0.00000");
 				
 			String htmlstring = "";
 			org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
@@ -1691,7 +1692,6 @@ import com.udojava.evalex.Expression;
 				try {
 					Double curcjezhanbidata = this.getChenJiaoErZhanBi(requireddate, 0);  //占比
 					
-					DecimalFormat decimalformate2 = new DecimalFormat("%#0.00000");
 					org.jsoup.nodes.Element licjezb = dl.appendElement("li");
 					org.jsoup.nodes.Element fontcjezb = licjezb.appendElement("font");
 					fontcjezb.appendText( "成交额占比" + decimalformate2.format(curcjezhanbidata)  );
@@ -1721,6 +1721,13 @@ import com.udojava.evalex.Expression;
 //						htmltext = "占比MaxWk=NULL"  ;
 					}
 				}
+				
+				Double cjezbgrowthrate = this.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(requireddate, 0);
+				org.jsoup.nodes.Element licjezbgr = dl.appendElement("li");
+				org.jsoup.nodes.Element fontcjezbgr = licjezbgr.appendElement("font");
+				fontcjezbgr.appendText( "成交额占比增长率=" + decimalformate2.format(cjezbgrowthrate)  );
+				fontcjezbgr.attr("color", "#17202A");
+				
 				 //
 				 Double curcjl = this.getChengJiaoLiang(requireddate, 0);
 		    	 String cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(curcjl);
@@ -1769,7 +1776,6 @@ import com.udojava.evalex.Expression;
 				try {
 					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate, 0);
 					
-					DecimalFormat decimalformate2 = new DecimalFormat("%#0.00000");
 					org.jsoup.nodes.Element licjlzb = dl.appendElement("li");
 					org.jsoup.nodes.Element fontzjlzb = licjlzb.appendElement("font");
 					fontzjlzb.appendText( "成交量占比" + decimalformate2.format(cjlzhanbidata)  );
@@ -1799,6 +1805,12 @@ import com.udojava.evalex.Expression;
 //						htmltext = "占比MaxWk=NULL"  ;
 					}
 				}
+				
+				Double cjlzbgrowthrate = this.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(requireddate, 0);
+				org.jsoup.nodes.Element licjlzbgr = dl.appendElement("li");
+				org.jsoup.nodes.Element fontcjlzbgr = licjlzbgr.appendElement("font");
+				fontcjlzbgr.appendText( "成交量占比增长率=" + decimalformate2.format(cjlzbgrowthrate)  );
+				fontcjlzbgr.attr("color", "#512E5F");
 
 	 
 					 Integer opneupquekou = this.getQueKouTongJiOpenUp(requireddate, 0);

@@ -598,7 +598,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         mntmHideZdt = new JMenuItem("突出涨跌停数据");
 //        mntmHideZdt.setEnabled(false);
         mntmHideQueKouData = new JMenuItem("突出缺口数据");
-        mntmClearLineData = new JMenuItem("仅显占比数据");
+        mntmClearLineData = new JMenuItem("仅显示占比数据");
 //        mntmHideQueKouData.setEnabled(false);
 		chartPanel.getPopupMenu().add(mntmHideZdt);
 		chartPanel.getPopupMenu().add(mntmHideQueKouData);
@@ -642,13 +642,14 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis
     		try{
     		if(nodexdata == null)
     			return Color.black;
+    			
     		else if(nodexdata.hasFxjgInPeriod(selecteddate, 0)) 
         		return Color.magenta.darker();
         	else 
-        		return Color.black;
+        		return Color.BLACK;
     		} catch (java.lang.NullPointerException e) {
 //    			System.out.println(period);
-    			return Color.black;
+    			return Color.BLACK;
     			
     		}
 //    		return null;

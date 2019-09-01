@@ -22,6 +22,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Period;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
@@ -545,7 +547,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			org.jfree.data.time.Day qkhbday = new org.jfree.data.time.Day (sqlqkhbdate);
 			
 		    try{
-			        double millisonemonth = qkhbday.getFirstMillisecond();
+			        long millisonemonth = qkhbday.getFirstMillisecond();
 			        ValueMarker marker = new  ValueMarker(millisonemonth);  // position is the value on the axis
 					marker.setPaint(Color.CYAN.brighter());
 					float[] dashPattern = { 6, 2 };
@@ -556,6 +558,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 					marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
 //					marker.setLabel( tmpmeeting.getDescription() ); // see JavaDoc for labels, colors, strokes
 					marker.setLabelPaint(Color.YELLOW);
+					
 					
 					candlestickChart.getXYPlot().addDomainMarker(marker);
 					
@@ -668,35 +671,47 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         	return ;
         }
 		
-		Day onemonthhighdate = null, twomonthhighdate=null;
-		double onemonthhigh = 0.0, onemonthlessclose = 0.0; //指定周期后1个月的最大值最小值
-		double twomonthhigh = 0.0, towmonthlessclose = 0.0; //指定周期后2个月的最大值最小值
-		
-		int itemcount = ohlcSeries.getItemCount();
-		for(int i=0;i<itemcount;i++){
-//			Double low  = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getLowValue();
-			Double high = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getHighValue();
-			
-				//高亮显示选中的那一周，本来要划一个长方形，觉得实现太麻烦，改在renderer里面高亮
-				//寻找1月/2月最大值
-				RegularTimePeriod dataitemp = ohlcSeries.getPeriod(i);
-				LocalDate endd = dataitemp.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				long betweendays = Math.abs(endd.toEpochDay() - highlightweekdate.toEpochDay() );
-				if(endd.isAfter(highlightweekdate) && betweendays <= 30) {
-					if(high > onemonthhigh) {
-						onemonthhigh = high;	
-						onemonthhighdate = new Day(dataitemp.getEnd());
-					}
-				} 
-				if(endd.isAfter(highlightweekdate) && betweendays <= 60  ) {
-					if(high > twomonthhigh) {
-						twomonthhigh = high;
-						twomonthhighdate = new Day(dataitemp.getEnd());
-					}
-				}
-		}
-        
+      //如果本周有指数关键日期marker，同时高亮指数关键日期
+        for(ValueMarker marker :this.categorymarkerlist ) {
+        	double milliseconds =  marker.getValue(); 
+        	LocalDate markerdate =  Instant.ofEpochMilli((long)milliseconds).atZone(ZoneId.systemDefault()).toLocalDate();
+        	
+        	Boolean result = CommonUtility.isInSameWeek(highlightweekdate, markerdate);
+        	if(result)
+        		marker.setPaint(Color.YELLOW.brighter());
+        	else
+        		marker.setPaint(Color.CYAN.brighter());
+        	
+        }
         //draw annotation 1/2月后的最高点
+//		Day onemonthhighdate = null, twomonthhighdate=null;
+//		double onemonthhigh = 0.0, onemonthlessclose = 0.0; //指定周期后1个月的最大值最小值
+//		double twomonthhigh = 0.0, towmonthlessclose = 0.0; //指定周期后2个月的最大值最小值
+//		int itemcount = ohlcSeries.getItemCount();
+//		for(int i=0;i<itemcount;i++){
+////			Double low  = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getLowValue();
+//			Double high = ( (OHLCItem)ohlcSeries.getDataItem(i) ).getHighValue();
+//			
+//				//高亮显示选中的那一周，本来要划一个长方形，觉得实现太麻烦，改在renderer里面高亮
+//				//寻找1月/2月最大值
+//				RegularTimePeriod dataitemp = ohlcSeries.getPeriod(i);
+//				LocalDate endd = dataitemp.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//				long betweendays = Math.abs(endd.toEpochDay() - highlightweekdate.toEpochDay() );
+//				if(endd.isAfter(highlightweekdate) && betweendays <= 30) {
+//					if(high > onemonthhigh) {
+//						onemonthhigh = high;	
+//						onemonthhighdate = new Day(dataitemp.getEnd());
+//					}
+//				} 
+//				if(endd.isAfter(highlightweekdate) && betweendays <= 60  ) {
+//					if(high > twomonthhigh) {
+//						twomonthhigh = high;
+//						twomonthhighdate = new Day(dataitemp.getEnd());
+//					}
+//				}
+//		}
+	    
+    
 //        try {
 //	        double millisonemonth = onemonthhighdate.getFirstMillisecond();
 //	        XYPointerAnnotation pointeronemonth = new XYPointerAnnotation(String.valueOf(onemonthhigh), millisonemonth, onemonthhigh, 0 );
@@ -924,8 +939,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		if(selecteddate == null)
 			return;
 		
-		LocalDate selectdate1 = CommonUtility.formateStringToDate(selecteddate.toString());
-		this.highLightSpecificDateCandleStickWithHighLowValue(selectdate1, TDXNodeGivenPeriodDataItem.DAY, true);
+//		LocalDate selectdate1 = CommonUtility.formateStringToDate(selecteddate.toString());
+		this.highLightSpecificDateCandleStickWithHighLowValue(selecteddate, TDXNodeGivenPeriodDataItem.DAY, true);
 		
 	}
 	@Override

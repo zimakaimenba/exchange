@@ -232,7 +232,12 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 		    	 else 
 		    		 background = Color.white ;
 		    } else   if( col == 5 && value != null  ) {	    //Í»³ö»»ÊÖÂÊ
-		    	double hsl = Double.parseDouble( tablemodel.getValueAt(modelRow, 5).toString() );
+		    	double hsl;
+		    	try{
+		    		 hsl = Double.parseDouble( tablemodel.getValueAt(modelRow, 5).toString() );
+		    	 } catch (java.lang.NullPointerException e) {
+		    		 hsl = 0.0;
+		    	 }
 		    	
 		    	double shouldhsl = tablemodel.getDisplayHuanShouLv();
 		    	if(hsl >= shouldhsl)

@@ -431,8 +431,8 @@ public class BanKuaiFengXi extends JDialog
 			selectedbk = allbksks.getAllGeGuOfBanKuai (selectedbk,period); //获取所有曾经是该板块的个股
 			ArrayList<StockOfBanKuai> allbkgg = selectedbk.getAllGeGuOfBanKuaiInHistory();
 			for(StockOfBanKuai stockofbk : allbkgg)   {
-				if(stockofbk.getMyOwnCode().equals("600812") )
-					logger.debug("tet start");
+//				if(stockofbk.getMyOwnCode().equals("600812") )
+//					logger.debug("tet start");
 				
 //				stockofbk = allbksks.getGeGuOfBanKuai(selectedbk, stockofbk,period ); //板块个股的占比，如果需要看板块成绩额饼图需要这个，目前为了速度暂时不用
 		    	if( stockofbk.isInBanKuaiAtSpecificDate(curselectdate)  ) { //确认当前还在板块内

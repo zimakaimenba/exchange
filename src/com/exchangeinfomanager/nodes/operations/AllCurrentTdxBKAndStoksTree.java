@@ -189,8 +189,8 @@ public class AllCurrentTdxBKAndStoksTree
 				if( !stockofbk.isInBanKuaiAtSpecificDate(tmpdate)  )  //确认当前还在板块内
 					continue;
 				
-				if(stockofbk.getMyOwnCode().equals("600812") && tmpdate.getYear() == 2019 && tmpdate.getMonthValue() == 8)
-					logger.debug("tet start");
+//				if(stockofbk.getMyOwnCode().equals("600812") && tmpdate.getYear() == 2019 && tmpdate.getMonthValue() == 8)
+//					logger.debug("tet start");
 				
 				Stock stock = stockofbk.getStock();
 				NodeXPeriodDataBasic stockxdate = stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);

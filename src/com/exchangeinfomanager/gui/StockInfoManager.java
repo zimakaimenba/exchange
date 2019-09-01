@@ -270,7 +270,6 @@ public class StockInfoManager
 			BkChanYeLianTreeNode tmpstock = allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpsgstockcodename.substring(0, 6), BkChanYeLianTreeNode.TDXGG);
 			( (JStockComboBoxModel)cBxstockcode.getModel() ).addElement(tmpstock);
 
-//			cBxstockcode.addItem(tmpsgstockcodename );
 		}
 		try {
 			kspanel.setStockcode(cBxstockcode.getSelectedItem().toString().substring(0, 6));
@@ -3243,10 +3242,13 @@ class AccountsInfoTableModel extends DefaultTableModel
                 break;
             case 1:
             	NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(); 
-            	
-                value = currencyFormat.format(0 - tmpstkcc.getChicangchenben()); //因为成本为负
+            	try {
+            		value = currencyFormat.format(0 - tmpstkcc.getChicangchenben()); //因为成本为负
+            	} catch (java.lang.NullPointerException e) {
+        			e.printStackTrace();
+        		}
 
-                break;
+            	break;
             case 2:
             	//NumberFormat currencyFormat1 = NumberFormat.getCurrencyInstance();
                 value = tmpstkcc.getChicanggushu();
