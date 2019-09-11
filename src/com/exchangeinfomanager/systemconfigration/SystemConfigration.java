@@ -55,17 +55,18 @@ public class SystemConfigration
 	private CurDataBase curdbs; //本地数据库连接信息
 	private CurDataBase rmtcurdb; //远程数据库连接信息
 	private int tryingcount = 0; //系统如果出错，会重试3次，3次不成直接退出
-	private String bkparsestoredpath;
+//	private String bkparsestoredpath;
 	private int setSoftWareMode; //设定系统模式，有2种，基本数据和通达信同步数据。
-	private String datatablesfromserver;
+//	private String datatablesfromserver;
 	private String tdxzdybkpath;
 	public static int MODELSERVER=0, MODELCLIENT=1, MODELSERVERCLIENT=2;
-	private int givenperiodofmonth;
+//	private int givenperiodofmonth;
 	private int zhanbifengxizhouqi; //成交量占比分析周期
 	private double bkdpzhanbimarker;
 	private double ggdpzhanbimarker;
 	private Boolean priavtemode;
 	private String pythoninterpreter;
+	private String nameofguanzhubankuai;
 	
 	private void getSystemInfoFromXML() 
 	{
@@ -137,12 +138,14 @@ public class SystemConfigration
 			Element eletdx = xmlroot.element("tdxpah");
 			this.tdxinstalledpath = eletdx.getText();
 			
-			Element eletbkparsefile = xmlroot.element("bankuaiparsefilepah");
-			this.bkparsestoredpath = eletbkparsefile.getText();
+			Element eletbkparsefile = xmlroot.element("nameofguanzhubankuai");
+			this.nameofguanzhubankuai = eletbkparsefile.getText();
 			
 			Element tdxzdyfilepath = xmlroot.element("tdxzdybkpath");
-			this.tdxzdybkpath = tdxzdyfilepath.getText();
-			
+			if(tdxzdyfilepath != null)
+				this.tdxzdybkpath = tdxzdyfilepath.getText();
+			else 
+				this.tdxzdybkpath = null;
 			
 			Element zhanbifengxizhouqi = xmlroot.element("zhanbifengxizhouqi");
 			this.zhanbifengxizhouqi = Integer.parseInt(zhanbifengxizhouqi.getText());
@@ -155,7 +158,7 @@ public class SystemConfigration
 			
 			 
 			
-			//本地数据库信息
+			//数据库信息
 			Element elesorce = xmlroot.element("databasesources");
 			Iterator it = elesorce.elementIterator();
 			while (it.hasNext()) 
@@ -622,11 +625,21 @@ public class SystemConfigration
 		 */
 		public String getTDXSysZDYBanKuaiFile ()
 		{
-//			return this.getTDXInstalledLocation() + "T0002/blocknew/blocknew.cfg";
+//			return 
 //			return "\\\\jeffauas\\blocknew\\blocknew.cfg";
-			return this.tdxzdybkpath + "blocknew.cfg";
+			if(this.tdxzdybkpath != null)
+				return this.tdxzdybkpath + "blocknew.cfg";
+			else
+				return this.getTDXInstalledLocation() + "T0002/blocknew/blocknew.cfg"; 
 			
 //			"\\\\Comp-1\\FileIO\\Stop.txt"
+		}
+		/*
+		 * 关注的自定义板块的名字
+		 */
+		public String getNameOfGuanZhuZdyBanKuai ()
+		{
+			return this.nameofguanzhubankuai;
 		}
 		public String getTDXSysAllBanKuaiFile() 
 		{

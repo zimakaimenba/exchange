@@ -80,7 +80,7 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
 
-public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl implements BarChartPanelDataChangedListener
+public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl 
 {
 	/**
 	 * Create the panel.
@@ -104,40 +104,12 @@ public class BanKuaiFengXiPieChartCjlPnl extends BanKuaiFengXiPieChartPnl implem
 	
 	public void setBanKuaiCjeNeededDisplay (BanKuai bankuai,int weightgate,LocalDate weeknumber,String period) 
 	{
-		this.curdisplaybk = bankuai;
-		this.displayedweeknumber = weeknumber;
 		
-		ArrayList<StockOfBanKuai> tmpallbkge = bankuai.getAllCurrentBanKuaiGeGu();
-		
-		piechartdataset = new DefaultPieDataset();
-    	
-    	if(tmpallbkge == null || tmpallbkge.isEmpty())
-    		return;
-    	
-    	for ( StockOfBanKuai tmpstock : tmpallbkge) {
-    		String ggcode = tmpstock.getMyOwnCode();
-    		String stockname = tmpstock.getMyOwnName();
-    		
-    		//找到对应周的数据
-    		NodeXPeriodDataBasic stockxdataforbk = tmpstock.getNodeXPeroidData(period);
-    		TDXNodeGivenPeriodDataItem tmprecord = stockxdataforbk.getSpecficRecord(weeknumber,0);
-    		if(tmprecord != null) {
-    			double cje = tmprecord.getMyownchengjiaoliang();
-       	    	if(stockname != null)
-        	    		piechartdataset.setValue(ggcode+stockname,cje);
-       	    	else 
-        	    		piechartdataset.setValue(ggcode,cje);
-    		}
-    	}
-    	
-    	pieplot.setDataset(piechartdataset);
-//		createCjeDataset(bankuai.getMyOwnCode(),tmpallbkge,weightgate,weeknumber);
-		setPanelTitle ("成交额占比");
 		
 	}
 
 	@Override
-	public void updatedDate(TDXNodes node, LocalDate startdate, LocalDate enddate, String period) {
+	public void updateDate(TDXNodes selectedbk, LocalDate curselectdate, int i, String globeperiod) {
 		// TODO Auto-generated method stub
 		
 	}

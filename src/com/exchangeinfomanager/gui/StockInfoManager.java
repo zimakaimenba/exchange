@@ -1848,7 +1848,7 @@ public class StockInfoManager
 	private void displayStockSuoShuBanKuai() 
 	{
 //		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuCurSuoShuTDXSysBanKuaiList();
-		 editorpansuosubk.displayBanKuaiListContents((Stock)nodeshouldbedisplayed);
+		 editorpansuosubk.displayBanKuaiListContentsForStock((Stock)nodeshouldbedisplayed);
 		 
 //		 Set<String> union =  suosusysbankuai.keySet();
 //		 Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
@@ -2038,19 +2038,36 @@ public class StockInfoManager
 				} catch(java.lang.NullPointerException e) {
 					dateChsquanshang.setDate(null);
 				}
-				
-				txtareafumianxx.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxi());
+				try {
+					txtareafumianxx.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxi());
+				} catch(java.lang.NullPointerException e) {
+					txtareafumianxx.setText("");
+				}
 				try {
 					dateChsefumian.setDate( Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxidate().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
 				} catch(java.lang.NullPointerException e) {
 					dateChsefumian.setDate(null);
 				}
-				
-				
-				txtfldzhengxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan());
-				txtfldfuxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFuxiangguan());
-				tfdJingZhengDuiShou.setText(nodeshouldbedisplayed.getNodeJiBenMian().getJingZhengDuiShou());
+				try {
+					txtfldzhengxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan());
+				} catch(java.lang.NullPointerException e) {
+					txtfldzhengxg.setText("");
+				}
+				try {
+					txtfldfuxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFuxiangguan());
+				} catch(java.lang.NullPointerException e) {
+					txtfldfuxg.setText("");
+				}
+				try {
+					tfdJingZhengDuiShou.setText(nodeshouldbedisplayed.getNodeJiBenMian().getJingZhengDuiShou());
+				} catch(java.lang.NullPointerException e) {
+					tfdJingZhengDuiShou.setText("");
+				}
+				try {
 				tfdCustom.setText(nodeshouldbedisplayed.getNodeJiBenMian().getKeHuCustom());
+				} catch(java.lang.NullPointerException e) {
+					tfdCustom.setText("");
+				}
 			
 			lblStatusBarOperationIndicatior.setText("");
 			lblStatusBarOperationIndicatior.setText("相关信息查找成功");

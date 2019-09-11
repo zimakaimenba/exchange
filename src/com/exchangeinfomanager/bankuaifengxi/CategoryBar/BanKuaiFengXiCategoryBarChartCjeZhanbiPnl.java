@@ -113,9 +113,12 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 		Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
 		
-		Integer qkmax = displayQueKouLineDataToGui(nodexdata,period);
-		
-		Integer zdt = displayZhangDieTingLineDataToGui(nodexdata,period);
+		if(super.shouldDrawQueKouLine()) {
+			Integer qkmax = displayQueKouLineDataToGui(nodexdata,period);
+		}
+		if(super.shouldDrawZhangDieTingLine() ) {
+			Integer zdt = displayZhangDieTingLineDataToGui(nodexdata,period);
+		}
 		
 //		setPanelTitle ("成交额" + period + super.getCurDisplayedNode().getMyOwnCode(),requireend);
 		
@@ -150,13 +153,13 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 				Integer dttj = ( (TDXNodesXPeriodData) nodexdata).getDieTingTongJi(tmpdate, 0);
 				 
 				if(zttj != null) { //确保右边坐标combined pnl显示同样的值
-					super.linequekouchartdataset.setValue(zttj, "ZhangTing", wkfriday );
+					super.linechartdataset.setValue(zttj, "ZhangTing", wkfriday );
 					if (zttj > zdtmax)
 						zdtmax = zttj ;
 					if (dttj != null  && dttj > zdtmax)
 						zdtmax = dttj;
 				}	else
-					super.linequekouchartdataset.setValue(0, "ZhangTing", wkfriday );
+					super.linechartdataset.setValue(0, "ZhangTing", wkfriday );
 			}
 			
 			
@@ -202,18 +205,18 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(wkfriday, 0);	
 			 
 			if(opneupquekou != null) {
-				super.linequekouchartdataset.setValue(opneupquekou, "QueKouOpenUp", wkfriday );
+				super.linechartdataset.setValue(opneupquekou, "QueKouOpenUp", wkfriday );
 				if (opneupquekou > qkmax)
 					qkmax = opneupquekou ;
 			}	else
-				super.linequekouchartdataset.setValue(0, "QueKouOpenUp", wkfriday );
+				super.linechartdataset.setValue(0, "QueKouOpenUp", wkfriday );
 			
 			if(huibudowquekou != null) {
-				super.linequekouchartdataset.setValue(huibudowquekou, "QueKouHuiBuDownQk", wkfriday );
+				super.linechartdataset.setValue(huibudowquekou, "QueKouHuiBuDownQk", wkfriday );
 				if (huibudowquekou > qkmax)
 					qkmax = huibudowquekou ;
 			}	else
-				super.linequekouchartdataset.setValue(0, "QueKouHuiBuDownQk", wkfriday );
+				super.linechartdataset.setValue(0, "QueKouHuiBuDownQk", wkfriday );
 			
 			if(opendownquekou != null && opendownquekou > qkmax) //确保右边坐标combined pnl显示同样的值
 				qkmax = opendownquekou;

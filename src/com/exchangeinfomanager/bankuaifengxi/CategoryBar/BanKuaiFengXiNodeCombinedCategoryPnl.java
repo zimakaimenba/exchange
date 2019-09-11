@@ -174,6 +174,22 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		cjezblargepnl.setAllowDrawAnnoation(allowdraw);
 		cjelargepnl.setAllowDrawAnnoation(allowdraw);
 	}
+	/*
+	 * 
+	 */
+	public void setDrawQueKouLine (Boolean draw)
+	{
+		cjezblargepnl.setDrawQueKouLine(draw);
+		cjelargepnl.setDrawQueKouLine(draw);
+	}
+	/*
+	 * 
+	 */
+	public void setDrawZhangDieTingLine (Boolean draw)
+	{
+		cjezblargepnl.setDrawZhangDieTingLine(draw) ;
+		cjelargepnl.setDrawZhangDieTingLine(draw) ;
+	}
 
 	/*
 	 * 

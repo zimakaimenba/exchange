@@ -37,9 +37,38 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 		this.stockmanager = stockmanager1;
 		this.bankuaitable =  bankuaitable1;
 	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu#createEvents()
+	 */
+	protected void showGeGuInfoWin() 
+	{
+		 int  view_row = this.bankuaitable.getSelectedRow();
+		 int  model_row = this.bankuaitable.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
+		 
+		 BanKuai bankuai = ((BanKuaiInfoTableModel)this.bankuaitable.getModel()).getBanKuai(model_row);
+		 this.stockmanager.getcBxstockcode().updateUserSelectedNode(bankuai );
+		 this.stockmanager.toFront();
+	}
+	
 	protected void createEvents () 
 	{
+		menuItemBkInfo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				int row = bankuaitable.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int modelRow = bankuaitable.convertRowIndexToModel(row); 
+				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
+
+				showGeGuInfoWin ();
+			}
+			
+		});
+
 		menuItemSetting.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {

@@ -92,7 +92,7 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
 		super ();
 		this.pianyiliang = pianyiliang;
 	}
-
+	@Override
 	public void updateDate (TDXNodes node, LocalDate date, int difference,String period) 
 	{
 		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
@@ -123,7 +123,7 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
     		String stockname = tmpstock.getMyOwnName();
     		
     		//找到对应周的数据
-    		NodeXPeriodDataBasic stockxdataforbk = tmpstock.getNodeXPeroidData(period);
+    		NodeXPeriodDataBasic stockxdataforbk = tmpstock.getStock().getNodeXPeroidData(period);
     		Double cje = stockxdataforbk.getChengJiaoEr(weeknumber,0);
     		if(cje != null) {
        	    	if(stockname != null)
@@ -139,11 +139,7 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
 		
 	}
 
-	@Override
-	public void updateDate(BanKuai selectedbk, LocalDate curselectdate, int i, String globeperiod) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 
 }

@@ -182,6 +182,12 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	    {
 	    	return this.entryList.get(row);
 	    }
+	    public StockOfBanKuai getStock (String stockcode)
+	    {
+	    	int index = this.getStockRowIndex (stockcode);
+	    	StockOfBanKuai sob = this.getStock(index);
+	    	return sob;
+	    }
 	    public void deleteAllRows ()
 	    {	
 	    	if(this.entryList == null)
@@ -190,7 +196,8 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 				 entryList.clear();
 	    	this.fireTableDataChanged();
 	    }
-	    public int getStockRowIndex (String neededfindstring) 
+	    
+	    public int getStockRowIndex (String neededfindstring) //可以查找code也可以查找name
 	    {
 	    		int index = -1;
 	    		HanYuPinYing hypy = new HanYuPinYing ();

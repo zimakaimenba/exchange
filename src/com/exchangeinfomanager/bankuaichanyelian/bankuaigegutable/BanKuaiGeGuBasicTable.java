@@ -216,11 +216,14 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 
         			 //int column = tblSearchResult.getSelectedColumn();
 					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
-					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
-//					 logger.debug(stockcode);
-					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
-					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
-					 this.stockmanager.toFront();
+//					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
+////					 logger.debug(stockcode);
+//					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
+//					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
+//					 this.stockmanager.toFront();
+       					 
+        			 showGeGuInfoWin ();
+        				
 				 }
 
 	}

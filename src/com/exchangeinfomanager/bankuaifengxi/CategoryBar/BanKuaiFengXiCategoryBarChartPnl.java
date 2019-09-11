@@ -105,8 +105,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		
 		createEvent ();
 		
-		sysconfig = SystemConfigration.getInstance();
-		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
+//		sysconfig = SystemConfigration.getInstance();
+//		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
 	}
 
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
@@ -120,12 +120,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected CategoryPlot plot;
 	protected ChartPanel chartPanel;
 	protected DefaultCategoryDataset barchartdataset ;
-//	protected DefaultCategoryDataset linechartdataset;
+	protected DefaultCategoryDataset linechartdataset;
 	protected JFreeChart barchart;
 	private List<CategoryMarker> categorymarkerlist;
 	
-	protected boolean displayhuibuquekou;
-	private SystemConfigration sysconfig;
+	private boolean displayhuibuquekou = true;
+	private boolean displayzhangdieting = true;
+//	private SystemConfigration sysconfig;
 	
 	public static final String SELECTED_PROPERTY = "selected";
 	public static final String MOUSEDOUBLECLICK_PROPERTY = "mousedoubleclick";
@@ -133,12 +134,34 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public static final String DISPLAYQUEKOUDATA = "quekou";
 	public static final String CLEARLINEDATA = "clearlinedata";
 	protected boolean selectchanged;
-//	private String tooltipselected;
+
 	protected LocalDate dateselected;
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
+	}
+	/*
+	 * 
+	 */
+	public void setDrawQueKouLine (Boolean draw)
+	{
+		this.displayhuibuquekou = draw;
+	}
+	public Boolean shouldDrawQueKouLine ()
+	{
+		return this.displayhuibuquekou;
+	}
+	/*
+	 * 
+	 */
+	public void setDrawZhangDieTingLine (Boolean draw)
+	{
+		this.displayzhangdieting = draw;
+	}
+	public Boolean shouldDrawZhangDieTingLine ()
+	{
+		return this.displayzhangdieting;
 	}
 	/*
 	 * 
@@ -291,16 +314,16 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	 */
 	public void resetLineDate ()
 	{
-		if(linequekouchartdataset != null)
-			linequekouchartdataset.clear();
+		if(linechartdataset != null)
+			linechartdataset.clear();
 	}
 	public void resetDate ()
 	{
 		if(barchartdataset != null)
 			barchartdataset.clear();
 		
-		if(linequekouchartdataset != null)
-			linequekouchartdataset.clear();
+		if(linechartdataset != null)
+			linechartdataset.clear();
 		
 		plot.getRangeAxis(3).setRange(0, 1.12);
 		
@@ -325,12 +348,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		
 		this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰
 	}
-	
-	
-//	abstract Integer displayQueKouLineDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period);
-//	abstract Double displayBarDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period);
-//	abstract void xiuShiGuiAfterDispalyDate (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, int downqkmax, String period);
-
 	/*
     * 
     */
@@ -445,7 +462,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	if(indexforbar != -1)
     		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer(0)).setBarColumnShouldChangeColor(indexforbar);
     	
-    	int indexforline = this.linequekouchartdataset.getColumnIndex(selecteddate) ;
+    	int indexforline = this.linechartdataset.getColumnIndex(selecteddate) ;
     	if(indexforline != -1) {
     		((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(3)).setBarColumnShouldChangeColor(indexforline);
 //    		((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(4)).setBarColumnShouldChangeColor(indexforline);
@@ -508,12 +525,10 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			this.displayhuibuquekou = false;
 	}
     
-//	private JMenuItem mntmFenXiJiLu;
-	protected DefaultCategoryDataset linequekouchartdataset;
-//	protected DefaultCategoryDataset linezdtchartdataset; //’«µ¯Õ£
 	protected JMenuItem mntmHideZdt;
 	protected JMenuItem mntmHideQueKouData;
 	protected JMenuItem mntmClearLineData;
+	
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
@@ -554,9 +569,9 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         plot.setDomainAxis(domainaxis);
         
         //line part,for QueKou
-        linequekouchartdataset = new DefaultCategoryDataset();  
+        linechartdataset = new DefaultCategoryDataset();  
         BanKuaiFengXiCategoryLineRenderer lineqkrenderer = new BanKuaiFengXiCategoryLineRenderer ();
-        plot.setDataset(3, linequekouchartdataset);
+        plot.setDataset(3, linechartdataset);
         plot.setRenderer(3, lineqkrenderer);
         ValueAxis rangeAxis2 = new NumberAxis("");
         plot.setRangeAxis(3, rangeAxis2);

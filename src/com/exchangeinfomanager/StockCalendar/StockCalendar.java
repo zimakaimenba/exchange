@@ -13,6 +13,9 @@ import com.toedter.calendar.JDateChooser;
 
 
 import javax.swing.*;
+
+import org.joda.time.Months;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -43,7 +47,7 @@ public class StockCalendar extends JCalendar
     private JPanel headerPanel = JPanelFactory.createPanel();
     private JPanel sidebar;
     private JPanel viewDeck = JPanelFactory.createPanel(layout);
-    private LocalDate date = LocalDate.now();
+    private LocalDate calrightdate = LocalDate.now();
     private JLabel dateLabel = new JLabel();
     private JPanel currentView;
 	private Cache cache;
@@ -75,10 +79,11 @@ public class StockCalendar extends JCalendar
 	    this.initHeaderPanel(); //
 	    this.initViewDeck();
 	    this.initJFrame();
-
+	    
+	    
     }
 
-    private void initJFrame() 
+	private void initJFrame() 
     {
     	GridBagLayout gbl = new GridBagLayout(); 
         this.setLayout(gbl);
@@ -98,6 +103,9 @@ public class StockCalendar extends JCalendar
 
         this.setPreferredSize(SIZE);
         this.setMinimumSize(MIN_SIZE);
+        
+       
+        
     }
 
     private void initViewDeck() {
@@ -116,15 +124,23 @@ public class StockCalendar extends JCalendar
     {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20,20));
         headerPanel.setLayout(new GridLayout(1, 2));
-        JPanel buttonsPanel = JPanelFactory.createFixedSizePanel();
+//        JPanel buttonsPanel = JPanelFactory.createFixedSizePanel();
+        
+        JLabel syncdate = JLabelFactory.createButton("", 40);
+        syncdate.setToolTipText("同步左边日期");
+        syncdate.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/right-dark-arrow.png")));
+//        syncdate.setEnabled(false);
+        syncdate.addMouseListener( new DateController(this,null));
+        		
+        
         JLabel today = JLabelFactory.createButton("Today");
-        today.addMouseListener(new TemporalController(0));
+        today.addMouseListener(new DateController(this,0));
 
         JLabel previous = JLabelFactory.createButton("<", 40);
-        previous.addMouseListener(new TemporalController(-1));
+        previous.addMouseListener(new DateController(this,-1));
 
         JLabel next = JLabelFactory.createButton(">", 40);
-        next.addMouseListener(new TemporalController(1));
+        next.addMouseListener(new DateController(this,1));
 
         JLabel month = JLabelFactory.createButton("Month");
         month.addMouseListener(new ViewController(monthView));
@@ -134,22 +150,28 @@ public class StockCalendar extends JCalendar
         
         JLabel setting = JLabelFactory.createButton("", 40);
         setting.setToolTipText("设置显示新闻范围");
-//        setting.setText("");
         setting.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/gear-black-shape.png")));
         setting.addMouseListener(new settingController ());
         
         
-
-        dateLabel = new JLabel(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+        //布局界面
+        dateLabel = new JLabel(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
         dateLabel.setForeground(ColorScheme.BLACK_FONT);
 
         JPanel tempPanel = JPanelFactory.createPanel();
-        tempPanel.add(today);
+        tempPanel.add(syncdate);
+        tempPanel.add(Box.createHorizontalStrut(20));
+        tempPanel.add(dateLabel);
+        
         tempPanel.add(Box.createHorizontalStrut(40));
+        
+        
+        tempPanel.add(today);
+        tempPanel.add(Box.createHorizontalStrut(10));
         tempPanel.add(previous);
         tempPanel.add(next);
+        
         tempPanel.add(Box.createHorizontalStrut(40));
-        tempPanel.add(dateLabel);
         JPanel viewPanel = JPanelFactory.createPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         viewPanel.add(month);
         viewPanel.add(year);
@@ -159,17 +181,13 @@ public class StockCalendar extends JCalendar
         this.headerPanel.add(viewPanel);
     }
 
-////    public LocalDate getStockCalendarCurDate ()
-////    {
-////    	return ((view.view.View)this.currentView).getDate();
-////    }
-//    
-//	public void propertyChange(PropertyChangeEvent evt) {
-//		if (evt.getPropertyName().equals("stock")) {
-//			System.out.println((Date) evt.getNewValue());
-//			firePropertyChange("date", evt.getOldValue(), evt.getNewValue());
-//		} 
-//	}
+    private void updateMonthAndYearView() 
+    {
+		Date leftdate = super.getDate();
+		LocalDate rightdate = calrightdate;
+		
+	}
+
    /*
     * 用户更改设置
     */
@@ -203,9 +221,9 @@ public class StockCalendar extends JCalendar
             currentView = view;
             layout.show(viewDeck, currentView.getName());
             if (currentView == monthView)
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             else if (currentView == yearView)
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
         }
     }
 
@@ -213,70 +231,95 @@ public class StockCalendar extends JCalendar
     /*
      * 
      */
-    private class TemporalController extends MouseAdapter {
+    private class DateController extends MouseAdapter 
+    {
 
-        private int action;
+        private Integer action;
+		private StockCalendar skcal;
 
-        TemporalController(int action) {
+		DateController(StockCalendar stockCalendar, Integer action) 
+        {
             this.action = action;
+            this.skcal = stockCalendar;
         }
 
         @Override
         public void mouseClicked(MouseEvent e) 
         {
             super.mouseClicked(e);
-            if (action == 0)
-                nowDate();
-            else if (action < 0)
-                minusDate(action);
+            if(action == null) {
+            	 Date leftdate = this.skcal.getDate();
+            	 LocalDate ldleftdate; 
+            	 try {
+            		 ldleftdate = leftdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+         		} catch (java.lang.NullPointerException evt) {
+         			ldleftdate = null;
+         		}
+            	
+            	long difference = ChronoUnit.MONTHS.between(calrightdate, ldleftdate );
+        		if (difference == 0) {
+        				int leftmonthvalue = ldleftdate.getMonthValue();
+                    	int rightmonthvalue = calrightdate.getMonthValue();
+                    	if(leftmonthvalue != rightmonthvalue) 
+                    		setNewDate(rightmonthvalue - leftmonthvalue )  ;
+        		} else
+        			setNewDate ( (int) difference) ;
+            } else if(action == 0)
+            	nowDate();
             else
-                plusDate(action);
+            	setNewDate(action);
         }
 
         private void nowDate() 
         {
-            date = LocalDate.now();
+        	calrightdate = LocalDate.now();
             if (currentView == monthView) {
-                monthView.setDate(date);
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                monthView.setDate(calrightdate);
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             } else if (currentView == yearView) {
-                yearView.setDate(date);
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                yearView.setDate(calrightdate);
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             }
-            wholemonthview.setDate(date);
+            wholemonthview.setDate(calrightdate);
             
+            firePropertyChange("day", 0, dateLabel);
         }
 
-        private void minusDate(int action) {
+        private void setNewDate(int action) 
+        {
             if (currentView == monthView) {
-                date = date.minusMonths(Math.abs(action));
-                monthView.setDate(date);
-                wholemonthview.setDate(date);
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+            	calrightdate = calrightdate.plusMonths(action);
+                monthView.setDate(calrightdate);
+                wholemonthview.setDate(calrightdate);
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
         		
             } else if (currentView == yearView) {
-                date = date.minusYears(1);
-                yearView.setDate(date);
-                wholemonthview.setDate(date);
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
-            }
-        }
-
-        private void plusDate(int action) {
-            if (currentView == monthView) {
-                date = date.plusMonths(action);
-                monthView.setDate(date);
-                wholemonthview.setDate(date);
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
-            } else if (currentView == yearView) {
-                date = date.plusYears(1);
-                yearView.setDate(date);
-                wholemonthview.setDate(date);
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+            	calrightdate = calrightdate.minusYears(action);
+                yearView.setDate(calrightdate);
+                wholemonthview.setDate(calrightdate);
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
             }
             
             firePropertyChange("day", 0, dateLabel);
         }
+
+//        private void plusDate(int action) {
+//            if (currentView == monthView) {
+//            	calrightdate = calrightdate.plusMonths(action);
+//                monthView.setDate(calrightdate);
+//                wholemonthview.setDate(calrightdate);
+//                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+//            } else if (currentView == yearView) {
+//            	calrightdate = calrightdate.plusYears(1);
+//                yearView.setDate(calrightdate);
+//                wholemonthview.setDate(calrightdate);
+//                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+//            }
+//            
+//            firePropertyChange("day", 0, dateLabel);
+//        }
+        
+        
     }
 
 

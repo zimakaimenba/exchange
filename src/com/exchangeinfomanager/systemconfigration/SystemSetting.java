@@ -51,6 +51,9 @@ import javax.swing.KeyStroke;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JCheckBox;
+import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
+import net.miginfocom.swing.MigLayout;
 
 public class SystemSetting extends JDialog 
 {
@@ -63,13 +66,13 @@ public class SystemSetting extends JDialog
 		createEvents ();
 		this.systemxmlfile = systemxmlfile;
 		curdbmap = new HashMap<String,CurDataBase> ();
-		rmtcurdbmap = new HashMap<String,CurDataBase> ();
+//		rmtcurdbmap = new HashMap<String,CurDataBase> ();
 		parseSystemSettingXML ();
 	}
 
 	private String systemxmlfile;
 	private HashMap<String, CurDataBase> curdbmap;
-	private HashMap<String, CurDataBase> rmtcurdbmap;
+//	private HashMap<String, CurDataBase> rmtcurdbmap;
 	private boolean  newsystemsetting = false;
 	private static Logger logger = Logger.getLogger(SystemSetting.class);
 	
@@ -110,10 +113,10 @@ public class SystemSetting extends JDialog
 				tfldTDXInstalledPath.setText(eletdx.getText() );
 			}
 			
-			Element elebkparsefile = xmlroot.element("bankuaiparsefilepah");
-			if(elebkparsefile != null ) {
-				String text = elebkparsefile.getText();
-				tfldzdyfilepath.setText(text);
+			Element elenameofguanzhuzdybk = xmlroot.element("nameofguanzhubankuai");
+			if(elenameofguanzhuzdybk != null ) {
+				String text = elenameofguanzhuzdybk.getText();
+				tfldzdyguanzhu.setText(text);
 			}
 			
 			Element elezbfxzq = xmlroot.element("zhanbifengxizhouqi");
@@ -173,31 +176,31 @@ public class SystemSetting extends JDialog
 			((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 			
 			//serverdatabasesources
-			Element elermtsorce = xmlroot.element("serverdatabasesources");
-			Iterator itrmt = elermtsorce.elementIterator();
-			 while (itrmt.hasNext()) 
-			 {
-				 Element elementdbs = (Element) itrmt.next();
-
-				 logger.debug( elementdbs.attributeValue("dbsname") ) ;
-				 CurDataBase tmpdb = new CurDataBase (elementdbs.attributeValue("dbsname"));
-				 logger.debug( elementdbs.attributeValue("user") ) ;
-				 tmpdb.setUser(elementdbs.attributeValue("user"));
-				 logger.debug( elementdbs.attributeValue("password") ) ;
-				 tmpdb.setPassWord(elementdbs.attributeValue("password"));
-				 logger.debug( elementdbs.getText() ) ;
-				 tmpdb.setDataBaseConStr(elementdbs.getText());
-				 tmpdb.setCurDatabaseType( elementdbs.attributeValue("databasetype") );
-				 logger.debug( elementdbs.attributeValue("curselecteddbs") ) ;
-				 if(elementdbs.attributeValue("curselecteddbs").equals("yes")){
-					 tmpdb.setCurrentSelectedDbs(true);
-					 //curselecteddbs = elementdbs.attributeValue("dbsname");
-				 }
-				 else
-					 tmpdb.setCurrentSelectedDbs(false);
-				 
-				 rmtcurdbmap.put( elementdbs.attributeValue("dbsname"), tmpdb);
-			 }
+//			Element elermtsorce = xmlroot.element("serverdatabasesources");
+//			Iterator itrmt = elermtsorce.elementIterator();
+//			 while (itrmt.hasNext()) 
+//			 {
+//				 Element elementdbs = (Element) itrmt.next();
+//
+//				 logger.debug( elementdbs.attributeValue("dbsname") ) ;
+//				 CurDataBase tmpdb = new CurDataBase (elementdbs.attributeValue("dbsname"));
+//				 logger.debug( elementdbs.attributeValue("user") ) ;
+//				 tmpdb.setUser(elementdbs.attributeValue("user"));
+//				 logger.debug( elementdbs.attributeValue("password") ) ;
+//				 tmpdb.setPassWord(elementdbs.attributeValue("password"));
+//				 logger.debug( elementdbs.getText() ) ;
+//				 tmpdb.setDataBaseConStr(elementdbs.getText());
+//				 tmpdb.setCurDatabaseType( elementdbs.attributeValue("databasetype") );
+//				 logger.debug( elementdbs.attributeValue("curselecteddbs") ) ;
+//				 if(elementdbs.attributeValue("curselecteddbs").equals("yes")){
+//					 tmpdb.setCurrentSelectedDbs(true);
+//					 //curselecteddbs = elementdbs.attributeValue("dbsname");
+//				 }
+//				 else
+//					 tmpdb.setCurrentSelectedDbs(false);
+//				 
+//				 rmtcurdbmap.put( elementdbs.attributeValue("dbsname"), tmpdb);
+//			 }
 			
 			 
 		} catch (DocumentException e) {
@@ -251,6 +254,18 @@ public class SystemSetting extends JDialog
 	 }
 	private void createEvents() 
 	{
+		ckbxzdy.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(ckbxzdy.isSelected()) {
+					btnzdyselect.setEnabled(true);
+				} else {
+					btnzdyselect.setEnabled(false);
+					tfldzdyfilepath.setText("通达信默认路径。");
+				}
+			}
+		});
+		
 		btnchoosepython.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
@@ -402,11 +417,13 @@ public class SystemSetting extends JDialog
 				Element eletdx = rootele.addElement("tdxpah");
 				eletdx.setText( toUNIXpath(tfldTDXInstalledPath.getText() ) );
 				
-				Element eletbkparsefile = rootele.addElement("bankuaiparsefilepah");
-				eletbkparsefile.setText( toUNIXpath(tfldzdyfilepath.getText() ) );
+				Element eletbknameofguanzhu = rootele.addElement("nameofguanzhubankuai");
+				eletbknameofguanzhu.setText( toUNIXpath(tfldzdyguanzhu.getText() ) );
 				
-				Element eletdxzdybkpath = rootele.addElement("tdxzdybkpath");
-				eletdxzdybkpath.setText(toUNIXpath(tfldzdyfilepath.getText()));
+				if(ckbxzdy.isSelected() ) {
+					Element eletdxzdybkpath = rootele.addElement("tdxzdybkpath");
+					eletdxzdybkpath.setText(toUNIXpath(tfldzdyfilepath.getText()));
+				}
 				
 				Element zhanbifengxizhouqi = rootele.addElement("zhanbifengxizhouqi");
 				zhanbifengxizhouqi.setText(tfldzhanbizhouqi.getText());
@@ -438,27 +455,27 @@ public class SystemSetting extends JDialog
 						eleonedbs.addAttribute("curselecteddbs", "no" );
 				}
 				
-				Element elermtsorce = rootele.addElement("serverdatabasesources");
+//				Element elermtsorce = rootele.addElement("serverdatabasesources");
 				
-				Set<String> rmtdbsnameset = rmtcurdbmap.keySet();
-				Iterator<String> rmtdbsit = rmtdbsnameset.iterator();
-				while(rmtdbsit.hasNext()) {
-					String tmpdbsname = rmtdbsit.next();
-					
-					CurDataBase tmpcurbs = rmtcurdbmap.get(tmpdbsname);
-					
-					Element eleonedbs = elermtsorce.addElement("singledbs");
-					
-					eleonedbs.addAttribute("dbsname", tmpcurbs.getCurDataBaseName());
-					eleonedbs.addAttribute("user", tmpcurbs.getUser() );
-					eleonedbs.addAttribute("password", tmpcurbs.getPassWord() );
-					eleonedbs.addAttribute("databasetype", tmpcurbs.getCurDatabaseType() );
-					eleonedbs.setText(tmpcurbs.getDataBaseConStr());
-					if(tmpcurbs.getCurrentSelectedDbs())
-						eleonedbs.addAttribute("curselecteddbs", "yes" );
-					else
-						eleonedbs.addAttribute("curselecteddbs", "no" );
-				}
+//				Set<String> rmtdbsnameset = rmtcurdbmap.keySet();
+//				Iterator<String> rmtdbsit = rmtdbsnameset.iterator();
+//				while(rmtdbsit.hasNext()) {
+//					String tmpdbsname = rmtdbsit.next();
+//					
+//					CurDataBase tmpcurbs = rmtcurdbmap.get(tmpdbsname);
+//					
+//					Element eleonedbs = elermtsorce.addElement("singledbs");
+//					
+//					eleonedbs.addAttribute("dbsname", tmpcurbs.getCurDataBaseName());
+//					eleonedbs.addAttribute("user", tmpcurbs.getUser() );
+//					eleonedbs.addAttribute("password", tmpcurbs.getPassWord() );
+//					eleonedbs.addAttribute("databasetype", tmpcurbs.getCurDatabaseType() );
+//					eleonedbs.setText(tmpcurbs.getDataBaseConStr());
+//					if(tmpcurbs.getCurrentSelectedDbs())
+//						eleonedbs.addAttribute("curselecteddbs", "yes" );
+//					else
+//						eleonedbs.addAttribute("curselecteddbs", "no" );
+//				}
 				
 				
 				
@@ -671,6 +688,8 @@ public class SystemSetting extends JDialog
 	private JButton btnchoosepython;
 	private JCheckBox ckbxzdy;
 	private JButton saveButton;
+	private JTextField tfldzdyguanzhu;
+	private JLabel lblblocknewcfg;
 	private void initializeGui() 
 	{
 		saveButton = new JButton ();
@@ -680,6 +699,39 @@ public class SystemSetting extends JDialog
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.NORTH);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		
+		JLabel label_1 = new JLabel("");
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
+		gl_contentPanel.setHorizontalGroup(
+			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(tabbedPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+						.addComponent(scrollPane_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(label_1)
+					.addContainerGap())
+		);
+		gl_contentPanel.setVerticalGroup(
+			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap(16, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 419, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE))))
+		);
+		
+		JPanel syspnl = new JPanel();
+		tabbedPane.addTab("\u7CFB\u7EDF\u4FE1\u606F", null, syspnl, null);
 		{
 			lblNewLabel = new JLabel("\u7CFB\u7EDF\u5B89\u88C5\u8DEF\u5F84");
 		}
@@ -698,166 +750,20 @@ public class SystemSetting extends JDialog
 		btnChosTDXDict = new JButton("");
 		btnChosTDXDict.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		
-		JLabel lblNewLabel_2 = new JLabel("\u6570\u636E\u6E90\u5217\u8868");
+		cbxprivatemode = new JCheckBox("\u9690\u79C1\u6A21\u5F0F");
+		syspnl.setLayout(new MigLayout("", "[73px][3px][8px][4px][289px][6px][57px]", "[42px][38px][23px]"));
+		syspnl.add(lblNewLabel, "cell 0 0,alignx left,aligny center");
+		syspnl.add(tfldSysInstallPath, "cell 2 0 5 1,grow");
+		syspnl.add(lblNewLabel_1, "cell 0 1 3 1,alignx left,aligny center");
+		syspnl.add(tfldTDXInstalledPath, "cell 4 1,grow");
+		syspnl.add(btnChosTDXDict, "cell 6 1,alignx left,aligny bottom");
+		syspnl.add(cbxprivatemode, "cell 0 2,alignx left,aligny top");
 		
-		btnEditDb = new JButton("");
-		btnEditDb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
-		
-		btmaddnewdb = new JButton("");
-		btmaddnewdb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/add_24px_1181422_easyicon.net.png")));
-		
-		btndeletedbs = new JButton("");
-		btndeletedbs.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/minus_red.png")));
+		JPanel panel_1 = new JPanel();
+		tabbedPane.addTab("\u6570\u636E\u5E93\u8BBE\u7F6E", null, panel_1, null);
 		
 		scrollPanelocal = new JScrollPane();
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		
-		JLabel label_1 = new JLabel("");
-		
-		tfldzdyfilepath = new JTextField();
-		tfldzdyfilepath.setText("\\\\jeffauas\\\\blocknew");
-		tfldzdyfilepath.setEditable(false);
-		tfldzdyfilepath.setColumns(10);
-		
-		btnzdyselect = new JButton("");
-		
-		btnzdyselect.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
-		
-		JLabel label_2 = new JLabel("\u6210\u4EA4\u5360\u6BD4\u5206\u6790\u5468\u671F\u8DE8\u5EA6(\u6708)");
-		
-		tfldzhanbizhouqi = new JTextField();
-		tfldzhanbizhouqi.setText("8");
-		tfldzhanbizhouqi.setColumns(10);
-		
-		cbxprivatemode = new JCheckBox("\u9690\u79C1\u6A21\u5F0F");
-		
-		JLabel lblPythonInterpreter = new JLabel(" Python Interpreter\u8DEF\u5F84");
-		
-		tfldpythonptah = new JTextField();
-		tfldpythonptah.setEnabled(false);
-		tfldpythonptah.setEditable(false);
-		tfldpythonptah.setColumns(10);
-		
-		btnchoosepython = new JButton("");
-		
-		btnchoosepython.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
-		
-		ckbxzdy = new JCheckBox("\u81EA\u5B9A\u4E49\u677F\u5757\u8DEF\u5F84");
-		ckbxzdy.setSelected(true);
-		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGap(26)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 501, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(lblNewLabel_1)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(tfldTDXInstalledPath, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(btnChosTDXDict))
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(lblNewLabel)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 453, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_contentPanel.createSequentialGroup()
-										.addComponent(lblNewLabel_2)
-										.addPreferredGap(ComponentPlacement.RELATED, 274, Short.MAX_VALUE)
-										.addComponent(btnEditDb)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(btmaddnewdb)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
-									.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(cbxprivatemode)
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(lblPythonInterpreter)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(tfldpythonptah, 190, 190, 190)
-											.addGap(18)
-											.addComponent(btnchoosepython))))
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(label_1)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(label_2)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-										.addGroup(gl_contentPanel.createSequentialGroup()
-											.addComponent(ckbxzdy)
-											.addGap(18)
-											.addComponent(tfldzdyfilepath, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnzdyselect)))))
-							.addGap(494))))
-		);
-		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGap(12)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblNewLabel)
-						.addComponent(tfldSysInstallPath, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblNewLabel_1)
-								.addComponent(tfldTDXInstalledPath, GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
-							.addGap(18))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(btnChosTDXDict)
-							.addGap(23)))
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-							.addComponent(tfldzdyfilepath, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
-							.addComponent(ckbxzdy))
-						.addComponent(btnzdyselect))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-						.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(16)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblPythonInterpreter))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(cbxprivatemode))
-						.addComponent(btnchoosepython))
-					.addGap(58)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblNewLabel_2)
-						.addComponent(btnEditDb)
-						.addComponent(btmaddnewdb)
-						.addComponent(btndeletedbs))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-					.addGap(28)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 235, GroupLayout.PREFERRED_SIZE)
-					.addGap(35))
-		);
-		
-		DatabaseSourceTableModel rmttablemode = new DatabaseSourceTableModel( null );
-		
-		txtareacheckresult = new JTextArea();
-		txtareacheckresult.setEditable(false);
-		scrollPane_1.setViewportView(txtareacheckresult);
-		
-		DatabaseSourceTableModel localtablemodel = new DatabaseSourceTableModel( null );
+		DatabaseSourceTableModel localtablemodel = new DatabaseSourceTableModel( null ); 
 		tablelocal = new  JTable(localtablemodel){
 			private static final long serialVersionUID = 1L;
 
@@ -877,6 +783,149 @@ public class SystemSetting extends JDialog
             }
 		};
 		scrollPanelocal.setViewportView(tablelocal);
+		
+		btnEditDb = new JButton("");
+		btnEditDb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
+		
+		btmaddnewdb = new JButton("");
+		btmaddnewdb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/add_24px_1181422_easyicon.net.png")));
+		
+		btndeletedbs = new JButton("");
+		btndeletedbs.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/minus_red.png")));
+		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
+		gl_panel_1.setHorizontalGroup(
+			gl_panel_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 494, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addComponent(btnEditDb)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btmaddnewdb)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btndeletedbs, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		gl_panel_1.setVerticalGroup(
+			gl_panel_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollPanelocal, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+						.addComponent(btnEditDb)
+						.addComponent(btmaddnewdb)
+						.addComponent(btndeletedbs))
+					.addContainerGap(85, Short.MAX_VALUE))
+		);
+		panel_1.setLayout(gl_panel_1);
+		
+		JPanel zdybkpnl = new JPanel();
+		tabbedPane.addTab("\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E", null, zdybkpnl, null);
+		
+		ckbxzdy = new JCheckBox("\u81EA\u5B9A\u4E49\u677F\u5757\u8DEF\u5F84");
+		
+		ckbxzdy.setSelected(true);
+		
+		tfldzdyfilepath = new JTextField();
+		tfldzdyfilepath.setText("\\\\jeffauas\\\\blocknew");
+		tfldzdyfilepath.setEditable(false);
+		tfldzdyfilepath.setColumns(10);
+		
+		btnzdyselect = new JButton("");
+		
+		btnzdyselect.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		
+		JLabel lblNewLabel_3 = new JLabel("\u81EA\u5B9A\u4E49\u5173\u6CE8\u677F\u5757\u540D\u79F0");
+		
+		tfldzdyguanzhu = new JTextField();
+		tfldzdyguanzhu.setText("\u6A21\u578B\u9A8C\u8BC1");
+		tfldzdyguanzhu.setColumns(10);
+		zdybkpnl.setLayout(new MigLayout("", "[109px][3px][77px][4px][292px][57px]", "[28px][2px][15px][29px]"));
+		
+		lblblocknewcfg = new JLabel("\uFF08\u6307\u5B9A\u5230blocknew.cfg\u4E0A\u4E00\u7EA7\uFF09");
+		zdybkpnl.add(lblblocknewcfg, "cell 0 2 3 1,alignx right,aligny top");
+		zdybkpnl.add(ckbxzdy, "cell 0 0,alignx left,aligny bottom");
+		zdybkpnl.add(tfldzdyfilepath, "cell 2 0 3 2,growx,aligny center");
+		zdybkpnl.add(lblNewLabel_3, "cell 0 3,alignx left,aligny center");
+		zdybkpnl.add(tfldzdyguanzhu, "cell 2 3 3 1,grow");
+		zdybkpnl.add(btnzdyselect, "cell 5 0 1 3,alignx left,aligny top");
+		
+		JPanel panel = new JPanel();
+		tabbedPane.addTab("\u5916\u90E8\u89E3\u91CA\u5668", null, panel, null);
+		
+		JLabel lblPythonInterpreter = new JLabel(" Python Interpreter\u8DEF\u5F84");
+		
+		tfldpythonptah = new JTextField();
+		tfldpythonptah.setEnabled(false);
+		tfldpythonptah.setEditable(false);
+		tfldpythonptah.setColumns(10);
+		
+		btnchoosepython = new JButton("");
+		
+		btnchoosepython.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		GroupLayout gl_panel = new GroupLayout(panel);
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblPythonInterpreter)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnchoosepython)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGap(32)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnchoosepython)
+						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(lblPythonInterpreter)
+							.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(160, Short.MAX_VALUE))
+		);
+		panel.setLayout(gl_panel);
+		
+		JPanel panel_2 = new JPanel();
+		tabbedPane.addTab("\u677F\u5757\u5206\u6790\u8BBE\u7F6E", null, panel_2, null);
+		
+		JLabel label_2 = new JLabel("\u6210\u4EA4\u5360\u6BD4\u5206\u6790\u5468\u671F\u8DE8\u5EA6(\u6708)");
+		
+		tfldzhanbizhouqi = new JTextField();
+		tfldzhanbizhouqi.setText("8");
+		tfldzhanbizhouqi.setColumns(10);
+		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
+		gl_panel_2.setHorizontalGroup(
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(label_2)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(291, Short.MAX_VALUE))
+		);
+		gl_panel_2.setVerticalGroup(
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addGap(19)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
+						.addComponent(label_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+						.addComponent(tfldzhanbizhouqi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(182, Short.MAX_VALUE))
+		);
+		panel_2.setLayout(gl_panel_2);
+		
+//		DatabaseSourceTableModel rmttablemode = new DatabaseSourceTableModel( null );
+		
+		txtareacheckresult = new JTextArea();
+		txtareacheckresult.setEditable(false);
+		scrollPane_1.setViewportView(txtareacheckresult);
+		
+		
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();

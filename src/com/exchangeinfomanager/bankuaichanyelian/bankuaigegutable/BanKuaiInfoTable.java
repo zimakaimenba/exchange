@@ -50,6 +50,7 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
@@ -70,9 +71,13 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	public BanKuaiInfoTable(StockInfoManager stockmanager1) 
 	{
 		super ();
+		
 		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel ();
 		this.setModel(bkmodel);
+		
 		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
+		this.sysconfig = SystemConfigration.getInstance();
+		this.stockmanager = stockmanager1;
 		
 		this.createEvents ();
 		
@@ -85,8 +90,7 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 //	    header.setToolTipText("Default ToolTip TEXT");
 //	    this.setTableHeader(header);
 	    
-		this.sysconfig = SystemConfigration.getInstance();
-		this.stockmanager = stockmanager1;
+		
 		
 //		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		this.getColumnModel().getColumn(0).setPreferredWidth(105);
@@ -236,6 +240,15 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	{
 		return this.popupMenuGeguNews;
 	}
+	protected void showGeGuInfoWin() 
+	{
+		 int  view_row = this.getSelectedRow();
+		 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
+		 
+		 BanKuai bankuai = ((BanKuaiInfoTableModel)this.getModel()).getBanKuai(model_row);
+		 this.stockmanager.getcBxstockcode().updateUserSelectedNode(bankuai );
+		 this.stockmanager.toFront();
+	}
 	/*
 	 * 
 	 */
@@ -248,32 +261,9 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 				 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
 				 
         		if (arg0.getClickCount() == 1) {
-//        			int row = this.getSelectedRow();
-//					 //int column = tblSearchResult.getSelectedColumn();
-//					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
-//					 String stockcode = ((BanKuaiGeGuTableModel)this.getModel()).getValueAt(model_row, 0).toString().trim();
-//					 try {
-//						 String stockname = ((BanKuaiGeGuTableModel)this.getModel()).getValueAt(model_row, 1).toString().trim();
-//						 pnlGeGuZhanBi.hightlightSpecificSector (stockcode+stockname);
-//					 } catch ( java.lang.NullPointerException e) {
-//						 pnlGeGuZhanBi.hightlightSpecificSector (stockcode);
-//					 }
         		}
         		 if (arg0.getClickCount() == 2) {
-//					 int  view_row = tablebkgegu.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
-//					 int  view_col = tablebkgegu.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
-//					 int  model_row = tablebkgegu.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
-//					 int  model_col = tablebkgegu.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
-					 
-					 
-//					 int row = this.getSelectedRow();
-					 //int column = tblSearchResult.getSelectedColumn();
-					 //String stockcode = tblSearchResult.getModel().getValueAt(row, 0).toString().trim();
-					 String stockcode = this.getModel().getValueAt(model_row, 0).toString().trim();
-//					 logger.debug(stockcode);
-					 this.stockmanager.getcBxstockcode().setSelectedItem(stockcode);
-					 this.stockmanager.preUpdateSearchResultToGui(stockcode);
-					 this.stockmanager.toFront();
+        			 showGeGuInfoWin ();
 				 }
 
 	}

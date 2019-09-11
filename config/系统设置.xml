@@ -2,7 +2,7 @@
 
 <SystemSettings>
   <tdxpah>E:/stock/zd_zszq/</tdxpah>
-  <bankuaiparsefilepah>//jeffauas/blocknew/</bankuaiparsefilepah>
+  <nameofguanzhubankuai>模型验证</nameofguanzhubankuai>
   <tdxzdybkpath>//jeffauas/blocknew/</tdxzdybkpath>
   <zhanbifengxizhouqi>9</zhanbifengxizhouqi>
   <privatemode>false</privatemode>
@@ -17,8 +17,4 @@
     <singledbs dbsname="mysql" user="root" password="987654321" databasetype="MySql" curselecteddbs="yes">127.0.0.1:3306/stockinfomanagementtest</singledbs>
     <singledbs dbsname="mysqltest" user="liuwei" password="987654321" databasetype="MySql" curselecteddbs="no">192.168.2.8:3306/stockinfomanagementtest</singledbs>
   </databasesources>
-  <serverdatabasesources>
-    <singledbs dbsname="mysqltest" user="liuwei" password="987654321" databasetype="MySql" curselecteddbs="no">192.168.2.8:3306/stockinfomanagementtest</singledbs>
-    <singledbs dbsname="mysqllocal" user="root" password="987654321" databasetype="MySql" curselecteddbs="yes">127.0.0.1:3306/stockinfomanagementtest</singledbs>
-  </serverdatabasesources>
 </SystemSettings>

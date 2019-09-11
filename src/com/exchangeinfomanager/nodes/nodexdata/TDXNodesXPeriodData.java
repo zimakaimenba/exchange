@@ -1659,27 +1659,21 @@ import com.udojava.evalex.Expression;
 				 
 				 Integer cjemaxwk = null;
 			     try{
-			    		cjemaxwk = this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大
+			    		cjemaxwk = this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
 			     } catch (java.lang.NullPointerException e) {
 			    		
 			     }
-			     Integer cjeminwk = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate, 0);
 				 if(cjemaxwk>0) {
 					 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
 					 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
 					 fontcjemaxwk.appendText("成交额MaxWk=" + cjemaxwk);
 					 fontcjemaxwk.attr("color", "#AF7AC5 ");
-				 } else {
-					 org.jsoup.nodes.Element licjeminwk = dl.appendElement("li");
-					 org.jsoup.nodes.Element fontcjeminwk = licjeminwk.appendElement("font");
-					 fontcjeminwk.appendText("成交额MinWk=" + (0-cjeminwk) );
-					 fontcjeminwk.attr("color", "#AF7AC5 ");
-				 }
+				 } 
 				 
 				 try{
 					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//成交额大盘变化贡献率
 					 if(cjechangerate != -100.0) {
-						 htmlstring = "成交额大盘变化贡献率" + percentFormat.format (cjechangerate) ;
+						 htmlstring = "成交额板块变化贡献率" + percentFormat.format (cjechangerate) ;
 						 org.jsoup.nodes.Element licjechangerate = dl.appendElement("li");
 						 org.jsoup.nodes.Element fontcjechangerate = licjechangerate.appendElement("font");
 						 fontcjechangerate.appendText(htmlstring);
@@ -1741,32 +1735,20 @@ import com.udojava.evalex.Expression;
 			     try{
 			    		cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
 			     } catch (java.lang.NullPointerException e) {
-			    		
-			     }
-			     Integer cjlminwk = null;
-			     try{
-			    		cjlminwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
-			     } catch (java.lang.NullPointerException e) {
-			    		
 			     }
 				 if(cjlmaxwk>0) {
 					 org.jsoup.nodes.Element licjlmaxwk = dl.appendElement("li");
 					 org.jsoup.nodes.Element fontcjlmaxwk = licjlmaxwk.appendElement("font");
 					 fontcjlmaxwk.appendText("成交量MaxWk=" + cjlmaxwk);
 					 fontcjlmaxwk.attr("color", "#641E16");
-				 } else {
-					 org.jsoup.nodes.Element licjlminwk = dl.appendElement("li");
-					 org.jsoup.nodes.Element fontcjlminwk = licjlminwk.appendElement("font");
-					 fontcjlminwk.appendText("成交量MinWk=" + (0-cjlminwk) );
-					 fontcjlminwk.attr("color", "#641E16");
-				 }
+				 } 
 				 //
 				 try{
 					 Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
 					 if( cjlchangerate != -100.0) {
 						 org.jsoup.nodes.Element licjlchangerate = dl.appendElement("li");
 						 org.jsoup.nodes.Element fontcjlchangerate = licjlchangerate.appendElement("font");
-						 fontcjlchangerate.appendText( "成交量大盘变化贡献率" + percentFormat.format (cjlchangerate)  );
+						 fontcjlchangerate.appendText( "成交量板块变化贡献率" + percentFormat.format (cjlchangerate)  );
 						 fontcjlchangerate.attr("color", "#641E16");
 					 }
 				 } catch (java.lang.IllegalArgumentException e) {

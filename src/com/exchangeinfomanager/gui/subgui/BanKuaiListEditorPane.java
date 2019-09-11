@@ -11,8 +11,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -33,7 +35,10 @@ import org.jsoup.Jsoup;
 
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 
@@ -47,6 +52,14 @@ public class BanKuaiListEditorPane extends JEditorPane
 		
 		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		selectstring = "";
+		displayedBankuaiinfomap = ArrayListMultimap.create();
+		displayedStockinfomap = ArrayListMultimap.create();
+		
+		menuItemclear = new JMenuItem("清空内容"); 
+		menuItemgcsv = new JMenuItem("导出到CSV");
+		jPopupMenue.add(menuItemgcsv);
+		jPopupMenue.add(menuItemclear);
+		
 		createEvents ();
 		
 	}
@@ -55,15 +68,39 @@ public class BanKuaiListEditorPane extends JEditorPane
 	private BanKuaiAndChanYeLian2 bkcyl;
 	public static final String URLSELECTED_PROPERTY = "urlselected";
 	public static final String EXPORTCSV_PROPERTY = "exporttocsv";
+	private Multimap<String,LocalDate> displayedBankuaiinfomap;
+	private Multimap<String,LocalDate> displayedStockinfomap;
+	
 	JPopupMenu jPopupMenue = new JPopupMenu();
-	JMenuItem menuItemclear = new JMenuItem("清空内容"); 
-	JMenuItem menuItemgcsv = new JMenuItem("导出到CSV");
+	JMenuItem menuItemclear; 
+	JMenuItem menuItemgcsv;
 	/*
 	 * 
 	 */
 	public void resetSelectedBanKuai ()
 	{
 		this.selectstring = "";
+	}
+	/*
+	 * 
+	 */
+	public void displayNodeSpecificDateInfo (TDXNodes node, LocalDate selectdate, String period)
+	{
+		String htmlstring = node.getNodeXPeroidDataInHtml(selectdate,period);
+		this.displayNodeSelectedInfo (htmlstring);
+		
+		if(node.getType() == BkChanYeLianTreeNode.TDXBK)
+			this.displayedBankuaiinfomap.put(node.getMyOwnCode(), selectdate);
+		else
+			displayedStockinfomap.put(node.getMyOwnCode(), selectdate);
+	}
+	public Multimap<String,LocalDate> getDisplayBanKuaiSpecificDateInfo ()
+	{
+		return this.displayedBankuaiinfomap;
+	}
+	public Multimap<String,LocalDate> getDisplayStockSpecificDateInfo ()
+	{
+		return this.displayedStockinfomap;
 	}
 	/*
 	 * 
@@ -109,7 +146,7 @@ public class BanKuaiListEditorPane extends JEditorPane
 	/*
 	 * 
 	 */
-	public void displayBanKuaiListContents (Stock stock)
+	public void displayBanKuaiListContentsForStock (Stock stock)
 	{
 		this.setText("");
 		HashMap<String, String> suosusysbankuai = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
@@ -175,8 +212,7 @@ public class BanKuaiListEditorPane extends JEditorPane
 	{
 		
 //		menuItemgcsv.setEnabled(false);
-		jPopupMenue.add(menuItemgcsv);
-		jPopupMenue.add(menuItemclear);
+		
 		
 		menuItemgcsv.addActionListener(new ActionListener() {
 
@@ -232,6 +268,8 @@ public class BanKuaiListEditorPane extends JEditorPane
 	protected void clearPaneContents()
 	{
 		this.setText("");
+		this.displayedBankuaiinfomap.clear();
+		this.displayedStockinfomap.clear();
 	}
 	/*
 	 * 

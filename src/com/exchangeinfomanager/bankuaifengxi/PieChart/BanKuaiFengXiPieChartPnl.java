@@ -1,6 +1,9 @@
 package com.exchangeinfomanager.bankuaifengxi.PieChart;
 
 import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -30,6 +33,7 @@ import org.jfree.data.general.PieDataset;
 
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.PieChartPanelDataChangedListener;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -54,6 +58,13 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements PieChar
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiPieChartCjePnl.class);
+	
+	public static final String SELECTED_PROPERTY = "selected";
+	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+	}
+	
 	protected BkChanYeLianTreeNode curdisplaynode;
 //	private Date displayedenddate;
 	protected LocalDate displayedweeknumber;
@@ -130,7 +141,7 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements PieChar
 	    	    public void chartMouseClicked(ChartMouseEvent e) {
 	    	        java.awt.event.MouseEvent me = e.getTrigger();
 	    	        if (me.getClickCount() == 2) {
-	    	        	logger.debug("chart mouse click " + e.getEntity());
+	    	        	
 	    	        	 try {
 	    	    	        	
 	    	    	        	pieplot.setLabelFont(new Font("Arial Unicode MS", 0, 15)); //让图片上的label字大一些
@@ -165,9 +176,13 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements PieChar
 //	    	        			pieplot.setExplodePercent(lasthightlightKey, 0);
 //	    	                }
 	    	                Comparable key = section.getSectionKey();
+	    	                
+	    	                PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiPieChartPnl.SELECTED_PROPERTY, "", key );
+	    		            pcs.firePropertyChange(evtzd);
+	    	                
 //	    	                plot.setExplodePercent(key, 0.05);
-	    	                lasthightlightKey = key;
-//	    	                logger.dubug(lasthightlightKey.toString());
+//	    	                lasthightlightKey = key;
+
 	    	            }
 	    	        	
 	    	        }
@@ -231,10 +246,6 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements PieChar
 			this.piechartPanel.removeAll();
 		}
 
-		public Comparable getCurHightLightStock ()
-		{
-			return this.lasthightlightKey; 
-		}
 		public JPanel getPiePanel ()
 		{
 			return this.piechartPanel;

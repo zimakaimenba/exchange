@@ -171,7 +171,7 @@ public class ExportCondition
 		return matchednodeset;
 	}
 	/*
-	 * 
+	 * 检查板块是否符合设定
 	 */
 	public String checkBanKuaiMatchedCurSettingConditons (BanKuai node, LocalDate exportdate, String period)
 	{
@@ -295,16 +295,46 @@ public class ExportCondition
 		Boolean shouldhavelianxufl = this.shouldHaveLianXuFangLangUnderCertainChenJiaoEr();
 		Double cjeleveloflianxufl = this.getCjeLevelUnderCertaincChenJiaoErOfLianXuFangLiang();
 		Integer lianxuleveloflianxufl = this.getFangLiangLevelUnderCertainChenJiaoEr();
-		
-		
-		
+
 		Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(exportdate,0);
 		Integer recordmaxcjewk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(exportdate,0);
 		Double recordhsl = ( (StockNodeXPeriodData)nodexdata).getSpecificTimeHuanShouLv(exportdate, 0);
 		
-		if( recordcje >= settingcjemin && recordcje <= settingcjemax &&  recordmaxbkwk >= settindpgmaxwk 
-				&& recordmaxcjewk >= seetingcjemaxwk && recordhsl >= settinghsl) { 
-			
+		Boolean cjematch;
+		if(recordcje != null  && recordcje >= settingcjemin && recordcje <= settingcjemax )
+			cjematch = true;
+		else if(recordcje != null  && ( recordcje < settingcjemin || recordcje > settingcjemax ))
+			cjematch = false;
+		else
+			cjematch = true;
+		
+		Boolean dpmaxwkmatch;
+		if(recordmaxbkwk != null  && recordmaxbkwk >= settindpgmaxwk)
+			dpmaxwkmatch = true;
+		else if(recordmaxbkwk != null  && recordmaxbkwk < settindpgmaxwk)
+			dpmaxwkmatch = false;
+		else
+			dpmaxwkmatch = true;
+		
+		Boolean cjewkmatch;
+		if(recordmaxcjewk != null && recordmaxcjewk >= seetingcjemaxwk)
+			cjewkmatch = true;
+		else if(recordmaxcjewk != null && recordmaxcjewk < seetingcjemaxwk)
+			cjewkmatch = false;
+		else
+			cjewkmatch = true;
+		
+		Boolean hslmatch;
+		if(recordhsl != null && recordhsl >= settinghsl)
+			hslmatch = true;
+		else if(recordhsl != null && recordhsl < settinghsl)
+			hslmatch = false;
+		else
+			hslmatch = true;
+		
+//		if( recordcje >= settingcjemin && recordcje <= settingcjemax &&  recordmaxbkwk >= settindpgmaxwk 
+//				&& recordmaxcjewk >= seetingcjemaxwk && recordhsl >= settinghsl) { 
+		if(cjematch && dpmaxwkmatch && cjewkmatch && hslmatch) {	
 			Boolean notskiptonextstock = true;
 			
 			if( shouldhavedayangxian && recordcje < cjelevelofyangxian  ) { //如果成交量小于于一定量，就前3周必须有大阳线或者连续2周满足条件
@@ -322,6 +352,7 @@ public class ExportCondition
 						
 					}
 			} 
+			
 			if( shouldhavelianxufl && recordcje < cjeleveloflianxufl && notskiptonextstock == false) { //如果成交量小于于一定量，就前3周必须有大阳线或者连续2周满足条件
 				Integer templianxuleveloflianxufl = 0- lianxuleveloflianxufl;
 				int lianxu = 0;
@@ -522,19 +553,19 @@ public class ExportCondition
 		else
 			this.settindpgmaxwk = null;
 	}
-	//
-	private Integer getSettinBkmaxwk() 
-	{
-		return settinbkgmaxwk;
-	}
-	private void setSettinBkmaxwk(String exportbkmaxwklevel) {
-		if(exportbkmaxwklevel != null) {
-			this.settinbkgmaxwk = Integer.parseInt( exportbkmaxwklevel );
-			this.tooltips = this.tooltips + "板块MAXWK>=" + settinbkgmaxwk + "周";
-		}
-		else
-			this.settinbkgmaxwk = null;
-	}
+//	//
+//	private Integer getSettinBkmaxwk() 
+//	{
+//		return settinbkgmaxwk;
+//	}
+//	private void setSettinBkmaxwk(String exportbkmaxwklevel) {
+//		if(exportbkmaxwklevel != null) {
+//			this.settinbkgmaxwk = Integer.parseInt( exportbkmaxwklevel );
+//			this.tooltips = this.tooltips + "板块MAXWK>=" + settinbkgmaxwk + "周";
+//		}
+//		else
+//			this.settinbkgmaxwk = null;
+//	}
 	//
 	public Integer getSettingCjemaxwk()
 	{

@@ -148,6 +148,10 @@ public class ImportTDXData extends JDialog {
 				String tmpname = tmpit.next();
 				zdybkckbxs[i] = new JCheckBox(tmpname);
 				pnlZdy.add(zdybkckbxs[i]);
+				
+				if(tmpname.equals(this.sysconfig.getNameOfGuanZhuZdyBanKuai() ) )
+					zdybkckbxs[i].setSelected(true);
+				
 				i++;
 			}
 		} catch (java.lang.NullPointerException e) {
@@ -159,16 +163,6 @@ public class ImportTDXData extends JDialog {
 
 	private void partThatCanImportDuringWork ()
 	{
-
-//		if(ckbxquekoutongji.isSelected() && ckbxquekoutongji.isEnabled()) { 
-//			
-//			System.out.println("缺口统计开始.....");
-//			long start=System.currentTimeMillis(); //获取开始时间
-//			queKouTongJi ();
-//			long end=System.currentTimeMillis(); //获取结束时间
-//			System.out.println("导入股票的基本面信息结束。" + "导入耗费时间： "+(end-start)+"ms.......");
-//			ckbxquekoutongji.setEnabled(false);
-//		}
 		
 		//从通达信中导入股票曾用名和现用名的信息
 		if(chbximportcym.isSelected() && chbximportcym.isEnabled())	{
@@ -631,12 +625,20 @@ public class ImportTDXData extends JDialog {
 					chbxdaorutdxsysbkvol.setSelected(true);
 					cbxImportSzGeGuVol.setSelected(true);
 					cbxImportShGeGuVol.setSelected(true);
-					ckbxnetease.setSelected(true);
-
+					chbxdaorutdxzdybk.setSelected(true);
 					
-					//曾用名和现用名一周只要更新一次，周五即可
+					LocalTime tdytime = LocalTime.now(); 
 					Calendar cal = Calendar.getInstance();
 					int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;
+					//9点前导入数据不选择导入网易数据
+					if( (wkday<=5 && wkday>=1) &&  tdytime.compareTo(LocalTime.of(21, 30, 0)) <0  ) 
+						ckbxnetease.setSelected(false);
+					else
+						ckbxnetease.setSelected(true);
+					
+					//曾用名和现用名一周只要更新一次，周五即可
+//					Calendar cal = Calendar.getInstance();
+//					int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;
 					if(wkday>=5)
 						chbximportcym.setSelected(true);
 					else
@@ -650,6 +652,7 @@ public class ImportTDXData extends JDialog {
 					cbxImportSzGeGuVol.setSelected(false);
 					cbxImportShGeGuVol.setSelected(false);
 					ckbxnetease.setSelected(false);
+					chbxdaorutdxzdybk.setSelected(false);
 				}
 			}
 		});
@@ -675,9 +678,9 @@ public class ImportTDXData extends JDialog {
 //						partThatHasBeImportAfterWsork();
 //				}
 				
-				partThatHasBeImportAfterWsork();
 				partThatCanImportDuringWork ();
-				
+				partThatHasBeImportAfterWsork();
+
 				lblstatus.setText("同步结束");
 				
 				int exchangeresult = JOptionPane.showConfirmDialog(null, "数据导入完成！是否检查数据导入完整性？","导入完成", JOptionPane.OK_CANCEL_OPTION);

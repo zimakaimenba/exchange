@@ -38,6 +38,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
 import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
@@ -204,14 +205,39 @@ public class NodeInfoToCsv extends JPanel
 	 */
 	protected File exportToCsvFile() 
 	{
-		String[] csvheader = {"Id","Name","Date",
-								"ChenJiaoEr","CjeZhanBi","CjeMaxWk","CjeZhanbiMaxWk","CjeZhanbiMinWk","HuanShouLv","LiuTongShiZhi",
-								"OpenUpQueKou","HuiBuDownQueKou","OpenDownQueKou","HuiBuUpQueKou"};
+		String[] csvheader = {  "Id","Name","Date",
+								"成交额",
+								"成交额MaxWk",
+								
+								"成交额占比",
+   							    "成交额占比MaxWk",
+								"成交额占比MinWk",
+								"成交额占比增长率",
+								
+								"成交量",
+								"成交量MaxWk",
+								
+								"成交量占比",
+   							    "成交量占比MaxWk",
+								"成交量占比MinWk",
+								"成交量占比增长率",
+								
+								 "换手率",
+								 "周平均流通市值",
+								 
+								 "OpenUpQueKou",
+								 "HuiBuDownQueKou",
+								 "OpenDownQueKou",
+								 "HuiBuUpQueKou",
+								 
+								 "涨停",
+								 "跌停"
+						};
 		
 		
 		ExportToCsvFile etcsv = new ExportToCsvFile ();
 		
-		Multiset<BkChanYeLianTreeNode> keyset = nodetimeframeMultimap.keys();
+//		Multiset<BkChanYeLianTreeNode> keyset = nodetimeframeMultimap.keys();
 		Set<BkChanYeLianTreeNode> keysets = nodetimeframeMultimap.keySet();
 		for(BkChanYeLianTreeNode node : keysets) {
 			
@@ -228,9 +254,19 @@ public class NodeInfoToCsv extends JPanel
 					Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);
 					if(cje != null) {
 						Integer cjemaxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(tmpdate,0);
+
 						Double cjezb = nodexdata.getChenJiaoErZhanBi(tmpdate, 0);
 						Integer cjezbmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(tmpdate, 0);
 						Integer cjezbminwk = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(tmpdate, 0);
+						Double cjezbgrowthrate = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(tmpdate, 0);
+						
+						Double curcjl = nodexdata.getChengJiaoLiang(tmpdate, 0);
+						Integer cjlmaxwk = nodexdata.getChenJiaoLiangMaxWeekOfSuperBanKuai(tmpdate,0);//显示cjl是多少周最大
+						
+						Double cjlzhanbidata = nodexdata.getChenJiaoLiangZhanBi(tmpdate, 0);
+						Integer cjlzbmaxwk = nodexdata.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(tmpdate, 0);
+						Integer cjlzbminwk = nodexdata.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(tmpdate, 0);
+						Double cjlzbgrowthrate = nodexdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(tmpdate, 0);
 						
 						Double hsl = null;
 						Double ltsz = null;
@@ -242,23 +278,43 @@ public class NodeInfoToCsv extends JPanel
 							ltsz = ((StockNodeXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);;
 						}
 						
-						Integer opneupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
-						Integer opendownquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
-						Integer huibuupquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
-						Integer huibudowquekou = ( (StockNodeXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);
+						Integer opneupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
+						Integer opendownquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
+						Integer huibuupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
+						Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);
+						
+						Integer zhangtingnum = ( (TDXNodesXPeriodData) nodexdata).getZhangTingTongJi(tmpdate, 0);
+						Integer dietingnum = ( (TDXNodesXPeriodData) nodexdata).getDieTingTongJi(tmpdate, 0);
 						
 						String[] csvline = {	"'" + node.getMyOwnCode() + "'", node.getMyOwnName(), tmpdate.with(DayOfWeek.FRIDAY).toString(),
-								cje.toString(),cjezb.toString(),
-								cjemaxwk.toString(),cjezbmaxwk.toString(),cjezbminwk.toString(),
+								cje.toString(),
+								cjemaxwk.toString(),
+								
+								cjezb.toString(),
+								cjezbmaxwk.toString(),
+								cjezbminwk.toString(),
+								cjezbgrowthrate.toString(),
+								
+								curcjl.toString(),
+								cjlmaxwk.toString(),
+								
+								cjlzhanbidata.toString(),
+								cjlzbmaxwk.toString(),
+								cjlzbminwk.toString(),
+								cjlzbgrowthrate.toString(),
+								
 								formateOutputValueString (hsl) ,
 								formateOutputValueString (ltsz),
+								
 								formateOutputValueString (opneupquekou),
 								formateOutputValueString (huibudowquekou),
 								formateOutputValueString (opendownquekou),
-								formateOutputValueString (huibuupquekou)
+								formateOutputValueString (huibuupquekou),
 								
+								formateOutputValueString (zhangtingnum),
+								formateOutputValueString (dietingnum)
 								};
-		
+						
 						nodecontentArrayList.add(csvline);
 //						unifiedAddingCsvData (node.getMyOwnCode(),node.getMyOwnName(),tmpdate,cje,cjezb,cjemaxwk,cjezbmaxwk,cjezbminwk,hsl,ltsz,
 //								opneupquekou,huibudowquekou,opendownquekou,huibuupquekou);
@@ -323,7 +379,6 @@ public class NodeInfoToCsv extends JPanel
 		btncsv = new JButton("\u5BFC\u51FA\u5230CSV");
 		
 		cbxappendmorebk = new JCheckBox("\u9644\u52A0\u57FA\u51C6\u677F\u5757(\u94F6\u884C/\u8BC1\u5238)");
-		cbxappendmorebk.setSelected(true);
 		
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
