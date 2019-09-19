@@ -15,8 +15,8 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
 
 public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 {
@@ -62,9 +62,9 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	    		 itr.remove();
 	    	 } else { //把停牌的个股的剔除，以免出问题
 		    	 Stock stock = sob.getStock();
-				 NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
+				 NodeXPeriodData stockxdata = stock.getNodeXPeroidData(period);
 		    	 
-		    	 Double cje = ((StockNodeXPeriodData)stockxdata).getChengJiaoEr(showwknum, 0);
+		    	 Double cje = stockxdata.getChengJiaoEr(showwknum, 0);
 		    	 if(cje == null)
 		    		 itr.remove();
 	    	 }
@@ -250,8 +250,8 @@ class NodeLiuTongShiZhiComparator implements Comparator<StockOfBanKuai> {
     	Stock stock1 = node1.getStock();
     	Stock stock2 = node2.getStock();
     	
-        Double cje1 = ((StockNodeXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference) ;
-        Double cje2 = ((StockNodeXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference);
+        Double cje1 = ((StockXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference) ;
+        Double cje2 = ((StockXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference);
         
         return cje2.compareTo(cje1);
     }

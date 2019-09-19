@@ -101,6 +101,7 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.ta4j.core.Bar;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
@@ -111,8 +112,9 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 /**
@@ -131,8 +133,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		createChartPanel();
 		createEvents ();
 	}
-	
-	
 
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickPnl.class);
 	public static final String ZHISHU_PROPERTY = "combinedzhishu";
@@ -146,8 +146,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	
 	private OHLCSeries dapanohlcSeries;
 	private OHLCSeriesCollection dapancandlestickDataset;
-	
-	
 
 	private NumberAxis priceAxis;
 	private ChartPanel chartPanel;
@@ -207,10 +205,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.setNotify(true);
 	}
 	/*
-	 * 
-	 */
-	
-	/*
 	 * node和上级板块同时显示
 	 */
 	public void updatedDate(TDXNodes superbk, TDXNodes node, LocalDate requirestart, LocalDate requireend ,String period)
@@ -232,14 +226,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		setPanelTitle ( node, requirestart, requireend);
 	}
 	/*
-	 * 
-	 */
-//	public void chongdieZhiShu (TDXNodes superzhishu, String period)
-//	{
-//		//计算当前node显示的时间范围
-//		RegularTimePeriod ohlcdate = ( (OHLCItem)ohlcSeries.getDataItem(0) ).getPeriod();
-//	}
-	/*
 	 * 个股和板块的K线可以重叠显示 
 	 */
 	private void setNodeCandleStickDate(TDXNodes node, LocalDate requirestart, LocalDate requireend,
@@ -253,22 +239,30 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
 			
-		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+		TDXNodesXPeriodDataForTA4J nodexdata = (TDXNodesXPeriodDataForTA4J) node.getNodeXPeroidData(period);
 		LocalDate tmpdate = requirestart;
 		double lowestLow =10000.0;  double highestHigh = 0.0;
 		do  {
-			OHLCItem tmpohlic = nodexdata.getSpecificDateOHLCData(tmpdate, 0);
-			if(tmpohlic == null) {
-				if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+			Bar ta4johlcbar = nodexdata.getSpecificDateOHLCData(tmpdate, 0);
+			if(ta4johlcbar == null) {
+				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-				else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+				else if(period.equals(NodeGivenPeriodDataItem.DAY))
 					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-				else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 				
 				continue;
 			}
-				
+			
+			java.sql.Date sqldate = java.sql.Date.valueOf(ta4johlcbar.getEndTime().toLocalDate() );
+			
+			OHLCItem tmpohlic = new OHLCItem(new Day(sqldate), 
+										ta4johlcbar.getOpenPrice().doubleValue(),
+										ta4johlcbar.getMaxPrice().doubleValue(),
+										ta4johlcbar.getMinPrice().doubleValue(),
+										ta4johlcbar.getClosePrice().doubleValue()
+										);
 			tmpohlcSeries.add(tmpohlic);
 			
 			Double low = tmpohlic.getLowValue();
@@ -281,11 +275,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				highestHigh = high;
 			}
 			
-			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
 				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
@@ -337,7 +331,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			OHLCItem kxiandatacurwk = (OHLCItem) ohlcSeries.getDataItem(j);
 			RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
 			LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			
 			OHLCItem kxiandatalastwk = (OHLCItem) ohlcSeries.getDataItem(j-1);
 			
@@ -940,7 +933,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			return;
 		
 //		LocalDate selectdate1 = CommonUtility.formateStringToDate(selecteddate.toString());
-		this.highLightSpecificDateCandleStickWithHighLowValue(selecteddate, TDXNodeGivenPeriodDataItem.DAY, true);
+		this.highLightSpecificDateCandleStickWithHighLowValue(selecteddate, NodeGivenPeriodDataItem.DAY, true);
 		
 	}
 	@Override

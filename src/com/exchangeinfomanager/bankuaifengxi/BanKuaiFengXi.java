@@ -75,13 +75,12 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.nodexdata.BanKuaiNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -273,6 +272,7 @@ public class BanKuaiFengXi extends JDialog
 	private void gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (String period)
 	{
 		this.globeperiod = period;
+		System.out.print(period);
     	LocalDate curselectdate = dateChooser.getLocalDate(); 
 
     	List<BanKuai> bkwithcje = initializeBanKuaiZhanBiByGrowthRate (curselectdate);
@@ -289,7 +289,7 @@ public class BanKuaiFengXi extends JDialog
     	percentFormat.setMinimumFractionDigits(1);
     	DecimalFormat df2 = new DecimalFormat(".##");
     	TDXNodes childnode = (TDXNodes)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
-    	NodeXPeriodDataBasic bkdata = ((TDXNodes)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+    	NodeXPeriodData bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		try {
 				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
 				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
@@ -299,7 +299,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 			
 		childnode = (TDXNodes)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK); 
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		try {
 				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
 				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
@@ -309,7 +309,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 		 
 		childnode = (TDXNodes)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);	
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		try {
 				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
 				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
@@ -319,7 +319,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 			
 		childnode = (TDXNodes)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK); 
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		try {
 				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
 				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
@@ -357,8 +357,8 @@ public class BanKuaiFengXi extends JDialog
 			
 			childnode = this.allbksks.getBanKuai( (BanKuai)childnode, requirestart, curselectdate,globeperiod);
 			
-			NodeXPeriodDataBasic bkxdata = ((TDXNodes)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-			if(bkxdata.hasRecordInThePeriod(curselectdate, 0) )//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+			NodeXPeriodData bkxdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			if(bkxdata.getIndexOfSpecificDateOHLCData(curselectdate, 0) != null)//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 				bkwithcje.add( (BanKuai)childnode );
 
 		}
@@ -628,11 +628,11 @@ public class BanKuaiFengXi extends JDialog
 		
 		LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		String dateshowinfilename = null;
-		if(globeperiod == null  || globeperiod.equals(TDXNodeGivenPeriodDataItem.WEEK))
+		if(globeperiod == null  || globeperiod.equals(NodeGivenPeriodDataItem.WEEK))
 			dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
-		else if(globeperiod.equals(TDXNodeGivenPeriodDataItem.DAY))
+		else if(globeperiod.equals(NodeGivenPeriodDataItem.DAY))
 			dateshowinfilename = "day" + curselectdate.toString().replaceAll("-","");
-		else if(globeperiod.equals(TDXNodeGivenPeriodDataItem.MONTH))
+		else if(globeperiod.equals(NodeGivenPeriodDataItem.MONTH))
 			dateshowinfilename = "month" +  curselectdate.withDayOfMonth(curselectdate.lengthOfMonth()).toString().replaceAll("-","");
 		String exportfilename = sysconfig.getTDXModelMatchExportFile () + "TDX模型个股" + dateshowinfilename + ".EBK";
 		File filefmxx = new File( exportfilename );
@@ -827,7 +827,7 @@ public class BanKuaiFengXi extends JDialog
 //		LocalDate requireend = curselectdate.with(DayOfWeek.SATURDAY);
 //		LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
-		selectstock = allbksks.getStock(selectstock,CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
+		selectstock = allbksks.getStock(selectstock,CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,NodeGivenPeriodDataItem.WEEK);
 		
 		
 		for (BarChartPanelDataChangedListener tmplistener : barchartpanelstockdatachangelisteners) {
@@ -844,32 +844,32 @@ public class BanKuaiFengXi extends JDialog
 		
 		TDXNodes tmpnode = null;
 		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
-			selectnode = allbksks.getStock((Stock)selectnode,CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
+			selectnode = allbksks.getStock((Stock)selectnode,CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,NodeGivenPeriodDataItem.WEEK);
 			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
 			this.allbksks.syncStockData((Stock)selectnode);
 			
 			tmpnode = selectnode;
 		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
-			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, TDXNodeGivenPeriodDataItem.WEEK);
+			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, NodeGivenPeriodDataItem.WEEK);
 			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
 			
 			tmpnode = selectnode;
 		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
-			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
+			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,NodeGivenPeriodDataItem.WEEK);
 			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
 			
 			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
 		}
 		
 		 if(superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
-			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, TDXNodeGivenPeriodDataItem.WEEK);
+			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, NodeGivenPeriodDataItem.WEEK);
 			 this.allbksks.syncBanKuaiData( (BanKuai)superbankuai);
 		 }
 		
 		
-		this.allbksks.getDaPanKXian (CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,TDXNodeGivenPeriodDataItem.DAY); 
+		this.allbksks.getDaPanKXian (CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,NodeGivenPeriodDataItem.DAY); 
 
-		paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),requireend,TDXNodeGivenPeriodDataItem.DAY);
+		paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),requireend,NodeGivenPeriodDataItem.DAY);
 		paneldayCandle.updateZhiShuKeyDates (zhishukeylists); //指数关键日期
 	}
 	/*
@@ -1914,7 +1914,7 @@ public class BanKuaiFengXi extends JDialog
 			    		
 //			    		setHighLightChenJiaoEr();
 			    		
-			    		gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (TDXNodeGivenPeriodDataItem.WEEK);
+			    		gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (NodeGivenPeriodDataItem.WEEK);
 			    		
 			    		lastselecteddate = newdate;
 			    		
@@ -2359,9 +2359,9 @@ public class BanKuaiFengXi extends JDialog
 			int row = tableGuGuZhanBiInBk.getSelectedRow();
 			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
 			StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
-			NodeXPeriodDataBasic nodexdata = selectstock.getStock().getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-			LocalDate nodestart = nodexdata.getAmoRecordsStartDate();
-			LocalDate nodeend = nodexdata.getAmoRecordsEndDate();
+			NodeXPeriodData nodexdata = selectstock.getStock().getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			LocalDate nodestart = nodexdata.getOHLCRecordsStartDate();
+			LocalDate nodeend = nodexdata.getOHLCRecordsEndDate();
 			nodeinfotocsv.addNodeToCsvList(selectstock.getStock(), nodestart, nodeend);
 		} else {
 			String stockcode = type.substring(0,6);
@@ -2388,9 +2388,9 @@ public class BanKuaiFengXi extends JDialog
 			int row = tableBkZhanBi.getSelectedRow();
 			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
 			BanKuai bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-			NodeXPeriodDataBasic nodexdata = bk.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-			LocalDate nodestart = nodexdata.getAmoRecordsStartDate();
-			LocalDate nodeend = nodexdata.getAmoRecordsEndDate();
+			NodeXPeriodData nodexdata = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			LocalDate nodestart = nodexdata.getOHLCRecordsStartDate();
+			LocalDate nodeend = nodexdata.getOHLCRecordsEndDate();
 			nodeinfotocsv.addNodeToCsvList( bk, nodestart, nodeend);
 		} else {
 			String stockcode = type.substring(0,6);
@@ -2514,7 +2514,7 @@ public class BanKuaiFengXi extends JDialog
 		for(int i=0; i<columncount;i ++) {
 			result = result + curtable.getColumnName(i) + ":" + curtable.getValueAt(row, i) +";";
 		}
-		StockNodeXPeriodData nodexdata = (StockNodeXPeriodData) selectstock.getStock().getNodeXPeroidData(globeperiod);
+		StockXPeriodData nodexdata =  (StockXPeriodData) selectstock.getStock().getNodeXPeroidData(globeperiod);
 		Double liutongshizhi = nodexdata.getSpecificTimeLiuTongShiZhi(curtableshowwknum, 0);
 		Double zongshizhi = nodexdata.getSpecificTimeZongShiZhi(curtableshowwknum, 0);
 		if(liutongshizhi != null  )
@@ -2542,8 +2542,8 @@ public class BanKuaiFengXi extends JDialog
 		DateTime requiredenddt = new DateTime(requireend.getYear(), requireend.getMonthValue(), requireend.getDayOfMonth(), 0, 0, 0, 0);
 		Interval requiredinterval = new Interval(requiredstartdt, requiredenddt);
 		
-		NodeXPeriodDataBasic nodexdate = node.getNodeXPeroidData(globeperiod);
-		LocalDate nodestart = nodexdate.getAmoRecordsStartDate();
+		NodeXPeriodData nodexdate = node.getNodeXPeroidData(globeperiod);
+		LocalDate nodestart = nodexdate.getOHLCRecordsStartDate();
 		LocalDate nodeend = LocalDate.now();//nodexdate.getAmoRecordsEndDate();
 		DateTime nodestartdt= new DateTime(nodestart.getYear(), nodestart.getMonthValue(), nodestart.getDayOfMonth(), 0, 0, 0, 0);
 		DateTime nodeenddt = new DateTime(nodeend.getYear(), nodeend.getMonthValue(), nodeend.getDayOfMonth(), 0, 0, 0, 0);
@@ -2588,7 +2588,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		this.allbksks.getDaPan (overlapldstartday,overlapldendday,globeperiod); //同步大盘数据,否则在其他地方会出错
 		this.allbksks.syncDaPanData ();
-//		this.allbksks.getDaPanKXian (requirestart.plusWeeks(1),curselectdate,TDXNodeGivenPeriodDataItem.DAY); //同步大盘数据,否则在其他地方会出错
+//		this.allbksks.getDaPanKXian (requirestart.plusWeeks(1),curselectdate,NodeGivenPeriodDataItem.DAY); //同步大盘数据,否则在其他地方会出错
 		
 		BanKuaiFengXiLargePnl largeinfo = null;
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
@@ -3604,7 +3604,7 @@ public class BanKuaiFengXi extends JDialog
 				cancelButton.setActionCommand("Cancel");
 			}
 			
-			ckbxma = new JCheckBox("\u7A81\u51FAMA");
+			ckbxma = new JCheckBox("\u7A81\u51FACLOSE vs. MA");
 			ckbxma.setFont(new Font("宋体", Font.PLAIN, 12));
 			ckbxma.setSelected(true);
 			ckbxma.setForeground(new Color(0,153,153) );
@@ -4122,15 +4122,15 @@ public class BanKuaiFengXi extends JDialog
 				String bkcode = childnode.getMyOwnCode();
 				LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 				childnode = (BanKuai)this.allbksks.getBanKuai(((BanKuai)childnode), requirestart,curselectdate,period); 
-				BanKuaiNodeXPeriodData bkxdata = (BanKuaiNodeXPeriodData) ((BanKuai)childnode).getNodeXPeroidData(period);
-	    		if(bkxdata.hasRecordInThePeriod(curselectdate, 0) != null ) {//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+				NodeXPeriodData bkxdata = ((BanKuai)childnode).getNodeXPeroidData(period);
+	    		if(bkxdata.getIndexOfSpecificDateOHLCData(curselectdate, 0) != null ) {//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 	    			((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai(((BanKuai)childnode));
 	    		}
 	    		
 	    		//显示大盘成交量
 	    		
 	    		if(bkcode.equals("999999") ) {
-	    			BanKuaiNodeXPeriodData bkshdata = (BanKuaiNodeXPeriodData) ((BanKuai)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+	    			 NodeXPeriodData bkshdata = ((BanKuai)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 	    			try {
 		    			Double cjerec = bkshdata.getChengJiaoEr(curselectdate,0);
 	    				lblshcje.setText( cjerec.toString() );
@@ -4139,7 +4139,7 @@ public class BanKuaiFengXi extends JDialog
 	    			}
 	    			
 	    		} else if(bkcode.equals("399001") ) {
-	    			BanKuaiNodeXPeriodData bkszdata = (BanKuaiNodeXPeriodData)((BanKuai)childnode).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+	    			NodeXPeriodData bkszdata = ((BanKuai)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 	    			try {
 	    				Double cjerec = bkszdata.getChengJiaoEr(curselectdate,0);
 	    				lblszcje.setText( cjerec.toString() );

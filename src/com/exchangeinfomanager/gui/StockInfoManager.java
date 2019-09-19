@@ -38,7 +38,6 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
-import com.exchangeinfomanager.bankuaifengxi.GeGuShiZhiFenXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
@@ -124,8 +123,8 @@ import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 
@@ -461,7 +460,7 @@ public class StockInfoManager
     					return;
     				
             		LocalDate requirestart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-    				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, requirestart, LocalDate.now(), TDXNodeGivenPeriodDataItem.WEEK);
+    				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, requirestart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
     				editorPanenodeinfo.displayNodeAllInfo(bankuai);
             		
             	}

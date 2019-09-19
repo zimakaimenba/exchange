@@ -32,7 +32,6 @@ import org.jfree.data.time.ohlc.OHLCSeries;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.operations.InvisibleNode;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.base.Splitter;

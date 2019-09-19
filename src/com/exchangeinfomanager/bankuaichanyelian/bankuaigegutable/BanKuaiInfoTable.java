@@ -40,6 +40,7 @@ import org.jfree.data.time.ohlc.OHLCItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.ta4j.core.Bar;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
@@ -51,8 +52,8 @@ import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -322,14 +323,12 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        }
 	       
 	        if (comp instanceof JLabel && col == 7) {
-	        	NodeXPeriodDataBasic nodexdata = bankuai.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
+	        	TDXNodesXPeriodDataForTA4J nodexdata = (TDXNodesXPeriodDataForTA4J) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+	        	Bar weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
 	        	if(weekohlc != null) {
-	        		double close = weekohlc.getCloseValue();
-	        		double open = weekohlc.getOpenValue();
-	        		if(close!= 0.0 && open >= close)
+	        		if (weekohlc.isBearish())
 	        			background = Color.GREEN;
-			        else if(close!= 0.0 && open < close)
+			        else if (weekohlc.isBullish() )
 			        	background = Color.RED;
 			        else
 			        	background = Color.WHITE;

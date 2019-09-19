@@ -47,8 +47,8 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
 
@@ -196,7 +196,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		BanKuaiFengXiCategoryBarRenderer render = (BanKuaiFengXiCategoryBarRenderer)plot.getRenderer();
 		render.setDisplayNode(this.curdisplayednode);
 		
-		NodeXPeriodDataBasic nodexdata = this.curdisplayednode.getNodeXPeroidData(period);
+		NodeXPeriodData nodexdata = this.curdisplayednode.getNodeXPeroidData(period);
 		render.setDisplayNodeXPeriod(nodexdata);
 		
 		
@@ -652,7 +652,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis
     		return Color.black;
     	else {
     		LocalDate selecteddate = CommonUtility.formateStringToDate(category.toString());
-    		NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(period);
+    		NodeXPeriodData nodexdata = ((TDXNodes)node).getNodeXPeroidData(period);
     		
     		try{
     		if(nodexdata == null)

@@ -172,9 +172,13 @@ public class StockCalendar extends JCalendar
         tempPanel.add(next);
         
         tempPanel.add(Box.createHorizontalStrut(40));
+        
         JPanel viewPanel = JPanelFactory.createPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         viewPanel.add(month);
         viewPanel.add(year);
+        
+        tempPanel.add(Box.createHorizontalStrut(20));
+        
         viewPanel.add(setting);
 
         this.headerPanel.add(tempPanel);

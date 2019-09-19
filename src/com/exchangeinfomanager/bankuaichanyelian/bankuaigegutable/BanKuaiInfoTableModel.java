@@ -14,8 +14,7 @@ import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
-import com.exchangeinfomanager.nodes.nodexdata.BanKuaiNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 
 public class BanKuaiInfoTableModel extends DefaultTableModel 
@@ -103,7 +102,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    		e.printStackTrace();
 	    		return null;
 	    	}
-	    	NodeXPeriodDataBasic bkxdata = (BanKuaiNodeXPeriodData)bankuai.getNodeXPeroidData(this.curperiod);
+	    	NodeXPeriodData bkxdata = bankuai.getNodeXPeroidData(this.curperiod);
 	    	logger.debug(bankuai.getMyOwnName() + bankuai.getMyOwnCode() );
 	    	
 //	    	if(bankuai.getMyOwnCode().equals("159932"))

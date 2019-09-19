@@ -4,9 +4,9 @@ import java.time.LocalDate;
 
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 public abstract class TDXNodes extends BkChanYeLianTreeNode
 {
@@ -15,9 +15,9 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		super (myowncode,myownname);
 	}
 	
-	protected NodeXPeriodDataBasic nodewkdata;
-	protected NodeXPeriodDataBasic nodedaydata;
-	protected NodeXPeriodDataBasic nodemonthdata;
+	protected NodeXPeriodData nodewkdata;
+	protected NodeXPeriodData nodedaydata;
+	protected NodeXPeriodData nodemonthdata;
 	
 	private String suoshujiaoyisuo;
 		
@@ -29,13 +29,13 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	{
 		this.suoshujiaoyisuo = jys;
 	}
-	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
+	public NodeXPeriodData getNodeXPeroidData (String period)
 	{
-		if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+		if(period.equals(NodeGivenPeriodDataItem.WEEK))
 			return nodewkdata;
-		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+		else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 			return nodemonthdata;
-		else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+		else if(period.equals(NodeGivenPeriodDataItem.DAY))
 			return nodedaydata;
 		else 
 			return null;
@@ -44,9 +44,9 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	public String getNodeXPeroidDataInHtml (LocalDate requireddate, String period)
 	{
 		String html;
-		NodeXPeriodDataBasic nodexdata = this.getNodeXPeroidData(period);
+		NodeXPeriodData nodexdata = this.getNodeXPeroidData(period);
 		if(super.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			 html = ( (StockNodeXPeriodData) nodexdata).getNodeXDataInHtml((DaPan)this.getRoot(),requireddate, 0);
+			 html = ( (StockXPeriodData) nodexdata).getNodeXDataInHtml((DaPan)this.getRoot(),requireddate, 0);
 		} else {
 			html = nodexdata.getNodeXDataInHtml((DaPan)this.getRoot(),requireddate, 0);
 		}

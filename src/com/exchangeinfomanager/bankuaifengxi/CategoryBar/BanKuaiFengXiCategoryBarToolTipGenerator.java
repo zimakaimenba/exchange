@@ -5,14 +5,14 @@ import org.jfree.data.category.CategoryDataset;
 
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 
 public class BanKuaiFengXiCategoryBarToolTipGenerator implements CategoryToolTipGenerator 
 {
 	protected TDXNodes node;
 //  private static Logger logger = Logger.getLogger(CustomToolTipGeneratorForChenJiaoEr.class);
-	protected NodeXPeriodDataBasic nodexdata;
+	protected NodeXPeriodData nodexdata;
 
 	@Override
 	public  String generateToolTip(CategoryDataset arg0, int arg1, int arg2) {
@@ -24,7 +24,7 @@ public class BanKuaiFengXiCategoryBarToolTipGenerator implements CategoryToolTip
     {
     	this.node = curdisplayednode;
     }
-    public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
+    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
     {
 		this.nodexdata = nodexdata1;
 	}

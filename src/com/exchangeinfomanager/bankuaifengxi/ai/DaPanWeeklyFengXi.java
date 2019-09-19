@@ -35,14 +35,13 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.github.cjwizard.WizardPage;
 
@@ -76,11 +75,11 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 
 		LocalDate upstartdate = displaydate.minus(30,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		LocalDate upenddate = displaydate.minus(16,ChronoUnit.WEEKS).with(DayOfWeek.SATURDAY);
-		pnlup.updatedMultiDate(zhishulist, upstartdate, upenddate, TDXNodeGivenPeriodDataItem.WEEK);
+//		pnlup.updatedMultiDate(zhishulist, upstartdate, upenddate, NodeGivenPeriodDataItem.WEEK);
 		
 		LocalDate dwnstartdate = displaydate.minus(15,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		LocalDate dwnenddate = displaydate.with(DayOfWeek.SATURDAY);
-		pnldown.updatedMultiDate(zhishulist, dwnstartdate, dwnenddate, TDXNodeGivenPeriodDataItem.WEEK);
+//		pnldown.updatedMultiDate(zhishulist, dwnstartdate, dwnenddate, NodeGivenPeriodDataItem.WEEK);
 	}
 	/*
 	 * 
@@ -199,8 +198,8 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 	private JTable tablebk;
 	private JTextField tfldbkcode;
 	private JPanel buttonPane;
-	private BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl pnldown;
-	private BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl pnlup;
+//	private BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl pnldown;
+//	private BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl pnlup;
 	private JButton btnxmlMartrix;
 	private JButton btnremv;
 	private JButton btnadd;
@@ -216,9 +215,9 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		this.add(contentPanel, BorderLayout.CENTER);
 		
-		pnlup = new BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl();
-		
-		pnldown = new BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl();
+//		pnlup = new BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl();
+//		
+//		pnldown = new BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl();
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
@@ -311,7 +310,7 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(pnldown, GroupLayout.DEFAULT_SIZE, 1542, Short.MAX_VALUE)
+						
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 443, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -324,16 +323,16 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 							.addComponent(scrollPane_4, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(scrollPane_5, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE))
-						.addComponent(pnlup, GroupLayout.DEFAULT_SIZE, 1542, Short.MAX_VALUE))
+						)
 					.addContainerGap())
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
-					.addComponent(pnlup, GroupLayout.PREFERRED_SIZE, 267, GroupLayout.PREFERRED_SIZE)
+					
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(pnldown, GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
+					
 					.addGap(4)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
@@ -391,7 +390,7 @@ class DaPanTableModel extends AbstractTableModel
 		this.dapanzhishu = new ArrayList<BkChanYeLianTreeNode>();
 		for( ZdgzItem zhishuitem :  zhishulist) {
 			String zhishucode  = zhishuitem.getValue();
-			BanKuai dapanitem = allbksks.getBanKuai(zhishucode, requirestart,this.showdate, TDXNodeGivenPeriodDataItem.WEEK);
+			BanKuai dapanitem = allbksks.getBanKuai(zhishucode, requirestart,this.showdate, NodeGivenPeriodDataItem.WEEK);
 			this.dapanzhishu.add(dapanitem);
 		}
 		
@@ -459,11 +458,11 @@ class DaPanTableModel extends AbstractTableModel
                 value = zhishuname;
                 break;
             case 2:
-            	NodeXPeriodDataBasic zhishunodexdate = dapanitem.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+            	NodeXPeriodData zhishunodexdate = dapanitem.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
                 value = zhishunodexdate.getChengJiaoEr(this.showdate, 0);
                 break;
             case 3:
-            	zhishunodexdate = dapanitem.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+            	zhishunodexdate = dapanitem.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
                 value = zhishunodexdate.getChenJiaoErZhanBi(showdate, 0);
                 break;
 	    	}

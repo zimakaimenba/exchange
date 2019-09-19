@@ -66,10 +66,10 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.SubBanKuai;
 import com.exchangeinfomanager.nodes.SubGuPiaoChi;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -169,10 +169,10 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 	  	   LocalDate curselectdate = LocalDate.now();
 	  	   LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		 		
-	  	     bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), requirestart,curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
-	  	     bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,TDXNodeGivenPeriodDataItem.WEEK);
+	  	     bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), requirestart,curselectdate,NodeGivenPeriodDataItem.WEEK);
+	  	     bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,NodeGivenPeriodDataItem.WEEK);
 	  	     
-	  	     Set<StockOfBanKuai> allbkge = bankuai.getSpecificPeriodBanKuaiGeGu(curselectdate,0,TDXNodeGivenPeriodDataItem.WEEK);
+	  	     Set<StockOfBanKuai> allbkge = bankuai.getSpecificPeriodBanKuaiGeGu(curselectdate,0,NodeGivenPeriodDataItem.WEEK);
 	  	     
 	  	     ((BkChanYeLianTreeNodeListTableModel)(tablebkgegu.getModel())).refresh(new ArrayList (allbkge) );
 	  	     
@@ -209,10 +209,10 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 		  	    LocalDate curselectdate = LocalDate.now();
 		  	    LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		 		
-		  	    bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), requirestart, curselectdate,TDXNodeGivenPeriodDataItem.WEEK);
-		  	    bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,TDXNodeGivenPeriodDataItem.WEEK);
+		  	    bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), requirestart, curselectdate,NodeGivenPeriodDataItem.WEEK);
+		  	    bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,NodeGivenPeriodDataItem.WEEK);
 		  	     
-		  	    Set<StockOfBanKuai> allbkge = bankuai.getSpecificPeriodBanKuaiGeGu(curselectdate,0,TDXNodeGivenPeriodDataItem.WEEK);
+		  	    Set<StockOfBanKuai> allbkge = bankuai.getSpecificPeriodBanKuaiGeGu(curselectdate,0,NodeGivenPeriodDataItem.WEEK);
 
 		  	    ((BkChanYeLianTreeNodeListTableModel)(tablebkgegu.getModel())).refresh(new ArrayList<BkChanYeLianTreeNode> (allbkge) );
 	        }

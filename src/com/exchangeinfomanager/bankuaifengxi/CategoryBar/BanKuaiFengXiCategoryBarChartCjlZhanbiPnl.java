@@ -35,10 +35,9 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl 
@@ -78,7 +77,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 //		BanKuaiFengXiCategoryBarRenderer render = (BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer();
 //		render.setDisplayNode(node);
 		
-		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
 		
 		displayDataToGui (nodexdata,startdate,enddate,period);
 		
@@ -94,7 +93,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 	/*
 	 * 
 	 */
-	private void displayDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period)
+	private void displayDataToGui (NodeXPeriodData nodexdata,LocalDate startdate,LocalDate enddate,String period)
 	{
 		DaPan dapan;
 		if(this.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
@@ -129,11 +128,11 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			}
 			
 			
-			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
 				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
@@ -146,7 +145,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 	/*
 	 * 突出显示一些预先设置
 	 */
-	private void operationAfterDataSetup (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, int upqkmax, String period) 
+	private void operationAfterDataSetup (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, int upqkmax, String period) 
 	{
 		if(highestHigh == 0.0)
 			return;
@@ -322,7 +321,7 @@ class CustomCategroyToolTipGeneratorForCjlZhanBi extends BanKuaiFengXiCategoryBa
 		String html;
 		DaPan dapan = (DaPan)  super.node.getRoot();
 		if(super.node.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			 html = ( (StockNodeXPeriodData) nodexdata).getNodeXDataInHtml(dapan,selecteddate, 0);
+			 html = ( (StockXPeriodData) nodexdata).getNodeXDataInHtml(dapan,selecteddate, 0);
 		} else {
 			html = nodexdata.getNodeXDataInHtml(dapan,selecteddate, 0);
 		}

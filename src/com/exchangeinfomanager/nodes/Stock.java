@@ -22,10 +22,10 @@ import org.jfree.data.time.ohlc.OHLCSeries;
 import com.google.common.base.Strings;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 
 public class Stock extends TDXNodes {
@@ -42,8 +42,8 @@ public class Stock extends TDXNodes {
 		
 //		suoShuTdxBanKuaiData = new HashMap<String,StockOfBanKuai> ();
 		
-		super.nodewkdata = new StockNodeXPeriodData (myowncode1,TDXNodeGivenPeriodDataItem.WEEK) ;
-		super.nodedaydata = new StockNodeXPeriodData (myowncode1,TDXNodeGivenPeriodDataItem.DAY) ;
+		super.nodewkdata = new StockXPeriodData (myowncode1,NodeGivenPeriodDataItem.WEEK) ;
+		super.nodedaydata = new StockXPeriodData (myowncode1,NodeGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 		super.nodetreerelated = new NodesTreeRelated (this);
 		
@@ -162,8 +162,8 @@ public class Stock extends TDXNodes {
 	 */
 	protected Boolean isTingPai (LocalDate requireddate,int difference, String period )
 	{
-		NodeXPeriodDataBasic nodexdate = super.getNodeXPeroidData(period);
-		if( !nodexdate.hasRecordInThePeriod(requireddate, difference) ) {
+		NodeXPeriodData nodexdate = super.getNodeXPeroidData(period);
+		if( nodexdate.getIndexOfSpecificDateOHLCData(requireddate, difference) != null) {
 			boolean dapanxiushi = ((DaPan)getRoot()).isDaPanXiuShi(requireddate,difference,period );
 			if(dapanxiushi)
 				return false;

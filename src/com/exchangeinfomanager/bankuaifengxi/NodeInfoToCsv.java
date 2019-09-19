@@ -35,11 +35,10 @@ import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -188,15 +187,15 @@ public class NodeInfoToCsv extends JPanel
 	{
 		if(cbxappendmorebk.isSelected()) {
 			BkChanYeLianTreeNode node = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("880471", BkChanYeLianTreeNode.TDXBK );
-			NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-			LocalDate curstart = nodexdata.getAmoRecordsStartDate();
-			LocalDate curend = nodexdata.getAmoRecordsEndDate();
+			NodeXPeriodData nodexdata = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			LocalDate curstart = nodexdata.getOHLCRecordsStartDate();
+			LocalDate curend = nodexdata.getOHLCRecordsEndDate();
 			this.addNodeToCsvList (node,curstart,curend);
 			
 			node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("880472", BkChanYeLianTreeNode.TDXBK );
-			nodexdata = ((TDXNodes)node).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
-			curstart = nodexdata.getAmoRecordsStartDate();
-			curend = nodexdata.getAmoRecordsEndDate();
+			nodexdata = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			curstart = nodexdata.getOHLCRecordsStartDate();
+			curend = nodexdata.getOHLCRecordsEndDate();
 			this.addNodeToCsvList (node,curstart,curend);
 		}
 	}
@@ -242,7 +241,7 @@ public class NodeInfoToCsv extends JPanel
 		for(BkChanYeLianTreeNode node : keysets) {
 			
 			node = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType() );
-			NodeXPeriodDataBasic nodexdata = ((TDXNodes)node).getNodeXPeroidData(TDXNodeGivenPeriodDataItem.WEEK);
+			NodeXPeriodData nodexdata = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 			
 			Collection<Interval> nodetimeframes = nodetimeframeMultimap.get(node);
 			for(Interval timerange : nodetimeframes) {
@@ -274,17 +273,17 @@ public class NodeInfoToCsv extends JPanel
 							hsl = null;
 							ltsz = null;
 						} else {
-							hsl = ((StockNodeXPeriodData)nodexdata).getSpecificTimeHuanShouLv(tmpdate, 0);
-							ltsz = ((StockNodeXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);;
+							hsl = ((StockXPeriodData)nodexdata).getSpecificTimeHuanShouLv(tmpdate, 0);
+							ltsz = ((StockXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);;
 						}
 						
-						Integer opneupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
-						Integer opendownquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
-						Integer huibuupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
-						Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);
+						Integer opneupquekou = nodexdata.getQueKouTongJiOpenUp(tmpdate, 0);
+						Integer opendownquekou = nodexdata.getQueKouTongJiOpenDown(tmpdate, 0);
+						Integer huibuupquekou =  nodexdata.getQueKouTongJiHuiBuUp(tmpdate, 0);
+						Integer huibudowquekou = nodexdata.getQueKouTongJiHuiBuDown(tmpdate, 0);
 						
-						Integer zhangtingnum = ( (TDXNodesXPeriodData) nodexdata).getZhangTingTongJi(tmpdate, 0);
-						Integer dietingnum = ( (TDXNodesXPeriodData) nodexdata).getDieTingTongJi(tmpdate, 0);
+						Integer zhangtingnum = nodexdata.getZhangTingTongJi(tmpdate, 0);
+						Integer dietingnum =  nodexdata.getDieTingTongJi(tmpdate, 0);
 						
 						String[] csvline = {	"'" + node.getMyOwnCode() + "'", node.getMyOwnName(), tmpdate.with(DayOfWeek.FRIDAY).toString(),
 								cje.toString(),

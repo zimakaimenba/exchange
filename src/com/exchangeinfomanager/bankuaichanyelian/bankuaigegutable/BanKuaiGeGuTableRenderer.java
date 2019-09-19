@@ -30,10 +30,9 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.google.common.base.Strings;
 import com.udojava.evalex.Expression;
@@ -92,7 +91,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    if( (table.isRowSelected(row) || stock.wetherHasReiewedToday() ) && col == 0 ) { //当前选择选择
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
-		    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);
+		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
 		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
 	    
 		    if(zhangdiefu > 0 )
@@ -141,7 +140,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    
 		    LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
-		    StockNodeXPeriodData nodexdata = (StockNodeXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+		    StockXPeriodData nodexdata = (StockXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		    Double curltsz = nodexdata.getSpecificTimeLiuTongShiZhi(requireddate, 0);
 		    try {
 			    if( curltsz >= ltszmin && curltsz <= ltszmax ) 
@@ -158,7 +157,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    
 		    LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
-		    NodeXPeriodDataBasic nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		    Double curcje = nodexdata.getChengJiaoEr(requireddate, 0);
 		    if( curcje >= cjemin && curcje <= cjemax ) 
 		    	background = Color.yellow ;
@@ -172,7 +171,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    else {
 		    	LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
-		    	TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+		    	NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 			    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(requireddate, 0);
 			    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(requireddate, 0);
 			    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  )
@@ -187,7 +186,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	if(cjedpmaxwk > 0 ) {
 	    		LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
-			    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		    	Integer lianxuflnum = nodexdata.getCjeLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
 		    	 
 		    	if(cjedpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) //连续放量,深色显示
@@ -210,7 +209,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	if(cjldpmaxwk > 0 ) {
 		    		LocalDate requireddate = tablemodel.getShowCurDate();
 				    String period = tablemodel.getCurDisplayPeriod();
-				    TDXNodesXPeriodData nodexdata = (TDXNodesXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+				    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 			    	Integer lianxuflnum = nodexdata.getCjlLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
 			    	 
 			    	if(cjldpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) //连续放量,深色显示
@@ -230,7 +229,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	String displayma = tablemodel.getDisplayMAFormula();
 	    	background = Color.white ;
 	    	if (!Strings.isNullOrEmpty(displayma)) {
-			    TDXNodesXPeriodData nodexdataday = (TDXNodesXPeriodData)stock.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
+	    		NodeXPeriodData nodexdataday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 			    
 			    LocalDate requireddate = tablemodel.getShowCurDate();
 			    Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,requireddate,0);

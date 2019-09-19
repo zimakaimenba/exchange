@@ -11,9 +11,9 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
-import com.exchangeinfomanager.nodes.nodexdata.DaPanNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.DaPanXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 
 public class DaPan extends TDXNodes
@@ -36,8 +36,8 @@ public class DaPan extends TDXNodes
 		this.shanghai = sh;
 		this.shenzhen = sz;
 		
-		super.nodewkdata = new DaPanNodeXPeriodData (TDXNodeGivenPeriodDataItem.WEEK,shanghai,shenzhen) ;
-		super.nodedaydata = new DaPanNodeXPeriodData (TDXNodeGivenPeriodDataItem.DAY,shanghai,shenzhen) ;
+		super.nodewkdata = new DaPanXPeriodData (NodeGivenPeriodDataItem.WEEK,shanghai,shenzhen) ;
+		super.nodedaydata = new DaPanXPeriodData (NodeGivenPeriodDataItem.DAY,shanghai,shenzhen) ;
 //		super.nodemonthdata = new DaPanNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 	}
 	
@@ -46,8 +46,8 @@ public class DaPan extends TDXNodes
 	 */
 	public Boolean  isDaPanXiuShi (LocalDate date,int difference,String period)
 	{
-		NodeXPeriodDataBasic shnodexdata = this.shanghai.getNodeXPeroidData(period);
-		if(shnodexdata.hasRecordInThePeriod(date,difference) )
+		NodeXPeriodData shnodexdata = this.shanghai.getNodeXPeroidData(period);
+		if(shnodexdata.getIndexOfSpecificDateOHLCData(date,difference) != null )
 			return false;
 		else
 			return true;

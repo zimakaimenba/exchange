@@ -41,7 +41,7 @@ import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListen
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.NodeXPeriodDataBasic;
 
 import javax.swing.*;
 import java.awt.*;

@@ -37,7 +37,6 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.google.common.io.Files;
 
 public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements PieChartPanelDataChangedListener

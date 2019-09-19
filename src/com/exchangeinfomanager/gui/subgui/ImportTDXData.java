@@ -17,8 +17,6 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets.SetView;
@@ -242,7 +240,7 @@ public class ImportTDXData extends JDialog {
 		//从通达信foxpro中导入股票的基本面信息
 		if(cbximporttdxgeguinfo.isSelected() && cbximporttdxgeguinfo.isEnabled()) {
 					try {
-						System.out.println("......导入股票的基本面信息开始" + LocalTime.now());
+						System.out.println("------导入股票的基本面信息开始" + LocalTime.now());
 						long start=System.currentTimeMillis(); //获取开始时间
 						File resultimporttdxgegutinfo = this.bkdbopt.refreshStockJiBenMianInfoFromTdxFoxProFile ();
 						long end=System.currentTimeMillis(); //获取结束时间
@@ -262,7 +260,7 @@ public class ImportTDXData extends JDialog {
 				
 		 //导入通达信定义的板块信息 ，包括概念，行业，风格，指数 板块
 		if(chbxdaorutdxsysbk.isSelected() && chbxdaorutdxsysbk.isEnabled()) {
-			System.out.println("......导入通达信板块信息开始" + LocalTime.now());
+			System.out.println("------导入通达信板块信息开始" + LocalTime.now());
 			long start=System.currentTimeMillis(); //获取开始时间
 			File resulttmpfilesys = bkdbopt.refreshTDXSystemBanKuai ();
 			long end=System.currentTimeMillis(); //获取结束时间
@@ -284,7 +282,7 @@ public class ImportTDXData extends JDialog {
 		//同步通达信板块成交量成交额
 		if(chbxdaorutdxsysbkvol.isSelected() &&  chbxdaorutdxsysbkvol.isEnabled() ) {
 			try {
-				System.out.println("......导入上海指数/板块当日成交信息开始" + LocalTime.now());
+				System.out.println("------导入上海指数/板块当日成交信息开始" + LocalTime.now());
 				
 				File resulttmpfilebkamppreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ("sh");
 //				System.out.println("导入上海板块当日成交信息.....结束");
@@ -301,7 +299,7 @@ public class ImportTDXData extends JDialog {
 				long start=System.currentTimeMillis(); //获取开始时间
 				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb("sh");
 				long end=System.currentTimeMillis(); //获取结束时间
-				System.out.println("........导入上海指数/板块当日成交信息结束" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms");
+				System.out.println(".......导入上海指数/板块当日成交信息结束" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms");
 				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
@@ -312,7 +310,7 @@ public class ImportTDXData extends JDialog {
 			}
 			
 			try {
-				System.out.println("......导入深圳指数板块当日成交信息开始" + LocalTime.now() );
+				System.out.println("------导入深圳指数板块当日成交信息开始" + LocalTime.now() );
 				File resulttmpfilezhishupreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ("sz");
 //				System.out.println("导入上海指数板块当日成交信息.....结束");
 				List<String> lines = Files.readLines(resulttmpfilezhishupreck, sysconfig.charSet());
@@ -345,7 +343,7 @@ public class ImportTDXData extends JDialog {
 		//同步个股成交量
 		if(cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled() ) {
 			try {
-				System.out.println("......导入深圳股票当日成交信息开始于" +  LocalTime.now());
+				System.out.println("------导入深证股票当日成交信息开始于" +  LocalTime.now());
 				long start=System.currentTimeMillis(); //获取开始时间
 				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sz");
 				long end=System.currentTimeMillis(); //获取结束时间
@@ -364,7 +362,7 @@ public class ImportTDXData extends JDialog {
 		}                                     
 		if(cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled() ) {
 			try {
-				System.out.println("......导入上海股票当日成交信息开始于" + LocalTime.now() );
+				System.out.println("------导入上证股票当日成交信息开始于" + LocalTime.now() );
 				long start=System.currentTimeMillis(); //获取开始时间
 				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sh");
 				long end=System.currentTimeMillis(); //获取结束时间
@@ -383,7 +381,7 @@ public class ImportTDXData extends JDialog {
 		
 		//用户同步完个股和板块成交量后，要update一下板块的类型，以便后用
 		if(chbxdaorutdxsysbkvol.isSelected()  || chbxdaorutdxsysbk.isSelected()  ) {
-			System.out.println("......更新板块类型开始于" + LocalTime.now() );
+			System.out.println("------更新板块类型开始于" + LocalTime.now() );
 			long start=System.currentTimeMillis(); //获取开始时间
 			bkdbopt.refreshTDXSystemBanKuaiLeiXing ();
 			long end=System.currentTimeMillis(); //获取结束时间
@@ -394,7 +392,7 @@ public class ImportTDXData extends JDialog {
 		//导入网易的股票的数据,主要是换手率/市值等数据，
 		if(ckbxnetease.isSelected() && ckbxnetease.isEnabled()) { 
 			try {
-				System.out.println("......导入网易股票数据开始" + LocalTime.now() );
+				System.out.println("------导入网易股票数据开始" + LocalTime.now() );
 				long start=System.currentTimeMillis(); //获取开始时间
 				File resulttmpfilenetease = bkdbopt.importNetEaseStockData ();
 				long end=System.currentTimeMillis(); //获取结束时间

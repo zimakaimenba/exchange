@@ -29,7 +29,8 @@ import org.jfree.ui.RectangleEdge;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+
 
 
 public class BanKuaiFengXiBarCjeLargePeriodChartPnl extends BanKuaiFengXiBarLargePeriodChartPnl
@@ -52,9 +53,9 @@ public class BanKuaiFengXiBarCjeLargePeriodChartPnl extends BanKuaiFengXiBarLarg
 
     protected XYDataset updateDataset(TDXNodes node, LocalDate displayedenddate1,String period) 
     {
-		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
-    	LocalDate requirestart = nodexdata.getRecordsStartDate().with(DayOfWeek.SATURDAY);
-		LocalDate requireend = nodexdata.getRecordsEndDate().with(DayOfWeek.SATURDAY);;
+		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+    	LocalDate requirestart = nodexdata.getOHLCRecordsStartDate().with(DayOfWeek.SATURDAY);
+		LocalDate requireend = nodexdata.getOHLCRecordsEndDate().with(DayOfWeek.SATURDAY);;
 		TimeSeries rangecjezb = nodexdata.getRangeChengJiaoEr(requirestart, requireend);
 
 		TimeSeriesCollection dataset = (TimeSeriesCollection) super.mainPlot.getDataset();
@@ -98,7 +99,7 @@ class CustomXYBarCjePainter extends CustomXYBarPainter
 class CustomXYPlotCjeToolTipGenerator extends CustomXYPlotToolTipGenerator 
 {
 //	protected BkChanYeLianTreeNode node;
-//	protected NodeXPeriodDataBasic nodexdata;
+//	protected NodeXPeriodData nodexdata;
 	
 	@Override
     public String generateToolTip(XYDataset dataset, int series, int item) 
@@ -140,7 +141,7 @@ class CustomXYPlotCjeToolTipGenerator extends CustomXYPlotToolTipGenerator
 //    {
 //    	this.node = curdisplayednode;
 //    }
-//    public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
+//    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
 //    {
 //		this.nodexdata = nodexdata1;
 //	}

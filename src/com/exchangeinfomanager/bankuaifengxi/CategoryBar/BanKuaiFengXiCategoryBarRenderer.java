@@ -21,7 +21,7 @@ import org.jfree.ui.TextAnchor;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 {
@@ -54,12 +54,12 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 //    private String barCharType;
 	protected TDXNodes node;
 	protected CategoryDataset chartdataset;
-	protected NodeXPeriodDataBasic nodexdata;
+	protected NodeXPeriodData nodexdata;
 	protected Color displayedcolumncolorindex;
 	/*
 	 * 单个个股用这个
 	 */
-	public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
+	public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
     {
 		this.nodexdata = nodexdata1;
 		BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();
@@ -176,7 +176,7 @@ abstract class  BkfxItemLabelGenerator extends StandardCategoryItemLabelGenerato
 {
 
 	protected BkChanYeLianTreeNode node;
-	protected NodeXPeriodDataBasic nodexdata;
+	protected NodeXPeriodData nodexdata;
 	protected int displayedmaxwklevel;
 	protected int displayedminwklevel;
 //	String decimalformate;
@@ -197,7 +197,7 @@ abstract class  BkfxItemLabelGenerator extends StandardCategoryItemLabelGenerato
     {
     	this.node = curdisplayednode;
     }
-    public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
+    public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
     {
 		this.nodexdata = nodexdata1;
 	}

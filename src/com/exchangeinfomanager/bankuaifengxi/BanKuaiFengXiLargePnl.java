@@ -49,8 +49,8 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 /*
@@ -104,32 +104,32 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		
 		TDXNodes tmpnode = null;
 		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
-			selectnode = allbksks.getStock((Stock)selectnode,requirestart,requireend,TDXNodeGivenPeriodDataItem.WEEK);
+			selectnode = allbksks.getStock((Stock)selectnode,requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
 			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
 			this.allbksks.syncStockData((Stock)selectnode);
 			
 			tmpnode = selectnode;
 		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
-			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, requirestart,requireend, TDXNodeGivenPeriodDataItem.WEEK);
+			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
 			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
 			
 			tmpnode = selectnode;
 		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
-			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),requirestart,requireend,TDXNodeGivenPeriodDataItem.WEEK);
+			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
 			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
 			
 			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
 		}
 		
 		 if(superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
-			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, requirestart,requireend, TDXNodeGivenPeriodDataItem.WEEK);
+			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
 			 this.allbksks.syncBanKuaiData( (BanKuai)superbankuai);
 		 }
 		
 		
-		this.allbksks.getDaPanKXian (requirestart,requireend,TDXNodeGivenPeriodDataItem.DAY); 
+		this.allbksks.getDaPanKXian (requirestart,requireend,NodeGivenPeriodDataItem.DAY); 
 
-		nodekpnl.updatedDate(superbankuai,tmpnode,requirestart,requireend,TDXNodeGivenPeriodDataItem.DAY);
+		nodekpnl.updatedDate(superbankuai,tmpnode,requirestart,requireend,NodeGivenPeriodDataItem.DAY);
 	}
 	/*
 	 * 
@@ -163,7 +163,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     if(zhishuinfo.toLowerCase().equals("bankuaizhisu") ) {
       
 //                    	nodekpnl.displayQueKou(true);
-//                		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,TDXNodeGivenPeriodDataItem.DAY);
+//                		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,NodeGivenPeriodDataItem.DAY);
                 		
                 		nodekpnl.displayQueKou(true);
                     	refreshTDXGeGuAndBanKuaiKXian ( displaynode, nodebankuai );
@@ -183,7 +183,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     		nodekpnl.displayQueKou(false);
                     	
                     	refreshTDXGeGuAndBanKuaiKXian ( displaynode, zhishubk );
-//                    	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,TDXNodeGivenPeriodDataItem.DAY);
+//                    	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,NodeGivenPeriodDataItem.DAY);
                 		
                     	
                     }
@@ -340,7 +340,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 			this.nodebkcjezblargepnl.updatedDate(nodebkbelogned, displayedstartdate1, displayedenddate1, period);
 		
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
-		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  TDXNodeGivenPeriodDataItem.DAY);
+		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  NodeGivenPeriodDataItem.DAY);
 	}
 	
 	@Override

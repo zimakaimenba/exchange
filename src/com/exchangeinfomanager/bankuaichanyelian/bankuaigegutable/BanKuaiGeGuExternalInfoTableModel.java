@@ -7,8 +7,9 @@ import org.apache.log4j.Logger;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+
 
 public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableModel
 {
@@ -51,11 +52,11 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 	    	StockOfBanKuai curdisplaystockofbankuai = entryList.get(rowIndex);
 		    String stockcode = curdisplaystockofbankuai.getMyOwnCode();
 		    String bkcode = curbk.getMyOwnCode();
-		    NodeXPeriodDataBasic stockxdataforbk = curdisplaystockofbankuai.getNodeXPeroidData(period);
+		    NodeXPeriodData stockxdataforbk = curdisplaystockofbankuai.getNodeXPeroidData(period);
 	
 		    Stock stock = curdisplaystockofbankuai.getStock();
 		    DaPan dapan = (DaPan)stock.getRoot();
-		    NodeXPeriodDataBasic stockxdata = stock.getNodeXPeroidData(period);
+		    NodeXPeriodData stockxdata = stock.getNodeXPeroidData(period);
 	
 		    Object value = "??";
 	    	switch (columnIndex) {
@@ -110,7 +111,7 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 	        	
 	            break;
 	       case 5: 
-	    	   Double hsl = ((StockNodeXPeriodData)stockxdata).getSpecificTimeHuanShouLv(showwknum, 0);
+	    	   Double hsl = ((StockXPeriodData)stockxdata).getSpecificTimeHuanShouLv(showwknum, 0);
 	    	   value = hsl;
 	
 	    	   break;

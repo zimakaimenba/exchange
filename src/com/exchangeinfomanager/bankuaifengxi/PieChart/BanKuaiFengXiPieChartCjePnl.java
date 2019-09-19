@@ -74,8 +74,8 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.io.Files;
 import com.sun.rowset.CachedRowSetImpl;
@@ -95,11 +95,11 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
 	@Override
 	public void updateDate (TDXNodes node, LocalDate date, int difference,String period) 
 	{
-		if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+		if(period.equals(NodeGivenPeriodDataItem.DAY))
 			date = date.plus(difference+pianyiliang,ChronoUnit.DAYS);
-		else if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+		else if(period.equals(NodeGivenPeriodDataItem.WEEK))
 			date = date.plus(difference+this.pianyiliang,ChronoUnit.WEEKS);
-		else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+		else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 			date = date.plus(difference+this.pianyiliang,ChronoUnit.MONTHS);
 		
 		setBanKuaiCjeNeededDisplay(node,date,period);
@@ -123,7 +123,7 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
     		String stockname = tmpstock.getMyOwnName();
     		
     		//找到对应周的数据
-    		NodeXPeriodDataBasic stockxdataforbk = tmpstock.getStock().getNodeXPeroidData(period);
+    		NodeXPeriodData stockxdataforbk = tmpstock.getStock().getNodeXPeroidData(period);
     		Double cje = stockxdataforbk.getChengJiaoEr(weeknumber,0);
     		if(cje != null) {
        	    	if(stockname != null)

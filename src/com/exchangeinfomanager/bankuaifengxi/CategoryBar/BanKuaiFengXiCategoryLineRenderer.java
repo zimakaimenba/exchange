@@ -12,11 +12,11 @@ import org.jfree.util.ShapeUtilities;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 {
-	private NodeXPeriodDataBasic nodexdata;
+	private NodeXPeriodData nodexdata;
 	private int shouldcolumn = -1;
 	private int shouldcolumnlast = -2;
 	private TDXNodes node;
@@ -65,7 +65,7 @@ class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 	 /*
 		 * 单个个股用这个
 		 */
-		public void setDisplayNodeXPeriod(NodeXPeriodDataBasic nodexdata1) 
+		public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
 	    {
 			this.nodexdata = nodexdata1;
 //			BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();

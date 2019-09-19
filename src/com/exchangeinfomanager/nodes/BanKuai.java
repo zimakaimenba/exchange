@@ -24,9 +24,8 @@ import java.util.Set;
 import org.jfree.data.time.TimeSeriesDataItem;
 //import org.jfree.data.time.Week;
 
-import com.exchangeinfomanager.nodes.nodexdata.BanKuaiNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.BanKuaiXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 
 public class BanKuai extends TDXNodes
@@ -45,9 +44,13 @@ public class BanKuai extends TDXNodes
 		super(bkcode,name);
 		super.nodetype = BkChanYeLianTreeNode.TDXBK;
 		
-		super.nodewkdata = new BanKuaiNodeXPeriodData (bkcode,TDXNodeGivenPeriodDataItem.WEEK) ;
-		super.nodedaydata = new BanKuaiNodeXPeriodData (bkcode,TDXNodeGivenPeriodDataItem.DAY) ;
-//		super.nodemonthdata = new BanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+		super.nodewkdata = new BanKuaiXPeriodData (bkcode,NodeGivenPeriodDataItem.WEEK) ;
+		super.nodedaydata = new BanKuaiXPeriodData (bkcode,NodeGivenPeriodDataItem.DAY) ;
+
+//		super.nodewkdata = new BanKuaiNodeXPeriodData (bkcode,TDXNodeGivenPeriodDataItem.WEEK) ;
+//		super.nodedaydata = new BanKuaiNodeXPeriodData (bkcode,TDXNodeGivenPeriodDataItem.DAY) ;
+////		super.nodemonthdata = new BanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
+		
 		super.nodetreerelated = new BanKuaiTreeRelated (this);
 	}
 	

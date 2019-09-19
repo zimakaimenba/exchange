@@ -62,10 +62,9 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.StockNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBarChartPnl 
@@ -87,22 +86,12 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	}
 	
 	 private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartCjePnl.class);
-//	/*
-//	 * 板块按周相对于某板块的交易额
-//	 */
-//	public void setBanKuaiJiaoYiEr (TDXNodes node, LocalDate displayedenddate1,String period)
-//	{
-//		LocalDate requireend = displayedenddate1.with(DayOfWeek.SATURDAY);
-//		LocalDate requirestart = displayedenddate1.with(DayOfWeek.MONDAY).minus(this.shoulddisplayedmonthnum,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-//		
-//		this.preparingdisplayDataToGui (node,requirestart,requireend,period);
-//	}
 	/*
 	 * 
 	 */
 	private void preparingdisplayDataToGui (TDXNodes node,LocalDate startdate,LocalDate enddate,String period)
 	{
-		NodeXPeriodDataBasic nodexdata = node.getNodeXPeroidData(period);
+		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
 //		
 		super.resetDate();
 //		barchartdataset.clear();
@@ -125,7 +114,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	public Integer displayZhangDieTingLineDataToGui(NodeXPeriodDataBasic nodexdata, String period) 
+	public Integer displayZhangDieTingLineDataToGui(NodeXPeriodData nodexdata, String period) 
 	{
 		if(super.barchartdataset.getColumnCount() ==0 )
 			return null;
@@ -146,8 +135,8 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			
 			//缺口 Line Part
 			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
-				Integer zttj = ( (TDXNodesXPeriodData) nodexdata).getZhangTingTongJi(tmpdate, 0);
-				Integer dttj = ( (TDXNodesXPeriodData) nodexdata).getDieTingTongJi(tmpdate, 0);
+				Integer zttj = nodexdata.getZhangTingTongJi(tmpdate, 0);
+				Integer dttj = nodexdata.getDieTingTongJi(tmpdate, 0);
 				 
 //				if(zttj != null) {
 //					super.linezdtchartdataset.setValue(zttj, "ZhangTing", wkfriday );
@@ -169,11 +158,11 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			}
 			
 			
-			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
 				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
@@ -185,7 +174,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	public Double displayBarDataToGui (NodeXPeriodDataBasic nodexdata,LocalDate startdate,LocalDate enddate,String period) 
+	public Double displayBarDataToGui (NodeXPeriodData nodexdata,LocalDate startdate,LocalDate enddate,String period) 
 	{
 		DaPan dapan;
 		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
@@ -196,9 +185,6 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
-		
-//		barchartdataset.clear();
-//		super.barchart.setNotify(false);
 		
 		double highestHigh =0.0; //设置显示范围
 		
@@ -218,11 +204,11 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				} 
 			}
 			
-			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
 				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
@@ -236,7 +222,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	public Integer displayQueKouLineDataToGui (NodeXPeriodDataBasic nodexdata,String period) 
+	public Integer displayQueKouLineDataToGui (NodeXPeriodData nodexdata,String period) 
 	{
 		if(super.barchartdataset.getColumnCount() ==0 )
 			return null;
@@ -257,10 +243,10 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			
 			//缺口 Line Part
 			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
-				Integer opneupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenUp(tmpdate, 0);
-				Integer opendownquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenDown(tmpdate, 0);
-				Integer huibuupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(tmpdate, 0);
-				Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(tmpdate, 0);	
+				Integer opneupquekou =  nodexdata.getQueKouTongJiOpenUp(tmpdate, 0);
+				Integer opendownquekou =  nodexdata.getQueKouTongJiOpenDown(tmpdate, 0);
+				Integer huibuupquekou = nodexdata.getQueKouTongJiHuiBuUp(tmpdate, 0);
+				Integer huibudowquekou =  nodexdata.getQueKouTongJiHuiBuDown(tmpdate, 0);	
 				 
 				if(opendownquekou != null) {
 					super.linechartdataset.setValue(opendownquekou, "QueKouOpenDown", wkfriday );
@@ -283,11 +269,11 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			}
 			
 			
-			if(period.equals(TDXNodeGivenPeriodDataItem.WEEK))
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.DAY))
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
 				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(TDXNodeGivenPeriodDataItem.MONTH))
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
@@ -300,7 +286,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	private void xiuShiLeftRangeAxixAfterDispalyDate (NodeXPeriodDataBasic nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, String period)
+	private void xiuShiLeftRangeAxixAfterDispalyDate (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, String period)
 	{
 		if(highestHigh == 0.0)
 			return;
@@ -334,7 +320,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		setPanelTitle ("成交额",enddate);
 		super.decorateXaxisWithYearOrMonth("year".trim());
 	}
-	private void xiuShiRightRangeAxixAfterDispalyDate (NodeXPeriodDataBasic nodexdata,int rightrangeaxixmax, String period)
+	private void xiuShiRightRangeAxixAfterDispalyDate (NodeXPeriodData nodexdata,int rightrangeaxixmax, String period)
 	{
 		if(rightrangeaxixmax == 0)
 			return;
@@ -498,7 +484,7 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 		String html;
 		DaPan dapan = (DaPan)  super.node.getRoot();
 		if(super.node.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			 html = ( (StockNodeXPeriodData) nodexdata).getNodeXDataInHtml(dapan,selecteddate, 0);
+			 html = ( (StockXPeriodData) nodexdata).getNodeXDataInHtml(dapan,selecteddate, 0);
 		} else {
 			html = nodexdata.getNodeXDataInHtml(dapan,selecteddate, 0);
 		}

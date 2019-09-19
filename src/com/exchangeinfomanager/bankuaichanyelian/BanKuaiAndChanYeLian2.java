@@ -31,10 +31,10 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.SubBanKuai;
 import com.exchangeinfomanager.nodes.SubGuPiaoChi;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
@@ -249,8 +249,8 @@ public class BanKuaiAndChanYeLian2
             	if( !nodeinallbktree.isShowinbkfxgui() ) //有些板块不会被显示分析表中，也就不用做个股分析
             		continue;
             	
-            	nodeinallbktree = this.allbkstocks.getAllGeGuOfBanKuai(nodeinallbktree, TDXNodeGivenPeriodDataItem.WEEK);
-            	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,TDXNodeGivenPeriodDataItem.WEEK);
+            	nodeinallbktree = this.allbkstocks.getAllGeGuOfBanKuai(nodeinallbktree, NodeGivenPeriodDataItem.WEEK);
+            	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,NodeGivenPeriodDataItem.WEEK);
             	HashSet<String> stkofbkset = new HashSet<String>  ();
             	for(StockOfBanKuai stkofbk : curbkallbkset) {
             		stkofbkset.add(stkofbk.getMyOwnCode());

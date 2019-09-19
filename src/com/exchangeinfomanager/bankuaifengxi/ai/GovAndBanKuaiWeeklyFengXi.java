@@ -28,7 +28,6 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasi
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartMultiCjeZhanbiPnl;
 import com.exchangeinfomanager.commonlib.MultilineTableCell;
 import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;

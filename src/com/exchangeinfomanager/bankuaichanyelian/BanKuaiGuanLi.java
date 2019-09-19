@@ -45,11 +45,9 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.nodexdata.BanKuaiNodeXPeriodData;
-import com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic;
-import com.exchangeinfomanager.nodes.nodexdata.TDXNodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
@@ -293,7 +291,7 @@ public class BanKuaiGuanLi extends JDialog
 				tfldsearchsysbk.setText(selectnode.getMyOwnCode());
 				
 				LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
-				selectnode = allbkstks.getBanKuai( (BanKuai)selectnode,  requiredstart, LocalDate.now(), TDXNodeGivenPeriodDataItem.WEEK);
+				selectnode = allbkstks.getBanKuai( (BanKuai)selectnode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
 				selectnode = bkdbopt.getBanKuaiBasicInfo( (BanKuai)selectnode);
 
 				panelsetting.setSettingNode(selectnode);
@@ -337,15 +335,15 @@ public class BanKuaiGuanLi extends JDialog
 		setCursor(hourglassCursor);
 
 		LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
-//		selectnode = this.allbkstks.getBanKuai( selectnode,  requiredstart, LocalDate.now(), TDXNodeGivenPeriodDataItem.WEEK);
+//		selectnode = this.allbkstks.getBanKuai( selectnode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
 //		selectnode = bkdbopt.getBanKuaiBasicInfo(selectnode);
 		
 		Set<String> bkrelatedbks = new HashSet<String> ();
-		selectnode = this.allbkstks.getAllGeGuOfBanKuai (selectnode,TDXNodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
+		selectnode = this.allbkstks.getAllGeGuOfBanKuai (selectnode,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
 		ArrayList<StockOfBanKuai> bkgg = selectnode.getAllGeGuOfBanKuaiInHistory();
 		for(StockOfBanKuai sob : bkgg) {
 			Stock stock = sob.getStock();
-			stock = this.allbkstks.getStock(stock, requiredstart, LocalDate.now(), TDXNodeGivenPeriodDataItem.WEEK);
+			stock = this.allbkstks.getStock(stock, requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
 			stock = bkdbopt.getTDXBanKuaiForAStock ( stock ); //通达信板块信息
 			HashMap<String, String> suoshubk = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
 			Set<String> bkcodeset = suoshubk.keySet();
@@ -358,9 +356,9 @@ public class BanKuaiGuanLi extends JDialog
 				continue;
 			
 			BanKuai tmpbk;
-			tmpbk = this.allbkstks.getBanKuai( bkcode,  requiredstart, LocalDate.now(), TDXNodeGivenPeriodDataItem.WEEK);
+			tmpbk = this.allbkstks.getBanKuai( bkcode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
 			tmpbk = bkdbopt.getBanKuaiBasicInfo(tmpbk);
-			tmpbk = this.allbkstks.getAllGeGuOfBanKuai (tmpbk,TDXNodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
+			tmpbk = this.allbkstks.getAllGeGuOfBanKuai (tmpbk,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
 			
 			bklist.add(tmpbk);
 		}
