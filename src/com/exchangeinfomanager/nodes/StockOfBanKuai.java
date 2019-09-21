@@ -12,7 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockOfBanKuaiXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockOfBanKuaiXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 /*
  * 板块的个股和普通大盘的个股有少数相似，但不同就在成交量，一个是对板块的成交量，一个是对大盘的成交量。
@@ -28,7 +28,7 @@ public class StockOfBanKuai extends TDXNodes
 		this.bankuai = bankuai1;
 		this.stock = stock1;
 		
-		super.nodewkdata = new StockOfBanKuaiXPeriodData (stock1.getMyOwnCode(),bankuai1.getMyOwnCode(),NodeGivenPeriodDataItem.WEEK);
+		super.nodewkdata = new StockOfBanKuaiXPeriodDataForJFC (stock1.getMyOwnCode(),bankuai1.getMyOwnCode(),NodeGivenPeriodDataItem.WEEK);
 		super.nodedaydata = null; //对绝大多数分析来说说，周线数据才有意义，日线毫无意义，特别是个股相对于板块的日线数据。
 //		super.nodemonthdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 		

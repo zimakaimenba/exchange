@@ -8,7 +8,7 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 
 
 public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableModel
@@ -49,7 +49,7 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 	    	if(entryList.isEmpty())
 	    		return null;
 	
-	    	StockOfBanKuai curdisplaystockofbankuai = entryList.get(rowIndex);
+	    	StockOfBanKuai curdisplaystockofbankuai = (StockOfBanKuai) entryList.get(rowIndex);
 		    String stockcode = curdisplaystockofbankuai.getMyOwnCode();
 		    String bkcode = curbk.getMyOwnCode();
 		    NodeXPeriodData stockxdataforbk = curdisplaystockofbankuai.getNodeXPeroidData(period);
@@ -111,7 +111,7 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 	        	
 	            break;
 	       case 5: 
-	    	   Double hsl = ((StockXPeriodData)stockxdata).getSpecificTimeHuanShouLv(showwknum, 0);
+	    	   Double hsl = ((StockNodesXPeriodData)stockxdata).getSpecificTimeHuanShouLv(showwknum, 0);
 	    	   value = hsl;
 	
 	    	   break;

@@ -698,7 +698,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 /*
 		  * 用户如果传来的是周六/日的日期，最好转为当周的周五
 		  */
-		 private LocalDate adjustDate(LocalDate dateneedtobeadjusted,int difference )
+		 protected LocalDate adjustDate(LocalDate dateneedtobeadjusted,int difference )
 		 {
 			 LocalDate friday;
 			 LocalDate expectedate = dateneedtobeadjusted.plus(difference,ChronoUnit.DAYS);
@@ -713,9 +713,8 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 						
 			return expectedate;
 		 }
-		
 
-
+		 
 
 
 }

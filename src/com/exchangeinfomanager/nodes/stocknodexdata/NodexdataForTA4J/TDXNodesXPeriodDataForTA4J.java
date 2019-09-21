@@ -12,6 +12,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,11 +22,13 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
+import org.joda.time.Interval;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseTimeSeries;
+import org.ta4j.core.indicators.MACDIndicator;
 //import org.ta4j.core.TimeSeries;
 import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
@@ -34,11 +37,14 @@ import org.ta4j.core.num.Num;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItemForTA4J;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.udojava.evalex.Expression;
 
 
@@ -55,81 +61,11 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 	
 	private org.ta4j.core.TimeSeries ohlcvaseries;
 	
-//	protected TimeSeries nodeamozhanbi; 
-//	protected TimeSeries nodevolzhanbi; 
-//	protected TimeSeries nodefxjg; //
-//	protected TimeSeries nodeexchangedaysnumber ; //
-//	 // 缺口的统计结果，不直接存放缺口的原因是已经有ohlc了，可以计算出缺口，如果再专门存放缺口list有点重复，不如存放缺口统计数据
-//	protected TimeSeries nodeqktjopenup;
-//	protected TimeSeries nodeqktjhuibuup;
-//	protected TimeSeries nodeqktjopendown;
-//	protected TimeSeries nodeqktjhuibudown;
-//	protected List<QueKou> qklist;
-//	
-//	protected TimeSeries nodezhangtingnum;
-//	protected TimeSeries nodedietingnum;
-//	
-//	private LocalDate firstdayinhistory; //可以知道历史记录起点在哪里
-	
-	
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
 	{
 		ohlcvaseries.addBar( (NodeGivenPeriodDataItemForTA4J)kdata,false);
 		
 		super.addNewXPeriodData(kdata);
-		
-//		RegularTimePeriod period = kdata.getPeriod();
-//		LocalDate recordday = kdata.getp.getRecordsDayofEndofWeek();
-//		double close = kdata.getCloseValue();
-//		double open = kdata.getOpenValue();
-//		double high = kdata.getHighValue();
-//		double low = kdata.getLowValue();
-//		Double cje = kdata.getMyOwnChengJiaoEr();
-//		Double cjl = kdata.getMyownchengjiaoliang ();
-		
-//		ZonedDateTime zdt = null;
-//		if(this.nodeperiodtype.equals(NodeGivenPeriodDataItem.WEEK))
-//			zdt = recordday.with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
-//		else if(this.nodeperiodtype.equals(NodeGivenPeriodDataItem.DAY))
-//			zdt = recordday.atStartOfDay(ZoneOffset.UTC);
-//		ohlcvaseries.addBar(zdt,open,high,low,close,cjl,cje);
-		
-		
-		
-//		if(kdata.getNodeToDpChenJiaoErZhanbi() != null) {
-//			nodeamozhanbi.setNotify(false);
-//			nodeamozhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoErZhanbi(),false);
-//			
-//			nodevolzhanbi.setNotify(false);
-//			nodevolzhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoLiangZhanbi(),false);
-//		}
-//		
-//		try{
-//			nodeexchangedaysnumber.setNotify(false);
-//			if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //
-//				nodeexchangedaysnumber.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getExchangeDaysNumber(),false);
-//			
-//		} catch (org.jfree.data.general.SeriesException e) {
-//			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod(this.nodeperiodtype) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod(this.nodeperiodtype).getStart() + "," + kdata.getJFreeChartPeriod(this.nodeperiodtype).getEnd() + ")");
-////			e.printStackTrace();
-//		}
-//		
-//		try {
-//			if(nodezhangtingnum == null)
-//				nodezhangtingnum = new TimeSeries(this.nodeperiodtype);
-//			if(nodedietingnum == null)
-//				nodedietingnum = new TimeSeries(this.nodeperiodtype);
-//			
-//			if(kdata.getZhangTingNumber() != null && kdata.getZhangTingNumber() !=0)
-//				nodezhangtingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getZhangTingNumber());
-//			
-//			if(kdata.getDieTingNumber() != null && kdata.getDieTingNumber() !=0)
-//				nodedietingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getDieTingNumber());
-//			
-//		} catch (org.jfree.data.general.SeriesException e) {
-//			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod(this.nodeperiodtype) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod(this.nodeperiodtype).getStart() + "," + kdata.getJFreeChartPeriod(this.nodeperiodtype).getEnd() + ")");
-////			e.printStackTrace();
-//		}
 	}
 	/*
 	 * 
@@ -145,312 +81,6 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		LocalDate end = this.ohlcvaseries.getBar(length -1).getBeginTime().toLocalDate();
 		return end;
 	}
-	/*
-	 * 判断日期是否到了数据库历史纪录的第一条
-	 */
-//	public Boolean isLocalDateReachFristDayInHistory (LocalDate requireddate,int difference)
-//	{
-//		Boolean result = externaldata.isLocalDateReachFristDayInHistory(requireddate, difference);
-//		return result;
-//		if(this.firstdayinhistory == null)
-//			return null;
-//		
-//		if(this.nodeperiodtype.equals(NodeGivenPeriodDataItem.DAY) ) {
-//			if(requireddate.equals(this.firstdayinhistory))
-//				return true;
-//			else
-//				return false;
-//		} else if(this.nodeperiodtype.equals(NodeGivenPeriodDataItem.WEEK) ) {
-//			Boolean checkresult = CommonUtility.isInSameWeek(requireddate, this.firstdayinhistory);
-//			return checkresult;
-//		}
-//		
-//		return null;
-//	}
-//	public void setShangShiRiQi (LocalDate requireddate)
-//	{
-//		this.firstdayinhistory = requireddate;
-//	}
-	/*
-	 * 
-	 */
-//	public String getNodeCode ()
-//	{
-//		return this.nodecode;
-//	}
-	/*
-	 * (non-Javadoc)
-	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getNodeperiodtype()
-	 */
-//	public String getNodeperiodtype() {
-//		return nodeperiodtype;
-//	}
-	/*
-	 * (non-Javadoc)
-	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
-	 */
-//	public Boolean hasFxjgInPeriod (LocalDate requireddate,int difference)
-//	{
-//		if(nodefxjg == null)
-//			return false;
-//		
-//		TimeSeriesDataItem fxjgitem = nodefxjg.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if(fxjgitem == null)
-//			return false;
-//		else
-//			 return true;
-//	}
-	/*
-	 * 
-	 */
-//	public void addFxjgToPeriod (RegularTimePeriod period,Integer fxjg)
-//	{
-//		if(nodefxjg == null)
-//			nodefxjg = new TimeSeries(this.nodeperiodtype);
-//		
-//		try {
-//			nodefxjg.add(period,fxjg);
-////			 addOrUpdate()
-//		} catch (org.jfree.data.general.SeriesException e) {
-////			e.printStackTrace();
-//		}
-//	}
-	/*
-	 * 
-	 */
-//	public void resetQueKouTongJiJieGuo ()
-//	{
-//		if(nodeqktjopenup != null)
-//			nodeqktjopenup.clear();
-//		if(nodeqktjhuibuup != null)
-//			nodeqktjhuibuup.clear();
-//		if(nodeqktjopendown != null)
-//			nodeqktjopendown.clear();
-//		if(nodeqktjhuibudown != null)
-//			nodeqktjhuibudown.clear();
-//	}
-	/*
-	 * 
-	 */
-//	public void addZhangDieTingTongJiJieGuo (LocalDate tjdate,Integer nodeztnum,Integer nodedtnum,Boolean addbasedoncurdata)
-//	{
-//		if( this.nodezhangtingnum == null)
-//			this.nodezhangtingnum = new TimeSeries(this.nodeperiodtype);
-//		
-//		if( this.nodedietingnum == null)
-//			this.nodedietingnum = new TimeSeries(this.nodeperiodtype);
-//		
-//		RegularTimePeriod period = getJFreeChartFormateTimePeriod(tjdate,0);
-//		try {
-//			if(nodeztnum != null  )
-//			if(addbasedoncurdata) {
-//				TimeSeriesDataItem dataitem = this.nodezhangtingnum.getDataItem(period);
-//				if(dataitem == null) 
-//					nodezhangtingnum.add(period,nodeztnum);
-//				else {
-//					int count = dataitem.getValue().intValue();
-//					nodezhangtingnum.addOrUpdate(period, count + nodeztnum);
-//				}
-//			} else
-//				nodezhangtingnum.addOrUpdate(period,nodeztnum);
-//
-//		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		try {
-//			if(nodedtnum != null  )
-//			if(addbasedoncurdata) {
-//				TimeSeriesDataItem dataitem = this.nodedietingnum.getDataItem(period);
-//				if(dataitem == null) 
-//					nodedietingnum.add(period,nodedtnum);
-//				else {
-//					int count = dataitem.getValue().intValue();
-//					nodedietingnum.addOrUpdate(period, count + nodedtnum);
-//				}
-//			} else
-//				nodedietingnum.addOrUpdate(period,nodedtnum);
-//
-//		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
-//		}
-//	}
-	/*
-	 * 参数addbasedoncurdata：true在现有的值上更新，false覆盖现有值
-	 */
-//	public void addQueKouTongJiJieGuo (LocalDate qkdate,
-//			Integer nodeqktjopenup1,Integer nodeqktjhuibuup1,Integer nodeqktjopendown1,Integer nodeqktjhuibudown1,
-//			Boolean addbasedoncurdata)
-//	{
-//		
-//		if( nodeqktjopenup == null)
-//			nodeqktjopenup = new TimeSeries(this.nodeperiodtype);
-//		
-//		if( nodeqktjhuibuup == null)
-//			nodeqktjhuibuup = new TimeSeries(this.nodeperiodtype);
-//		
-//		if( nodeqktjopendown == null)
-//			nodeqktjopendown = new TimeSeries(this.nodeperiodtype);
-//		
-//		if( nodeqktjhuibudown == null)
-//			nodeqktjhuibudown = new TimeSeries(this.nodeperiodtype);
-//		
-//		RegularTimePeriod period = getJFreeChartFormateTimePeriod(qkdate,0);
-//		try {
-//			if(nodeqktjopenup1 != null  ) //nodeqktjopenup1可以等于0，用来标记统计缺口的开始/结束时间
-//			if(addbasedoncurdata) {
-//				TimeSeriesDataItem dataitem = nodeqktjopenup.getDataItem(period);
-//				if(dataitem == null) 
-//					nodeqktjopenup.add(period,nodeqktjopenup1);
-//				else {
-//					int count = dataitem.getValue().intValue();
-//					nodeqktjopenup.addOrUpdate(period, count + nodeqktjopenup1);
-//				}
-//			} else
-//				nodeqktjopenup.addOrUpdate(period,nodeqktjopenup1);
-//
-//		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		try {
-//			if(nodeqktjhuibuup1 != null && nodeqktjhuibuup1 !=0 )
-//			if(addbasedoncurdata) {
-//				TimeSeriesDataItem dataitem = nodeqktjhuibuup.getDataItem(period);
-//				if(dataitem == null)
-//					nodeqktjhuibuup.add(period,nodeqktjhuibuup1);
-//				else {
-//					int count = dataitem.getValue().intValue();
-//					nodeqktjhuibuup.addOrUpdate(period, count + nodeqktjhuibuup1);
-//				}
-//					
-//			} else
-//				nodeqktjhuibuup.addOrUpdate(period,nodeqktjhuibuup1);
-//		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		try {
-//			if(nodeqktjopendown1 != null && nodeqktjopendown1 !=0 )
-//			if(addbasedoncurdata) {
-//				TimeSeriesDataItem dataitem = nodeqktjopendown.getDataItem(period);
-//				if(dataitem == null)
-//					nodeqktjopendown.add(period,nodeqktjopendown1);
-//				else {
-//					int count = dataitem.getValue().intValue();
-//					nodeqktjopendown.addOrUpdate(period, count + nodeqktjopendown1);
-//				}
-//					
-//			} else
-//				nodeqktjopendown.addOrUpdate(period,nodeqktjopendown1);
-//
-//		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		try {
-//			if(nodeqktjhuibudown1 != null && nodeqktjhuibudown1 !=0 )
-//			if(addbasedoncurdata) {
-//				TimeSeriesDataItem dataitem = nodeqktjhuibudown.getDataItem(period);
-//				if(dataitem == null)
-//					nodeqktjhuibudown.add(period,nodeqktjhuibudown1);
-//				else {
-//					int count = dataitem.getValue().intValue();
-//					nodeqktjhuibudown.addOrUpdate(period, count + 1);
-//				}
-//					
-//			} else
-//				nodeqktjhuibudown.addOrUpdate(period,nodeqktjhuibudown1);
-//
-//		} catch (org.jfree.data.general.SeriesException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//	public List<QueKou> getPeriodQueKou ()
-//	{
-//		return this.qklist;
-//	}
-//	public void setPeriodQueKou (List<QueKou> qkl)
-//	{
-//		this.qklist = qkl;
-//	}
-	/*
-	 * 
-	 */
-//	public Integer getZhangTingTongJi (LocalDate requireddate, Integer difference)
-//	{
-//		if(this.nodezhangtingnum == null)
-//			return null;
-//		
-//		TimeSeriesDataItem zttjitem = nodezhangtingnum.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if(zttjitem == null)
-//			return null;
-//		else
-//			 return (Integer)zttjitem.getValue().intValue();			
-//					
-//	}
-//	public Integer getDieTingTongJi (LocalDate requireddate, Integer difference)
-//	{
-//		if(this.nodedietingnum == null)
-//			return null;
-//		
-//		TimeSeriesDataItem dttjitem = nodedietingnum.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if(dttjitem == null)
-//			return null;
-//		else
-//			 return (Integer)dttjitem.getValue().intValue();			
-//					
-//	}
-	/*
-	 * 
-	 */
-//	public Integer getQueKouTongJiOpenUp (LocalDate requireddate, Integer difference)
-//	{
-//		if(this.nodeqktjopenup == null)
-//			return null;
-//		
-//		TimeSeriesDataItem qktjitem = nodeqktjopenup.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if(qktjitem == null)
-//			return null;
-//		else
-//			 return (Integer)qktjitem.getValue().intValue(); 
-//		
-//	}
-//	public Integer getQueKouTongJiOpenDown (LocalDate requireddate, Integer difference)
-//	{
-//		if(this.nodeqktjopendown == null)
-//			return null;
-//		
-//		TimeSeriesDataItem qktjitem = nodeqktjopendown.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if(qktjitem == null)
-//			return null;
-//		else
-//			 return (Integer)qktjitem.getValue().intValue(); 
-//		
-//	}
-//	public Integer getQueKouTongJiHuiBuUp (LocalDate requireddate, Integer difference)
-//	{
-//		if(this.nodeqktjhuibuup == null)
-//			return null;
-//		
-//		TimeSeriesDataItem qktjitem = nodeqktjhuibuup.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if(qktjitem == null)
-//			return null;
-//		else
-//			 return (Integer)qktjitem.getValue().intValue(); 
-//		
-//	}
-//	public Integer getQueKouTongJiHuiBuDown (LocalDate requireddate, Integer difference)
-//	{
-//		if(this.nodeqktjhuibudown == null)
-//			return null;
-//		
-//		TimeSeriesDataItem qktjitem = nodeqktjhuibudown.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if(qktjitem == null)
-//			return null;
-//		else
-//			 return qktjitem.getValue().intValue(); 
-//	}
 	/*
 	 * 
 	 */
@@ -543,53 +173,6 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 	/*
 	 * 
 	 */
-//	public  LocalDate  getQueKouRecordsStartDate ()
-//	{ 
-//		if(nodeqktjopenup == null)
-//			return null;
-//		
-//		if(nodeqktjopenup.getItemCount() == 0)
-//			return null;
-//
-//		RegularTimePeriod firstperiod = nodeqktjopenup.getTimePeriod( 0);
-//		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
-//		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
-//	
-//		if(this.nodeperiodtype == NodeGivenPeriodDataItem.WEEK) {
-//			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
-//			LocalDate mondayday = startdate.with(fieldUS, 2);
-//			return mondayday;
-//		} else if(this.nodeperiodtype == NodeGivenPeriodDataItem.DAY) {
-//			return startdate;
-//		}
-//		
-//		return null;
-//	}
-	/*
-	 * 
-	 */
-//	public  LocalDate  getQueKouRecordsEndDate ()
-//	{ 
-//		if(nodeqktjopenup == null || nodeqktjopenup.getItemCount() == 0)
-//			return null;
-//
-//		int itemcount = nodeqktjopenup.getItemCount();
-//		RegularTimePeriod firstperiod = nodeqktjopenup.getTimePeriod( itemcount - 1 );
-//		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
-//		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
-//	
-//		if(this.nodeperiodtype == NodeGivenPeriodDataItem.WEEK) {
-//			LocalDate saturday = enddate.with(DayOfWeek.SATURDAY);
-//			return saturday;
-//		} else if(this.nodeperiodtype == NodeGivenPeriodDataItem.DAY) {
-//			return enddate;
-//		}
-//		
-//		return null;
-//	}
-	/*
-	 * 
-	 */
 	public LocalDate getOHLCRecordsStartDate ()
 	{
 		int itemcount = this.ohlcvaseries.getBarCount();
@@ -661,36 +244,6 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 	/*
 	 * 
 	 */
-//	public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) 
-//	{
-//		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if( curcjlrecord == null) 
-//			return null;
-//		
-//		int index = this.nodeamozhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
-//		
-//		try {
-//			TimeSeriesDataItem lastcjlrecord = nodeamozhanbi.getDataItem( index -1  );
-//			if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
-//				logger.debug(getNodeCode() + "可能是一个新个股或板块");
-//				return 100.0;
-//			}
-//			
-//			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
-//			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
-//			Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-//			logger.debug(getNodeCode() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
-//			
-//			return zhanbigrowthrate;
-//			
-//		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-//			return 100.0;
-//		}
-//
-//	}
-	/*
-	 * 
-	 */
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
 		Bar curcjlrecord = this.getSpecificDateOHLCData(requireddate, 0);
@@ -718,66 +271,6 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 
 		return maxweek;
 	}
-	/*
-	 * 对上级板块的成交额占比是多少周内的最大值
-	 */
-//	public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
-//	{
-//		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if( curcjlrecord == null) 
-//			return null;
-//					
-//		Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
-//		
-//		int index = nodeamozhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
-//		
-//		int maxweek = 0;
-//		for(int i = index - 1; i >= 0; i--) {
-//			
-//			
-//			TimeSeriesDataItem lastcjlrecord = nodeamozhanbi.getDataItem( i );
-//			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
-//				return maxweek;
-//
-//			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
-//			if(curzhanbiratio > lastzhanbiratio)
-//				maxweek ++;
-//			else
-//				break;
-//		}
-//		
-//		return maxweek;
-//	}
-	/*
-	 * 
-	 */
-//	public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate,int difference)
-//	{
-//		if(this.ohlcvaseries == null)
-//			return null;
-//		
-//		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if( curcjlrecord == null) 
-//			return null;
-//
-//		Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
-//		
-//		int index = nodeamozhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
-//		int minweek = 0;
-//		for(int i = index -1; i >= 0; i --) {
-//			TimeSeriesDataItem lastcjlrecord = nodeamozhanbi.getDataItem( i );
-//			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
-//				return minweek;
-//
-//			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
-//			if(curzhanbiratio < lastzhanbiratio)
-//				minweek ++;
-//			else
-//				break;
-//		}
-//		
-//		return minweek;
-//	}
 	/*
 	 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率，
 	 */
@@ -818,21 +311,6 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		
 		return cjechange/bkcjediff;
 	}
-	/*
-	  * 计算指定周有几个交易日
-	  */
-//	 public Integer getExchangeDaysNumberForthePeriod (LocalDate requireddate,int difference)
-//	 {
-//		 if(nodeexchangedaysnumber == null)
-//			 return null;
-//		 
-//		 TimeSeriesDataItem curdaynumberrecord = this.nodeexchangedaysnumber.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		 if( curdaynumberrecord == null) 
-//				return 5;
-//		 else
-//			 return curdaynumberrecord.getValue().intValue();
-//		 
-//	 }
 	 /*
 	  * (non-Javadoc)
 	  * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getLianXuFangLiangPeriodNumber(java.time.LocalDate, int, int)
@@ -856,16 +334,170 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 			return -1;
 
 	 }
+	 public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange)
+	 {
+//		 requireddate = this.adjustDate(requireddate, difference); //先确保日期是在交易日内
+//		 
+//		 org.ta4j.core.TimeSeries ohlcvaseries = this.getOHLCDataOfTa4jFormat(requireddate.minusMonths(monthrange + 3),requireddate);
+//		 
+//		 Multimap<LocalDate,LocalDate>  macddivergencemap = ArrayListMultimap.create(); 
+//
+//		 ClosePriceIndicator closePrice = new ClosePriceIndicator(ohlcvaseries);
+//		 MACDIndicator macd = new MACDIndicator (closePrice);
+//		 org.ta4j.core.TimeSeries macdorgohlc = macd.getTimeSeries();
+//		 int mac = macdorgohlc.getBarCount();
+//		 int ohlccount = ohlcvaseries.getBarCount();
+//		  
+//		 
+//		 List<LocalDate> macdreversedatelist = new ArrayList <> (); 
+//		 List<Integer> macdreverseIndexlist = new ArrayList <> ();
+//		 LocalDate requrestart = requireddate.minusMonths(monthrange);
+//		 int indexcursor = ohlcvaseries.getEndIndex();
+//		 
+//		 ZonedDateTime endtime = ohlcvaseries.getBar(indexcursor).getEndTime();
+//		 for(int i = indexcursor-2; i>=0; i--) {
+//			 double macdsecond = macd.getValue(i+1).doubleValue();
+//			 Bar barsecond = ohlcvaseries.getBar(i +1);
+//			 LocalDate seconddate = barsecond.getEndTime().toLocalDate();
+//			 
+//			 if(macdsecond >=0) //小于0的MACD底背离才有意义
+//				 continue;
+//			 
+//			 if(seconddate.isBefore(requireddate.minusMonths(monthrange)))
+//				 break;
+//			 
+//			 double macdfirst = macd.getValue(i+2).doubleValue();
+//			 double macdthird = macd.getValue(i).doubleValue();
+//			 
+//			 
+//			 
+//			 if(macdthird < macdsecond && macdfirst <= macdsecond) {
+//				 macdreversedatelist.add(seconddate);
+//				 macdreverseIndexlist.add(Integer.valueOf(i+1));
+//			 }
+//
+//			 if(seconddate.isBefore(requrestart))
+//				 break;
+//		 }
+//		 //统计背离
+//		 for(int i=0;i<macdreverseIndexlist.size();i++) {
+//			 Integer index = macdreverseIndexlist.get(i);
+//			 double curmacd = macd.getValue(index).doubleValue();
+//			 double curclose = ohlcvaseries.getBar(index).getClosePrice().doubleValue();
+//			 LocalDate curzdt = ohlcvaseries.getBar(index).getEndTime().toLocalDate();
+//			 
+//			 double toppesemacdbetweentwopoints = -100;
+//			 for(int j=i+1; j<macdreverseIndexlist.size();j++) {
+//				 Integer lstindex = macdreverseIndexlist.get(j);
+//				 double lstmacd = macd.getValue(lstindex).doubleValue();
+//				 double lstclose = ohlcvaseries.getBar(lstindex).getClosePrice().doubleValue();
+//				 LocalDate lstzdt = ohlcvaseries.getBar(lstindex).getEndTime().toLocalDate();
+//				 
+//				 if(lstmacd > toppesemacdbetweentwopoints)
+//					 toppesemacdbetweentwopoints = lstmacd; 
+//				 
+//				 if(curclose > lstclose && curmacd < lstmacd &&  lstmacd == toppesemacdbetweentwopoints ) { //两个背离的MACD点之间不应该有更大的值
+//					 macddivergencemap.put(curzdt, lstzdt);
+//				 }
+//				 
+//			 }
+//
+//		 }
+//		 
+//		 ohlcvaseries = null;
+//		 closePrice = null;
+//		 macd = null;
+//		 macdreversedatelist = null; 
+//		 macdreverseIndexlist = null;
+//		 
+//		 return macddivergencemap;
+		 return null;
+	 }
+
+	 /**
+	  * 
+	  * @param requireddate
+	  * @param difference
+	  * @param monthrange
+	  * @return
+	  */
+	 public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange)
+	 {
+		 requireddate = this.adjustDate(requireddate, difference); //先确保日期是在交易日内
+		 
+		 Multimap<LocalDate,LocalDate>  macddivergencemap = ArrayListMultimap.create(); 
+
+		 ClosePriceIndicator closePrice = new ClosePriceIndicator(ohlcvaseries);
+		 MACDIndicator macd = new MACDIndicator (closePrice);
+		 org.ta4j.core.TimeSeries macdorgohlc = macd.getTimeSeries();
+		 int mac = macdorgohlc.getBarCount();
+		 int ohlccount = this.ohlcvaseries.getBarCount();
+		 int tmpresult = ohlccount +1; 
+		 
+		 List<LocalDate> macdreversedatelist = new ArrayList <> (); 
+		 List<Integer> macdreverseIndexlist = new ArrayList <> ();
+		 LocalDate requrestart = requireddate.minusMonths(monthrange);
+		 int indexcursor = ohlcvaseries.getEndIndex();
+		 double lastclose = ohlcvaseries.getBar(indexcursor).getClosePrice().doubleValue();
+		 ZonedDateTime endtime = ohlcvaseries.getBar(indexcursor).getEndTime();
+		 for(int i = indexcursor-2; i>=0; i--) {
+			 double macdsecond = macd.getValue(i+1).doubleValue();
+			 Bar barsecond = this.ohlcvaseries.getBar(i +1);
+			 LocalDate seconddate = barsecond.getEndTime().toLocalDate();
+			 
+			 if(macdsecond >=0) //小于0的MACD底背离才有意义
+				 continue;
+			 
+			 double macdfirst = macd.getValue(i+2).doubleValue();
+			 double macdthird = macd.getValue(i).doubleValue();
+			 
+			 
+			 
+			 if(macdthird >= macdsecond && macdfirst > macdsecond) {
+				 macdreversedatelist.add(seconddate);
+				 macdreverseIndexlist.add(Integer.valueOf(i+1));
+			 }
+
+			 if(seconddate.isBefore(requrestart))
+				 break;
+		 }
+		 
+		 for(int i=0;i<macdreverseIndexlist.size();i++) {
+			 Integer index = macdreverseIndexlist.get(i);
+			 double curmacd = macd.getValue(index).doubleValue();
+			 double curclose = this.ohlcvaseries.getBar(index).getClosePrice().doubleValue();
+			 LocalDate curzdt = this.ohlcvaseries.getBar(index).getEndTime().toLocalDate();
+			 
+			 for(int j=i+1; j<macdreverseIndexlist.size();j++) {
+				 Integer lstindex = macdreverseIndexlist.get(j);
+				 double lstmacd = macd.getValue(lstindex).doubleValue();
+				 double lstclose = this.ohlcvaseries.getBar(lstindex).getClosePrice().doubleValue();
+				 LocalDate lstzdt = this.ohlcvaseries.getBar(lstindex).getEndTime().toLocalDate();
+				 
+				 if(curclose < lstclose && curmacd > lstmacd ) {
+					 macddivergencemap.put(curzdt, lstzdt);
+				 }
+				 
+			 }
+
+		 }
+		 
+		 closePrice = null;
+		 macd = null;
+		 macdreversedatelist = null; 
+		 macdreverseIndexlist = null;
+		 
+		 return macddivergencemap;
+	 }
 	/*
 	 * 
 	 */
 	public Double[] getNodeOhlcSMA (LocalDate  requireddate,int difference)
 	{
 		requireddate = this.adjustDate(requireddate, difference); //先确保日期是在交易日内
-		int beginin = ohlcvaseries.getBeginIndex();
-		int endin = ohlcvaseries.getEndIndex();
+
 		Integer location = null;
-		for(int i = beginin;i<endin;i++) {
+		for(int i = 0;i<ohlcvaseries.getBarCount();i++) {
 			Bar bar = ohlcvaseries.getBar(i);
 			ZonedDateTime time = bar.getEndTime();
 			LocalDate ldtime = time.toLocalDate();
@@ -903,6 +535,15 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		SMAIndicator Sma250 = new SMAIndicator(closePrice, 250);
 		Double ma250 = Sma250.getValue(location).doubleValue();
 		
+		closePrice = null;
+		Sma5 = null;
+		Sma10 = null;
+		Sma20 = null;
+		Sma30 = null;
+		Sma60 = null;
+		Sma120 = null;
+		Sma250 = null;
+		
 		Double sma[] = {ma5,ma10,ma20,ma30,ma60,ma120,ma250};
 		return sma;
 	}
@@ -926,9 +567,12 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		 if (ohlcdata != null) {
 		    	Double close = (Double)ohlcdata.getClosePrice().doubleValue();
 			    Double[] maresult = this.getNodeOhlcSMA(tmpdate, 0);
-			    Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
-			    if( result != null )
-			    	return result;
+			    if(maresult != null) {
+			    	Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
+			    	if( result != null )
+				    	return result;
+			    }
+			    
 		 }
 		 
 		 return null;
@@ -1067,96 +711,6 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 	/*
 	 * 
 	 */
-//	public Double getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) 
-//	{
-//		TimeSeriesDataItem curcjlrecord = this.nodevolzhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if( curcjlrecord == null) 
-//			return null;
-//		
-//		int index = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
-//		
-//		try {
-//			TimeSeriesDataItem lastcjlrecord = nodevolzhanbi.getDataItem( index -1  );
-//			if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
-//				logger.debug(getNodeCode() + "可能是一个新个股或板块");
-//				return 100.0;
-//			}
-//			
-//			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
-//			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
-//			Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-//			logger.debug(getNodeCode() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
-//			
-//			return zhanbigrowthrate;
-//			
-//		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-//			return 100.0;
-//		}
-//
-//	}
-	/*
-	 * 
-	 */
-//	public Integer getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
-//	{
-//		TimeSeriesDataItem curcjlrecord = this.nodevolzhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if( curcjlrecord == null) 
-//			return null;
-//					
-//		Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
-//		
-//		int index = nodevolzhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
-//		
-//		int maxweek = 0;
-//		for(int i = index - 1; i >= 0; i--) {
-//			
-//			
-//			TimeSeriesDataItem lastcjlrecord = nodevolzhanbi.getDataItem( i );
-//			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
-//				return maxweek;
-//
-//			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
-//			if(curzhanbiratio > lastzhanbiratio)
-//				maxweek ++;
-//			else
-//				break;
-//		}
-//		
-//		return maxweek;
-//	}
-	/*
-	 * 
-	 */
-//	public Integer getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
-//	{
-//		if(this.ohlcvaseries == null)
-//			return null;
-//		
-//		TimeSeriesDataItem curcjlrecord = this.nodevolzhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		if( curcjlrecord == null) 
-//			return null;
-//
-//		Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
-//		
-//		int index = nodevolzhanbi.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
-//		int minweek = 0;
-//		for(int i = index -1; i >= 0; i --) {
-//			TimeSeriesDataItem lastcjlrecord = nodevolzhanbi.getDataItem( i );
-//			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
-//				return minweek;
-//
-//			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
-//			if(curzhanbiratio < lastzhanbiratio)
-//				minweek ++;
-//			else
-//				break;
-//		}
-//		
-//		return minweek;
-//	}
-	/*
-	 * 
-	 */
 	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,	int difference) 
 	{
 		Bar curcjlrecord = this.getSpecificDateOHLCData(requireddate,difference) ;
@@ -1241,22 +795,6 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		else
 			return curcjlrecord.getVolume().doubleValue();
 	}
-	/*
-	 * 
-	 */
-//	public Double getChenJiaoLiangZhanBi(LocalDate requireddate, int difference) 
-//	{
-//		if(this.ohlcvaseries == null)
-//			return null;
-//		
-//		TimeSeriesDataItem curcjlrecord = null;
-//		curcjlrecord = nodevolzhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		
-//		if( curcjlrecord == null) 
-//			return null;
-//		else
-//			return curcjlrecord.getValue().doubleValue();
-//	}
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getNodeXDataInHtml(java.time.LocalDate, int)
@@ -1482,47 +1020,6 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		
 		return doc.toString();
 	}
-	/*
-	 * 
-	 */
-//	protected RegularTimePeriod getJFreeChartFormateTimePeriod (LocalDate requireddate,int difference) 
-//	{
-//		String nodeperiod = this.getNodeperiodtype();
-//		LocalDate expectedate = null;
-//		RegularTimePeriod period = null;
-//		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-//			expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
-//			period = new org.jfree.data.time.Week (lastdayofweek);
-////			period = new org.jfree.data.time.Week (Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-//		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-//			expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
-//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
-//			period = new org.jfree.data.time.Day (lastdayofweek);
-////			period = new org.jfree.data.time.Day(Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-//		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-//			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
-//		}
-//		
-//		return period;
-//	}
-	 /*
-	  * 用户如果传来的是周六/日的日期，最好转为当周的周五
-	  */
-	 private LocalDate adjustDate(LocalDate dateneedtobeadjusted,int difference )
-	 {
-		 LocalDate friday;
-		 LocalDate expectedate = dateneedtobeadjusted.plus(difference,ChronoUnit.DAYS);
-		 DayOfWeek dayofweek = expectedate.getDayOfWeek();
-		 if( dayofweek.equals(DayOfWeek.SUNDAY)  ) {
-			friday = dateneedtobeadjusted.minus(2,ChronoUnit.DAYS);
-			return friday;
-		 } else if (  dayofweek.equals(DayOfWeek.SATURDAY)  ) {
-			friday = dateneedtobeadjusted.minus(1,ChronoUnit.DAYS);
-			return friday;
-		 }
-					
-		return expectedate;
-	 }
-	 
+	
+		 
 }

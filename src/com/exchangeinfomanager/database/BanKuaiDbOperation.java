@@ -100,9 +100,11 @@ import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItemForJFC;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
@@ -2644,6 +2646,16 @@ public class BanKuaiDbOperation
 		
 		return value;
 	}
+	/**
+	 * 
+	 * @param tmpbkcode
+	 * @param tmpbkfile
+	 * @param lastestdbrecordsdate
+	 * @param inserttablename
+	 * @param datarule
+	 * @param tmprecordfile
+	 * @return
+	 */
 	private Boolean setVolAmoRecordsFromFileToDatabase (String tmpbkcode, File tmpbkfile, LocalDate lastestdbrecordsdate, String inserttablename, String datarule,File tmprecordfile)
 	{
 		Boolean newdataimported = null;
@@ -2651,7 +2663,7 @@ public class BanKuaiDbOperation
 		if(lastestdbrecordsdate == null) //null说明数据库里面还没有相关的数据，把时间设置为1900年把文件中所有数据都导入
 			try {
 		        lastestdbrecordsdate = LocalDate.now().minus(100,ChronoUnit.YEARS);
-				Files.append(tmpbkcode + "板块成交量记录将导入所有记录！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+				Files.append(tmpbkcode + "成交量记录将导入所有记录！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			} 
@@ -2701,10 +2713,10 @@ public class BanKuaiDbOperation
                         			finalneededsavelinefound = true;
                         			if(lineimportcount == 0) {
                         				newdataimported = false;
-                        				Files.append(tmpbkcode + "指数成交量记录导入起始时间为:" + line + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+                        				Files.append(tmpbkcode + "交量记录导入起始时间为:" + line + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
                             			Files.append(tmpbkcode + "共导入:" + lineimportcount + "个记录" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
                         			} else {
-                        				Files.append(tmpbkcode + "指数成交量记录导入起始时间为:" + line + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+                        				Files.append(tmpbkcode + "成交量记录导入起始时间为:" + line + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
                             			Files.append(tmpbkcode + "共导入:" + lineimportcount + "个记录" + System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
                         			}
                         			
@@ -2735,6 +2747,7 @@ public class BanKuaiDbOperation
             try {  
                 if (rf != null)  
                     rf.close();  
+                rf = null;
             } catch (IOException e) {  
                 e.printStackTrace();  
             }  
@@ -3320,7 +3333,7 @@ public class BanKuaiDbOperation
 			while(rs.next()) {
 				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
 				ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
-//				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
+				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
 				
 				Double bankuaicje = rs.getDouble("板块周交易额");
 				Double dapancje = rs.getDouble("大盘周交易额");
@@ -3332,9 +3345,13 @@ public class BanKuaiDbOperation
 				
 				int exchangedaysnumber = rs.getInt("JILUTIAOSHU");
 				
-				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bkcode, NodeGivenPeriodDataItem.WEEK,
-						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
+				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bkcode, NodeGivenPeriodDataItem.WEEK,
+						wknum, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
 						PrecisionNum.valueOf(bankuaicjl), PrecisionNum.valueOf(bankuaicje) );
+				
+//				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bkcode, NodeGivenPeriodDataItem.WEEK,
+//						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
+//						PrecisionNum.valueOf(bankuaicjl), PrecisionNum.valueOf(bankuaicje) );
 				
 				bkperiodrecord.setNodeToDpChenJiaoErZhanbi(cjezb);
 				bkperiodrecord.setNodeToDpChenJiaoLiangZhanbi(cjlzb);
@@ -3344,6 +3361,8 @@ public class BanKuaiDbOperation
 				
 				nodewkperioddata.addNewXPeriodData(bkperiodrecord);
 				
+				
+				wknum = null;
 				bkperiodrecord = null;
 				bankuaicje = null;
 				dapancje = null;
@@ -3464,11 +3483,14 @@ public class BanKuaiDbOperation
 				double bkcjl = rsfg.getDouble("category_vol");
 				java.sql.Date  lastdayofweek = rsfg.getDate("EndOfWeekDate");
 				ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
-//				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
+				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 				
-				NodeGivenPeriodDataItem sobperiodrecord = new NodeGivenPeriodDataItemForTA4J( stockofbk.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
-						zdtime, DoubleNum.valueOf(0.0), DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0), 
+				NodeGivenPeriodDataItem sobperiodrecord = new NodeGivenPeriodDataItemForJFC( stockofbk.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+						recordwk, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
 						PrecisionNum.valueOf(stcokcjl), PrecisionNum.valueOf(stcokcje) );
+//				NodeGivenPeriodDataItem sobperiodrecord = new NodeGivenPeriodDataItemForTA4J( stockofbk.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+//						zdtime, DoubleNum.valueOf(0.0), DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0), 
+//						PrecisionNum.valueOf(stcokcjl), PrecisionNum.valueOf(stcokcje) );
 				
 				sobperiodrecord.setUplevelChengJiaoEr(bkcje);
 				sobperiodrecord.setUplevelChengJiaoLiang(bkcjl);
@@ -3513,7 +3535,7 @@ public class BanKuaiDbOperation
 		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
-		StockXPeriodData nodewkperioddata = (StockXPeriodData)stock.getNodeXPeroidData(period);
+		NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
 		
 		String stockcode = stock.getMyOwnCode();
 		String bkcjltable;
@@ -3601,9 +3623,9 @@ public class BanKuaiDbOperation
 				
 				String action = rsgz.getString("ACTION").trim();
 				if(action.equals("加入关注"))
-					nodewkperioddata.addGzjlToPeriod(wknum, 1);
+					((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 1);
 				else if(action.equals("移除关注"))
-					nodewkperioddata.addGzjlToPeriod(wknum, 0);
+					((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 0);
 			}
 			//分析数据
 			rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
@@ -3621,7 +3643,7 @@ public class BanKuaiDbOperation
 				double cjezb = rs.getDouble("CJE占比");
 				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
 				ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
-//				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
+				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 				double stockcjl = rs.getDouble("板块周交易量");
 				double dapancjl = rs.getDouble("大盘周交易量");
 				double cjlzb = rs.getDouble("VOL占比");
@@ -3634,9 +3656,13 @@ public class BanKuaiDbOperation
 				int zhangtingnum = rs.getInt("涨停");
 				int dietingnum = rs.getInt("跌停");
 
-				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
-						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
+				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+						recordwk, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
 						PrecisionNum.valueOf(stockcjl), PrecisionNum.valueOf(stockcje) );
+				
+//				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+//						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
+//						PrecisionNum.valueOf(stockcjl), PrecisionNum.valueOf(stockcje) );
 				
 				stockperiodrecord.setNodeToDpChenJiaoErZhanbi(cjezb);
 				stockperiodrecord.setNodeToDpChenJiaoLiangZhanbi(cjlzb);
@@ -3746,7 +3772,7 @@ public class BanKuaiDbOperation
 //					java.sql.Date lastdayofweek = rs.getDate("STARTDAY");
 					java.sql.Date lastdayofweek =  java.sql.Date.valueOf(formatedstartdate);
 					ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
-//					org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
+					org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 					double stockcjl = rs.getDouble("板块周交易量");
 					double dapancjl = rs.getDouble("大盘周交易量");
 					double huanshoulv = rs.getDouble("板块周换手率");
@@ -3756,9 +3782,13 @@ public class BanKuaiDbOperation
 					double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅");
 					int exchengdaysnumber = rs.getInt("JILUTIAOSHU");
 		
-					stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
-							zdtime, DoubleNum.valueOf(0.0), DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0), 
+					stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+							recordwk, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
 							PrecisionNum.valueOf(stockcjl), PrecisionNum.valueOf(stockcje) );
+					
+//					stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+//							zdtime, DoubleNum.valueOf(0.0), DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0), 
+//							PrecisionNum.valueOf(stockcjl), PrecisionNum.valueOf(stockcje) );
 					
 					stockperiodrecord.setUplevelChengJiaoEr(dapancje);
 					stockperiodrecord.setUplevelChengJiaoLiang(dapancjl);
@@ -3830,7 +3860,8 @@ public class BanKuaiDbOperation
 
 		try {
 			LocalDate lastdaydate = requiredstartday.with(fieldCH, 6); //
-			org.ta4j.core.TimeSeries nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(stock.getMyOwnCode()).build();
+//			org.ta4j.core.TimeSeries nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(stock.getMyOwnCode()).build();
+			OHLCSeries nodenewohlc = new OHLCSeries (stock.getMyOwnCode());
 			int linenumber =0;
 			
 			String [] linevalue ;
@@ -3864,6 +3895,7 @@ public class BanKuaiDbOperation
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
+				org.jfree.data.time.Day recordday = new org.jfree.data.time.Day (sqldate);
 				ZonedDateTime zdtime = sqldate.toLocalDate().atStartOfDay(ZoneOffset.UTC);
 //				System.out.print(zdtime.toString());
 					
@@ -3873,10 +3905,14 @@ public class BanKuaiDbOperation
 				String close = linevalue[4];
 				String cjl = linevalue[5];
 				String cje = linevalue[6];
-				 
-				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
-						zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
+				
+				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
+						recordday, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
 						PrecisionNum.valueOf(cjl), PrecisionNum.valueOf(cje) );
+				 
+//				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+//						zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
+//						PrecisionNum.valueOf(cjl), PrecisionNum.valueOf(cje) );
 				 
 				 nodedayperioddata.addNewXPeriodData(stockperiodrecord);
 				 
@@ -3885,21 +3921,23 @@ public class BanKuaiDbOperation
 				 int lastdayweekNumber = lastdaydate.get(weekFields.weekOfWeekBasedYear());
 				 int curweekNumber = curlinedate.get(weekFields.weekOfWeekBasedYear());
 				 if(lastdayweekNumber == curweekNumber) {
-					 nodenewohlc.addBar( (NodeGivenPeriodDataItemForTA4J)stockperiodrecord); //先把本周的日线数据存储起来，等待后面处理
+//					 nodenewohlc.addBar( (NodeGivenPeriodDataItemForJFC)stockperiodrecord); //先把本周的日线数据存储起来，等待后面处理
+					 nodenewohlc.add( (NodeGivenPeriodDataItemForJFC)stockperiodrecord); //先把本周的日线数据存储起来，等待后面处理
 				 } else {
 					 //换周了，计算上一周周线OHLC 数据
-					 this.getTDXNodesWeeklyKXianZouShiForTA4J(stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+					 this.getTDXNodesWeeklyKXianZouShiForJFC(stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 					 
 					 nodenewohlc = null;
-					 nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(stock.getMyOwnCode()).build();
+//					 nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(stock.getMyOwnCode()).build();
+					 nodenewohlc = new OHLCSeries (stock.getMyOwnCode());
 					 lastdaydate = curlinedate.with(DayOfWeek.FRIDAY);
-					 nodenewohlc.addBar( (NodeGivenPeriodDataItemForTA4J)stockperiodrecord);
+					 nodenewohlc.add( (NodeGivenPeriodDataItemForJFC)stockperiodrecord);
 					 stockperiodrecord = null;
 				 }
 					 
 			}
 			 //目前算法最后一周要跳出循环后才能计算
-			this.getTDXNodesWeeklyKXianZouShiForTA4J(stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+			this.getTDXNodesWeeklyKXianZouShiForJFC(stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 			
 			nodenewohlc = null;
 		} catch (IOException e) {
@@ -3913,73 +3951,19 @@ public class BanKuaiDbOperation
 	/*
 	 *
 	 */
-	private TDXNodes getTDXNodesWeeklyKXianZouShiForTA4J (TDXNodes tdxnode, LocalDate friday, org.ta4j.core.TimeSeries ohlcvaseries)
-	{
-		int newcount = ohlcvaseries.getBarCount();
-		if(newcount == 0)
-			return tdxnode;
-		
-		TDXNodesXPeriodDataForTA4J nodexdata =  (TDXNodesXPeriodDataForTA4J) tdxnode.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		//在前面处理周线成交量等数据的时候，已经存了OHLC的数据，都是0，现在要把这个数据找到，是情况处理
-		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
-		if(spcohlcdataindex == null)
-			return tdxnode;
-		
-		if(spcohlcdataindex != null) {
-			Bar wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
-			
-			if(! (wkohlcdata.getClosePrice().doubleValue() == 0 &&
-				wkohlcdata.getMaxPrice().doubleValue() == 0 &&
-				wkohlcdata.getMinPrice().doubleValue() == 0 &&
-				wkohlcdata.getOpenPrice().doubleValue() == 0) ) 
-			{
-				return tdxnode; //都不是0，说明正确的数据已经在前面找出来了，直接退出。
-			}
-		} 
-
-		Num weeklyopen = null;
-		try{
-			Bar newohlcdata0 = ohlcvaseries.getBar(0);
-			weeklyopen = newohlcdata0.getOpenPrice();
-		} catch (java.lang.IndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
-		
-		
-		Bar newohlcdatalast = ohlcvaseries.getBar(ohlcvaseries.getBarCount() - 1);
-		Num weeklyclose = newohlcdatalast.getClosePrice();
-		
-		Num weeklyhigh= DoubleNum.valueOf(0.0); Num weeklylow= DoubleNum.valueOf(10000000.0);
-		for(int i=0;i<ohlcvaseries.getBarCount();i++) {
-			Bar newohlctmp = ohlcvaseries.getBar(i) ;
-			if( newohlctmp.getMaxPrice().doubleValue() > weeklyhigh.doubleValue())
-				weeklyhigh = newohlctmp.getMaxPrice();
-			
-			if( newohlctmp.getMinPrice().doubleValue() < weeklylow.doubleValue())
-				weeklylow = newohlctmp.getMinPrice();
-		}
-		
-		Bar wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
-		try{
-			wkohlcdata.updateBarOHLC(weeklyopen, weeklyhigh, weeklylow, weeklyclose, null, null);
-		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-		}
-		
- 		return tdxnode;
-	}
-	/*
-	 * 函数需要修改
-	 */
-//	private TDXNodes getTDXNodesWeeklyKXianZouShiForJFC (TDXNodes tdxnode, LocalDate friday, org.ta4j.core.TimeSeries ohlcvaseries)
+//	private TDXNodes getTDXNodesWeeklyKXianZouShiForTA4J (TDXNodes tdxnode, LocalDate friday, OHLCSeries nodenewohlc)
 //	{
-//		int newcount = ohlcvaseries.getBarCount();
+////		int newcount = nodenewohlc.getBarCount();
+//		int newcount = nodenewohlc.getItemCount();
 //		if(newcount == 0)
 //			return tdxnode;
 //		
 //		TDXNodesXPeriodDataForTA4J nodexdata =  (TDXNodesXPeriodDataForTA4J) tdxnode.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 //		//在前面处理周线成交量等数据的时候，已经存了OHLC的数据，都是0，现在要把这个数据找到，是情况处理
 //		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
+//		if(spcohlcdataindex == null)
+//			return tdxnode;
+//		
 //		if(spcohlcdataindex != null) {
 //			Bar wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
 //			
@@ -3991,55 +3975,110 @@ public class BanKuaiDbOperation
 //				return tdxnode; //都不是0，说明正确的数据已经在前面找出来了，直接退出。
 //			}
 //		} 
-//		
-//		try { //都是0，就把原来的数据移除，然后把新数据放进去
-//			if(spcohlcdataindex != null) 
-//				nodexdata.getOHLCData().remove(spcohlcdataindex.intValue());
-//			
-//		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		Double weeklyopen = null;
+//
+//		Num weeklyopen = null;
 //		try{
-//			OHLCItem newohlcdata0 = (OHLCItem) nodenewohlc.getDataItem(0);
-//			weeklyopen = newohlcdata0.getOpenValue();
+//			Bar newohlcdata0 = nodenewohlc.getBar(0);
+//			weeklyopen = newohlcdata0.getOpenPrice();
 //		} catch (java.lang.IndexOutOfBoundsException e) {
 //			e.printStackTrace();
 //		}
 //		
 //		
-//		OHLCItem newohlcdatalast = (OHLCItem) nodenewohlc.getDataItem(nodenewohlc.getItemCount()-1);
-//		Double weeklyclose = newohlcdatalast.getCloseValue();
+//		Bar newohlcdatalast = nodenewohlc.getBar(nodenewohlc.getBarCount() - 1);
+//		Num weeklyclose = newohlcdatalast.getClosePrice();
 //		
-//		Double weeklyhigh=0.0; Double weeklylow=10000000.0;
-//		for(int i=0;i<nodenewohlc.getItemCount();i++) {
-//			OHLCItem newohlctmp = (OHLCItem) nodenewohlc.getDataItem(i);
-//			if( newohlctmp.getHighValue() > weeklyhigh)
-//				weeklyhigh = newohlctmp.getHighValue();
+//		Num weeklyhigh= DoubleNum.valueOf(0.0); Num weeklylow= DoubleNum.valueOf(10000000.0);
+//		for(int i=0;i<nodenewohlc.getBarCount();i++) {
+//			Bar newohlctmp = nodenewohlc.getBar(i) ;
+//			if( newohlctmp.getMaxPrice().doubleValue() > weeklyhigh.doubleValue())
+//				weeklyhigh = newohlctmp.getMaxPrice();
 //			
-//			if( newohlctmp.getLowValue() < weeklylow)
-//				weeklylow = newohlctmp.getLowValue();
+//			if( newohlctmp.getMinPrice().doubleValue() < weeklylow.doubleValue())
+//				weeklylow = newohlctmp.getMinPrice();
 //		}
 //		
-//		java.sql.Date sqldate = null;
-//		try {
-//			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-//			 sqldate = new java.sql.Date(format.parse(friday.toString()).getTime());
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
+//		Bar wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
 //		try{
-//			org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
-//			nodexdata.getOHLCData().add(new OHLCItem(recordwk,weeklyopen,weeklyhigh,weeklylow,weeklyclose) );
-//		} catch(Exception e) {
+//			wkohlcdata.updateBarOHLC(weeklyopen, weeklyhigh, weeklylow, weeklyclose, null, null);
+//		} catch (java.lang.NullPointerException e) {
 //			e.printStackTrace();
 //		}
-//		
 //		
 // 		return tdxnode;
-//		
 //	}
+	/*
+	 * 函数需要修改
+	 */
+	private TDXNodes getTDXNodesWeeklyKXianZouShiForJFC (TDXNodes tdxnode, LocalDate friday, OHLCSeries nodenewohlc)
+	{
+		int newcount = nodenewohlc.getItemCount();
+		if(newcount == 0)
+			return tdxnode;
+		
+		TDXNodesXPeriodDataForJFC nodexdata =  (TDXNodesXPeriodDataForJFC) tdxnode.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		//在前面处理周线成交量等数据的时候，已经存了OHLC的数据，都是0，现在要把这个数据找到，是情况处理
+		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
+		if(spcohlcdataindex != null) {
+			OHLCItem wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
+			
+			if(! (wkohlcdata.getCloseValue() == 0 &&
+				wkohlcdata.getHighValue() == 0 &&
+				wkohlcdata.getLowValue() == 0 &&
+				wkohlcdata.getOpenValue() == 0) ) 
+			{
+				return tdxnode; //都不是0，说明正确的数据已经在前面找出来了，直接退出。
+			}
+		} 
+		
+		try { //都是0，就把原来的数据移除，然后把新数据放进去
+			if(spcohlcdataindex != null) 
+				nodexdata.getOHLCData().remove(spcohlcdataindex.intValue());
+			
+		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+		
+		Double weeklyopen = null;
+		try{
+			OHLCItem newohlcdata0 = (OHLCItem) nodenewohlc.getDataItem(0);
+			weeklyopen = newohlcdata0.getOpenValue();
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+		
+		
+		OHLCItem newohlcdatalast = (OHLCItem) nodenewohlc.getDataItem(nodenewohlc.getItemCount()-1);
+		Double weeklyclose = newohlcdatalast.getCloseValue();
+		
+		Double weeklyhigh=0.0; Double weeklylow=10000000.0;
+		for(int i=0;i<nodenewohlc.getItemCount();i++) {
+			OHLCItem newohlctmp = (OHLCItem) nodenewohlc.getDataItem(i);
+			if( newohlctmp.getHighValue() > weeklyhigh)
+				weeklyhigh = newohlctmp.getHighValue();
+			
+			if( newohlctmp.getLowValue() < weeklylow)
+				weeklylow = newohlctmp.getLowValue();
+		}
+		
+		java.sql.Date sqldate = null;
+		try {
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+			 sqldate = new java.sql.Date(format.parse(friday.toString()).getTime());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		try{
+			org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
+			nodexdata.getOHLCData().add(new OHLCItem(recordwk,weeklyopen,weeklyhigh,weeklylow,weeklyclose) );
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+ 		return tdxnode;
+		
+	}
 	/*
 	 * 从数据库中获取板块某时间段的日线走势，而个股是从CSV中读取
 	 */
@@ -4072,7 +4111,8 @@ public class BanKuaiDbOperation
 		
 		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
 		LocalDate lastdaydate = nodestartday.with(fieldCH, 6); //
-		org.ta4j.core.TimeSeries nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(bk.getMyOwnCode()).build();
+//		org.ta4j.core.TimeSeries nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(bk.getMyOwnCode()).build();
+		OHLCSeries nodenewohlc = new OHLCSeries (bk.getMyOwnCode());
 		try {  
 			 rsfx = connectdb.sqlQueryStatExecute(sqlquerystat);
 			
@@ -4085,10 +4125,15 @@ public class BanKuaiDbOperation
 				 double cjl = rsfx.getDouble("成交量");
 				 java.sql.Date actiondate = rsfx.getDate("交易日期");
 				 ZonedDateTime zdtime = actiondate.toLocalDate().atStartOfDay(ZoneOffset.UTC);
+				 org.jfree.data.time.Day recordday = new org.jfree.data.time.Day (actiondate);
 				 
-				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
-							zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
+				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
+						 recordday, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
 							PrecisionNum.valueOf(cjl), PrecisionNum.valueOf(cje) );
+				 
+//				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
+//							zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
+//							PrecisionNum.valueOf(cjl), PrecisionNum.valueOf(cje) );
 				 
 				 
 				 nodedayperioddata.addNewXPeriodData(bkperiodrecord);
@@ -4099,24 +4144,25 @@ public class BanKuaiDbOperation
 				 int curweekNumber = actiondate.toLocalDate().get(weekFields.weekOfWeekBasedYear());
 				 if(lastdayweekNumber == curweekNumber) {
 					 try{
-						 nodenewohlc.addBar( (NodeGivenPeriodDataItemForTA4J)bkperiodrecord);
+//						 nodenewohlc.addBar( (NodeGivenPeriodDataItemForTA4J)bkperiodrecord);
+						 nodenewohlc.add( (NodeGivenPeriodDataItemForJFC)bkperiodrecord);
 					 } catch (java.lang.IllegalArgumentException e) {
 						 e.printStackTrace();
 					 }
 				 } else {
 					 //换周了，计算上一周周线OHLC 数据
-					 this.getTDXNodesWeeklyKXianZouShiForTA4J(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+					 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 					 
 					 nodenewohlc = null;
-					 nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(bk.getMyOwnCode()).build();
+					 nodenewohlc = new OHLCSeries (bk.getMyOwnCode());
 					 lastdaydate = actiondate.toLocalDate().with(DayOfWeek.FRIDAY);
-					 nodenewohlc.addBar( (NodeGivenPeriodDataItemForTA4J)bkperiodrecord);
+					 nodenewohlc.add( (NodeGivenPeriodDataItemForJFC)bkperiodrecord);
 				 }
 				 
 				 bkperiodrecord = null;
 			 }
 			 //目前算法最后一周要跳出循环后才能计算
-			 this.getTDXNodesWeeklyKXianZouShiForTA4J(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+			 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 				
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();
@@ -4155,10 +4201,6 @@ public class BanKuaiDbOperation
 		String exportath = volamooutput.get(0);
 		String filenamerule = volamooutput.get(1);
 		String dateRule = volamooutput.get(2);
-//		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
-//		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
-//		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
-//		String dateRule = getTDXDateExportDateRule(Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(2)).get(1));
 		
 		ConvertTxtToCsv cttc = new ConvertTxtToCsv ();
 		
@@ -7385,17 +7427,18 @@ public class BanKuaiDbOperation
 				qklist = new ArrayList<QueKou> ();
 			
 			NodeXPeriodData nodexdata = childnode.getNodeXPeroidData(period);
-			TimeSeries nodeohlc = ((TDXNodesXPeriodDataForTA4J)nodexdata).getOHLCData();
+			OHLCSeries nodeohlc = ((TDXNodesXPeriodDataForJFC)nodexdata).getOHLCData();
 			List<QueKou> newquekou = new ArrayList<QueKou> ();
-			for(int j=1;j < nodeohlc.getBarCount();j++) {
+			for(int j=1;j < nodeohlc.getItemCount();j++) {
 				
-				Bar kxiandatacurwk = nodeohlc.getBar(j);
-				ZonedDateTime curperiod = kxiandatacurwk.getEndTime();
-				LocalDate curstart = curperiod.toLocalDate();
+				OHLCItem kxiandatacurwk = (OHLCItem) nodeohlc.getDataItem(j);
+				RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
+				LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				
-				Double curhigh = kxiandatacurwk.getMaxPrice().doubleValue();
-				Double curlow = kxiandatacurwk.getMinPrice().doubleValue();
-				Double curclose = kxiandatacurwk.getClosePrice().doubleValue();
+				Double curhigh = kxiandatacurwk.getHighValue();
+				Double curlow = kxiandatacurwk.getLowValue();
+				Double curclose = kxiandatacurwk.getCloseValue();
 				
 				if(curstart.isBefore(startdate) || curstart.isAfter(enddate)) { //对于不在要求检查范围内的日线数据，只做检查是否补当前缺口用
 					
@@ -7427,9 +7470,9 @@ public class BanKuaiDbOperation
 					} 
 					
 					//看看有没有产生新的缺口
-					Bar kxiandatalastwk =  nodeohlc.getBar(j-1);
-					double lasthigh = kxiandatalastwk.getMaxPrice().doubleValue();
-					double lastlow = kxiandatalastwk.getMinPrice().doubleValue();
+					OHLCItem kxiandatalastwk = (OHLCItem) nodeohlc.getDataItem(j-1);
+					double lasthigh = kxiandatalastwk.getHighValue();
+					double lastlow = kxiandatalastwk.getLowValue();
 					
 					Boolean tiaokongup = false; Boolean tiaokongdown = false;
 					if(curlow > lasthigh) {

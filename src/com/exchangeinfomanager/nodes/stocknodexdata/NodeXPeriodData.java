@@ -9,6 +9,7 @@ import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.google.common.collect.Multimap;
 
 public interface NodeXPeriodData 
 {
@@ -53,8 +54,6 @@ public interface NodeXPeriodData
 	public Integer getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference);
 	
 //	public  org.ta4j.core.TimeSeries getOHLCData ();
-//	public LocalDate getOhlcRecordsStartDate ();
-//	public LocalDate getOhlcRecordsEndDate ();
 	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate,int difference);
 	public Double getSpecificOHLCZhangDieFu (LocalDate requireddate,int difference);
 	
@@ -76,5 +75,10 @@ public interface NodeXPeriodData
 	public Double[] getNodeOhlcSMA (LocalDate  requireddate,int difference);
 	public Boolean checkCloseComparingToMAFormula (String maformula, LocalDate requireddate, int difference);
 	
+	public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange);
+	public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange);
+	
 	public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference);
+	
+	
 }

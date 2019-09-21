@@ -24,7 +24,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasi
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 
@@ -42,8 +42,8 @@ public class Stock extends TDXNodes {
 		
 //		suoShuTdxBanKuaiData = new HashMap<String,StockOfBanKuai> ();
 		
-		super.nodewkdata = new StockXPeriodData (myowncode1,NodeGivenPeriodDataItem.WEEK) ;
-		super.nodedaydata = new StockXPeriodData (myowncode1,NodeGivenPeriodDataItem.DAY) ;
+		super.nodewkdata = new StockXPeriodDataForJFC (myowncode1,NodeGivenPeriodDataItem.WEEK) ;
+		super.nodedaydata = new StockXPeriodDataForJFC (myowncode1,NodeGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 		super.nodetreerelated = new NodesTreeRelated (this);
 		

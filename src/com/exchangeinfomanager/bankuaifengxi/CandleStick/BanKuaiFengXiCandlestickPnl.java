@@ -55,6 +55,7 @@ import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.annotations.XYShapeAnnotation;
 import org.jfree.chart.axis.CategoryLabelPositions;
@@ -101,6 +102,7 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.joda.time.Interval;
 import org.ta4j.core.Bar;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
@@ -111,11 +113,14 @@ import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.google.common.collect.Multimap;
 
 /**
  * The Class JfreeCandlestickChart.
@@ -156,6 +161,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	private JMenuItem mntmbankuai;
 	private JMenuItem mntmzhishu;
 	private boolean displayhuibuquekou;
+	private boolean displaymacddivergence = true;
+	private boolean hasmacddivergence;
 
 	
 	private List<ValueMarker> categorymarkerlist; //指数关键日期的marker
@@ -197,6 +204,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
 			displayQueKouToChart ();
 		
+		if(node.getType() == TDXNodes.TDXGG && this.displaymacddivergence )
+			displayMACDDivergenceToChart (NodeGivenPeriodDataItem.DAY);
+		
 		if(this.checkDatesShunXu (startdate,enddate) )
 			setPanelTitle ( node, startdate, enddate);
 		else
@@ -223,6 +233,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
 			displayQueKouToChart ();
 		
+		if(node.getType() == TDXNodes.TDXGG && this.displaymacddivergence )
+			displayMACDDivergenceToChart (NodeGivenPeriodDataItem.DAY);
+		
 		setPanelTitle ( node, requirestart, requireend);
 	}
 	/*
@@ -239,12 +252,12 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
 			
-		TDXNodesXPeriodDataForTA4J nodexdata = (TDXNodesXPeriodDataForTA4J) node.getNodeXPeroidData(period);
+		TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) node.getNodeXPeroidData(period);
 		LocalDate tmpdate = requirestart;
 		double lowestLow =10000.0;  double highestHigh = 0.0;
 		do  {
-			Bar ta4johlcbar = nodexdata.getSpecificDateOHLCData(tmpdate, 0);
-			if(ta4johlcbar == null) {
+			OHLCItem tmpohlic = nodexdata.getSpecificDateOHLCData(tmpdate, 0);
+			if(tmpohlic == null) {
 				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 				else if(period.equals(NodeGivenPeriodDataItem.DAY))
@@ -254,15 +267,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				
 				continue;
 			}
-			
-			java.sql.Date sqldate = java.sql.Date.valueOf(ta4johlcbar.getEndTime().toLocalDate() );
-			
-			OHLCItem tmpohlic = new OHLCItem(new Day(sqldate), 
-										ta4johlcbar.getOpenPrice().doubleValue(),
-										ta4johlcbar.getMaxPrice().doubleValue(),
-										ta4johlcbar.getMinPrice().doubleValue(),
-										ta4johlcbar.getClosePrice().doubleValue()
-										);
+
 			tmpohlcSeries.add(tmpohlic);
 			
 			Double low = tmpohlic.getLowValue();
@@ -373,6 +378,55 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	/*
 	 * 
 	 */
+	public void displayMACDDivergenceToChart (String checkperiod)
+	{
+		NodeXPeriodData nodexdata = this.curdisplayednode.getNodeXPeroidData(checkperiod);
+		Multimap<LocalDate, LocalDate> mdvgc = nodexdata.isMacdButtomDivergenceInSpecificMonthRange(this.getDispalyEndDate(), 0, 4);
+		
+		if(mdvgc == null)
+			return;
+		
+		if(mdvgc.size() >0)
+			this.hasmacddivergence = true;
+		
+		Set<LocalDate> keysets = mdvgc.keySet();
+		for(LocalDate basedate : keysets) {
+			long basexPoint = new org.jfree.data.time.Day (java.sql.Date.valueOf(basedate)).getMiddleMillisecond();
+			OHLCItem basebar = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData(basedate, 0);
+			double baselowprice = basebar.getLowValue();
+			
+			XYPointerAnnotation xypointerannotation = new XYPointerAnnotation("背S", basexPoint, baselowprice, 200D);//
+			xypointerannotation.setText("背S");
+			xypointerannotation.setTextAnchor(TextAnchor.BOTTOM_RIGHT);
+			xypointerannotation.setPaint(Color.yellow);
+			this.candlestickChart.getXYPlot().addAnnotation(xypointerannotation);
+			
+			Collection<LocalDate> divdatelist = mdvgc.get(basedate);
+			for(LocalDate divdate : divdatelist) {
+				long divxPoint = new org.jfree.data.time.Day (java.sql.Date.valueOf(divdate)).getMiddleMillisecond();
+				OHLCItem divbar = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData(divdate, 0);
+				double divlowprice = divbar.getLowValue();
+				
+				//For creating line on mouse click.
+//				XYLineAnnotation xYLineAnnotation = new XYLineAnnotation(basexPoint, baselowprice, divxPoint, divlowprice, new BasicStroke(1.0f), Color.blue);
+				//For creating a pointer at a specific location
+				XYPointerAnnotation xypointerannotationend = new XYPointerAnnotation("背E", divxPoint, divlowprice, 200D);//
+				xypointerannotationend.setText("背E");
+				xypointerannotationend.setTextAnchor(TextAnchor.BOTTOM_RIGHT);
+				xypointerannotationend.setPaint(Color.yellow);
+				this.candlestickChart.getXYPlot().addAnnotation(xypointerannotationend);
+				
+			}
+		}
+		
+		keysets = null;
+		mdvgc = null;
+
+	}
+	
+	/*
+	 * 
+	 */
 	private void displayQueKouToChart ()
 	{
 		ohlcSeries.setNotify(false);
@@ -476,6 +530,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	 
 		}
 		
+		qklist = null;
 		 ohlcSeries.setNotify(true);
 	     candlestickDataset.setNotify(true);
 	     candlestickChart.setNotify(true);
@@ -499,6 +554,14 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			return;
 		}
 			
+	}
+	public void displayMACDDivergence (boolean display)
+	{
+		this.displaymacddivergence = display;
+	}
+	public Boolean hasMACDDivergence ()
+	{
+		return this.hasmacddivergence;
 	}
 	/*
 	 * 
@@ -924,6 +987,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		} catch (java.lang.NullPointerException e) {
 			
 		}
+		
+		this.hasmacddivergence = false;
 	
 	}
 	@Override

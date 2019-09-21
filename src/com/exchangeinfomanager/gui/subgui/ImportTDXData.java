@@ -85,7 +85,7 @@ public class ImportTDXData extends JDialog {
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.sysconfig = SystemConfigration.getInstance(); 
-		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
+//		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 		initializeGui ();
 
 		iniiazlizeZdyGui ();
@@ -99,8 +99,8 @@ public class ImportTDXData extends JDialog {
 	Map<String, String> zdybkmap; //从tdx得到的自定义板块设置
 	Map<String, String> zdybkmapfromfile; //从用户选择的文件直接得到的自定义板块设置
 	private SystemConfigration sysconfig;
-	private AllCurrentTdxBKAndStoksTree allbksks;
-	private BanKuaiAndChanYeLian2 bkcyl;
+//	private AllCurrentTdxBKAndStoksTree allbksks;
+//	private BanKuaiAndChanYeLian2 bkcyl;
 	private BanKuaiDbOperation bkdbopt;
 	
 	private void formateGui() 
@@ -172,30 +172,11 @@ public class ImportTDXData extends JDialog {
 			long end=System.currentTimeMillis(); //获取结束时间
 			System.out.println("......导入股票曾用名和现用名的信息结束"  + LocalTime.now() + "导入耗费时间： "+(end-start)+"ms.......");
 			chbximportcym.setEnabled(false);
-			
-			
-//			try {
-//				List<String> lines = Files.readLines(resulttmpfilesys, sysconfig.charSet());
-//				for (String line : lines) {
-//		        	tfldresult.append(line+"\n");
-//		        }
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			} catch (java.lang.NullPointerException e) {
-//			}
-//			try {
-//				List<String> lines = Files.readLines(resulttmpfilesys2, sysconfig.charSet());
-//				for (String line : lines) {
-//		        	tfldresult.append(line+"\n");
-//		        }
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			} catch (java.lang.NullPointerException e) {
-//			}
 		}
 		
 		//同步自定义板块
-		if(chbxdaorutdxzdybk.isSelected() && chbxdaorutdxzdybk.isEnabled()) { 
+		if(chbxdaorutdxzdybk.isSelected() && chbxdaorutdxzdybk.isEnabled() && this.zdybkckbxs != null) { 
+			
 			for(JCheckBox tmpbox:zdybkckbxs) {
 				if(! tmpbox.isSelected() )
 					zdybkmap.remove(tmpbox.getText() );
@@ -317,6 +298,7 @@ public class ImportTDXData extends JDialog {
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
 		        }
+				resulttmpfilezhishupreck = null;
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
@@ -331,6 +313,7 @@ public class ImportTDXData extends JDialog {
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
 		        }
+				resulttmpfilezsamo = null;
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
@@ -352,6 +335,7 @@ public class ImportTDXData extends JDialog {
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
 		        }
+				lines = null;
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
@@ -371,6 +355,7 @@ public class ImportTDXData extends JDialog {
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
 		        }
+				lines = null;
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
@@ -619,7 +604,6 @@ public class ImportTDXData extends JDialog {
 			{
 				if(chbxselectall.isSelected()) { 
 					cbximporttdxgeguinfo.setSelected(true);
-					chbxdaorutdxsysbk.setSelected(true);
 					chbxdaorutdxsysbkvol.setSelected(true);
 					cbxImportSzGeGuVol.setSelected(true);
 					cbxImportShGeGuVol.setSelected(true);
@@ -633,6 +617,11 @@ public class ImportTDXData extends JDialog {
 						ckbxnetease.setSelected(false);
 					else
 						ckbxnetease.setSelected(true);
+					
+					if(wkday == 1 || wkday == 4 ) {
+						chbxdaorutdxsysbk.setSelected(true);
+					}
+						
 					
 					//曾用名和现用名一周只要更新一次，周五即可
 //					Calendar cal = Calendar.getInstance();
@@ -756,7 +745,7 @@ public class ImportTDXData extends JDialog {
 		
 		scrollPane_1 = new JScrollPane();
 		
-		chbxdaorutdxsysbk = new JCheckBox("*\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u677F\u5757\u548C\u6307\u6570\u4FE1\u606F");
+		chbxdaorutdxsysbk = new JCheckBox("*\u5BFC\u5165\u901A\u8FBE\u4FE1\u7CFB\u7EDF\u677F\u5757\u548C\u6307\u6570\u4FE1\u606F(\u5468\u4E00\u4E09\u4E94\u540C\u6B65)");
 		
 		chbxdaorutdxzdybk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757(\u9009\u62E9\u8981\u5BFC\u5165\u7684\u81EA\u5B9A\u4E49\u677F\u5757)");
 		

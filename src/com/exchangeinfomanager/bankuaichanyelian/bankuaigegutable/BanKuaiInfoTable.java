@@ -53,6 +53,7 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
@@ -323,12 +324,14 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        }
 	       
 	        if (comp instanceof JLabel && col == 7) {
-	        	TDXNodesXPeriodDataForTA4J nodexdata = (TDXNodesXPeriodDataForTA4J) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-	        	Bar weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
+	        	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
+	        	double open = weekohlc.getOpenValue();
+	        	double close = weekohlc.getCloseValue();
 	        	if(weekohlc != null) {
-	        		if (weekohlc.isBearish())
+	        		if (close < open)
 	        			background = Color.GREEN;
-			        else if (weekohlc.isBullish() )
+			        else if (open < close )
 			        	background = Color.RED;
 			        else
 			        	background = Color.WHITE;

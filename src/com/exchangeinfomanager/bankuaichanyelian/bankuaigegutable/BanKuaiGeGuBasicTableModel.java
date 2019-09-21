@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -15,8 +16,9 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 
 public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 {
@@ -29,7 +31,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	
 	protected String[] jtableTitleStrings ;
 	protected BanKuai curbk;
-	protected ArrayList<StockOfBanKuai> entryList;
+	protected ArrayList<TDXNodes> entryList;
 	protected LocalDate showwknum;
 	protected String period;
 	/*
@@ -50,7 +52,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		this.period = period;
 
 		entryList = null;
-		entryList = new ArrayList<StockOfBanKuai>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );
+		entryList = new ArrayList<TDXNodes>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );
 		
 		 Iterator itr = entryList.iterator(); 
 	     while (itr.hasNext())      { 
@@ -139,7 +141,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		  if(entryList.isEmpty())
 	    		return ;
 		  
-		  StockOfBanKuai stock = entryList.get(row);
+		  StockOfBanKuai stock = (StockOfBanKuai) entryList.get(row);
 		  String stockcode = stock.getMyOwnCode();
 	      curbk.setGeGuSuoShuBanKuaiWeight(stockcode,newweight);
 		  this.fireTableDataChanged();
@@ -180,7 +182,11 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	    } 
 	    public StockOfBanKuai getStock (int row)
 	    {
-	    	return this.entryList.get(row);
+	    	return (StockOfBanKuai) this.entryList.get(row);
+	    }
+	    public List<TDXNodes> getAllStocks ()
+	    {
+	    	return this.entryList;
 	    }
 	    public StockOfBanKuai getStock (String stockcode)
 	    {
@@ -219,7 +225,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 			   		}
 	    		}
 	   		
-	   		return index;
+	    		return index;
 	    }
 
 	    public void removeAllRows ()
@@ -236,7 +242,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 /*
  * 按流通市值对个股排序
  */
-class NodeLiuTongShiZhiComparator implements Comparator<StockOfBanKuai> {
+class NodeLiuTongShiZhiComparator implements Comparator<TDXNodes> {
 	private String period;
 	private LocalDate compareDate;
 	private int difference;
@@ -246,12 +252,12 @@ class NodeLiuTongShiZhiComparator implements Comparator<StockOfBanKuai> {
 		this.compareDate = compareDate;
 		this.difference = difference;
 	}
-    public int compare(StockOfBanKuai node1, StockOfBanKuai node2) {
-    	Stock stock1 = node1.getStock();
-    	Stock stock2 = node2.getStock();
+    public int compare(TDXNodes node1, TDXNodes node2) {
+    	Stock stock1 = ( (StockOfBanKuai)node1).getStock();
+    	Stock stock2 = ( (StockOfBanKuai)node2).getStock();
     	
-        Double cje1 = ((StockXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference) ;
-        Double cje2 = ((StockXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference);
+        Double cje1 = ((StockNodesXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference) ;
+        Double cje2 = ((StockNodesXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference);
         
         return cje2.compareTo(cje1);
     }

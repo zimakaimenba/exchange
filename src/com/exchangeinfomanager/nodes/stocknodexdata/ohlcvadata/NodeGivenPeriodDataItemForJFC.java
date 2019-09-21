@@ -12,6 +12,7 @@ import java.util.Locale;
 
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.ohlc.OHLCItem;
+import org.ta4j.core.num.Num;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
@@ -23,13 +24,13 @@ public class NodeGivenPeriodDataItemForJFC extends OHLCItem implements NodeGiven
 	private static final long serialVersionUID = 1L;
 	
 	public NodeGivenPeriodDataItemForJFC(String nodecode,String datatype,RegularTimePeriod period,
-			double open, double high, double low, double close,double myamount,double myvolumne) 
+			Num open, Num high, Num low, Num close,Num myvolumne,Num myamount) 
 	{
-		super (period,open,high,low,close);
+		super (period,open.doubleValue(),high.doubleValue(),low.doubleValue(),close.doubleValue());
 		
 		this.myowncode = nodecode;
-		this.myownchengjiaoer = myamount;
-		this.myownchengjiaoliang = myvolumne;
+		this.myownchengjiaoer = myamount.doubleValue();
+		this.myownchengjiaoliang = myvolumne.doubleValue();
 		this.regulartimeperiod = period;
 				
 		if( datatype.toUpperCase().equals(NodeGivenPeriodDataItem.DAY)

@@ -31,10 +31,11 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.google.common.base.Strings;
+import com.google.common.collect.Multimap;
 import com.udojava.evalex.Expression;
 
 
@@ -55,9 +56,9 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
-	    String valuepect = "";
+	    
 	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { //用百分比显示
-
+	    	String valuepect = "";
 	    	try {
         		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
         		 
@@ -134,14 +135,25 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		foreground = Color.RED;
 	    	else 
 	    		foreground = Color.BLACK;
+	    	
+//	    	NodeXPeriodData nodexdataday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+//	    	Multimap<LocalDate, LocalDate> result = nodexdataday.isMacdButtomDivergenceInSpecificMonthRange(requireddate, 0, 4);
+//	    	if(result.size() >0) {
+//	    		int c = 0x24b9;
+//	    		String s = Character.toString((char)c);
+//	    		String valueSTr = value.toString() + s; 
+//	    		
+//	    		((JLabel)comp).setText(valueSTr);
+//	    	}
+	    	
 	    } else if( col == 2) { //流通市值
 	    	Double ltszmin = tablemodel.getDisplayLiuTongShiZhiMin() ;
 		    Double ltszmax = tablemodel.getDisplayLiuTongShiZhiMax() ;
 		    
 		    LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
-		    StockXPeriodData nodexdata = (StockXPeriodData)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-		    Double curltsz = nodexdata.getSpecificTimeLiuTongShiZhi(requireddate, 0);
+		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+		    Double curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, 0);
 		    try {
 			    if( curltsz >= ltszmin && curltsz <= ltszmax ) 
 			    	background = Color.MAGENTA ;

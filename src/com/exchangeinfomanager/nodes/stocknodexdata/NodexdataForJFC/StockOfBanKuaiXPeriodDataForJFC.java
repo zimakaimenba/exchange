@@ -1,22 +1,32 @@
-package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J;
+package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.time.ohlc.OHLCItem;
+import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.google.common.collect.Multimap;
 
 
-public class StockOfBanKuaiXPeriodData implements NodeXPeriodData 
+
+public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 {
+	
+	private TimeSeries stockamo;
+	private String bkcode;
 
-	public StockOfBanKuaiXPeriodData (String nodecode, String bkcode,String nodeperiodtype1) 
+	public StockOfBanKuaiXPeriodDataForJFC (String nodecode, String bkcode,String nodeperiodtype1) 
 	{
 		this.nodecode = nodecode;
 		this.bkcode = bkcode;
@@ -25,39 +35,90 @@ public class StockOfBanKuaiXPeriodData implements NodeXPeriodData
 		stockamo = new TimeSeries(nodeperiodtype1);
 	}
 	
-	private String bkcode;
-	private TimeSeries stockamo;
 	private String nodeperiodtype;
 	private String nodecode;
-	@Override
-	public String getNodeCode() {
-		// TODO Auto-generated method stub
-		return this.nodecode;
+	
+//	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErChangeGrowthRateOfSuperBanKuai(java.time.LocalDate)
+	 * 和其他该函数不同的地方就是这里是板块的成交量而不是大盘的成交量
+	 */
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(TDXNodes superbk,LocalDate requireddate,int difference) 
+	{
+			TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			if( curcjlrecord == null) 
+				return null;
+			
+			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
+			String nodept = getNodeperiodtype();
+			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
+			Double bkcjediff = bkxdata.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
+			if( bkcjediff == null || bkcjediff < 0   ) {//板块缩量，
+				return -100.0;
+			}
+			
+			
+			int index = this.stockamo.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			TimeSeriesDataItem lastcjlrecord = stockamo.getDataItem( index - 1);
+			if(lastcjlrecord == null) { //休市前还是空，说明是停牌后复牌了
+				Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
+				return curggcje/bkcjediff;
+			}
+			
+			Double curcje = curcjlrecord.getValue().doubleValue();
+			Double lastcje = lastcjlrecord.getValue().doubleValue();
+			Double cjechange = curcje - lastcje; //个股成交量的变化
+			
+			return cjechange/bkcjediff;
+		
+	}
+	/*
+	 * 
+	 */
+	protected RegularTimePeriod getJFreeChartFormateTimePeriod (LocalDate requireddate,int difference) 
+	{
+		String nodeperiod = this.getNodeperiodtype();
+		LocalDate expectedate = null;
+		RegularTimePeriod period = null;
+		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
+			expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
+			period = new org.jfree.data.time.Week (lastdayofweek);
+//			period = new org.jfree.data.time.Week (Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
+			expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
+			period = new org.jfree.data.time.Day (lastdayofweek);
+//			period = new org.jfree.data.time.Day(Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
+			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
+		}
+		
+		return period;
 	}
 	@Override
 	public String getNodeperiodtype() {
 		// TODO Auto-generated method stub
 		return this.nodeperiodtype;
 	}
+
 	@Override
-	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
+	public String getNodeCode() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.nodecode;
 	}
-	
-	public String getSuoShuBanKuaiCode ()
-	{
-		return this.bkcode;
-	}
+
 	@Override
-	public String getNodeXDataInHtml(TDXNodes root, LocalDate requireddate, int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
+	public Double getChengJiaoEr(LocalDate requireddate, int difference) {
+		TimeSeriesDataItem curcjlrecord = null;
+//		if(difference >=0 )
+			curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		
+		if( curcjlrecord == null) 
+			return null;
+		else
+			return curcjlrecord.getValue().doubleValue();
 	}
 	@Override
 	public void addNewXPeriodData(NodeGivenPeriodDataItem kdata) {
@@ -217,18 +278,12 @@ public class StockOfBanKuaiXPeriodData implements NodeXPeriodData
 		return null;
 	}
 	@Override
-	public Double getChengJiaoEr(LocalDate requireddate, int difference) {
+	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,
-			int difference) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -239,6 +294,11 @@ public class StockOfBanKuaiXPeriodData implements NodeXPeriodData
 	}
 	@Override
 	public Double getChengJiaoLiang(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -268,6 +328,48 @@ public class StockOfBanKuaiXPeriodData implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+	@Override
+	public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange(LocalDate requireddate,
+			int difference, int monthrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String getNodeXDataInHtml(TDXNodes superbk, LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+//	@Override
+//	public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//	@Override
+//	public Double getSpecificTimeZongShiZhi(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//	@Override
+//	public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//	@Override
+//	public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//	@Override
+//	public Double getSpecificTimeLiuTongShiZhi(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+	@Override
+	public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange(LocalDate requireddate,
+			int difference, int monthrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	
 }

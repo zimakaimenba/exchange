@@ -24,7 +24,7 @@ import java.util.Set;
 import org.jfree.data.time.TimeSeriesDataItem;
 //import org.jfree.data.time.Week;
 
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.BanKuaiXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.BanKuaiXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 
@@ -44,8 +44,8 @@ public class BanKuai extends TDXNodes
 		super(bkcode,name);
 		super.nodetype = BkChanYeLianTreeNode.TDXBK;
 		
-		super.nodewkdata = new BanKuaiXPeriodData (bkcode,NodeGivenPeriodDataItem.WEEK) ;
-		super.nodedaydata = new BanKuaiXPeriodData (bkcode,NodeGivenPeriodDataItem.DAY) ;
+		super.nodewkdata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.WEEK) ;
+		super.nodedaydata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.DAY) ;
 
 //		super.nodewkdata = new BanKuaiNodeXPeriodData (bkcode,TDXNodeGivenPeriodDataItem.WEEK) ;
 //		super.nodedaydata = new BanKuaiNodeXPeriodData (bkcode,TDXNodeGivenPeriodDataItem.DAY) ;

@@ -1,43 +1,43 @@
-package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J;
+package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.ohlc.OHLCItem;
+import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.google.common.collect.Multimap;
 
-public class DaPanXPeriodData implements NodeXPeriodData
+
+public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 {
-	private String nodecode;
 	private String nodeperiodtype;
-	private BanKuai shanghai;
-	private BanKuai shenzhen;
-
-	public DaPanXPeriodData (String nodeperiodtype1,BanKuai shanghai, BanKuai shenzhen)
+	private String nodecode;
+	
+	public DaPanXPeriodDataForJFC (String nodeperiodtype1,BanKuai shanghai, BanKuai shenzhen)
 	{
 		this.nodecode = "000000";
 		this.nodeperiodtype = nodeperiodtype1;
 		this.shanghai = shanghai;
 		this.shenzhen = shenzhen;
 	}
-
-	@Override
-	public String getNodeCode() {
-		// TODO Auto-generated method stub
-		return this.nodecode;
-	}
-
+	
 	@Override
 	public String getNodeperiodtype() 
 	{
-		// TODO Auto-generated method stub
 		return this.nodeperiodtype;
 	}
+	
+	private BanKuai shanghai;
+	private BanKuai shenzhen;
+
 	/*
 	 * 
 	 */
@@ -62,15 +62,32 @@ public class DaPanXPeriodData implements NodeXPeriodData
 	}
 
 	@Override
-	public String getNodeXDataInHtml(TDXNodes root, LocalDate requireddate, int i) {
-		// TODO Auto-generated method stub
-		return null;
+	public Double getChengJiaoEr(LocalDate requireddate, int difference) 
+	{
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		Double shcurrecord = shanghaiperiodrecords.getChengJiaoEr(requireddate,difference);
+		
+		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
+		Double szcurrecord = shenzhenperiodrecords.getChengJiaoEr(requireddate,difference);
+		
+		Double dapancje = null;
+		try {
+		 dapancje = shcurrecord + szcurrecord;
+		} catch (java.lang.NullPointerException e) {
+//			System.out.println(requireddate);
+		}
+		return dapancje;
 	}
 
+
 	@Override
-	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
+	public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate, int difference) 
+	{
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		Integer exchangedays = shanghaiperiodrecords.getExchangeDaysNumberForthePeriod(requireddate,difference);
+		return exchangedays;
 	}
 
 	@Override
@@ -89,6 +106,12 @@ public class DaPanXPeriodData implements NodeXPeriodData
 	public void setShangShiRiQi(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public String getNodeCode() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -184,12 +207,6 @@ public class DaPanXPeriodData implements NodeXPeriodData
 	}
 
 	@Override
-	public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Double getChenJiaoErZhanBi(LocalDate requireddate, int difference) {
 		// TODO Auto-generated method stub
 		return null;
@@ -262,12 +279,6 @@ public class DaPanXPeriodData implements NodeXPeriodData
 	}
 
 	@Override
-	public Double getChengJiaoEr(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
 		// TODO Auto-generated method stub
 		return null;
@@ -288,6 +299,12 @@ public class DaPanXPeriodData implements NodeXPeriodData
 
 	@Override
 	public Double getChengJiaoLiang(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -322,4 +339,58 @@ public class DaPanXPeriodData implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange(LocalDate requireddate,
+			int difference, int monthrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getNodeXDataInHtml(TDXNodes superbk, LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange(LocalDate requireddate,
+			int difference, int monthrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+//	@Override
+//	public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public Double getSpecificTimeZongShiZhi(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public Double getSpecificTimeLiuTongShiZhi(LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
+	
+
 }
+

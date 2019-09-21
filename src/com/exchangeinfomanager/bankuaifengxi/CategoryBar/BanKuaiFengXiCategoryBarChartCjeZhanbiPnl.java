@@ -48,8 +48,8 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl
@@ -285,7 +285,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			
 			//对个股有关注记录的时候
 			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG) { //对个股有关注记录的时候
-					Integer gzjl = ((StockXPeriodData)nodexdata).hasGzjlInPeriod(wkfriday, 0);
+					Integer gzjl = ((StockNodesXPeriodData)nodexdata).hasGzjlInPeriod(wkfriday, 0);
 					if(gzjl != null) {
 						double angle; Color paintcolor;String label;
 						if(gzjl == 1) {
@@ -510,7 +510,7 @@ class CustomCategroyToolTipGeneratorForCjeZhanBi extends BanKuaiFengXiCategoryBa
 		String html;
 		DaPan dapan = (DaPan)  super.node.getRoot();
 		if(super.node.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			 html = ( (StockXPeriodData) nodexdata).getNodeXDataInHtml(dapan,selecteddate, 0);
+			 html =  nodexdata.getNodeXDataInHtml(dapan,selecteddate, 0);
 		} else {
 			html = nodexdata.getNodeXDataInHtml(dapan,selecteddate, 0);
 		}

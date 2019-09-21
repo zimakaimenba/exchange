@@ -68,7 +68,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	    	if(entryList.isEmpty())
 	    		return null;
 
-	    	StockOfBanKuai curdisplaystockofbankuai = entryList.get(rowIndex);
+	    	StockOfBanKuai curdisplaystockofbankuai = (StockOfBanKuai) entryList.get(rowIndex);
 		    String stockcode = curdisplaystockofbankuai.getMyOwnCode();
 		    String bkcode = curbk.getMyOwnCode();
 		    NodeXPeriodData stockxdataforbk = curdisplaystockofbankuai.getNodeXPeroidData(period);

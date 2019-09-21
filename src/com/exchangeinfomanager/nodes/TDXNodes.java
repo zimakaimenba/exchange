@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 public abstract class TDXNodes extends BkChanYeLianTreeNode
@@ -46,7 +46,7 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		String html;
 		NodeXPeriodData nodexdata = this.getNodeXPeroidData(period);
 		if(super.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			 html = ( (StockXPeriodData) nodexdata).getNodeXDataInHtml((DaPan)this.getRoot(),requireddate, 0);
+			 html =  nodexdata.getNodeXDataInHtml((DaPan)this.getRoot(),requireddate, 0);
 		} else {
 			html = nodexdata.getNodeXDataInHtml((DaPan)this.getRoot(),requireddate, 0);
 		}

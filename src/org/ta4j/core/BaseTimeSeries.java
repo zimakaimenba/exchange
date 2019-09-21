@@ -27,10 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ta4j.core.num.PrecisionNum;
 
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
-
 import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 

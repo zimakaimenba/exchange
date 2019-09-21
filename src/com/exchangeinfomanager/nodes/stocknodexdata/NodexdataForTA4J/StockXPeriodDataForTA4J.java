@@ -14,12 +14,13 @@ import org.jsoup.Jsoup;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 
-public class StockXPeriodData extends TDXNodesXPeriodDataForTA4J
+public class StockXPeriodDataForTA4J extends TDXNodesXPeriodDataForTA4J implements StockNodesXPeriodData
 {
-		public StockXPeriodData (String nodecode, String nodeperiodtype1) 
+		public StockXPeriodDataForTA4J (String nodecode, String nodeperiodtype1) 
 		{
 			super(nodecode , nodeperiodtype1);
 			
@@ -30,7 +31,7 @@ public class StockXPeriodData extends TDXNodesXPeriodDataForTA4J
 			periodlowestzhangdiefu = new TimeSeries(nodeperiodtype1);
 		}
 		
-		private Logger logger = Logger.getLogger(StockXPeriodData.class);
+		private Logger logger = Logger.getLogger(StockXPeriodDataForTA4J.class);
 		
 		private  TimeSeries stockhuanshoulv; //换手率
 		private  TimeSeries stockliutongshizhi; //流通市值

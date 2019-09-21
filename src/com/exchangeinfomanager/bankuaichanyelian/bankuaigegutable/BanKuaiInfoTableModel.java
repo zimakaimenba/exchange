@@ -14,6 +14,7 @@ import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 
@@ -28,7 +29,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	}
 	
 	String[] jtableTitleStrings = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"};
-	List<BanKuai> entryList;
+	List<TDXNodes> entryList;
 	LocalDate showzhbiwknum;
 	private String curperiod;
 	private int difference;
@@ -60,11 +61,11 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	public void addBanKuai ( BanKuai bankuai)
 	{
 		if(entryList == null)
-			entryList = new ArrayList<BanKuai> ();
+			entryList = new ArrayList<TDXNodes> ();
 		
 		entryList.add(bankuai);
 	}
-	public void addBanKuai ( List<BanKuai> bankuaiwithcje)
+	public void addBanKuai ( List<TDXNodes> bankuaiwithcje)
 	{
 		entryList = bankuaiwithcje;
 	}
@@ -96,7 +97,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    	BanKuai bankuai = null;
 	    	DaPan dapan = null;
 	    	try {
-	    		bankuai = entryList.get( rowIndex );
+	    		bankuai = (BanKuai) entryList.get( rowIndex );
 	    		dapan = (DaPan)bankuai.getRoot();
 	    	} catch (java.lang.IndexOutOfBoundsException e) {
 	    		e.printStackTrace();
@@ -228,7 +229,11 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    } 
 	    public BanKuai getBanKuai (int row)
 	    {
-	    	return this.entryList.get(row);
+	    	return (BanKuai) this.entryList.get(row);
+	    }
+	    public List<TDXNodes> getAllBanKuai ()
+	    {
+	    	return this.entryList;
 	    }
 
 	    public int getBanKuaiRowIndex (String neededfindstring) 

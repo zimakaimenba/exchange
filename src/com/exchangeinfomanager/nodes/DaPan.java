@@ -12,7 +12,7 @@ import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.DaPanXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.DaPanXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 
@@ -36,8 +36,8 @@ public class DaPan extends TDXNodes
 		this.shanghai = sh;
 		this.shenzhen = sz;
 		
-		super.nodewkdata = new DaPanXPeriodData (NodeGivenPeriodDataItem.WEEK,shanghai,shenzhen) ;
-		super.nodedaydata = new DaPanXPeriodData (NodeGivenPeriodDataItem.DAY,shanghai,shenzhen) ;
+		super.nodewkdata = new DaPanXPeriodDataForJFC (NodeGivenPeriodDataItem.WEEK,shanghai,shenzhen) ;
+		super.nodedaydata = new DaPanXPeriodDataForJFC (NodeGivenPeriodDataItem.DAY,shanghai,shenzhen) ;
 //		super.nodemonthdata = new DaPanNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 	}
 	

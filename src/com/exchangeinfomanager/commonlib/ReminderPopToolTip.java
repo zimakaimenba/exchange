@@ -179,7 +179,7 @@ public class ReminderPopToolTip
          */  
         public void run() {  
             try {  
-                boolean animate = true;  
+                boolean animate = false;  
                 GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();  
                 Rectangle screenRect = ge.getMaximumWindowBounds();  
                 int screenHeight = (int) screenRect.height;  
@@ -192,13 +192,15 @@ public class ReminderPopToolTip
                 
                 int posx = (int) screenRect.width - _width - 1;  
                 _single.setLocation(posx, screenHeight);  
+                
                 _single.setVisible(true);  
                 
                 if (_useTop) {  
                     _single.setAlwaysOnTop(true);  
                 }  
                 if (animate) {  
-                    startYPosition = screenHeight;  
+//                    startYPosition = screenHeight;
+                	startYPosition = 0;
                     stopYPosition = startYPosition - _height - 1;  
                     if (_countOfToolTip > 0) {  
                         stopYPosition = stopYPosition  

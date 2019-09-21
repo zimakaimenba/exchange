@@ -6,45 +6,39 @@ import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 import java.util.Set;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.table.DefaultTableModel;
 
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.data.time.Week;
-
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
-import com.exchangeinfomanager.commonlib.CommonUtility;
+
+
 import com.exchangeinfomanager.commonlib.ExportToCsvFile;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
-import com.exchangeinfomanager.database.BanKuaiDbOperation;
+
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
+
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -65,9 +59,9 @@ import org.joda.time.Interval;
 public class NodeInfoToCsv extends JPanel 
 {
 	
-	private BanKuaiDbOperation bkdbopt;
+//	private BanKuaiDbOperation bkdbopt;
 	private SystemConfigration sysconfig;
-	private BanKuaiAndChanYeLian2 bkcyl;
+//	private BanKuaiAndChanYeLian2 bkcyl;
 	private AllCurrentTdxBKAndStoksTree allbksks;
 
 	/**
@@ -76,9 +70,9 @@ public class NodeInfoToCsv extends JPanel
 	public NodeInfoToCsv() 
 	{
 		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
+//		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		this.sysconfig = SystemConfigration.getInstance();
-		this.bkdbopt = new BanKuaiDbOperation ();
+//		this.bkdbopt = new BanKuaiDbOperation ();
 		
 		initializeGui ();
 		createEvents ();
@@ -118,14 +112,14 @@ public class NodeInfoToCsv extends JPanel
 				Interval finalinterval = null;
 				for(Interval timerange : nodetimeframes) {
 					 
-					LocalDate tmpstartdate = Instant.ofEpochMilli(timerange.getStartMillis()).atZone(ZoneId.systemDefault()).toLocalDate();
-					LocalDate tmpenddate = Instant.ofEpochMilli(timerange.getEndMillis()).atZone(ZoneId.systemDefault()).toLocalDate();
+//					LocalDate tmpstartdate = Instant.ofEpochMilli(timerange.getStartMillis()).atZone(ZoneId.systemDefault()).toLocalDate();
+//					LocalDate tmpenddate = Instant.ofEpochMilli(timerange.getEndMillis()).atZone(ZoneId.systemDefault()).toLocalDate();
 					
 					if(timerange.overlap(newtimeinterval) != null) {
 						timeintervalchange = true;
 						finalinterval = unionInterval (timerange,newtimeinterval);
-						LocalDate startdate = Instant.ofEpochMilli(finalinterval.getStartMillis()).atZone(ZoneId.systemDefault()).toLocalDate();
-						LocalDate enddate = Instant.ofEpochMilli(finalinterval.getEndMillis()).atZone(ZoneId.systemDefault()).toLocalDate();
+//						LocalDate startdate = Instant.ofEpochMilli(finalinterval.getStartMillis()).atZone(ZoneId.systemDefault()).toLocalDate();
+//						LocalDate enddate = Instant.ofEpochMilli(finalinterval.getEndMillis()).atZone(ZoneId.systemDefault()).toLocalDate();
 						
 //						nodetimeframeMultimap.remove(node, timerange);
 						break;
@@ -143,8 +137,6 @@ public class NodeInfoToCsv extends JPanel
 		
 	public void clearCsvDataSet ()
 	{
-//		bknodetimerange.clear();
-//		stocknodetimerange.clear();
 		nodecontentArrayList.clear();
 		nodetimeframeMultimap.clear();
 	}
@@ -168,7 +160,7 @@ public class NodeInfoToCsv extends JPanel
 		     			  return;
 		     		  
 		     	try {
-		     			String path = csvfile.getParent();
+//		     			String path = csvfile.getParent();
 	//	     			Desktop.getDesktop().open(new File( path ));
 		     			Runtime.getRuntime().exec("explorer.exe /select," + csvfile.getAbsolutePath() );
 		     	} catch (IOException e1) {
@@ -273,8 +265,8 @@ public class NodeInfoToCsv extends JPanel
 							hsl = null;
 							ltsz = null;
 						} else {
-							hsl = ((StockXPeriodData)nodexdata).getSpecificTimeHuanShouLv(tmpdate, 0);
-							ltsz = ((StockXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);;
+							hsl = ((StockNodesXPeriodData)nodexdata).getSpecificTimeHuanShouLv(tmpdate, 0);
+							ltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);;
 						}
 						
 						Integer opneupquekou = nodexdata.getQueKouTongJiOpenUp(tmpdate, 0);
@@ -315,6 +307,8 @@ public class NodeInfoToCsv extends JPanel
 								};
 						
 						nodecontentArrayList.add(csvline);
+						
+						csvline = null;
 //						unifiedAddingCsvData (node.getMyOwnCode(),node.getMyOwnName(),tmpdate,cje,cjezb,cjemaxwk,cjezbmaxwk,cjezbminwk,hsl,ltsz,
 //								opneupquekou,huibudowquekou,opendownquekou,huibuupquekou);
 					} 
@@ -335,29 +329,30 @@ public class NodeInfoToCsv extends JPanel
 		File csvfile = etcsv.exportToCsvFile(csvfilepath,csvheader, nodecontentArrayList);
 		
 		etcsv = null;
+		csvheader = null;
 		return csvfile;
 	}
 		
-	private void unifiedAddingCsvData(String nodecode, String nodename, LocalDate tmpdate, 
-			Double cje, Double cjezb, Integer cjemaxwk, Integer cjezbmaxwk, Integer cjezbminwk, Double hsl, Double liutongshizhi, 
-			Integer openupquekou , Integer huibudowquekou, Integer opendownquekou, Integer huibuupquekou ) 
-	{
-		
-		//代码必须加“‘”，否则导出后000前缀会消失，很麻烦
-		String[] csvline = {	"'" + nodecode + "'", nodename,tmpdate.with(DayOfWeek.FRIDAY).toString(),
-								cje.toString(),cjezb.toString(),
-								cjemaxwk.toString(),cjezbmaxwk.toString(),cjezbminwk.toString(),
-								formateOutputValueString (hsl) ,
-								formateOutputValueString (liutongshizhi),
-								formateOutputValueString (openupquekou),
-								formateOutputValueString (huibudowquekou),
-								formateOutputValueString (opendownquekou),
-								formateOutputValueString (huibuupquekou)
-								
-								};
-		
-		nodecontentArrayList.add(csvline);
-	}
+//	private void unifiedAddingCsvData(String nodecode, String nodename, LocalDate tmpdate, 
+//			Double cje, Double cjezb, Integer cjemaxwk, Integer cjezbmaxwk, Integer cjezbminwk, Double hsl, Double liutongshizhi, 
+//			Integer openupquekou , Integer huibudowquekou, Integer opendownquekou, Integer huibuupquekou ) 
+//	{
+//		
+//		//代码必须加“‘”，否则导出后000前缀会消失，很麻烦
+//		String[] csvline = {	"'" + nodecode + "'", nodename,tmpdate.with(DayOfWeek.FRIDAY).toString(),
+//								cje.toString(),cjezb.toString(),
+//								cjemaxwk.toString(),cjezbmaxwk.toString(),cjezbminwk.toString(),
+//								formateOutputValueString (hsl) ,
+//								formateOutputValueString (liutongshizhi),
+//								formateOutputValueString (openupquekou),
+//								formateOutputValueString (huibudowquekou),
+//								formateOutputValueString (opendownquekou),
+//								formateOutputValueString (huibuupquekou)
+//								
+//								};
+//		
+//		nodecontentArrayList.add(csvline);
+//	}
 	private String formateOutputValueString (Number value)
 	{
 		String output = "0";

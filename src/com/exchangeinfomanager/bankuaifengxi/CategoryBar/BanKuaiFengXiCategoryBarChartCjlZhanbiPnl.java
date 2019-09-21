@@ -36,7 +36,6 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.StockXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
@@ -321,7 +320,7 @@ class CustomCategroyToolTipGeneratorForCjlZhanBi extends BanKuaiFengXiCategoryBa
 		String html;
 		DaPan dapan = (DaPan)  super.node.getRoot();
 		if(super.node.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			 html = ( (StockXPeriodData) nodexdata).getNodeXDataInHtml(dapan,selecteddate, 0);
+			 html = nodexdata.getNodeXDataInHtml(dapan,selecteddate, 0);
 		} else {
 			html = nodexdata.getNodeXDataInHtml(dapan,selecteddate, 0);
 		}
