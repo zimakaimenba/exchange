@@ -11,13 +11,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.net.URL;
-import java.net.URLConnection;
+
 import java.nio.charset.Charset;
-import java.nio.file.Paths;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+
 import java.sql.SQLException;
-import java.text.Collator;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,7 +24,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Period;
+
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -36,11 +34,11 @@ import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 
-import java.util.Calendar;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Enumeration;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,36 +56,24 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
+
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.jfree.data.ComparableObjectItem;
+
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.ta4j.core.Bar;
-import org.ta4j.core.BaseTimeSeries;
-import org.ta4j.core.TimeSeries;
-import org.ta4j.core.num.DoubleNum;
-import org.ta4j.core.num.Num;
 import org.ta4j.core.num.PrecisionNum;
 
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiShuXingSheZhi;
+
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
-import com.exchangeinfomanager.bankuaifengxi.ai.ZhongDianGuanZhu;
+
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.commonlib.DayCounter;
+
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.GuPiaoChi;
@@ -102,7 +88,6 @@ import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItemForJFC;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -110,18 +95,13 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 import com.mysql.jdbc.MysqlDataTruncation;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -131,11 +111,7 @@ import com.sun.rowset.CachedRowSetImpl;
 import net.iryndin.jdbf.core.DbfMetadata;
 import net.iryndin.jdbf.core.DbfRecord;
 import net.iryndin.jdbf.reader.DbfReader;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 
-import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItemForTA4J;
 
 
 public class BanKuaiDbOperation 

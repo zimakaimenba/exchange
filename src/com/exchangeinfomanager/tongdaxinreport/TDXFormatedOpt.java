@@ -81,38 +81,61 @@ public class TDXFormatedOpt {
 		
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
 		
-		String sqlquerystat = "SELECT * FROM 指数关键日期表";
+		String sqlquerystat = "SELECT * FROM 指数关键日期表 ORDER BY 日期 DESC";
 		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+		String[] lineinfo; String[] remindinfo;
 		try {
-			while (rs.next()) {
+			rs.last();  
+	        int rows = rs.getRow();
+	        lineinfo = new String[rows];
+	        remindinfo = new String[rows];
+	        
+//	        int lineindex = rows-1;
+	        rs.first();  
+	        for(int j=0;j<rows;j++) {
 				String zhishucode = rs.getString("代码").trim();
 				LocalDate date = rs.getDate("日期").toLocalDate();
 				String zhishushuoming = rs.getString("说明");
 				
-				String colorcode;
-				if(zhishucode.equals("999999")) 
-					colorcode = "COLOR80FFFF";
-				else if(zhishucode.equals("000016")) 
-					colorcode = "COLORFF8000";
-				else if(zhishucode.equals("399006")) 
-					colorcode = "COLORFF80FF";
-				else
-					colorcode = "COLOR80FFFF";
+				String colorcode = getColorCodeForSpecificZhiShuCode(zhishucode);
+				
 				//DRAWSL(DATE = 1190506  ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF ; {2000亿加税}
-				String result = "DRAWSL(DATE =   " 
+				String lineresult = "DRAWSL(DATE =   " 
 								 + String.valueOf(Integer.parseInt(date.toString().replace("-", "") ) - 19000000)
 								 + "   ,CLOSE,10000,1000,2) LINETHICK1 " + colorcode + "; "
 								 + "{" + zhishucode + zhishushuoming + "}"
 								 ;
+//				DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+0*PSTN_STEP_DLY,0, '20190826:中美互加关税' ) COLOR80FFFF  ; {};
+				String remindresult = "DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+"
+								 + j + "*PSTN_STEP_DLY,0, '" 
+								 + date.toString() + ":"
+								 + zhishushuoming
+								 +"' )   "
+								 + colorcode
+								 + ";"
+								 ;
+						
+				lineinfo[j] = lineresult;
+				remindinfo[j] = remindresult;
 				
-				
-				try {
-					Files.append( result + System.getProperty("line.separator") ,tongdaxinfile,charset);
+//				lineindex --;
+				rs.next();
+	        }
+	        
+	        for(int j=0;j<rows;j++) {
+	        	try {
+					Files.append( lineinfo[j] + System.getProperty("line.separator") ,tongdaxinfile,charset);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
-			
+	        }
+	        for(int j=0;j<rows;j++) {
+	        	try {
+					Files.append( remindinfo[j] + System.getProperty("line.separator") ,tongdaxinfile,charset);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	        }
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -124,6 +147,8 @@ public class TDXFormatedOpt {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
+			    	lineinfo = null;
+					remindinfo = null;
 		}
 		
 		try {
@@ -135,6 +160,20 @@ public class TDXFormatedOpt {
 		}
 		
 		return true;
+	}
+	private static String getColorCodeForSpecificZhiShuCode (String zhishucode)
+	{
+		String colorcode;
+		if(zhishucode.equals("999999")) 
+			colorcode = "COLOR80FFFF";
+		else if(zhishucode.equals("000016")) 
+			colorcode = "COLORFF8000";
+		else if(zhishucode.equals("399006")) 
+			colorcode = "COLORFF80FF";
+		else
+			colorcode = "COLOR80FFFF";
+		
+		return colorcode;
 	}
 	/*
 	 * 

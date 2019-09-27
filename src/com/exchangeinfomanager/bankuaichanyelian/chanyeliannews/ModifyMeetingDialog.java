@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class ModifyMeetingDialog extends MeetingDialog<InsertedMeeting> 
 {
 
-    public ModifyMeetingDialog(MeetingService meetingService, Cache cache) 
+    public ModifyMeetingDialog(EventService meetingService, Cache cache) 
     {
         super(meetingService, cache);
         super.setTitle("ÐÞ¸Ä");
@@ -37,30 +37,23 @@ public class ModifyMeetingDialog extends MeetingDialog<InsertedMeeting>
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
     }
     
-    public Boolean setMeeting(InsertedMeeting meeting)
+    public Boolean setMeeting(InsertedMeeting event)
     {
-    	super.setMeeting( meeting);
+    	super.setMeeting( event);
     	
-    	if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI  ) {
-        	titleField.setEnabled(false);
-        	locationField.setEnabled(false);
-        	slackurlField.setEnabled(false);
-        	
-        	newsownersField.setEnabled(false);
-        } else if(meeting.getMeetingType() == Meeting.ZHISHUDATE ) {
-        	titleField.setEnabled(false);
-        	locationField.setEnabled(false);
-        	slackurlField.setEnabled(false);
-        	
-        	newsownersField.setEnabled(false);
-        } else {
-        	newsownersField.setEnabled(false);
-        	
-        	titleField.setEnabled(true);
-        	locationField.setEnabled(true);
-        	slackurlField.setEnabled(true);
-        }
+    	if(event.getMeetingType() == Meeting.QIANSHI || event.getMeetingType() == Meeting.RUOSHI ) {
+    		newsownersField.setVisible(false);
+    		newstitleField.setVisible(true);
+    		newstitleField.setEnabled(false);
+    	}
+    		
+    	if(event.getMeetingType() == Meeting.ZHISHUDATE ) {
+        	endTimeChooser.setVisible(true);
+        } 
         
+    	centerPanel.revalidate();
+    	centerPanel.repaint();
+    	
         return true;
     }
 

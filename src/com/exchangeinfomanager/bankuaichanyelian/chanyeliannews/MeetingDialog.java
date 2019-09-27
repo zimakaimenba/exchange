@@ -4,12 +4,16 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
+import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
+
 import java.awt.*;
 import java.awt.Dialog.ModalityType;
 import java.awt.datatransfer.Clipboard;
@@ -18,6 +22,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,87 +42,47 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 
     protected static final DateTimeFormatter LABEL_DATE = DateTimeFormatter.ofPattern("dd MMM uuuu");
     protected JUpdatedTextField newsownersField;
-    protected JUpdatedTextField titleField;
-    protected JUpdatedTextField locationField; 
+    protected JUpdatedTextField newstitleField;
+    protected JUpdatedTextField keywordsField; 
     protected JUpdatedTextField slackurlField;
     protected JTextArea descriptionArea;
-    protected JDateChooser startTimeChooser;
+    protected JLocalDateChooser startTimeChooser;
+    protected JLocalDateChooser endTimeChooser;
+    
     protected JPanel centerPanel;
-//    protected JLabel dateLabel;
     protected JLabel labelButton;
     protected Cache cache;
-    protected MeetingService meetingService;
+    protected EventService meetingService;
     protected LabelListDialog labelListDialog;
     private BanKuaiDbOperation bkdbopt;
 
-    private T meeting;
+    private T event;
 
-    public MeetingDialog(MeetingService meetingService, Cache cache) {
+    public MeetingDialog(EventService meetingService, Cache cache) 
+    {
         this.meetingService = meetingService;
         this.cache = cache;
         this.bkdbopt = new BanKuaiDbOperation ();
-        this.createUI();
+        
+        this.createUIComponents();
         this.createCenterPanel();
+        
         this.createEvent ();
         
     }
 
     private void createEvent() 
     {
-//    	newsownersField.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mousePressed(MouseEvent event) {
-//				
-//				if (SwingUtilities.isRightMouseButton(event)) {
-//					Toolkit toolkit = Toolkit.getDefaultToolkit();
-//					Clipboard clipboard = toolkit.getSystemClipboard();
-//					try	{
-//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-//						newsownersField.setText(newsownersField.getText() + result);
-//						
-//					}catch(Exception ex)	{
-//						
-//					}
-//				}
-//			}
+//    	startTimeChooser.addPropertyChangeListener(new PropertyChangeListener() {
+//		    @Override
+//		    public void propertyChange(PropertyChangeEvent e) {
+//		    	if("date".equals(e.getPropertyName() ) ) {
+//		    		
+//		    		endTimeChooser.setLocalDate(startTimeChooser.getLocalDate());
+//		    	}
+//
+//		    }
 //		});
-    	
-//    	titleField.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mousePressed(MouseEvent event) {
-//				
-//				if (SwingUtilities.isRightMouseButton(event)) {
-//					Toolkit toolkit = Toolkit.getDefaultToolkit();
-//					Clipboard clipboard = toolkit.getSystemClipboard();
-//					try	{
-//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-//						titleField.setText(titleField.getText() + result);
-//						
-//					}catch(Exception ex)	{
-//						
-//					}
-//				}
-//			}
-//		});
-//    	
-//    	locationField.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mousePressed(MouseEvent event) {
-//				
-//				if (SwingUtilities.isRightMouseButton(event)) {
-//					Toolkit toolkit = Toolkit.getDefaultToolkit();
-//					Clipboard clipboard = toolkit.getSystemClipboard();
-//					try	{
-//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-//						locationField.setText(locationField.getText() + result);
-//						
-//					}catch(Exception ex)	{
-//						
-//					}
-//				}
-//			}
-//		});
-    	
     	descriptionArea.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent event) {
@@ -134,24 +100,6 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 				}
 			}
 		});
-//    	
-//    	slackurlField.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mousePressed(MouseEvent event) {
-//				
-//				if (SwingUtilities.isRightMouseButton(event)) {
-//					Toolkit toolkit = Toolkit.getDefaultToolkit();
-//					Clipboard clipboard = toolkit.getSystemClipboard();
-//					try	{
-//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-//						slackurlField.setText(slackurlField.getText() + result);
-//						
-//					}catch(Exception ex)	{
-//						
-//					}
-//				}
-//			}
-//		});
 		
 	}
 
@@ -160,28 +108,29 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     	return this.centerPanel;
     }
     
-    private void createUI() 
+    private void createUIComponents() 
     {
     	this.newsownersField = (JUpdatedTextField) JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
     	this.newsownersField.setMouseLeftClearEnabled(false);
-        this.titleField = (JUpdatedTextField) JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
-        this.titleField.setMouseLeftClearEnabled(false);
-        this.locationField = (JUpdatedTextField) JTextFactory.createTextField();
-        this.locationField.setMouseLeftClearEnabled(false);
+        this.newstitleField = (JUpdatedTextField) JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
+        this.newstitleField.setMouseLeftClearEnabled(false);
+        this.keywordsField = (JUpdatedTextField) JTextFactory.createTextField();
+        this.keywordsField.setMouseLeftClearEnabled(false);
         this.slackurlField = (JUpdatedTextField) JTextFactory.createTextField();
         this.slackurlField.setMouseLeftClearEnabled(false);
         this.slackurlField.setMouseRightPasteEnabled(true, JUpdatedTextField.PASTEWITHCLEAR);
         this.descriptionArea = JTextFactory.createTextArea();
         this.descriptionArea.setLineWrap(true);
-        this.startTimeChooser = new JDateChooser();
+        this.startTimeChooser = new JLocalDateChooser();
+        this.endTimeChooser = new JLocalDateChooser ();
 
         this.centerPanel = new JPanel();
-//        this.dateLabel = JLabelFactory.createLabel("", ColorScheme.PINK_DARK, SwingConstants.CENTER, TITLE_FONT_SIZE);
         this.labelListDialog = new LabelListDialog();
     }
 
 
-    private void createCenterPanel() {
+    private void createCenterPanel()
+    {
         this.centerPanel = JPanelFactory.createFixedSizePanel(WIDTH, HEIGHT, PADDING);
         this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.PAGE_AXIS));
 
@@ -189,9 +138,9 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.centerPanel.add(p);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
         this.centerPanel.add(this.newsownersField);
-        this.centerPanel.add(this.titleField);
+        this.centerPanel.add(this.newstitleField);
         this.centerPanel.add(Box.createVerticalStrut(30));
-        this.centerPanel.add(this.getTimeChooser());
+                this.centerPanel.add(this.getTimeChooserPanel());
         this.centerPanel.add(Box.createVerticalStrut(10));
 
         JPanel labelPanel = JPanelFactory.createFixedSizePanel(new GridLayout(1, 2));
@@ -209,7 +158,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.centerPanel.add(labelPanel);
 
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
-        this.centerPanel.add(this.locationField);
+        this.centerPanel.add(this.keywordsField);
         this.centerPanel.add(Box.createVerticalStrut(10));
         this.centerPanel.add(this.slackurlField);
         this.centerPanel.add(Box.createVerticalStrut(10));
@@ -227,30 +176,85 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         super.setResizable(false);
     }
 
-    private JPanel getTimeChooser() {
-        JPanel panel = JPanelFactory.createPanel(new GridLayout(2, 2, 0, 10));
+    private JPanel getTimeChooserPanel() 
+    {
+        JPanel panel = JPanelFactory.createPanel(new GridLayout(1, 3) );
         panel.add(new JLabel("日期:"));
         panel.add(this.startTimeChooser);
+        panel.add(this.endTimeChooser);
         return panel;
     }
 
-    public Boolean setMeeting(T meeting)  
+    public Boolean setMeeting(T event)  
     {
-        this.meeting = meeting;
+        this.event = event;
 
-        titleField.setText(meeting.getTitle());
-        newsownersField.setText(meeting.getNewsOwnerCodes());
-        locationField.setText(meeting.getKeyWords());
-        descriptionArea.setText(meeting.getDescription());
-        startTimeChooser.setDate(Date.from(meeting.getStart().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
-        slackurlField.setText(meeting.getSlackUrl());
+        newstitleField.setText(event.getTitle());
+        newsownersField.setText(event.getNewsOwnerCodes());
+        keywordsField.setText(event.getKeyWords());
+        descriptionArea.setText(event.getDescription());
+        startTimeChooser.setLocalDate( event.getStart() );
+        try{
+        	endTimeChooser.setLocalDate( event.getEnd() );
+        } catch (java.lang.NullPointerException ex) {
+        	
+        }
+        slackurlField.setText(event.getSlackUrl());
+        
+        endTimeChooser.setVisible(false);
+        
+        //根据event类型不同定制界面
+        if(event.getMeetingType() == Meeting.QIANSHI || event.getMeetingType() == Meeting.RUOSHI ) {
+//    		newsownersField.setVisible(true);
+//    		newsownersField.setEnabled(true);
+//    		newstitleField.setVisible(false);
+    		
+    		keywordsField.setVisible(false);
+    		slackurlField.setVisible(false);
+    		
+
+        } else if(event.getMeetingType() == Meeting.ZHISHUDATE ) {
+        	newsownersField.setVisible(true);
+        	newsownersField.setEnabled(true);
+    		
+    		keywordsField.setVisible(false);
+    		slackurlField.setVisible(false);
+    		newstitleField.setVisible(false);
+    
+        } else if(event.getMeetingType() == Meeting.CHANGQIJILU || event.getMeetingType() == Meeting.NODESNEWS) {
+
+        	newsownersField.setVisible(false);
+        	
+        	keywordsField.setVisible(true);
+    		slackurlField.setVisible(true);
+    		newstitleField.setVisible(true);
+        	
+        	newstitleField.setEnabled(true);
+        	keywordsField.setEnabled(true);
+        	slackurlField.setEnabled(true);
+        	
+        	
+        	
+        } else if (event.getMeetingType() == Meeting.JINQIGUANZHU) {
+        	newstitleField.setVisible(true);
+        	newstitleField.setEnabled(true);
+        	
+        	keywordsField.setVisible(false);
+    		slackurlField.setVisible(false);
+        }
+        
+    	
+    	
+        centerPanel.revalidate();
+    	centerPanel.repaint();
+
         
         return true;
     }
 
     public T getMeeting() 
     {
-    	if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI) { //指数和板块有时候代码重叠，强弱如果输入的重叠的话，要用户明确是个股还是板块
+    	if(event.getMeetingType() == Meeting.QIANSHI || event.getMeetingType() == Meeting.RUOSHI) { //指数和板块有时候代码重叠，强弱如果输入的重叠的话，要用户明确是个股还是板块
     		String nodecode = newsownersField.getText ();
     		if(nodecode.length() == 6) { 
     			
@@ -285,14 +289,14 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     	}
 		
 		 
-    	meeting.setNewsOwnerCodes(newsownersField.getText());
-        meeting.setTitle(titleField.getText());
-        meeting.setStart(startTimeChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() );
-        meeting.setKeyWords(locationField.getText());
-        meeting.setDescription(descriptionArea.getText());
-        meeting.setSlackUrl(slackurlField.getText());
-//        System.out.println(meeting.getNewsownercodes());
-        return meeting;
+    	event.setNewsOwnerCodes(newsownersField.getText());
+    	event.setTitle(newstitleField.getText());
+    	event.setStart(startTimeChooser.getLocalDate() );
+    	event.setEnd(endTimeChooser.getLocalDate() );
+    	event.setKeyWords(keywordsField.getText());
+    	event.setDescription(descriptionArea.getText());
+    	event.setSlackUrl(slackurlField.getText());
+        return event;
     }
 
     private LocalTime toLocalTime(Instant instant) {
@@ -325,14 +329,14 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
             Collection<InsertedMeeting.Label> labels = cache.produceLabels();
             for (InsertedMeeting.Label label : labels) {
                 JPanel mPanel = JPanelFactory.createFixedSizePanel(new BorderLayout());
-                mPanel.setName(meeting.getLabels().contains(label) ? "selected" : "");
+                mPanel.setName(event.getLabels().contains(label) ? "selected" : "");
 
                 JLabel name = JLabelFactory.createLabel("  " + label.getName());
                 name.setName(String.valueOf(label.getID()));
                 name.setOpaque(true);
-                name.setBackground(meeting.getLabels().contains(label) ? label.getColor() : ColorScheme.BACKGROUND);
+                name.setBackground(event.getLabels().contains(label) ? label.getColor() : ColorScheme.BACKGROUND);
                 name.setForeground(
-                    meeting.getLabels().contains(label) ? ColorScheme.BACKGROUND : ColorScheme.BLACK_FONT);
+                		event.getLabels().contains(label) ? ColorScheme.BACKGROUND : ColorScheme.BLACK_FONT);
                 name.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorScheme.GREY_LINE));
 
                 mPanel.addMouseListener(new MouseAdapter() {
@@ -362,7 +366,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
                 @Override
                 public void windowClosing(WindowEvent e) {
                     super.windowClosing(e);
-                    meeting.getLabels().clear();
+                    event.getLabels().clear();
 
                     for (Component c : centerPanel.getComponents()) {
                         if (c instanceof JPanel && c.getName().equals("selected")) {
@@ -372,7 +376,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
                                                                  .filter(l -> l.getID() == id)
                                                                  .findFirst();
                             if (label.isPresent())
-                                meeting.getLabels().add(label.get());
+                            	event.getLabels().add(label.get());
                         }
                     }
 

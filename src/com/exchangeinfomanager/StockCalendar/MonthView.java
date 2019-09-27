@@ -4,10 +4,10 @@ import javax.swing.*;
 
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.JMultiLineToolTip;
 import com.exchangeinfomanager.commonlib.WrapLayout;
@@ -33,7 +33,7 @@ public class MonthView extends View
     private JLabel dateLabel = new JLabel();
     private SettingOfDisplayNewsArea settingsofnewsdisplay;
     
-    public MonthView(MeetingService meetingService, Cache cache, SettingOfDisplayNewsArea settingsofnewsdisplay) 
+    public MonthView(EventService meetingService, Cache cache, SettingOfDisplayNewsArea settingsofnewsdisplay) 
     {
         super(meetingService, cache);
         this.settingsofnewsdisplay = settingsofnewsdisplay;
@@ -100,11 +100,6 @@ public class MonthView extends View
                 dayLabel.setOpaque(true);
                 panel.add(dayLabel, BorderLayout.PAGE_START);
                 panel.add(JPanelFactory.createPanel(new WrapLayout(WrapLayout.LEFT, 5, 5)), BorderLayout.CENTER);
-                
-//                JPanel newpnl = new JPanel ();
-//                newpnl.setLayout( new BoxLayout(newpnl, BoxLayout.Y_AXIS) );
-//                panel.add(newpnl, BorderLayout.CENTER);
-                
                 
             } else {
                 color = ColorScheme.GREY_WHITER;
@@ -250,7 +245,7 @@ public class MonthView extends View
         	
         	if (e.getClickCount() == 2) { //增加一个新的meeting
                 Meeting meeting = new Meeting("新闻标题",mDate,
-                     "描述", "关键词", new HashSet<>(),"SlackURL","000000",Meeting.DAPANNEWS);
+                     "描述", "关键词", new HashSet<>(),"SlackURL","000000",Meeting.NODESNEWS);
                 getCreateDialog().setMeeting(meeting);
                 getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 getCreateDialog().setVisible(true);
@@ -295,22 +290,6 @@ public class MonthView extends View
                 getModifyDialog().setVisible(true);
             }
             
-            
-//            if (meeting.isPresent()) {
-//                JLabel source = (JLabel) e.getSource();
-//                String title = source.getText();
-//                LocalDate date = LocalDate.parse(source.getParent().getParent().getName());
-//                
-//                InsertedMeeting selectedmeeting = meeting.get();
-//                String owner = selectedmeeting.getNewsOwnerCodes();
-//                if( selectedmeeting.getMeetingType() == Meeting.WKZONGJIE ) { //说明是大盘一周总结，内容是XML，用DaPanWeeklyFengXi显示内容
-//                	showWeeklyFenXiWizardDialog  ("000000",date);
-//                } else {
-//                	getModifyDialog().setMeeting(meeting.get());
-//                    getModifyDialog().setVisible(true);
-//                }
-//                
-//            }
         }
 
     }

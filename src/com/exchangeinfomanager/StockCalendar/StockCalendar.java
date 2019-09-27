@@ -3,10 +3,11 @@ package com.exchangeinfomanager.StockCalendar;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
@@ -61,9 +62,12 @@ public class StockCalendar extends JCalendar
     	//所有过去一年的新闻，
     	settingsofnewsdisplay = new SettingOfDisplayNewsArea ();
     	
-    	MeetingService meetingService = new DBMeetingService ( );
+    	EventService meetingService = new DBMeetingService ( );
     	LabelService labelService = new DBLabelService ();
-        cache = new Cache("ALL",meetingService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+		Integer[] wantednewstypeforall = {Integer.valueOf(Meeting.NODESNEWS), Integer.valueOf(Meeting.CHANGQIJILU), Integer.valueOf(Meeting.JINQIGUANZHU),
+				Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI),Integer.valueOf(Meeting.WKZONGJIE)
+				};
+        cache = new Cache("ALL",meetingService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6),wantednewstypeforall);
         
         this.monthView = new MonthView(meetingService, cache,settingsofnewsdisplay);
         this.yearView = new YearView(meetingService, cache);
@@ -307,23 +311,6 @@ public class StockCalendar extends JCalendar
             firePropertyChange("day", 0, dateLabel);
         }
 
-//        private void plusDate(int action) {
-//            if (currentView == monthView) {
-//            	calrightdate = calrightdate.plusMonths(action);
-//                monthView.setDate(calrightdate);
-//                wholemonthview.setDate(calrightdate);
-//                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
-//            } else if (currentView == yearView) {
-//            	calrightdate = calrightdate.plusYears(1);
-//                yearView.setDate(calrightdate);
-//                wholemonthview.setDate(calrightdate);
-//                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
-//            }
-//            
-//            firePropertyChange("day", 0, dateLabel);
-//        }
-        
-        
     }
 
 

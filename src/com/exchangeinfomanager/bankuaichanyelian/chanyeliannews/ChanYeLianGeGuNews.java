@@ -35,12 +35,12 @@ public class ChanYeLianGeGuNews extends View
 {
 	private JTable tableCurCylNews;
 	private JButton btnAddNews;
-	private MeetingService meetingService;
+	private EventService meetingService;
 	private String title;
 	private String nodecode;
 	private static Logger logger = Logger.getLogger(ChanYeLianGeGuNews.class);
 
-	public ChanYeLianGeGuNews(MeetingService meetingService, Cache cache,String title)
+	public ChanYeLianGeGuNews(EventService meetingService, Cache cache,String title)
 	{
 		super(meetingService, cache);
 		this.meetingService = meetingService;
@@ -80,10 +80,10 @@ public class ChanYeLianGeGuNews extends View
 	{
 		String newsbelogns = cache.getNodeCode();
 		if(newsbelogns.toLowerCase().equals("all") )
-			newsbelogns = "999999";
+			newsbelogns = "000000";
 		
 		Meeting meeting = new Meeting("新闻标题",LocalDate.now(),
-                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.DAPANNEWS);
+                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.NODESNEWS);
         getCreateDialog().setMeeting(meeting);
         getCreateDialog().setVisible(true);
 		

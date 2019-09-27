@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 
 @SuppressWarnings("all")
-public class DBMeetingService  implements MeetingService {
+public class DBMeetingService  implements EventService {
 
     private static Logger LOGGER = Logger.getLogger(DBMeetingService.class.getSimpleName());
 
@@ -29,9 +29,10 @@ public class DBMeetingService  implements MeetingService {
     	this.cache = cache;
     }
     @Override
-    public Collection<InsertedMeeting> getMeetings(String nodeid,LocalDate startdate, LocalDate enddate) throws SQLException {
+    public Collection<InsertedMeeting> getMeetings(String nodeid,LocalDate startdate, LocalDate enddate, Integer[] eventtype) throws SQLException 
+    {
 //        return this.database.getMeetings();
-        return this.database.getBanKuaiRelatedNews (nodeid, startdate,  enddate);
+        return this.database.getRequiredRelatedInfoForNewsAndOthers (nodeid, startdate,  enddate,eventtype);
     }
 
     @Override

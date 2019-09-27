@@ -5,10 +5,10 @@ package com.exchangeinfomanager.StockCalendar;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DialogFactory;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
 import com.toedter.calendar.JDayChooser;
 
 
@@ -48,24 +48,19 @@ public abstract class View extends JPanel implements CacheListener
      * @param meetingService used by meeting dialogs
      * @param cache used by the views
      */
-    public View(MeetingService meetingService, Cache cache) {
+    public View(EventService meetingService, Cache cache) {
         this.cache = cache;
         this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
         this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
     }
     
-//    public View(MeetingService meetingService,LabelService labelService, Cache cache) {
-//    	this.cache = cache;
-//        this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
-//        this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
-//    }
-
     /**
      * Accessor for the create meeting dialog.
      *
      * @return meeting dialog
      */
     protected MeetingDialog getCreateDialog() {
+    	this.createDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
         return this.createDialog;
     }
 
@@ -75,6 +70,7 @@ public abstract class View extends JPanel implements CacheListener
      * @return meeting dialog
      */
     protected MeetingDialog getModifyDialog() {
+    	this.modifyDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
         return this.modifyDialog;
     }
 

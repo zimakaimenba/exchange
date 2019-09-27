@@ -16,7 +16,7 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
 
 //    private Meeting meeting;
 
-    public CreateMeetingDialog(MeetingService meetingService, Cache cache) {
+    public CreateMeetingDialog(EventService meetingService, Cache cache) {
         super(meetingService, cache);
         super.setTitle("Create");
 
@@ -31,37 +31,30 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
         JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new FlowLayout(FlowLayout.RIGHT), 35);
         layoutPanel.add(createButton);
         layoutPanel.add(createFromURLButton);
-        this.centerPanel.add(layoutPanel);
-        this.centerPanel.add(Box.createVerticalStrut(PADDING));
-
+        super.centerPanel.add(layoutPanel);
+        super.centerPanel.add(Box.createVerticalStrut(PADDING));
     }
-
-    public Boolean setMeeting(Meeting meeting)
+    /*
+     * (non-Javadoc)
+     * @see com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog#setMeeting(com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting)
+     */
+    public Boolean setMeeting(Meeting event)
     {
-    	super.setMeeting( meeting);
+    	super.setMeeting( event);
     	
-    	if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI  ) {
+    	if(event.getMeetingType() == Meeting.QIANSHI || event.getMeetingType() == Meeting.RUOSHI ) {
+    		newsownersField.setVisible(true);
     		newsownersField.setEnabled(true);
-    		
-        	titleField.setEnabled(false);
-        	locationField.setEnabled(false);
-        	slackurlField.setEnabled(false);
-        } else if(meeting.getMeetingType() == Meeting.ZHISHUDATE ) {
-        	titleField.setEnabled(false);
-        	locationField.setEnabled(false);
-        	slackurlField.setEnabled(false);
-        } else if(meeting.getMeetingType() == Meeting.CHANGQIJILU || meeting.getMeetingType() == Meeting.DAPANNEWS 
-        		|| meeting.getMeetingType() == Meeting.JINQIGUANZHU) {
-        	newsownersField.setEnabled(false);
-        	
-        	titleField.setEnabled(true);
-        	locationField.setEnabled(true);
-        	slackurlField.setEnabled(true);
-        	
+    		newstitleField.setVisible(false);
+    	} else  if(event.getMeetingType() == Meeting.ZHISHUDATE ) {
+        	endTimeChooser.setVisible(true);
         }
-        
-        return true;
+    	    	
+    	return true;
     }
+    /*
+     * 
+     */
     private class CreateController extends MouseAdapter {
 
         @Override
@@ -86,6 +79,9 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
             
         }
     }
+    /*
+     * 
+     */
     private class CreateUrlController extends MouseAdapter {
 
         @Override

@@ -266,7 +266,7 @@ public class NodeInfoToCsv extends JPanel
 							ltsz = null;
 						} else {
 							hsl = ((StockNodesXPeriodData)nodexdata).getSpecificTimeHuanShouLv(tmpdate, 0);
-							ltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);;
+							ltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(tmpdate, 0);
 						}
 						
 						Integer opneupquekou = nodexdata.getQueKouTongJiOpenUp(tmpdate, 0);

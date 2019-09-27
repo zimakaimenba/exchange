@@ -5,11 +5,11 @@ public class DialogFactory {
 
     private DialogFactory() {}
 
-    public static MeetingDialog createMeetingDialog(MeetingService meeetingService, Cache cache) {
+    public static MeetingDialog createMeetingDialog(EventService meeetingService, Cache cache) {
         return new CreateMeetingDialog(meeetingService, cache);
     }
 
-    public static MeetingDialog modifyMeetingDialog(MeetingService meetingService, Cache cache) {
+    public static MeetingDialog modifyMeetingDialog(EventService meetingService, Cache cache) {
         return new ModifyMeetingDialog(meetingService, cache);
     }
 

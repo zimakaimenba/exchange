@@ -97,6 +97,35 @@ public class AllCurrentTdxBKAndStoksTree
 		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
 		treeallstockrootdapan.setDaPanContents(shdpbankuai,szdpbankuai);
 	}
+	/**
+	 * 	  
+	 * 把板块和板块下个股数据一次性同步
+	 * @param bk
+	 * @param requiredstartday
+	 * @param requiredendday
+	 * @param period
+	 */
+	public void syncBanKuaiAndItsStocksForSpecificTime (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
+	{
+		this.getBanKuai(bk, requiredstartday, requiredendday, period);
+		this.syncBanKuaiData(bk);
+		
+		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
+			bk = this.getAllGeGuOfBanKuai (bk,period); //获取所有曾经是该板块的个股
+			ArrayList<StockOfBanKuai> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+			for(StockOfBanKuai stockofbk : allbkgg)   {
+			    	if( stockofbk.isInBanKuaiAtSpecificDate(requiredendday)  ) { //确认当前还在板块内
+			    		 Stock stock = this.getStock(stockofbk.getMyOwnCode(), requiredstartday, requiredendday, period);
+				    	 this.syncStockData(stock);
+			    	 }
+	        		
+			}
+			//有了个股的缺口数据，就可以统计板块的缺口数据了,
+			this.getBanKuaiQueKouInfo(bk, requiredstartday, requiredendday, period);
+			//同时根据个股的涨跌停数据，统计板块的涨跌停数据
+			this.getBanKuaiZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
+		}
+	}
 	/*
 	 * 获得板块，并同步上证/深圳指数的成交量，以保住板块和上证/深圳的成交量记录日期跨度是完全的。
 	 */
@@ -173,7 +202,7 @@ public class AllCurrentTdxBKAndStoksTree
 		return bk;
 	}
 	/*
-	 * 统计板块的涨跌停数据
+	 * 统计板块的涨跌停数据,数据从板块下属个股来
 	 */
 	public BanKuai getBanKuaiZhangDieTingInfo (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
@@ -300,7 +329,7 @@ public class AllCurrentTdxBKAndStoksTree
 	public BanKuai getAllGeGuOfBanKuai (BanKuai bankuai,String period) 
 	{
 		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getOHLCRecordsStartDate();
-		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getOHLCRecordsStartDate();
+		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getOHLCRecordsEndDate();
 		
 		if(bkstartday == null || bkendday == null)  {
 			bkstartday = CommonUtility.getSettingRangeDate(LocalDate.now(), "middle");
@@ -440,31 +469,6 @@ public class AllCurrentTdxBKAndStoksTree
 		stock = this.getStockQueKouInfo(stock, requiredstartday, requiredendday, period);
 		return stock;
 	}
-//	public Stock getStockQueKouInfo (Stock stock,LocalDate requiredstartday,LocalDate requiredendday,String period)
-//	{
-//		NodeXPeriodDataBasic nodedayperioddata = stock.getNodeXPeroidData(period);
-//		if(nodedayperioddata.getQueKouRecordsStartDate() == null) {
-//			stock = bkdbopt.getStockQueKouTimeRangTongJIResult (stock,requiredstartday,requiredendday,period);
-//			return stock;
-//		}
-//		
-//		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-//				(requiredstartday,requiredendday,nodedayperioddata.getQueKouRecordsStartDate(),nodedayperioddata.getQueKouRecordsEndDate());
-//		if(timeintervallist == null)
-//			return stock;
-//		
-//		for(Interval tmpinterval : timeintervallist) {
-//				DateTime newstartdt = tmpinterval.getStart();
-//				DateTime newenddt = tmpinterval.getEnd();
-//				
-//				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
-//				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
-//				
-//				stock = bkdbopt.getStockQueKouTimeRangTongJIResult (stock,requiredstartday,requiredendday,period);
-//		}
-//		return stock;
-//
-//	}
 	/*
 	 * 
 	 */

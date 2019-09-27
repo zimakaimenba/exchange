@@ -7,7 +7,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -25,7 +25,7 @@ public class YearView extends View {
     private JLabel dateLabel = new JLabel();
     private JPanel calendar = new JPanel();
 
-    public YearView(MeetingService meetingService, Cache cache) {
+    public YearView(EventService meetingService, Cache cache) {
         super(meetingService, cache);
         cache.addCacheListener(this);
         this.initYearView();
@@ -180,7 +180,7 @@ public class YearView extends View {
             
             if (e.getClickCount() == 2) { //获取选择的日期
             	Meeting meeting = new Meeting("新闻标题",mDate,
-                        "描述", "关键词", new HashSet<>(),"SlackURL","000000",Meeting.DAPANNEWS);
+                        "描述", "关键词", new HashSet<>(),"SlackURL","000000",Meeting.NODESNEWS);
                     getCreateDialog().setMeeting(meeting);
                     getCreateDialog().setVisible(true);
             }

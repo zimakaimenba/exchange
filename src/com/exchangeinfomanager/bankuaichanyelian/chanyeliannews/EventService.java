@@ -8,9 +8,9 @@ import java.util.Collection;
 
 
 @SuppressWarnings("all")
-public interface MeetingService  {
+public interface EventService  {
 
-    Collection<InsertedMeeting> getMeetings(String nodeid,LocalDate startdate, LocalDate enddate) throws SQLException;
+    Collection<InsertedMeeting> getMeetings(String nodeid,LocalDate startdate, LocalDate enddate,Integer[] eventtype) throws SQLException;
 
     void createMeeting(Meeting meeting) throws SQLException;
 

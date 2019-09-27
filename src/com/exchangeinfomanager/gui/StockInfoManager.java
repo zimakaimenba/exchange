@@ -3,10 +3,8 @@ package com.exchangeinfomanager.gui;
 
 import java.awt.EventQueue;
 
-import static org.junit.Assert.assertEquals;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JTextField;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -29,17 +27,14 @@ import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.Search.SearchDialog;
 //import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeeting;
-import com.exchangeinfomanager.accountconfiguration.AccountOperation.ImportQuanShangJiaoYiRecords;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi.ZhiShuGJRQManagementPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
-import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
-import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxNodeRenderer;
@@ -52,39 +47,26 @@ import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
-import com.toedter.calendar.JDateChooser;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ActionMap;
+
 import javax.swing.ButtonGroup;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
+
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+
 import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
@@ -101,17 +83,7 @@ import javax.swing.JMenuItem;
 
 
 import com.exchangeinfomanager.tongdaxinreport.*;
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
-import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
-import com.sun.rowset.CachedRowSetImpl;
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
@@ -119,15 +91,12 @@ import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
-import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
-
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -137,13 +106,9 @@ import java.awt.GraphicsEnvironment;
 
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
 import javax.swing.border.BevelBorder;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -153,19 +118,10 @@ import java.awt.Dimension;
 
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.tree.TreePath;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
-
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
@@ -178,11 +134,6 @@ import java.awt.FlowLayout;
 
 import javax.swing.JTabbedPane;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JSplitPane;
-import javax.swing.BoxLayout;
-import javax.swing.border.TitledBorder;
-import java.awt.event.MouseWheelListener;
-import java.awt.event.MouseWheelEvent;
 
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 
@@ -703,10 +654,16 @@ public class StockInfoManager
 				try{
 					stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
 				} catch (java.lang.NullPointerException ex) {
-					ex.printStackTrace();
-				} 
-				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-				cylnews.setVisible(true);
+//					stockcode = formatStockCode( ((Stock)cBxstockcode.getSelectedItem()).getMyOwnCode() );
+//					ex.printStackTrace();
+				} catch (java.lang.ClassCastException ex) {
+					stockcode = formatStockCode( ((Stock)cBxstockcode.getSelectedItem()).getMyOwnCode() );
+				}
+//				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
+//				cylnews.setVisible(true);
+				
+				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl ("all");
+				gjrq.setVisible(true);
 
 			}
 		});

@@ -12,13 +12,14 @@ import java.util.HashSet;
 public class Meeting {
 
     private LocalDate start;
+    private LocalDate end;
     private String title;
     private String description;
     private String keywords; //keywrods
     private String slackUrl;
     protected String newsownercodes;
     private int meetingtype;
-    public static int  CHANGQIJILU = 2, DAPANNEWS = 3, WKZONGJIE = 4, QIANSHI = 8, RUOSHI = 5, ZHISHUDATE = 7, JINQIGUANZHU = 6;
+    public static int  CHANGQIJILU = 2, NODESNEWS = 3, WKZONGJIE = 4, QIANSHI = 8, RUOSHI = 5, ZHISHUDATE = 7, JINQIGUANZHU = 6;
 
     private Collection<InsertedMeeting.Label> labels;
 
@@ -51,9 +52,15 @@ public class Meeting {
     public LocalDate getStart() {
         return start;
     }
+    public LocalDate getEnd (){
+    	return end;
+    }
 
     public void setStart(LocalDate start) {
         this.start = start;
+    }
+    public void setEnd(LocalDate end) {
+        this.end = end;
     }
 
     public void setSlackUrl (String url)

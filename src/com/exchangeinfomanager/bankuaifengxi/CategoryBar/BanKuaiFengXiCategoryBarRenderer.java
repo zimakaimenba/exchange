@@ -4,17 +4,15 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 
 import org.apache.log4j.Logger;
-import org.jfree.chart.labels.CategoryItemLabelGenerator;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.DefaultCategoryItemRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.TextAnchor;
 
@@ -34,10 +32,15 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
         this.setItemLabelAnchorOffset(5);
 //        this.setItemLabelsVisible(true);
         this.setBaseItemLabelsVisible(true);
+//        renderer.setSeriesItemLabelsVisible(0, Boolean.TRUE);
         this.setMaximumBarWidth(.5);
         this.setMinimumBarLength(.5);
         this.setItemMargin(-2);
+//        BarRenderer.setDefaultShadowsVisible(false);
+        this.setDrawBarOutline(false);
         
+        this.setBarPainter(new StandardBarPainter());
+        this.setShadowVisible(false);
         
 //        BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
 //		this.setBaseItemLabelGenerator(labelgenerator);
@@ -56,6 +59,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	protected CategoryDataset chartdataset;
 	protected NodeXPeriodData nodexdata;
 	protected Color displayedcolumncolorindex;
+	protected Color lastdisplayedcolumncolorindex;
 	/*
 	 * 单个个股用这个
 	 */
@@ -124,6 +128,20 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 		this.displayedcolumncolorindex = colorindex;
 	}
 	/*
+	 * 
+	 */
+	public void hideBarMode ()
+	{
+//		BarRenderer.setDefaultShadowsVisible(false);
+		this.lastdisplayedcolumncolorindex = this.displayedcolumncolorindex;//先保存
+		this.displayedcolumncolorindex = Color.WHITE;
+	}
+	public void unhideBarMode ()
+	{
+//		BarRenderer.setDefaultShadowsVisible(false);
+		this.displayedcolumncolorindex = this.lastdisplayedcolumncolorindex;//先保存 
+	}
+	/*
 	 * (non-Javadoc)
 	 * @see org.jfree.chart.renderer.AbstractRenderer#getItemPaint(int, int)
 	 */
@@ -156,7 +174,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	     
 	     	if(column == shouldcolumnlast && exchangesdaynumber == 5) //完整周
 		    	return Color.blue.darker();
-	     	else if(column == shouldcolumnlast && exchangesdaynumber != 5) //不完整周
+	     	else if(column == shouldcolumnlast && exchangesdaynumber != 5 ) //不完整周
 	     		return shouldcolumnlastnotwholeweekcolor;
 		    else if(column == shouldcolumn && exchangesdaynumber == 5)
 		    	return new Color (51,153,255);

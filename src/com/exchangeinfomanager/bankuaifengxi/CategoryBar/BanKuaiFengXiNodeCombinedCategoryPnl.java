@@ -179,16 +179,16 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	 */
 	public void setDrawQueKouLine (Boolean draw)
 	{
-		cjezblargepnl.setDrawQueKouLine(draw);
 		cjelargepnl.setDrawQueKouLine(draw);
+		cjezblargepnl.setDrawQueKouLine(draw);
 	}
 	/*
 	 * 
 	 */
 	public void setDrawZhangDieTingLine (Boolean draw)
 	{
-		cjezblargepnl.setDrawZhangDieTingLine(draw) ;
 		cjelargepnl.setDrawZhangDieTingLine(draw) ;
+		cjezblargepnl.setDrawZhangDieTingLine(draw) ;
 	}
 
 	/*
@@ -228,9 +228,20 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			cjezblargepnl.resetLineDate();
 			((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
 			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.CLEARLINEDATA ) ) {
+		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWBARDATA ) ) {
 			cjelargepnl.resetLineDate ();
 			cjezblargepnl.resetLineDate();
+			
+			((BanKuaiFengXiCategoryBarRenderer)cjelargepnl.plot.getRenderer()).unhideBarMode();
+			((BanKuaiFengXiCategoryBarRenderer)cjezblargepnl.plot.getRenderer()).unhideBarMode();
+			
+		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE ) ) {
+			cjelargepnl.resetLineDate ();
+			cjezblargepnl.resetLineDate();
+			
+			((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+			
 		}
 		
 	}

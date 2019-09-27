@@ -61,22 +61,25 @@ public class ChanYeLianNewsPanel extends JDialog
 	    protected static final int PADDING = 20;
 	    protected static final int TITLE_SIZE = 40;
 	    protected static final int TITLE_FONT_SIZE = 20;
-		private MeetingService curmeetingService;
+		private EventService curmeetingService;
 	/**
 	 * Create the panel.
 	 */
 	public ChanYeLianNewsPanel(String curnodecode)
 	{
 		this.myowncode = curnodecode;
-		MeetingService allmeetingService = new DBMeetingService ();
+		EventService allmeetingService = new DBMeetingService ();
     	LabelService alllabelService = new DBLabelService ();
-    	
-        Cache cacheAll = new Cache("ALL",allmeetingService, alllabelService,LocalDate.now().minusWeeks(10),LocalDate.now());
+    	Integer[] wantednewstypeforall = {Integer.valueOf(Meeting.NODESNEWS), Integer.valueOf(Meeting.CHANGQIJILU),
+    								Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI)	};
+        Cache cacheAll = new Cache("ALL",allmeetingService, alllabelService,LocalDate.now().minusWeeks(10),LocalDate.now(),
+        		wantednewstypeforall);
         panelallnews = new ChanYeLianGeGuNews(allmeetingService,cacheAll,"10周内所有新闻");
         
         curmeetingService = new DBMeetingService ();
     	LabelService curlabelService = new DBLabelService ();
-        Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService,LocalDate.now().minusWeeks(10),LocalDate.now());
+    	Integer[] wantednewstypefornode = {Integer.valueOf(Meeting.NODESNEWS),Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI)		};
+        Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService,LocalDate.now().minusWeeks(10),LocalDate.now(),wantednewstypefornode);
         panelgegunews = new ChanYeLianGeGuNews(curmeetingService,cachecurnode,curnodecode + "10周内个股新闻");
 		
 		initializeGui ();

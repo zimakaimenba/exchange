@@ -12,81 +12,49 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
-import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.CategoryItemEntity;
-import org.jfree.chart.entity.ChartEntity;
 
-import org.jfree.chart.labels.ItemLabelAnchor;
-import org.jfree.chart.labels.ItemLabelPosition;
-import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
-import org.jsoup.Jsoup;
-import org.jsoup.select.Elements;
 
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
+
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.google.common.base.Strings;
 
 import java.awt.Color;
-import java.awt.Dimension;
+
 import java.awt.Font;
 import java.awt.Paint;
-import java.awt.Shape;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
+
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
+
 
 public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel 
 	implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener
@@ -132,7 +100,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public static final String MOUSEDOUBLECLICK_PROPERTY = "mousedoubleclick";
 	public static final String DISPLAYZHANGDIETING = "zhangdieting";
 	public static final String DISPLAYQUEKOUDATA = "quekou";
-	public static final String CLEARLINEDATA = "clearlinedata";
+	public static final String ONLYSHOWBARDATA = "onlyshowbardata";
+	public static final String CJECJLZBTOLINE = "cjecjlzbtoline";
 	protected boolean selectchanged;
 
 	protected LocalDate dateselected;
@@ -353,6 +322,24 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     */
     private void createEvent ()
     {
+    	mntmCjeCjlZblineDate.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+//				if(linequekouchartdataset != null)
+//					linequekouchartdataset.clear();
+				
+//				if(linezdtchartdataset != null)
+//					linezdtchartdataset.clear();
+				
+//				Comparable index0 = barchartdataset.getColumnKey(0);
+//				Comparable indexlast = barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
+				
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, "", "cjecjlzbtoline" );
+	            pcs.firePropertyChange(evtzd);
+			}
+			
+		});
+    	
     	mntmHideZdt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -394,7 +381,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //				if(linezdtchartdataset != null)
 //					linezdtchartdataset.clear();
 				
-				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CLEARLINEDATA, "", "quekou" );
+				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWBARDATA, "", "onlyshowbardata" );
 	            pcs.firePropertyChange(evtqk);
 		
 			}
@@ -505,6 +492,9 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	{
 //        String oldText = this.dateselected + this.tooltipselected;
         this.dateselected = newdate ;
+//        int column = barchartdataset.getColumnIndex(newdate);
+//        int row = barchartdataset.getRowIndex(newdate);
+//        Number value = barchartdataset.getValue(row, column);
         
 
         PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  this.dateselected );
@@ -528,6 +518,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected JMenuItem mntmHideZdt;
 	protected JMenuItem mntmHideQueKouData;
 	protected JMenuItem mntmClearLineData;
+
+	private JMenuItem mntmCjeCjlZblineDate;
 	
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
@@ -576,12 +568,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         ValueAxis rangeAxis2 = new NumberAxis("");
         plot.setRangeAxis(3, rangeAxis2);
 
-//        linezdtchartdataset= new DefaultCategoryDataset();  
-//        BanKuaiFengXiCategoryLineRenderer linezdtrenderer = new BanKuaiFengXiCategoryLineRenderer ();
-//        plot.setDataset(4, linezdtchartdataset);
-//        plot.setRenderer(4, linezdtrenderer);
-//        plot.setRangeAxis(4, rangeAxis2);
-
         plot.mapDatasetToRangeAxis(0, 0);
 		plot.mapDatasetToRangeAxis(3, 3);
 //		plot.mapDatasetToRangeAxis(4, 3);
@@ -613,11 +599,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         mntmHideZdt = new JMenuItem("突出涨跌停数据");
 //        mntmHideZdt.setEnabled(false);
         mntmHideQueKouData = new JMenuItem("突出缺口数据");
-        mntmClearLineData = new JMenuItem("仅显示占比数据");
+        mntmCjeCjlZblineDate = new JMenuItem("占比柱图转线图");
+        mntmClearLineData = new JMenuItem("突出占比数据");
 //        mntmHideQueKouData.setEnabled(false);
 		chartPanel.getPopupMenu().add(mntmHideZdt);
 		chartPanel.getPopupMenu().add(mntmHideQueKouData);
 		chartPanel.getPopupMenu().add(mntmClearLineData);
+		chartPanel.getPopupMenu().add(mntmCjeCjlZblineDate); 
+		
 		
 		this.categorymarkerlist = new ArrayList<> ();
    }

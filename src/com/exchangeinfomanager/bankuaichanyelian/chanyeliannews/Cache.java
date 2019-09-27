@@ -15,14 +15,15 @@ public class Cache {
     private Set<CacheListener> listeners;
     private Set<InsertedMeeting> meetings;
     private Set<InsertedMeeting.Label> meetingLabels;
-    private MeetingService meetingService;
+    private EventService meetingService;
     private LabelService labelService;
 	private String nodecode; //"ALL":所有新闻；"000000":每个固定月都显示的新闻。"999999":显示在jstockcalendar的新闻
 	private boolean datachanged = false;
 	private LocalDate cashestartdate;
 	private LocalDate casheenddate;
+	private Integer[] eventtype;
 
-    public Cache(String nodecode,MeetingService meetingService, LabelService labelService,LocalDate startdate, LocalDate enddate) 
+    public Cache(String nodecode,EventService meetingService, LabelService labelService,LocalDate startdate, LocalDate enddate,Integer[] eventtype) 
     {
     	this.nodecode = nodecode;
         this.meetingService = meetingService;
@@ -34,8 +35,9 @@ public class Cache {
         this.meetingLabels = new HashSet<>();
         this.cashestartdate = startdate;
         this.casheenddate = enddate;
+        this.eventtype = eventtype;
         
-        this.refreshMeetings(nodecode,cashestartdate,casheenddate);
+        this.refreshMeetings(nodecode,cashestartdate,casheenddate,eventtype);
         this.refreshLabels();
     }
     /*
@@ -86,7 +88,7 @@ public class Cache {
     	} else if(firstdayofmonth.isAfter(this.casheenddate)) {
     		this.casheenddate = firstdayofmonth.plusMonths(6).with(DayOfWeek.SUNDAY);
     	}
-    	this.refreshMeetings (this.nodecode,this.cashestartdate ,this.casheenddate ) ;
+    	this.refreshMeetings (this.nodecode,this.cashestartdate ,this.casheenddate,this.eventtype ) ;
         return this.meetings;
     }
     /*
@@ -98,33 +100,33 @@ public class Cache {
 
     public void updateMeeting(InsertedMeeting meeting) {
     	datachanged = true;
-        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
+        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void removeMeeting(InsertedMeeting meeting) {
     	datachanged = true;
-        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
+        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void addMeeting(InsertedMeeting meeting) {
     	datachanged = true;
-        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
+        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void updateMeetingLabel(InsertedMeeting.Label label) {
     	datachanged = true;
         this.refreshLabels();
-        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
+        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
     public void removeMeetingLabel(InsertedMeeting.Label label) {
     	datachanged = true;
         this.refreshLabels();
-        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
+        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
@@ -132,16 +134,16 @@ public class Cache {
     {
     	datachanged = true;
         this.refreshLabels();
-        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
+        this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
-    private void refreshMeetings(String nodecode,LocalDate startdate,LocalDate enddate) 
+    private void refreshMeetings(String nodecode,LocalDate startdate,LocalDate enddate,Integer[] eventtype) 
     {
         this.meetings.clear();
 
         try {
-            this.meetings.addAll(meetingService.getMeetings(nodecode,startdate,enddate));
+            this.meetings.addAll(meetingService.getMeetings(nodecode,startdate,enddate,eventtype));
         } catch (SQLException e) {
             e.printStackTrace();
         } 

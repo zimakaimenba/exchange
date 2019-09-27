@@ -1,24 +1,11 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
-import java.awt.Color;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
+
 import java.util.HashSet;
-import java.util.Map;
+
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
-
-import org.jfree.data.ComparableObjectItem;
-import org.jfree.data.time.ohlc.OHLCItem;
-
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -30,7 +17,6 @@ import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
 
 
@@ -49,7 +35,6 @@ public class ExportCondition
 	private Double settingcjemax;
 	private Double settingcjemin;
 	private Integer settindpgmaxwk;
-	private Integer settinbkgmaxwk;
 	private Integer settingcjemaxwk;
 	private Double settinghsl;
 	private String settingbk;
@@ -81,6 +66,7 @@ public class ExportCondition
 			if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
 				
 				childnode = allbksks.getBanKuai( (BanKuai)childnode, requirestart, exportdate,period);
+				allbksks.syncBanKuaiData((BanKuai)childnode);
 				String checkresult = this.checkBanKuaiMatchedCurSettingConditons((BanKuai)childnode, exportdate, period);
 				
 				if(checkresult.toUpperCase().contains("MATCHED") && !matchednodeset.contains(childnode))
@@ -102,6 +88,7 @@ public class ExportCondition
 						 continue;
 					 
 					 ggstock = allbksks.getStock(ggstock,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK);
+					 allbksks.syncStockData(ggstock);
 					 Boolean stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA(ggstock, exportdate, period);
 					 if(stkcheckresult == null) {//停牌股
 						 checkednodesset.add( ggstock.getMyOwnCode() );
@@ -194,16 +181,20 @@ public class ExportCondition
 			if(nodexdata == null) //该时间还没有数据，对板块来说就是还没有诞生
 				return "UNMATCH";
 			
+			if(nodexdata.getIndexOfSpecificDateOHLCData(exportdate,0) != null) 
+				return "UNMATCH";
+			
 			if( this.shouldOnlyExportBanKuaiOfZhanBiUp() ) { //导出环比上升的板块
-				if(nodexdata.getIndexOfSpecificDateOHLCData(exportdate,0) != null) { 
 					Double cjezbchangerate = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(exportdate, 0);
 					Double cjlzbchangerate = nodexdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(exportdate, 0);
 					if(cjezbchangerate <0 && cjlzbchangerate <0)
 						return "UNMATCH";
-				} else
+			}
+			if( this.shouldOnlyExportBanKuaiWithYangXian () ) {
+				Double zhangfu = nodexdata.getSpecificOHLCZhangDieFu(exportdate, 0);
+				if(zhangfu <0)
 					return "UNMATCH";
 			}
-			
 			String checkresult = ""; 
 			if(!this.shouldExportAllBanKuai())
 				checkresult = "WITHCHECKGEGU";
@@ -332,8 +323,6 @@ public class ExportCondition
 		else
 			hslmatch = true;
 		
-//		if( recordcje >= settingcjemin && recordcje <= settingcjemax &&  recordmaxbkwk >= settindpgmaxwk 
-//				&& recordmaxcjewk >= seetingcjemaxwk && recordhsl >= settinghsl) { 
 		if(cjematch && dpmaxwkmatch && cjewkmatch && hslmatch) {	
 			Boolean notskiptonextstock = true;
 			
@@ -341,7 +330,7 @@ public class ExportCondition
 					Integer searchyangxianrange = -3;//设定往前回溯几周找大阳线，现在定为3周
 					for(int wkindex = 0;wkindex > searchyangxianrange;wkindex--) { //找前3周的数据，看看有没有大阳线
 						Double hzdf = nodexdata.getSpecificOHLCZhangDieFu(exportdate, wkindex);
-						if(hzdf != null && hzdf >= yangxianlevelofyangxian) { //大阳线涨幅，现在定为5%
+						if(hzdf != null && hzdf >= yangxianlevelofyangxian) { //大阳线涨幅
 							notskiptonextstock = true;
 							break;
 						} else 
@@ -483,6 +472,11 @@ public class ExportCondition
 	public Boolean shouldOnlyExportBanKuaiOfZhanBiUp ()
 	{
 		boolean should = extracon.shouldOnlyExportBanKuaiOfZhanBiUp();
+		return should;
+	}
+	public Boolean shouldOnlyExportBanKuaiWithYangXian()
+	{
+		boolean should = extracon.shouldOnlyExportBanKuaiWithYangXian ();
 		return should;
 	}
 	public Boolean shouldNotExportSTStocks()

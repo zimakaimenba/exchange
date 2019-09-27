@@ -29,7 +29,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting.Label;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -47,7 +47,7 @@ public class WholeMonthNewsView extends View
 	
 //    private JLabel dateLabel = new JLabel();
 
-    public WholeMonthNewsView(MeetingService meetingService, Cache cache) 
+    public WholeMonthNewsView(EventService meetingService, Cache cache) 
     {
         super(meetingService, cache);
         
@@ -423,11 +423,11 @@ public class WholeMonthNewsView extends View
         			keywords = "关键词";
         		} else if(this.meetingtype == Meeting.QIANSHI) {
         			title = "强势个股板块";
-        			owner = "";
+        			owner = "个股板块代码";
         			keywords = "强势个股板块";
         		}  else if(this.meetingtype == Meeting.RUOSHI) {
         			title = "弱势个股板块";
-        			owner = "";
+        			owner = "个股板块代码";
         			keywords = "弱势个股板块"; 
         		} else if(this.meetingtype == Meeting.JINQIGUANZHU) {
         			title = "近期关注";
