@@ -85,5 +85,10 @@ public class JStockCalendarDateChooser extends JLocalDateChooser implements Popu
 //		stockcal.refreshNews ();
 		
 	}
+	
+	public StockCalendar getStockCalendar ()
+	{
+		return this.stockcal;
+	}
 
 }

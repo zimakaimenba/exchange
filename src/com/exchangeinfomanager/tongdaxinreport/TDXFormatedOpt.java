@@ -32,8 +32,12 @@ import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXiXmlHandler;
 import com.exchangeinfomanager.bankuaifengxi.ai.ZdgzItem;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.TreeMultimap;
@@ -80,62 +84,77 @@ public class TDXFormatedOpt {
 		File tongdaxinfile = new File(tmpfilefoler + "指数关键日期.txt");
 		
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
+		SystemConfigration syscon = SystemConfigration.getInstance();
+		
+		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
 		
 		String sqlquerystat = "SELECT * FROM 指数关键日期表 ORDER BY 日期 DESC";
 		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-		String[] lineinfo; String[] remindinfo;
+		List<String> lineinfo = new ArrayList<>();
+		List<String> remindinfo = new ArrayList<>();
 		try {
 			rs.last();  
 	        int rows = rs.getRow();
-	        lineinfo = new String[rows];
-	        remindinfo = new String[rows];
 	        
-//	        int lineindex = rows-1;
-	        rs.first();  
+	        rs.first();
+	        int lineindex =0;
 	        for(int j=0;j<rows;j++) {
-				String zhishucode = rs.getString("代码").trim();
-				LocalDate date = rs.getDate("日期").toLocalDate();
+				String zhishucode = rs.getString("关联板块").trim();
+				LocalDate startdate = rs.getDate("日期").toLocalDate();
+				LocalDate enddate = null;
+				try {
+					enddate = rs.getDate("截至日期").toLocalDate();
+				} catch (java.lang.NullPointerException e) {
+					
+				}
 				String zhishushuoming = rs.getString("说明");
-				
-				String colorcode = getColorCodeForSpecificZhiShuCode(zhishucode);
-				
-				//DRAWSL(DATE = 1190506  ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF ; {2000亿加税}
-				String lineresult = "DRAWSL(DATE =   " 
-								 + String.valueOf(Integer.parseInt(date.toString().replace("-", "") ) - 19000000)
-								 + "   ,CLOSE,10000,1000,2) LINETHICK1 " + colorcode + "; "
-								 + "{" + zhishucode + zhishushuoming + "}"
-								 ;
-//				DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+0*PSTN_STEP_DLY,0, '20190826:中美互加关税' ) COLOR80FFFF  ; {};
-				String remindresult = "DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+"
-								 + j + "*PSTN_STEP_DLY,0, '" 
-								 + date.toString() + ":"
-								 + zhishushuoming
-								 +"' )   "
-								 + colorcode
-								 + ";"
-								 ;
+
+				List<String> zhishulist = Splitter.on("|").omitEmptyStrings().splitToList(zhishucode); //0|000001|T1001|440101
+				for(String tmpzhishu : zhishulist) {
+					
+					if(corezhishu.contains(tmpzhishu)) { //核心指数肯定要显示
+						setTDXDrawLineInfo (tmpzhishu,zhishushuoming,"",startdate, lineinfo, remindinfo );
 						
-				lineinfo[j] = lineresult;
-				remindinfo[j] = remindresult;
+						lineindex ++;
+						if(enddate != null) {
+							setTDXDrawLineInfo (tmpzhishu,zhishushuoming,"",enddate, lineinfo, remindinfo );
+							lineindex ++;
+						}
+						
+					} else {  //板块指数只在是该板块的时候显示
+						AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
+						TDXNodes tmpzhishunode = (TDXNodes)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpzhishu, BkChanYeLianTreeNode.TDXBK);
+						String extrainfo = "   AND INBLOCK('" + tmpzhishunode.getMyOwnName() + "')";
+						setTDXDrawLineInfo (tmpzhishu,zhishushuoming,extrainfo,startdate, lineinfo, remindinfo );
+						
+						lineindex++ ;
+						
+						if(enddate != null) {
+							setTDXDrawLineInfo (tmpzhishu,zhishushuoming,extrainfo,enddate, lineinfo, remindinfo );
+							lineindex ++;
+						}
+					}
+	
+				}
 				
-//				lineindex --;
+				
 				rs.next();
 	        }
 	        
-	        for(int j=0;j<rows;j++) {
+	        for(String info : lineinfo)
 	        	try {
-					Files.append( lineinfo[j] + System.getProperty("line.separator") ,tongdaxinfile,charset);
+	        			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-	        }
-	        for(int j=0;j<rows;j++) {
+	        
+	        for (String info : remindinfo)
 	        	try {
-					Files.append( remindinfo[j] + System.getProperty("line.separator") ,tongdaxinfile,charset);
+	        			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-	        }
+	        
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -161,6 +180,33 @@ public class TDXFormatedOpt {
 		
 		return true;
 	}
+	
+	private static void setTDXDrawLineInfo(String zhishucode, String zhishushuoming, String extrainfo, LocalDate startdate, List<String> lineinfo, List<String> remindinfo) 
+	{
+		String colorcode = getColorCodeForSpecificZhiShuCode(zhishucode);
+		//DRAWSL(DATE = 1190506  ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF ; {2000亿加税}
+//		DRAWSL(DATE =   1190830 AND INBLOCK('酿酒')   ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF; {999999上证跌到前期最低点后开始反弹}
+		String lineresult = "DRAWSL(DATE =   " 
+						 + String.valueOf(Integer.parseInt(startdate.toString().replace("-", "") ) - 19000000)
+						 + extrainfo
+						 + "   ,CLOSE,10000,1000,2) LINETHICK1 " + colorcode + "; "
+						 + "{" + zhishucode + zhishushuoming + "}"
+						 ;
+//		DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+0*PSTN_STEP_DLY,0, '20190826:中美互加关税' ) COLOR80FFFF  ; {};
+		String remindresult = "DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+"
+						 + remindinfo.size() + "*PSTN_STEP_DLY,0, '" 
+						 + startdate.toString() + ":"
+						 + zhishushuoming
+						 +"' )   "
+						 + colorcode
+						 + ";"
+						 ;
+				
+		lineinfo.add( lineresult );
+		remindinfo.add( remindresult );
+		
+	}
+
 	private static String getColorCodeForSpecificZhiShuCode (String zhishucode)
 	{
 		String colorcode;

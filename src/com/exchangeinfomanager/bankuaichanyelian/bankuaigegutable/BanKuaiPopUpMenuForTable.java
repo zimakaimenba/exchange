@@ -15,6 +15,7 @@ import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiShuXingSheZhi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi.ZhiShuGJRQManagementPnl;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -53,6 +54,23 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 	
 	protected void createEvents () 
 	{
+		menuItemAddBkGJRQ.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				int row = bankuaitable.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"ÇëÑ¡ÔñÒ»¸ö°å¿é","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int modelRow = bankuaitable.convertRowIndexToModel(row); 
+				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
+
+				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl (bankuai.getMyOwnCode());
+				gjrq.setVisible(true);
+			}
+			
+		});
+
 		menuItemBkInfo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {

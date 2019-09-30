@@ -120,6 +120,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPer
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Multimap;
 
 /**
@@ -581,6 +582,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	 */
 	public void updateZhiShuKeyDates( Collection<InsertedMeeting> zhishukeylists ) 
 	{     
+		if(zhishukeylists == null || zhishukeylists.size() == 0)
+			return ;
+		
 		 ohlcSeries.setNotify(true);
 	     candlestickDataset.setNotify(true);
 	     candlestickChart.setNotify(true);
@@ -588,46 +592,85 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	     candlestickDataset.setNotify(true);
 	     candlestickChart.setNotify(true);
 	     
+	    SystemConfigration syscon = SystemConfigration.getInstance();
+		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
+	     
 		for (InsertedMeeting tmpmeeting: zhishukeylists ) {
+			
 			LocalDate zhishudate = tmpmeeting.getStart();
+			if(zhishudate == null)
+				continue;
 			if(zhishudate.isBefore(this.getDispalyStartDate()) || zhishudate.isAfter(this.getDispalyEndDate() ))
 				continue;
 			
-			java.sql.Date sqlqkhbdate = null;
-			try {
-				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-				 sqlqkhbdate = new java.sql.Date(format.parse(zhishudate.toString()).getTime());
-			} catch (ParseException e) {
-				e.printStackTrace();
+			String zhishucode = tmpmeeting.getNewsOwnerCodes();
+			List<String> zhishulist = Splitter.on("|").omitEmptyStrings().splitToList(zhishucode); //0|000001|T1001|440101
+			for(String tmpzhishu : zhishulist) {
+				
+				if(corezhishu.contains(tmpzhishu)) { //核心指数肯定要显示
+					drawDefinedMarker (zhishudate,Color.CYAN.brighter() ); 
+					
+					LocalDate zhishuend = tmpmeeting.getEnd();
+					if(zhishuend == null)
+						continue;
+					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
+						continue;
+					drawDefinedMarker (zhishuend,Color.CYAN.brighter() );
+				} else if( curdisplayednode.getMyOwnCode().equals(tmpzhishu) ) { //其他板块只在自己板块的时候显示
+					
+					drawDefinedMarker (zhishudate,Color.PINK.brighter() ); 
+					
+					LocalDate zhishuend = tmpmeeting.getEnd();
+					if(zhishuend == null)
+						continue;
+					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
+						continue;
+					drawDefinedMarker (zhishuend,Color.PINK.brighter() );
+				}
+				
 			}
-			org.jfree.data.time.Day qkhbday = new org.jfree.data.time.Day (sqlqkhbdate);
 			
-		    try{
-			        long millisonemonth = qkhbday.getFirstMillisecond();
-			        ValueMarker marker = new  ValueMarker(millisonemonth);  // position is the value on the axis
-					marker.setPaint(Color.CYAN.brighter());
-					float[] dashPattern = { 6, 2 };
-					marker.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
-					marker.setAlpha(0.5f);
-					marker.setLabelAnchor(RectangleAnchor.TOP);
-					marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
-					marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
-//					marker.setLabel( tmpmeeting.getDescription() ); // see JavaDoc for labels, colors, strokes
-					marker.setLabelPaint(Color.YELLOW);
-					
-					
-					candlestickChart.getXYPlot().addDomainMarker(marker);
-					
-					categorymarkerlist.add(marker);
-					
-					
-		    } catch (java.lang.NullPointerException e) {
-		        	e.printStackTrace();
-		    } 
+			 
 		}
     
 		candlestickChart.fireChartChanged();
 //		this.repaint();
+	}
+	private void drawDefinedMarker (LocalDate zhishudate,Color drawcolor)
+	{
+		java.sql.Date sqlqkhbdate = null;
+		try {
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+			 sqlqkhbdate = new java.sql.Date(format.parse(zhishudate.toString()).getTime());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (java.lang.NullPointerException e) {
+			return;
+		}
+		org.jfree.data.time.Day markerday = new org.jfree.data.time.Day (sqlqkhbdate);
+		
+		try{
+	        long millisonemonth = markerday.getFirstMillisecond();
+	        ValueMarker marker = new  ValueMarker(millisonemonth);  // position is the value on the axis
+			marker.setPaint(drawcolor);
+			float[] dashPattern = { 6, 2 };
+			marker.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
+			marker.setAlpha(0.5f);
+			marker.setLabelAnchor(RectangleAnchor.TOP);
+			marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
+			marker.setLabelOffsetType(LengthAdjustmentType.CONTRACT);
+//			marker.setLabel( tmpmeeting.getDescription() ); // see JavaDoc for labels, colors, strokes
+			marker.setLabelPaint(drawcolor);
+			
+			
+			candlestickChart.getXYPlot().addDomainMarker(marker);
+			
+			categorymarkerlist.add(marker);
+			
+			
+    } catch (java.lang.NullPointerException e) {
+        	e.printStackTrace();
+    } 
 	}
 	/*
 	 * 显示某个阶段的最大最小值，现在不用了

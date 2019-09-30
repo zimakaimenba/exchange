@@ -209,6 +209,32 @@ public class WholeMonthNewsView extends View
         return null;
     }
 
+    private void updateChangQiJiLuPnl (Cache cache, InsertedMeeting m)
+    {
+    	Collection<InsertedMeeting.Label> labels = cache.produceLabels();
+    	
+    	LocalDate mDate = m.getStart();
+        String actioncode = m.getNewsOwnerCodes();
+        LocalDate firstDayInMonth = mDate.withDayOfMonth(1);
+        
+    	if (mDate.getMonth().equals(super.getDate().getMonth())  ) {
+            if (m.getLabels().isEmpty()) {
+            	JUpdatedLabel label = getFormatedLabelForNoneLabel (m);
+               	this.getWholeMonthNewsPanel(actioncode).add(label);
+               	
+                return;
+            }
+            
+            for (Meeting.Label l : labels) {
+                if (l.isActive() && m.getLabels().contains(l)) {
+                	JUpdatedLabel label = getFormatedLabelForWithLabels (m,l);
+                   	this.getWholeMonthNewsPanel(actioncode).add(label);
+                   	
+                    break;
+                }
+            }
+        }
+    }
     @Override
     /*
      * (non-Javadoc)
@@ -226,42 +252,9 @@ public class WholeMonthNewsView extends View
         for (InsertedMeeting m : meetings) {
             LocalDate mDate = m.getStart();
             String actioncode = m.getNewsOwnerCodes();
-//            LocalDate firstDayInMonth = mDate.withDayOfMonth(1);
             
             if(m.getMeetingType() == Meeting.CHANGQIJILU) { // 每月固定新闻
-            	
-            	if (mDate.getMonth().equals(super.getDate().getMonth())  ) {
-                    if (m.getLabels().isEmpty()) {
-                    	JUpdatedLabel label = getFormatedLabelForNoneLabel (m);
-//                        JLabel label = new JLabel(m.getTitle());
-//                        label.setToolTipText(m.getTitle() );
-//                        label.setOpaque(true);
-//                        label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
-//                        label.addMouseListener(new MeetingController());
-//                        label.setForeground(ColorScheme.BLACK_FONT);
-//                        label.setBackground(ColorScheme.GREY_WHITER_DARKER);
-//                        label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
-                       	this.getWholeMonthNewsPanel(actioncode).add(label);
-                       	
-                        continue;
-                    }
-                    for (Meeting.Label l : labels) {
-                        if (l.isActive() && m.getLabels().contains(l)) {
-                        	JUpdatedLabel label = getFormatedLabelForWithLabels (m,l);
-//                            JLabel label = new JLabel(m.getTitle());
-//                            label.setToolTipText(m.getTitle() );
-//                            label.setOpaque(true);
-//                            label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()) );
-//                            label.addMouseListener(new MeetingController());
-//                            label.setForeground(Color.BLACK);
-//                            label.setBackground(l.getColor());
-//                            label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
-                           	this.getWholeMonthNewsPanel(actioncode).add(label);
-                           	
-                            break;
-                        }
-                    }
-                }
+            	updateChangQiJiLuPnl (cache, m);
             	
             } else if(m.getMeetingType() == Meeting.JINQIGUANZHU) { // 关注板块
             	

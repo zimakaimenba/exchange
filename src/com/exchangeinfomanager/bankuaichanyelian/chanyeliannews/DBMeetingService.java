@@ -37,24 +37,25 @@ public class DBMeetingService  implements EventService {
 
     @Override
     public void createMeeting(Meeting meeting) throws SQLException {
-//        InsertedMeeting m  = this.database.createMeeting(meeting);
-    	 InsertedMeeting m  = this.database.addBanKuaiNews (meeting);
+
+    	 InsertedMeeting m  = this.database.createRequiredRelatedInfoForNewsAndOthers (meeting);
         
-          cache.addMeeting(m);
+    	 if(m != null && cache != null)
+    		 cache.addMeeting(m);
     }
 
     @Override
     public void deleteMeeting(InsertedMeeting meeting) throws SQLException {
 //        InsertedMeeting m = this.database.deleteMeeting(meeting);
         
-        InsertedMeeting m = this.database.deleteBanKuaiNews(meeting);
+        InsertedMeeting m = this.database.deleteRequiredRelatedInfoForNewsAndOthers(meeting);
         
         cache.removeMeeting(m);
     }
 
     @Override
     public void updateMeeting(InsertedMeeting meeting) throws SQLException {
-        InsertedMeeting m = this.database.updateMeeting(meeting);
+        InsertedMeeting m = this.database.updateRequiredRelatedInfoForNewsAndOthers(meeting);
         
         cache.updateMeeting(m);
     }

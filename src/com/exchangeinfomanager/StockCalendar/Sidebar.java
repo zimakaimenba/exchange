@@ -14,6 +14,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelDialog;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi.ZhiShuGJRQManagementPnl;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.toedter.calendar.JCalendar;
 
@@ -170,12 +171,15 @@ public class Sidebar extends View implements CacheListener {
 			super.mouseClicked(e);
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				
-			      Meeting zhishugjrq = new Meeting("设置指数关键日期",LocalDate.now(),
-		                  "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
-		            		
-		               getCreateDialog().setMeeting(zhishugjrq);
-		               getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-		               getCreateDialog().setVisible(true);
+				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl ("ALL");
+				gjrq.setVisible(true);
+				
+//			      Meeting zhishugjrq = new Meeting("设置指数关键日期",LocalDate.now(),
+//		                  "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
+//		            		
+//		               getCreateDialog().setMeeting(zhishugjrq);
+//		               getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+//		               getCreateDialog().setVisible(true);
 		               
             } else if (e.getButton() == MouseEvent.BUTTON3) {
             	TDXFormatedOpt.parserZhiShuGuanJianRiQiToTDXCode();

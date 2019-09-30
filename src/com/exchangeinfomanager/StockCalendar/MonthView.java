@@ -143,7 +143,7 @@ public class MonthView extends View
         	
             LocalDate mDate = m.getStart();
             
-            if(!shouldDisplayNews (m) )
+            if(!shouldBeDisplayedOnPanel (m) )
             	continue;
             
             if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
@@ -186,7 +186,7 @@ public class MonthView extends View
     }
 
     
-    private Boolean shouldDisplayNews(InsertedMeeting m) 
+    private Boolean shouldBeDisplayedOnPanel(InsertedMeeting m) 
     {
     	if( settingsofnewsdisplay.shouldDisplayAllExtraNews() )
     		return true;

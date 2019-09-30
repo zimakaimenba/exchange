@@ -1,9 +1,9 @@
-package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi;
 
-import com.exchangeinfomanager.StockCalendar.View;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,27 +11,28 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
+import com.exchangeinfomanager.StockCalendar.View;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianGeGuNews;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.sql.SQLException;
-import java.time.LocalDate;
-
-public class ChanYeLianGeGuNews extends View
+public class ZhiShuGJRQView extends View 
 {
 	private JTable tableCurCylNews;
 	private JButton btnAddNews;
@@ -40,7 +41,7 @@ public class ChanYeLianGeGuNews extends View
 	private String nodecode;
 	private static Logger logger = Logger.getLogger(ChanYeLianGeGuNews.class);
 
-	public ChanYeLianGeGuNews(EventService meetingService, Cache cache,String title)
+	public ZhiShuGJRQView(EventService meetingService, Cache cache,String title)
 	{
 		super(meetingService, cache);
 		this.meetingService = meetingService;
@@ -80,10 +81,10 @@ public class ChanYeLianGeGuNews extends View
 	{
 		String newsbelogns = cache.getNodeCode();
 		if(newsbelogns.toLowerCase().equals("all") )
-			newsbelogns = "000000";
+			newsbelogns = "999999";
 		
-		Meeting meeting = new Meeting("新闻标题",LocalDate.now(),
-                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.NODESNEWS);
+		Meeting meeting = new Meeting("指数日期",LocalDate.now(),
+                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
         getCreateDialog().setMeeting(meeting);
         getCreateDialog().setVisible(true);
 		
@@ -111,7 +112,7 @@ public class ChanYeLianGeGuNews extends View
 		}
 		
 		int  model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(model_row);
+		InsertedMeeting selectednews = ((ZhiShuGJRQModel)tableCurCylNews.getModel()).getZhiShuGJRQ(model_row);
 		
 //		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
 		return selectednews;
@@ -138,7 +139,7 @@ public class ChanYeLianGeGuNews extends View
 						
 //						int model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
 
-					  InsertedMeeting stocknews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(model_row);
+					  InsertedMeeting stocknews = ((ZhiShuGJRQModel)tableCurCylNews.getModel()).getZhiShuGJRQ(model_row);
 					  Optional<InsertedMeeting> meeting = getCache().produceMeetings()
                               .stream()
                               .filter(m -> m.getID() == Integer.valueOf(stocknews.getID()))
@@ -153,7 +154,7 @@ public class ChanYeLianGeGuNews extends View
 	{
 		JLabel lbltitle = new JLabel(title);
 		
-		btnAddNews = new JButton("\u6DFB\u52A0\u65B0\u95FB");
+		btnAddNews = new JButton("添加关键日期");
 
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -184,7 +185,7 @@ public class ChanYeLianGeGuNews extends View
 					.addContainerGap())
 		);
 		
-		NewsTableModel newsmodel = new NewsTableModel ();
+		ZhiShuGJRQModel newsmodel = new ZhiShuGJRQModel ();
 		tableCurCylNews = new JTable(newsmodel) {
 			private static final long serialVersionUID = 1L;
 			public String getToolTipText(MouseEvent e) 
@@ -214,8 +215,7 @@ public class ChanYeLianGeGuNews extends View
 	public void onMeetingChange(Cache cache) 
 	{
 		Collection<InsertedMeeting> meetings = cache.produceMeetings();
-		logger.debug(meetings.size());
-		((NewsTableModel)tableCurCylNews.getModel()).refresh(meetings);
+		((ZhiShuGJRQModel)tableCurCylNews.getModel()).refresh(meetings);
 		
 
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)tableCurCylNews.getRowSorter();
@@ -233,4 +233,5 @@ public class ChanYeLianGeGuNews extends View
 		
 		
 	}
+
 }

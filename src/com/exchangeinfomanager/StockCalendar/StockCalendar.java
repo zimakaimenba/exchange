@@ -62,31 +62,31 @@ public class StockCalendar extends JCalendar
     	//所有过去一年的新闻，
     	settingsofnewsdisplay = new SettingOfDisplayNewsArea ();
     	
-    	EventService meetingService = new DBMeetingService ( );
+    	EventService eventDbService = new DBMeetingService ();
     	LabelService labelService = new DBLabelService ();
-		Integer[] wantednewstypeforall = {Integer.valueOf(Meeting.NODESNEWS), Integer.valueOf(Meeting.CHANGQIJILU), Integer.valueOf(Meeting.JINQIGUANZHU),
-				Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI),Integer.valueOf(Meeting.WKZONGJIE)
-				};
-        cache = new Cache("ALL",meetingService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6),wantednewstypeforall);
+    	Integer[] wantednewstypeforall = { Integer.valueOf(Meeting.CHANGQIJILU),Integer.valueOf(Meeting.NODESNEWS),
+    			Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI),Integer.valueOf(Meeting.JINQIGUANZHU),Integer.valueOf(Meeting.ZHISHUDATE),
+    			Integer.valueOf(Meeting.WKZONGJIE)
+    			};
+        cache = new Cache("ALL",eventDbService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6),wantednewstypeforall);
         
-        this.monthView = new MonthView(meetingService, cache,settingsofnewsdisplay);
-        this.yearView = new YearView(meetingService, cache);
-        this.sidebar = new Sidebar(meetingService,labelService, cache);
+        this.monthView = new MonthView(eventDbService, cache,settingsofnewsdisplay);
+        this.yearView = new YearView(eventDbService, cache);
+        this.sidebar = new Sidebar(eventDbService,labelService, cache);
         
         //每月固定信息，用于记录长期月度重复信息,显示在Cal星期的上部
-//        MeetingService meetingServicewholemonth = new DBMeetingService ( );
-//    	LabelService labelServicewholemonth = new DBLabelService ();
-//        cachewholemonth = new Cache("HEADLINE",meetingServicewholemonth, labelServicewholemonth,null,null);
-//        this.wholemonthview = new WholeMonthNewsView (meetingServicewholemonth, cachewholemonth);
-        this.wholemonthview = new WholeMonthNewsView (meetingService, cache);
+//      Integer[] wantednewstypeforwholemonth = {Integer.valueOf(Meeting.CHANGQIJILU), Integer.valueOf(Meeting.JINQIGUANZHU),
+//				Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI)};
+//      cachewholemonth = new Cache("ALL",eventDbService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6),wantednewstypeforwholemonth);
+        this.wholemonthview = new WholeMonthNewsView (eventDbService, cache);
 
 	    this.initHeaderPanel(); //
 	    this.initViewDeck();
 	    this.initJFrame();
-	    
-	    
     }
-
+    /*
+     * 
+     */
 	private void initJFrame() 
     {
     	GridBagLayout gbl = new GridBagLayout(); 
@@ -111,7 +111,9 @@ public class StockCalendar extends JCalendar
        
         
     }
-
+	/*
+	 * 
+	 */
     private void initViewDeck() {
         viewDeck.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
         monthView.setName(MONTH);
@@ -123,7 +125,9 @@ public class StockCalendar extends JCalendar
         currentView = monthView;
         layout.show(viewDeck, currentView.getName());
     }
-
+    /*
+     * 
+     */
     private void initHeaderPanel() 
     {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20,20));
@@ -188,14 +192,21 @@ public class StockCalendar extends JCalendar
         this.headerPanel.add(tempPanel);
         this.headerPanel.add(viewPanel);
     }
-
+    /*
+     * 
+     */
     private void updateMonthAndYearView() 
     {
 		Date leftdate = super.getDate();
 		LocalDate rightdate = calrightdate;
-		
 	}
-
+    /*
+     * 
+     */
+    public void refreshStockCalander ()
+    {
+    	this.cache.refresh();
+    }
    /*
     * 用户更改设置
     */

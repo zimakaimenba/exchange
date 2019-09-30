@@ -19,7 +19,7 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
     public CreateMeetingDialog(EventService meetingService, Cache cache) {
         super(meetingService, cache);
         super.setTitle("Create");
-
+        
         // lets create button and add controller to it
         JLabel createButton = JLabelFactory.createOrangeButton("Create");
         createButton.addMouseListener(new CreateController());

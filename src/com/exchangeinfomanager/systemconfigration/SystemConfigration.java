@@ -1022,6 +1022,19 @@ public class SystemConfigration
 			else
 				return false;
 		}
+		/*
+		 * 最核心的几个指数
+		 */
+		public List<String> getCoreZhiShuCodeList ()
+		{
+			List<String> zhishu = new ArrayList<> ();
+			zhishu.add("999999");
+//			zhishu.add("399001");
+			zhishu.add("399006");
+			zhishu.add("000016");
+			
+			return zhishu ;
+		}
 
 }
 

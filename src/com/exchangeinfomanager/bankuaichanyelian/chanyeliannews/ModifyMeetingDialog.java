@@ -39,7 +39,7 @@ public class ModifyMeetingDialog extends MeetingDialog<InsertedMeeting>
     
     public Boolean setMeeting(InsertedMeeting event)
     {
-    	super.setMeeting( event);
+      	super.setMeeting( event);
     	
     	if(event.getMeetingType() == Meeting.QIANSHI || event.getMeetingType() == Meeting.RUOSHI ) {
     		newsownersField.setVisible(false);

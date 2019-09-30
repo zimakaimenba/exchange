@@ -29,7 +29,8 @@ public class Cache {
         this.meetingService = meetingService;
         this.meetingService.setCache(this);
         this.labelService = labelService;
-        this.labelService.setCache(this);
+        if(this.labelService != null)
+        	this.labelService.setCache(this);
         this.listeners = new HashSet<>();
         this.meetings = new HashSet<>();
         this.meetingLabels = new HashSet<>();
@@ -38,18 +39,19 @@ public class Cache {
         this.eventtype = eventtype;
         
         this.refreshMeetings(nodecode,cashestartdate,casheenddate,eventtype);
-        this.refreshLabels();
+        if(this.labelService != null)
+        	this.refreshLabels();
     }
     /*
      * 
      */
-    public void refreshNews ()
+    public void refresh ()
     {
-//    	if(true) {
-//    		
-//    		this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate);
-//        	this.listeners.forEach(l -> l.onMeetingChange(this));
-//    	}
+    	if(true) {
+    		
+    		this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,eventtype);
+        	this.listeners.forEach(l -> l.onMeetingChange(this));
+    	}
     }
     
     public String getNodeCode ()
@@ -69,8 +71,10 @@ public class Cache {
     {
     	return this.meetings;
     }
-    /*
-     * 
+    /**
+     * cach只选择初始一年的新闻，如果超过这个范围需要重新从数据库中选择数据
+     * @param firstdayofmonth
+     * @return
      */
     public Collection<InsertedMeeting> produceMeetings(LocalDate firstdayofmonth) 
     {
@@ -156,6 +160,8 @@ public class Cache {
             this.meetingLabels.addAll(labelService.getLabels());
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (java.lang.NullPointerException ex) {
+        	ex.printStackTrace();
         }
     }
 }

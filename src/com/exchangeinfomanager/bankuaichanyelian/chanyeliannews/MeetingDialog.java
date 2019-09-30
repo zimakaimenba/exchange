@@ -73,16 +73,6 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 
     private void createEvent() 
     {
-//    	startTimeChooser.addPropertyChangeListener(new PropertyChangeListener() {
-//		    @Override
-//		    public void propertyChange(PropertyChangeEvent e) {
-//		    	if("date".equals(e.getPropertyName() ) ) {
-//		    		
-//		    		endTimeChooser.setLocalDate(startTimeChooser.getLocalDate());
-//		    	}
-//
-//		    }
-//		});
     	descriptionArea.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent event) {
@@ -313,14 +303,14 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     {
         JPanel centerPanel;
 
-        private LabelListDialog() {
+        private LabelListDialog() 
+        {
             this.centerPanel = JPanelFactory.createPanel();
             this.centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
             this.centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             super.add(this.centerPanel);
             super.setModalityType(ModalityType.APPLICATION_MODAL);
             super.setTitle("Labels");
-
         }
 
         void display() 

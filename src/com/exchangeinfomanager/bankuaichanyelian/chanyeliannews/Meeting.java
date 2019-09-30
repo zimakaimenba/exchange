@@ -35,6 +35,19 @@ public class Meeting {
         this.setNewsOwnerCodes(ownercodes);
         this.setMeetingType (meetingtype);
     }
+    public Meeting(String title, LocalDate start, LocalDate end, String description, String keywords, 
+    		Collection<InsertedMeeting.Label> labels,String slackUrl,String ownercodes,int meetingtype)
+    {
+        this.setStart(start);
+        this.setEnd(end);
+        this.setTitle(title);
+        this.setDescription(description);
+        this.setKeyWords(keywords);
+        this.labels = new HashSet<>(labels);
+        this.setSlackUrl(slackUrl);
+        this.setNewsOwnerCodes(ownercodes);
+        this.setMeetingType (meetingtype);
+    }
 
     public void setMeetingType(int meetingtype)
     {
@@ -71,15 +84,6 @@ public class Meeting {
     {
     	return this.slackUrl;
     }
-
-//    public void setCurrentownercode (String curcodes)
-//    {
-//    	this.currentownercode = curcodes;
-//    }
-//    public String getCurrentownercode ()
-//    {
-//    	return this.currentownercode;
-//    }
     public void setNewsOwnerCodes (String ownercodes)
     {
   		this.newsownercodes = ownercodes;
@@ -117,7 +121,7 @@ public class Meeting {
 
     @Override
     public String toString() {
-        return String.format("title: %s, start: %s, end: %s, description: %s, keywords: %s", getTitle(), getStart(),
+        return String.format("title: %s, start: %s, end: %s, description: %s, keywords: %s", getTitle(), getStart(),getEnd(),
              getDescription(), getKeyWords());
     }
 
@@ -134,8 +138,13 @@ public class Meeting {
             return false;
         if (!title.equals(meeting.title))
             return false;
-        if (!description.equals(meeting.description))
-            return false;
+        try{
+        	if (!description.equals(meeting.description))
+                return false;
+        } catch( java.lang.NullPointerException e) {
+        	return false;
+        }
+        
         if (!keywords.equals(meeting.keywords))
             return false;
 

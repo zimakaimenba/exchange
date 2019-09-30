@@ -6,7 +6,7 @@ public class InsertedMeeting extends Meeting {
     private int id;
 
     public InsertedMeeting(Meeting meeting, int id) {
-        super(meeting.getTitle(), meeting.getStart(),  meeting.getDescription(), meeting.getKeyWords(),
+        super(meeting.getTitle(), meeting.getStart(),  meeting.getEnd(),meeting.getDescription(), meeting.getKeyWords(),
             meeting.getLabels(),meeting.getSlackUrl(),meeting.getNewsOwnerCodes(),meeting.getMeetingType());
         this.setID(id);
     }
@@ -32,13 +32,18 @@ public class InsertedMeeting extends Meeting {
         getLabels().clear();
         getLabels().addAll(meeting.getLabels());
     }
-
+    /*
+     * 
+     */
     public void removeMeetingSpecficOwner (String removedowner) 
     {
     	if(newsownercodes.contains(removedowner)) {
     		newsownercodes = newsownercodes.replace(removedowner + "|", "");
     	}
     }
+    /*
+     * 
+     */
     public Boolean addMeetingToSpecificOwner (String newowner)
     {
     	if(!newsownercodes.contains(newowner)) {

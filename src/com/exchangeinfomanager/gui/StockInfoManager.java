@@ -659,11 +659,11 @@ public class StockInfoManager
 				} catch (java.lang.ClassCastException ex) {
 					stockcode = formatStockCode( ((Stock)cBxstockcode.getSelectedItem()).getMyOwnCode() );
 				}
-//				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-//				cylnews.setVisible(true);
+				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
+				cylnews.setVisible(true);
 				
-				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl ("all");
-				gjrq.setVisible(true);
+//				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl (stockcode);
+//				gjrq.setVisible(true);
 
 			}
 		});

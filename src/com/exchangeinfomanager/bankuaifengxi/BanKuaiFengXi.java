@@ -46,7 +46,12 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 
@@ -103,6 +108,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
@@ -354,8 +360,11 @@ public class BanKuaiFengXi extends JDialog
 //		LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"middle").with(DayOfWeek.MONDAY);
 		
-		zhishukeylists = newsdbopt.getZhiShuKeyDates(requirestart, curselectdate);
+		Integer[] wantednewstype = {Integer.valueOf(Meeting.ZHISHUDATE)};
+		EventService allDbmeetingService = new DBMeetingService ();
+	    Cache cacheAll = new Cache("ALL",allDbmeetingService, null,LocalDate.now().minusWeeks(52),LocalDate.now(),wantednewstype);
 		
+		zhishukeylists = cacheAll.produceMeetings();
 		
     	//显示大盘成交量
 		NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
@@ -402,6 +411,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 		curselectdate = null;
+		cacheAll = null;
 		SystemAudioPlayed.playSound();
 	}
 	/*
@@ -1017,12 +1027,18 @@ public class BanKuaiFengXi extends JDialog
     				String nodecode = childnode.getMyOwnCode();
     				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
     			}
-        		
 				
 				Meeting meeting = new Meeting(title, mDate,
 		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
 				meeting.setNewsOwnerCodes(stock.getMyOwnCode() + "gg"); //
-				newsdbopt.addBanKuaiNews(meeting);
+				EventService newsDbService = new DBMeetingService ();
+				try {
+					newsDbService.createMeeting(meeting);
+					dateChooser.getStockCalendar().refreshStockCalander ();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+//				newsdbopt.addBanKuaiNews(meeting);
 		
 			}
 			
@@ -1063,7 +1079,14 @@ public class BanKuaiFengXi extends JDialog
 				Meeting meeting = new Meeting(title, mDate,
 		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
 				meeting.setNewsOwnerCodes(stock.getMyOwnCode() + "gg"); //
-				newsdbopt.addBanKuaiNews(meeting);
+				EventService newsDbService = new DBMeetingService ();
+				try {
+					newsDbService.createMeeting(meeting);
+					dateChooser.getStockCalendar().refreshStockCalander ();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+//				newsdbopt.addBanKuaiNews(meeting);
         		
 			}
 			
@@ -1081,9 +1104,9 @@ public class BanKuaiFengXi extends JDialog
 				BanKuai bankuai = ((BanKuaiInfoTableModel) tableBkZhanBi.getModel()).getBanKuai(modelRow);
 
 				
-        		String title = "强势个股板块";
-        		String owner = "";
-        		String keywords = "强势个股板块";
+        		String title = "强势板块";
+        		String owner = bankuai.getMyOwnCode();
+        		String keywords = "强势板块";
         		LocalDate mDate = dateChooser.getLocalDate();
         		int meetingtype = Meeting.QIANSHI;
         		
@@ -1103,8 +1126,13 @@ public class BanKuaiFengXi extends JDialog
 				Meeting meeting = new Meeting(title, mDate,
 		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
 				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); //
-				newsdbopt.addBanKuaiNews(meeting);
-		
+				EventService newsDbService = new DBMeetingService ();
+				try {
+					newsDbService.createMeeting(meeting);
+					dateChooser.getStockCalendar().refreshStockCalander ();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 			
 		});
@@ -1144,9 +1172,15 @@ public class BanKuaiFengXi extends JDialog
 				
 				Meeting meeting = new Meeting(title, mDate,
 		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
-				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); //
-				newsdbopt.addBanKuaiNews(meeting);
-        		
+				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); 
+				EventService newsDbService = new DBMeetingService ();
+				try {
+					newsDbService.createMeeting(meeting);
+					dateChooser.getStockCalendar().refreshStockCalander ();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+//				newsdbopt.addBanKuaiNews(meeting);
 			}
 			
 		});
@@ -1280,8 +1314,8 @@ public class BanKuaiFengXi extends JDialog
                     	refreshKXianOfTDXNodeWithSuperBanKuai ( stockofbank, zhishubk );
                     	
                     } else if(zhishuinfo.toLowerCase().equals("zhishuguanjianriqi") ) {
-                		Collection<InsertedMeeting> zhishukeylists = newsdbopt.getZhiShuKeyDates(null, null);
-                		paneldayCandle.updateZhiShuKeyDates (zhishukeylists);
+//                		Collection<InsertedMeeting> zhishukeylists = newsdbopt.getZhiShuKeyDates(null, null);
+//                		paneldayCandle.updateZhiShuKeyDates (zhishukeylists);
                     }
 
                 } 
