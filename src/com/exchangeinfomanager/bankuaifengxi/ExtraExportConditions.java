@@ -101,6 +101,55 @@ class ExtraExportConditions extends JPanel
 			public void mouseClicked(MouseEvent arg0) {
 				
 				huchiOperationsForJCheckBox(huchixuanzeaboutstock,chkbxonlyexportbk);
+				
+				if(chkbxonlyexportbk.isSelected()) {
+					cbxShiZhilevelyangxian.setEnabled(false);
+					cbxShiZhilevelyangxian.setSelected(false);
+					chckbxshizhilevellianxu.setEnabled(false);
+					chckbxshizhilevellianxu.setSelected(false);
+					tfldshizhilevelyangxian.setEnabled(false);
+					
+					tfldyangxian.setEnabled(false);
+					tfldshizhilevellianxu.setEnabled(false);
+					tfldwkyangxian.setEnabled(false);
+					
+
+				} else {
+					cbxShiZhilevelyangxian.setEnabled(true);
+					cbxShiZhilevelyangxian.setSelected(true);
+					chckbxshizhilevellianxu.setEnabled(true);
+					chckbxshizhilevellianxu.setSelected(true);
+					tfldshizhilevelyangxian.setEnabled(true);
+					tfldyangxian.setEnabled(true);
+					tfldshizhilevellianxu.setEnabled(true);
+					tfldwkyangxian.setEnabled(true);
+					
+				}
+
+				
+				if(chkbxonlyexportbk.isSelected()) {
+//					chkbxexportyangxianbk.setSelected(false);
+//					chkbxexportyangxianbk.setEnabled(false);
+					
+					cbxExceptSt.setSelected(false);
+					cbxExceptSt.setEnabled(false);
+					
+					chckbxexportyangxiangegu.setSelected(false);
+					chckbxexportyangxiangegu.setEnabled(false);
+					
+					tfldwkyingxiandayu.setEnabled(false);
+					
+				} else {
+//					chkbxexportyangxianbk.setEnabled(true);
+					
+					cbxExceptSt.setEnabled(true);
+					cbxExceptSt.setSelected(true);
+					
+					chckbxexportyangxiangegu.setEnabled(true);
+					tfldwkyingxiandayu.setEnabled(true);
+				}
+				
+
 
 			}
 		});
@@ -301,7 +350,7 @@ class ExtraExportConditions extends JPanel
 		chkbxonlycurstock = new JCheckBox("\u4EC5\u5BFC\u51FA\u5F53\u524D\u4E2A\u80A1");
 		add(chkbxonlycurstock, "cell 0 10");
 		
-		chckbxexportyangxiangegu = new JCheckBox("\u4EC5\u5BFC\u51FA\u4E2A\u80A1\u5468\u7EBF\u9633\u7EBF\u6216\u5468\u7EBF\u9634\u7EBF\u4E0D\u5927\u4E8E");
+		chckbxexportyangxiangegu = new JCheckBox("\u4EC5\u5BFC\u51FA\u4E2A\u80A1\u5468\u7EBF\u9633\u7EBF\u6216\u5468\u7EBF\u9634\u7EBF>=");
 		add(chckbxexportyangxiangegu, "cell 0 11");
 		
 		tfldwkyingxiandayu = new JTextField();
@@ -461,6 +510,13 @@ class ExtraExportConditions extends JPanel
 	public Boolean shouldOnlyExportBanKuaiAllowedInSetting ()
 	{
 		if(this.chkbxexporbkallowedinsetting.isSelected() )
+			return true;
+		else
+			return false;
+	}
+	public Boolean shouldOnlyExportBanKuaisNotStock ()
+	{
+		if(this.chkbxonlyexportbk.isSelected())
 			return true;
 		else
 			return false;

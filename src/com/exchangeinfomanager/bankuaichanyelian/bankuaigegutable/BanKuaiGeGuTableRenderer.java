@@ -95,9 +95,9 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
 		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
 	    
-		    if(zhangdiefu > 0 )
+		    if(zhangdiefu != null  && zhangdiefu > 0 )
 		    	background = Color.RED;
-		    else if(zhangdiefu < 0 )
+		    else if(zhangdiefu != null  &&  zhangdiefu < 0 )
 		    	background = Color.GREEN;
 		    else
 		    	background = Color.WHITE;

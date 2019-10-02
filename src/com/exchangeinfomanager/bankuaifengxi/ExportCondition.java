@@ -16,6 +16,7 @@ import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.google.common.base.Strings;
 
@@ -65,13 +66,31 @@ public class ExportCondition
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
 			if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
 				
+				if( !((BanKuai)childnode).isImportdailytradingdata() )
+					continue;
+				if( !((BanKuai)childnode).isExportTowWlyFile() )
+					continue;
+				
+				if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
+						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
+					continue;
+				
 				childnode = allbksks.getBanKuai( (BanKuai)childnode, requirestart, exportdate,period);
 				allbksks.syncBanKuaiData((BanKuai)childnode);
 				String checkresult = this.checkBanKuaiMatchedCurSettingConditons((BanKuai)childnode, exportdate, period);
 				
-				if(checkresult.toUpperCase().contains("MATCHED") && !matchednodeset.contains(childnode))
-					matchednodeset.add((TDXNodes) childnode);
-				
+				if(checkresult.toUpperCase().contains("MATCHED") ) {
+					if( !this.shouldOnlyExportStocksNotBanKuai() ) //只导出板块个股
+						if(!matchednodeset.contains(childnode)) 
+							matchednodeset.add((TDXNodes) childnode);
+					
+				}  else
+					continue;
+					
+				if(this.shouldOnlyExportBanKuaisNotStock())
+					continue;
+								
 				if( !checkresult.toUpperCase().contains("WITHCHECKGEGU") )
 					continue;
 				
@@ -130,8 +149,6 @@ public class ExportCondition
 					e.printStackTrace();
 				}
 				if(stkcheckresult && !Strings.isNullOrEmpty(this.getSettingMAFormula() )) {
-//					if(childnode.getMyOwnCode().equals("000975"))
-//						System.out.print("test start");
 					
 					childnode = allbksks.getStockKXian((Stock)childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY);
 					try{
@@ -162,11 +179,6 @@ public class ExportCondition
 	 */
 	public String checkBanKuaiMatchedCurSettingConditons (BanKuai node, LocalDate exportdate, String period)
 	{
-			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
-					 ||  ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
-					 ||  ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
-				return "UNMATCH";
-			
 			String settingbk = this.getSettingBanKuai();
 			if( this.shouldOnlyExportCurrentBankuai()  && !Strings.isNullOrEmpty( settingbk ) )  {//仅限当前板块
 				if(!node.getMyOwnCode().equals(settingbk))
@@ -181,11 +193,13 @@ public class ExportCondition
 			if(nodexdata == null) //该时间还没有数据，对板块来说就是还没有诞生
 				return "UNMATCH";
 			
-			if(nodexdata.getIndexOfSpecificDateOHLCData(exportdate,0) != null) 
+			if(nodexdata.getIndexOfSpecificDateOHLCData(exportdate,0) == null) 
 				return "UNMATCH";
 			
 			if( this.shouldOnlyExportBanKuaiOfZhanBiUp() ) { //导出环比上升的板块
 					Double cjezbchangerate = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(exportdate, 0);
+					if(cjezbchangerate == null)
+						return "UNMATCH";
 					Double cjlzbchangerate = nodexdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(exportdate, 0);
 					if(cjezbchangerate <0 && cjlzbchangerate <0)
 						return "UNMATCH";
@@ -210,7 +224,6 @@ public class ExportCondition
 					Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(exportdate,0);
 					Integer recordmaxcjewk =nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(exportdate,0);
 					if( recordmaxbkwk >= settindpgmaxwk && recordmaxcjewk >= seetingcjemaxwk ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
-						if ( !this.shouldOnlyExportStocksNotBanKuai() )
 							checkresult = checkresult + "MATCHED";
 					}
 					
@@ -285,7 +298,7 @@ public class ExportCondition
 		
 		Boolean shouldhavelianxufl = this.shouldHaveLianXuFangLangUnderCertainChenJiaoEr();
 		Double cjeleveloflianxufl = this.getCjeLevelUnderCertaincChenJiaoErOfLianXuFangLiang();
-		Integer lianxuleveloflianxufl = this.getFangLiangLevelUnderCertainChenJiaoEr();
+		
 
 		Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(exportdate,0);
 		Integer recordmaxcjewk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(exportdate,0);
@@ -328,8 +341,9 @@ public class ExportCondition
 			
 			if( shouldhavedayangxian && recordcje < cjelevelofyangxian  ) { //如果成交量小于于一定量，就前3周必须有大阳线或者连续2周满足条件
 					Integer searchyangxianrange = -3;//设定往前回溯几周找大阳线，现在定为3周
+					
 					for(int wkindex = 0;wkindex > searchyangxianrange;wkindex--) { //找前3周的数据，看看有没有大阳线
-						Double hzdf = nodexdata.getSpecificOHLCZhangDieFu(exportdate, wkindex);
+						Double hzdf = ((StockXPeriodDataForJFC)nodexdata).getSpecificTimeHighestZhangDieFu(exportdate, wkindex);
 						if(hzdf != null && hzdf >= yangxianlevelofyangxian) { //大阳线涨幅
 							notskiptonextstock = true;
 							break;
@@ -343,17 +357,9 @@ public class ExportCondition
 			} 
 			
 			if( shouldhavelianxufl && recordcje < cjeleveloflianxufl && notskiptonextstock == false) { //如果成交量小于于一定量，就前3周必须有大阳线或者连续2周满足条件
-				Integer templianxuleveloflianxufl = 0- lianxuleveloflianxufl;
-				int lianxu = 0;
-				for(int wkindex = 0;wkindex > templianxuleveloflianxufl ; wkindex--) { 
-					Integer recordmaxbkwklast = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(exportdate,wkindex);
-					if( recordmaxbkwklast != null && recordmaxbkwklast >= settindpgmaxwk) 
-						lianxu ++;
-					else
-					if(recordmaxbkwklast == null )
-						templianxuleveloflianxufl --;
-				}
-				if(lianxuleveloflianxufl == lianxu ) 
+				Integer lianxunum = nodexdata.getCjlLianXuFangLiangPeriodNumber (exportdate,0,settindpgmaxwk);
+				Integer lianxuleveloflianxufl = this.getFangLiangLevelUnderCertainChenJiaoEr();
+				if(lianxunum >= lianxuleveloflianxufl)
 					notskiptonextstock = true;
 				else
 					notskiptonextstock = false;
@@ -730,5 +736,9 @@ public class ExportCondition
 	public Double shouldOnlyExportStocksWithWkYangXian ()
 	{
 		return extracon.shouldOnlyExportStocksWithWkYangXian ();
+	}
+	public Boolean shouldOnlyExportBanKuaisNotStock ()
+	{
+		return extracon.shouldOnlyExportBanKuaisNotStock ();
 	}
 }

@@ -463,7 +463,8 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	 */
 	public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
-		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		RegularTimePeriod expectedperiod = getJFreeChartFormateTimePeriod(requireddate,difference);
+		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem(expectedperiod );
 		if( curcjlrecord == null) 
 			return null;
 		
@@ -479,7 +480,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
 			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
 			Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
-			logger.debug(getNodeCode() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
+//			logger.debug(getNodeCode() + "占比增速" + requireddate.toString() + zhanbigrowthrate);
 			
 			return zhanbigrowthrate;
 			

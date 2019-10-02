@@ -316,6 +316,7 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public void syncBanKuaiData (BanKuai bk)
 	{
+		System.out.print("syncBanKuaiData");
 		LocalDate bkstartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
 		LocalDate bkendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
 		

@@ -4073,7 +4073,12 @@ public class BanKuaiDbOperation
 		} 
 		
 		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
-		nodestartday = nodestartday.with(fieldCH, 1); //确保K线总是显示完整得一周
+		try{
+			nodestartday = nodestartday.with(fieldCH, 1); //确保K线总是显示完整得一周
+		} catch (java.lang.NullPointerException e) {
+//			e.printStackTrace();
+			return bk;
+		}
 		nodeendday = nodeendday.with(fieldCH, 7);
 		
 		NodeXPeriodData nodedayperioddata = bk.getNodeXPeroidData(period);

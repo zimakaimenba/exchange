@@ -48,6 +48,7 @@ public class SettingOfDisplayNewsArea extends JPanel
 		chkbxjingqiguanzhu.setSelected(true);
 		
 		chkbxzhishudate = new JCheckBox("\u663E\u793A\u6307\u6570\u5173\u6CE8\u65E5\u671F");
+		chkbxzhishudate.setSelected(true);
 		setLayout(new MigLayout("", "[133px]", "[23px][23px][23px][23px][23px][23px]"));
 		add(chckbxNewCheckBox, "cell 0 0,alignx left,aligny top");
 		add(chkbxdisplayall, "cell 0 1,alignx left,aligny top");

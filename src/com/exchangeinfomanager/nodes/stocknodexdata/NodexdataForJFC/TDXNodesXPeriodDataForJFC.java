@@ -51,7 +51,7 @@ import com.google.common.collect.Multimap;
 import com.udojava.evalex.Expression;
 
 /*
- * 自己写的原始版本，MA的计算都是自己写的公式，有点落后 
+ *  
  */
  public abstract class TDXNodesXPeriodDataForJFC extends TDXNodesXPeriodExternalData
  {
@@ -163,9 +163,12 @@ import com.udojava.evalex.Expression;
 	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate,int difference)
 	{
 		int itemcount = this.nodeohlc.getItemCount();
+//		RegularTimePeriod dataitemp2 = this.nodeohlc.getPeriod(itemcount -1);
+		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriod(requireddate,difference);
+		
 		for(int i=0;i<itemcount;i++) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-			if(dataitemp.equals(this.getJFreeChartFormateTimePeriod(requireddate,0)) )
+			if(dataitemp.equals(expectedperiod) )
 				return i;
 		}
 		
@@ -193,12 +196,15 @@ import com.udojava.evalex.Expression;
 	public Double getSpecificOHLCZhangDieFu (LocalDate requireddate,int difference)
 	{
 		
-		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate, 0);
+		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
 		OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
 		double curclose = curohlc.getCloseValue();
-		
+	
 		OHLCItem lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
 		double lastclose = lastholc.getCloseValue();
+		if(lastclose == 0.0)
+			return null;
+		
 		double zhangfu = (curclose - lastclose) / lastclose;
 		
 		return zhangfu;

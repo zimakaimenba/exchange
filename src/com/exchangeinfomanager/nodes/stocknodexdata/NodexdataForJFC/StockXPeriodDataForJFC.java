@@ -166,7 +166,6 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
 	{
 		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-//		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(LocalDate.parse("2019-01-04"),difference));
 		Double curhzdf = null ;
 		try {
 			curhzdf = curhighzdfrecord.getValue().doubleValue();
