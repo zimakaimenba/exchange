@@ -151,6 +151,9 @@ public class BanKuaiAndChanYeLian2
             	BanKuaiAndStockTree bkstkstree = this.allbkstocks.getAllBkStocksTree();
             	BanKuai nodeinallbktree = (BanKuai)bkstkstree.getSpecificNodeByHypyOrCode(tmpbkcode, BkChanYeLianTreeNode.TDXBK);
             	
+            	if(!nodeinallbktree.isImportdailytradingdata())
+            		continue;
+            	
             	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
             			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) 
             			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) //有些指数是没有个股不列入比较范围
@@ -241,13 +244,13 @@ public class BanKuaiAndChanYeLian2
             	BanKuaiAndStockTree bkstkstree = this.allbkstocks.getAllBkStocksTree();
             	BanKuai nodeinallbktree = (BanKuai)bkstkstree.getSpecificNodeByHypyOrCode(tmpbkcode, BkChanYeLianTreeNode.TDXBK);
             	
-            	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
-            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) 
-            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) //有些指数是没有个股不列入比较范围
-					continue;
-
             	if( !nodeinallbktree.isShowinbkfxgui() ) //有些板块不会被显示分析表中，也就不用做个股分析
             		continue;
+            	
+            	if( nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) 
+            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) 
+            			|| nodeinallbktree.getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL)  ) 
+					continue;
             	
             	nodeinallbktree = this.allbkstocks.getAllGeGuOfBanKuai(nodeinallbktree, NodeGivenPeriodDataItem.WEEK);
             	Set<StockOfBanKuai> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,NodeGivenPeriodDataItem.WEEK);

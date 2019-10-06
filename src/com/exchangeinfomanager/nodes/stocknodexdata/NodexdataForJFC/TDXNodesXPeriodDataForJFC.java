@@ -200,8 +200,15 @@ import com.udojava.evalex.Expression;
 		OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
 		double curclose = curohlc.getCloseValue();
 	
-		OHLCItem lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
-		double lastclose = lastholc.getCloseValue();
+		OHLCItem lastholc = null; Double lastclose = 0.0;
+		try {
+			lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
+			lastclose = lastholc.getCloseValue();
+		} catch (java.lang.ArrayIndexOutOfBoundsException e) { //第一周
+			return null;
+		}
+		
+		
 		if(lastclose == 0.0)
 			return null;
 		

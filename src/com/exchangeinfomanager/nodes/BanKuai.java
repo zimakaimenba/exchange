@@ -90,47 +90,64 @@ public class BanKuai extends TDXNodes
 	}
 	public void setExportTowWlyFile (Boolean exporttofile)
 	{
+		if(exporttofile != null)
 			this.exporttowklyfile = exporttofile;
 	}
 	
 	public Boolean isShowincyltree () {
-		return this.showincyltree;
+		if(this.showincyltree != null)
+			return this.showincyltree;
+		else
+			return true;
 	}
 	public void setShowincyltree (Boolean showincyltree) {
-		this.showincyltree = showincyltree;
+		if(showincyltree != null)
+			this.showincyltree = showincyltree;
 	}
 	public boolean isExporttogehpi() {
-		return exporttogehpi;
+		if(exporttogehpi != null)
+			return exporttogehpi;
+		else
+			return true;
 	}
 	/*
 	 * 设置是否导出数据到Gephi
 	 */
-	public void setExporttogehpi(boolean exporttogehpi) {
-		this.exporttogehpi = exporttogehpi;
+	public void setExporttogehpi(Boolean exporttogehpi) {
+		if(exporttogehpi != null)
+			this.exporttogehpi = exporttogehpi;
 	}
 	/*
 	 * 设置是否要每天导入交易数据，设置为false的则在每天导入数据的时候跳过
 	 */
 	public boolean isImportdailytradingdata() {
-		return importdailytradingdata;
+		if(importdailytradingdata != null)
+			return importdailytradingdata;
+		else
+			return true;
 	}
 	/*
 	 * 设置是否导入每日交易数据
 	 */
-	public void setImportdailytradingdata(boolean importdailytradingdata) {
-		this.importdailytradingdata = importdailytradingdata;
+	public void setImportdailytradingdata(Boolean importdailytradingdata) {
+		if(importdailytradingdata != null)
+			this.importdailytradingdata = importdailytradingdata;
 	}
 	/*
 	 * 
 	 */
 	public boolean isShowinbkfxgui() {
-		return showinbkfxgui;
+		if(showinbkfxgui != null)
+			return showinbkfxgui;
+		else
+			return true;
 	}
 	/*
 	 * 设置是否显示在板块分析窗口
 	 */
-	public void setShowinbkfxgui(boolean showinbkfxgui) {
-		this.showinbkfxgui = showinbkfxgui;
+	public void setShowinbkfxgui(Boolean showinbkfxgui) {
+		if(showinbkfxgui != null)
+			this.showinbkfxgui = showinbkfxgui;
 	}
 	/*
 	 * 

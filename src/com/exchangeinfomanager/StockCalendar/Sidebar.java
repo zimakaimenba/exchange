@@ -174,12 +174,7 @@ public class Sidebar extends View implements CacheListener {
 				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl ("ALL");
 				gjrq.setVisible(true);
 				
-//			      Meeting zhishugjrq = new Meeting("设置指数关键日期",LocalDate.now(),
-//		                  "描述", "指数关键日期", new HashSet<>(),"SlackURL","指数代码",Meeting.ZHISHUDATE);
-//		            		
-//		               getCreateDialog().setMeeting(zhishugjrq);
-//		               getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-//		               getCreateDialog().setVisible(true);
+				cache.refresh();
 		               
             } else if (e.getButton() == MouseEvent.BUTTON3) {
             	TDXFormatedOpt.parserZhiShuGuanJianRiQiToTDXCode();

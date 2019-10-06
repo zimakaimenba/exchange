@@ -73,20 +73,18 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		Collection<InsertedMeeting> curnewlist = cache.produceMeetings();
 		
 		String htmlstring = this.getText();
-		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-		 org.jsoup.select.Elements content = doc.select("body");
+		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+		org.jsoup.select.Elements content = doc.select("body");
 		       
 		content.append( "<h4>周新闻:" + monday + "到" + sunday + "</h4>");
 		for(InsertedMeeting cylnew : curnewlist ) {
 	   		String title = cylnew.getTitle();
 	   		String newdate = cylnew.getStart().toString(); 
 	   		String slackurl = cylnew.getSlackUrl();
-	   		String keywords = cylnew.getKeyWords();
 	   		if(slackurl != null && !slackurl.isEmpty() )	    		
 	   			content.append( "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
 	   		else
 	   			content.append( "<p>" + newdate  + title + "</p> ");
-	   		//notesPane.setText("<a href=\"http://www.google.com/finance?q=NYSE:C\">C</a>, <a href=\"http://www.google.com/finance?q=NASDAQ:MSFT\">MSFT</a>");
 		}
 		
 		//说明该周的指数关键日期

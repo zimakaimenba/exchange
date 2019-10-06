@@ -362,23 +362,21 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
             	((JLabel)comp).setText(valuepect);
 	        } 
 	        if( col == 1 && !bktype.equals(BanKuai.NOGGWITHSELFCJL) ) {
-	        	NodesTreeRelated tmptreerelated = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK).getNodeTreeRelated();
-//	        	TreeRelated tmptreerelated = bankuai.getNodeTreerelated (); 
-	        	Integer patchfilestocknum = ((BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (curdate);
-	        	Boolean selfisin = ((BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (curdate);
-	        	 
-	        	if(patchfilestocknum != null && patchfilestocknum > 0 )
-		        	background = Color.ORANGE;
-		        else
-		        	background = Color.white;
-	        	
-//	        	if(selfisin) {//板块自身满足模型,用粗体
-//		        	 Font font = new Font("黑体",Font.BOLD + Font.ITALIC,14);
-//		        	 ((JLabel)comp).setFont(font);
-//		         } else {
-//		        	 Font font=new Font("宋体",Font.PLAIN,14); 
-//		        	 ((JLabel)comp).setFont(font);
-//		         }
+	        	NodesTreeRelated tmptreerelated = null;
+	        	try {
+	        		BkChanYeLianTreeNode node = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
+	        		tmptreerelated = node.getNodeTreeRelated();
+	        		Integer patchfilestocknum = ((BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (curdate);
+        	 
+		        	if(patchfilestocknum != null && patchfilestocknum > 0 )
+			        	background = Color.ORANGE;
+			        else
+			        	background = Color.white;
+	        	} catch (java.lang.NullPointerException e) {
+//	        		e.printStackTrace();
+	        		background = Color.white;
+	        	}
+
 	        }
 	        
 	       comp.setBackground(background);

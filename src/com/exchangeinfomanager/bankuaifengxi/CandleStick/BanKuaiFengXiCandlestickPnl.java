@@ -608,24 +608,33 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			for(String tmpzhishu : zhishulist) {
 				
 				if(corezhishu.contains(tmpzhishu)) { //核心指数肯定要显示
-					drawDefinedMarker (zhishudate,Color.CYAN.brighter() ); 
+					Color zhishucolor = null;
+					if(tmpzhishu.equals("999999"))
+						zhishucolor = Color.YELLOW;
+					else if(tmpzhishu.equals("000016"))
+						zhishucolor = new Color(102,178,255);
+					else if(tmpzhishu.equals("399006"))
+						zhishucolor = new Color(255,51,255);
+					
+					drawDefinedMarker (zhishudate,zhishucolor ); 
 					
 					LocalDate zhishuend = tmpmeeting.getEnd();
 					if(zhishuend == null)
 						continue;
 					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
 						continue;
-					drawDefinedMarker (zhishuend,Color.CYAN.brighter() );
-				} else if( curdisplayednode.getMyOwnCode().equals(tmpzhishu) ) { //其他板块只在自己板块的时候显示
+					drawDefinedMarker (zhishuend,zhishucolor );
+				} else if( curdisplayednode.getMyOwnCode().equals(tmpzhishu) || this.curdisplayedsupernode.getMyOwnCode().equals(tmpzhishu) ) { //其他板块只在自己板块的时候显示
 					
-					drawDefinedMarker (zhishudate,Color.PINK.brighter() ); 
+					Color bankuaicolor = new Color(51,255,153);
+					drawDefinedMarker (zhishudate,bankuaicolor ); 
 					
 					LocalDate zhishuend = tmpmeeting.getEnd();
 					if(zhishuend == null)
 						continue;
 					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
 						continue;
-					drawDefinedMarker (zhishuend,Color.PINK.brighter() );
+					drawDefinedMarker (zhishuend,bankuaicolor );
 				}
 				
 			}

@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.tongdaxinreport;
 
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -217,7 +218,7 @@ public class TDXFormatedOpt {
 		else if(zhishucode.equals("399006")) 
 			colorcode = "COLORFF80FF";
 		else
-			colorcode = "COLOR80FFFF";
+			colorcode = "COLOR808040";
 		
 		return colorcode;
 	}

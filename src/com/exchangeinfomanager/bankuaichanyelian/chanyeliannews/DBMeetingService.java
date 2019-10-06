@@ -50,14 +50,16 @@ public class DBMeetingService  implements EventService {
         
         InsertedMeeting m = this.database.deleteRequiredRelatedInfoForNewsAndOthers(meeting);
         
-        cache.removeMeeting(m);
+        if(m != null && cache != null)
+        	cache.removeMeeting(m);
     }
 
     @Override
     public void updateMeeting(InsertedMeeting meeting) throws SQLException {
         InsertedMeeting m = this.database.updateRequiredRelatedInfoForNewsAndOthers(meeting);
         
-        cache.updateMeeting(m);
+        if(m != null && cache != null) 
+        	cache.updateMeeting(m);
     }
 
 

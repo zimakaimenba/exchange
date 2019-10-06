@@ -38,7 +38,9 @@ public class InsertedMeeting extends Meeting {
     public void removeMeetingSpecficOwner (String removedowner) 
     {
     	if(newsownercodes.contains(removedowner)) {
-    		newsownercodes = newsownercodes.replace(removedowner + "|", "");
+    		newsownercodes = newsownercodes.replace(removedowner , "");
+    		if(newsownercodes.contains("||"))
+    			newsownercodes = newsownercodes.replace("||" , "|");
     	}
     }
     /*

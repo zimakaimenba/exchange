@@ -59,7 +59,7 @@ public final class StockCalendarAndNewDbOperation
 				Collection<InsertedMeeting> newslist = this.getNodeRelatedNews(bankuaiid,startdate,enddate);
 				events.addAll(newslist);
 			} else if(type == Meeting.CHANGQIJILU) {
-				Collection<InsertedMeeting> cqlist = this.getChangQiJiLuInfo ();
+				Collection<InsertedMeeting> cqlist = this.getChangQiJiLuInfo (startdate,enddate);
 				events.addAll(cqlist);
 			} else if(type == Meeting.JINQIGUANZHU) {
 				Collection<InsertedMeeting> jqgzlist = this.getJiQiGuanZhuInfo (startdate,enddate);
@@ -662,14 +662,25 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private Collection<InsertedMeeting> getChangQiJiLuInfo ()
+	private Collection<InsertedMeeting> getChangQiJiLuInfo (LocalDate startdate, LocalDate enddate)
 	{
 		Collection<InsertedMeeting> cqjllist = new ArrayList<InsertedMeeting>();
 		
+		String timerangesql = null ;
+		if(startdate == null && enddate != null) {
+			timerangesql = "WHERE 录入日期  < '" + enddate + "' \r\n" ;
+		} else if(startdate != null && enddate == null) {
+			timerangesql = "WHERE 录入日期 > '" + startdate + "' \r\n" ;
+		} else if(startdate != null && enddate != null) {
+			timerangesql = " WHERE 录入日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
+		}
+		
 		String sqlquerystat = 	" SELECT * FROM 商业新闻"
-								+ "  WHERE  关联板块 LIKE '%wwwwww%' " //长期记录
-							+ " ORDER BY 录入日期 DESC"
-							;
+								+ timerangesql
+								+ "  AND  关联板块 LIKE '%wwwwww%' " //长期记录
+								 
+								+ " ORDER BY 录入日期 DESC"
+								;
 		
 		CachedRowSetImpl result = null;
 		try {
@@ -811,13 +822,22 @@ public final class StockCalendarAndNewDbOperation
     	InsertedMeeting insertedMeeting = null;
     	
     	try {
-			String sqlinsertstat = "INSERT INTO 指数关键日期表(关联板块,日期,截至日期,说明) VALUES ("
+    		String sqlinsertstat = null ;
+    		if(end != null)
+    			sqlinsertstat = "INSERT INTO 指数关键日期表(关联板块,日期,截至日期,说明) VALUES ("
     				+ "'"  + newsownercode + "',"
-    				+ start  + ","
-    				+ end + ","
+    				+ "'" + start  + "',"
+    				+ "'" + end + "',"
     				+ "'"  + description  + "'"
     				+ ")"
     				;
+    		else
+    			sqlinsertstat = "INSERT INTO 指数关键日期表(关联板块,日期,说明) VALUES ("
+        				+ "'"  + newsownercode + "',"
+        				+ "'" + start  + "',"
+        				+ "'"  + description  + "'"
+        				+ ")"
+        				;
     		
     		logger.debug(sqlinsertstat);
 			int meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;

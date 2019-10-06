@@ -71,11 +71,19 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	
 	private void initializeGuiValue()
 	{
-		cbxnotimport.setSelected( !((BanKuai)settingnode).isImportdailytradingdata() );
-		cbxnotgephi.setSelected( !((BanKuai)settingnode).isExporttogehpi() );
-		cbxnotbkfx.setSelected( !((BanKuai)settingnode).isShowinbkfxgui() );
-		cbxnotshowincyltree.setSelected( !((BanKuai)settingnode).isShowincyltree() );
-		chkbxnotexportwklyfile.setSelected( !((BanKuai)settingnode).isExportTowWlyFile() );
+		cbxnotimport.setSelected( ! ((BanKuai)settingnode).isImportdailytradingdata() );
+		cbxnotgephi.setSelected( ! ((BanKuai)settingnode).isExporttogehpi() );
+		cbxnotbkfx.setSelected( ! ((BanKuai)settingnode).isShowinbkfxgui() );
+		cbxnotshowincyltree.setSelected( ! ((BanKuai)settingnode).isShowincyltree() );
+		chkbxnotexportwklyfile.setSelected( ! ((BanKuai)settingnode).isExportTowWlyFile() );
+		
+		if( ((BanKuai)settingnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)) { //没有个股没有成交量的板块肯定不做板块分析等动作
+			cbxnotimport.setSelected(true);
+			cbxnotgephi.setSelected(true);
+			cbxnotbkfx.setSelected(true);
+			cbxnotshowincyltree.setSelected(true);
+			chkbxnotexportwklyfile.setSelected(true);
+		}
 	}
 
 
@@ -97,7 +105,8 @@ public class BanKuaiShuXingSheZhi extends JPanel
 			if(cbxnotimport.isSelected()) {
 				cbxnotbkfx.setEnabled(false);
 				cbxnotgephi.setEnabled(false);
-//				cbxnotshowincyltree.setSelected(false);
+				cbxnotshowincyltree.setEnabled(false);
+				chkbxnotexportwklyfile.setEnabled(false);
 			}
 				
 		} else { //个股，不能设置
@@ -193,14 +202,12 @@ public class BanKuaiShuXingSheZhi extends JPanel
 
 	protected void applaySetttingToDb() 
 	{
-		
-		
 		bkdbopt.updateBanKuaiExportGephiBkfxOperation (settingnode.getMyOwnCode(),!cbxnotimport.isSelected(),
 				!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected(),
 				!cbxnotshowincyltree.isSelected(),
 				!chkbxnotexportwklyfile.isSelected()
 				);
-//		bkdbopt.updateBanKuaiExportGephiBkfxOperation (this);
+
 		((BanKuai)settingnode).setImportdailytradingdata(!cbxnotimport.isSelected());
 		((BanKuai)settingnode).setExporttogehpi(!cbxnotgephi.isSelected());
 		((BanKuai)settingnode).setShowinbkfxgui(!cbxnotbkfx.isSelected());

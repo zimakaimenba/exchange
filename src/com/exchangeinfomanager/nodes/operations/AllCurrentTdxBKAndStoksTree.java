@@ -316,13 +316,11 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public void syncBanKuaiData (BanKuai bk)
 	{
-		System.out.print("syncBanKuaiData");
 		LocalDate bkstartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
 		LocalDate bkendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
 		
 		this.getBanKuaiKXian(bk, bkstartday, bkendday, NodeGivenPeriodDataItem.DAY);
 //		this.getBanKuaiQueKouInfo(bk, bkstartday, bkendday, NodeGivenPeriodDataItem.WEEK);
-		
 	}
 	/*
 	 * 只要是在整个时间周期内都曾经是该板块的个股，板块都会存入 
