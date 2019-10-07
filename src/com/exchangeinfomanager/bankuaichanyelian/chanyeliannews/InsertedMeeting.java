@@ -41,6 +41,8 @@ public class InsertedMeeting extends Meeting {
     		newsownercodes = newsownercodes.replace(removedowner , "");
     		if(newsownercodes.contains("||"))
     			newsownercodes = newsownercodes.replace("||" , "|");
+    		if(newsownercodes.equals("|"))
+    			newsownercodes = "";
     	}
     }
     /*

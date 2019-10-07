@@ -122,6 +122,8 @@ public class TDXFormatedOpt {
 							lineindex ++;
 						}
 						
+						break;//核心指数和普通板块指数都在，就只导出核心指数信息，否则会重复显示
+						
 					} else {  //板块指数只在是该板块的时候显示
 						AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 						TDXNodes tmpzhishunode = (TDXNodes)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpzhishu, BkChanYeLianTreeNode.TDXBK);

@@ -78,7 +78,10 @@ public class ZhiShuGJRQManagementPnl extends JDialog
 	        try {
 	        	InsertedMeeting upmeeting = panelgegunews.getCurSelectedNews ();
 	        	upmeeting.removeMeetingSpecficOwner (myowncode);
-	        	curmeetingService.updateMeeting(upmeeting);
+	        	if(!upmeeting.getNewsOwnerCodes().isEmpty())
+	        		curmeetingService.updateMeeting(upmeeting);
+	        	else
+	        		curmeetingService.deleteMeeting(upmeeting);
 	        } catch (Exception e1) {
 	            e1.printStackTrace();
 	        } 

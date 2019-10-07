@@ -620,12 +620,24 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 					
 					LocalDate zhishuend = tmpmeeting.getEnd();
 					if(zhishuend == null)
+						break;
+					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
+						break;
+					drawDefinedMarker (zhishuend,zhishucolor );
+					
+					break;
+				} else if( curdisplayednode.getMyOwnCode().equals(tmpzhishu) ) { //其他板块只在自己板块的时候显示
+					
+					Color bankuaicolor = new Color(51,255,153);
+					drawDefinedMarker (zhishudate,bankuaicolor ); 
+					
+					LocalDate zhishuend = tmpmeeting.getEnd();
+					if(zhishuend == null)
 						continue;
 					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
 						continue;
-					drawDefinedMarker (zhishuend,zhishucolor );
-				} else if( curdisplayednode.getMyOwnCode().equals(tmpzhishu) || this.curdisplayedsupernode.getMyOwnCode().equals(tmpzhishu) ) { //其他板块只在自己板块的时候显示
-					
+					drawDefinedMarker (zhishuend,bankuaicolor );
+				} else if( this.curdisplayedsupernode !=null && this.curdisplayedsupernode.getMyOwnCode().equals(tmpzhishu) ) {
 					Color bankuaicolor = new Color(51,255,153);
 					drawDefinedMarker (zhishudate,bankuaicolor ); 
 					
@@ -756,7 +768,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	/*
 	 * 显示某天的最高值
 	 */
-	public void highLightSpecificDateCandleStickWithHighLowValue (LocalDate highlightweekdate,String period,boolean highlow)
+	public void highLightSpecificDateCandleStick (LocalDate highlightweekdate,String period,boolean highlow)
 	{
 		if(ohlcSeries == null )
 			return ;
@@ -785,10 +797,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         	LocalDate markerdate =  Instant.ofEpochMilli((long)milliseconds).atZone(ZoneId.systemDefault()).toLocalDate();
         	
         	Boolean result = CommonUtility.isInSameWeek(highlightweekdate, markerdate);
-        	if(result)
-        		marker.setPaint(Color.YELLOW.brighter());
-        	else
-        		marker.setPaint(Color.CYAN.brighter());
+        	if(result) {
+        		float[] dashPattern = { 6, 2 };
+        		marker.setStroke(new BasicStroke(2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
+    			marker.setAlpha(0.5f);
+        	} else {
+        		float[] dashPattern = { 6, 2 };
+        		marker.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
+    			marker.setAlpha(0.5f);
+        	}
         	
         }
         //draw annotation 1/2月后的最高点
@@ -1049,9 +1066,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		if(selecteddate == null)
 			return;
 		
-//		LocalDate selectdate1 = CommonUtility.formateStringToDate(selecteddate.toString());
-		this.highLightSpecificDateCandleStickWithHighLowValue(selecteddate, NodeGivenPeriodDataItem.DAY, true);
-		
+		this.highLightSpecificDateCandleStick(selecteddate, NodeGivenPeriodDataItem.DAY, true);
 	}
 	@Override
 	public void highLightSpecificBarColumn(Integer columnindex) {

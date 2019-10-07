@@ -180,7 +180,6 @@ public class BanKuaiFengXi extends JDialog
 		adjustDate (LocalDate.now());
 	}
 	
-//	private BanKuaiFengXiReminderXmlHandler fxrminder;
 	private ExportCondition displayexpc;
 	private LocalDate lastselecteddate;
 	private AllCurrentTdxBKAndStoksTree allbksks;
@@ -223,7 +222,8 @@ public class BanKuaiFengXi extends JDialog
 		
 		String reminder = "提示: \n"
 						+ "1. 注意板块占比是否放量。\n"
-						+ "2. 好友板块是否同时放量。"
+						+ "2. 好友板块是否同时放量。\n"
+						+ "3. 有何新闻支持该板块。\n"
 						;
 		showReminderMessage (reminder);
 	}

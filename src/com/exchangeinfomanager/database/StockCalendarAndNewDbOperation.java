@@ -825,7 +825,7 @@ public final class StockCalendarAndNewDbOperation
     		String sqlinsertstat = null ;
     		if(end != null)
     			sqlinsertstat = "INSERT INTO 指数关键日期表(关联板块,日期,截至日期,说明) VALUES ("
-    				+ "'"  + newsownercode + "',"
+    				+ "'"  + newsownercode + "|',"
     				+ "'" + start  + "',"
     				+ "'" + end + "',"
     				+ "'"  + description  + "'"
@@ -833,7 +833,7 @@ public final class StockCalendarAndNewDbOperation
     				;
     		else
     			sqlinsertstat = "INSERT INTO 指数关键日期表(关联板块,日期,说明) VALUES ("
-        				+ "'"  + newsownercode + "',"
+        				+ "'"  + newsownercode + "|',"
         				+ "'" + start  + "',"
         				+ "'"  + description  + "'"
         				+ ")"

@@ -145,7 +145,7 @@ public class WholeMonthNewsView extends View
            	pnlpguanzhubk.setBackground(color);
            	pnlpguanzhubk.addMouseListener(new WholeMonthCreateNewsController(Meeting.JINQIGUANZHU, firstDayInMonth));
            	
-           	JUpdatedLabel guanzhubkLabel = new JUpdatedLabel("近期关注板块个股(谈股论金)");
+           	JUpdatedLabel guanzhubkLabel = new JUpdatedLabel("近期关注板块个股");
            	guanzhubkLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
            	guanzhubkLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 5));
            	guanzhubkLabel.setBackground(ColorScheme.BACKGROUND);
