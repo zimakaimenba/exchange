@@ -72,9 +72,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		createChartPanel();
 		
 		createEvent ();
-		
-//		sysconfig = SystemConfigration.getInstance();
-//		this.shoulddisplayedmonthnum = sysconfig.banKuaiFengXiMonthRange() -3;
 	}
 
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartPnl.class);
@@ -94,6 +91,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	
 	private boolean displayhuibuquekou = true;
 	private boolean displayzhangdieting = true;
+	private Boolean displayaveragedailycje = false;
 //	private SystemConfigration sysconfig;
 	
 	public static final String SELECTED_PROPERTY = "selected";
@@ -102,11 +100,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public static final String DISPLAYQUEKOUDATA = "quekou";
 	public static final String ONLYSHOWBARDATA = "onlyshowbardata";
 	public static final String CJECJLZBTOLINE = "cjecjlzbtoline";
+	public static final String AVERAGEDAILYCJE = "averagedailycjeline";
 	protected boolean selectchanged;
 
 	protected LocalDate dateselected;
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+
+	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
@@ -131,6 +132,17 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public Boolean shouldDrawZhangDieTingLine ()
 	{
 		return this.displayzhangdieting;
+	}
+	/*
+	 * 
+	 */
+	public void setDrawAverageDailyCjeOfWeekLine(Boolean draw) {
+		this.displayaveragedailycje = draw;
+		
+	}
+	public boolean shouldDrawAverageDailyCjeOfWeekLine() {
+		// TODO Auto-generated method stub
+		return this.displayaveragedailycje;
 	}
 	/*
 	 * 
@@ -322,17 +334,19 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     */
     private void createEvent ()
     {
+    	mntmAveDailyCjeLineData.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE, "", "averagedailycjeline" );
+	            pcs.firePropertyChange(evtzd);
+			}
+			
+		});
+    	
     	mntmCjeCjlZblineDate.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-//				if(linequekouchartdataset != null)
-//					linequekouchartdataset.clear();
-				
-//				if(linezdtchartdataset != null)
-//					linezdtchartdataset.clear();
-				
-//				Comparable index0 = barchartdataset.getColumnKey(0);
-//				Comparable indexlast = barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
 				
 				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, "", "cjecjlzbtoline" );
 	            pcs.firePropertyChange(evtzd);
@@ -343,15 +357,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	mntmHideZdt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-//				if(linequekouchartdataset != null)
-//					linequekouchartdataset.clear();
-				
-//				if(linezdtchartdataset != null)
-//					linezdtchartdataset.clear();
-				
-//				Comparable index0 = barchartdataset.getColumnKey(0);
-//				Comparable indexlast = barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
-				
+
 				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING, "", "zhangdieting" );
 	            pcs.firePropertyChange(evtzd);
 			}
@@ -360,11 +366,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	mntmHideQueKouData.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-//				if(linequekouchartdataset != null)
-//					linequekouchartdataset.clear();
-				
-//				if(linezdtchartdataset != null)
-//					linezdtchartdataset.clear();
 				
 				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA, "", "quekou" );
 	            pcs.firePropertyChange(evtqk);
@@ -375,11 +376,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	mntmClearLineData.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-//				if(linequekouchartdataset != null)
-//					linequekouchartdataset.clear();
-				
-//				if(linezdtchartdataset != null)
-//					linezdtchartdataset.clear();
 				
 				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWBARDATA, "", "onlyshowbardata" );
 	            pcs.firePropertyChange(evtqk);
@@ -518,8 +514,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected JMenuItem mntmHideZdt;
 	protected JMenuItem mntmHideQueKouData;
 	protected JMenuItem mntmClearLineData;
-
-	private JMenuItem mntmCjeCjlZblineDate;
+	protected JMenuItem mntmAveDailyCjeLineData;
+	protected JMenuItem mntmCjeCjlZblineDate;
 	
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
@@ -590,24 +586,18 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
         
-//        JPopupMenu popupMenu = new JPopupMenu();
-//		mntmFenXiJiLu = new JMenuItem("分析记录");
-//		mntmqkopenup = new JMenuItem("统计新开向上跳空缺口");
-//		mntmqkopendown = new JMenuItem("统计新开向下跳空缺口");
-//		mntmqkhuibuup = new JMenuItem("统计回补上跳空缺口");
-//		mntmqkhuibudown = new JMenuItem("统计回补下跳空缺口");
         mntmHideZdt = new JMenuItem("突出涨跌停数据");
-//        mntmHideZdt.setEnabled(false);
         mntmHideQueKouData = new JMenuItem("突出缺口数据");
+        mntmAveDailyCjeLineData = new JMenuItem("突出周日平均成交额");
         mntmCjeCjlZblineDate = new JMenuItem("占比柱图转线图");
         mntmClearLineData = new JMenuItem("突出占比数据");
-//        mntmHideQueKouData.setEnabled(false);
+
 		chartPanel.getPopupMenu().add(mntmHideZdt);
 		chartPanel.getPopupMenu().add(mntmHideQueKouData);
+		chartPanel.getPopupMenu().add(mntmAveDailyCjeLineData);
 		chartPanel.getPopupMenu().add(mntmClearLineData);
 		chartPanel.getPopupMenu().add(mntmCjeCjlZblineDate); 
-		
-		
+
 		this.categorymarkerlist = new ArrayList<> ();
    }
  
@@ -615,6 +605,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     {
     	return chartPanel.getPopupMenu();
     }
+	
     
 }
 

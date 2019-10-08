@@ -1245,7 +1245,7 @@ public class StockInfoManager
 		{
 			public void mouseClicked(MouseEvent event) 
 			{
-				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
+				if(cBxstockcode.getSelectedItem() == null)
 					return;
 				
 			    if (SwingUtilities.isRightMouseButton(event))   {
@@ -1270,7 +1270,7 @@ public class StockInfoManager
 		{
 			public void mouseClicked(MouseEvent event) 
 			{
-				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
+				if(cBxstockcode.getSelectedItem() == null)
 					return;
 				
 				if (SwingUtilities.isRightMouseButton(event))
@@ -1307,7 +1307,7 @@ public class StockInfoManager
 		{
 			public void mouseClicked(MouseEvent event) 
 			{
-				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
+				if(cBxstockcode.getSelectedItem()  == null)
 					return;
 				
 				if (SwingUtilities.isRightMouseButton(event))
@@ -1354,7 +1354,7 @@ public class StockInfoManager
 			public void mouseClicked(MouseEvent event) 
 			{
 				
-				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
+				if(cBxstockcode.getSelectedItem() == null)
 					return;
 				
 				if (SwingUtilities.isRightMouseButton(event)) {

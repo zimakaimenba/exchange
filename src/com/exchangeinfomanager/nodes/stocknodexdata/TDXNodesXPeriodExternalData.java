@@ -19,6 +19,9 @@ import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
+/*
+ * node的OHLC数据有JFC/TA4J两种存储方式，该类是这2中的所有公共方法 
+ */
 public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData 
 {
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodExternalData.class);

@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -37,6 +38,11 @@ import org.jsoup.Jsoup;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
@@ -61,12 +67,6 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private TDXNodes displaynode;
 	private SystemConfigration sysconfig;
 	private TDXNodes nodebankuai;
-//	private LocalDate displayedstartdate;
-//	private LocalDate displaystartdate;
-//	private LocalDate displayenddate;
-//	private String displayperiod;
-//	private BanKuaiDbOperation bkdbopt;
-//	private LocalDate displayedenddate;
 	private AllCurrentTdxBKAndStoksTree allbksks;
 	private Boolean exportuserselectedinfotocsv;
 	private String globeperiod;
@@ -87,6 +87,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //		this.displayedstartdate = displayedstartdate1;
 //		this.displayedenddate = displayedenddate1;
 		updateData (nodebkbelonged, node,displayedstartdate1,displayedenddate1,period);
+		
+		
 	}
 	
 	private void initialzieSysconf ()
@@ -161,9 +163,6 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                     String zhishuinfo = evt.getNewValue().toString();
                     
                     if(zhishuinfo.toLowerCase().equals("bankuaizhisu") ) {
-      
-//                    	nodekpnl.displayQueKou(true);
-//                		nodekpnl.updatedDate(nodebankuai,displaynode,displayedstartdate,displayedenddate,NodeGivenPeriodDataItem.DAY);
                 		
                 		nodekpnl.displayQueKou(true);
                     	refreshTDXGeGuAndBanKuaiKXian ( displaynode, nodebankuai );
@@ -298,20 +297,6 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	{
 		String htmlstring = this.displaynode.getNodeXPeroidDataInHtml(LocalDate.parse(selttooltips),this.globeperiod);
 		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
-		
-//		String allstring = selttooltips + "\n" + "*----------------------*" + "\n";
-//		
-//		tfldselectedmsg.setText( allstring + tfldselectedmsg.getText() + "\n");
-//		tfldselectedmsg.setCaretPosition(0);
-		
-//		String htmlstring = "";
-//		org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
-//		org.jsoup.select.Elements content = doc.select("body");
-//		content.append("<p><font size=\"3\">" + selttooltips + "</font></p>");
-//		
-//		
-//		htmlstring = doc.toString();
-//		tfldselectedmsg.setText(htmlstring);
 	}
 	/*
 	 * 用户选择了导出CSV，把信息传递到上一级才有意义，否则就是NULL 
@@ -335,12 +320,17 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private void updateData(TDXNodes nodebkbelogned, TDXNodes node, LocalDate displayedstartdate1, LocalDate displayedenddate1,
 			String period) 
 	{
-//		centerPanel.updatedDate(node, displayedstartdate1,displayedenddate1, period);
 		if(nodebkbelogned != null)
 			this.nodebkcjezblargepnl.updatedDate(nodebkbelogned, displayedstartdate1, displayedenddate1, period);
 		
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
 		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  NodeGivenPeriodDataItem.DAY);
+		
+		Integer[] wantednewstype = {Integer.valueOf(Meeting.ZHISHUDATE)};
+		EventService allDbmeetingService = new DBMeetingService ();
+	    Cache cacheAll = new Cache("ALL",allDbmeetingService, null,displayedstartdate1,displayedenddate1,wantednewstype);
+		Collection<InsertedMeeting> zhishukeylists = cacheAll.produceMeetings();
+		nodekpnl.updateZhiShuKeyDates (zhishukeylists); //指数关键日期
 	}
 	
 	@Override

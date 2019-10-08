@@ -171,6 +171,19 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		return null;
 	}
 	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData#getAverageDailyChengJiaoErOfWeek(java.time.LocalDate, int)
+	 */
+	public Double getAverageDailyChengJiaoErOfWeek (LocalDate requireddate,int difference)
+	{
+		Double cje = this.getChengJiaoEr(requireddate, 0);
+		Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, 0);
+		if(daynum != null)
+			return cje/daynum;
+		else
+			return cje/5;
+	}
+	/*
 	 * 
 	 */
 	public LocalDate getOHLCRecordsStartDate ()

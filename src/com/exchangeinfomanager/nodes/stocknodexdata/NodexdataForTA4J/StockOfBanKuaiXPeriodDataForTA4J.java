@@ -306,6 +306,11 @@ public class StockOfBanKuaiXPeriodDataForTA4J implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public Double getAverageDailyChengJiaoErOfWeek(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }

@@ -273,6 +273,21 @@ import com.udojava.evalex.Expression;
 		else
 			return curcjlrecord.getValue().doubleValue();
 	}
+	/*
+	 * 
+	 */
+	public Double getAverageDailyChengJiaoErOfWeek (LocalDate requireddate,int difference)
+	{
+		Double cje = this.getChengJiaoEr(requireddate, 0);
+		if(cje != null) {
+			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, 0);
+			if(daynum != null)
+				return cje/daynum;
+			else
+				return cje/5;
+		} else
+			return null;
+	}
 	
 		/*
 	 * /*
@@ -905,6 +920,21 @@ import com.udojava.evalex.Expression;
 				 org.jsoup.nodes.Element fontcje = licje.appendElement("font");
 				 fontcje.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
 				 fontcje.attr("color", "#AF7AC5");
+				 
+				 Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate, 0);
+				 cjedanwei = null;
+				 try{
+						cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(avecje);
+						avecje = FormatDoubleToShort.formateDoubleToShort (avecje);
+				 } catch (java.lang.NullPointerException e) {
+//						e.printStackTrace();
+						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
+						return "";
+				 }
+				 org.jsoup.nodes.Element liavecje = dl.appendElement("li");
+				 org.jsoup.nodes.Element fontavecje = liavecje.appendElement("font");
+				 fontavecje.appendText("周日平均成交额" + decimalformate.format(avecje) + cjedanwei);
+				 fontavecje.attr("color", "#AF7AC5");
 				 
 				 Integer cjemaxwk = null;
 			     try{
