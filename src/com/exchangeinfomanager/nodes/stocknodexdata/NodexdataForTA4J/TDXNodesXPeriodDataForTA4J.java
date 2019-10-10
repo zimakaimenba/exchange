@@ -157,6 +157,28 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		
 	}
 	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData#getOHLCRecordsStartDate()
+	 */
+	public Double getSpecificTimeRangeOHLCHightestZhangFu (LocalDate requiredstart,LocalDate requiredend)
+	{
+		Integer indexofstart = this.getIndexOfSpecificDateOHLCData(requiredstart, 0);
+		Integer indexofend = this.getIndexOfSpecificDateOHLCData(requiredend, 0);
+		
+		Double startclose = this.getSpecificOHLCZhangDieFu(requiredstart, 0);
+		
+		Double highest = 0.0;
+		for(int i = indexofstart+1; i<=indexofend ; i++) {
+			Bar tmpohlc = this.getOHLCData().getBar(i);
+			double tmphigh = tmpohlc.getMaxPrice().doubleValue();
+			if(tmphigh > highest)
+				highest = tmphigh;
+		}
+		
+		double result = (highest - startclose) / startclose;
+		return result;
+	}
+	/*
 	 * 
 	 */
 	public Double getChengJiaoEr (LocalDate requireddate,int difference)

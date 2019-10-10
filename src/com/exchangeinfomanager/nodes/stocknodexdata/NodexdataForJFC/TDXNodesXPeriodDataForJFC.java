@@ -48,6 +48,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItemForJFC;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.ObjectArrays;
 import com.udojava.evalex.Expression;
 
 /*
@@ -59,13 +60,11 @@ import com.udojava.evalex.Expression;
 
 	public TDXNodesXPeriodDataForJFC (String nodecode,String nodeperiodtype)
 	{
-		
 		super(nodecode,nodeperiodtype);
 		
 		nodeohlc = new OHLCSeries(nodeperiodtype);
 		nodeamo = new TimeSeries(nodeperiodtype);
 		nodevol = new TimeSeries(nodeperiodtype);;
-		
 	}
 	
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodDataForJFC.class);
@@ -197,26 +196,110 @@ import com.udojava.evalex.Expression;
 	{
 		
 		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
-		OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
-		double curclose = curohlc.getCloseValue();
-	
-		OHLCItem lastholc = null; Double lastclose = 0.0;
-		try {
-			lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
-			lastclose = lastholc.getCloseValue();
-		} catch (java.lang.ArrayIndexOutOfBoundsException e) { //第一周
+		if(indexofcur == null)
 			return null;
+		
+		OHLCItem curohlc;
+		try {
+			curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
+			
+			double curclose = curohlc.getCloseValue();
+			
+			OHLCItem lastholc = null; Double lastclose = 0.0;
+			try {
+				lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
+				lastclose = lastholc.getCloseValue();
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) { //第一周
+				return null;
+			}
+			
+			if(lastclose == 0.0)
+				return null;
+			
+			double zhangfu = (curclose - lastclose) / lastclose;
+			
+			return zhangfu;
+		} catch (java.lang.NullPointerException e) {
+			String code = super.getNodeCode();
+			e.printStackTrace();
 		}
 		
+		return null;
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData#getOHLCRecordsStartDate()
+	 */
+	public Double getSpecificTimeRangeOHLCHightestZhangFu (LocalDate requiredstart,LocalDate requiredend)
+	{
+		LocalDate curohlcstart = this.getOHLCRecordsStartDate();
+		LocalDate curohlcend = this.getOHLCRecordsEndDate();
+		if(requiredstart.isBefore(curohlcstart) || requiredend.isAfter(curohlcend) )
+			return null;
+
+		Integer indexofstart = this.getIndexOfSpecificDateOHLCData(requiredstart, 0);
+		if(indexofstart == null) { //没有可能是停牌，往后找
+			int itemcount = this.nodeohlc.getItemCount();
+			for(int i=0;i<itemcount;i++) {
+				RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
+				if( dataitemp.getStart().after( java.util.Date.from( requiredstart.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant() ) )
+					&& dataitemp.getStart().before( java.util.Date.from( requiredend.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant() ) )
+						) {
+					indexofstart = i;
+					requiredstart = dataitemp.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					break;
+				}
+			}
+		}
 		
-		if(lastclose == 0.0)
+		Integer indexofend = this.getIndexOfSpecificDateOHLCData(requiredend, 0);
+		if(indexofend == null) { //没有可能是停牌，往后找
+			int itemcount = this.nodeohlc.getItemCount();
+			for(int i=itemcount -1; i>=0; i--) {
+				RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
+				if( dataitemp.getStart().before( java.util.Date.from( requiredend.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant() ) )
+					&& dataitemp.getStart().after( java.util.Date.from( requiredstart.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant() ) )
+						) {
+					indexofend = i;
+					requiredend = dataitemp.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					break;
+				}
+			}
+		}
+		
+		if(indexofstart == null || indexofend == null)
 			return null;
 		
-		double zhangfu = (curclose - lastclose) / lastclose;
 		
-		return zhangfu;
-		
+		if(indexofstart < indexofend) { //不是同一天
+			OHLCItem dataitem = (OHLCItem) this.getOHLCData().getDataItem(indexofstart.intValue());
+			double startclose = dataitem.getCloseValue();
+			
+			Double highest = startclose;
+			for(int i = indexofstart + 1; i<=indexofend ; i++) {
+				OHLCItem tmpohlc = (OHLCItem) this.getOHLCData().getDataItem(i);
+				double tmphigh = tmpohlc.getCloseValue();
+				if(tmphigh > highest)
+					highest = tmphigh;
+			}
+			
+			double result = (highest - startclose) / startclose + this.getSpecificOHLCZhangDieFu(requiredstart, 0);
+			return result;
+			
+//			if(highest > startclose) { //
+//				double result = (highest - startclose) / startclose + this.getSpecificOHLCZhangDieFu(requiredstart, 0);
+//				return result;
+//			} else //头一天就是最高值
+//				return this.getSpecificOHLCZhangDieFu(requiredstart, 0);
+			
+		} else { //start 和 end是同一天
+			return this.getSpecificOHLCZhangDieFu(requiredstart, 0);
+		}
 	}
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData#getOHLCRecordsStartDate()
+	 */
 	public LocalDate getOHLCRecordsStartDate ()
 	{
 		if(this.nodeohlc.getItemCount() == 0)
@@ -883,6 +966,94 @@ import com.udojava.evalex.Expression;
 	      
 
 		}
+	 /*
+	  * 
+	  */
+	 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference)
+	 {
+		String[] supcsv = super.getNodeXDataCsvData(superbk, requireddate, 0); 
+		
+		Double curcje = this.getChengJiaoEr(requireddate, 0);
+		Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate, 0);
+		Integer cjemaxwk =  this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+		Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//成交额大盘变化贡献率
+		
+		Double curcjl = this.getChengJiaoLiang(requireddate, 0);
+		Integer cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
+		Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
+		
+		Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate,0);
+		
+		String strcurcje = null;
+		String stravecje = null;
+		String strcjemaxwk =  null;
+		String strcjechangerate = null;
+		
+		String strcurcjl = null;
+		String strcjlmaxwk = null;
+		String strcjlchangerate = null;
+		String strzhangfu = null;
+		
+		try {
+			strcurcje = curcje.toString();
+		} catch (java.lang.NullPointerException e) {
+			strcurcje = String.valueOf("0");
+		}
+		try {
+			stravecje = avecje.toString();
+		} catch (java.lang.NullPointerException e) {
+			stravecje = String.valueOf("0");
+		}
+		try {
+			strcjemaxwk = cjemaxwk.toString();
+		} catch (java.lang.NullPointerException e) {
+			strcjemaxwk = String.valueOf("0");
+		}
+		try {
+			strcjechangerate = cjechangerate.toString();
+					
+		} catch (java.lang.NullPointerException e) {
+			strcjechangerate = String.valueOf("0");
+		}
+		try {
+			strcurcjl = curcjl.toString();
+		} catch (java.lang.NullPointerException e) {
+			strcurcjl = String.valueOf("0");
+		}
+		try {
+			strcjlmaxwk =  cjlmaxwk.toString();
+		} catch (java.lang.NullPointerException e) {
+			strcjlmaxwk = String.valueOf("0");
+		}
+		try {
+			strcjlchangerate =  cjlchangerate.toString();
+		} catch (java.lang.NullPointerException e) {
+			strcjlchangerate = String.valueOf("0");
+		}
+		try {
+			strzhangfu =  zhangfu.toString();
+		} catch (java.lang.NullPointerException e) {
+			strzhangfu = String.valueOf("0");
+		}
+		
+		
+		
+		String[] curcsvline = {  strcurcje ,
+		 stravecje ,
+		 strcjemaxwk ,
+		 strcjechangerate ,
+		
+		 strcurcjl ,
+		 strcjlmaxwk ,
+		 strcjlchangerate,
+		 
+		 strzhangfu
+		}; 
+
+		String [] joined = ObjectArrays.concat(supcsv, curcsvline, String.class);
+		
+		return joined;
+	 }
 	 
 	 /*
 		 * (non-Javadoc)
@@ -905,6 +1076,14 @@ import com.udojava.evalex.Expression;
 				 org.jsoup.nodes.Element fontdate = lidate.appendElement("font");
 				 fontdate.appendText(requireddate.toString());
 				 fontdate.attr("color", "#17202A");
+				 
+				 Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate,0);
+				 if(zhangfu != null) {
+					 org.jsoup.nodes.Element li12 = dl.appendElement("li");
+					 org.jsoup.nodes.Element font12 = li12.appendElement("font");
+					 font12.appendText("涨跌幅" + percentFormat.format (zhangfu)  );
+					 font12.attr("color", "#1B2631");
+				 }
 				 
 				 Double curcje = this.getChengJiaoEr(requireddate, 0);
 				 String cjedanwei = null;
@@ -1118,7 +1297,6 @@ import com.udojava.evalex.Expression;
 						 font11.appendText("跌停 =" + dietingnum );
 						 font11.attr("color", "#1B2631");
 					 }
-				 
 				
 			}
 			

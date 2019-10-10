@@ -160,7 +160,8 @@ public class BanKuaiListEditorPane extends JEditorPane
 		 
 		 content.append( "<html> "
 		 		+ "<body>"
-		 		+ " <p>所属板块:");
+//		 		+ " <p>"
+		 		);
 		 
 		 boolean shuyuruoshibankuai = false;
 	     for(String suoshubankcode : union ) {
@@ -186,7 +187,7 @@ public class BanKuaiListEditorPane extends JEditorPane
 	     if(shuyuruoshibankuai)
 	    	 JOptionPane.showMessageDialog(this, "<html><font face='Calibri' size='8' color='red'>该个股属于近期弱势或要回避的板块！");
 	     
-	     content.append( "</p>");
+//	     content.append( "</p>");
 	     
 	     		
 	     
@@ -210,10 +211,6 @@ public class BanKuaiListEditorPane extends JEditorPane
 	
 	private void createEvents() 
 	{
-		
-//		menuItemgcsv.setEnabled(false);
-		
-		
 		menuItemgcsv.addActionListener(new ActionListener() {
 
             @Override

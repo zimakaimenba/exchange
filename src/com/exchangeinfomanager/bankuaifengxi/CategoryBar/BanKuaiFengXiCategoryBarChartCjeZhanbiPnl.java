@@ -557,7 +557,6 @@ class CustomCategroyToolTipGeneratorForCjeZhanBi extends BanKuaiFengXiCategoryBa
     {
 		String selected = dataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-//    	nodexdata = super.node.getNodeXPeroidData(period);
     			
 		String html;
 		DaPan dapan = (DaPan)  super.node.getRoot();
@@ -568,89 +567,5 @@ class CustomCategroyToolTipGeneratorForCjeZhanBi extends BanKuaiFengXiCategoryBa
 		}
 		
 		return html;
-		
-//		String selected = dataset.getColumnKey(column).toString();
-//    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-//    	 
-//		
-//		
-//		Double curzhanbidata = (Double)dataset.getValue(row, column);  //占比
-//		if(curzhanbidata == null)
-//			return null;
-//
-//			Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);//nodefx.getGgbkzhanbimaxweek();
-//			if(maxweek == null)
-//				return null;
-//			
-//			Integer minweek = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(selecteddate,0);
-//			if(minweek == null)
-//				return null;
-//			
-//			Double hsl = null ;
-//			if(super.node.getType() == BkChanYeLianTreeNode.TDXGG) {
-//				hsl = ((StockNodeXPeriodData)nodexdata).getSpecificTimeHuanShouLv(selecteddate, 0);
-//			}
-//			
-//			
-//			String htmlstring = "";
-//			org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//			Elements body = doc.getElementsByTag("body");
-//			for(Element elbody : body) {
-//				 org.jsoup.nodes.Element dl = elbody.appendElement("dl");
-//				 
-//				 org.jsoup.nodes.Element li5 = dl.appendElement("li");
-//				 li5.appendText(selecteddate.toString()); 
-//				
-//				String htmltext = null;
-//				
-//				try {
-//					DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
-//					htmltext = "CJE占比" + decimalformate.format(curzhanbidata) ;
-//					
-//					org.jsoup.nodes.Element li1 = dl.appendElement("li");
-//					li1.appendText(htmltext);
-//				} catch (java.lang.IllegalArgumentException e ) {
-////					htmltext = "占比占比NULL" ;
-//				}
-//				
-//				 
-//				try {
-//					 htmltext = "CJE占比MaxWk=" + maxweek.toString() ;
-//					 
-//					 org.jsoup.nodes.Element li2 = dl.appendElement("li");
-//					 li2.appendText(htmltext);
-//				} catch (java.lang.IllegalArgumentException e ) {
-////					htmltext = "占比MaxWk=NULL"  ;
-//				}
-//				 
-//				 
-//				try {
-//					htmltext = "CJE占比MinWk=" + minweek.toString() ;
-//					org.jsoup.nodes.Element li3 = dl.appendElement("li");
-//					 li3.appendText(htmltext);
-//				} catch (java.lang.IllegalArgumentException e ) {
-////					htmltext = "占比MinWk=NULL" ;
-//				}
-//				 
-//				 
-//				try {
-////					DecimalFormat decimalformate = new DecimalFormat("%.3f");
-//					if(hsl != null) {
-//						htmltext = "HSL=" + String.format("%.3f", hsl);
-//						
-//						org.jsoup.nodes.Element li4 = dl.appendElement("li");
-//						li4.appendText(htmltext);
-//					}
-//					
-//				} catch (java.lang.IllegalArgumentException e ) {
-////					htmltext = "HSL=NULL";
-//				} catch (java.lang.NullPointerException ex) {
-////					htmltext = "HSL=NULL";
-//				}
-//				
-//			}
-//			
-//			htmlstring = doc.toString();
-//			return htmlstring;
     }
 }

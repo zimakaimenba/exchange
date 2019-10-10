@@ -56,6 +56,7 @@ public interface NodeXPeriodData
 //	public  org.ta4j.core.TimeSeries getOHLCData ();
 	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate,int difference);
 	public Double getSpecificOHLCZhangDieFu (LocalDate requireddate,int difference);
+	public Double getSpecificTimeRangeOHLCHightestZhangFu (LocalDate requiredstart,LocalDate requiredend);
 	
 	public LocalDate getOHLCRecordsStartDate ();
 	public LocalDate getOHLCRecordsEndDate ();
@@ -82,5 +83,36 @@ public interface NodeXPeriodData
 	
 	public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference);
 	
+	public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference);
 	
+	public static String[] NODEXDATACSVDATAHEADLINE = { 		 
+			"成交额占比",
+		    "成交额占比MaxWk",
+			"成交额占比MinWk",
+			"成交额占比增长率",
+			
+			"成交量占比",
+		    "成交量占比MaxWk",
+			"成交量占比MinWk",
+			"成交量占比增长率",
+
+			"OpenUpQueKou",
+			 "HuiBuDownQueKou",
+			 "OpenDownQueKou",
+			 "HuiBuUpQueKou",
+			 
+			 "涨停",
+			 "跌停",
+			 
+			 "成交额",
+			 "周平均成交额",
+			 "成交额MaxWK",
+			 "成交额大盘贡献率",
+			 
+			 "成交量",
+			 "成交量MaxWK",
+			 "成交量大盘贡献率",
+			 
+			 "涨跌幅"
+		};
 }

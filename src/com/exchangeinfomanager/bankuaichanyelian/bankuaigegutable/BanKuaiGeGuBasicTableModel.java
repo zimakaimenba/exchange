@@ -106,16 +106,29 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	{
 		
 	}
+	/*
+	 * 
+	 */
 	public void sortTableByChenJiaoEr ()
 	{
 		try{
 			Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,period) );
 			this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-			logger.debug("表位空，表排序出错");
+//			e.printStackTrace();
+			logger.debug("该表内容为空，表排序出错");
 		}
 		
+	}
+	public void sortTableByTimeRangeZhangFu (LocalDate start, LocalDate end, String specificperiod)
+	{
+		try{
+			Collections.sort(entryList, new NodeTimeRangeZhangFuComparator(start,end,specificperiod) );
+			this.fireTableDataChanged();
+		} catch (java.lang.NullPointerException e) {
+//			e.printStackTrace();
+			logger.debug("该表没有数据，表排序出错");
+		}
 	}
 	
 	/*

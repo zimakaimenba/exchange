@@ -555,6 +555,10 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 
         CategoryLabelCustomizableCategoryAxis domainaxis = new CategoryLabelCustomizableCategoryAxis("");
         plot.setDomainAxis(domainaxis);
+        domainaxis.setAxisLineVisible(false);
+        domainaxis.setVisible(false);
+        domainaxis.setTickLabelsVisible(false);
+        domainaxis.setTickMarksVisible(false);
         
         //line part,for QueKou
         linechartdataset = new DefaultCategoryDataset();  

@@ -344,6 +344,18 @@ public class DaPanXPeriodDataForTA4J implements NodeXPeriodData
 		return null;
 	}
 
+	@Override
+	public Double getSpecificTimeRangeOHLCHightestZhangFu(LocalDate requiredstart, LocalDate requiredend) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] getNodeXDataCsvData(TDXNodes superbk, LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 //	@Override
 //	public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {
 //		// TODO Auto-generated method stub

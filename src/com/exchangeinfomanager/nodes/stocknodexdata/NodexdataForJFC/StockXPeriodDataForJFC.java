@@ -11,6 +11,7 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.google.common.collect.ObjectArrays;
 
 import org.apache.log4j.Logger;
 import org.jfree.data.time.RegularTimePeriod;
@@ -209,6 +210,37 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	}
 	/*
 	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC#getNodeXDataCsvData(com.exchangeinfomanager.nodes.TDXNodes, java.time.LocalDate, int)
+	 */
+	 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference)
+	 {
+		 String[] supcsv = super.getNodeXDataCsvData(superbk, requireddate, 0);
+		 
+		 Double hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);
+		 Double liutongshizhi = this.getSpecificTimeLiuTongShiZhi(requireddate, 0);
+		 
+		 String strhsl = null;
+		 String strliutongshizhi = null;
+		 
+		 try {
+			 strhsl = hsl.toString();
+		 } catch (java.lang.NullPointerException e) {
+			 strliutongshizhi = String.valueOf("0");
+		 }
+		 try {
+			 strliutongshizhi	 =   liutongshizhi.toString();
+		 } catch (java.lang.NullPointerException e) {
+			 strliutongshizhi	= String.valueOf("0");
+		 }
+		 String[] curcsvline = {strhsl, strliutongshizhi };
+		 
+		 String [] joined = ObjectArrays.concat(supcsv, curcsvline, String.class);
+			
+		 return joined;
+	 }
+	 
+	/*
+	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getNodeXDataInHtml(java.time.LocalDate, int)
 	 */
 	public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) 
@@ -257,5 +289,5 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		
 		return doc.toString();
 	}
-
+	
 }

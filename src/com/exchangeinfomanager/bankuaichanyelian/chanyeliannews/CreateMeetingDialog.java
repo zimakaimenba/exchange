@@ -63,7 +63,7 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
 
             try {
             	Meeting mt = getMeeting();
-            	if(mt.getTitle().length() >50) {
+            	if(mt.getTitle().length() >150) {
             		JOptionPane.showMessageDialog(null,"新闻标题过长！");
             		setVisible(true);
             	} else { 
