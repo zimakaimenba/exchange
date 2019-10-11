@@ -75,7 +75,7 @@ public class JStockComboBox extends  JComboBox<String>
 	{
 		this.setEditable(true);
 		
-		this.setModel( new JStockComboBoxModel () );
+		this.setModel( new JStockComboBoxModel (this.onlyselectnodetype) );
 		
 		this.setRenderer(new JStockComboBoxNodeRenderer());
 	    this.setEditor(new JStockComboBoxEditor());

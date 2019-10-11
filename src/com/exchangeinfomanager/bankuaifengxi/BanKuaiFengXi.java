@@ -238,7 +238,9 @@ public class BanKuaiFengXi extends JDialog
 			setCursor(hourglassCursor);
 			
 			try{ //如果用户选择的和上次选择的个股一样，不重复做板块查找
-				String stockcodeincbx = ((Stock)combxstockcode.getSelectedItem()).getMyOwnCode();
+				String stockcodeincbx;
+				stockcodeincbx = ((Stock)combxstockcode.getSelectedItem()).getMyOwnCode();
+
 				if(!selectstock.getMyOwnCode().equals( stockcodeincbx ) ) {
 					 combxstockcode.updateUserSelectedNode (selectstock.getStock());
 				}
@@ -3194,15 +3196,14 @@ public class BanKuaiFengXi extends JDialog
 		
 		JScrollPane scrollPanestockbk = new JScrollPane();
 		
-		editorPanebankuai = new BanKuaiListEditorPane();
-		scrollPanestockbk.setViewportView(editorPanebankuai);
-		
 		paneldayCandle = new BanKuaiFengXiCandlestickPnl();
 //		paneldayCandle.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
 		JScrollPane scrollPane_3 = new JScrollPane();
+		
+		editorPanebankuai = new BanKuaiListEditorPane();
 		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
@@ -3217,8 +3218,9 @@ public class BanKuaiFengXi extends JDialog
 							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 382, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(paneldayCandle, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE)
+						.addComponent(editorPanebankuai, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE)
 						.addComponent(panel_2, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 1107, Short.MAX_VALUE)
+						.addComponent(paneldayCandle, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE)
 						.addComponent(scrollPanestockbk, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE))
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPanel.createSequentialGroup()
@@ -3246,9 +3248,11 @@ public class BanKuaiFengXi extends JDialog
 									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 										.addGroup(gl_contentPanel.createSequentialGroup()
 											.addGap(237)
-											.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 532, GroupLayout.PREFERRED_SIZE)
+											.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 528, GroupLayout.PREFERRED_SIZE)
+											.addGap(2)
+											.addComponent(editorPanebankuai, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
 											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(scrollPanestockbk, GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE)
+											.addComponent(scrollPanestockbk, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
 											.addPreferredGap(ComponentPlacement.RELATED))
 										.addGroup(gl_contentPanel.createSequentialGroup()
 											.addPreferredGap(ComponentPlacement.RELATED)
@@ -3289,10 +3293,9 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
-			gl_panel_2.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel_2.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(tabbedPanebkzb, GroupLayout.PREFERRED_SIZE, 557, GroupLayout.PREFERRED_SIZE)
+			gl_panel_2.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addComponent(tabbedPanebkzb, GroupLayout.PREFERRED_SIZE, 567, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 533, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())

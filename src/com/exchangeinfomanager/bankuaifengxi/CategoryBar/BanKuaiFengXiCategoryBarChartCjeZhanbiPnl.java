@@ -136,11 +136,11 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 						double angle; Color paintcolor;String label;
 						if(gzjl == 1) {
 							angle = 10 * Math.PI/4;
-							paintcolor = Color.YELLOW;
+							paintcolor = Color.BLUE;
 							label = "jr";
 						}	else {						
 							angle = 10 * Math.PI/4;
-							paintcolor = Color.YELLOW;
+							paintcolor = Color.BLUE;
 							label = "yc";
 						}
 						CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, wkfriday , cjezb, angle);

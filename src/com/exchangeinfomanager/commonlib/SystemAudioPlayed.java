@@ -8,6 +8,7 @@ import java.net.URL;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
 
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
@@ -31,6 +32,11 @@ public class SystemAudioPlayed
 		    	File audioFile = new File(audiofilepath);
 		    		    	
 		        Clip clip = AudioSystem.getClip();
+		        clip.addLineListener(event -> {
+		            if(LineEvent.Type.STOP.equals(event.getType())) {
+		                clip.close();
+		            }
+		        });
 		        AudioInputStream inputStream =  AudioSystem.getAudioInputStream( audioFile );
 		        clip.open(inputStream);
 		        clip.start(); 

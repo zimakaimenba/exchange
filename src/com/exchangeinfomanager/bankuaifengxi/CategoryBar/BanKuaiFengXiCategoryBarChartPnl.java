@@ -552,6 +552,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        
         plot.setRangeAxis(0,new NumberAxis(""));
         plot.setRangePannable(true);
+        plot.getRangeAxis(0).setVisible(false);
 
         CategoryLabelCustomizableCategoryAxis domainaxis = new CategoryLabelCustomizableCategoryAxis("");
         plot.setDomainAxis(domainaxis);

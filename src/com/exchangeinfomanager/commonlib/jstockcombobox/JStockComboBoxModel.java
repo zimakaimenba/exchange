@@ -13,20 +13,22 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	 private AllCurrentTdxBKAndStoksTree allbkstock;
 
 	 BkChanYeLianTreeNode selection = null;
+	private int onlyselectnodetype;
 	
 	  
-	  public JStockComboBoxModel ()
+	  public JStockComboBoxModel (int onlyselectnodetype)
 	  {
-//		  allbkstock = AllCurrentTdxBKAndStoksTree.getInstance();
 		  nodelist = new ArrayList<BkChanYeLianTreeNode> ();
+		  this.onlyselectnodetype = onlyselectnodetype;
 	  }
 
 	  public void addElement (Object node)
 	  {
+		  if( ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) node).getType() != this.onlyselectnodetype   )
+			  return ;
+					  
 		  if(!nodelist.contains(node))
-			  this.nodelist.add((BkChanYeLianTreeNode) node);
-		  
-		  
+			  this.nodelist.add(  (BkChanYeLianTreeNode) node);
 	  }
 	  public Object getElementAt(int index) 
 	  {

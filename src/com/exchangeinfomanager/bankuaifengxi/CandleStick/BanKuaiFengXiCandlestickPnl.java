@@ -984,7 +984,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 //		chartPanel.setHorizontalAxisTrace(false);
 //	    chartPanel.setVerticalAxisTrace(false);
 	    
-		chartPanel.setPreferredSize(new Dimension(1400, 250));
+		chartPanel.setPreferredSize(new Dimension(1400, 300));
 
 	    this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");

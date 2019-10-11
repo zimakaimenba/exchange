@@ -387,7 +387,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		JScrollBar bar = scrollPaneuserselctmsg.getHorizontalScrollBar();
 		
 //		tfldselectedmsg.setPreferredSize(new Dimension(150, 500));
-		scrollPaneuserselctmsg.setPreferredSize(new Dimension(150, 500));
+		scrollPaneuserselctmsg.setPreferredSize(new Dimension(150, 200));
 		
 		scrollPaneuserselctmsg.setViewportView(tfldselectedmsg);
 
