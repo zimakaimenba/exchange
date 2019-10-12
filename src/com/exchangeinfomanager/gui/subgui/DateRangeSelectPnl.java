@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.commonlib.jstockcombobox;
+package com.exchangeinfomanager.gui.subgui;
 
 import javax.swing.JPanel;
 
@@ -17,13 +17,34 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-public class DateRangeSelectPnl extends JPanel {
+public class DateRangeSelectPnl extends JPanel 
+{
 
 	private SystemConfigration sysconfig;
 	private JLocalDateChooser datachoosestart;
 	private JLocalDateChooser datachooseend;
+	private Integer wknum;
 	
+	public DateRangeSelectPnl (Integer wknum)
+	{
+		this.wknum = wknum;
+		
+		LocalDate searchstart = LocalDate.now().with(DayOfWeek.MONDAY).minus(wknum,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
+		datachoosestart.setLocalDate(searchstart);
+		
+		datachooseend.setLocalDate(LocalDate.now());
+	}
 	
+	public DateRangeSelectPnl (LocalDate start, LocalDate end)
+	{
+		initialGui ();
+		
+		datachoosestart.setLocalDate(start);
+		datachooseend.setLocalDate(end);
+		
+	}
+	
+
 	public LocalDate getDatachoosestart() {
 		return datachoosestart.getLocalDate();
 	}
@@ -35,7 +56,7 @@ public class DateRangeSelectPnl extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public DateRangeSelectPnl(Integer wknum) 
+	private void initialGui() 
 	{
 		
 		sysconfig = SystemConfigration.getInstance();
@@ -48,10 +69,7 @@ public class DateRangeSelectPnl extends JPanel {
 		
 		datachooseend = new JLocalDateChooser();
 		
-		LocalDate searchstart = LocalDate.now().with(DayOfWeek.MONDAY).minus(wknum,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
-		datachoosestart.setLocalDate(searchstart);
 		
-		datachooseend.setLocalDate(LocalDate.now());
 		setLayout(new MigLayout("", "[48px][89px][24px][100px]", "[21px]"));
 		add(lblNewLabel, "cell 0 0,alignx left,aligny center");
 		add(datachoosestart, "cell 1 0,growx,aligny top");

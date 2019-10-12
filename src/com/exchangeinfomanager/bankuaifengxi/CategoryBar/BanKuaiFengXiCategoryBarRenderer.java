@@ -42,9 +42,6 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
         this.setBarPainter(new StandardBarPainter());
         this.setShadowVisible(false);
         
-//        BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGenerator ();
-//		this.setBaseItemLabelGenerator(labelgenerator);
-		
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarRenderer.class);

@@ -954,6 +954,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.getXYPlot().setDomainAxis(dayAxis);
 		candlestickChart.getXYPlot().setDomainGridlinesVisible(true);
 		candlestickChart.getXYPlot().setBackgroundPaint(Color.BLACK);
+		candlestickChart.getXYPlot().setRangePannable(true);
 //		candlestickChart.getXYPlot().setDomainGridlinePaint(Color.lightGray);
 //		candlestickChart.getXYPlot().setRangeGridlinePaint(Color.lightGray);
 		candlestickChart.removeLegend();
@@ -1165,8 +1166,6 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
 		
 		this.setBaseItemLabelGenerator(tooltipgenerator);
 		this.setBaseItemLabelsVisible(true);
-//        super.setBaseToolTipGenerator(null);
-//        super.setUseOutlinePaint(true);
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickRenderer.class);

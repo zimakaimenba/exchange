@@ -213,6 +213,10 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 				 return ;
 			 else 
 				 entryList.clear();
+	    	
+	    	this.showwknum = null;
+	    	this.period = null;
+	    	
 	    	this.fireTableDataChanged();
 	    }
 	    

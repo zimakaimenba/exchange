@@ -144,6 +144,9 @@ public class TDXFormatedOpt {
 				rs.next();
 	        }
 	        
+	        if(lineinfo.isEmpty())
+	        	return false;
+	        
 	        for(String info : lineinfo)
 	        	try {
 	        			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);

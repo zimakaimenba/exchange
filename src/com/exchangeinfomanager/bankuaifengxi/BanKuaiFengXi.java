@@ -65,13 +65,13 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 
 import com.exchangeinfomanager.commonlib.ReminderPopToolTip;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
-import com.exchangeinfomanager.commonlib.jstockcombobox.DateRangeSelectPnl;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
+import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -218,6 +218,8 @@ public class BanKuaiFengXi extends JDialog
 		
 		refreshBanKuaiGeGuTableHightLight ();
 		
+		tabbedPanebk.setSelectedIndex(2);
+		
 		tableBkZhanBi.repaint(); //
 		
 		String reminder = "提示: \n"
@@ -232,7 +234,7 @@ public class BanKuaiFengXi extends JDialog
 	 * @param selectstock
 	 * @param selectedGeguTable
 	 */
-	protected void performActionsForGeGuTablesAfterUserSelected(StockOfBanKuai selectstock,BanKuaiGeGuBasicTable selectedGeguTable) 
+	protected void unifiedOperationsAfterUserSelectAStock(StockOfBanKuai selectstock) 
 	{
 			Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 			setCursor(hourglassCursor);
@@ -264,7 +266,7 @@ public class BanKuaiFengXi extends JDialog
 			LocalDate curselecteddate = panelbkwkcjezhanbi.getCurSelectedDate();
 			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(curselecteddate));
 			
-			displayStockCurrentFxResult (selectedGeguTable);
+			displayNodeInfo (selectstock.getStock());
 			
 			String reminder = "提示: \n"
 					+ "1. 大盘占比增率高的多关注。"
@@ -272,12 +274,9 @@ public class BanKuaiFengXi extends JDialog
 					;
 			showReminderMessage (reminder);
 			
-//			cbxshizhifx.setSelected(false);
-			
 			hourglassCursor = null;
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 			setCursor(hourglassCursor2);
-		
 	}
 	/*
 	 * 
@@ -464,7 +463,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		editorPanenodeinfo.displayAllNewsOfSpecificWeek (selectdate);
 		
-		setUserSelectedColumnMessage(bkcur,selectedinfo);
+		setUserSelectedColumnMessage(bkcur,selectdate);
 		
 		String reminder = "提示: \n"
 						+ "1. 板块的占比和成交量/成交额是否背离？ \n"
@@ -476,9 +475,9 @@ public class BanKuaiFengXi extends JDialog
 		if(!menuItemnonshowselectbkinfo.getText().contains("X"))
 			return;
 			
-			//选定周的板块排名情况
-			LocalDate cursetdate = dateChooser.getLocalDate(); 
-			if(!CommonUtility.isInSameWeek(selectdate,cursetdate) ) {
+		//选定周的板块排名情况
+		LocalDate cursetdate = dateChooser.getLocalDate(); 
+		if(!CommonUtility.isInSameWeek(selectdate,cursetdate) ) {
 				allbksks.syncBanKuaiAndItsStocksForSpecificTime (bkcur, CommonUtility.getSettingRangeDate(selectdate,"large"), selectdate, globeperiod);
 				
 				List<TDXNodes> bkwithcje = initializeBanKuaiZhanBiByGrowthRate (selectdate);
@@ -499,15 +498,22 @@ public class BanKuaiFengXi extends JDialog
 					refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
 				}
 					
-			} 
+		} 
 			
-			SystemAudioPlayed.playSound();
+		SystemAudioPlayed.playSound();
 	}
 	/*
 	 * 几个表显示用户在选择周个股占比增长率排名等
 	 */
 	private void refreshSpecificBanKuaiFengXiResult (BanKuai selectedbk, LocalDate selecteddate,String period)
 	{
+		LocalDate formerdate = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).getShowCurDate();
+		if(formerdate != null) { //前面有显示过，把她挪到tab 4
+			//显示选定周+1股票排名情况
+			((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).refresh(selectedbk, formerdate,period);
+			tabbedPanegegu.setTitleAt(5,  formerdate.toString() );
+		}
+		
 		//显示选定周股票排名情况
 		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).refresh(selectedbk, selecteddate,period);
 		tabbedPanegegu.setTitleAt(2, this.getTabbedPanegeguTabTiles(2) + selecteddate);
@@ -519,20 +525,12 @@ public class BanKuaiFengXi extends JDialog
 
 		
 		//显示选定周-2股票排名情况
-		LocalDate selectdate3 = selecteddate.minus(2,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
+		LocalDate selectdate3 = selecteddate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
 		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).refresh(selectedbk, selectdate3,period);
-		tabbedPanegegu.setTitleAt(4,  selectdate3 + "(-2)");
-
-		
-		//显示选定周+1股票排名情况
-		LocalDate selectdate4 = selecteddate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
-		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).refresh(selectedbk, selectdate4,period);
-		tabbedPanegegu.setTitleAt(5,  selectdate4 + "(+1)");
+		tabbedPanegegu.setTitleAt(4,  selectdate3 + "(+1)");
 		
 		refreshBanKuaiGeGuTableHightLight ();
 	}
-	
-
 	/*
 	 * 对板块个股表高亮
 	 */
@@ -831,8 +829,6 @@ public class BanKuaiFengXi extends JDialog
 	{
 		tabbedPanebk.setSelectedIndex(0);
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).deleteAllRows();
-//		((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).deleteAllRows();
-//		tabbedPanebk.setTitleAt(1, "选定周" );
 		
 		btnresetdate.setEnabled(true);
 		
@@ -866,9 +862,6 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanegegu.setTitleAt(4, this.getTabbedPanegeguTabTiles(4) );
 		tabbedPanegegu.setTitleAt(5, this.getTabbedPanegeguTabTiles(5) );
 		
-
-//		cbxshizhifx.setSelected(false);
-		
 		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 		((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).deleteAllRows();
 		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).deleteAllRows();
@@ -888,7 +881,7 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private String getTabbedPanegeguTabTiles (int tabindex)
 	{
-		String[] jtabbedpanetitle = { "当前周", "其他信息","选定周","选定周-1","选定周-2","选定周+1"};
+		String[] jtabbedpanetitle = { "当前周", "其他信息","选定周","选定周-1","选定周+1","上次选定周"};
 		return jtabbedpanetitle[tabindex];
 	}
 	private void clearTheGuiBeforDisplayNewInfoSection3 ()
@@ -898,10 +891,6 @@ public class BanKuaiFengXi extends JDialog
 		panelGgDpCjeZhanBi.resetDate();
 		
 		panelggdpcjlwkzhanbi.resetDate();
-//		tabbedPanegeguzhanbi.setSelectedIndex(0);
-//		tabbedPanebk.setSelectedIndex(1);
-//		paneldayCandle.resetDate();
-		
 	}
 	
 	
@@ -986,9 +975,9 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 显示用户点击bar column后应该提示的信息
 	 */
-	private void setUserSelectedColumnMessage(TDXNodes node,String seldate) 
+	private void setUserSelectedColumnMessage(TDXNodes node,LocalDate seldate) 
 	{
-		tfldselectedmsg.displayNodeSpecificDateInfo(node,LocalDate.parse(seldate),this.globeperiod);
+		tfldselectedmsg.displayNodeSpecificDateInfo(node, seldate ,this.globeperiod);
 //    	String htmlstring = node.getNodeXPeroidDataInHtml(LocalDate.parse(seldate),this.globeperiod);
 //		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
 	}
@@ -1003,7 +992,6 @@ public class BanKuaiFengXi extends JDialog
 	{
 		ReminderPopToolTip tip = new ReminderPopToolTip();  
         tip.setToolTip(null,showmsg);
-
 	}
 	/*
 	 * 
@@ -1413,8 +1401,7 @@ public class BanKuaiFengXi extends JDialog
             	menuItemchengjiaoer.setText("按成交额排名");
             	menuItemliutong.setText("按流通市值排名");
             	
-            	
-            	DateRangeSelectPnl datachoose = new DateRangeSelectPnl (1); 
+            	DateRangeSelectPnl datachoose = new DateRangeSelectPnl ( LocalDate.now().minusDays(1), LocalDate.now() ); 
         		JOptionPane.showMessageDialog(null, datachoose,"选择时间段", JOptionPane.OK_CANCEL_OPTION);
         		
         		LocalDate searchstart = datachoose.getDatachoosestart();
@@ -1698,7 +1685,7 @@ public class BanKuaiFengXi extends JDialog
             		LocalDate datekey = LocalDate.parse(selectedinfo);
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
-    				setUserSelectedColumnMessage(selectstock, selectedinfo);
+    				setUserSelectedColumnMessage(selectstock, datekey);
     				
 //    				if(cbxshizhifx.isSelected()) { //显示市值排名
 //						dispalyStockShiZhiFengXiResult (selectstock,datekey);
@@ -1730,7 +1717,7 @@ public class BanKuaiFengXi extends JDialog
             		LocalDate datekey = LocalDate.parse(selectedinfo);
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
-    				setUserSelectedColumnMessage(selectstock, selectedinfo);
+    				setUserSelectedColumnMessage(selectstock, datekey);
     				
     				String reminder = "提示: \n"
     						+ "1. 个股的占比和成交量/成交额是否背离？ \n"
@@ -2122,11 +2109,6 @@ public class BanKuaiFengXi extends JDialog
     					//找到用户选择的板块
     					BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
     					unifiedOperationsAfterUserSelectABanKuai (selectedbk);
-//    					refreshCurentBanKuaiFengXiResult (selectedbk,globeperiod);
-//    					displayNodeInfo(selectedbk);
-////    					patchParsedFile (selectedbk);
-//    					combxsearchbk.updateUserSelectedNode(selectedbk);
-//    					refreshBanKuaiGeGuTableHightLight ();
     					
     					//找不到该股票
     					String stockcode = combxstockcode.getSelectedItem().toString().substring(0, 6);
@@ -2150,17 +2132,6 @@ public class BanKuaiFengXi extends JDialog
 			@Override
 			public void keyPressed(KeyEvent e) 
 			{
-//				if(e.getKeyCode() == KeyEvent.VK_UP) {
-//					int row = tableGuGuZhanBiInBk.getSelectedRow();
-//					if(row <0) {
-//						JOptionPane.showMessageDialog(null,"请选择一个股票！","Warning",JOptionPane.WARNING_MESSAGE);
-//						return;
-//					}
-//					
-//					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row -1 );
-//					StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
-//					performActionsForGeGuTablesAfterUserSelected (selectstock,tableGuGuZhanBiInBk);
-//				}
 			}
 		});
 		/*
@@ -2179,7 +2150,7 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
 				
 				if (arg0.getClickCount() == 1) { //用户点击一下
-					performActionsForGeGuTablesAfterUserSelected (selectstock,tableGuGuZhanBiInBk);
+					unifiedOperationsAfterUserSelectAStock (selectstock);
 				}
 				if (arg0.getClickCount() == 2) {
 				}
@@ -2199,7 +2170,7 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).getStock (modelRow);
 				
 				if (arg0.getClickCount() == 1) {
-					performActionsForGeGuTablesAfterUserSelected (selectstock,tablexuandingzhou);
+					unifiedOperationsAfterUserSelectAStock (selectstock);
 				}
 				if (arg0.getClickCount() == 2) {
 				}
@@ -2218,7 +2189,7 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
-					performActionsForGeGuTablesAfterUserSelected (selectstock,tablexuandingminustwo);
+					unifiedOperationsAfterUserSelectAStock (selectstock);
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }
@@ -2237,7 +2208,7 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
-					performActionsForGeGuTablesAfterUserSelected (selectstock,tablexuandingminusone);
+					unifiedOperationsAfterUserSelectAStock (selectstock);
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }
@@ -2256,7 +2227,7 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
-					performActionsForGeGuTablesAfterUserSelected (selectstock,tablexuandingplusone);
+					unifiedOperationsAfterUserSelectAStock (selectstock);
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }
@@ -2275,7 +2246,7 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
-					performActionsForGeGuTablesAfterUserSelected (selectstock,tableExternalInfo);
+					unifiedOperationsAfterUserSelectAStock (selectstock);
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }
@@ -2507,39 +2478,56 @@ public class BanKuaiFengXi extends JDialog
 		return null;
 	}
 	/*
+	 * 
+	 */
+	protected void displayNodeInfo(BkChanYeLianTreeNode selectednode) 
+	{
+		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (false);
+		
+		if(selectednode.getType() == BkChanYeLianTreeNode.TDXBK)
+			editorPanenodeinfo.displayAllNewsOfSpecificWeek ( this.dateChooser.getLocalDate() );
+		
+		editorPanenodeinfo.displayNodeAllInfo(selectednode);
+		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (true);
+		
+		setUserSelectedColumnMessage( (TDXNodes)selectednode, this.dateChooser.getLocalDate());
+	}
+	/*
 	 * 顯示用户選擇的個股的基本信息
 	 */
-	private void displayStockCurrentFxResult(BanKuaiGeGuBasicTable curtable) 
-	{
-		int row = curtable.getSelectedRow();
-		if(row <0) {
-			JOptionPane.showMessageDialog(null,"请先选择一个个股","Warning",JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		
-		int modelRow = curtable.convertRowIndexToModel(row);
-		StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)curtable.getModel()).getStock (modelRow);
-		LocalDate curtableshowwknum = ((BanKuaiGeGuBasicTableModel)curtable.getModel()).getShowCurDate ();
-		int columncount = curtable.getColumnCount();
-		String result = "";
-		for(int i=0; i<columncount;i ++) {
-			result = result + curtable.getColumnName(i) + ":" + curtable.getValueAt(row, i) +";";
-		}
-		NodeXPeriodData nodexdata = selectstock.getStock().getNodeXPeroidData(globeperiod);
-		Double liutongshizhi = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(curtableshowwknum, 0);
-		Double zongshizhi = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(curtableshowwknum, 0);
-		if(liutongshizhi != null  )
-			result = result + "流通市值:" + liutongshizhi/100000000 + "亿";
-		if(zongshizhi != null)
-			result = result + "总市值:" + zongshizhi/100000000 + "\n";
-
-		result = null;
-		
-		//顯示個股的信息
-		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (false);
-		editorPanenodeinfo.displayNodeAllInfo(selectstock.getStock());
-		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (true);
-	}
+//	private void displayStockCurrentFxResult(BanKuaiGeGuBasicTable curtable) 
+//	{
+//		int row = curtable.getSelectedRow();
+//		if(row <0) {
+//			JOptionPane.showMessageDialog(null,"请先选择一个个股","Warning",JOptionPane.WARNING_MESSAGE);
+//			return;
+//		}
+//		
+//		int modelRow = curtable.convertRowIndexToModel(row);
+//		StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)curtable.getModel()).getStock (modelRow);
+//		LocalDate curtableshowwknum = ((BanKuaiGeGuBasicTableModel)curtable.getModel()).getShowCurDate ();
+//		int columncount = curtable.getColumnCount();
+//		String result = "";
+//		for(int i=0; i<columncount;i ++) {
+//			result = result + curtable.getColumnName(i) + ":" + curtable.getValueAt(row, i) +";";
+//		}
+//		NodeXPeriodData nodexdata = selectstock.getStock().getNodeXPeroidData(globeperiod);
+//		Double liutongshizhi = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(curtableshowwknum, 0);
+//		Double zongshizhi = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(curtableshowwknum, 0);
+//		if(liutongshizhi != null  )
+//			result = result + "流通市值:" + liutongshizhi/100000000 + "亿";
+//		if(zongshizhi != null)
+//			result = result + "总市值:" + zongshizhi/100000000 + "\n";
+//
+//		result = null;
+//		
+//		//顯示個股的信息
+//		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (false);
+//		editorPanenodeinfo.displayNodeAllInfo(selectstock.getStock());
+//		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (true);
+//		
+//		setUserSelectedColumnMessage(selectstock.getStock(),this.dateChooser.getLocalDate() );
+//	}
 	/*
 	 * 用户双击某个node占比chart，则放大显示该node一年内的占比所有数据
 	 */
@@ -3026,19 +3014,6 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 		return !notfound;
-	}
-	/*
-	 * 
-	 */
-	protected void displayNodeInfo(BkChanYeLianTreeNode selectedbk) 
-	{
-//		editorPanebkinfo.setText("");
-//		editorPanebkinfo.displayNodeAllInfo(selectedbk);
-//		editorPanenodeinfo.setText("");
-		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (false);
-		editorPanenodeinfo.displayAllNewsOfSpecificWeek (this.dateChooser.getLocalDate());
-		editorPanenodeinfo.displayNodeAllInfo(selectedbk);
-		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (true);
 	}
 	/*
 	 * 跑马灯

@@ -297,6 +297,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	{
 		if(linechartdataset != null)
 			linechartdataset.clear();
+		
+		plot.getRangeAxis(3).setRange(0.0, 1.0);
 	}
 	public void resetDate ()
 	{
