@@ -2592,12 +2592,12 @@ public class BanKuaiFengXi extends JDialog
 		BanKuaiFengXiLargePnl largeinfo = null;
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
 			DaPan treeroot = (DaPan)this.allbksks.getAllBkStocksTree().getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday
-					, overlapldendday, globeperiod);
+			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod);
 			
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
-			largeinfo = new BanKuaiFengXiLargePnl (bkcur, node, overlapldstartday
-					, overlapldendday, globeperiod);
+//			largeinfo = new BanKuaiFengXiLargePnl (bkcur, node, overlapldstartday, overlapldendday, globeperiod);
+			DaPan treeroot = (DaPan)this.allbksks.getAllBkStocksTree().getModel().getRoot();
+			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod);
 		}
 		
 		if(datekey != null)
@@ -2605,18 +2605,8 @@ public class BanKuaiFengXi extends JDialog
 		else
 			largeinfo.highLightSpecificBarColumn(curselectdate);;
 		
-//		long start=System.currentTimeMillis(); //获取开始时间
 		JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
-//		long end=System.currentTimeMillis(); //获取结束时间
-//		logger.debug("程序运行时间： "+(end-start)+"ms");
-		
-//		String userselectnodeinfo = largeinfo.getUserSelectedColumnMessage ();
-//		if(userselectnodeinfo != null ){
-//    		
-////    		nodeinfotocsv.clearCsvDataSet();
-//    		exportUserSelectedNodeInfoToCsv (userselectnodeinfo);
-//		}
-		
+
 		largeinfo = null;
 		System.gc();
 	}

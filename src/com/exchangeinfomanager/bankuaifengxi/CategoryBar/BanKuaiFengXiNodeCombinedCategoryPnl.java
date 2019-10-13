@@ -239,8 +239,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			cjelargepnl.resetLineDate ();
 			cjezblargepnl.resetLineDate();
 			
-			((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
-			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+			if(this.pnltype.equals("CJE")) {
+				((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+				((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+			}
 		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE ) ) {
 			cjelargepnl.resetLineDate ();
 			cjezblargepnl.resetLineDate();

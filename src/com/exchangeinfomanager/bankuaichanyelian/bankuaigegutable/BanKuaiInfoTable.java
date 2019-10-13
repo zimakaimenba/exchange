@@ -53,6 +53,7 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
@@ -338,8 +339,18 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 	        	}
 	        	
 	        } 
-	        if (comp instanceof JLabel && ( col == 3 ||   col == 5 ||  col == 6  )) {
+	        if (comp instanceof JLabel && ( col == 3 ||   col == 5  )) {
 	        	background = new Color(51,204,255);
+	        }
+	        if (comp instanceof JLabel && ( col == 6   )) {
+	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+	        	Double cjediff = nodexdata.getChengJiaoErDifferenceWithLastPeriod(curdate, 0);
+	        	if(cjediff != null && cjediff > 0) 
+	        		background = Color.RED;
+			    else if ( cjediff != null && cjediff < 0 )
+			       	background = Color.GREEN;
+			    else
+			       	background = Color.WHITE;
 	        }
 	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
 	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||  col == 4 ||  col == 5 ||  col == 6  )) {
