@@ -3132,7 +3132,11 @@ public class BanKuaiDbOperation
 	 * 板块设定时间跨度内和大盘相比的按周期占比。
 	 */
 	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
-	{//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
+	{
+		if(bankuai == null  )
+			return null;
+		
+		//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
 		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
 		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
