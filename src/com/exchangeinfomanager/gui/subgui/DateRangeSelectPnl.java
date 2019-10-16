@@ -27,8 +27,9 @@ public class DateRangeSelectPnl extends JPanel
 	
 	public DateRangeSelectPnl (Integer wknum)
 	{
-		this.wknum = wknum;
+		initialGui ();
 		
+		this.wknum = wknum;
 		LocalDate searchstart = LocalDate.now().with(DayOfWeek.MONDAY).minus(wknum,ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
 		datachoosestart.setLocalDate(searchstart);
 		

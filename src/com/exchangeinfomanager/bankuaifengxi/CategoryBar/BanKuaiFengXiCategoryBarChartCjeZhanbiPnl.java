@@ -3,20 +3,16 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 import java.awt.Color;
 
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 
 import org.apache.log4j.Logger;
-
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
-
 import org.jfree.chart.plot.CategoryPlot;
 
 import org.jfree.data.Range;
@@ -37,6 +33,10 @@ import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public BanKuaiFengXiCategoryBarChartCjeZhanbiPnl() 
 	{
 		super ();
@@ -81,6 +81,10 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		}
 		if(super.shouldDrawZhangDieTingLine() ) {
 			Integer zdt = displayZhangDieTingLineDataToGui(nodexdata,period);
+		}
+		if(super.shouldDisplayZhanBiInLine() ) {
+			super.resetLineDate ();
+			this.dipalyCjeCjlZBLineDataToGui (super.getCurDisplayedNode().getNodeXPeroidData(period),period);
 		}
 		
 		super.barchart.setNotify(true);
@@ -144,6 +148,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 							label = "yc";
 						}
 						CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, wkfriday , cjezb, angle);
+//						CategoryTextAnnotation cpa = new CategoryTextAnnotation (label, wkfriday , cjezb);
 	//					cpa.setBaseRadius(0.0);
 	//			        cpa.setTipRadius(25.0);
 				        cpa.setFont(new Font("SansSerif", Font.BOLD, 10));

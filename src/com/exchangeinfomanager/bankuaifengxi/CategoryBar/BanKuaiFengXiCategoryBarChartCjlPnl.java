@@ -27,6 +27,10 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBarChartPnl 
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public BanKuaiFengXiCategoryBarChartCjlPnl() 
 	{
 		super ();

@@ -92,6 +92,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	private boolean displayhuibuquekou = true;
 	private boolean displayzhangdieting = true;
 	private Boolean displayaveragedailycje = false;
+	private Boolean displayzhanbishujuinline = false;
 //	private SystemConfigration sysconfig;
 	
 	public static final String SELECTED_PROPERTY = "selected";
@@ -143,6 +144,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public boolean shouldDrawAverageDailyCjeOfWeekLine() {
 		// TODO Auto-generated method stub
 		return this.displayaveragedailycje;
+	}
+	public void setDisplayZhanBiInLine (Boolean draw)
+	{
+		this.displayzhanbishujuinline = draw;
+	}
+	public Boolean shouldDisplayZhanBiInLine ()
+	{
+		return this.displayzhanbishujuinline;
 	}
 	/*
 	 * 

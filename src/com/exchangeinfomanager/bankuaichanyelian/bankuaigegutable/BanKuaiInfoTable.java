@@ -154,7 +154,7 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
     }
     
   //Implement table header tool tips.
-  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名(突出周线阳线阴线)"};
+  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率(成交额上周变化)","成交额排名(突出周线阳线阴线)"};
       protected JTableHeader createDefaultTableHeader() 
       {
           return new JTableHeader(columnModel) {

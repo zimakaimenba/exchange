@@ -3026,24 +3026,24 @@ public class StockInfoManager
 		buttonGroup.add(menuOperationList);
 		menuBar.add(menuOperationList);
 		
-		menuItemTongdaxinbb = new JMenuItem("\u751F\u6210\u901A\u8FBE\u4FE1\u62A5\u8868");
-		menuItemTongdaxinbb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_reports_49615 (1).png")));
-		menuOperationList.add(menuItemTongdaxinbb);
-		
 		menuItemRfshBk = new JMenuItem("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
 		menuItemRfshBk.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/synchronization.png")));
 		
 		menuOperationList.add(menuItemRfshBk);
 		
-		menuItemChanYeLian = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u4E0E\u4EA7\u4E1A\u94FE");
-		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
-		
-		menuOperationList.add(menuItemChanYeLian);
-		
 		menuItembkfx = new JMenuItem("\u6210\u4EA4\u91CF\u5206\u6790");
 		menuItembkfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
 		
 		menuOperationList.add(menuItembkfx);
+		
+		menuItemTongdaxinbb = new JMenuItem("\u751F\u6210\u901A\u8FBE\u4FE1\u62A5\u8868");
+		menuItemTongdaxinbb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_reports_49615 (1).png")));
+		menuOperationList.add(menuItemTongdaxinbb);
+		
+		menuItemChanYeLian = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u4E0E\u4EA7\u4E1A\u94FE");
+		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
+		
+		menuOperationList.add(menuItemChanYeLian);
 		
 		menuItemimportrecords = new JMenuItem("\u5BFC\u5165\u4EA4\u6613\u8BB0\u5F55");
 		menuItemimportrecords.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/import.png")));
@@ -3051,6 +3051,7 @@ public class StockInfoManager
 		menuOperationList.add(menuItemimportrecords);
 		
 		mntmNewMenuItem_1 = new JMenuItem("\u67E5\u8BE2");
+		mntmNewMenuItem_1.setEnabled(false);
 		mntmNewMenuItem_1.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/search_results_30.918276374443px_1194419_easyicon.net.png")));
 		
 		menuOperationList.add(mntmNewMenuItem_1);

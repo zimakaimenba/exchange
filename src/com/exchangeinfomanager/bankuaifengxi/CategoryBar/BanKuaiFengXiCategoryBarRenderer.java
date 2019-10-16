@@ -58,7 +58,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	protected Color displayedcolumncolorindex;
 	protected Color lastdisplayedcolumncolorindex;
 	/*
-	 * 单个个股用这个
+	 * 
 	 */
 	public void setDisplayNodeXPeriod(NodeXPeriodData nodexdata1) 
     {
@@ -78,8 +78,10 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 			this.shouldcolumnlast = this.shouldcolumn;
 			this.shouldcolumn = column;
 		}
-		
     }
+	/*
+	 * 
+	 */
 	public void resetBarColumnShouldChangeColor ()
 	{
 		this.shouldcolumn = -1;
@@ -130,13 +132,13 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	public void hideBarMode ()
 	{
 //		BarRenderer.setDefaultShadowsVisible(false);
-		this.lastdisplayedcolumncolorindex = this.displayedcolumncolorindex;//先保存
+//		this.lastdisplayedcolumncolorindex = this.displayedcolumncolorindex;//先保存
 		this.displayedcolumncolorindex = Color.WHITE;
 	}
 	public void unhideBarMode ()
 	{
 //		BarRenderer.setDefaultShadowsVisible(false);
-		this.displayedcolumncolorindex = this.lastdisplayedcolumncolorindex;//先保存 
+		this.displayedcolumncolorindex = this.lastdisplayedcolumncolorindex; 
 	}
 	/*
 	 * (non-Javadoc)
@@ -190,6 +192,10 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 abstract class  BkfxItemLabelGenerator extends StandardCategoryItemLabelGenerator 
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected BkChanYeLianTreeNode node;
 	protected NodeXPeriodData nodexdata;
 	protected int displayedmaxwklevel;

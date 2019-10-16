@@ -376,15 +376,16 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
 			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
 		}
+		this.nodecombinedpnl.setDisplayZhanBiInLine(true);
 		
 		this.centerPanel.add(this.nodecombinedpnl);
 		this.centerPanel.add(this.nodebkcjezblargepnl);
 		
-		JPanel eastpanel;
+//		JPanel eastpanel;
 		tfldselectedmsg = new BanKuaiListEditorPane();
 //		tfldselectedmsg.setLineWrap(true);
 		JScrollPane scrollPaneuserselctmsg = new JScrollPane (); 
-		JScrollBar bar = scrollPaneuserselctmsg.getHorizontalScrollBar();
+//		JScrollBar bar = scrollPaneuserselctmsg.getHorizontalScrollBar();
 		
 //		tfldselectedmsg.setPreferredSize(new Dimension(150, 500));
 		scrollPaneuserselctmsg.setPreferredSize(new Dimension(150, 200));
@@ -403,6 +404,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		saveImage.add(mntmsaveimage);
 
 		this.setComponentPopupMenu(saveImage);
+		
+		
 
 	}
 

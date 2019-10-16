@@ -15,6 +15,10 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private NodeXPeriodData nodexdata;
 	private int shouldcolumn = -1;
 	private int shouldcolumnlast = -2;

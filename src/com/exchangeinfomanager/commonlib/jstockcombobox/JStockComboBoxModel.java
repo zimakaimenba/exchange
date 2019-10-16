@@ -24,7 +24,8 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 
 	  public void addElement (Object node)
 	  {
-		  if( ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) node).getType() != this.onlyselectnodetype   )
+		  int nodetype = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) node).getType();
+		  if( this.onlyselectnodetype != -1 && nodetype != this.onlyselectnodetype   )
 			  return ;
 					  
 		  if(!nodelist.contains(node))

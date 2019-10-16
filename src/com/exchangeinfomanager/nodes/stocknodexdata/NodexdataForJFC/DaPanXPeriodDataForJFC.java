@@ -56,7 +56,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			dapanchaer = szcurrecord + shcurrecord ;
 		} catch (java.lang.NullPointerException e) {
 			dapanchaer = 0.0;
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		return dapanchaer ;
 	}

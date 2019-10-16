@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Paint;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -12,9 +13,11 @@ import java.time.temporal.ChronoUnit;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.LegendItem;
+import org.jfree.chart.annotations.CategoryTextAnnotation;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 
@@ -31,6 +34,10 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBarChartPnl 
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public BanKuaiFengXiCategoryBarChartCjePnl() 
 	{
 		super ();
@@ -68,6 +75,11 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			Double avecje = displayAverageDailyCjeOfWeekLineDataToGui(nodexdata,period);
 		}
 		
+		if(super.shouldDisplayZhanBiInLine() ) {
+			super.resetLineDate ();
+			this.dipalyCjeCjlZBLineDataToGui (super.getCurDisplayedNode().getNodeXPeroidData(period),period);
+		}
+
 		super.barchart.setNotify(true);
 	}
 	/*
@@ -97,18 +109,30 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				
 				if(cje > highestHigh)
 					highestHigh = cje;
+				
+				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+				Double dpdiff = dpnodexdata.getChengJiaoErDifferenceWithLastPeriod(tmpdate, 0);
+				if(dpdiff != null && dpdiff >0) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , 0.0);
+					//cpa.setBaseRadius(0.0);
+					// cpa.setTipRadius(25.0);
+					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.RED);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				}
+				
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
 					barchartdataset.setValue(0.0,super.getRowKey(),wkfriday);
 			}
-			
+
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 			else if(period.equals(NodeGivenPeriodDataItem.DAY))
 				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
 			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
-			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 
 //		super.barchart.setNotify(true);
