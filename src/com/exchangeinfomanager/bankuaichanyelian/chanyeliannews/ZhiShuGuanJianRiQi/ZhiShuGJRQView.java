@@ -1,5 +1,7 @@
 package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -20,12 +22,14 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.StockCalendar.View;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianGeGuNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
@@ -45,7 +49,7 @@ public class ZhiShuGJRQView extends View
 	{
 		super(meetingService, cache);
 		this.meetingService = meetingService;
-		this.title = title;
+		this.title = "'" + title + "'";
 		this.nodecode = cache.getNodeCode();
 		
 		
@@ -63,7 +67,7 @@ public class ZhiShuGJRQView extends View
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				addNews ();
+				addZhiShuGuanJianRiQi (null);
 				
 			}
 		});
@@ -77,16 +81,30 @@ public class ZhiShuGJRQView extends View
 		
 	}
 	
-	protected void addNews() 
+	public void addZhiShuGuanJianRiQi(InsertedMeeting selectnews) 
 	{
 		String newsbelogns = cache.getNodeCode();
 		if(newsbelogns.toLowerCase().equals("all") )
 			newsbelogns = "999999";
 		
-		Meeting meeting = new Meeting("指数日期",LocalDate.now(),
-                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
-        getCreateDialog().setMeeting(meeting);
-        getCreateDialog().setVisible(true);
+		if(selectnews == null ) {
+			Meeting meeting = new Meeting("指数日期",LocalDate.now(),
+                    "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
+	       getCreateDialog().setMeeting(meeting);
+	       getCreateDialog().setVisible(true);
+		} else {
+			Meeting meeting = new Meeting(selectnews.getTitle(),selectnews.getStart(),
+					selectnews.getTitle(), "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
+			
+			try {
+				meetingService.createMeeting(meeting);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 		
 	}
 
@@ -202,6 +220,27 @@ public class ZhiShuGJRQView extends View
                 }
                 return tip;
             }
+			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				 
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        Object value = getModel().getValueAt(row, col);
+		        
+		        Color foreground = Color.BLACK, background = Color.white; 
+		        ZhiShuGJRQModel tablemodel =  (ZhiShuGJRQModel)this.getModel() ;
+		        int modelRow = this.convertRowIndexToModel(row);
+		        InsertedMeeting event = tablemodel.getZhiShuGJRQ(modelRow);
+		        if(event.getMeetingType() == Meeting.NODESNEWS)
+		        	background = new Color(255,255,204);
+		        else
+		        	background = new Color(255,204,229);
+		        
+		        comp.setBackground(background);
+		    	comp.setForeground(foreground);
+
+		    	return comp;
+		    }
+
 		};
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tableCurCylNews.getModel());
 		tableCurCylNews.setRowSorter(sorter);

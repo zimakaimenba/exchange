@@ -394,7 +394,7 @@ public class StockInfoManager
 			{
 				int action = JOptionPane.showConfirmDialog(null, "是否将该股设置为已经退市状态？设置后将无法更改，是否继续？","警告", JOptionPane.YES_NO_OPTION);
 				if(0 == action) {
-					bkdbopt.setStockAsYiJingTuiShi (formatStockCode((String)cBxstockcode.getSelectedItem()));
+					bkdbopt.setStockAsYiJingTuiShi (((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode() );
 				}
 			}
 		});
@@ -652,19 +652,14 @@ public class StockInfoManager
 			{
 				String stockcode = "";
 				try{
-					stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+					stockcode = ((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode();
 				} catch (java.lang.NullPointerException ex) {
-//					stockcode = formatStockCode( ((Stock)cBxstockcode.getSelectedItem()).getMyOwnCode() );
-//					ex.printStackTrace();
+					ex.printStackTrace();
 				} catch (java.lang.ClassCastException ex) {
-					stockcode = formatStockCode( ((Stock)cBxstockcode.getSelectedItem()).getMyOwnCode() );
+					ex.printStackTrace();
 				}
 				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
 				cylnews.setVisible(true);
-				
-//				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl (stockcode);
-//				gjrq.setVisible(true);
-
 			}
 		});
 		
@@ -863,7 +858,7 @@ public class StockInfoManager
 				Object dabataseidstr =  ((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 3);
 				Integer dabataseid = Integer.parseInt(dabataseidstr.toString() );
 				//String actiondate = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
-				String stockcode = formatStockCode( (String)cBxstockcode.getSelectedItem() );
+				String stockcode = ((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode();
 				String currentacnt = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 4);
 				
 				GengGaiZhangHu ggzhpnl = new GengGaiZhangHu( stockcode,  currentacnt,  sellbuy,  accountschicangconfig);
@@ -946,7 +941,7 @@ public class StockInfoManager
 				}
 
 				AccountInfoBasic tmpactionacnt = (AccountInfoBasic) ((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).getAccountsAt(rowindex);
-				String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
+				String stockcode = ((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode();
 				String actionstockaccount = tmpactionacnt.getAccountName();
 				int curgushu = tmpactionacnt.getStockChiCangInfoIndexOf(stockcode).getChicanggushu();
 				
@@ -3031,7 +3026,7 @@ public class StockInfoManager
 		
 		menuOperationList.add(menuItemRfshBk);
 		
-		menuItembkfx = new JMenuItem("\u6210\u4EA4\u91CF\u5206\u6790");
+		menuItembkfx = new JMenuItem("\u677F\u5757\u5206\u6790");
 		menuItembkfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
 		
 		menuOperationList.add(menuItembkfx);
@@ -3072,7 +3067,7 @@ public class StockInfoManager
 		
 		menuConfigration.add(menuItemSysSet);
 		
-		mntmNewMenuItem = new JMenuItem("V17.12.15.13.02");
+		mntmNewMenuItem = new JMenuItem("V19.10.16.13.02");
 		menuConfigration.add(mntmNewMenuItem);
 		
 		AccountsInfoTableModel stockaccountmodel = new AccountsInfoTableModel();

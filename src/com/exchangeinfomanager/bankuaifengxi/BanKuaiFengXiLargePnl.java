@@ -326,11 +326,18 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
 		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  NodeGivenPeriodDataItem.DAY);
 		
-		Integer[] wantednewstype = {Integer.valueOf(Meeting.ZHISHUDATE)};
+		Integer[] wantedzhishutype = {Integer.valueOf(Meeting.ZHISHUDATE)};
 		EventService allDbmeetingService = new DBMeetingService ();
-	    Cache cacheAll = new Cache("ALL",allDbmeetingService, null,displayedstartdate1,displayedenddate1,wantednewstype);
+	    Cache cacheAll = new Cache("ALL",allDbmeetingService, null,displayedstartdate1,displayedenddate1,wantedzhishutype);
+	    
+	    Integer[] wantednewstype = {Integer.valueOf(Meeting.NODESNEWS)};
+	    Cache cacheNode = new Cache(node.getMyOwnCode(),allDbmeetingService, null,displayedstartdate1,displayedenddate1,wantednewstype);
+	    
 		Collection<InsertedMeeting> zhishukeylists = cacheAll.produceMeetings();
-		nodekpnl.updateZhiShuKeyDates (zhishukeylists); //指数关键日期
+		Collection<InsertedMeeting> newslist = cacheNode.produceMeetings();
+		
+		zhishukeylists.addAll(newslist);
+		nodekpnl.updateNewAndZhiShuKeyDates (zhishukeylists); //指数关键日期
 	}
 	
 	@Override

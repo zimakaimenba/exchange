@@ -55,6 +55,7 @@ import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.annotations.CategoryPointerAnnotation;
 import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.annotations.XYShapeAnnotation;
@@ -580,9 +581,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	/*
 	 * 指数关键日期
 	 */
-	public void updateZhiShuKeyDates( Collection<InsertedMeeting> zhishukeylists ) 
+	public void updateNewAndZhiShuKeyDates( Collection<InsertedMeeting> newszhishukeylists ) 
 	{     
-		if(zhishukeylists == null || zhishukeylists.size() == 0)
+		if(newszhishukeylists == null || newszhishukeylists.size() == 0)
 			return ;
 		
 		 ohlcSeries.setNotify(true);
@@ -592,70 +593,119 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	     candlestickDataset.setNotify(true);
 	     candlestickChart.setNotify(true);
 	     
-	    SystemConfigration syscon = SystemConfigration.getInstance();
-		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
-	     
-		for (InsertedMeeting tmpmeeting: zhishukeylists ) {
-			
-			LocalDate zhishudate = tmpmeeting.getStart();
-			if(zhishudate == null)
-				continue;
-			if(zhishudate.isBefore(this.getDispalyStartDate()) || zhishudate.isAfter(this.getDispalyEndDate() ))
-				continue;
-			
-			String zhishucode = tmpmeeting.getNewsOwnerCodes();
-			List<String> zhishulist = Splitter.on("|").omitEmptyStrings().splitToList(zhishucode); //0|000001|T1001|440101
-			for(String tmpzhishu : zhishulist) {
-				
-				if(corezhishu.contains(tmpzhishu)) { //核心指数肯定要显示
-					Color zhishucolor = null;
-					if(tmpzhishu.equals("999999"))
-						zhishucolor = Color.YELLOW;
-					else if(tmpzhishu.equals("000016"))
-						zhishucolor = new Color(102,178,255);
-					else if(tmpzhishu.equals("399006"))
-						zhishucolor = new Color(255,51,255);
-					
-					drawDefinedMarker (zhishudate,zhishucolor ); 
-					
-					LocalDate zhishuend = tmpmeeting.getEnd();
-					if(zhishuend == null)
-						break;
-					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
-						break;
-					drawDefinedMarker (zhishuend,zhishucolor );
-					
-					break;
-				} else if( curdisplayednode.getMyOwnCode().equals(tmpzhishu) ) { //其他板块只在自己板块的时候显示
-					
-					Color bankuaicolor = new Color(51,255,153);
-					drawDefinedMarker (zhishudate,bankuaicolor ); 
-					
-					LocalDate zhishuend = tmpmeeting.getEnd();
-					if(zhishuend == null)
-						continue;
-					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
-						continue;
-					drawDefinedMarker (zhishuend,bankuaicolor );
-				} else if( this.curdisplayedsupernode !=null && this.curdisplayedsupernode.getMyOwnCode().equals(tmpzhishu) ) {
-					Color bankuaicolor = new Color(51,255,153);
-					drawDefinedMarker (zhishudate,bankuaicolor ); 
-					
-					LocalDate zhishuend = tmpmeeting.getEnd();
-					if(zhishuend == null)
-						continue;
-					if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
-						continue;
-					drawDefinedMarker (zhishuend,bankuaicolor );
-				}
-				
+		for (InsertedMeeting tmpmeeting: newszhishukeylists ) {
+			if(tmpmeeting.getMeetingType() == Meeting.ZHISHUDATE) {
+				displayZhiShuGuanJianRiQiToGui (tmpmeeting);
+			} else if (tmpmeeting.getMeetingType() == Meeting.NODESNEWS) {
+				displayNodeNewsToGui (tmpmeeting);
 			}
+			
 			
 			 
 		}
     
 		candlestickChart.fireChartChanged();
 //		this.repaint();
+	}
+	private void displayNodeNewsToGui(InsertedMeeting tmpmeeting)
+	{
+		Paint drawcolor;
+		
+		LocalDate zhishudate = tmpmeeting.getStart();
+		if(zhishudate == null)
+			return;
+		if(zhishudate.isBefore(this.getDispalyStartDate()) || zhishudate.isAfter(this.getDispalyEndDate() ))
+			return;
+		
+		java.sql.Date sqlqkhbdate = null;
+		try {
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+			 sqlqkhbdate = new java.sql.Date(format.parse(zhishudate.toString()).getTime());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (java.lang.NullPointerException e) {
+			return;
+		}
+		org.jfree.data.time.Day markerday = new org.jfree.data.time.Day (sqlqkhbdate);
+		
+		try{
+			long millisonemonth = markerday.getFirstMillisecond();
+			double highestHigh = candlestickChart.getXYPlot().getRangeAxis(0).getRange().getUpperBound();
+			double ylocation = ( highestHigh /1.02) * 1.01;
+			XYPointerAnnotation pointertwomonth = new XYPointerAnnotation("\u004e" , millisonemonth, ylocation, 0);
+	        pointertwomonth.setBaseRadius(0.0);
+	        pointertwomonth.setTipRadius(25.0);
+	        pointertwomonth.setFont(new Font("SansSerif", Font.BOLD, 9));
+	        pointertwomonth.setPaint(Color.YELLOW);
+	        pointertwomonth.setTextAnchor(TextAnchor.CENTER);
+	        pointertwomonth.setToolTipText(tmpmeeting.getTitle());
+	        
+			candlestickChart.getXYPlot().addAnnotation(pointertwomonth);
+			
+	    } catch (java.lang.NullPointerException e) {
+	        	e.printStackTrace();
+	    }
+	}
+	
+	private void displayZhiShuGuanJianRiQiToGui(InsertedMeeting tmpmeeting) 
+	{
+		SystemConfigration syscon = SystemConfigration.getInstance();
+		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
+		
+		LocalDate zhishudate = tmpmeeting.getStart();
+		if(zhishudate == null)
+			return;
+		if(zhishudate.isBefore(this.getDispalyStartDate()) || zhishudate.isAfter(this.getDispalyEndDate() ))
+			return;
+		
+		String zhishucode = tmpmeeting.getNewsOwnerCodes();
+		List<String> zhishulist = Splitter.on("|").omitEmptyStrings().splitToList(zhishucode); //0|000001|T1001|440101
+		for(String tmpzhishu : zhishulist) {
+			
+			if(corezhishu.contains(tmpzhishu)) { //核心指数肯定要显示
+				Color zhishucolor = null;
+				if(tmpzhishu.equals("999999"))
+					zhishucolor = Color.YELLOW;
+				else if(tmpzhishu.equals("000016"))
+					zhishucolor = new Color(102,178,255);
+				else if(tmpzhishu.equals("399006"))
+					zhishucolor = new Color(255,51,255);
+				
+				drawDefinedMarker (zhishudate,zhishucolor ); 
+				
+				LocalDate zhishuend = tmpmeeting.getEnd();
+				if(zhishuend == null)
+					break;
+				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
+					break;
+				drawDefinedMarker (zhishuend,zhishucolor );
+				
+				break;
+			} else if( curdisplayednode.getMyOwnCode().equals(tmpzhishu) ) { //其他板块只在自己板块的时候显示
+				
+				Color bankuaicolor = new Color(51,255,153);
+				drawDefinedMarker (zhishudate,bankuaicolor ); 
+				
+				LocalDate zhishuend = tmpmeeting.getEnd();
+				if(zhishuend == null)
+					continue;
+				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
+					continue;
+				drawDefinedMarker (zhishuend,bankuaicolor );
+			} else if( this.curdisplayedsupernode !=null && this.curdisplayedsupernode.getMyOwnCode().equals(tmpzhishu) ) {
+				Color bankuaicolor = new Color(51,255,153);
+				drawDefinedMarker (zhishudate,bankuaicolor ); 
+				
+				LocalDate zhishuend = tmpmeeting.getEnd();
+				if(zhishuend == null)
+					continue;
+				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
+					continue;
+				drawDefinedMarker (zhishuend,bankuaicolor );
+			}
+			
+		}
+		
 	}
 	private void drawDefinedMarker (LocalDate zhishudate,Color drawcolor)
 	{
@@ -689,9 +739,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			categorymarkerlist.add(marker);
 			
 			
-    } catch (java.lang.NullPointerException e) {
-        	e.printStackTrace();
-    } 
+	    } catch (java.lang.NullPointerException e) {
+	        	e.printStackTrace();
+	    } 
 	}
 	/*
 	 * 显示某个阶段的最大最小值，现在不用了

@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
@@ -46,17 +47,18 @@ public class ZhiShuGJRQManagementPnl extends JDialog
 		this.myowncode = curnodecode;
 		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
 		
-		Integer[] wantednewstype = {Integer.valueOf(Meeting.ZHISHUDATE)};
-		
+		//有些新闻就是指数关键日期的来源，把新闻也放进来，减少输入次数
+		Integer[] wantednewstypeall = {Integer.valueOf(Meeting.ZHISHUDATE),Integer.valueOf(Meeting.NODESNEWS)};
 		LabelService alllabelService = new DBLabelService ();
 		EventService allDbmeetingService = new DBMeetingService ();
-	    Cache cacheAll = new Cache("ALL",allDbmeetingService, alllabelService,LocalDate.now().minusWeeks(52),LocalDate.now(),wantednewstype);
-	    panelallnews = new ZhiShuGJRQView(allDbmeetingService,cacheAll,"25周内所有关键日期");
+	    Cache cacheAll = new Cache("ALL",allDbmeetingService, alllabelService,LocalDate.now().minusWeeks(52),LocalDate.now(),wantednewstypeall);
+	    panelallnews = new ZhiShuGJRQView(allDbmeetingService,cacheAll,"'25周内所有关键日期和新闻'");
 	    
+	    Integer[] wantednewstypesingle = {Integer.valueOf(Meeting.ZHISHUDATE)};
 	    curmeetingService = new DBMeetingService ();
 		LabelService curlabelService = new DBLabelService ();
-	    Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService,LocalDate.now().minusWeeks(52),LocalDate.now(),wantednewstype);
-	    panelgegunews = new ZhiShuGJRQView(curmeetingService,cachecurnode,curnodecode + "25周内关键日期");
+	    Cache cachecurnode = new Cache(curnodecode,curmeetingService, curlabelService,LocalDate.now().minusWeeks(52),LocalDate.now(),wantednewstypesingle);
+	    panelgegunews = new ZhiShuGJRQView(curmeetingService,cachecurnode,curnodecode + "'25周内关键日期'");
 		
 		initializeGui ();
 		createEvents ();
@@ -76,7 +78,10 @@ public class ZhiShuGJRQManagementPnl extends JDialog
 	    public void mouseClicked(MouseEvent e) {
 	        super.mouseClicked(e);
 	        try {
+
 	        	InsertedMeeting upmeeting = panelgegunews.getCurSelectedNews ();
+	        	if(upmeeting == null)
+	        		return ;
 	        	upmeeting.removeMeetingSpecficOwner (myowncode);
 	        	if(!upmeeting.getNewsOwnerCodes().isEmpty())
 	        		curmeetingService.updateMeeting(upmeeting);
@@ -97,11 +102,14 @@ public class ZhiShuGJRQManagementPnl extends JDialog
 		addnewstogegu.addMouseListener(new MouseAdapter() {
 	    	@Override
 	    	public void mouseClicked(MouseEvent arg0) {
-	    		InsertedMeeting selectnewsall = panelallnews.getCurSelectedNews ();
-	    		if(selectnewsall == null)
+	    		InsertedMeeting selectnews = panelallnews.getCurSelectedNews ();
+	    		if(selectnews == null)
 	    			return;
 	    		
-	    		panelgegunews.updateNewsToABkGeGu(selectnewsall,myowncode);
+	    		if(selectnews.getMeetingType() == Meeting.ZHISHUDATE)
+	    			panelgegunews.updateNewsToABkGeGu(selectnews,myowncode);
+	    		else if(selectnews.getMeetingType() == Meeting.NODESNEWS)
+	    			panelgegunews.addZhiShuGuanJianRiQi(selectnews);
 	    	}
 	    });
 	}
@@ -114,25 +122,16 @@ public class ZhiShuGJRQManagementPnl extends JDialog
 	    this.centerPanel.add(panelgegunews);
 	    this.centerPanel.add(Box.createVerticalStrut(5));
 	    JPanel p = JPanelFactory.createPanel(new FlowLayout(FlowLayout.RIGHT));
-	    deletenewstogegu = new JButton("从当前前个股/板块删除");
-	    addnewstogegu = new JButton("添加到当前个股/板块");
+	    deletenewstogegu = new JButton("从当前板块移除");
+	    addnewstogegu = new JButton("添加到当前板块");
 	    p.add(deletenewstogegu);
 	    p.add(new Label("                       "));
 	    p.add(addnewstogegu);
 	    this.centerPanel.add(p);
 	    this.centerPanel.add(Box.createVerticalStrut(5));
 	    this.centerPanel.add(panelallnews);
-	    
-	
-	//   
-	//
-	//    this.centerPanel.add(Box.createVerticalStrut(PADDING));
-	//    
-	//    this.centerPanel.add(Box.createVerticalStrut(10));
-	//    
-	//    this.centerPanel.add(Box.createVerticalStrut(10));
-	//   
-	//    this.centerPanel.add(Box.createVerticalStrut(PADDING));
+	    this.centerPanel.add(new JLabel("* 红色为指数关键日期，黄色为近期新闻。") );
+
 	
 	    // add main panel to the dialog
 	    getContentPane().setLayout(new BorderLayout());

@@ -440,8 +440,8 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		
 		super.plot.getRenderer(3).setSeriesPaint(0, new Color(0,102,0) );
 		super.plot.getRenderer(3).setSeriesPaint(1, new Color(102,255,102) );
-		super.plot.getRenderer(3).setSeriesPaint(2, new Color(204,0,0) );
-		super.plot.getRenderer(3).setSeriesPaint(3, new Color(204,0,0) );
+		super.plot.getRenderer(3).setSeriesPaint(2, new Color(178,102,255) );
+		super.plot.getRenderer(3).setSeriesPaint(3, new Color(178,102,255) );
 		
 	}
 
@@ -591,113 +591,6 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
 		}
 		
 		return html;
-		
-//		String selected = dataset.getColumnKey(column).toString();
-//    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-//    	
-//    	Double curcje = (Double)dataset.getValue(row, column);
-//    	String cjedanwei = getNumberChineseDanWei(curcje);
-//    	curcje = formateCjeToShort (curcje);
-////    	if(curcje >= 100000000) {
-////    		curcje = curcje / 100000000;
-////    		danwei = "亿";
-////    	}  	else if(curcje >= 10000000 && curcje <100000000) {
-////    		curcje = curcje / 10000000;
-////    		danwei = "千万";
-////    	}  	else if(curcje >= 1000000 && curcje <10000000) {
-////    		curcje = curcje / 1000000;
-////    		danwei = "百万";
-////    	}
-//    		
-//    	DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
-//    	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-//    	percentFormat.setMinimumFractionDigits(4);
-//		
-//    	Integer maxwk;
-//    	try{
-//    		maxwk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);//显示成交额是多少周最大
-//    	} catch (java.lang.NullPointerException e) {
-//    		return null;
-//    	}
-//		DaPan dapan = (DaPan)  super.node.getRoot();
-//		Double changerate = nodexdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(dapan,selecteddate,0);//成交额大盘变化贡献率
-//		
-//		Double liutongshizhi = null; String liutongshizhidanwei = null;
-//		if(super.node.getType() == BkChanYeLianTreeNode.TDXGG) {
-//			liutongshizhi = ((StockNodeXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(selecteddate, 0);
-//			if(liutongshizhi == null) {
-//				liutongshizhidanwei = "";
-//			} else {
-//				liutongshizhidanwei = getNumberChineseDanWei(liutongshizhi);
-//				liutongshizhi = formateCjeToShort (liutongshizhi);
-//			}
-//		}
-//		
-//		String htmlstring = "";
-//		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//		Elements body = doc.getElementsByTag("body");
-//		for(Element elbody : body) {
-//			 org.jsoup.nodes.Element dl = elbody.appendElement("dl");
-//			 
-//			 org.jsoup.nodes.Element li3 = dl.appendElement("li");
-//			 li3.appendText(selecteddate.toString());
-//			 
-//			 org.jsoup.nodes.Element li = dl.appendElement("li");
-//			 li.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
-//			 
-//			 org.jsoup.nodes.Element li2 = dl.appendElement("li");
-//			 li2.appendText("成交额MaxWk=" + maxwk);
-//			 
-//			 
-//			 try{
-//				 htmlstring = "成交额大盘变化贡献率" + percentFormat.format (changerate) ;
-//				 
-//				 org.jsoup.nodes.Element li4 = dl.appendElement("li");
-//				 li4.appendText(htmlstring);
-//			 } catch (java.lang.IllegalArgumentException e) {
-////				 li4.appendText("成交额大盘变化贡献率NULL" );
-//			 }
-//			 
-//			 if(super.node.getType() == BkChanYeLianTreeNode.TDXGG) {
-//				 
-//				 try{
-//					 htmlstring = "流通周平均市值" + decimalformate.format(liutongshizhi) + liutongshizhidanwei ;
-//					 
-//					 org.jsoup.nodes.Element li5 = dl.appendElement("li");
-//					 li5.appendText(htmlstring);
-//				 } catch (java.lang.IllegalArgumentException e) {
-////					 li5.appendText("流通周平均市值=NULL");
-//				 }
-//			 }
-//			 
-//			 if(super.node.getType() == BkChanYeLianTreeNode.TDXGG || super.node.getType() == BkChanYeLianTreeNode.TDXBK ) {
-//				 Integer opneupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenUp(selecteddate, 0);
-//				 if( opneupquekou != null) {
-//					 org.jsoup.nodes.Element li6 = dl.appendElement("li");
-//					 li6.appendText("缺口OpenUp =" + opneupquekou);
-//				 }
-//				 Integer opendownquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiOpenDown(selecteddate, 0);
-//				 if( opendownquekou != null) {
-//					 org.jsoup.nodes.Element li7 = dl.appendElement("li");
-//					 li7.appendText("缺口OpenDown =" + opendownquekou);
-//				 }
-//				 Integer huibuupquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuUp(selecteddate, 0);
-//				 if( huibuupquekou != null) {
-//					 org.jsoup.nodes.Element li8 = dl.appendElement("li");
-//					 li8.appendText("缺口HuiBuUp =" + huibuupquekou );
-//				 }
-//				 Integer huibudowquekou = ( (TDXNodesXPeriodData) nodexdata).getQueKouTongJiHuiBuDown(selecteddate, 0);
-//				 if( huibudowquekou != null) {
-//					 org.jsoup.nodes.Element li9 = dl.appendElement("li");
-//					 li9.appendText("缺口HuiBuDown =" + huibudowquekou );
-//				 }
-//			 }
-//			 
-//			 
-//		}
-//		
-//		htmlstring = doc.toString();
-//		return htmlstring;
     }
 	
 	private Double formateCjeToShort(Double curcje) 

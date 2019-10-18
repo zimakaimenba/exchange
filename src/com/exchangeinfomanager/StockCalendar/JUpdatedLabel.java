@@ -37,10 +37,7 @@ public class JUpdatedLabel extends JLabel
 		FontMetrics fm = getFontMetrics(getFont());
 		
 		int basiclength = fm.stringWidth(test);
-		
-		
-		
-//		jmtt.setFixedWidth( basiclength + 15 );
+
 		jmtt.setFixedWidth(  300 );
 		
 		return jmtt;

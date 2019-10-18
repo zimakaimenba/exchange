@@ -88,7 +88,13 @@ public class Meeting {
     {
   		this.newsownercodes = ownercodes;
     }
-    
+    public String getTitleWithUrl ()
+    {
+    	if(slackUrl != null && !slackUrl.isEmpty() )	    		
+   			return "<a href=\" " +   slackUrl + "\"> " + title + "</a> ";
+    	else
+    		return this.title;
+    }
     public String getNewsOwnerCodes ()
     {
     	return this.newsownercodes;

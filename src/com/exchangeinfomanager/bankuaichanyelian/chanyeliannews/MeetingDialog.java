@@ -195,23 +195,18 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         
         //根据event类型不同定制界面
         if(event.getMeetingType() == Meeting.QIANSHI || event.getMeetingType() == Meeting.RUOSHI ) {
-//    		newsownersField.setVisible(true);
-//    		newsownersField.setEnabled(true);
-//    		newstitleField.setVisible(false);
-    		
     		keywordsField.setVisible(false);
     		slackurlField.setVisible(false);
-    		
-
         } else if(event.getMeetingType() == Meeting.ZHISHUDATE ) {
+        	newstitleField.setVisible(true);
+        	newstitleField.setEnabled(true);
+        	
         	newsownersField.setVisible(true);
         	newsownersField.setEnabled(true);
     		
     		keywordsField.setVisible(false);
     		slackurlField.setVisible(false);
-    		newstitleField.setVisible(false);
-    
-        } else if(event.getMeetingType() == Meeting.CHANGQIJILU || event.getMeetingType() == Meeting.NODESNEWS) {
+        } else if(event.getMeetingType() == Meeting.CHANGQIJILU ) {
 
         	newsownersField.setVisible(false);
         	
@@ -222,8 +217,17 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         	newstitleField.setEnabled(true);
         	keywordsField.setEnabled(true);
         	slackurlField.setEnabled(true);
+        } else if ( event.getMeetingType() == Meeting.NODESNEWS) {
+        	newsownersField.setVisible(true);
+        	newsownersField.setEnabled(false);
         	
+        	keywordsField.setVisible(true);
+    		slackurlField.setVisible(true);
+    		newstitleField.setVisible(true);
         	
+        	newstitleField.setEnabled(true);
+        	keywordsField.setEnabled(true);
+        	slackurlField.setEnabled(true);
         	
         } else if (event.getMeetingType() == Meeting.JINQIGUANZHU) {
         	newstitleField.setVisible(true);

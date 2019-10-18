@@ -65,7 +65,7 @@ public class ZhiShuGJRQModel extends AbstractTableModel
             	value = tmpcylnews.getEnd();
                 break;
             case 3:
-            	value = tmpcylnews.getDescription();
+            	value = tmpcylnews.getTitle();
 	    	}
 
 	    	return value;

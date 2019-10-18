@@ -84,7 +84,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		}
 		if(super.shouldDisplayZhanBiInLine() ) {
 			super.resetLineDate ();
-			this.dipalyCjeCjlZBLineDataToGui (super.getCurDisplayedNode().getNodeXPeroidData(period),period);
+			this.dipalyCjeCjlZBLineDataToGui ( super.getCurDisplayedNode().getNodeXPeroidData(period),period );
 		}
 		
 		super.barchart.setNotify(true);

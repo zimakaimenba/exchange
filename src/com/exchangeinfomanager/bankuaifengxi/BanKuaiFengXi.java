@@ -47,11 +47,9 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 
@@ -83,7 +81,6 @@ import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
@@ -319,8 +316,8 @@ public class BanKuaiFengXi extends JDialog
 		barchartpanelbankuaidatachangelisteners.add(panelbkwkcjezhanbi);
 		barchartpanelbankuaidatachangelisteners.add(pnlbkwkcjlzhanbi);
 		//板块pie chart
-		piechartpanelbankuaidatachangelisteners.add(pnllastestggzhanbi);
-		piechartpanelbankuaidatachangelisteners.add(panelLastWkGeGuZhanBi);
+		piechartpanelbankuaidatachangelisteners.add(pnlcurwkggcjezhanbi);
+		piechartpanelbankuaidatachangelisteners.add(panelLastWkGeGucjeZhanBi);
 		piechartpanelbankuaidatachangelisteners.add(pnllastestggcjlzhanbi);
 		
 		
@@ -496,6 +493,8 @@ public class BanKuaiFengXi extends JDialog
 				//显示板块个股
 				if(bkcur.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股，
 					refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
+					
+					panelLastWkGeGucjeZhanBi.updateDate(bkcur, selectdate, 0,globeperiod); //显示选定周PIE
 				}
 					
 		} 
@@ -850,10 +849,10 @@ public class BanKuaiFengXi extends JDialog
 		
 		panelbkwkcjezhanbi.resetDate();
 		
-		pnllastestggzhanbi.resetDate();
+		pnlcurwkggcjezhanbi.resetDate();
 		
 		
-		panelLastWkGeGuZhanBi.resetDate();
+		panelLastWkGeGucjeZhanBi.resetDate();
 		
 		tabbedPanegegu.setTitleAt(0, this.getTabbedPanegeguTabTiles(0) );
 		tabbedPanegegu.setTitleAt(1, this.getTabbedPanegeguTabTiles(1) );
@@ -955,13 +954,21 @@ public class BanKuaiFengXi extends JDialog
 
 		paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),requireend,NodeGivenPeriodDataItem.DAY);
 
-		Integer[] wantednewstype = {Integer.valueOf(Meeting.ZHISHUDATE)};
+		Integer[] wantedzhishutype = {Integer.valueOf(Meeting.ZHISHUDATE)};
 		EventService allDbmeetingService = new DBMeetingService ();
-	    Cache cacheAll = new Cache("ALL",allDbmeetingService, null,CommonUtility.getSettingRangeDate(curselectdate, "basic"),requireend,wantednewstype);
+	    Cache cacheAll = new Cache("ALL",allDbmeetingService, null,CommonUtility.getSettingRangeDate(curselectdate, "basic"),requireend,wantedzhishutype);
+	    
+	    Integer[] wantednewstype = {Integer.valueOf(Meeting.NODESNEWS)};
+	    Cache cacheNode = new Cache(selectnode.getMyOwnCode(),allDbmeetingService, null,CommonUtility.getSettingRangeDate(curselectdate, "basic"),requireend,wantednewstype);
+	    
 		zhishukeylists = cacheAll.produceMeetings();
-		paneldayCandle.updateZhiShuKeyDates (zhishukeylists); //指数关键日期
+		Collection<InsertedMeeting> newslist = cacheNode.produceMeetings();
+		
+		zhishukeylists.addAll(newslist);
+		paneldayCandle.updateNewAndZhiShuKeyDates (zhishukeylists); //指数关键日期
 		
 		cacheAll = null;
+		cacheNode = null;
 		allDbmeetingService = null;
 	}
 	/*
@@ -1916,7 +1923,7 @@ public class BanKuaiFengXi extends JDialog
 		/*
 		 * 查找pie chart内点击的那个个股 
 		 */
-		pnllastestggzhanbi.addPropertyChangeListener(new PropertyChangeListener() 
+		pnlcurwkggcjezhanbi.addPropertyChangeListener(new PropertyChangeListener() 
 		{
 
 	            public void propertyChange(PropertyChangeEvent evt) {
@@ -1930,7 +1937,7 @@ public class BanKuaiFengXi extends JDialog
 	                }
 	            }
 		});
-		panelLastWkGeGuZhanBi.addPropertyChangeListener(new PropertyChangeListener() 
+		panelLastWkGeGucjeZhanBi.addPropertyChangeListener(new PropertyChangeListener() 
 		{
 
             public void propertyChange(PropertyChangeEvent evt) {
@@ -3046,8 +3053,8 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiFengXiNodeCombinedCategoryPnl panelggdpcjlwkzhanbi;
 	private BanKuaiFengXiNodeCombinedCategoryPnl pnlbkwkcjlzhanbi;
 
-	private BanKuaiFengXiPieChartCjePnl pnllastestggzhanbi;
-	private BanKuaiFengXiPieChartCjePnl panelLastWkGeGuZhanBi;
+	private BanKuaiFengXiPieChartCjePnl pnlcurwkggcjezhanbi;
+	private BanKuaiFengXiPieChartCjePnl panelLastWkGeGucjeZhanBi;
 	
 	private BanKuaiFengXiCandlestickPnl paneldayCandle;
 	private BanKuaiFengXiPieChartCjlPnl pnllastestggcjlzhanbi;
@@ -3154,8 +3161,8 @@ public class BanKuaiFengXi extends JDialog
 		JPanel panel = new JPanel();
 		JPanel panel_1 = new JPanel();
 		
-		panelLastWkGeGuZhanBi = new BanKuaiFengXiPieChartCjePnl(-1);
-		panelLastWkGeGuZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelLastWkGeGucjeZhanBi = new BanKuaiFengXiPieChartCjePnl(-1);
+		panelLastWkGeGucjeZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JPanel panel_2 = new JPanel();
 		
@@ -3192,7 +3199,7 @@ public class BanKuaiFengXi extends JDialog
 							.addGap(14)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
-								.addComponent(panelLastWkGeGuZhanBi, 0, 0, Short.MAX_VALUE)))
+								.addComponent(panelLastWkGeGucjeZhanBi, 0, 0, Short.MAX_VALUE)))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(18)
 							.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 375, GroupLayout.PREFERRED_SIZE)))
@@ -3225,7 +3232,7 @@ public class BanKuaiFengXi extends JDialog
 								.addGroup(gl_contentPanel.createSequentialGroup()
 									.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 311, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(panelLastWkGeGuZhanBi, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
+									.addComponent(panelLastWkGeGucjeZhanBi, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 303, GroupLayout.PREFERRED_SIZE)))
 							.addGap(34))))
@@ -3235,9 +3242,9 @@ public class BanKuaiFengXi extends JDialog
 		scrollPane_3.setViewportView(tfldselectedmsg);
 		tfldselectedmsg.setEditable(false);
 		
-		pnllastestggzhanbi = new BanKuaiFengXiPieChartCjePnl(0);
-		tabbedPane.addTab("\u677F\u5757\u5F53\u5468\u6210\u4EA4\u989D\u4E2A\u80A1\u5360\u6BD4", null, pnllastestggzhanbi, null);
-		pnllastestggzhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u5F53\u524D\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlcurwkggcjezhanbi = new BanKuaiFengXiPieChartCjePnl(0);
+		tabbedPane.addTab("\u677F\u5757\u5F53\u5468\u6210\u4EA4\u989D\u4E2A\u80A1\u5360\u6BD4", null, pnlcurwkggcjezhanbi, null);
+		pnlcurwkggcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u5F53\u524D\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		pnllastestggcjlzhanbi = new BanKuaiFengXiPieChartCjlPnl();
 		pnllastestggcjlzhanbi.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
