@@ -62,6 +62,8 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	protected TimeSeries nodedietingnum;
 	private LocalDate firstdayinhistory;
 	
+	private LocalDate lastdayofbxfx; //为不完整周分析准备的。如果为空说明是完整周
+	
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
 	{
 		if(kdata.getNodeToDpChenJiaoErZhanbi() == null) 
@@ -99,7 +101,67 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		} catch (org.jfree.data.general.SeriesException e) {
 		}
 	}
-	
+	/*
+	 * 
+	 */
+	public void resetAllData ()
+	{
+		try {
+			nodeamozhanbi.clear(); 
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodevolzhanbi.clear(); 
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodefxjg.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeexchangedaysnumber.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeqktjopenup.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {	
+			nodeqktjhuibuup.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeqktjopendown.clear();
+		} catch (java.lang.NullPointerException e) {
+					
+		}
+		try {
+			nodeqktjhuibudown.clear();
+		} catch (java.lang.NullPointerException e) {
+					
+		}
+		try {
+			qklist.clear();
+		} catch (java.lang.NullPointerException e) {
+		}
+		try {	
+			nodezhangtingnum.clear();
+		} catch (java.lang.NullPointerException e) {
+		}
+		try {
+			nodedietingnum.clear();
+		} catch (java.lang.NullPointerException e) {
+		}
+		
+		firstdayinhistory = null;
+	}
+
 	/*
 	 * 判断日期是否到了数据库历史纪录的第一条
 	 */

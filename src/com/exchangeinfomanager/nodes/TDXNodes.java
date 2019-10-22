@@ -20,6 +20,7 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	protected NodeXPeriodData nodemonthdata;
 	
 	private String suoshujiaoyisuo;
+	private LocalDate lastdayofbxfx;
 		
 	public String getSuoShuJiaoYiSuo ()
 	{
@@ -60,5 +61,25 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		
 		return htmldoc.toString();
 	}
+	
+	/*
+	 * 
+	 */
+	public Boolean isNodeDataAtNotCalWholeWeekMode ()
+	{
+		if(this.lastdayofbxfx == null)
+			return false;
+		else
+			return true;
+	}
+	public void setNodeDataAtNotCalWholeWeekMode (LocalDate lastdayofbxfx)
+	{
+		this.lastdayofbxfx = lastdayofbxfx;
+	}
+	public LocalDate getNodeDataAtNotCalWholeWeekModeLastDate ()
+	{
+		return this.lastdayofbxfx;
+	}
+	
 	
 }

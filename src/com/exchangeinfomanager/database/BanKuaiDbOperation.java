@@ -3136,6 +3136,10 @@ public class BanKuaiDbOperation
 		if(bankuai == null  )
 			return null;
 		
+		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
+		if(!bankuai.isNodeDataAtNotCalWholeWeekMode() )
+			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
+		
 		//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
 		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
@@ -3152,8 +3156,8 @@ public class BanKuaiDbOperation
 		else
 			bkcjltable = "通达信交易所指数每日交易信息";
 		
-		String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart);
-		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend);
+		String formatedstartdate = selecteddatestart.toString();
+		String formatedenddate  = selecteddateend.toString();
 		
 		//包含成交量和成交额的SQL
 		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
@@ -3164,18 +3168,18 @@ public class BanKuaiDbOperation
 				 
 				"FROM\r\n" + 
 				"(\r\n" + 
-				"select  通达信板块每日交易信息.`交易日期` as workday, DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+				"SELECT  通达信板块每日交易信息.`交易日期` as workday, DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
 				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
-				"from 通达信板块每日交易信息\r\n" + 
-				"where 代码 = '999999'\r\n" + 
-				"group by year(通达信板块每日交易信息.`交易日期`),week(通达信板块每日交易信息.`交易日期`)\r\n" + 
+				"FROM 通达信板块每日交易信息 \r\n" + 
+				"WHERE 代码 = '999999' AND 通达信板块每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
+				"GROUP by year(通达信板块每日交易信息.`交易日期`),week(通达信板块每日交易信息.`交易日期`)\r\n" + 
 				"\r\n" + 
 				"UNION ALL\r\n" + 
 				"\r\n" + 
 				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
 				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
 				"from 通达信交易所指数每日交易信息\r\n" + 
-				"where 代码 = '399001'\r\n" + 
+				"where 代码 = '399001' AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
 				"group by year(通达信交易所指数每日交易信息.`交易日期`),week(通达信交易所指数每日交易信息.`交易日期`)\r\n" + 
 				") T,\r\n" + 
 				"\r\n" + 
@@ -3185,11 +3189,10 @@ public class BanKuaiDbOperation
 						+ " count(1) as JILUTIAOSHU \r\n"
 						+ "from " + bkcjltable + "\r\n" +
 						
-				"where 代码 = '" + bkcode + "'\r\n" + 
+				"where 代码 = '" + bkcode + "' AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
 				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
 				") M\r\n" + 
 				"WHERE YEAR(T.WORKDAY) = YEAR(M.WORKDAY) AND  WEEK(T.WORKDAY) = WEEK(M.WORKDAY)\r\n" + 
-				"		AND T.WORKDAY BETWEEN'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
 				" GROUP BY year(t.workday),week(t.workday)"
 				;
 							
@@ -3418,14 +3421,21 @@ public class BanKuaiDbOperation
 	 * //上面是个股对板块的指定周期(默认是周线)，下面部分是为个股自身周线数据，用来计算个股对大盘的数据
 	 */
 	public Stock getStockZhanBi(Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
-	{	
+	{
+		if(stock == null)
+			return null;
+		
+		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
+		if(!stock.isNodeDataAtNotCalWholeWeekMode())
+			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
+		
 		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
 		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
 		NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
-		
+
 		String stockcode = stock.getMyOwnCode();
 		String bkcjltable;
 //		if(stockcode.startsWith("6"))
@@ -3434,8 +3444,8 @@ public class BanKuaiDbOperation
 		else
 			bkcjltable = "通达信深交所股票每日交易信息";
 		
-		String formatedstartdate = CommonUtility.formatDateYYYY_MM_DD(selecteddatestart);
-		String formatedenddate  = CommonUtility.formatDateYYYY_MM_DD(selecteddateend);
+		String formatedstartdate = selecteddatestart.toString();
+		String formatedenddate  = selecteddateend.toString();
 		
 		//包含成交量和成交额的SQL
 		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday,1) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
@@ -3449,14 +3459,16 @@ public class BanKuaiDbOperation
 				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
 				"from 通达信板块每日交易信息\r\n" + 
 				"where 代码 = '999999'\r\n" + 
-				"group by year(通达信板块每日交易信息.`交易日期`),week(通达信板块每日交易信息.`交易日期`)\r\n" + 
+				" AND 通达信板块每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"+
+				"group by year(通达信板块每日交易信息.`交易日期`), week(通达信板块每日交易信息.`交易日期`)\r\n" + 
 				"\r\n" + 
 				"UNION ALL\r\n" + 
 				"\r\n" + 
 				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
 				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
 				"from 通达信交易所指数每日交易信息\r\n" + 
-				"where 代码 = '399001'\r\n" + 
+				"where 代码 = '399001' "
+				+" AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"+ 
 				"group by year(通达信交易所指数每日交易信息.`交易日期`),week(通达信交易所指数每日交易信息.`交易日期`)\r\n" + 
 				") T,\r\n" + 
 				"\r\n" + 
@@ -3472,11 +3484,12 @@ public class BanKuaiDbOperation
 						+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` >= 9.0,1,NULL) ) AS 涨停, \r\n"
 						+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` <= -9.0,1,NULL) ) AS 跌停  \r\n"
 						+ " from " + bkcjltable + "\r\n" +  
-				"where 代码 = '" + stockcode + "'\r\n" + 
+				"Where 代码 = '" + stockcode + "'\r\n" + 
+				" AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
 				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
 				") M\r\n" + 
 				"WHERE YEAR(T.WORKDAY) = YEAR(M.WORKDAY) AND  WEEK(T.WORKDAY) = WEEK(M.WORKDAY)\r\n" + 
-				"		AND T.WORKDAY BETWEEN'" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
+				
 				" GROUP BY year(t.workday),week(t.workday)"
 				;
 				
@@ -3717,7 +3730,8 @@ public class BanKuaiDbOperation
 		
 		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
 		requiredstartday = requiredstartday.with(fieldCH, 1); //确保K线总是显示完整得一周
-		requiredendday = requiredendday.with(fieldCH, 7); 
+		if(!stock.isNodeDataAtNotCalWholeWeekMode() )
+			requiredendday = requiredendday.with(fieldCH, 7); 
 		
 		String csvfilepath = sysconfig.getCsvPathOfExportedTDXVOLFiles();
 		String stockcode = stock.getMyOwnCode();
@@ -3992,7 +4006,8 @@ public class BanKuaiDbOperation
 //			e.printStackTrace();
 			return bk;
 		}
-		nodeendday = nodeendday.with(fieldCH, 7);
+		if(!bk.isNodeDataAtNotCalWholeWeekMode() )
+			nodeendday = nodeendday.with(fieldCH, 7);
 		
 		NodeXPeriodData nodedayperioddata = bk.getNodeXPeroidData(period);
 

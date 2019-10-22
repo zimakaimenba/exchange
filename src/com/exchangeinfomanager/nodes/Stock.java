@@ -179,12 +179,6 @@ public class Stock extends TDXNodes {
 	*/
 	public Boolean isVeryVeryNewXinStock (LocalDate checkdate)
 	{
-//		NodeXPeriodDataBasic stockxdata = this.getNodeXPeroidData(TDXNodeGivenPeriodDataItem.DAY);
-//		OHLCSeries ohlcdata = stockxdata.getOHLCData();
-//		if(ohlcdata.getItemCount() <= 20)
-//			return true;
-//		else
-//			return false;
 		NodeJiBenMian tmpnodejbm = super.getNodeJiBenMian();
 		LocalDate shangshiriqi = tmpnodejbm.getShangShiRiQi();
 		if(com.exchangeinfomanager.commonlib.DayCounter.bestDaysBetweenIngoreWeekEnd(shangshiriqi, checkdate) <= 15)

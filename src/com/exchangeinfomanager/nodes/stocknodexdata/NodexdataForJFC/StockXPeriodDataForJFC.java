@@ -127,6 +127,40 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 //			e.printStackTrace();
 		}
 	}
+	public void resetAllData ()
+	{
+		super.resetAllData();
+		try {
+			stockhuanshoulv.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			stockliutongshizhi.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			stockzongshizhi.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			periodhighestzhangdiefu.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			periodlowestzhangdiefu.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			stockgzjl.clear();
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)

@@ -128,23 +128,6 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode
 		// TODO Auto-generated method stub
 		
 	}
-	/*
-	 * 
-	 */
-//	public abstract NodeXPeriodDataBasic getNodeXPeroidData (String period);
-
-//	public NodeXPeriodDataBasic getNodeXPeroidData (String period)
-//	{
-//		if(period.equals(StockGivenPeriodDataItem.WEEK))
-//			return nodewkdata;
-//		else if(period.equals(StockGivenPeriodDataItem.MONTH))
-//			return nodemonthdata;
-//		else if(period.equals(StockGivenPeriodDataItem.DAY))
-//			return nodedaydata;
-//		else 
-//			return null;
-//	}
-		 
 }
 
 

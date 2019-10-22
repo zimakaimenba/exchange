@@ -411,7 +411,7 @@ public class StockInfoManager
     					return;
     				
             		LocalDate requirestart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-    				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, requirestart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
+    				BanKuai bankuai = (BanKuai) allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selbkcode, BkChanYeLianTreeNode.TDXBK);
     				editorPanenodeinfo.displayNodeAllInfo(bankuai);
             		
             	}

@@ -378,6 +378,14 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
+	@Override
+	public void resetAllData() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+
 //	@Override
 //	public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {
 //		// TODO Auto-generated method stub

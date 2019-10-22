@@ -12,19 +12,15 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
-import org.jfree.data.ComparableObjectItem;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
-import org.joda.time.Interval;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -36,11 +32,9 @@ import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.PrecisionNum;
 
-import com.exchangeinfomanager.bankuaifengxi.QueKou;
+
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
@@ -56,8 +50,6 @@ import com.udojava.evalex.Expression;
  */
  public abstract class TDXNodesXPeriodDataForJFC extends TDXNodesXPeriodExternalData
  {
-	
-
 	public TDXNodesXPeriodDataForJFC (String nodecode,String nodeperiodtype)
 	{
 		super(nodecode,nodeperiodtype);
@@ -69,7 +61,6 @@ import com.udojava.evalex.Expression;
 	
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodDataForJFC.class);
 
-	
 	protected OHLCSeries nodeohlc; 
 	protected TimeSeries nodeamo; 
 	protected TimeSeries nodevol; 
@@ -113,6 +104,97 @@ import com.udojava.evalex.Expression;
 		}
 		
 		super.addNewXPeriodData(kdata);
+	}
+	public void resetAllData ()
+	{
+		super.resetAllData();
+		try {
+			nodeohlc.clear(); 
+		}  catch (java.lang.NullPointerException e) {
+		
+		}
+		try {
+			nodeamo.clear(); 
+		}   catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodevol.clear(); 
+		}   catch (java.lang.NullPointerException e) {
+			
+		}
+
+		//均线
+		try {
+			nodeohlcma5.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeohlcma10.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeohlcma20.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeohlcma30.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeohlcma60.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeohlcma120.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeohlcma250.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeamoma5.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeamoma10.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeamoma20.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeamoma30.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeamoma60.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeamoma120.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
+		try {
+			nodeamoma250.clear();
+		}  catch (java.lang.NullPointerException e) {
+			
+		}
 	}
 	/*
 	 * 
@@ -319,7 +401,6 @@ import com.udojava.evalex.Expression;
 		}
 		
 		return null;
-		
 	}
 	public LocalDate getOHLCRecordsEndDate ()
 	{

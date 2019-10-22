@@ -235,6 +235,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         	
         	keywordsField.setVisible(false);
     		slackurlField.setVisible(false);
+    		newsownersField.setVisible(false);
         }
         
     	

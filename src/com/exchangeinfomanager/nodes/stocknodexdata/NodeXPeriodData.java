@@ -13,8 +13,14 @@ import com.google.common.collect.Multimap;
 
 public interface NodeXPeriodData 
 {
+	
+	
+	
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata);
 	
+	
+	public void resetAllData ();
+		
 	public Boolean isLocalDateReachFristDayInHistory (LocalDate requireddate,int difference);
 	public void setShangShiRiQi (LocalDate requireddate);
 	

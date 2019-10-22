@@ -356,7 +356,7 @@ public class BanKuaiGuanLi extends JDialog
 				continue;
 			
 			BanKuai tmpbk;
-			tmpbk = this.allbkstks.getBanKuai( bkcode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
+			tmpbk = this.allbkstks.getBanKuai( bkcode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true,false);
 			tmpbk = bkdbopt.getBanKuaiBasicInfo(tmpbk);
 			tmpbk = this.allbkstks.getAllGeGuOfBanKuai (tmpbk,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
 			
