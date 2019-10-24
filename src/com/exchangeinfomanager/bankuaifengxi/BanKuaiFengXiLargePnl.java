@@ -47,6 +47,7 @@ import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestic
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarRenderer;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
@@ -56,6 +57,7 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
@@ -105,31 +107,31 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		LocalDate requirestart = nodekpnl.getDispalyStartDate();
 		
 		TDXNodes tmpnode = null;
-		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
-			selectnode = allbksks.getStock((Stock)selectnode,requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
-			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
-			this.allbksks.syncStockData((Stock)selectnode);
-			
-			tmpnode = selectnode;
-		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
-			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
-			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
-			
-			tmpnode = selectnode;
-		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
-			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
-			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
-			
-			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
-		}
+//		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
+//			selectnode = allbksks.getStock((Stock)selectnode,requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
+//			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
+//			this.allbksks.syncStockData((Stock)selectnode);
+//			
+//			tmpnode = selectnode;
+//		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
+//			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
+//			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
+//			
+//			tmpnode = selectnode;
+//		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
+//			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
+//			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
+//			
+//			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
+//		}
+//		
+//		 if(superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
+//			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
+//			 this.allbksks.syncBanKuaiData( (BanKuai)superbankuai);
+//		 }
 		
-		 if(superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
-			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
-			 this.allbksks.syncBanKuaiData( (BanKuai)superbankuai);
-		 }
 		
-		
-		this.allbksks.getDaPanKXian (requirestart,requireend,NodeGivenPeriodDataItem.DAY); 
+//		this.allbksks.getDaPanKXian (requirestart,requireend,NodeGivenPeriodDataItem.DAY); 
 
 		nodekpnl.updatedDate(superbankuai,tmpnode,requirestart,requireend,NodeGivenPeriodDataItem.DAY);
 	}
@@ -238,32 +240,23 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 			}
 		});
 
-		this.nodebkcjezblargepnl.addPropertyChangeListener(new PropertyChangeListener() {
+		nodebkcjezblargepnl.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
-                    
-                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
-            		org.jsoup.select.Elements body = doc.select("body");
-            		org.jsoup.select.Elements dl = body.select("dl");
-            		org.jsoup.select.Elements li;
-            		try {
-            			 li = dl.get(0).select("li");
-            		} catch (java.lang.IndexOutOfBoundsException e) {
-            			return;
-            		}
-            		
-            		String selecteddate = li.get(0).text();
-            		LocalDate datekey = LocalDate.parse(selecteddate);
-    				
-    				
-    				setUserSelectedColumnMessage(selectedinfo);
+            		LocalDate datekey = LocalDate.parse(selectedinfo);
 
     				nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
     				nodecombinedpnl.highLightSpecificBarColumn(datekey);
     				nodekpnl.highLightSpecificBarColumn(datekey);
-                }
+    				
+    				setUserSelectedColumnMessage(nodebankuai,selectedinfo);
+                } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE ) ) {
+                	nodebkcjezblargepnl.resetLineDate ();
+                	NodeXPeriodData dpnodexdata = nodebankuai.getNodeXPeroidData (NodeGivenPeriodDataItem.WEEK);
+        			((BanKuaiFengXiCategoryBarChartCjePnl)nodebkcjezblargepnl).displayAverageDailyCjeOfWeekLineDataToGui(dpnodexdata,NodeGivenPeriodDataItem.WEEK);
+        		}
             }
         });
 		
@@ -272,17 +265,12 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
-                    
-//                    org.jsoup.nodes.Document doc = Jsoup.parse(selectedinfo);
-//            		org.jsoup.select.Elements body = doc.select("body");
-//            		org.jsoup.select.Elements dl = body.select("dl");
-//            		org.jsoup.select.Elements li = dl.get(0).select("li");
-//            		String selecteddate = li.get(0).text();
             		LocalDate datekey = LocalDate.parse(selectedinfo);
+            		
             		nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
     				nodekpnl.highLightSpecificBarColumn(datekey);
     				
-    				setUserSelectedColumnMessage(selectedinfo);
+    				setUserSelectedColumnMessage(displaynode,selectedinfo);
     				
     				
                 }
@@ -293,9 +281,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	/*
 	 * 显示用户点击bar column后应该提示的信息
 	 */
-	private void setUserSelectedColumnMessage(String selttooltips) 
+	private void setUserSelectedColumnMessage(TDXNodes node, String selttooltips) 
 	{
-		String htmlstring = this.displaynode.getNodeXPeroidDataInHtml(LocalDate.parse(selttooltips),this.globeperiod);
+		String htmlstring = node.getNodeXPeroidDataInHtml(LocalDate.parse(selttooltips),this.globeperiod);
 		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
 	}
 	/*
@@ -359,7 +347,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //	private BanKuaiFengXiNodeCombinedCategoryPnl centerPanel;
 	private JPanel centerPanel;
 	private BanKuaiFengXiNodeCombinedCategoryPnl nodecombinedpnl;
-	private  BanKuaiFengXiCategoryBarChartPnl nodebkcjezblargepnl;
+	private BanKuaiFengXiCategoryBarChartPnl nodebkcjezblargepnl;
 	private BanKuaiListEditorPane tfldselectedmsg;
 	private BanKuaiFengXiCandlestickPnl nodekpnl;
 	private JPopupMenu saveImage;
@@ -376,6 +364,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.setPreferredSize(new Dimension(1640, 705)); //设置显示框的大小
 		
 		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical","CJE");
+		
 		if(nodebkbelonged.getType() == BkChanYeLianTreeNode.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
 			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());

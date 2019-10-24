@@ -1128,7 +1128,7 @@ public class BanKuaiFengXi extends JDialog
 					
 					gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (globeperiod);
 				} else {
-					chxbxwholeweek.setSelected(false);
+					chxbxwholeweek.setSelected(!chxbxwholeweek.isSelected());
 				}
 			}
 		});

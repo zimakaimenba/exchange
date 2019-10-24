@@ -206,6 +206,13 @@ import com.udojava.evalex.Expression;
 	/*
 	 * 
 	 */
+	public TimeSeries getAMOData ()
+	{
+		return this.nodeamo;
+	}
+	/*
+	 * 
+	 */
 	public org.ta4j.core.TimeSeries getOHLCDataOfTa4jFormat (LocalDate requiredstart, LocalDate requiredend)
 	{
 		if(this.nodeohlc == null)
@@ -468,10 +475,6 @@ import com.udojava.evalex.Expression;
 			return null;
 		
 		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
-//		DaPan dapan = (DaPan)getRoot();
-//		while ( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) {  //上周可能大盘修饰
-//			index --;
-//		}
 		try{
 			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( index -1 );
 			if(lastcjlrecord == null) //休市前还是空，说明要是新板块。板块没有停牌的
@@ -494,7 +497,6 @@ import com.udojava.evalex.Expression;
 			return null;
 		
 		Double curcje = curcjlrecord.getValue().doubleValue();
-		int itemcount = nodeamo.getItemCount();
 		int maxweek = 0;
 		
 		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );

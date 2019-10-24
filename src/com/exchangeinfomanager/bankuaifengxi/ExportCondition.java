@@ -79,7 +79,7 @@ public class ExportCondition
 						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
 					continue;
 				
-				childnode = allbksks.getBanKuai( (BanKuai)childnode, requirestart, exportdate,period);
+				childnode = allbksks.getBanKuai( (BanKuai)childnode, requirestart, exportdate,period,true);
 				if( this.shouldOnlyExportBanKuaiWithYangXian () ) //需要OHLC数据才同步K线数据，节约时间
 					allbksks.syncBanKuaiData((BanKuai)childnode);
 				
@@ -111,7 +111,7 @@ public class ExportCondition
 					 if( checkednodesset.contains(ggstock.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
 						 continue;
 					 
-					 ggstock = allbksks.getStock(ggstock,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK);
+					 ggstock = allbksks.getStock(ggstock,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 //					 if(!Strings.isNullOrEmpty(this.getSettingMAFormula() ) || this.shouldOnlyExportStocksWithWkYangXian() != null )
 //						 allbksks.syncStockData(ggstock);
 
@@ -144,7 +144,7 @@ public class ExportCondition
 				if( checkednodesset.contains(childnode.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
 					 continue;
 				
-				childnode = allbksks.getStock((Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK);
+				childnode = allbksks.getStock((Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 				Boolean stkcheckresult = null;
 				try{
 				stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA( (Stock)childnode, exportdate, period);

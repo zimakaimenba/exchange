@@ -278,7 +278,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		do  {
 			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 			
-			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
+//			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
 				Double avecje = nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday, 0);
 				
 				if(avecje != null) {
@@ -291,7 +291,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 						linechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
 				}
 				
-			}
+//			}
 			
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;

@@ -1,39 +1,26 @@
 package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
-import java.awt.BorderLayout;
+
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
+
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
-import org.jfree.chart.ChartMouseEvent;
-import org.jfree.chart.ChartMouseListener;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jsoup.Jsoup;
-
-
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
@@ -41,10 +28,6 @@ import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
-import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeLargePeriodChartPnl;
-import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl;
-import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 
 public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel 
@@ -76,26 +59,19 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	{
 		createGui ();
 		
-//		if(this.pnltype.toUpperCase().equals("CJE")) {
-			chartpanelhighlightlisteners = new HashSet<BarChartPanelHightLightColumnListener> ();
-			chartpanelhighlightlisteners.add(cjelargepnl);
-			chartpanelhighlightlisteners.add(cjezblargepnl);
+		chartpanelhighlightlisteners = new HashSet<BarChartPanelHightLightColumnListener> ();
+		chartpanelhighlightlisteners.add(cjelargepnl);
+		chartpanelhighlightlisteners.add(cjezblargepnl);
 			
-			cjelargepnl.addPropertyChangeListener(this);
-			cjezblargepnl.addPropertyChangeListener(this);
-			
-		
-		
-		
-		
+		cjelargepnl.addPropertyChangeListener(this);
+		cjezblargepnl.addPropertyChangeListener(this);
+
 		createEvents();
 	}
 	
 	
 	public static final String SELECTED_PROPERTY = "selected";
 	protected boolean selectchanged;
-	private String tooltipselected;
-	private LocalDate dateselected;
 	private boolean horizonlayout;
 	private String pnltype = "CJE"; //cje or cjl pnl?
 	
@@ -255,7 +231,6 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayAverageDailyCjeOfWeekLineDataToGui(this.curdisplayednode.getNodeXPeroidData(period),period);
 			((BanKuaiFengXiCategoryBarRenderer)cjezblargepnl.plot.getRenderer()).unhideBarMode();
-//			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).displayAverageDailyCjeOfWeekLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
 		}
 		
 		
