@@ -104,7 +104,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
             	
             	break;
             case 3: // "°å¿é³É½»¶î¹±Ï×",
-            	Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
+            	Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
             	value = cjechangegrowthrate;
             	
 //            	cjechangegrowthrate = null;

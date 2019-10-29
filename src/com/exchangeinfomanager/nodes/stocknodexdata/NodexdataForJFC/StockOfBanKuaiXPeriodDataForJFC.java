@@ -13,6 +13,7 @@ import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
+import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -389,6 +390,28 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 	public void resetAllData() {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate,
+			int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+//	@Override
+//	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(DaPan superbk, LocalDate requireddate,
+//			int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+	@Override
+	public LocalDate getLocalDateOfSpecificIndexOfOHLCData(Integer index) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 

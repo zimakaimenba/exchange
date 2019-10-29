@@ -169,7 +169,7 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 	  	   LocalDate curselectdate = LocalDate.now();
 	  	   LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		 		
-	  	     bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), requirestart,curselectdate,NodeGivenPeriodDataItem.WEEK,true,false);
+	  	     bankuai = bkstk.getBanKuai(bankuai, requirestart,curselectdate,NodeGivenPeriodDataItem.WEEK,true);
 	  	     bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,NodeGivenPeriodDataItem.WEEK);
 	  	     
 	  	     Set<StockOfBanKuai> allbkge = bankuai.getSpecificPeriodBanKuaiGeGu(curselectdate,0,NodeGivenPeriodDataItem.WEEK);
@@ -209,7 +209,7 @@ public class BanKuaiAndChanYeLianGUI2  extends JPanel
 		  	    LocalDate curselectdate = LocalDate.now();
 		  	    LocalDate requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		 		
-		  	    bankuai = bkstk.getBanKuai(bankuai.getMyOwnCode(), requirestart, curselectdate,NodeGivenPeriodDataItem.WEEK,true,false);
+		  	    bankuai = bkstk.getBanKuai(bankuai, requirestart, curselectdate,NodeGivenPeriodDataItem.WEEK,true);
 		  	    bankuai = bkstk.getAllGeGuOfBanKuai ( bankuai,NodeGivenPeriodDataItem.WEEK);
 		  	     
 		  	    Set<StockOfBanKuai> allbkge = bankuai.getSpecificPeriodBanKuaiGeGu(curselectdate,0,NodeGivenPeriodDataItem.WEEK);

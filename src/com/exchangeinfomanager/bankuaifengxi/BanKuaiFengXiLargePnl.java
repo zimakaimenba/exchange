@@ -107,31 +107,31 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		LocalDate requirestart = nodekpnl.getDispalyStartDate();
 		
 		TDXNodes tmpnode = null;
-//		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
+		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
 //			selectnode = allbksks.getStock((Stock)selectnode,requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
 //			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
 //			this.allbksks.syncStockData((Stock)selectnode);
-//			
-//			tmpnode = selectnode;
-//		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
+			
+			tmpnode = selectnode;
+		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
 //			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
 //			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
-//			
-//			tmpnode = selectnode;
-//		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
+			
+			tmpnode = selectnode;
+		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
 //			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
 //			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
-//			
-//			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
-//		}
-//		
-//		 if(superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
-//			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
-//			 this.allbksks.syncBanKuaiData( (BanKuai)superbankuai);
-//		 }
+			
+			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
+		}
+		
+		 if(superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
+			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, requirestart,requireend, NodeGivenPeriodDataItem.WEEK,true);
+			 this.allbksks.syncBanKuaiData( (BanKuai)superbankuai);
+		 }
 		
 		
-//		this.allbksks.getDaPanKXian (requirestart,requireend,NodeGivenPeriodDataItem.DAY); 
+		this.allbksks.getDaPanKXian (requirestart,requireend,NodeGivenPeriodDataItem.DAY); 
 
 		nodekpnl.updatedDate(superbankuai,tmpnode,requirestart,requireend,NodeGivenPeriodDataItem.DAY);
 	}
@@ -308,8 +308,10 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private void updateData(TDXNodes nodebkbelogned, TDXNodes node, LocalDate displayedstartdate1, LocalDate displayedenddate1,
 			String period) 
 	{
-		if(nodebkbelogned != null)
+		if(nodebkbelogned != null) {
+			this.nodebkcjezblargepnl.setDrawAverageDailyCjeOfWeekLine(true);
 			this.nodebkcjezblargepnl.updatedDate(nodebkbelogned, displayedstartdate1, displayedenddate1, period);
+		}
 		
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
 		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  NodeGivenPeriodDataItem.DAY);

@@ -153,7 +153,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	
             	break;
             case 6:
-            	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuai(dapan,showzhbiwknum,0);
+            	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(dapan,showzhbiwknum,0);
             	value = cjegrowthrate;
             	
             	cjegrowthrate = null;

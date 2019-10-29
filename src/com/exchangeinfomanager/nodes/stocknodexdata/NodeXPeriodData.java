@@ -61,6 +61,7 @@ public interface NodeXPeriodData
 	
 //	public  org.ta4j.core.TimeSeries getOHLCData ();
 	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate,int difference);
+	public LocalDate getLocalDateOfSpecificIndexOfOHLCData (Integer index);
 	public Double getSpecificOHLCZhangDieFu (LocalDate requireddate,int difference);
 	public Double getSpecificTimeRangeOHLCHightestZhangFu (LocalDate requiredstart,LocalDate requiredend);
 	
@@ -69,8 +70,11 @@ public interface NodeXPeriodData
 	
 	public Double getChengJiaoEr (LocalDate requireddate,int difference);
 	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate,int difference);
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod (LocalDate requireddate,int difference);
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference);
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (TDXNodes superbk, LocalDate requireddate,int difference);
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate,int difference);
+//	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (DaPan superbk, LocalDate requireddate,int difference);
 	public Integer getCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk);
 	
 	public Double getAverageDailyChengJiaoErOfWeek (LocalDate requireddate,int difference);
@@ -117,7 +121,7 @@ public interface NodeXPeriodData
 			 
 			 "成交量",
 			 "成交量MaxWK",
-			 "成交量大盘贡献率",
+//			 "成交量大盘贡献率",
 			 
 			 "涨跌幅"
 		};

@@ -291,7 +291,7 @@ public class BanKuaiGuanLi extends JDialog
 				tfldsearchsysbk.setText(selectnode.getMyOwnCode());
 				
 				LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
-				selectnode = allbkstks.getBanKuai( (BanKuai)selectnode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
+				selectnode = allbkstks.getBanKuai( (BanKuai)selectnode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
 				selectnode = bkdbopt.getBanKuaiBasicInfo( (BanKuai)selectnode);
 
 				panelsetting.setSettingNode(selectnode);
@@ -335,15 +335,13 @@ public class BanKuaiGuanLi extends JDialog
 		setCursor(hourglassCursor);
 
 		LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
-//		selectnode = this.allbkstks.getBanKuai( selectnode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
-//		selectnode = bkdbopt.getBanKuaiBasicInfo(selectnode);
-		
+	
 		Set<String> bkrelatedbks = new HashSet<String> ();
 		selectnode = this.allbkstks.getAllGeGuOfBanKuai (selectnode,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
 		ArrayList<StockOfBanKuai> bkgg = selectnode.getAllGeGuOfBanKuaiInHistory();
 		for(StockOfBanKuai sob : bkgg) {
 			Stock stock = sob.getStock();
-			stock = this.allbkstks.getStock(stock, requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
+			stock = this.allbkstks.getStock(stock, requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
 			stock = bkdbopt.getTDXBanKuaiForAStock ( stock ); //通达信板块信息
 			HashMap<String, String> suoshubk = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
 			Set<String> bkcodeset = suoshubk.keySet();
@@ -356,7 +354,7 @@ public class BanKuaiGuanLi extends JDialog
 				continue;
 			
 			BanKuai tmpbk;
-			tmpbk = this.allbkstks.getBanKuai( bkcode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true,false);
+			tmpbk = this.allbkstks.getBanKuai( bkcode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
 			tmpbk = bkdbopt.getBanKuaiBasicInfo(tmpbk);
 			tmpbk = this.allbkstks.getAllGeGuOfBanKuai (tmpbk,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
 			

@@ -599,9 +599,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			} else if (tmpmeeting.getMeetingType() == Meeting.NODESNEWS) {
 				displayNodeNewsToGui (tmpmeeting);
 			}
-			
-			
-			 
 		}
     
 		candlestickChart.fireChartChanged();
@@ -638,7 +635,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	        pointertwomonth.setFont(new Font("SansSerif", Font.BOLD, 9));
 	        pointertwomonth.setPaint(Color.YELLOW);
 	        pointertwomonth.setTextAnchor(TextAnchor.CENTER);
-	        pointertwomonth.setToolTipText(tmpmeeting.getTitle());
+	        pointertwomonth.setToolTipText(tmpmeeting.getStart() + tmpmeeting.getTitle());
 	        
 			candlestickChart.getXYPlot().addAnnotation(pointertwomonth);
 			

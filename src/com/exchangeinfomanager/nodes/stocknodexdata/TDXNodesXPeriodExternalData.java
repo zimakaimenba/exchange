@@ -917,8 +917,4 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 						
 			return expectedate;
 		 }
-
-		 
-
-
 }

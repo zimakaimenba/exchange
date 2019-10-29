@@ -12,6 +12,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,6 +36,7 @@ import org.ta4j.core.num.PrecisionNum;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
+import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
@@ -251,7 +253,7 @@ import com.udojava.evalex.Expression;
 	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate,int difference)
 	{
 		int itemcount = this.nodeohlc.getItemCount();
-//		RegularTimePeriod dataitemp2 = this.nodeohlc.getPeriod(itemcount -1);
+
 		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriod(requireddate,difference);
 		
 		for(int i=0;i<itemcount;i++) {
@@ -261,6 +263,14 @@ import com.udojava.evalex.Expression;
 		}
 		
 		return null;
+	}
+	public LocalDate getLocalDateOfSpecificIndexOfOHLCData (Integer index)
+	{
+		TimeSeriesDataItem indexrecord = this.nodeamo.getDataItem(index);
+		Date end = indexrecord.getPeriod().getEnd();
+		return end.toInstant()
+			      .atZone(ZoneId.systemDefault())
+			      .toLocalDate();
 	}
 	/*
 	 * (non-Javadoc)
@@ -489,6 +499,43 @@ import com.udojava.evalex.Expression;
 		}
 
 	}
+	/*
+	 * 每日均量和上周均量的差额
+	 */
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate,int difference)
+	{
+		if(nodeohlc == null)
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		if( curcjlrecord == null) 
+			return null;
+		
+		Integer curexchangedaynum = super.getExchangeDaysNumberForthePeriod(requireddate,difference);
+		
+		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
+		try{
+			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( index -1 );
+			if(lastcjlrecord == null) 
+				return null;
+			
+			RegularTimePeriod lastp = lastcjlrecord.getPeriod();
+			Date end = lastp.getEnd();
+			LocalDate lastdate = end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			Integer lastexchangedaynum = super.getExchangeDaysNumberForthePeriod(lastdate,difference);
+			
+			double curcje = curcjlrecord.getValue().doubleValue() ;
+			Double curcjeave = curcje/ curexchangedaynum;
+			double lastcje = lastcjlrecord.getValue().doubleValue();
+			Double lastcjeave = lastcje / lastexchangedaynum;
+			
+			double result = curcjeave - lastcjeave;
+			return result;
+		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+			return 100.0;
+		}
+
+	}
 	@Override
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
@@ -553,9 +600,51 @@ import com.udojava.evalex.Expression;
 		
 		Double curcje = curcjlrecord.getValue().doubleValue();
 		Double lastcje = lastcjlrecord.getValue().doubleValue();
-		Double cjechange = curcje - lastcje; //个股成交量的变化
+		Double cjechange = curcje - lastcje; //个股成交量的变化，如果缩量了也还是计算
 		
 		return cjechange/bkcjediff;
+	}
+	/*
+	 * 计算成交额日平均变化贡献率，即基于日平均成交额，板块成交额的变化占整个上级板块成交额增长量的比率，
+	 */
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate,int difference) 
+	{	
+		String nodecode = super.getNodeCode();
+		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		if( curcjlrecord == null) 
+			return null;
+		
+//		Double curavecje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference);
+//		if( curavecje == null) 
+//			return null;
+		
+		//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
+		String nodept = getNodeperiodtype();
+		NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
+		Double bkcjediff = bkxdata.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		if( bkcjediff == null || bkcjediff < 0   ) {//板块缩量，
+			return -100.0;
+		}
+		
+		TimeSeriesDataItem lastcjlrecord = null;
+		int index = this.nodeamo.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		try{
+			lastcjlrecord = nodeamo.getDataItem( index - 1);
+		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
+			return null;
+		}
+		if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate,0)) { //说明是停牌后复牌了，或者新股
+			try {
+			Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
+			return curggcje/bkcjediff;
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		Double nodeavediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		return nodeavediff/bkcjediff;
 	}
 	/*
 	  * (non-Javadoc)
@@ -1059,11 +1148,11 @@ import com.udojava.evalex.Expression;
 		Double curcje = this.getChengJiaoEr(requireddate, 0);
 		Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate, 0);
 		Integer cjemaxwk =  this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
-		Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//成交额大盘变化贡献率
+		Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate,0);//成交额大盘变化贡献率
 		
 		Double curcjl = this.getChengJiaoLiang(requireddate, 0);
 		Integer cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
-		Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
+//		Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
 		
 		Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate,0);
 		
@@ -1074,7 +1163,7 @@ import com.udojava.evalex.Expression;
 		
 		String strcurcjl = null;
 		String strcjlmaxwk = null;
-		String strcjlchangerate = null;
+//		String strcjlchangerate = null;
 		String strzhangfu = null;
 		
 		try {
@@ -1108,11 +1197,11 @@ import com.udojava.evalex.Expression;
 		} catch (java.lang.NullPointerException e) {
 			strcjlmaxwk = String.valueOf("0");
 		}
-		try {
-			strcjlchangerate =  cjlchangerate.toString();
-		} catch (java.lang.NullPointerException e) {
-			strcjlchangerate = String.valueOf("0");
-		}
+//		try {
+//			strcjlchangerate =  cjlchangerate.toString();
+//		} catch (java.lang.NullPointerException e) {
+//			strcjlchangerate = String.valueOf("0");
+//		}
 		try {
 			strzhangfu =  zhangfu.toString();
 		} catch (java.lang.NullPointerException e) {
@@ -1128,7 +1217,7 @@ import com.udojava.evalex.Expression;
 		
 		 strcurcjl ,
 		 strcjlmaxwk ,
-		 strcjlchangerate,
+//		 strcjlchangerate,
 		 
 		 strzhangfu
 		}; 
@@ -1212,9 +1301,9 @@ import com.udojava.evalex.Expression;
 				 } 
 				 
 				 try{
-					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//成交额大盘变化贡献率
+					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate,0);//成交额大盘变化贡献率
 					 if(cjechangerate != -100.0) {
-						 htmlstring = "成交额板块变化贡献率" + percentFormat.format (cjechangerate) ;
+						 htmlstring = "CJE板块贡献率(周日均)" + percentFormat.format (cjechangerate) ;
 						 org.jsoup.nodes.Element licjechangerate = dl.appendElement("li");
 						 org.jsoup.nodes.Element fontcjechangerate = licjechangerate.appendElement("font");
 						 fontcjechangerate.appendText(htmlstring);
@@ -1257,7 +1346,7 @@ import com.udojava.evalex.Expression;
 					}
 				}
 				
-				Double cjezbgrowthrate = this.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(requireddate, 0);
+				Double cjezbgrowthrate = super.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(requireddate, 0);
 				org.jsoup.nodes.Element licjezbgr = dl.appendElement("li");
 				org.jsoup.nodes.Element fontcjezbgr = licjezbgr.appendElement("font");
 				fontcjezbgr.appendText( "成交额占比增长率=" + decimalformate2.format(cjezbgrowthrate)  );
@@ -1284,17 +1373,17 @@ import com.udojava.evalex.Expression;
 					 fontcjlmaxwk.attr("color", "#641E16");
 				 } 
 				 //
-				 try{
-					 Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
-					 if( cjlchangerate != -100.0) {
-						 org.jsoup.nodes.Element licjlchangerate = dl.appendElement("li");
-						 org.jsoup.nodes.Element fontcjlchangerate = licjlchangerate.appendElement("font");
-						 fontcjlchangerate.appendText( "成交量板块变化贡献率" + percentFormat.format (cjlchangerate)  );
-						 fontcjlchangerate.attr("color", "#641E16");
-					 }
-				 } catch (java.lang.IllegalArgumentException e) {
-//					 li4.appendText("成交额大盘变化贡献率NULL" );
-				 }
+//				 try{
+//					 Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
+//					 if( cjlchangerate != -100.0) {
+//						 org.jsoup.nodes.Element licjlchangerate = dl.appendElement("li");
+//						 org.jsoup.nodes.Element fontcjlchangerate = licjlchangerate.appendElement("font");
+//						 fontcjlchangerate.appendText( "成交量板块变化贡献率" + percentFormat.format (cjlchangerate)  );
+//						 fontcjlchangerate.attr("color", "#641E16");
+//					 }
+//				 } catch (java.lang.IllegalArgumentException e) {
+////					 li4.appendText("成交额大盘变化贡献率NULL" );
+//				 }
 
 				try {
 					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate, 0);
@@ -1384,6 +1473,90 @@ import com.udojava.evalex.Expression;
 			}
 			
 			return doc.toString();
+		}
+		
+//		protected Boolean isNodeDataFuPaiAfterTingPai (DaPan superbk, LocalDate requireddate,int difference)
+//		{
+//			int index = this.nodeamo.getIndex( super.getJFreeChartFormateTimePeriod(requireddate,difference) );
+//			
+//			TimeSeriesDataItem lastcjlrecord = null;
+//			try{
+//				lastcjlrecord = nodeamo.getDataItem( index - 1);
+//			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+//				logger.debug("index = 0，可能是新股第一周");
+//				return true;
+//			}
+//			Date lastdate = lastcjlrecord.getPeriod().getEnd();
+//			LocalDate lastld = lastdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//			//和大盘上周的日期比较
+//			String nodept = getNodeperiodtype();
+//			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
+//			int superbkindex = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, 0);
+//			int bklstindex = 0;
+//			for(int i= -1;;i--) {
+//				Integer bklastxdata = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, i);
+//				if(bklastxdata != null) {
+//					bklstindex = bklastxdata;
+//					break;
+//				}
+//			}
+//			LocalDate bklastlocaldate = bkxdata.getLocalDateOfSpecificIndexOfOHLCData(bklstindex);
+//			
+//			
+//			WeekFields weekFields = WeekFields.of(Locale.getDefault());
+//			int year2 = lastld.getYear();
+//			int weeknumber2 = lastld.get(weekFields.weekOfWeekBasedYear());
+//			
+//			int year1 = bklastlocaldate.getYear();
+//			int weeknumber1 = bklastlocaldate.get(weekFields.weekOfWeekBasedYear());
+//			
+//			if(year1 != year2)
+//				return true;
+//			else if(year1 == year2 && weeknumber1 != weeknumber2  ) //板块一般不会停牌，以板块为基准
+//				return true;
+//			else 
+//				return false;
+//		}
+		protected Boolean isNodeDataFuPaiAfterTingPai (TDXNodes superbk, LocalDate requireddate,int difference)
+		{
+			int index = this.nodeamo.getIndex( super.getJFreeChartFormateTimePeriod(requireddate,difference) );
+			
+			TimeSeriesDataItem lastcjlrecord = null;
+			try{
+				lastcjlrecord = nodeamo.getDataItem( index - 1);
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+				logger.debug("index = 0，可能是新股第一周");
+				return true;
+			}
+			Date lastdate = lastcjlrecord.getPeriod().getEnd();
+			LocalDate lastld = lastdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			
+			String nodept = getNodeperiodtype();
+			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
+			int superbkindex = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, 0);
+			int bklstindex = 0;
+			for(int i= -1;;i--) {
+				Integer bklastxdata = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, i);
+				if(bklastxdata != null) {
+					bklstindex = bklastxdata;
+					break;
+				}
+			}
+			LocalDate bklastlocaldate = bkxdata.getLocalDateOfSpecificIndexOfOHLCData(bklstindex);
+			
+			WeekFields weekFields = WeekFields.of(Locale.getDefault());
+			int year2 = lastld.getYear();
+			int weeknumber2 = lastld.get(weekFields.weekOfWeekBasedYear());
+			
+			int year1 = bklastlocaldate.getYear();
+			int weeknumber1 = bklastlocaldate.get(weekFields.weekOfWeekBasedYear());
+			
+			if(year1 != year2)
+				return true;
+			else if(year1 == year2 && weeknumber1 != weeknumber2  ) //板块一般不会停牌，以板块为基准
+				return true;
+			else 
+				return false;
 		}
 		
 		

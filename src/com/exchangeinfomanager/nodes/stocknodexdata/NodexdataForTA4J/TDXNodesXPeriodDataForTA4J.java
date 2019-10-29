@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,6 +39,7 @@ import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
@@ -1054,6 +1056,27 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		}
 		
 		return doc.toString();
+	}
+	
+	@Override
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate,
+			int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+//	@Override
+//	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (DaPan superbk, LocalDate requireddate,int difference) 
+//	{
+//		return null;
+//	}
+	public LocalDate getLocalDateOfSpecificIndexOfOHLCData (Integer index)
+	{
+		return null;
 	}
 	
 		 

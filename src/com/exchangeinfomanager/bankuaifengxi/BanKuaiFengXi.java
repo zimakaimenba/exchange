@@ -1016,21 +1016,21 @@ public class BanKuaiFengXi extends JDialog
 		
 		TDXNodes tmpnode = null;
 		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
-			selectnode = allbksks.getStock((Stock)selectnode,CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,
-					NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
-			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
-			this.allbksks.syncStockData((Stock)selectnode);
+//			selectnode = allbksks.getStock((Stock)selectnode,CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,
+//					NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
+//			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
+//			this.allbksks.syncStockData((Stock)selectnode);
 			
 			tmpnode = selectnode;
 		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
-			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,
-					NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
-			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
+//			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,
+//					NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
+//			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
 			
 			tmpnode = selectnode;
 		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
 //			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,NodeGivenPeriodDataItem.WEEK);
-			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
+//			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
 			
 			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
 		}

@@ -20,12 +20,6 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class CommonUtility {
 
-	public CommonUtility() 
-	{
-		 
-	}
-	
-	
 	/*
 	 * 
 	 */

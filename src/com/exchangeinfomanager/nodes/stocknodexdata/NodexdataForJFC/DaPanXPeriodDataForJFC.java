@@ -3,7 +3,9 @@ package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -19,6 +21,7 @@ import org.jsoup.select.Elements;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -90,7 +93,13 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		}
 		return dapancje;
 	}
-
+	@Override
+	public LocalDate getLocalDateOfSpecificIndexOfOHLCData(Integer index)
+	{
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		return shanghaiperiodrecords.getLocalDateOfSpecificIndexOfOHLCData(index);
+	}
 
 	@Override
 	public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate, int difference) 
@@ -100,6 +109,20 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		Integer exchangedays = shanghaiperiodrecords.getExchangeDaysNumberForthePeriod(requireddate,difference);
 		return exchangedays;
 	}
+	@Override
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
+	{
+		String recordsperiod = getNodeperiodtype();
+		
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		Double shdiff = shanghaiperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		
+		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
+		Double szcurrecord = shenzhenperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		
+		return shdiff + szcurrecord;
+	}
+	
 	@Override
 	public String getNodeXDataInHtml(TDXNodes superbk, LocalDate requireddate, int difference)
 	{
@@ -349,9 +372,13 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Integer getIndexOfSpecificDateOHLCData(LocalDate requireddate, int difference) {
+	public Integer getIndexOfSpecificDateOHLCData(LocalDate requireddate, int difference)
+	{
 		// TODO Auto-generated method stub
-		return null;
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		Integer index = shanghaiperiodrecords.getIndexOfSpecificDateOHLCData(requireddate, difference);
+		return index;
 	}
 
 	@Override
@@ -442,6 +469,12 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 //			System.out.println(requireddate);
 		}
 		return dapancjl;
+	}
+	@Override
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate,
+			int difference) 
+	{
+		return null;
 	}
 
 	@Override
@@ -565,6 +598,19 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		
 		return expectedate;
 	}
+
+//	@Override
+//	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(DaPan superbk, LocalDate requireddate,
+//			int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
+	
+
+	
+
+	
 
 	
 
