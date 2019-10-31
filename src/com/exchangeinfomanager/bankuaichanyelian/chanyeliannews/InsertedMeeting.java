@@ -1,5 +1,8 @@
 package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @SuppressWarnings("all")
 public class InsertedMeeting extends Meeting {
 
@@ -45,6 +48,18 @@ public class InsertedMeeting extends Meeting {
     			newsownercodes = "";
     	}
     }
+    public void removeMeetingSpecficOwner(Set<String> friendset) 
+    {
+    	for(String removedowner : friendset) {
+    		if(newsownercodes.contains(removedowner)) {
+        		newsownercodes = newsownercodes.replace(removedowner , "");
+        		if(newsownercodes.contains("||"))
+        			newsownercodes = newsownercodes.replace("||" , "|");
+        		if(newsownercodes.equals("|"))
+        			newsownercodes = "";
+        	}
+    	}
+	}
     /*
      * 
      */
@@ -55,6 +70,16 @@ public class InsertedMeeting extends Meeting {
     		return true;
     	} else
     		return false;
+    }
+    public Boolean addMeetingToSpecificOwner (Set<String> newowners)
+    {
+    	for(String newowner : newowners) {
+    		if(!newsownercodes.contains(newowner)) {
+        		newsownercodes = newsownercodes + newowner + "|";
+        	} 
+    	}
+    	
+    	return true;
     }
     @Override
     public String toString() {
@@ -108,4 +133,6 @@ public class InsertedMeeting extends Meeting {
             return this.id;
         }
     }
+
+	
 }

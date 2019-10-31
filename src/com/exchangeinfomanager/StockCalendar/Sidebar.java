@@ -14,7 +14,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelDialog;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi.ZhiShuGJRQManagementPnl;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodesZhiShuGJRQPnl;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 import com.toedter.calendar.JCalendar;
 
@@ -161,17 +161,13 @@ public class Sidebar extends View implements CacheListener {
     }
 
     private class CreateDapanMileStoneDateController extends MouseAdapter {
-         
-//    	MeetingService meetingService;
-//		private MeetingDialog createDialog;
-//		private MeetingDialog modifyDialog;
 
 		@Override
         public void mouseClicked(MouseEvent e) {
 			super.mouseClicked(e);
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				
-				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl ("ALL");
+				TDXNodesZhiShuGJRQPnl gjrq = new TDXNodesZhiShuGJRQPnl (null);
 				gjrq.setVisible(true);
 				
 				cache.refresh();

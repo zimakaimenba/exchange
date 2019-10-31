@@ -43,7 +43,6 @@ import org.jsoup.select.Elements;
 import org.ta4j.core.Bar;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;

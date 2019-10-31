@@ -24,13 +24,14 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
 public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHightLightFxDataValueListener
@@ -273,16 +274,10 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 		}
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		String stockcode = ((BanKuaiGeGuTableModel) this.getModel()).getStockCode (model_row);
-		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
+		Stock stock = ((BanKuaiGeGuTableModel) this.getModel()).getStock (model_row).getStock();
+		TDXNodsInforPnl cylnews = new TDXNodsInforPnl (stock);
 		cylnews.setVisible(true);
-//		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-//		int exchangeresult = JOptionPane.showConfirmDialog(null, cylnews, "增加个股新闻", JOptionPane.OK_CANCEL_OPTION);
-//		System.out.print(exchangeresult);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-//		
-//		bkdbopt.newsdbopt(stockcode, cylnews.getInputedNews());
+
 	}
 //	/*
 //     * 设置该板块个股的权重

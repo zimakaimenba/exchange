@@ -1125,7 +1125,10 @@ public final class StockCalendarAndNewDbOperation
 //		logger.debug("test");
 		
 		String sqlupatestatement = null;
-		if(endtime != null)
+		if(Strings.isNullOrEmpty(newsowners)) {
+			this.deleteZhiShuGuanJianRiQi(meeting);
+			return meeting;
+		} else	if(endtime != null)
 			sqlupatestatement =  "UPDATE 指数关键日期表  SET"
 					+ " 日期 = '" + starttime + "', "
 					+ " 截至日期 = '" + endtime +"',"

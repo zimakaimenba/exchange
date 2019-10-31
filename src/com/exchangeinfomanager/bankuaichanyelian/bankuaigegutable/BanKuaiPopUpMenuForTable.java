@@ -13,9 +13,9 @@ import javax.swing.tree.TreePath;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiShuXingSheZhi;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi.ZhiShuGJRQManagementPnl;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodesZhiShuGJRQPnl;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -65,7 +65,7 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 				int modelRow = bankuaitable.convertRowIndexToModel(row); 
 				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
 
-				ZhiShuGJRQManagementPnl gjrq = new ZhiShuGJRQManagementPnl (bankuai.getMyOwnCode());
+				TDXNodesZhiShuGJRQPnl gjrq = new TDXNodesZhiShuGJRQPnl (bankuai);
 				gjrq.setVisible(true);
 			}
 			
@@ -147,7 +147,7 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 	@Override
 	public void addBanKuaiNews(BkChanYeLianTreeNode node) 
 	{
-		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (node.getMyOwnCode());
+		TDXNodsInforPnl cylnews = new TDXNodsInforPnl (node);
 		cylnews.setVisible(true);
 		
 	}

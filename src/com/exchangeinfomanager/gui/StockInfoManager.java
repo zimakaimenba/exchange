@@ -32,8 +32,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInf
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi.ZhiShuGJRQManagementPnl;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
@@ -650,16 +649,27 @@ public class StockInfoManager
 		btnSearch.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) 
 			{
-				String stockcode = "";
+				
+				
 				try{
-					stockcode = ((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode();
+					BkChanYeLianTreeNode stockcode = (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
+					TDXNodsInforPnl cylnews = new TDXNodsInforPnl (stockcode);
+					cylnews.setVisible(true);
 				} catch (java.lang.NullPointerException ex) {
 					ex.printStackTrace();
 				} catch (java.lang.ClassCastException ex) {
 					ex.printStackTrace();
 				}
-				ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-				cylnews.setVisible(true);
+				
+//				try{
+//					BkChanYeLianTreeNode stockcode = (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
+//					ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
+//					cylnews.setVisible(true);
+//				} catch (java.lang.NullPointerException ex) {
+//					ex.printStackTrace();
+//				} catch (java.lang.ClassCastException ex) {
+//					ex.printStackTrace();
+//				}
 			}
 		});
 		

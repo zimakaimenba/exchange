@@ -13,7 +13,7 @@ import javax.swing.tree.TreePath;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiShuXingSheZhi;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianNewsPanel;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -140,7 +140,7 @@ public class BanKuaiPopUpMenuForTree extends BanKuaiPopUpMenu
 	@Override
 	public void addBanKuaiNews(BkChanYeLianTreeNode node) 
 	{
-		ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (node.getMyOwnCode());
+		TDXNodsInforPnl cylnews = new TDXNodsInforPnl (node);
 		cylnews.setVisible(true);
 		
 	}

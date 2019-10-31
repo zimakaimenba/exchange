@@ -1302,7 +1302,7 @@ import com.udojava.evalex.Expression;
 				 
 				 try{
 					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate,0);//成交额大盘变化贡献率
-					 if(cjechangerate != -100.0) {
+					 if( cjechangerate != -100.0) {
 						 htmlstring = "CJE板块贡献率(周日均)" + percentFormat.format (cjechangerate) ;
 						 org.jsoup.nodes.Element licjechangerate = dl.appendElement("li");
 						 org.jsoup.nodes.Element fontcjechangerate = licjechangerate.appendElement("font");
@@ -1311,7 +1311,10 @@ import com.udojava.evalex.Expression;
 					 }
 				 } catch (java.lang.IllegalArgumentException e) {
 //					 li4.appendText("成交额大盘变化贡献率NULL" );
-				 }
+				 } catch (java.lang.NullPointerException e) {
+					 logger.debug(e.getMessage());
+//			    	e.printStackTrace();	
+			     }
 
 				try {
 					Double curcjezhanbidata = super.getChenJiaoErZhanBi(requireddate, 0);  //占比
@@ -1321,6 +1324,7 @@ import com.udojava.evalex.Expression;
 					fontcjezb.appendText( "成交额占比" + decimalformate2.format(curcjezhanbidata)  );
 					fontcjezb.attr("color", "#17202A");
 				} catch (java.lang.IllegalArgumentException e ) {
+					logger.debug(e.getMessage());
 //					htmltext = "占比占比NULL" ;
 				}
 				
