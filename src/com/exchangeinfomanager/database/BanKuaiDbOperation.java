@@ -3978,9 +3978,39 @@ public class BanKuaiDbOperation
 			e.printStackTrace();
 		}
 		
-		
  		return tdxnode;
+	}
+	private void teststub (TDXNodes bk,String period) 
+	{
+		if(bk.getMyOwnCode().equals("399006") || bk.getMyOwnCode().equals("999999") || bk.getMyOwnCode().equals("399001"))
+			return ;
 		
+		period = NodeGivenPeriodDataItem.WEEK;
+		NodeXPeriodData nodexdata = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		LocalDate start = nodexdata.getOHLCRecordsStartDate();
+		LocalDate end = nodexdata.getOHLCRecordsEndDate();
+		
+		LocalDate tmpdate = start;
+		do  {
+			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
+			Double cje = nodexdata.getChengJiaoEr(wkfriday, 0);
+			Double zdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday, 0);
+			if(zdf!=null)
+				logger.info(wkfriday + "::" + zdf.toString() );
+			else
+				logger.info(wkfriday + ":: null" );
+			
+				
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+		} while (tmpdate.isBefore( end) || tmpdate.isEqual(end));
+		
+		return ;
 	}
 	/*
 	 * 从数据库中获取板块某时间段的日线走势，而个股是从CSV中读取
@@ -3991,7 +4021,7 @@ public class BanKuaiDbOperation
 			; 
 		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
-		
+
 		HashMap<String, String> actiontables;
 		String searchtable = null;
 		if(bk.getType() == BkChanYeLianTreeNode.TDXBK) {
@@ -4072,6 +4102,7 @@ public class BanKuaiDbOperation
 			 }
 			 //目前算法最后一周要跳出循环后才能计算
 			 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+			 
 				
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();

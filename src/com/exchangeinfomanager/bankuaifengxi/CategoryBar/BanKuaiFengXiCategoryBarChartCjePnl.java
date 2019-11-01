@@ -110,6 +110,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				if(cje > highestHigh)
 					highestHigh = cje;
 				
+				//标记大盘成交量该周是涨还是跌
 				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
 				Double dpdiff = dpnodexdata.getChengJiaoErDifferenceWithLastPeriod(tmpdate, 0);
 				if(dpdiff != null && dpdiff >0) {

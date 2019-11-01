@@ -148,7 +148,7 @@ public class MonthView extends View
             
             if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
             	
-                if (m.getLabels().isEmpty()) {
+                if (m.getLabels().isEmpty()) { //没有Label的情况
                 	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
                     
                     label.setToolTipText( getLabelToolTipText(m) );
@@ -163,7 +163,7 @@ public class MonthView extends View
                 }
                 
                 
-                for (Meeting.Label l : labels) {
+                for (Meeting.Label l : labels) { //有LABEL的情况
                     if (l.isActive() && m.getLabels().contains(l)) {
                     	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
                         label.setToolTipText(getLabelToolTipText(m) );

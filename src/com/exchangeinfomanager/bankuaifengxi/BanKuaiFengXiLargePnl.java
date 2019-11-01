@@ -79,18 +79,12 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.displaynode = node;
 		this.globeperiod = period;
 		initialzieSysconf ();
-//		this.displaystartdate = displayedstartdate1;
-//		this.displayenddate = displayedenddate1;
-//		this.displayperiod = period;
-//		this.bkdbopt = new BanKuaiDbOperation ();
+
 		createGui (nodebkbelonged);
 		createEvents ();
 
-//		this.displayedstartdate = displayedstartdate1;
-//		this.displayedenddate = displayedenddate1;
+
 		updateData (nodebkbelonged, node,displayedstartdate1,displayedenddate1,period);
-		
-		
 	}
 	
 	private void initialzieSysconf ()

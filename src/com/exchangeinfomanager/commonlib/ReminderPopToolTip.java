@@ -1,19 +1,27 @@
 package com.exchangeinfomanager.commonlib;
 
 import java.awt.BorderLayout;   
-import java.awt.Color;   
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;   
 import java.awt.GraphicsEnvironment;  
 import java.awt.Insets;  
-import java.awt.Rectangle;  
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.BorderFactory;  
 import javax.swing.Icon;  
-import javax.swing.ImageIcon;  
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;  
 import javax.swing.JPanel;  
 import javax.swing.JTextArea;  
 import javax.swing.JWindow;  
-import javax.swing.border.EtchedBorder;   
+import javax.swing.border.EtchedBorder;
+
+import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.systemconfigration.SystemConfigration;   
 //https://xbgd.iteye.com/blog/755002
 public class ReminderPopToolTip 
 {  
@@ -97,16 +105,41 @@ public class ReminderPopToolTip
         private JLabel _iconLabel = new JLabel();  
   
         private JTextArea _message = new JTextArea();  
-  
+        
+        private JButton _openMatrixButn = new JButton ("");
+
         public ToolTipSingle() {  
             initComponents();  
+            createEvents ();
         }  
   
-        private void initComponents() {  
+        private void createEvents() 
+        {
+        	_openMatrixButn.addMouseListener(new MouseAdapter() {
+            	@Override
+            	public void mouseClicked(MouseEvent arg0) 
+            	{
+            		String bkfxmatrixfile = SystemConfigration.getInstance().getBanKuaiFengXiChecklistXmlFile();
+            		try {
+    					String cmd = "rundll32 url.dll,FileProtocolHandler " + bkfxmatrixfile;
+    					Process p  = Runtime.getRuntime().exec(cmd);
+    					p.waitFor();
+    				} catch (Exception e1) {
+    					// TODO Auto-generated catch block
+    				    e1.printStackTrace();
+    				}
+            	}
+            });
+			
+		}
+
+		private void initComponents() {  
             setSize(_width, _height);  
             _message.setFont(getMessageFont());  
             JPanel externalPanel = new JPanel(new BorderLayout(1, 1));  
             externalPanel.setBackground(_bgColor);  
+            
+            
             //   
             JPanel innerPanel = new JPanel(new BorderLayout(getGap(), getGap()));  
             innerPanel.setBackground(_bgColor);  
@@ -124,6 +157,15 @@ public class ReminderPopToolTip
             _message.setForeground(getMessageColor());  
             innerPanel.add(_iconLabel, BorderLayout.WEST);  
             innerPanel.add(_message, BorderLayout.CENTER);  
+            
+            _openMatrixButn.setToolTipText("\u4E2A\u80A1\u65B0\u95FB");
+            _openMatrixButn.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/greenClosed15.png")) );
+            JPanel buttonpnl = new JPanel ();
+            buttonpnl.setBackground(_bgColor);
+            buttonpnl.setLayout(new FlowLayout() );
+            buttonpnl.add(_openMatrixButn);
+            innerPanel.add(buttonpnl, BorderLayout.EAST);
+            
             getContentPane().add(externalPanel);  
         }  
   

@@ -50,7 +50,6 @@ public abstract class WeeklyFengXiXmlHandler
 	
 	protected SAXReader reader;
 	protected ZhongDianGuanZhu zdgzinfo;
-//	protected boolean hasxmlindatabase = false;
 	protected LocalDate currentdate;
 	protected Document xmlindbdoc;
 	protected Element xmlindbroot;

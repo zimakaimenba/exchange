@@ -152,8 +152,7 @@ public class ZhongDianGuanZhu
 	 */
 	public void setGovpolicy(ArrayList<ZdgzItem> govpolicy2)
 	{
-
-			this.govpolicy = govpolicy2;
+		this.govpolicy = govpolicy2;
 	}
 	/**
 	 * @return the dapan

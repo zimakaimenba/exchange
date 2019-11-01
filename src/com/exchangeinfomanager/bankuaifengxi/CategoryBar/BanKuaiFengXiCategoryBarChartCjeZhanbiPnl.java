@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
+import org.jfree.chart.annotations.CategoryTextAnnotation;
 import org.jfree.chart.plot.CategoryPlot;
 
 import org.jfree.data.Range;
@@ -118,6 +119,19 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 
 				if(cjezb > highestHigh)
 					highestHigh = cjezb;
+				
+				//标记该NODE本周是阳线还是阴线
+				Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(wkfriday, 0);
+				if(zhangdiefu != null && zhangdiefu >0) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
+					//cpa.setBaseRadius(0.0);
+					// cpa.setTipRadius(25.0);
+					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.RED);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				}
+				
 			} else {
 				if( !dapan.isDaPanXiuShi(wkfriday,0,period) ) {
 					super.barchartdataset.setValue(0.0,super.getRowKey(),wkfriday );

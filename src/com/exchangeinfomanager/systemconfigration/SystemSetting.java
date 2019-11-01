@@ -57,26 +57,30 @@ import net.miginfocom.swing.MigLayout;
 
 public class SystemSetting extends JDialog 
 {
+	private SystemConfigration sysconf;
+
 	/**
 	 * Create the dialog.
 	 */
 	public SystemSetting(String systemxmlfile) 
 	{
+		sysconf = SystemConfigration.getInstance();
+		this.systemxmlfile = sysconf.getSysSettingFile();
+		
 		initializeGui ();
 		createEvents ();
-		this.systemxmlfile = systemxmlfile;
-		curdbmap = new HashMap<String,CurDataBase> ();
-//		rmtcurdbmap = new HashMap<String,CurDataBase> ();
-		parseSystemSettingXML ();
+
+		initializeSystemSettingGui ();
 	}
 
-	private String systemxmlfile;
-	private HashMap<String, CurDataBase> curdbmap;
-//	private HashMap<String, CurDataBase> rmtcurdbmap;
-	private boolean  newsystemsetting = false;
 	private static Logger logger = Logger.getLogger(SystemSetting.class);
 	
-	private void parseSystemSettingXML()  
+	private String systemxmlfile;
+	private boolean  newsystemsetting = false;
+	private String LicenseMacString;
+
+	
+	private void initializeSystemSettingGui()  
 	{
 		File directory = new File(this.systemxmlfile);//设定为当前文件夹
 		try{
@@ -107,102 +111,17 @@ public class SystemSetting extends JDialog
 			document = reader.read(xmlfileinput); 
 			xmlroot = document.getRootElement();
 			
-			Element eletdx = xmlroot.element("tdxpah");
-			if(eletdx != null ) {
-				String tdxpath = eletdx.getText();
-				tfldTDXInstalledPath.setText(eletdx.getText() );
-			}
-			
-			Element elenameofguanzhuzdybk = xmlroot.element("nameofguanzhubankuai");
-			if(elenameofguanzhuzdybk != null ) {
-				String text = elenameofguanzhuzdybk.getText();
-				tfldzdyguanzhu.setText(text);
-			}
-			
-			Element elezbfxzq = xmlroot.element("zhanbifengxizhouqi");
-			if(elezbfxzq != null ) {
-				String text = elezbfxzq.getText();
-				tfldzhanbizhouqi.setText(text);
-			}
-			
-			
-			Element eletdxzdybkpath = xmlroot.element("tdxzdybkpath");
-			if(eletdxzdybkpath != null) {
-				String text = eletdxzdybkpath.getText();
-				tfldzdyfilepath.setText(text);
-			}
-			
-			Element eleprivate = xmlroot.element("privatemode");
-			if(eleprivate != null ) {
-				String text = eleprivate.getText();
-				cbxprivatemode.setSelected(Boolean.parseBoolean(text));
-			}
-			
-			Element elepythoninterper = xmlroot.element("pythoninterper");
-			if(elepythoninterper != null ) {
-				String text = elepythoninterper.getText();
-				tfldpythonptah.setText(text);
-			}
-			
-			
-			
-			Element elesorce = xmlroot.element("databasesources");
-			Iterator it = elesorce.elementIterator();
-			 while (it.hasNext()) 
-			 {
-				 Element elementdbs = (Element) it.next();
-
-				 logger.debug( elementdbs.attributeValue("dbsname") ) ;
-				 CurDataBase tmpdb = new CurDataBase (elementdbs.attributeValue("dbsname"));
-				 logger.debug( elementdbs.attributeValue("user") ) ;
-				 tmpdb.setUser(elementdbs.attributeValue("user"));
-				 logger.debug( elementdbs.attributeValue("password") ) ;
-				 tmpdb.setPassWord(elementdbs.attributeValue("password"));
-				 logger.debug( elementdbs.getText() ) ;
-				 tmpdb.setDataBaseConStr(elementdbs.getText());
-				 tmpdb.setCurDatabaseType( elementdbs.attributeValue("databasetype") );
-				 logger.debug( elementdbs.attributeValue("curselecteddbs") ) ;
-				 if(elementdbs.attributeValue("curselecteddbs").equals("yes")){
-					 tmpdb.setCurrentSelectedDbs(true);
-					 //curselecteddbs = elementdbs.attributeValue("dbsname");
-				 }
-				 else
-					 tmpdb.setCurrentSelectedDbs(false);
-				 
-				 curdbmap.put( elementdbs.attributeValue("dbsname"), tmpdb);
-			 }
-			 
-			((DatabaseSourceTableModel)tablelocal.getModel()).refresh(curdbmap );
+			tfldTDXInstalledPath.setText(sysconf.getTDXInstalledLocation() );
+			tfldzdyguanzhu.setText(sysconf.getNameOfGuanZhuZdyBanKuai());
+			tfldzhanbizhouqi.setText(String.valueOf( sysconf.banKuaiFengXiMonthRange () ));
+			tfldzdyfilepath.setText(sysconf.getTDXSysZDYBanKuaiFile() );
+			cbxprivatemode.setSelected(sysconf.getPrivateModeSetting() );
+			tfldpythonptah.setText(sysconf.getPythonInterpreter() );
+			LicenseMacString = sysconf.getLinceseMac();
+		
+			((DatabaseSourceTableModel)tablelocal.getModel()).refresh(sysconf.getgetCurrentAllDatabaseSources()  );
 			((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 			
-			//serverdatabasesources
-//			Element elermtsorce = xmlroot.element("serverdatabasesources");
-//			Iterator itrmt = elermtsorce.elementIterator();
-//			 while (itrmt.hasNext()) 
-//			 {
-//				 Element elementdbs = (Element) itrmt.next();
-//
-//				 logger.debug( elementdbs.attributeValue("dbsname") ) ;
-//				 CurDataBase tmpdb = new CurDataBase (elementdbs.attributeValue("dbsname"));
-//				 logger.debug( elementdbs.attributeValue("user") ) ;
-//				 tmpdb.setUser(elementdbs.attributeValue("user"));
-//				 logger.debug( elementdbs.attributeValue("password") ) ;
-//				 tmpdb.setPassWord(elementdbs.attributeValue("password"));
-//				 logger.debug( elementdbs.getText() ) ;
-//				 tmpdb.setDataBaseConStr(elementdbs.getText());
-//				 tmpdb.setCurDatabaseType( elementdbs.attributeValue("databasetype") );
-//				 logger.debug( elementdbs.attributeValue("curselecteddbs") ) ;
-//				 if(elementdbs.attributeValue("curselecteddbs").equals("yes")){
-//					 tmpdb.setCurrentSelectedDbs(true);
-//					 //curselecteddbs = elementdbs.attributeValue("dbsname");
-//				 }
-//				 else
-//					 tmpdb.setCurrentSelectedDbs(false);
-//				 
-//				 rmtcurdbmap.put( elementdbs.attributeValue("dbsname"), tmpdb);
-//			 }
-			
-			 
 		} catch (DocumentException e) {
 			e.printStackTrace();
 			logger.debug("SystemSetting2 parse xml error");
@@ -221,22 +140,6 @@ public class SystemSetting extends JDialog
 	{
 		return newsystemsetting;
 	}
-//	public String getTDXInstalledPath() 
-//	{
-//		return tfdTDXInstalledPath.getText().trim();
-//	}
-//	public String getDataBaseConnectStr() 
-//	{
-//		return tfdDbInstalledPath.getText();
-//	}
-//	public String getCurDBUser() 
-//	{
-//		return tfldUser.getText();
-//	}
-//	public String getCurDBPaswd() 
-//	{
-//		return tfldPaswd.getText();
-//	}
 	private void setTDXInstalledPath() 
 	{
 		JFileChooser chooser = new JFileChooser();
@@ -301,9 +204,9 @@ public class SystemSetting extends JDialog
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
 
-				curdbmap.put( dbnewname, tmpcur );
+				sysconf.getgetCurrentAllDatabaseSources().put( dbnewname, tmpcur );
 				
-				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(curdbmap );
+				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(sysconf.getgetCurrentAllDatabaseSources() );
 				((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 				
 				saveButton.setEnabled(true);
@@ -317,12 +220,7 @@ public class SystemSetting extends JDialog
 			public void mouseClicked(MouseEvent arg0)
 			{
 				setTDXInstalledPath ();
-				
-				
-	
-				
 			}
-
 			
 		});
 		
@@ -360,13 +258,6 @@ public class SystemSetting extends JDialog
 					return;
 				
 				((DatabaseSourceTableModel)tablelocal.getModel()).deleteRow(row);
-				
-//				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)table.getModel()).getDbsAtRow(row);
-//				
-//				String dbsdeleted = tmpcur.getCurDataBaseName (); 
-//				curdbmap.remove(dbsdeleted);
-//				
-//				((DatabaseSourceTableModel)table.getModel()).refresh(curdbmap );
 				((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 				
 				saveButton.setEnabled(true);
@@ -378,7 +269,7 @@ public class SystemSetting extends JDialog
 			{
 				String dbnewname = JOptionPane.showInputDialog(null,"请输入新的数据库源名:","加入数据库源", JOptionPane.QUESTION_MESSAGE);
 				KeyStroke escapeStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0); 
-				if(curdbmap.keySet().contains(dbnewname)) {
+				if(sysconf.getgetCurrentAllDatabaseSources().keySet().contains(dbnewname)) {
 					JOptionPane.showMessageDialog(null,"数据库源名重复！");
 					return;
 				}
@@ -390,9 +281,9 @@ public class SystemSetting extends JDialog
 					return;
 				
 				logger.debug(addnewsr.getCurDataBaseName());
-				curdbmap.put( dbnewname, addnewsr );
+				sysconf.getgetCurrentAllDatabaseSources().put( dbnewname, addnewsr );
 				
-				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(curdbmap );
+				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(sysconf.getgetCurrentAllDatabaseSources() );
 				((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 				
 				saveButton.setEnabled(true);
@@ -435,12 +326,12 @@ public class SystemSetting extends JDialog
 				elebpythoninterper.setText(tfldpythonptah.getText().trim());
 
 				Element elesorce = rootele.addElement("databasesources");
-				Set<String> dbsnameset = curdbmap.keySet();
+				Set<String> dbsnameset = sysconf.getgetCurrentAllDatabaseSources().keySet();
 				Iterator<String> dbsit = dbsnameset.iterator();
 				while(dbsit.hasNext()) {
 					String tmpdbsname = dbsit.next();
 					
-					CurDataBase tmpcurbs = curdbmap.get(tmpdbsname);
+					CurDataBase tmpcurbs = sysconf.getgetCurrentAllDatabaseSources().get(tmpdbsname);
 					
 					Element eleonedbs = elesorce.addElement("singledbs");
 					
@@ -454,31 +345,6 @@ public class SystemSetting extends JDialog
 					else
 						eleonedbs.addAttribute("curselecteddbs", "no" );
 				}
-				
-//				Element elermtsorce = rootele.addElement("serverdatabasesources");
-				
-//				Set<String> rmtdbsnameset = rmtcurdbmap.keySet();
-//				Iterator<String> rmtdbsit = rmtdbsnameset.iterator();
-//				while(rmtdbsit.hasNext()) {
-//					String tmpdbsname = rmtdbsit.next();
-//					
-//					CurDataBase tmpcurbs = rmtcurdbmap.get(tmpdbsname);
-//					
-//					Element eleonedbs = elermtsorce.addElement("singledbs");
-//					
-//					eleonedbs.addAttribute("dbsname", tmpcurbs.getCurDataBaseName());
-//					eleonedbs.addAttribute("user", tmpcurbs.getUser() );
-//					eleonedbs.addAttribute("password", tmpcurbs.getPassWord() );
-//					eleonedbs.addAttribute("databasetype", tmpcurbs.getCurDatabaseType() );
-//					eleonedbs.setText(tmpcurbs.getDataBaseConStr());
-//					if(tmpcurbs.getCurrentSelectedDbs())
-//						eleonedbs.addAttribute("curselecteddbs", "yes" );
-//					else
-//						eleonedbs.addAttribute("curselecteddbs", "no" );
-//				}
-				
-				
-				
 				
 				OutputFormat format = OutputFormat.createPrettyPrint();
 				format.setEncoding("GBK");    // 指定XML编码        
@@ -501,17 +367,9 @@ public class SystemSetting extends JDialog
 					e1.printStackTrace();
 				}
 				
-//				dispose ();
 			}
 		});
 	
-//		okButton_1.addActionListener(new ActionListener() 
-//		{
-//			public void actionPerformed(ActionEvent arg0) 
-//			{
-//				
-//			}
-//		});
 
 		
 	}
@@ -671,7 +529,6 @@ public class SystemSetting extends JDialog
 	private JLabel lblNewLabel;
 	private JTextField tfldSysInstallPath;
 	private JTextField tfldTDXInstalledPath;
-//	private JTable table;
 	private JTable tablelocal;
 	private JButton btnEditDb;
 	private JButton btmaddnewdb;
@@ -1013,7 +870,6 @@ class DatabaseSourceTableModel extends AbstractTableModel
             	 value = new Boolean(tmpcub.getCurrentSelectedDbs() );
             	 if((Boolean)value == true) {
             		 selecteddbs = dbname;
-//            		 logger.debug("cur dbs = " + dbname);
             	 }
             	 
                 break;
@@ -1024,10 +880,10 @@ class DatabaseSourceTableModel extends AbstractTableModel
             	value = tmpcub.getDataBaseConStr();
                 break;
             case 3:
-            	value = tmpcub.getUser();
+            	value = "********";
                 break;    
             case 4:
-            	value = tmpcub.getPassWord();
+            	value = "********";
                 break;
             case 5:
             	value = tmpcub.getCurDatabaseType();

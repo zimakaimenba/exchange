@@ -24,6 +24,8 @@ import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
+import com.exchangeinfomanager.License.GetNetworkAddress;
+import com.exchangeinfomanager.License.License;
 import com.exchangeinfomanager.Search.SearchDialog;
 //import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeeting;
@@ -61,10 +63,10 @@ import javax.swing.ButtonGroup;
 
 import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -124,6 +126,10 @@ import org.apache.log4j.Logger;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EtchedBorder;
@@ -144,13 +150,13 @@ public class StockInfoManager
 	 */
 	public StockInfoManager() 
 	{
-//		Enumeration e = Logger.getRootLogger().getAllAppenders();
-//	    while ( e.hasMoreElements() ) {
-//	      Appender app = (Appender)e.nextElement();
-//	      if ( app instanceof FileAppender ){
-//	        System.out.println("File: " + ((FileAppender)app).getFile());
-//	      }
-//	    }
+		License license = new License ();
+		if( !license.isLicenseValide() ) {
+			JOptionPane.showMessageDialog(null,"License非法！再见！");
+			System.exit(0);
+		}
+		license = null;
+			
 	    
 		sysconfig = SystemConfigration.getInstance();
 		connectdb = ConnectDataBase.getInstance();
@@ -159,18 +165,6 @@ public class StockInfoManager
 			JOptionPane.showMessageDialog(null,"数据库连接都失败！再见！");
 			System.exit(0);
 		}
-//		boolean rmtconnect = connectdb.isRemoteDatabaseconnected();
-//		if(localconnect == true && rmtconnect == true) {
-//			;
-//		}
-//		else if(localconnect == false && rmtconnect == true) {
-//				JOptionPane.showMessageDialog(null,"仅通达信同步数据可用！");
-//		} else if(localconnect == true && rmtconnect == false) {
-//				JOptionPane.showMessageDialog(null,"仅基本数据可用！");
-//		} else{
-//				JOptionPane.showMessageDialog(null,"基本数据和通达信同步数据两个数据库连接都失败！再见！");
-//				System.exit(0);
-//		}
 		
 		accountschicangconfig = AccountAndChiCangConfiguration.getInstance();
 		acntdbopt = new AccountDbOperation();
@@ -1172,7 +1166,7 @@ public class StockInfoManager
 					logger.debug(cmd);
 					Process p  = Runtime.getRuntime().exec(cmd);
 					p.waitFor();
-				}catch (Exception e1){
+				} catch (Exception e1){
 					e1.printStackTrace();
 				}
 			}

@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,7 @@ public class SystemConfigration
 {
 	private SystemConfigration ()
 	{  
+		this.curdbmap = new HashMap<String,CurDataBase> ();
 		getSystemInfoFromXML ();
 	}  
 	public Charset charSet ()
@@ -52,8 +54,10 @@ public class SystemConfigration
 	private String systeminstalledpath;
 	private String tdxinstalledpath;
 	private String curdatabasetype;
+	private HashMap<String, CurDataBase> curdbmap;
+	
 	private CurDataBase curdbs; //本地数据库连接信息
-	private CurDataBase rmtcurdb; //远程数据库连接信息
+
 	private int tryingcount = 0; //系统如果出错，会重试3次，3次不成直接退出
 //	private String bkparsestoredpath;
 	private int setSoftWareMode; //设定系统模式，有2种，基本数据和通达信同步数据。
@@ -65,6 +69,7 @@ public class SystemConfigration
 	private double bkdpzhanbimarker;
 	private double ggdpzhanbimarker;
 	private Boolean priavtemode;
+	private String LinceseMac;
 	private String pythoninterpreter;
 	private String nameofguanzhubankuai;
 	
@@ -156,57 +161,39 @@ public class SystemConfigration
 			Element elepythoninterpreter = xmlroot.element("pythoninterper");
 			this.pythoninterpreter = elepythoninterpreter.getText();
 			
-			 
+			Element eleLicense = xmlroot.element("License");
+			if(eleLicense != null)
+				this.LinceseMac = eleLicense.getText();
+			else
+				this.LinceseMac = "";
 			
 			//数据库信息
 			Element elesorce = xmlroot.element("databasesources");
 			Iterator it = elesorce.elementIterator();
-			while (it.hasNext()) 
-			{
-				Element tmpelement = (Element) it.next();
-				String cursel = tmpelement.attributeValue("curselecteddbs");
-				if(tmpelement.attributeValue("curselecteddbs").equals("yes")) {
-					curdbs = new CurDataBase (tmpelement.attributeValue("dbsname") );
-//					logger.debug( tmpelement.getText() );
-//					logger.debug(tmpelement.attributeValue("user") );
-//					logger.debug( tmpelement.attributeValue("password") );
-//					logger.debug( tmpelement.attributeValue("databasetype").trim()  ) ;
-					
-					curdbs.setDataBaseConStr (tmpelement.getText() );
-					curdbs.setUser (tmpelement.attributeValue("user").trim() );
-					curdbs.setPassWord (tmpelement.attributeValue("password").trim() );
-					curdbs.setCurDatabaseType(tmpelement.attributeValue("databasetype").trim());
-				}
-			}
-			//远程数据库信息
-//			Element elermtsorce = xmlroot.element("serverdatabasesources");
-//			Iterator itrmt = elermtsorce.elementIterator();
-//			while (itrmt.hasNext()) 
-//			{
-//				Element tmpelement = (Element) itrmt.next();
-//				String cursel = tmpelement.attributeValue("curselecteddbs");
-//				if(tmpelement.attributeValue("curselecteddbs").equals("yes")) {
-//					rmtcurdb = new CurDataBase (tmpelement.attributeValue("dbsname") );
-//					logger.debug( tmpelement.getText() );
-//					logger.debug(tmpelement.attributeValue("user") );
-//					logger.debug( tmpelement.attributeValue("password") );
-//					logger.debug( tmpelement.attributeValue("databasetype").trim()  ) ;
-//					
-//					if(tmpelement.getText().trim().equals(curdbs.getCurDatabaseType() ) )
-//						rmtcurdb = curdbs;
-//					else {
-//						rmtcurdb.setDataBaseConStr (tmpelement.getText() );
-//						rmtcurdb.setUser (tmpelement.attributeValue("user").trim() );
-//						rmtcurdb.setPassWord (tmpelement.attributeValue("password").trim() );
-//						rmtcurdb.setCurDatabaseType(tmpelement.attributeValue("databasetype").trim());
-//					}
-//				}
-//			}
-			
-//			//哪些数据从server读取
-//			Element elermtdatatablefromserver = xmlroot.element("tablesfromserver");
-//			this.datatablesfromserver = elermtdatatablefromserver.getText();
-			
+			 while (it.hasNext()) 
+			 {
+				 Element elementdbs = (Element) it.next();
+
+				 logger.debug( elementdbs.attributeValue("dbsname") ) ;
+				 CurDataBase tmpdb = new CurDataBase (elementdbs.attributeValue("dbsname"));
+				 logger.debug( elementdbs.attributeValue("user") ) ;
+				 tmpdb.setUser(elementdbs.attributeValue("user"));
+				 logger.debug( elementdbs.attributeValue("password") ) ;
+				 tmpdb.setPassWord(elementdbs.attributeValue("password"));
+				 logger.debug( elementdbs.getText() ) ;
+				 tmpdb.setDataBaseConStr(elementdbs.getText());
+				 tmpdb.setCurDatabaseType( elementdbs.attributeValue("databasetype") );
+				 logger.debug( elementdbs.attributeValue("curselecteddbs") ) ;
+				 if(elementdbs.attributeValue("curselecteddbs").equals("yes")){
+					 tmpdb.setCurrentSelectedDbs(true);
+					 curdbs = tmpdb;
+				 }
+				 else
+					 tmpdb.setCurrentSelectedDbs(false);
+				 
+				 curdbmap.put( elementdbs.attributeValue("dbsname"), tmpdb);
+			 }
+		
 			try {
 				xmlfileinput.close();
 				tryingcount = 0;
@@ -243,10 +230,10 @@ public class SystemConfigration
 	 {  
 	        private static SystemConfigration instance =  new SystemConfigration ();  
 	 }
-//	 public CurDataBase getCurrentDataBase ()
-//	 {
-//		 return curdbs;
-//	 }
+	 public String getLinceseMac ()
+	 {
+		 return this.LinceseMac;
+	 }
 	 public String getSystemDataBaseType ()
 	 {
 		 return this.curdatabasetype;
@@ -280,10 +267,10 @@ public class SystemConfigration
 	 {
 		 return curdbs;
 	 }
-	 public  CurDataBase getRemoteCurrentDatabaseSource ()
+	 public HashMap<String, CurDataBase> getgetCurrentAllDatabaseSources ()
 	 {
-		 return rmtcurdb;
-	 } 
+		 return this.curdbmap;
+	 }
 //	 /*
 //	  * 哪些数据从server表读取
 //	  */
@@ -771,6 +758,10 @@ public class SystemConfigration
 			}
 			return null;
 			
+		}
+		public String getBanKuaiFengXiChecklistXmlFile ()
+		{
+			return this.getSystemInstalledPath() + "/checklists/bankuaifengxiremindmatrix.xml";
 		}
 //		public String formatDate(Date tmpdate)
 //		{

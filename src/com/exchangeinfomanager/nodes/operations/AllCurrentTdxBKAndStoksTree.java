@@ -1,5 +1,7 @@
 package com.exchangeinfomanager.nodes.operations;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -11,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jfree.chart.annotations.CategoryTextAnnotation;
+import org.jfree.ui.TextAnchor;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
@@ -198,11 +202,45 @@ public class AllCurrentTdxBKAndStoksTree
 		bk = (BanKuai) this.getBanKuaiKXian(bk, requiredstartday,requiredendday, period);
 		return bk;
 	}
+	private void teststub (TDXNodes bk,String period) 
+	{
+		if(bk.getMyOwnCode().equals("399006") || bk.getMyOwnCode().equals("999999") || bk.getMyOwnCode().equals("399001"))
+			return;
+		
+		period = NodeGivenPeriodDataItem.WEEK;
+		NodeXPeriodData nodexdata = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		LocalDate start = nodexdata.getOHLCRecordsStartDate();
+		LocalDate end = nodexdata.getOHLCRecordsEndDate();
+		
+		LocalDate tmpdate = start;
+		do  {
+			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
+			Double cje = nodexdata.getChengJiaoEr(wkfriday, 0);
+			Double zdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday, 0);
+			if(zdf!=null)
+				logger.info(wkfriday + "::" + zdf.toString() );
+			else
+				logger.info(wkfriday + ":: null" );
+			
+				
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+		} while (tmpdate.isBefore( end) || tmpdate.isEqual(end));
+		
+		return ;
+	}
 	public BanKuai getBanKuaiKXian (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
+		
 		NodeXPeriodData nodedayperioddata = bk.getNodeXPeroidData(period);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
 			bk = bkdbopt.getBanKuaiKXianZouShi (bk,requiredstartday,requiredendday,period);
+			
 			return bk;
 		}
 		
@@ -220,6 +258,7 @@ public class AllCurrentTdxBKAndStoksTree
 				
 				bk = bkdbopt.getBanKuaiKXianZouShi (bk,requiredstartday,requiredendday,period);
 		}
+		
 		return bk;
 	}
 	/*
