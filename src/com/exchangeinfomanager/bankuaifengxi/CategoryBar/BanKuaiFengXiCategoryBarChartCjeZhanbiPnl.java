@@ -191,6 +191,9 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	 */
 	public Double dipalyCjeCjlZBLineDataToGui (NodeXPeriodData nodexdata,String period)
 	{
+		if(!super.shouldDisplayZhanBiInLine() ) 
+			return null;
+		
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).hideBarMode();
 		
 		if(super.barchartdataset.getColumnCount() ==0 )

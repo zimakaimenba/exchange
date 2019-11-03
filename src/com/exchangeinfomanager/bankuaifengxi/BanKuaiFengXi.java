@@ -3418,7 +3418,9 @@ public class BanKuaiFengXi extends JDialog
 		panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
 		panelGgDpCjeZhanBi.setDrawQueKouLine(false);
 		panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
+		this.panelGgDpCjeZhanBi.setDisplayZhanBiInLine(true);
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
+		
 		
 		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
 		

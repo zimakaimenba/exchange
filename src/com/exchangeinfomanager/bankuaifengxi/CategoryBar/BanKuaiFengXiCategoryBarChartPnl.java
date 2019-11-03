@@ -148,6 +148,10 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public void setDisplayZhanBiInLine (Boolean draw)
 	{
 		this.displayzhanbishujuinline = draw;
+		if(this.displayzhanbishujuinline) 
+			this.mntmCjeCjlZblineDate.setText("X 占比柱图转线图");
+		else
+			this.mntmCjeCjlZblineDate.setText("占比柱图转线图");
 	}
 	public Boolean shouldDisplayZhanBiInLine ()
 	{
@@ -358,9 +362,20 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	mntmCjeCjlZblineDate.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
+				if(mntmCjeCjlZblineDate.getText().contains("X")) {
+					setDisplayZhanBiInLine (false);
+					
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, "", "notcjecjlzbtoline" );
+		            pcs.firePropertyChange(evtzd);
+		            
+				} else {
+					setDisplayZhanBiInLine (true);
+					
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, "", "cjecjlzbtoline" );
+		            pcs.firePropertyChange(evtzd);
+				}
 				
-				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, "", "cjecjlzbtoline" );
-	            pcs.firePropertyChange(evtzd);
+				
 			}
 			
 		});
