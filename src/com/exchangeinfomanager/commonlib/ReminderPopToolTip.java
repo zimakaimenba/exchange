@@ -158,8 +158,8 @@ public class ReminderPopToolTip
             innerPanel.add(_iconLabel, BorderLayout.WEST);  
             innerPanel.add(_message, BorderLayout.CENTER);  
             
-            _openMatrixButn.setToolTipText("\u4E2A\u80A1\u65B0\u95FB");
-            _openMatrixButn.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/greenClosed15.png")) );
+            _openMatrixButn.setToolTipText("´ò¿ªMatrix");
+            _openMatrixButn.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/endit-16.png")) );
             JPanel buttonpnl = new JPanel ();
             buttonpnl.setBackground(_bgColor);
             buttonpnl.setLayout(new FlowLayout() );

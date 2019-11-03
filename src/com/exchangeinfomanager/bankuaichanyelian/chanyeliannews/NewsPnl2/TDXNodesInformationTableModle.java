@@ -1,20 +1,20 @@
-package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.swing.table.AbstractTableModel;
+
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 
-class NewsTableModel extends AbstractTableModel 
+public class TDXNodesInformationTableModle extends AbstractTableModel implements InformationTableModelBasic
 {
 	String[] jtableTitleStrings = { "新闻标题", "录入日期"};
 	private ArrayList<InsertedMeeting> cylnewslists;
-	private static Logger logger = Logger.getLogger(NewsTableModel.class);
-	
-	NewsTableModel (){
-	}
 	
 	public void refresh  ( Collection<InsertedMeeting> allnewlist)
 	{
@@ -41,11 +41,6 @@ class NewsTableModel extends AbstractTableModel
 	        return jtableTitleStrings.length;
 	} 
 	
-	public InsertedMeeting getNews (int row) 
-	{
-		return this.cylnewslists.get(row);
-	}
-	    
 	public Object getValueAt(int rowIndex, int columnIndex) 
 	{
 	    	if(this.cylnewslists.isEmpty())
@@ -87,7 +82,7 @@ class NewsTableModel extends AbstractTableModel
 		
 
 	 
-	 public InsertedMeeting getChanYeLianNews (int row) 
+	 public InsertedMeeting getRequiredInformationOfTheRow (int row) 
 	 {
 	    	return cylnewslists.get(row) ;
 	 }
@@ -99,4 +94,10 @@ class NewsTableModel extends AbstractTableModel
 			 else 
 				 cylnewslists.clear();
 	 }
+
+	@Override
+	public Integer getMainInforTypeForCreating() 
+	{
+		return Meeting.NODESNEWS;
+	}
 }

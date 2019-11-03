@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -11,7 +11,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -22,124 +24,84 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.log4j.Logger;
-
+import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
 import com.exchangeinfomanager.StockCalendar.View;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ChanYeLianGeGuNews;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 
-public class ZhiShuGJRQView extends View 
+public class TDXNodesInfomationListsView extends View
 {
-	private JTable tableCurCylNews;
-	private JButton btnAddNews;
-	private EventService meetingService;
-	private String title;
-	private String nodecode;
-	private static Logger logger = Logger.getLogger(ChanYeLianGeGuNews.class);
 
-	public ZhiShuGJRQView(EventService meetingService, Cache cache,String title)
+	private EventService meetingService;
+	private String nodecode;
+
+	public TDXNodesInfomationListsView(EventService meetingService,Cache cache,AbstractTableModel tablemodle)
 	{
 		super(meetingService, cache);
 		this.meetingService = meetingService;
-		this.title = "'" + title + "'";
 		this.nodecode = cache.getNodeCode();
-		
-		
+		this.cache = cache;
+	
 		cache.addCacheListener(this);
 		
-		initializeGui ();
+		initializeGui (tablemodle);
 		createEvents ();
 		
         this.onMeetingChange(cache);
 	}
-
+	
+	protected void addNews() 
+	{
+		
+		String newsbelogns = cache.getNodeCode();
+		if(newsbelogns.toLowerCase().equals("all") )
+			newsbelogns = "000000";
+		
+		Meeting meeting = new Meeting("新闻标题",LocalDate.now(),
+                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.NODESNEWS);
+        getCreateDialog().setMeeting(meeting);
+        getCreateDialog().setVisible(true);
+	}
+	
+	protected void addZhiShuGJRQ ()
+	{
+		String newsbelogns = cache.getNodeCode();
+		if(newsbelogns.toLowerCase().equals("all") )
+			newsbelogns = "999999";
+		
+		Meeting meeting = new Meeting("指数日期",LocalDate.now(),
+                    "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
+	    getCreateDialog().setMeeting(meeting);
+	    getCreateDialog().setVisible(true);
+	}
+	
 	private void createEvents() 
 	{
 		btnAddNews.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				addZhiShuGuanJianRiQi (null);
-				
+				Integer meetingtype = ((InformationTableModelBasic)tableCurCylNews.getModel()).getMainInforTypeForCreating();
+				if(meetingtype == Meeting.NODESNEWS)
+					addNews ();
+				else if(meetingtype == Meeting.ZHISHUDATE)
+					addZhiShuGJRQ ();
 			}
 		});
 		
 		tableCurCylNews.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				tableMouseClickActions (arg0);
-			}
-		});
-		
-	}
-	
-	public void addZhiShuGuanJianRiQi(InsertedMeeting selectnews) 
-	{
-		String newsbelogns = cache.getNodeCode();
-		if(newsbelogns.toLowerCase().equals("all") )
-			newsbelogns = "999999";
-		
-		if(selectnews == null ) {
-			Meeting meeting = new Meeting("指数日期",LocalDate.now(),
-                    "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
-	       getCreateDialog().setMeeting(meeting);
-	       getCreateDialog().setVisible(true);
-		} else {
-			Meeting meeting = new Meeting(selectnews.getTitle(),selectnews.getStart(),
-					selectnews.getTitle(), "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
-			
-			try {
-				meetingService.createMeeting(meeting);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		
-		
-	}
-
-	public void updateNewsToABkGeGu (InsertedMeeting news,String bkggcode)
-	{
-		Boolean addresult = news.addMeetingToSpecificOwner(bkggcode);
-		if(addresult) {
-			try {
-				meetingService.updateMeeting(news);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public InsertedMeeting getCurSelectedNews ()
-	{
-		int row = tableCurCylNews.getSelectedRow();
-		if(row <0) {
-			JOptionPane.showMessageDialog(null,"请选择一条新闻！","Warning",JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		
-		int  model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		InsertedMeeting selectednews = ((ZhiShuGJRQModel)tableCurCylNews.getModel()).getZhiShuGJRQ(model_row);
-		
-//		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
-		return selectednews;
-		
-	}
-	
-	private void tableMouseClickActions (MouseEvent arg0)
-	{
-        		int  view_row = tableCurCylNews.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
+				int  view_row = tableCurCylNews.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
 				int  view_col = tableCurCylNews.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
 				int  model_row = tableCurCylNews.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
 				int  model_col = tableCurCylNews.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
@@ -155,9 +117,7 @@ public class ZhiShuGJRQView extends View
 							return ;
 						}
 						
-//						int model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-
-					  InsertedMeeting stocknews = ((ZhiShuGJRQModel)tableCurCylNews.getModel()).getZhiShuGJRQ(model_row);
+					  InsertedMeeting stocknews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getRequiredInformationOfTheRow(model_row);
 					  Optional<InsertedMeeting> meeting = getCache().produceMeetings()
                               .stream()
                               .filter(m -> m.getID() == Integer.valueOf(stocknews.getID()))
@@ -166,13 +126,64 @@ public class ZhiShuGJRQView extends View
 		              getModifyDialog().setVisible(true);
 				 }
 
-	}
-
-	private void initializeGui() 
-	{
-		JLabel lbltitle = new JLabel(title);
+			}
+		});
 		
-		btnAddNews = new JButton("添加关键日期");
+	}
+//	/*
+//	 * 
+//	 */
+//	public void updateNewsToABkGeGu (InsertedMeeting news,String bkggcode)
+//	{
+//		Boolean addresult = news.addMeetingToSpecificOwner(bkggcode);
+//		if(addresult) {
+//			try {
+//				meetingService.updateMeeting(news);
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//	}
+//	public void updateNewsToABkGeGu (InsertedMeeting news,Set<String> bkggcodeset)
+//	{
+//		Boolean addresult = news.addMeetingToSpecificOwner(bkggcodeset);
+//		if(addresult) {
+//			try {
+//				meetingService.updateMeeting(news);
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//	}
+	/*
+	 * 
+	 */
+	public InsertedMeeting getCurSelectedNews ()
+	{
+		int row = tableCurCylNews.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一条新闻！","Warning",JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		
+		int  model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+		InsertedMeeting selectednews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getRequiredInformationOfTheRow(model_row);
+		
+//		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
+		return selectednews;
+		
+	}
+	
+	private JTable tableCurCylNews;
+	private JButton btnAddNews;
+	JLabel lbltitle;
+	private void initializeGui(AbstractTableModel tablemodle) 
+	{
+		lbltitle = new JLabel();
+		
+		btnAddNews = new JButton("添加");
 
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -203,8 +214,7 @@ public class ZhiShuGJRQView extends View
 					.addContainerGap())
 		);
 		
-		ZhiShuGJRQModel newsmodel = new ZhiShuGJRQModel ();
-		tableCurCylNews = new JTable(newsmodel) {
+		tableCurCylNews = new JTable(tablemodle) {
 			private static final long serialVersionUID = 1L;
 			public String getToolTipText(MouseEvent e) 
 			{
@@ -227,13 +237,25 @@ public class ZhiShuGJRQView extends View
 		        Object value = getModel().getValueAt(row, col);
 		        
 		        Color foreground = Color.BLACK, background = Color.white; 
-		        ZhiShuGJRQModel tablemodel =  (ZhiShuGJRQModel)this.getModel() ;
+		        InformationTableModelBasic tablemodel =  (InformationTableModelBasic)this.getModel() ;
 		        int modelRow = this.convertRowIndexToModel(row);
-		        InsertedMeeting event = tablemodel.getZhiShuGJRQ(modelRow);
-		        if(event.getMeetingType() == Meeting.NODESNEWS)
-		        	background = new Color(255,255,204);
-		        else
-		        	background = new Color(255,204,229);
+		        InsertedMeeting event = tablemodel.getRequiredInformationOfTheRow(modelRow);
+		        
+		        Collection<InsertedMeeting.Label> labels = cache.produceLabels();
+		        for (Meeting.Label l : labels) { //有LABEL的情况
+                    if (l.isActive() && event.getLabels().contains(l)) {
+                        background = l.getColor();
+                    }
+                }
+		        
+//		        if(event.getMeetingType() == Meeting.NODESNEWS)
+//		        	background = new Color(255,255,204);
+//		        else if(event.getMeetingType() == Meeting.ZHISHUDATE)
+//		        	background = new Color(255,204,229);
+//		        else if(event.getMeetingType() == Meeting.QIANSHI)
+//		        	background = Color.RED;
+//		        else if(event.getMeetingType() == Meeting.RUOSHI)
+//		        	background = Color.GREEN;
 		        
 		        comp.setBackground(background);
 		    	comp.setForeground(foreground);
@@ -254,7 +276,7 @@ public class ZhiShuGJRQView extends View
 	public void onMeetingChange(Cache cache) 
 	{
 		Collection<InsertedMeeting> meetings = cache.produceMeetings();
-		((ZhiShuGJRQModel)tableCurCylNews.getModel()).refresh(meetings);
+		((InformationTableModelBasic)tableCurCylNews.getModel()).refresh(meetings);
 		
 
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)tableCurCylNews.getRowSorter();
@@ -263,13 +285,21 @@ public class ZhiShuGJRQView extends View
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
-	
+		
 	}
 
 	@Override
-	public void onLabelChange(Cache cache) 
-	{
+	public void onLabelChange(Cache cache) {
+		// TODO Auto-generated method stub
 		
+	}
+
+	public void setListsViewTitle(String title) 
+	{
+		if(this.nodecode.equals("ALL"))
+			lbltitle.setText("所有:" + title);
+		else
+			lbltitle.setText(this.nodecode + ":" + title);
 		
 	}
 

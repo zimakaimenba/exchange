@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ZhiShuGuanJianRiQi;
+package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,16 +9,14 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 
-public class ZhiShuGJRQModel extends AbstractTableModel
+public class TDXNodesZhiShuGJRQModle extends AbstractTableModel implements InformationTableModelBasic
 {
 	String[] jtableTitleStrings = { "指数/板块代码", "起始日期","截止日期","说明"};
+	Integer informationtypeforcreating;
 	private ArrayList<InsertedMeeting> zhishuslists;
-	private static Logger logger = Logger.getLogger(ZhiShuGJRQModel.class);
-	
-	ZhiShuGJRQModel (){
-	}
-	
+		
 	public void refresh  ( Collection<InsertedMeeting> allnewlist)
 	{
 		if(this.zhishuslists == null) {
@@ -99,7 +97,7 @@ public class ZhiShuGJRQModel extends AbstractTableModel
 		
 
 	 
-	 public InsertedMeeting getZhiShuGJRQ (int row) 
+	 public InsertedMeeting getRequiredInformationOfTheRow (int row) 
 	 {
 	    	return zhishuslists.get(row) ;
 	 }
@@ -112,4 +110,11 @@ public class ZhiShuGJRQModel extends AbstractTableModel
 				 zhishuslists.clear();
 	 }
 
+	@Override
+	public Integer getMainInforTypeForCreating() 
+	{
+		return Meeting.ZHISHUDATE;
+	}
+
+	
 }

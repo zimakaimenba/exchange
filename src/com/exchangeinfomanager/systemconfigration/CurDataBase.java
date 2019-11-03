@@ -2,30 +2,25 @@ package com.exchangeinfomanager.systemconfigration;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
+
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
+
+
+
+
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class CurDataBase extends JPanel 
 {
+//	private EncryptAndDecypt encyptanddecypt;
+
 	/**
 	 * Create the panel.
 	 */
 	public CurDataBase (String sourcename) 
 	{
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent arg0) 
-			{
-				
-			}
-		});
 		initializeGui ();
 		tfldname.setText(sourcename);
 		setLayout(new MigLayout("", "[72px][238px,grow]", "[24px][][30px][][][25px][31px]"));
@@ -50,19 +45,11 @@ public class CurDataBase extends JPanel
 		add(tflduser, "cell 1 5,alignx left,growy");
 		add(tfldname, "cell 1 0,alignx center,growy");
 		add(tflddbconstr, "cell 1 2,grow");
-//		datype = "";
-//		dbconstr = "";
-//		user = "";
-//		password = "";
 		curuseddbs = false;
-		
-		
 	}
-//	private String datype;
-//	private String dbconstr;
-//	private String user;
-//	private String password;
+
 	private boolean curuseddbs;
+	
 	public void setCurDatabaseType (String type)
 	{
 		comboBox.setSelectedItem(type);
@@ -97,10 +84,6 @@ public class CurDataBase extends JPanel
 	{
 		return toUNIXpath(tflddbconstr.getText());
 	}
-//	public void setCurDataBaseName(String trim) 
-//	{
-//		this.datype = trim;
-//	}
 	public String getCurDataBaseName() 
 	{
 		return tfldname.getText();

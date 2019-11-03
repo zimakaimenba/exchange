@@ -15,20 +15,19 @@ public class License
 	public Boolean isLicenseValide ()
 	{
 		try {
-//			System.out.println("Ip: " + GetNetworkAddress.GetAddress("ip"));
-//			System.out.println("Mac: " + GetNetworkAddress.GetAddress("mac"));
-			
+		
 			String curhardwareMac = GetNetworkAddress.GetAddress("mac");
+			
 			String sysmacsetting = sysconf.getLinceseMac ();
+			sysmacsetting = (new EncryptAndDecypt()).getDecryptedPassowrd(sysmacsetting);
+			
 			if(sysmacsetting.equals(curhardwareMac))
 				return true;
 			else 
 				return false;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			return false;
 		}
-		
-		return true;
 	}
 }

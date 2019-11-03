@@ -1,4 +1,5 @@
 package com.exchangeinfomanager.database;
+import com.exchangeinfomanager.License.EncryptAndDecypt;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.*;
 import com.google.common.base.CharMatcher;
@@ -37,41 +38,15 @@ public class ConnectDataBase
 		 
 		 private static Logger logger = Logger.getLogger(ConnectDataBase.class);
 		 DataBaseConnection localcon;
-//		 DataBaseConnection remotcon;
 		 SystemConfigration sysconfig = null;
-//		 String[] rmtservertable = {"股票通达信交易所指数对应表","股票通达信概念板块对应表","股票通达信行业板块对应表","股票通达信风格板块对应表",
-//				 					"通达信交易所指数列表","通达信交易所指数每日交易信息","通达信板块列表","通达信板块每日交易信息","产业链子板块列表"};	
-////			Connection con;
-//			Connection rmtcon;
-//			boolean rmtdatabaseconnected = false;
-//			//boolean databaseconnected = false;
-//			private String databasetype;
-//			private String databasename;
-			
+
 
 		public void refreshDatabaseConnection ()
 		{
 			sysconfig = SystemConfigration.getInstance();
 			CurDataBase localcurdb = sysconfig.getCurrentDatabaseSource ();
-//			CurDataBase rmtcurdb = sysconfig.getRemoteCurrentDatabaseSource();
 			
 			localcon = new DataBaseConnection (localcurdb);
-			String localconstr = localcurdb.getDataBaseConStr ().trim().toLowerCase();
-//			String rmtconstr = rmtcurdb.getDataBaseConStr().trim().toLowerCase();
-//			if(localconstr.equals(rmtconstr))
-//				remotcon = localcon;
-//			else 
-//				remotcon = new DataBaseConnection (rmtcurdb); 
-			
-			boolean localconnect = localcon.isDatabaseconnected();
-//			boolean rmtconnect = remotcon.isDatabaseconnected();
-//			if(localconnect == true && rmtconnect == true)
-//				sysconfig.setSoftWareMode (sysconfig.MODELSERVERCLIENT);
-//			else if(localconnect == false && rmtconnect == true) 
-//				sysconfig.setSoftWareMode (sysconfig.MODELSERVER);
-//			else if(localconnect == true && rmtconnect == false) 
-//				sysconfig.setSoftWareMode (sysconfig.MODELCLIENT);
-			
 		}
 		
 		
@@ -333,7 +308,6 @@ class DataBaseConnection
 						try	{
 								Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
 						} catch(ClassNotFoundException e)	{
-//							System.out.println("找不到驱动程序类 ，加载驱动失败！");
 							logger.error("找不到驱动程序类 ，加载驱动失败！");
 							e.printStackTrace();
 						}
@@ -341,7 +315,6 @@ class DataBaseConnection
 //jdbc:ucanaccess://C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/exchange info manager test.accdb;jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener
 						urlToDababasecrypt = "jdbc:ucanaccess://" + dbconnectstr + ";jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener";
 						logger.debug(urlToDababasecrypt);
-//						System.out.println(urlToDababasecrypt);
 						break;
 			case "mysql":
 						try	{
@@ -361,11 +334,14 @@ class DataBaseConnection
 			}
 			
 			try	{	// 方式二 通过数据源与数据库建立连接
-//				System.out.println("begin to connect database");
 				logger.info("begin to connect database");
-				tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,password);
+				
+				EncryptAndDecypt encyptanddecypt = new EncryptAndDecypt ();
+				String decryptedpassword = encyptanddecypt.getDecryptedPassowrd(password);
+				encyptanddecypt = null;
+				
+				tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,decryptedpassword);
 				if(tmpcon != null)	{
-//					System.out.println( "Sucessed connect database:" + dbconnectstr );
 					logger.info("Sucessed connect database:" + dbconnectstr );
 					this.databaseconnected = true;
 				}

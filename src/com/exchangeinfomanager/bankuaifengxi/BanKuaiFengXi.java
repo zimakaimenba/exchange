@@ -2026,6 +2026,8 @@ public class BanKuaiFengXi extends JDialog
 						setCursor(hourglassCursor);
 						
 						chooseParsedFile (null);
+						
+						tableBkZhanBi.repaint();
 //						if(Strings.isNullOrEmpty(tfldparsedfile.getText() ) )
 //							chooseParsedFile (null);
 //						else

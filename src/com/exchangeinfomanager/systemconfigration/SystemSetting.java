@@ -19,6 +19,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.exchangeinfomanager.License.EncryptAndDecypt;
 import com.exchangeinfomanager.database.ConnectDataBase;
 
 import java.awt.event.ActionEvent;
@@ -199,11 +200,18 @@ public class SystemSetting extends JDialog
 				
 				CurDataBase tmpcur = (CurDataBase) ((DatabaseSourceTableModel)tablelocal.getModel()).getDbsAtRow(row);
 				String dbnewname = tmpcur.getCurDataBaseName();
+				String originalpw = tmpcur.getPassWord();
 				
-				int exchangeresult = JOptionPane.showConfirmDialog(null, tmpcur, "加入数据源", JOptionPane.OK_CANCEL_OPTION);
+				int exchangeresult = JOptionPane.showConfirmDialog(null, tmpcur, "数据源", JOptionPane.OK_CANCEL_OPTION);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 					return;
-
+				else { //加密密码
+					if(tmpcur.getPassWord() != originalpw) {
+						String newpassword = (new EncryptAndDecypt() ).getEncryptedPassowrd(tmpcur.getPassWord() );
+						tmpcur.setPassWord(newpassword);
+					}
+				}
+				
 				sysconf.getgetCurrentAllDatabaseSources().put( dbnewname, tmpcur );
 				
 				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(sysconf.getgetCurrentAllDatabaseSources() );
@@ -820,7 +828,7 @@ class DatabaseSourceTableModel extends AbstractTableModel
 	private String selecteddbs;
 	
 
-	String[] jtableTitleStrings = {  "选择","数据源名","数据库连接字","登录名","密码","数据库类型"};
+	String[] jtableTitleStrings = {  "选择","数据源名","数据库连接字","数据库类型"};
 	
 	DatabaseSourceTableModel (HashMap<String, CurDataBase> curdbmap)
 	{
@@ -880,12 +888,6 @@ class DatabaseSourceTableModel extends AbstractTableModel
             	value = tmpcub.getDataBaseConStr();
                 break;
             case 3:
-            	value = "********";
-                break;    
-            case 4:
-            	value = "********";
-                break;
-            case 5:
             	value = tmpcub.getCurDatabaseType();
                 break; 
 	    	}
@@ -906,12 +908,6 @@ class DatabaseSourceTableModel extends AbstractTableModel
 			          clazz = String.class;
 			          break;
 		        case 3:
-			          clazz = String.class;
-			          break;
-		        case 4:
-			          clazz = String.class;
-			          break;
-		        case 5:
 			          clazz = String.class;
 			          break;
 		      }
