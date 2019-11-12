@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
@@ -89,5 +91,15 @@ public class TDXNodesZhiShuGJRQPnl   extends TDXNodesInfomationListsPnlBasic
 		}
 		
 	}
+	
+//	@Override
+//	public void propertyChange(PropertyChangeEvent evt)
+//	{
+//		String evtpropertyname = evt.getPropertyName();
+//		if (evt.getPropertyName().equals("CREATENEWS")) {
+//			int i = 0;
+//			
+//		}
+//	}
 
 }

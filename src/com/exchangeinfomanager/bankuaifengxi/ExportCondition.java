@@ -100,9 +100,9 @@ public class ExportCondition
 					continue;
 				
 				childnode = allbksks.getAllGeGuOfBanKuai ( (BanKuai)childnode,period);
-				Set<StockOfBanKuai> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0,period);
-				for (StockOfBanKuai stockofbankuai : nowbkallgg) {
-					 Stock ggstock = stockofbankuai.getStock();
+				Set<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0,period);
+				for (BkChanYeLianTreeNode stockofbankuai : nowbkallgg) {
+					 Stock ggstock = ((StockOfBanKuai)stockofbankuai).getStock();
 //					 if( testcheck.contains(ggstock.getMyOwnCode()))
 //							System.out.print("checkTDXNodeMatchedCurSettingConditons");
 					 

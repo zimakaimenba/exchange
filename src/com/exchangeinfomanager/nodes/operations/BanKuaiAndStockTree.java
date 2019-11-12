@@ -27,13 +27,13 @@ import org.apache.log4j.Logger;
 
 import javax.swing.tree.TreeNode;
 
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI2;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
@@ -58,16 +58,12 @@ public class BanKuaiAndStockTree extends JTree
 		this.setModel(ml);
 		
 		this.createEvents(this);
-		this.setDragEnabled(false);
 		this.setDragEnabled(true);
 		this.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
-		this.setEditable(true);
+		this.setEditable(false);
 		this.setCellRenderer(new BkChanYeLianTreeCellRenderer());
-		this.setRootVisible(false);
+		this.setRootVisible(true);
 		this.setTransferHandler(new TreeTransferHandler() );
-		
-//		BanKuaiPopUpMenu popupMenuGeguNews = new BanKuaiPopUpMenuForTree(this);
-//		this.setComponentPopupMenu(popupMenuGeguNews);
 	}
 	
 	public BanKuaiAndStockTree (InvisibleTreeModel bkcylmodel,String treeid)
@@ -77,17 +73,16 @@ public class BanKuaiAndStockTree extends JTree
 		this.treeid = treeid;
 		
 		
-		bkcylmodel.activateFilter(true);
+		bkcylmodel.activateFilter(false);
 		this.setModel(bkcylmodel);
 		
 		this.createEvents(this);
-		
 		this.setDragEnabled(true);
 		this.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
-		this.setEditable(true);
+		this.setEditable(false);
 		this.setCellRenderer(new BkChanYeLianTreeCellRenderer());
-		this.setRootVisible(false);
-		this.setTransferHandler(new TreeTransferHandler());
+		this.setRootVisible(true);
+		this.setTransferHandler(new TreeTransferHandler() );
 		
 	}
 	
@@ -106,6 +101,34 @@ public class BanKuaiAndStockTree extends JTree
 	{
 		this.currentdisplayedwk = diswk;
 	}
+	public void printTreeInformation ()
+	{
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+		printTree(treeroot);
+	}
+	private  void printTree(BkChanYeLianTreeNode aNode)
+	{
+	    String name = aNode.toString();
+	    int level= aNode.getLevel();
+	    String placement = "";
+	    while (level > 0)
+	    {
+	        placement += ">";
+	        level--;
+	    }
+	    if(aNode.isLeaf())
+	    {
+	        System.out.println(placement + name);
+	        return;
+	    }
+
+	    System.out.println(placement + "--- " + name + " ---");
+	    for(int i = 0 ; i < aNode.getChildCount() ; i++)
+	    {
+	        printTree((CylTreeNestedSetNode)aNode.getChildAt(i));
+	    }
+	    System.out.println(placement + "+++ " + name + " +++");
+	}
 	/*
 	 * 
 	 */
@@ -123,40 +146,76 @@ public class BanKuaiAndStockTree extends JTree
 	/*
 	 * 
 	 */
-	public Boolean shouldSaveTreeToXml ()
+	public boolean deleteNodes(TreePath selectednode) 
 	{
-		return treechangedshouldsave;
+		DefaultTreeModel treeModel = (DefaultTreeModel) this.getModel();
+
+		this.setSelectionPath(selectednode);
+		TreePath[] treePaths = this.getSelectionPaths();
+		sortPaths(this,treePaths);
+	    int topRow = this.getRowForPath(treePaths[0]);
+	    for (TreePath path : treePaths) {
+	            	BkChanYeLianTreeNode child = (BkChanYeLianTreeNode) path.getLastPathComponent();
+	            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) child.getParent();
+	                if (parent != null){
+	                    int childIndex = parent.getIndex(child);
+	                    parent.remove(child);
+	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
+	                }
+	      }
+	            
+	      if (this.getVisibleRowCount()>0) 
+	            	this.setSelectionRow(topRow);
+	   
+	   return true;
+	}
+	public boolean isolatedNodes(TreePath selectednode) 
+	{
+		DefaultTreeModel treeModel = (DefaultTreeModel) this.getModel();
+
+		this.setSelectionPath(selectednode);
+		TreePath[] treePaths = this.getSelectionPaths();
+		sortPaths(this,treePaths);
+	    int topRow = this.getRowForPath(treePaths[0]);
+	    for (TreePath path : treePaths) {
+	    	CylTreeNestedSetNode child = (CylTreeNestedSetNode) path.getLastPathComponent();
+	    	child.setNodeIsolatedDate(LocalDate.now());
+	      }
+	            
+	      if (this.getVisibleRowCount()>0) 
+	            	this.setSelectionRow(topRow);
+	   
+	   return true;
+	}
+	/*
+	 * 
+	 */
+	public boolean checkNodeDuplicate(BkChanYeLianTreeNode parent,  BkChanYeLianTreeNode newNode) 
+	{
+		String gegucodename = newNode.getUserObject().toString().trim();
+		String parentname = parent.getUserObject().toString().trim();
+		
+		if(gegucodename.equals(parentname))
+			return true;
+		
+		int childnum = parent.getChildCount();
+	    for(int i=0;i<childnum;i++) {
+	    	BkChanYeLianTreeNode tmpnode = (BkChanYeLianTreeNode)parent.getChildAt(i);
+	    	String tmpnodename = tmpnode.getUserObject().toString();
+	    	logger.debug(tmpnodename);
+	    	if(tmpnodename.equals(gegucodename)) {
+	    		return true;
+	    	}
+	    }
+	
+		return false;
 	}
 	/*
 	 * 
 	 */
 	private void createEvents(final JTree tree) 
 	{
-		
-			((InvisibleTreeModel)this.getModel()).addTreeModelListener( new  TreeModelListener () {
 
-				@Override
-				public void treeNodesChanged(TreeModelEvent arg0) {
-					treechangedshouldsave = true;
-				}
-
-				@Override
-				public void treeNodesInserted(TreeModelEvent arg0) {
-					treechangedshouldsave = true;
-				}
-
-				@Override
-				public void treeNodesRemoved(TreeModelEvent arg0) {
-					treechangedshouldsave = true;
-				}
-
-				@Override
-				public void treeStructureChanged(TreeModelEvent arg0) {
-					treechangedshouldsave = true;
-				}});
-			
-		
-		
 		this.addMouseListener(new MouseAdapter() {
     		
             public void mouseClicked(MouseEvent evt) 
@@ -165,35 +224,35 @@ public class BanKuaiAndStockTree extends JTree
             }
 		});
 		
-        this.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
-            public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
-                treeTreeExpanded(evt);
-            }
-            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
-                treeTreeCollapsed(evt);
-            }
-        });
+//        this.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
+//            public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
+//                treeTreeExpanded(evt);
+//            }
+//            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
+//                treeTreeCollapsed(evt);
+//            }
+//        });
 	}
-	/*
-	 * 
-	 */
-	private void treeTreeCollapsed(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeCollapsed
-        if (!ignoreExpansion)
-        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreeRelated().setExpansion(false);
-    }
-	/*
-	 * 
-	 */
-    private void treeTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeExpanded
-        if (!ignoreExpansion ) 
-        	try {
-        		BkChanYeLianTreeNode node = ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent());
-        		NodesTreeRelated treerelatd = node.getNodeTreeRelated();
-        		treerelatd.setExpansion(true);
-        	} catch(java.lang.NullPointerException  e) {
-//        		e.printStackTrace();
-        	}
-    }
+//	/*
+//	 * 
+//	 */
+//	private void treeTreeCollapsed(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeCollapsed
+//        if (!ignoreExpansion)
+//        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreeRelated().setExpansion(false);
+//    }
+//	/*
+//	 * 
+//	 */
+//    private void treeTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeExpanded
+//        if (!ignoreExpansion ) 
+//        	try {
+//        		BkChanYeLianTreeNode node = ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent());
+//        		NodesTreeRelated treerelatd = node.getNodeTreeRelated();
+//        		treerelatd.setExpansion(true);
+//        	} catch(java.lang.NullPointerException  e) {
+////        		e.printStackTrace();
+//        	}
+//    }
     /*
      * 
      */
@@ -216,8 +275,8 @@ public class BanKuaiAndStockTree extends JTree
      */
     public void expandTreePathAllNode (TreePath closestPath)
     {
-    		 this.currentselectedtdxbk = closestPath.getPathComponent(1).toString();
-    		 String tdxbkcode = ((BkChanYeLianTreeNode)closestPath.getPathComponent(1)).getMyOwnCode();
+//    		 this.currentselectedtdxbk = closestPath.getPathComponent(1).toString();
+//    		 String tdxbkcode = ((BkChanYeLianTreeNode)closestPath.getPathComponent(1)).getMyOwnCode();
         	 BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
         	 this.setSelectionPath(closestPath);
         	 this.scrollPathToVisible(closestPath);
@@ -249,30 +308,6 @@ public class BanKuaiAndStockTree extends JTree
 //
 //		model.nodeStructureChanged(root);
 //	}
-
-
-		
-	public boolean checkNodeDuplicate(BkChanYeLianTreeNode parent,  BkChanYeLianTreeNode newNode) 
-    {
-    	String gegucodename = newNode.getUserObject().toString().trim();
-    	String parentname = parent.getUserObject().toString().trim();
-    	
-    	if(gegucodename.equals(parentname))
-    		return true;
-    	
-    	int childnum = parent.getChildCount();
-        for(int i=0;i<childnum;i++) {
-        	BkChanYeLianTreeNode tmpnode = (BkChanYeLianTreeNode)parent.getChildAt(i);
-        	String tmpnodename = tmpnode.getUserObject().toString();
-        	logger.debug(tmpnodename);
-        	if(tmpnodename.equals(gegucodename)) {
-        		return true;
-        	}
-        }
-
-		return false;
-	}
-
     @SuppressWarnings("unchecked")
     public void sortPaths(BanKuaiAndStockTree bkChanYeLianTree, TreePath[] treePaths){
         Arrays.sort(treePaths, new java.util.Comparator(){
@@ -365,34 +400,7 @@ public class BanKuaiAndStockTree extends JTree
 //                this.scrollPathToVisible(new TreePath(node.getPath()));
 //	}
 	
-	/*
-	 * 
-	 */
-	public boolean deleteNodes(TreePath selectednode) 
-	{
-		DefaultTreeModel treeModel = (DefaultTreeModel) this.getModel();
 
-		this.setSelectionPath(selectednode);
-		TreePath[] treePaths = this.getSelectionPaths();
-		sortPaths(this,treePaths);
-	    int topRow = this.getRowForPath(treePaths[0]);
-	    for (TreePath path : treePaths) {
-	            	BkChanYeLianTreeNode child = (BkChanYeLianTreeNode) path.getLastPathComponent();
-	            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) child.getParent();
-	                if (parent != null){
-	                    int childIndex = parent.getIndex(child);
-	                    parent.remove(child);
-	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
-	                    if (parent.getChildCount()==0) parent.getNodeTreeRelated().setExpansion(false);
-	                }
-	      }
-	            
-	      if (this.getVisibleRowCount()>0) 
-	            	this.setSelectionRow(topRow);
-	   
-	
-	   return true;
-	}
 
 	/*
 	 * 把树节点存储的产业链转化为arraylist

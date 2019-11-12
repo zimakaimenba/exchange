@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 
 public class TDXNodesInfomationListsView extends View
 {
@@ -61,7 +64,6 @@ public class TDXNodesInfomationListsView extends View
 	
 	protected void addNews() 
 	{
-		
 		String newsbelogns = cache.getNodeCode();
 		if(newsbelogns.toLowerCase().equals("all") )
 			newsbelogns = "000000";
@@ -70,6 +72,12 @@ public class TDXNodesInfomationListsView extends View
                      "ÃèÊö", "¹Ø¼ü´Ê", new HashSet<>(),"SlackURL",newsbelogns,Meeting.NODESNEWS);
         getCreateDialog().setMeeting(meeting);
         getCreateDialog().setVisible(true);
+        
+        PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+        PropertyChangeEvent evtzd = new PropertyChangeEvent(this, "CREATENEWS", "", meeting );
+        pcs.firePropertyChange(evtzd);
+        
+//        this.firePropertyChange("new news",true,true);
 	}
 	
 	protected void addZhiShuGJRQ ()
@@ -82,6 +90,8 @@ public class TDXNodesInfomationListsView extends View
                     "ÃèÊö", "¹Ø¼ü´Ê", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
 	    getCreateDialog().setMeeting(meeting);
 	    getCreateDialog().setVisible(true);
+	    
+	    
 	}
 	
 	private void createEvents() 
@@ -130,33 +140,6 @@ public class TDXNodesInfomationListsView extends View
 		});
 		
 	}
-//	/*
-//	 * 
-//	 */
-//	public void updateNewsToABkGeGu (InsertedMeeting news,String bkggcode)
-//	{
-//		Boolean addresult = news.addMeetingToSpecificOwner(bkggcode);
-//		if(addresult) {
-//			try {
-//				meetingService.updateMeeting(news);
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-//	public void updateNewsToABkGeGu (InsertedMeeting news,Set<String> bkggcodeset)
-//	{
-//		Boolean addresult = news.addMeetingToSpecificOwner(bkggcodeset);
-//		if(addresult) {
-//			try {
-//				meetingService.updateMeeting(news);
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 	/*
 	 * 
 	 */

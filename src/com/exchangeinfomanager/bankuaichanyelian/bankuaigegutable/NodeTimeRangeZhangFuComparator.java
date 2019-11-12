@@ -3,11 +3,12 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 import java.time.LocalDate;
 import java.util.Comparator;
 
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
-public class NodeTimeRangeZhangFuComparator implements Comparator<TDXNodes> 
+public class NodeTimeRangeZhangFuComparator implements Comparator<BkChanYeLianTreeNode> 
 {
 	private String period;
 	private LocalDate startDate;
@@ -20,7 +21,7 @@ public class NodeTimeRangeZhangFuComparator implements Comparator<TDXNodes>
 		this.endtDate = endDate;
 	}
 	
-    public int compare(TDXNodes node1, TDXNodes node2) 
+    public int compare(BkChanYeLianTreeNode node1, BkChanYeLianTreeNode node2) 
     {
     	NodeXPeriodData node1data = ((StockOfBanKuai)node1).getStock().getNodeXPeroidData(period);
     	Double node1zhangfu = null;

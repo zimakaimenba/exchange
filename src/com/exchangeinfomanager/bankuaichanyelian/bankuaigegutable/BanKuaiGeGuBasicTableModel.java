@@ -19,6 +19,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 {
@@ -31,7 +32,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	
 	protected String[] jtableTitleStrings ;
 	protected BanKuai curbk;
-	protected ArrayList<TDXNodes> entryList;
+	protected List<BkChanYeLianTreeNode> entryList;
 	protected LocalDate showwknum;
 	protected String period;
 	/*
@@ -52,7 +53,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		this.period = period;
 
 		entryList = null;
-		entryList = new ArrayList<TDXNodes>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );
+		entryList = new ArrayList<>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );
 		
 		 Iterator itr = entryList.iterator(); 
 	     while (itr.hasNext())      { 
@@ -193,7 +194,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	    {
 	    	return (StockOfBanKuai) this.entryList.get(row);
 	    }
-	    public List<TDXNodes> getAllStocks ()
+	    public List<BkChanYeLianTreeNode> getAllStocks ()
 	    {
 	    	return this.entryList;
 	    }
@@ -255,7 +256,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 /*
  * 按流通市值对个股排序
  */
-class NodeLiuTongShiZhiComparator implements Comparator<TDXNodes> {
+class NodeLiuTongShiZhiComparator implements Comparator<BkChanYeLianTreeNode> {
 	private String period;
 	private LocalDate compareDate;
 	private int difference;
@@ -265,7 +266,7 @@ class NodeLiuTongShiZhiComparator implements Comparator<TDXNodes> {
 		this.compareDate = compareDate;
 		this.difference = difference;
 	}
-    public int compare(TDXNodes node1, TDXNodes node2) {
+    public int compare(BkChanYeLianTreeNode node1, BkChanYeLianTreeNode node2) {
     	Stock stock1 = ( (StockOfBanKuai)node1).getStock();
     	Stock stock2 = ( (StockOfBanKuai)node2).getStock();
     	

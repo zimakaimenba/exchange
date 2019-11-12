@@ -11,6 +11,8 @@ import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.annotations.Annotation;
+import org.jfree.chart.annotations.CategoryAnnotation;
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
@@ -22,7 +24,7 @@ import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.ValueMarker;
-
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
@@ -50,6 +52,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
 
@@ -220,7 +223,18 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public void setAnnotations (LocalDate columnkey )
 	{
 	     //特别标记选定的周，作用在界面上操作后会体会出来。
-        plot.clearAnnotations();
+//        plot.clearAnnotations();
+        List<Annotation> ann = plot.getAnnotations();
+        Iterator<Annotation> i = ann.iterator();
+        while (i.hasNext()) {
+        	Annotation tmpan = i.next(); // must be called before you can call i.remove()
+        	if(tmpan instanceof CategoryPointerAnnotation) {
+        		String tmptext = ((CategoryPointerAnnotation)tmpan).getText();
+            	if(tmptext.equals("选定周"))
+            		i.remove();
+        	}
+        }
+        
         if(isAllowDrawAnnoation ())
         	markASpecificColumn (columnkey,"选定周");
 	}
@@ -433,8 +447,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
             	        String selectedtooltip = xyitem.getToolTipText();
             	        
             	        setCurSelectedBarInfo (columnkey,selectedtooltip);
-            	        
-            	   
 
             	        selectchanged = true;
         	    	} catch ( java.lang.ClassCastException e ) {
@@ -474,7 +486,10 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	int indexforline = this.linechartdataset.getColumnIndex(selecteddate) ;
     	if(indexforline != -1) {
     		((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(3)).setBarColumnShouldChangeColor(indexforline);
-//    		((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(4)).setBarColumnShouldChangeColor(indexforline);
+    		
+    		CategoryItemRenderer fourthrenderer = plot.getRenderer(4);
+    		if(fourthrenderer instanceof BanKuaiFengXiCategoryLineRenderer)
+    			((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(4)).setBarColumnShouldChangeColor(indexforline);
     	}
     	
         this.dateselected = selecteddate;
@@ -587,7 +602,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        domainaxis.setTickLabelsVisible(true);
 //        domainaxis.setTickMarksVisible(true);
         
-        //line part,for QueKou
+        //line part
         linechartdataset = new DefaultCategoryDataset();  
         BanKuaiFengXiCategoryLineRenderer lineqkrenderer = new BanKuaiFengXiCategoryLineRenderer ();
         plot.setDataset(3, linechartdataset);

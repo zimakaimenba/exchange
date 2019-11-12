@@ -13,6 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;;
 
@@ -20,15 +21,11 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 {
 	public BkChanYeLianTreeCellRenderer ()
 	{
-//		pnlrenderer = new JPanel();
 		lblnodenameandcount = new JLabel (" ");
 		this.bkcyliconfactory = new BkChanYeLianTreeIconFactory ();
-		
-//		pnlrenderer.add(lblnodenameandcount);
 	}
 	
 	private JLabel lblnodenameandcount;
-	//private JPanel pnlrenderer ;
 	private BkChanYeLianTreeIconFactory bkcyliconfactory;
 	
 	 public Component getTreeCellRendererComponent(JTree tree, Object value,  
@@ -36,51 +33,38 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
              boolean hasFocus) 
      {  
 		 Component returnValue = null;
-		 if(value !=null && value instanceof DefaultMutableTreeNode) {
+		 if(value !=null && value instanceof CylTreeNestedSetNode) {
 			 
-	         int nodetype = ((BkChanYeLianTreeNode)value).getType();
-	         
+	         int nodetype = ((CylTreeNestedSetNode)value).getType();
 	         String bktreenodename;
 	         if(nodetype == BkChanYeLianTreeNode.BKGEGU || nodetype == BkChanYeLianTreeNode.TDXGG)
-	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnCode() + ((BkChanYeLianTreeNode)value).getMyOwnName();
+	        	 bktreenodename = ((CylTreeNestedSetNode)value).getMyOwnCode() + ((CylTreeNestedSetNode)value).getMyOwnName();
 	         else
-	        	 bktreenodename = ((BkChanYeLianTreeNode)value).getMyOwnName();
+	        	 bktreenodename = ((CylTreeNestedSetNode)value).getMyOwnCode() + ((CylTreeNestedSetNode)value).getMyOwnName();
+	         lblnodenameandcount.setText( bktreenodename );
 	         
 	         // 每日板块分析信息
-	         Integer patchfilestocknum = 0; Boolean selfisin = false;
-	         if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
-	        	 LocalDate diswk = ((BanKuaiAndStockTree)tree).getCurrentDisplayedWk ();
-	        	 NodesTreeRelated tmptreerelated = ((BkChanYeLianTreeNode)value).getNodeTreeRelated (); 
-	        	 patchfilestocknum = ((BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (diswk);
-	        	 
-	        	 selfisin = ((BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (diswk);
-	         }
+//	         Integer patchfilestocknum = 0; Boolean selfisin = false;
+//	         if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
+//	        	 LocalDate diswk = ((BanKuaiAndStockTree)tree).getCurrentDisplayedWk ();
+//	        	 NodesTreeRelated tmptreerelated = ((BkChanYeLianTreeNode)value).getNodeTreeRelated (); 
+//	        	 patchfilestocknum = ((BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (diswk);
+//	        	 
+//	        	 selfisin = ((BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (diswk);
+//	         }
+//	         if( patchfilestocknum != null  && patchfilestocknum > 0) {
+//	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + patchfilestocknum + ")"  ); 
+//	         } else
+//	        	 lblnodenameandcount.setText( bktreenodename );
 	         
-	         if( patchfilestocknum != null  && patchfilestocknum > 0) {
-	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + patchfilestocknum + ")"  ); 
-	         } else
-	        	 lblnodenameandcount.setText( bktreenodename );
-	         
-	         BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) value;
 	        //ICON
-	         
-//	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon(node, leaf, expanded)); //
-	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon(node));
+	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon((CylTreeNestedSetNode) value));
 	         
 	         //各种状态下的COLOR
-	         if(patchfilestocknum != null && patchfilestocknum > 0) //板块含有满足模型的个股 
-	        	 lblnodenameandcount.setForeground(Color.ORANGE);
-	         else 
-	        	 lblnodenameandcount.setForeground(this.getForeground());
+	         lblnodenameandcount.setForeground(this.getForeground());
 	         
-	         if(selfisin) {//板块自身满足模型,用粗体
-	        	 Font font = new Font("黑体",Font.BOLD + Font.ITALIC,14);
-	        	 lblnodenameandcount.setFont(font);
-	         } else {
-	        	 Font font=new Font("宋体",Font.PLAIN,14); 
-		         lblnodenameandcount.setFont(font);
-	         }
-	         
+        	 Font font=new Font("宋体",Font.PLAIN,14); 
+	         lblnodenameandcount.setFont(font);
 	         
 	         //如果是要删除的节点，用特殊的字体表示
 //	         if(node.getNodetreerelated().shouldBeRemovedWhenSaveXml()) {
@@ -106,10 +90,9 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 		 
 		 if (returnValue == null) {
 		      returnValue = super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-		    }
-//		 
-//         String stringValue = tree.convertValueToText(value, isSelected,expanded, leaf, row, hasFocus);  
-         return returnValue;
+		  }
+		 
+		 return returnValue;
      }
 
 }

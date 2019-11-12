@@ -72,6 +72,7 @@ import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -110,7 +111,7 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
 		this.curdisplaybk = bankuai;
 		this.displayedweeknumber = weeknumber;
 		
-		Set<StockOfBanKuai> tmpallbkge = ((BanKuai)bankuai).getSpecificPeriodBanKuaiGeGu (weeknumber,0,period);
+		Set<BkChanYeLianTreeNode> tmpallbkge = ((BanKuai)bankuai).getSpecificPeriodBanKuaiGeGu (weeknumber,0,period);
 		
 		piechartdataset.clear();
 		super.piechart.setNotify(false);
@@ -118,12 +119,12 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
     	if(tmpallbkge == null || tmpallbkge.isEmpty())
     		return;
     	
-    	for ( StockOfBanKuai tmpstock : tmpallbkge) {
+    	for ( BkChanYeLianTreeNode tmpstock : tmpallbkge) {
     		String ggcode = tmpstock.getMyOwnCode();
     		String stockname = tmpstock.getMyOwnName();
     		
     		//找到对应周的数据
-    		NodeXPeriodData stockxdataforbk = tmpstock.getStock().getNodeXPeroidData(period);
+    		NodeXPeriodData stockxdataforbk = ((StockOfBanKuai)tmpstock).getStock().getNodeXPeroidData(period);
     		Double cje = stockxdataforbk.getChengJiaoEr(weeknumber,0);
     		if(cje != null) {
        	    	if(stockname != null)

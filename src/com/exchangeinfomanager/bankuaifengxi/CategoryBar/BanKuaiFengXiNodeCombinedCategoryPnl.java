@@ -171,8 +171,12 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		cjelargepnl.setDisplayZhanBiInLine(draw) ;
 		cjezblargepnl.setDisplayZhanBiInLine(draw) ;
 	}
-	
-
+	public void setDrawAverageDailyCjeOfWeekLine  (Boolean draw)
+	{
+		cjelargepnl.setDrawAverageDailyCjeOfWeekLine(draw) ;
+		cjelargepnl.setDisplayZhanBiInLine(false) ;
+		cjezblargepnl.setDisplayZhanBiInLine(draw) ;
+	}
 	/*
 	 * 
 	 */
@@ -239,7 +243,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			cjezblargepnl.resetLineDate();
 			
 			((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayAverageDailyCjeOfWeekLineDataToGui(this.curdisplayednode.getNodeXPeroidData(period),period);
-			((BanKuaiFengXiCategoryBarRenderer)cjezblargepnl.plot.getRenderer()).unhideBarMode();
+//			((BanKuaiFengXiCategoryBarRenderer)cjezblargepnl.plot.getRenderer()).unhideBarMode();
+			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
 		}
 		
 		
@@ -250,11 +255,6 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	private BanKuaiFengXiCategoryBarChartPnl cjelargepnl;
 	private BanKuaiFengXiCategoryBarChartPnl cjezblargepnl;
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
-//	private JPopupMenu quekouImage;
-//	private JMenuItem mntmqkopenup;
-//	private JMenuItem mntmqkopendown;
-//	private JMenuItem mntmqkhuibuup;
-//	private JMenuItem mntmqkhuibudown;
 	/*
 	 * 
 	 */

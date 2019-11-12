@@ -34,18 +34,15 @@ public class BkChanYeLianTreeIconFactory {
 	        
 	        if(leaf) {
 	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeLeafIcon;
-	            else if (node.getType() == BkChanYeLianTreeNode.SUBBK) icon = completeLeafIcon;
 	            else if (node.getType() == BkChanYeLianTreeNode.TDXBK) icon = nowLeafIcon;
 	            else icon = inactiveLeafIcon;
 	        }
 	        else if (expanded) {
 	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeOpenIcon;
-	            else if (node.getType() == BkChanYeLianTreeNode.SUBBK) icon = completeOpenIcon;
 	            else if (node.getType() == BkChanYeLianTreeNode.TDXBK) icon = nowOpenIcon;
 	            else icon = inactiveOpenIcon;
 	        } else {
 	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeClosedIcon;
-	            else if (node.getType() == BkChanYeLianTreeNode.SUBBK) icon = completeClosedIcon;
 	            else if (node.getType() == BkChanYeLianTreeNode .TDXBK) icon = nowClosedIcon;
 	            else icon = inactiveClosedIcon;            
 	        }
@@ -73,29 +70,21 @@ public class BkChanYeLianTreeIconFactory {
 	    		if(node.getChildCount() > 0)
 	    			icon =  guPiaoChiHasChildIcon;
 	    		else icon = guPiaoChiNoChildIcon;
-	    	} else
-	    		
+	    	} else	    		
 	    	if (node.getType() == BkChanYeLianTreeNode.SUBGPC) {
 	    		if(node.getChildCount() > 0)
 	    			icon = subGuPiaoHasChildIcon;
 	    		else icon = subGuPiaoNoChildIcon;
 	    	} else
-	    		
 	    	if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
 	    		if(node.getChildCount() > 0)
 	    			icon = banKuaiHasChildIcon;
 	    		else icon = banKuaiNoChildIcon;
 	    	} else
-	    		
-	    	if (node.getType() == BkChanYeLianTreeNode.SUBBK) {
-	    		if(node.getChildCount() > 0)
-	    			icon = subBanKuaiHasChildIcon;
-	    		else icon = subBanKuaiNoChildIcon;
-	    	} else
-	    		
 	    	if (node.getType() == BkChanYeLianTreeNode.TDXGG) {
 	    			icon = stockIcon;
-	    	}
+	    	} else
+	    		icon = stockIcon;
 	    	
 			return icon;
 	    }

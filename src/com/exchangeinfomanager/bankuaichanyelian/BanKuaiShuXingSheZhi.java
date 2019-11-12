@@ -41,7 +41,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	private BkChanYeLianTreeNode settingnode;
 	private BanKuaiDbOperation bkdbopt;
 	private JCheckBox chkbxnotexportwklyfile;
-	private BanKuaiAndChanYeLian2 cyltree;
 	
 
 	/**
@@ -51,7 +50,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	{
 		this.settingnode = node;
 		this.bkdbopt = new BanKuaiDbOperation ();
-		this.cyltree = BanKuaiAndChanYeLian2.getInstance();
 		
 		initializeGui ();
 		createEvetns ();
@@ -63,7 +61,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	public BanKuaiShuXingSheZhi() 
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
-		this.cyltree = BanKuaiAndChanYeLian2.getInstance();
 		
 		initializeGui ();
 		createEvetns ();
@@ -122,21 +119,21 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	}
 	private void createEvetns() 
 	{
-		chkbxnotexportwklyfile.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				Set<String> codeet = new HashSet<String> ();
-				codeet.add(settingnode.getMyOwnCode());
-				Multimap<?, ?> result = cyltree.checkBanKuaiSuoSuTwelveDaLei (codeet );
-				
-				if(result != null && result.size() > 0) {
-						chkbxnotexportwklyfile.setSelected(false);
-						JOptionPane.showMessageDialog(null,"该板块在重大关注中。\r\n 请先在重点关注中删除该板块再改变板块分析设置!","Warning",JOptionPane.WARNING_MESSAGE);
-						chkbxnotexportwklyfile.setSelected(  !((BanKuai)settingnode).isExportTowWlyFile()  );
-						return;
-				}
-			}
-		});
+//		chkbxnotexportwklyfile.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) {
+//				Set<String> codeet = new HashSet<String> ();
+//				codeet.add(settingnode.getMyOwnCode());
+//				Multimap<?, ?> result = cyltree.checkBanKuaiSuoSuTwelveDaLei (codeet );
+//				
+//				if(result != null && result.size() > 0) {
+//						chkbxnotexportwklyfile.setSelected(false);
+//						JOptionPane.showMessageDialog(null,"该板块在重大关注中。\r\n 请先在重点关注中删除该板块再改变板块分析设置!","Warning",JOptionPane.WARNING_MESSAGE);
+//						chkbxnotexportwklyfile.setSelected(  !((BanKuai)settingnode).isExportTowWlyFile()  );
+//						return;
+//				}
+//			}
+//		});
 		
 		chkbxnotexportwklyfile.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {

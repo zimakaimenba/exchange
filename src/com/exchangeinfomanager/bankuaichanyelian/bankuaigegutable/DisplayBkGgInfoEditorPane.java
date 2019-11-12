@@ -7,6 +7,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
@@ -55,6 +56,33 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		this.displayChanYeLianNewsHtml(curselectedbknodecode);
 		this.displayNodeBasicInfo(curselectedbknodecode);
 		this.displayNodeZdgzMrMcZdgzYingKuiInfo (curselectedbknodecode);
+		this.displayChanYeLianInfo (curselectedbknodecode);
+	}
+	/*
+	 * 
+	 */
+	public void displayChanYeLianInfo (BkChanYeLianTreeNode curselectedbknodecode)
+	{
+		List<String[]> cylinfo = curselectedbknodecode.getNodeJiBenMian().getChanYeLianInfo();
+		if(cylinfo.isEmpty() )
+			return;
+		
+		String htmlstring = this.getText();
+		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+		org.jsoup.select.Elements content = doc.select("body");
+		content.append( "<h4>产业链信息</h4>");
+		for(String[] tmpinfo : cylinfo) {
+			String result = "";
+			for(String tmpstr : tmpinfo) {
+				if(tmpstr!= null)
+					result = result + tmpstr + "->";
+			}
+				
+			content.append( "<p>" + result + "</p> ");
+		}
+		
+		htmlstring = doc.toString();
+	    this.setText(htmlstring);
 	}
 	/*
 	 * 
@@ -171,14 +199,8 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
     		String curselectedbknodename = curselectedbknode.getMyOwnName();
 	     	String curbknodecode = curselectedbknode.getMyOwnCode();
 	       	int type = curselectedbknode.getType();
-	       	
-//	       	if(type == 4 ) {
-//	       		curselectedbknode = bkdbopt.getBanKuaiBasicInfo( (BanKuai)curselectedbknode) ;
-//	       	} else if(type == 6) {
-//	       		curselectedbknode = bkdbopt.getStockBasicInfo( (Stock)curselectedbknode) ;
-//	       	}
-	       	
-	       String htmlstring = this.getText();
+
+	       	String htmlstring = this.getText();
 	       org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 //	       logger.debug(doc.toString());
 	       org.jsoup.select.Elements content = doc.select("body"); 

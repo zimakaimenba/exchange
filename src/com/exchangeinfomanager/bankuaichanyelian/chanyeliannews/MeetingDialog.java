@@ -2,7 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
-
+import com.exchangeinfomanager.bankuaichanyelian.LabelListDialog;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -148,14 +148,14 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.centerPanel.add(labelPanel);
 
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
-        this.centerPanel.add(this.keywordsField);
-        this.centerPanel.add(Box.createVerticalStrut(10));
-        this.centerPanel.add(this.slackurlField);
-        this.centerPanel.add(Box.createVerticalStrut(10));
         JScrollPane despane = new JScrollPane ();
         despane.setAutoscrolls(true);
         despane.setViewportView(this.descriptionArea);
         this.centerPanel.add(despane);
+        this.centerPanel.add(Box.createVerticalStrut(10));
+        this.centerPanel.add(this.slackurlField);
+        this.centerPanel.add(Box.createVerticalStrut(10));
+        this.centerPanel.add(this.keywordsField);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
 
         // add main panel to the dialog
@@ -303,12 +303,15 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         return LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), time.getHour(), time.getMinute())
                             .toInstant(ZoneOffset.UTC);
     }
-
-    private class LabelListDialog extends JDialog 
+    
+    
+    public class LabelListDialog<T extends Meeting> extends JDialog 
     {
         JPanel centerPanel;
+        private T event;
+        protected Cache cache;
 
-        private LabelListDialog() 
+        public LabelListDialog() 
         {
             this.centerPanel = JPanelFactory.createPanel();
             this.centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
@@ -318,7 +321,20 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
             super.setTitle("Labels");
         }
 
-        void display() 
+//        public LabelListDialog(Cache cache, T event)
+//        {
+//        	this.centerPanel = JPanelFactory.createPanel();
+//            this.centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+//            this.centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+//            super.add(this.centerPanel);
+//            super.setModalityType(ModalityType.APPLICATION_MODAL);
+//            super.setTitle("Labels");
+//        	
+//    		this.cache = cache;
+//    		this.event = event;
+//    	}
+
+    	public void display() 
         {
             this.centerPanel.removeAll();
             Collection<InsertedMeeting.Label> labels = cache.produceLabels();
@@ -383,4 +399,6 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
             super.setVisible(true);
         }
     }
+
+    
 }

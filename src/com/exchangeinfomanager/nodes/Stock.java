@@ -45,7 +45,7 @@ public class Stock extends TDXNodes {
 		super.nodewkdata = new StockXPeriodDataForJFC (myowncode1,NodeGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new StockXPeriodDataForJFC (myowncode1,NodeGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
-		super.nodetreerelated = new NodesTreeRelated (this);
+//		super.nodetreerelated = new NodesTreeRelated (this);
 		
 	}
 	

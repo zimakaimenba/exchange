@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -36,18 +38,20 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.ConnectDataBase;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.exchangeinfomanager.nodes.DaPan;
-import com.exchangeinfomanager.nodes.GuPiaoChi;
 import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.SubBanKuai;
-import com.exchangeinfomanager.nodes.SubGuPiaoChi;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
+import com.mysql.jdbc.CallableStatement;
+import com.sun.rowset.CachedRowSetImpl;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
@@ -58,13 +62,18 @@ import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombi
 
 class ChanYeLianXMLHandler 
 {
+	private ConnectDataBase connectdb;
+
 	public ChanYeLianXMLHandler() 
 	{
 		this.sysconfig = SystemConfigration.getInstance();
-		
+		connectdb = ConnectDataBase.getInstance();
 		bankuaichanyelianxml = sysconfig.getBanKuaiChanYeLianXml ();
 		geguchanyelianxml = sysconfig.getGeGuChanYeLianXmlFile ();
 		this.bkopt = new BanKuaiDbOperation ();
+		
+//		CylTreeDbOperation treedb = new CylTreeDbOperation  ();
+//		BanKuaiAndStockTree treecyl = treedb.getBanKuaiAndStockTree();
 		
 		FileInputStream xmlfileinput = null;
 		try {
@@ -120,27 +129,15 @@ class ChanYeLianXMLHandler
 	
 	private void initializeChanYeLianTree() 
 	{
-		DaPan alltopNode = new DaPan("000000","两交易所");
-		
-//		ArrayList<Stock> allstocks = bkopt.getAllStocks ();
-//		ArrayList<BanKuai> allbkandzs = bkopt.getTDXBanKuaiList ("all");
-
-		
-		
-//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treecyl.getModel().getRoot();
-//	    @SuppressWarnings("unchecked")
-//		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
-//	    while (e.hasMoreElements() ) {
-//	    	BkChanYeLianTreeNode node = e.nextElement();
-//    		logger.debug(node.getMyOwnCode() + "类型" + node.getType());
-//	    }
+		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode("000000","两交易所",0);
+		alltopNode.setNestedId(1);
 		
 		//产业链tree part
 		if(cylxmlroot != null) {
 			generateChanYeLianTreeFromXML(alltopNode,cylxmlroot); //生成产业链树
 		}
 		
-		treecyl = new BanKuaiAndStockTree(alltopNode,"CYLTREE");
+		 treecyl = new BanKuaiAndStockTree(alltopNode,"CYLTREE");
 		
 //		allstocks = null;
 //		e = null;
@@ -149,7 +146,7 @@ class ChanYeLianXMLHandler
 	/*
 	 * 
 	 */
-	private void generateChanYeLianTreeFromXML(BkChanYeLianTreeNode topNode, Element xmlelement) 
+	private void generateChanYeLianTreeFromXML(CylTreeNestedSetNode topNode, Element xmlelement) 
 	{
 	    	 Iterator it = xmlelement.elementIterator();
 	    	 
@@ -157,7 +154,7 @@ class ChanYeLianXMLHandler
 	    	 {
 				   Element element = (Element) it.next();
 			   
-				   BkChanYeLianTreeNode parentsleaf = null;
+				   CylTreeNestedSetNode parentsleaf = null;
 				   
 				   String bkname = null, bkowncode = null; String suoshubkcode = null;
 				   String nodetypestr = element.attributeValue("Type").trim();
@@ -168,42 +165,133 @@ class ChanYeLianXMLHandler
 					   bkname = element.attributeValue("gpcname");
 					   
 					   parentsleaf = new GuPiaoChi(bkowncode,bkname);
+					   parentsleaf.setNodeType(BkChanYeLianTreeNode.GPC);
+					   
 				   } else
 				   if(BkChanYeLianTreeNode.SUBGPC == nodetype ) { //是股票池
 					   bkowncode = element.attributeValue("subgpccode"); 
 					   bkname = element.attributeValue("subgpcname");
 					   
+//					   String newcode = addSubGPCToDataBase (bkowncode,bkname);
 					   parentsleaf = new SubGuPiaoChi(bkowncode,bkname);
+					   parentsleaf.setNodeType(BkChanYeLianTreeNode.SUBGPC);
+					   
 				   } else
 				   if(BkChanYeLianTreeNode.TDXBK == nodetype ) { //是通达信板块  
 					   bkowncode = element.attributeValue("bkcode");
 					   bkname = element.attributeValue("bkname");
 					   suoshubkcode = bkowncode;
 					 
-					   parentsleaf = new BanKuai(bkowncode,bkname);
+					   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname);
+					   parentsleaf.setNodeType(BkChanYeLianTreeNode.TDXBK);
 				   } else
-				   if(BkChanYeLianTreeNode.SUBBK == nodetype ) {//是自定义子板块
+				   if(5 == nodetype ) {//是自定义子板块
 					   bkname = element.attributeValue("subbkname");
 					   bkowncode = element.attributeValue("subbkcode");
 					   suoshubkcode = element.attributeValue("suoshubkcode"); //所有节点都保存所属板块的板块code，便于识别是在哪个板块下的节点
 					    
-					    parentsleaf = new SubBanKuai(bkowncode,bkname);
-					    topNode.add(parentsleaf);
-					   
+//					   String newcode = addSubGPCToDataBase (bkowncode,bkname);
+					    parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname);
+					    parentsleaf.setNodeType(BkChanYeLianTreeNode.SUBGPC);
+					    
 				   } else 
 				   if(BkChanYeLianTreeNode.TDXGG == nodetype || BkChanYeLianTreeNode.BKGEGU == nodetype) {//是个股
 					   bkname = element.attributeValue("geguname");
 					   bkowncode = element.attributeValue("gegucode");
 					   
-					   parentsleaf = new Stock(bkowncode,bkname );
+					   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname );
+					   parentsleaf.setNodeType(BkChanYeLianTreeNode.TDXGG);
 				   }
 				   
-				   if(parentsleaf != null) {
-					   topNode.add(parentsleaf);
-					   generateChanYeLianTreeFromXML(parentsleaf,element);
-				   } else
-					   return;
+				  
+					   if(parentsleaf != null) {
+//						   addNodeToNestedDatabase (topNode,parentsleaf);
+						   
+						   topNode.add(parentsleaf);
+						   generateChanYeLianTreeFromXML(parentsleaf,element);
+					   }
+					    else
+						   return;
+				   
+				   
 			}
+	}
+	private String addSubGPCToDataBase (String bkcode,String bkname)
+	{
+		
+		
+		String subcode = JOptionPane.showInputDialog(null,"定义SUBGPC代码",bkcode);
+		if(subcode == null)
+			return "";
+		
+		String description = JOptionPane.showInputDialog(null,"SUBGPC代码说明");
+		if(description == null)
+			description = "";
+		
+		String sqlinsertstat = "INSERT INTO  产业链板块国列表(板块国代码,板块国名称,板块国说明) values ("
+					+ "'" + subcode + "'" + ","
+					+ "'" + bkname + "'"  + ","
+					+ "'" + description + "'"
+					+ ")"
+					;
+			try{
+				
+				    connectdb.sqlInsertStatExecute(sqlinsertstat);
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+			
+				}
+		return subcode;
+
+	}
+	private void addNodeToNestedDatabase (CylTreeNestedSetNode topNode,CylTreeNestedSetNode parentsleaf)
+	{
+		
+			   int treeid = topNode.getNestedId ();
+			   
+			   CachedRowSetImpl rsagu = null;
+				try{
+					   String query = "{CALL r_tree_traversal(?,?,?)}";
+					    java.sql.CallableStatement stm = connectdb.getCurrentDataBaseConnect().prepareCall(query); 
+					    stm.setString(1, "insert");
+					    stm.setString(2, null);
+					    stm.setInt(3, treeid);
+					    ResultSet rs = stm.executeQuery();
+//					    stm.registerOutParameter(1, Types.INTEGER);
+//					    stm.execute();
+//					    Integer m_count = stm.getInt(1);
+					    
+					    Integer lstid = null;
+					    while(rs.next()) {
+					    	lstid = rs.getInt("LAST_INSERT_ID()");
+					    }
+					    stm.close();
+					    
+					    parentsleaf.setNestedId(lstid);
+					    String sqlquerystat = "INSERT INTO tree_content (tree_id, nodeid,nodetype) VALUES (" 
+					    						+ lstid + ","
+					    						+ "'" + parentsleaf.getMyOwnCode() + "',"
+					    						+ parentsleaf.getType() 
+					    						+ ")"
+					    						;
+					    connectdb.sqlInsertStatExecute(sqlquerystat);
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							if(rsagu != null)
+							rsagu.close();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						rsagu = null;
+					}
+			   
+			   
+		   
+		
 	}
 	/*
 	 * 
@@ -390,7 +478,7 @@ class ChanYeLianXMLHandler
 		            cylchildele.addAttribute("bkname", tmpname  );
 		            cylchildele.addAttribute("Type", status);
 		        } else 
-		        if(Integer.parseInt(status) == BkChanYeLianTreeNode.SUBBK) {
+		        if(Integer.parseInt(status) == 5) {
 		        	cylchildele = cylparentele.addElement("SubBanKuai");
 		        	cylchildele.addAttribute("subbkcode", tmpbkcode  );
 		        	cylchildele.addAttribute("subbkname", tmpname);

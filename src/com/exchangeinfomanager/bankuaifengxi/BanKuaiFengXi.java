@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -39,7 +40,6 @@ import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuExternalInfoTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
@@ -66,6 +66,7 @@ import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
@@ -147,6 +148,7 @@ import java.awt.event.KeyEvent;
 public class BanKuaiFengXi extends JDialog 
 {
 	private static final long serialVersionUID = 1L;
+	private CylTreeDbOperation cyldbopt;
 	
 	/**
 	 * Create the dialog.
@@ -156,9 +158,9 @@ public class BanKuaiFengXi extends JDialog
 	{
 		this.stockmanager = stockmanager1;
 		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
+		this.cyldbopt = new  CylTreeDbOperation ();
 		this.newsdbopt = new StockCalendarAndNewDbOperation ();
 		this.nodeinfotocsv = new NodeInfoToCsv ();
 		this.displayexpc = new ExportCondition () ;
@@ -180,7 +182,6 @@ public class BanKuaiFengXi extends JDialog
 	private ExportCondition displayexpc;
 	private LocalDate lastselecteddate;
 	private AllCurrentTdxBKAndStoksTree allbksks;
-	private BanKuaiAndChanYeLian2 bkcyl;
 	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
 	private BanKuaiDbOperation bkdbopt;
@@ -219,11 +220,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		tableBkZhanBi.repaint(); //
 		
-		String reminder = "提示: \n"
-						+ "1. 注意板块占比是否放量。\n"
-						+ "2. 好友板块是否同时放量。\n"
-						+ "3. 有何新闻支持该板块。\n"
-						;
 		showReminderMessage (bkfxremind.getBankuairemind());
 	}
 	/*
@@ -286,6 +282,7 @@ public class BanKuaiFengXi extends JDialog
 			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
 			Double cje = nodexdata.getChengJiaoEr(wkfriday, 0);
 			Double zdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday, 0);
+			logger.info(wkfriday + ":" + zdf);
 
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
@@ -326,20 +323,20 @@ public class BanKuaiFengXi extends JDialog
 		if(selectedbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
 			
 			//如果板块的分析结果个股数目>0，则要把符合条件的个股标记好
-			BkChanYeLianTreeNode nodeincyltree = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(selectedbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
-			BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)nodeincyltree.getNodeTreeRelated ();
-			Integer patchfilestocknum = ((BanKuaiTreeRelated)treerelated).getStocksNumInParsedFileForSpecificDate (curselectdate);
-			if(patchfilestocknum != null && patchfilestocknum >0) {
-				Set<String> stkofbkset = this.bkcyl.getBanKuaiFxSetOfSpecificDate(selectedbk.getMyOwnCode(), curselectdate);
-				
-				for(String stkofbk : stkofbkset ) {
-					StockOfBanKuai stkinbk = selectedbk.getBanKuaiGeGu(stkofbk);
-	    			StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkinbk.getNodeTreeRelated();
-	        		stofbktree.setStocksNumInParsedFile (curselectdate,true);
-				}
-				
-				stkofbkset= null;
-			}
+//			BkChanYeLianTreeNode nodeincyltree = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(selectedbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
+//			BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)nodeincyltree.getNodeTreeRelated ();
+//			Integer patchfilestocknum = ((BanKuaiTreeRelated)treerelated).getStocksNumInParsedFileForSpecificDate (curselectdate);
+//			if(patchfilestocknum != null && patchfilestocknum >0) {
+//				Set<String> stkofbkset = this.bkcyl.getBanKuaiFxSetOfSpecificDate(selectedbk.getMyOwnCode(), curselectdate);
+//				
+//				for(String stkofbk : stkofbkset ) {
+//					StockOfBanKuai stkinbk = selectedbk.getBanKuaiGeGu(stkofbk);
+//	    			StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkinbk.getNodeTreeRelated();
+//	        		stofbktree.setStocksNumInParsedFile (curselectdate,true);
+//				}
+//				
+//				stkofbkset= null;
+//			}
 			//板块所属个股占比info
 			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate,period);
 			((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).refresh(selectedbk, curselectdate,period);
@@ -355,13 +352,13 @@ public class BanKuaiFengXi extends JDialog
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
 		}
-		// 表的定位表中定位该表中
-		Integer rowindex = ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel() ).getBanKuaiRowIndex(selectedbk.getMyOwnCode());
-		if(rowindex >0) {
-				int modelRow = tableselectedwkbkzb.convertRowIndexToView(rowindex);
-				tableselectedwkbkzb.setRowSelectionInterval(modelRow, modelRow);
-				tableselectedwkbkzb.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
-		}
+//		// 表的定位表中定位该表中
+//		Integer rowindex = ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel() ).getBanKuaiRowIndex(selectedbk.getMyOwnCode());
+//		if(rowindex != null && rowindex >0) {
+//				int modelRow = tableselectedwkbkzb.convertRowIndexToView(rowindex);
+//				tableselectedwkbkzb.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
+//				tableselectedwkbkzb.setRowSelectionInterval(modelRow, modelRow);
+//		}
 	}
 	/*
 	 * 用户选择一个板块的column后的相应操作
@@ -375,10 +372,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		setUserSelectedColumnMessage(bkcur,selectdate);
 		
-		String reminder = "提示: \n"
-						+ "1. 板块的占比和成交量/成交额是否背离？ \n"
-						+ "2. 缺口的组成。"
-						;
 		showReminderMessage (bkfxremind.getBankuaicolumnremind() );
 
 		//根据设置，显示选定周分析数据
@@ -409,18 +402,8 @@ public class BanKuaiFengXi extends JDialog
 					bkwithcje.add( (BanKuai)childnode );
 
 			}
-//				List<TDXNodes> bkwithcje = initializeBanKuaiZhanBiByGrowthRate (selectdate);
 			((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).addBanKuai( bkwithcje );
 			((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).refresh(selectdate,0,globeperiod);
-				
-			tabbedPanebk.setTitleAt(1, "选定周" + selectdate);
-				//表中找到板块
-			Integer rowindex = ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel() ).getBanKuaiRowIndex(bkcur.getMyOwnCode());
-			if(rowindex >0) {
-						int modelRow = tableselectedwkbkzb.convertRowIndexToView(rowindex);
-						tableselectedwkbkzb.setRowSelectionInterval(modelRow, modelRow);
-						tableselectedwkbkzb.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
-			}
 				
 			//显示板块个股
 			if(bkcur.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股，
@@ -452,9 +435,24 @@ public class BanKuaiFengXi extends JDialog
 					
 				panelLastWkGeGucjeZhanBi.updateDate(bkcur, selectdate, 0,globeperiod); //显示选定周PIE
 			}
-					
-		} 
 			
+			tabbedPanebk.setTitleAt(1, "选定周" + selectdate);
+			//表中找到板块
+			Integer rowindex = ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel() ).getBanKuaiRowIndex(bkcur.getMyOwnCode());
+			if(rowindex >0) {
+				int modelRow = tableselectedwkbkzb.convertRowIndexToView(rowindex);
+				
+				tableselectedwkbkzb.setRowSelectionInterval(modelRow, modelRow);
+			    tableselectedwkbkzb.scrollRectToVisible(tableselectedwkbkzb.getCellRect(0, 0, true));
+			    Rectangle rec = new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true));
+				tableselectedwkbkzb.scrollRectToVisible(rec);
+//			    Point p = new Point ();
+//			    p.setLocation(rec.x, rec.y);
+//				this.scrollPane_1.getViewport().setViewPosition(p);
+				
+			}
+		} 
+		
 		SystemAudioPlayed.playSound();
 	}
 
@@ -482,6 +480,8 @@ public class BanKuaiFengXi extends JDialog
 			clearTheGuiBeforDisplayNewInfoSection3 ();
 			tabbedPanebk.setSelectedIndex(2);
 			
+			this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上日均成交额，下占比线
+			
 			findInputedNodeInTable ( selectstock.getMyOwnCode() );
 			hightlightSpecificSector (selectstock); //餅圖
 //			refreshGeGuFengXiResult (selectstock); //个股对板块的数据
@@ -496,11 +496,7 @@ public class BanKuaiFengXi extends JDialog
 			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(curselecteddate));
 			
 			displayNodeInfo (selectstock.getStock());
-			
-			String reminder = "提示: \n"
-					+ "1. 大盘占比增率高的多关注。"
-					+ "2. 个股占比和成交额/成交量是否背离。"
-					;
+
 			showReminderMessage (bkfxremind.getStockremind());
 			
 			hourglassCursor = null;
@@ -1181,19 +1177,19 @@ public class BanKuaiFengXi extends JDialog
         		int meetingtype = Meeting.QIANSHI;
         		
         		//Set up description of all GPC
-        		String descriptions = "";
-        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
-        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-    			for(int i=0;i< bankuaicount; i++) {
-    				
-    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-    				String nodename = childnode.getMyOwnName();
-    				String nodecode = childnode.getMyOwnCode();
-    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-    			}
+//        		String descriptions = "";
+//        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
+//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+//    			for(int i=0;i< bankuaicount; i++) {
+//    				
+//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+//    				String nodename = childnode.getMyOwnName();
+//    				String nodecode = childnode.getMyOwnCode();
+//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+//    			}
 				
 				Meeting meeting = new Meeting(title, mDate,
-		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
+		        		"", keywords, new HashSet<>(),"URL",owner,meetingtype);
 				meeting.setNewsOwnerCodes(stock.getMyOwnCode() + "gg"); //
 				EventService newsDbService = new DBMeetingService ();
 				try {
@@ -1228,20 +1224,20 @@ public class BanKuaiFengXi extends JDialog
         		int meetingtype = Meeting.RUOSHI;
         		
         		//Set up description of all GPC
-        		String descriptions = "";
-        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
-        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-    			for(int i=0;i< bankuaicount; i++) {
-    				
-    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-    				String nodename = childnode.getMyOwnName();
-    				String nodecode = childnode.getMyOwnCode();
-    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-    			}
+//        		String descriptions = "";
+//        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
+//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+//    			for(int i=0;i< bankuaicount; i++) {
+//    				
+//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+//    				String nodename = childnode.getMyOwnName();
+//    				String nodecode = childnode.getMyOwnCode();
+//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+//    			}
         		
 				
 				Meeting meeting = new Meeting(title, mDate,
-		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
+		        		"", keywords, new HashSet<>(),"URL",owner,meetingtype);
 				meeting.setNewsOwnerCodes(stock.getMyOwnCode() + "gg"); //
 				EventService newsDbService = new DBMeetingService ();
 				try {
@@ -1275,20 +1271,20 @@ public class BanKuaiFengXi extends JDialog
         		int meetingtype = Meeting.QIANSHI;
         		
         		//Set up description of all GPC
-        		String descriptions = "";
-        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
-        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-    			for(int i=0;i< bankuaicount; i++) {
-    				
-    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-    				String nodename = childnode.getMyOwnName();
-    				String nodecode = childnode.getMyOwnCode();
-    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-    			}
+//        		String descriptions = "";
+//        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
+//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+//    			for(int i=0;i< bankuaicount; i++) {
+//    				
+//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+//    				String nodename = childnode.getMyOwnName();
+//    				String nodecode = childnode.getMyOwnCode();
+//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+//    			}
         		
 				
 				Meeting meeting = new Meeting(title, mDate,
-		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
+		        		"", keywords, new HashSet<>(),"URL",owner,meetingtype);
 				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); //
 				EventService newsDbService = new DBMeetingService ();
 				try {
@@ -1322,20 +1318,20 @@ public class BanKuaiFengXi extends JDialog
         		int meetingtype = Meeting.RUOSHI;
         		
         		//Set up description of all GPC
-        		String descriptions = "";
-        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
-        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-    			for(int i=0;i< bankuaicount; i++) {
-    				
-    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-    				String nodename = childnode.getMyOwnName();
-    				String nodecode = childnode.getMyOwnCode();
-    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-    			}
+//        		String descriptions = "";
+//        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
+//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+//    			for(int i=0;i< bankuaicount; i++) {
+//    				
+//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+//    				String nodename = childnode.getMyOwnName();
+//    				String nodecode = childnode.getMyOwnCode();
+//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+//    			}
         		
 				
 				Meeting meeting = new Meeting(title, mDate,
-		        		descriptions, keywords, new HashSet<>(),"URL",owner,meetingtype);
+		        		"", keywords, new HashSet<>(),"URL",owner,meetingtype);
 				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); 
 				EventService newsDbService = new DBMeetingService ();
 				try {
@@ -1348,32 +1344,6 @@ public class BanKuaiFengXi extends JDialog
 			}
 			
 		});
-
-		
-		
-		((InvisibleTreeModel)bkcyl.getBkChanYeLianTree().getModel()).addTreeModelListener( new  TreeModelListener () {
-
-			@Override
-			public void treeNodesChanged(TreeModelEvent arg0) {
-//				updateBkcylTree ();
-			}
-
-			@Override
-			public void treeNodesInserted(TreeModelEvent arg0) {
-//				updateBkcylTree ();
-			}
-
-			@Override
-			public void treeNodesRemoved(TreeModelEvent arg0) {
-//				updateBkcylTree ();
-			}
-
-			@Override
-			public void treeStructureChanged(TreeModelEvent arg0) {
-//				updateBkcylTree ();
-			}});
-		
-	
 	
 		this.addMouseListener(new MouseAdapter() {
 			
@@ -1769,7 +1739,6 @@ public class BanKuaiFengXi extends JDialog
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
-                    
                     refreshAfterUserSelectBanKuaiColumn (bkcur,selectedinfo);
                     
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
@@ -2162,17 +2131,17 @@ public class BanKuaiFengXi extends JDialog
 					int rowindex = tableGuGuZhanBiInBk.getSelectedRow();
 //					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
 					
-					if(!findInputedNodeInTable (nodecode)) { //如果没有找到
+//					if(!findInputedNodeInTable (nodecode)) { //如果没有找到
 //						tableGuGuZhanBiInBk.setRowSelectionInterval(rowindex,rowindex);
 //						tableGuGuZhanBiInBk.getSelectionModel().clearSelection() ; //把当前在table中选择取消，以免用户觉得已经找到
 						//既然取消了table中的个股，就需要把几个图表的信息清楚，否则用户再去双击这些图表，会出现问题。
 						
 //						panelGgDpCjeZhanBi.resetDate();
 //						paneldayCandle.resetDate();
-					} else { //在当前表就有的话，就把相关PANEL清空
+//					} else { //在当前表就有的话，就把相关PANEL清空
 //						panelGgDpCjeZhanBi.resetDate();
 //						paneldayCandle.resetDate();
-					}
+//					}
 						
 				}
 				
@@ -2228,8 +2197,8 @@ public class BanKuaiFengXi extends JDialog
 						clearTheGuiBeforDisplayNewInfoSection2 ();
 						clearTheGuiBeforDisplayNewInfoSection3 ();
 						
-			    		bkcyl.getBkChanYeLianTree().setCurrentDisplayedWk (newdate);
-			    		DefaultTreeModel treeModel = (DefaultTreeModel) bkcyl.getBkChanYeLianTree().getModel();
+						cyldbopt.getBkChanYeLianTree().setCurrentDisplayedWk (newdate);
+			    		DefaultTreeModel treeModel = (DefaultTreeModel) cyldbopt.getBkChanYeLianTree().getModel();
 			    		treeModel.reload();
 			    		
 //			    		setHighLightChenJiaoEr();
@@ -3047,11 +3016,11 @@ public class BanKuaiFengXi extends JDialog
 			ckboxparsefile.setSelected(true);
 			tfldparsedfile.setText(filename);
 			
-			if(xmlfileexist) {
-				this.bkcyl.patchWeeklyBanKuaiFengXiXmlFileToCylTree (filexminconfigpath,localDate);
-			} else { //不存在要生成
-				this.bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (fileebk,localDate);
-			}
+//			if(xmlfileexist) {
+//				this.cyldbopt.patchWeeklyBanKuaiFengXiXmlFileToCylTree (filexminconfigpath,localDate);
+//			} else { //不存在要生成
+//				this.cyldbopt.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (fileebk,localDate);
+//			}
 
 			this.cyltreecopy.setCurrentDisplayedWk (localDate);
 			
@@ -3087,7 +3056,6 @@ public class BanKuaiFengXi extends JDialog
 					
 					//在当前表就有的话，就把相关PANEL清空
 					panelGgDpCjeZhanBi.resetDate();
-//					paneldayCandle.resetDate();
 				}
 			}
 		}
@@ -3337,7 +3305,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		JScrollPane scrollPane_3 = new JScrollPane();
 		
-		editorPanebankuai = new BanKuaiListEditorPane();
+		editorPanebankuai = new BanKuaiListEditorPane(this.cyldbopt);
 		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
@@ -3400,7 +3368,7 @@ public class BanKuaiFengXi extends JDialog
 							.addGap(34))))
 		);
 		
-		tfldselectedmsg = new BanKuaiListEditorPane ();
+		tfldselectedmsg = new BanKuaiListEditorPane (this.cyldbopt);
 		scrollPane_3.setViewportView(tfldselectedmsg);
 		tfldselectedmsg.setEditable(false);
 		
@@ -3414,11 +3382,11 @@ public class BanKuaiFengXi extends JDialog
 		
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
 		
-		panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
-		panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
-		panelGgDpCjeZhanBi.setDrawQueKouLine(false);
-		panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
-		this.panelGgDpCjeZhanBi.setDisplayZhanBiInLine(true);
+		this.panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
+		this.panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
+		this.panelGgDpCjeZhanBi.setDrawQueKouLine(false);
+		this.panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
+		this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true);
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
 		
 		
@@ -3564,7 +3532,7 @@ public class BanKuaiFengXi extends JDialog
 		JScrollPane scrollPane = new JScrollPane();
 		tabbedPanebk.addTab("\u4EA7\u4E1A\u94FE", null, scrollPane, null);
 		
-		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.bkcyl.getBkChanYeLianTree().getModel();
+		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyldbopt.getBkChanYeLianTree().getModel();
 		cyltreecopy = new BanKuaiAndStockTree(treeModel,"cyltreecopy");
 		
 		scrollPane.setViewportView(cyltreecopy);

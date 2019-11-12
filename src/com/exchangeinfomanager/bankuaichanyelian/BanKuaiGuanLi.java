@@ -37,6 +37,7 @@ import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.JTreeTable.AbstractTreeTableModel;
 import com.exchangeinfomanager.commonlib.JTreeTable.JTreeTable;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -123,6 +124,8 @@ import java.awt.event.ActionEvent;
 
 public class BanKuaiGuanLi extends JDialog 
 {
+	private CylTreeDbOperation cyltreedb;
+
 	/**
 	 * Create the dialog.
 	 * @param stockInfoManager 
@@ -131,41 +134,29 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(StockInfoManager stockInfoManager2 ) 
+	public BanKuaiGuanLi(CylTreeDbOperation cyltreedb ) 
 	{
 		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
-		this.stockInfoManager = stockInfoManager2;
+		
 		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
-		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
+		this.cyltreedb = cyltreedb;
 		
 		initializeBaiKuaiOfNoGeGuWithSelfCJLTree ();
 		initializeGui2 ();
 		
 		createEvents ();
-
-//		initializeTDXBanKuaiLists ();
 	}
 
-	private StockInfoManager stockInfoManager;	
+		
 	private BanKuaiDbOperation bkdbopt;
 	private HashMap<String,BanKuai> zhishulist;
-//	private HashMap<String,BanKuai> sysbankuailist ; 
 	private SystemConfigration sysconfig;
-	private BanKuaiAndChanYeLian2 bkcyl;
 	private BanKuaiAndStockTree treebkonlynoggwithselfcjl;
 	
 	private Border outside = new MatteBorder(1, 0, 1, 0, Color.RED);
 	private Border inside = new EmptyBorder(0, 1, 0, 1);
 	private Border highlight = new CompoundBorder(outside, inside);
-
-//	private void initializeTDXBanKuaiLists() 
-//	{
-//		DefaultTreeModel treeModel = (DefaultTreeModel)this.allbkstks.getAllBkStocksTree().getModel();
-//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
-//		
-//		BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree(),"ALL");
-//	}
 
 	private void initializeBaiKuaiOfNoGeGuWithSelfCJLTree() 
 	{
@@ -338,9 +329,9 @@ public class BanKuaiGuanLi extends JDialog
 	
 		Set<String> bkrelatedbks = new HashSet<String> ();
 		selectnode = this.allbkstks.getAllGeGuOfBanKuai (selectnode,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
-		ArrayList<StockOfBanKuai> bkgg = selectnode.getAllGeGuOfBanKuaiInHistory();
-		for(StockOfBanKuai sob : bkgg) {
-			Stock stock = sob.getStock();
+		List<BkChanYeLianTreeNode> bkgg = selectnode.getAllGeGuOfBanKuaiInHistory();
+		for(BkChanYeLianTreeNode sob : bkgg) {
+			Stock stock = ((StockOfBanKuai)sob).getStock();
 			stock = this.allbkstks.getStock(stock, requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
 			stock = bkdbopt.getTDXBanKuaiForAStock ( stock ); //通达信板块信息
 			HashMap<String, String> suoshubk = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
@@ -379,8 +370,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JPanel panelSys;
 	private JTable tableZdy;
 	private BanKuaiAndStockTree cyltree;
-	private BanKuaiAndChanYeLianGUI2 bkcylpnl;
-	private JUpdatedTextField tfldsearchsysbk;
+		private JUpdatedTextField tfldsearchsysbk;
 	private BanKuaiShuXingSheZhi panelsetting;
 	private JMenuBar menuBar;
 	private JTable tableBkfriends;
@@ -640,9 +630,11 @@ public class BanKuaiGuanLi extends JDialog
 		westbankuaipnl.add(allbkfriendspnl);
 		
 		layoutPanel.add(westbankuaipnl, BorderLayout.WEST);
+		layoutPanel.setPreferredSize(new Dimension(751, 677));
 		
 		
-		bkcylpnl = new BanKuaiAndChanYeLianGUI2(bkcyl,stockInfoManager,allbkstks) ;
+		BanKuaiAndChanYeLianGUI bkcylpnl = new BanKuaiAndChanYeLianGUI(allbkstks, cyltreedb) ;
+		bkcylpnl.setPreferredSize(new Dimension(751, 677));
 		layoutPanel.add(bkcylpnl, BorderLayout.CENTER);
 		
 		menuBar = new JMenuBar();
@@ -808,7 +800,8 @@ class BanKuaiSocialFriendsTableModel extends DefaultTableModel
 	    	
 	    	
 	    	Object value = "??";
-	    	switch (columnIndex) {
+	    	
+			switch (columnIndex) {
             case 0:
             	String bkcode = socialbankuai.getMyOwnCode();
                 value = bkcode;
@@ -818,16 +811,16 @@ class BanKuaiSocialFriendsTableModel extends DefaultTableModel
             	value = thisbkname;
             	break;
             case 2: //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-            	ArrayList<StockOfBanKuai> mainbkgegu = this.mainbankuai.getAllGeGuOfBanKuaiInHistory();
-            	ArrayList<StockOfBanKuai> socialbkgegu = socialbankuai.getAllGeGuOfBanKuaiInHistory();
+            	List<BkChanYeLianTreeNode> mainbkgegu = this.mainbankuai.getAllGeGuOfBanKuaiInHistory();
+            	List<BkChanYeLianTreeNode> socialbkgegu = socialbankuai.getAllGeGuOfBanKuaiInHistory();
             	Set<String> mainbkgegucodeset = new HashSet<String> (); Set<String> socialbkgegucodeset = new HashSet<String> ();
-            	for(StockOfBanKuai sob: mainbkgegu) {
-            		Boolean isinbknow = sob.isInBanKuaiAtSpecificDate(LocalDate.now());
+            	for(BkChanYeLianTreeNode sob: mainbkgegu) {
+            		Boolean isinbknow = ((StockOfBanKuai)sob).isInBanKuaiAtSpecificDate(LocalDate.now());
             		if(isinbknow)
             			mainbkgegucodeset.add( sob.getMyOwnCode() );
             	}
-            	for(StockOfBanKuai sob: socialbkgegu) {
-            		Boolean isinbknow = sob.isInBanKuaiAtSpecificDate(LocalDate.now());
+            	for(BkChanYeLianTreeNode sob: socialbkgegu) {
+            		Boolean isinbknow = ((StockOfBanKuai)sob).isInBanKuaiAtSpecificDate(LocalDate.now());
             		if(isinbknow)
             			socialbkgegucodeset.add( sob.getMyOwnCode() );
             	}

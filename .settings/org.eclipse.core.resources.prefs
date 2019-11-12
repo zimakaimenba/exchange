@@ -3,8 +3,8 @@ encoding//src/com/exchangeinfomanager/bankuaifengxi/CategoryBar/BanKuaiFengXiCat
 encoding//src/com/exchangeinfomanager/bankuaifengxi/Gephi/GephiFilesGenerator.java=UTF-8
 encoding//src/com/exchangeinfomanager/nodes/BanKuai.java=UTF-8
 encoding//src/com/exchangeinfomanager/nodes/Stock.java=UTF-8
-encoding//src/com/exchangeinfomanager/nodes/nodexdata/BanKuaiAndStockXPeriodData.java=UTF-8
-encoding//src/com/exchangeinfomanager/nodes/nodexdata/StockNodeXPeriodData.java=UTF-8
-encoding//src/com/exchangeinfomanager/nodes/nodexdata/StockOfBanKuaiNodeXPeriodData.java=UTF-8
+encoding//src/com/exchangeinfomanager/nodes/stocknodexdata/NodexdataForJFC/StockOfBanKuaiXPeriodDataForJFC.java=UTF-8
+encoding//src/com/exchangeinfomanager/nodes/stocknodexdata/NodexdataForJFC/StockXPeriodDataForJFC.java=UTF-8
+encoding//src/com/exchangeinfomanager/nodes/stocknodexdata/NodexdataForJFC/TDXNodesXPeriodDataForJFC.java=UTF-8
 encoding//src/com/exchangeinfomanager/nodes/treerelated/NodesTreeRelated.java=UTF-8
 encoding/<project>=GBK

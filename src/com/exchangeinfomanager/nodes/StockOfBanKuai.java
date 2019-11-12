@@ -31,9 +31,6 @@ public class StockOfBanKuai extends TDXNodes
 		super.nodewkdata = new StockOfBanKuaiXPeriodDataForJFC (stock1.getMyOwnCode(),bankuai1.getMyOwnCode(),NodeGivenPeriodDataItem.WEEK);
 		super.nodedaydata = null; //对绝大多数分析来说说，周线数据才有意义，日线毫无意义，特别是个股相对于板块的日线数据。
 //		super.nodemonthdata = new StockOfBanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
-		
-		super.nodetreerelated = null;
-		super.nodetreerelated = new StockOfBanKuaiTreeRelated(this);
 	}
 	
 //	private static Logger logger = Logger.getLogger(StockOfBanKuai.class);

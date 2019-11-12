@@ -122,30 +122,20 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    }
 	    
 	    if( col == 1 ) { //个股名称
-	    	LocalDate requireddate = tablemodel.getShowCurDate();
-	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreeRelated();
-    	
-	 		Boolean isin = stofbktree.isInBanKuaiFengXiResultFileForSpecificDate(requireddate);
-	    	if(isin != null && isin  ) 
-		    		background = Color.ORANGE;  
-	    	else
-		    		background = Color.white;
-	    	
-	    	if(stockofbank.isBkLongTou())
-	    		foreground = Color.RED;
-	    	else 
-	    		foreground = Color.BLACK;
-	    	
-//	    	NodeXPeriodData nodexdataday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
-//	    	Multimap<LocalDate, LocalDate> result = nodexdataday.isMacdButtomDivergenceInSpecificMonthRange(requireddate, 0, 4);
-//	    	if(result.size() >0) {
-//	    		int c = 0x24b9;
-//	    		String s = Character.toString((char)c);
-//	    		String valueSTr = value.toString() + s; 
-//	    		
-//	    		((JLabel)comp).setText(valueSTr);
-//	    	}
-	    	
+//	    	LocalDate requireddate = tablemodel.getShowCurDate();
+//	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreeRelated();
+//    	
+//	 		Boolean isin = stofbktree.isInBanKuaiFengXiResultFileForSpecificDate(requireddate);
+//	    	if(isin != null && isin  ) 
+//		    		background = Color.ORANGE;  
+//	    	else
+//		    		background = Color.white;
+//	    	
+//	    	if(stockofbank.isBkLongTou())
+//	    		foreground = Color.RED;
+//	    	else 
+//	    		foreground = Color.BLACK;
+
 	    } else if( col == 2) { //流通市值
 	    	Double ltszmin = tablemodel.getDisplayLiuTongShiZhiMin() ;
 		    Double ltszmax = tablemodel.getDisplayLiuTongShiZhiMax() ;

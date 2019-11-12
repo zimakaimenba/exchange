@@ -23,7 +23,6 @@ import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
@@ -429,19 +428,19 @@ public class WholeMonthNewsView extends View
         		}  
         		
         		//Set up description of all GPC
-        		String descriptions = "";
-        		BanKuaiAndStockTree cyltree = BanKuaiAndChanYeLian2.getInstance().getBkChanYeLianTree();
-        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-    			for(int i=0;i< bankuaicount; i++) {
-    				
-    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-    				String nodename = childnode.getMyOwnName();
-    				String nodecode = childnode.getMyOwnCode();
-    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-    			}
+//        		String descriptions = "";
+//        		BanKuaiAndStockTree cyltree = BanKuaiAndChanYeLian2.getInstance().getBkChanYeLianTree();
+//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
+//    			for(int i=0;i< bankuaicount; i++) {
+//    				
+//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
+//    				String nodename = childnode.getMyOwnName();
+//    				String nodecode = childnode.getMyOwnCode();
+//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
+//    			}
         		
                 Meeting meeting = new Meeting(title, mDate,
-                		descriptions, keywords, new HashSet<>(),"URL",owner,this.meetingtype);
+                		"", keywords, new HashSet<>(),"URL",owner,this.meetingtype);
                 getCreateDialog().setMeeting(meeting);
                 getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 getCreateDialog().setVisible(true);

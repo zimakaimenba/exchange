@@ -151,7 +151,7 @@ public class AccountDbOperation
 	 */
 	public int setZijingLiuShui(LocalDateTime actiondate,String accountname, String actionqstype, boolean ischuru, double zhuanruxianjing,String actionshuoming) 
 	{
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
+		
 		String sqlinsertstat = null;
 		sqlinsertstat = "INSERT INTO 资金流水(操作日期,操作账户,操作类型,转入转出,资金金额,操作说明) values ("
 				+ "\"" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(actiondate)  + "\"" + ","
@@ -162,11 +162,11 @@ public class AccountDbOperation
 				+ "'" + actionshuoming.trim() + "'"  
 				+ ")"
 				;
-		sqlstatmap.put("mysql", sqlinsertstat);
+		
 		
 		int autoIncKeyFromApi = 0;
 		try {
-			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -309,15 +309,9 @@ public class AccountDbOperation
 	            //计算该账号当日的挂单金额，因为可用现金要减去挂单金额才合理
 	            CachedRowSetImpl rs_jiner = null;
 	            try {
-	            	HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
+	       
 	            	String sqlquerystat2 = null;
-	            	sqlquerystat2 = "SELECT 买入卖出标志 , SUM(买卖金额) AS 金额  FROM 操作记录买卖   "
-							+ " WHERE 买卖账号 =" +"'" + (String)row[1] +"'" 
-							+ " AND 挂单=true "
-							+ " AND 日期>=Date () "
-							+ " GROUP BY 买入卖出标志 , 买卖金额"   
-							;
-	            	sqlstatmap.put("access", sqlquerystat2);
+	       
 	            	
 	            	sqlquerystat2 = "SELECT 买入卖出标志 , SUM(买卖金额) AS 金额  FROM 操作记录买卖   "
 							+ " WHERE 买卖账号 =" +"'" + (String)row[1] +"'" 
@@ -325,9 +319,9 @@ public class AccountDbOperation
 							+ " AND 日期>=curdate() "
 							+ " GROUP BY 买入卖出标志 , 买卖金额"   
 							;
-	            	sqlstatmap.put("mysql", sqlquerystat2);
+	            	
 
-		    		rs_jiner = connectdb.sqlQueryStatExecute(sqlstatmap);
+		    		rs_jiner = connectdb.sqlQueryStatExecute(sqlquerystat2);
 		    		while(rs_jiner.next()) {
 		    			boolean mairumaichusign = rs_jiner.getBoolean("买入卖出标志");
 		    			
@@ -649,7 +643,7 @@ public class AccountDbOperation
 		LocalDateTime actiondate = stocknumberpricepanel.getActionDay();
 		actiondate = actiondate.plusMinutes(3);
 		
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
+		
 		String sqlinsertstat  = null;
 		sqlinsertstat = "INSERT INTO A股个股盈亏(股票代码,日期,原因描述,盈亏金额,操作账号) VALUES ("
 				+ "'" +  stockcode.trim() + "'" + "," 
@@ -659,10 +653,10 @@ public class AccountDbOperation
 				+ "'" + subaccount + "'" 
 				+ ")"
 				;
-		sqlstatmap.put("mysql", sqlinsertstat);
+		
 		int autoIncKeyFromApi = 0;
 		try {
-			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlstatmap);
+			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

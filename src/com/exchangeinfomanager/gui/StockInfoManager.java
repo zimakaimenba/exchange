@@ -20,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.TableCellListener;
+import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
@@ -31,7 +32,6 @@ import com.exchangeinfomanager.Search.SearchDialog;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeeting;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
@@ -45,6 +45,7 @@ import javax.swing.JTextArea;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -68,6 +69,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
 import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
@@ -85,6 +88,8 @@ import javax.swing.JMenuItem;
 
 import com.exchangeinfomanager.tongdaxinreport.*;
 import com.google.common.base.Strings;
+import com.hankcs.hanlp.HanLP;
+import com.lc.nlp.keyword.algorithm.TextRank;
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
@@ -96,6 +101,7 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
@@ -141,10 +147,12 @@ import javax.swing.JTabbedPane;
 import net.miginfocom.swing.MigLayout;
 
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
+import javax.swing.JComboBox;
 
 
 public class StockInfoManager 
 {
+	private CylTreeDbOperation cyltreedb;
 	/**
 	 * Create the application.
 	 */
@@ -162,7 +170,7 @@ public class StockInfoManager
 		connectdb = ConnectDataBase.getInstance();
 		boolean localconnect = connectdb.isLocalDatabaseconnected();
 		if(localconnect == false) {
-			JOptionPane.showMessageDialog(null,"数据库连接都失败！再见！");
+			JOptionPane.showMessageDialog(null,"数据库连接失败！再见！");
 			System.exit(0);
 		}
 		
@@ -171,7 +179,8 @@ public class StockInfoManager
 		bkdbopt = new BanKuaiDbOperation ();
 		
 		allbkstock = AllCurrentTdxBKAndStoksTree.getInstance();
-		bkcyl = BanKuaiAndChanYeLian2.getInstance();
+		
+		this.cyltreedb = new CylTreeDbOperation ();
 		
 		initializeGui();
 		displayAccountAndChiCang ();
@@ -191,9 +200,9 @@ public class StockInfoManager
 	private BanKuaiGuanLi bkgldialog = null;
 	private BanKuaiFengXi bkfx ;
 	private SearchDialog searchdialog;
-	private BanKuaiAndChanYeLian2 bkcyl;
 	private WeeklyExportFileFengXi effx;
 	private AllCurrentTdxBKAndStoksTree allbkstock;
+	private BanKuaiAndStockTree bkcyl;
 	/*
 	 * 
 	 */
@@ -243,20 +252,10 @@ public class StockInfoManager
 	 */
 		private void displayDbInfo() 
 		{
-			boolean localconnect = false;
-			boolean rmtconnect = false;
-//			if(connectdb.isRemoteDatabaseconnected()){
-//				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
-//				lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText()+ connectdb.getRemoteDatabaseName("full")+"数据库已连接");
-//				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
-//				rmtconnect = true;
-//			}
-			
 			if(connectdb.isLocalDatabaseconnected()){
 				btnDBStatus.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/database_23.147208121827px_1201712_easyicon.net.png")));
 				lblStatusBarOperationIndicatior.setText(lblStatusBarOperationIndicatior.getText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
 				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
-				localconnect = true;
 			}
 		}
 		public void preUpdateSearchResultToGui(BkChanYeLianTreeNode node)
@@ -289,23 +288,16 @@ public class StockInfoManager
 //					initializeNetWorkOperation (stockcode); //生成对应的网站网址
 				 
 				 if(nodeshouldbedisplayed.getType() == 6) { //是个股
-					if(accountschicangconfig.isSystemChiCang(stockcode)) {
+					if(accountschicangconfig.isSystemChiCang(stockcode)) 
 						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
-					} 
-					
-//					nodeshouldbedisplayed = bkdbopt.getCheckListsXMLInfo ((Stock)nodeshouldbedisplayed);
-					//
-					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
+
+					nodeshouldbedisplayed = cyltreedb.getChanYeLianInfo(nodeshouldbedisplayed);
 					
 					if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 						displayAccountTableToGui ();
-//						displaySellBuyZdgzInfoToGui ();
 					}
 					displayStockSuoShuBanKuai ();
 					setKuaiSuGui (stockcode);
-//					if(buychklstdialog!= null ) {
-//						displayChecklistsItemsToGui ();
-//					}
 				 } 
 				 
 				 displayBanKuaiAndStockNews (); //显示板块和个股新闻
@@ -1534,6 +1526,14 @@ public class StockInfoManager
 			@Override
 			public void keyTyped(KeyEvent e) 
 			{
+//				TextRank.setKeywordNumber(6);
+//				TextRank.setWindowSize(4);
+//				
+//				System.out.println(TextRank.getKeyword(nodeshouldbedisplayed.getMyOwnName(), txtareagainiants.getText() + txtareafumianxx.getText() ));
+//				
+//				List<String> keywordList = HanLP.extractKeyword(txtareagainiants.getText() + txtareafumianxx.getText() , 5);
+//				System.out.println(keywordList);
+				
 				btngengxinxx.setEnabled(true);
 			    
 			}
@@ -1691,7 +1691,7 @@ public class StockInfoManager
 		protected void startBanKuaiGuanLiDlg()
 		{
 			if(bkgldialog == null ) {
-				bkgldialog = new BanKuaiGuanLi(this);
+				bkgldialog = new BanKuaiGuanLi(this.cyltreedb);
 				bkgldialog.setModal(true);
 
 				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -1851,8 +1851,8 @@ public class StockInfoManager
 	
 	private void displayBanKuaiAndStockNews()
 	{
-//		String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
 		editorPanenodeinfo.displayChanYeLianNewsHtml (nodeshouldbedisplayed);
+		editorPanenodeinfo.displayChanYeLianInfo(nodeshouldbedisplayed);
 	}
 
 
@@ -1865,19 +1865,11 @@ public class StockInfoManager
 
 	private void displayAccountTableToGui ()
 	{
-//		ArrayList<AccountInfoBasic> chicangaccountslist = null;
 		String tmpstockcode = nodeshouldbedisplayed.getMyOwnCode();
 		
 		if(accountschicangconfig.isSystemChiCang(tmpstockcode)) { //如果是系统持仓才要显示持仓信息，否则什么都不用做
 			nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
 			HashMap<String, AccountInfoBasic> accountsnamemap = ((Stock)nodeshouldbedisplayed).getChiCangAccounts();
-//			chicangaccountslist = new ArrayList<AccountInfoBasic> ();
-//			for(String tmpstockacntname: accountsnamelist ){
-//				
-//				AccountInfoBasic tmpacnt  = accountschicangconfig.getAccount(tmpstockacntname);
-//				
-//				chicangaccountslist.add(tmpacnt);
-//			}
 			
 			ArrayList<AccountInfoBasic> accountsnamelist = new ArrayList<AccountInfoBasic>(accountsnamemap.values());
 			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).refresh(accountsnamelist,tmpstockcode );
@@ -2064,6 +2056,7 @@ public class StockInfoManager
 		
 		
 		kspanel.resetInput ();
+		
 				
 //		editorPaneBanKuai.setText("");
 //		panelZhanBi.resetDate();
@@ -2115,6 +2108,9 @@ public class StockInfoManager
 				btnSell.setEnabled(false);
 				btnSongZhuanGu.setEnabled(false);
 			}
+			
+			if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXBK)
+				cobxgpc.setEnabled(true);
 		
 	}
 	
@@ -2315,6 +2311,7 @@ public class StockInfoManager
 	private JMenuItem menuItembkfx;
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JButton btnyituishi;
+	private JComboBox cobxgpc;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2328,7 +2325,7 @@ public class StockInfoManager
 		frame.getContentPane().setEnabled(false);
 				
 		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u740610");
-		frame.setBounds(100, 100, 845, 921);
+		frame.setBounds(100, 100, 866, 921);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -2337,7 +2334,7 @@ public class StockInfoManager
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		
-		editorpansuosubk = new BanKuaiListEditorPane ();
+		editorpansuosubk = new BanKuaiListEditorPane (this.cyltreedb);
 		
 		editorpansuosubk.setPreferredSize(new Dimension(200,30));
 		//txaBanKuai.setEditorKit(new WrapEditorKit());
@@ -2519,17 +2516,17 @@ public class StockInfoManager
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnDBStatus))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(groupLayout.createSequentialGroup()
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 										.addComponent(panel_2, 0, 0, Short.MAX_VALUE)
 										.addComponent(scrollPane, 0, 0, Short.MAX_VALUE)
 										.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
 										.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE))
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-							.addGap(1093)
+									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 454, GroupLayout.PREFERRED_SIZE)))
+							.addGap(1067)
 							.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
@@ -2550,7 +2547,7 @@ public class StockInfoManager
 							.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 745, GroupLayout.PREFERRED_SIZE))
+						.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 755, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
@@ -2690,6 +2687,7 @@ public class StockInfoManager
 		JLabel label = new JLabel("\u5BA2\u6237");
 		
 		tfdCustom = new JTextField();
+		tfdCustom.setFont(new Font("宋体", Font.PLAIN, 16));
 		
 		tfdCustom.setEnabled(false);
 		tfdCustom.setColumns(10);
@@ -2697,125 +2695,122 @@ public class StockInfoManager
 		JLabel label_1 = new JLabel("\u7ADE\u4E89\u5BF9\u624B");
 		
 		tfdJingZhengDuiShou = new JTextField();
+		tfdJingZhengDuiShou.setFont(new Font("宋体", Font.PLAIN, 16));
 		tfdJingZhengDuiShou.setEnabled(false);
 		tfdJingZhengDuiShou.setColumns(10);
 		
 		
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
+		
+		JLabel label_2 = new JLabel("\u540C\u6B65\u597D\u53CB\u677F\u5757");
+		
+		Vector v = new Vector();
+		v.add(new JCheckBox("概念提示",true));
+		v.add(new JCheckBox("负面消息",true));
+		v.add(new JCheckBox("券商评级",true));
+		v.add(new JCheckBox("正相关",true));
+		v.add(new JCheckBox("负相关",true));
+		v.add(new JCheckBox("客户",false));
+		v.add(new JCheckBox("竞争对手",false));
+//		cobxgpc = new JComboCheckBox(v);
+		cobxgpc = new JComboBox (v);
+		cobxgpc.setEnabled(false);
+		cobxgpc.setFont(new Font("宋体", Font.PLAIN, 12));
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
 		gl_panel_3.setHorizontalGroup(
-			gl_panel_3.createParallelGroup(Alignment.LEADING)
+			gl_panel_3.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_3.createSequentialGroup()
-					.addGap(7)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+						.addComponent(scrollPanefumian, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
 						.addGroup(gl_panel_3.createSequentialGroup()
-							.addComponent(lblstockinfo)
-							.addGap(11)
-							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
-							.addContainerGap())
-						.addGroup(gl_panel_3.createSequentialGroup()
+							.addGap(4)
 							.addComponent(lblfumianxiaoxi)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
-							.addContainerGap())
+							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
 						.addGroup(gl_panel_3.createSequentialGroup()
-							.addComponent(lblquanshangpj)
-							.addGap(15)
-							.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-							.addGap(22))
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addGap(3)
-							.addComponent(lblzhengxg, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(txtfldzhengxg, GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
-							.addContainerGap())
+							.addComponent(lblstockinfo)
+							.addGap(14)
+							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
+						.addComponent(scrollPanegainian, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
 						.addGroup(gl_panel_3.createSequentialGroup()
 							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-								.addComponent(label_1)
 								.addGroup(gl_panel_3.createSequentialGroup()
+									.addContainerGap()
+									.addComponent(lblquanshangpj))
+								.addGroup(gl_panel_3.createSequentialGroup()
+									.addContainerGap()
+									.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+										.addComponent(label_1)
+										.addComponent(label)))
+								.addGroup(gl_panel_3.createSequentialGroup()
+									.addGap(22)
+									.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+										.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblzhengxg, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE))))
+							.addGap(32)
+							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+								.addComponent(txtfldfuxg, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+								.addComponent(tfdJingZhengDuiShou, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+								.addComponent(tfdCustom, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+								.addComponent(txtfldzhengxg, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+								.addGroup(gl_panel_3.createSequentialGroup()
+									.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-									.addGap(10)
-									.addComponent(txtfldfuxg, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)))
-							.addContainerGap())))
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(label)
-					.addGap(30)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addComponent(tfdJingZhengDuiShou, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
-						.addComponent(tfdCustom, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE))
-					.addContainerGap())
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addComponent(scrollPanefumian, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addComponent(scrollPanegainian, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
-					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+									.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))))
+						.addGroup(gl_panel_3.createSequentialGroup()
+							.addComponent(label_2)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(cobxgpc, 0, 368, Short.MAX_VALUE))
+						.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_panel_3.setVerticalGroup(
 			gl_panel_3.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_3.createSequentialGroup()
 					.addGap(7)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblstockinfo)
-						.addComponent(dateChsgainian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
+						.addComponent(label_2)
+						.addComponent(cobxgpc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPanegainian, GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+						.addComponent(dateChsgainian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblstockinfo))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addGap(10)
-							.addComponent(lblfumianxiaoxi))
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addGap(4)
-							.addComponent(dateChsefumian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPanefumian, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addGap(10)
-							.addComponent(lblquanshangpj))
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addGap(4)
-							.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(txtfldquanshangpj, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrollPanegainian, GroupLayout.PREFERRED_SIZE, 123, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+						.addComponent(dateChsefumian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblfumianxiaoxi))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPanefumian, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblquanshangpj)
+						.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(txtfldquanshangpj, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblzhengxg)
-						.addComponent(txtfldzhengxg, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
+						.addComponent(txtfldzhengxg, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblzhengxg))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblNewLabel)
-						.addComponent(txtfldfuxg, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txtfldfuxg, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
-						.addComponent(label)
-						.addComponent(tfdCustom, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addGap(18)
-							.addComponent(label_1))
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(tfdJingZhengDuiShou, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)))
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
+						.addComponent(tfdCustom, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
+						.addComponent(label))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
+						.addComponent(tfdJingZhengDuiShou, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+						.addComponent(label_1))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+					.addContainerGap())
 		);
 		
 		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();

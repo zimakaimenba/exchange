@@ -368,7 +368,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
 			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
 		}
-		this.nodecombinedpnl.setDisplayZhanBiInLine(true);
+		this.nodecombinedpnl.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上日均成交额，下占比线
 		
 		this.centerPanel.add(this.nodecombinedpnl);
 		this.centerPanel.add(this.nodebkcjezblargepnl);

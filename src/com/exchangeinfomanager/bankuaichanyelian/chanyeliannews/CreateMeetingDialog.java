@@ -75,8 +75,6 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
         	}catch (SQLException e1) {
                 e1.printStackTrace();
             }
-            
-            
         }
     }
     /*
@@ -99,7 +97,7 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
           try {
         	setMeeting(  showhtmldialog.getMeeting () );
 			meetingService.createMeeting(getMeeting());
-			 setVisible(false);
+			setVisible(false);
 		  } catch (SQLException e1) {
 				e1.printStackTrace();
 		  }

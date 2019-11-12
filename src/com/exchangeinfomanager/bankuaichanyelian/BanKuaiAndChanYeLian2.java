@@ -13,23 +13,15 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl.ChanYeLianNewsPanel;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
-import com.exchangeinfomanager.commonlib.CommonUtility;
+
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.GuPiaoChi;
+import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.SubBanKuai;
-import com.exchangeinfomanager.nodes.SubGuPiaoChi;
+
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
@@ -38,9 +30,9 @@ import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
+
 import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -48,38 +40,13 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
-import com.sun.rowset.CachedRowSetImpl;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JSeparator;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTree;
-import javax.swing.ImageIcon;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JEditorPane;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.event.HyperlinkEvent;
-import com.toedter.calendar.JDateChooser;
-import javax.swing.border.TitledBorder;
-import javax.swing.JCheckBox;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import javax.swing.UIManager;
 
-public class BanKuaiAndChanYeLian2 
+class BanKuaiAndChanYeLian2 
 {
 	private static final long serialVersionUID = 1L;
+
+	private CylTreeDbOperation treedb;
 
 	private BanKuaiAndChanYeLian2 () 
 	{
@@ -87,11 +54,8 @@ public class BanKuaiAndChanYeLian2
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.allbkstocks = AllCurrentTdxBKAndStoksTree.getInstance();
 
-		this.cylxmhandler = new ChanYeLianXMLHandler ();
-		this.bkfxrfxmlhandler = new BkfxWeeklyFileResultXmlHandler ();
-	
-		treechanyelian = cylxmhandler.getBkChanYeLianXMLTree();
-		updatedChanYeLianTree (allbkstocks);
+		treedb = new CylTreeDbOperation  ();
+		treechanyelian = treedb.getBanKuaiAndStockTree();
 	}
 	// 单例实现  
 	 public static BanKuaiAndChanYeLian2 getInstance ()
@@ -106,20 +70,54 @@ public class BanKuaiAndChanYeLian2
 	
 	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian2.class);
 	
-	private BkfxWeeklyFileResultXmlHandler bkfxrfxmlhandler;
+//	private BkfxWeeklyFileResultXmlHandler bkfxrfxmlhandler;
 	private AllCurrentTdxBKAndStoksTree allbkstocks;
 	protected SystemConfigration sysconfig;
-	protected ChanYeLianXMLHandler cylxmhandler;
+//	protected ChanYeLianXMLHandler cylxmhandler;
     protected BanKuaiAndStockTree treechanyelian;
     private BanKuaiDbOperation bkdbopt;
-
+    
 	/*
-	 * XML存在
+	 * 
 	 */
-//    public void patchWeeklyBanKuaiFengXiXmlFileToCylTree(BkChanYeLianTreeNode treeroot,File xmlfile, LocalDate localDate)
-//    {
-//    	patchParsedResultXmlToTrees(treeroot,localDate);
-//    }
+	public BanKuaiAndStockTree getBkChanYeLianTree ()
+	{
+		CylTreeNestedSetNode treeroot = (CylTreeNestedSetNode)treechanyelian.getModel().getRoot();
+		print(treeroot);
+		
+		return treechanyelian;
+	}
+	public  void print(CylTreeNestedSetNode aNode)
+	{
+	    String name = aNode.toString();
+	    int level= aNode.getLevel();
+	    String placement = "";
+	    while (level > 0)
+	    {
+	        placement += ">";
+	        level--;
+	    }
+	    if(aNode.isLeaf())
+	    {
+	        System.out.println(placement + name);
+	        return;
+	    }
+
+	    System.out.println(placement + "--- " + name + " ---");
+	    for(int i = 0 ; i < aNode.getChildCount() ; i++)
+	    {
+	        print((CylTreeNestedSetNode)aNode.getChildAt(i));
+	    }
+	    System.out.println(placement + "+++ " + name + " +++");
+	}
+
+    /*
+     * 
+     */
+    private void setupChanYeLianTreeFromNestedSetDatabase ()
+    {
+    	
+    }
 	public void patchWeeklyBanKuaiFengXiXmlFileToCylTree(File xmlfile, LocalDate localDate)
 	{
 		bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (xmlfile);
@@ -163,10 +161,10 @@ public class BanKuaiAndChanYeLian2
             	Boolean bkselfinparsedfile = this.bkfxrfxmlhandler.getBanKuaiFxSelfMatchModelOfSepecificDate (tmpbkcode, localDate);
   
 				if(setnum != null && setnum > 0) {
-					BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
-					if(bkselfinparsedfile)
-						treerelated.setSelfIsMatchModel (localDate);
-	    			treerelated.setStocksNumInParsedFile (localDate,  setnum);
+//					BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
+//					if(bkselfinparsedfile)
+//						treerelated.setSelfIsMatchModel (localDate);
+//	    			treerelated.setStocksNumInParsedFile (localDate,  setnum);
 				}
 	        } 
             
@@ -288,12 +286,19 @@ public class BanKuaiAndChanYeLian2
 	{
 		
 	}
-	/*
-	 * 
-	 */
-	public BanKuaiAndStockTree getBkChanYeLianTree ()
+
+	public Set<BkChanYeLianTreeNode> getGuoPiaoChi ()
 	{
-		return treechanyelian;
+		Set<BkChanYeLianTreeNode> gpcindb =  new HashSet<BkChanYeLianTreeNode> ();
+		InvisibleTreeModel ml = (InvisibleTreeModel)this.treechanyelian.getModel();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)(ml.getRoot());
+		int bankuaicount = this.treechanyelian.getModel().getChildCount(treeroot);
+		for(int i=0;i< bankuaicount; i++) {
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.treechanyelian.getModel().getChild(treeroot, i);
+			gpcindb.add(childnode);
+		}
+		
+		return gpcindb;
 	}
 	/*
 	 * 
@@ -309,7 +314,7 @@ public class BanKuaiAndChanYeLian2
 		InvisibleTreeModel ml = (InvisibleTreeModel)this.treechanyelian.getModel();
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)(ml.getRoot());
 		int bankuaicount = this.treechanyelian.getModel().getChildCount(treeroot);
-		HashSet<String> gpcintree = new HashSet<String> ();
+		Set<String> gpcintree = new HashSet<String> ();
 		for(int i=0;i< bankuaicount; i++) {
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.treechanyelian.getModel().getChild(treeroot, i);
 			gpcintree.add(childnode.getMyOwnCode());
@@ -436,131 +441,7 @@ public class BanKuaiAndChanYeLian2
 	{
 		return cylxmhandler.getGeGuChanYeLian(stockcode);
 	}
-    /*
-     * 
-     */
-    public void addNewNode(BkChanYeLianTreeNode newNode, int direction)
-	{
-		if (this.treechanyelian.getSelectionCount() == 1) {
-			
-			if( newNode.getType() == BkChanYeLianTreeNode.SUBGPC) { 
-//				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
-//				if(parent.getType() == BkChanYeLianTreeNode.GPC)
-					direction = BanKuaiAndChanYeLianGUI2.RIGHT; //板块国只能加在GPC板块州的下面
-//				else if(parent.getType() == BkChanYeLianTreeNode.SUBGPC)
-//					direction = BanKuaiAndChanYeLianGUI2.DOWN;
-			} else
-			if( newNode.getType() == BkChanYeLianTreeNode.SUBBK) { 
-//				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
-//				if(parent.getType() == BkChanYeLianTreeNode.GPC)
-					direction = BanKuaiAndChanYeLianGUI2.RIGHT; //子板块只能加在板块的下面
-//				else if(parent.getType() == BkChanYeLianTreeNode.SUBGPC)
-//					direction = BanKuaiAndChanYeLianGUI2.DOWN;
-			} else
-			if( newNode.getType() == BkChanYeLianTreeNode.TDXBK) { 
-				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
-				if(parent.getType() == BkChanYeLianTreeNode.GPC)
-					direction = BanKuaiAndChanYeLianGUI2.RIGHT; //板块只能加在GPC板块州的下面
-				else if(parent.getType() == BkChanYeLianTreeNode.TDXBK)
-					direction = BanKuaiAndChanYeLianGUI2.DOWN; //板块不能加在板块下一级
-			} else
-			if( newNode.getType() == BkChanYeLianTreeNode.BKGEGU || newNode.getType() == BkChanYeLianTreeNode.TDXGG) {
-				BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
-				if(parent.getType() == BkChanYeLianTreeNode.TDXBK)
-					direction = BanKuaiAndChanYeLianGUI2.RIGHT; //个股只能加在板块的下面
-				else if( parent.getType() == BkChanYeLianTreeNode.BKGEGU  ||  parent.getType() == BkChanYeLianTreeNode.TDXGG) { //父节点是个股不可以加
-//					logger.debug("父节点是个股，不能有子板块");
-                	direction = BanKuaiAndChanYeLianGUI2.UP;
-				}
-			}
-			
-            if (direction == BanKuaiAndChanYeLianGUI2.RIGHT){
-            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
-                
-                boolean enableoperation = treechanyelian.checkNodeDuplicate (parent,newNode);
-            	if( enableoperation ) {
-                		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
-                		return;
-                } 
-            	
-            	parent.add(newNode);
-            	try {
-            		NodesTreeRelated tree = parent.getNodeTreeRelated();
-            		tree.setExpansion(true);
-            	} catch(java.lang.NullPointerException e) {
-//            		e.printStackTrace();
-            	}
-            	
-            	if( newNode.getType() == BkChanYeLianTreeNode.TDXBK ) {
-            		this.updateBanKuaiExportGephiBkfxOperation (parent,newNode);
-    			}
-            	
-            } 
-            
-            if (direction != BanKuaiAndChanYeLianGUI2.RIGHT){
-            	BkChanYeLianTreeNode currentNode = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
-            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) currentNode.getParent();
-                
-                boolean enableoperation = treechanyelian.checkNodeDuplicate (parent,newNode);
-            	if( enableoperation ) {
-                		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
-                		return;
-                }
-                
-                int childIndex = parent.getIndex(currentNode);
-                if (direction == BanKuaiAndChanYeLianGUI2.DOWN) 
-                	parent.insert(newNode, childIndex+1);
-                else if (direction == BanKuaiAndChanYeLianGUI2.UP) 
-                	parent.insert(newNode, childIndex);
-                
-                if( newNode.getType() == BkChanYeLianTreeNode.TDXBK ) {
-            		this.updateBanKuaiExportGephiBkfxOperation (parent,newNode);
-    			}
-            }
 
-            InvisibleTreeModel treeModel = (InvisibleTreeModel)this.treechanyelian.getModel();
-    		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
-            treeModel.nodesWereInserted(newNode.getParent(), new int[] {newNode.getParent().getIndex(newNode)});
-            
-			treeModel.reload(treeroot);
-			
-			treechanyelian.setSelectionPath(new TreePath(((BkChanYeLianTreeNode)newNode.getParent()).getPath()));
-			treechanyelian.scrollPathToVisible( new TreePath(newNode.getPath()));
-
-        }
-	}
-    private void updateBanKuaiExportGephiBkfxOperation(BkChanYeLianTreeNode parent, BkChanYeLianTreeNode newNode) 
-    {
-    	try {
-			TreeNode[] bkpath = newNode.getPath();
-			BkChanYeLianTreeNode gpcbelonged = (BkChanYeLianTreeNode) bkpath[1];
-			String gpccode = gpcbelonged.getMyOwnCode();
-			if( !gpccode.toUpperCase().equals("GPC999") ) {//其他
-				if(!gpccode.toUpperCase().equals("GPC014")) {
-					//把在"其他"里的该个股找出来, 同时在数据库更新该板块”导出到分析文件的状态“，用户必须在树删除该节点后才可以更改状态，否则必须导出到分析文件
-					BanKuai bkinallbkst = (BanKuai) allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newNode.getMyOwnCode(),BkChanYeLianTreeNode.TDXBK);
-					((BanKuai)bkinallbkst).setExportTowWlyFile(true);
-					
-					bkdbopt.updateBanKuaiExportGephiBkfxOperation (bkinallbkst.getMyOwnCode(),bkinallbkst.isImportdailytradingdata(),
-							bkinallbkst.isExporttogehpi(), bkinallbkst.isShowinbkfxgui(),
-							bkinallbkst.isShowincyltree(),bkinallbkst.isExportTowWlyFile()
-							);
-				} else { //弱势远离的是否要特别标注
-					//把在"其他"里的该个股找出来, 同时在数据库更新该板块”导出到分析文件的状态“，用户必须在树删除该节点后才可以更改状态，否则必须导出到分析文件
-					BanKuai bkinallbkst = (BanKuai) allbkstocks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(newNode.getMyOwnCode(),BkChanYeLianTreeNode.TDXBK);
-					((BanKuai)bkinallbkst).setExportTowWlyFile(false);
-					
-					bkdbopt.updateBanKuaiExportGephiBkfxOperation (bkinallbkst.getMyOwnCode(),bkinallbkst.isImportdailytradingdata(),
-							bkinallbkst.isExporttogehpi(), bkinallbkst.isShowinbkfxgui(),
-							bkinallbkst.isShowincyltree(),bkinallbkst.isExportTowWlyFile()
-							);
-				}
-			}
-		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-			
-		}
-	}
 	/*
      * 
      */

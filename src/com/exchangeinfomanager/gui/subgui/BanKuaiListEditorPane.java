@@ -33,8 +33,8 @@ import javax.swing.text.Element;
 
 import org.jsoup.Jsoup;
 
-
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -44,13 +44,15 @@ import com.google.common.collect.Multimap;
 
 public class BanKuaiListEditorPane extends JEditorPane 
 {
-	public BanKuaiListEditorPane() 
+	
+	
+	public BanKuaiListEditorPane(CylTreeDbOperation cyltreedb) 
 	{
 		super ();
 		this.setEditable(false);
 		this.setContentType("text/html;charset=utf-8");
 		
-		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
+//		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
 		selectstring = "";
 		displayedBankuaiinfomap = ArrayListMultimap.create();
 		displayedStockinfomap = ArrayListMultimap.create();
@@ -61,11 +63,11 @@ public class BanKuaiListEditorPane extends JEditorPane
 		jPopupMenue.add(menuItemclear);
 		
 		createEvents ();
-		
+		this.cyltreedb = cyltreedb;
 	}
 	
+	private CylTreeDbOperation cyltreedb;
 	private String selectstring;
-	private BanKuaiAndChanYeLian2 bkcyl;
 	public static final String URLSELECTED_PROPERTY = "urlselected";
 	public static final String EXPORTCSV_PROPERTY = "exporttocsv";
 	private Multimap<String,LocalDate> displayedBankuaiinfomap;
@@ -115,17 +117,13 @@ public class BanKuaiListEditorPane extends JEditorPane
 			org.jsoup.select.Elements dls = body.select("dl");
 			for(org.jsoup.nodes.Element dl : dls) {
 				
-//				org.jsoup.nodes.Attributes attrs = new org.jsoup.nodes.Attributes();
-//			    attrs.put("size", "5");
+
 			    org.jsoup.nodes.Element font = new org.jsoup.nodes.Element("Font");
 			    font.attr("size", "3");
 			    
 			    dl.appendChild(font);
-			    
-//			    atrs.put("id", "div1");
 			}
-//			String dltext = dl.text();
-//			System.out.println(dltext);
+
 		}
 		String head = selectbody.get(0).text();
 		
@@ -151,33 +149,25 @@ public class BanKuaiListEditorPane extends JEditorPane
 		this.setText("");
 		HashMap<String, String> suosusysbankuai = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
 		Set<String> union =  suosusysbankuai.keySet();
-		Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
-		 
-		 String htmlstring = this.getText();
+
+		String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 		 
 		 org.jsoup.select.Elements content = doc.select("body");
 		 
 		 content.append( "<html> "
 		 		+ "<body>"
-//		 		+ " <p>"
 		 		);
 		 
 		 boolean shuyuruoshibankuai = false;
 	     for(String suoshubankcode : union ) {
 	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
-	    	 
 	    	 try {
-	    		 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
-	    		 if( daleilist.size() != 0) {
-	    			 if(daleilist.contains("GREEN") ) {
-	    				 content.append("<a style=\"color:green\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString().replace("GREEN,", "")  + "</a> " );
-	    				 shuyuruoshibankuai = true ;
-	    			 } else
-	    				 content.append("<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> " );
-	    			 
-	    		 }
-	    		 else
+	    		 boolean inrsbk = cyltreedb.isBanKuaiInBearPart(suoshubankcode);
+    			 if(inrsbk ) {
+    				 content.append("<a style=\"color:green\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + "</a> " );
+	    			 shuyuruoshibankuai = true ;
+	    		 } else
 	    			 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ");
 	    	 } catch (java.lang.NullPointerException e) {
 	    		 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ");
@@ -186,20 +176,6 @@ public class BanKuaiListEditorPane extends JEditorPane
 	     
 	     if(shuyuruoshibankuai)
 	    	 JOptionPane.showMessageDialog(this, "<html><font face='Calibri' size='8' color='red'>该个股属于近期弱势或要回避的板块！");
-	     
-//	     content.append( "</p>");
-	     
-	     		
-	     
-//	     String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
-//	     ArrayList<String> gegucyl = ((Stock)nodeshouldbedisplayed).getGeGuAllChanYeLianInfo();
-//	     for(String cyl : gegucyl) {
-//	    	 content.append( " <p>个股产业链:"
-//	    	 		+ "<a  href=\"openBanKuaiAndChanYeLianDialog\">  " + cyl)
-//	    	 		;
-//	     }
-//	     if(gegucyl.size()>0)
-//	    	 content.append( "</p>");
 	     
 	     content.append( "</body>"
 					+ "</html>");
@@ -247,7 +223,6 @@ public class BanKuaiListEditorPane extends JEditorPane
 			
 		});
 
-		
 		//为个股板块信息的hyperlink注册时间  http://www.javalobby.org/java/forums/t19716.html
 		 ActionMap actionMap = new ActionMap(); 
 	     actionMap.put("openBanKuaiAndChanYeLianDialog", new AbstractAction (){

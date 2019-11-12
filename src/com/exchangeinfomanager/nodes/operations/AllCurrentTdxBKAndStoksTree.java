@@ -22,6 +22,7 @@ import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.ConnectDataBase;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
@@ -41,12 +42,14 @@ public class AllCurrentTdxBKAndStoksTree
 	{
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
-		
+
 		initializeAllStocksTree ();
 		setupDaPan ();
+		
+//		initializeChanYeLianTree ();
 	}
 	
-	 // 单例实现  
+	// 单例实现  
 	 public static AllCurrentTdxBKAndStoksTree getInstance ()
 	 {  
 	        return Singtonle.instance;  
@@ -61,8 +64,12 @@ public class AllCurrentTdxBKAndStoksTree
 	private static Logger logger = Logger.getLogger(AllCurrentTdxBKAndStoksTree.class);
 	
 	private BanKuaiDbOperation bkdbopt;
-	private BanKuaiAndStockTree treecyl;
+	private BanKuaiAndStockTree allbkggtree;
 	private SystemConfigration sysconfig;
+
+	private CylTreeDbOperation cyltreedb;
+
+	private BanKuaiAndStockTree cyltree;
 
 	
 	
@@ -83,22 +90,28 @@ public class AllCurrentTdxBKAndStoksTree
 
 		}
 
-		treecyl = new BanKuaiAndStockTree(alltopNode,"ALLBKSTOCKS");
+		allbkggtree = new BanKuaiAndStockTree(alltopNode,"ALLBKSTOCKS");
 		allstocks = null;
 	}
+//	private void initializeChanYeLianTree() 
+//	{
+//		this.cyltreedb = new CylTreeDbOperation ();
+//		this.cyltree = this.cyltreedb.getBkChanYeLianTree();
+//		
+//	}
 	
 	public  BanKuaiAndStockTree getAllBkStocksTree()
 	{
-		return treecyl;
+		return allbkggtree;
 	}
 	/*
 	 * 
 	 */
 	public void setupDaPan ()
 	{
-		DaPan treeallstockrootdapan = (DaPan)treecyl.getModel().getRoot();
-		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
-		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+		DaPan treeallstockrootdapan = (DaPan)allbkggtree.getModel().getRoot();
+		BanKuai shdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
+		BanKuai szdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
 		treeallstockrootdapan.setDaPanContents(shdpbankuai,szdpbankuai);
 	}
 	/**
@@ -117,10 +130,10 @@ public class AllCurrentTdxBKAndStoksTree
 		
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
 			bk = this.getAllGeGuOfBanKuai (bk,period); //获取所有曾经是该板块的个股
-			ArrayList<StockOfBanKuai> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
-			for(StockOfBanKuai stockofbk : allbkgg)   {
-			    	if( stockofbk.isInBanKuaiAtSpecificDate(requiredendday)  ) { //确认当前还在板块内
-			    		 Stock stock = this.getStock(stockofbk.getStock(), requiredstartday, requiredendday, period,calwholeweek);
+			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
+			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { //确认当前还在板块内
+			    		 Stock stock = this.getStock(((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
 			    		 
 		    			 this.syncStockData(stock);
 			    	 }
@@ -186,7 +199,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public BanKuai getBanKuai (String bkcode,LocalDate requiredstartday,LocalDate requiredendday,String period) 
 	{
-		BanKuai bankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
+		BanKuai bankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
 		if(bankuai == null)
 			return null;
 		
@@ -198,7 +211,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public BanKuai getBanKuaiKXian (String bkcode,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-		BanKuai bk = (BanKuai)this.treecyl.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
+		BanKuai bk = (BanKuai)this.allbkggtree.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
 		bk = (BanKuai) this.getBanKuaiKXian(bk, requiredstartday,requiredendday, period);
 		return bk;
 	}
@@ -267,21 +280,21 @@ public class AllCurrentTdxBKAndStoksTree
 	public BanKuai getBanKuaiZhangDieTingInfo (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
 		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		ArrayList<StockOfBanKuai> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 		
 		LocalDate tmpdate = requiredstartday;
 		do {
 			 Integer zhangtingnum = 0;
 			 Integer dietingnum = 0;
 			 
-			for(StockOfBanKuai stockofbk : allbkgg)   {
-				if( !stockofbk.isInBanKuaiAtSpecificDate(tmpdate)  )  //确认当前还在板块内
+			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
+				if( !((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(tmpdate)  )  //确认当前还在板块内
 					continue;
 				
 //				if(stockofbk.getMyOwnCode().equals("600812") && tmpdate.getYear() == 2019 && tmpdate.getMonthValue() == 8)
 //					logger.debug("tet start");
 				
-				Stock stock = stockofbk.getStock();
+				Stock stock = ((StockOfBanKuai)stockofbk).getStock();
 				NodeXPeriodData stockxdate = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 				Integer stockzt = stockxdate .getZhangTingTongJi (tmpdate,0);
 				if(stockzt != null)
@@ -316,7 +329,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public BanKuai getBanKuaiQueKouInfo (String bkcode,LocalDate requiredrecordsday,LocalDate requiredendday,String period)
 	{
-		BanKuai bankuai = (BanKuai)this.treecyl.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
+		BanKuai bankuai = (BanKuai)this.allbkggtree.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
 		bankuai = (BanKuai) this.getBanKuaiQueKouInfo(bankuai, requiredrecordsday, requiredendday, period);
 		return bankuai;
 	}
@@ -324,7 +337,7 @@ public class AllCurrentTdxBKAndStoksTree
 	{
 //		bk = this.getAllGeGuOfBanKuai (bk,period); //获取所有曾经是该板块的个股
 		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		ArrayList<StockOfBanKuai> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 		
 		LocalDate tmpdate = requiredstartday;
 		do {
@@ -333,11 +346,11 @@ public class AllCurrentTdxBKAndStoksTree
 			 Integer huibuup = 0;
 			 Integer huibudown = 0;
 			 
-			for(StockOfBanKuai stockofbk : allbkgg)   {
-				if( !stockofbk.isInBanKuaiAtSpecificDate(tmpdate)  )  //确认当前还在板块内
+			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
+				if( ! ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(tmpdate)  )  //确认当前还在板块内
 					continue;
 				
-				Stock stock = stockofbk.getStock();
+				Stock stock = ((StockOfBanKuai)stockofbk).getStock();
 				NodeXPeriodData stockxdate = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 				Integer stockopenup = stockxdate.getQueKouTongJiOpenUp (tmpdate,0);
 				if(stockopenup != null && stockopenup != 0)
@@ -400,7 +413,7 @@ public class AllCurrentTdxBKAndStoksTree
 		}
 		
 		//同步板块的个股
-		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,treecyl);
+		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,allbkggtree);
 //		ArrayList<StockOfBanKuai> allbkgg = bankuai.getAllCurrentBanKuaiGeGu();
 //		
 //		for(StockOfBanKuai stockofbk : allbkgg)   {
@@ -429,20 +442,20 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, String stockcode,String period)
 	{
-		StockOfBanKuai stock = bankuai.getBanKuaiGeGu(stockcode);
+		BkChanYeLianTreeNode stock = bankuai.getBanKuaiGeGu(stockcode);
 		if(stock == null)
 			return null;
 		
-		stock = this.getGeGuOfBanKuai( bankuai,  stock,period);
-		return stock;
+		stock = this.getGeGuOfBanKuai( bankuai,  (StockOfBanKuai) stock,period);
+		return (StockOfBanKuai) stock;
 	}
 	public StockOfBanKuai getGeGuOfBanKuai(String bkcode, String stockcode,String period) 
 	{
-		BanKuai bankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
+		BanKuai bankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
 		if(bankuai == null)
 			return null;
 		
-		StockOfBanKuai stock = bankuai.getBanKuaiGeGu(stockcode);
+		StockOfBanKuai stock = (StockOfBanKuai) bankuai.getBanKuaiGeGu(stockcode);
 		if(stock == null)
 			return null;
 		
@@ -455,9 +468,9 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public void getDaPanKXian (LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
-		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
-		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
+		BanKuai shdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
+		BanKuai szdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+		BanKuai cybdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
 		
 		shdpbankuai = (BanKuai) this.getBanKuaiKXian(shdpbankuai, requiredstartday, requiredendday,period);
 		szdpbankuai = (BanKuai) this.getBanKuaiKXian(szdpbankuai, requiredstartday, requiredendday,period);
@@ -469,9 +482,9 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public void getDaPan (LocalDate requiredstartday,LocalDate requiredendday,String period, Boolean calwholeweek)
 	{
-		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
-		BanKuai szdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
-		BanKuai cybdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
+		BanKuai shdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
+		BanKuai szdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+		BanKuai cybdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
 		
 		shdpbankuai = this.getBanKuai (shdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
 		szdpbankuai = this.getBanKuai (szdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
@@ -479,7 +492,7 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public void syncDaPanData() 
 	{
-		BanKuai shdpbankuai = (BanKuai) treecyl.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
+		BanKuai shdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
 		LocalDate bkstartday = shdpbankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
 		LocalDate bkendday = shdpbankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
 		
@@ -533,7 +546,7 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public Stock getStock (String stockcode,LocalDate requiredstartday,LocalDate requiredendday,String period) 
 	{
-		Stock stock = (Stock) treecyl.getSpecificNodeByHypyOrCode(stockcode,BkChanYeLianTreeNode.TDXGG);
+		Stock stock = (Stock) allbkggtree.getSpecificNodeByHypyOrCode(stockcode,BkChanYeLianTreeNode.TDXGG);
 		if(stock == null)
 			return null;
 		
@@ -545,7 +558,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public Stock getStockQueKouInfo (String stockcode,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BkChanYeLianTreeNode.TDXGG);
+		Stock stock = (Stock)this.allbkggtree.getSpecificNodeByHypyOrCode(stockcode,BkChanYeLianTreeNode.TDXGG);
 		stock = this.getStockQueKouInfo(stock, requiredstartday, requiredendday, period);
 		return stock;
 	}
@@ -647,7 +660,7 @@ public class AllCurrentTdxBKAndStoksTree
 	 */
 	public Stock getStockKXian (String stockcode,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-		Stock stock = (Stock)this.treecyl.getSpecificNodeByHypyOrCode(stockcode,BkChanYeLianTreeNode.TDXGG);
+		Stock stock = (Stock)this.allbkggtree.getSpecificNodeByHypyOrCode(stockcode,BkChanYeLianTreeNode.TDXGG);
 		stock = (Stock) this.getStockKXian(stock, requiredstartday, requiredendday,period);
 		return stock;
 	}

@@ -1,38 +1,11 @@
 package com.exchangeinfomanager.commonlib;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
-import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
 import com.opencsv.CSVWriter;
 
 public class ExportToCsvFile {

@@ -24,7 +24,7 @@ public class DaPan extends TDXNodes
 		super(dapcode,"╢Сел");
 		super.nodetype = BkChanYeLianTreeNode.DAPAN;
 		
-		super.nodetreerelated = new NodesTreeRelated (this);
+//		super.nodetreerelated = new NodesTreeRelated (this);
 	}
 //	private static Logger logger = Logger.getLogger(DaPan.class);
 	private BanKuai shanghai; //

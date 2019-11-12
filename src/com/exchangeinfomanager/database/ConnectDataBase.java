@@ -57,13 +57,7 @@ public class ConnectDataBase
 			else 
 				return false;
 		}
-//		public boolean isRemoteDatabaseconnected() 
-//		{
-//			if(remotcon.isDatabaseconnected() == true)
-//				return true;
-//			else 
-//				return false;
-//		}
+
 
 		public void closeConnectedDb()
 		{
@@ -71,172 +65,38 @@ public class ConnectDataBase
 					if(localcon != null)
 						localcon.closeConnectedDb();
 					
-//					if(remotcon != null)
-//						remotcon.closeConnectedDb();
 				}catch(Exception ex) {
 					ex.printStackTrace();
 				}
         } 
-		
-		private boolean checkExecuteOnServer (String sqlstatement)
-		{
-//			List<String> rmtservertable = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(sysconfig.getTablesDataSelectedFromServer() );
-//			for(String str:rmtservertable) {
-//				if(sqlstatement.contains(str) )
-//					return true;
-//			}
-			
-			return false;
-		}
-		
-		public CachedRowSetImpl sqlQueryStatExecute(HashMap<String,String> sqlstatementmap )
-		{
-			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
-			String sqlstatement = sqlstatementmap.get("mysql");
-			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
 
-			DataBaseConnection tmpdbcon;
-//			if(exectrmtcon == true) {
-//				tmpdbcon = remotcon;
-//			}
-//			else 
-				tmpdbcon = localcon;
-
-			//在相应的数据库连接执行数据
-			
-			String dbtype = tmpdbcon.getDatabaseType();
-			sqlstatement = sqlstatementmap.get(dbtype);
-			CachedRowSetImpl cachedRS = null;
-			cachedRS = tmpdbcon.sqlQueryStatExecute(sqlstatement);
-			return cachedRS;
-		}
 		public CachedRowSetImpl sqlQueryStatExecute(String sqlstatement )
 		{
-			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
-
-			DataBaseConnection tmpdbcon;
-//			if(exectrmtcon == true) {
-//				tmpdbcon = remotcon;
-//			}
-//			else 
-				tmpdbcon = localcon;
-
 			//在相应的数据库连接执行数据
 			CachedRowSetImpl cachedRS = null;
-			cachedRS = tmpdbcon.sqlQueryStatExecute(sqlstatement);
+			cachedRS = localcon.sqlQueryStatExecute(sqlstatement);
 			return cachedRS;
-		}
-
-		
-		public int sqlUpdateStatExecute(HashMap<String,String> sqlstatementmap) throws SQLException
-		{
-			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
-			String sqlstatement = sqlstatementmap.get("mysql");
-			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
-			
-			DataBaseConnection tmpdbcon;
-//			if(exectrmtcon == true) {
-//				tmpdbcon = remotcon;
-//			}
-//			else 
-				tmpdbcon = localcon;
-			
-			String dbtype = tmpdbcon.getDatabaseType();
-			sqlstatement = sqlstatementmap.get(dbtype);
-			int autoIncKeyFromApi = -1;
-			autoIncKeyFromApi = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
-			
-			
-			return autoIncKeyFromApi;
 		}
 		public int sqlUpdateStatExecute(String sqlstatement) throws SQLException
 		{
-			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
-			
-			DataBaseConnection tmpdbcon;
-//			if(exectrmtcon == true) {
-//				tmpdbcon = remotcon;
-//			}
-//			else 
-				tmpdbcon = localcon;
-			
 			int autoIncKeyFromApi = -1;
-			autoIncKeyFromApi = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
+			autoIncKeyFromApi = localcon.sqlUpdateStatExecute(sqlstatement);
 			
 			return autoIncKeyFromApi;
 		}
 		
-		public int sqlInsertStatExecute(HashMap<String,String> sqlstatementmap) throws SQLException
-		{
-			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
-			String sqlstatement = sqlstatementmap.get("mysql");
-			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
-			
-			DataBaseConnection tmpdbcon;
-//			if(exectrmtcon == true) {
-//				tmpdbcon = remotcon;
-//			}
-//			else 
-				tmpdbcon = localcon;
-			
-			String dbtype = tmpdbcon.getDatabaseType();
-			sqlstatement = sqlstatementmap.get(dbtype);
-			int result = 0; 
-			result = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
-			
-			return result;
-			
-		}
 		public int sqlInsertStatExecute(String sqlstatement) throws SQLException
 		{
-			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
-			
-			DataBaseConnection tmpdbcon;
-//			if(exectrmtcon == true) {
-//				tmpdbcon = remotcon;
-//			}
-//			else 
-				tmpdbcon = localcon;
-			
 			int result = 0; 
-			result = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
+			result = localcon.sqlUpdateStatExecute(sqlstatement);
 			
 			return result;
 		}
 		
-		public int sqlDeleteStatExecute(HashMap<String,String> sqlstatementmap) throws SQLException
-		{
-			//先随便取出一句SQL，用来判定在哪个数据库里面查数据
-			String sqlstatement = sqlstatementmap.get("mysql");
-			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
-			
-			DataBaseConnection tmpdbcon;
-//			if(exectrmtcon == true) {
-//				tmpdbcon = remotcon;
-//			}
-//			else 
-				tmpdbcon = localcon;
-			
-			String dbtype = tmpdbcon.getDatabaseType();
-			sqlstatement = sqlstatementmap.get(dbtype);
-			int result = 0; 
-			result = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
-			
-			return result;
-		}
 		public int sqlDeleteStatExecute(String sqlstatement) throws SQLException
 		{
-			boolean exectrmtcon = checkExecuteOnServer (sqlstatement);
-			
-			DataBaseConnection tmpdbcon;
-//			if(exectrmtcon == true) {
-//				tmpdbcon = remotcon;
-//			}
-//			else 
-				tmpdbcon = localcon;
-			
 			int result = 0; 
-			result = tmpdbcon.sqlUpdateStatExecute(sqlstatement);
+			result = localcon.sqlUpdateStatExecute(sqlstatement);
 			
 			return result;
 		}
@@ -245,23 +105,15 @@ public class ConnectDataBase
 		{
 			return localcon.getDatabaseType();
 		}
-//		public String getRemoteDatabaseType() 
-//		{
-//			return remotcon.getDatabaseType();
-//		}
 		public String getLocalDatabaseName(String string) 
 		{
 			return localcon.getDatabaseName(string);
 		}
-//		public String getRemoteDatabaseName(String shortorfull) 
-//		{
-//			return remotcon.getDatabaseName(shortorfull);
-//		}
-//		public String[] getTDXDataSysRelatedTablesNames ()
-//		{
-//			return rmtservertable;
-//		}
 
+		public Connection getCurrentDataBaseConnect ()
+		{
+			return localcon.getDbConnection ();
+		}
 }
 
 class DataBaseConnection 
@@ -292,6 +144,10 @@ class DataBaseConnection
 	public boolean isDatabaseconnected ()
 	{
 		return databaseconnected;
+	}
+	public Connection getDbConnection ()
+	{
+		return this.con;
 	}
 	
 	private Connection setupDataBaseConnection (CurDataBase curdb)
@@ -355,10 +211,6 @@ class DataBaseConnection
 		 
 	 }
 	
-//	private void setDatabaseconnected(boolean databaseconnected) 
-//	{
-//		this.databaseconnected = databaseconnected;
-//	}
 	public String getDatabaseType() {
 		return databasetype;
 	}

@@ -8,7 +8,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 @SuppressWarnings("all")
-public class LabelDialog<T extends Meeting.Label> extends JDialog {
+public class LabelDialog<T extends Meeting.Label> extends JDialog 
+{
 
     protected static final int WIDTH = 270;
     protected static final int HEIGHT = 150;

@@ -13,7 +13,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 /*
  * 
  */
-class NodeChenJiaoErComparator implements Comparator<TDXNodes> 
+class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode> 
 {
 	private String period;
 	private LocalDate compareDate;
@@ -24,7 +24,7 @@ class NodeChenJiaoErComparator implements Comparator<TDXNodes>
 		this.compareDate = compareDate;
 		this.difference = difference;
 	}
-    public int compare(TDXNodes node1, TDXNodes node2) {
+    public int compare(BkChanYeLianTreeNode node1,  BkChanYeLianTreeNode node2) { 
     	
     	Double cje1 = null ;
         Double cje2 = null;
@@ -32,7 +32,7 @@ class NodeChenJiaoErComparator implements Comparator<TDXNodes>
     		Stock node1stock = ((StockOfBanKuai)node1).getStock();
     		cje1 = (node1stock.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
     	} else {
-    		cje1 = (node1.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
+    		cje1 = ( ((TDXNodes)node1).getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
     	}
     	
     	if(node2.getType() == BkChanYeLianTreeNode.BKGEGU){
@@ -40,7 +40,7 @@ class NodeChenJiaoErComparator implements Comparator<TDXNodes>
             cje2 = (node2stock.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
             
     	} else {
-    		cje2 = (node2.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
+    		cje2 = ( ((TDXNodes)node2).getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
     	}
        
         try{

@@ -14,9 +14,11 @@ import java.time.temporal.ChronoUnit;
 import org.apache.log4j.Logger;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.annotations.CategoryTextAnnotation;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
@@ -38,10 +40,20 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	protected DefaultCategoryDataset averagelinechartdataset;
+	
 	public BanKuaiFengXiCategoryBarChartCjePnl() 
 	{
 		super ();
 		super.plot.setRenderer(0,new CustomRendererForCje() );
+		
+		averagelinechartdataset = new DefaultCategoryDataset();
+		plot.setDataset(4, averagelinechartdataset);
+	    BanKuaiFengXiCategoryLineRenderer lineqkrenderer = new BanKuaiFengXiCategoryLineRenderer ();
+        plot.setRenderer(4, lineqkrenderer);
+        ValueAxis rangeaxis = plot.getRangeAxis(0);
+        plot.setRangeAxis(4, rangeaxis);
+        super.plot.getRenderer(4).setSeriesPaint(1, Color.CYAN );
 	}
 	
 	public void updatedDate (TDXNodes node, LocalDate startdate, LocalDate enddate,String period)
@@ -110,6 +122,12 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				if(cje > highestHigh)
 					highestHigh = cje;
 				
+				//标记周日平均成交额
+				if(!super.shouldDrawAverageDailyCjeOfWeekLine() ) { //如果已经要划线了，这里就不划了
+					Double avecje = 2 * nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday, 0);
+					averagelinechartdataset.setValue(avecje,"AverageDailyCje", wkfriday);
+				}
+
 				//标记大盘成交量该周是涨还是跌
 				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
 				Double dpdiff = dpnodexdata.getChengJiaoErDifferenceWithLastPeriod(tmpdate, 0);
@@ -124,8 +142,10 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				}
 				
 			} else {
-				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
+				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
 					barchartdataset.setValue(0.0,super.getRowKey(),wkfriday);
+					averagelinechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
+				}
 			}
 
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
@@ -444,6 +464,25 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		super.plot.getRenderer(3).setSeriesPaint(2, new Color(178,102,255) );
 		super.plot.getRenderer(3).setSeriesPaint(3, new Color(178,102,255) );
 		
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl#resetLineDate()
+	 */
+	public void resetLineDate ()
+	{
+		super.resetLineDate();
+		if(averagelinechartdataset != null)
+			averagelinechartdataset.clear();
+		
+		plot.getRangeAxis(3).setRange(0.0, 1.0);
+	}
+	public void resetDate ()
+	{
+		super.resetDate();
+		
+		if(averagelinechartdataset != null)
+			averagelinechartdataset.clear();
 	}
 
 	/*

@@ -39,7 +39,7 @@ import com.google.common.base.Strings;
 
 public abstract class BkChanYeLianTreeNode  extends InvisibleNode 
 {
-	public static int  DAPAN = 3, TDXBK = 4, SUBBK = 5, BKGEGU = 7, TDXGG = 6, GPC = 8, SUBGPC = 9;
+	public static int  DAPAN = 3, TDXBK = 4,  BKGEGU = 7, TDXGG = 6, GPC = 8, SUBGPC = 9; //SUBBK = 5,
 
     public BkChanYeLianTreeNode(String myowncode, String name)
     {
@@ -59,6 +59,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode
    		
    		//NodeJiBenMian  TreeRelated
    		this.nodejbm = new NodeJiBenMian ();
+   		this.nodetreerelated = new NodesTreeRelated (this);
   }
 	
     private Logger logger = Logger.getLogger(BkChanYeLianTreeNode.class);
@@ -92,7 +93,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode
         			return found;
         		}
     	} catch (java.lang.NullPointerException ex) {
-        	logger.debug(this.getUserObject().toString()+ "Æ´ï¿½ï¿½ï¿½ï¿½NULL" );
+        	
     	}
     	
     	return found;
@@ -115,8 +116,15 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode
 	}
 	
 	public String getMyOwnCode() {
-		// TODO Auto-generated method stub
+		
 		return this.getUserObject().toString().trim();
+	}
+	/*
+	 * ÁÙÊ±
+	 */
+	public void setMyOwnCode (String code)
+	{
+		super.setUserObject(code);
 	}
 	
 	public String getCreatedTime() {

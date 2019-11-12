@@ -1,10 +1,10 @@
 package com.exchangeinfomanager.bankuaichanyelian;
 
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI2;
+
 
 public class MoveButton extends javax.swing.JButton{
 
-    private int direction = BanKuaiAndChanYeLianGUI2.NONE;
+    private int direction = BanKuaiAndChanYeLianGUI.NONE;
         
     public void setDirection(int direction){
         this.direction = direction;

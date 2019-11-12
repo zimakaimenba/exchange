@@ -76,11 +76,8 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.GuPiaoChi;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.SubBanKuai;
-import com.exchangeinfomanager.nodes.SubGuPiaoChi;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
@@ -116,8 +113,6 @@ import net.iryndin.jdbf.reader.DbfReader;
 
 public class BanKuaiDbOperation 
 {
-	
-
 	public BanKuaiDbOperation() 
 	{
 		connectdb = ConnectDataBase.getInstance();
@@ -2081,106 +2076,106 @@ public class BanKuaiDbOperation
 	/*
 	 * 找出某通达信板块的所有子板块，为板块产业链
 	 */
-	public List<BkChanYeLianTreeNode> getSubBanKuai(String tdxbk) 
-	{
-		String sqlquerystat = "SELECT 产业链子板块列表.`子板块代码`, 产业链子板块列表.`子板块名称`" + 
-				" FROM 产业链子板块列表" +
-				" INNER JOIN 产业链板块子板块对应表" +
-				" ON 产业链子板块列表.`子板块代码` = 产业链板块子板块对应表.`子板块代码`" +
-				" WHERE 产业链板块子板块对应表.`通达信板块代码`  = '" + tdxbk + "' " +
-				" ORDER BY 产业链子板块列表.`子板块代码`" 
-				; 
-		logger.debug(sqlquerystat);
-		
-		List<BkChanYeLianTreeNode> sublist = new ArrayList<BkChanYeLianTreeNode> ();
-		CachedRowSetImpl rs = null;
-		try {  
-			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-			
-			while(rs.next() ) {  
-				String tmpbkcode = rs.getString("子板块代码");
-				String tmpbkname = rs.getString("子板块名称");
-				
-				BkChanYeLianTreeNode subbk = new SubBanKuai (tmpbkcode,tmpbkname) ;
-				sublist.add(subbk);
-			}
-		
-		}catch(java.lang.NullPointerException e){ 
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally {
-	    	if(rs != null)
-				try {
-					rs.close();
-					rs = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-	    }  
-		return sublist;
-	}
+//	public List<BkChanYeLianTreeNode> getSubBanKuai(String tdxbk) 
+//	{
+//		String sqlquerystat = "SELECT 产业链子板块列表.`子板块代码`, 产业链子板块列表.`子板块名称`" + 
+//				" FROM 产业链子板块列表" +
+//				" INNER JOIN 产业链板块子板块对应表" +
+//				" ON 产业链子板块列表.`子板块代码` = 产业链板块子板块对应表.`子板块代码`" +
+//				" WHERE 产业链板块子板块对应表.`通达信板块代码`  = '" + tdxbk + "' " +
+//				" ORDER BY 产业链子板块列表.`子板块代码`" 
+//				; 
+//		logger.debug(sqlquerystat);
+//		
+//		List<BkChanYeLianTreeNode> sublist = new ArrayList<BkChanYeLianTreeNode> ();
+//		CachedRowSetImpl rs = null;
+//		try {  
+//			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+//			
+//			while(rs.next() ) {  
+//				String tmpbkcode = rs.getString("子板块代码");
+//				String tmpbkname = rs.getString("子板块名称");
+//				
+//				BkChanYeLianTreeNode subbk = new SubBanKuai (tmpbkcode,tmpbkname) ;
+//				sublist.add(subbk);
+//			}
+//		
+//		}catch(java.lang.NullPointerException e){ 
+//			e.printStackTrace();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}finally {
+//	    	if(rs != null)
+//				try {
+//					rs.close();
+//					rs = null;
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//	    }  
+//		return sublist;
+//	}
 	
 	/*
 	 * 当前只能加不能删除
 	 */
-	public BkChanYeLianTreeNode addNewSubBanKuai(String tdxbk,String newsubbk) 
-	{
-		List<BkChanYeLianTreeNode> cursubbks = this.getSubBanKuai(tdxbk);
-		for(BkChanYeLianTreeNode tmpnode : cursubbks) {
-			if(tmpnode.getMyOwnName().equals(newsubbk)) 
-				return null;
-		}
-		
-		int cursize = cursubbks.size();
-		String subcylcode;
-		if(cursize+1 >= 10)
-			subcylcode = tdxbk + String.valueOf(cursize+1);
-		else
-			subcylcode = tdxbk + "0" + String.valueOf(cursize+1);
-		
-		
-		String sqlinsertstat = "INSERT INTO  产业链子板块列表(子板块名称,子板块代码) values ("
-								+ "'" + newsubbk.trim() + "'" + ","
-								+ "'" + subcylcode.trim() + "'"
-								+ ")"
-								;
-		logger.debug(sqlinsertstat);
-		int autoIncKeyFromApi;
-		try {
-			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-		} catch (MysqlDataTruncation e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		sqlinsertstat = "INSERT INTO  产业链板块子板块对应表(通达信板块代码,子板块代码) values ("
-				+ "'" + tdxbk.trim() + "'" + ","
-				+ "'" + subcylcode.trim() + "'"
-				+ ")"
-				;
-		logger.debug(sqlinsertstat);
-		try {
-			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-		} catch (MysqlDataTruncation e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-
-		cursubbks = null;
-		SubBanKuai subbk = new SubBanKuai (subcylcode,newsubbk); 
-		return subbk;
-		
-	}
+//	public BkChanYeLianTreeNode addNewSubBanKuai(String tdxbk,String newsubbk) 
+//	{
+//		List<BkChanYeLianTreeNode> cursubbks = this.getSubBanKuai(tdxbk);
+//		for(BkChanYeLianTreeNode tmpnode : cursubbks) {
+//			if(tmpnode.getMyOwnName().equals(newsubbk)) 
+//				return null;
+//		}
+//		
+//		int cursize = cursubbks.size();
+//		String subcylcode;
+//		if(cursize+1 >= 10)
+//			subcylcode = tdxbk + String.valueOf(cursize+1);
+//		else
+//			subcylcode = tdxbk + "0" + String.valueOf(cursize+1);
+//		
+//		
+//		String sqlinsertstat = "INSERT INTO  产业链子板块列表(子板块名称,子板块代码) values ("
+//								+ "'" + newsubbk.trim() + "'" + ","
+//								+ "'" + subcylcode.trim() + "'"
+//								+ ")"
+//								;
+//		logger.debug(sqlinsertstat);
+//		int autoIncKeyFromApi;
+//		try {
+//			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+//		} catch (MysqlDataTruncation e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		sqlinsertstat = "INSERT INTO  产业链板块子板块对应表(通达信板块代码,子板块代码) values ("
+//				+ "'" + tdxbk.trim() + "'" + ","
+//				+ "'" + subcylcode.trim() + "'"
+//				+ ")"
+//				;
+//		logger.debug(sqlinsertstat);
+//		try {
+//			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+//		} catch (MysqlDataTruncation e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//
+//		cursubbks = null;
+//		SubBanKuai subbk = new SubBanKuai (subcylcode,newsubbk); 
+//		return subbk;
+//		
+//	}
 	/*
 	 * 
 	 */
@@ -2647,14 +2642,14 @@ public class BanKuaiDbOperation
 	{
 		Date lastesttdxtablesmdftime = null;
 		
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> (); 
+		 
 		String sqlquerystat = " SELECT MAX(创建时间) FROM 通达信板块列表" 
 						   ;
-		sqlstatmap.put("mysql", sqlquerystat);
+		
 			
 			CachedRowSetImpl rs = null; 
 		    try {  
-		    	 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
+		    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	 
 		    	 java.sql.Timestamp tmplastmdftime = null;
 		    	 while(rs.next())
@@ -2685,55 +2680,55 @@ public class BanKuaiDbOperation
 		return lastesttdxtablesmdftime;
 	}
 	
-	private boolean getTDXRelatedTablesStatus()
-	{
-		boolean tableunderupdated = false;
-		// show OPEN TABLES where In_use > 0;
-		//SHOW OPEN TABLES WHERE `Table` LIKE '%[TABLE_NAME]%' AND `Database` LIKE '[DBNAME]' AND In_use > 0;
-		HashMap<String,String> sqlstatmap = new HashMap<String,String> (); 
-//		ArrayList<String> rmtservertable = new ArrayList<String>();
-//		rmtservertable.add("通达信交易所指数列表");
-//		rmtservertable.add("通达信板块列表");
-		List<String> rmtservertable = Lists.newArrayList("通达信板块列表");
-		
-		
-			String sqlquerystat =  " show OPEN TABLES where In_use > 0" ;
-			//sqlquerystat = "SHOW OPEN TABLES WHERE `Table` LIKE '%[a股]%' AND `Database` LIKE '[stockinfomanagementtest]' AND In_use > 0";		   
-			logger.debug(sqlquerystat);
-			sqlstatmap.put("mysql", sqlquerystat);
-			
-			CachedRowSetImpl rs = null; 
-		    try {  
-		    	 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
-		    	 
-		    	 while(rs.next()) {
-		    		 String tmptablename = rs.getString("Table");
-		    		 String tmpinuse = rs.getString("In_use");
-		    		 if(rmtservertable.contains(tmptablename) && tmpinuse.equals("1"))
-		    			 tableunderupdated = true; 
-		    		 
-		    	 }
-		    		  
-		    }catch(java.lang.NullPointerException e){ 
-		    	e.printStackTrace();
-		    } catch (SQLException e) {
-		    	e.printStackTrace();
-		    }catch(Exception e){
-		    	e.printStackTrace();
-		    }  finally {
-		    	if(rs != null)
-					try {
-						rs.close();
-						rs = null;
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-		    }
-			
-		
-		
-		return tableunderupdated;
-	}
+//	private boolean getTDXRelatedTablesStatus()
+//	{
+//		boolean tableunderupdated = false;
+//		// show OPEN TABLES where In_use > 0;
+//		//SHOW OPEN TABLES WHERE `Table` LIKE '%[TABLE_NAME]%' AND `Database` LIKE '[DBNAME]' AND In_use > 0;
+//		HashMap<String,String> sqlstatmap = new HashMap<String,String> (); 
+////		ArrayList<String> rmtservertable = new ArrayList<String>();
+////		rmtservertable.add("通达信交易所指数列表");
+////		rmtservertable.add("通达信板块列表");
+//		List<String> rmtservertable = Lists.newArrayList("通达信板块列表");
+//		
+//		
+//			String sqlquerystat =  " show OPEN TABLES where In_use > 0" ;
+//			//sqlquerystat = "SHOW OPEN TABLES WHERE `Table` LIKE '%[a股]%' AND `Database` LIKE '[stockinfomanagementtest]' AND In_use > 0";		   
+//			logger.debug(sqlquerystat);
+//			sqlstatmap.put("mysql", sqlquerystat);
+//			
+//			CachedRowSetImpl rs = null; 
+//		    try {  
+//		    	 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
+//		    	 
+//		    	 while(rs.next()) {
+//		    		 String tmptablename = rs.getString("Table");
+//		    		 String tmpinuse = rs.getString("In_use");
+//		    		 if(rmtservertable.contains(tmptablename) && tmpinuse.equals("1"))
+//		    			 tableunderupdated = true; 
+//		    		 
+//		    	 }
+//		    		  
+//		    }catch(java.lang.NullPointerException e){ 
+//		    	e.printStackTrace();
+//		    } catch (SQLException e) {
+//		    	e.printStackTrace();
+//		    }catch(Exception e){
+//		    	e.printStackTrace();
+//		    }  finally {
+//		    	if(rs != null)
+//					try {
+//						rs.close();
+//						rs = null;
+//					} catch (SQLException e) {
+//						e.printStackTrace();
+//					}
+//		    }
+//			
+//		
+//		
+//		return tableunderupdated;
+//	}
 	/*
 	 * 判断板块是什么类型的板块，概念/风格/指数/行业/地域
 	 */
@@ -3025,7 +3020,7 @@ public class BanKuaiDbOperation
 				Interval joinleftinterval = new Interval(joindt, leftdt);
 				
 				if(currentbk.getBanKuaiGeGu(tmpstockcode) != null ) {//已经有了
-					StockOfBanKuai bkofst = currentbk.getBanKuaiGeGu(tmpstockcode);
+					StockOfBanKuai bkofst = (StockOfBanKuai) currentbk.getBanKuaiGeGu(tmpstockcode);
 					bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
 				} else {
 					Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BkChanYeLianTreeNode.TDXGG);
@@ -5140,31 +5135,6 @@ public class BanKuaiDbOperation
 			
 			stockbasicinfo.setGeGuCurSuoShuTDXSysBanKuaiList(tmpsysbk);
 			
-//			sqlquerystat=  "SELECT 自定义板块 FROM 股票通达信自定义板块对应表  WHERE 股票代码= "
-//							+ "'" +  stockcode.trim() + "'"
-//							;
-//			//logger.debug(sqlquerystat);
-//			CachedRowSetImpl rs_zdy = connectdb.sqlQueryStatExecute(sqlquerystat);
-//			HashSet<String> tmpzdybk = new HashSet<String> ();
-//			try  {     
-//				rs_zdy.last();  
-//		        int rows = rs_zdy.getRow();  
-//		        rs_zdy.first();  
-//		        int k = 0;  
-//		        //while(rs.next())
-//		        for(int j=0;j<rows;j++) { 
-//		        	tmpzdybk.add( rs_zdy.getString("自定义板块") );
-//		        	rs_zdy.next();
-//		        } 
-//		        rs_zdy.close();
-//		    }catch(java.lang.NullPointerException e){ 
-//		    	e.printStackTrace();
-//		    }catch(Exception e) {
-//		    	e.printStackTrace();
-//		    }
-//			
-//			stockbasicinfo.setSuoShuTDXZdyBanKuai(tmpzdybk);
-			
 			return stockbasicinfo;
 		}
 
@@ -5533,15 +5503,9 @@ public class BanKuaiDbOperation
 								;
 			logger.debug(sqlquerystat4);
 			String sqlquerystat =  sqlquerystat2 + sqlquerystat3 + sqlquerystat4 ;
-			
-			HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
-			sqlstatmap.put("mysql", sqlquerystat);
-			
-//			sqlquerystat = getZdgzMrmcYingKuiSQLForAccess (stockbasicinfo);
-//			sqlstatmap.put("access", sqlquerystat);
 	     
 			 CachedRowSetImpl rs = null;
-			 rs = connectdb.sqlQueryStatExecute(sqlstatmap);
+			 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			 
 			 Object[][] data = null;  
 			    try  {     
@@ -6816,152 +6780,8 @@ public class BanKuaiDbOperation
 			
 			return result;
 		}
-		/*
-		 * 股票池/板块州
-		 */
-		public Set<BkChanYeLianTreeNode> getGuPiaoChi() 
-		{
-			Set<BkChanYeLianTreeNode> gpcindb = new HashSet<BkChanYeLianTreeNode> ();
-			boolean hasbkcode = true;
-            CachedRowSetImpl rspd = null; 
-            
-			try {
-				   String sqlquerystat = "SELECT * FROM 产业链板块州列表 "
-							;
-	
-			    	logger.debug(sqlquerystat);
-			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
-			    	
-			    	
-			        while(rspd.next())  {
-			        	String bkzcode = rspd.getString("板块州代码");
-			        	String bkzname = rspd.getString("板块州名称");
-			        	GuPiaoChi gpc = new GuPiaoChi (bkzcode,bkzname);
-			        	gpcindb.add(gpc);
-			        }
-			       
-			} catch(java.lang.NullPointerException e){ 
-			    	e.printStackTrace();
-			} catch (SQLException e) {
-			    	e.printStackTrace();
-			} catch(Exception e){
-			    	e.printStackTrace();
-			} finally {
-			    	if(rspd != null)
-						try {
-							rspd.close();
-							rspd = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-			}
-	
-			return gpcindb;
-		}
-		/*
-		 * 股票池对应的子股票池/板块国
-		 */
-		public List<BkChanYeLianTreeNode> getSubGuPiaoChi(String gpccode) 
-		{
-			
-			boolean hasbkcode = true;
-            CachedRowSetImpl rspd = null; 
-            
-            List<BkChanYeLianTreeNode> subpgcset = new ArrayList<BkChanYeLianTreeNode> ();
-			try {
-				   String sqlquerystat = "SELECT 产业链板块国列表.`板块国代码`,产业链板块国列表.`板块国名称`" + 
-										" FROM 产业链板块国列表" +
-										" INNER JOIN 产业链板块州板块国对应表" +
-										" ON 产业链板块国列表.`板块国代码` = 产业链板块州板块国对应表.`板块国代码`" +
-										" WHERE 产业链板块州板块国对应表.`板块州代码`  = '" + gpccode + "' " +
-										" ORDER BY 产业链板块国列表.`板块国代码`" 
-										;
-	
-			    	logger.debug(sqlquerystat);
-			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
-			    	
-			    	
-			        while(rspd.next())  {
-			        	String bkzcode = rspd.getString("板块国代码");
-			        	String bkzname = rspd.getString("板块国名称");
-			        	SubGuPiaoChi subgpc = new SubGuPiaoChi (bkzcode,bkzname); 
-			        	subpgcset.add(subgpc);
-			        }
-			       
-			} catch(java.lang.NullPointerException e){ 
-			    	e.printStackTrace();
-			} catch (SQLException e) {
-			    	e.printStackTrace();
-			} catch(Exception e){
-			    	e.printStackTrace();
-			} finally {
-			    	if(rspd != null)
-						try {
-							rspd.close();
-							rspd = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-			}
-	
-			return subpgcset;
-		}
-		/*
-		 * 
-		 */
-		public BkChanYeLianTreeNode addNewSubGuoPiaoChi(String nodecode, String subnodename) 
-		{
-			List<BkChanYeLianTreeNode> cursubbks = this.getSubGuPiaoChi(nodecode);
-			for(BkChanYeLianTreeNode tmpnode : cursubbks ) {
-				if(tmpnode.equals(subnodename.trim() ) ) 
-					return null;
-			}
-			
-			int cursize = cursubbks.size();
-			String subgpccode;
-			if(cursize+1 >= 10)
-				subgpccode = nodecode + String.valueOf(cursize+1);
-			else
-				subgpccode = nodecode + "0" + String.valueOf(cursize+1);
-			
-			String sqlinsertstat = "INSERT INTO 产业链板块国列表(板块国代码,板块国名称) VALUES ("
-									+ "'" + subgpccode.trim() + "'" + ","
-									+ "'" + subnodename.trim() + "'" 
-											+ ")"
-									;
-			logger.debug(sqlinsertstat);
-			int autoIncKeyFromApi;
-			try {
-				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-			} catch (MysqlDataTruncation e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			sqlinsertstat = "INSERT INTO  产业链板块州板块国对应表(板块州代码,板块国代码) values ("
-									+ "'" + nodecode.trim() + "'" + ","
-									+ "'" + subgpccode.trim() + "'" 
-									+ ")"
-									;
-			logger.debug(sqlinsertstat);
-			try {
-				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-			} catch (MysqlDataTruncation e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			cursubbks = null;
-			
-			BkChanYeLianTreeNode subnode = new SubGuPiaoChi (subgpccode,subnodename);
-			return subnode;
-		}
+		
+		
 		/*
 		 * 
 		 */

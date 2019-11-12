@@ -142,5 +142,7 @@ public class CurDataBase extends JPanel
 		this.setFocusable(true);
 		
 	}
+	
+	
 
 }

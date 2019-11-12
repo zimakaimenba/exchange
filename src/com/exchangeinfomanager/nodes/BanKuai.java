@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 //import java.util.List;
 //import java.util.Locale;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class BanKuai extends TDXNodes
 	private static final long serialVersionUID = 1L;
 	
 	public static String  HASGGWITHSELFCJL = "HASGGWITHSELFCJL" , HASGGNOSELFCJL = "HASGGNOSELFCJL"
-						, NOGGWITHSELFCJL = "NOGGWITHSELFCJL" , NOGGNOSELFCJL = "NOGGNOSELFCJL"; // 通锟斤拷锟斤拷锟斤拷锟芥定锟斤拷陌锟斤拷锟叫硷拷锟街ｏ拷1.锟叫革拷锟斤拷锟斤拷锟斤拷锟叫成斤拷锟斤拷锟斤拷锟斤拷 2. 锟叫革拷锟斤拷锟斤拷锟斤拷锟睫成斤拷锟斤拷锟斤拷锟斤拷 3.锟睫革拷锟斤拷锟斤拷锟斤拷锟叫成斤拷锟斤拷锟斤拷锟斤拷
+						, NOGGWITHSELFCJL = "NOGGWITHSELFCJL" , NOGGNOSELFCJL = "NOGGNOSELFCJL"; 
 	
 	public BanKuai(String bkcode,String name ) 
 	{
@@ -47,11 +48,7 @@ public class BanKuai extends TDXNodes
 		super.nodewkdata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.DAY) ;
 
-//		super.nodewkdata = new BanKuaiNodeXPeriodData (bkcode,TDXNodeGivenPeriodDataItem.WEEK) ;
-//		super.nodedaydata = new BanKuaiNodeXPeriodData (bkcode,TDXNodeGivenPeriodDataItem.DAY) ;
-////		super.nodemonthdata = new BanKuaiNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
-		
-		super.nodetreerelated = new BanKuaiTreeRelated (this);
+//		super.nodetreerelated = new BanKuaiTreeRelated (this);
 	}
 	
 //	private static Logger logger = Logger.getLogger(BanKuai.class);
@@ -62,7 +59,7 @@ public class BanKuai extends TDXNodes
 	private Boolean showinbkfxgui = true;
 	private Boolean showincyltree = true;
 	private Boolean exporttowklyfile ;
-	private ArrayList<StockOfBanKuai> stockofbklist; //存放所有的个股
+	private List<BkChanYeLianTreeNode> stockofbklist; //存放所有的个股
 	private Set<String> socialfriends;
 	
 	public void addSocialFriends (String friend)
@@ -162,7 +159,7 @@ public class BanKuai extends TDXNodes
 			this.bankuaileixing = leixing;
 			
 			if(this.bankuaileixing.equals(this.HASGGNOSELFCJL) || leixing.equals(this.HASGGWITHSELFCJL) )
-				this.stockofbklist = new ArrayList<StockOfBanKuai> ();
+				this.stockofbklist = new ArrayList<> ();
 		}
 		
 	}
@@ -196,7 +193,7 @@ public class BanKuai extends TDXNodes
 	 * @return the tmpallbkge
 	 * 
 	 */
-	public ArrayList<StockOfBanKuai> getAllGeGuOfBanKuaiInHistory() 
+	public List<BkChanYeLianTreeNode> getAllGeGuOfBanKuaiInHistory() 
 	{
 //		ArrayList<StockOfBanKuai> stocklist = new ArrayList<StockOfBanKuai> ();
 //		int childcount = this.getChildCount();
@@ -214,13 +211,13 @@ public class BanKuai extends TDXNodes
 	/*
 	 * 
 	 */
-	public Set<StockOfBanKuai> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference,String period) 
+	public Set<BkChanYeLianTreeNode> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference,String period) 
 	{
-		HashSet<StockOfBanKuai> result = new HashSet<StockOfBanKuai> ();
+		Set<BkChanYeLianTreeNode> result = new HashSet<> ();
 
-		for(StockOfBanKuai stockofbk : this.stockofbklist) {
+		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 		
-			if(stockofbk.isInBanKuaiAtSpecificDate(requireddate)) 
+			if(  ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requireddate)) 
 					result.add(stockofbk);
 			
 			
@@ -231,21 +228,11 @@ public class BanKuai extends TDXNodes
 	/*
 	 * 
 	 */
-	public StockOfBanKuai getBanKuaiGeGu (String stockcode)
+	public BkChanYeLianTreeNode getBanKuaiGeGu (String stockcode)
 	{
-//		if (this.getChildCount() >= 0) {
-//            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-//            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
-//            	if(childnode.getType() == BkChanYeLianTreeNode.BKGEGU && childnode.getMyOwnCode().equals(stockcode))
-//                	return (StockOfBanKuai)childnode;
-//            }
-//        }
-//		
-//		return null;
-		
-		for(StockOfBanKuai stockofbk : this.stockofbklist) {
+		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
-				return stockofbk;
+				return ((StockOfBanKuai)stockofbk);
 			}
 		}
 		
@@ -258,22 +245,9 @@ public class BanKuai extends TDXNodes
 	 */
 	public Integer getGeGuSuoShuBanKuaiWeight(String stockcode) 
 	{
-//		int childcount = this.getChildCount();
-//		if (this.getChildCount() >= 0) {
-//            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-//            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
-//                
-//                if( childnode.getMyOwnCode().equals(stockcode)) {
-//    				Integer quanzhong = ((StockOfBanKuai)childnode).getQuanZhong();
-//    				return quanzhong;
-//                }
-//            }
-//        }
-//		return null;
-		
-		for(StockOfBanKuai stockofbk : this.stockofbklist) {
-			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
-				return stockofbk.getQuanZhong();
+		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
+			if( ((StockOfBanKuai)stockofbk).getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
+				return ((StockOfBanKuai)stockofbk).getQuanZhong();
 			}
 		}
 		
@@ -284,43 +258,14 @@ public class BanKuai extends TDXNodes
 	 */
 	public void setGeGuSuoShuBanKuaiWeight(String stockcode , Integer quanzhong) 
 	{
-//		int childcount = this.getChildCount();
-//		if (this.getChildCount() >= 0) {
-//            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-//            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
-//                
-//                if(childnode.getMyOwnCode().equals(stockcode)) {
-//                	 ((StockOfBanKuai)childnode).setStockQuanZhong(quanzhong);
-//                }
-//            }
-//        }
+
 		
-		for(StockOfBanKuai stockofbk : this.stockofbklist) {
+		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
-				stockofbk.setStockQuanZhong(quanzhong);
+				((StockOfBanKuai)stockofbk).setStockQuanZhong(quanzhong);
 			}
 		}
 	}
-	/*
-	 * 
-	 */
-//	public NodeXPeriodDataBasic getStockXPeriodDataForABanKuai (String stockcode,String period)
-//	{
-//		int childcount = this.getChildCount();
-//		if (this.getChildCount() >= 0) {
-//            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-//            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
-//                
-//                if(childnode.getMyOwnCode().equals(stockcode)) {
-//                	NodeXPeriodDataBasic perioddata = ((TDXNodes)childnode).getNodeXPeroidData(period);
-//            		return perioddata;
-//                }
-//            }
-//        }
-//		return null;
-//	}
-	
-	 
 	
 
 }

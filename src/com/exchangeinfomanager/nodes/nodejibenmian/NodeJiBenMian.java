@@ -1,14 +1,14 @@
 package com.exchangeinfomanager.nodes.nodejibenmian;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class NodeJiBenMian 
 {	
 			public NodeJiBenMian ()
 			{
-//				nodejbm = this;
-//				this.myowncode = nodecode;
 			}
+			
 			private LocalDate shangshiriqi ;
 			private String myowncode;
 			private LocalDate gainiantishidate;
@@ -22,8 +22,17 @@ public class NodeJiBenMian
 			private String jingZhengDuiShou;
 			private String keHuCustom;
 			private String suoshujiaoyisuo;
-			private Object[][] zdgzmrmcykRecords ;
+			private Object[][] zdgzmrmcykRecords;
+			private List<String[]> cylinfo;
 			
+			public void setChanYeLianInfo (List<String[]> cylinfo)
+			{
+				this.cylinfo = cylinfo;
+			}
+			public List<String[]> getChanYeLianInfo ()
+			{
+				return this.cylinfo;
+			}
 			public void setShangShiRiQi (LocalDate ssrq)
 			{
 				this.shangshiriqi = ssrq;

@@ -6,25 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.stream.Stream;
 
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
-import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-
-//import java.io.*;
 
 public class ConvertTxtToCsv 
 {
-	private SystemConfigration sysconfig;
-	private AllCurrentTdxBKAndStoksTree allbksks;
-	private BanKuaiAndChanYeLian2 bkcyl;
-	private BanKuaiDbOperation bkdbopt;
+//	private SystemConfigration sysconfig;
+//	private AllCurrentTdxBKAndStoksTree allbksks;
+//	private BanKuaiDbOperation bkdbopt;
 
 	public ConvertTxtToCsv() 
 	{

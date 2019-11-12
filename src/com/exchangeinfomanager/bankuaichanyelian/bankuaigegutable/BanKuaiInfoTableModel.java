@@ -234,27 +234,34 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	    	return this.entryList;
 	    }
 
-	    public int getBanKuaiRowIndex (String neededfindstring) 
+	    public Integer getBanKuaiRowIndex (String neededfindstring) 
 	    {
-	    		int index = -1;
-	    		HanYuPinYing hypy = new HanYuPinYing ();
-	    		
-	    		for(int i=0;i<this.getRowCount();i++) {
-	    			String bkcode = (String)this.getValueAt(i, 0);
-	    			String bkname = (String)this.getValueAt(i,1); 
-	    			if(bkcode.trim().equals(neededfindstring) ) {
-	    				index = i;
-	    				break;
-	    			}
-
-	    			String namehypy = hypy.getBanKuaiNameOfPinYin(bkname );
-			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
-			   			index = i;
-			   			break;
-			   		}
-	    		}
-	    	hypy = null;
-	   		return index;
+	    	if(entryList == null)
+	    		return null;
+	    	
+	    	for(TDXNodes tmpnode : this.entryList) {
+	    		if(tmpnode.getMyOwnCode().equals(neededfindstring) || tmpnode.getMyOwnName().equals(neededfindstring) )
+	    			return this.entryList.indexOf(tmpnode);
+	    	}
+//	    		int index = -1;
+//	    		HanYuPinYing hypy = new HanYuPinYing ();
+//	    		
+//	    		for(int i=0;i<this.getRowCount();i++) {
+//	    			String bkcode = (String)this.getValueAt(i, 0);
+//	    			String bkname = (String)this.getValueAt(i,1); 
+//	    			if(bkcode.trim().equals(neededfindstring) ) {
+//	    				index = i;
+//	    				break;
+//	    			}
+//
+//	    			String namehypy = hypy.getBanKuaiNameOfPinYin(bkname );
+//			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
+//			   			index = i;
+//			   			break;
+//			   		}
+//	    		}
+//	    	hypy = null;
+	   		return null;
 	    }
 
 		public String[] getTableHeader() 

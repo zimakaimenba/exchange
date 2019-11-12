@@ -54,7 +54,6 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	  {
 		  for(BkChanYeLianTreeNode tmpnode : nodelist) {
 			  String tmpnodecode = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnCode()
-//					  				+ ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnName()
 					  				;
 			  try {
 				  String itemcode = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) anItem).getMyOwnCode();
@@ -68,7 +67,6 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 					  break;
 				  }
 			  }
-			  
 		  }
 		 
 		  this.fireIntervalAdded(this, nodelist.size(), nodelist.size());
