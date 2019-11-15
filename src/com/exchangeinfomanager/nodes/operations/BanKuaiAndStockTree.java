@@ -17,6 +17,7 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
+import javax.swing.ToolTipManager;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -64,6 +65,7 @@ public class BanKuaiAndStockTree extends JTree
 		this.setCellRenderer(new BkChanYeLianTreeCellRenderer());
 		this.setRootVisible(true);
 		this.setTransferHandler(new TreeTransferHandler() );
+		ToolTipManager.sharedInstance().registerComponent(this);
 	}
 	
 	public BanKuaiAndStockTree (InvisibleTreeModel bkcylmodel,String treeid)
@@ -89,7 +91,6 @@ public class BanKuaiAndStockTree extends JTree
 	private static Logger logger = Logger.getLogger(BanKuaiAndStockTree.class);
 	private String treeid; //系统要用到两棵cyltree，用ID来区分
 	
-	private boolean ignoreExpansion = false;
 	private String currentselectedtdxbk;
 	private LocalDate currentdisplayedwk; //tree当前所显示的分析州
 	protected boolean treechangedshouldsave = false;
@@ -216,83 +217,72 @@ public class BanKuaiAndStockTree extends JTree
 	private void createEvents(final JTree tree) 
 	{
 
-		this.addMouseListener(new MouseAdapter() {
-    		
-            public void mouseClicked(MouseEvent evt) 
-            {
-            	treeMousePressed( evt);
-            }
-		});
+//		this.addMouseListener(new MouseAdapter() {
+//    		
+//            public void mouseClicked(MouseEvent evt) 
+//            {
+//            	treeMousePressed( evt);
+//            }
+//		});
 		
-//        this.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
-//            public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
-//                treeTreeExpanded(evt);
-//            }
-//            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
+        this.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
+            public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
+            	treeMousePressed ();
+            }
+            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
 //                treeTreeCollapsed(evt);
-//            }
-//        });
+            }
+        });
 	}
-//	/*
-//	 * 
-//	 */
-//	private void treeTreeCollapsed(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeCollapsed
-//        if (!ignoreExpansion)
-//        ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent()).getNodeTreeRelated().setExpansion(false);
-//    }
-//	/*
-//	 * 
-//	 */
-//    private void treeTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeExpanded
-//        if (!ignoreExpansion ) 
-//        	try {
-//        		BkChanYeLianTreeNode node = ((BkChanYeLianTreeNode) evt.getPath().getLastPathComponent());
-//        		NodesTreeRelated treerelatd = node.getNodeTreeRelated();
-//        		treerelatd.setExpansion(true);
-//        	} catch(java.lang.NullPointerException  e) {
-////        		e.printStackTrace();
-//        	}
-//    }
     /*
      * 
      */
-	private void treeMousePressed(MouseEvent evt) 
+	private void treeMousePressed() 
 	{
-		TreePath closestPath = this.getClosestPathForLocation(evt.getX(), evt.getY());
-
-        if(closestPath != null) {
-            Rectangle pathBounds = this.getPathBounds(closestPath);
-            int maxY = (int) pathBounds.getMaxY();
-            int minX = (int) pathBounds.getMinX();
-            int maxX = (int) pathBounds.getMaxX();
-            if (evt.getY() > maxY) this.clearSelection();
-            else if (evt.getX() < minX || evt.getX() > maxX) this.clearSelection();
-        }
-        expandTreePathAllNode (closestPath);
+		try {
+			BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
+			if (parent.isLeaf()) {  
+		            return;  
+		    }  
+			expandTreeNode(parent);
+		} catch (java.lang.NullPointerException e) {
+			
+		}
+		
+//		TreePath closestPath = this.getClosestPathForLocation(evt.getX(), evt.getY());
+//
+//        if(closestPath != null) {
+//            Rectangle pathBounds = this.getPathBounds(closestPath);
+//            int maxY = (int) pathBounds.getMaxY();
+//            int minX = (int) pathBounds.getMinX();
+//            int maxX = (int) pathBounds.getMaxX();
+//            if (evt.getY() > maxY) this.clearSelection();
+//            else if (evt.getX() < minX || evt.getX() > maxX) this.clearSelection();
+//        }
+//        BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
+       
 	}
 	/*
      * 展开节点,在其他地方也有调用
      */
     public void expandTreePathAllNode (TreePath closestPath)
     {
-//    		 this.currentselectedtdxbk = closestPath.getPathComponent(1).toString();
-//    		 String tdxbkcode = ((BkChanYeLianTreeNode)closestPath.getPathComponent(1)).getMyOwnCode();
         	 BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
         	 this.setSelectionPath(closestPath);
         	 this.scrollPathToVisible(closestPath);
-         	 expandTreeNode (this,parent);
+         	 expandTreeNode (parent);
     }
     /*
      * 展开所选取的节点
      */
-    private static void expandTreeNode(JTree aTree, BkChanYeLianTreeNode aNode) {  
+    private void expandTreeNode( BkChanYeLianTreeNode aNode) {  
         if (aNode.isLeaf()) {  
           return;  
         }  
-        aTree.expandPath(new TreePath( ( (BkChanYeLianTreeNode) aNode).getPath()));  
+        this.expandPath(new TreePath( ( (BkChanYeLianTreeNode) aNode).getPath()));  
         int n = aNode.getChildCount();  
         for (int i = 0; i <n; i++) {  
-          expandTreeNode(aTree, (BkChanYeLianTreeNode) aNode.getChildAt(i));  
+          expandTreeNode( (BkChanYeLianTreeNode) aNode.getChildAt(i));  
         }  
      } 
 
@@ -399,22 +389,6 @@ public class BanKuaiAndStockTree extends JTree
 //                }
 //                this.scrollPathToVisible(new TreePath(node.getPath()));
 //	}
-	
-
-
-	/*
-	 * 把树节点存储的产业链转化为arraylist
-	 */
-	private ArrayList<String> getFormatedBanKuaiChanYeLian (String bkcyl)
-	{
-		List<String> tmpcyltreepathlist =  Splitter.on("->").trimResults().omitEmptyStrings().splitToList(bkcyl);  
-		logger.debug(tmpcyltreepathlist);
-		
-		ArrayList<String> cyltreepathlist = new ArrayList<String>(tmpcyltreepathlist);
-		logger.debug(cyltreepathlist);
-
-		return cyltreepathlist;
-	}
 	/*
 	 * 找到XMl的产业链对应的树节点
 	 */
@@ -429,98 +403,6 @@ public class BanKuaiAndStockTree extends JTree
 //		BkChanYeLianTreeNode expectNode = updatedZdgzInfoBkCylTreeNodeOneByOne2 (treeroot,cyltreepathlist,addedtime,officallselect);
 //		
 //		return expectNode;
-//	}
-	/*
-	 * 
-	 */
-//	private BkChanYeLianTreeNode updatedZdgzInfoBkCylTreeNodeOneByOne2 (BkChanYeLianTreeNode node, List<String> cyltreepathlist, String addedtime, boolean officallsltopt)
-//	{
-//		BkChanYeLianTreeNode expectedNode = null;
-////		if(cyltreepathlist.size() == 0)
-////			return;
-//		
-//		int childCount = node.getChildCount();
-// 	    for (int i = 0; i < childCount; i++) {
-//	    	if(cyltreepathlist.size() == 0)
-//				return expectedNode;
-//
-//	    	BkChanYeLianTreeNode childNode = (BkChanYeLianTreeNode) node.getChildAt(i);
-//	    	String childnodecode = childNode.getMyOwnCode(); 
-//	    	if(childNode.getType() == BkChanYeLianTreeNode.TDXBK && !childnodecode.equals(cyltreepathlist.get(0))  )
-//	    		continue;
-//	    	
-//	    	if(childnodecode.equals(cyltreepathlist.get(0)  ) ) {
-//    			if(officallsltopt)
-//    				childNode.getNodeTreeRelated().increaseZdgzOfficalCount();
-//	    		
-//    			childNode.getNodeTreeRelated().increaseZdgzCandidateCount();
-//	    			
-//	    		DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
-//	    		treemodel.nodeChanged(childNode);
-//	    		
-//	    		cyltreepathlist.remove(0);
-//	    		
-//	    		if(cyltreepathlist.size() == 0) {
-//	    			childNode.getNodeTreeRelated().setOfficallySelected(officallsltopt);
-//	    			childNode.getNodeTreeRelated().setSelectedToZdgzTime(addedtime);
-//	    			
-//	    			expectedNode = childNode;
-//	    			break;
-//	    		}
-//	    	}
-//	    	
-//	    	
-//	        if (childNode.getChildCount() > 0 && cyltreepathlist.size()>0 ) {
-//	        	expectedNode = updatedZdgzInfoBkCylTreeNodeOneByOne2(childNode,cyltreepathlist,addedtime,officallsltopt);
-//	        } 
-//	    }
-// 	    
-// 	    return expectedNode;
-		
-//	}
-//	/*
-//	 * 
-//	 */
-//	public void removeZdgzBkCylInfoFromTreeNode(BkChanYeLianTreeNode childNode,boolean stillkeepincandidate) 
-//	{
-//		 TreeNode[] nodepath = childNode.getPath();
-//		 Boolean isofficallselected = childNode.getNodeTreeRelated().isOfficallySelected();
-//		 
-//		 DefaultTreeModel model = (DefaultTreeModel) this.getModel();
-//		 TreeNode[] tempath = model.getPathToRoot(childNode);
-//		 for(int j=1;j<tempath.length;j++ ) {
-//		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
-//		    	if(isofficallselected) 
-//		    		parentnode.getNodeTreeRelated().decreaseZdgzOfficalCount();
-//		    	if(!stillkeepincandidate) //只是从offical移除，candidate还有就不用加
-//		    		parentnode.getNodeTreeRelated().decreasedgzCandidateCount();
-//		    	
-//		    	model.nodeChanged(parentnode);
-//		 }
-//		
-//	}
-//	/*
-//	 * 
-//	 */
-//	public void addZdgzBkCylInfoToTreeNode(BkChanYeLianTreeNode childNode, boolean hasbeenincandidate)  
-//	{
-//		 TreeNode[] nodepath = childNode.getPath();
-//		 Boolean isofficallselected = childNode.getNodeTreeRelated().isOfficallySelected();
-//		 
-////		 DefaultTreeModel treemodel = (DefaultTreeModel) this.getModel();
-//		 
-//		 DefaultTreeModel model = (DefaultTreeModel) this.getModel();
-//		 TreeNode[] tempath = model.getPathToRoot(childNode);
-//		 for(int j=1;j<tempath.length;j++ ) {
-//		    	BkChanYeLianTreeNode parentnode = (BkChanYeLianTreeNode)tempath[j];
-//		    	if(isofficallselected) 
-//		    		parentnode.getNodeTreeRelated().increaseZdgzOfficalCount();
-//		    	if(!hasbeenincandidate) //如果已经在候选里面，cand count就不用加
-//		    		parentnode.getNodeTreeRelated().increaseZdgzCandidateCount();	
-//		    	
-//		    	model.nodeChanged(parentnode);
-//		 }
-//		
 //	}
 	/*
 	 * 找到指定节点的位置
@@ -557,9 +439,9 @@ public class BanKuaiAndStockTree extends JTree
     		return treeroot;
     	
 	    @SuppressWarnings("unchecked")
-		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
+		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();
 	    while (e.hasMoreElements() ) {
-	    	BkChanYeLianTreeNode node = e.nextElement();
+	    	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) e.nextElement();
 	    	Boolean found = node.checktHanYuPingYin(bkinputed);
 //    		logger.debug(node.getMyOwnCode());
 	        if (found && node.getType() == requirenodetype ) {
@@ -588,9 +470,9 @@ public class BanKuaiAndStockTree extends JTree
 			return null;
 		
 	    @SuppressWarnings("unchecked")
-		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
+		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();
 	    while (e.hasMoreElements() ) {
-	    	BkChanYeLianTreeNode node = e.nextElement();
+	    	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) e.nextElement();
 	    	if(node.getType() == requirenodetype) {
 	    		nodesset.add(node.getMyOwnCode());
 	    	}

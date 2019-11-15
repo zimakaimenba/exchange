@@ -34,13 +34,10 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
      {  
 		 Component returnValue = null;
 		 if(value !=null && value instanceof CylTreeNestedSetNode) {
+			 lblnodenameandcount.setToolTipText(  ((CylTreeNestedSetNode)value).getMyOwnCode()  );
 			 
 	         int nodetype = ((CylTreeNestedSetNode)value).getType();
-	         String bktreenodename;
-	         if(nodetype == BkChanYeLianTreeNode.BKGEGU || nodetype == BkChanYeLianTreeNode.TDXGG)
-	        	 bktreenodename = ((CylTreeNestedSetNode)value).getMyOwnCode() + ((CylTreeNestedSetNode)value).getMyOwnName();
-	         else
-	        	 bktreenodename = ((CylTreeNestedSetNode)value).getMyOwnCode() + ((CylTreeNestedSetNode)value).getMyOwnName();
+	         String bktreenodename =  ((CylTreeNestedSetNode)value).getMyOwnName();
 	         lblnodenameandcount.setText( bktreenodename );
 	         
 	         // 每日板块分析信息
@@ -89,7 +86,7 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 		 }
 		 
 		 if (returnValue == null) {
-		      returnValue = super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+		      returnValue = super.getTreeCellRendererComponent(tree, returnValue, selected, expanded, leaf, row, hasFocus);
 		  }
 		 
 		 return returnValue;

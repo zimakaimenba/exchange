@@ -3,19 +3,28 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Label;
 import java.awt.Toolkit;
 import java.awt.Dialog.ModalityType;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -25,20 +34,33 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.google.common.collect.Multimap;
 
 abstract public class TDXNodesInfomationListsPnlBasic extends JDialog 
 {
 	protected BkChanYeLianTreeNode node;
 	protected DBMeetingService curmeetingService;
 	protected DBLabelService alllabelService;
+	private AllCurrentTdxBKAndStoksTree bkstk;
+	private BanKuaiDbOperation bkopt;
 
 	public TDXNodesInfomationListsPnlBasic (BkChanYeLianTreeNode curnode)
 	{
 		this.node = curnode;
 		curmeetingService = new DBMeetingService ();
 		alllabelService = new DBLabelService ();
+		bkstk = AllCurrentTdxBKAndStoksTree.getInstance();
+		bkopt = new BanKuaiDbOperation ();
 		
 		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
 	}
@@ -46,8 +68,50 @@ abstract public class TDXNodesInfomationListsPnlBasic extends JDialog
 	protected void createEvents() 
 	{
 		deletenewstogegu.addMouseListener(new RemoveController() );
+		
+		panelgegunews.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+            	//用户添加新新闻后，确定是否要对朋友板块和所属个股添加
+                if (evt.getPropertyName().equals(TDXNodesInfomationListsView.ANEWSADDED)) {
+                	if( node.getType() != BkChanYeLianTreeNode.TDXBK )
+            			return ;
+                	
+                	InsertedMeeting mt = (InsertedMeeting) evt.getNewValue();
+                	updatedNewsToFriendsAndChildrenBasedOnConfigration (mt);
+                }
+            }
+		});
 	}
-	
+	/*
+	 * 
+	 */
+	private void updatedNewsToFriendsAndChildrenBasedOnConfigration (InsertedMeeting mt)
+	{
+		int count = addnewstofriends.getItemCount();
+		for(int i=0; i<addnewstofriends.getItemCount(); i++) {
+			JCheckBox tmpitem = (JCheckBox) addnewstofriends.getItemAt(i);
+			if(tmpitem.isSelected() && tmpitem.getText().contains("板块")) {
+				Set<String> friendset = ((BanKuai)node).getSocialFriendsSet ();
+				if(friendset.isEmpty())
+					continue;
+				
+				updateNewsToABkGeGu(mt,friendset);
+//				updateNewsToABkGeGu(mt,node.getMyOwnCode());
+			} else if(tmpitem.isSelected() && tmpitem.getText().contains("个股")) {
+				node = bkopt.getTDXBanKuaiGeGuOfHyGnFg (  (BanKuai)node,CommonUtility.getSettingRangeDate(LocalDate.now(),"large"), LocalDate.now(),bkstk.getAllBkStocksTree());
+				Set<BkChanYeLianTreeNode> children = ((BanKuai)node).getSpecificPeriodBanKuaiGeGu(LocalDate.now(), 0, "WEEK");
+				if(children.isEmpty())
+				 continue;
+				 
+				Set<String> childrenset = new HashSet<> ();
+				for (BkChanYeLianTreeNode tmpnode : children) {
+						childrenset.add(tmpnode.getMyOwnCode());
+				}
+				updateNewsToABkGeGu (mt, childrenset);
+			}
+		}
+	}
 	/*
 	 * 
 	 */
@@ -90,7 +154,8 @@ abstract public class TDXNodesInfomationListsPnlBasic extends JDialog
             try {
             	InsertedMeeting upmeeting = panelgegunews.getCurSelectedNews ();
             	
-            	if(addnewstofriends.isSelected()) {
+            	if( ((JCheckBox)addnewstofriends.getSelectedItem()).isSelected() ) {
+            		
         			Set<String> friendset = ((BanKuai)node).getSocialFriendsSet ();
         			upmeeting.removeMeetingSpecficOwner (friendset );
         			upmeeting.removeMeetingSpecficOwner (node.getMyOwnCode() );
@@ -112,7 +177,7 @@ abstract public class TDXNodesInfomationListsPnlBasic extends JDialog
 	protected JButton addnewstogegu;
 	private JPanel centerPanel;
 	private JButton deletenewstogegu;
-	protected JCheckBox addnewstofriends;
+	protected JComboBox addnewstofriends;
 	
 	protected static final int WIDTH = 500;
     protected static final int HEIGHT = 500;
@@ -133,14 +198,23 @@ abstract public class TDXNodesInfomationListsPnlBasic extends JDialog
         JPanel addp = JPanelFactory.createPanel(new FlowLayout(FlowLayout.LEFT));
         
         addnewstogegu = new JButton("添加到当前");
-        addnewstofriends = new JCheckBox ("对朋友板块相同操作");
+        
+		Vector v = new Vector();
+		v.add(new JCheckBox("对朋友板块相同操作",true));
+		v.add(new JCheckBox("对所属个股相同操作",true));
+		addnewstofriends = new JComboCheckBox(v);
+//		addnewstofriends = new JCheckBox ("对朋友板块相同操作");
+		addnewstofriends.setFont(new Font("宋体", Font.PLAIN, 12));
         if(this.node != null  && this.node.getType() != BkChanYeLianTreeNode.TDXBK)
         	addnewstofriends.setEnabled(false);
+        else
+        	addnewstofriends.setEnabled(true);
+        
         deletenewstogegu = new JButton("从当前移除");
         addp.add(addnewstogegu);
-        addp.add(new Label("          "));
+        addp.add(new Label("   "));
         addp.add(deletenewstogegu);
-        addp.add(new Label("          "));
+        addp.add(new Label(""));
         addp.add(addnewstofriends);
 
         this.centerPanel.add(addp);

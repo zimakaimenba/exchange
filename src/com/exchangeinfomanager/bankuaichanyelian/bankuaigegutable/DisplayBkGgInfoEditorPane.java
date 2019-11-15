@@ -64,7 +64,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	public void displayChanYeLianInfo (BkChanYeLianTreeNode curselectedbknodecode)
 	{
 		List<String[]> cylinfo = curselectedbknodecode.getNodeJiBenMian().getChanYeLianInfo();
-		if(cylinfo.isEmpty() )
+		if(cylinfo == null  || cylinfo.isEmpty() )
 			return;
 		
 		String htmlstring = this.getText();

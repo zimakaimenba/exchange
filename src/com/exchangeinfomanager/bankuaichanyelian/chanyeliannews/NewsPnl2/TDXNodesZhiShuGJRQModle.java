@@ -116,5 +116,11 @@ public class TDXNodesZhiShuGJRQModle extends AbstractTableModel implements Infor
 		return Meeting.ZHISHUDATE;
 	}
 
+	@Override
+	public InsertedMeeting getLastestInformation() {
+		
+		return zhishuslists.get( zhishuslists.size()-1);
+	}
+
 	
 }

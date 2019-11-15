@@ -308,7 +308,7 @@ import com.udojava.evalex.Expression;
 			try {
 				lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
 				lastclose = lastholc.getCloseValue();
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) { //第一周
+			}	catch (java.lang.IndexOutOfBoundsException ex) { //第一周
 				return null;
 			}
 			
@@ -494,7 +494,7 @@ import com.udojava.evalex.Expression;
 			Double lastcje = lastcjlrecord.getValue().doubleValue();
 			
 			return curcje - lastcje;
-		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+		}	catch (java.lang.IndexOutOfBoundsException ex) {
 			return 100.0;
 		}
 
@@ -531,7 +531,7 @@ import com.udojava.evalex.Expression;
 			
 			double result = curcjeave - lastcjeave;
 			return result;
-		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+		}	catch (java.lang.IndexOutOfBoundsException ex) {
 			return 100.0;
 		}
 
@@ -630,7 +630,7 @@ import com.udojava.evalex.Expression;
 		int index = this.nodeamo.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
 		try{
 			lastcjlrecord = nodeamo.getDataItem( index - 1);
-		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+		}	catch (java.lang.IndexOutOfBoundsException ex) {
 			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
 			return null;
 		}

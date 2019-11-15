@@ -1,8 +1,6 @@
 package com.exchangeinfomanager.gui.subgui;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -10,37 +8,34 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
-import com.exchangeinfomanager.bankuaifengxi.QueKou;
+
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+
+
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.google.common.collect.Sets.SetView;
+
 import com.google.common.io.Files;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
+
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JProgressBar;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
+
 import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -48,29 +43,17 @@ import javax.swing.JTextArea;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.text.Collator;
-import java.time.Instant;
-import java.time.LocalDate;
+
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+
 
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
-import javax.swing.ScrollPaneConstants;
-import java.awt.GridBagLayout;
 import java.awt.Color;
 
-import org.apache.commons.io.FileUtils;
-import org.jfree.data.time.ohlc.OHLCItem;
 
 import javax.swing.DefaultComboBoxModel;
 

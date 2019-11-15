@@ -35,52 +35,7 @@ public class InsertedMeeting extends Meeting {
         getLabels().clear();
         getLabels().addAll(meeting.getLabels());
     }
-    /*
-     * 
-     */
-    public void removeMeetingSpecficOwner (String removedowner) 
-    {
-    	if(newsownercodes.contains(removedowner)) {
-    		newsownercodes = newsownercodes.replace(removedowner , "");
-    		if(newsownercodes.contains("||"))
-    			newsownercodes = newsownercodes.replace("||" , "|");
-    		if(newsownercodes.equals("|"))
-    			newsownercodes = "";
-    	}
-    }
-    public void removeMeetingSpecficOwner(Set<String> friendset) 
-    {
-    	for(String removedowner : friendset) {
-    		if(newsownercodes.contains(removedowner)) {
-        		newsownercodes = newsownercodes.replace(removedowner , "");
-        		if(newsownercodes.contains("||"))
-        			newsownercodes = newsownercodes.replace("||" , "|");
-        		if(newsownercodes.equals("|"))
-        			newsownercodes = "";
-        	}
-    	}
-	}
-    /*
-     * 
-     */
-    public Boolean addMeetingToSpecificOwner (String newowner)
-    {
-    	if(!newsownercodes.contains(newowner)) {
-    		newsownercodes = newsownercodes + newowner + "|";
-    		return true;
-    	} else
-    		return false;
-    }
-    public Boolean addMeetingToSpecificOwner (Set<String> newowners)
-    {
-    	for(String newowner : newowners) {
-    		if(!newsownercodes.contains(newowner)) {
-        		newsownercodes = newsownercodes + newowner + "|";
-        	} 
-    	}
-    	
-    	return true;
-    }
+
     @Override
     public String toString() {
         return String.format("id: %d, %s", getID(), getMeeting());

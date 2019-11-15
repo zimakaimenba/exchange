@@ -110,8 +110,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected LocalDate dateselected;
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
-
-	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
@@ -271,10 +269,11 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			try {
 				 lastyear = columnlocaldates.get(i-1).getYear();
 				 lastmonth = columnlocaldates.get(i-1).getMonthValue();
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+			} catch (java.lang.IndexOutOfBoundsException ex) {
 				lastyear = curyear;
 				lastmonth = curmonth;
 			}
+			
 			if(curyear != lastyear && monthoryear.toLowerCase().equals("year")) {
 				CategoryMarker marker = new CategoryMarker(columnlocaldates.get(i));  // position is the value on the axis
 				marker.setPaint(Color.gray);

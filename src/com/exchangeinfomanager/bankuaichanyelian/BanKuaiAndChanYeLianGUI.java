@@ -46,7 +46,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreePath;
 
 
-
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -55,43 +54,26 @@ import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
-import com.exchangeinfomanager.gui.StockInfoManager;
+
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
-import com.exchangeinfomanager.nodes.DaPan;
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
+
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
-import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
-import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
+
 import com.google.common.io.LineProcessor;
-import com.toedter.calendar.JDateChooser;
-import javax.swing.ScrollPaneConstants;
+
 import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
-import java.awt.GridLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.FlowLayout;
 
 public class BanKuaiAndChanYeLianGUI  extends JPanel 
 {
-	private CylTreeDbOperation treedb;
-
-	private BanKuaiAndStockTree treechanyelian;
-
-	private BanKuaiDbOperation bkopt;
-
 	public BanKuaiAndChanYeLianGUI  ( AllCurrentTdxBKAndStoksTree bkstk1 , CylTreeDbOperation treedb1)
 	{
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -114,8 +96,10 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	
 	private AllCurrentTdxBKAndStoksTree bkstk;
 	private String currentselectedtdxbk = "";
-	
-	
+	private CylTreeDbOperation treedb;
+	private BanKuaiAndStockTree treechanyelian;
+	private BanKuaiDbOperation bkopt;
+ 	
 	private void setupSubGpcAndBanKuai() 
 	{
 		//subgpc
@@ -270,28 +254,78 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	/*
 	    * 产业链树上定位用户选择的板块
 	    */
-	private void findNodeInTree(String bkinputed) 
+	private Boolean findNodeInTree(String bkinputed) 
 	{
 		   BkChanYeLianTreeNode findnode = treechanyelian.getSpecificNodeByHypyOrCode (bkinputed,BkChanYeLianTreeNode.TDXBK);
+		   if(findnode == null)
+			   return false;
+		   
 		   TreePath bkpath = new TreePath(findnode.getPath());
 		   if(bkpath != null) {
 			   treechanyelian.setSelectionPath(bkpath);
 			   treechanyelian.scrollPathToVisible(bkpath);
 			   treechanyelian.expandTreePathAllNode(bkpath);
+			   
+			   return true;
 			}
+		return null;
 	}
 	/*
 	 * 
 	 */
-	private void findNodeInTables(String bkinputed) 
+	private void findNodeInTables(String searchcode) 
 	{
+		int rowindex = ((BkChanYeLianTreeNodeListTableModel)tablesubcyl.getModel() ).findNodeByNameOrCode(searchcode);;
+		if(rowindex >= 0) {
+			tablesubcyl.setRowSelectionInterval(rowindex, rowindex);
+			tablesubcyl.scrollRectToVisible( new Rectangle(tablesubcyl.getCellRect(rowindex, 0, true)) );
+		}
 		
+		rowindex = ((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel() ).findNodeByNameOrCode(searchcode);;
+		if(rowindex >= 0) {
+			tablebankuai.setRowSelectionInterval(rowindex, rowindex);
+			tablebankuai.scrollRectToVisible( new Rectangle(tablebankuai.getCellRect(rowindex, 0, true)) );
+		}
+		
+		rowindex = ((BkChanYeLianTreeNodeListTableModel)tablebkgegu.getModel() ).findNodeByNameOrCode(searchcode);;
+		if(rowindex >= 0) {
+			tablebkgegu.setRowSelectionInterval(rowindex, rowindex);
+			tablebkgegu.scrollRectToVisible( new Rectangle(tablebkgegu.getCellRect(rowindex, 0, true)) );
+		}
 	}
 	/*
 	 * 
 	 */
 	private void createEvents() 
 	{
+		btndelsubgpc.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int row = tablesubcyl.getSelectedRow() ;
+				if( row <0) {
+					 JOptionPane.showMessageDialog(null,"请选择一个子板块!");
+					 return;
+				}
+			
+				BkChanYeLianTreeNode node = ((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).getNode(row);
+				if( findNodeInTree(node.getMyOwnCode()) ) {
+					JOptionPane.showMessageDialog(null,"产业链树有该子板块，请先在树中删除该板块!");
+					return;
+				}
+				
+				treedb.deleNodeFromDatabase (node);
+				
+			}
+		});
+		
+		btnfindgegu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				String searchcode = tfldfindgegu.getText();
+				findNodeInTables (searchcode);
+			}
+		});
+		
 		btndelnode.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -547,6 +581,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 
 	private JTextArea txaDescripton;
 
+	private JButton btndelsubgpc;
+
 	private void initializeGui() 
 	{
 		JPanel paneltree = new JPanel();
@@ -573,26 +609,26 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_3.createSequentialGroup()
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
-							.addGap(6)
-							.addComponent(btnAddGeGutotree, GroupLayout.PREFERRED_SIZE, 34, Short.MAX_VALUE))
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_panel_3.createSequentialGroup()
 							.addContainerGap()
-							.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(btnAddBktotree, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-								.addComponent(btnaddSubGPCtotree, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 34, Short.MAX_VALUE))))
+							.addComponent(btnaddSubGPCtotree, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
+						.addGroup(Alignment.LEADING, gl_panel_3.createSequentialGroup()
+							.addGap(6)
+							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnAddBktotree, 0, 0, Short.MAX_VALUE)
+								.addComponent(btnAddGeGutotree, GroupLayout.PREFERRED_SIZE, 38, Short.MAX_VALUE))))
 					.addContainerGap())
 		);
 		gl_panel_3.setVerticalGroup(
-			gl_panel_3.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, gl_panel_3.createSequentialGroup()
+			gl_panel_3.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_3.createSequentialGroup()
 					.addGap(223)
-					.addComponent(btnaddSubGPCtotree)
-					.addGap(120)
-					.addComponent(btnAddBktotree)
-					.addPreferredGap(ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
-					.addComponent(btnAddGeGutotree)
+					.addComponent(btnaddSubGPCtotree, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 224, Short.MAX_VALUE)
+					.addComponent(btnAddBktotree, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(94)
+					.addComponent(btnAddGeGutotree, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(53))
 		);
 		panel_3.setLayout(gl_panel_3);
@@ -601,8 +637,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		paneltree.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BorderLayout(0, 0));
 		
-		
-		this.treechanyelian.printTreeInformation();
 		treeScrollPane = new JScrollPane(this.treechanyelian,
 			      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -618,26 +652,12 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		
 		btnAddNewGPC = new JButton("\u6DFB\u52A0GPC");
 		btnAddSubGPC = new JButton("\u6DFB\u52A0SUBGPC");
-		GroupLayout gl_pnlup = new GroupLayout(pnlup);
-		gl_pnlup.setHorizontalGroup(
-			gl_pnlup.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlup.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(btnAddNewGPC)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnAddSubGPC)
-					.addGap(552))
-		);
-		gl_pnlup.setVerticalGroup(
-			gl_pnlup.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlup.createSequentialGroup()
-					.addGap(5)
-					.addGroup(gl_pnlup.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnAddNewGPC)
-						.addComponent(btnAddSubGPC))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		pnlup.setLayout(gl_pnlup);
+		pnlup.setLayout(new MigLayout("", "[75px][93px][93px]", "[23px]"));
+		
+		btndelsubgpc = new JButton("\u5220\u9664SUBGPC");
+		pnlup.add(btndelsubgpc, "cell 2 0,alignx left,aligny top");
+		pnlup.add(btnAddNewGPC, "cell 0 0,alignx left,aligny top");
+		pnlup.add(btnAddSubGPC, "cell 1 0,alignx left,aligny top");
 		
 		JPanel pnlcenter = JPanelFactory.createPanel();
 		pnlcenter.setLayout(new BoxLayout(pnlcenter, BoxLayout.PAGE_AXIS));
@@ -645,7 +665,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		
 		JPanel panel_1 = JPanelFactory.createPanel(new BorderLayout(0,0));
 		JPanel panel_2 = JPanelFactory.createPanel(new BorderLayout(0,0));
-		JPanel panel_4 = JPanelFactory.createPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel panel_4 = JPanelFactory.createPanel();
+		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
 		JPanel panel_5 = JPanelFactory.createPanel();
 		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.X_AXIS));
 		
@@ -673,19 +694,25 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		sclpforpnl71.setViewportView(txaDescripton);
 		
 		
-		JScrollPane sclpforpnl2 = new JScrollPane();
-		panel_2.add(sclpforpnl2,BorderLayout.CENTER);
+		JScrollPane sclpforpnl21 = new JScrollPane();
+		panel_2.add(sclpforpnl21,BorderLayout.CENTER);
 		
-		
-		
+		JScrollPane scllPnsubcyl41 = new JScrollPane();
+		JScrollPane scrollPane_42 = new JScrollPane();
+		panel_4.add(scllPnsubcyl41);
+		panel_4.add(scrollPane_42);
+
+		JScrollPane scrollPane_51 = new JScrollPane();
+		panel_5.add(scrollPane_51);
+		JScrollPane scrollPane52 = new JScrollPane();
+		panel_5.add(scrollPane52);
 		
 		
 		
 		
 		
 	
-		JScrollPane scrollPane_2 = new JScrollPane();
-		panel_5.add(scrollPane_2);
+		
 		BkChanYeLianTreeNodeListTableModel bankuaimodel = new BkChanYeLianTreeNodeListTableModel ();
 		tablebankuai = new JTable(bankuaimodel)
 		{
@@ -706,9 +733,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
                 return tip;
             } 
 		};
-		scrollPane_2.setViewportView(tablebankuai);
-		JScrollPane scrollPane = new JScrollPane();
-		panel_5.add(scrollPane);
+		scrollPane_51.setViewportView(tablebankuai);
+		
 		BkChanYeLianTreeNodeListTableModel bkggmodel = new BkChanYeLianTreeNodeListTableModel ();
 		tablebkgegu = new JTable(bkggmodel)
 		{
@@ -729,12 +755,12 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
                 return tip;
             } 
 		};
-		scrollPane.setViewportView(tablebkgegu);
+		scrollPane52.setViewportView(tablebkgegu);
 		
 		
 		
 		
-		JScrollPane scllPnsubcyl = new JScrollPane();
+
 		BkChanYeLianTreeNodeListTableModel subcylmode = new BkChanYeLianTreeNodeListTableModel ();
 		tablesubcyl = new JTable(subcylmode)
 		{
@@ -755,13 +781,11 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
                 return tip;
             } 
 		};
-		scllPnsubcyl.setViewportView(tablesubcyl);
+		scllPnsubcyl41.setViewportView(tablesubcyl);
 		
-		JScrollPane scrollPane_4 = new JScrollPane();
 		
-		panel_4.add(scllPnsubcyl, "cell 0 0,grow");
-		panel_4.add(scrollPane_4, "cell 1 0,grow");
 		
+				
 		
 		
 		
@@ -774,14 +798,10 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		tfldfindnodeintree = new JUpdatedTextField();
 		tfldfindnodeintree.setColumns(10);
 		
-		btnfindgegu = new JButton("\u5B9A\u4F4D\u8282\u70B9");
-		
 		tfldfindgegu =  new JUpdatedTextField();
 		tfldfindgegu.setColumns(10);
 		
-		JLabel lblNewLabel = new JLabel("New label");
-		
-		JLabel lblNewLabel_1 = new JLabel("New label");
+		JLabel lblNewLabel = new JLabel("                             ");
 		pnldown.setLayout(new MigLayout("", "[93px][66px][][][54px][54px][66px][93px][93px]", "[23px]"));
 		pnldown.add(btnfindnode, "cell 0 0,alignx left,aligny top");
 		pnldown.add(tfldfindnodeintree, "cell 1 0,alignx left,aligny center");
@@ -792,10 +812,11 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		
 		btnrestorenode = new JButton("\u6062\u590D\u8282\u70B9");
 		pnldown.add(btnrestorenode, "cell 3 0");
-		pnldown.add(btnfindgegu, "cell 7 0,alignx left,aligny top");
-		pnldown.add(tfldfindgegu, "cell 6 0,alignx left,aligny center");
+		pnldown.add(tfldfindgegu, "flowx,cell 5 0 2 1,alignx left,aligny center");
 		pnldown.add(lblNewLabel, "cell 4 0,alignx left,aligny center");
-		pnldown.add(lblNewLabel_1, "cell 5 0,alignx left,aligny center");
+		
+		btnfindgegu = new JButton("\u5B9A\u4F4D\u8282\u70B9");
+		pnldown.add(btnfindgegu, "cell 7 0,alignx left,aligny top");
 		
 		//
 		java.util.ArrayList<java.awt.Image> imageList = new java.util.ArrayList<java.awt.Image>();
@@ -1108,16 +1129,6 @@ class BkChanYeLianTreeNodeListTableModel extends DefaultTableModel
 	{
 		this.jtableTitleStrings = tabletitle;
 	}
-	public int getNodeLineIndex(String nodeid) 
-	{
-		if(nodelist == null)
-			return -1;
-		for(int i = 0;i <  nodelist.size() ; i++) {
-			if(nodelist.get(i).getMyOwnCode().equals(nodeid))
-				return i;
-		}
-		return -1;
-	}
 
 	public void refresh(List<BkChanYeLianTreeNode> nodelist)  
 	{
@@ -1150,13 +1161,16 @@ class BkChanYeLianTreeNodeListTableModel extends DefaultTableModel
 	}
 	public Integer findNodeByNameOrCode (String nameorcode)
 	{
+		if(nodelist == null)
+			return -1;
+		
 		for(int i =0;i<this.nodelist.size();i++) {
 			BkChanYeLianTreeNode tmpnode = this.nodelist.get(i);
 			if(tmpnode.getMyOwnCode().equals(nameorcode) || tmpnode.getMyOwnName().equals(nameorcode)) 
 				return i;
 		}
 		
-		return null;
+		return -1;
 	}
 	
 	

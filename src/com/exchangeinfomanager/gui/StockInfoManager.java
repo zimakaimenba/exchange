@@ -25,7 +25,6 @@ import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
-import com.exchangeinfomanager.License.GetNetworkAddress;
 import com.exchangeinfomanager.License.License;
 import com.exchangeinfomanager.Search.SearchDialog;
 //import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
@@ -247,9 +246,6 @@ public class StockInfoManager
 		else pnl_paomd.refreshMessage(null);
 	}
 
-	/*
-	 * @数据库可以有2个数据库，一个存放基本数据，一个存放通达信同步数据，这样减轻基本数据库的负荷	
-	 */
 		private void displayDbInfo() 
 		{
 			if(connectdb.isLocalDatabaseconnected()){
@@ -258,6 +254,8 @@ public class StockInfoManager
 				btnDBStatus.setToolTipText(btnDBStatus.getToolTipText() + connectdb.getLocalDatabaseName("full")+"数据库已连接");
 			}
 		}
+		
+		
 		public void preUpdateSearchResultToGui(BkChanYeLianTreeNode node)
 		{
 			nodeshouldbedisplayed = node;
@@ -281,24 +279,25 @@ public class StockInfoManager
 				clearGuiDispalyedInfo ();
 				
 				 displayStockJibenmianInfotoGui (); //显示板块或者股票的基本信息
+				 
 				 if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 					 nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB(nodeshouldbedisplayed);
 					 displaySellBuyZdgzInfoToGui ();
 				 }
-//					initializeNetWorkOperation (stockcode); //生成对应的网站网址
+				 
+				 nodeshouldbedisplayed = cyltreedb.getChanYeLianInfo(nodeshouldbedisplayed);
 				 
 				 if(nodeshouldbedisplayed.getType() == 6) { //是个股
 					if(accountschicangconfig.isSystemChiCang(stockcode)) 
 						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
-
-					nodeshouldbedisplayed = cyltreedb.getChanYeLianInfo(nodeshouldbedisplayed);
-					
 					if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 						displayAccountTableToGui ();
 					}
+
 					displayStockSuoShuBanKuai ();
 					setKuaiSuGui (stockcode);
 				 } 
+				 
 				 
 				 displayBanKuaiAndStockNews (); //显示板块和个股新闻
 				 enableGuiEditable();
@@ -638,8 +637,8 @@ public class StockInfoManager
 				
 				
 				try{
-					BkChanYeLianTreeNode stockcode = (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
-					TDXNodsInforPnl cylnews = new TDXNodsInforPnl (stockcode);
+					BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
+					TDXNodsInforPnl cylnews = new TDXNodsInforPnl (node);
 					cylnews.setVisible(true);
 				} catch (java.lang.NullPointerException ex) {
 					ex.printStackTrace();
@@ -2334,7 +2333,7 @@ public class StockInfoManager
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		
-		editorpansuosubk = new BanKuaiListEditorPane (this.cyltreedb);
+		editorpansuosubk = new BanKuaiListEditorPane ();
 		
 		editorpansuosubk.setPreferredSize(new Dimension(200,30));
 		//txaBanKuai.setEditorKit(new WrapEditorKit());

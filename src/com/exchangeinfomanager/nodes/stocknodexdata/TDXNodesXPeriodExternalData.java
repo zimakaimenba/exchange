@@ -556,7 +556,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			
 			return zhanbigrowthrate;
 			
-		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+		}	catch (java.lang.IndexOutOfBoundsException ex) {
 			return 100.0;
 		}
 
@@ -653,7 +653,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				TimeSeriesDataItem lastcjlrecord = nodevolzhanbi.getDataItem( index -1  );
 				if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
 					logger.debug(getNodeCode() + "可能是一个新个股或板块");
-					return 100.0;
+					return 100.00;
 				}
 				
 				Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
@@ -663,7 +663,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				
 				return zhanbigrowthrate;
 				
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+			}	catch (java.lang.IndexOutOfBoundsException ex) {
 				return 100.0;
 			}
 

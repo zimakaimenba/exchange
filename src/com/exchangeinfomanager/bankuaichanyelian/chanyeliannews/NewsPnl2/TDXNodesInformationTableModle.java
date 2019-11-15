@@ -100,4 +100,13 @@ public class TDXNodesInformationTableModle extends AbstractTableModel implements
 	{
 		return Meeting.NODESNEWS;
 	}
+
+	@Override
+	public InsertedMeeting getLastestInformation() 
+	{
+		if(cylnewslists.isEmpty())
+			return null;
+		else
+			return cylnewslists.get( cylnewslists.size()-1);
+	}
 }

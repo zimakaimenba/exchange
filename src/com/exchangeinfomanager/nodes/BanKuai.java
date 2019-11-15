@@ -172,22 +172,8 @@ public class BanKuai extends TDXNodes
 	 */
 	public void addNewBanKuaiGeGu (StockOfBanKuai stockofbk) 
 	{
-//		boolean hasalreadybeenbankuaigegu = false;
-		
-//		if (this.getChildCount() >= 0) {
-//            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-//            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
-//            	if(childnode.getType() == BkChanYeLianTreeNode.BKGEGU && childnode.getMyOwnCode().equals(stock.getMyOwnCode()))
-//                	hasalreadybeenbankuaigegu = true;
-//                
-//            }
-//        }
-//		if(!hasalreadybeenbankuaigegu)
-//			this.add(stock);
-		
 		if( this.stockofbklist.indexOf(stockofbk) < 0 )
 			this.stockofbklist.add(stockofbk);
-			
 	}
 	 /**
 	 * @return the tmpallbkge
@@ -195,17 +181,6 @@ public class BanKuai extends TDXNodes
 	 */
 	public List<BkChanYeLianTreeNode> getAllGeGuOfBanKuaiInHistory() 
 	{
-//		ArrayList<StockOfBanKuai> stocklist = new ArrayList<StockOfBanKuai> ();
-//		int childcount = this.getChildCount();
-//		if (this.getChildCount() >= 0) {
-//            for (Enumeration e= this.children(); e.hasMoreElements(); ) {
-//            	BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)e.nextElement();
-//            	if(childnode.getType() == BkChanYeLianTreeNode.BKGEGU) 
-//                    stocklist.add((StockOfBanKuai)childnode);
-//                }
-//        }
-//		return stocklist;
-		
 		return this.stockofbklist;
     }
 	/*
@@ -219,8 +194,6 @@ public class BanKuai extends TDXNodes
 		
 			if(  ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requireddate)) 
 					result.add(stockofbk);
-			
-			
 		}
 		
 		return result;

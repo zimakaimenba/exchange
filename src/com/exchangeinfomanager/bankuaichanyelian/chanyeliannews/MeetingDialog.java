@@ -9,6 +9,7 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.lc.nlp.keyword.algorithm.TextRank;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
@@ -57,6 +58,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     private BanKuaiDbOperation bkdbopt;
 
     private T event;
+	private JLabel kwbutton;
 
     public MeetingDialog(EventService meetingService, Cache cache) 
     {
@@ -73,6 +75,17 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 
     private void createEvent() 
     {
+    	kwbutton.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent arg0) {
+        		TextRank.setKeywordNumber(6);
+        		TextRank.setWindowSize(4);
+        		String title = event.getTitle();
+        		String content = event.getDescription();
+        		keywordsField.setText( TextRank.getKeyword(title, content).toString()  );
+        	}
+        });
+    	
     	descriptionArea.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent event) {
@@ -155,7 +168,14 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.centerPanel.add(Box.createVerticalStrut(10));
         this.centerPanel.add(this.slackurlField);
         this.centerPanel.add(Box.createVerticalStrut(10));
-        this.centerPanel.add(this.keywordsField);
+        
+        JPanel kwPanel = JPanelFactory.createFixedSizePanel(new GridLayout(1, 5));
+        kwbutton = JLabelFactory.createButton("¹Ø¼ü´Ê");
+        kwPanel.add(kwbutton);
+        kwPanel.add(new JLabel(" "));
+        kwPanel.add(this.keywordsField);
+        this.centerPanel.add(kwPanel);
+        
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
 
         // add main panel to the dialog
@@ -303,15 +323,12 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         return LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), time.getHour(), time.getMinute())
                             .toInstant(ZoneOffset.UTC);
     }
-    
-    
-    public class LabelListDialog<T extends Meeting> extends JDialog 
+
+    private class LabelListDialog extends JDialog 
     {
         JPanel centerPanel;
-        private T event;
-        protected Cache cache;
 
-        public LabelListDialog() 
+        public LabelListDialog()
         {
             this.centerPanel = JPanelFactory.createPanel();
             this.centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
@@ -321,20 +338,7 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
             super.setTitle("Labels");
         }
 
-//        public LabelListDialog(Cache cache, T event)
-//        {
-//        	this.centerPanel = JPanelFactory.createPanel();
-//            this.centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-//            this.centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-//            super.add(this.centerPanel);
-//            super.setModalityType(ModalityType.APPLICATION_MODAL);
-//            super.setTitle("Labels");
-//        	
-//    		this.cache = cache;
-//    		this.event = event;
-//    	}
-
-    	public void display() 
+        void display() 
         {
             this.centerPanel.removeAll();
             Collection<InsertedMeeting.Label> labels = cache.produceLabels();

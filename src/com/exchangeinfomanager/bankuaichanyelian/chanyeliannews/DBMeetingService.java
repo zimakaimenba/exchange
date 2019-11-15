@@ -46,7 +46,6 @@ public class DBMeetingService  implements EventService {
 
     @Override
     public void deleteMeeting(InsertedMeeting meeting) throws SQLException {
-//        InsertedMeeting m = this.database.deleteMeeting(meeting);
         
         InsertedMeeting m = this.database.deleteRequiredRelatedInfoForNewsAndOthers(meeting);
         

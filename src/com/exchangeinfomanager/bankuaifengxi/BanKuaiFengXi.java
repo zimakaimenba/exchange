@@ -3305,7 +3305,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		JScrollPane scrollPane_3 = new JScrollPane();
 		
-		editorPanebankuai = new BanKuaiListEditorPane(this.cyldbopt);
+		editorPanebankuai = new BanKuaiListEditorPane();
 		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
@@ -3368,7 +3368,7 @@ public class BanKuaiFengXi extends JDialog
 							.addGap(34))))
 		);
 		
-		tfldselectedmsg = new BanKuaiListEditorPane (this.cyldbopt);
+		tfldselectedmsg = new BanKuaiListEditorPane ();
 		scrollPane_3.setViewportView(tfldselectedmsg);
 		tfldselectedmsg.setEditable(false);
 		

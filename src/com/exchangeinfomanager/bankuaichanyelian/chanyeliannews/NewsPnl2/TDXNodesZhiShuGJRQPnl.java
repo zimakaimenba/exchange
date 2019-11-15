@@ -4,10 +4,13 @@ import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.JCheckBox;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
@@ -54,6 +57,24 @@ public class TDXNodesZhiShuGJRQPnl   extends TDXNodesInfomationListsPnlBasic
 	{
 		super.createEvents();
 		
+//		panelgegunews.addPropertyChangeListener(new PropertyChangeListener() {
+//
+//            public void propertyChange(PropertyChangeEvent evt) {
+//
+//                if (evt.getPropertyName().equals(TDXNodesInfomationListsView.ANEWSADDED)) {
+//                	InsertedMeeting mt = (InsertedMeeting) evt.getNewValue();
+//
+//                	System.out.print(mt.getNewsOwnerCodes() );
+//                	
+//                	if( ((JCheckBox) addnewstofriends.getSelectedItem()).isSelected()) {
+//            			Set<String> friendset = ((BanKuai)node).getSocialFriendsSet ();
+//            			updateNewsToABkGeGu(mt,friendset);
+//            			updateNewsToABkGeGu(mt,node.getMyOwnCode());
+//            		} 
+//                }
+//            }
+//		});
+		
 		super.addnewstogegu.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) {
@@ -69,17 +90,24 @@ public class TDXNodesZhiShuGJRQPnl   extends TDXNodesInfomationListsPnlBasic
 	
 	private void createZsgjrqOrUpdatedZsgjrq(InsertedMeeting selectnewsall) 
 	{
+		 String checkcode;
+		    if(super.node == null) {
+		    	checkcode = "999999";
+		    }
+		    else 
+		    	 checkcode = super.node.getMyOwnCode();
+		    
 		if(selectnewsall.getMeetingType() == Meeting.ZHISHUDATE) {
-			if(addnewstofriends.isSelected()) {
+			if(  ( (JCheckBox)addnewstofriends.getSelectedItem()).isSelected()) {
     			Set<String> friendset = ((BanKuai)node).getSocialFriendsSet ();
     			updateNewsToABkGeGu(selectnewsall,friendset);
-    			updateNewsToABkGeGu(selectnewsall,node.getMyOwnCode());
+    			updateNewsToABkGeGu(selectnewsall,checkcode  );
     		} else
-    			updateNewsToABkGeGu(selectnewsall,node.getMyOwnCode());
+    			updateNewsToABkGeGu(selectnewsall,checkcode );
 		}
 		else if(selectnewsall.getMeetingType() == Meeting.NODESNEWS) {
 			Meeting meeting = new Meeting(selectnewsall.getTitle(),selectnewsall.getStart(),
-					selectnewsall.getTitle(), "¹Ø¼ü´Ê", new HashSet<>(),"SlackURL",node.getMyOwnCode(),Meeting.ZHISHUDATE);
+					selectnewsall.getTitle(), "¹Ø¼ü´Ê", new HashSet<>(),"SlackURL",checkcode , Meeting.ZHISHUDATE);
 			
 			try {
 				super.curmeetingService.createMeeting(meeting);

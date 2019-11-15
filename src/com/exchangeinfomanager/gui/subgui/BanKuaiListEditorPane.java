@@ -46,7 +46,7 @@ public class BanKuaiListEditorPane extends JEditorPane
 {
 	
 	
-	public BanKuaiListEditorPane(CylTreeDbOperation cyltreedb) 
+	public BanKuaiListEditorPane() 
 	{
 		super ();
 		this.setEditable(false);
@@ -63,10 +63,10 @@ public class BanKuaiListEditorPane extends JEditorPane
 		jPopupMenue.add(menuItemclear);
 		
 		createEvents ();
-		this.cyltreedb = cyltreedb;
+//		this.cyltreedb = cyltreedb1;
 	}
 	
-	private CylTreeDbOperation cyltreedb;
+//	private CylTreeDbOperation cyltreedb;
 	private String selectstring;
 	public static final String URLSELECTED_PROPERTY = "urlselected";
 	public static final String EXPORTCSV_PROPERTY = "exporttocsv";
@@ -163,7 +163,7 @@ public class BanKuaiListEditorPane extends JEditorPane
 	     for(String suoshubankcode : union ) {
 	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
 	    	 try {
-	    		 boolean inrsbk = cyltreedb.isBanKuaiInBearPart(suoshubankcode);
+	    		 boolean inrsbk = false; //cyltreedb.isBanKuaiInBearPart(suoshubankcode);
     			 if(inrsbk ) {
     				 content.append("<a style=\"color:green\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + "</a> " );
 	    			 shuyuruoshibankuai = true ;

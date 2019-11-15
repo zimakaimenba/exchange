@@ -8,5 +8,6 @@ public interface InformationTableModelBasic
 {
 	void refresh (Collection<InsertedMeeting> meetings);
 	InsertedMeeting getRequiredInformationOfTheRow(int modelRow);
+	InsertedMeeting getLastestInformation();
 	Integer getMainInforTypeForCreating ();
 }

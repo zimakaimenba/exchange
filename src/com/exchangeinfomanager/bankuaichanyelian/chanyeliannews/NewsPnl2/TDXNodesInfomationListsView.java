@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -46,8 +47,8 @@ public class TDXNodesInfomationListsView extends View
 
 	private EventService meetingService;
 	private String nodecode;
-
-	public TDXNodesInfomationListsView(EventService meetingService,Cache cache,AbstractTableModel tablemodle)
+	
+		public TDXNodesInfomationListsView(EventService meetingService,Cache cache,AbstractTableModel tablemodle)
 	{
 		super(meetingService, cache);
 		this.meetingService = meetingService;
@@ -61,8 +62,14 @@ public class TDXNodesInfomationListsView extends View
 		
         this.onMeetingChange(cache);
 	}
+		
+	public static final String ANEWSADDED = "addednews";
+	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+	}
 	
-	protected void addNews() 
+	protected  Meeting addNews() 
 	{
 		String newsbelogns = cache.getNodeCode();
 		if(newsbelogns.toLowerCase().equals("all") )
@@ -73,14 +80,10 @@ public class TDXNodesInfomationListsView extends View
         getCreateDialog().setMeeting(meeting);
         getCreateDialog().setVisible(true);
         
-        PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
-        PropertyChangeEvent evtzd = new PropertyChangeEvent(this, "CREATENEWS", "", meeting );
-        pcs.firePropertyChange(evtzd);
-        
-//        this.firePropertyChange("new news",true,true);
+        return meeting;
 	}
 	
-	protected void addZhiShuGJRQ ()
+	protected  Meeting addZhiShuGJRQ ()
 	{
 		String newsbelogns = cache.getNodeCode();
 		if(newsbelogns.toLowerCase().equals("all") )
@@ -91,7 +94,7 @@ public class TDXNodesInfomationListsView extends View
 	    getCreateDialog().setMeeting(meeting);
 	    getCreateDialog().setVisible(true);
 	    
-	    
+	    return meeting;
 	}
 	
 	private void createEvents() 
@@ -101,10 +104,19 @@ public class TDXNodesInfomationListsView extends View
 			public void mouseClicked(MouseEvent arg0) 
 			{
 				Integer meetingtype = ((InformationTableModelBasic)tableCurCylNews.getModel()).getMainInforTypeForCreating();
+				Meeting mt = null;
 				if(meetingtype == Meeting.NODESNEWS)
-					addNews ();
+					mt = addNews ();
 				else if(meetingtype == Meeting.ZHISHUDATE)
-					addZhiShuGJRQ ();
+					mt = addZhiShuGJRQ ();
+				
+				onMeetingChange(cache);
+				
+				InsertedMeeting selectednews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getLastestInformation();
+				if( mt.getTitle().equals(selectednews.getTitle() )  ) { //无法取得用户是否取消添加的状态，只好用这种方式来确定用户是否真的已经加了一条新新闻
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, TDXNodesInfomationListsView.ANEWSADDED, "", selectednews );
+		            pcs.firePropertyChange(evtzd);
+				}
 			}
 		});
 		
@@ -154,9 +166,7 @@ public class TDXNodesInfomationListsView extends View
 		int  model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
 		InsertedMeeting selectednews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getRequiredInformationOfTheRow(model_row);
 		
-//		InsertedMeeting selectednews = ((NewsTableModel)tableCurCylNews.getModel()).getNews(row);
 		return selectednews;
-		
 	}
 	
 	private JTable tableCurCylNews;
@@ -230,16 +240,7 @@ public class TDXNodesInfomationListsView extends View
                         background = l.getColor();
                     }
                 }
-		        
-//		        if(event.getMeetingType() == Meeting.NODESNEWS)
-//		        	background = new Color(255,255,204);
-//		        else if(event.getMeetingType() == Meeting.ZHISHUDATE)
-//		        	background = new Color(255,204,229);
-//		        else if(event.getMeetingType() == Meeting.QIANSHI)
-//		        	background = Color.RED;
-//		        else if(event.getMeetingType() == Meeting.RUOSHI)
-//		        	background = Color.GREEN;
-		        
+	        
 		        comp.setBackground(background);
 		    	comp.setForeground(foreground);
 
@@ -261,14 +262,12 @@ public class TDXNodesInfomationListsView extends View
 		Collection<InsertedMeeting> meetings = cache.produceMeetings();
 		((InformationTableModelBasic)tableCurCylNews.getModel()).refresh(meetings);
 		
-
-		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)tableCurCylNews.getRowSorter();
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 1; //优先排序占比增长
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-		
+//		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)tableCurCylNews.getRowSorter();
+//		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+//		int columnIndexToSort = 1; //优先排序
+//		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
+//		sorter.setSortKeys(sortKeys);
+//		sorter.sort();
 	}
 
 	@Override

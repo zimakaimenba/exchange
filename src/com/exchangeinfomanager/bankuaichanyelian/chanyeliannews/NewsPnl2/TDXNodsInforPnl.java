@@ -2,8 +2,12 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.util.Set;
+
+import javax.swing.JCheckBox;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
@@ -45,18 +49,26 @@ public class TDXNodsInforPnl extends TDXNodesInfomationListsPnlBasic
 		super.addnewstogegu.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) {
-        		InsertedMeeting selectnewsall = panelallnews.getCurSelectedNews ();
-        		if(selectnewsall == null)
-        			return;
-        		
-        		if(addnewstofriends.isSelected()) {
-        			Set<String> friendset = ((BanKuai)node).getSocialFriendsSet ();
-        			updateNewsToABkGeGu(selectnewsall,friendset);
-        			updateNewsToABkGeGu(selectnewsall,node.getMyOwnCode());
-        		} else
-        			updateNewsToABkGeGu(selectnewsall,node.getMyOwnCode());
+        		addNewsAsNeeded ();
         	}
         });
+	}
+	
+	private void addNewsAsNeeded ()
+	{
+		InsertedMeeting selectnewsall = panelallnews.getCurSelectedNews ();
+		if(selectnewsall == null)
+			return;
+		
+		if( super.node.getType() != BkChanYeLianTreeNode.TDXBK )
+			return ;
+		
+		if( ((JCheckBox) addnewstofriends.getSelectedItem()).isSelected()) {
+			Set<String> friendset = ((BanKuai)node).getSocialFriendsSet ();
+			updateNewsToABkGeGu(selectnewsall,friendset);
+			updateNewsToABkGeGu(selectnewsall,node.getMyOwnCode());
+		} else
+			updateNewsToABkGeGu(selectnewsall,node.getMyOwnCode());
 	}
 
 }

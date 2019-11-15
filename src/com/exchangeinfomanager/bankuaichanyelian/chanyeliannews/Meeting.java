@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 
 
@@ -124,12 +125,59 @@ public class Meeting {
     public void setKeyWords(String keywords) {
         this.keywords = keywords;
     }
-
+    
+    /*
+     * 
+     */
+    public void removeMeetingSpecficOwner (String removedowner) 
+    {
+    	if(newsownercodes.contains(removedowner)) {
+    		newsownercodes = newsownercodes.replace(removedowner , "");
+    		if(newsownercodes.contains("||"))
+    			newsownercodes = newsownercodes.replace("||" , "|");
+    		if(newsownercodes.equals("|"))
+    			newsownercodes = "";
+    	}
+    }
+    public void removeMeetingSpecficOwner(Set<String> friendset) 
+    {
+    	for(String removedowner : friendset) {
+    		if(newsownercodes.contains(removedowner)) {
+        		newsownercodes = newsownercodes.replace(removedowner , "");
+        		if(newsownercodes.contains("||"))
+        			newsownercodes = newsownercodes.replace("||" , "|");
+        		if(newsownercodes.equals("|"))
+        			newsownercodes = "";
+        	}
+    	}
+	}
+    /*
+     * 
+     */
+    public Boolean addMeetingToSpecificOwner (String newowner)
+    {
+    	if(!newsownercodes.contains(newowner)) {
+    		newsownercodes = newsownercodes + newowner + "|";
+    		return true;
+    	} else
+    		return false;
+    }
+    public Boolean addMeetingToSpecificOwner (Set<String> newowners)
+    {
+    	for(String newowner : newowners) {
+    		if(!newsownercodes.contains(newowner)) {
+        		newsownercodes = newsownercodes + newowner + "|";
+        	} 
+    	}
+    	
+    	return true;
+    }
     @Override
     public String toString() {
         return String.format("title: %s, start: %s, end: %s, description: %s, keywords: %s", getTitle(), getStart(),getEnd(),
              getDescription(), getKeyWords());
     }
+    
 
     @Override
     public boolean equals(Object o) {
