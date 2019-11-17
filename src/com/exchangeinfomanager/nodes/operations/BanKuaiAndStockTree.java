@@ -1,8 +1,30 @@
 package com.exchangeinfomanager.nodes.operations;
 
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragGestureRecognizer;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetContext;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,40 +37,35 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
+import javax.swing.TransferHandler;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
 
 import javax.swing.tree.TreeNode;
 
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTree;
-import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
-import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
-import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
-import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
 
 /*
  * 系统维护2棵树，1个是所有板块和个股在一颗树上。第二个树父节点是板块，板块下面是属于该板块的所有个股。
  */
 public class BanKuaiAndStockTree extends JTree 
 {
+	
+
+	private TreeDragSource ds;
+	private TreeDropTarget dt;
+	private TreeTransferHandler transhdlr;
+
 	public BanKuaiAndStockTree (BkChanYeLianTreeNode bkcylrootnode,String treeid)
 	{
 		super(bkcylrootnode);
@@ -64,8 +81,18 @@ public class BanKuaiAndStockTree extends JTree
 		this.setEditable(false);
 		this.setCellRenderer(new BkChanYeLianTreeCellRenderer());
 		this.setRootVisible(true);
-		this.setTransferHandler(new TreeTransferHandler() );
 		ToolTipManager.sharedInstance().registerComponent(this);
+//		transhdlr = new TreeTransferHandler();
+//		this.setTransferHandler(transhdlr);
+        this.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
+//		this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		
+//        ds = new TreeDragSource(this, DnDConstants.ACTION_COPY_OR_MOVE);
+//        dt = new TreeDropTarget(this);
+        
+		    
+		this.createEvents ();
+		
 	}
 	
 	public BanKuaiAndStockTree (InvisibleTreeModel bkcylmodel,String treeid)
@@ -84,9 +111,15 @@ public class BanKuaiAndStockTree extends JTree
 		this.setEditable(false);
 		this.setCellRenderer(new BkChanYeLianTreeCellRenderer());
 		this.setRootVisible(true);
-		this.setTransferHandler(new TreeTransferHandler() );
+//		transhdlr = new TreeTransferHandler();
+//		this.setTransferHandler(transhdlr );
 		
+        this.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
+//		this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+	
+        this.createEvents ();
 	}
+
 	
 	private static Logger logger = Logger.getLogger(BanKuaiAndStockTree.class);
 	private String treeid; //系统要用到两棵cyltree，用ID来区分
@@ -94,6 +127,24 @@ public class BanKuaiAndStockTree extends JTree
 	private String currentselectedtdxbk;
 	private LocalDate currentdisplayedwk; //tree当前所显示的分析州
 	protected boolean treechangedshouldsave = false;
+	
+	public void createEvents ()
+	{
+//		this.addTreeSelectionListener(new TreeSelectionListener() {
+//			
+//	        public void valueChanged(TreeSelectionEvent e) {
+//	        	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode)getLastSelectedPathComponent();
+//
+//	        /* if nothing is selected */ 
+//	            if (node == null) return;
+//
+//	        /* retrieve the node that was selected */ 
+//	          currentselectedtdxbk = node.getMyOwnCode();
+//	        /* React to the node selection. */
+//	            
+//	        }
+//	    });
+	}
 
 	/*
 	 * 
@@ -248,18 +299,6 @@ public class BanKuaiAndStockTree extends JTree
 		} catch (java.lang.NullPointerException e) {
 			
 		}
-		
-//		TreePath closestPath = this.getClosestPathForLocation(evt.getX(), evt.getY());
-//
-//        if(closestPath != null) {
-//            Rectangle pathBounds = this.getPathBounds(closestPath);
-//            int maxY = (int) pathBounds.getMaxY();
-//            int minX = (int) pathBounds.getMinX();
-//            int maxX = (int) pathBounds.getMaxX();
-//            if (evt.getY() > maxY) this.clearSelection();
-//            else if (evt.getX() < minX || evt.getX() > maxX) this.clearSelection();
-//        }
-//        BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) closestPath.getLastPathComponent();
        
 	}
 	/*
@@ -311,6 +350,7 @@ public class BanKuaiAndStockTree extends JTree
         }});
     }
     
+   
 //	public void moveNode(int direction) 
 //	{
 //		if (this.getSelectionCount()==0) return;
@@ -390,45 +430,6 @@ public class BanKuaiAndStockTree extends JTree
 //                this.scrollPathToVisible(new TreePath(node.getPath()));
 //	}
 	/*
-	 * 找到XMl的产业链对应的树节点
-	 */
-//	public BkChanYeLianTreeNode updateZdgzInfoToBkCylTreeNode(String bkcyl, String addedtime, boolean officallselect) 
-//	{
-//		//[TongDaXinBanKuaiAndZhiShu, 染料涂料, 浙江, 300192科斯伍德]
-//		//[TongDaXinBanKuaiAndZhiShu, 染料涂料, 浙江, 600352浙江龙盛]
-//		//bkcyl = "TongDaXinBanKuaiAndZhiShu->" + bkcyl;
-//		ArrayList<String> cyltreepathlist = getFormatedBanKuaiChanYeLian (bkcyl);
-//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
-//		
-//		BkChanYeLianTreeNode expectNode = updatedZdgzInfoBkCylTreeNodeOneByOne2 (treeroot,cyltreepathlist,addedtime,officallselect);
-//		
-//		return expectNode;
-//	}
-	/*
-	 * 找到指定节点的位置
-	 */
-//	public TreePath locateNodeByNameOrHypyOrBkCode(String bkinputed,boolean showatonce) 
-//	{
-//		TreePath bkpath = null ;
-//    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
-//	    @SuppressWarnings("unchecked")
-//		Enumeration<BkChanYeLianTreeNode> e = treeroot.depthFirstEnumeration();
-//	    while (e.hasMoreElements() ) {
-//	    	BkChanYeLianTreeNode node = e.nextElement();
-//	    	Boolean found = node.checktHanYuPingYin(bkinputed);
-//	        if (found) {
-//	             bkpath = new TreePath(node.getPath());
-//	             if(showatonce) { //定位后同时也跳转到该个股
-//		             this.setSelectionPath(bkpath);
-//		     	     this.scrollPathToVisible(bkpath);
-//		     	     this.expandTreePathAllNode(bkpath);
-//	             }
-//	     	     return bkpath;
-//	        }
-//	    }
-//		return null;
-//	}
-	/*
 	 * 找到指定的节点
 	 */
 	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String bkinputed,int requirenodetype) //有时候板块和个股代码相同,所以要加上type
@@ -485,3 +486,204 @@ public class BanKuaiAndStockTree extends JTree
 }
 
 
+
+//TreeDragSource.java
+//A drag source wrapper for a JTree. This class can be used to make
+//a rearrangeable DnD tree with the TransferableTreeNode class as the
+//transfer data type.
+
+class TreeDragSource implements DragSourceListener, DragGestureListener 
+{
+
+DragSource source;
+
+DragGestureRecognizer recognizer;
+
+TransferableTreeNode transferable;
+
+DefaultMutableTreeNode oldNode;
+
+JTree sourceTree;
+
+public TreeDragSource(JTree tree, int actions) {
+  sourceTree = tree;
+  source = new DragSource();
+  try {
+	  recognizer = source.createDefaultDragGestureRecognizer(sourceTree, actions, this);
+  } catch (java.awt.dnd.InvalidDnDOperationException e) {
+	  e.printStackTrace ();
+  }
+}
+
+/*
+ * Drag Gesture Handler
+ */
+public void dragGestureRecognized(DragGestureEvent dge) {
+  TreePath path = sourceTree.getSelectionPath();
+  if ((path == null) || (path.getPathCount() <= 1)) {
+    // We can't move the root node or an empty selection
+    return;
+  }
+  oldNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+  transferable = new TransferableTreeNode(path);
+  try {
+	  source.startDrag(dge, DragSource.DefaultMoveNoDrop, transferable, this);
+  } catch ( java.awt.dnd.InvalidDnDOperationException e) {
+	  e.printStackTrace ();
+  }
+
+  // If you support dropping the node anywhere, you should probably
+  // start with a valid move cursor:
+  //source.startDrag(dge, DragSource.DefaultMoveDrop, transferable,
+  // this);
+}
+
+/*
+ * Drag Event Handlers
+ */
+public void dragEnter(DragSourceDragEvent dsde) {
+}
+
+public void dragExit(DragSourceEvent dse) {
+}
+
+public void dragOver(DragSourceDragEvent dsde) {
+}
+
+public void dropActionChanged(DragSourceDragEvent dsde) {
+  System.out.println("Action: " + dsde.getDropAction());
+  System.out.println("Target Action: " + dsde.getTargetActions());
+  System.out.println("User Action: " + dsde.getUserAction());
+}
+
+public void dragDropEnd(DragSourceDropEvent dsde) {
+  /*
+   * to support move or copy, we have to check which occurred:
+   */
+  System.out.println("Drop Action: " + dsde.getDropAction());
+  if (dsde.getDropSuccess()
+      && (dsde.getDropAction() == DnDConstants.ACTION_MOVE)) {
+    ((DefaultTreeModel) sourceTree.getModel()).removeNodeFromParent(oldNode);
+  }
+
+  /*
+   * to support move only... if (dsde.getDropSuccess()) {
+   * ((DefaultTreeModel)sourceTree.getModel()).removeNodeFromParent(oldNode); }
+   */
+}
+}
+
+//TreeDropTarget.java
+//A quick DropTarget that's looking for drops from draggable JTrees.
+//
+
+class TreeDropTarget implements DropTargetListener 
+{
+
+DropTarget target;
+
+JTree targetTree;
+
+public TreeDropTarget(JTree tree) {
+  targetTree = tree;
+  target = new DropTarget(targetTree, this);
+}
+
+/*
+ * Drop Event Handlers
+ */
+private TreeNode getNodeForEvent(DropTargetDragEvent dtde) {
+  Point p = dtde.getLocation();
+  DropTargetContext dtc = dtde.getDropTargetContext();
+  JTree tree = (JTree) dtc.getComponent();
+  TreePath path = tree.getClosestPathForLocation(p.x, p.y);
+  return (TreeNode) path.getLastPathComponent();
+}
+
+public void dragEnter(DropTargetDragEvent dtde) {
+  TreeNode node = getNodeForEvent(dtde);
+
+    dtde.acceptDrag(dtde.getDropAction());
+  
+}
+
+public void dragOver(DropTargetDragEvent dtde) {
+  TreeNode node = getNodeForEvent(dtde);
+
+    dtde.acceptDrag(dtde.getDropAction());
+  
+}
+
+public void dragExit(DropTargetEvent dte) {
+}
+
+public void dropActionChanged(DropTargetDragEvent dtde) {
+}
+
+public void drop(DropTargetDropEvent dtde) {
+  Point pt = dtde.getLocation();
+  DropTargetContext dtc = dtde.getDropTargetContext();
+  JTree tree = (JTree) dtc.getComponent();
+  TreePath parentpath = tree.getClosestPathForLocation(pt.x, pt.y);
+  DefaultMutableTreeNode parent = (DefaultMutableTreeNode) parentpath.getLastPathComponent();
+
+  try {
+    Transferable tr = dtde.getTransferable();
+    DataFlavor[] flavors = tr.getTransferDataFlavors();
+    for (int i = 0; i < flavors.length; i++) {
+      if (tr.isDataFlavorSupported(flavors[i])) {
+        dtde.acceptDrop(dtde.getDropAction());
+        TreePath p = (TreePath) tr.getTransferData(flavors[i]);
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
+        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+        model.insertNodeInto(node, parent, 0);
+        dtde.dropComplete(true);
+        return;
+      }
+    }
+    dtde.rejectDrop();
+  } catch (Exception e) {
+    e.printStackTrace();
+    dtde.rejectDrop();
+  }
+}
+}
+
+//TransferableTreeNode.java
+//A Transferable TreePath to be used with Drag & Drop applications.
+//
+
+class TransferableTreeNode implements Transferable 
+{
+
+public static DataFlavor TREE_PATH_FLAVOR = new DataFlavor(TreePath.class,
+    "Tree Path");
+
+DataFlavor flavors[] = { TREE_PATH_FLAVOR };
+
+TreePath path;
+
+public TransferableTreeNode(TreePath tp) {
+  path = tp;
+}
+
+public synchronized DataFlavor[] getTransferDataFlavors() {
+  return flavors;
+}
+
+public boolean isDataFlavorSupported(DataFlavor flavor) {
+  return (flavor.getRepresentationClass() == TreePath.class);
+}
+
+public synchronized Object getTransferData(DataFlavor flavor)
+    throws UnsupportedFlavorException, IOException {
+  if (isDataFlavorSupported(flavor)) {
+    return (Object) path;
+  } else {
+    throw new UnsupportedFlavorException(flavor);
+  }
+}
+}
+
+         
+       

@@ -33,10 +33,6 @@ public class CylTreeNestedSetNode extends BkChanYeLianTreeNode
 		return this.nodetreerelated;
 	}
 	
-	public int getNestedid() {
-		return nestedid;
-	}
-
 	public void setNestedId(int nestedid) {
 		this.nestedid = nestedid;
 	}

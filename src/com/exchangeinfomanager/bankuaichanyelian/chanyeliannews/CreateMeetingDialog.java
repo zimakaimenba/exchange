@@ -24,13 +24,13 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
         JLabel createButton = JLabelFactory.createOrangeButton("Create");
         createButton.addMouseListener(new CreateController());
         
-        JLabel createFromURLButton = JLabelFactory.createOrangeButton("Create From URL");
-        createFromURLButton.addMouseListener(new CreateUrlController());
+//        JLabel createFromURLButton = JLabelFactory.createOrangeButton("Create From URL");
+//        createFromURLButton.addMouseListener(new CreateUrlController());
 
         // add button to the main panel
         JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new FlowLayout(FlowLayout.RIGHT), 35);
         layoutPanel.add(createButton);
-        layoutPanel.add(createFromURLButton);
+//        layoutPanel.add(createFromURLButton);
         super.centerPanel.add(layoutPanel);
         super.centerPanel.add(Box.createVerticalStrut(PADDING));
     }
@@ -80,27 +80,27 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
     /*
      * 
      */
-    private class CreateUrlController extends MouseAdapter {
-
-        @Override
-        public void mouseClicked(MouseEvent e) 
-        {
-            super.mouseClicked(e);
-
-            GetNewsFromHtml	 showhtmldialog = new GetNewsFromHtml (getMeeting());
-            
-            int exchangeresult = JOptionPane.showConfirmDialog(null, showhtmldialog ,"设置新闻", JOptionPane.OK_CANCEL_OPTION);
-			if(exchangeresult == JOptionPane.CANCEL_OPTION)
-					return;
-//        			SystemAudioPlayed.playSound();
-            
-          try {
-        	setMeeting(  showhtmldialog.getMeeting () );
-			meetingService.createMeeting(getMeeting());
-			setVisible(false);
-		  } catch (SQLException e1) {
-				e1.printStackTrace();
-		  }
-	   }
-    }
+//    private class CreateUrlController extends MouseAdapter {
+//
+//        @Override
+//        public void mouseClicked(MouseEvent e) 
+//        {
+//            super.mouseClicked(e);
+//
+//            GetNewsFromHtml	 showhtmldialog = new GetNewsFromHtml (getMeeting());
+//            
+//            int exchangeresult = JOptionPane.showConfirmDialog(null, showhtmldialog ,"设置新闻", JOptionPane.OK_CANCEL_OPTION);
+//			if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//					return;
+////        			SystemAudioPlayed.playSound();
+//            
+//          try {
+//        	setMeeting(  showhtmldialog.getMeeting () );
+//			meetingService.createMeeting(getMeeting());
+//			setVisible(false);
+//		  } catch (SQLException e1) {
+//				e1.printStackTrace();
+//		  }
+//	   }
+//    }
 }

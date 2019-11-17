@@ -113,7 +113,7 @@ public class TDXNodesInfomationListsView extends View
 				onMeetingChange(cache);
 				
 				InsertedMeeting selectednews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getLastestInformation();
-				if( mt.getTitle().equals(selectednews.getTitle() )  ) { //无法取得用户是否取消添加的状态，只好用这种方式来确定用户是否真的已经加了一条新新闻
+				if(selectednews!= null && mt.getTitle().equals(selectednews.getTitle() )  ) { //无法取得用户是否取消添加的状态，只好用这种方式来确定用户是否真的已经加了一条新新闻
 					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, TDXNodesInfomationListsView.ANEWSADDED, "", selectednews );
 		            pcs.firePropertyChange(evtzd);
 				}

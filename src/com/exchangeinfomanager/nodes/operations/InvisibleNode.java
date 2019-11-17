@@ -1,13 +1,18 @@
 package com.exchangeinfomanager.nodes.operations;
 
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 //http://www.java2s.com/Code/Java/Swing-Components/InvisibleNodeTreeExample.htm
-public class InvisibleNode extends DefaultMutableTreeNode 
+public class InvisibleNode extends DefaultMutableTreeNode    
 {
 
 	protected boolean isVisible;
@@ -79,5 +84,6 @@ public class InvisibleNode extends DefaultMutableTreeNode
 	public boolean isVisible() {
 	 return isVisible;
 	}
-
+	
+	 
 }

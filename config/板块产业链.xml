@@ -5,33 +5,186 @@
   <GuPiaoChi gpccode="GPC009" gpcname="券商参券" Type="8">
     <BanKuai bkcode="880472" bkname="证券" Type="4"/>
   </GuPiaoChi>
-  <GuPiaoChi gpccode="GPC999" gpcname="其他" Type="8">
-    <BanKuai bkcode="880330" bkname="化纤" Type="4">
-      <SubBanKuai subbkcode="88033001" subbkname="涤纶长丝" suoshubkcode="GPC999" Type="5">
-        <gegu gegucode="600527" geguname="江南高纤" Type="6"/>
-        <gegu gegucode="002015" geguname="霞客环保" Type="6"/>
-      </SubBanKuai>
-      <SubBanKuai subbkcode="88033002" subbkname="PTA" suoshubkcode="GPC999" Type="5"/>
-    </BanKuai>
-  </GuPiaoChi>
   <GuPiaoChi gpccode="GPC006" gpcname="涨价和业绩反转" Type="8"/>
-  <GuPiaoChi gpccode="GPC007" gpcname="次新股" Type="8"/>
+  <GuPiaoChi gpccode="GPC007" gpcname="次新股" Type="8">
+    <BanKuai bkcode="880529" bkname="次新股" Type="4"/>
+    <SubGuPiaoChi subgpccode="GPC00702" subgpcname="已高送转" Type="9">
+      <BanKuai bkcode="880851" bkname="已高送转" Type="4"/>
+    </SubGuPiaoChi>
+    <SubGuPiaoChi subgpccode="GPC00701" subgpcname="预高送转" Type="9">
+      <BanKuai bkcode="880854" bkname="预高送转" Type="4"/>
+    </SubGuPiaoChi>
+  </GuPiaoChi>
   <GuPiaoChi gpccode="GPC004" gpcname="黑天鹅受益" Type="8"/>
   <GuPiaoChi gpccode="GPC005" gpcname="前热点余热" Type="8"/>
-  <GuPiaoChi gpccode="GPC002" gpcname="重组收购" Type="8">
-    <BanKuai bkcode="880461" bkname="水运" Type="4">
-      <gegu gegucode="600026" geguname="中远海能" Type="6"/>
-    </BanKuai>
-  </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC002" gpcname="重组收购" Type="8"/>
   <GuPiaoChi gpccode="GPC013" gpcname="国新政策" Type="8">
-    <BanKuai bkcode="880454" bkname="水务" Type="4">
-      <gegu gegucode="600168" geguname="武汉控股" Type="6"/>
-    </BanKuai>
+    <BanKuai bkcode="880471" bkname="银行" Type="4"/>
+    <BanKuai bkcode="880533" bkname="物联网" Type="4"/>
+    <BanKuai bkcode="880904" bkname="智能机器" Type="4"/>
   </GuPiaoChi>
   <GuPiaoChi gpccode="GPC003" gpcname="稳定白马" Type="8"/>
-  <GuPiaoChi gpccode="GPC014" gpcname="弱势远离" Type="8"/>
-  <GuPiaoChi gpccode="GPC011" gpcname="成长和概念" Type="8"/>
+  <GuPiaoChi gpccode="GPC011" gpcname="成长和概念" Type="8">
+    <BanKuai bkcode="880948" bkname="人工智能" Type="4"/>
+  </GuPiaoChi>
   <GuPiaoChi gpccode="GPC001" gpcname="超跌反弹" Type="8"/>
-  <GuPiaoChi gpccode="GPC012" gpcname="特定时间重大事件" Type="8"/>
-  <GuPiaoChi gpccode="GPC010" gpcname="题材转业绩" Type="8"/>
+  <GuPiaoChi gpccode="GPC012" gpcname="特定时间重大事件" Type="8">
+    <BanKuai bkcode="880506" bkname="5G概念" Type="4">
+      <SubBanKuai subbkcode="88050604" subbkname="网络规划" suoshubkcode="GPC012" Type="5">
+        <gegu gegucode="300299" geguname="富春股份" Type="6"/>
+        <gegu gegucode="002093" geguname="国脉科技" Type="6"/>
+        <gegu gegucode="002544" geguname="杰赛科技" Type="6"/>
+        <gegu gegucode="603559" geguname="中通国脉" Type="6"/>
+        <gegu gegucode="300050" geguname="世纪鼎利" Type="6"/>
+        <gegu gegucode="002115" geguname="三维通信" Type="6"/>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="88050605" subbkname="无线主设备" suoshubkcode="GPC012" Type="5">
+        <SubBanKuai subbkcode="88050609" subbkname="天线" suoshubkcode="GPC012" Type="5">
+          <gegu gegucode="002446" geguname="盛路通信" Type="6"/>
+          <gegu gegucode="300602" geguname="飞荣达" Type="6"/>
+        </SubBanKuai>
+        <SubBanKuai subbkcode="88050602" subbkname="光芯片" suoshubkcode="GPC012" Type="5">
+          <gegu gegucode="002281" geguname="光迅科技" Type="6"/>
+          <gegu gegucode="300548" geguname="博创科技" Type="6"/>
+          <gegu gegucode="000988" geguname="华工科技" Type="6"/>
+          <gegu gegucode="300570" geguname="太辰光" Type="6"/>
+          <gegu gegucode="300308" geguname="中际旭创" Type="6"/>
+          <gegu gegucode="300394" geguname="天孚通信" Type="6"/>
+          <gegu gegucode="300502" geguname="新易盛" Type="6"/>
+          <gegu gegucode="300565" geguname="科信技术" Type="6"/>
+          <gegu gegucode="002313" geguname="日海智能" Type="6"/>
+        </SubBanKuai>
+        <SubBanKuai subbkcode="88050610" subbkname="射频器件(PCB)" suoshubkcode="GPC012" Type="5">
+          <gegu gegucode="002463" geguname="沪电股份" Type="6"/>
+          <gegu gegucode="002916" geguname="深南电路" Type="6"/>
+        </SubBanKuai>
+        <SubBanKuai subbkcode="88050611" subbkname="射频器件(滤波器)" suoshubkcode="GPC012" Type="5">
+          <gegu gegucode="002384" geguname="东山精密" Type="6"/>
+          <gegu gegucode="002194" geguname="*ST凡谷" Type="6"/>
+          <gegu gegucode="300134" geguname="大富科技" Type="6"/>
+          <gegu gegucode="002547" geguname="春兴精工" Type="6"/>
+          <gegu gegucode="300136" geguname="信维通信" Type="6"/>
+          <gegu gegucode="300322" geguname="硕贝德" Type="6"/>
+        </SubBanKuai>
+        <SubBanKuai subbkcode="8805061" subbkname="基站" suoshubkcode="GPC012" Type="5">
+          <gegu gegucode="300312" geguname="邦讯技术" Type="6"/>
+          <gegu gegucode="603322" geguname="超讯通信" Type="6"/>
+        </SubBanKuai>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="88050606" subbkname="传输设备" suoshubkcode="GPC012" Type="5">
+        <SubBanKuai subbkcode="88050603" subbkname="光纤及光纤预制棒" suoshubkcode="GPC012" Type="5">
+          <gegu gegucode="601869" geguname="长飞光纤" Type="6"/>
+          <gegu gegucode="600487" geguname="亨通光电" Type="6"/>
+          <gegu gegucode="600522" geguname="中天科技" Type="6"/>
+        </SubBanKuai>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="88050608" subbkname="运营商" suoshubkcode="GPC012" Type="5"/>
+    </BanKuai>
+  </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC010" gpcname="题材转业绩" Type="8">
+    <BanKuai bkcode="880544" bkname="太阳能" Type="4">
+      <SubBanKuai subbkcode="88054405" subbkname="电池片" suoshubkcode="GPC010" Type="5"/>
+      <SubBanKuai subbkcode="88054403" subbkname="单多晶硅" suoshubkcode="GPC010" Type="5"/>
+      <SubBanKuai subbkcode="88054404" subbkname="硅料" suoshubkcode="GPC010" Type="5"/>
+      <SubBanKuai subbkcode="88054401" subbkname="光伏玻璃" suoshubkcode="GPC010" Type="5"/>
+      <SubBanKuai subbkcode="88054402" subbkname="太阳能组件" suoshubkcode="GPC010" Type="5"/>
+      <SubBanKuai subbkcode="88054406" subbkname="光伏机床设备" suoshubkcode="GPC010" Type="5"/>
+    </BanKuai>
+  </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC999" gpcname="其他" Type="8">
+    <BanKuai bkcode="880445" bkname="专用机械" Type="4">
+      <SubBanKuai subbkcode="8804451" subbkname="芯片设备" suoshubkcode="GPC999" Type="5">
+        <gegu gegucode="300604" geguname="长川科技" Type="6"/>
+      </SubBanKuai>
+    </BanKuai>
+    <BanKuai bkcode="880574" bkname="苹果概念" Type="4">
+      <SubBanKuai subbkcode="8805741" subbkname="SIP模组" suoshubkcode="GPC999" Type="5">
+        <gegu gegucode="601231" geguname="环旭电子" Type="6"/>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="8805743" subbkname="光摄像头" suoshubkcode="GPC999" Type="5">
+        <SubBanKuai subbkcode="8805744" subbkname="光摄像头模组" suoshubkcode="GPC999" Type="5">
+          <gegu gegucode="002456" geguname="欧菲科技" Type="6"/>
+        </SubBanKuai>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="8805742" subbkname="摄像头" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8805745" subbkname="镜头" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+    <BanKuai bkcode="880336" bkname="化工原料" Type="4">
+      <SubBanKuai subbkcode="8803361" subbkname="OLED" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8803362" subbkname="水汽阻隔膜" suoshubkcode="GPC999" Type="5">
+        <gegu gegucode="002450" geguname="康得新" Type="6"/>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="8803363" subbkname="PVC" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8803364" subbkname="甲醇" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+    <BanKuai bkcode="880329" bkname="小金属" Type="4">
+      <SubBanKuai subbkcode="8803297" subbkname="铼" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+    <BanKuai bkcode="880535" bkname="稀土永磁" Type="4">
+      <SubBanKuai subbkcode="8805352" subbkname="稀土发光材料" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8805351" subbkname="稀土永磁材料" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8805354" subbkname="镨钕" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8805353" subbkname="氧化铈" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+    <BanKuai bkcode="880534" bkname="锂电池" Type="4">
+      <SubBanKuai subbkcode="8805341" subbkname="三元材料" suoshubkcode="GPC999" Type="5">
+        <SubBanKuai subbkcode="8805343" subbkname="锂" suoshubkcode="GPC999" Type="5"/>
+        <SubBanKuai subbkcode="8805342" subbkname="钴" suoshubkcode="GPC999" Type="5"/>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="8805345" subbkname="负极材料" suoshubkcode="GPC999" Type="5">
+        <SubBanKuai subbkcode="8805349" subbkname="硅碳负极" suoshubkcode="GPC999" Type="5"/>
+        <SubBanKuai subbkcode="8805348" subbkname="石墨负极" suoshubkcode="GPC999" Type="5"/>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="8805344" subbkname="正极材料" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8805347" subbkname="电解液" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8805346" subbkname="隔膜" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+    <BanKuai bkcode="880917" bkname="央企改革" Type="4">
+      <SubBanKuai subbkcode="8809172" subbkname="三峡集团" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8809171" subbkname="军工改革" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8809176" subbkname="深圳国资" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8809175" subbkname="中国建材集团" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8809174" subbkname="铁路总公司" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8809173" subbkname="上海国资" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+    <BanKuai bkcode="880946" bkname="区块链" Type="4">
+      <gegu gegucode="002517" geguname="恺英网络" Type="6"/>
+    </BanKuai>
+    <BanKuai bkcode="880491" bkname="半导体" Type="4">
+      <SubBanKuai subbkcode="88049107" subbkname="半导体设计" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="88049109" subbkname="半导体材料" suoshubkcode="GPC999" Type="5">
+        <SubBanKuai subbkcode="8804911" subbkname="光刻胶" suoshubkcode="GPC999" Type="5"/>
+        <SubBanKuai subbkcode="8804913" subbkname="超高纯金属及溅射靶材" suoshubkcode="GPC999" Type="5"/>
+        <SubBanKuai subbkcode="8803382" subbkname="PI基材" suoshubkcode="GPC999" Type="5"/>
+        <SubBanKuai subbkcode="8804914" subbkname="电子薄膜" suoshubkcode="GPC999" Type="5"/>
+      </SubBanKuai>
+      <SubBanKuai subbkcode="88049108" subbkname="半导体设备" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="88049110" subbkname="半导体制造" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="8804912" subbkname="半导体封装" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+    <BanKuai bkcode="880330" bkname="化纤" Type="4">
+      <SubBanKuai subbkcode="88033001" subbkname="涤纶长丝" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="88033003" subbkname="PX" suoshubkcode="GPC999" Type="5"/>
+      <SubBanKuai subbkcode="88033002" subbkname="PTA" suoshubkcode="GPC999" Type="5"/>
+    </BanKuai>
+    <BanKuai bkcode="880366" bkname="农业综合" Type="4">
+      <SubBanKuai subbkcode="88036601" subbkname="鸡鸭肉" suoshubkcode="GPC999" Type="5">
+        <gegu gegucode="002299" geguname="圣农发展" Type="6"/>
+        <gegu gegucode="002746" geguname="仙坛股份" Type="6"/>
+        <gegu gegucode="002234" geguname="民和股份" Type="6"/>
+        <gegu gegucode="002458" geguname="益生股份" Type="6"/>
+      </SubBanKuai>
+    </BanKuai>
+    <BanKuai bkcode="880414" bkname="商贸代理" Type="4">
+      <gegu gegucode="600826" geguname="兰生股份" Type="6"/>
+    </BanKuai>
+  </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC014" gpcname="弱势远离" Type="8">
+    <BanKuai bkcode="880203" bkname="吉林板块" Type="4"/>
+    <BanKuai bkcode="880205" bkname="辽宁板块" Type="4"/>
+    <BanKuai bkcode="880201" bkname="黑龙江" Type="4"/>
+    <SubGuPiaoChi subgpccode="GPC01401" subgpcname="人民币贬值" Type="9"/>
+    <BanKuai bkcode="880591" bkname="上海自贸" Type="4"/>
+  </GuPiaoChi>
+  <GuPiaoChi gpccode="GPC015" gpcname="机构抱团" Type="8"/>
 </两交易所>

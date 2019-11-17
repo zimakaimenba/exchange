@@ -1,30 +1,51 @@
 package com.exchangeinfomanager.database;
+
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 //https://www.we-rc.com/blog/2015/07/19/nested-set-model-practical-examples-part-i#foot-1
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JTree;
+import javax.swing.TransferHandler;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.joda.time.LocalDate;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
+
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
-import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+
 import com.mysql.jdbc.MysqlDataTruncation;
 import com.sun.rowset.CachedRowSetImpl;
 
@@ -32,7 +53,7 @@ public class CylTreeDbOperation
 {
 	private ConnectDataBase connectdb;
 	private SystemConfigration sysconfig;
-	private AllCurrentTdxBKAndStoksTree allbksks;
+//	private AllCurrentTdxBKAndStoksTree allbksks;
 	private BanKuaiAndStockTree treecyl;
 	private CylTreeNestedSetNode alltopNode; 
 
@@ -40,9 +61,10 @@ public class CylTreeDbOperation
 	{
 		connectdb = ConnectDataBase.getInstance();
 		sysconfig = SystemConfigration.getInstance();
-		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
+//		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 		
 		setupBanKuaiAndStockTree ();
+//		restoreChanYeLianNestedDbFromXml ();
 	}
 	
 	public BanKuaiAndStockTree getBkChanYeLianTree ()
@@ -75,6 +97,7 @@ public class CylTreeDbOperation
 	}
 	private void setupBanKuaiAndStockTree ()
 	{
+		 List<BkChanYeLianTreeNode> nodelist = new ArrayList<>();
 		 CachedRowSetImpl rsagu = null;
 		 try{
 				   String query = "{call r_return_tree(?)}";
@@ -97,6 +120,7 @@ public class CylTreeDbOperation
 				    	if(nestedtree_id == 1) {
 				    		tmpnode = new CylTreeNestedSetNode ("000000","两交易所",0);
 				    		alltopNode = tmpnode;
+				    		this.treecyl = new BanKuaiAndStockTree(alltopNode,"CYLTREE");
 				    	} 	else 
 				    		tmpnode = new CylTreeNestedSetNode (nodeid,nodename,nodetype);
 
@@ -107,9 +131,8 @@ public class CylTreeDbOperation
 				    	if(isolatedtime != null)
 				    		tmpnode.setNodeIsolatedDate(isolatedtime.toLocalDate());
 				    	
-				    	buildNodeToTree (tmpnode);
+				    	nodelist.add(tmpnode);
 				    }
-				    
 				    stm.close();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -122,33 +145,308 @@ public class CylTreeDbOperation
 						e.printStackTrace();
 					}
 					rsagu = null;
-				}
+			}
+		 	
+		 try{
+				Collections.sort(nodelist, new FatherNodeIdComparator () );
+			} catch (java.lang.NullPointerException e) {
+//				e.printStackTrace();
+		 }
+		 
+		 CylTreeNestedSetNode treeroot = (CylTreeNestedSetNode)treecyl.getModel().getRoot();
+		 InvisibleTreeModel treemodel = (InvisibleTreeModel)treecyl.getModel();
+		 for(BkChanYeLianTreeNode tmpnode : nodelist) {
+			  Integer parent_id = ( (CylTreeNestedSetNode)tmpnode).getNestedParent ();
+			  Enumeration<TreeNode> e = treeroot.breadthFirstEnumeration();
+			  while (e.hasMoreElements() ) {
+			    	CylTreeNestedSetNode node = (CylTreeNestedSetNode) e.nextElement();
+			    	int nodeid = node.getNestedId();
+			        if (parent_id == nodeid) {
+			             treemodel.insertNodeInto(tmpnode, node, node.getChildCount());
+			             break;
+			         }
+			    }
+		 }
+		 
+		 treecyl.setTransferHandler(new TreeTransferHandler() );
+//		 treemodel.addTreeModelListener(new CustomTreeModelListener());
 	}
+	
+	class CustomTreeModelListener implements TreeModelListener {
+	    public void treeNodesChanged(TreeModelEvent e) {
+	        DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)e.getTreePath().getLastPathComponent();
+	        int index = e.getChildIndices()[0];
+	        DefaultMutableTreeNode modifiedNode = (DefaultMutableTreeNode)(parentNode.getChildAt(index));
 
-	private void buildNodeToTree(CylTreeNestedSetNode tmpnode)
-	{
-		if(tmpnode.getNestedId() == 1) {
-			this.treecyl = new BanKuaiAndStockTree(alltopNode,"CYLTREE");
-			return;
-		}
-		
-		int parent_id = tmpnode.getNestedParent();
-		
-		CylTreeNestedSetNode treeroot = (CylTreeNestedSetNode)treecyl.getModel().getRoot();
-		InvisibleTreeModel treemodel = (InvisibleTreeModel)treecyl.getModel();
-	    
-		Enumeration<TreeNode> e = treeroot.breadthFirstEnumeration();
-	    while (e.hasMoreElements() ) {
-	    	CylTreeNestedSetNode node = (CylTreeNestedSetNode) e.nextElement();
-	    	int nodeid = node.getNestedid();
-	        if (parent_id == nodeid) {
-	             treemodel.insertNodeInto(tmpnode, node, node.getChildCount());
-	             break;
-	         }
+	        System.out.println("A node on parent: " + parentNode.getUserObject()
+	                + " was modified to: " + modifiedNode.getUserObject());
 	    }
 
-	    return ;
+	    public void treeNodesInserted(TreeModelEvent e) {
+	        String parentNode = e.getTreePath().getLastPathComponent().toString();
+	        String childNodes = Arrays.toString(e.getChildren());
+	        System.out.println("Node(s): " + childNodes + " inserted to parent: " + parentNode);
+	    }
+
+	    public void treeNodesRemoved(TreeModelEvent e) {
+	        String parentNode = e.getTreePath().getLastPathComponent().toString();
+	        String childNodes = Arrays.toString(e.getChildren());
+	        System.out.println("Node(s): " + childNodes + " removed from parent: " + parentNode);
+	    }
+
+	    public void treeStructureChanged(TreeModelEvent e) {
+	        System.out.println("Tree structure has been updated");
+	    }
 	}
+	
+	class TreeTransferHandler extends TransferHandler {
+	    DataFlavor nodesFlavor;
+	    DataFlavor[] flavors = new DataFlavor[1];
+	    BkChanYeLianTreeNode[] nodesToRemove;
+	    BkChanYeLianTreeNode movingancesternode; //移动的根节点
+	  
+	    public TreeTransferHandler() 
+	    {
+	        try {
+	            String mimeType = DataFlavor.javaJVMLocalObjectMimeType +
+	                              ";class=\"" +
+	                javax.swing.tree.DefaultMutableTreeNode[].class.getName() +
+	                              "\"";
+	            nodesFlavor = new DataFlavor(mimeType);
+	            flavors[0] = nodesFlavor;
+	        } catch(ClassNotFoundException e) {
+	            System.out.println("ClassNotFound: " + e.getMessage());
+	        }
+	    }
+
+	    public boolean canImport(TransferHandler.TransferSupport support) 
+	    {
+	        if(!support.isDrop()) {
+	            return false;
+	        }
+	        support.setShowDropLocation(true);
+	        if(!support.isDataFlavorSupported(nodesFlavor)) {
+	            return false;
+	        }
+	        // Do not allow a drop on the drag source selections.
+	        JTree.DropLocation dl =  (JTree.DropLocation)support.getDropLocation();
+	        BanKuaiAndStockTree tree = (BanKuaiAndStockTree)support.getComponent();
+	        int dropRow = tree.getRowForPath(dl.getPath());
+	        int[] selRows = tree.getSelectionRows();
+	        for(int i = 0; i < selRows.length; i++) {
+	            if(selRows[i] == dropRow) {
+	                return false;
+	            }
+	        }
+	        // Do not allow MOVE-action drops if a non-leaf node is
+	        // selected unless all of its children are also selected.
+	        int action = support.getDropAction();
+	        if(action == MOVE) {
+	            return haveCompleteNode(tree);
+	        }
+	        // Do not allow a non-leaf node to be copied to a level
+	        // which is less than its source level.
+	        TreePath dest = dl.getPath();
+	        BkChanYeLianTreeNode target =          (BkChanYeLianTreeNode)dest.getLastPathComponent();
+	        TreePath path = tree.getPathForRow(selRows[0]);
+	        BkChanYeLianTreeNode firstNode =         (BkChanYeLianTreeNode)path.getLastPathComponent();
+	        if(firstNode.getChildCount() > 0 &&     target.getLevel() < firstNode.getLevel()) {
+	            return false;
+	        }
+	        
+	      //不可以move到GPC一级
+	        if( ((BkChanYeLianTreeNode)target).getType() == BkChanYeLianTreeNode.DAPAN )
+	        	return false;
+	        
+	        return true;
+	    }
+	  
+	    private boolean haveCompleteNode(JTree tree) {
+//	        int[] selRows = tree.getSelectionRows();
+//	        TreePath path = tree.getPathForRow(selRows[0]);
+//	        DefaultMutableTreeNode first =
+//	            (DefaultMutableTreeNode)path.getLastPathComponent();
+//	        int childCount = first.getChildCount();
+//	        // first has children and no children are selected.
+//	        if(childCount > 0 && selRows.length == 1)
+//	            return false;
+//	        // first may have children.
+//	        for(int i = 1; i < selRows.length; i++) {
+//	            path = tree.getPathForRow(selRows[i]);
+//	            DefaultMutableTreeNode next =
+//	                (DefaultMutableTreeNode)path.getLastPathComponent();
+//	            if(first.isNodeChild(next)) {
+//	                // Found a child of first.
+//	                if(childCount > selRows.length-1) {
+//	                    // Not all children of first are selected.
+//	                    return false;
+//	                }
+//	            }
+//	        }
+	        return true;
+	    }
+	  
+	    protected Transferable createTransferable(JComponent c) {
+	    	BanKuaiAndStockTree tree = (BanKuaiAndStockTree)c;
+	        TreePath[] paths = tree.getSelectionPaths();
+	        TreePath pathresult = paths[0];
+	        if(paths != null) {
+	            // Make up a node array of copies for transfer and
+	            // another for/of the nodes that will be removed in
+	            // exportDone after a successful drop.
+	            List<BkChanYeLianTreeNode> copies =  new ArrayList<>();
+	            List<BkChanYeLianTreeNode> toRemove = new ArrayList<>();
+	            BkChanYeLianTreeNode node =  (BkChanYeLianTreeNode)paths[0].getLastPathComponent();
+	            movingancesternode = node;
+	           
+	            findNodeSubNodes (node, copies, toRemove);
+            
+	            Collections.sort(copies, new FatherNodeIdComparator () );
+	            BkChanYeLianTreeNode[] nodes =   copies.toArray(new CylTreeNestedSetNode[copies.size()]);
+	            nodesToRemove =    toRemove.toArray(new CylTreeNestedSetNode[toRemove.size()]);
+	            return new NodesTransferable(nodes);
+	            
+	        }
+	        return null;
+	    }
+	    
+	    private void findNodeSubNodes (BkChanYeLianTreeNode parentnode,List<BkChanYeLianTreeNode> copylist, List<BkChanYeLianTreeNode> removelist)
+	    {
+	    	copylist.add(copy(parentnode) );
+			removelist.add (parentnode);
+			
+	    	if(parentnode.isLeaf())
+	    		return;
+
+	    	for(int i = 0 ; i < parentnode.getChildCount() ; i++)
+		    {
+		    	findNodeSubNodes((BkChanYeLianTreeNode)parentnode.getChildAt(i),copylist, removelist);
+		    }
+	    	
+	    }
+	    /** Defensive copy used in createTransferable. */
+	    private BkChanYeLianTreeNode copy(BkChanYeLianTreeNode node) 
+	    {
+	    	BkChanYeLianTreeNode tmpnode =  new CylTreeNestedSetNode(node.getMyOwnCode(), node.getMyOwnName(),node.getType()  );
+	    	int nestedid = ((CylTreeNestedSetNode)node).getNestedId();
+	    	((CylTreeNestedSetNode)tmpnode).setNestedId(nestedid);
+	    	
+	    	CylTreeNestedSetNode fn = (CylTreeNestedSetNode)node.getParent();
+	        int parentid = ((CylTreeNestedSetNode)node.getParent()).getNestedId();
+	        ((CylTreeNestedSetNode)tmpnode).setNestedParent(parentid);
+	        return tmpnode;
+	    }
+	    /*
+	     * 
+	     */
+	    protected void exportDone(JComponent source, Transferable data, int action) {
+	        if((action & MOVE) == MOVE) {
+	            JTree tree = (JTree)source;
+	            DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+	            // Remove nodes saved in nodesToRemove in createTransferable.
+	            for(int i = 0; i < nodesToRemove.length; i++) {
+	                model.removeNodeFromParent(nodesToRemove[i]);
+	            }
+	        }
+	        nodesToRemove = null;
+	    }
+	  
+	    public int getSourceActions(JComponent c) {
+	        return COPY_OR_MOVE;
+	    }
+	  
+	    public boolean importData(TransferHandler.TransferSupport support) {
+	        if(!canImport(support)) {
+	            return false;
+	        }
+	        // Extract transfer data.
+	        BkChanYeLianTreeNode[] nodes = null;
+	        try {
+	            Transferable t = support.getTransferable();
+	            nodes = (BkChanYeLianTreeNode[])t.getTransferData(nodesFlavor);
+	        } catch(UnsupportedFlavorException ufe) {
+	            System.out.println("UnsupportedFlavor: " + ufe.getMessage());
+	        } catch(java.io.IOException ioe) {
+	            System.out.println("I/O error: " + ioe.getMessage());
+	        }
+	        
+	        // Get drop location info.
+	        JTree.DropLocation dl =    (JTree.DropLocation)support.getDropLocation();
+	        int childIndex = dl.getChildIndex();
+	        TreePath dest = dl.getPath();
+	        BkChanYeLianTreeNode parent =   (BkChanYeLianTreeNode)dest.getLastPathComponent();
+	        BanKuaiAndStockTree tree = (BanKuaiAndStockTree)support.getComponent();
+	        InvisibleTreeModel model = (InvisibleTreeModel)tree.getModel();
+	        // Configure for drop mode.
+	        int index = childIndex;    // DropMode.INSERT
+	        if(childIndex == -1) {     // DropMode.ON
+	            index = parent.getChildCount();
+	        }
+	        // Add data to model.
+	        BkChanYeLianTreeNode tmpfather = null;
+	        for(int i = 0; i < nodes.length; i++) {
+	        	String nodecode = ((BkChanYeLianTreeNode)nodes[i]).getMyOwnCode ();
+	        	if(nodecode.equals (movingancesternode.getMyOwnCode () ) )
+	        		model.insertNodeInto(nodes[i], parent, index++);
+	        	
+	        	tmpfather = nodes[i];
+	        	break;
+	        }
+	        for(int i = 0; i < nodes.length; i++) {
+	        	String nodecode = ((BkChanYeLianTreeNode)nodes[i]).getMyOwnCode ();
+	        	if(!nodecode.equals (movingancesternode.getMyOwnCode () ) )	 {
+	        		int nodefatherid = ((CylTreeNestedSetNode)nodes[i]).getNestedParent ();
+	        		
+	        		Enumeration<TreeNode> e = tmpfather.breadthFirstEnumeration();
+	        		while (e.hasMoreElements() ) {
+				    	CylTreeNestedSetNode possiblefather = (CylTreeNestedSetNode) e.nextElement();
+				    	int possiblefatherid = possiblefather.getNestedId();
+				    	
+				        if (possiblefatherid == nodefatherid) {
+				             model.insertNodeInto(nodes[i], possiblefather, possiblefather.getChildCount() );
+				             break;
+				         }
+				    }
+	        	}
+	        }
+	        
+	        moveNodeInNestedDatabase ( (CylTreeNestedSetNode)movingancesternode, (CylTreeNestedSetNode)parent);
+	        
+	        return true;
+	    }
+	  
+	    public String toString() {
+	        return getClass().getName();
+	    }
+	  
+	    public class NodesTransferable implements Transferable 
+	    {
+	    	BkChanYeLianTreeNode[] nodes;
+	  
+	        public NodesTransferable(BkChanYeLianTreeNode[] nodes) {
+	            this.nodes = nodes;
+	         }
+	  
+	        public Object getTransferData(DataFlavor flavor)
+	                                 throws UnsupportedFlavorException {
+	            if(!isDataFlavorSupported(flavor))
+	                throw new UnsupportedFlavorException(flavor);
+	            return nodes;
+	        }
+	  
+	        public DataFlavor[] getTransferDataFlavors() {
+	            return flavors;
+	        }
+	  
+	        public boolean isDataFlavorSupported(DataFlavor flavor) {
+	            return nodesFlavor.equals(flavor);
+	        }
+	    }
+	}
+	/*
+	 * 
+	 */
+	
 	/*
 	 * 股票池对应的子股票池/板块国
 	 */
@@ -158,13 +456,6 @@ public class CylTreeDbOperation
         
         List<BkChanYeLianTreeNode> subpgcset = new ArrayList<BkChanYeLianTreeNode> ();
 		try {
-//			   String sqlquerystat = "SELECT 产业链板块国列表.`板块国代码`,产业链板块国列表.`板块国名称`" + 
-//									" FROM 产业链板块国列表" +
-//									" INNER JOIN 产业链板块州板块国对应表" +
-//									" ON 产业链板块国列表.`板块国代码` = 产业链板块州板块国对应表.`板块国代码`" +
-//									" WHERE 产业链板块州板块国对应表.`板块州代码`  = '" + gpccode + "' " +
-//									" ORDER BY 产业链板块国列表.`板块国代码`" 
-//									;
 				String sqlquerystat = "SELECT 产业链板块国列表.`板块国代码`,产业链板块国列表.`板块国名称`" + 
 					" FROM 产业链板块国列表" 
 					;
@@ -292,7 +583,7 @@ public class CylTreeDbOperation
 	/*
 	 * 
 	 */
-	private void addNodeToNestedDatabase (CylTreeNestedSetNode topNode,CylTreeNestedSetNode parentsleaf)
+	private void addNodeToNestedDatabase (CylTreeNestedSetNode topNode,CylTreeNestedSetNode childrennode)
 	{
 			   int treeid = topNode.getNestedId ();
 			   
@@ -314,14 +605,40 @@ public class CylTreeDbOperation
 					    }
 					    stm.close();
 					    
-					    parentsleaf.setNestedId(lstid);
-					    String sqlquerystat = "INSERT INTO tree_content (tree_id, nodeid,nodetype) VALUES (" 
-					    						+ lstid + ","
-					    						+ "'" + parentsleaf.getMyOwnCode() + "',"
-					    						+ parentsleaf.getType() 
-					    						+ ")"
+					    childrennode.setNestedId(lstid);
+					    String sqlquerystat = "UPDATE tree_map SET " 
+					    						+ " nodeid = '" +  childrennode.getMyOwnCode() +  "', "
+					    						+ " nodetype = " +  childrennode.getType() 
+					    						+ " where tree_id=" + lstid
 					    						;
 					    connectdb.sqlInsertStatExecute(sqlquerystat);
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							if(rsagu != null)
+							rsagu.close();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						rsagu = null;
+					}
+	}
+	private void moveNodeInNestedDatabase (CylTreeNestedSetNode movedNode,CylTreeNestedSetNode parentsnode)
+	{
+			   int movednodetreeid = movedNode.getNestedId ();
+			   int parentnodetreeid = parentsnode.getNestedId();
+			   
+			   CachedRowSetImpl rsagu = null;
+				try{
+					   String query = "{CALL r_tree_move(?,?)}";
+					    java.sql.CallableStatement stm = connectdb.getCurrentDataBaseConnect().prepareCall(query); 
+					    stm.setInt(1, movednodetreeid);
+					    stm.setInt(2, parentnodetreeid);
+					    stm.executeQuery();
+					    stm.close();
+					    
 					} catch (Exception e) {
 						e.printStackTrace();
 					} finally {
@@ -386,21 +703,21 @@ public class CylTreeDbOperation
 	/*
 	 * 
 	 */
-	public void deleteNodeFromTree(BkChanYeLianTreeNode delnode, boolean deleteforever) 
+	public void deleteNodeFromTree(CylTreeNestedSetNode delnode, boolean deleteforever) 
 	{
 		if(! deleteforever) {
 			isolatedNodes (delnode);
 		} else
 			deleteNodes (delnode);
 	}
-	private void isolatedNodes (BkChanYeLianTreeNode delnode)
+	private void isolatedNodes (CylTreeNestedSetNode delnode)
 	{
 		//在数据库中标记
 		isolatedNodeInDb (delnode);
 		
 		treecyl.isolatedNodes (   new TreePath (delnode.getPath() ) );  //在树上标记
 	}
-	private  void isolatedNodeInDb(BkChanYeLianTreeNode aNode)
+	private  void isolatedNodeInDb(CylTreeNestedSetNode aNode)
 	{
     	int nestedtreeid = ((CylTreeNestedSetNode)aNode).getNestedId();
     	CachedRowSetImpl rsagu = null;
@@ -427,14 +744,14 @@ public class CylTreeDbOperation
 	    }
 
 	}
-	private void deleteNodes (BkChanYeLianTreeNode delnode)
+	private void deleteNodes (CylTreeNestedSetNode delnode)
 	{
 		//在数据中删除
 		deleteNodeInDb (delnode);
 		
 		treecyl.deleteNodes (   new TreePath (delnode.getPath() ) );  //在树上删除
 	}
-	private  void deleteNodeInDb(BkChanYeLianTreeNode aNode)
+	private  void deleteNodeInDb (CylTreeNestedSetNode aNode)
 	{
 	    	Integer nestedtreeid = ((CylTreeNestedSetNode)aNode).getNestedId();
 	    	
@@ -558,6 +875,143 @@ public class CylTreeDbOperation
 			}
 		}
 				
-	}	
+	}
+	/*
+	 * 
+	 */
+	public void restoreChanYeLianNestedDbFromXml ()
+	{
+		FileInputStream xmlfileinput = null;
+		try {
+			xmlfileinput = new FileInputStream(sysconfig.getBanKuaiChanYeLianXml ());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		Element cylxmlroot = null;
+		try {
+			SAXReader reader = new SAXReader();
+			Document cylxmldoc = reader.read(xmlfileinput);
+			cylxmlroot = cylxmldoc.getRootElement();
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		
+		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode("000000","两交易所",0);
+		alltopNode.setNestedId(1);
+		String sqlquerystat = "INSERT INTO tree_map (tree_id, lft,rgt,parent_id) VALUES (" 
+				+ 1 + ","
+				+ 1 + ","
+				+ 2 + ","
+				+ 0
+				+ ")"
+				;
+		try {
+			connectdb.sqlInsertStatExecute(sqlquerystat);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//产业链tree part
+		generateChanYeLianTreeFromXML(alltopNode,cylxmlroot); //生成产业链树
+		
+	}
+	private void generateChanYeLianTreeFromXML(CylTreeNestedSetNode topNode, Element xmlelement) 
+	{
+	    	 Iterator it = xmlelement.elementIterator();
+	    	 
+	    	 while (it.hasNext() ) 
+	    	 {
+				   Element element = (Element) it.next();
+			   
+				   CylTreeNestedSetNode parentsleaf = null;
+				   
+				   String bkname = null, bkowncode = null; 
+				   String nodetypestr = element.attributeValue("Type").trim();
+				   Integer nodetype = Integer.parseInt(nodetypestr ); 
+				   
+				   if(BkChanYeLianTreeNode.GPC == nodetype ) { //是股票池
+					   bkowncode = element.attributeValue("gpccode"); 
+					   bkname = element.attributeValue("gpcname");
+					   
+					   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname,BkChanYeLianTreeNode.GPC);
+					   
+				   } else
+				   if(BkChanYeLianTreeNode.SUBGPC == nodetype  ) { //是股票池
+					   bkowncode = element.attributeValue("subgpccode"); 
+					   bkname = element.attributeValue("subgpcname");
+					   
+					   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname,BkChanYeLianTreeNode.SUBGPC);
+					   
+					   String sqlquerystat = "INSERT INTO 产业链板块国列表 (板块国代码, 板块国名称)  VALUES (" 
+								+"'" + bkowncode + "',"
+								+"'" + bkname + "'"
+								+ ")"
+								;
+						try {
+							connectdb.sqlInsertStatExecute(sqlquerystat);
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} 
+					   
+				   } else
+					if(5 == nodetype ) { //是通达信板块  
+							bkowncode = element.attributeValue("subbkcode"); 
+						   bkname = element.attributeValue("subbkname");
+						   
+						   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname,BkChanYeLianTreeNode.SUBGPC);
+						   
+						   String sqlquerystat = "INSERT INTO 产业链板块国列表 (板块国代码, 板块国名称)  VALUES (" 
+									+"'" + bkowncode + "',"
+									+"'" + bkname + "'"
+									+ ")"
+									;
+							try {
+								connectdb.sqlInsertStatExecute(sqlquerystat);
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} 
+					} else
+				   if(BkChanYeLianTreeNode.TDXBK == nodetype ) { //是通达信板块  
+					   bkowncode = element.attributeValue("bkcode");
+					   bkname = element.attributeValue("bkname");
+					 
+					   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname,BkChanYeLianTreeNode.TDXBK);
+				   } else
+				   if(BkChanYeLianTreeNode.TDXGG == nodetype || BkChanYeLianTreeNode.BKGEGU == nodetype) {//是个股
+					   bkname = element.attributeValue("geguname");
+					   bkowncode = element.attributeValue("gegucode");
+					   
+					   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname,BkChanYeLianTreeNode.TDXGG );
+				   }
+				   
+				   
+				   if(parentsleaf != null) {
+					   addNodeToNestedDatabase (topNode,parentsleaf);
+					   generateChanYeLianTreeFromXML(parentsleaf,element);
+				   }  else
+						return;
+			}
+	}
 
+}
+
+
+/*
+ * 按父亲节点
+ */
+class FatherNodeIdComparator implements Comparator<BkChanYeLianTreeNode> {
+	
+	public FatherNodeIdComparator ( )
+	{
+	}
+    public int compare(BkChanYeLianTreeNode node1, BkChanYeLianTreeNode node2) {
+    	 Integer node1p = ( (CylTreeNestedSetNode)node1).getNestedParent ();
+    	 Integer node2p = ( (CylTreeNestedSetNode)node2).getNestedParent ();
+        
+        return node1p.compareTo(node2p);
+    }
 }

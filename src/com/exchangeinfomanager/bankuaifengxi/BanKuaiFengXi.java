@@ -1997,27 +1997,12 @@ public class BanKuaiFengXi extends JDialog
 						chooseParsedFile (null);
 						
 						tableBkZhanBi.repaint();
-//						if(Strings.isNullOrEmpty(tfldparsedfile.getText() ) )
-//							chooseParsedFile (null);
-//						else
-//							chooseParsedFile (tfldparsedfile.getText() );
 						
 						hourglassCursor = null;
 						Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 						setCursor(hourglassCursor2);
 					}
 				}
-			
-//				if(!ckboxparsefile.isSelected()) {
-//					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-//					setCursor(hourglassCursor);
-//					
-//					ckboxparsefile.setSelected(true);
-//					
-//					hourglassCursor = null;
-//					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-//					setCursor(hourglassCursor2);
-//				}
 			}
 		});
 		
@@ -3015,12 +3000,6 @@ public class BanKuaiFengXi extends JDialog
 			
 			ckboxparsefile.setSelected(true);
 			tfldparsedfile.setText(filename);
-			
-//			if(xmlfileexist) {
-//				this.cyldbopt.patchWeeklyBanKuaiFengXiXmlFileToCylTree (filexminconfigpath,localDate);
-//			} else { //不存在要生成
-//				this.cyldbopt.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (fileebk,localDate);
-//			}
 
 			this.cyltreecopy.setCurrentDisplayedWk (localDate);
 			

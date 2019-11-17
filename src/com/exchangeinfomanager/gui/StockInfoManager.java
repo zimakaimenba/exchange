@@ -63,12 +63,12 @@ import javax.swing.ButtonGroup;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
+
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Properties;
-import java.util.Set;
+
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -87,8 +87,7 @@ import javax.swing.JMenuItem;
 
 import com.exchangeinfomanager.tongdaxinreport.*;
 import com.google.common.base.Strings;
-import com.hankcs.hanlp.HanLP;
-import com.lc.nlp.keyword.algorithm.TextRank;
+
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
@@ -101,7 +100,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
-import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 import java.awt.event.ActionListener;
@@ -131,10 +130,6 @@ import org.apache.log4j.Logger;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EtchedBorder;
@@ -175,10 +170,10 @@ public class StockInfoManager
 		
 		accountschicangconfig = AccountAndChiCangConfiguration.getInstance();
 		acntdbopt = new AccountDbOperation();
-		bkdbopt = new BanKuaiDbOperation ();
+		
 		
 		allbkstock = AllCurrentTdxBKAndStoksTree.getInstance();
-		
+		bkdbopt = new BanKuaiDbOperation ();
 		this.cyltreedb = new CylTreeDbOperation ();
 		
 		initializeGui();

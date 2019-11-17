@@ -201,15 +201,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
  		if(newsubbkcode == null)
  			return;
         
-// 		if(	((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).findNodeByNameOrCode(newsubbkcode) ) {
-// 			JOptionPane.showMessageDialog(null,"添加失败，代码已经存在！","Warning",JOptionPane.WARNING_MESSAGE);
-// 			return;
-// 		}
-// 		else if(	((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).findNodeByNameOrCode(newsubbk) ) {
-// 			JOptionPane.showMessageDialog(null,"添加失败，名称已经存在！","Warning",JOptionPane.WARNING_MESSAGE);
-// 			return ;
-// 		}
- 		
  		BkChanYeLianTreeNode newnode = treedb.addNewGuoPiaoChi (newsubbkcode,newsubbk);
 	}
 	

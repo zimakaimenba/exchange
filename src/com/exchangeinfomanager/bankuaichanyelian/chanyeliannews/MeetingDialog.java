@@ -15,6 +15,8 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.jsoup.Jsoup;
+
 import java.awt.*;
 import java.awt.Dialog.ModalityType;
 import java.awt.datatransfer.Clipboard;
@@ -25,12 +27,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Scanner;
 
 @SuppressWarnings("all")
 public  class MeetingDialog<T extends Meeting> extends JDialog 
@@ -78,10 +84,26 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     	kwbutton.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) {
-        		TextRank.setKeywordNumber(6);
-        		TextRank.setWindowSize(4);
+        		TextRank.setKeywordNumber(8);
+        		TextRank.setWindowSize(6);
+        		
+        		String urlcontent = "";
+        		if( ! slackurlField.getText().toLowerCase ().equals("slackurl")) {
+        			
+        			try {
+        				URL slkurl = new URL(slackurlField.getText().trim() );
+						urlcontent = new Scanner(slkurl.openStream(), "UTF-8").useDelimiter("\\A").next();
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
+        		
         		String title = event.getTitle();
-        		String content = event.getDescription();
+        		String content = event.getDescription() +  Jsoup.parse(urlcontent).text(); ;
         		keywordsField.setText( TextRank.getKeyword(title, content).toString()  );
         	}
         });
@@ -169,11 +191,11 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         this.centerPanel.add(this.slackurlField);
         this.centerPanel.add(Box.createVerticalStrut(10));
         
-        JPanel kwPanel = JPanelFactory.createFixedSizePanel(new GridLayout(1, 5));
+        JPanel kwPanel = JPanelFactory.createFixedSizePanel(new BorderLayout());
         kwbutton = JLabelFactory.createButton("¹Ø¼ü´Ê");
-        kwPanel.add(kwbutton);
-        kwPanel.add(new JLabel(" "));
-        kwPanel.add(this.keywordsField);
+        kwPanel.add(kwbutton,BorderLayout.WEST);
+//        kwPanel.add(new JLabel(" "));
+        kwPanel.add(this.keywordsField,BorderLayout.CENTER);
         this.centerPanel.add(kwPanel);
         
         this.centerPanel.add(Box.createVerticalStrut(PADDING));

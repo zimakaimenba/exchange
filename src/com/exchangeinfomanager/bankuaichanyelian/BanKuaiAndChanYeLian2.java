@@ -70,54 +70,16 @@ class BanKuaiAndChanYeLian2
 	
 	private static Logger logger = Logger.getLogger(BanKuaiAndChanYeLian2.class);
 	
-//	private BkfxWeeklyFileResultXmlHandler bkfxrfxmlhandler;
+	private BkfxWeeklyFileResultXmlHandler bkfxrfxmlhandler;
 	private AllCurrentTdxBKAndStoksTree allbkstocks;
 	protected SystemConfigration sysconfig;
 //	protected ChanYeLianXMLHandler cylxmhandler;
     protected BanKuaiAndStockTree treechanyelian;
     private BanKuaiDbOperation bkdbopt;
     
-	/*
-	 * 
-	 */
-	public BanKuaiAndStockTree getBkChanYeLianTree ()
-	{
-		CylTreeNestedSetNode treeroot = (CylTreeNestedSetNode)treechanyelian.getModel().getRoot();
-		print(treeroot);
-		
-		return treechanyelian;
-	}
-	public  void print(CylTreeNestedSetNode aNode)
-	{
-	    String name = aNode.toString();
-	    int level= aNode.getLevel();
-	    String placement = "";
-	    while (level > 0)
-	    {
-	        placement += ">";
-	        level--;
-	    }
-	    if(aNode.isLeaf())
-	    {
-	        System.out.println(placement + name);
-	        return;
-	    }
 
-	    System.out.println(placement + "--- " + name + " ---");
-	    for(int i = 0 ; i < aNode.getChildCount() ; i++)
-	    {
-	        print((CylTreeNestedSetNode)aNode.getChildAt(i));
-	    }
-	    System.out.println(placement + "+++ " + name + " +++");
-	}
 
-    /*
-     * 
-     */
-    private void setupChanYeLianTreeFromNestedSetDatabase ()
-    {
-    	
-    }
+
 	public void patchWeeklyBanKuaiFengXiXmlFileToCylTree(File xmlfile, LocalDate localDate)
 	{
 		bkfxrfxmlhandler.getXmlRootFileForBkfxWeeklyFile (xmlfile);

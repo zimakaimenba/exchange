@@ -68,13 +68,14 @@ class ChanYeLianXMLHandler
 	{
 		this.sysconfig = SystemConfigration.getInstance();
 		connectdb = ConnectDataBase.getInstance();
-		bankuaichanyelianxml = sysconfig.getBanKuaiChanYeLianXml ();
+		
 		geguchanyelianxml = sysconfig.getGeGuChanYeLianXmlFile ();
 		this.bkopt = new BanKuaiDbOperation ();
 		
 //		CylTreeDbOperation treedb = new CylTreeDbOperation  ();
 //		BanKuaiAndStockTree treecyl = treedb.getBanKuaiAndStockTree();
 		
+		bankuaichanyelianxml = sysconfig.getBanKuaiChanYeLianXml ();
 		FileInputStream xmlfileinput = null;
 		try {
 			xmlfileinput = new FileInputStream(bankuaichanyelianxml);

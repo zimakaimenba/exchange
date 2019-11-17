@@ -1,28 +1,23 @@
 package com.exchangeinfomanager.nodes.operations;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.time.DayOfWeek;
-import java.time.Duration;
+
 import java.time.LocalDate;
-import java.time.Period;
-import java.time.chrono.Chronology;
+
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jfree.chart.annotations.CategoryTextAnnotation;
-import org.jfree.ui.TextAnchor;
+
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.ConnectDataBase;
-import com.exchangeinfomanager.database.CylTreeDbOperation;
+
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
@@ -30,7 +25,7 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 /*
@@ -40,7 +35,7 @@ public class AllCurrentTdxBKAndStoksTree
 {
 	private AllCurrentTdxBKAndStoksTree ()
 	{
-		this.sysconfig = SystemConfigration.getInstance();
+//		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 
 		initializeAllStocksTree ();
@@ -65,11 +60,11 @@ public class AllCurrentTdxBKAndStoksTree
 	
 	private BanKuaiDbOperation bkdbopt;
 	private BanKuaiAndStockTree allbkggtree;
-	private SystemConfigration sysconfig;
-
-	private CylTreeDbOperation cyltreedb;
-
-	private BanKuaiAndStockTree cyltree;
+//	private SystemConfigration sysconfig;
+//
+//	private CylTreeDbOperation cyltreedb;
+//
+//	private BanKuaiAndStockTree cyltree;
 
 	
 	
