@@ -147,15 +147,16 @@ public class CylTreeDbOperation
 					rsagu = null;
 			}
 		 	
-		 try{
-				Collections.sort(nodelist, new FatherNodeIdComparator () );
-			} catch (java.lang.NullPointerException e) {
-//				e.printStackTrace();
-		 }
+//		 try{
+//				Collections.sort(nodelist, new FatherNodeIdComparator () );
+//			} catch (java.lang.NullPointerException e) {
+////				e.printStackTrace();
+//		 }
 		 
 		 CylTreeNestedSetNode treeroot = (CylTreeNestedSetNode)treecyl.getModel().getRoot();
 		 InvisibleTreeModel treemodel = (InvisibleTreeModel)treecyl.getModel();
 		 for(BkChanYeLianTreeNode tmpnode : nodelist) {
+			  String nodename = tmpnode.getMyOwnName();
 			  Integer parent_id = ( (CylTreeNestedSetNode)tmpnode).getNestedParent ();
 			  Enumeration<TreeNode> e = treeroot.breadthFirstEnumeration();
 			  while (e.hasMoreElements() ) {
@@ -802,7 +803,7 @@ public class CylTreeDbOperation
 	}
 	public  List<String[]> getChanYeLianInfo (String nodecode, int nodetype)
 	{
-		String query = "SELECT * FROM  tree_content "
+		String query = "SELECT * FROM  tree_map "
 				+ " WHERE nodeid ='" + nodecode + "'"
 				+ " AND nodetype = " + nodetype
 				;

@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -45,7 +46,7 @@ public class Stock extends TDXNodes {
 		super.nodewkdata = new StockXPeriodDataForJFC (myowncode1,NodeGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new StockXPeriodDataForJFC (myowncode1,NodeGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
-//		super.nodetreerelated = new NodesTreeRelated (this);
+		super.nodetreerelated = new StockOfBanKuaiTreeRelated (this);
 		
 	}
 	

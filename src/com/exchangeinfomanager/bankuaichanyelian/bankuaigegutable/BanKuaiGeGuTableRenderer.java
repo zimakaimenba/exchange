@@ -33,6 +33,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
@@ -122,19 +123,19 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    }
 	    
 	    if( col == 1 ) { //个股名称
-//	    	LocalDate requireddate = tablemodel.getShowCurDate();
-//	 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreeRelated();
-//    	
-//	 		Boolean isin = stofbktree.isInBanKuaiFengXiResultFileForSpecificDate(requireddate);
-//	    	if(isin != null && isin  ) 
-//		    		background = Color.ORANGE;  
-//	    	else
-//		    		background = Color.white;
-//	    	
-//	    	if(stockofbank.isBkLongTou())
-//	    		foreground = Color.RED;
-//	    	else 
-//	    		foreground = Color.BLACK;
+	    	LocalDate requireddate = tablemodel.getShowCurDate();
+	 		NodesTreeRelated stofbktree = stock.getNodeTreeRelated();
+    	
+	 		Boolean isin = stofbktree.selfIsMatchModel(requireddate);
+	    	if(isin != null && isin  ) 
+		    		background = Color.ORANGE;  
+	    	else
+		    		background = Color.white;
+	    	
+	    	if(stockofbank.isBkLongTou())
+	    		foreground = Color.RED;
+	    	else 
+	    		foreground = Color.BLACK;
 
 	    } else if( col == 2) { //流通市值
 	    	Double ltszmin = tablemodel.getDisplayLiuTongShiZhiMin() ;

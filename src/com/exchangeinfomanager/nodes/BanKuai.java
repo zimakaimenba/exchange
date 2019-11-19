@@ -48,7 +48,7 @@ public class BanKuai extends TDXNodes
 		super.nodewkdata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.DAY) ;
 
-//		super.nodetreerelated = new BanKuaiTreeRelated (this);
+		super.nodetreerelated = new BanKuaiTreeRelated (this);
 	}
 	
 //	private static Logger logger = Logger.getLogger(BanKuai.class);

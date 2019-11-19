@@ -50,6 +50,8 @@ import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
@@ -62,9 +64,8 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 {
 	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
-	private BanKuaiDbOperation bkdbopt;
-	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
+	private BanKuaiAndStockTree allbkskstree;
 	
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 
@@ -75,7 +76,7 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel ();
 		this.setModel(bkmodel);
 		
-		this.sysconfig = SystemConfigration.getInstance();
+		this.allbkskstree = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree();
 		this.stockmanager = stockmanager1;
 		
 		this.createEvents ();
@@ -367,18 +368,19 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 					e.printStackTrace();
 				}
             	((JLabel)comp).setText(valuepect);
-	        } 
+	        }
+	        
 	        if( col == 1 && !bktype.equals(BanKuai.NOGGWITHSELFCJL) ) {
-	        	NodesTreeRelated tmptreerelated = null;
+	        	
 	        	try {
-//	        		BkChanYeLianTreeNode node = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
-//	        		tmptreerelated = node.getNodeTreeRelated();
-//	        		Integer patchfilestocknum = ((BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (curdate);
-//        	 
-//		        	if(patchfilestocknum != null && patchfilestocknum > 0 )
-//			        	background = Color.ORANGE;
-//			        else
-//			        	background = Color.white;
+	        		BkChanYeLianTreeNode node = allbkskstree.getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
+	        		NodesTreeRelated tmptreerelated = node.getNodeTreeRelated();
+	        		Integer patchfilestocknum = tmptreerelated.getStocksNumInParsedFileForSpecificDate (curdate);
+        	 
+		        	if(patchfilestocknum != null && patchfilestocknum > 0 )
+			        	background = Color.ORANGE;
+			        else
+			        	background = Color.white;
 	        	} catch (java.lang.NullPointerException e) {
 	        		background = Color.white;
 	        	}

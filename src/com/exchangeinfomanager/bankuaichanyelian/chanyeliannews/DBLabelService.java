@@ -1,8 +1,6 @@
 package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 
-
-
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -11,6 +9,7 @@ import java.util.Collection;
 import java.util.logging.Logger;
 
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
+
 
 @SuppressWarnings("all")
 public class DBLabelService implements LabelService {

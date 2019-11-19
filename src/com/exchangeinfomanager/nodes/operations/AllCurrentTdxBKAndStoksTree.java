@@ -33,10 +33,12 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
  */
 public class AllCurrentTdxBKAndStoksTree 
 {
+	
 	private AllCurrentTdxBKAndStoksTree ()
 	{
 //		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
+		
 
 		initializeAllStocksTree ();
 		setupDaPan ();
@@ -60,6 +62,7 @@ public class AllCurrentTdxBKAndStoksTree
 	
 	private BanKuaiDbOperation bkdbopt;
 	private BanKuaiAndStockTree allbkggtree;
+
 //	private SystemConfigration sysconfig;
 //
 //	private CylTreeDbOperation cyltreedb;

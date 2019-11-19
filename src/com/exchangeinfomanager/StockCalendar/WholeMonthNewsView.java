@@ -80,8 +80,7 @@ public class WholeMonthNewsView extends View
        	pnlmonthnews.setName(firstDayInMonth + "wwwwww");
         
         Color color = null;
-//        if (firstDayInMonth.getMonth().equals(super.getDate().getMonth()) ) {
-                color = ColorScheme.BACKGROUND;
+        color = ColorScheme.BACKGROUND;
 
                 pnlmonthnews.setLayout(new BorderLayout());
                 pnlmonthnews.addMouseListener(new WholeMonthCreateNewsController(Meeting.CHANGQIJILU, firstDayInMonth));
@@ -94,9 +93,7 @@ public class WholeMonthNewsView extends View
                 pnlmonthnews.add(newscontentsLabel, BorderLayout.NORTH);
                 pnlmonthnews.add(JPanelFactory.createPanel(new WrapLayout(WrapLayout.LEFT, 5, 5)), BorderLayout.CENTER); //中间用来显示信息的panel
                 
-//            } else {
-//                color = ColorScheme.GREY_WHITER;
-//            }
+
             pnlmonthnews.setBackground(color);
             sclpmonthnews.setViewportView (pnlmonthnews);
             //强势板块个股

@@ -11,30 +11,31 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 /*
  * 
  */
-public class StockOfBanKuaiTreeRelated extends NodesTreeRelated
+public class StockOfBanKuaiTreeRelated implements NodesTreeRelated
 {
 	public StockOfBanKuaiTreeRelated (BkChanYeLianTreeNode treenode1)
 	{
-		super(treenode1);
+		this.node = treenode1;
 	}
 	
+	private BkChanYeLianTreeNode node;
 	private Set<LocalDate> isinparsedfile; //表明个股在指定日期是否在分析文件中
-	public void setStocksNumInParsedFile (LocalDate parsefiledate, Boolean isin)
+	
+	@Override
+	public void setSelfIsMatchModel(LocalDate selfinsetdate)
 	{
-		if(isinparsedfile == null) {
+		if(isinparsedfile == null) 
 			isinparsedfile = new HashSet<LocalDate> ();
-			LocalDate friday = parsefiledate.with(DayOfWeek.FRIDAY);
-			if(isin)
-				isinparsedfile.add(friday);
-		} else {
-			LocalDate friday = parsefiledate.with(DayOfWeek.FRIDAY);
-			if(isin)
-				isinparsedfile.add(friday);
-		}
+		
+		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
+		if(!isinparsedfile.contains(friday))
+			isinparsedfile.add(friday);
+		
 	}
-	public Boolean isInBanKuaiFengXiResultFileForSpecificDate (LocalDate requiredate)
+	@Override
+	public Boolean selfIsMatchModel(LocalDate selfinsetdate) 
 	{
-		LocalDate friday = requiredate.with(DayOfWeek.FRIDAY);
+		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
 		try {
 			 if( isinparsedfile.contains(friday) )
 				 return true;
@@ -43,6 +44,16 @@ public class StockOfBanKuaiTreeRelated extends NodesTreeRelated
 		} catch(java.lang.NullPointerException e) {
 			return null;
 		}
+	}
+	@Override
+	public void setStocksNumInParsedFile(LocalDate parsefiledate, Integer stocksnum) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public Integer getStocksNumInParsedFileForSpecificDate(LocalDate requiredate) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

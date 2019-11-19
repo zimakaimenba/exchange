@@ -1,40 +1,10 @@
 package com.exchangeinfomanager.nodes;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
-import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.swing.tree.*;
-
 import org.apache.log4j.Logger;
-import org.jfree.data.ComparableObjectItem;
-import org.jfree.data.time.Day;
-import org.jfree.data.time.RegularTimePeriod;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.data.time.ohlc.OHLCItem;
-import org.jfree.data.time.ohlc.OHLCSeries;
-
-import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.operations.InvisibleNode;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 public abstract class BkChanYeLianTreeNode  extends InvisibleNode 
@@ -59,7 +29,6 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode
    		
    		//NodeJiBenMian  TreeRelated
    		this.nodejbm = new NodeJiBenMian ();
-   		this.nodetreerelated = new NodesTreeRelated (this);
   }
 	
     private Logger logger = Logger.getLogger(BkChanYeLianTreeNode.class);

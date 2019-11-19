@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 
@@ -80,15 +82,23 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
+import com.exchangeinfomanager.nodes.operations.BkfxWeeklyFileResultXmlHandler;
 import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
+import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
+import com.google.common.io.LineProcessor;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
@@ -165,6 +175,7 @@ public class BanKuaiFengXi extends JDialog
 		this.nodeinfotocsv = new NodeInfoToCsv ();
 		this.displayexpc = new ExportCondition () ;
 		this.bkfxremind = new BanKuaiFengXiRemindXmlHandler ();
+		this.bkfxfh = new BkfxWeeklyFileResultXmlHandler ();
 
 		this.globecalwholeweek = true; //计算整周
 
@@ -186,6 +197,7 @@ public class BanKuaiFengXi extends JDialog
 	private StockInfoManager stockmanager;
 	private BanKuaiDbOperation bkdbopt;
 	private StockCalendarAndNewDbOperation newsdbopt;
+	private BkfxWeeklyFileResultXmlHandler bkfxfh;
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
 	private ExportTask2 exporttask;
 //	private BanKuaiPaiXuTask bkfxtask;
@@ -2907,11 +2919,10 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
-	protected void chooseParsedFile(String pasedpathintextfld) 
+	protected void chooseParsedFile(String filename) 
 	{
 		//先选择文件
-		String filename = null;
-		if(pasedpathintextfld == null) {
+		if(filename == null) {
 			String parsedpath = sysconfig.getTDXModelMatchExportFile ();
 			JFileChooser chooser = new JFileChooser();
 			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -2924,8 +2935,6 @@ public class BanKuaiFengXi extends JDialog
 			    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
 			} else
 				return;
-		} else {
-			filename = pasedpathintextfld; 
 		}
 		
 		if(!filename.endsWith("EBK") && !filename.endsWith("XML")) { //不是板块文件
@@ -2933,15 +2942,12 @@ public class BanKuaiFengXi extends JDialog
 			ckboxparsefile.setSelected(false);
 			return;
 		}
-//			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setShowParsedFile(true);
 			
 			//找到对应的XML
-			File fileebk = null;
 			boolean xmlfileexist = false;
 			File filexminconfigpath = null;
-			String filenamedate = null;
 			if(filename.endsWith("EBK")) {
-				fileebk = new File( filename );
+				File fileebk = new File( filename );
 				String exportxmlfilename = sysconfig.getTDXModelMatchExportFile () +  fileebk.getName();
 				String xmlfilename = exportxmlfilename.replace(".EBK", ".XML");
 				filexminconfigpath = new File(xmlfilename);
@@ -2953,9 +2959,10 @@ public class BanKuaiFengXi extends JDialog
 						return ;
 				}
 				
-				 filenamedate = fileebk.getName().replaceAll("\\D+","");
-				
-			} else {
+//				 filenamedate = fileebk.getName().replaceAll("\\D+","");
+			}
+			
+			if(filename.endsWith("XML")) {
 				filexminconfigpath = new File(filename);
 				Path inputfilepath = FileSystems.getDefault().getPath(filexminconfigpath.getParent());
 				Path systemrequiredpath = FileSystems.getDefault().getPath(sysconfig.getTDXModelMatchExportFile ());
@@ -2967,28 +2974,23 @@ public class BanKuaiFengXi extends JDialog
 						return;
 					} else {
 						xmlfileexist = true;
-						
-						filenamedate = filexminconfigpath.getName().replaceAll("\\D+","");
 					}
 				} catch (IOException e) {
-					
 					e.printStackTrace();
 				}
 			}
 			
-			
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 			LocalDate localDate = null;
 			try{
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+				
+				String filenamedate = filexminconfigpath.getName().replaceAll("\\D+","");
 					 localDate = LocalDate.parse(filenamedate, formatter);
 					 int exchangeresult = JOptionPane.showConfirmDialog(null,"文件指定日期是" + localDate + "。是否更改到该日期？", "是否更改日期？", JOptionPane.OK_CANCEL_OPTION);
 					 if(exchangeresult != JOptionPane.CANCEL_OPTION) {
 						 	LocalDate curselectdate = dateChooser.getLocalDate();
-							if(!curselectdate.equals(localDate) ) {
-								ZoneId zone = ZoneId.systemDefault();
-								Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
-								this.dateChooser.setDate(Date.from(instant));
-							}
+							if(!curselectdate.equals(localDate) ) 
+								this.dateChooser.setLocalDate(localDate);
 					 } else { //用户可以作为本周文件
 						 localDate = dateChooser.getLocalDate();
 					 }
@@ -2997,15 +2999,28 @@ public class BanKuaiFengXi extends JDialog
 					localDate = dateChooser.getLocalDate();
 			}
 			
-			
 			ckboxparsefile.setSelected(true);
 			tfldparsedfile.setText(filename);
 
-			this.cyltreecopy.setCurrentDisplayedWk (localDate);
+			if(xmlfileexist) {
+				InvisibleTreeModel treeModel = (InvisibleTreeModel)this.allbksks.getAllBkStocksTree().getModel();
+				BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+				
+				this.bkfxfh.setXmlRootFileForBkfxWeeklyFile(new File(filename));
+				this.bkfxfh.patchParsedResultXmlToTrees (treeroot,localDate);
+				
+				this.allbksks.getAllBkStocksTree().setCurrentDisplayedWk (localDate);
+				
+				treeModel.reload(treeroot);
+			}
+			else
+				this.bkfxfh.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (new File( filename ),localDate);
 			
-			InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyltreecopy.getModel();
-			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
-			treeModel.reload(treeroot);
+			//产业链树暂时不更新
+//			this.cyltreecopy.setCurrentDisplayedWk (localDate);
+//			InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyltreecopy.getModel();
+//			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+//			treeModel.reload(treeroot);
 
 			filexminconfigpath = null;
 			filexminconfigpath = null;
@@ -3511,8 +3526,8 @@ public class BanKuaiFengXi extends JDialog
 		JScrollPane scrollPane = new JScrollPane();
 		tabbedPanebk.addTab("\u4EA7\u4E1A\u94FE", null, scrollPane, null);
 		
-		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyldbopt.getBkChanYeLianTree().getModel();
-		cyltreecopy = new BanKuaiAndStockTree(treeModel,"cyltreecopy");
+//		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyldbopt.getBkChanYeLianTree().getModel();
+		cyltreecopy = this.cyldbopt.getBkChanYeLianTree();//new BanKuaiAndStockTree(treeModel,"cyltreecopy");
 		
 		scrollPane.setViewportView(cyltreecopy);
 		

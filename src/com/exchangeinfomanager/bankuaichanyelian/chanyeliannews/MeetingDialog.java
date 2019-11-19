@@ -102,8 +102,8 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 					}
         		}
         		
-        		String title = event.getTitle();
-        		String content = event.getDescription() +  Jsoup.parse(urlcontent).text(); ;
+        		String title = newstitleField.getText();
+        		String content = descriptionArea.getText() +  Jsoup.parse(urlcontent).text(); ;
         		keywordsField.setText( TextRank.getKeyword(title, content).toString()  );
         	}
         });

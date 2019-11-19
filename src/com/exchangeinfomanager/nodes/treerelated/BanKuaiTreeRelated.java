@@ -12,13 +12,14 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 /*
  * 
  */
-public class BanKuaiTreeRelated extends NodesTreeRelated
+public class BanKuaiTreeRelated implements NodesTreeRelated
 {
 	public BanKuaiTreeRelated (BkChanYeLianTreeNode treenode1)
 	{
-		super(treenode1);
+		this.node = treenode1;
 	}
-//	public boolean selfismatchmodel;
+	
+	private BkChanYeLianTreeNode node;
 	private Map<LocalDate,Integer> stocknumsinparsedfile; //
 	private Set<LocalDate> bkselfinparsedfile;
 	/*

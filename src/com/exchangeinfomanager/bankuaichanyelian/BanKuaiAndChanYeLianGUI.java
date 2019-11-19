@@ -54,7 +54,7 @@ import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
-
+import com.exchangeinfomanager.labelmanagement.LabelsManagement;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
@@ -160,9 +160,9 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		BkChanYeLianTreeNode delnode = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
 		int action = JOptionPane.showConfirmDialog(null, "是否将该节点彻底删除？选择YES彻底删除，选择NO将保留数据","询问", JOptionPane.YES_NO_OPTION);
 		if(0 == action) {
-			treedb.deleteNodeFromTree (delnode,true);
+			treedb.deleteNodeFromTree ( (CylTreeNestedSetNode)delnode,true);
 		} else {
-			treedb.deleteNodeFromTree (delnode,false);
+			treedb.deleteNodeFromTree ( (CylTreeNestedSetNode)delnode,false);
 		}
 	}
 	/*
@@ -688,6 +688,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		JScrollPane sclpforpnl21 = new JScrollPane();
 		panel_2.add(sclpforpnl21,BorderLayout.CENTER);
 		
+//		LabelsManagement tagspnl = new LabelsManagement ();
+//		panel_4.add(tagspnl);
 		JScrollPane scllPnsubcyl41 = new JScrollPane();
 		JScrollPane scrollPane_42 = new JScrollPane();
 		panel_4.add(scllPnsubcyl41);

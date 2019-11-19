@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<Checklists>
+  <BanKuaiRemind value="板块提醒">
+    <item id="bk04">注意板块占比是否放量。</item>
+    <item id="bk10">好友板块是否同时放量。</item>
+    <item id="bk11">有何新闻支持该板块。</item>
+  </BanKuaiRemind>
+  <BanKuaiColumnRemind value="板块Column提醒">
+    <item id="bkc01" >板块的占比和成交量/成交额是否背离？</item>
+    <item id="bkc02" >缺口的组成</item>
+  </BanKuaiColumnRemind>
+  <StockRemind value="个股提醒">
+    <item id="sk01">大盘占比增率高的多关注。</item>
+    <item id="sk02">个股占比和成交额/成交量是否背离。</item>
+  </StockRemind>
+  <StockColumnRemind value="板块Column提醒">
+    <item id="skc01" >个股的占比和成交量/成交额是否背离？ </item>
+    <item id="skc02" >K线和大盘关键日期的对应走势。</item>
+  </StockColumnRemind>
+</Checklists>

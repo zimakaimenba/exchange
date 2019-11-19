@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
 
 import javax.swing.tree.TreeNode;
 
-import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
+
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 
@@ -60,12 +60,6 @@ import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
  */
 public class BanKuaiAndStockTree extends JTree 
 {
-	
-
-	private TreeDragSource ds;
-	private TreeDropTarget dt;
-	private TreeTransferHandler transhdlr;
-
 	public BanKuaiAndStockTree (BkChanYeLianTreeNode bkcylrootnode,String treeid)
 	{
 		super(bkcylrootnode);
@@ -92,6 +86,8 @@ public class BanKuaiAndStockTree extends JTree
         
 		    
 		this.createEvents ();
+		
+
 		
 	}
 	
@@ -127,6 +123,7 @@ public class BanKuaiAndStockTree extends JTree
 	private String currentselectedtdxbk;
 	private LocalDate currentdisplayedwk; //tree当前所显示的分析州
 	protected boolean treechangedshouldsave = false;
+//	private BkfxWeeklyFileResultXmlHandler bkfxxml;
 	
 	public void createEvents ()
 	{
@@ -145,7 +142,11 @@ public class BanKuaiAndStockTree extends JTree
 //	        }
 //	    });
 	}
-
+	
+//	public  BkfxWeeklyFileResultXmlHandler getWeeklyBkfxXml ()
+//	{
+//		return this.bkfxxml;
+//	}
 	/*
 	 * 
 	 */
@@ -349,87 +350,7 @@ public class BanKuaiAndStockTree extends JTree
                 else return 0;
         }});
     }
-    
-   
-//	public void moveNode(int direction) 
-//	{
-//		if (this.getSelectionCount()==0) return;
-//        
-//		DefaultTreeModel treeModel = (DefaultTreeModel) this.getModel();
-//        TreePath parentPath = this.getSelectionPath().getParentPath();
-//        TreePath[] treePaths = this.getSelectionPaths();
-//        final BkChanYeLianTreeNode parentNode = (BkChanYeLianTreeNode) parentPath.getLastPathComponent();
-//        //String tmpstr = parentPath.toString();
-//        if(parentNode.getType() == BkChanYeLianTreeNode.TDXBK || parentPath.toString().equals("[JTree]"))
-//        	return;
-//        
-//        //unselect non-siblings
-//        for (TreePath treePath : treePaths)
-//            if (!parentPath.equals(treePath.getParentPath()))
-//                this.removeSelectionPath(treePath);
-//        treePaths = this.getSelectionPaths();
-//        
-//        sortPaths(this,treePaths);
-//        
-//        BkChanYeLianTreeNode node=null, newParentNode;
-//        int index;
-//        if (direction == BanKuaiAndChanYeLian.UP){
-//            this.clearSelection();
-//            for (TreePath treePath : treePaths){
-//                node = (BkChanYeLianTreeNode) treePath.getLastPathComponent();
-//                index = parentNode.getIndex(node);
-//                if (index == 0) {
-//                    this.setSelectionPaths(treePaths);
-//                    return;
-//                }
-//                else {
-//                    parentNode.remove(index);
-//                    treeModel.nodesWereRemoved(parentNode, new int[] {index}, new Object[] {node});
-//                    parentNode.insert(node, index-1);
-//                    treeModel.nodesWereInserted(parentNode, new int[] {index - 1});
-//                }
-//            }
-//            this.setSelectionPaths(treePaths);
-//            this.scrollPathToVisible(treePaths[0]);
-//        }
-//        else if (direction == BanKuaiAndChanYeLian.DOWN){
-//            this.clearSelection();
-//            for (int i=treePaths.length - 1; i>=0; i--){
-//                node = (BkChanYeLianTreeNode) treePaths[i].getLastPathComponent();
-//                index = parentNode.getIndex(node);
-//                if (index == parentNode.getChildCount()-1) {
-//                    this.setSelectionPaths(treePaths);
-//                    return;
-//                }
-//                else {
-//                    parentNode.remove(index);
-//                    treeModel.nodesWereRemoved(parentNode, new int[] {index}, new Object[] {node});
-//                    parentNode.insert(node, index+1);
-//                    treeModel.nodesWereInserted(parentNode, new int[] {index + 1});
-//                }
-//            }
-//            this.setSelectionPaths(treePaths);
-//            this.scrollPathToVisible(treePaths[treePaths.length-1]);
-//            
-//        }
-//        else if (direction==BanKuaiAndChanYeLian.LEFT)
-//            
-//            
-//                this.clearSelection();
-//                newParentNode = (BkChanYeLianTreeNode)parentNode.getParent();
-//            
-//                for (TreePath treePath : treePaths){
-//                    node = (BkChanYeLianTreeNode) treePath.getLastPathComponent();
-//                    index = parentNode.getIndex(node);
-//                    parentNode.remove(index);
-//                    treeModel.nodesWereRemoved(parentNode, new int[]{index}, new Object[]{node});
-//                    newParentNode.add(node);
-//                    treeModel.nodesWereInserted(newParentNode, new int[] {newParentNode.getIndex(node)});
-//                    this.addSelectionPath(new TreePath(node.getPath()));
-//                }
-//                this.scrollPathToVisible(new TreePath(node.getPath()));
-//	}
-	/*
+    /*
 	 * 找到指定的节点
 	 */
 	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String bkinputed,int requirenodetype) //有时候板块和个股代码相同,所以要加上type
@@ -686,4 +607,3 @@ public synchronized Object getTransferData(DataFlavor flavor)
 }
 
          
-       

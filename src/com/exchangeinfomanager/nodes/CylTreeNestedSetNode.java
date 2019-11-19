@@ -2,6 +2,7 @@ package com.exchangeinfomanager.nodes;
 
 import java.time.LocalDate;
 
+import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 
 public class CylTreeNestedSetNode extends BkChanYeLianTreeNode 
@@ -11,6 +12,8 @@ public class CylTreeNestedSetNode extends BkChanYeLianTreeNode
 	{
 		super(myowncode, name);
 		super.nodetype = type;
+		
+		super.nodetreerelated = new BanKuaiTreeRelated (this);
 	}
 	
 	private int nestedid;

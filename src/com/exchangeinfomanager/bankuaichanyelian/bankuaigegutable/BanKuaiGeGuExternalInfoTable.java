@@ -193,9 +193,9 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 
 		    if( col == 1 ) { //¸ö¹ÉÃû³Æ
 		    	LocalDate requireddate = tablemodel.getShowCurDate();
-		 		StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stockofbank.getNodeTreeRelated();
+		 		NodesTreeRelated stofbktree = stock.getNodeTreeRelated();
 	    	
-		 		Boolean isin = stofbktree.isInBanKuaiFengXiResultFileForSpecificDate(requireddate);
+		 		Boolean isin = stofbktree.selfIsMatchModel(requireddate);
 		    	if(isin != null && isin  ) 
 			    		background = Color.ORANGE;  
 		    	else

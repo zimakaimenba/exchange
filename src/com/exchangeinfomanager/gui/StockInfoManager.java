@@ -95,6 +95,7 @@ import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
+import com.exchangeinfomanager.labelmanagement.NodeLabelMatrixManagement;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
@@ -359,6 +360,14 @@ public class StockInfoManager
 	 */
 	private void createEvents()
 	{
+		lblzhengxg.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e)	{
+				NodeLabelMatrixManagement keywordsmatrix = new NodeLabelMatrixManagement ();
+				keywordsmatrix.setVisible(true);
+			}
+		});
+		
 		tblzhongdiangz.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) 
@@ -2306,6 +2315,7 @@ public class StockInfoManager
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JButton btnyituishi;
 	private JComboBox cobxgpc;
+	private JLabel lblzhengxg;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2661,7 +2671,8 @@ public class StockInfoManager
 		txtfldquanshangpj.setEnabled(false);
 		txtfldquanshangpj.setColumns(10);
 		
-		JLabel lblzhengxg = new JLabel("\u6B63\u76F8\u5173");
+		lblzhengxg = new JLabel("\u6B63\u76F8\u5173");
+		
 		
 		txtfldzhengxg = new JTextField();
 		

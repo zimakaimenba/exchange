@@ -1938,33 +1938,33 @@ public class BanKuaiDbOperation
 					e.printStackTrace();
 				}
 				
-				sqldeletetstat = "DELETE 产业链子板块列表 "
-						+ "	FROM 产业链子板块列表 "
-						+ " INNER JOIN 产业链板块子板块对应表 ON 产业链子板块列表.子板块代码 = 产业链板块子板块对应表.子板块代码"
-						;
-				logger.debug(sqldeletetstat);
-				try {
-					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				sqldeletetstat = "DELETE  FROM 产业链板块子板块对应表"
-						+ " WHERE 通达信板块代码 =" + "'"  + oldbkcode.trim() + "'"
-						;
-				logger.debug(sqldeletetstat);
-				try {
-					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				sqldeletetstat = "DELETE 产业链子板块列表 "
+//						+ "	FROM 产业链子板块列表 "
+//						+ " INNER JOIN 产业链板块子板块对应表 ON 产业链子板块列表.子板块代码 = 产业链板块子板块对应表.子板块代码"
+//						;
+//				logger.debug(sqldeletetstat);
+//				try {
+//					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				sqldeletetstat = "DELETE  FROM 产业链板块子板块对应表"
+//						+ " WHERE 通达信板块代码 =" + "'"  + oldbkcode.trim() + "'"
+//						;
+//				logger.debug(sqldeletetstat);
+//				try {
+//					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			 }
 		 }
 		 differencebankuaiold = null;
