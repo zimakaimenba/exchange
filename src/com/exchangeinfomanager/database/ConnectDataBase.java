@@ -11,7 +11,6 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.sql.rowset.CachedRowSet;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -159,21 +158,8 @@ class DataBaseConnection
 
 			String tmpdatabasetype = curdb.getCurDatabaseType().toLowerCase();
 			String urlToDababasecrypt = null;
-			switch(tmpdatabasetype) {
-			case "access": 
-						try	{
-								Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
-						} catch(ClassNotFoundException e)	{
-							logger.error("找不到驱动程序类 ，加载驱动失败！");
-							e.printStackTrace();
-						}
-
-//jdbc:ucanaccess://C:/Users/wei.Jeff_AUAS/OneDrive/stock/2016/exchange info manager test.accdb;jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener
-						urlToDababasecrypt = "jdbc:ucanaccess://" + dbconnectstr + ";jackcessOpener=com.exchangeinfomanager.database.CryptCodecOpener";
-						logger.debug(urlToDababasecrypt);
-						break;
-			case "mysql":
-						try	{
+			
+			try	{
 								Class.forName("com.mysql.jdbc.Driver");
 								logger.info("成功加载MySQL驱动 for" + dbconnectstr);
 //								 System.out.println("成功加载MySQL驱动 for" + dbconnectstr);
@@ -181,14 +167,9 @@ class DataBaseConnection
 								logger.error("找不到驱动程序类 ，加载驱动失败！");
 //								System.out.println("找不到驱动程序类 ，加载驱动失败！");
 								e.printStackTrace();
-							}
-						urlToDababasecrypt = "jdbc:mysql://" +  dbconnectstr;  						// "jdbc:mysql://localhost:3306/stockinfomanagementtest" ;
-						break;
-			case "sqlserver": //Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-								break;
-								
 			}
-			
+			urlToDababasecrypt = "jdbc:mysql://" +  dbconnectstr;  						// "jdbc:mysql://localhost:3306/stockinfomanagementtest" ;
+
 			try	{	// 方式二 通过数据源与数据库建立连接
 				logger.info("begin to connect database");
 				
@@ -258,9 +239,7 @@ class DataBaseConnection
 			
 			cachedRS = new CachedRowSetImpl();
 			cachedRS.populate(rsquery);
-		}  catch(net.ucanaccess.jdbc.UcanaccessSQLException ex) {
-			ex.printStackTrace();
-		} catch(java.lang.NullPointerException e) {
+		}  catch(java.lang.NullPointerException e) {
 			logger.info("数据库连接为NULL");
 //			System.out.println("数据库连接为NULL");
 			e.printStackTrace();

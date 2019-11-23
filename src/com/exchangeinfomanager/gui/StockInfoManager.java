@@ -4,6 +4,7 @@ package com.exchangeinfomanager.gui;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.Toolkit;
@@ -68,7 +69,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import java.util.Properties;
-
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -95,7 +96,10 @@ import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
+import com.exchangeinfomanager.labelmanagement.DBNodesTagsService;
+import com.exchangeinfomanager.labelmanagement.LabelCache;
 import com.exchangeinfomanager.labelmanagement.NodeLabelMatrixManagement;
+import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelsManagement;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
@@ -143,6 +147,7 @@ import net.miginfocom.swing.MigLayout;
 
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import javax.swing.JComboBox;
+import java.awt.BorderLayout;
 
 
 public class StockInfoManager 
@@ -198,6 +203,7 @@ public class StockInfoManager
 	private WeeklyExportFileFengXi effx;
 	private AllCurrentTdxBKAndStoksTree allbkstock;
 	private BanKuaiAndStockTree bkcyl;
+	private LabelCache bkstkkwcache;
 	/*
 	 * 
 	 */
@@ -274,7 +280,7 @@ public class StockInfoManager
 				btngengxinxx.setEnabled(false);
 				clearGuiDispalyedInfo ();
 				
-				 displayStockJibenmianInfotoGui (); //显示板块或者股票的基本信息
+				 displayStockJibenmianInfotoGui (); //显示基本信息
 				 
 				 if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 					 nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB(nodeshouldbedisplayed);
@@ -296,8 +302,20 @@ public class StockInfoManager
 				 
 				 
 				 displayBanKuaiAndStockNews (); //显示板块和个股新闻
+				 displayNodeTags ();
 				 enableGuiEditable();
 		}
+		
+	private void displayNodeTags() 
+	{
+		Set<BkChanYeLianTreeNode> bkstk = new HashSet<> ();
+		bkstk.add(this.nodeshouldbedisplayed);
+		DBNodesTagsService lbnodedbservice = new DBNodesTagsService (bkstk);
+		bkstkkwcache = new LabelCache (lbnodedbservice);
+		lbnodedbservice.setCache(bkstkkwcache);
+		pnltags.initializeLabelsManagement (lbnodedbservice,bkstkkwcache);
+		
+	}
 	/*
 	 * 
 	 */
@@ -360,13 +378,6 @@ public class StockInfoManager
 	 */
 	private void createEvents()
 	{
-		lblzhengxg.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e)	{
-				NodeLabelMatrixManagement keywordsmatrix = new NodeLabelMatrixManagement ();
-				keywordsmatrix.setVisible(true);
-			}
-		});
 		
 		tblzhongdiangz.addMouseListener(new MouseAdapter() {
         	@Override
@@ -707,22 +718,6 @@ public class StockInfoManager
 			}
 			
 		};
-		
-		tfdCustom.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent arg0) 
-			{
-				btngengxinxx.setEnabled(true);
-			}
-		});
-		
-		tfdJingZhengDuiShou.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent arg0) 
-			{
-				btngengxinxx.setEnabled(true);
-			}
-		});
 		
 		menuItem.addMouseListener(new MouseAdapter() {
 			@Override
@@ -1107,7 +1102,11 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-
+				NodeLabelMatrixManagement lblmag = new NodeLabelMatrixManagement (nodeshouldbedisplayed );
+				lblmag.setVisible(true);
+				
+				bkstkkwcache.refreshTags();
+				
 			}
 		});
 
@@ -1165,98 +1164,6 @@ public class StockInfoManager
 					e1.printStackTrace();
 				}
 			}
-		});
-		/*
-		 * 
-		 */
-//		mntmOpenRmtDb.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) 
-//			{
-//				String dbfile = null;
-//				switch (connectdb.getRemoteDatabaseType().toLowerCase() ) {
-//				case "mysql":    dbfile = "D:\\tools\\HeidiSQL\\heidisql.exe";
-//					break;
-//				case "access":  dbfile = connectdb.getLocalDatabaseName("full");
-//					break;
-//				}
-//				try {
-//					String cmd = "rundll32 url.dll,FileProtocolHandler " + dbfile;
-//					logger.debug(cmd);
-//					Process p  = Runtime.getRuntime().exec(cmd);
-//					p.waitFor();
-//				}catch (Exception e1){
-//					e1.printStackTrace();
-//				}
-//				
-//			}
-//		});
-		
-//		menuOpenDailyReport.addMouseListener(new MouseAdapter() 
-//		{
-//			@Override
-//			public void mousePressed(MouseEvent e) 
-//			{
-//				try {
-//					String cmd = "rundll32 url.dll,FileProtocolHandler " + sysconfig.getMeirijilupath() + sysconfig.getMeirijilufilename();
-//					Process p  = Runtime.getRuntime().exec(cmd);
-//					p.waitFor();
-//				} catch (Exception e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//			}
-//		});
-		/*
-		 * 
-		 */
-		txtfldfuxg.addMouseListener(new MouseAdapter() 
-		{
-			public void mouseClicked(MouseEvent event) 
-			{
-				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
-					return;
-				
-			    if (SwingUtilities.isRightMouseButton(event))  {
-			    	Toolkit toolkit = Toolkit.getDefaultToolkit();
-			    	Clipboard clipboard = toolkit.getSystemClipboard();
-			    	try 	{
-			    		String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			    		logger.debug(result);
-			    		txtfldfuxg.setText(txtfldfuxg.getText() + result);
-			    		btngengxinxx.setEnabled(true);
-			    		dateChsgainian.setDate(new Date());
-			    	} catch(Exception e)  	{
-			    		e.printStackTrace();
-			    		logger.debug(e);
-			    	}
-			    }
-			 }
-		});
-		
-		
-		txtfldzhengxg.addMouseListener(new MouseAdapter() 
-		{
-			public void mouseClicked(MouseEvent event) 
-			{
-				if(cBxstockcode.getSelectedItem() == null)
-					return;
-				
-			    if (SwingUtilities.isRightMouseButton(event))   {
-			    	Toolkit toolkit = Toolkit.getDefaultToolkit();
-			    	Clipboard clipboard = toolkit.getSystemClipboard();
-			    	try	{
-			    		String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			    		logger.debug(result);
-			    		txtfldzhengxg.setText(txtfldzhengxg.getText() + result);
-			    		//txtareafumianxx.insert(result, txtareafumianxx.getCaretPosition());
-			    		btngengxinxx.setEnabled(true);
-			    		dateChsgainian.setDate(new Date());
-			    	} catch(Exception e)	{
-			    		logger.debug(e);
-			    	}
-			    }
-			 }
 		});
 		
 		
@@ -1369,54 +1276,6 @@ public class StockInfoManager
 			}
 		});
 		
-		
-		tfdCustom.addMouseListener(new MouseAdapter() 
-		{
-			public void mouseClicked(MouseEvent event) 
-			{
-				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
-					return;
-				
-			    if (SwingUtilities.isRightMouseButton(event))  {
-			    	Toolkit toolkit = Toolkit.getDefaultToolkit();
-			    	Clipboard clipboard = toolkit.getSystemClipboard();
-			    	try 	{
-			    		String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			    		logger.debug(result);
-			    		tfdCustom.setText(tfdCustom.getText() + result);
-			    		btngengxinxx.setEnabled(true);
-			    		
-			    	} catch(Exception e)  	{
-			    		e.printStackTrace();
-			    		logger.debug(e);
-			    	}
-			    }
-			 }
-		});
-		
-		tfdJingZhengDuiShou.addMouseListener(new MouseAdapter() 
-		{
-			public void mouseClicked(MouseEvent event) 
-			{
-				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
-					return;
-				
-			    if (SwingUtilities.isRightMouseButton(event))  {
-			    	Toolkit toolkit = Toolkit.getDefaultToolkit();
-			    	Clipboard clipboard = toolkit.getSystemClipboard();
-			    	try 	{
-			    		String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-			    		logger.debug(result);
-			    		tfdJingZhengDuiShou.setText(tfdJingZhengDuiShou.getText() + result);
-			    		btngengxinxx.setEnabled(true);
-			    	} catch(Exception e)  	{
-			    		e.printStackTrace();
-			    		logger.debug(e);
-			    	}
-			    }
-			 }
-		});
-		
 //		btnSearchCode.addMouseListener(new MouseAdapter() 
 //		{
 //			@Override
@@ -1521,34 +1380,6 @@ public class StockInfoManager
 			{
 				btngengxinxx.setEnabled(true);
 				dateChsquanshang.setDate(new Date());
-			}
-		});
-		
-		txtfldzhengxg.addKeyListener(new KeyAdapter()
-		{
-			@Override
-			public void keyTyped(KeyEvent e) 
-			{
-//				TextRank.setKeywordNumber(6);
-//				TextRank.setWindowSize(4);
-//				
-//				System.out.println(TextRank.getKeyword(nodeshouldbedisplayed.getMyOwnName(), txtareagainiants.getText() + txtareafumianxx.getText() ));
-//				
-//				List<String> keywordList = HanLP.extractKeyword(txtareagainiants.getText() + txtareafumianxx.getText() , 5);
-//				System.out.println(keywordList);
-				
-				btngengxinxx.setEnabled(true);
-			    
-			}
-		});
-		
-		txtfldfuxg.addKeyListener(new KeyAdapter()
-		{
-			@Override
-			public void keyTyped(KeyEvent e) 
-			{
-				btngengxinxx.setEnabled(true);
-			    
 			}
 		});
 		
@@ -1998,26 +1829,26 @@ public class StockInfoManager
 				} catch(java.lang.NullPointerException e) {
 					dateChsefumian.setDate(null);
 				}
-				try {
-					txtfldzhengxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan());
-				} catch(java.lang.NullPointerException e) {
-					txtfldzhengxg.setText("");
-				}
-				try {
-					txtfldfuxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFuxiangguan());
-				} catch(java.lang.NullPointerException e) {
-					txtfldfuxg.setText("");
-				}
-				try {
-					tfdJingZhengDuiShou.setText(nodeshouldbedisplayed.getNodeJiBenMian().getJingZhengDuiShou());
-				} catch(java.lang.NullPointerException e) {
-					tfdJingZhengDuiShou.setText("");
-				}
-				try {
-				tfdCustom.setText(nodeshouldbedisplayed.getNodeJiBenMian().getKeHuCustom());
-				} catch(java.lang.NullPointerException e) {
-					tfdCustom.setText("");
-				}
+//				try {
+//					txtfldzhengxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan());
+//				} catch(java.lang.NullPointerException e) {
+//					txtfldzhengxg.setText("");
+//				}
+//				try {
+//					txtfldfuxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFuxiangguan());
+//				} catch(java.lang.NullPointerException e) {
+//					txtfldfuxg.setText("");
+//				}
+//				try {
+//					tfdJingZhengDuiShou.setText(nodeshouldbedisplayed.getNodeJiBenMian().getJingZhengDuiShou());
+//				} catch(java.lang.NullPointerException e) {
+//					tfdJingZhengDuiShou.setText("");
+//				}
+//				try {
+//				tfdCustom.setText(nodeshouldbedisplayed.getNodeJiBenMian().getKeHuCustom());
+//				} catch(java.lang.NullPointerException e) {
+//					tfdCustom.setText("");
+//				}
 			
 			lblStatusBarOperationIndicatior.setText("");
 			lblStatusBarOperationIndicatior.setText("相关信息查找成功");
@@ -2045,10 +1876,10 @@ public class StockInfoManager
 	    dateChsefumian.setDate(null);
 	    txtareafumianxx.setText("");
 		
-	    txtfldzhengxg.setText("");
-		txtfldfuxg.setText("");
-		tfdCustom.setText("");
-		tfdJingZhengDuiShou.setText("");
+//	    txtfldzhengxg.setText("");
+//		txtfldfuxg.setText("");
+//		tfdCustom.setText("");
+//		tfdJingZhengDuiShou.setText("");
 		
 		editorpansuosubk.setText("");
 		editorPanenodeinfo.setText("");
@@ -2060,7 +1891,8 @@ public class StockInfoManager
 		
 		kspanel.resetInput ();
 		
-				
+			
+		pnltags.removeAll();
 //		editorPaneBanKuai.setText("");
 //		panelZhanBi.resetDate();
 //		pnlGeGuWkZhanBi.resetDate();
@@ -2082,8 +1914,8 @@ public class StockInfoManager
 			txtfldquanshangpj.setEnabled(true);
 			dateChsefumian.setEnabled(true);
 			txtareafumianxx.setEnabled(true);
-			txtfldzhengxg.setEnabled(true);
-			txtfldfuxg.setEnabled(true);
+//			txtfldzhengxg.setEnabled(true);
+//			txtfldfuxg.setEnabled(true);
 			
 			btnCaiwufengxi.setEnabled(true);
 			btnDongcaiyanbao.setEnabled(true);
@@ -2100,8 +1932,8 @@ public class StockInfoManager
 			
 			btnjiaruzdgz.setEnabled(true);
 			btnSongZhuanGu.setEnabled(true);
-			tfdCustom.setEnabled(true);
-			tfdJingZhengDuiShou.setEnabled(true);
+//			tfdCustom.setEnabled(true);
+//			tfdJingZhengDuiShou.setEnabled(true);
 			
 			btnRemvZdy.setEnabled(true);
 			btndetailfx.setEnabled(true);
@@ -2140,10 +1972,10 @@ public class StockInfoManager
 		if(dateChsefumian.getDate() != null)
 		nodeshouldbedisplayed.getNodeJiBenMian().setFumianxiaoxidate(dateChsefumian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 		nodeshouldbedisplayed.getNodeJiBenMian().setFumianxiaoxi(txtareafumianxx.getText().trim());
-		nodeshouldbedisplayed.getNodeJiBenMian().setZhengxiangguan( txtfldzhengxg.getText().trim());
-		nodeshouldbedisplayed.getNodeJiBenMian().setFuxiangguan(txtfldfuxg.getText().trim());
-		nodeshouldbedisplayed.getNodeJiBenMian().setKeHuCustom(tfdCustom.getText().trim());
-		nodeshouldbedisplayed.getNodeJiBenMian().setJingZhengDuiShou(tfdJingZhengDuiShou.getText().trim());
+//		nodeshouldbedisplayed.getNodeJiBenMian().setZhengxiangguan( txtfldzhengxg.getText().trim());
+//		nodeshouldbedisplayed.getNodeJiBenMian().setFuxiangguan(txtfldfuxg.getText().trim());
+//		nodeshouldbedisplayed.getNodeJiBenMian().setKeHuCustom(tfdCustom.getText().trim());
+//		nodeshouldbedisplayed.getNodeJiBenMian().setJingZhengDuiShou(tfdJingZhengDuiShou.getText().trim());
 	    
 	    if( bkdbopt.updateStockNewInfoToDb(nodeshouldbedisplayed) ) {
 	    	lblStatusBarOperationIndicatior.setText("");
@@ -2253,8 +2085,6 @@ public class StockInfoManager
 
 	private JFrame frame;
 	private JTextField txtfldquanshangpj;
-	private JTextField txtfldzhengxg;
-	private JTextField txtfldfuxg;
 	private JButton btnSearchCode;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JButton btngengxinxx;
@@ -2291,8 +2121,6 @@ public class StockInfoManager
 	private JMenuItem menuItem;
 	private JTable tableStockAccountsInfo;
 	private JScrollPane scrollPane;
-	private JTextField tfdCustom;
-	private JTextField tfdJingZhengDuiShou;
 	private JMenuItem mntmNewMenuItem;
 	private JTabbedPane tabbedPane;
 	private BuyStockNumberPrice kspanel;
@@ -2315,7 +2143,7 @@ public class StockInfoManager
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JButton btnyituishi;
 	private JComboBox cobxgpc;
-	private JLabel lblzhengxg;
+	private LabelsManagement pnltags;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2323,12 +2151,12 @@ public class StockInfoManager
 	private void initializeGui() 
 	{
 		frame = new JFrame();
-
+		
 		frame.getContentPane().setForeground(Color.RED);
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(StockInfoManager.class.getResource("/images/Adobe_Stock_Photos_256px_1124397_easyicon.net.png")));
 		frame.getContentPane().setEnabled(false);
 				
-		frame.setTitle("\u80A1\u7968\u4FE1\u606F\u7BA1\u740610");
+		frame.setTitle("StockMining");
 		frame.setBounds(100, 100, 866, 921);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -2671,39 +2499,6 @@ public class StockInfoManager
 		txtfldquanshangpj.setEnabled(false);
 		txtfldquanshangpj.setColumns(10);
 		
-		lblzhengxg = new JLabel("\u6B63\u76F8\u5173");
-		
-		
-		txtfldzhengxg = new JTextField();
-		
-		txtfldzhengxg.setFont(new Font("宋体", Font.PLAIN, 16));
-		
-		txtfldzhengxg.setEnabled(false);
-		txtfldzhengxg.setColumns(10);
-		
-		JLabel lblNewLabel = new JLabel("\u8D1F\u76F8\u5173");
-		
-		txtfldfuxg = new JTextField();
-		
-		txtfldfuxg.setFont(new Font("宋体", Font.PLAIN, 16));
-		txtfldfuxg.setEnabled(false);
-		txtfldfuxg.setColumns(10);
-		
-		JLabel label = new JLabel("\u5BA2\u6237");
-		
-		tfdCustom = new JTextField();
-		tfdCustom.setFont(new Font("宋体", Font.PLAIN, 16));
-		
-		tfdCustom.setEnabled(false);
-		tfdCustom.setColumns(10);
-		
-		JLabel label_1 = new JLabel("\u7ADE\u4E89\u5BF9\u624B");
-		
-		tfdJingZhengDuiShou = new JTextField();
-		tfdJingZhengDuiShou.setFont(new Font("宋体", Font.PLAIN, 16));
-		tfdJingZhengDuiShou.setEnabled(false);
-		tfdJingZhengDuiShou.setColumns(10);
-		
 		
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -2722,53 +2517,38 @@ public class StockInfoManager
 		cobxgpc = new JComboBox (v);
 		cobxgpc.setEnabled(false);
 		cobxgpc.setFont(new Font("宋体", Font.PLAIN, 12));
+		
+		JPanel pnlfortags = new JPanel();
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_3.createSequentialGroup()
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
-						.addComponent(scrollPanefumian, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
-						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
-						.addGroup(gl_panel_3.createSequentialGroup()
+					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPanefumian, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+						.addComponent(scrollPane_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
 							.addGap(4)
 							.addComponent(lblfumianxiaoxi)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
-						.addGroup(gl_panel_3.createSequentialGroup()
+						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
 							.addComponent(lblstockinfo)
 							.addGap(14)
 							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
-						.addComponent(scrollPanegainian, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel_3.createSequentialGroup()
-									.addContainerGap()
-									.addComponent(lblquanshangpj))
-								.addGroup(gl_panel_3.createSequentialGroup()
-									.addContainerGap()
-									.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
-										.addComponent(label_1)
-										.addComponent(label)))
-								.addGroup(gl_panel_3.createSequentialGroup()
-									.addGap(22)
-									.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
-										.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblzhengxg, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE))))
+						.addComponent(scrollPanegainian, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblquanshangpj)
 							.addGap(32)
-							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-								.addComponent(txtfldfuxg, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-								.addComponent(tfdJingZhengDuiShou, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-								.addComponent(tfdCustom, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-								.addComponent(txtfldzhengxg, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-								.addGroup(gl_panel_3.createSequentialGroup()
-									.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))))
-						.addGroup(gl_panel_3.createSequentialGroup()
+							.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))
+						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
 							.addComponent(label_2)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(cobxgpc, 0, 368, Short.MAX_VALUE))
-						.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))
+						.addComponent(scrollPane_2, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+						.addComponent(pnlfortags, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_panel_3.setVerticalGroup(
@@ -2795,28 +2575,21 @@ public class StockInfoManager
 						.addComponent(lblquanshangpj)
 						.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(txtfldquanshangpj, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txtfldzhengxg, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblzhengxg))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txtfldfuxg, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(tfdCustom, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-						.addComponent(label))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
-						.addComponent(tfdJingZhengDuiShou, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-						.addComponent(label_1))
+					.addGap(4)
+					.addComponent(pnlfortags, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
 					.addContainerGap())
 		);
+		pnlfortags.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane sclptags = new JScrollPane();
+		pnlfortags.add(sclptags, BorderLayout.CENTER);
+		
+		pnltags = new LabelsManagement("",LabelsManagement.HIDEHEADERMODE,LabelsManagement.PARTCONTROLMODE);
+		sclptags.setViewportView(pnltags);
 		
 		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();
 		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo(false);
@@ -2875,7 +2648,7 @@ public class StockInfoManager
 		btnhudongyi.setEnabled(false);
 		
 		btnhudongyi.setToolTipText("\u4E92\u52A8\u6613");
-		btnhudongyi.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/Question_23.970037453184px_1183370_easyicon.net.png")));
+		btnhudongyi.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/tags (1).png")));
 		
 		btnSlack = new JButton("");
 		
@@ -3120,17 +2893,17 @@ public class StockInfoManager
 	/*
 	 * 如果是双屏就显示在副屏幕上
 	 */
-	public static void showOnScreen( int screen, JFrame frame ) {
-	    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-	    GraphicsDevice[] gd = ge.getScreenDevices();
-	    if( screen > -1 && screen < gd.length ) {
-	        frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x, frame.getY());
-	    } else if( gd.length > 0 ) {
-	        frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x, frame.getY());
-	    } else {
-	        throw new RuntimeException( "No Screens Found" );
-	    }
-	}
+//	public static void showOnScreen( int screen, JFrame frame ) {
+//	    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//	    GraphicsDevice[] gd = ge.getScreenDevices();
+//	    if( screen > -1 && screen < gd.length ) {
+//	        frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x, frame.getY());
+//	    } else if( gd.length > 0 ) {
+//	        frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x, frame.getY());
+//	    } else {
+//	        throw new RuntimeException( "No Screens Found" );
+//	    }
+//	}
 	
 	/**
 	 * Launch the application.

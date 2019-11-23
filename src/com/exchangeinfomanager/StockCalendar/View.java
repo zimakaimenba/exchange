@@ -134,16 +134,6 @@ public abstract class View extends JPanel implements CacheListener
     protected String getLabelToolTipText (InsertedMeeting m)
     {
     	return m.getTitle() + "\n \n" + m.getDescription();
-    	//在tooltips显示当前有几个已经添加的条件及内容
-//		String htmlstring = "";
-//		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//		org.jsoup.select.Elements content = doc.select("body");
-//		content.append(m.getTitle());
-//		content.append("<br>");
-//		content.append(m.getDescription());
-//		htmlstring = doc.toString();
-//		
-//		return htmlstring; 
     }
 
 }

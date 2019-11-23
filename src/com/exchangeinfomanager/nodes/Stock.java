@@ -10,7 +10,9 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jfree.data.time.RegularTimePeriod;
@@ -50,16 +52,11 @@ public class Stock extends TDXNodes {
 		
 	}
 	
-	private Boolean hasreviewedtoday; //锟节帮拷锟斤拷锟斤拷锟斤拷时锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟街撅拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟窖撅拷review锟斤拷锟矫革拷锟缴ｏ拷锟酵匡拷锟皆斤拷省时锟斤拷
-//	private String checklistXml;
+	private Boolean hasreviewedtoday; 
 	private static Logger logger = Logger.getLogger(Stock.class);
 	
-//	private Multimap<String> chiCangAccountNameList; //锟斤拷锟叫该癸拷票锟斤拷锟斤拷锟斤拷锟剿伙拷锟斤拷锟斤拷锟斤拷
-	private HashMap<String,AccountInfoBasic> chiCangAccounts; //锟斤拷锟叫该癸拷票锟斤拷锟斤拷锟斤拷锟剿伙拷<锟剿伙拷锟斤拷锟剿伙拷锟斤拷息>
-//	private HashMap<String,StockOfBanKuai> suoShuTdxBanKuaiData; //锟斤拷锟斤拷通锟斤拷锟斤拷系统锟斤拷锟� <锟斤拷锟絚ode,锟斤拷锟斤拷锟斤拷锟�>
-//	private  HashMap<String,Integer> sysBanKuaiWeight; //锟斤拷锟斤拷通锟斤拷锟斤拷系统锟斤拷锟饺拷锟�
-//	private HashSet<String> suoShuZdyBanKuai; //锟斤拷锟斤拷锟皆讹拷锟斤拷锟斤拷
-	private HashMap<String, String> suoShuCurSysBanKuai; //锟斤拷锟缴碉拷前锟斤拷锟斤拷锟斤拷通锟斤拷锟脚帮拷锟�
+	private HashMap<String,AccountInfoBasic> chiCangAccounts; 
+	private Set<BkChanYeLianTreeNode> suoShuCurSysBanKuai; 
 	
 	
 	public void setHasReviewedToday ()
@@ -110,51 +107,42 @@ public class Stock extends TDXNodes {
 	 */
 	public boolean isInTdxBanKuai (String tdxbk)
 	{
-		if(this.suoShuCurSysBanKuai.containsKey(tdxbk))
-			return true;
-		else 
-			return false;
+		for(BkChanYeLianTreeNode node : this.suoShuCurSysBanKuai) {
+			String nodecode = node.getMyOwnCode();
+			String nodename = node.getMyOwnName();
+			if(nodecode.equals(tdxbk) || nodename.equals(tdxbk))
+				return true;
+		}
+		
+		return false;
 	}
 	/**
+	 * @return 
 	 * @return the suoShuBanKuai
 	 */
-	public HashMap<String,String> getGeGuCurSuoShuTDXSysBanKuaiList() 
+	public  Set<BkChanYeLianTreeNode> getGeGuCurSuoShuTDXSysBanKuaiList() 
 	{
 		if( this.suoShuCurSysBanKuai == null)
-			return new HashMap<String,String> ();
+			return new HashSet<>();
 		else
 			return suoShuCurSysBanKuai;
 	}
 
 	/**
+	 * @param stockbanks 
 	 * @param tmpsysbk the suoShuBanKuai to set
 	 */
-	public void setGeGuCurSuoShuTDXSysBanKuaiList(HashMap<String,String> tmpsysbk) {
-		this.suoShuCurSysBanKuai = tmpsysbk;
+	public void setGeGuCurSuoShuTDXSysBanKuaiList( Set<BkChanYeLianTreeNode> stockbanks) {
+		this.suoShuCurSysBanKuai = stockbanks;
 	}
  
+	List<String> nodeallchanyelian ;
 	
-	/**
-	 * @return the suoShuBanKuai
-	 */
-//	public HashSet<String> getSuoShuTDXZdyBanKuai() {
-//		return suoShuZdyBanKuai;
-//	}
-
-	/**
-	 * @param tmpbk the suoShuBanKuai to set
-	 */
-//	public void setSuoShuTDXZdyBanKuai(HashSet<String> tmpbk) {
-//		this.suoShuZdyBanKuai = tmpbk;
-//	}
-	
-	ArrayList<String> nodeallchanyelian ;
-	
-	public void setGeGuAllChanYeLianInfo(ArrayList<String> ggcyl) 
+	public void setGeGuAllChanYeLianInfo(List<String> ggcyl) 
 	{
 		this.nodeallchanyelian = ggcyl;
 	}
-	public ArrayList<String> getGeGuAllChanYeLianInfo() 
+	public List<String> getGeGuAllChanYeLianInfo() 
 	{
 		return this.nodeallchanyelian;
 	}

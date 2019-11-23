@@ -31,6 +31,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 
+import org.bouncycastle.util.Arrays.Iterator;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -147,8 +148,9 @@ public class BanKuaiListEditorPane extends JEditorPane
 	public void displayBanKuaiListContentsForStock (Stock stock)
 	{
 		this.setText("");
-		HashMap<String, String> suosusysbankuai = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
-		Set<String> union =  suosusysbankuai.keySet();
+		Set<BkChanYeLianTreeNode> suosusysbankuai = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
+		 
+		 
 
 		String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
@@ -160,10 +162,12 @@ public class BanKuaiListEditorPane extends JEditorPane
 		 		);
 		 
 		 boolean shuyuruoshibankuai = false;
-	     for(String suoshubankcode : union ) {
-	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
+		 for ( java.util.Iterator<BkChanYeLianTreeNode> it = suosusysbankuai.iterator(); it.hasNext(); ) {
+			 BkChanYeLianTreeNode f = it.next();
+		      
+	    	 String displayedbkformate = "\"" + f.getMyOwnCode() + f.getMyOwnName() + "\"";
 	    	 try {
-	    		 boolean inrsbk = false; //cyltreedb.isBanKuaiInBearPart(suoshubankcode);
+	    		 boolean inrsbk = false; 
     			 if(inrsbk ) {
     				 content.append("<a style=\"color:green\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + "</a> " );
 	    			 shuyuruoshibankuai = true ;

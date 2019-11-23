@@ -172,14 +172,13 @@ public class BanKuaiGuanLi extends JDialog
 					continue;
 				
 				String bkleixing = ((BanKuai)childnode).getBanKuaiLeiXing(); 
-				if(  bkleixing.equals(BanKuai.NOGGWITHSELFCJL) || bkleixing.equals(BanKuai.HASGGWITHSELFCJL)  ) {//有些指数是没有个股和成交量的，不列入比较范围
+				if(  bkleixing != null  && (bkleixing.equals(BanKuai.NOGGWITHSELFCJL) || bkleixing.equals(BanKuai.HASGGWITHSELFCJL))  ) {//有些指数是没有个股和成交量的，不列入比较范围
 					BanKuai newbk = new BanKuai (childnode.getMyOwnCode(),childnode.getMyOwnName());
 					newbk.setBanKuaiLeiXing(bkleixing);
 					alltopNode.add(newbk);
 				}
 			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 				e.printStackTrace();
-//				System.out.println("test");
 			}
 		} 
 

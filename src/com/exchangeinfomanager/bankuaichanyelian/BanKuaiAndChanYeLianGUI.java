@@ -54,7 +54,7 @@ import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
-import com.exchangeinfomanager.labelmanagement.LabelsManagement;
+import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelsManagement;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
@@ -186,7 +186,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
  			return ;
  		}
  		
- 		BkChanYeLianTreeNode newnode = treedb.addNewSubGuoPiaoChi (newsubbkcode,newsubbk);
+ 		BkChanYeLianTreeNode newnode = treedb.addNewSubGuoPiaoChi (newsubbk);
  		((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).addRow (newnode);
 	}
 	/*

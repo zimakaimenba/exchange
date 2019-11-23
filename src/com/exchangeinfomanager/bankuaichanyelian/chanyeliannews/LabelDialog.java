@@ -31,7 +31,7 @@ public class LabelDialog<T extends Meeting.Label> extends JDialog
 
     private void createUI() {
         this.centerPanel = JPanelFactory.createPanel();
-        this.colorButton = JLabelFactory.createLabel("", 40, 30);
+        this.colorButton = JLabelFactory.createLabel("", 40, 50);
         this.colorButton.addMouseListener(new ColorChooserController());
         this.nameField = JTextFactory.createTextField();
         this.nameField.setBorder(BorderFactory.createMatteBorder(0, 10, 0, 0, this.centerPanel.getBackground()));

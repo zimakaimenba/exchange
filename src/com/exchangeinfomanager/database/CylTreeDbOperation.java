@@ -11,12 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JComponent;
@@ -37,6 +40,8 @@ import org.dom4j.io.SAXReader;
 import org.joda.time.LocalDate;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI;
+import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
+import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 
@@ -63,9 +68,62 @@ public class CylTreeDbOperation
 		sysconfig = SystemConfigration.getInstance();
 //		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 		
+
 		setupBanKuaiAndStockTree ();
 //		restoreChanYeLianNestedDbFromXml ();
 	}
+	
+//	private void updatedb ()
+//	{
+//		Map<Integer,String> map = new HashMap<> ();
+//		String sql = "SELECT * FROM 产业链板块国列表 \r\n" + 
+//				"JOIN tree_map\r\n" + 
+//				"ON 产业链板块国列表.`板块国代码` = tree_map.nodeid"
+//				;
+//		 CachedRowSetImpl rspd = null;
+//		 try{
+//			 rspd = connectdb.sqlQueryStatExecute(sql);
+//		    	
+//		    	
+//		        while(rspd.next())  {
+//		        	Integer treeid = rspd.getInt("tree_id");
+//		        	String bkname = rspd.getString("板块国名称");
+//		        	String bkcode = rspd.getString("板块国代码");
+//		        	
+//		        	map.put(treeid,bkname);
+//		        }
+//			 
+//		 } catch (Exception e) {
+//				e.printStackTrace();
+//			} finally {
+//				try {
+//					if(rspd != null)
+//					rspd.close();
+//					rspd = null;
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		 
+//
+//		 	for (Map.Entry<Integer, String> entry : map.entrySet()) {
+// 
+//		 			Integer treeid = entry.getKey();
+//		 			String bkname = entry.getValue();
+//		 			String sql2 = "UPDATE tree_map SET nodeid='" + bkname + "'"
+//		 	     			+ " WHERE tree_id=" + treeid
+//		 	     			;
+//		 	     	try {
+//						connectdb.sqlUpdateStatExecute(sql2);
+//					} catch (SQLException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//		 		
+// 
+//		 	}
+//	}
 	
 	public BanKuaiAndStockTree getBkChanYeLianTree ()
 	{
@@ -140,11 +198,12 @@ public class CylTreeDbOperation
 					try {
 						if(rsagu != null)
 						rsagu.close();
+						rsagu = null;
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					rsagu = null;
+					
 			}
 		 	
 //		 try{
@@ -457,17 +516,16 @@ public class CylTreeDbOperation
         
         List<BkChanYeLianTreeNode> subpgcset = new ArrayList<BkChanYeLianTreeNode> ();
 		try {
-				String sqlquerystat = "SELECT 产业链板块国列表.`板块国代码`,产业链板块国列表.`板块国名称`" + 
-					" FROM 产业链板块国列表" 
-					;
+				String sqlquerystat = "SELECT * FROM 产业链板块国列表" 
+										;
 
 		    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	
 		    	
 		        while(rspd.next())  {
-		        	String bkzcode = rspd.getString("板块国代码");
+		        	int bkzid = rspd.getInt("id");
 		        	String bkzname = rspd.getString("板块国名称");
-		        	CylTreeNestedSetNode subgpc = new CylTreeNestedSetNode (bkzcode,bkzname,BkChanYeLianTreeNode.SUBGPC); 
+		        	CylTreeNestedSetNode subgpc = new CylTreeNestedSetNode (String.valueOf(bkzid),bkzname,BkChanYeLianTreeNode.SUBGPC); 
 		        	subpgcset.add(subgpc);
 		        }
 		       
@@ -492,14 +550,13 @@ public class CylTreeDbOperation
 	/*
 	 * 
 	 */
-	public BkChanYeLianTreeNode addNewSubGuoPiaoChi(String subgpccode, String subgpcname) 
+	public BkChanYeLianTreeNode addNewSubGuoPiaoChi( String subgpcname) 
 	{
-		String sqlinsertstat = "INSERT INTO 产业链板块国列表(板块国代码,板块国名称) VALUES ("
-								+ "'" + subgpccode.trim() + "'" + ","
+		String sqlinsertstat = "INSERT INTO 产业链板块国列表(板块国名称) VALUES ("
 								+ "'" + subgpcname.trim() + "'" 
 								+ ")"
 								;
-		int autoIncKeyFromApi;
+		int autoIncKeyFromApi = 0;
 		try {
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		} catch (MysqlDataTruncation e) {
@@ -510,7 +567,7 @@ public class CylTreeDbOperation
 			e.printStackTrace();
 		}
 		
-		BkChanYeLianTreeNode subnode = new CylTreeNestedSetNode (subgpccode,subgpcname,BkChanYeLianTreeNode.SUBGPC);
+		BkChanYeLianTreeNode subnode = new CylTreeNestedSetNode (String.valueOf(autoIncKeyFromApi),subgpcname,BkChanYeLianTreeNode.SUBGPC);
 		return subnode;
 	}
 	/*
@@ -796,19 +853,19 @@ public class CylTreeDbOperation
 
 	public BkChanYeLianTreeNode getChanYeLianInfo(BkChanYeLianTreeNode node) 
 	{
-		List<String[]> result = this.getChanYeLianInfo(node.getMyOwnCode(), node.getType());
+		List<String> result = this.getChanYeLianInfo(node.getMyOwnCode(), node.getType());
 		node.getNodeJiBenMian().setChanYeLianInfo(result);
 		
 		return node;
 	}
-	public  List<String[]> getChanYeLianInfo (String nodecode, int nodetype)
+	public  List<String> getChanYeLianInfo (String nodecode, int nodetype)
 	{
 		String query = "SELECT * FROM  tree_map "
 				+ " WHERE nodeid ='" + nodecode + "'"
 				+ " AND nodetype = " + nodetype
 				;
 		
-		List<String[]> cylinfo = new ArrayList<> ();
+		List<String> cylinfo = new ArrayList<> ();
 		CachedRowSetImpl rs = null;
 		try{
 				rs = this.connectdb.sqlQueryStatExecute(query);
@@ -820,23 +877,10 @@ public class CylTreeDbOperation
 					stmdel.setInt(1, tree_id);
 					 
 					ResultSet rsstm = stmdel.executeQuery();
-					int rowcount = 0;
-					if (rsstm.last()) {
-					  rowcount = rsstm.getRow();
-					  rsstm.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
-					}
-					String[] treepath = new String[rowcount];
-					int tmpc =0;
 					while(rsstm.next()){
 						int treeid = rsstm.getInt("tree_id");
-						if(treeid != 1) {
-							treepath[tmpc] =  rsstm.getString("name") + "[" + rsstm.getString("nodeid")  +"]";
-							tmpc ++;
-						} else
-							tmpc ++;
+						cylinfo.add( rsstm.getString("nodeid") );
 					}
-					
-					cylinfo.add(treepath);
 				}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -853,19 +897,62 @@ public class CylTreeDbOperation
 		return cylinfo;
 
 	}
+	public List<String>  getSlidingInChanYeLianInfo (String nodecode, int nodetype)
+	{
+		String sqlquery = "SELECT * FROM  tree_map "
+				+ " WHERE nodeid ='" + nodecode + "'"
+				+ " AND nodetype = " + nodetype
+				;
+		
+		List<String> cylinfo = new ArrayList<> ();
+		CachedRowSetImpl rs = null;
+		CachedRowSetImpl rsnext = null;
+		try{
+				rs = this.connectdb.sqlQueryStatExecute(sqlquery);
+				while(rs.next()) {
+					String nodeid = rs.getString("nodeid");
+					
+					sqlquery = "SELECT * FROM \r\n" + 
+							"tree_map ,\r\n" + 
+							"\r\n" + 
+							"(SELECT tree_map.parent_id, tree_map.nodeid  FROM tree_map \r\n" + 
+							"WHERE nodeid = '" + nodecode+ "' AND tree_map.nodetype = " + nodetype + "  \r\n" + 
+							") A \r\n" + 
+							"where  tree_map.parent_id = A.parent_id \r\n" + 
+							"GROUP BY tree_map.tree_id"
+							;
+					rsnext = this.connectdb.sqlQueryStatExecute(sqlquery);
+					while(rsnext.next()){
+						String slidingnodeid = rsnext.getString("nodeid");
+						cylinfo.add(slidingnodeid); 
+					}
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+				try {
+					if(rs != null)
+						rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		
+		return cylinfo;
+		
+	}
+
 
 	public Boolean isBanKuaiInBearPart(String bkcode) 
 	{
-				
 		return null;
 	}
-
 	public void deleNodeFromDatabase(BkChanYeLianTreeNode node) 
 	{
 		if(node.getType() == BkChanYeLianTreeNode.SUBGPC) {
 			String sqldeletestat = "DELETE  FROM 产业链板块国列表"
-					+ " WHERE 产业链板块国列表.`板块国代码` = " + "'" + node.getMyOwnCode() + "'"
-					+ " AND 产业链板块国列表.`板块国名称` = " + "'" + node.getMyOwnName() + "'" 
+					+ " WHERE 产业链板块国列表.`板块国名称` = " + "'" + node.getMyOwnName() + "'" 
 					;
 
 			try {
@@ -875,7 +962,6 @@ public class CylTreeDbOperation
 				e.printStackTrace();
 			}
 		}
-				
 	}
 	/*
 	 * 
@@ -945,8 +1031,7 @@ public class CylTreeDbOperation
 					   
 					   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname,BkChanYeLianTreeNode.SUBGPC);
 					   
-					   String sqlquerystat = "INSERT INTO 产业链板块国列表 (板块国代码, 板块国名称)  VALUES (" 
-								+"'" + bkowncode + "',"
+					   String sqlquerystat = "INSERT INTO 产业链板块国列表 (板块国名称)  VALUES (" 
 								+"'" + bkname + "'"
 								+ ")"
 								;
@@ -964,8 +1049,7 @@ public class CylTreeDbOperation
 						   
 						   parentsleaf = new CylTreeNestedSetNode(bkowncode,bkname,BkChanYeLianTreeNode.SUBGPC);
 						   
-						   String sqlquerystat = "INSERT INTO 产业链板块国列表 (板块国代码, 板块国名称)  VALUES (" 
-									+"'" + bkowncode + "',"
+						   String sqlquerystat = "INSERT INTO 产业链板块国列表 ( 板块国名称)  VALUES (" 
 									+"'" + bkname + "'"
 									+ ")"
 									;

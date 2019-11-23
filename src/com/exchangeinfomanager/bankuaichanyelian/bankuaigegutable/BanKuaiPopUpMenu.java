@@ -22,8 +22,6 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public abstract class BanKuaiPopUpMenu extends JPopupMenu
 {
-
-	
 	protected JMenuItem menuItemAddNews;
 	protected JMenuItem menuItemAddToGz;
 	protected JMenuItem menuItemSetting;

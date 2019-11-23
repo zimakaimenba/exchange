@@ -5033,11 +5033,8 @@ public class BanKuaiDbOperation
 		public Stock getTDXBanKuaiForAStock(Stock stockbasicinfo) 
 		{
 			String stockcode = stockbasicinfo.getMyOwnCode();
-			HashMap<String,String> tmpsysbk = new HashMap<String,String> ();
-			
-//			SELECT gpgn.概念板块, tdxbk.`板块ID`
-//			FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk
-//			WHERE 股票代码= '000001' AND gpgn.概念板块 = tdxbk.`板块名称`
+			Set<BkChanYeLianTreeNode> stockbanks = new HashSet<>();
+
 			String sqlquerystat =null;
 			sqlquerystat=  "SELECT gpgn.板块代码 板块代码, tdxbk.`板块名称` 板块名称 FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk"
 					+ "  WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gpgn.板块代码 = tdxbk.`板块ID` AND ISNULL(移除时间)"
@@ -5054,8 +5051,8 @@ public class BanKuaiDbOperation
 			try  {     
 		        while(rs_gn.next()) {
 		        	String bkcode = rs_gn.getString("板块代码");
-		        	String bkname = rs_gn.getString("板块名称");
-		        	tmpsysbk.put(bkcode,bkname);
+		        	BkChanYeLianTreeNode bk = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
+		        	stockbanks.add(bk);
 		        } 
 		        
 		    }catch(java.lang.NullPointerException e){ 
@@ -5075,7 +5072,7 @@ public class BanKuaiDbOperation
 		    	}
 		    }
 			
-			stockbasicinfo.setGeGuCurSuoShuTDXSysBanKuaiList(tmpsysbk);
+			stockbasicinfo.setGeGuCurSuoShuTDXSysBanKuaiList(stockbanks);
 			
 			return stockbasicinfo;
 		}

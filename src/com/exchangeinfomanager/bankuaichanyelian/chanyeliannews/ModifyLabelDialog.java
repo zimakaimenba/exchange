@@ -8,7 +8,8 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 @SuppressWarnings("all")
-public class ModifyLabelDialog extends LabelDialog<InsertedMeeting.Label> {
+public class ModifyLabelDialog extends LabelDialog<InsertedMeeting.Label>
+{
     public ModifyLabelDialog(LabelService labelService) {
         super(labelService);
         JLabel deleteButton = JLabelFactory.createPinkButton("Delete");
@@ -19,7 +20,7 @@ public class ModifyLabelDialog extends LabelDialog<InsertedMeeting.Label> {
 
         JPanel layoutPanel = JPanelFactory.createFixedSizePanel();
         layoutPanel.add(deleteButton);
-        layoutPanel.add(Box.createHorizontalStrut(20));
+        layoutPanel.add(Box.createHorizontalStrut(5));
         layoutPanel.add(updateButton);
         this.centerPanel.add(layoutPanel);
 

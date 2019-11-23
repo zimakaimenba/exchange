@@ -15,6 +15,7 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 
 import java.awt.*;
@@ -28,6 +29,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.*;
@@ -35,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -92,6 +95,12 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         			
         			try {
         				URL slkurl = new URL(slackurlField.getText().trim() );
+        				
+        				HttpURLConnection connection = (HttpURLConnection)  slkurl.openConnection();
+        				connection.setRequestMethod("HEAD");
+        				connection.connect();
+        				String contentType = connection.getContentType();
+        				
 						urlcontent = new Scanner(slkurl.openStream(), "UTF-8").useDelimiter("\\A").next();
 					} catch (MalformedURLException e) {
 						// TODO Auto-generated catch block
@@ -103,8 +112,10 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
         		}
         		
         		String title = newstitleField.getText();
-        		String content = descriptionArea.getText() +  Jsoup.parse(urlcontent).text(); ;
-        		keywordsField.setText( TextRank.getKeyword(title, content).toString()  );
+        		String content = descriptionArea.getText() +  Jsoup.parse(urlcontent).text(); 
+        		List<String> keywordslist = TextRank.getKeyword(title, content); 
+        		
+        		keywordsField.setText(StringUtils.join(keywordslist, " ")  );
         	}
         });
     	

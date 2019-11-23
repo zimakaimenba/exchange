@@ -23,13 +23,13 @@ public class NodeJiBenMian
 			private String keHuCustom;
 			private String suoshujiaoyisuo;
 			private Object[][] zdgzmrmcykRecords;
-			private List<String[]> cylinfo;
+			private List<String> cylinfo;
 			
-			public void setChanYeLianInfo (List<String[]> cylinfo)
+			public void setChanYeLianInfo (List<String> cylinfo)
 			{
 				this.cylinfo = cylinfo;
 			}
-			public List<String[]> getChanYeLianInfo ()
+			public List<String> getChanYeLianInfo ()
 			{
 				return this.cylinfo;
 			}

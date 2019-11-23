@@ -10,15 +10,15 @@ import java.util.Set;
 
 
 @SuppressWarnings("all")
-public class Cache {
-
+public class Cache 
+{
     private Set<CacheListener> listeners;
     private Set<InsertedMeeting> meetings;
     private Set<InsertedMeeting.Label> meetingLabels;
     private EventService meetingService;
     private LabelService labelService;
 	private String nodecode; //"ALL":所有新闻；"000000":每个固定月都显示的新闻。"999999":显示在jstockcalendar的新闻
-	private boolean datachanged = false;
+//	private boolean datachanged = false;
 	private LocalDate cashestartdate;
 	private LocalDate casheenddate;
 	private Integer[] eventtype;
@@ -103,32 +103,27 @@ public class Cache {
     }
 
     public void updateMeeting(InsertedMeeting meeting) {
-    	datachanged = true;
         this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void removeMeeting(InsertedMeeting meeting) {
-    	datachanged = true;
         this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void addMeeting(InsertedMeeting meeting) {
-    	datachanged = true;
         this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onMeetingChange(this));
     }
 
     public void updateMeetingLabel(InsertedMeeting.Label label) {
-    	datachanged = true;
         this.refreshLabels();
         this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onLabelChange(this));
     }
 
     public void removeMeetingLabel(InsertedMeeting.Label label) {
-    	datachanged = true;
         this.refreshLabels();
         this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onLabelChange(this));
@@ -136,7 +131,6 @@ public class Cache {
 
     public void addMeetingLabel(InsertedMeeting.Label label) 
     {
-    	datachanged = true;
         this.refreshLabels();
         this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onLabelChange(this));
