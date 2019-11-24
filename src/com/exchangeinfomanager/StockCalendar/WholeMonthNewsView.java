@@ -482,6 +482,12 @@ public class WholeMonthNewsView extends View
         }
 
     }
+
+	@Override
+	public void onMeetingAdded(Meeting m) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 

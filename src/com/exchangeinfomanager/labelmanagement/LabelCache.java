@@ -64,7 +64,7 @@ public class LabelCache
     	Collection<Tag> selectedtag = new HashSet<> ();
     	
     	for(Tag tmptag : tagslist) 
-	    	if(  tmptag.isSelected() )
+	    	if(  ((InsertedTag)tmptag).isSelected() )
 	    		selectedtag.add(tmptag);
 	    	
 	    return selectedtag;

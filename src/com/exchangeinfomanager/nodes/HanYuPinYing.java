@@ -11,16 +11,10 @@ import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombi
 
 public class HanYuPinYing {
 
-	public HanYuPinYing() {
-		// TODO Auto-generated constructor stub
-	}
 	private static Logger logger = Logger.getLogger(HanYuPinYing.class);
 	
-	public String getBanKuaiNameOfPinYin (String chinese)
+	public String getQuanBuOfPinYin (String chinese)
 	{
-//		if(chinese.contains("柳工茾"))
-//			logger.debug("test start");
-		 //logger.debug(chinese);
 		 //这部分获得全部拼音
 		 HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
 	        format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
@@ -52,8 +46,12 @@ public class HanYuPinYing {
 	        } catch (BadHanyuPinyinOutputFormatCombination e) {
 	            e.printStackTrace();
 	        }
-	       //logger.debug(output);
-	       
+	        
+	        return output;
+	}
+	
+	public String getSouZiMuOfPinYin (String chinese)
+	{
 	       //这部分获得首字母拼音
 	       StringBuffer pybf = new StringBuffer();  
            char[] arr = chinese.toCharArray();  

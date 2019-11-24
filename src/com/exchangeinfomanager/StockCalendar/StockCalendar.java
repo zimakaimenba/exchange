@@ -75,9 +75,6 @@ public class StockCalendar extends JCalendar
         this.sidebar = new Sidebar(eventDbService,labelService, cache);
         
         //每月固定信息，用于记录长期月度重复信息,显示在Cal星期的上部
-//      Integer[] wantednewstypeforwholemonth = {Integer.valueOf(Meeting.CHANGQIJILU), Integer.valueOf(Meeting.JINQIGUANZHU),
-//				Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI)};
-//      cachewholemonth = new Cache("ALL",eventDbService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6),wantednewstypeforwholemonth);
         this.wholemonthview = new WholeMonthNewsView (eventDbService, cache);
 
 	    this.initHeaderPanel(); //

@@ -2,6 +2,7 @@ package com.exchangeinfomanager.labelmanagement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
@@ -19,13 +20,13 @@ public class DBSystemTagsService implements TagService
 	private LabelCache cache;
 	private Set<String> nodeset;
 
-	public DBSystemTagsService (Set<String> nodecode)
+	public DBSystemTagsService ()
 	{
 		dboptforsys = new TagsDbOperation ();
 		dboptfornode = new TagsDbOperation ();
 		dboptfornews = new TagsNewsDbOperation ();
 		
-		this.nodeset = nodecode;
+		
 	}
 
 	@Override
@@ -90,6 +91,11 @@ public class DBSystemTagsService implements TagService
 	public void combinLabels(Tag newlabel) throws SQLException {
 		// TODO Auto-generated method stub
 		
+	}
+	public   Map<String, Integer> getNodesSetOfSpecificTag (String tagname)
+	{
+		 Map<String, Integer> nodesetfortagname = this.dboptforsys.getNodesSetOfSpecificTag (tagname);
+		 return nodesetfortagname;
 	}
 
 

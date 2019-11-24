@@ -6,5 +6,7 @@ public interface CacheListener {
   void onMeetingChange(Cache cache);
 
   void onLabelChange(Cache cache);
+  
+  void onMeetingAdded (Meeting m);
 
 }

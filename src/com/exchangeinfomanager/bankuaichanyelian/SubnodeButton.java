@@ -4,13 +4,14 @@ package com.exchangeinfomanager.bankuaichanyelian;
 
 public class SubnodeButton extends javax.swing.JButton
 {
-    private int direction = BanKuaiAndChanYeLianGUI.NONE;
+    private int direction = BanKuaiAndChanYeLianGUI.RIGHT;
         
     public void setDirection(int direction){
         this.direction = direction;
     }
     
-    public int getDirection(){
+    public int getDirection()
+    {
         return direction;
     }
 }

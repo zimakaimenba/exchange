@@ -14,6 +14,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -47,6 +49,7 @@ import com.exchangeinfomanager.labelmanagement.LabelCacheListener;
 import com.exchangeinfomanager.labelmanagement.TagService;
 import com.exchangeinfomanager.labelmanagement.Tag.CombineTagsDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.CreateTagDialog;
+import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.ModifyTagDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.labelmanagement.Tag.TagDialog;
@@ -66,7 +69,6 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 {
 	private String title;
 	private String displaymode;
-	private TagDialog createTagDialog;
 	private String controlmode;
 	/**
 	 * Create the panel.
@@ -138,7 +140,30 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	
 	private void createEvetns() 
 	{
-
+		menuItemAddNew.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				addMenuAction ();
+			}
+			
+		});
+		menuItemReset.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				resetAction ();
+			}
+			
+		});
+		
+		tfldsearchkw.addKeyListener(new KeyAdapter() {
+			
+			public void keyPressed(KeyEvent  evt)
+			{
+				if(evt.getKeyCode() == KeyEvent.VK_ENTER)	{
+					searchKeyWrodsInTagList (tfldsearchkw.getText().trim() );
+			}
+			}
+		});
 	}
 
 	private JPanel pnllabelcontain;
@@ -182,6 +207,14 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	    
 		this.add(sclpcenter,BorderLayout.CENTER);
 		
+		selfMenu = new JPopupMenu("test");   
+		menuItemAddNew = new JMenuItem("新增");
+		menuItemReset = new JMenuItem("Reset");
+		
+		selfMenu.add(menuItemAddNew);
+		selfMenu.add(menuItemReset);
+		
+		pnllabelcontain.addMouseListener( new DisPlayMenuController () );
 		
 	}
 	
@@ -211,58 +244,8 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 				Pmenu.add(menuItemAddToCur);
 			}
 			
-			selfMenu = new JPopupMenu("test");   
-			menuItemAddNew = new JMenuItem("新增");
-			menuItemReset = new JMenuItem("Reset");
-			
-			selfMenu.add(menuItemAddNew);
-			selfMenu.add(menuItemReset);
-//			Pmenu.add(menuItemCombined);
-//			Pmenu.add(menuItemAdd);
 	 }
 
-	private class ChangeKeyWordsPanelController extends MouseAdapter 
-	 {
-	        @Override
-	        public void mouseClicked(MouseEvent e) {
-	        	 super.mouseClicked(e);
-	        	 JLabel label = null;
-	        	 try {
-	        		 label = (JLabel) e.getSource();
-	        	 } catch ( java.lang.ClassCastException exc) {
-	        		 
-	        	 }
-	        	 try {
-	        		 String labelname = label.getName();
-	        		 Collection<Tag> tagslist = cache.produceLabels();
-			     	    for(Tag tmptag : tagslist) {
-			     	    	if(labelname.equals(   tmptag.getName()  ))
-			     	    		if(  tmptag.isSelected() )
-			     	    			unselectTag (tmptag, label);
-			     	    		else
-			     	    			selectTag (tmptag, label);
-			     	  }
-	        	 } catch (java.lang.NullPointerException ex) {
-	        		 
-	        	 }
-	             
-	        }
-	        
-	        private void unselectTag(Tag tmptag, JLabel label)
-	        {
-	        	tmptag.setSelected(false);
-	        	JPanel p = (JPanel)label.getParent();
-	            LineBorder line = new LineBorder(tmptag.getColor(), 2, true);
-	     	    p.setBorder(line);
-			}
-	        private void selectTag (Tag tmptag, JLabel label)
-	        {
-	        	tmptag.setSelected(true);
-	        	JPanel p = (JPanel)label.getParent();
-	            LineBorder line = new LineBorder(Color.BLUE, 2, true);
-	     	    p.setBorder(line);
-	        }
-	 }
 	 
 	 private class DisPlayMenuController extends MouseAdapter 
 	 {
@@ -270,24 +253,13 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	     public void mouseClicked(MouseEvent evt) {
         	 super.mouseClicked(evt);
         	 Component source = (Component)evt.getSource();
-        	 JPanel p = (JPanel) source.getParent() ;
-        	 String labelname = p.getName();
-    		 Collection<Tag> tagslist = cache.produceLabels();
-    		 for (Iterator<Tag> lit = tagslist.iterator(); lit.hasNext(); ) {
-    		        Tag f = lit.next();
-    		        if(f.getName().equals(labelname)) {
-    		        	f.setSelected(true);
-    		            LineBorder line = new LineBorder(Color.BLUE, 2, true);
-    		     	    p.setBorder(line);
-    		        }
-    		 }
         	 
         	 Point location = source.getLocation();
         	 Dimension size = source.getSize();
 
         	 int xPos = location.x ;
         	 int yPos = location.y ;
-        	 Pmenu.show(source, xPos, yPos);
+        	 selfMenu.show(source, xPos, yPos);
 		 }
 	 }
 
@@ -300,7 +272,7 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
             		addMenuAction ();
             	}   else 
             	if (evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDASDELETE)) {
-            		
+            		deleteMenuAction ();
             	} else
             	if (evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDASEDIT)) {
             		editMenuAction ();
@@ -370,6 +342,42 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 		PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelsManagement.NODESBEENDELETED , "", tagslist );
         pcs.firePropertyChange(evtzd);
 	
+	}
+	protected void resetAction() 
+	{
+		Collection<Tag> curlabl = cache.produceLabels();
+		for (Iterator<Tag> lit = curlabl.iterator(); lit.hasNext(); ) {
+	        InsertedTag f = (InsertedTag) lit.next();
+	        
+	        if(!f.isSelected())
+	        	continue;
+	        f.setSelected(false);
+	    }
+		
+		Component[] pnltags = pnllabelcontain.getComponents();
+        for( Component tmpc :  pnltags) {
+        	Tag l = ((LabelTag)tmpc).getTag();
+        	LineBorder line = new LineBorder(l.getColor(), 2, true);
+        	((JPanel)tmpc).setBorder(line);
+        }
+        
+		this.revalidate();
+	}
+	
+	protected void searchKeyWrodsInTagList(String text) 
+	{
+		if(text.trim().isEmpty())
+			text = "abcdefghigklmnopqrstuvwxyz";
+		
+		Component[] pnltags = pnllabelcontain.getComponents();
+		for( Component tmpc :  pnltags) {
+        	Tag l = ((LabelTag)tmpc).getTag();
+        	Boolean chkresult = l.checkHanYuPinYing (text.trim() );
+        	if(chkresult) {
+        		LineBorder line = new LineBorder(Color.MAGENTA, 2, true);
+            	((JPanel)tmpc).setBorder(line);
+        	}
+        }
 	}
 
 }

@@ -20,7 +20,8 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 @SuppressWarnings("all")
-public class YearView extends View {
+public class YearView extends View
+{
     private static int BUTTON_WIDTH = 40;
     private JLabel dateLabel = new JLabel();
     private JPanel calendar = new JPanel();
@@ -214,5 +215,11 @@ public class YearView extends View {
         }
 
     }
+
+	@Override
+	public void onMeetingAdded(Meeting m) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

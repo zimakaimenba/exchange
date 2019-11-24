@@ -308,5 +308,13 @@ public class MonthView extends View
     	
     	ggfx = null;
 	}
+	@Override
+	public void onMeetingAdded(Meeting m) 
+	{
+		String de = m.getDescription();
+		String kw = m.getKeyWords();
+		String url = m.getSlackUrl();
+		
+	}
 
 }

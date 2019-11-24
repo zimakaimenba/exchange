@@ -22,8 +22,8 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode
         
       	HanYuPinYing hypy = new HanYuPinYing ();
     	hanyupingyin = new ArrayList<String> ();
-   		String codehypy = hypy.getBanKuaiNameOfPinYin(myowncode); 
-   		String namehypy = hypy.getBanKuaiNameOfPinYin(name );
+   		String codehypy = hypy.getSouZiMuOfPinYin(myowncode); 
+   		String namehypy = hypy.getSouZiMuOfPinYin(name );
    		hanyupingyin.add(codehypy);
    		hanyupingyin.add(namehypy);
    		

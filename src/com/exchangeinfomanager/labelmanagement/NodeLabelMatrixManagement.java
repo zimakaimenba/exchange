@@ -84,7 +84,7 @@ public class NodeLabelMatrixManagement extends JDialog
 		Set<String> all = new HashSet<> ();
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
 		all.add("treeroot");
-		lballdbservice = new DBSystemTagsService (all); 
+		lballdbservice = new DBSystemTagsService (); 
 		allsyskwcache = new LabelCache (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);
 		pnldisplayallsyskw.initializeLabelsManagement (lballdbservice,allsyskwcache);

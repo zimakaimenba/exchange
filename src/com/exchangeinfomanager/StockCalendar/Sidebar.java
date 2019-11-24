@@ -192,4 +192,10 @@ public class Sidebar extends View implements CacheListener {
             }
         }
     }
+
+	@Override
+	public void onMeetingAdded(Meeting m) {
+		// TODO Auto-generated method stub
+		
+	}
 }

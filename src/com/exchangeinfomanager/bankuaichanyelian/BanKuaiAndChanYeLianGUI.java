@@ -24,15 +24,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
 import java.util.ArrayList;
-
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-
-
+import java.util.Set;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -54,7 +57,11 @@ import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
+import com.exchangeinfomanager.labelmanagement.DBSystemTagsService;
+import com.exchangeinfomanager.labelmanagement.LabelCache;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelsManagement;
+import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
+import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
@@ -99,29 +106,42 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	private CylTreeDbOperation treedb;
 	private BanKuaiAndStockTree treechanyelian;
 	private BanKuaiDbOperation bkopt;
+
+	private DBSystemTagsService lballdbservice;
+
+	private LabelCache allsyskwcache;
  	
 	private void setupSubGpcAndBanKuai() 
 	{
-		//subgpc
-		List<BkChanYeLianTreeNode> subgpclist = treedb.getSubGuPiaoChi ();
-		((BkChanYeLianTreeNodeListTableModel)tablesubcyl.getModel()).refresh(subgpclist);
+		Set<String> all = new HashSet<> ();
+//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
+		all.add("treeroot");
+		lballdbservice = new DBSystemTagsService (all); 
+		allsyskwcache = new LabelCache (lballdbservice);
+		lballdbservice.setCache(allsyskwcache);
+		pnllblsysmanagement.initializeLabelsManagement (lballdbservice,allsyskwcache);
 		
-		//bankuai
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.bkstk.getAllBkStocksTree().getModel().getRoot();
-        int bankuaicount = this.bkstk.getAllBkStocksTree().getModel().getChildCount(treeroot);
-        List<BkChanYeLianTreeNode> allbklist = new ArrayList<> ();
-		for(int i=0;i < bankuaicount; i++) {
-			try {
-				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.bkstk.getAllBkStocksTree().getModel().getChild(treeroot, i);
-				if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
-					BkChanYeLianTreeNode cylbk = new CylTreeNestedSetNode (childnode.getMyOwnCode(), childnode.getMyOwnName(), BkChanYeLianTreeNode.TDXBK );
-					allbklist.add(cylbk);
-				}
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-				e.printStackTrace();
-			}
-		} 
-		((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).refresh(allbklist);
+		
+//		//subgpc
+//		List<BkChanYeLianTreeNode> subgpclist = treedb.getSubGuPiaoChi ();
+//		((BkChanYeLianTreeNodeListTableModel)tablesubcyl.getModel()).refresh(subgpclist);
+//		
+//		//bankuai
+//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.bkstk.getAllBkStocksTree().getModel().getRoot();
+//        int bankuaicount = this.bkstk.getAllBkStocksTree().getModel().getChildCount(treeroot);
+//        List<BkChanYeLianTreeNode> allbklist = new ArrayList<> ();
+//		for(int i=0;i < bankuaicount; i++) {
+//			try {
+//				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.bkstk.getAllBkStocksTree().getModel().getChild(treeroot, i);
+//				if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
+//					BkChanYeLianTreeNode cylbk = new CylTreeNestedSetNode (childnode.getMyOwnCode(), childnode.getMyOwnName(), BkChanYeLianTreeNode.TDXBK );
+//					allbklist.add(cylbk);
+//				}
+//			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+//				e.printStackTrace();
+//			}
+//		} 
+//		((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).refresh(allbklist);
 	}
 	/*
      * 选择 
@@ -231,16 +251,38 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	}
 	private void addSubGpcButtonActionPerformed(ActionEvent evt) 
 	{
-		int row = tablesubcyl.getSelectedRow() ;
-		if( row <0) {
-			 JOptionPane.showMessageDialog(null,"请选择一个子板块!");
-			 return;
-		}
-	
-		BkChanYeLianTreeNode subcode = ((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).getNode(row);
+//		int row = tablesubcyl.getSelectedRow() ;
+//		if( row <0) {
+//			 JOptionPane.showMessageDialog(null,"请选择一个子板块!");
+//			 return;
+//		}
+//		BkChanYeLianTreeNode subcode = ((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).getNode(row);
 		 
-		 int direction = ((SubnodeButton)evt.getSource()).getDirection();
-		 this.treedb.addNewNodeToTree (subcode, direction);
+		Collection<Tag> selectedlbl = allsyskwcache.produceSelectedLabels();
+		if(selectedlbl.size() > 1)
+			JOptionPane.showMessageDialog(null,"一次只能添加一个TAG!");
+		
+		for (Iterator<Tag> lit = selectedlbl.iterator(); lit.hasNext(); )  {
+	        InsertedTag f = (InsertedTag) lit.next();
+	        
+	        BkChanYeLianTreeNode subcode = new CylTreeNestedSetNode (String.valueOf(f.getID() ), f.getName(), BkChanYeLianTreeNode.SUBGPC);
+	        int direction = ((SubnodeButton)evt.getSource()).getDirection();
+			this.treedb.addNewNodeToTree (subcode, direction);
+		}
+	}
+	private void addSubGpcButtonActionPerformed(int direction)
+	{
+		Collection<Tag> selectedlbl = allsyskwcache.produceSelectedLabels();
+		if(selectedlbl.size() > 1)
+			JOptionPane.showMessageDialog(null,"一次只能添加一个TAG!");
+		
+		for (Iterator<Tag> lit = selectedlbl.iterator(); lit.hasNext(); )  {
+	        InsertedTag f = (InsertedTag) lit.next();
+	        
+	        BkChanYeLianTreeNode subcode = new CylTreeNestedSetNode (String.valueOf(f.getID() ), f.getName(), BkChanYeLianTreeNode.SUBGPC);
+			this.treedb.addNewNodeToTree (subcode, direction);
+		}
+		
 	}
 	/*
 	    * 产业链树上定位用户选择的板块
@@ -289,6 +331,15 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	 */
 	private void createEvents() 
 	{
+		pnllblsysmanagement.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+            	if (evt.getPropertyName().equals(LabelsManagement.ADDNEWTAGSTONODE)) {
+            		addSubGpcButtonActionPerformed (BanKuaiAndChanYeLianGUI.RIGHT );
+            	}
+            }
+		});
+		
 		btndelsubgpc.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -463,7 +514,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
        });
 	   btnaddSubGPCtotree.addActionListener(new java.awt.event.ActionListener() {
            public void actionPerformed(java.awt.event.ActionEvent evt) {
-               addSubGpcButtonActionPerformed(evt);
+        	   int direction = ((SubnodeButton)evt.getSource()).getDirection();
+               addSubGpcButtonActionPerformed(direction);
            }
        });
         
@@ -573,6 +625,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	private JTextArea txaDescripton;
 
 	private JButton btndelsubgpc;
+
+	private LabelsManagement pnllblsysmanagement;
 
 	private void initializeGui() 
 	{
@@ -700,8 +754,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		JScrollPane scrollPane52 = new JScrollPane();
 		panel_5.add(scrollPane52);
 		
-		
-		
+		pnllblsysmanagement = new LabelsManagement("所有系统关键字",null, LabelsManagement.FULLCONTROLMODE);
+		scllPnsubcyl41.setViewportView(pnllblsysmanagement);
 		
 		
 	
@@ -754,27 +808,27 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		
 		
 
-		BkChanYeLianTreeNodeListTableModel subcylmode = new BkChanYeLianTreeNodeListTableModel ();
-		tablesubcyl = new JTable(subcylmode)
-		{
-			private static final long serialVersionUID = 1L;
-			
-			public String getToolTipText(MouseEvent e) 
-			{
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                	e1.printStackTrace();
-                }
-                return tip;
-            } 
-		};
-		scllPnsubcyl41.setViewportView(tablesubcyl);
+//		BkChanYeLianTreeNodeListTableModel subcylmode = new BkChanYeLianTreeNodeListTableModel ();
+//		tablesubcyl = new JTable(subcylmode)
+//		{
+//			private static final long serialVersionUID = 1L;
+//			
+//			public String getToolTipText(MouseEvent e) 
+//			{
+//                String tip = null;
+//                java.awt.Point p = e.getPoint();
+//                int rowIndex = rowAtPoint(p);
+//                int colIndex = columnAtPoint(p);
+//
+//                try {
+//                    tip = getValueAt(rowIndex, colIndex).toString();
+//                } catch (RuntimeException e1) {
+//                	e1.printStackTrace();
+//                }
+//                return tip;
+//            } 
+//		};
+//		scllPnsubcyl41.setViewportView(tablesubcyl);
 		
 		
 		

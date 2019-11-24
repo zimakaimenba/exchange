@@ -47,11 +47,8 @@ public class Cache
      */
     public void refresh ()
     {
-    	if(true) {
-    		
     		this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,eventtype);
         	this.listeners.forEach(l -> l.onMeetingChange(this));
-    	}
     }
     
     public String getNodeCode ()
@@ -115,6 +112,7 @@ public class Cache
     public void addMeeting(InsertedMeeting meeting) {
         this.refreshMeetings(nodecode,this.cashestartdate,this.casheenddate,this.eventtype);
         this.listeners.forEach(l -> l.onMeetingChange(this));
+        this.listeners.forEach(l -> l.onMeetingAdded(meeting));
     }
 
     public void updateMeetingLabel(InsertedMeeting.Label label) {

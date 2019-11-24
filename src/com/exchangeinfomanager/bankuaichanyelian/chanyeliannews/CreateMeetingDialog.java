@@ -24,13 +24,9 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
         JLabel createButton = JLabelFactory.createOrangeButton("Create");
         createButton.addMouseListener(new CreateController());
         
-//        JLabel createFromURLButton = JLabelFactory.createOrangeButton("Create From URL");
-//        createFromURLButton.addMouseListener(new CreateUrlController());
-
         // add button to the main panel
         JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new FlowLayout(FlowLayout.RIGHT), 35);
         layoutPanel.add(createButton);
-//        layoutPanel.add(createFromURLButton);
         super.centerPanel.add(layoutPanel);
         super.centerPanel.add(Box.createVerticalStrut(PADDING));
     }
@@ -69,6 +65,8 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
             	} else { 
             		meetingService.createMeeting(mt);
             		setVisible(false);
+            		
+            		
             	}
             } catch (com.mysql.jdbc.MysqlDataTruncation e2) {
             	e2.printStackTrace();
@@ -77,30 +75,4 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
             }
         }
     }
-    /*
-     * 
-     */
-//    private class CreateUrlController extends MouseAdapter {
-//
-//        @Override
-//        public void mouseClicked(MouseEvent e) 
-//        {
-//            super.mouseClicked(e);
-//
-//            GetNewsFromHtml	 showhtmldialog = new GetNewsFromHtml (getMeeting());
-//            
-//            int exchangeresult = JOptionPane.showConfirmDialog(null, showhtmldialog ,"…Ë÷√–¬Œ≈", JOptionPane.OK_CANCEL_OPTION);
-//			if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//					return;
-////        			SystemAudioPlayed.playSound();
-//            
-//          try {
-//        	setMeeting(  showhtmldialog.getMeeting () );
-//			meetingService.createMeeting(getMeeting());
-//			setVisible(false);
-//		  } catch (SQLException e1) {
-//				e1.printStackTrace();
-//		  }
-//	   }
-//    }
 }

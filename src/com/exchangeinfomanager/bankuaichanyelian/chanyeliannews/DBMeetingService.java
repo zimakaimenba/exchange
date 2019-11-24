@@ -49,7 +49,7 @@ public class DBMeetingService  implements EventService {
     	 if(m != null && cache != null)
     		 cache.addMeeting(m);
     }
-
+ 
     @Override
     public void deleteMeeting(InsertedMeeting meeting) throws SQLException {
         
