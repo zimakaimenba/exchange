@@ -3,6 +3,8 @@ package com.exchangeinfomanager.nodes.nodejibenmian;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+
 public class NodeJiBenMian 
 {	
 			public NodeJiBenMian ()
@@ -23,13 +25,10 @@ public class NodeJiBenMian
 			private String keHuCustom;
 			private String suoshujiaoyisuo;
 			private Object[][] zdgzmrmcykRecords;
-			private List<String> cylinfo;
+			private List<BkChanYeLianTreeNode> cylinfo;
 			
-			public void setChanYeLianInfo (List<String> cylinfo)
-			{
-				this.cylinfo = cylinfo;
-			}
-			public List<String> getChanYeLianInfo ()
+			
+			public List<BkChanYeLianTreeNode> getChanYeLianInfo ()
 			{
 				return this.cylinfo;
 			}
@@ -125,6 +124,10 @@ public class NodeJiBenMian
 			 */
 			public Object[][] getZdgzMrmcZdgzYingKuiRecords() {
 				return zdgzmrmcykRecords;
+			}
+			public void setChanYeLianInfo(List<BkChanYeLianTreeNode> result)
+			{
+				this.cylinfo = result;
 			}
 		
 }

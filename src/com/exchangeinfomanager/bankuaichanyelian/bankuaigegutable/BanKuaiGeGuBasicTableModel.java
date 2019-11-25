@@ -232,8 +232,9 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	    			
 	    			if(stockname == null)
 	    				continue;
-	    			String namehypy = hypy.getBanKuaiNameOfPinYin(stockname );
-			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
+	    			
+	    			Boolean compresult = hypy.compareTwoStrings (stockname, neededfindstring.trim() );
+			   		if(compresult) {
 			   			index = i;
 			   			break;
 			   		}

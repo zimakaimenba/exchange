@@ -164,7 +164,7 @@ public class TreeTransferHandler extends TransferHandler
     private BkChanYeLianTreeNode copy(BkChanYeLianTreeNode node) 
     {
     	BkChanYeLianTreeNode tmpnode =  new CylTreeNestedSetNode(node.getMyOwnCode(), node.getMyOwnName(),node.getType()  );
-    	int nestedid = ((CylTreeNestedSetNode)node).getNestedid();
+    	int nestedid = ((CylTreeNestedSetNode)node).getNestedId();
     	((CylTreeNestedSetNode)tmpnode).setNestedId(nestedid);
     	
     	CylTreeNestedSetNode fn = (CylTreeNestedSetNode)node.getParent();
@@ -239,7 +239,7 @@ public class TreeTransferHandler extends TransferHandler
         		Enumeration<TreeNode> e = tmpfather.breadthFirstEnumeration();
         		while (e.hasMoreElements() ) {
 			    	CylTreeNestedSetNode possiblefather = (CylTreeNestedSetNode) e.nextElement();
-			    	int possiblefatherid = possiblefather.getNestedid();
+			    	int possiblefatherid = possiblefather.getNestedId();
 			    	
 			        if (possiblefatherid == nodefatherid) {
 			             model.insertNodeInto(nodes[i], possiblefather, possiblefather.getChildCount() );

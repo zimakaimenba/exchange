@@ -24,7 +24,6 @@ import com.sun.rowset.CachedRowSetImpl;
 public class TagsDbOperation 
 {
 	private ConnectDataBase connectdb;
-	private HashSet kwset; //跨多个品种的时候用这个来避免重复
 
 	public TagsDbOperation() 
 	{
@@ -108,14 +107,10 @@ public class TagsDbOperation
  			while (result.next()) {
 		        	String bkzname = result.getString("板块国名称");
  		        	String tagcolor = result.getString("DefaultCOLOUR") ;
- 		        	Color defaultColor;
+ 		        	Color defaultColor = Color.WHITE;
  		        	try {
- 		        		if(tagcolor == null)
- 	 		        		defaultColor =Color.decode( "#ffffff");
- 	 		        	else
- 	 		        		defaultColor = Color.decode( tagcolor);
- 		        	} catch (java.lang.NumberFormatException e) {
- 		        		defaultColor =Color.decode( "#ffffff");
+ 		        		defaultColor = Color.decode( tagcolor);
+ 		        	} catch (java.lang.Exception e) {
  		        	}
  		        	
  		        	int id = result.getInt ("id");
@@ -140,15 +135,16 @@ public class TagsDbOperation
 	/*
 	 * 
 	 */
+	
 	public Collection<Tag> getNodesTagsFromDataBase(Set<BkChanYeLianTreeNode> nodesets) throws SQLException 
 	{
         Collection<Tag> labels = new HashSet<>();
         
-        kwset = new HashSet<> ();
+        
         for(BkChanYeLianTreeNode code : nodesets) 
         		labels.addAll( this.getNodeTagsFromDataBase (code.getMyOwnCode(),code.getType()) );
         
-        kwset = null;
+        
         return labels;
 	}
 	public Collection<NodeInsertedTag> getNodeTagsFromDataBase(String nodecode, int nodetype) throws SQLException
@@ -169,10 +165,7 @@ public class TagsDbOperation
 		   while (result.next()) {
 		     	String bkzname = result.getString("板块国名称");
 		     	
-		     	if( !kwset.contains(bkzname) ) {
-		     		kwset.add(bkzname);
-		     		
-			     	Color defaultColor = Color.GRAY;
+			     	Color defaultColor = Color.WHITE;
 					try {
 						defaultColor = Color.decode( result.getString("DefaultCOLOUR")  ) ;
 					} catch (java.lang.Exception e)  {
@@ -184,7 +177,7 @@ public class TagsDbOperation
 			     	
 			     	int matchid = result.getInt("matchid");
 			     	String gegubk = result.getString("个股板块");
-			     	Color color = Color.GRAY;
+			     	Color color = Color.WHITE;
 			     	try {
 			     		color=  Color.decode( result.getString("颜色") );
 			     	} catch (java.lang.Exception e) {
@@ -193,7 +186,7 @@ public class TagsDbOperation
 			     	
 			         NodeInsertedTag label = new NodeInsertedTag(intag, matchid, gegubk, color);
 			         labels.add(label);
-		     	}
+		     	
 		   }
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();
@@ -217,7 +210,6 @@ public class TagsDbOperation
 	 */
 	public Tag attachedTagToNodes(Set<BkChanYeLianTreeNode> nodesets, Tag label)
 	{
-	
 		for(BkChanYeLianTreeNode tmpnode : nodesets)
 			this.attachedTagToNode(tmpnode, label);
 		
@@ -233,7 +225,6 @@ public class TagsDbOperation
 		}
 		
 		return label;
-		
 	}
 	public Tag attachedTagToNode(BkChanYeLianTreeNode node, Tag label) 
 	{
@@ -253,6 +244,8 @@ public class TagsDbOperation
 		int autoIncKeyFromApi = 0;
 		try {
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlquery);
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+			e.printStackTrace();
 		} catch (MysqlDataTruncation e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

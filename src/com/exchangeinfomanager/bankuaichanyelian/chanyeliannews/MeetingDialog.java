@@ -2,7 +2,6 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
-import com.exchangeinfomanager.bankuaichanyelian.LabelListDialog;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;

@@ -31,6 +31,7 @@ import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
+import com.exchangeinfomanager.labelmanagement.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
 
@@ -41,6 +42,7 @@ public class LabelTag extends JPanel
 	protected static final String PROPERTYCHANGEDASDELETE = "PROPERTYCHANGED_AS_DELETE";
 	protected static final String PROPERTYCHANGEDASEDIT = "PROPERTYCHANGED_AS_EDIT";
 	protected static final String PROPERTYCHANGEDASCOMBINE = "PROPERTYCHANGED_AS_COMBINED";
+	private Color tagcolor;
 //	private static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 //	private static LayoutManager FLOW_LAYOUT = new FlowLayout(FlowLayout.LEFT, 0, 0);
 //	private static Color BG_COLOR = ColorScheme.BACKGROUND;
@@ -48,11 +50,18 @@ public class LabelTag extends JPanel
 	
 	public LabelTag (Tag l)
 	{
-		this.tag = (InsertedTag) l;
+		this.tag =  l;
+		if(l instanceof Tag)
+			this.tagcolor = l.getColor() ;
+		if(l instanceof InsertedTag)
+			this.tagcolor = ((InsertedTag) l).getColor();
+		if(l instanceof NodeInsertedTag)
+			this.tagcolor = ((NodeInsertedTag)l).getNodeMachColor();
+		
+		
 		
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		this.setBorder(BorderFactory.createEmptyBorder());
-//		this.addMouseListener(new ChangeKeyWordsPanelController());
 		this.setName( l.getName() );
 
 		JUpdatedLabel label = new JUpdatedLabel( l.getName() );
@@ -61,13 +70,13 @@ public class LabelTag extends JPanel
 	    label.setName( l.getName() );
 	    label.setToolTipText(l.getName() );
 	    label.setForeground(Color.BLACK);
-	    label.setBackground(l.getColor());
+	    label.setBackground( this.tagcolor);
 	    
 	    if(  tag.isSelected() ) {
 	    	LineBorder line = new LineBorder(Color.BLUE, 2, true);
 	 	    this.setBorder(line);
 	    } else {
-	    	LineBorder line = new LineBorder(l.getColor(), 2, true);
+	    	LineBorder line = new LineBorder( this.tagcolor, 2, true);
 	 	    this.setBorder(line);
 	    }
 	    
@@ -129,7 +138,7 @@ public class LabelTag extends JPanel
 		
 	}
 
-	private InsertedTag tag;
+	private Tag tag;
 	private JPopupMenu Pmenu;
 	private JMenuItem menuItemEdit;
 	private JMenuItem menuItemDel;
@@ -187,7 +196,7 @@ public class LabelTag extends JPanel
 	private void unselectTag(Tag tmptag, JPanel p)
     {
     	((InsertedTag)tmptag).setSelected(false);
-        LineBorder line = new LineBorder(tmptag.getColor(), 2, true);
+        LineBorder line = new LineBorder( this.tagcolor, 2, true);
  	    p.setBorder(line);
     }
     private void selectTag (Tag tmptag, JPanel p)

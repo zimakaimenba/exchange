@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.labelmanagement;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
@@ -66,6 +67,7 @@ public class NodeLabelMatrixManagement extends JDialog
 	private DBUrlTagsService lburldbservice;
 	private LabelCache urlcache;
 	private HashSet<TagService> tagdeltedlisteners;
+	private TagServicesForTreeChanYeLian tagserviceforcyl;
 
 
 	/**
@@ -112,23 +114,10 @@ public class NodeLabelMatrixManagement extends JDialog
 		lbnewsdbservice.setCache(newskwcache);
 		pnldisplayallnewskw.initializeLabelsManagement (lbnewsdbservice,newskwcache);
 		//²úÒµÁ´
-		List<String> cylinfo = this.cydbopt.getChanYeLianInfo (node.getMyOwnCode() , node.getType() );
-		List<String> cylsliding = this.cydbopt.getSlidingInChanYeLianInfo (node.getMyOwnCode() , node.getType() );
-		Set<BkChanYeLianTreeNode> cylnodeset = new HashSet<> ();
-		for(String tmpstr : cylinfo) {
-			BkChanYeLianTreeNode bk = this.allbkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpstr, BkChanYeLianTreeNode.TDXBK);
-			if(bk != null)
-				cylnodeset.add(bk);
-		}
-		for(String tmpstr : cylsliding) {
-			BkChanYeLianTreeNode bk = this.allbkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpstr, BkChanYeLianTreeNode.TDXBK);
-			if(bk != null)
-				cylnodeset.add(bk);
-		}
-		lbcyldbservice = new DBNodesTagsService (cylnodeset);
-		cylkwcache = new LabelCache (lbcyldbservice);
-		lbcyldbservice.setCache(cylkwcache);
-		pnldisplaycylskw.initializeLabelsManagement (lbcyldbservice,cylkwcache);
+		tagserviceforcyl = new TagServicesForTreeChanYeLian (bkstk);
+		cylkwcache = new LabelCache (tagserviceforcyl);
+		tagserviceforcyl.setCache(cylkwcache);
+		pnldisplaycylskw.initializeLabelsManagement (tagserviceforcyl,cylkwcache);
 		
 		
 		createEvent ();
@@ -144,6 +133,9 @@ public class NodeLabelMatrixManagement extends JDialog
 	
 	private void createKeyWorkdsFromURL() 
 	{
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		setCursor(hourglassCursor);
+		
 		Set<String> urlset = new HashSet< > ();
 		urlset.add(tfldurl.getText());
 	
@@ -152,6 +144,10 @@ public class NodeLabelMatrixManagement extends JDialog
 		lburldbservice.setCache(urlcache);
 		pnldisplayurlskw.initializeLabelsManagement (lburldbservice,urlcache);
 		pnldisplayurlskw.revalidate();
+		
+		hourglassCursor = null;
+		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+		setCursor(hourglassCursor2);
 		
 	}
 	

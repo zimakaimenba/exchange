@@ -881,6 +881,19 @@ public class SystemConfigration
 			 }
 			 return path; 
 		}
+		public String getYanJiuBaoGaoDownloadedFilePath ()
+		{
+			String path = this.systeminstalledpath + "weeklyreports/研究报告/";
+			 if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path) );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path; 
+		}
 		public String getXueQiuDownloadedFilePath() 
 		{
 			String path = this.systeminstalledpath + "dailydata/xueqiu/downloaded/";

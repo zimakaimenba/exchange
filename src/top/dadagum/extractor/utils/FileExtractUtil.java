@@ -1,5 +1,7 @@
 package top.dadagum.extractor.utils;
 
+import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.POIXMLDocument;
@@ -26,7 +28,7 @@ import java.nio.charset.Charset;
 import java.text.NumberFormat;
 
 /**
- * @Description 文件工具类
+ * @Description 鏂囦欢宸ュ叿绫�
  * @Author Honda
  * @Date 2019/6/19 22:58
  **/
@@ -43,14 +45,14 @@ public class FileExtractUtil {
     }
 
     /**
-     * 默认检测 txt 的字符集
+     * 榛樿妫�娴� txt 鐨勫瓧绗﹂泦
      */
     private static String[] charsetsToBeTested = {"Unicode", "UTF-8", "UTF-16"};
 
     /**
-     * 根据文件后缀名提取文本内容， 目前内容只支持 pdf, doc, docx, ppt, pptx, xls, xlsx 的提取
-     * 如果是其它文件的类型，返回 String = null
-     * @param path 文件路径
+     * 鏍规嵁鏂囦欢鍚庣紑鍚嶆彁鍙栨枃鏈唴瀹癸紝 鐩墠鍐呭鍙敮鎸� pdf, doc, docx, ppt, pptx, xls, xlsx 鐨勬彁鍙�
+     * 濡傛灉鏄叾瀹冩枃浠剁殑绫诲瀷锛岃繑鍥� String = null
+     * @param path 鏂囦欢璺緞
      * @return
      */
     public static String extractString(String path) throws IOException, OpenXML4JException, XmlException {
@@ -86,8 +88,8 @@ public class FileExtractUtil {
     }
 
     /**
-     * 得到文件后缀
-     * @param fileName 文件名
+     * 寰楀埌鏂囦欢鍚庣紑
+     * @param fileName 鏂囦欢鍚�
      * @return
      */
     public static String getFileSuffix(String fileName) {
@@ -97,22 +99,21 @@ public class FileExtractUtil {
     public static String pdf2String(File file) throws IOException {
         PDDocument document = null;
         String content = null;
-        // 方式一：
-        /**
-         InputStream input = null;
-         input = new FileInputStream( pdfFile );
-         //加载 pdf 文档
-         PDFParser parser = new PDFParser(new RandomAccessBuffer(input));
-         parser.parse();
-         document = parser.getPDDocument();
-         **/
-        // 方式二：
+        
+//         InputStream input = null;
+//         input = new FileInputStream( "e:\\test.pdf" );
+//
+//         PDFParser parser = new PDFParser(new RandomAccessBuffer(input));
+//         parser.parse();
+//         document = parser.getPDDocument();
+         
+
         document = PDDocument.load(file);
-        // 获取页码
+
         int pages = document.getNumberOfPages();
-        // 读文本内容
+
         PDFTextStripper stripper = new PDFTextStripper();
-        // 设置按顺序输出
+
         stripper.setSortByPosition(true);
         stripper.setStartPage(1);
         stripper.setEndPage(pages);
@@ -154,15 +155,15 @@ public class FileExtractUtil {
         XSSFWorkbook workbook = new XSSFWorkbook(path);
         for (int numSheets = 0; numSheets < workbook.getNumberOfSheets(); numSheets++) {
             if (null != workbook.getSheetAt(numSheets)) {
-                XSSFSheet aSheet = workbook.getSheetAt(numSheets);// 获得一个sheet
+                XSSFSheet aSheet = workbook.getSheetAt(numSheets);// 鑾峰緱涓�涓猻heet
                 for (int rowNumOfSheet = 0; rowNumOfSheet <= aSheet
                         .getLastRowNum(); rowNumOfSheet++) {
                     if (null != aSheet.getRow(rowNumOfSheet)) {
-                        XSSFRow aRow = aSheet.getRow(rowNumOfSheet); // 获得一个行
+                        XSSFRow aRow = aSheet.getRow(rowNumOfSheet); // 鑾峰緱涓�涓
                         for (short cellNumOfRow = 0; cellNumOfRow <= aRow
                                 .getLastCellNum(); cellNumOfRow++) {
                             if (null != aRow.getCell(cellNumOfRow)) {
-                                XSSFCell aCell = aRow.getCell(cellNumOfRow);// 获得列值
+                                XSSFCell aCell = aRow.getCell(cellNumOfRow);// 鑾峰緱鍒楀��
                                 if (convertCell(aCell).length() > 0) {
                                     content.append(convertCell(aCell));
                                 }
@@ -178,18 +179,18 @@ public class FileExtractUtil {
 
     public static String xls2String(String path) throws IOException {
         StringBuilder content = new StringBuilder();
-        HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(path));// 创建对Excel工作簿文件的引用
+        HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(path));// 鍒涘缓瀵笶xcel宸ヤ綔绨挎枃浠剁殑寮曠敤
         for (int numSheets = 0; numSheets < workbook.getNumberOfSheets(); numSheets++) {
             if (null != workbook.getSheetAt(numSheets)) {
-                HSSFSheet aSheet = workbook.getSheetAt(numSheets);// 获得一个sheet
+                HSSFSheet aSheet = workbook.getSheetAt(numSheets);// 鑾峰緱涓�涓猻heet
                 for (int rowNumOfSheet = 0; rowNumOfSheet <= aSheet
                         .getLastRowNum(); rowNumOfSheet++) {
                     if (null != aSheet.getRow(rowNumOfSheet)) {
-                        HSSFRow aRow = aSheet.getRow(rowNumOfSheet); // 获得一个行
+                        HSSFRow aRow = aSheet.getRow(rowNumOfSheet); // 鑾峰緱涓�涓
                         for (short cellNumOfRow = 0; cellNumOfRow <= aRow
                                 .getLastCellNum(); cellNumOfRow++) {
                             if (null != aRow.getCell(cellNumOfRow)) {
-                                HSSFCell aCell = aRow.getCell(cellNumOfRow);// 获得列值
+                                HSSFCell aCell = aRow.getCell(cellNumOfRow);// 鑾峰緱鍒楀��
                                 if (convertCell(aCell).length() > 0) {
                                     content.append(convertCell(aCell));
                                 }
@@ -205,7 +206,7 @@ public class FileExtractUtil {
 
     public static String txt2String(File file) throws IOException {
         StringBuilder sb = new StringBuilder();
-        // 检查字符集
+        // 妫�鏌ュ瓧绗﹂泦
         Charset charset = CharsetDetector.detectCharset(file, charsetsToBeTested);
         if (charset != null) {
             InputStreamReader isr = new InputStreamReader(new FileInputStream(file), charset);

@@ -76,6 +76,9 @@ public class StockCalendar extends JCalendar
         
         //每月固定信息，用于记录长期月度重复信息,显示在Cal星期的上部
         this.wholemonthview = new WholeMonthNewsView (eventDbService, cache);
+        
+        //有新的新闻，加到同关键字的节点上
+        AddNewsToSameTagsNodes addkwtoothernode = new AddNewsToSameTagsNodes (cache);
 
 	    this.initHeaderPanel(); //
 	    this.initViewDeck();

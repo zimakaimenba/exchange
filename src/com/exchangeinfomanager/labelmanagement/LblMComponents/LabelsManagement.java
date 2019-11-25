@@ -286,7 +286,7 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	private void combinMenuAction() 
 	{
 		CombineTagsDialog combineTagDialog = new CombineTagsDialog (lbdbservice);
-		combineTagDialog.setLabel(new Tag("Combined label", ColorScheme.ORANGE_LIGHT));
+		combineTagDialog.setLabel(new Tag("Combined label", ColorScheme.GREY_WHITER));
 		combineTagDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
 		combineTagDialog.setVisible(true);
         
@@ -296,7 +296,7 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	private void addMenuAction ()
 	{
 		CreateTagDialog createTagDialog = new CreateTagDialog (lbdbservice);
-        createTagDialog.setLabel(new Tag("Create label", ColorScheme.ORANGE_LIGHT));
+        createTagDialog.setLabel(new Tag("Create label", ColorScheme.GREY_WHITER));
         createTagDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
         createTagDialog.setVisible(true);
         

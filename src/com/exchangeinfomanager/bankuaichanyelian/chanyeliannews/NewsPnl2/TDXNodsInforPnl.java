@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.swing.JCheckBox;
 
+import com.exchangeinfomanager.StockCalendar.AddNewsToSameTagsNodes;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
@@ -35,6 +36,7 @@ public class TDXNodsInforPnl extends TDXNodesInfomationListsPnlBasic
         TDXNodesInformationTableModle gginformodle = new TDXNodesInformationTableModle ();
         TDXNodesInfomationListsView panelgegunews = new TDXNodesInfomationListsView(curmeetingService,cachecurnode,gginformodle);
 		
+        
         
 		super.initializeGui (panelgegunews,panelallnews);
 		this.createEvents();

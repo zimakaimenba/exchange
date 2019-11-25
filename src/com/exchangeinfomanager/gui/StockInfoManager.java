@@ -654,6 +654,7 @@ public class StockInfoManager
 				try{
 					BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
 					TDXNodsInforPnl cylnews = new TDXNodsInforPnl (node);
+					cylnews.setModal(false);
 					cylnews.setVisible(true);
 				} catch (java.lang.NullPointerException ex) {
 					ex.printStackTrace();
@@ -1103,6 +1104,7 @@ public class StockInfoManager
 			public void mousePressed(MouseEvent arg0) 
 			{
 				NodeLabelMatrixManagement lblmag = new NodeLabelMatrixManagement (nodeshouldbedisplayed );
+				lblmag.setModal(false);
 				lblmag.setVisible(true);
 				
 				bkstkkwcache.refreshTags();

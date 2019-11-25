@@ -32,6 +32,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import com.exchangeinfomanager.StockCalendar.AddNewsToSameTagsNodes;
 import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
 import com.exchangeinfomanager.StockCalendar.View;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
@@ -59,6 +60,8 @@ public class TDXNodesInfomationListsView extends View
 		
 		initializeGui (tablemodle);
 		createEvents ();
+		
+		AddNewsToSameTagsNodes addkwtoothernode = new AddNewsToSameTagsNodes (cache);
 		
         this.onMeetingChange(cache);
 	}
@@ -282,6 +285,12 @@ public class TDXNodesInfomationListsView extends View
 			lbltitle.setText("Ыљга:" + title);
 		else
 			lbltitle.setText(this.nodecode + ":" + title);
+		
+	}
+
+	@Override
+	public void onMeetingAdded(Meeting m) {
+		// TODO Auto-generated method stub
 		
 	}
 

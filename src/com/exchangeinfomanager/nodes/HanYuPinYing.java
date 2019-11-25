@@ -77,5 +77,13 @@ public class HanYuPinYing {
            return pybf.toString().replaceAll("\\W", "").trim(); //·µ»ØÊ××ÖÄ¸Æ´Òô
 	 } 
 	
+	public Boolean compareTwoStrings (String checkedstr, String comparedstr)
+	{
+		if(this.getQuanBuOfPinYin (checkedstr).equals(comparedstr) || this.getSouZiMuOfPinYin(checkedstr).equals(comparedstr) )
+			return true;
+		else
+			return false;
+	}
+	
 
 }

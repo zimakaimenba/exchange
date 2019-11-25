@@ -65,8 +65,6 @@ public class CreateMeetingDialog extends MeetingDialog<Meeting> {
             	} else { 
             		meetingService.createMeeting(mt);
             		setVisible(false);
-            		
-            		
             	}
             } catch (com.mysql.jdbc.MysqlDataTruncation e2) {
             	e2.printStackTrace();

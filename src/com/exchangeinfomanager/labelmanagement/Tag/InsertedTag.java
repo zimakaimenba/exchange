@@ -9,7 +9,7 @@ public class InsertedTag extends Tag
 	private int id;
 	private Tag tag;
 	private String des;
-	private boolean selected;
+	
 
     public InsertedTag(Tag label, Integer id) 
     {
@@ -36,14 +36,4 @@ public class InsertedTag extends Tag
     	return this.des ;
     } 
     
-    
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean active) {
-        this.selected = active;
-    }
-
-
 }

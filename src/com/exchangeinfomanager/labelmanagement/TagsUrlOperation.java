@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.labelmanagement;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -13,6 +14,10 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.apache.xmlbeans.XmlException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,14 +25,14 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 import com.lc.nlp.keyword.algorithm.TextRank;
 
+import top.dadagum.extractor.utils.FileExtractUtil;
+
 public class TagsUrlOperation 
 {
-	private HashSet kwset;
-	
-
 	public TagsUrlOperation ()
 	{
 		
@@ -38,23 +43,42 @@ public class TagsUrlOperation
 	{
         Collection<Tag> labels = new HashSet<>();
         
-        kwset = new HashSet<> ();
-        
         for(String tmpurl : URL) {
-        		labels.addAll( this.getTagsFromURL (tmpurl) );
+        	if(tmpurl.contains("http"))
+        		labels.addAll( this.getTagsFromURL (tmpurl) ); 
+        	else
+        		labels.addAll( this.getTagsFromReadingFiles (tmpurl) );
         }
         
-        kwset = null;
         return labels;
 	}
-
-	private Collection<? extends Tag> getTagsFromURL(String url)
+	private Collection<? extends Tag> getTagsFromReadingFiles(String path) 
 	{
 		Collection<Tag> labels = new HashSet<>();
 		
-		TextRank.setKeywordNumber(8);
-		TextRank.setWindowSize(6);
-		
+		try { 
+	        String body = FileExtractUtil.extractString(path);
+	        
+	        TextRank.setKeywordNumber(8);
+			TextRank.setWindowSize(6);
+			List<String> keywords = TextRank.getKeyword(path, body);
+	        for(String tmpkwname : keywords) {
+	        	if( !tmpkwname.equals("关键词")) {
+	        		Tag tag = new Tag (tmpkwname, Color.WHITE);
+	    	        labels.add(tag);
+	        	}
+	        }
+	        
+		} catch (IOException | OpenXML4JException | XmlException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return labels;
+	}
+	private Collection<? extends Tag> getTagsFromURL(String url)
+	{
+		Collection<Tag> labels = new HashSet<>();
+				
 		URL slkurl;
 		String contentType = null;
 		try {
@@ -64,27 +88,51 @@ public class TagsUrlOperation
 			connection.connect();
 			contentType = connection.getContentType();
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		if(contentType.toUpperCase().contains("PDF"))
-			labels.add ( this.getTagsFromPDFFile ( url) );
-		else
 		if(contentType.toUpperCase().contains("HTML"))
 			labels.addAll ( this.getTagsFromHTML ( url) );
+		else {//是文件
+			String file = this.downloadFileToLocal (url);
+			labels.addAll (this.getTagsFromReadingFiles (file) );
+		}
 	
         return labels;
 	}
-	private Tag getTagsFromPDFFile(String url)
+	/*
+	 * 
+	 */
+	private   String downloadFileToLocal(String url) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		File savedfile = null;
+		String savedfilename = null;
+		URL URLink;
+		try {
+			URLink = new URL( url); //"http://quotes.money.163.com/service/chddata.html?code=0601857&start=20071105&end=20150618&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP"
+			
+//			System.out.println(FilenameUtils.getBaseName(URLink.getPath())); // -> file
+//	        System.out.println(FilenameUtils.getExtension(URLink.getPath())); // -> xml
+			savedfilename = SystemConfigration.getInstance().getYanJiuBaoGaoDownloadedFilePath () + FilenameUtils.getName(URLink.getPath()); // -> file.xml
+	        
+			savedfile = new File (savedfilename);
+			if(savedfile.exists())
+				savedfile.delete();
+			
+			FileUtils.copyURLToFile(URLink, savedfile,10000,10000); //http://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/FileUtils.html#copyURLToFile(java.net.URL,%20java.io.File)
+		} catch (java.net.SocketTimeoutException e)  {
+			e.printStackTrace();
+		} catch ( IOException e) {
+			e.printStackTrace();
+		}finally {
+			URLink = null;
+		}
+		
+		return savedfilename;
+		
 	}
-
 	private  Collection<Tag> getTagsFromHTML(String url) 
 	{
 		Collection<Tag> labels = new HashSet<>();
@@ -94,18 +142,13 @@ public class TagsUrlOperation
 			doc = Jsoup.connect(url).get();
 			String title = doc.title();
 			String body = doc.body().text ();
-			
-//			Elements elements = doc.body().select("[href]");
-//			for (Element element : elements) {
-//			    String contentType1 = new URL(element.attr("href")).openConnection().getContentType();
-//			}
-			
+		
+			TextRank.setKeywordNumber(8);
+			TextRank.setWindowSize(6);
 			List<String> keywords = TextRank.getKeyword(title, body);
 	        for(String tmpkwname : keywords) {
-	        	if(  !kwset.contains(tmpkwname) && !tmpkwname.equals("关键词")) {
-	        		kwset.add(tmpkwname);
-	        		
-	        		Tag tag = new Tag (tmpkwname, Color.GRAY);
+	        	if( !tmpkwname.equals("关键词")) {
+	        		Tag tag = new Tag (tmpkwname, Color.WHITE);
 	    	        labels.add(tag);
 	        	}
 	        }

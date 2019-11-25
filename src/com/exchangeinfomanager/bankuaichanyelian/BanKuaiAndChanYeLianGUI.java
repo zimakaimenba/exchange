@@ -113,10 +113,10 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
  	
 	private void setupSubGpcAndBanKuai() 
 	{
-		Set<String> all = new HashSet<> ();
+//		Set<String> all = new HashSet<> ();
 //		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
-		all.add("treeroot");
-		lballdbservice = new DBSystemTagsService (all); 
+//		all.add("treeroot");
+		lballdbservice = new DBSystemTagsService (); 
 		allsyskwcache = new LabelCache (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);
 		pnllblsysmanagement.initializeLabelsManagement (lballdbservice,allsyskwcache);
@@ -125,23 +125,23 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 //		//subgpc
 //		List<BkChanYeLianTreeNode> subgpclist = treedb.getSubGuPiaoChi ();
 //		((BkChanYeLianTreeNodeListTableModel)tablesubcyl.getModel()).refresh(subgpclist);
-//		
-//		//bankuai
-//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.bkstk.getAllBkStocksTree().getModel().getRoot();
-//        int bankuaicount = this.bkstk.getAllBkStocksTree().getModel().getChildCount(treeroot);
-//        List<BkChanYeLianTreeNode> allbklist = new ArrayList<> ();
-//		for(int i=0;i < bankuaicount; i++) {
-//			try {
-//				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.bkstk.getAllBkStocksTree().getModel().getChild(treeroot, i);
-//				if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
-//					BkChanYeLianTreeNode cylbk = new CylTreeNestedSetNode (childnode.getMyOwnCode(), childnode.getMyOwnName(), BkChanYeLianTreeNode.TDXBK );
-//					allbklist.add(cylbk);
-//				}
-//			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-//				e.printStackTrace();
-//			}
-//		} 
-//		((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).refresh(allbklist);
+		
+		//bankuai
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.bkstk.getAllBkStocksTree().getModel().getRoot();
+        int bankuaicount = this.bkstk.getAllBkStocksTree().getModel().getChildCount(treeroot);
+        List<BkChanYeLianTreeNode> allbklist = new ArrayList<> ();
+		for(int i=0;i < bankuaicount; i++) {
+			try {
+				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.bkstk.getAllBkStocksTree().getModel().getChild(treeroot, i);
+				if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
+					BkChanYeLianTreeNode cylbk = new CylTreeNestedSetNode (childnode.getMyOwnCode(), childnode.getMyOwnName(), BkChanYeLianTreeNode.TDXBK );
+					allbklist.add(cylbk);
+				}
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+				e.printStackTrace();
+			}
+		} 
+		((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).refresh(allbklist);
 	}
 	/*
      * Ñ¡Ôñ 

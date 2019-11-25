@@ -10,10 +10,13 @@ public class Tag
 {
     private Color color;
     private String name;
+    private boolean selected;
 
-    public Tag(  String name, Color color) {
-        this.color = color;
-        this.name = name;
+    public Tag(  String name, Color color) 
+    {
+    	this.name = name;
+    	if(this.color == null)
+    		this.color = Color.GRAY;
     }
     
     public Boolean checkHanYuPinYing (String checkedhypy)
@@ -72,6 +75,14 @@ public class Tag
         result = 31 * result + name.hashCode();
         return result;
     }
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean active) {
+        this.selected = active;
+    }
+
 
 
 }

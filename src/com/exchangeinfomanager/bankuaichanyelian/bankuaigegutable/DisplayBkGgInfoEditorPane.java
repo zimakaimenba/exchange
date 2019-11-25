@@ -63,7 +63,7 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 	 */
 	public void displayChanYeLianInfo (BkChanYeLianTreeNode curselectedbknodecode)
 	{
-		List<String> cylinfo = curselectedbknodecode.getNodeJiBenMian().getChanYeLianInfo();
+		List<BkChanYeLianTreeNode> cylinfo = curselectedbknodecode.getNodeJiBenMian().getChanYeLianInfo();
 		if(cylinfo == null  || cylinfo.isEmpty() )
 			return;
 		
@@ -72,8 +72,11 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		org.jsoup.select.Elements content = doc.select("body");
 		content.append( "<h4>产业链信息</h4>");
 		String result ="";
-		for(String tmpinfo : cylinfo) {
-			result =  result + tmpinfo + "->";
+		for(BkChanYeLianTreeNode tmpinfo : cylinfo) {
+			if(tmpinfo == null)
+				continue;
+			
+			result =  result + tmpinfo.getMyOwnName() + "->";
 		}
 		content.append( "<p>" + result + "</p> ");
 		

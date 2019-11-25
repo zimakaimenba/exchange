@@ -853,19 +853,19 @@ public class CylTreeDbOperation
 
 	public BkChanYeLianTreeNode getChanYeLianInfo(BkChanYeLianTreeNode node) 
 	{
-		List<String> result = this.getChanYeLianInfo(node.getMyOwnCode(), node.getType());
+		List<BkChanYeLianTreeNode> result = this.getChanYeLianInfo(node.getMyOwnCode(), node.getType());
 		node.getNodeJiBenMian().setChanYeLianInfo(result);
 		
 		return node;
 	}
-	public  List<String> getChanYeLianInfo (String nodecode, int nodetype)
+	public  List<BkChanYeLianTreeNode> getChanYeLianInfo (String nodecode, int nodetype)
 	{
 		String query = "SELECT * FROM  tree_map "
 				+ " WHERE nodeid ='" + nodecode + "'"
 				+ " AND nodetype = " + nodetype
 				;
 		
-		List<String> cylinfo = new ArrayList<> ();
+		List<BkChanYeLianTreeNode> cylinfo = new ArrayList<> ();
 		CachedRowSetImpl rs = null;
 		try{
 				rs = this.connectdb.sqlQueryStatExecute(query);
@@ -879,7 +879,11 @@ public class CylTreeDbOperation
 					ResultSet rsstm = stmdel.executeQuery();
 					while(rsstm.next()){
 						int treeid = rsstm.getInt("tree_id");
-						cylinfo.add( rsstm.getString("nodeid") );
+						String nodeid = rsstm.getString("nodeid") ;
+						int cylnodetype = rsstm.getInt("nodetype") ;
+						BkChanYeLianTreeNode node = treecyl.getSpecificNodeByHypyOrCode(nodeid, cylnodetype);
+						
+						cylinfo.add( node );
 					}
 				}
 		} catch (Exception e) {
@@ -897,14 +901,14 @@ public class CylTreeDbOperation
 		return cylinfo;
 
 	}
-	public List<String>  getSlidingInChanYeLianInfo (String nodecode, int nodetype)
+	public List<BkChanYeLianTreeNode>  getSlidingInChanYeLianInfo (String nodecode, int nodetype)
 	{
 		String sqlquery = "SELECT * FROM  tree_map "
 				+ " WHERE nodeid ='" + nodecode + "'"
 				+ " AND nodetype = " + nodetype
 				;
 		
-		List<String> cylinfo = new ArrayList<> ();
+		List<BkChanYeLianTreeNode> cylinfo = new ArrayList<> ();
 		CachedRowSetImpl rs = null;
 		CachedRowSetImpl rsnext = null;
 		try{
@@ -923,8 +927,11 @@ public class CylTreeDbOperation
 							;
 					rsnext = this.connectdb.sqlQueryStatExecute(sqlquery);
 					while(rsnext.next()){
-						String slidingnodeid = rsnext.getString("nodeid");
-						cylinfo.add(slidingnodeid); 
+						String sliblingnodeid = rsnext.getString("nodeid") ;
+						int cylnodetype = rsnext.getInt("nodetype") ;
+						BkChanYeLianTreeNode node = treecyl.getSpecificNodeByHypyOrCode(sliblingnodeid, cylnodetype);
+						
+						cylinfo.add(node); 
 					}
 				}
 		} catch (Exception e) {
@@ -940,8 +947,50 @@ public class CylTreeDbOperation
 		}
 		
 		return cylinfo;
-		
 	}
+	public List<BkChanYeLianTreeNode> getChildrenInChanYeLianInfo(String nodecode, int nodetype) 
+	{
+		String query = "SELECT * FROM  tree_map "
+				+ " WHERE nodeid ='" + nodecode + "'"
+				+ " AND nodetype = " + nodetype
+				;
+		
+		List<BkChanYeLianTreeNode> cylinfo = new ArrayList<> ();
+		CachedRowSetImpl rs = null;
+		try{
+				rs = this.connectdb.sqlQueryStatExecute(query);
+				while(rs.next()) {
+					int tree_id = rs.getInt("tree_id");
+					
+					query = "{CALL r_return_subtree(?)}";
+					java.sql.CallableStatement stmdel = connectdb.getCurrentDataBaseConnect().prepareCall(query); 
+					stmdel.setInt(1, tree_id);
+					 
+					ResultSet rsstm = stmdel.executeQuery();
+					while(rsstm.next()){
+						int treeid = rsstm.getInt("tree_id");
+						String nodeid = rsstm.getString("nodeid") ;
+						int cylnodetype = rsstm.getInt("nodetype") ;
+						BkChanYeLianTreeNode node = treecyl.getSpecificNodeByHypyOrCode(nodeid, cylnodetype);
+						
+						cylinfo.add( node );
+					}
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+				try {
+					if(rs != null)
+						rs.close();
+					rs = null;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		
+		return cylinfo;
+	}
+	
 
 
 	public Boolean isBanKuaiInBearPart(String bkcode) 
@@ -1081,6 +1130,8 @@ public class CylTreeDbOperation
 						return;
 			}
 	}
+
+	
 
 }
 

@@ -28,7 +28,6 @@ import com.sun.rowset.CachedRowSetImpl;
 public class TagsNewsDbOperation 
 {
 	private ConnectDataBase connectdb;
-	Set<String> kwset ; //跨多个板块的时候，需要记录其他板块的关键字以免重复
 	
 	private TagsDbOperation tagdboptforsys;
 
@@ -43,14 +42,11 @@ public class TagsNewsDbOperation
 	{
         Collection<Tag> labels = new HashSet<>();
         
-        kwset = new HashSet<> ();
-        
         for (Iterator<BkChanYeLianTreeNode> it = nodeset.iterator(); it.hasNext(); ) {
         	BkChanYeLianTreeNode f = it.next();
         	labels.addAll( this.getNodeNewsTagsFromDataBase (f.getMyOwnCode()) );
         }
         
-        kwset = null;
         return labels;
 	}
 	
@@ -104,9 +100,7 @@ public class TagsNewsDbOperation
 	            
 	            List<String> tmpkwlist = Splitter.on(" ").omitEmptyStrings().splitToList(keywords);
 	            for(String tmpkwname : tmpkwlist) {
-	            	if(  !kwset.contains(tmpkwname) && !tmpkwname.equals("关键词")) {
-	            		kwset.add(tmpkwname);
-	            		
+	            	if(   !tmpkwname.equals("关键词")) {
 	            		Tag tag = new Tag (tmpkwname, Color.decode( "#ffffff"));
 	                	InsertedTag itag = new InsertedTag(tag,  newsID);
 	        	        labels.add(itag);

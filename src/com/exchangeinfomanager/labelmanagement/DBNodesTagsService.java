@@ -24,9 +24,9 @@ public class DBNodesTagsService implements TagService
 	public DBNodesTagsService (Set<BkChanYeLianTreeNode> nodeset)
 	{
 		dboptfornode = new TagsDbOperation (); 
-		 dbforsys = new TagsDbOperation ();
-		 dbfornews = new TagsNewsDbOperation ();
-		 this.nodesets = nodeset;
+		dbforsys = new TagsDbOperation ();
+		dbfornews = new TagsNewsDbOperation ();
+		this.nodesets = nodeset;
 	}
 	@Override
 	public void setCache(LabelCache cache) 
@@ -49,12 +49,14 @@ public class DBNodesTagsService implements TagService
 	public void createLabel(Tag label) throws SQLException 
 	{
 		//可以在这里检查是否已经有同样的label
-		Collection<Tag> curlabl = cache.produceLabels();
-		for (Iterator<Tag> it = curlabl.iterator(); it.hasNext(); ) {
-	        Tag f = it.next();
-	        if (f.getName().equals( label.getName()  ))
-	            return;
-	    }
+		if(cache != null) {
+			Collection<Tag> curlabl = cache.produceLabels();
+			for (Iterator<Tag> it = curlabl.iterator(); it.hasNext(); ) {
+		        Tag f = it.next();
+		        if (f.getName().equals( label.getName()  ))
+		            return;
+		    }
+		}
 		
 		Tag tag = this.dbforsys.createSystemTags(label);
 		this.dboptfornode.attachedTagToNodes ( nodesets, tag);
