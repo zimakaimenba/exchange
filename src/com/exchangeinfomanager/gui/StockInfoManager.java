@@ -97,15 +97,14 @@ import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.labelmanagement.DBNodesTagsService;
-import com.exchangeinfomanager.labelmanagement.LabelCache;
 import com.exchangeinfomanager.labelmanagement.NodeLabelMatrixManagement;
-import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelsManagement;
+import com.exchangeinfomanager.labelmanagement.TagCache;
+import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
-
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 import java.awt.event.ActionListener;
@@ -203,7 +202,7 @@ public class StockInfoManager
 	private WeeklyExportFileFengXi effx;
 	private AllCurrentTdxBKAndStoksTree allbkstock;
 	private BanKuaiAndStockTree bkcyl;
-	private LabelCache bkstkkwcache;
+	private TagCache bkstkkwcache;
 	/*
 	 * 
 	 */
@@ -311,9 +310,9 @@ public class StockInfoManager
 		Set<BkChanYeLianTreeNode> bkstk = new HashSet<> ();
 		bkstk.add(this.nodeshouldbedisplayed);
 		DBNodesTagsService lbnodedbservice = new DBNodesTagsService (bkstk);
-		bkstkkwcache = new LabelCache (lbnodedbservice);
+		bkstkkwcache = new TagCache (lbnodedbservice);
 		lbnodedbservice.setCache(bkstkkwcache);
-		pnltags.initializeLabelsManagement (lbnodedbservice,bkstkkwcache);
+		pnltags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
 		
 	}
 	/*
@@ -1107,7 +1106,7 @@ public class StockInfoManager
 				lblmag.setModal(false);
 				lblmag.setVisible(true);
 				
-				bkstkkwcache.refreshTags();
+				bkstkkwcache.produceTags();
 				
 			}
 		});
@@ -2145,7 +2144,7 @@ public class StockInfoManager
 	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JButton btnyituishi;
 	private JComboBox cobxgpc;
-	private LabelsManagement pnltags;
+	private TagsPanel pnltags;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2590,7 +2589,7 @@ public class StockInfoManager
 		JScrollPane sclptags = new JScrollPane();
 		pnlfortags.add(sclptags, BorderLayout.CENTER);
 		
-		pnltags = new LabelsManagement("",LabelsManagement.HIDEHEADERMODE,LabelsManagement.PARTCONTROLMODE);
+		pnltags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
 		sclptags.setViewportView(pnltags);
 		
 		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();

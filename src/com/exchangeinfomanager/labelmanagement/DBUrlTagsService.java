@@ -31,45 +31,45 @@ public class DBUrlTagsService implements TagService
 	}
 
 	@Override
-	public Collection<Tag> getLabels() throws SQLException {
+	public Collection<Tag> getTags() throws SQLException {
 		Collection<Tag> l = this.db.getTagsFromURL(urlset);
 		return l;
 	}
 
 	@Override
-	public void createLabel(Tag label) throws SQLException {
+	public void createTag(Tag label) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void deleteLabels(Collection<Tag> label) throws SQLException {
+	public void deleteTags(Collection<Tag> label) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void updateLabel(Tag label) throws SQLException {
+	public void updateTag(Tag label) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void setCache(LabelCache cache) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void deleteLabel(Tag label) throws SQLException {
+	public void setCache(TagCache cache) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void createLabels(Collection<Tag> label) throws SQLException {
+	public void deleteTag(Tag label) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void createTags(Collection<Tag> label) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -83,7 +83,7 @@ public class DBUrlTagsService implements TagService
 
 
 	@Override
-	public void combinLabels(Tag newlabel) throws SQLException {
+	public void combinTags(Tag newlabel) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}

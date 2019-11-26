@@ -50,44 +50,12 @@ public class TagsNewsDbOperation
         return labels;
 	}
 	
-//	private InsertedTag createSystemTags (Tag newtag)
-//	{
-//		String tagname = newtag.getName();
-//		String color;
-//		try {
-//			color =  "#"+Integer.toHexString(  newtag.getColor() .getRGB()).substring(2);
-//		} catch ( java.lang.NullPointerException e) {
-//			color = "#ffffff";
-//		}
-//		String sqlinsertquery = "INSERT INTO 产业链板块国列表 (板块国名称, DefaultCOLOUR) VALUES("
-//								+ "'" + tagname + "',"
-//								+ "'" + color + "'" 
-//								+ ")"
-//								;
-//		int autoIncKeyFromApi = 0;
-//		try {
-//			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertquery);
-//		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException exc) {
-//			exc.printStackTrace();
-//			return null;
-//		} catch (MysqlDataTruncation e) {
-//			e.printStackTrace();
-//			return null;
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//		
-//		return new InsertedTag (newtag, autoIncKeyFromApi);
-//	}
- 
-	
 	private Collection<? extends Tag> getNodeNewsTagsFromDataBase (String nodecode) 
 	{
 		Collection<InsertedTag> labels = new HashSet<>();
 		
 		String sqlquerystat = "SELECT * FROM 商业新闻   "
-					+ " WHERE 关联板块 like '%" + "000000" +  "%'  \r\n"
+					+ " WHERE 关联板块 like '%" + nodecode +  "%'  \r\n"
 					+ " ORDER BY  录入日期 DESC"
 					;
 
@@ -166,7 +134,7 @@ public class TagsNewsDbOperation
 				storeNewsKeyWordToDataBase ( new InsertedTag (new Tag(tmpkw,null),bkID) , m ) ;
 				
 			} else {
-				InsertedTag inserttag = tagdboptforsys.createSystemTags( new Tag(tmpkw,Color.GRAY) );
+				InsertedTag inserttag = tagdboptforsys.createSystemTags( new Tag(tmpkw,Color.WHITE) );
 				storeNewsKeyWordToDataBase (inserttag,m);
 			}
 		}

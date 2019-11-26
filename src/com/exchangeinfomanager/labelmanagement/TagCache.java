@@ -15,14 +15,14 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
-public class LabelCache 
+public class TagCache 
 {
-    private Set<LabelCacheListener> listeners;
+    private Set<TagCacheListener> listeners;
     private Set<Tag> tags;
     private TagService labelService;
 //	private Set<String> nodecode; 
 
-    public LabelCache(TagService labelService) 
+    public TagCache (TagService labelService) 
     {
         this.labelService = labelService;
        	this.labelService.setCache(this);
@@ -40,7 +40,7 @@ public class LabelCache
         this.tags.clear();
 
         try {
-            this.tags.addAll(labelService.getLabels());
+            this.tags.addAll(labelService.getTags());
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (java.lang.NullPointerException ex) {
@@ -50,41 +50,48 @@ public class LabelCache
     /*
      * 
      */
-    public void addCacheListener(LabelCacheListener listener) {
+    public void addCacheListener(TagCacheListener listener) {
         this.listeners.add(listener);
     }
     /*
      * 
      */
-    public Collection<Tag> produceLabels() {
+    public Collection<Tag> produceTags() {
+    	
         return this.tags;
     }
-    public Collection<Tag> produceSelectedLabels() {
-    	Collection<Tag> tagslist = this.produceLabels ();
+    public Collection<Tag> produceSelectedTags() {
+    	Collection<Tag> tagslist = this.produceTags ();
     	Collection<Tag> selectedtag = new HashSet<> ();
     	
     	for(Tag tmptag : tagslist) 
-	    	if(  ((InsertedTag)tmptag).isSelected() )
+	    	if(  tmptag.isSelected() )
 	    		selectedtag.add(tmptag);
 	    	
 	    return selectedtag;
     }
     
-	  public void addLabel(Tag label) 
+    
+    public void addTags(Collection<Tag> label) 
 	  {
 	      this.refreshTags();
-	      this.listeners.forEach(l -> l.onLabelChange(this));
+	      this.listeners.forEach(l -> l.onTagChange(this));
+	  }
+	  public void addTag(Tag label) 
+	  {
+	      this.refreshTags();
+	      this.listeners.forEach(l -> l.onTagChange(this));
 	  }
 	  public void addLabels(Collection<Tag> label)
 	  {
 		  this.refreshTags();
-	      this.listeners.forEach(l -> l.onLabelChange(this));
+	      this.listeners.forEach(l -> l.onTagChange(this));
 	  }
 	    
     
 	  public Boolean hasBeenInCache (String tagname)
 	  {
-			Collection<Tag> curlbs = this.produceLabels();
+			Collection<Tag> curlbs = this.produceTags();
 			for ( Iterator<Tag> it = curlbs.iterator(); it.hasNext(); ) {
 		        Tag f = it.next();
 		        if (f.getName().equals(tagname ))
@@ -96,23 +103,23 @@ public class LabelCache
 	  public void removeTags(Collection<Tag> label) 
 	  {
 	        this.refreshTags();
-	        this.listeners.forEach(l -> l.onLabelChange(this));
+	        this.listeners.forEach(l -> l.onTagChange(this));
 	  }
-	  public void removeTags(Tag label) 
+	  public void removeTag (Tag label) 
 	  {
 	        this.refreshTags();
-	        this.listeners.forEach(l -> l.onLabelChange(this));
+	        this.listeners.forEach(l -> l.onTagChange(this));
 	  }
 
-    public void updateMeetingLabel(Tag label) 
+    public void updateTag(Tag label) 
     {
     	this.refreshTags();
-    	this.listeners.forEach(l -> l.onLabelChange(this));
+    	this.listeners.forEach(l -> l.onTagChange(this));
     }
-    public void updateMeetingLabel(Collection<Tag> label) 
-    {
-    	this.refreshTags();
-    	this.listeners.forEach(l -> l.onLabelChange(this));
-    }
+//    public void updateTags (Collection<Tag> label) 
+//    {
+//    	this.refreshTags();
+//    	this.listeners.forEach(l -> l.onTagChange(this));
+//    }
 
 }

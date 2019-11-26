@@ -13,20 +13,20 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public interface TagService 
 {
-	Collection<Tag> getLabels() throws SQLException ;
+	Collection<Tag> getTags() throws SQLException ;
 
-    void createLabel(Tag label) throws SQLException ;
-    void createLabels(Collection<Tag> label) throws SQLException ;
+    void createTag(Tag label) throws SQLException ;
+    void createTags(Collection<Tag> label) throws SQLException ;
     
-    void deleteLabels(Collection<Tag> label) throws SQLException ;
-    void deleteLabel(Tag label) throws SQLException;
+    void deleteTags(Collection<Tag> label) throws SQLException ;
+    void deleteTag(Tag label) throws SQLException;
 
-    void updateLabel(Tag label) throws SQLException ;
+    void updateTag(Tag label) throws SQLException ;
     
-    void setCache (LabelCache cache);
+    void setCache (TagCache cache);
 
 	void setDbOptNodesSet(Set<BkChanYeLianTreeNode> nodesets);
 
-	void combinLabels(Tag newlabel) throws SQLException;
+	void combinTags(Tag newlabel) throws SQLException;
    
 }

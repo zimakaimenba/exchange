@@ -1,5 +1,6 @@
 package top.dadagum.extractor.utils;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -118,6 +119,9 @@ public class FileExtractUtil {
         stripper.setStartPage(1);
         stripper.setEndPage(pages);
         content = stripper.getText(document);
+        
+        document.close();
+        
         return content;
     }
 

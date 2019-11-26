@@ -8,9 +8,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Menu;
+
 import java.awt.Point;
-import java.awt.Rectangle;
+
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,48 +24,35 @@ import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
+
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
-import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelDialog;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting.Label;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodesZhiShuGJRQPnl;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
+
 import com.exchangeinfomanager.commonlib.WrapLayout;
-import com.exchangeinfomanager.gui.StockInfoManager;
+
 import com.exchangeinfomanager.labelmanagement.DBSystemTagsService;
-import com.exchangeinfomanager.labelmanagement.LabelCache;
-import com.exchangeinfomanager.labelmanagement.LabelCacheListener;
+import com.exchangeinfomanager.labelmanagement.TagCache;
+import com.exchangeinfomanager.labelmanagement.TagCacheListener;
 import com.exchangeinfomanager.labelmanagement.TagService;
 import com.exchangeinfomanager.labelmanagement.Tag.CombineTagsDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.CreateTagDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.ModifyTagDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
-import com.exchangeinfomanager.labelmanagement.Tag.TagDialog;
-import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
+
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
+
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 
-public class LabelsManagement extends JPanel implements LabelCacheListener
+public class TagsPanel extends JPanel implements TagCacheListener
 {
 	private String title;
 	private String displaymode;
@@ -73,7 +60,7 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	/**
 	 * Create the panel.
 	 */
-	public LabelsManagement(String title,String displaymode,String controlmode)
+	public TagsPanel(String title,String displaymode,String controlmode)
 	{
 		this.title = title;
 		
@@ -84,7 +71,7 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 		
 		this.controlmode = controlmode;
 	}
-	public LabelsManagement(String title)
+	public TagsPanel(String title)
 	{
 		this.title = title;
 		this.displaymode = "displayhead";
@@ -105,7 +92,7 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	public static final String NODESBEENDELETED = "nodes_been_deleted";
 	public static final String NODESBEENEDIT = "nodes_been_edited";
 	
-	public void initializeLabelsManagement(TagService lbdbservice, LabelCache cache) 
+	public void initializeTagsPanel(TagService lbdbservice, TagCache cache) 
 	{
 		this.lbdbservice =  lbdbservice;
 		this.cache =  cache;
@@ -119,10 +106,11 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	
 	private void initializeTags()
 	{
-		Collection<Tag> alltags = cache.produceLabels();
+		Collection<Tag> alltags = cache.produceTags();
 		
 		pnllabelcontain.removeAll();
 		for (Tag l : alltags) {
+
 			LabelTag label = new LabelTag (l);
 			this.initializeMenu (label);
 			label.addPropertyChangeListener(new PropertyChanged() );
@@ -133,7 +121,8 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	}
 	
 	@Override
-	public void onLabelChange(LabelCache cache) {
+	public void onTagChange(TagCache cache) {
+		cache.refreshTags();
 		initializeTags ();
 		
 	}
@@ -168,7 +157,7 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 
 	private JPanel pnllabelcontain;
 	private TagService lbdbservice;
-	private LabelCache cache;
+	private TagCache cache;
 	private JPopupMenu Pmenu ;
 
 	private JTextField tfldsearchkw;
@@ -182,7 +171,6 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	
 	public void createGui ()
 	{
-		Color color = ColorScheme.BACKGROUND;
         this.setLayout(new BorderLayout(0,0));
  
         JPanel pnlup = new JPanel ();
@@ -198,11 +186,11 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 		JScrollPane sclpcenter = new JScrollPane();
 		pnllabelcontain = new JPanel();
 		pnllabelcontain.setLayout(new WrapLayout(WrapLayout.CENTER, 5, 5));
-		pnllabelcontain.setBackground(color);
+		pnllabelcontain.setBackground(ColorScheme.BACKGROUND);
 	    sclpcenter.setViewportView (pnllabelcontain);
 	    
 	    
-	    if(!this.displaymode.equals(LabelsManagement.HIDEHEADERMODE ))
+	    if(!this.displaymode.equals(TagsPanel.HIDEHEADERMODE ))
 	    	this.add(pnlup,BorderLayout.NORTH);
 	    
 		this.add(sclpcenter,BorderLayout.CENTER);
@@ -227,17 +215,17 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 				@Override
 				public void actionPerformed(ActionEvent evt) {
 					
-					Collection<Tag> tagslist = cache.produceSelectedLabels();
+					Collection<Tag> tagslist = cache.produceSelectedTags();
 
-					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelsManagement.ADDNEWTAGSTONODE , "", tagslist );
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, TagsPanel.ADDNEWTAGSTONODE , "", tagslist );
 		            pcs.firePropertyChange(evtzd);
 				}
 				
 			});
 			
-			if( this.controlmode.equals(LabelsManagement.FULLCONTROLMODE ) ) {
+			if( this.controlmode.equals(TagsPanel.FULLCONTROLMODE ) ) {
 				Pmenu.add(menuItemAddToCur,0);
-			} else if ( this.controlmode.equals(LabelsManagement.PARTCONTROLMODE)  ) {
+			} else if ( this.controlmode.equals(TagsPanel.PARTCONTROLMODE)  ) {
 				
 			} else {
 				Pmenu.removeAll();
@@ -286,39 +274,42 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 	private void combinMenuAction() 
 	{
 		CombineTagsDialog combineTagDialog = new CombineTagsDialog (lbdbservice);
-		combineTagDialog.setLabel(new Tag("Combined label", ColorScheme.GREY_WHITER));
+		combineTagDialog.setLabel(new Tag("     ", ColorScheme.GREY_WHITER));
 		combineTagDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
 		combineTagDialog.setVisible(true);
         
-        PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelsManagement.NODESBEENEDIT , "", combineTagDialog.getLabel () );
+        PropertyChangeEvent evtzd = new PropertyChangeEvent(this, TagsPanel.NODESBEENEDIT , "", combineTagDialog.getLabel () );
         pcs.firePropertyChange(evtzd);
 	}
 	private void addMenuAction ()
 	{
 		CreateTagDialog createTagDialog = new CreateTagDialog (lbdbservice);
-        createTagDialog.setLabel(new Tag("Create label", ColorScheme.GREY_WHITER));
+        createTagDialog.setLabel(new Tag("     ", ColorScheme.GREY_WHITER));
         createTagDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
         createTagDialog.setVisible(true);
         
-        PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelsManagement.NODEADDNEWTAGSNEEDSYSUPDAT , "", createTagDialog.getLabel () );
+        PropertyChangeEvent evtzd = new PropertyChangeEvent(this, TagsPanel.NODEADDNEWTAGSNEEDSYSUPDAT , "", createTagDialog.getLabel () );
         pcs.firePropertyChange(evtzd);
 	}
 	private void editMenuAction ()
 	{
-		 JLabel menulbl  = (JLabel) Pmenu.getInvoker();
-	   	 String clickname = menulbl.getName();
-	   	 Collection<Tag> tagslist = cache.produceSelectedLabels();
+//		 JLabel menulbl  = (JLabel) Pmenu.getInvoker();
+//	   	 String clickname = menulbl.getName();
+	   	 Collection<Tag> tagslist = cache.produceSelectedTags();
+	   	 if(tagslist.size() >1) {
+	   		 JOptionPane.showMessageDialog(null,"请只选择一个Tag做修改!","Warning",JOptionPane.WARNING_MESSAGE);
+	   		 return;
+	   	 }
+	   	 
 	   	 for (Iterator<Tag> lit = tagslist.iterator(); lit.hasNext(); ) {
 		        Tag f = lit.next();
-		        if(f.getName().equals(clickname) ) {
-		        	ModifyTagDialog mdl = new ModifyTagDialog (lbdbservice);
-		        	mdl.setLabel(f);
-		        	mdl.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-		            mdl.setVisible(true);
+	        	ModifyTagDialog mdl = new ModifyTagDialog (lbdbservice);
+	        	mdl.setLabel(f );
+	        	mdl.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+	            mdl.setVisible(true);
 		            
-		            PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelsManagement.NODESBEENEDIT , "", mdl.getLabel () );
-		            pcs.firePropertyChange(evtzd);
-		        }
+	            PropertyChangeEvent evtzd = new PropertyChangeEvent(this, TagsPanel.NODESBEENEDIT , "", mdl.getLabel () );
+	            pcs.firePropertyChange(evtzd);
 	   	 }
 	}
 	private void deleteMenuAction ()
@@ -332,20 +323,20 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
 				return;
 		
-		Collection<Tag> tagslist = cache.produceSelectedLabels();
+		Collection<Tag> tagslist = cache.produceSelectedTags();
 		try {
-			lbdbservice.deleteLabels(tagslist);
+			lbdbservice.deleteTags(tagslist);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelsManagement.NODESBEENDELETED , "", tagslist );
+		PropertyChangeEvent evtzd = new PropertyChangeEvent(this, TagsPanel.NODESBEENDELETED , "", tagslist );
         pcs.firePropertyChange(evtzd);
 	
 	}
 	protected void resetAction() 
 	{
-		Collection<Tag> curlabl = cache.produceLabels();
+		Collection<Tag> curlabl = cache.produceTags();
 		for (Iterator<Tag> lit = curlabl.iterator(); lit.hasNext(); ) {
 	        InsertedTag f = (InsertedTag) lit.next();
 	        
@@ -375,6 +366,9 @@ public class LabelsManagement extends JPanel implements LabelCacheListener
         	Boolean chkresult = l.checkHanYuPinYing (text.trim() );
         	if(chkresult) {
         		LineBorder line = new LineBorder(Color.MAGENTA, 2, true);
+            	((JPanel)tmpc).setBorder(line);
+        	} else {
+        		LineBorder line = new LineBorder(l.getColor(), 2, true);
             	((JPanel)tmpc).setBorder(line);
         	}
         }

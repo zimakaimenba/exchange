@@ -26,7 +26,10 @@ public class NodeInsertedTag extends InsertedTag
     public int getMatchID() {
         return this.matchid;
     }
-    
+    public void setNodeMachColor (Color color)
+    {
+    	this.nodematchcolor = color;
+    }
     public Color getNodeMachColor ()
     {
     	return this.nodematchcolor;

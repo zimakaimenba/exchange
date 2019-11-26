@@ -4,12 +4,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting.Label;
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
 public class DBSystemTagsService implements TagService  
@@ -17,7 +12,7 @@ public class DBSystemTagsService implements TagService
 	private TagsDbOperation dboptforsys;
 	private TagsDbOperation dboptfornode;
 	private TagsNewsDbOperation dboptfornews;
-	private LabelCache cache;
+	private TagCache cache;
 	private Set<String> nodeset;
 
 	public DBSystemTagsService ()
@@ -30,30 +25,30 @@ public class DBSystemTagsService implements TagService
 	}
 
 	@Override
-	public Collection<Tag> getLabels() throws SQLException {
+	public Collection<Tag> getTags() throws SQLException {
 		
 		Collection<Tag> result = this.dboptforsys.getAllTagsFromDataBase ();
 		return result;
 	}
 	
 	@Override
-	public void setCache(LabelCache cache) {
+	public void setCache(TagCache cache) {
 		this.cache = cache;
 	}
 
 	@Override
-	public void createLabel(Tag label) throws SQLException 
+	public void createTag(Tag label) throws SQLException 
 	{
 		if( cache.hasBeenInCache (label.getName())   ) 
 			return;
 			
 		Tag m = this.dboptforsys.createSystemTags(label);
 		if(m != null && cache != null)
-			 cache.addLabel(m);
+			 cache.addTag(m);
 	}
 
 	@Override
-	public void deleteLabels(Collection<Tag> label) throws SQLException 
+	public void deleteTags(Collection<Tag> label) throws SQLException 
 	{
 		this.dboptforsys.deleteSystemTags (label);
 		this.dboptfornode.forcedUnattachedTagFromAllNodes(label);
@@ -61,22 +56,22 @@ public class DBSystemTagsService implements TagService
 		cache.removeTags(label);
 	}
 	@Override
-	public void deleteLabel(Tag label) throws SQLException 
+	public void deleteTag(Tag label) throws SQLException 
 	{
 		this.dboptforsys.deleteSystemTag (label);
-		cache.removeTags(label);
+		cache.removeTag(label);
 	}
 
 	@Override
-	public void updateLabel(Tag label) throws SQLException
+	public void updateTag(Tag label) throws SQLException
 	{
 		this.dboptforsys.updateSystemTags (label);
-		cache.updateMeetingLabel (label);
+		cache.updateTag (label);
 		
 	}
 
 	@Override
-	public void createLabels(Collection<Tag> label) throws SQLException {
+	public void createTags(Collection<Tag> label) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -88,7 +83,7 @@ public class DBSystemTagsService implements TagService
 	}
 
 	@Override
-	public void combinLabels(Tag newlabel) throws SQLException {
+	public void combinTags(Tag newlabel) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}

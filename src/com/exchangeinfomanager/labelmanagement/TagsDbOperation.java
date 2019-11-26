@@ -37,7 +37,7 @@ public class TagsDbOperation
 			 		while(checkresult.next()) {
 						int count = checkresult.getInt ("COUNT");
 						if(count > 0) {
-							Color color = Color.GRAY;
+							Color color = Color.WHITE;
 							try {
 								color = Color.decode( checkresult.getString("DefaultCOLOUR")) ;
 							} catch (java.lang.Exception e)  {
@@ -106,6 +106,8 @@ public class TagsDbOperation
  			result = connectdb.sqlQueryStatExecute(sqlquerystat);
  			while (result.next()) {
 		        	String bkzname = result.getString("板块国名称");
+//					if(bkzname.contains("edit"))
+//						System.out.println("test");
  		        	String tagcolor = result.getString("DefaultCOLOUR") ;
  		        	Color defaultColor = Color.WHITE;
  		        	try {
@@ -374,12 +376,21 @@ public class TagsDbOperation
 		Color lcolor = l.getColor();
 		String color =   "#"+Integer.toHexString( lcolor.getRGB()).substring(2);
 		
+		String sqlupdated;
+		if( l  instanceof NodeInsertedTag) { //NodeInsertedTag就不改自己的颜色)
+			 sqlupdated = "UPDATE 产业链板块国列表 SET "
+					+ "  板块国名称 = '" + lname + "' " 
+					+ "  WHERE id = " + id
+					;
+		} else {
+			sqlupdated = "UPDATE 产业链板块国列表 SET "
+					+ " 板块国名称 = '" + lname + "', " 
+					+ " DefaultCOLOUR= '" + color + "' "
+					+ " WHERE id = " + id
+					;
+		}
+		
 		try {
-			String sqlupdated = "UPDATE 产业链板块国列表 SET "
-								+ " 板块国名称 = '" + lname + "', " 
-								+ " DefaultCOLOUR= '" + color + "' "
-								+ " WHERE id = " + id
-								;
 			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute( sqlupdated);
 		} catch (MysqlDataTruncation e) {
 			e.printStackTrace();
@@ -391,7 +402,22 @@ public class TagsDbOperation
 	public void updateTagForNodesInDataBase(Tag label)
 	{
 		int matchid = ((NodeInsertedTag)label).getMatchID();
+		String color =   "#"+Integer.toHexString(  ((NodeInsertedTag)label).getNodeMachColor().getRGB()).substring(2);
 		
+//		Tag systg = ((NodeInsertedTag)label).getTag();
+//		this.updateSystemTags (systg);
+		
+		try {
+			String sql = "UPDATE 产业链板块国个股板块对应表  SET \r\n" +
+					"  颜色 = '" +  color + "'\r\n" + 
+					 " WHERE matchid = " + matchid
+					;
+			int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute( sql);
+		} catch (MysqlDataTruncation e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 				 
 	}
 	public InsertedTag combinLabelsToNewOneForSystem (Collection<Tag> curlabls, Tag newlabel)
 	{

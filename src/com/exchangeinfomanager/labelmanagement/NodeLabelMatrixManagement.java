@@ -36,8 +36,9 @@ import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
-import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelsManagement;
+import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
@@ -52,21 +53,21 @@ public class NodeLabelMatrixManagement extends JDialog
 {
 	private BkChanYeLianTreeNode node;
 	private DBSystemTagsService lballdbservice;
-	private LabelCache allsyskwcache;
+	private TagCache allsyskwcache;
 	private DBNodesTagsService lbnodedbservice;
-	private LabelCache bkstkkwcache;
+	private TagCache bkstkkwcache;
 	private DBNewsTagsService lbnewsdbservice;
-	private LabelCache newskwcache;
+	private TagCache newskwcache;
 	private AllCurrentTdxBKAndStoksTree allbkstk;
 	private BanKuaiDbOperation nodedbopt;
 	private DBNodesTagsService lbbkdbservice;
-	private LabelCache bankuaikwcache;
+	private TagCache bankuaikwcache;
 	private CylTreeDbOperation cydbopt;
-	private DBNodesTagsService lbcyldbservice;
-	private LabelCache cylkwcache;
+	private TagCache cylkwcache;
 	private DBUrlTagsService lburldbservice;
-	private LabelCache urlcache;
+	private TagCache urlcache;
 	private HashSet<TagService> tagdeltedlisteners;
+	private HashSet<TagCache> tagsystemcachechangessteners;
 	private TagServicesForTreeChanYeLian tagserviceforcyl;
 
 
@@ -87,37 +88,47 @@ public class NodeLabelMatrixManagement extends JDialog
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
 		all.add("treeroot");
 		lballdbservice = new DBSystemTagsService (); 
-		allsyskwcache = new LabelCache (lballdbservice);
+		allsyskwcache = new TagCache (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);
-		pnldisplayallsyskw.initializeLabelsManagement (lballdbservice,allsyskwcache);
+		pnldisplayallsyskw.initializeTagsPanel (lballdbservice,allsyskwcache);
 		//当前KW
 		Set<BkChanYeLianTreeNode> bkstk = new HashSet<> ();
 		bkstk.add(this.node);
 		lbnodedbservice = new DBNodesTagsService (bkstk);
-		bkstkkwcache = new LabelCache (lbnodedbservice);
+		bkstkkwcache = new TagCache (lbnodedbservice);
 		lbnodedbservice.setCache(bkstkkwcache);
-		tfldcurkeywords.initializeLabelsManagement (lbnodedbservice,bkstkkwcache);
+		tfldcurkeywords.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
 		//所属板块KW
-		Set<BkChanYeLianTreeNode> suosusysbankuai = null;
+		Set<BkChanYeLianTreeNode> suosusysbankuai = new HashSet<> ();
 		if(node.getType () == BkChanYeLianTreeNode.TDXGG) {
 			node = this.nodedbopt.getTDXBanKuaiForAStock ((Stock) node);
 			suosusysbankuai = ((Stock) node).getGeGuCurSuoShuTDXSysBanKuaiList();
 			
 			lbbkdbservice = new DBNodesTagsService (suosusysbankuai);
-			bankuaikwcache = new LabelCache (lbbkdbservice);
+			bankuaikwcache = new TagCache (lbbkdbservice);
 			lbbkdbservice.setCache(bankuaikwcache);
-			pnldisplayallbkskw.initializeLabelsManagement (lbbkdbservice,bankuaikwcache);
+			pnldisplayallbkskw.initializeTagsPanel (lbbkdbservice,bankuaikwcache);
+		} if(node.getType () == BkChanYeLianTreeNode.TDXBK) {
+			node = this.nodedbopt.getBanKuaiBasicInfo ((BanKuai) node);
+			Set<String> friends = ((BanKuai)node).getSocialFriendsSet();
+			for(String tmpfri : friends) 
+				suosusysbankuai.add( this.allbkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpfri, BkChanYeLianTreeNode.TDXBK) );
+			
+			lbbkdbservice = new DBNodesTagsService (suosusysbankuai);
+			bankuaikwcache = new TagCache (lbbkdbservice);
+			lbbkdbservice.setCache(bankuaikwcache);
+			pnldisplayallbkskw.initializeTagsPanel (lbbkdbservice,bankuaikwcache);
 		}
 		//新闻KW
 		lbnewsdbservice = new DBNewsTagsService (suosusysbankuai);
-		newskwcache = new LabelCache (lbnewsdbservice);
+		newskwcache = new TagCache (lbnewsdbservice);
 		lbnewsdbservice.setCache(newskwcache);
-		pnldisplayallnewskw.initializeLabelsManagement (lbnewsdbservice,newskwcache);
+		pnldisplayallnewskw.initializeTagsPanel (lbnewsdbservice,newskwcache);
 		//产业链
 		tagserviceforcyl = new TagServicesForTreeChanYeLian (bkstk);
-		cylkwcache = new LabelCache (tagserviceforcyl);
+		cylkwcache = new TagCache (tagserviceforcyl);
 		tagserviceforcyl.setCache(cylkwcache);
-		pnldisplaycylskw.initializeLabelsManagement (tagserviceforcyl,cylkwcache);
+		pnldisplaycylskw.initializeTagsPanel (tagserviceforcyl,cylkwcache);
 		
 		
 		createEvent ();
@@ -128,7 +139,13 @@ public class NodeLabelMatrixManagement extends JDialog
 		tagdeltedlisteners.add(lbnodedbservice);
 		tagdeltedlisteners.add(lbnewsdbservice);
 		tagdeltedlisteners.add(lbbkdbservice);
-		tagdeltedlisteners.add(lbcyldbservice);
+		tagdeltedlisteners.add(tagserviceforcyl);
+		
+		tagsystemcachechangessteners = new HashSet<> ();
+		tagsystemcachechangessteners.add (bkstkkwcache);
+		tagsystemcachechangessteners.add (newskwcache);
+		tagsystemcachechangessteners.add (cylkwcache);
+		tagsystemcachechangessteners.add (bankuaikwcache);
 	}
 	
 	private void createKeyWorkdsFromURL() 
@@ -140,9 +157,9 @@ public class NodeLabelMatrixManagement extends JDialog
 		urlset.add(tfldurl.getText());
 	
 		lburldbservice = new DBUrlTagsService (urlset);
-		urlcache = new LabelCache (lburldbservice);
+		urlcache = new TagCache (lburldbservice);
 		lburldbservice.setCache(urlcache);
-		pnldisplayurlskw.initializeLabelsManagement (lburldbservice,urlcache);
+		pnldisplayurlskw.initializeTagsPanel (lburldbservice,urlcache);
 		pnldisplayurlskw.revalidate();
 		
 		hourglassCursor = null;
@@ -158,40 +175,49 @@ public class NodeLabelMatrixManagement extends JDialog
 		pnldisplayallsyskw.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(LabelsManagement.ADDNEWTAGSTONODE)) {
-            		Collection<Tag> sltlbs = allsyskwcache.produceSelectedLabels();
-    						try {
-    							lbnodedbservice.createLabels(sltlbs); //个股
-    						} catch (SQLException e) {
-    							e.printStackTrace();
-    						}
+            	if (evt.getPropertyName().equals(TagsPanel.ADDNEWTAGSTONODE)) {
+            		Collection<Tag> sltlbs = allsyskwcache.produceSelectedTags();
+    				try {
+    					lbnodedbservice.createTags(sltlbs); //个股
+    				} catch (SQLException e) {
+    					e.printStackTrace();
+    				}
     				
             	}   else
-                	if (evt.getPropertyName().equals(LabelsManagement.NODESBEENDELETED)) {
-                		Collection<Tag> tagslist = (Collection<Tag>) evt.getNewValue();
-						tagdeltedlisteners.forEach(l -> {
-							try {
-								l.deleteLabels(tagslist);
-							} catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}  );
-                	}
+                if (evt.getPropertyName().equals(TagsPanel.NODESBEENDELETED)) {
+                	Collection<Tag> tagslist = (Collection<Tag>) evt.getNewValue();
+					tagdeltedlisteners.forEach(l -> {
+					try {
+						l.deleteTags(tagslist);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					}  );
+                } else
+                if( evt.getPropertyName().equals(TagsPanel.NODESBEENEDIT ) ) {
+                	Tag newtag = (Tag) evt.getNewValue();
+                	tagsystemcachechangessteners.forEach(l -> {
+    				try {
+    					l.updateTag(newtag);
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    				}
+                	}  );
+                }
             }
 		});
 		
 		pnldisplayurlskw.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(LabelsManagement.ADDNEWTAGSTONODE)) {
+            	if (evt.getPropertyName().equals(TagsPanel.ADDNEWTAGSTONODE)) {
 
-    				Collection<Tag> sltlbs = urlcache.produceSelectedLabels();
+    				Collection<Tag> sltlbs = urlcache.produceSelectedTags();
     				for(Tag tmpsltlbs : sltlbs) {
     					
     					if( !bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())   )
     						try {
-    							lbnodedbservice.createLabel(tmpsltlbs);
+    							lbnodedbservice.createTag (tmpsltlbs);
     						} catch (SQLException e) {
     							e.printStackTrace();
     						}
@@ -206,14 +232,14 @@ public class NodeLabelMatrixManagement extends JDialog
 		pnldisplayallnewskw.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(LabelsManagement.ADDNEWTAGSTONODE)) {
+            	if (evt.getPropertyName().equals(TagsPanel.ADDNEWTAGSTONODE)) {
 
-    				Collection<Tag> sltlbs = newskwcache.produceSelectedLabels();
+    				Collection<Tag> sltlbs = newskwcache.produceSelectedTags();
     				for(Tag tmpsltlbs : sltlbs) {
     					
     					if(  !bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())   )
     						try {
-    							lbnodedbservice.createLabel(tmpsltlbs);
+    							lbnodedbservice.createTag(tmpsltlbs);
     						} catch (SQLException e) {
     							e.printStackTrace();
     						}
@@ -225,14 +251,14 @@ public class NodeLabelMatrixManagement extends JDialog
 		pnldisplayallbkskw.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(LabelsManagement.ADDNEWTAGSTONODE)) {
+            	if (evt.getPropertyName().equals(TagsPanel.ADDNEWTAGSTONODE)) {
 
-    				Collection<Tag> sltlbs = bankuaikwcache.produceSelectedLabels();
+    				Collection<Tag> sltlbs = bankuaikwcache.produceSelectedTags();
     				for(Tag tmpsltlbs : sltlbs) {
     					
     					if( !bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())   )
     						try {
-    							lbnodedbservice.createLabel( tmpsltlbs);
+    							lbnodedbservice.createTag( tmpsltlbs);
     						} catch (SQLException e) {
     							e.printStackTrace();
     						}
@@ -244,14 +270,14 @@ public class NodeLabelMatrixManagement extends JDialog
 		pnldisplaycylskw.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(LabelsManagement.ADDNEWTAGSTONODE)) {
+            	if (evt.getPropertyName().equals(TagsPanel.ADDNEWTAGSTONODE)) {
 
-    				Collection<Tag> sltlbs = cylkwcache.produceSelectedLabels();
+    				Collection<Tag> sltlbs = cylkwcache.produceSelectedTags();
     				for(Tag tmpsltlbs : sltlbs) {
     					
     					if( !bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())   )
     						try {
-    							lbnodedbservice.createLabel(tmpsltlbs);
+    							lbnodedbservice.createTag(tmpsltlbs);
     						} catch (SQLException e) {
     							e.printStackTrace();
     						}
@@ -263,19 +289,19 @@ public class NodeLabelMatrixManagement extends JDialog
 		tfldcurkeywords.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(LabelsManagement.NODEADDNEWTAGSNEEDSYSUPDAT)) {
+            	if (evt.getPropertyName().equals(TagsPanel.NODEADDNEWTAGSNEEDSYSUPDAT)) {
             		Tag newtag = (Tag) evt.getNewValue();
 					try {
-						allsyskwcache.addLabel(newtag);  //同时也要加入到系统关键词里面
+						allsyskwcache.addTag(newtag);  //同时也要加入到系统关键词里面
 					} catch (Exception e) {
     					e.printStackTrace();
     				}
             	} else
-            	if( evt.getPropertyName().equals(LabelsManagement.NODESBEENEDIT ) ) {
+            	if( evt.getPropertyName().equals(TagsPanel.NODESBEENEDIT ) ) {
             		Tag newtag = (Tag) evt.getNewValue();
             		tagdeltedlisteners.forEach(l -> {
 						try {
-							l.updateLabel(newtag);
+							l.updateTag(newtag);
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -313,9 +339,9 @@ public class NodeLabelMatrixManagement extends JDialog
 
 
 	private JPanel contentPanel ;
-	private LabelsManagement tfldcurkeywords;
-	private LabelsManagement pnldisplayallsyskw;
-	private LabelsManagement pnldisplayallnewskw;
+	private TagsPanel tfldcurkeywords;
+	private TagsPanel pnldisplayallsyskw;
+	private TagsPanel pnldisplayallnewskw;
 	private JTextField tfldsearchkw;
 	private JButton btnsyskwaddtocur;
 	private JPanel pnlnewskw;
@@ -324,10 +350,10 @@ public class NodeLabelMatrixManagement extends JDialog
 	private JButton btnnewskwaddtocur;
 	private JTextField tfldsearchbkkw;
 	private JButton btnkbkwaddtocur;
-	private LabelsManagement pnldisplayallbkskw;
-	private LabelsManagement pnldisplaycylskw;
+	private TagsPanel pnldisplayallbkskw;
+	private TagsPanel pnldisplaycylskw;
 	private JTextField tfldurl;
-	private LabelsManagement pnldisplayurlskw;
+	private TagsPanel pnldisplayurlskw;
 
 	protected static final int WIDTH = 400;
     protected static final int HEIGHT = 200;
@@ -348,7 +374,7 @@ public class NodeLabelMatrixManagement extends JDialog
 			JPanel pnlup = JPanelFactory.createFixedSizePanel(200, 80, 5);
 			pnlup.setLayout(new BorderLayout());
 			JLabel lblcurkeywords = new JLabel ("当前关键字");
-			tfldcurkeywords = new LabelsManagement("当前关键字",LabelsManagement.HIDEHEADERMODE, LabelsManagement.PARTCONTROLMODE);
+			tfldcurkeywords = new TagsPanel("当前关键字",TagsPanel.HIDEHEADERMODE, TagsPanel.PARTCONTROLMODE);
 			pnlup.add(lblcurkeywords,BorderLayout.WEST);
 			pnlup.add(tfldcurkeywords,BorderLayout.CENTER);
 			
@@ -420,7 +446,7 @@ public class NodeLabelMatrixManagement extends JDialog
 //		pnlsyskwup.add(tfldsearchsyskw);
 //		pnlsyskwup.add(btnsyskwaddtocur);
 		
-		pnldisplayallsyskw = new LabelsManagement("所有系统关键字",null, LabelsManagement.FULLCONTROLMODE);
+		pnldisplayallsyskw = new TagsPanel("所有系统关键字",null, TagsPanel.FULLCONTROLMODE);
 		
 //		pnlsyskw.add(pnlsyskwup,BorderLayout.NORTH);
 		pnlsyskw.add(pnldisplayallsyskw,BorderLayout.CENTER);
@@ -436,7 +462,7 @@ public class NodeLabelMatrixManagement extends JDialog
 //		pnlnewskwup.add(lblnewsfengge);
 //		pnlnewskwup.add(tfldsearchnewskw);
 //		pnlnewskwup.add(btnnewskwaddtocur);
-		pnldisplayallnewskw = new LabelsManagement("所属新闻关键字",null, LabelsManagement.ONLYIPLAYMODE);
+		pnldisplayallnewskw = new TagsPanel("所属新闻关键字",null, TagsPanel.ONLYIPLAYMODE);
 		
 //		pnlnewskw.add(pnlnewskwup,BorderLayout.NORTH);
 		pnlnewskw.add(pnldisplayallnewskw,BorderLayout.CENTER);
@@ -452,13 +478,13 @@ public class NodeLabelMatrixManagement extends JDialog
 //		pnlbkskwup.add(lblbkfengge);
 //		pnlbkskwup.add(tfldsearchbkkw);
 //		pnlbkskwup.add(btnkbkwaddtocur);
-		pnldisplayallbkskw = new LabelsManagement("所属板块关键字",null, LabelsManagement.ONLYIPLAYMODE);
+		pnldisplayallbkskw = new TagsPanel("所属板块关键字",null, TagsPanel.ONLYIPLAYMODE);
 		
 //		pnlbkkw.add(pnlbkskwup,BorderLayout.NORTH);
 		pnlbkkw.add(pnldisplayallbkskw,BorderLayout.CENTER);
 		
 		//所属产业链关键词
-		pnldisplaycylskw = new LabelsManagement("所在产业链关键字",null, LabelsManagement.ONLYIPLAYMODE);
+		pnldisplaycylskw = new TagsPanel("所在产业链关键字",null, TagsPanel.ONLYIPLAYMODE);
 		pnlcylkw.add(pnldisplaycylskw,BorderLayout.CENTER);
 		
 		//URL关键词
@@ -469,7 +495,7 @@ public class NodeLabelMatrixManagement extends JDialog
 		pnlurlup.add (lblurl,BorderLayout.WEST);
 		pnlurlup.add (tfldurl,BorderLayout.CENTER);
 
-		pnldisplayurlskw = new LabelsManagement("",LabelsManagement.HIDEHEADERMODE, LabelsManagement.ONLYIPLAYMODE);
+		pnldisplayurlskw = new TagsPanel("",TagsPanel.HIDEHEADERMODE, TagsPanel.ONLYIPLAYMODE);
 
 		pnlurlkw.add(pnlurlup,BorderLayout.NORTH);
 		pnlurlkw.add(pnldisplayurlskw,BorderLayout.CENTER);

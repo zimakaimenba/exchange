@@ -12,11 +12,13 @@ public class Tag
     private String name;
     private boolean selected;
 
-    public Tag(  String name, Color color) 
+    public Tag(  String name, Color color1) 
     {
     	this.name = name;
-    	if(this.color == null)
-    		this.color = Color.GRAY;
+    	if(color1 == null)
+    		this.color = Color.WHITE;
+    	else 
+    		this.color = color1;
     }
     
     public Boolean checkHanYuPinYing (String checkedhypy)

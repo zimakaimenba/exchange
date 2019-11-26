@@ -31,7 +31,7 @@ public class CombineTagsDialog extends TagDialog<Tag>
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             try {
-                labelService.combinLabels(getLabel());
+                labelService.combinTags(getLabel());
             } catch (SQLException e1) {
                 e1.printStackTrace();
             } 

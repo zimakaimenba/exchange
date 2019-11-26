@@ -42,6 +42,7 @@ public class LabelTag extends JPanel
 	protected static final String PROPERTYCHANGEDASDELETE = "PROPERTYCHANGED_AS_DELETE";
 	protected static final String PROPERTYCHANGEDASEDIT = "PROPERTYCHANGED_AS_EDIT";
 	protected static final String PROPERTYCHANGEDASCOMBINE = "PROPERTYCHANGED_AS_COMBINED";
+	protected static final String PROPERTYCHANGEDASSEARCH = "SEARCH_ON_INTERNET";
 	private Color tagcolor;
 //	private static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 //	private static LayoutManager FLOW_LAYOUT = new FlowLayout(FlowLayout.LEFT, 0, 0);
@@ -51,12 +52,11 @@ public class LabelTag extends JPanel
 	public LabelTag (Tag l)
 	{
 		this.tag =  l;
-		if(l instanceof Tag)
-			this.tagcolor = l.getColor() ;
-		if(l instanceof InsertedTag)
-			this.tagcolor = ((InsertedTag) l).getColor();
+
 		if(l instanceof NodeInsertedTag)
 			this.tagcolor = ((NodeInsertedTag)l).getNodeMachColor();
+		else
+			this.tagcolor = l.getColor() ;
 		
 		
 		
@@ -70,7 +70,7 @@ public class LabelTag extends JPanel
 	    label.setName( l.getName() );
 	    label.setToolTipText(l.getName() );
 	    label.setForeground(Color.BLACK);
-	    label.setBackground( this.tagcolor);
+	    label.setBackground(this.tagcolor);  //
 	    
 	    if(  tag.isSelected() ) {
 	    	LineBorder line = new LineBorder(Color.BLUE, 2, true);
@@ -135,6 +135,13 @@ public class LabelTag extends JPanel
 	            pcs.firePropertyChange(evtzd);
 			}
 		});
+		menuItemSearchOnNet.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDASSEARCH , "", "SEARCH"  );
+	            pcs.firePropertyChange(evtzd);
+			}
+		});
 		
 	}
 
@@ -146,6 +153,7 @@ public class LabelTag extends JPanel
 	private JMenuItem menuItemCombined;
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+	private JMenuItem menuItemSearchOnNet;
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
@@ -158,15 +166,16 @@ public class LabelTag extends JPanel
 	 {
 			Pmenu = new JPopupMenu("test");   
 			menuItemEdit = new JMenuItem("修改");
-			menuItemEdit.setEnabled(false);
 			menuItemDel = new JMenuItem("删除");
 			menuItemCombined = new JMenuItem("合并");
 			menuItemAdd = new JMenuItem("新增");
+			menuItemSearchOnNet = new JMenuItem("网络查询"); 
 			
 			Pmenu.add(menuItemEdit);
 			Pmenu.add(menuItemDel);
 			Pmenu.add(menuItemCombined);
 			Pmenu.add(menuItemAdd);
+			Pmenu.add(menuItemSearchOnNet);
 	 }
 	
 	private class ChangeKeyWordsPanelController extends MouseAdapter 

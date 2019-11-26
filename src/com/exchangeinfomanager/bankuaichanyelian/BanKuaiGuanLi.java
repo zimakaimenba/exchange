@@ -326,25 +326,24 @@ public class BanKuaiGuanLi extends JDialog
 
 		LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
 	
-		Set<String> bkrelatedbks = new HashSet<String> ();
+		Set<BkChanYeLianTreeNode> bkrelatedbks = new HashSet<> ();
 		selectnode = this.allbkstks.getAllGeGuOfBanKuai (selectnode,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
 		List<BkChanYeLianTreeNode> bkgg = selectnode.getAllGeGuOfBanKuaiInHistory();
 		for(BkChanYeLianTreeNode sob : bkgg) {
 			Stock stock = ((StockOfBanKuai)sob).getStock();
 			stock = this.allbkstks.getStock(stock, requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
 			stock = bkdbopt.getTDXBanKuaiForAStock ( stock ); //通达信板块信息
-			HashMap<String, String> suoshubk = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
-			Set<String> bkcodeset = suoshubk.keySet();
+			Set<BkChanYeLianTreeNode> bkcodeset = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
 			bkrelatedbks.addAll(bkcodeset);
 		}
 		
 		ArrayList<BanKuai> bklist = new ArrayList<BanKuai> ();
-		for(String bkcode : bkrelatedbks) {
-			if(bkcode.equals(selectnode.getMyOwnCode()))
+		for(BkChanYeLianTreeNode bkcode : bkrelatedbks) {
+			if(bkcode.getMyOwnCode().equals(selectnode.getMyOwnCode()))
 				continue;
 			
 			BanKuai tmpbk;
-			tmpbk = this.allbkstks.getBanKuai( bkcode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
+			tmpbk = this.allbkstks.getBanKuai( bkcode.getMyOwnCode(),  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
 			tmpbk = bkdbopt.getBanKuaiBasicInfo(tmpbk);
 			tmpbk = this.allbkstks.getAllGeGuOfBanKuai (tmpbk,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
 			

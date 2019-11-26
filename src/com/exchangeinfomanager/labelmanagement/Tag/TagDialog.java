@@ -72,7 +72,7 @@ public class TagDialog<T extends Tag> extends JDialog
     }
 
     public T getLabel() {
-        meetingLabel.setName(nameField.getText());
+        meetingLabel.setName(nameField.getText().trim () );
         meetingLabel.setColor(colorButton.getBackground());
         return meetingLabel;
     }
@@ -80,7 +80,11 @@ public class TagDialog<T extends Tag> extends JDialog
     public void setLabel(T label) {
         this.meetingLabel = label;
         this.nameField.setText(label.getName());
-        this.colorButton.setBackground(label.getColor());
+        
+        if(label instanceof NodeInsertedTag)
+        	this.colorButton.setBackground(  ((NodeInsertedTag)label).getNodeMachColor()   );
+        else
+        	this.colorButton.setBackground(label.getColor());
     }
 
     private class ColorController extends MouseAdapter {

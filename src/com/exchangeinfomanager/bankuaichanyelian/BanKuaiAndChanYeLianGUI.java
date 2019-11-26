@@ -58,17 +58,15 @@ import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.labelmanagement.DBSystemTagsService;
-import com.exchangeinfomanager.labelmanagement.LabelCache;
-import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelsManagement;
+import com.exchangeinfomanager.labelmanagement.TagCache;
+import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
-
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
-
 import com.google.common.collect.Lists;
 
 import com.google.common.io.LineProcessor;
@@ -109,7 +107,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 
 	private DBSystemTagsService lballdbservice;
 
-	private LabelCache allsyskwcache;
+	private TagCache allsyskwcache;
  	
 	private void setupSubGpcAndBanKuai() 
 	{
@@ -117,9 +115,9 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 //		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
 //		all.add("treeroot");
 		lballdbservice = new DBSystemTagsService (); 
-		allsyskwcache = new LabelCache (lballdbservice);
+		allsyskwcache = new TagCache (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);
-		pnllblsysmanagement.initializeLabelsManagement (lballdbservice,allsyskwcache);
+		pnllblsysmanagement.initializeTagsPanel (lballdbservice,allsyskwcache);
 		
 		
 //		//subgpc
@@ -258,7 +256,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 //		}
 //		BkChanYeLianTreeNode subcode = ((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).getNode(row);
 		 
-		Collection<Tag> selectedlbl = allsyskwcache.produceSelectedLabels();
+		Collection<Tag> selectedlbl = allsyskwcache.produceSelectedTags();
 		if(selectedlbl.size() > 1)
 			JOptionPane.showMessageDialog(null,"一次只能添加一个TAG!");
 		
@@ -272,7 +270,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	}
 	private void addSubGpcButtonActionPerformed(int direction)
 	{
-		Collection<Tag> selectedlbl = allsyskwcache.produceSelectedLabels();
+		Collection<Tag> selectedlbl = allsyskwcache.produceSelectedTags();
 		if(selectedlbl.size() > 1)
 			JOptionPane.showMessageDialog(null,"一次只能添加一个TAG!");
 		
@@ -334,7 +332,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		pnllblsysmanagement.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(LabelsManagement.ADDNEWTAGSTONODE)) {
+            	if (evt.getPropertyName().equals(TagsPanel.ADDNEWTAGSTONODE)) {
             		addSubGpcButtonActionPerformed (BanKuaiAndChanYeLianGUI.RIGHT );
             	}
             }
@@ -626,7 +624,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 
 	private JButton btndelsubgpc;
 
-	private LabelsManagement pnllblsysmanagement;
+	private TagsPanel pnllblsysmanagement;
 
 	private void initializeGui() 
 	{
@@ -742,7 +740,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		JScrollPane sclpforpnl21 = new JScrollPane();
 		panel_2.add(sclpforpnl21,BorderLayout.CENTER);
 		
-//		LabelsManagement tagspnl = new LabelsManagement ();
+//		TagsPanel tagspnl = new TagsPanel ();
 //		panel_4.add(tagspnl);
 		JScrollPane scllPnsubcyl41 = new JScrollPane();
 		JScrollPane scrollPane_42 = new JScrollPane();
@@ -754,7 +752,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		JScrollPane scrollPane52 = new JScrollPane();
 		panel_5.add(scrollPane52);
 		
-		pnllblsysmanagement = new LabelsManagement("所有系统关键字",null, LabelsManagement.FULLCONTROLMODE);
+		pnllblsysmanagement = new TagsPanel("所有系统关键字",null, TagsPanel.FULLCONTROLMODE);
 		scllPnsubcyl41.setViewportView(pnllblsysmanagement);
 		
 		

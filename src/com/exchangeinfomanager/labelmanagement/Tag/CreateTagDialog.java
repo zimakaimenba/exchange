@@ -32,7 +32,7 @@ public class CreateTagDialog  extends TagDialog<Tag>
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             try {
-                labelService.createLabel(getLabel());
+                labelService.createTag(getLabel());
             } catch (SQLException e1) {
                 e1.printStackTrace();
             } 

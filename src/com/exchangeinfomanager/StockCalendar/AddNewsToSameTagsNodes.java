@@ -50,9 +50,10 @@ public class AddNewsToSameTagsNodes extends JDialog implements CacheListener
 	private JTable tblNodesLists;
 	private Meeting news;
 	private TagService dbserviceforsys;
-	private AllCurrentTdxBKAndStoksTree allbkstk;
+	
 	private JButton btnupdatetonode;
-
+	private AllCurrentTdxBKAndStoksTree allbkstk;
+	
 	/**
 	 * Create the dialog.
 	 */
