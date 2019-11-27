@@ -226,7 +226,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	public Stock getStockBasicInfo(Stock stockbasicinfo) 
+	public BkChanYeLianTreeNode getStockBasicInfo(BkChanYeLianTreeNode stockbasicinfo) 
 	{
 		String stockcode = stockbasicinfo.getMyOwnCode();
 		CachedRowSetImpl rsagu = null;
@@ -276,7 +276,7 @@ public class BanKuaiDbOperation
 		        		
 		        		tmpnode = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
 		        		
-		        		this.getStockBasicInfo((Stock)tmpnode );
+		        		this.getStockBasicInfo(tmpnode );
 
 		        	} else {
 		        		tmpnode = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
@@ -316,7 +316,7 @@ public class BanKuaiDbOperation
 			} catch(java.lang.NullPointerException ex1) {
 				tmpnode.setMyOwnName( " ");
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				
 			}
 			try {
 				Boolean stockname = rs.getBoolean("已退市");
@@ -324,7 +324,7 @@ public class BanKuaiDbOperation
 			} catch(java.lang.NullPointerException ex1) {
 				Boolean stockname = false;
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				
 			}
 		} else {
 			try {
@@ -333,7 +333,7 @@ public class BanKuaiDbOperation
 			} catch(java.lang.NullPointerException ex1) {
 				tmpnode.setMyOwnName( " ");
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				
 			}
 		}
 		
@@ -346,8 +346,7 @@ public class BanKuaiDbOperation
 		} catch(java.lang.NullPointerException ex1) {
 			nodejbm.setGainiantishidate(null);
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
+		
 		}
 		
 		try {
@@ -398,41 +397,41 @@ public class BanKuaiDbOperation
 			e.printStackTrace();
 		}
 		
-		try {
-			String zhengxiangguan = rs.getString("正相关及客户");
-			nodejbm.setZhengxiangguan(zhengxiangguan);
-		} catch(java.lang.NullPointerException ex1) {
-			nodejbm.setZhengxiangguan("");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-		try {
-			String fuxiangguan = rs.getString("负相关及竞争对手");
-			nodejbm.setFuxiangguan(fuxiangguan);
-		} catch(java.lang.NullPointerException ex1) {
-			nodejbm.setFuxiangguan("");			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-		try {
-			String keHuCustom = rs.getString("客户");
-			nodejbm.setKeHuCustom(keHuCustom);
-		} catch(java.lang.NullPointerException ex1) {
-			nodejbm.setKeHuCustom("");			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-		try {
-			String jingZhengDuiShou = rs.getString("竞争对手");
-			nodejbm.setJingZhengDuiShou(jingZhengDuiShou);
-		} catch(java.lang.NullPointerException ex1) {
-			nodejbm.setJingZhengDuiShou("");			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			String zhengxiangguan = rs.getString("正相关及客户");
+//			nodejbm.setZhengxiangguan(zhengxiangguan);
+//		} catch(java.lang.NullPointerException ex1) {
+//			nodejbm.setZhengxiangguan("");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	
+//		try {
+//			String fuxiangguan = rs.getString("负相关及竞争对手");
+//			nodejbm.setFuxiangguan(fuxiangguan);
+//		} catch(java.lang.NullPointerException ex1) {
+//			nodejbm.setFuxiangguan("");			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	
+//		try {
+//			String keHuCustom = rs.getString("客户");
+//			nodejbm.setKeHuCustom(keHuCustom);
+//		} catch(java.lang.NullPointerException ex1) {
+//			nodejbm.setKeHuCustom("");			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	
+//		try {
+//			String jingZhengDuiShou = rs.getString("竞争对手");
+//			nodejbm.setJingZhengDuiShou(jingZhengDuiShou);
+//		} catch(java.lang.NullPointerException ex1) {
+//			nodejbm.setJingZhengDuiShou("");			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		
 		
 		
@@ -4943,11 +4942,11 @@ public class BanKuaiDbOperation
 		    
 			txtfldinputfumianxx = "'" + nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxi() + "'";
 		    
-		    String txtfldinputzhengxiangguan = "'" + nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan().trim() + "'";
-		    String txtfldinputfuxiangguan = "'" + nodeshouldbedisplayed.getNodeJiBenMian().getFuxiangguan().trim() + "'";
+//		    String txtfldinputzhengxiangguan = "'" + nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan().trim() + "'";
+//		    String txtfldinputfuxiangguan = "'" + nodeshouldbedisplayed.getNodeJiBenMian().getFuxiangguan().trim() + "'";
 		    
-		    String keHuCustom = nodeshouldbedisplayed.getNodeJiBenMian().getKeHuCustom();
-		    String jingZhengDuiShou = nodeshouldbedisplayed.getNodeJiBenMian().getJingZhengDuiShou();
+//		    String keHuCustom = nodeshouldbedisplayed.getNodeJiBenMian().getKeHuCustom();
+//		    String jingZhengDuiShou = nodeshouldbedisplayed.getNodeJiBenMian().getJingZhengDuiShou();
 	    
 			 if(nodeshouldbedisplayed.getType() == 6) {//是股票{
 				 HashMap<String,String> sqlstatmap = new HashMap<String,String> ();
@@ -4958,11 +4957,12 @@ public class BanKuaiDbOperation
 							+ " 券商评级时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingjidate() ) ) +","
 							+ " 券商评级提醒=" + txtfldinputquanshangpj +","
 							+ " 负面消息时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxidate()  ) ) +","
-							+ " 负面消息=" + txtfldinputfumianxx +","
-							+ " 正相关及客户=" + txtfldinputzhengxiangguan +","
-							+ " 负相关及竞争对手=" + txtfldinputfuxiangguan +","
-							+ " 客户=" + "'" + keHuCustom +"'" + ","
-							+ " 竞争对手=" + "'" + jingZhengDuiShou + "'"  
+							+ " 负面消息=" + txtfldinputfumianxx
+//							+","
+//							+ " 正相关及客户=" + txtfldinputzhengxiangguan +","
+//							+ " 负相关及竞争对手=" + txtfldinputfuxiangguan +","
+//							+ " 客户=" + "'" + keHuCustom +"'" + ","
+//							+ " 竞争对手=" + "'" + jingZhengDuiShou + "'"  
 							+ " WHERE 股票代码=" + stockcode
 							;
 				 sqlstatmap.put("mysql", sqlupdatestat);
@@ -4990,11 +4990,12 @@ public class BanKuaiDbOperation
 							+ " 券商评级时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingjidate() ) ) +","
 							+ " 券商评级提醒=" + txtfldinputquanshangpj +","
 							+ " 负面消息时间=" + formateDateForDiffDatabase("mysql", CommonUtility.formatDateYYYY_MM_DD(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxidate()  ) ) +","
-							+ " 负面消息=" + txtfldinputfumianxx +","
-							+ " 正相关及客户=" + txtfldinputzhengxiangguan +","
-							+ " 负相关及竞争对手=" + txtfldinputfuxiangguan +","
-							+ " 客户=" + "'" + keHuCustom +"'" + ","
-							+ " 竞争对手=" + "'" + jingZhengDuiShou + "'"  
+							+ " 负面消息=" + txtfldinputfumianxx 
+//							+","
+//							+ " 正相关及客户=" + txtfldinputzhengxiangguan +","
+//							+ " 负相关及竞争对手=" + txtfldinputfuxiangguan +","
+//							+ " 客户=" + "'" + keHuCustom +"'" + ","
+//							+ " 竞争对手=" + "'" + jingZhengDuiShou + "'"  
 							+ " WHERE 板块ID=" + stockcode
 							;
 				 //logger.debug(sqlinsertstat); 

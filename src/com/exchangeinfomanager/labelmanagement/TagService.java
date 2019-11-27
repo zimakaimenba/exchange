@@ -22,6 +22,7 @@ public interface TagService
     void deleteTag(Tag label) throws SQLException;
 
     void updateTag(Tag label) throws SQLException ;
+    void updateTags(Collection<Tag> label) throws SQLException ;
     
     void setCache (TagCache cache);
 

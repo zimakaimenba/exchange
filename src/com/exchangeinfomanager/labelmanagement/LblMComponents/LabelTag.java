@@ -39,10 +39,12 @@ import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 public class LabelTag extends JPanel
 {
 	protected static final String PROPERTYCHANGEDASADD = "PROPERTYCHANGED_AS_ADD";
-	protected static final String PROPERTYCHANGEDASDELETE = "PROPERTYCHANGED_AS_DELETE";
-	protected static final String PROPERTYCHANGEDASEDIT = "PROPERTYCHANGED_AS_EDIT";
-	protected static final String PROPERTYCHANGEDASCOMBINE = "PROPERTYCHANGED_AS_COMBINED";
-	protected static final String PROPERTYCHANGEDASSEARCH = "SEARCH_ON_INTERNET";
+	public static final String PROPERTYCHANGEDASDELETE = "PROPERTYCHANGED_AS_DELETE";
+	public static final String PROPERTYCHANGEDASEDIT = "PROPERTYCHANGED_AS_EDIT";
+	public static final String PROPERTYCHANGEDASCOMBINE = "PROPERTYCHANGED_AS_COMBINED";
+	public static final String PROPERTYCHANGEDASSEARCH = "SEARCH_ON_INTERNET";
+	public static final String PROPERTYCHANGEDBUNCHADD = "PI_LIANG_TIAN_JIA";
+	
 	private Color tagcolor;
 //	private static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 //	private static LayoutManager FLOW_LAYOUT = new FlowLayout(FlowLayout.LEFT, 0, 0);
@@ -142,6 +144,14 @@ public class LabelTag extends JPanel
 	            pcs.firePropertyChange(evtzd);
 			}
 		});
+		menuItemaddexpress.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDBUNCHADD , "", "PILIANGTIANJIA"  );
+	            pcs.firePropertyChange(evtzd);
+			}
+		});
+		
 		
 	}
 
@@ -154,6 +164,7 @@ public class LabelTag extends JPanel
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	private JMenuItem menuItemSearchOnNet;
+	private JMenuItem menuItemaddexpress;
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
@@ -169,13 +180,15 @@ public class LabelTag extends JPanel
 			menuItemDel = new JMenuItem("删除");
 			menuItemCombined = new JMenuItem("合并");
 			menuItemAdd = new JMenuItem("新增");
-			menuItemSearchOnNet = new JMenuItem("网络查询"); 
+			menuItemSearchOnNet = new JMenuItem("Google");
+			menuItemaddexpress = new JMenuItem("批量添加"); 
 			
 			Pmenu.add(menuItemEdit);
 			Pmenu.add(menuItemDel);
 			Pmenu.add(menuItemCombined);
 			Pmenu.add(menuItemAdd);
 			Pmenu.add(menuItemSearchOnNet);
+			Pmenu.add(menuItemaddexpress);
 	 }
 	
 	private class ChangeKeyWordsPanelController extends MouseAdapter 

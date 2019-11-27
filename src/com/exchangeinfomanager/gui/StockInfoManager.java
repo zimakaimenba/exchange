@@ -1103,10 +1103,10 @@ public class StockInfoManager
 			public void mousePressed(MouseEvent arg0) 
 			{
 				NodeLabelMatrixManagement lblmag = new NodeLabelMatrixManagement (nodeshouldbedisplayed );
-				lblmag.setModal(false);
+				lblmag.setModal(true);
 				lblmag.setVisible(true);
 				
-				bkstkkwcache.produceTags();
+				bkstkkwcache.refreshTags();
 				
 			}
 		});
@@ -3056,13 +3056,6 @@ class AccountsInfoTableModel extends DefaultTableModel
 	    	}
 	    }
 	    
-//	    public void removeAllRows ()
-//	    {
-//	    	if(accountslist != null) {
-//	    		this.accountslist.clear();
-//		    	this.fireTableDataChanged();
-//	    	}
-//	    	
-//	    }
+
 }
 

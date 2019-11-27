@@ -116,10 +116,15 @@ public class TagCache
     	this.refreshTags();
     	this.listeners.forEach(l -> l.onTagChange(this));
     }
-//    public void updateTags (Collection<Tag> label) 
-//    {
-//    	this.refreshTags();
-//    	this.listeners.forEach(l -> l.onTagChange(this));
-//    }
+    public void updateTags (Collection<Tag> label) 
+    {
+    	this.refreshTags();
+    	this.listeners.forEach(l -> l.onTagChange(this));
+    }
+    public void remindListenersToRefresh ()
+    {
+    	this.refreshTags();
+    	this.listeners.forEach(l -> l.onTagChange(this));
+    }
 
 }

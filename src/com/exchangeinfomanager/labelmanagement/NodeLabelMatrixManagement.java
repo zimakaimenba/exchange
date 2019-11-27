@@ -36,6 +36,7 @@ import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
+import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelTag;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -48,6 +49,8 @@ import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class NodeLabelMatrixManagement extends JDialog 
 {
@@ -184,7 +187,7 @@ public class NodeLabelMatrixManagement extends JDialog
     				}
     				
             	}   else
-                if (evt.getPropertyName().equals(TagsPanel.NODESBEENDELETED)) {
+                if (evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDASDELETE)) {
                 	Collection<Tag> tagslist = (Collection<Tag>) evt.getNewValue();
 					tagdeltedlisteners.forEach(l -> {
 					try {
@@ -194,11 +197,22 @@ public class NodeLabelMatrixManagement extends JDialog
 					}
 					}  );
                 } else
-                if( evt.getPropertyName().equals(TagsPanel.NODESBEENEDIT ) ) {
-                	Tag newtag = (Tag) evt.getNewValue();
+                if( evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDASEDIT ) ) {
+//                	Tag newtag = (Tag) evt.getNewValue();
                 	tagsystemcachechangessteners.forEach(l -> {
     				try {
-    					l.updateTag(newtag);
+    					l.remindListenersToRefresh();;
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    				}
+                	}  );
+                } else
+                if( evt.getPropertyName().equals( LabelTag.PROPERTYCHANGEDBUNCHADD ) ) {
+                	
+//                	Tag newtag = (Tag) evt.getNewValue();
+                	tagsystemcachechangessteners.forEach(l -> {
+    				try {
+    					l.remindListenersToRefresh();;
     				} catch (Exception e) {
     					e.printStackTrace();
     				}
@@ -289,7 +303,7 @@ public class NodeLabelMatrixManagement extends JDialog
 		tfldcurkeywords.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(TagsPanel.NODEADDNEWTAGSNEEDSYSUPDAT)) {
+            	if (evt.getPropertyName().equals(TagsPanel.ADDNEWTAGSTONODE)) {
             		Tag newtag = (Tag) evt.getNewValue();
 					try {
 						allsyskwcache.addTag(newtag);  //同时也要加入到系统关键词里面
@@ -297,7 +311,7 @@ public class NodeLabelMatrixManagement extends JDialog
     					e.printStackTrace();
     				}
             	} else
-            	if( evt.getPropertyName().equals(TagsPanel.NODESBEENEDIT ) ) {
+            	if( evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDASEDIT ) ) {
             		Tag newtag = (Tag) evt.getNewValue();
             		tagdeltedlisteners.forEach(l -> {
 						try {
@@ -508,29 +522,18 @@ public class NodeLabelMatrixManagement extends JDialog
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("OK");
+				okButton.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						setVisible(false);
+					}
+				});
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
 		}
 	}
 	
-	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		try {
-//			NodeLabelMatrixManagement dialog = new NodeLabelMatrixManagement();
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 }
 

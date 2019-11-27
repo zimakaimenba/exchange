@@ -12,7 +12,6 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.annotations.Annotation;
-import org.jfree.chart.annotations.CategoryAnnotation;
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;

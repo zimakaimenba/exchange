@@ -8,6 +8,8 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.labelmanagement.TagService;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
@@ -25,18 +27,33 @@ public class CreateTagDialog  extends TagDialog<Tag>
         JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         layoutPanel.add(createButton);
         this.centerPanel.add(layoutPanel);
+        
+        super.nameField.addKeyListener(new KeyAdapter() {
+    		
+    		public void keyPressed(KeyEvent  evt)
+    		{
+    			if(evt.getKeyCode() == KeyEvent.VK_ENTER)	{
+    				createMenuAction ();
+    		}
+    		}
+    	});
     }
 
     private class CreateController extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
-            try {
-                labelService.createTag(getLabel());
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            } 
-            setVisible(false);
+            createMenuAction ();
         }
+    }
+    
+    public void createMenuAction ()
+    {
+    	try {
+            labelService.createTag(getLabel());
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        } 
+        setVisible(false);
     }
 }

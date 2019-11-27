@@ -136,6 +136,11 @@ public class DBNodesTagsService implements TagService
 		
 		cache.addTag(newlabel);
 	}
+	@Override
+	public void updateTags(Collection<Tag> label) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

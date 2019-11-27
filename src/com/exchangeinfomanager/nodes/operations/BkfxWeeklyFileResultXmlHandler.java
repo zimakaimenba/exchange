@@ -26,6 +26,8 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetBanKuaisProcessor;
+import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -360,53 +362,5 @@ public class BkfxWeeklyFileResultXmlHandler
 
 
 
-class ParseBanKuaiWeeklyFielGetStocksProcessor implements LineProcessor<List<String>> 
-{
 
-private List<String> stocklists = Lists.newArrayList();
 
-@Override
-public boolean processLine(String line) throws IOException {
-	if(line.trim().length() ==7) {
-		if(line.startsWith("1")) { //上海的个股或板块
-			if(line.startsWith("16")) { //上海的个股
-				stocklists.add(line.substring(1));
-			}
-		} else  {
-			if(line.startsWith("00") || line.startsWith("03") ) { //深圳的个股
-				stocklists.add(line.substring(1));
-			}
-		}
-	}
- return true;
-}
-@Override
-public List<String> getResult() {
- return stocklists;
-}
-}
-class ParseBanKuaiWeeklyFielGetBanKuaisProcessor implements LineProcessor<List<String>> 
-{
-
-private List<String> stocklists = Lists.newArrayList();
-
-@Override
-public boolean processLine(String line) throws IOException {
-	if(line.trim().length() ==7) {
-		if(line.startsWith("1")) { //上海的个股或板块
-			if(!line.startsWith("16")) { //上海的板块
-				stocklists.add(line.substring(1));
-			}
-		} else  {
-			if(!line.startsWith("00") && !line.startsWith("03") ) { //深圳的板块
-				stocklists.add(line.substring(1));
-			}
-		}
-	}
- return true;
-}
-@Override
-public List<String> getResult() {
- return stocklists;
-}
-}

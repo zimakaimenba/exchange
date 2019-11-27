@@ -103,4 +103,11 @@ public class DBNewsTagsService implements TagService
 	}
 
 
+	@Override
+	public void updateTags(Collection<Tag> label) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }

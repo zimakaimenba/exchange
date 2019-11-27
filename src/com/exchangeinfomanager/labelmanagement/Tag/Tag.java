@@ -25,13 +25,13 @@ public class Tag
     {	
     	HanYuPinYing hypy = new HanYuPinYing ();
 	
-		String namehypy = hypy.getQuanBuOfPinYin(this.name );
-		String souzimuhypy = hypy.getSouZiMuOfPinYin(this.name);
+		String namehypy = hypy.getQuanBuOfPinYin(this.name ).toUpperCase();
+		String souzimuhypy = hypy.getSouZiMuOfPinYin(this.name).toUpperCase();
 		
-		if(this.name.equals(checkedhypy) )
+		if(this.name.equals(checkedhypy.toUpperCase()) || this.name.contains(checkedhypy.toUpperCase()) )
 			return true;
 		
-		if(namehypy.contains(checkedhypy) || souzimuhypy.contains(checkedhypy) )
+		if(namehypy.contains(checkedhypy.toUpperCase()) || souzimuhypy.contains(checkedhypy.toUpperCase()) )
 			return true;
 		else
 			return false;
@@ -50,7 +50,7 @@ public class Tag
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.trim();
     }
 
     @Override

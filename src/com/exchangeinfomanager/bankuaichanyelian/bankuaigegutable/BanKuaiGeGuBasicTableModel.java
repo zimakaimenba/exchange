@@ -59,7 +59,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	     while (itr.hasNext())      { 
 	    	 StockOfBanKuai sob = (StockOfBanKuai) itr.next();
     	 
-	    	 if( !sob.isInBanKuaiAtSpecificDate(showwknum)  ) { //确认当前还在板块内
+	    	 if( !sob.isInBanKuaiAtSpecificDate(showwknum)  ) { //确认当前还在板块内，不在要剔除
 	    		 itr.remove();
 	    	 } else { //把停牌的个股的剔除，以免出问题
 		    	 Stock stock = sob.getStock();
