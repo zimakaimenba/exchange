@@ -14,7 +14,7 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 
 import java.awt.*;
@@ -86,9 +86,6 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
     	kwbutton.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) {
-        		TextRank.setKeywordNumber(8);
-        		TextRank.setWindowSize(6);
-        		
         		String urlcontent = "";
         		if( ! slackurlField.getText().toLowerCase ().equals("slackurl")) {
         			
@@ -109,6 +106,9 @@ public  class MeetingDialog<T extends Meeting> extends JDialog
 						e.printStackTrace();
 					}
         		}
+        		
+        		TextRank.setKeywordNumber(20);
+        		TextRank.setWindowSize(20);
         		
         		String title = newstitleField.getText();
         		String content = descriptionArea.getText() +  Jsoup.parse(urlcontent).text(); 

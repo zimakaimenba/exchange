@@ -59,8 +59,8 @@ public class TagsUrlOperation
 		try { 
 	        String body = FileExtractUtil.extractString(path);
 	        
-	        TextRank.setKeywordNumber(80);
-			TextRank.setWindowSize(80);
+	        TextRank.setKeywordNumber(100);
+			TextRank.setWindowSize(100);
 			List<String> keywords = TextRank.getKeyword(path, body);
 	        for(String tmpkwname : keywords) {
 	        	if( !tmpkwname.equals("¹Ø¼ü´Ê")) {
@@ -145,8 +145,8 @@ public class TagsUrlOperation
 			String title = doc.title();
 			String body = doc.body().text ();
 		
-			TextRank.setKeywordNumber(80);
-			TextRank.setWindowSize(80);
+			TextRank.setKeywordNumber(100);
+			TextRank.setWindowSize(100);
 			List<String> keywords = TextRank.getKeyword(title, body);
 	        for(String tmpkwname : keywords) {
 	        	if( !tmpkwname.equals("¹Ø¼ü´Ê")) {

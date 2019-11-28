@@ -2,8 +2,9 @@ package com.exchangeinfomanager.nodes;
 
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
+
+import com.exchangeinfomanager.Trees.InvisibleNode;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
-import com.exchangeinfomanager.nodes.operations.InvisibleNode;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.base.Strings;
 

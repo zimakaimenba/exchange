@@ -38,6 +38,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.ta4j.core.Bar;
 
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 
@@ -46,8 +47,6 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
-
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;

@@ -28,6 +28,7 @@ import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.License.License;
 import com.exchangeinfomanager.Search.SearchDialog;
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 //import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeeting;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
@@ -104,7 +105,6 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 import java.awt.event.ActionListener;
@@ -151,7 +151,6 @@ import java.awt.BorderLayout;
 
 public class StockInfoManager 
 {
-	private CylTreeDbOperation cyltreedb;
 	/**
 	 * Create the application.
 	 */
@@ -179,7 +178,7 @@ public class StockInfoManager
 		
 		allbkstock = AllCurrentTdxBKAndStoksTree.getInstance();
 		bkdbopt = new BanKuaiDbOperation ();
-		this.cyltreedb = new CylTreeDbOperation ();
+//		this.cyltreedb = new CylTreeDbOperation ();
 		
 		initializeGui();
 		displayAccountAndChiCang ();
@@ -286,7 +285,8 @@ public class StockInfoManager
 					 displaySellBuyZdgzInfoToGui ();
 				 }
 				 
-				 nodeshouldbedisplayed = cyltreedb.getChanYeLianInfo(nodeshouldbedisplayed);
+				
+//				nodeshouldbedisplayed = cyltreedb.getChanYeLianInfo(nodeshouldbedisplayed);
 				 
 				 if(nodeshouldbedisplayed.getType() == 6) { //ÊÇ¸ö¹É
 					if(accountschicangconfig.isSystemChiCang(stockcode)) 
@@ -1526,7 +1526,7 @@ public class StockInfoManager
 		protected void startBanKuaiGuanLiDlg()
 		{
 			if(bkgldialog == null ) {
-				bkgldialog = new BanKuaiGuanLi(this.cyltreedb);
+				bkgldialog = new BanKuaiGuanLi();
 				bkgldialog.setModal(true);
 
 				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -2935,7 +2935,6 @@ public class StockInfoManager
 	public void toFront() 
 	{
 		this.frame.toFront();
-		
 	}
 }
 

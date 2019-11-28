@@ -3,7 +3,6 @@ package com.exchangeinfomanager.bankuaifengxi;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -14,7 +13,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -28,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
+
 import javax.swing.tree.TreePath;
 
 
@@ -42,6 +40,9 @@ import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Trees.InvisibleTreeModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuExternalInfoTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
@@ -68,8 +69,7 @@ import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.CylTreeDbOperation;
-import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
+
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
@@ -81,23 +81,18 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.operations.BkfxWeeklyFileResultXmlHandler;
-import com.exchangeinfomanager.nodes.operations.InvisibleTreeModel;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
-import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
-import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
+
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-import com.google.common.base.Charsets;
+
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
+
 import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
+
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -120,7 +115,6 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -129,8 +123,7 @@ import java.beans.PropertyChangeEvent;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
+
 import javax.swing.UIManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -158,8 +151,6 @@ import java.awt.event.KeyEvent;
 public class BanKuaiFengXi extends JDialog 
 {
 	private static final long serialVersionUID = 1L;
-	private CylTreeDbOperation cyldbopt;
-	
 	/**
 	 * Create the dialog.
 	 * @param bkcyl2 
@@ -170,8 +161,6 @@ public class BanKuaiFengXi extends JDialog
 		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
-		this.cyldbopt = new  CylTreeDbOperation ();
-		this.newsdbopt = new StockCalendarAndNewDbOperation ();
 		this.nodeinfotocsv = new NodeInfoToCsv ();
 		this.displayexpc = new ExportCondition () ;
 		this.bkfxremind = new BanKuaiFengXiRemindXmlHandler ();
@@ -187,6 +176,9 @@ public class BanKuaiFengXi extends JDialog
 		
 		adjustDate (LocalDate.now());
 	}
+	
+	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
+	
 	private String globeperiod;
 	private Boolean globecalwholeweek; //º∆À„’˚÷‹
 	private BanKuaiFengXiRemindXmlHandler bkfxremind;
@@ -196,11 +188,10 @@ public class BanKuaiFengXi extends JDialog
 	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
 	private BanKuaiDbOperation bkdbopt;
-	private StockCalendarAndNewDbOperation newsdbopt;
 	private BkfxWeeklyFileResultXmlHandler bkfxfh;
-	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
+
 	private ExportTask2 exporttask;
-//	private BanKuaiPaiXuTask bkfxtask;
+
 	private ArrayList<ExportCondition> exportcond;
 	
 	private NodeInfoToCsv nodeinfotocsv;
@@ -2194,11 +2185,9 @@ public class BanKuaiFengXi extends JDialog
 						clearTheGuiBeforDisplayNewInfoSection2 ();
 						clearTheGuiBeforDisplayNewInfoSection3 ();
 						
-						cyldbopt.getBkChanYeLianTree().setCurrentDisplayedWk (newdate);
-			    		DefaultTreeModel treeModel = (DefaultTreeModel) cyldbopt.getBkChanYeLianTree().getModel();
+						cyltreecopy.setCurrentDisplayedWk (newdate);
+			    		DefaultTreeModel treeModel = (DefaultTreeModel) cyltreecopy.getModel();
 			    		treeModel.reload();
-			    		
-//			    		setHighLightChenJiaoEr();
 			    		
 			    		gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (NodeGivenPeriodDataItem.WEEK);
 			    		
@@ -3527,7 +3516,7 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanebk.addTab("\u4EA7\u4E1A\u94FE", null, scrollPane, null);
 		
 //		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyldbopt.getBkChanYeLianTree().getModel();
-		cyltreecopy = this.cyldbopt.getBkChanYeLianTree();//new BanKuaiAndStockTree(treeModel,"cyltreecopy");
+		cyltreecopy = CreateExchangeTree.CreateTreeOfChanYeLian();//new BanKuaiAndStockTree(treeModel,"cyltreecopy");
 		
 		scrollPane.setViewportView(cyltreecopy);
 		

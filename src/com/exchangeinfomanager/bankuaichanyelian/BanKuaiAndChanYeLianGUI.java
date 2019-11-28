@@ -48,7 +48,9 @@ import javax.swing.table.DefaultTableModel;
 
 import javax.swing.tree.TreePath;
 
-
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -66,7 +68,6 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.google.common.collect.Lists;
 
 import com.google.common.io.LineProcessor;
@@ -79,18 +80,18 @@ import java.awt.FlowLayout;
 
 public class BanKuaiAndChanYeLianGUI  extends JPanel 
 {
-	public BanKuaiAndChanYeLianGUI  ( AllCurrentTdxBKAndStoksTree bkstk1 , CylTreeDbOperation treedb1)
+	public BanKuaiAndChanYeLianGUI  ()
 	{
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 
-		this.bkstk = bkstk1;
+		this.bkstk = AllCurrentTdxBKAndStoksTree.getInstance();
 		
 		setLayout(new BorderLayout(0, 0));
 		
 		bkopt = new BanKuaiDbOperation ();
-		this.treedb = treedb1;
 		
-		treechanyelian = treedb.getBkChanYeLianTree();
+		treechanyelian = CreateExchangeTree.CreateTreeOfChanYeLian();
+		
 
 		initializeGui ();
 		setupSubGpcAndBanKuai ();
@@ -101,8 +102,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	
 	private AllCurrentTdxBKAndStoksTree bkstk;
 	private String currentselectedtdxbk = "";
-	private CylTreeDbOperation treedb;
-	private BanKuaiAndStockTree treechanyelian;
+//	private CylTreeDbOperation treedb;
+	private TreeOfChanYeLian treechanyelian;
 	private BanKuaiDbOperation bkopt;
 
 	private DBSystemTagsService lballdbservice;
@@ -178,34 +179,10 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		BkChanYeLianTreeNode delnode = (BkChanYeLianTreeNode) treechanyelian.getSelectionPath().getLastPathComponent();
 		int action = JOptionPane.showConfirmDialog(null, "是否将该节点彻底删除？选择YES彻底删除，选择NO将保留数据","询问", JOptionPane.YES_NO_OPTION);
 		if(0 == action) {
-			treedb.deleteNodeFromTree ( (CylTreeNestedSetNode)delnode,true);
+			treechanyelian.deleteNodeFromTree ( (CylTreeNestedSetNode)delnode,true);
 		} else {
-			treedb.deleteNodeFromTree ( (CylTreeNestedSetNode)delnode,false);
+			treechanyelian.deleteNodeFromTree ( (CylTreeNestedSetNode)delnode,false);
 		}
-	}
-	/*
-	 * 
-	 */
-	private void createNewSubGuPiaoChi ()
-	{
-       String newsubbk = JOptionPane.showInputDialog(null,"请输入SUB股票池名称","输入", JOptionPane.QUESTION_MESSAGE);
- 		if(newsubbk == null)
- 			return;
- 		String newsubbkcode = JOptionPane.showInputDialog(null,"请指定SUB股票池代码","输入", JOptionPane.QUESTION_MESSAGE);
- 		if(newsubbkcode == null)
- 			return;
-        
- 		if(	((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).findNodeByNameOrCode(newsubbkcode) != null ) {
- 			JOptionPane.showMessageDialog(null,"添加失败，代码已经存在！","Warning",JOptionPane.WARNING_MESSAGE);
- 			return;
- 		}
- 		else if(	((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).findNodeByNameOrCode(newsubbk) != null ) {
- 			JOptionPane.showMessageDialog(null,"添加失败，名称已经存在！","Warning",JOptionPane.WARNING_MESSAGE);
- 			return ;
- 		}
- 		
- 		BkChanYeLianTreeNode newnode = treedb.addNewSubGuoPiaoChi (newsubbk);
- 		((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).addRow (newnode);
 	}
 	/*
 	 * 
@@ -219,7 +196,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
  		if(newsubbkcode == null)
  			return;
         
- 		BkChanYeLianTreeNode newnode = treedb.addNewGuoPiaoChi (newsubbkcode,newsubbk);
+ 		BkChanYeLianTreeNode newnode = treechanyelian.addNewGuoPiaoChi (newsubbkcode,newsubbk);
 	}
 	
 	 private void addGeGuButtonActionPerformed(java.awt.event.ActionEvent evt) 
@@ -232,7 +209,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	  		BkChanYeLianTreeNode addednode = ((BkChanYeLianTreeNodeListTableModel)(tablebkgegu.getModel())).getNode(row);
 	  		
 	  		int direction =  ((SubnodeButton)evt.getSource()).getDirection();
-	  		this.treedb.addNewNodeToTree (addednode,direction);
+	  		treechanyelian.addNewNodeToTree (addednode,direction);
 	 }
 	 private void addBanKuaiButtonActionPerformed(java.awt.event.ActionEvent evt) 
 	  {
@@ -245,7 +222,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 			 BkChanYeLianTreeNode subcode = ((BkChanYeLianTreeNodeListTableModel)(tablebankuai.getModel())).getNode(row);
 			 
 			 int direction = ((SubnodeButton)evt.getSource()).getDirection();
-			 this.treedb.addNewNodeToTree (subcode, direction);
+			 this.treechanyelian.addNewNodeToTree (subcode, direction);
 	}
 	private void addSubGpcButtonActionPerformed(ActionEvent evt) 
 	{
@@ -265,7 +242,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	        
 	        BkChanYeLianTreeNode subcode = new CylTreeNestedSetNode (String.valueOf(f.getID() ), f.getName(), BkChanYeLianTreeNode.SUBGPC);
 	        int direction = ((SubnodeButton)evt.getSource()).getDirection();
-			this.treedb.addNewNodeToTree (subcode, direction);
+			this.treechanyelian.addNewNodeToTree (subcode, direction);
 		}
 	}
 	private void addSubGpcButtonActionPerformed(int direction)
@@ -278,7 +255,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	        InsertedTag f = (InsertedTag) lit.next();
 	        
 	        BkChanYeLianTreeNode subcode = new CylTreeNestedSetNode (String.valueOf(f.getID() ), f.getName(), BkChanYeLianTreeNode.SUBGPC);
-			this.treedb.addNewNodeToTree (subcode, direction);
+			this.treechanyelian.addNewNodeToTree (subcode, direction);
 		}
 		
 	}
@@ -306,13 +283,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	 */
 	private void findNodeInTables(String searchcode) 
 	{
-		int rowindex = ((BkChanYeLianTreeNodeListTableModel)tablesubcyl.getModel() ).findNodeByNameOrCode(searchcode);;
-		if(rowindex >= 0) {
-			tablesubcyl.setRowSelectionInterval(rowindex, rowindex);
-			tablesubcyl.scrollRectToVisible( new Rectangle(tablesubcyl.getCellRect(rowindex, 0, true)) );
-		}
-		
-		rowindex = ((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel() ).findNodeByNameOrCode(searchcode);;
+		Integer rowindex = ((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel() ).findNodeByNameOrCode(searchcode);;
 		if(rowindex >= 0) {
 			tablebankuai.setRowSelectionInterval(rowindex, rowindex);
 			tablebankuai.scrollRectToVisible( new Rectangle(tablebankuai.getCellRect(rowindex, 0, true)) );
@@ -336,26 +307,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
             		addSubGpcButtonActionPerformed (BanKuaiAndChanYeLianGUI.RIGHT );
             	}
             }
-		});
-		
-		btndelsubgpc.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				int row = tablesubcyl.getSelectedRow() ;
-				if( row <0) {
-					 JOptionPane.showMessageDialog(null,"请选择一个子板块!");
-					 return;
-				}
-			
-				BkChanYeLianTreeNode node = ((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).getNode(row);
-				if( findNodeInTree(node.getMyOwnCode()) ) {
-					JOptionPane.showMessageDialog(null,"产业链树有该子板块，请先在树中删除该板块!");
-					return;
-				}
-				
-				treedb.deleNodeFromDatabase (node);
-				
-			}
 		});
 		
 		btnfindgegu.addMouseListener(new MouseAdapter() {
@@ -384,14 +335,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				createNewGuPiaoChi ();
-			}
-		});
-		
-		
-		btnAddSubGPC.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				createNewSubGuPiaoChi ();
 			}
 		});
 		
@@ -589,31 +532,21 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	
 	private JUpdatedTextField tfldfindnodeintree;
 	private JUpdatedTextField tfldfindgegu;
-	private JButton deleteButton;
-	private JButton btnfindbk;
+	
 	private JButton btnfindgegu;
-	private JScrollPane scrollPanegegu;
-	private JButton addGeGuButton;
-	private JButton addSubnodeButton;
-	private JButton btnGenTDXCode;
-	private JButton btnadddalei;
-	private JButton btndeldalei;
+	
 	ImageIcon addBelowIcon, addAboveIcon, addChildIcon, addSubnodeIcon;
 	
-	private JButton btnopencylxml;
-	private JPopupMenu popupMenu;
-	private JMenuItem mntmNewMenuItem;
 	
-	private JButton btnSaveAll;
+	
 	private JButton btnAddBktotree;
 	private JScrollPane treeScrollPane;
 	private JLocalDateChooser datechooser;
-	private JTable tablesubcyl;
+	
 	private JTable tablebankuai;
 	private JTable tablebkgegu;
 
 	private JButton btnaddSubGPCtotree;
-	private JButton btnAddSubGPC;
 	private JButton btnfindnode;
 	private JButton btnAddNewGPC;
 	private JButton btnAddGeGutotree;
@@ -621,8 +554,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	private JButton btnrestorenode;
 
 	private JTextArea txaDescripton;
-
-	private JButton btndelsubgpc;
 
 	private TagsPanel pnllblsysmanagement;
 
@@ -694,13 +625,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		add(pnlup, BorderLayout.NORTH);
 		
 		btnAddNewGPC = new JButton("\u6DFB\u52A0GPC");
-		btnAddSubGPC = new JButton("\u6DFB\u52A0SUBGPC");
 		pnlup.setLayout(new MigLayout("", "[75px][93px][93px]", "[23px]"));
-		
-		btndelsubgpc = new JButton("\u5220\u9664SUBGPC");
-		pnlup.add(btndelsubgpc, "cell 2 0,alignx left,aligny top");
 		pnlup.add(btnAddNewGPC, "cell 0 0,alignx left,aligny top");
-		pnlup.add(btnAddSubGPC, "cell 1 0,alignx left,aligny top");
 		
 		JPanel pnlcenter = JPanelFactory.createPanel();
 		pnlcenter.setLayout(new BoxLayout(pnlcenter, BoxLayout.PAGE_AXIS));

@@ -65,7 +65,7 @@ public class NodeLabelMatrixManagement extends JDialog
 	private BanKuaiDbOperation nodedbopt;
 	private DBNodesTagsService lbbkdbservice;
 	private TagCache bankuaikwcache;
-	private CylTreeDbOperation cydbopt;
+//	private CylTreeDbOperation cydbopt;
 	private TagCache cylkwcache;
 	private DBUrlTagsService lburldbservice;
 	private TagCache urlcache;
@@ -83,22 +83,20 @@ public class NodeLabelMatrixManagement extends JDialog
 		
 		this.node = node;
 		this.nodedbopt = new BanKuaiDbOperation ();
-		this.cydbopt = new CylTreeDbOperation ();
+//		this.cydbopt = new CylTreeDbOperation ();
 		this.allbkstk = AllCurrentTdxBKAndStoksTree.getInstance();
 		
 		//所有KW
-		Set<String> all = new HashSet<> ();
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
-		all.add("treeroot");
+		
 		lballdbservice = new DBSystemTagsService (); 
-		allsyskwcache = new TagCache (lballdbservice);
+		allsyskwcache = new CacheForInsertedTag (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);
 		pnldisplayallsyskw.initializeTagsPanel (lballdbservice,allsyskwcache);
 		//当前KW
-		Set<BkChanYeLianTreeNode> bkstk = new HashSet<> ();
-		bkstk.add(this.node);
+		Set<BkChanYeLianTreeNode> bkstk = Set.of(this.node);
 		lbnodedbservice = new DBNodesTagsService (bkstk);
-		bkstkkwcache = new TagCache (lbnodedbservice);
+		bkstkkwcache = new CacheForInsertedTag (lbnodedbservice);
 		lbnodedbservice.setCache(bkstkkwcache);
 		tfldcurkeywords.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
 		//所属板块KW
@@ -123,7 +121,10 @@ public class NodeLabelMatrixManagement extends JDialog
 			pnldisplayallbkskw.initializeTagsPanel (lbbkdbservice,bankuaikwcache);
 		}
 		//新闻KW
-		lbnewsdbservice = new DBNewsTagsService (suosusysbankuai);
+		Set<BkChanYeLianTreeNode> nodewithbankuais = new HashSet<> () ;
+		nodewithbankuais.add(this.node);
+		nodewithbankuais.addAll(suosusysbankuai);
+		lbnewsdbservice = new DBNewsTagsService (nodewithbankuais);
 		newskwcache = new TagCache (lbnewsdbservice);
 		lbnewsdbservice.setCache(newskwcache);
 		pnldisplayallnewskw.initializeTagsPanel (lbnewsdbservice,newskwcache);

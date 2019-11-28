@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.StockCalendar.GBC;
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuExternalInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
@@ -47,7 +48,6 @@ import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.collect.Ordering;
@@ -124,7 +124,7 @@ import java.awt.event.ActionEvent;
 
 public class BanKuaiGuanLi extends JDialog 
 {
-	private CylTreeDbOperation cyltreedb;
+//	private CylTreeDbOperation cyltreedb;
 
 	/**
 	 * Create the dialog.
@@ -134,13 +134,13 @@ public class BanKuaiGuanLi extends JDialog
 	 * @param zdgzbkxmlhandler 
 	 * @param cylxmlhandler 
 	 */
-	public BanKuaiGuanLi(CylTreeDbOperation cyltreedb ) 
+	public BanKuaiGuanLi() 
 	{
 		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 		
 		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
-		this.cyltreedb = cyltreedb;
+		
 		
 		initializeBaiKuaiOfNoGeGuWithSelfCJLTree ();
 		initializeGui2 ();
@@ -557,7 +557,8 @@ public class BanKuaiGuanLi extends JDialog
 		 JPanel searchpnl = JPanelFactory.createFixedSizePanel(new FlowLayout ());
 		 searchpnl.setPreferredSize(new Dimension(200, 38));
 			tfldsearchsysbk = new JUpdatedTextField();
-			tfldsearchsysbk.setColumns(8);
+			tfldsearchsysbk.setPreferredSize( new Dimension( 200, 50 ) );
+			tfldsearchsysbk.setColumns(80);
 			JButton btnsearchsysbk = new JButton("\u67E5\u627E\u677F\u5757");
 			searchpnl.add(tfldsearchsysbk);
 			searchpnl.add(btnsearchsysbk);
@@ -567,7 +568,6 @@ public class BanKuaiGuanLi extends JDialog
 		 JScrollPane scrollPanesysbk = new JScrollPane (); //
 //			≥ı ºªØjtreetable
 			BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree() );
-//			JTable tableSysBk = new JTable();
 			tableSysBk = new JTreeTable(treetablemodel) {
 				
 				private static final long serialVersionUID = 1L;
@@ -631,7 +631,7 @@ public class BanKuaiGuanLi extends JDialog
 		layoutPanel.setPreferredSize(new Dimension(751, 677));
 		
 		
-		BanKuaiAndChanYeLianGUI bkcylpnl = new BanKuaiAndChanYeLianGUI(allbkstks, cyltreedb) ;
+		BanKuaiAndChanYeLianGUI bkcylpnl = new BanKuaiAndChanYeLianGUI() ;
 		bkcylpnl.setPreferredSize(new Dimension(751, 677));
 		layoutPanel.add(bkcylpnl, BorderLayout.CENTER);
 		

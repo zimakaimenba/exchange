@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.nodes.operations;
+package com.exchangeinfomanager.Trees;
 
 //Example from http://www.crionics.com/products/opensource/faq/swing_ex/SwingExamples.html
 //http://www.java2s.com/Code/Java/Swing-Components/InvisibleNodeTreeExample.htm

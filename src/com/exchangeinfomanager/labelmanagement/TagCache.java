@@ -14,6 +14,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagCache 
 {

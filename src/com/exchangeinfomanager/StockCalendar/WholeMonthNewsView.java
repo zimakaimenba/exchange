@@ -23,6 +23,7 @@ import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
@@ -32,7 +33,6 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.operations.BanKuaiAndStockTree;
 /**
  * 
  * @author Administrator

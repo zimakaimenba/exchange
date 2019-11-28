@@ -34,6 +34,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
+import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetBanKuaisProcessor;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.commonlib.WrapLayout;
@@ -168,7 +169,7 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	private TagCache cache;
 	private JPopupMenu Pmenu ;
 
-	private JTextField tfldsearchkw;
+	private JUpdatedTextField tfldsearchkw;
 
 	private JButton btnkaddtocur;
 
@@ -186,7 +187,7 @@ public class TagsPanel extends JPanel implements TagCacheListener
 		pnlup.setLayout (new FlowLayout(FlowLayout.LEFT) );
 		JLabel lblbkkw = new JLabel(this.title);
 		JLabel lblbkfengge = new JLabel("  ");
-		tfldsearchkw = new JTextField ("                    ");
+		tfldsearchkw = new JUpdatedTextField ("                    ");
 		tfldsearchkw.setCaretPosition(8);
 		
 		searchcount = new JLabel ("  ");

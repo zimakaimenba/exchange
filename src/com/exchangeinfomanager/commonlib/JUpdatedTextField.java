@@ -22,6 +22,15 @@ public class JUpdatedTextField extends JTextField
 		
 		createEvents ();
 	}
+	public JUpdatedTextField (String str)
+	{
+		super (str);
+		mouseleftclear = true;
+		mouserightpaste = true;
+		this.pastepostion = JUpdatedTextField.PASTETORIGHT; 
+		
+		createEvents ();
+	}
 	private boolean mouseleftclear;
 	private boolean mouserightpaste;
 	private int pastepostion;
@@ -66,8 +75,12 @@ public class JUpdatedTextField extends JTextField
 
 	protected void setEditorToNull() 
 	{
-		if(this.mouseleftclear && this.isEnabled())
+		if(this.mouseleftclear && this.isEnabled()) {
 			this.setText("");
+			this.setColumns(10);
+			this.setCaretPosition(0);
+		}
+		
 		
 	}
 	

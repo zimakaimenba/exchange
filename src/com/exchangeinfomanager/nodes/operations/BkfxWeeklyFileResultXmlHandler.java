@@ -26,6 +26,8 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.InvisibleTreeModel;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetBanKuaisProcessor;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;

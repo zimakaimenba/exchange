@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.nodes.operations;
+package com.exchangeinfomanager.Trees;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -69,7 +69,6 @@ public class BanKuaiAndStockTree extends JTree
 		ml.activateFilter(false);
 		this.setModel(ml);
 		
-		this.createEvents(this);
 		this.setDragEnabled(true);
 		this.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
 		this.setEditable(false);
@@ -83,12 +82,7 @@ public class BanKuaiAndStockTree extends JTree
 		
 //        ds = new TreeDragSource(this, DnDConstants.ACTION_COPY_OR_MOVE);
 //        dt = new TreeDropTarget(this);
-        
-		    
 		this.createEvents ();
-		
-
-		
 	}
 	
 	public BanKuaiAndStockTree (InvisibleTreeModel bkcylmodel,String treeid)
@@ -101,7 +95,6 @@ public class BanKuaiAndStockTree extends JTree
 		bkcylmodel.activateFilter(false);
 		this.setModel(bkcylmodel);
 		
-		this.createEvents(this);
 		this.setDragEnabled(true);
 		this.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
 		this.setEditable(false);
@@ -125,28 +118,6 @@ public class BanKuaiAndStockTree extends JTree
 	protected boolean treechangedshouldsave = false;
 //	private BkfxWeeklyFileResultXmlHandler bkfxxml;
 	
-	public void createEvents ()
-	{
-//		this.addTreeSelectionListener(new TreeSelectionListener() {
-//			
-//	        public void valueChanged(TreeSelectionEvent e) {
-//	        	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode)getLastSelectedPathComponent();
-//
-//	        /* if nothing is selected */ 
-//	            if (node == null) return;
-//
-//	        /* retrieve the node that was selected */ 
-//	          currentselectedtdxbk = node.getMyOwnCode();
-//	        /* React to the node selection. */
-//	            
-//	        }
-//	    });
-	}
-	
-//	public  BkfxWeeklyFileResultXmlHandler getWeeklyBkfxXml ()
-//	{
-//		return this.bkfxxml;
-//	}
 	/*
 	 * 
 	 */
@@ -154,6 +125,16 @@ public class BanKuaiAndStockTree extends JTree
 	{
 		this.currentdisplayedwk = diswk;
 	}
+	/*
+	 * 
+	 */
+	public LocalDate getCurrentDisplayedWk ()
+	{
+		return this.currentdisplayedwk ;
+	}
+	/*
+	 * 
+	 */
 	public void printTreeInformation ()
 	{
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
@@ -185,60 +166,9 @@ public class BanKuaiAndStockTree extends JTree
 	/*
 	 * 
 	 */
-	public LocalDate getCurrentDisplayedWk ()
-	{
-		return this.currentdisplayedwk ;
-	}
-	/*
-	 * 
-	 */
 	public String getTreeId ()
 	{
 		return this.treeid;
-	}
-	/*
-	 * 
-	 */
-	public boolean deleteNodes(TreePath selectednode) 
-	{
-		DefaultTreeModel treeModel = (DefaultTreeModel) this.getModel();
-
-		this.setSelectionPath(selectednode);
-		TreePath[] treePaths = this.getSelectionPaths();
-		sortPaths(this,treePaths);
-	    int topRow = this.getRowForPath(treePaths[0]);
-	    for (TreePath path : treePaths) {
-	            	BkChanYeLianTreeNode child = (BkChanYeLianTreeNode) path.getLastPathComponent();
-	            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) child.getParent();
-	                if (parent != null){
-	                    int childIndex = parent.getIndex(child);
-	                    parent.remove(child);
-	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
-	                }
-	      }
-	            
-	      if (this.getVisibleRowCount()>0) 
-	            	this.setSelectionRow(topRow);
-	   
-	   return true;
-	}
-	public boolean isolatedNodes(TreePath selectednode) 
-	{
-		DefaultTreeModel treeModel = (DefaultTreeModel) this.getModel();
-
-		this.setSelectionPath(selectednode);
-		TreePath[] treePaths = this.getSelectionPaths();
-		sortPaths(this,treePaths);
-	    int topRow = this.getRowForPath(treePaths[0]);
-	    for (TreePath path : treePaths) {
-	    	CylTreeNestedSetNode child = (CylTreeNestedSetNode) path.getLastPathComponent();
-	    	child.setNodeIsolatedDate(LocalDate.now());
-	      }
-	            
-	      if (this.getVisibleRowCount()>0) 
-	            	this.setSelectionRow(topRow);
-	   
-	   return true;
 	}
 	/*
 	 * 
@@ -266,17 +196,8 @@ public class BanKuaiAndStockTree extends JTree
 	/*
 	 * 
 	 */
-	private void createEvents(final JTree tree) 
+	private void createEvents() 
 	{
-
-//		this.addMouseListener(new MouseAdapter() {
-//    		
-//            public void mouseClicked(MouseEvent evt) 
-//            {
-//            	treeMousePressed( evt);
-//            }
-//		});
-		
         this.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
             public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
             	treeMousePressed ();

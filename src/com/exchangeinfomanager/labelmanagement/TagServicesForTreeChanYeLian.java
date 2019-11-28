@@ -22,6 +22,7 @@ public class TagServicesForTreeChanYeLian implements TagService
 	public TagServicesForTreeChanYeLian (Set<BkChanYeLianTreeNode> node)
 	{
 		dboptforcyltree = new CylTreeDbOperation ();
+		
 		dboptfornode = new TagsDbOperation ();
 		
 		this.nodeset = node;

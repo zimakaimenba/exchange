@@ -1,11 +1,12 @@
 package com.exchangeinfomanager.labelmanagement.Tag;
 
-import java.awt.Color;
+import java.util.Set;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class InsertedTag extends Tag
 {
+	private Set<BkChanYeLianTreeNode> owners ;
 	private int id;
 	private Tag tag;
 	private String des;
@@ -35,5 +36,26 @@ public class InsertedTag extends Tag
     {
     	return this.des ;
     } 
+    
+    public void addOwners (BkChanYeLianTreeNode newowner)
+    {
+    	this.owners.add(newowner);
+    }
+    public Set<BkChanYeLianTreeNode> getOwners ()
+    {
+    	return this.owners;
+    }
+    public boolean checkerOwner (String checkowner)
+    {
+    	for(BkChanYeLianTreeNode node : this.owners) {
+    		String ownername = node.getMyOwnCode();
+    		String ownercode = node.getMyOwnCode();
+    		
+    		if(ownername.equals(checkowner) || ownercode.equals(checkowner) )
+    			return true;
+    	}
+    	
+    	return false;
+    }
     
 }
