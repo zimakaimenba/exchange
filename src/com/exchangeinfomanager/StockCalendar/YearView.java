@@ -4,9 +4,9 @@ import javax.swing.*;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.guifactory.JLabelFactory;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 
 import java.awt.*;

@@ -28,8 +28,8 @@ import javax.swing.border.LineBorder;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
@@ -44,6 +44,7 @@ public class LabelTag extends JPanel
 	public static final String PROPERTYCHANGEDASCOMBINE = "PROPERTYCHANGED_AS_COMBINED";
 	public static final String PROPERTYCHANGEDASSEARCH = "SEARCH_ON_INTERNET";
 	public static final String PROPERTYCHANGEDBUNCHADD = "PI_LIANG_TIAN_JIA";
+	public static final String PROPERTYCHANGEDRELATEDNODES = "RELATED_NODES";
 	
 	private Color tagcolor;
 //	private static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
@@ -151,6 +152,13 @@ public class LabelTag extends JPanel
 	            pcs.firePropertyChange(evtzd);
 			}
 		});
+		menuItemrelatednodes.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDRELATEDNODES , "", "RELATEDNODES"  );
+	            pcs.firePropertyChange(evtzd);
+			}
+		});
 		
 		
 	}
@@ -165,6 +173,7 @@ public class LabelTag extends JPanel
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	private JMenuItem menuItemSearchOnNet;
 	private JMenuItem menuItemaddexpress;
+	private JMenuItem menuItemrelatednodes;
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
@@ -179,16 +188,18 @@ public class LabelTag extends JPanel
 			menuItemEdit = new JMenuItem("修改");
 			menuItemDel = new JMenuItem("删除");
 			menuItemCombined = new JMenuItem("合并");
-			menuItemAdd = new JMenuItem("新增");
 			menuItemSearchOnNet = new JMenuItem("Google");
-			menuItemaddexpress = new JMenuItem("批量添加"); 
-			
+			menuItemrelatednodes = new JMenuItem("关联信息");
+			menuItemaddexpress = new JMenuItem("批量添加");
+			menuItemAdd = new JMenuItem("新增");
+			 
 			Pmenu.add(menuItemEdit);
 			Pmenu.add(menuItemDel);
 			Pmenu.add(menuItemCombined);
-			Pmenu.add(menuItemAdd);
 			Pmenu.add(menuItemSearchOnNet);
+			Pmenu.add(menuItemrelatednodes);
 			Pmenu.add(menuItemaddexpress);
+			Pmenu.add(menuItemAdd);
 	 }
 	
 	private class ChangeKeyWordsPanelController extends MouseAdapter 

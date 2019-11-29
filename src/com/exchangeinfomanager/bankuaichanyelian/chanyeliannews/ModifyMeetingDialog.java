@@ -2,6 +2,9 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import javax.swing.*;
 
+import com.exchangeinfomanager.guifactory.JLabelFactory;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;

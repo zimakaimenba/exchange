@@ -8,8 +8,8 @@ import java.sql.SQLException;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
+import com.exchangeinfomanager.guifactory.JLabelFactory;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.labelmanagement.TagService;
 
 

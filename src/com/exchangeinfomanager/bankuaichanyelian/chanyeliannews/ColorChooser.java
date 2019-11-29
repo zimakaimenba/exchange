@@ -6,6 +6,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;

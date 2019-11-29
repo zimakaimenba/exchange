@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
+package com.exchangeinfomanager.guifactory;
 
 
 

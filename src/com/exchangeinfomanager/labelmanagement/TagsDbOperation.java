@@ -7,8 +7,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
@@ -18,16 +22,20 @@ import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
+import com.google.common.base.Joiner;
 import com.mysql.jdbc.MysqlDataTruncation;
 import com.sun.rowset.CachedRowSetImpl;
 
 public class TagsDbOperation 
 {
 	private ConnectDataBase connectdb;
+	private AllCurrentTdxBKAndStoksTree bkstk;
 
 	public TagsDbOperation() 
 	{
 		connectdb = ConnectDataBase.getInstance();
+		this.bkstk = AllCurrentTdxBKAndStoksTree.getInstance();
 	}
 	private InsertedTag checkTagExistInSystem (String tagname)
 	{
@@ -138,7 +146,7 @@ public class TagsDbOperation
 	 * 
 	 */
 	
-	public Collection<Tag> getNodesTagsFromDataBase(Set<BkChanYeLianTreeNode> nodesets) throws SQLException 
+	public Collection<Tag> getNodesTagsFromDataBase(Collection<BkChanYeLianTreeNode> nodesets) throws SQLException 
 	{
         Collection<Tag> labels = new HashSet<>();
         
@@ -210,7 +218,7 @@ public class TagsDbOperation
 	/*
 	 * 
 	 */
-	public Tag attachedTagToNodes(Set<BkChanYeLianTreeNode> nodesets, Tag label)
+	public Tag attachedTagToNodes(Collection<BkChanYeLianTreeNode> nodesets, Tag label)
 	{
 		for(BkChanYeLianTreeNode tmpnode : nodesets)
 			this.attachedTagToNode(tmpnode, label);
@@ -312,7 +320,7 @@ public class TagsDbOperation
 	}
 
 	
-	public void unattachedTagsFromNodes(Set<BkChanYeLianTreeNode> nodesets, Collection<Tag> label) 
+	public void unattachedTagsFromNodes(Collection<BkChanYeLianTreeNode> nodesets, Collection<Tag> label) 
 	{
 		for ( Iterator<BkChanYeLianTreeNode> it = nodesets.iterator(); it.hasNext(); ) {
 			BkChanYeLianTreeNode f = it.next();
@@ -516,18 +524,20 @@ public class TagsDbOperation
 	    }
 	}
 
-	public Map<String,Integer>  getNodesSetOfSpecificTag(String tagname) 
+	public Collection<BkChanYeLianTreeNode>  getNodesSetWithAllSpecificTags(Collection<Tag> tagnames) 
 	{
-		InsertedTag checkresult = this.checkTagExistInSystem (tagname);
-		if(checkresult == null)
-			return null;
+//		InsertedTag checkresult = this.checkTagExistInSystem (tagname);
+//		if(checkresult == null)
+//			return null;
 		
-		Map<String, Integer> nodecodeset = new HashMap <> ();
+		Collection<BkChanYeLianTreeNode> nodecodeset = new ArrayList <> ();
 		CachedRowSetImpl result = null;
 		try {
-			Integer id = checkresult.getID();
+			String join = Joiner.on("','").skipNulls().join(tagnames);
+			
+			
 			String sql = "SELECT * FROM 产业链板块国个股板块对应表 \r\n" + 
-					 " WHERE ( 板块国ID = " +  id + ")\r\n" + 
+					 " WHERE ( 板块国ID = " + ")\r\n" + 
 					 " GROUP BY 产业链板块国个股板块对应表.`个股板块`"
 					;
 			
@@ -535,7 +545,8 @@ public class TagsDbOperation
 			while (result.next()) {
 			     String nodecode = result.getString("个股板块");	
 			     Integer nodetype = result.getInt ("个股板块类型");
-			     nodecodeset.put (nodecode, nodetype);
+			     BkChanYeLianTreeNode node = bkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, nodetype);
+			     nodecodeset.add (node);
 			}
 			 
 		}catch(java.lang.NullPointerException e){ 
@@ -550,6 +561,91 @@ public class TagsDbOperation
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+		}
+		
+		return nodecodeset;
+	}
+	public Collection<BkChanYeLianTreeNode> getNodesSetWithAllSpecificTags(String tagnames) 
+	{
+//		String join = Joiner.on("','").skipNulls().join(tagnames);
+//		Joiner.on(" ").skipNulls().join(tagnames);
+		Collection<BkChanYeLianTreeNode> nodecodeset = new ArrayList <> ();
+		CachedRowSetImpl result = null;
+		try {
+			String newtagnames = tagnames.trim().replaceAll(" +", " ").replaceAll("\\s", "' , '");
+			int count = StringUtils.countMatches(newtagnames, ",") + 1;
+			String sql = " SELECT dy.`个股板块`, COUNT(*) AS count , dy.`个股板块类型`, lb.`板块国名称`  AS tagname, dy.`板块国ID` AS tagid FROM 产业链板块国个股板块对应表 AS dy\r\n" + 
+					"INNER  JOIN 产业链板块国列表 AS lb\r\n" + 
+					"ON lb.id = dy.`板块国ID`\r\n" + 
+					" WHERE lb.`板块国名称` IN ('" + newtagnames + "')\r\n" + 
+					" GROUP BY dy.`个股板块` \r\n" + 
+					" HAVING count=" + count
+					;
+			result = connectdb.sqlQueryStatExecute(sql);
+			while (result.next()) {
+			     String nodecode = result.getString("个股板块");	
+			     Integer nodetype = result.getInt ("个股板块类型");
+			     BkChanYeLianTreeNode node = bkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, nodetype);
+			     nodecodeset.add (node);
+			}
+			 
+		}catch(java.lang.NullPointerException e){ 
+				e.printStackTrace();
+		} catch(Exception e){
+				e.printStackTrace();
+		}  finally {
+				try {
+					result.close();
+					result = null;
+					
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		
+		return nodecodeset;
+	}
+	
+	public Collection<BkChanYeLianTreeNode> getNodesSetWithOneOfSpecificTags (String tagnames)
+	{
+		Collection<BkChanYeLianTreeNode> nodecodeset = new ArrayList <> ();
+		CachedRowSetImpl result = null;
+		try {
+//			String newtagnames = tagnames.trim().replaceAll(" +", " ").replaceAll("\\s","' OR 产业链板块国列表.`板块国名称`  = '").trim();
+//			newtagnames = "产业链板块国列表.`板块国名称`  = '" + newtagnames + "'";
+//			
+//			String sql = "SELECT * FROM 产业链板块国个股板块对应表 \r\n" + 
+//						"LEFT JOIN 产业链板块国列表\r\n" + 
+//						"ON 产业链板块国列表.id = 产业链板块国个股板块对应表.`板块国ID`\r\n" + 
+//						"WHERE " + newtagnames + "\r\n" + 
+//						"GROUP BY 产业链板块国个股板块对应表.`个股板块` "
+//						;
+			String newtagnames = tagnames.trim().replaceAll(" +", " ").replaceAll("\\s", "' , '");
+			String sql = "SELECT * FROM 产业链板块国个股板块对应表 \r\n" + 
+						"LEFT JOIN 产业链板块国列表\r\n" + 
+						"ON 产业链板块国列表.id = 产业链板块国个股板块对应表.`板块国ID`\r\n" + 
+						"WHERE  产业链板块国列表.`板块国名称`  IN ('" + newtagnames + "')\r\n" + 
+						"GROUP BY 产业链板块国个股板块对应表.`个股板块`"
+						;
+			result = connectdb.sqlQueryStatExecute(sql);
+			while (result.next()) {
+			     String nodecode = result.getString("个股板块");	
+			     Integer nodetype = result.getInt ("个股板块类型");
+			     BkChanYeLianTreeNode node = bkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecode, nodetype);
+			     nodecodeset.add (node);
+			}
+			
+		}catch(java.lang.NullPointerException e){ 
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		}  finally {
+			try {
+				result.close();
+				result = null;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return nodecodeset;

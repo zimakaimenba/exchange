@@ -3,6 +3,10 @@ package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
 
 import javax.swing.*;
 
+import com.exchangeinfomanager.guifactory.JLabelFactory;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
+import com.exchangeinfomanager.guifactory.JTextFactory;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

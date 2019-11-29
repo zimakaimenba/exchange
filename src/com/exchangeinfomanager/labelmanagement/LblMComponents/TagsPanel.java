@@ -48,6 +48,8 @@ import com.exchangeinfomanager.labelmanagement.Tag.CreateTagDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.ModifyTagDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.labelmanagement.TagSearch.JDialogForTagSearchMatrixPanelForWholeSearchTags;
+import com.exchangeinfomanager.labelmanagement.TagSearch.TagSearchMatrixPanelForWholeSearchTags;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.google.common.base.Charsets;
@@ -171,7 +173,7 @@ public class TagsPanel extends JPanel implements TagCacheListener
 
 	private JUpdatedTextField tfldsearchkw;
 
-	private JButton btnkaddtocur;
+//	private JButton btnkaddtocur;
 
 	private JMenuItem menuItemAddToCur;
 	private JPopupMenu selfMenu;
@@ -283,17 +285,18 @@ public class TagsPanel extends JPanel implements TagCacheListener
             		combinMenuAction ();
             	} else
             	if(evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDASSEARCH)) {
-                		searchMenuAction ();
+                		searchInternetMenuAction ();
                 } else
             	if(evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDBUNCHADD)) {
             		bundleAddMenuAction();
-            	}
+            	} else
+            	if(evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDRELATEDNODES)) {
+                	displayRelatedNodes();
+                }
             }
-
-			
 	}
 	 
-	private void searchMenuAction() 
+	private void searchInternetMenuAction() 
 	{
 		Collection<Tag> seltlb = this.cache.produceSelectedTags();
 		String googlesearchquery = "https://www.google.com/search?q=%22" ;
@@ -340,6 +343,15 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	       }
 	      return;
 			
+	}
+	public void displayRelatedNodes() 
+	{
+		JDialogForTagSearchMatrixPanelForWholeSearchTags pnlsearchtags = new JDialogForTagSearchMatrixPanelForWholeSearchTags();
+		
+		pnlsearchtags.setPreSearchMustHaveTags (cache.produceSelectedTags());
+		pnlsearchtags.setModal(true);
+		pnlsearchtags.setVisible(true);
+		
 	}
 	private void bundleAddMenuAction ()
 	{

@@ -3,8 +3,8 @@ package com.exchangeinfomanager.labelmanagement.Tag;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
+import com.exchangeinfomanager.guifactory.JLabelFactory;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.labelmanagement.TagService;
 
 import java.awt.*;

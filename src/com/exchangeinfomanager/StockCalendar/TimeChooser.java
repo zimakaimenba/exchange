@@ -4,7 +4,7 @@ package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
+import com.exchangeinfomanager.guifactory.JLabelFactory;
 
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;

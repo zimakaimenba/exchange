@@ -21,6 +21,8 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -51,14 +53,13 @@ import javax.swing.tree.TreePath;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
-
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.labelmanagement.DBSystemTagsService;
 import com.exchangeinfomanager.labelmanagement.TagCache;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
@@ -76,6 +77,9 @@ import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import java.awt.FlowLayout;
 
 public class BanKuaiAndChanYeLianGUI  extends JPanel 
@@ -298,8 +302,45 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	/*
 	 * 
 	 */
+	private void showSelectedBanKuaiGeGu (int row)
+	{
+		int modelRow = tablebankuai.convertRowIndexToModel(row);
+		BkChanYeLianTreeNode selectednode =  ((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).getNode(modelRow);
+		BanKuai selectedbankuai = (BanKuai) bkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selectednode.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
+		selectedbankuai = bkopt.getTDXBanKuaiGeGuOfHyGnFg (selectedbankuai,CommonUtility.getSettingRangeDate(LocalDate.now(),"large"), LocalDate.now(),bkstk.getAllBkStocksTree());
+		
+		List<BkChanYeLianTreeNode> allbkgg = selectedbankuai.getAllGeGuOfBanKuaiInHistory();
+		List<BkChanYeLianTreeNode> cylgg = new ArrayList<> ();
+		if(allbkgg != null)
+			for(BkChanYeLianTreeNode childnode : allbkgg) 
+				cylgg.add( new CylTreeNestedSetNode (childnode.getMyOwnCode(), childnode.getMyOwnName(), BkChanYeLianTreeNode.TDXGG ) );
+		((BkChanYeLianTreeNodeListTableModel)tablebkgegu.getModel()).refresh(cylgg);
+
+	}
+	/*
+	 * 
+	 */
 	private void createEvents() 
 	{
+		tablebankuai.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+	        public void valueChanged(ListSelectionEvent event) {
+	            // do some actions here, for example
+	            // print first column value from selected row
+	        	showSelectedBanKuaiGeGu (tablebankuai.getSelectedRow()  );
+//	            System.out.println(tablebankuai.getValueAt(tablebankuai.getSelectedRow(), 0).toString());
+	        }
+	    });
+		
+		tfldfindgegu.addKeyListener(new KeyAdapter() {
+			
+			public void keyPressed(KeyEvent  evt)
+			{
+				if(evt.getKeyCode() == KeyEvent.VK_ENTER)	{
+					String searchcode = tfldfindgegu.getText();
+					findNodeInTables (searchcode);
+				}
+			}
+		});
 		pnllblsysmanagement.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
@@ -350,18 +391,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 				setCursor(hourglassCursor);
 				
-				int modelRow = tablebankuai.convertRowIndexToModel(row);
-				BkChanYeLianTreeNode selectednode =  ((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).getNode(modelRow);
-				BanKuai selectedbankuai = (BanKuai) bkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selectednode.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
-				selectedbankuai = bkopt.getTDXBanKuaiGeGuOfHyGnFg (selectedbankuai,CommonUtility.getSettingRangeDate(LocalDate.now(),"large"), LocalDate.now(),bkstk.getAllBkStocksTree());
-				
-				List<BkChanYeLianTreeNode> allbkgg = selectedbankuai.getAllGeGuOfBanKuaiInHistory();
-				List<BkChanYeLianTreeNode> cylgg = new ArrayList<> ();
-				if(allbkgg != null)
-					for(BkChanYeLianTreeNode childnode : allbkgg) 
-						cylgg.add( new CylTreeNestedSetNode (childnode.getMyOwnCode(), childnode.getMyOwnName(), BkChanYeLianTreeNode.TDXGG ) );
-				((BkChanYeLianTreeNodeListTableModel)tablebkgegu.getModel()).refresh(cylgg);
-				
+				showSelectedBanKuaiGeGu (row);
+								
 				hourglassCursor = null;
 				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 				setCursor(hourglassCursor2);
@@ -728,38 +759,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		};
 		scrollPane52.setViewportView(tablebkgegu);
 		
-		
-		
-		
-
-//		BkChanYeLianTreeNodeListTableModel subcylmode = new BkChanYeLianTreeNodeListTableModel ();
-//		tablesubcyl = new JTable(subcylmode)
-//		{
-//			private static final long serialVersionUID = 1L;
-//			
-//			public String getToolTipText(MouseEvent e) 
-//			{
-//                String tip = null;
-//                java.awt.Point p = e.getPoint();
-//                int rowIndex = rowAtPoint(p);
-//                int colIndex = columnAtPoint(p);
-//
-//                try {
-//                    tip = getValueAt(rowIndex, colIndex).toString();
-//                } catch (RuntimeException e1) {
-//                	e1.printStackTrace();
-//                }
-//                return tip;
-//            } 
-//		};
-//		scllPnsubcyl41.setViewportView(tablesubcyl);
-		
-		
-		
-				
-		
-		
-		
 		JPanel pnldown = new JPanel();
 		add(pnldown, BorderLayout.SOUTH);
 		
@@ -806,263 +805,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	}
 	
 	
-//	private void initializeGui2() 
-//	{
-//		
-//		JPanel panelcyltree = new JPanel();
-//		GroupLayout groupLayout = new GroupLayout(this);
-//		groupLayout.setHorizontalGroup(
-//			groupLayout.createParallelGroup(Alignment.LEADING)
-//				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-//					.addGap(103)
-//					.addComponent(panelcyltree, 0, 0, Short.MAX_VALUE)
-//					.addGap(38))
-//		);
-//		groupLayout.setVerticalGroup(
-//			groupLayout.createParallelGroup(Alignment.LEADING)
-//				.addGroup(groupLayout.createSequentialGroup()
-//					.addContainerGap()
-//					.addComponent(panelcyltree, GroupLayout.PREFERRED_SIZE, 659, GroupLayout.PREFERRED_SIZE)
-//					.addContainerGap(269, Short.MAX_VALUE))
-//		);
-//		
-//		addSubnodeButton = new SubnodeButton();
-//		addSubnodeButton.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
-//		
-//		addGeGuButton = new SubnodeButton();
-//		addGeGuButton.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
-//		
-//		btnAddSubBk = new JButton("\u589E\u52A0\u5B50\u677F\u5757");
-//		JScrollPane scrollPanesubbk = new JScrollPane();
-//		
-//		scrollPanegegu = new JScrollPane();
-//		
-//		deleteButton = new JButton("\u5220\u9664\u8282\u70B9");
-//		deleteButton.setIcon(null);
-//		
-//		tfldfindbk = new JUpdatedTextField();
-//		tfldfindbk.setColumns(10);
-//		
-//		btnfindbk = new JButton("\u5B9A\u4F4D\u677F\u5757");
-//		
-//		tfldfindgegu = new JUpdatedTextField();
-//		tfldfindgegu.setColumns(10);
-//		
-//		btnfindgegu = new JButton("\u5B9A\u4F4D\u4E2A\u80A1");
-//		
-//		btnopencylxml = new JButton("\u6253\u5F00XML");
-//		
-//		
-//		btnSaveAll = new JButton("\u4FDD\u5B58");
-//		btnSaveAll.setForeground(Color.RED);
-//		
-//		btnadddalei = new JButton("\u589E\u52A0\u80A1\u7968\u6C60");
-//		btnadddalei.setEnabled(false);
-//		
-//		btndeldalei = new JButton("\u5220\u9664\u80A1\u7968\u6C60");
-//		btndeldalei.setEnabled(false);
-//		
-//		btnGenTDXCode = new JButton("\u751F\u6210TDX\u4EE3\u7801");
-//		
-//		treeScrollPane = new JScrollPane();
-//		
-////		treeScrollPane.setViewportView(treechanyelian);
-//		treeScrollPane.grabFocus();
-//		treeScrollPane.getVerticalScrollBar().setValue(0);
-//		
-//		
-//		GroupLayout gl_panelcyltree = new GroupLayout(panelcyltree);
-//		gl_panelcyltree.setHorizontalGroup(
-//			gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//				.addGroup(gl_panelcyltree.createSequentialGroup()
-//					.addContainerGap()
-//					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING, false)
-//						.addGroup(gl_panelcyltree.createSequentialGroup()
-//							.addComponent(deleteButton)
-//							.addPreferredGap(ComponentPlacement.RELATED)
-//							.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//							.addPreferredGap(ComponentPlacement.RELATED)
-//							.addComponent(btnfindbk))
-//						.addGroup(gl_panelcyltree.createSequentialGroup()
-//							.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING, false)
-//								.addGroup(gl_panelcyltree.createSequentialGroup()
-//									.addComponent(btnadddalei)
-//									.addPreferredGap(ComponentPlacement.UNRELATED)
-//									.addComponent(btndeldalei))
-//								.addComponent(treeScrollPane))
-//							.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//								.addGroup(gl_panelcyltree.createSequentialGroup()
-//									.addPreferredGap(ComponentPlacement.RELATED)
-//									.addComponent(addGeGuButton, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
-//								.addGroup(gl_panelcyltree.createSequentialGroup()
-//									.addGap(18)
-//									.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//										.addComponent(addSubnodeButton, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
-//										.addGroup(gl_panelcyltree.createSequentialGroup()
-//											.addComponent(btnSaveAll)
-//											.addPreferredGap(ComponentPlacement.UNRELATED)
-//											.addComponent(btnAddSubBk)))))))
-//					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//						.addGroup(gl_panelcyltree.createSequentialGroup()
-//							.addGap(137)
-//							.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//								.addGroup(gl_panelcyltree.createSequentialGroup()
-//									.addComponent(tfldfindgegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//									.addPreferredGap(ComponentPlacement.RELATED)
-//									.addComponent(btnfindgegu))
-//								.addComponent(scrollPanegegu, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE)
-//								.addComponent(scrollPanesubbk, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE)))
-//						.addGroup(gl_panelcyltree.createSequentialGroup()
-//							.addPreferredGap(ComponentPlacement.RELATED)
-//							.addComponent(btnGenTDXCode)
-//							.addPreferredGap(ComponentPlacement.UNRELATED)
-//							.addComponent(btnopencylxml)))
-//					.addContainerGap(11, Short.MAX_VALUE))
-//		);
-//		gl_panelcyltree.setVerticalGroup(
-//			gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//				.addGroup(gl_panelcyltree.createSequentialGroup()
-//					.addContainerGap()
-//					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
-//						.addComponent(btnadddalei)
-//						.addComponent(btndeldalei)
-//						.addComponent(btnSaveAll)
-//						.addComponent(btnAddSubBk)
-//						.addComponent(btnGenTDXCode)
-//						.addComponent(btnopencylxml, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-//					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//						.addGroup(gl_panelcyltree.createSequentialGroup()
-//							.addGap(29)
-//							.addComponent(addSubnodeButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//							.addPreferredGap(ComponentPlacement.RELATED, 239, Short.MAX_VALUE)
-//							.addComponent(addGeGuButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//							.addGap(91))
-//						.addGroup(gl_panelcyltree.createSequentialGroup()
-//							.addPreferredGap(ComponentPlacement.RELATED)
-//							.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//								.addComponent(treeScrollPane, GroupLayout.PREFERRED_SIZE, 413, GroupLayout.PREFERRED_SIZE)
-//								.addGroup(gl_panelcyltree.createSequentialGroup()
-//									.addComponent(scrollPanesubbk, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-//									.addPreferredGap(ComponentPlacement.RELATED)
-//									.addComponent(scrollPanegegu, 0, 0, Short.MAX_VALUE)))
-//							.addPreferredGap(ComponentPlacement.RELATED)))
-//					.addGroup(gl_panelcyltree.createParallelGroup(Alignment.TRAILING)
-//						.addGroup(gl_panelcyltree.createParallelGroup(Alignment.LEADING)
-//							.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
-//								.addComponent(tfldfindbk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//								.addComponent(btnfindbk))
-//							.addGroup(gl_panelcyltree.createParallelGroup(Alignment.BASELINE)
-//								.addComponent(tfldfindgegu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//								.addComponent(btnfindgegu)))
-//						.addComponent(deleteButton, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE))
-//					.addGap(13))
-//		);
-//		
-//		BkChanYeLianTreeNodeListTableModel subcylmode = new BkChanYeLianTreeNodeListTableModel ();
-//		tablesubcyl = new JTable(subcylmode)
-//		{
-//			private static final long serialVersionUID = 1L;
-//			
-//			public String getToolTipText(MouseEvent e) 
-//			{
-//                String tip = null;
-//                java.awt.Point p = e.getPoint();
-//                int rowIndex = rowAtPoint(p);
-//                int colIndex = columnAtPoint(p);
-//
-//                try {
-//                    tip = getValueAt(rowIndex, colIndex).toString();
-//                } catch (RuntimeException e1) {
-//                	e1.printStackTrace();
-//                }
-//                return tip;
-//            } 
-//		};
-//		scrollPanesubbk.setViewportView(tablesubcyl);
-//		
-//		
-//		BkChanYeLianTreeNodeListTableModel bkstmodel = new BkChanYeLianTreeNodeListTableModel ();
-//		tablebkgegu = new  JTable(bkstmodel)
-//		{
-//			private static final long serialVersionUID = 1L;
-//			
-//			public String getToolTipText(MouseEvent e) 
-//			{
-//                String tip = null;
-//                java.awt.Point p = e.getPoint();
-//                int rowIndex = rowAtPoint(p);
-//                int colIndex = columnAtPoint(p);
-//
-//                try {
-//                    tip = getValueAt(rowIndex, colIndex).toString();
-//                } catch (RuntimeException e1) {
-//                	e1.printStackTrace();
-//                }
-//                return tip;
-//            } 
-//		};
-//		scrollPanegegu.setViewportView(tablebkgegu);
-//		
-//		
-//		//个股table也可以加个股新闻
-//		JPopupMenu popupMenuGeguNews = new JPopupMenu();
-//		JMenuItem menuItemAddNews = new JMenuItem("添加个股新闻");
-//		JMenuItem menuItemMakeLongTou = new JMenuItem("设置股票权重");
-//		popupMenuGeguNews.add(menuItemAddNews);
-//		popupMenuGeguNews.add(menuItemMakeLongTou);
-//		tablebkgegu.setComponentPopupMenu(popupMenuGeguNews);
-//		menuItemAddNews.addActionListener(new ActionListener() {
-//			@Override
-//
-//			public void actionPerformed(ActionEvent evt) {
-//
-//				addGeGuNews ();
-//			}
-//			
-//		});
-//		menuItemMakeLongTou.setComponentPopupMenu(popupMenuGeguNews);
-//		menuItemMakeLongTou.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent evt) {
-//				setGeGuWeightInBanKuai ();
-//			}
-//			
-//		});
-//
-//		panelcyltree.setLayout(gl_panelcyltree);
-		
-		//ZdgzBanKuaiDetailXmlTableModel xmlaccountsmodel = new ZdgzBanKuaiDetailXmlTableModel( );
-		//tableZdgzBankDetails = new  JTable(xmlaccountsmodel)
-//		CurZdgzBanKuaiTableModel curzdgzbkmodel = new CurZdgzBanKuaiTableModel ();
-//		int preferedwidth = 170;
-//		
-//		
-//		
-//		CurZdgzBanKuaiTableModel curzdgzbkmodel = new CurZdgzBanKuaiTableModel (); 
-//		tableCurZdgzbk = new  JTable(curzdgzbkmodel) {
-//		ZdgzBanKuaiDetailXmlTableModel xmlaccountsmodel = new ZdgzBanKuaiDetailXmlTableModel( );
-//		setLayout(groupLayout);
-//		
-//		
-//		
-//		java.util.ArrayList<java.awt.Image> imageList = new java.util.ArrayList<java.awt.Image>();
-//        imageList.add(new javax.swing.ImageIcon(getClass().getResource("/images/ginkgo16.png")).getImage());
-//        imageList.add(new javax.swing.ImageIcon(getClass().getResource("/images/ginkgo18.png")).getImage());
-//        imageList.add(new javax.swing.ImageIcon(getClass().getResource("/images/ginkgo20.png")).getImage());
-//        imageList.add(new javax.swing.ImageIcon(getClass().getResource("/images/ginkgo24.png")).getImage());
-//        imageList.add(new javax.swing.ImageIcon(getClass().getResource("/images/ginkgo32.png")).getImage());
-//        imageList.add(new javax.swing.ImageIcon(getClass().getResource("/images/ginkgo36.png")).getImage());
-//        
-//        //setIconImages(imageList);
-//        addBelowIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeBelow24.png"));
-//        addAboveIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeAbove24.png"));
-//        addSubnodeIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnode24.png"));
-//        addChildIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeChild24.png"));
-//        
-//        //tree 的弹出菜单
-////        popupMenu = new BanKuaiPopUpMenu(this.stockInfoManager,treechanyelian);
-////		addPopup(treechanyelian, popupMenu);
-//	}
-
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {

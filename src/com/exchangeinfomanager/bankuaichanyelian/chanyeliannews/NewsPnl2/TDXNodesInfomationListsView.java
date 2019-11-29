@@ -7,24 +7,23 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.sql.SQLException;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
-import javax.swing.BorderFactory;
+import java.util.Optional;
+
+
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
+
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.AbstractTableModel;
@@ -32,16 +31,18 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.exchangeinfomanager.StockCalendar.AddNewsToSameTagsNodes;
-import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
+
+
 import com.exchangeinfomanager.StockCalendar.View;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
+
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
+
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
+
+import com.exchangeinfomanager.labelmanagement.TagSearch.JDialogForTagSearchMatrixPanelForAddNewsToNode;
+
 
 public class TDXNodesInfomationListsView extends View
 {
@@ -61,7 +62,7 @@ public class TDXNodesInfomationListsView extends View
 		initializeGui (tablemodle);
 		createEvents ();
 		
-		AddNewsToSameTagsNodes addkwtoothernode = new AddNewsToSameTagsNodes (cache);
+		JDialogForTagSearchMatrixPanelForAddNewsToNode addkwtoothernode = new JDialogForTagSearchMatrixPanelForAddNewsToNode (cache);
 		
         this.onMeetingChange(cache);
 	}

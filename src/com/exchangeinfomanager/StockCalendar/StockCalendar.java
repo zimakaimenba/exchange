@@ -4,11 +4,12 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JLabelFactory;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.guifactory.JLabelFactory;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
+import com.exchangeinfomanager.labelmanagement.TagSearch.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
@@ -78,7 +79,7 @@ public class StockCalendar extends JCalendar
         this.wholemonthview = new WholeMonthNewsView (eventDbService, cache);
         
         //有新的新闻，加到同关键字的节点上
-        AddNewsToSameTagsNodes addkwtoothernode = new AddNewsToSameTagsNodes (cache);
+        JDialogForTagSearchMatrixPanelForAddNewsToNode addkwtoothernode = new JDialogForTagSearchMatrixPanelForAddNewsToNode (cache);
 
 	    this.initHeaderPanel(); //
 	    this.initViewDeck();

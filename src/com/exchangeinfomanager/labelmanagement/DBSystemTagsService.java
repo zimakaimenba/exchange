@@ -2,9 +2,12 @@ package com.exchangeinfomanager.labelmanagement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
 public class DBSystemTagsService implements TagService  
@@ -20,8 +23,6 @@ public class DBSystemTagsService implements TagService
 		dboptforsys = new TagsDbOperation ();
 		dboptfornode = new TagsDbOperation ();
 		dboptfornews = new TagsNewsDbOperation ();
-		
-		
 	}
 
 	@Override
@@ -67,6 +68,11 @@ public class DBSystemTagsService implements TagService
 	{
 		this.dboptforsys.updateSystemTags (label);
 		cache.updateTag (label);
+	}
+	@Override
+	public void updateTags(Collection<Tag> label) throws SQLException 
+	{
+		// TODO Auto-generated method stub
 		
 	}
 
@@ -87,17 +93,34 @@ public class DBSystemTagsService implements TagService
 		// TODO Auto-generated method stub
 		
 	}
-	public   Map<String, Integer> getNodesSetOfSpecificTag (String tagname)
+	public   Collection<BkChanYeLianTreeNode> getNodesSetWithAllSpecificTags (String tagname)
 	{
-		 Map<String, Integer> nodesetfortagname = this.dboptforsys.getNodesSetOfSpecificTag (tagname);
+		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithAllSpecificTags (tagname);
 		 return nodesetfortagname;
 	}
-
-	@Override
-	public void updateTags(Collection<Tag> label) throws SQLException {
-		// TODO Auto-generated method stub
-		
+	public   Collection<BkChanYeLianTreeNode> getNodesSetWithAllSpecificTags (Collection<Tag> tags)
+	{
+		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithAllSpecificTags (tags);
+		 return nodesetfortagname;
 	}
+	public   Collection<BkChanYeLianTreeNode> getNodesSetWithOneOfSpecificTags (String tagname)
+	{
+		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithOneOfSpecificTags (tagname);
+		 return nodesetfortagname;
+	}
+//	public   Collection<BkChanYeLianTreeNode> getNodesSetWithOneOfSpecificTags (Collection<Tag> tags)
+//	{
+//		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithOneOfSpecificTags (tags);
+//		 return nodesetfortagname;
+//	}
+
+	public Collection<InsertedMeeting> getNewsSetWithAllSpecificTags(String tagname)
+	{
+		Collection<InsertedMeeting> newsset = dboptfornews.getNewsSetWithAllSpecificTags (tagname);
+		return newsset;
+	}
+
+
 
 
 }

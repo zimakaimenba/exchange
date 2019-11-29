@@ -30,12 +30,12 @@ import javax.swing.border.EmptyBorder;
 
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JPanelFactory;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.JTextFactory;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
+import com.exchangeinfomanager.guifactory.JTextFactory;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelTag;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;

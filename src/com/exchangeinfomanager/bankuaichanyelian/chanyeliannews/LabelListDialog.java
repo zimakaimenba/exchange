@@ -19,6 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
+import com.exchangeinfomanager.guifactory.JLabelFactory;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
 
 public class LabelListDialog<T extends Meeting> extends JDialog 
 {

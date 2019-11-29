@@ -4,11 +4,11 @@ package com.exchangeinfomanager.StockCalendar;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DialogFactory;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
+import com.exchangeinfomanager.guifactory.DialogFactory;
 import com.toedter.calendar.JDayChooser;
 
 

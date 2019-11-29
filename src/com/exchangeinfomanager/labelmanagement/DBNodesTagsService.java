@@ -2,6 +2,7 @@ package com.exchangeinfomanager.labelmanagement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -19,15 +20,24 @@ public class DBNodesTagsService implements TagService
 	private TagsDbOperation dbforsys;
 	
 	private TagCache cache;
-	private Set<BkChanYeLianTreeNode> nodesets;
+	private Collection<BkChanYeLianTreeNode> nodesets;
 	
 
-	public DBNodesTagsService (Set<BkChanYeLianTreeNode> nodeset)
+	public DBNodesTagsService (Collection<BkChanYeLianTreeNode> nodeset)
 	{
 		dboptfornode = new TagsDbOperation (); 
 		dbforsys = new TagsDbOperation ();
 		dbfornews = new TagsNewsDbOperation ();
 		this.nodesets = nodeset;
+	}
+	public DBNodesTagsService (BkChanYeLianTreeNode nodeset)
+	{
+		dboptfornode = new TagsDbOperation (); 
+		dbforsys = new TagsDbOperation ();
+		dbfornews = new TagsNewsDbOperation ();
+		
+		this.nodesets = new HashSet<> ();
+		this.nodesets.add( nodeset);
 	}
 	@Override
 	public void setCache(TagCache cache) 
@@ -39,6 +49,7 @@ public class DBNodesTagsService implements TagService
 	public void setDbOptNodesSet (Set<BkChanYeLianTreeNode> nodesets)
 	{
 		this.nodesets = nodesets;
+		this.cache.clearAllTags();
 	}
 	@Override
 	public Collection<Tag> getTags() throws SQLException 
