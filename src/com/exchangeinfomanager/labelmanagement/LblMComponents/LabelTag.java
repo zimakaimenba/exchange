@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
@@ -198,7 +199,9 @@ public class LabelTag extends JPanel
 			Pmenu.add(menuItemCombined);
 			Pmenu.add(menuItemSearchOnNet);
 			Pmenu.add(menuItemrelatednodes);
+			Pmenu.add(new JSeparator ());
 			Pmenu.add(menuItemaddexpress);
+			Pmenu.add(new JSeparator ());
 			Pmenu.add(menuItemAdd);
 	 }
 	

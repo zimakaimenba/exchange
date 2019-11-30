@@ -31,8 +31,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
+import com.exchangeinfomanager.ServicesForNodes.SvsForNodeOfFileNodes;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetBanKuaisProcessor;
@@ -49,6 +51,7 @@ import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.ModifyTagDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.labelmanagement.TagSearch.JDialogForTagSearchMatrixPanelForWholeSearchTags;
+import com.exchangeinfomanager.labelmanagement.TagSearch.JDislogForTagSearchMatrixPanelForTagsBundleAdd;
 import com.exchangeinfomanager.labelmanagement.TagSearch.TagSearchMatrixPanelForWholeSearchTags;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
@@ -241,6 +244,8 @@ public class TagsPanel extends JPanel implements TagCacheListener
 			
 			if( this.controlmode.equals(TagsPanel.FULLCONTROLMODE ) ) {
 				Pmenu.add(menuItemAddToCur,0);
+				JSeparator sp = new JSeparator ();
+				Pmenu.add(sp,1);
 			} else if ( this.controlmode.equals(TagsPanel.PARTCONTROLMODE)  ) {
 				
 			} else {
@@ -355,66 +360,47 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	}
 	private void bundleAddMenuAction ()
 	{
-		String parsedpath = "E:\\";
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		chooser.setCurrentDirectory(new File(parsedpath) );
+//		String parsedpath = "E:\\";
+//		JFileChooser chooser = new JFileChooser();
+//		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+//		chooser.setCurrentDirectory(new File(parsedpath) );
+//		
+//		String filename;
+//		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+//		    if(chooser.getSelectedFile().isDirectory())
+//		    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+//		    else
+//		    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
+//		} else
+//			return;
+//	
+//		if(!filename.endsWith("EBK") ) { //不是板块文件
+//			JOptionPane.showMessageDialog(null,"不是通达信板块导出文件，请使用正确格式文件。","Warning",JOptionPane.WARNING_MESSAGE);
+//	   		return;
+//		}
+//		
+//		SvsForNodeOfFileNodes svsfornodefile = new SvsForNodeOfFileNodes (filename);
+//		Collection<BkChanYeLianTreeNode> addnodeset = svsfornodefile.getAllNodes();
 		
-		String filename;
-		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-		    if(chooser.getSelectedFile().isDirectory())
-		    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-		    else
-		    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
-		} else
-			return;
-	
-		if(!filename.endsWith("EBK") ) { //不是板块文件
-			JOptionPane.showMessageDialog(null,"不是通达信板块导出文件，请使用正确格式文件。","Warning",JOptionPane.WARNING_MESSAGE);
-	   		return;
-		}
+		JDislogForTagSearchMatrixPanelForTagsBundleAdd bnndladd = new JDislogForTagSearchMatrixPanelForTagsBundleAdd ();
+		bnndladd.setPreSearchMustHaveTags (this.cache.produceSelectedTags());
+		bnndladd.toFront();
+		bnndladd.setVisible(true);
+//		TagService tagserviceofbunch = new DBNodesTagsService (addnodeset);
+//		TagCache tagcacheofbuch = new TagCache (tagserviceofbunch);
+//		tagserviceofbunch.setCache(tagcacheofbuch);
+//		Collection<Tag> seltag = this.cache.produceSelectedTags();
+//		try {
+//			tagserviceofbunch.createTags (seltag);
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		tagserviceofbunch = null;
+//		tagcacheofbuch = null;
 		
-		File parsefile = new File (filename);
-		List<String> readparsefileLines = null;
-		try { //读出个股
-			readparsefileLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetStocksProcessor ());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		List<String> readparsefilegetbkLines = null;
-		try {//读出板块
-			readparsefilegetbkLines = Files.readLines(parsefile,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetBanKuaisProcessor ());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		AllCurrentTdxBKAndStoksTree allbkstk = AllCurrentTdxBKAndStoksTree.getInstance();
-		Set<BkChanYeLianTreeNode> addnodeset = new HashSet<> ();
-		for(String bkcode : readparsefilegetbkLines) {
-			BkChanYeLianTreeNode bknode = allbkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
-			if(bknode != null)
-				addnodeset.add(bknode);
-		}
-		for(String stockcode : readparsefileLines) {
-			BkChanYeLianTreeNode stocknode = allbkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG);
-			if(stocknode != null)
-				addnodeset.add(stocknode);
-		}
-		TagService tagserviceofbunch = new DBNodesTagsService (addnodeset);
-		TagCache tagcacheofbuch = new TagCache (tagserviceofbunch);
-		tagserviceofbunch.setCache(tagcacheofbuch);
-		Collection<Tag> seltag = this.cache.produceSelectedTags();
-		try {
-			tagserviceofbunch.createTags (seltag);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		tagserviceofbunch = null;
-		tagcacheofbuch = null;
-		
-		PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDBUNCHADD , "",seltag );
+		PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDBUNCHADD , "",this.cache.produceSelectedTags() );
         pcs.firePropertyChange(evtzd);
 		
 		

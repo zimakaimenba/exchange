@@ -171,7 +171,6 @@ public class BanKuaiDbOperation
 		}
 		
 		return bkbasicinfo;
-
 	}
 	/*
 	 * 

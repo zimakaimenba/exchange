@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.labelmanagement;
 
 import java.awt.Color;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -281,7 +282,7 @@ public class TagsNewsDbOperation
 		try {
 			String newtagnames = tagnames.trim().replaceAll(" +", " ").replaceAll("\\s", "' , '");
 			int count = StringUtils.countMatches(newtagnames, ",") + 1;
-			String sql = 	"SELECT dy.news_id  , COUNT(*) AS count , news.`新闻标题`,    news.`具体描述`,    news.`关键词`, lb.`板块国名称`  AS MATCHED FROM 产业链板块国新闻对应表 AS dy\r\n" + 
+			String sql = 	"SELECT dy.news_id  , COUNT(*) AS count ,news.`录入日期`,news.`新闻标题`,    news.`具体描述`,    news.`关键词`, lb.`板块国名称`  AS MATCHED FROM 产业链板块国新闻对应表 AS dy\r\n" + 
 					"INNER  JOIN 产业链板块国列表 AS lb\r\n" + 
 					"ON lb.id = dy.`板块国ID`\r\n" + 
 					"\r\n" + 
@@ -296,12 +297,13 @@ public class TagsNewsDbOperation
 			result = connectdb.sqlQueryStatExecute(sql);
 			while (result.next()) {
 				 int newsid = result.getInt("news_id");
+				 LocalDate recorddate = result.getDate("录入日期").toLocalDate();
 			     String title = result.getString("新闻标题");	
 			     String description = result.getString("具体描述");
 			     String keywords = result.getString("关键词");
 			     
 			     InsertedMeeting newmeeting = new InsertedMeeting(
-			                new Meeting(title, null,  description, keywords, new HashSet<InsertedMeeting.Label>(),null,null,Meeting.NODESNEWS), newsid);
+			                new Meeting(title, recorddate,  description, keywords, new HashSet<InsertedMeeting.Label>(),null,null,Meeting.NODESNEWS), newsid);
 			     
 			     nodecodeset.add (newmeeting);
 			}

@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -46,7 +47,7 @@ public class AllCurrentTdxBKAndStoksTree
 //		initializeChanYeLianTree ();
 	}
 	
-	// 单例实现  
+	// 锟斤拷锟斤拷实锟斤拷  
 	 public static AllCurrentTdxBKAndStoksTree getInstance ()
 	 {  
 	        return Singtonle.instance;  
@@ -63,30 +64,18 @@ public class AllCurrentTdxBKAndStoksTree
 	private BanKuaiDbOperation bkdbopt;
 	private BanKuaiAndStockTree allbkggtree;
 
-//	private SystemConfigration sysconfig;
-//
-//	private CylTreeDbOperation cyltreedb;
-//
-//	private BanKuaiAndStockTree cyltree;
-
-	
-	
 	private void initializeAllStocksTree() 
 	{
 		
 		DaPan alltopNode = new DaPan("000000","两交易所");
 		
 		ArrayList<BanKuai> allbkandzs = bkdbopt.getTDXBanKuaiList ("all");
-		for (BanKuai bankuai : allbkandzs ) {
+		for (BanKuai bankuai : allbkandzs ) 
 		    alltopNode.add(bankuai);
-//		    logger.debug(bankuai.getMyOwnCode()+ "类型" + bankuai.getType());
-		}
 		
 		ArrayList<Stock> allstocks = bkdbopt.getAllStocks ();
-		for (Stock stock : allstocks ) {
+		for (Stock stock : allstocks ) 
 		    alltopNode.add(stock);
-
-		}
 
 		allbkggtree = new BanKuaiAndStockTree(alltopNode,"ALLBKSTOCKS");
 		allstocks = null;
@@ -114,7 +103,7 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	/**
 	 * 	  
-	 * 把板块和板块下个股数据一次性同步
+	 * 锟窖帮拷锟酵帮拷锟斤拷赂锟斤拷锟斤拷锟斤拷锟揭伙拷锟斤拷锟酵拷锟?
 	 * @param bk
 	 * @param requiredstartday
 	 * @param requiredendday
@@ -126,11 +115,11 @@ public class AllCurrentTdxBKAndStoksTree
 		
 		this.syncBanKuaiData(bk);
 		
-		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
-			bk = this.getAllGeGuOfBanKuai (bk,period); //获取所有曾经是该板块的个股
+		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { 
+			bk = this.getAllGeGuOfBanKuai (bk,period); 
 			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
-			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { //确认当前还在板块内
+			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
 			    		 Stock stock = this.getStock(((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
 			    		 
 		    			 this.syncStockData(stock);
@@ -138,16 +127,16 @@ public class AllCurrentTdxBKAndStoksTree
 	        		
 			}
 			
-			if(calwholeweek ) {
-				//有了个股的缺口数据，就可以统计板块的缺口数据了,
+			if(calwholeweek ) { //
+				
 				this.getBanKuaiQueKouInfo(bk, requiredstartday, requiredendday, period);
-				//同时根据个股的涨跌停数据，统计板块的涨跌停数据
+				
 				this.getBanKuaiZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
 			}
 		}
 	}
 	/*
-	 * 获得板块，并同步上证/深圳指数的成交量，以保住板块和上证/深圳的成交量记录日期跨度是完全的。
+	 *
 	 */
 	public BanKuai getBanKuai (BanKuai bankuai,LocalDate requiredstartday,LocalDate requiredendday,String period ,Boolean calwholeweek )
 	{
@@ -205,7 +194,7 @@ public class AllCurrentTdxBKAndStoksTree
 		return bankuai;
 	}
 	/*
-	 *板块的K线走势， 直接从数据库中读取数据，和个股不一样
+	 *锟斤拷锟斤拷K锟斤拷锟斤拷锟狡ｏ拷 直锟接达拷锟斤拷锟捷匡拷锟叫讹拷取锟斤拷锟捷ｏ拷锟酵革拷锟缴诧拷一锟斤拷
 	 */
 	public BanKuai getBanKuaiKXian (String bkcode,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
@@ -226,7 +215,7 @@ public class AllCurrentTdxBKAndStoksTree
 		LocalDate tmpdate = start;
 		do  {
 			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
-			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
+			//锟斤拷锟斤拷应锟矫革拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷选锟斤拷锟斤拷锟斤拷锟斤拷锟酵ｏ拷锟斤拷锟斤拷锟斤拷为锟斤拷锟斤拷锟斤拷锟竭ｏ拷锟酵诧拷细锟斤拷锟斤拷
 			Double cje = nodexdata.getChengJiaoEr(wkfriday, 0);
 			Double zdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday, 0);
 			if(zdf!=null)
@@ -273,7 +262,7 @@ public class AllCurrentTdxBKAndStoksTree
 		return bk;
 	}
 	/*
-	 * 统计板块的涨跌停数据,数据从板块下属个股来
+	 * 统锟狡帮拷锟斤拷锟角碉拷停锟斤拷锟斤拷,锟斤拷锟捷从帮拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟?
 	 */
 	public BanKuai getBanKuaiZhangDieTingInfo (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
@@ -286,7 +275,7 @@ public class AllCurrentTdxBKAndStoksTree
 			 Integer dietingnum = 0;
 			 
 			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
-				if( !((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(tmpdate)  )  //确认当前还在板块内
+				if( !((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(tmpdate)  )  //确锟较碉拷前锟斤拷锟节帮拷锟斤拷锟?
 					continue;
 				
 //				if(stockofbk.getMyOwnCode().equals("600812") && tmpdate.getYear() == 2019 && tmpdate.getMonthValue() == 8)
@@ -333,7 +322,7 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public BanKuai getBanKuaiQueKouInfo (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
-//		bk = this.getAllGeGuOfBanKuai (bk,period); //获取所有曾经是该板块的个股
+//		bk = this.getAllGeGuOfBanKuai (bk,period); //锟斤拷取锟斤拷锟斤拷锟斤拷锟斤拷锟角该帮拷锟侥革拷锟斤拷
 		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 		
@@ -345,7 +334,7 @@ public class AllCurrentTdxBKAndStoksTree
 			 Integer huibudown = 0;
 			 
 			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
-				if( ! ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(tmpdate)  )  //确认当前还在板块内
+				if( ! ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(tmpdate)  )  //确锟较碉拷前锟斤拷锟节帮拷锟斤拷锟?
 					continue;
 				
 				Stock stock = ((StockOfBanKuai)stockofbk).getStock();
@@ -397,7 +386,7 @@ public class AllCurrentTdxBKAndStoksTree
 //		this.getBanKuaiQueKouInfo(bk, bkstartday, bkendday, NodeGivenPeriodDataItem.WEEK);
 	}
 	/*
-	 * 只要是在整个时间周期内都曾经是该板块的个股，板块都会存入 
+	 * 
 	 */
 	public BanKuai getAllGeGuOfBanKuai (BanKuai bankuai,String period) 
 	{
@@ -410,7 +399,7 @@ public class AllCurrentTdxBKAndStoksTree
 //			return bankuai;
 		}
 		
-		//同步板块的个股
+		//同锟斤拷锟斤拷锟侥革拷锟斤拷
 		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,allbkggtree);
 //		ArrayList<StockOfBanKuai> allbkgg = bankuai.getAllCurrentBanKuaiGeGu();
 //		
@@ -428,7 +417,7 @@ public class AllCurrentTdxBKAndStoksTree
 		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getOHLCRecordsStartDate();
 		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getOHLCRecordsEndDate();
 		
-		if(bkstartday == null && bkendday == null) //板块本身没有数据，无法找出对应的个股的数据，所以原路返回
+		if(bkstartday == null && bkendday == null) //锟斤拷楸撅拷锟矫伙拷锟斤拷锟斤拷荩锟斤拷薹锟斤拷页锟斤拷锟接︼拷母锟斤拷傻锟斤拷锟斤拷荩锟斤拷锟斤拷锟皆凤拷锟斤拷锟?
 			return stockofbk;
 		
 		stockofbk = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stockofbk, bkstartday, bkendday,period);
@@ -436,7 +425,7 @@ public class AllCurrentTdxBKAndStoksTree
 		return stockofbk;
 	}
 	/*
-	 * 返回这个板块的某个个股的成交量,不做板块是否包含该个股的检查
+	 * 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟侥筹拷锟斤拷锟斤拷傻某山锟斤拷锟?,锟斤拷锟斤拷锟斤拷锟斤拷欠锟斤拷锟斤拷锟矫革拷锟缴的硷拷锟?
 	 */
 	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, String stockcode,String period)
 	{
@@ -476,7 +465,7 @@ public class AllCurrentTdxBKAndStoksTree
 		
 	}
 	/*
-	 * 同步大盘成交额
+	 * 同锟斤拷锟斤拷锟教成斤拷锟斤拷
 	 */
 	public void getDaPan (LocalDate requiredstartday,LocalDate requiredendday,String period, Boolean calwholeweek)
 	{
@@ -590,7 +579,7 @@ public class AllCurrentTdxBKAndStoksTree
 			}
 		}
 		
-		if(period.equals(NodeGivenPeriodDataItem.DAY)) { //日线计算完了，周线给出统计数据
+		if(period.equals(NodeGivenPeriodDataItem.DAY)) { //锟斤拷锟竭硷拷锟斤拷锟斤拷锟剿ｏ拷锟斤拷锟竭革拷锟斤拷统锟斤拷锟斤拷锟斤拷
 
 			List<QueKou> qklist = nodedayperioddata .getPeriodQueKou();
 			if(qklist == null || qklist.size() == 0)
@@ -609,20 +598,20 @@ public class AllCurrentTdxBKAndStoksTree
 					LocalDate tmpqkdate = tmpqk.getQueKouDate();
 					
 					if(CommonUtility.isInSameWeek(tmpqkdate, tmpdate)) {
-						if(tmpqk.getQueKouLeiXing()) { //up缺口
-							logger.debug(stock.getMyOwnName() + "UP缺口" + tmpqkdate);
+						if(tmpqk.getQueKouLeiXing()) { //up缺锟斤拷
+							logger.debug(stock.getMyOwnName() + "UP缺锟斤拷" + tmpqkdate);
 							stockxwkdate.addQueKouTongJiJieGuo(tmpqkdate, 1, null, null, null, true);
-							if(tmpqk.getQueKouHuiBuDate() != null) { //已经被回补
+							if(tmpqk.getQueKouHuiBuDate() != null) { //锟窖撅拷锟斤拷锟截诧拷
 								LocalDate tmpqkhbdate = tmpqk.getQueKouHuiBuDate();
-								logger.debug(stock.getMyOwnName() + "UP缺口回补" + tmpqkhbdate);
+								logger.debug(stock.getMyOwnName() + "UP缺锟节回诧拷" + tmpqkhbdate);
 								stockxwkdate.addQueKouTongJiJieGuo(tmpqkhbdate, null, 1, null, null, true);
 							} 
-						} else { //down缺口
-							logger.debug(stock.getMyOwnName() + "DW缺口" + tmpqkdate);
+						} else { //down缺锟斤拷
+							logger.debug(stock.getMyOwnName() + "DW缺锟斤拷" + tmpqkdate);
 							stockxwkdate.addQueKouTongJiJieGuo(tmpqkdate, null, null, 1, null, true);
-							if(tmpqk.getQueKouHuiBuDate() != null) { //已经被回补
+							if(tmpqk.getQueKouHuiBuDate() != null) { //锟窖撅拷锟斤拷锟截诧拷
 								LocalDate tmpqkhbdate = tmpqk.getQueKouHuiBuDate();
-								logger.debug(stock.getMyOwnName() + "DW缺口回补" + tmpqkhbdate);
+								logger.debug(stock.getMyOwnName() + "DW缺锟节回诧拷" + tmpqkhbdate);
 								stockxwkdate.addQueKouTongJiJieGuo(tmpqkhbdate, null, null, null, 1, true);
 							}
 						}
@@ -643,11 +632,11 @@ public class AllCurrentTdxBKAndStoksTree
 				
 			} while (tmpdate.isBefore( qkenddate) || tmpdate.isEqual(qkenddate));
 			
-			//标记缺口统计的时间，
-			 if(!qkstartdate.equals(requiredstartday) && requiredstartday.isBefore(qkstartdate)) { //特别标记完整的openupquekou的起始日期，用于获得缺口统计的起始时间
+			//锟斤拷锟饺憋拷锟酵筹拷频锟绞憋拷洌?
+			 if(!qkstartdate.equals(requiredstartday) && requiredstartday.isBefore(qkstartdate)) { //锟截憋拷锟斤拷锟斤拷锟斤拷锟斤拷openupquekou锟斤拷锟斤拷始锟斤拷锟节ｏ拷锟斤拷锟节伙拷锟饺憋拷锟酵筹拷频锟斤拷锟绞际憋拷锟?
 				 stockxwkdate.addQueKouTongJiJieGuo ( requiredstartday, 0, null, null, null,true);
         	 }  
-			 if(!qkenddate.equals(requiredendday)  && requiredendday.isAfter(qkenddate) )  //特别标记完整的openupquekou的结束日期，用于获得缺口统计的结束时间
+			 if(!qkenddate.equals(requiredendday)  && requiredendday.isAfter(qkenddate) )  //锟截憋拷锟斤拷锟斤拷锟斤拷锟斤拷openupquekou锟侥斤拷锟斤拷锟斤拷锟节ｏ拷锟斤拷锟节伙拷锟饺憋拷锟酵筹拷频慕锟斤拷锟绞憋拷锟?
         		 stockxwkdate.addQueKouTongJiJieGuo ( requiredendday, 0, null, null, null,true);
 		}
 //		System.out.print("");
@@ -663,7 +652,7 @@ public class AllCurrentTdxBKAndStoksTree
 		return stock;
 	}
 	/*
-	 * 个股的K线从CSV里面读取
+	 * 锟斤拷锟缴碉拷K锟竭达拷CSV锟斤拷锟斤拷锟饺?
 	 */
 	public Stock getStockKXian (Stock stock,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
@@ -702,7 +691,7 @@ public class AllCurrentTdxBKAndStoksTree
 		
 	}
 	/*
-	 * 确定用户要求的时间段和node当前的数据的时间段的差值时间段
+	 * 确锟斤拷锟矫伙拷要锟斤拷锟绞憋拷锟轿猴拷node锟斤拷前锟斤拷锟斤拷锟捷碉拷时锟斤拷蔚牟锟街凳憋拷锟斤拷
 	 */
 	private List<Interval> getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
 					(LocalDate requiredstartday,LocalDate requiredendday,LocalDate nodestart,LocalDate nodeend)

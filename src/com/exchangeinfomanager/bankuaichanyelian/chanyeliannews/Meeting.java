@@ -208,9 +208,8 @@ public class Meeting {
     @Override
     public int hashCode() {
     	int result = 0;
-    	
-    		
-	    		result = start.hashCode();
+
+    			result = start.hashCode();
 	            result = 31 * result + title.hashCode();
 	            try{
 	            	result = 31 * result + description.hashCode();
