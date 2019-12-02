@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.labelmanagement;
+package com.exchangeinfomanager.Services;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -7,6 +7,7 @@ import java.util.Set;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.labelmanagement.TagCache;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;

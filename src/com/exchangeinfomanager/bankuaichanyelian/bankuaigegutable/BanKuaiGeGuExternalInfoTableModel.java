@@ -1,15 +1,17 @@
 package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
+
 
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
-
+import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
 public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableModel
 {
@@ -41,6 +43,8 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 	private Double showltszmax;
 	private Boolean showhuibudownquekou;
 	private Integer cjezbdpminwk;
+
+	private Collection<Tag> tags;
 	
 	
 		public Object getValueAt(int rowIndex, int columnIndex) 
@@ -298,6 +302,8 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 		{
 			return this.showhuibudownquekou;
 		}
+		
+		
 
 
 }

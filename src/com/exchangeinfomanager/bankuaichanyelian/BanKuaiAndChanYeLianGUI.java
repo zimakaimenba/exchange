@@ -60,8 +60,8 @@ import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.labelmanagement.DBSystemTagsService;
 import com.exchangeinfomanager.labelmanagement.TagCache;
+import com.exchangeinfomanager.labelmanagement.TagsServiceForSystemTags;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
@@ -110,7 +110,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	private TreeOfChanYeLian treechanyelian;
 	private BanKuaiDbOperation bkopt;
 
-	private DBSystemTagsService lballdbservice;
+	private TagsServiceForSystemTags lballdbservice;
 
 	private TagCache allsyskwcache;
  	
@@ -119,7 +119,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 //		Set<String> all = new HashSet<> ();
 //		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
 //		all.add("treeroot");
-		lballdbservice = new DBSystemTagsService (); 
+		lballdbservice = new TagsServiceForSystemTags (); 
 		allsyskwcache = new TagCache (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);
 		pnllblsysmanagement.initializeTagsPanel (lballdbservice,allsyskwcache);

@@ -38,5 +38,45 @@ public class NodeInsertedTag extends InsertedTag
     {
     	return this.gegubk;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        
+        if (o == null )
+            return false;
+        
+        if(getClass() != o.getClass())
+        return false;
+        
+        if(!super.equals(o))
+        	return false;
+
+//        NodeInsertedTag label = (NodeInsertedTag) o;
+//        if( label.getTag() != this.getTag() )
+//        	return false;
+//        
+//        if(label.getInsertedTag() != this.getInsertedTag() )
+//        	return false;
+//        
+//        if( this.matchid != label.getMatchID())
+//        	return false;
+//        
+//        if(this.nodematchcolor != label.getNodeMachColor() )
+//        	return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+    	return super.hashCode();
+//    	int result = nodematchcolor.hashCode();
+//        result = 31 * result + super.hashCode();
+//        result = result  + this.gegubk.hashCode() ;
+//        return result;
+    }
 
 }

@@ -1,9 +1,11 @@
 package com.exchangeinfomanager.nodes;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -18,6 +20,8 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	protected NodeXPeriodData nodewkdata;
 	protected NodeXPeriodData nodedaydata;
 	protected NodeXPeriodData nodemonthdata;
+	
+	protected Collection<Tag> nodetags;
 	
 	private String suoshujiaoyisuo;
 	private LocalDate lastdayofbxfx;
@@ -62,6 +66,20 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		return htmldoc.toString();
 	}
 	
+	public void setNodeTags (Collection<Tag> tags)
+	{
+		this.nodetags = tags;
+	}
+	public  Collection<Tag> getNodeTags () {
+		return this.nodetags;
+	}
+	public boolean isTagInCurrentNodeTags (Tag tag)
+	{
+		if(this.nodetags.contains(tag))
+			return true;
+		else
+			return false;
+	}
 	/*
 	 * 
 	 */

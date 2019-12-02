@@ -3,6 +3,7 @@ package com.exchangeinfomanager.labelmanagement.Tag;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 
 
@@ -62,19 +63,20 @@ public class Tag
     public boolean equals(Object o) {
         if (this == o)
             return true;
+        
         if (o == null || getClass() != o.getClass())
             return false;
 
         Tag label = (Tag) o;
+        if(!name.equals(label.getName()))
+        	return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-    	
-        int result = color.hashCode();
-        result = 31 * result + name.hashCode();
+        int result = name.hashCode();
         return result;
     }
     public boolean isSelected() {
@@ -84,7 +86,4 @@ public class Tag
     public void setSelected(boolean active) {
         this.selected = active;
     }
-
-
-
 }

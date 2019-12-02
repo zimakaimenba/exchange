@@ -1,12 +1,13 @@
 package com.exchangeinfomanager.nodes.operations;
 
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 
 import java.time.LocalDate;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -18,7 +19,8 @@ import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-
+import com.exchangeinfomanager.labelmanagement.TagsServiceForNodes;
+import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
@@ -108,29 +110,34 @@ public class AllCurrentTdxBKAndStoksTree
 	 * @param requiredstartday
 	 * @param requiredendday
 	 * @param period
+	 * @throws SQLException 
 	 */
-	public void syncBanKuaiAndItsStocksForSpecificTime (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek  )
+	public void syncBanKuaiAndItsStocksForSpecificTime (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek  ) throws SQLException
 	{
 		this.getBanKuai(bk, requiredstartday, requiredendday, period,calwholeweek);
 		
 		this.syncBanKuaiData(bk);
 		
+		 TagsServiceForNodes tagsevofbk = new TagsServiceForNodes (bk);
+		 Collection<Tag> tags = tagsevofbk.getTags();
+		 bk.setNodeTags(tags);
+		
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { 
 			bk = this.getAllGeGuOfBanKuai (bk,period); 
 			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
-			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
-			    		 Stock stock = this.getStock(((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
-			    		 
-		    			 this.syncStockData(stock);
-			    	 }
-	        		
+		    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
+		    		 Stock stock = this.getStock(((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
+	    			 this.syncStockData(stock);
+	    			 
+	    			 TagsServiceForNodes tagsevofnode = new TagsServiceForNodes (stock);
+	    			 Collection<Tag> tagsofstock = tagsevofnode.getTags();
+	    			 stock.setNodeTags(tagsofstock);
+		    	 }
 			}
 			
 			if(calwholeweek ) { //
-				
 				this.getBanKuaiQueKouInfo(bk, requiredstartday, requiredendday, period);
-				
 				this.getBanKuaiZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
 			}
 		}

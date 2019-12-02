@@ -3,9 +3,9 @@ package com.exchangeinfomanager.labelmanagement.Tag;
 
 import javax.swing.*;
 
+import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.labelmanagement.TagService;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;

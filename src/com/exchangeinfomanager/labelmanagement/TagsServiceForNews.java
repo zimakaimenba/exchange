@@ -5,11 +5,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-public class DBNewsTagsService implements TagService
+public class TagsServiceForNews implements TagService
 {
 	private TagsNewsDbOperation dboptfornews;
 	private TagsDbOperation dboptforsys;
@@ -18,7 +19,7 @@ public class DBNewsTagsService implements TagService
 	private TagCache cache;
 	
 
-	public DBNewsTagsService (Set<BkChanYeLianTreeNode> nodeset)
+	public TagsServiceForNews (Set<BkChanYeLianTreeNode> nodeset)
 	{
 		this.dboptfornews = new TagsNewsDbOperation ();
 		this.nodeset = nodeset;

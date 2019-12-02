@@ -34,17 +34,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
+import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.ServicesForNodes.SvsForNodeOfFileNodes;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetBanKuaisProcessor;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.commonlib.WrapLayout;
-import com.exchangeinfomanager.labelmanagement.DBNodesTagsService;
-import com.exchangeinfomanager.labelmanagement.DBSystemTagsService;
+import com.exchangeinfomanager.labelmanagement.TagsServiceForSystemTags;
 import com.exchangeinfomanager.labelmanagement.TagCache;
 import com.exchangeinfomanager.labelmanagement.TagCacheListener;
-import com.exchangeinfomanager.labelmanagement.TagService;
 import com.exchangeinfomanager.labelmanagement.Tag.CombineTagsDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.CreateTagDialog;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
@@ -84,27 +83,28 @@ public class TagsPanel extends JPanel implements TagCacheListener
 			this.displaymode = displaymode;
 		
 		this.controlmode = controlmode;
+		
+//		createGui ();
+//		createEvents ();
 	}
-	public TagsPanel(String title)
-	{
-		this.title = title;
-		this.displaymode = "displayhead";
-	}
+//	public TagsPanel(String title)
+//	{
+//		this.title = title;
+//		this.displaymode = "displayhead";
+//	}
 	
 	public static String HIDEHEADERMODE = "hidehead";
 	public static String ONLYIPLAYMODE = "only_display_mode";
 	public static String FULLCONTROLMODE = "full_control_mode";
 	public static String PARTCONTROLMODE = "part_control_mode";
-
+	public static String NONECONTROLMODE = "none_control_mode";
+	public static String ADDNEWTAGSTONODE = "add_new_tags_to_node";
+	public static String SELFFULLCONTROLMODE = "Tag_full_control_himself";
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
-	public static final String ADDNEWTAGSTONODE = "add_new_tags_to_node";
-//	public static final String NODEADDNEWTAGSNEEDSYSUPDAT = "node_add_new_tags_need_sys_upated";
-//	public static final String NODESBEENDELETED = "nodes_been_deleted";
-//	public static final String NODESBEENEDIT = "nodes_been_edited";
 	
 	public void initializeTagsPanel(TagService lbdbservice, TagCache cache) 
 	{
@@ -112,17 +112,20 @@ public class TagsPanel extends JPanel implements TagCacheListener
 		this.cache =  cache;
 		cache.addCacheListener(this);
 		
+		this.removeAll();
 		createGui ();
+		this.revalidate();
+		this.repaint();
+		
 		initializeTags ();
 		
-		createEvetns ();
+		createEvents ();
 	}
 	
 	private void initializeTags()
 	{
 		Collection<Tag> alltags = cache.produceTags();
 		
-		pnllabelcontain.removeAll();
 		for (Tag l : alltags) {
 
 			LabelTag label = new LabelTag (l);
@@ -130,8 +133,6 @@ public class TagsPanel extends JPanel implements TagCacheListener
 			label.addPropertyChangeListener(new PropertyChanged() );
 			pnllabelcontain.add(label);
 		}
-		
-		pnllabelcontain.revalidate();
 	}
 	
 	@Override
@@ -141,7 +142,7 @@ public class TagsPanel extends JPanel implements TagCacheListener
 		
 	}
 	
-	private void createEvetns() 
+	private void createEvents() 
 	{
 		menuItemAddNew.addActionListener(new ActionListener() {
 			@Override
@@ -183,6 +184,7 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	private JMenuItem menuItemAddNew;
 	private JMenuItem menuItemReset;
 	private JLabel searchcount;
+	private JScrollPane sclpcenter;
 	
 	public void createGui ()
 	{
@@ -202,7 +204,7 @@ public class TagsPanel extends JPanel implements TagCacheListener
 		pnlup.add(tfldsearchkw);
 		pnlup.add(searchcount);
         
-		JScrollPane sclpcenter = new JScrollPane();
+		sclpcenter = new JScrollPane();
 		pnllabelcontain = new JPanel();
 		pnllabelcontain.setLayout(new WrapLayout(WrapLayout.CENTER, 5, 5));
 		pnllabelcontain.setBackground(ColorScheme.BACKGROUND);
@@ -246,8 +248,14 @@ public class TagsPanel extends JPanel implements TagCacheListener
 				Pmenu.add(menuItemAddToCur,0);
 				JSeparator sp = new JSeparator ();
 				Pmenu.add(sp,1);
-			} else if ( this.controlmode.equals(TagsPanel.PARTCONTROLMODE)  ) {
-				
+			} else
+			if ( this.controlmode.equals(TagsPanel.SELFFULLCONTROLMODE)  ) {
+//				label.setMenuMode(TagsPanel.PARTCONTROLMODE);
+			} else 
+			if ( this.controlmode.equals(TagsPanel.PARTCONTROLMODE)  ) {
+				label.setMenuMode(TagsPanel.PARTCONTROLMODE);
+			} else if ( this.controlmode.equals(TagsPanel.NONECONTROLMODE)  ) {
+				label.setMenuMode(TagsPanel.NONECONTROLMODE); 
 			} else {
 				Pmenu.removeAll();
 				Pmenu.add(menuItemAddToCur);
@@ -297,7 +305,13 @@ public class TagsPanel extends JPanel implements TagCacheListener
             	} else
             	if(evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDRELATEDNODES)) {
                 	displayRelatedNodes();
+                } else
+                if(evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDATAGWASSELECTED)) {
+                	
+                	PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDATAGWASSELECTED , "", cache.produceSelectedTags() );
+                    pcs.firePropertyChange(evtzd);
                 }
+            	
             }
 	}
 	 
@@ -449,7 +463,7 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	private void deleteMenuAction ()
 	{
 		String warningmsg = "";
-		if(lbdbservice instanceof DBSystemTagsService) {
+		if(lbdbservice instanceof TagsServiceForSystemTags) {
 			warningmsg = "警告:确定删除? 删除后无法恢复!";
 		} else
 			warningmsg = "警告:确定从当前移除?";

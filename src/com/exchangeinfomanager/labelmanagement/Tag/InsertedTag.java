@@ -58,4 +58,32 @@ public class InsertedTag extends Tag
     	return false;
     }
     
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        
+        if (o == null )
+            return false;
+        
+        return super.equals(o);
+        
+//        if(getClass() != o.getClass())
+//        	return false;
+//
+//        InsertedTag label = (InsertedTag) o;
+//        if( this.getTag() != label.getTag() )
+//        	return false;
+//        
+//        if( this.id != label.getID())
+//        	return false;
+//
+//        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result =  super.hashCode()  ;
+        return result;
+    }
 }

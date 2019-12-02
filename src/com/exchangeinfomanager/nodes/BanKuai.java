@@ -7,6 +7,7 @@ import java.time.LocalDate;
 //import java.time.temporal.ChronoUnit;
 //import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Collection;
 //import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -184,9 +185,9 @@ public class BanKuai extends TDXNodes
 		return this.stockofbklist;
     }
 	/*
-	 * 
+	 * 返回stockofBanKuai
 	 */
-	public Set<BkChanYeLianTreeNode> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference,String period) 
+	public Set<BkChanYeLianTreeNode> getSpecificPeriodStockOfBanKuai(LocalDate requireddate,int difference) 
 	{
 		Set<BkChanYeLianTreeNode> result = new HashSet<> ();
 
@@ -199,9 +200,24 @@ public class BanKuai extends TDXNodes
 		return result;
 	}
 	/*
+	 * 返回stock
+	 */
+	public Collection<BkChanYeLianTreeNode> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference)
+	{
+		Collection<BkChanYeLianTreeNode> nodefortags = new HashSet<> ();
+		for(BkChanYeLianTreeNode tmpstkofbks :  this.stockofbklist) {
+			if(  ((StockOfBanKuai)tmpstkofbks).isInBanKuaiAtSpecificDate(requireddate)) {
+				Stock stock = ((StockOfBanKuai)tmpstkofbks).getStock();
+				nodefortags.add(stock);
+			}
+		}
+		
+		return nodefortags;
+	}
+	/*
 	 * 
 	 */
-	public BkChanYeLianTreeNode getBanKuaiGeGu (String stockcode)
+	public BkChanYeLianTreeNode getStockOfBanKuai (String stockcode)
 	{
 		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
@@ -211,7 +227,16 @@ public class BanKuai extends TDXNodes
 		
 		return null;
 	}
-	
+	public BkChanYeLianTreeNode getBanKuaiGeGu (String stockcode)
+	{
+		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
+			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
+				return ((StockOfBanKuai)stockofbk).getStock();
+			}
+		}
+		
+		return null;
+	}
 	
 	/**
 	 * @return the sysBanKuaiWeight

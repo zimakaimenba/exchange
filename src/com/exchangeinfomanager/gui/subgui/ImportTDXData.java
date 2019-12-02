@@ -372,6 +372,7 @@ public class ImportTDXData extends JDialog {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
+				e.printStackTrace();
 			}
 			ckbxnetease.setEnabled(false);
 			

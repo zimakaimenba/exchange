@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
-public class DBSystemTagsService implements TagService  
+public class TagsServiceForSystemTags implements TagService  
 {
 	private TagsDbOperation dboptforsys;
 	private TagsDbOperation dboptfornode;
@@ -18,7 +19,7 @@ public class DBSystemTagsService implements TagService
 	private TagCache cache;
 	private Set<String> nodeset;
 
-	public DBSystemTagsService ()
+	public TagsServiceForSystemTags ()
 	{
 		dboptforsys = new TagsDbOperation ();
 		dboptfornode = new TagsDbOperation ();
@@ -113,16 +114,11 @@ public class DBSystemTagsService implements TagService
 //		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithOneOfSpecificTags (tags);
 //		 return nodesetfortagname;
 //	}
-
 	public Collection<InsertedMeeting> getNewsSetWithAllSpecificTags(String tagname)
 	{
 		Collection<InsertedMeeting> newsset = dboptfornews.getNewsSetWithAllSpecificTags (tagname);
 		return newsset;
 	}
-
-
-
-
 }
 
 

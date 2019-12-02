@@ -2959,8 +2959,8 @@ public class BanKuaiDbOperation
 				Interval joinleftinterval = new Interval(joindt, leftdt);
 				
 				if(currentbk.getBanKuaiGeGu(tmpstockcode) != null ) {//已经有了
-					StockOfBanKuai bkofst = (StockOfBanKuai) currentbk.getBanKuaiGeGu(tmpstockcode);
-					bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
+//					StockOfBanKuai bkofst = (StockOfBanKuai) currentbk.getBanKuaiGeGu(tmpstockcode);
+//					bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
 				} else {
 					Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BkChanYeLianTreeNode.TDXGG);
 					if(tmpstock != null) {
@@ -5788,9 +5788,9 @@ public class BanKuaiDbOperation
 			   }
 				
 			   if(ldlastestdbrecordsdate == null)
-				    	ldlastestdbrecordsdate =  LocalDate.parse("2013-03-04"); //当前数据的起点
+				   ldlastestdbrecordsdate =  LocalDate.parse("2013-03-04"); //当前数据的起点
 			   else
-				    	ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1);
+				   ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1);
 				    
 				    //获取网易文件
 				    URL URLink; //https://blog.csdn.net/NarutoInspire/article/details/72716724

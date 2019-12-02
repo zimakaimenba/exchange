@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.swing.JCheckBox;
 
-import com.exchangeinfomanager.StockCalendar.AddNewsToSameTagsNodes;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;

@@ -30,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
@@ -55,19 +56,19 @@ import java.awt.event.MouseEvent;
 public class NodeLabelMatrixManagement extends JDialog 
 {
 	private BkChanYeLianTreeNode node;
-	private DBSystemTagsService lballdbservice;
+	private TagsServiceForSystemTags lballdbservice;
 	private TagCache allsyskwcache;
-	private DBNodesTagsService lbnodedbservice;
+	private TagsServiceForNodes lbnodedbservice;
 	private TagCache bkstkkwcache;
-	private DBNewsTagsService lbnewsdbservice;
+	private TagsServiceForNews lbnewsdbservice;
 	private TagCache newskwcache;
 	private AllCurrentTdxBKAndStoksTree allbkstk;
 	private BanKuaiDbOperation nodedbopt;
-	private DBNodesTagsService lbbkdbservice;
+	private TagsServiceForNodes lbbkdbservice;
 	private TagCache bankuaikwcache;
 //	private CylTreeDbOperation cydbopt;
 	private TagCache cylkwcache;
-	private DBUrlTagsService lburldbservice;
+	private TagsServiceForURLAndFile lburldbservice;
 	private TagCache urlcache;
 	private HashSet<TagService> tagdeltedlisteners;
 	private HashSet<TagCache> tagsystemcachechangessteners;
@@ -89,13 +90,13 @@ public class NodeLabelMatrixManagement extends JDialog
 		//所有KW
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
 		
-		lballdbservice = new DBSystemTagsService (); 
+		lballdbservice = new TagsServiceForSystemTags (); 
 		allsyskwcache = new CacheForInsertedTag (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);
 		pnldisplayallsyskw.initializeTagsPanel (lballdbservice,allsyskwcache);
 		//当前KW
 		Set<BkChanYeLianTreeNode> bkstk = Set.of(this.node);
-		lbnodedbservice = new DBNodesTagsService (bkstk);
+		lbnodedbservice = new TagsServiceForNodes (bkstk);
 		bkstkkwcache = new CacheForInsertedTag (lbnodedbservice);
 		lbnodedbservice.setCache(bkstkkwcache);
 		tfldcurkeywords.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
@@ -105,7 +106,7 @@ public class NodeLabelMatrixManagement extends JDialog
 			node = this.nodedbopt.getTDXBanKuaiForAStock ((Stock) node);
 			suosusysbankuai = ((Stock) node).getGeGuCurSuoShuTDXSysBanKuaiList();
 			
-			lbbkdbservice = new DBNodesTagsService (suosusysbankuai);
+			lbbkdbservice = new TagsServiceForNodes (suosusysbankuai);
 			bankuaikwcache = new TagCache (lbbkdbservice);
 			lbbkdbservice.setCache(bankuaikwcache);
 			pnldisplayallbkskw.initializeTagsPanel (lbbkdbservice,bankuaikwcache);
@@ -115,7 +116,7 @@ public class NodeLabelMatrixManagement extends JDialog
 			for(String tmpfri : friends) 
 				suosusysbankuai.add( this.allbkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpfri, BkChanYeLianTreeNode.TDXBK) );
 			
-			lbbkdbservice = new DBNodesTagsService (suosusysbankuai);
+			lbbkdbservice = new TagsServiceForNodes (suosusysbankuai);
 			bankuaikwcache = new TagCache (lbbkdbservice);
 			lbbkdbservice.setCache(bankuaikwcache);
 			pnldisplayallbkskw.initializeTagsPanel (lbbkdbservice,bankuaikwcache);
@@ -124,7 +125,7 @@ public class NodeLabelMatrixManagement extends JDialog
 		Set<BkChanYeLianTreeNode> nodewithbankuais = new HashSet<> () ;
 		nodewithbankuais.add(this.node);
 		nodewithbankuais.addAll(suosusysbankuai);
-		lbnewsdbservice = new DBNewsTagsService (nodewithbankuais);
+		lbnewsdbservice = new TagsServiceForNews (nodewithbankuais);
 		newskwcache = new TagCache (lbnewsdbservice);
 		lbnewsdbservice.setCache(newskwcache);
 		pnldisplayallnewskw.initializeTagsPanel (lbnewsdbservice,newskwcache);
@@ -160,7 +161,7 @@ public class NodeLabelMatrixManagement extends JDialog
 		Set<String> urlset = new HashSet< > ();
 		urlset.add(tfldurl.getText());
 	
-		lburldbservice = new DBUrlTagsService (urlset);
+		lburldbservice = new TagsServiceForURLAndFile (urlset);
 		urlcache = new TagCache (lburldbservice);
 		lburldbservice.setCache(urlcache);
 		pnldisplayurlskw.initializeTagsPanel (lburldbservice,urlcache);
@@ -389,7 +390,7 @@ public class NodeLabelMatrixManagement extends JDialog
 			JPanel pnlup = JPanelFactory.createFixedSizePanel(200, 80, 5);
 			pnlup.setLayout(new BorderLayout());
 			JLabel lblcurkeywords = new JLabel ("当前关键字");
-			tfldcurkeywords = new TagsPanel("当前关键字",TagsPanel.HIDEHEADERMODE, TagsPanel.PARTCONTROLMODE);
+			tfldcurkeywords = new TagsPanel("当前关键字",TagsPanel.HIDEHEADERMODE, TagsPanel.SELFFULLCONTROLMODE);
 			pnlup.add(lblcurkeywords,BorderLayout.WEST);
 			pnlup.add(tfldcurkeywords,BorderLayout.CENTER);
 			
@@ -449,53 +450,15 @@ public class NodeLabelMatrixManagement extends JDialog
 							.addComponent(pnlnewskw, GroupLayout.PREFERRED_SIZE, 229, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
-		//系统关键字
-//		JPanel pnlsyskwup = new JPanel ();
-//		pnlsyskwup.setLayout (new FlowLayout(FlowLayout.LEFT) );
-//		JLabel lblsyskw = new JLabel("所有系统关键字");
-//		JLabel lblfengge = new JLabel("  ");
-//		tfldsearchsyskw = new JTextField ("                 ");
-//		btnsyskwaddtocur = new JButton ("加入到当前");
-//		pnlsyskwup.add(lblsyskw);
-//		pnlsyskwup.add(lblfengge);
-//		pnlsyskwup.add(tfldsearchsyskw);
-//		pnlsyskwup.add(btnsyskwaddtocur);
 		
 		pnldisplayallsyskw = new TagsPanel("所有系统关键字",null, TagsPanel.FULLCONTROLMODE);
-		
-//		pnlsyskw.add(pnlsyskwup,BorderLayout.NORTH);
 		pnlsyskw.add(pnldisplayallsyskw,BorderLayout.CENTER);
 		
-		//新闻关键字
-//		JPanel pnlnewskwup = new JPanel ();
-//		pnlnewskwup.setLayout (new FlowLayout(FlowLayout.LEFT) );
-//		JLabel lblnewskw = new JLabel("所属新闻关键字");
-//		JLabel lblnewsfengge = new JLabel("  ");
-//		tfldsearchnewskw = new JTextField ("                 ");
-//		btnnewskwaddtocur = new JButton ("加入到当前");
-//		pnlnewskwup.add(lblnewskw);
-//		pnlnewskwup.add(lblnewsfengge);
-//		pnlnewskwup.add(tfldsearchnewskw);
-//		pnlnewskwup.add(btnnewskwaddtocur);
 		pnldisplayallnewskw = new TagsPanel("所属新闻关键字",null, TagsPanel.ONLYIPLAYMODE);
-		
-//		pnlnewskw.add(pnlnewskwup,BorderLayout.NORTH);
 		pnlnewskw.add(pnldisplayallnewskw,BorderLayout.CENTER);
 
-		//所属板块关键词
-//		JPanel pnlbkskwup = new JPanel ();
-//		pnlbkskwup.setLayout (new FlowLayout(FlowLayout.LEFT) );
-//		JLabel lblbkkw = new JLabel("所属板块关键字");
-//		JLabel lblbkfengge = new JLabel("  ");
-//		tfldsearchbkkw = new JTextField ("                 ");
-//		btnkbkwaddtocur = new JButton ("加入到当前");
-//		pnlbkskwup.add(lblbkkw);
-//		pnlbkskwup.add(lblbkfengge);
-//		pnlbkskwup.add(tfldsearchbkkw);
-//		pnlbkskwup.add(btnkbkwaddtocur);
+
 		pnldisplayallbkskw = new TagsPanel("所属板块关键字",null, TagsPanel.ONLYIPLAYMODE);
-		
-//		pnlbkkw.add(pnlbkskwup,BorderLayout.NORTH);
 		pnlbkkw.add(pnldisplayallbkskw,BorderLayout.CENTER);
 		
 		//所属产业链关键词

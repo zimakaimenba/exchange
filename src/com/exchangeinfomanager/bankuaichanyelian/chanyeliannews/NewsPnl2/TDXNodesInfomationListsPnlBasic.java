@@ -14,6 +14,7 @@ import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +101,7 @@ abstract public class TDXNodesInfomationListsPnlBasic extends JDialog
 //				updateNewsToABkGeGu(mt,node.getMyOwnCode());
 			} else if(tmpitem.isSelected() && tmpitem.getText().contains("¸ö¹É")) {
 				node = bkopt.getTDXBanKuaiGeGuOfHyGnFg (  (BanKuai)node,CommonUtility.getSettingRangeDate(LocalDate.now(),"large"), LocalDate.now(),bkstk.getAllBkStocksTree());
-				Set<BkChanYeLianTreeNode> children = ((BanKuai)node).getSpecificPeriodBanKuaiGeGu(LocalDate.now(), 0, "WEEK");
+				Collection<BkChanYeLianTreeNode> children = ((BanKuai)node).getSpecificPeriodBanKuaiGeGu(LocalDate.now(), 0);
 				if(children.isEmpty())
 				 continue;
 				 

@@ -173,8 +173,7 @@ public class TagsDbOperation
 			result = connectdb.sqlQueryStatExecute(sqlquerystat);
 			
 		   while (result.next()) {
-		     	String bkzname = result.getString("板块国名称");
-		     	
+		     		String bkzname = result.getString("板块国名称");
 			     	Color defaultColor = Color.WHITE;
 					try {
 						defaultColor = Color.decode( result.getString("DefaultCOLOUR")  ) ;
@@ -196,7 +195,6 @@ public class TagsDbOperation
 			     	
 			         NodeInsertedTag label = new NodeInsertedTag(intag, matchid, gegubk, color);
 			         labels.add(label);
-		     	
 		   }
 		}catch(java.lang.NullPointerException e){ 
 			e.printStackTrace();

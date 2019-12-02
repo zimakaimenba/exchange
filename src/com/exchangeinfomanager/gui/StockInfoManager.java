@@ -4,7 +4,6 @@ package com.exchangeinfomanager.gui;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.Toolkit;
@@ -21,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.TableCellListener;
-import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
@@ -29,7 +27,6 @@ import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.License.License;
 import com.exchangeinfomanager.Search.SearchDialog;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
-//import com.exchangeinfomanager.checkboxtree.CheckBoxTreeXmlHandler;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeeting;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
@@ -97,9 +94,9 @@ import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
-import com.exchangeinfomanager.labelmanagement.DBNodesTagsService;
 import com.exchangeinfomanager.labelmanagement.NodeLabelMatrixManagement;
 import com.exchangeinfomanager.labelmanagement.TagCache;
+import com.exchangeinfomanager.labelmanagement.TagsServiceForNodes;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -110,8 +107,6 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
@@ -307,12 +302,38 @@ public class StockInfoManager
 		
 	private void displayNodeTags() 
 	{
+		int count = pnltags.getComponentCount();
+		for(int i=0;i<count;i++) {
+			Component comp = pnltags.getComponent(i);
+			String name = comp.getName();
+			Class<? extends Component> classes = comp.getClass();
+			comp.getLocation();
+		}
+		
+		
 		Set<BkChanYeLianTreeNode> bkstk = new HashSet<> ();
 		bkstk.add(this.nodeshouldbedisplayed);
-		DBNodesTagsService lbnodedbservice = new DBNodesTagsService (bkstk);
+		TagsServiceForNodes lbnodedbservice = new TagsServiceForNodes (bkstk);
 		bkstkkwcache = new TagCache (lbnodedbservice);
 		lbnodedbservice.setCache(bkstkkwcache);
 		pnltags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
+		
+		count = pnltags.getComponentCount();
+		for(int i=0;i<count;i++) {
+			Component comp = pnltags.getComponent(i);
+			String name = comp.getName();
+			Class<? extends Component> classes = comp.getClass();
+			comp.getLocation();
+		}
+		
+//		pnltags.revalidate();
+//		pnltags.repaint();
+////		
+////		panel_3.revalidate();
+////		panel_3.repaint();
+//		
+//		frame.validate ();
+//		frame.repaint();
 		
 	}
 	/*
@@ -2352,13 +2373,14 @@ public class StockInfoManager
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 								.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(panel_2, 0, 0, Short.MAX_VALUE)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 										.addComponent(scrollPane, 0, 0, Short.MAX_VALUE)
-										.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
-										.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE))
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 454, GroupLayout.PREFERRED_SIZE)))
+										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+											.addComponent(panel_2, 0, 0, Short.MAX_VALUE)
+											.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
+											.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE)))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 458, GroupLayout.PREFERRED_SIZE)))
 							.addGap(1067)
 							.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -2367,25 +2389,23 @@ public class StockInfoManager
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnRemvZdy, Alignment.TRAILING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(6)
-									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(btnRemvZdy)
+								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 755, Short.MAX_VALUE))
+						.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 755, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+						.addComponent(btnDBStatus, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
 						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
 							.addComponent(pnl_paomd, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
 							.addComponent(panelStatusBar, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -2519,37 +2539,39 @@ public class StockInfoManager
 		cobxgpc.setEnabled(false);
 		cobxgpc.setFont(new Font("ËÎÌו", Font.PLAIN, 12));
 		
-		JPanel pnlfortags = new JPanel();
+		pnltags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.FULLCONTROLMODE);
 		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
 		gl_panel_3.setHorizontalGroup(
 			gl_panel_3.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_3.createSequentialGroup()
 					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPanefumian, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
-						.addComponent(scrollPane_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+						.addComponent(scrollPanefumian, Alignment.TRAILING)
+						.addComponent(scrollPane_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
 						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
 							.addGap(4)
 							.addComponent(lblfumianxiaoxi)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
+							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE))
 						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
 							.addComponent(lblstockinfo)
 							.addGap(14)
-							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
-						.addComponent(scrollPanegainian, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE))
+						.addComponent(scrollPanegainian, Alignment.TRAILING)
 						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(lblquanshangpj)
 							.addGap(32)
 							.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))
+							.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE))
 						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
 							.addComponent(label_2)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(cobxgpc, 0, 368, Short.MAX_VALUE))
-						.addComponent(scrollPane_2, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
-						.addComponent(pnlfortags, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
+							.addComponent(cobxgpc, 0, 372, Short.MAX_VALUE))
+						.addComponent(scrollPane_2, Alignment.TRAILING)
+						.addGroup(gl_panel_3.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(pnltags, GroupLayout.PREFERRED_SIZE, 437, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		gl_panel_3.setVerticalGroup(
@@ -2577,20 +2599,13 @@ public class StockInfoManager
 						.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(txtfldquanshangpj, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(4)
-					.addComponent(pnlfortags, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
+					.addComponent(pnltags, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
+					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
 					.addContainerGap())
 		);
-		pnlfortags.setLayout(new BorderLayout(0, 0));
-		
-		JScrollPane sclptags = new JScrollPane();
-		pnlfortags.add(sclptags, BorderLayout.CENTER);
-		
-		pnltags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
-		sclptags.setViewportView(pnltags);
 		
 		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();
 		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo(false);
@@ -2648,7 +2663,7 @@ public class StockInfoManager
 		btnhudongyi = new JButton("");
 		btnhudongyi.setEnabled(false);
 		
-		btnhudongyi.setToolTipText("\u4E92\u52A8\u6613");
+		btnhudongyi.setToolTipText("\u5173\u952E\u8BCD\u7BA1\u7406");
 		btnhudongyi.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/tags (1).png")));
 		
 		btnSlack = new JButton("");

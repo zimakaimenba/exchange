@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.labelmanagement.TagService;
 
 
 public class CombineTagsDialog extends TagDialog<Tag>

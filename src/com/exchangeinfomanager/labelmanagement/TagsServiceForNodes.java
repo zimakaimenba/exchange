@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
@@ -13,7 +14,7 @@ import com.exchangeinfomanager.labelmanagement.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-public class DBNodesTagsService implements TagService  
+public class TagsServiceForNodes implements TagService  
 {
 	private TagsDbOperation dboptfornode;
 	private TagsNewsDbOperation dbfornews;
@@ -23,14 +24,14 @@ public class DBNodesTagsService implements TagService
 	private Collection<BkChanYeLianTreeNode> nodesets;
 	
 
-	public DBNodesTagsService (Collection<BkChanYeLianTreeNode> nodeset)
+	public TagsServiceForNodes (Collection<BkChanYeLianTreeNode> nodeset)
 	{
 		dboptfornode = new TagsDbOperation (); 
 		dbforsys = new TagsDbOperation ();
 		dbfornews = new TagsNewsDbOperation ();
 		this.nodesets = nodeset;
 	}
-	public DBNodesTagsService (BkChanYeLianTreeNode nodeset)
+	public TagsServiceForNodes (BkChanYeLianTreeNode nodeset)
 	{
 		dboptfornode = new TagsDbOperation (); 
 		dbforsys = new TagsDbOperation ();
@@ -50,6 +51,7 @@ public class DBNodesTagsService implements TagService
 	{
 		this.nodesets = nodesets;
 		this.cache.clearAllTags();
+		this.cache.refreshTags();
 	}
 	@Override
 	public Collection<Tag> getTags() throws SQLException 
@@ -82,6 +84,7 @@ public class DBNodesTagsService implements TagService
 		for (Iterator<Tag> lit = label.iterator(); lit.hasNext(); ) {
 	        Tag f = lit.next();
 	        
+//	        boolean result = curlabl.contains(f);
 	        Boolean incache = false;
 	        for (Iterator<Tag> it = curlabl.iterator(); it.hasNext(); ) {
 		        Tag l = it.next();

@@ -13,9 +13,6 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -24,13 +21,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
-import com.exchangeinfomanager.StockCalendar.ColorScheme;
+
 import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
-import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.guifactory.JPanelFactory;
+
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
@@ -46,6 +41,7 @@ public class LabelTag extends JPanel
 	public static final String PROPERTYCHANGEDASSEARCH = "SEARCH_ON_INTERNET";
 	public static final String PROPERTYCHANGEDBUNCHADD = "PI_LIANG_TIAN_JIA";
 	public static final String PROPERTYCHANGEDRELATEDNODES = "RELATED_NODES";
+	public static final String PROPERTYCHANGEDATAGWASSELECTED = "A_TAG_WAS_SELECTED";
 	
 	private Color tagcolor;
 //	private static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
@@ -204,6 +200,20 @@ public class LabelTag extends JPanel
 			Pmenu.add(new JSeparator ());
 			Pmenu.add(menuItemAdd);
 	 }
+	 
+	 public void setMenuMode (String menumode)
+	 {
+		 if(menumode.equals(TagsPanel.PARTCONTROLMODE)) {
+			 Pmenu.remove(menuItemEdit);
+			 Pmenu.remove(menuItemDel);
+			 Pmenu.remove(menuItemCombined);
+			 Pmenu.remove(menuItemaddexpress);
+			 Pmenu.remove(menuItemAdd);
+		 } else 
+		 if (menumode.equals(TagsPanel.NONECONTROLMODE)) {
+			 Pmenu.removeAll ();
+		 }
+	 }
 	
 	private class ChangeKeyWordsPanelController extends MouseAdapter 
 	{
@@ -231,15 +241,21 @@ public class LabelTag extends JPanel
 	
 	private void unselectTag(Tag tmptag, JPanel p)
     {
-    	((InsertedTag)tmptag).setSelected(false);
-        LineBorder line = new LineBorder( this.tagcolor, 2, true);
- 	    p.setBorder(line);
+		((InsertedTag)tmptag).setSelected(false);
+		LineBorder line = new LineBorder( this.tagcolor, 2, true);
+ 	   	p.setBorder(line);
+ 	    
+ 	   	PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDATAGWASSELECTED , "", "ATAGWASSELECTED"  );
+ 	   	pcs.firePropertyChange(evtzd);
     }
     private void selectTag (Tag tmptag, JPanel p)
     {
     	((InsertedTag)tmptag).setSelected(true);
         LineBorder line = new LineBorder(Color.BLUE, 2, true);
  	    p.setBorder(line);
+ 	    
+ 	   PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDATAGWASSELECTED , "", "ATAGWASSELECTED"  );
+       pcs.firePropertyChange(evtzd);
     }
 	 
 	

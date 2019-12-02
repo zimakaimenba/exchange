@@ -4,23 +4,24 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 
+import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
 import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-public class DBUrlTagsService implements TagService
+public class TagsServiceForURLAndFile implements TagService
 {
 	private TagsUrlOperation db;
 	private Set<String> urlset;
 
-	public DBUrlTagsService (Set<String> urlset)
+	public TagsServiceForURLAndFile (Set<String> urlset)
 	{
 		this.db = new TagsUrlOperation ();
 		this.urlset =  urlset;
 	}
 
 	
-	public DBUrlTagsService ()
+	public TagsServiceForURLAndFile ()
 	{
 		this.db = new TagsUrlOperation ();
 	}

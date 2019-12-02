@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
@@ -35,6 +37,8 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	protected List<BkChanYeLianTreeNode> entryList;
 	protected LocalDate showwknum;
 	protected String period;
+
+	private Collection<Tag> tags;
 	/*
 	 * 
 	 */
@@ -53,7 +57,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		this.period = period;
 
 		entryList = null;
-		entryList = new ArrayList<>( bankuai.getSpecificPeriodBanKuaiGeGu(wknum,0,period) );
+		entryList = new ArrayList<>( bankuai.getSpecificPeriodStockOfBanKuai(wknum,0) );
 		
 		 Iterator itr = entryList.iterator(); 
 	     while (itr.hasNext())      { 
@@ -250,6 +254,15 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		    	this.fireTableDataChanged();
 	    	}
 	    }
+	    
+	    public void setCurrentHighlightKeyWords (Collection<Tag> keywords)
+		{
+			this.tags = keywords;
+		}
+		public Collection<Tag> getCurrentHighlightKeyWords ()
+		{
+			return this.tags ;
+		}
 	    
 				
 

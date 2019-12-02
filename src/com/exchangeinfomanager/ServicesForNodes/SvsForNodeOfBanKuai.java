@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.ServicesForNodes;
 
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,9 +14,14 @@ import org.joda.time.Interval;
 import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.labelmanagement.TagsServiceForNodes;
+import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
@@ -264,6 +270,100 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		}
 		
 		return result;
+	}
+	
+	/*
+	 * 
+	 */
+	public BanKuai getAllGeGuOfBanKuai (BanKuai bankuai,String period) 
+	{
+		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getOHLCRecordsStartDate();
+		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getOHLCRecordsEndDate();
+		
+		if(bkstartday == null || bkendday == null)  {
+			bkstartday = CommonUtility.getSettingRangeDate(LocalDate.now(), "middle");
+			bkendday = LocalDate.now();
+//			return bankuai;
+		}
+		
+		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,allbkstk);
+		
+		return bankuai;
+	}
+	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, StockOfBanKuai stockofbk,String period)
+	{
+		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getOHLCRecordsStartDate();
+		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getOHLCRecordsEndDate();
+		
+		if(bkstartday == null && bkendday == null) 
+			return stockofbk;
+		
+		stockofbk = bkdbopt.getGeGuZhanBiOfBanKuai (bankuai,stockofbk, bkstartday, bkendday,period);
+
+		return stockofbk;
+	}
+	/*
+	 * �����������ĳ�����ɵĳɽ���?,��������Ƿ�����ø��ɵļ��?
+	 */
+	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, String stockcode,String period)
+	{
+		BkChanYeLianTreeNode stock = bankuai.getBanKuaiGeGu(stockcode);
+		if(stock == null)
+			return null;
+		
+		stock = this.getGeGuOfBanKuai( bankuai,  (StockOfBanKuai) stock,period);
+		return (StockOfBanKuai) stock;
+	}
+	public StockOfBanKuai getGeGuOfBanKuai(String bkcode, String stockcode,String period) 
+	{
+		BanKuai bankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
+		if(bankuai == null)
+			return null;
+		
+		StockOfBanKuai stock = (StockOfBanKuai) bankuai.getBanKuaiGeGu(stockcode);
+		if(stock == null)
+			return null;
+		
+		stock = this.getGeGuOfBanKuai( bankuai,  stock,period);
+
+		return stock;
+	}
+	
+	public void syncBanKuaiAndItsStocksForSpecificTime (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek  ) throws SQLException
+	{
+		this.getNodeData(bk, requiredstartday, requiredendday, period,calwholeweek);
+		
+		this.syncNodeData(bk);
+		
+		 TagsServiceForNodes tagsevofbk = new TagsServiceForNodes (bk);
+		 Collection<Tag> tags = tagsevofbk.getTags();
+		 bk.setNodeTags(tags);
+		
+		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { 
+			SvsForNodeOfStock svsforstock = new SvsForNodeOfStock (); 
+			bk = this.getAllGeGuOfBanKuai (bk,period); 
+//			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+			Collection<BkChanYeLianTreeNode> allbkgg = bk.getSpecificPeriodBanKuaiGeGu (requiredendday,0);
+			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
+//		    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
+		    		 BkChanYeLianTreeNode stock = svsforstock.getNodeData(((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
+		    		 svsforstock.syncNodeData(stock);
+	    			 
+	    			 TagsServiceForNodes tagsevofnode = new TagsServiceForNodes (stock);
+	    			 Collection<Tag> tagsofstock = tagsevofnode.getTags();
+	    			 ((Stock)stock).setNodeTags(tagsofstock);
+	    			 
+	    			 tagsofstock  = null;
+	    			 tagsevofnode = null;
+	    			 
+//		    	 }
+			}
+			
+			if(calwholeweek ) { //
+				this.getNodeQueKouInfo(bk, requiredstartday, requiredendday, period);
+				this.getNodeZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
+			}
+		}
 	}
 
 }

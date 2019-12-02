@@ -9,17 +9,24 @@ import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
@@ -27,6 +34,7 @@ import org.bouncycastle.util.Integers;
 import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
@@ -37,6 +45,8 @@ import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.udojava.evalex.Expression;
 
 
@@ -50,13 +60,17 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableRenderer.class);
+	
+	private Border outside = new MatteBorder(1, 0, 1, 0, Color.RED);
+	private Border inside = new EmptyBorder(0, 1, 0, 1);
+	private Border highlight = new CompoundBorder(outside, inside);
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
 	{
 //		{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
 		
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-
+	    JComponent jc = (JComponent)comp;
 	    
 	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { //用百分比显示
 	    	String valuepect = "";
@@ -80,13 +94,24 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    int modelRow = table.convertRowIndexToModel(row);
 	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
 	    Stock stock = stockofbank.getStock();
-	    BanKuai bankuai = stockofbank.getBanKuai();
+//	    BanKuai bankuai = stockofbank.getBanKuai();
 	    
 	    if(stock.wetherHasReiewedToday()) {
         	Font defaultFont = this.getFont();
         	Font font = new Font(defaultFont.getName(), Font.BOLD + Font.ITALIC,defaultFont.getSize());
         	comp.setFont(font);
         }
+	    
+	    
+	    Collection<Tag> keywordsset = tablemodel.getCurrentHighlightKeyWords ();
+	    if(keywordsset != null) {
+	    	Collection<Tag> curtags = stock.getNodeTags ();
+		    SetView<Tag> intersection = Sets.intersection((HashSet<Tag>)keywordsset, (HashSet<Tag>)curtags);
+		    if( !intersection.isEmpty() && intersection.size() == keywordsset.size() ) {
+		    	jc.setBorder( highlight );
+		    }
+	    }
+	    
 	    
 	    Color foreground = Color.BLACK, background = Color.white;
 	    
