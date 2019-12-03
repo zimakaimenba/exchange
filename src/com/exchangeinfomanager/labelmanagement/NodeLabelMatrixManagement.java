@@ -31,6 +31,7 @@ import javax.swing.border.EmptyBorder;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.Services.TagService;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
@@ -39,7 +40,6 @@ import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.guifactory.JTextFactory;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelTag;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
@@ -88,8 +88,6 @@ public class NodeLabelMatrixManagement extends JDialog
 		this.allbkstk = AllCurrentTdxBKAndStoksTree.getInstance();
 		
 		//ËùÓÐKW
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
-		
 		lballdbservice = new TagsServiceForSystemTags (); 
 		allsyskwcache = new CacheForInsertedTag (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);

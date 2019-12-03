@@ -9,8 +9,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
 public class JDialogForTagSearchMatrixPanelForWholeSearchTags extends JDialog {
 

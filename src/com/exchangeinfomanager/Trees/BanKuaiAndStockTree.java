@@ -274,21 +274,20 @@ public class BanKuaiAndStockTree extends JTree
     /*
 	 * 找到指定的节点
 	 */
-	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String bkinputed,int requirenodetype) //有时候板块和个股代码相同,所以要加上type
+	public BkChanYeLianTreeNode getSpecificNodeByHypyOrCode (String nodecode,int requirenodetype) //有时候板块和个股代码相同,所以要加上type
 	{
 		TreePath bkpath = null ;
+		
     	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
-    	if(bkinputed.equals("000000"))
+    	if(nodecode.equals("000000"))
     		return treeroot;
     	
 	    @SuppressWarnings("unchecked")
 		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();
 	    while (e.hasMoreElements() ) {
 	    	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) e.nextElement();
-	    	Boolean found = node.checktHanYuPingYin(bkinputed);
-//    		logger.debug(node.getMyOwnCode());
+	    	Boolean found = node.checktHanYuPingYin(nodecode);
 	        if (found && node.getType() == requirenodetype ) {
-//	        	logger.debug(node.getMyOwnCode());
 	             bkpath = new TreePath(node.getPath());
 	             break;
 	        }
@@ -299,6 +298,22 @@ public class BanKuaiAndStockTree extends JTree
 			
 		} else
 			return null;
+	}
+	public  Boolean searchAndLocateNodeInTree(BkChanYeLianTreeNode node) 
+	{
+		   BkChanYeLianTreeNode findnode = this.getSpecificNodeByHypyOrCode (node.getMyOwnCode(),node.getType());
+		   if(findnode == null)
+			   return false;
+		   
+		   TreePath bkpath = new TreePath(findnode.getPath());
+		   if(bkpath != null) {
+			   this.setSelectionPath(bkpath);
+			   this.scrollPathToVisible(bkpath);
+			   this.expandTreePathAllNode(bkpath);
+			   
+			   return true;
+			}
+		return null;
 	}
 	/*
 	 * 找到nodecode下所有requirenodetype的节点名称

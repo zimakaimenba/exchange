@@ -41,6 +41,7 @@ import org.jsoup.select.Elements;
 import com.exchangeinfomanager.ServicesForNodes.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.InvisibleTreeModel;
@@ -79,7 +80,6 @@ import com.exchangeinfomanager.labelmanagement.CacheForInsertedTag;
 import com.exchangeinfomanager.labelmanagement.TagsServiceForNodes;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.LabelTag;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -232,12 +232,15 @@ public class BanKuaiFengXi extends JDialog
 		
 		tableBkZhanBi.repaint(); //
 		
+		cyltreecopy.searchAndLocateNodeInTree (selectedbk);
+		
+		
 		showReminderMessage (bkfxremind.getBankuairemind());
 	}
 	private void refreshCurrentBanKuaiTags(BanKuai selectedbk, String globeperiod2) 
 	{
 		SvsForNodeOfBanKuai svrforbk = new SvsForNodeOfBanKuai ();
-		selectedbk = svrforbk.getAllGeGuOfBanKuai(selectedbk, globeperiod);
+		selectedbk = svrforbk.getAllGeGuOfBanKuai(selectedbk);
 		Collection<BkChanYeLianTreeNode> bkstock = selectedbk.getSpecificPeriodBanKuaiGeGu (this.dateChooser.getLocalDate(),0);
 		bkstock.add(selectedbk);
 		TagsServiceForNodes lbnodedbservice = new TagsServiceForNodes (bkstock);
@@ -454,6 +457,8 @@ public class BanKuaiFengXi extends JDialog
 			displayNodeInfo (selectstock.getStock());
 
 			refreshCurrentStockTags (selectstock.getStock() );
+			
+			cyltreecopy.searchAndLocateNodeInTree (selectstock.getStock());
 			
 			showReminderMessage (bkfxremind.getStockremind());
 			

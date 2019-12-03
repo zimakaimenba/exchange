@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.labelmanagement.Tag;
+package com.exchangeinfomanager.Tag;
 
 import java.awt.Color;
 import java.util.ArrayList;

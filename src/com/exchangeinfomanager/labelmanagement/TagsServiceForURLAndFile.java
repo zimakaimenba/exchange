@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.exchangeinfomanager.Services.TagService;
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagsServiceForURLAndFile implements TagService
@@ -38,7 +38,8 @@ public class TagsServiceForURLAndFile implements TagService
 	}
 
 	@Override
-	public void createTag(Tag label) throws SQLException {
+	public Tag createTag(Tag label) throws SQLException {
+		return label;
 		// TODO Auto-generated method stub
 		
 	}
@@ -50,7 +51,8 @@ public class TagsServiceForURLAndFile implements TagService
 	}
 
 	@Override
-	public void updateTag(Tag label) throws SQLException {
+	public Tag updateTag(Tag label) throws SQLException {
+		return label;
 		// TODO Auto-generated method stub
 		
 	}
@@ -70,7 +72,8 @@ public class TagsServiceForURLAndFile implements TagService
 
 
 	@Override
-	public void createTags(Collection<Tag> label) throws SQLException {
+	public Collection<Tag> createTags(Collection<Tag> label) throws SQLException {
+		return label;
 		// TODO Auto-generated method stub
 		
 	}
@@ -84,16 +87,25 @@ public class TagsServiceForURLAndFile implements TagService
 
 
 	@Override
-	public void combinTags(Tag newlabel) throws SQLException {
+	public Tag combinTags(Collection<Tag> oldlabels , Tag newlabel) throws SQLException {
+		return newlabel;
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void updateTags(Collection<Tag> label) throws SQLException {
+	public Collection<Tag> updateTags(Collection<Tag> label) throws SQLException {
+		return label;
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public Tag combinTags(Tag newlabel) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

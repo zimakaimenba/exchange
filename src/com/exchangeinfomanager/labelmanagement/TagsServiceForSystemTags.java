@@ -7,9 +7,10 @@ import java.util.Map;
 import java.util.Set;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.Services.TagService;
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
 public class TagsServiceForSystemTags implements TagService  
 {
@@ -18,6 +19,7 @@ public class TagsServiceForSystemTags implements TagService
 	private TagsNewsDbOperation dboptfornews;
 	private TagCache cache;
 	private Set<String> nodeset;
+	
 
 	public TagsServiceForSystemTags ()
 	{
@@ -39,14 +41,16 @@ public class TagsServiceForSystemTags implements TagService
 	}
 
 	@Override
-	public void createTag(Tag label) throws SQLException 
+	public  Tag createTag(Tag label) throws SQLException 
 	{
-		if( cache.hasBeenInCache (label.getName())   ) 
-			return;
+		if( cache != null && cache.hasBeenInCache (label.getName())   ) 
+			return label;
 			
 		Tag m = this.dboptforsys.createSystemTags(label);
 		if(m != null && cache != null)
 			 cache.addTag(m);
+		
+		return m;
 	}
 
 	@Override
@@ -65,22 +69,27 @@ public class TagsServiceForSystemTags implements TagService
 	}
 
 	@Override
-	public void updateTag(Tag label) throws SQLException
+	public Tag updateTag(Tag label) throws SQLException
 	{
 		this.dboptforsys.updateSystemTags (label);
-		cache.updateTag (label);
+		
+		if(cache != null)
+			cache.updateTag (label);
+		
+		return label;
 	}
 	@Override
-	public void updateTags(Collection<Tag> label) throws SQLException 
+	public Collection<Tag> updateTags(Collection<Tag> label) throws SQLException 
 	{
+		return label;
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void createTags(Collection<Tag> label) throws SQLException {
-		// TODO Auto-generated method stub
-		
+	public Collection<Tag> createTags(Collection<Tag> label) throws SQLException 
+	{
+		return null;
 	}
 
 	@Override
@@ -90,10 +99,28 @@ public class TagsServiceForSystemTags implements TagService
 	}
 
 	@Override
-	public void combinTags(Tag newlabel) throws SQLException {
-		// TODO Auto-generated method stub
+	public Tag combinTags(Collection<Tag> oldlabels, Tag newlabel) throws SQLException 
+	{
+		InsertedTag newtag = this.dboptforsys.combinLabelsToNewOneForSystem (oldlabels, newlabel);
 		
+		this.dboptfornode.combinLabelsToNewOneForNodes(oldlabels,newtag);
+		
+		this.dboptfornews.combinLabelsToNewOneForNews (oldlabels, newtag);
+		
+		cache.addTag(newlabel);
+		
+		return newtag;
 	}
+	@Override
+	public Tag combinTags(Tag newlabel) throws SQLException
+	{
+		Collection<Tag> curlabls = cache.produceSelectedTags();
+		Tag m = this.combinTags(curlabls, newlabel);
+		
+		return m;
+	}
+	
+	
 	public   Collection<BkChanYeLianTreeNode> getNodesSetWithAllSpecificTags (String tagname)
 	{
 		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithAllSpecificTags (tagname);

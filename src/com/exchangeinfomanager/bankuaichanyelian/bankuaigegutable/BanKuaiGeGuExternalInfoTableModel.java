@@ -5,13 +5,12 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
-
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 
 public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableModel
 {

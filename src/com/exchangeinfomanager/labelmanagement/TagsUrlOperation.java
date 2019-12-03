@@ -24,7 +24,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 import com.lc.nlp.keyword.algorithm.TextRank;

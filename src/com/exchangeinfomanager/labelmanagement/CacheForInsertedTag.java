@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.exchangeinfomanager.Services.TagService;
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class CacheForInsertedTag extends TagCache

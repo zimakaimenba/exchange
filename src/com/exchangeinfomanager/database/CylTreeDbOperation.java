@@ -39,12 +39,12 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.joda.time.LocalDate;
 
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.InvisibleTreeModel;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI;
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -64,7 +64,6 @@ public class CylTreeDbOperation
 		connectdb = ConnectDataBase.getInstance();
 		
 		this.treecyl = treecyl;
-		
 	}
 	public CylTreeDbOperation ()
 	{

@@ -33,8 +33,8 @@ import org.apache.log4j.Logger;
 import org.bouncycastle.util.Integers;
 import org.jfree.data.time.ohlc.OHLCItem;
 
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;

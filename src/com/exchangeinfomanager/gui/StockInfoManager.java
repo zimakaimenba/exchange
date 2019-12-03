@@ -318,13 +318,13 @@ public class StockInfoManager
 		lbnodedbservice.setCache(bkstkkwcache);
 		pnltags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
 		
-		count = pnltags.getComponentCount();
-		for(int i=0;i<count;i++) {
-			Component comp = pnltags.getComponent(i);
-			String name = comp.getName();
-			Class<? extends Component> classes = comp.getClass();
-			comp.getLocation();
-		}
+//		count = pnltags.getComponentCount();
+//		for(int i=0;i<count;i++) {
+//			Component comp = pnltags.getComponent(i);
+//			String name = comp.getName();
+//			Class<? extends Component> classes = comp.getClass();
+//			comp.getLocation();
+//		}
 		
 //		pnltags.revalidate();
 //		pnltags.repaint();

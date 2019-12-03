@@ -9,7 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.Tag.Tag;
 
 public class JDislogForTagSearchMatrixPanelForTagsBundleAdd extends JDialog {
 

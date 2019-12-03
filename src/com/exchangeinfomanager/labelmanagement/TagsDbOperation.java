@@ -14,13 +14,13 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.StringUtil;
 
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.NodeInsertedTag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 
 import com.exchangeinfomanager.database.ConnectDataBase;
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.NodeInsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.google.common.base.Joiner;
@@ -486,6 +486,7 @@ public class TagsDbOperation
 						e.printStackTrace();
 					}
 			}
+		}
 			//加上新的
 			int newid = ((InsertedTag)newlabel).getID();
 			for(Map.Entry<String,Integer> entry : nodecodeset.entrySet()) {
@@ -510,7 +511,6 @@ public class TagsDbOperation
 					e.printStackTrace();
 				}
 			}
-		}
 	}
 
 	public void forcedUnattachedTagFromAllNodes(Collection<Tag> label)

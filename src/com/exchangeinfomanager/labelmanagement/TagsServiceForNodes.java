@@ -7,18 +7,19 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.exchangeinfomanager.Services.TagService;
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.NodeInsertedTag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.NodeInsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagsServiceForNodes implements TagService  
 {
 	private TagsDbOperation dboptfornode;
 	private TagsNewsDbOperation dbfornews;
-	private TagsDbOperation dbforsys;
+//	private TagsDbOperation dbforsys;
+	private TagsServiceForSystemTags tagsvssys; 
 	
 	private TagCache cache;
 	private Collection<BkChanYeLianTreeNode> nodesets;
@@ -26,15 +27,20 @@ public class TagsServiceForNodes implements TagService
 
 	public TagsServiceForNodes (Collection<BkChanYeLianTreeNode> nodeset)
 	{
+		tagsvssys =  new TagsServiceForSystemTags ();
+		CacheForInsertedTag allsyskwcache = new CacheForInsertedTag (tagsvssys);
+		tagsvssys.setCache(allsyskwcache);
+		
 		dboptfornode = new TagsDbOperation (); 
-		dbforsys = new TagsDbOperation ();
 		dbfornews = new TagsNewsDbOperation ();
+		
 		this.nodesets = nodeset;
 	}
 	public TagsServiceForNodes (BkChanYeLianTreeNode nodeset)
 	{
+		tagsvssys =  new TagsServiceForSystemTags ();
+		
 		dboptfornode = new TagsDbOperation (); 
-		dbforsys = new TagsDbOperation ();
 		dbfornews = new TagsNewsDbOperation ();
 		
 		this.nodesets = new HashSet<> ();
@@ -60,46 +66,41 @@ public class TagsServiceForNodes implements TagService
 		return result;
 	}
 	@Override
-	public void createTag(Tag label) throws SQLException 
+	public Tag createTag(Tag label) throws SQLException 
 	{
 		//可以在这里检查是否已经有同样的label
 		if(cache != null) {
 			Collection<Tag> curlabl = cache.produceTags();
-			for (Iterator<Tag> it = curlabl.iterator(); it.hasNext(); ) {
-		        Tag f = it.next();
-		        if (f.getName().equals( label.getName()  ))
-		            return;
-		    }
+			if(curlabl.contains(label))
+				return label;
 		}
 		
-		Tag tag = this.dbforsys.createSystemTags(label);
+		Tag tag = this.tagsvssys.createTag(label);
+		
 		this.dboptfornode.attachedTagToNodes ( nodesets, tag);
+		
 		if(tag != null && cache != null)
    		 	cache.addTag(tag);
+		
+		return tag;
 	}
-	public void createTags(Collection<Tag> label) throws SQLException 
+	public Collection<Tag> createTags(Collection<Tag> label) throws SQLException 
 	{
 		//可以在这里检查是否已经有同样的label
 		Collection<Tag> curlabl = cache.produceTags();
 		for (Iterator<Tag> lit = label.iterator(); lit.hasNext(); ) {
 	        Tag f = lit.next();
-	        
-//	        boolean result = curlabl.contains(f);
-	        Boolean incache = false;
-	        for (Iterator<Tag> it = curlabl.iterator(); it.hasNext(); ) {
-		        Tag l = it.next();
-		        if (f.getName().equals( l.getName()  )) {
-		        	incache = true;
-		        	break;
-		        }
-		    }
-	        
-	        if(!incache)
-	        	this.createTag (f);
+
+	        Tag m;
+			if( !curlabl.contains(f) ) 
+	        	m = this.createTag (f);
 	    }
 		
-		if(label != null && cache != null)
-   		 	cache.addTags(label);
+		if(label != null && cache != null) {
+			cache.addTags(label);
+		}
+		
+		return label;
 	}
 	@Override
 	public void deleteTag(Tag label) throws SQLException 
@@ -113,17 +114,18 @@ public class TagsServiceForNodes implements TagService
 	 	cache.removeTags(label);
 	}
 	@Override
-	public void updateTag(Tag label) throws SQLException 
+	public Tag updateTag(Tag label) throws SQLException 
 	{
 		int labelid = ((InsertedTag)label).getID();
 		
 		Collection<Tag> curlabl = cache.produceTags();
+		
 		for (Iterator<Tag> it = curlabl.iterator(); it.hasNext(); ) { //必须从自己CACHE里面找，因为有可能并不是自己cache里面的tag,颜色不一样
 	        Tag f = it.next();
 	        int myownkwid = ((InsertedTag)f).getID();
 	        if(myownkwid == labelid) { 
 	        	
-	        	this.dbforsys.updateSystemTags (label);
+	        	this.tagsvssys.updateTag (label);
 	        	
 	        	if(f instanceof NodeInsertedTag) { //只改自己的颜色
 	        		((NodeInsertedTag)f).setNodeMachColor( label.getColor()  );
@@ -136,24 +138,34 @@ public class TagsServiceForNodes implements TagService
 		}
 		
 		cache.updateTag (label);
+		
+		return label;
 	}
 	@Override
-	public void combinTags (Tag newlabel) throws SQLException
+	public Tag combinTags (Collection<Tag> oldlabels, Tag newlabel) throws SQLException
+	{
+//		Collection<Tag> curlabls = cache.produceSelectedTags();
+		
+		Tag tag = tagsvssys.combinTags(oldlabels, newlabel);
+		
+		cache.addTag(newlabel);
+		
+		return tag;
+	}
+	@Override
+	public Collection<Tag> updateTags(Collection<Tag> label) throws SQLException {
+		return label;
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public Tag combinTags(Tag newlabel) throws SQLException 
 	{
 		Collection<Tag> curlabls = cache.produceSelectedTags();
 		
-		InsertedTag newtag = this.dbforsys.combinLabelsToNewOneForSystem (curlabls, newlabel);
+		Tag t = this.combinTags(curlabls, newlabel);
 		
-		this.dboptfornode.combinLabelsToNewOneForNodes(curlabls,newtag);
-		
-		this.dbfornews.combinLabelsToNewOneForNews (curlabls, newtag);
-		
-		cache.addTag(newlabel);
-	}
-	@Override
-	public void updateTags(Collection<Tag> label) throws SQLException {
-		// TODO Auto-generated method stub
-		
+		return t;
 	}
 	
 	

@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -50,21 +51,23 @@ import javax.swing.table.DefaultTableModel;
 
 import javax.swing.tree.TreePath;
 
+import com.exchangeinfomanager.ServicesForNodes.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
+import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.CylTreeDbOperation;
+
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.labelmanagement.TagCache;
 import com.exchangeinfomanager.labelmanagement.TagsServiceForSystemTags;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
@@ -77,20 +80,26 @@ import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import java.awt.FlowLayout;
+
 
 public class BanKuaiAndChanYeLianGUI  extends JPanel 
 {
+	private SvsForNodeOfBanKuai svsforbank;
+
 	public BanKuaiAndChanYeLianGUI  ()
 	{
+		setLayout(new BorderLayout(0, 0));
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 
-		this.bkstk = AllCurrentTdxBKAndStoksTree.getInstance();
+//		this.bkstk = AllCurrentTdxBKAndStoksTree.getInstance();
 		
-		setLayout(new BorderLayout(0, 0));
+		svsforbank = new SvsForNodeOfBanKuai ();
+		
+		
 		
 		bkopt = new BanKuaiDbOperation ();
 		
@@ -104,7 +113,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	
 	public static final int UP=0, LEFT=1, RIGHT=2, DOWN=3, NONE=4;
 	
-	private AllCurrentTdxBKAndStoksTree bkstk;
+//	private AllCurrentTdxBKAndStoksTree bkstk;
 	private String currentselectedtdxbk = "";
 //	private CylTreeDbOperation treedb;
 	private TreeOfChanYeLian treechanyelian;
@@ -124,26 +133,9 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		lballdbservice.setCache(allsyskwcache);
 		pnllblsysmanagement.initializeTagsPanel (lballdbservice,allsyskwcache);
 		
-		
-//		//subgpc
-//		List<BkChanYeLianTreeNode> subgpclist = treedb.getSubGuPiaoChi ();
-//		((BkChanYeLianTreeNodeListTableModel)tablesubcyl.getModel()).refresh(subgpclist);
-		
 		//bankuai
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.bkstk.getAllBkStocksTree().getModel().getRoot();
-        int bankuaicount = this.bkstk.getAllBkStocksTree().getModel().getChildCount(treeroot);
-        List<BkChanYeLianTreeNode> allbklist = new ArrayList<> ();
-		for(int i=0;i < bankuaicount; i++) {
-			try {
-				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.bkstk.getAllBkStocksTree().getModel().getChild(treeroot, i);
-				if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
-					BkChanYeLianTreeNode cylbk = new CylTreeNestedSetNode (childnode.getMyOwnCode(), childnode.getMyOwnName(), BkChanYeLianTreeNode.TDXBK );
-					allbklist.add(cylbk);
-				}
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-				e.printStackTrace();
-			}
-		} 
+		Collection<BkChanYeLianTreeNode> allnodes = svsforbank.getAllNodes();
+		List<BkChanYeLianTreeNode> allbklist = new ArrayList<> (allnodes);
 		((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).refresh(allbklist);
 	}
 	/*
@@ -306,10 +298,10 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	{
 		int modelRow = tablebankuai.convertRowIndexToModel(row);
 		BkChanYeLianTreeNode selectednode =  ((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).getNode(modelRow);
-		BanKuai selectedbankuai = (BanKuai) bkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selectednode.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
-		selectedbankuai = bkopt.getTDXBanKuaiGeGuOfHyGnFg (selectedbankuai,CommonUtility.getSettingRangeDate(LocalDate.now(),"large"), LocalDate.now(),bkstk.getAllBkStocksTree());
-		
-		List<BkChanYeLianTreeNode> allbkgg = selectedbankuai.getAllGeGuOfBanKuaiInHistory();
+
+		selectednode = svsforbank.getAllGeGuOfBanKuai((BanKuai) selectednode);
+
+		List<BkChanYeLianTreeNode> allbkgg = ((BanKuai) selectednode).getAllGeGuOfBanKuaiInHistory();
 		List<BkChanYeLianTreeNode> cylgg = new ArrayList<> ();
 		if(allbkgg != null)
 			for(BkChanYeLianTreeNode childnode : allbkgg) 
@@ -322,6 +314,33 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	 */
 	private void createEvents() 
 	{
+		addstocktotree.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				int row = tablebkgegu.getSelectedRow();
+		  		if(row <0) {
+		  			JOptionPane.showMessageDialog(null,"请选择一个股票!","Warning",JOptionPane.WARNING_MESSAGE);
+		  			return;
+		  		}
+		  		BkChanYeLianTreeNode addednode = ((BkChanYeLianTreeNodeListTableModel)(tablebkgegu.getModel())).getNode(row);
+		  		
+		  		treechanyelian.addNewNodeToTree (addednode,BanKuaiAndChanYeLianGUI.RIGHT);
+			}
+		});
+		addbktotree.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				 int row = tablebankuai.getSelectedRow() ;
+				 if( row <0) {
+					 JOptionPane.showMessageDialog(null,"请选择一个子板块!");
+					 return;
+				 }
+				 
+				 BkChanYeLianTreeNode subcode = ((BkChanYeLianTreeNodeListTableModel)(tablebankuai.getModel())).getNode(row);
+				 treechanyelian.addNewNodeToTree (subcode, BanKuaiAndChanYeLianGUI.RIGHT);
+			}
+		});
+		
 		tablebankuai.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 	        public void valueChanged(ListSelectionEvent event) {
 	            // do some actions here, for example
@@ -346,6 +365,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
             public void propertyChange(PropertyChangeEvent evt) {
             	if (evt.getPropertyName().equals(TagsPanel.ADDNEWTAGSTONODE)) {
             		addSubGpcButtonActionPerformed (BanKuaiAndChanYeLianGUI.RIGHT );
+            	} else {
+            		pnllblsysmanagement.initializeTagsPanel (lballdbservice,allsyskwcache);
             	}
             }
 		});
@@ -476,20 +497,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
                 addBanKuaiButtonActionPerformed(evt);
             }
         });
-		
-	   btnaddSubGPCtotree.addMouseMotionListener(new mousemotionadapter() );
-	   btnaddSubGPCtotree.addMouseListener(new java.awt.event.MouseAdapter() {
-           public void mouseExited(java.awt.event.MouseEvent evt) {
-//           	addSubnodeButton.setIcon(addSubnodeIcon);
-//   	        addSubnodeButton.setToolTipText("Add subnode");
-           }
-       });
-	   btnaddSubGPCtotree.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-        	   int direction = ((SubnodeButton)evt.getSource()).getDirection();
-               addSubGpcButtonActionPerformed(direction);
-           }
-       });
         
 		
 //		deleteButton.addMouseListener(new MouseAdapter() {
@@ -576,8 +583,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	
 	private JTable tablebankuai;
 	private JTable tablebkgegu;
-
-	private JButton btnaddSubGPCtotree;
 	private JButton btnfindnode;
 	private JButton btnAddNewGPC;
 	private JButton btnAddGeGutotree;
@@ -588,6 +593,10 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 
 	private TagsPanel pnllblsysmanagement;
 
+	private JMenuItem addbktotree;
+
+	private JMenuItem addstocktotree;
+
 	private void initializeGui() 
 	{
 		JPanel paneltree = new JPanel();
@@ -595,48 +604,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 //		paneltree.setPreferredSize(new Dimension(200, 280));
 		add(paneltree, BorderLayout.WEST);
 		paneltree.setLayout(new BorderLayout(0, 0));
-		
-		JPanel panel_3 = new JPanel();
-//		panel_3.setPreferredSize(new Dimension(50, 180));
-		paneltree.add(panel_3, BorderLayout.EAST);
-		
-		btnaddSubGPCtotree = new SubnodeButton(); 
-		btnaddSubGPCtotree.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
-		
-		btnAddBktotree = new SubnodeButton();
-		btnAddBktotree.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
-		
-		btnAddGeGutotree = new SubnodeButton();
-		btnAddGeGutotree.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
-		
-		
-		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
-		gl_panel_3.setHorizontalGroup(
-			gl_panel_3.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_panel_3.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btnaddSubGPCtotree, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_panel_3.createSequentialGroup()
-							.addGap(6)
-							.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnAddBktotree, 0, 0, Short.MAX_VALUE)
-								.addComponent(btnAddGeGutotree, GroupLayout.PREFERRED_SIZE, 38, Short.MAX_VALUE))))
-					.addContainerGap())
-		);
-		gl_panel_3.setVerticalGroup(
-			gl_panel_3.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addGap(223)
-					.addComponent(btnaddSubGPCtotree, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 224, Short.MAX_VALUE)
-					.addComponent(btnAddBktotree, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(94)
-					.addComponent(btnAddGeGutotree, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(53))
-		);
-		panel_3.setLayout(gl_panel_3);
 		
 		JPanel panel = new JPanel();
 		paneltree.add(panel, BorderLayout.CENTER);
@@ -664,14 +631,12 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		add(pnlcenter, BorderLayout.CENTER);
 		
 		JPanel panel_1 = JPanelFactory.createPanel(new BorderLayout(0,0));
-		JPanel panel_2 = JPanelFactory.createPanel(new BorderLayout(0,0));
 		JPanel panel_4 = JPanelFactory.createPanel();
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
 		JPanel panel_5 = JPanelFactory.createPanel();
 		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.X_AXIS));
 		
 		pnlcenter.add(panel_1);
-		pnlcenter.add(panel_2);
 		pnlcenter.add(panel_4);
 		pnlcenter.add(panel_5);
 		
@@ -692,10 +657,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		
 		txaDescripton = new JTextArea ();
 		sclpforpnl71.setViewportView(txaDescripton);
-		
-		
-		JScrollPane sclpforpnl21 = new JScrollPane();
-		panel_2.add(sclpforpnl21,BorderLayout.CENTER);
 		
 //		TagsPanel tagspnl = new TagsPanel ();
 //		panel_4.add(tagspnl);
@@ -735,6 +696,11 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
                 return tip;
             } 
 		};
+		JPopupMenu popupMenuforbankuai = new JPopupMenu("mfb");
+		addbktotree = new JMenuItem ("加入到产业链树");
+		popupMenuforbankuai.add(addbktotree);
+		tablebankuai.setComponentPopupMenu(popupMenuforbankuai);
+		tablebankuai.addMouseListener( new DisPlayMenuController (popupMenuforbankuai) );
 		scrollPane_51.setViewportView(tablebankuai);
 		
 		BkChanYeLianTreeNodeListTableModel bkggmodel = new BkChanYeLianTreeNodeListTableModel ();
@@ -757,6 +723,11 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
                 return tip;
             } 
 		};
+		JPopupMenu popupMenuforstock = new JPopupMenu("mfb");
+		addstocktotree = new JMenuItem ("加入到产业链树");
+		popupMenuforstock.add(addstocktotree);
+		tablebkgegu.setComponentPopupMenu(popupMenuforstock);
+		tablebkgegu.addMouseListener( new DisPlayMenuController (popupMenuforstock) );
 		scrollPane52.setViewportView(tablebkgegu);
 		
 		JPanel pnldown = new JPanel();
@@ -768,11 +739,8 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		tfldfindnodeintree = new JUpdatedTextField();
 		tfldfindnodeintree.setColumns(10);
 		
-		tfldfindgegu =  new JUpdatedTextField();
-		tfldfindgegu.setColumns(10);
-		
 		JLabel lblNewLabel = new JLabel("                             ");
-		pnldown.setLayout(new MigLayout("", "[93px][66px][][][54px][54px][66px][93px][93px]", "[23px]"));
+		pnldown.setLayout(new MigLayout("", "[93px][66px][][][54px][][54px][66px][93px][93px]", "[23px]"));
 		pnldown.add(btnfindnode, "cell 0 0,alignx left,aligny top");
 		pnldown.add(tfldfindnodeintree, "cell 1 0,alignx left,aligny center");
 		
@@ -782,11 +750,22 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		
 		btnrestorenode = new JButton("\u6062\u590D\u8282\u70B9");
 		pnldown.add(btnrestorenode, "cell 3 0");
-		pnldown.add(tfldfindgegu, "flowx,cell 5 0 2 1,alignx left,aligny center");
 		pnldown.add(lblNewLabel, "cell 4 0,alignx left,aligny center");
 		
+		btnAddBktotree = new SubnodeButton();
+		pnldown.add(btnAddBktotree, "cell 5 0");
+		btnAddBktotree.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
+		
+		btnAddGeGutotree = new SubnodeButton();
+		pnldown.add(btnAddGeGutotree, "cell 6 0");
+		btnAddGeGutotree.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
+		
+		tfldfindgegu =  new JUpdatedTextField();
+		tfldfindgegu.setColumns(10);
+		pnldown.add(tfldfindgegu, "flowx,cell 8 0,alignx left,aligny center");
+		
 		btnfindgegu = new JButton("\u5B9A\u4F4D\u8282\u70B9");
-		pnldown.add(btnfindgegu, "cell 7 0,alignx left,aligny top");
+		pnldown.add(btnfindgegu, "cell 9 0,alignx left,aligny top");
 		
 		//
 		java.util.ArrayList<java.awt.Image> imageList = new java.util.ArrayList<java.awt.Image>();
@@ -823,7 +802,32 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 			}
 		});
 	}
+	
+	private class DisPlayMenuController extends MouseAdapter 
+	{
+		private JPopupMenu Pmenu;
+		public DisPlayMenuController (JPopupMenu menu)
+		{
+			this.Pmenu = menu;
+		}
+		 @Override //https://stackoverflow.com/questions/11605426/popup-on-left-click
+	     public void mouseClicked(MouseEvent evt) {
+	       	 super.mouseClicked(evt);
+	       	 Component source = (Component)evt.getSource();
+//	       	JViewport p = (JViewport) source.getParent() ;
+//	       	 String labelname = p.getName();
+
+	       	 Point location = source.getLocation();
+	       	 Dimension size = source.getSize();
+
+	       	 int xPos = location.x ;
+	       	 int yPos = location.y ;
+	       	 Pmenu.show(source, xPos, yPos);
+		 }
+	}
 }
+
+
 
 class BkChanYeLianTreeNodeListTableModel extends DefaultTableModel 
 {

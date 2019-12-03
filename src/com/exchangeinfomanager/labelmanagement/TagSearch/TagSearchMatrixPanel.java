@@ -10,6 +10,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.exchangeinfomanager.Services.TagService;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.TableCellListener;
@@ -21,7 +22,6 @@ import com.exchangeinfomanager.labelmanagement.CacheForInsertedTag;
 import com.exchangeinfomanager.labelmanagement.TagsServiceForSystemTags;
 import com.exchangeinfomanager.labelmanagement.TagsServiceForNodes;
 import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 import java.awt.BorderLayout;

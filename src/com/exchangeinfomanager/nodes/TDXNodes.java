@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;

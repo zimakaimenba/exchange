@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.labelmanagement.Tag;
+package com.exchangeinfomanager.Tag;
 
 import java.util.Set;
 

@@ -1,7 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
 import java.time.LocalDate;
-
+import java.util.Collection;
 import java.util.HashSet;
 
 import java.util.Set;
@@ -100,9 +100,8 @@ public class ExportCondition
 					continue;
 				
 				childnode = allbksks.getAllGeGuOfBanKuai ( (BanKuai)childnode,period);
-				Set<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0,period);
-				for (BkChanYeLianTreeNode stockofbankuai : nowbkallgg) {
-					 Stock ggstock = ((StockOfBanKuai)stockofbankuai).getStock();
+				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
+				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
 //					 if( testcheck.contains(ggstock.getMyOwnCode()))
 //							System.out.print("checkTDXNodeMatchedCurSettingConditons");
 					 
@@ -111,23 +110,23 @@ public class ExportCondition
 					 if( checkednodesset.contains(ggstock.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
 						 continue;
 					 
-					 ggstock = allbksks.getStock(ggstock,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
+					 ggstock = allbksks.getStock((Stock)ggstock,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 //					 if(!Strings.isNullOrEmpty(this.getSettingMAFormula() ) || this.shouldOnlyExportStocksWithWkYangXian() != null )
 //						 allbksks.syncStockData(ggstock);
 
-					 Boolean stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA(ggstock, exportdate, period);
+					 Boolean stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA((Stock)ggstock, exportdate, period);
 					 if(stkcheckresult == null) {//停牌股
 						 checkednodesset.add( ggstock.getMyOwnCode() );
 						 continue;
 					 }
 					 
 					 if(stkcheckresult && (!Strings.isNullOrEmpty(this.getSettingMAFormula() ) || this.shouldOnlyExportStocksWithWkYangXian() != null ) ) {
-						 ggstock = allbksks.getStockKXian(ggstock, requirestart, exportdate, NodeGivenPeriodDataItem.DAY);
-						 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfCheckMA(ggstock, exportdate, period);
+						 ggstock = allbksks.getStockKXian((Stock)ggstock, requirestart, exportdate, NodeGivenPeriodDataItem.DAY);
+						 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfCheckMA((Stock)ggstock, exportdate, period);
 					 }
 					 try{
 					 if(stkcheckresult)
-						 matchednodeset.add(ggstock);
+						 matchednodeset.add((TDXNodes) ggstock);
 					 } catch(Exception e) {
 						 checkednodesset.add( ggstock.getMyOwnCode() );
 						 e.printStackTrace();

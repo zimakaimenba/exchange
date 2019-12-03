@@ -37,6 +37,11 @@ import javax.swing.JTextField;
 import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.ServicesForNodes.SvsForNodeOfFileNodes;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
+import com.exchangeinfomanager.Tag.CombineTagsDialog;
+import com.exchangeinfomanager.Tag.CreateTagDialog;
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.ModifyTagDialog;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetBanKuaisProcessor;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
@@ -44,11 +49,6 @@ import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.labelmanagement.TagsServiceForSystemTags;
 import com.exchangeinfomanager.labelmanagement.TagCache;
 import com.exchangeinfomanager.labelmanagement.TagCacheListener;
-import com.exchangeinfomanager.labelmanagement.Tag.CombineTagsDialog;
-import com.exchangeinfomanager.labelmanagement.Tag.CreateTagDialog;
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.ModifyTagDialog;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.labelmanagement.TagSearch.JDialogForTagSearchMatrixPanelForWholeSearchTags;
 import com.exchangeinfomanager.labelmanagement.TagSearch.JDislogForTagSearchMatrixPanelForTagsBundleAdd;
 import com.exchangeinfomanager.labelmanagement.TagSearch.TagSearchMatrixPanelForWholeSearchTags;
@@ -113,7 +113,11 @@ public class TagsPanel extends JPanel implements TagCacheListener
 		cache.addCacheListener(this);
 		
 		this.removeAll();
+		if(pnllabelcontain != null)
+			pnllabelcontain.removeAll();
+		
 		createGui ();
+		
 		this.revalidate();
 		this.repaint();
 		
@@ -124,6 +128,12 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	
 	private void initializeTags()
 	{
+		if(pnllabelcontain != null)
+			pnllabelcontain.removeAll();
+		
+		pnllabelcontain.revalidate();
+		pnllabelcontain.repaint();
+		
 		Collection<Tag> alltags = cache.produceTags();
 		
 		for (Tag l : alltags) {
@@ -133,13 +143,15 @@ public class TagsPanel extends JPanel implements TagCacheListener
 			label.addPropertyChangeListener(new PropertyChanged() );
 			pnllabelcontain.add(label);
 		}
+		
+		pnllabelcontain.revalidate();
+		pnllabelcontain.repaint();
 	}
 	
 	@Override
 	public void onTagChange(TagCache cache) {
 		cache.refreshTags();
 		initializeTags ();
-		
 	}
 	
 	private void createEvents() 
@@ -374,50 +386,13 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	}
 	private void bundleAddMenuAction ()
 	{
-//		String parsedpath = "E:\\";
-//		JFileChooser chooser = new JFileChooser();
-//		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-//		chooser.setCurrentDirectory(new File(parsedpath) );
-//		
-//		String filename;
-//		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-//		    if(chooser.getSelectedFile().isDirectory())
-//		    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-//		    else
-//		    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
-//		} else
-//			return;
-//	
-//		if(!filename.endsWith("EBK") ) { //不是板块文件
-//			JOptionPane.showMessageDialog(null,"不是通达信板块导出文件，请使用正确格式文件。","Warning",JOptionPane.WARNING_MESSAGE);
-//	   		return;
-//		}
-//		
-//		SvsForNodeOfFileNodes svsfornodefile = new SvsForNodeOfFileNodes (filename);
-//		Collection<BkChanYeLianTreeNode> addnodeset = svsfornodefile.getAllNodes();
-		
 		JDislogForTagSearchMatrixPanelForTagsBundleAdd bnndladd = new JDislogForTagSearchMatrixPanelForTagsBundleAdd ();
 		bnndladd.setPreSearchMustHaveTags (this.cache.produceSelectedTags());
 		bnndladd.toFront();
 		bnndladd.setVisible(true);
-//		TagService tagserviceofbunch = new DBNodesTagsService (addnodeset);
-//		TagCache tagcacheofbuch = new TagCache (tagserviceofbunch);
-//		tagserviceofbunch.setCache(tagcacheofbuch);
-//		Collection<Tag> seltag = this.cache.produceSelectedTags();
-//		try {
-//			tagserviceofbunch.createTags (seltag);
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		tagserviceofbunch = null;
-//		tagcacheofbuch = null;
 		
 		PropertyChangeEvent evtzd = new PropertyChangeEvent(this, LabelTag.PROPERTYCHANGEDBUNCHADD , "",this.cache.produceSelectedTags() );
         pcs.firePropertyChange(evtzd);
-		
-		
 	}
 	private void combinMenuAction() 
 	{

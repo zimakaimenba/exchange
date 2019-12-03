@@ -25,10 +25,9 @@ import javax.swing.border.LineBorder;
 
 
 import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
-
-import com.exchangeinfomanager.labelmanagement.Tag.InsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.NodeInsertedTag;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
+import com.exchangeinfomanager.Tag.InsertedTag;
+import com.exchangeinfomanager.Tag.NodeInsertedTag;
+import com.exchangeinfomanager.Tag.Tag;
 
 
 

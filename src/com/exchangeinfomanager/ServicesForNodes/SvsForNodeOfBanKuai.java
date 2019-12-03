@@ -12,12 +12,12 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.exchangeinfomanager.Services.ServicesForNode;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.labelmanagement.TagsServiceForNodes;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
@@ -275,10 +275,10 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	/*
 	 * 
 	 */
-	public BanKuai getAllGeGuOfBanKuai (BanKuai bankuai,String period) 
+	public BanKuai getAllGeGuOfBanKuai (BanKuai bankuai) 
 	{
-		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getOHLCRecordsStartDate();
-		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getOHLCRecordsEndDate();
+		LocalDate bkstartday = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
+		LocalDate bkendday = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
 		
 		if(bkstartday == null || bkendday == null)  {
 			bkstartday = CommonUtility.getSettingRangeDate(LocalDate.now(), "middle");
@@ -341,7 +341,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { 
 			SvsForNodeOfStock svsforstock = new SvsForNodeOfStock (); 
-			bk = this.getAllGeGuOfBanKuai (bk,period); 
+			bk = this.getAllGeGuOfBanKuai (bk); 
 //			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 			Collection<BkChanYeLianTreeNode> allbkgg = bk.getSpecificPeriodBanKuaiGeGu (requiredendday,0);
 			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {

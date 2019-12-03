@@ -14,12 +14,12 @@ import javax.swing.JPanel;
 
 import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.ServicesForNodes.SvsForNodeOfFileNodes;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 
 import com.exchangeinfomanager.labelmanagement.TagCache;
 import com.exchangeinfomanager.labelmanagement.TagsServiceForNodes;
-import com.exchangeinfomanager.labelmanagement.Tag.Tag;
 import com.exchangeinfomanager.labelmanagement.TagSearch.TagSearchMatrixPanelForAddNewsToNode.AddController;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
