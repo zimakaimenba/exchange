@@ -34,14 +34,13 @@ import javax.swing.table.TableRowSorter;
 
 
 import com.exchangeinfomanager.StockCalendar.View;
+import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-
-import com.exchangeinfomanager.labelmanagement.TagSearch.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 
 
 public class TDXNodesInfomationListsView extends View

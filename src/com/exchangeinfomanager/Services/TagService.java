@@ -6,10 +6,10 @@ import java.util.Set;
 
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.labelmanagement.TagCache;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public interface TagService 

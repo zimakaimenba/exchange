@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
-import com.exchangeinfomanager.labelmanagement.TagsNewsDbOperation;
 import com.google.common.base.Splitter;
 
 @SuppressWarnings("all")

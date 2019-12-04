@@ -1,6 +1,8 @@
 package com.exchangeinfomanager.database;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedNews;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
@@ -50,32 +52,31 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	public Collection<InsertedMeeting> getRequiredRelatedInfoForNewsAndOthers(String bankuaiid,LocalDate startdate, LocalDate enddate,Integer[] requiredtype)
+	public Collection<InsertedNews> getRequiredRelatedInfoForNewsAndOthers(String bankuaiid,LocalDate startdate, LocalDate enddate,Integer[] requiredtype)
 	{
-		Collection<InsertedMeeting> events = new ArrayList<InsertedMeeting>();
+		Collection<InsertedNews> events = new ArrayList<InsertedNews>();
 		
 		for(int i=0;i<requiredtype.length;i++) {
 			int type = requiredtype[i];
 			if(type == Meeting.NODESNEWS) {
-				Collection<InsertedMeeting> newslist = this.getNodeRelatedNews(bankuaiid,startdate,enddate);
-				events.addAll(newslist);
+				
 			} else if(type == Meeting.CHANGQIJILU) {
-				Collection<InsertedMeeting> cqlist = this.getChangQiJiLuInfo (startdate,enddate);
+				Collection<InsertedNews> cqlist = this.getChangQiJiLuInfo (startdate,enddate);
 				events.addAll(cqlist);
 			} else if(type == Meeting.JINQIGUANZHU) {
-				Collection<InsertedMeeting> jqgzlist = this.getJiQiGuanZhuInfo (startdate,enddate);
+				Collection<InsertedNews> jqgzlist = this.getJiQiGuanZhuInfo (startdate,enddate);
 				events.addAll(jqgzlist);
 			} else if( type == Meeting.RUOSHI) {
-				Collection<InsertedMeeting> qiangruoshilist = this.getRuoShiBanKuaiAndStock (bankuaiid,startdate,enddate);
+				Collection<InsertedNews> qiangruoshilist = this.getRuoShiBanKuaiAndStock (bankuaiid,startdate,enddate);
 				events.addAll(qiangruoshilist);
 			} else if(type == Meeting.QIANSHI ) {
-				Collection<InsertedMeeting> qiangruoshilist = this.getQiangShiBanKuaiAndStock(bankuaiid,startdate,enddate);
+				Collection<InsertedNews> qiangruoshilist = this.getQiangShiBanKuaiAndStock(bankuaiid,startdate,enddate);
 				events.addAll(qiangruoshilist);
 			} else if(type == Meeting.WKZONGJIE) {
-				Collection<InsertedMeeting> wkslist = this.getWeeklySummary(startdate, enddate);
+				Collection<InsertedNews> wkslist = this.getWeeklySummary(startdate, enddate);
 				events.addAll(wkslist);
 			} else if(type == Meeting.ZHISHUDATE) {
-				Collection<InsertedMeeting> zhishudatelist = this.getZhiShuKeyDates (bankuaiid,startdate,enddate);
+				Collection<InsertedNews> zhishudatelist = this.getZhiShuKeyDates (bankuaiid,startdate,enddate);
 				events.addAll(zhishudatelist);
 			} 
 		}
@@ -85,9 +86,9 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private Collection<InsertedMeeting> getZhiShuKeyDates (String bankuaiid,LocalDate startdate, LocalDate enddate)
+	private Collection<InsertedNews> getZhiShuKeyDates (String bankuaiid,LocalDate startdate, LocalDate enddate)
 	{
-		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
+		Collection<InsertedNews> meetings = new ArrayList<InsertedNews>();
 //		System.out.print("getZhiShuKeyDates");
 		
 		 //找出指数关键日期  
@@ -123,13 +124,13 @@ public final class StockCalendarAndNewDbOperation
 		         
 		         String shuoming = rspd.getString("说明");
 		         
-		         InsertedMeeting newmeeting = new InsertedMeeting(
-			                new Meeting(nodecode + shuoming, start,  end, shuoming, "指数关键日期", new HashSet<InsertedMeeting.Label>(),null,nodecode,Meeting.ZHISHUDATE), meetingID);
+		         InsertedNews newmeeting = new InsertedNews(
+			                new Meeting(nodecode + shuoming, start,  end, shuoming, "指数关键日期", new HashSet<InsertedNews.Label>(),null,nodecode,Meeting.ZHISHUDATE), meetingID);
 		         meetings.add(newmeeting);
 			 }
 			 
 			//label 	 
-	  		 for (InsertedMeeting m : meetings) {
+	  		 for (InsertedNews m : meetings) {
 	        	int meetingid = m.getID();
 	        	int meetingtype = m.getMeetingType();
 	        	
@@ -149,7 +150,7 @@ public final class StockCalendarAndNewDbOperation
 	                String name = set.getString("NAME");
 	                Color colour = Color.decode(set.getString("COLOUR"));
 	                boolean active = set.getBoolean("ACTIVE");
-	                InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
+	                InsertedNews.Label label = new InsertedNews.Label(new Meeting.Label(name, colour, active), labelID);
 	                m.getLabels().add(label);
 	            }
 	            
@@ -180,9 +181,9 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private Collection<InsertedMeeting> getNodeRelatedNews(String bankuaiid,LocalDate startdate, LocalDate enddate) 
+	public Collection<InsertedNews> getNodeRelatedNews(String bankuaiid,LocalDate startdate, LocalDate enddate) 
 	{
-		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
+		Collection<InsertedNews> meetings = new ArrayList<InsertedNews>();
 		
 		String timerangesql = null ;
 		if(startdate == null && enddate != null) {
@@ -224,16 +225,15 @@ public final class StockCalendarAndNewDbOperation
 	            String ownercodes = result.getString("关联板块");
 	            int type = Meeting.NODESNEWS;
 	            
-	            InsertedMeeting newmeeting = new InsertedMeeting(
-		                new Meeting(title, start,  description, keywords, new HashSet<InsertedMeeting.Label>(),slackurl,ownercodes,type), meetingID);
+	            InsertedNews newmeeting = new InsertedNews(
+		                new News(title, start,  description, keywords, new HashSet<InsertedNews.Label>(),slackurl,ownercodes), meetingID);
 
 	            meetings.add(newmeeting);
    		 	}
    		 
    		//label 	 
-   		 for (InsertedMeeting m : meetings) {
+   		 for (InsertedNews m : meetings) {
          	int meetingid = m.getID();
-         	int meetingtype = m.getMeetingType();
          	
          	String area  = "商业新闻";
          	sqlquerystat = "SELECT label.* FROM label INNER "
@@ -250,7 +250,7 @@ public final class StockCalendarAndNewDbOperation
                  String name = set.getString("NAME");
                  Color colour = Color.decode(set.getString("COLOUR"));
                  boolean active = set.getBoolean("ACTIVE");
-                 InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
+                 InsertedNews.Label label = new InsertedNews.Label(new News.Label(name, colour), labelID);
                  m.getLabels().add(label);
              }
              
@@ -282,9 +282,9 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private Collection<InsertedMeeting> getWeeklySummary(LocalDate startdate, LocalDate enddate)
+	private Collection<InsertedNews> getWeeklySummary(LocalDate startdate, LocalDate enddate)
 	{
-		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
+		Collection<InsertedNews> meetings = new ArrayList<InsertedNews>();
 		
 		//如果是ALL，还要从操作记录重点关注中读取每周总结报告
 		String 	sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
@@ -307,8 +307,8 @@ public final class StockCalendarAndNewDbOperation
     	            if(Strings.isNullOrEmpty(description))
     	            	description = "描述";
 
-    	            InsertedMeeting newmeeting = new InsertedMeeting(
-    		                new Meeting("一周总结", start,  description, "一周总结", new HashSet<InsertedMeeting.Label>(),null,"000000",Meeting.WKZONGJIE), meetingID);
+    	            InsertedNews newmeeting = new InsertedNews(
+    		                new Meeting("一周总结", start,  description, "一周总结", new HashSet<InsertedNews.Label>(),null,"000000",Meeting.WKZONGJIE), meetingID);
     	            meetings.add(newmeeting);
     	    }
     		
@@ -336,9 +336,9 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private Collection<InsertedMeeting> getQiangShiBanKuaiAndStock(String nodeid, LocalDate startdate, LocalDate enddate)
+	private Collection<InsertedNews> getQiangShiBanKuaiAndStock(String nodeid, LocalDate startdate, LocalDate enddate)
 	{
-		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
+		Collection<InsertedNews> meetings = new ArrayList<InsertedNews>();
 		
 		String sqlquerystat = null;
 		if(nodeid.equals("ALL"))
@@ -395,14 +395,14 @@ public final class StockCalendarAndNewDbOperation
    	        	 owner = nodecode + "gg";
    	         } 
    	         
-   	         InsertedMeeting newmeeting = new InsertedMeeting(
+   	         InsertedNews newmeeting = new InsertedNews(
    		                new Meeting( owner.subSequence(0, 6) + "/" + nodename, start,  shuoming, leixing, 
-   		                		new HashSet<InsertedMeeting.Label>(),null,owner,type), meetingID);
+   		                		new HashSet<InsertedNews.Label>(),null,owner,type), meetingID);
    	         meetings.add(newmeeting);
    		 }
         	
         	//label 	 
-      		 for (InsertedMeeting m : meetings) {
+      		 for (InsertedNews m : meetings) {
             	int meetingid = m.getID();
             	int meetingtype = m.getMeetingType();
             	
@@ -422,7 +422,7 @@ public final class StockCalendarAndNewDbOperation
                     String name = set.getString("NAME");
                     Color colour = Color.decode(set.getString("COLOUR"));
                     boolean active = set.getBoolean("ACTIVE");
-                    InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
+                    InsertedNews.Label label = new InsertedNews.Label(new Meeting.Label(name, colour, active), labelID);
                     m.getLabels().add(label);
                 }
                 
@@ -452,10 +452,10 @@ public final class StockCalendarAndNewDbOperation
         return meetings;
 
 	}
-	private Collection<InsertedMeeting> getRuoShiBanKuaiAndStock(String nodeid, LocalDate startdate, LocalDate enddate)
+	private Collection<InsertedNews> getRuoShiBanKuaiAndStock(String nodeid, LocalDate startdate, LocalDate enddate)
 	{
 	    //找出强弱板块个股
-		Collection<InsertedMeeting> meetings = new ArrayList<InsertedMeeting>();
+		Collection<InsertedNews> meetings = new ArrayList<InsertedNews>();
 		
 		String sqlquerystat = null;
 		if(nodeid.equals("ALL"))
@@ -512,14 +512,14 @@ public final class StockCalendarAndNewDbOperation
    	        	 owner = nodecode + "gg";
    	         }
    	         
-   	         InsertedMeeting newmeeting = new InsertedMeeting(
+   	         InsertedNews newmeeting = new InsertedNews(
    		                new Meeting( owner.subSequence(0, 6) + "/" + nodename, start,  shuoming, leixing, 
-   		                		new HashSet<InsertedMeeting.Label>(),null,owner,type), meetingID);
+   		                		new HashSet<InsertedNews.Label>(),null,owner,type), meetingID);
    	         meetings.add(newmeeting);
    		 }
         	
         	//label 	 
-      		 for (InsertedMeeting m : meetings) {
+      		 for (InsertedNews m : meetings) {
             	int meetingid = m.getID();
             	int meetingtype = m.getMeetingType();
             	
@@ -539,7 +539,7 @@ public final class StockCalendarAndNewDbOperation
                     String name = set.getString("NAME");
                     Color colour = Color.decode(set.getString("COLOUR"));
                     boolean active = set.getBoolean("ACTIVE");
-                    InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
+                    InsertedNews.Label label = new InsertedNews.Label(new Meeting.Label(name, colour, active), labelID);
                     m.getLabels().add(label);
                 }
                 
@@ -571,9 +571,9 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private Collection<InsertedMeeting> getJiQiGuanZhuInfo (LocalDate startdate, LocalDate enddate)
+	private Collection<InsertedNews> getJiQiGuanZhuInfo (LocalDate startdate, LocalDate enddate)
 	{
-		Collection<InsertedMeeting> jqgzlist = new ArrayList<InsertedMeeting>();
+		Collection<InsertedNews> jqgzlist = new ArrayList<InsertedNews>();
 		
 		String timerangesql = null ;
 		if(startdate == null && enddate != null) {
@@ -606,13 +606,13 @@ public final class StockCalendarAndNewDbOperation
 	            String ownercodes = result.getString("关联板块");
 	            int type = Meeting.JINQIGUANZHU;
 	            
-	            InsertedMeeting newmeeting = new InsertedMeeting(
-		                new Meeting(title, start,  description, keywords, new HashSet<InsertedMeeting.Label>(),slackurl,ownercodes,type), meetingID);
+	            InsertedNews newmeeting = new InsertedNews(
+		                new Meeting(title, start,  description, keywords, new HashSet<InsertedNews.Label>(),slackurl,ownercodes,type), meetingID);
 
 	            jqgzlist.add(newmeeting);
    		  }
 			//label 	 
-	   		 for (InsertedMeeting m : jqgzlist) {
+	   		 for (InsertedNews m : jqgzlist) {
 	         	int meetingid = m.getID();
 	         	int meetingtype = m.getMeetingType();
 	         	
@@ -631,7 +631,7 @@ public final class StockCalendarAndNewDbOperation
 	                 String name = set.getString("NAME");
 	                 Color colour = Color.decode(set.getString("COLOUR"));
 	                 boolean active = set.getBoolean("ACTIVE");
-	                 InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
+	                 InsertedNews.Label label = new InsertedNews.Label(new Meeting.Label(name, colour, active), labelID);
 	                 m.getLabels().add(label);
 	             }
 	             
@@ -663,9 +663,9 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private Collection<InsertedMeeting> getChangQiJiLuInfo (LocalDate startdate, LocalDate enddate)
+	private Collection<InsertedNews> getChangQiJiLuInfo (LocalDate startdate, LocalDate enddate)
 	{
-		Collection<InsertedMeeting> cqjllist = new ArrayList<InsertedMeeting>();
+		Collection<InsertedNews> cqjllist = new ArrayList<InsertedNews>();
 		
 		String timerangesql = null ;
 		if(startdate == null && enddate != null) {
@@ -700,15 +700,15 @@ public final class StockCalendarAndNewDbOperation
 	            String ownercodes = result.getString("关联板块");
 	            int type = Meeting.CHANGQIJILU;
 	            
-	            InsertedMeeting newmeeting = new InsertedMeeting(
-		                new Meeting(title, start,  description, keywords, new HashSet<InsertedMeeting.Label>(),slackurl,ownercodes,type), meetingID);
+	            InsertedNews newmeeting = new InsertedNews(
+		                new Meeting(title, start,  description, keywords, new HashSet<InsertedNews.Label>(),slackurl,ownercodes,type), meetingID);
 
 	            cqjllist.add(newmeeting);
    		  }
 			
 			
 			//label 	 
-	   		 for (InsertedMeeting m : cqjllist) {
+	   		 for (InsertedNews m : cqjllist) {
 	         	int meetingid = m.getID();
 	         	int meetingtype = m.getMeetingType();
 	         	
@@ -727,7 +727,7 @@ public final class StockCalendarAndNewDbOperation
 	                 String name = set.getString("NAME");
 	                 Color colour = Color.decode(set.getString("COLOUR"));
 	                 boolean active = set.getBoolean("ACTIVE");
-	                 InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), labelID);
+	                 InsertedNews.Label label = new InsertedNews.Label(new Meeting.Label(name, colour, active), labelID);
 	                 m.getLabels().add(label);
 	             }
 	             
@@ -758,18 +758,17 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private InsertedMeeting createNodeNews (Meeting meeting)
+	public InsertedNews createNodeNews (News meeting)
 	{
 		String newsownercode = meeting.getNewsOwnerCodes();
 		LocalDate newdate = meeting.getStart();
     	String title = meeting.getTitle();
     	String description = meeting.getDescription().replace("'", " ");
     	String keywords = meeting.getKeyWords();
-    	String slackurl = meeting.getSlackUrl();
+    	String slackurl = meeting.getNewsUrl();
     	
-    	InsertedMeeting insertedMeeting = null;
+    	InsertedNews InsertedNews = null;
     	
-    	//其他都放到商业新闻表
     			try {
     					String sqlinsertstat = "INSERT INTO 商业新闻(新闻标题,关键词,SLACK链接,录入日期,关联板块,具体描述) values ("
     							+ "'" + title + "'" + ","
@@ -780,11 +779,10 @@ public final class StockCalendarAndNewDbOperation
     							+ "'" +  description + "'"
     							+ ")"
     							;
-    					logger.debug(sqlinsertstat);
     					int meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
     					int labelid = 0;
     					String area = "商业新闻";
-    					for (InsertedMeeting.Label label : meeting.getLabels()) {
+    					for (InsertedNews.Label label : meeting.getLabels()) {
     			                labelid = label.getID();
     			                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID,fromtable) VALUES( " 
     			                							+ meetingID + "," 
@@ -795,7 +793,7 @@ public final class StockCalendarAndNewDbOperation
     			                connectdb.sqlInsertStatExecute(sqlstatementlabel);
     					}
     					
-    			        insertedMeeting = new InsertedMeeting(meeting, meetingID);
+    			        InsertedNews = new InsertedNews(meeting, meetingID);
     					
     				}catch(java.lang.NullPointerException e){ 
     			    	e.printStackTrace();
@@ -805,12 +803,12 @@ public final class StockCalendarAndNewDbOperation
     			    	
     			    }
     			
-    	return insertedMeeting;
+    	return InsertedNews;
 	}
 	/*
 	 * 
 	 */
-	private InsertedMeeting createZhiShuGuanJianRiQi (Meeting meeting)
+	private InsertedNews createZhiShuGuanJianRiQi (Meeting meeting)
 	{
 		String newsownercode = meeting.getNewsOwnerCodes();
 		LocalDate start = meeting.getStart();
@@ -820,7 +818,7 @@ public final class StockCalendarAndNewDbOperation
     	String keywords = meeting.getKeyWords();
     	String slackurl = meeting.getSlackUrl();
     	
-    	InsertedMeeting insertedMeeting = null;
+    	InsertedNews InsertedNews = null;
     	
     	try {
     		String sqlinsertstat = null ;
@@ -844,7 +842,7 @@ public final class StockCalendarAndNewDbOperation
 			int meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
 			int labelid = 0;
 			String area = "指数关键日期";
-			for (InsertedMeeting.Label label : meeting.getLabels()) {
+			for (InsertedNews.Label label : meeting.getLabels()) {
 	                labelid = label.getID();
 	                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID,fromtable) VALUES( " 
 	                						+ meetingID + "," 
@@ -855,7 +853,7 @@ public final class StockCalendarAndNewDbOperation
 	                connectdb.sqlInsertStatExecute(sqlstatementlabel);
 			 }
 			
-			insertedMeeting = new InsertedMeeting(meeting, meetingID);
+			InsertedNews = new InsertedNews(meeting, meetingID);
 			
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -865,10 +863,10 @@ public final class StockCalendarAndNewDbOperation
 	    	
 	    }
 		
-		return insertedMeeting;
+		return InsertedNews;
 		
 	}
-	private InsertedMeeting createQianRuoShiInfo (Meeting meeting)
+	private InsertedNews createQianRuoShiInfo (Meeting meeting)
 	{
 		String newsownercode = meeting.getNewsOwnerCodes();
 		LocalDate newdate = meeting.getStart();
@@ -877,7 +875,7 @@ public final class StockCalendarAndNewDbOperation
     	String keywords = meeting.getKeyWords();
     	String slackurl = meeting.getSlackUrl();
     	
-    	InsertedMeeting insertedMeeting = null;
+    	InsertedNews InsertedNews = null;
     	
     	String leixing = null; 
 		if(meeting.getMeetingType() == Meeting.QIANSHI) {
@@ -912,7 +910,7 @@ public final class StockCalendarAndNewDbOperation
     		}
 			int labelid = 0;
 			String area = "强弱势板块个股";
-			for (InsertedMeeting.Label label : meeting.getLabels()) {
+			for (InsertedNews.Label label : meeting.getLabels()) {
 	                labelid = label.getID();
 	                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID,fromtable) VALUES( " 
 	                						+ meetingID + "," 
@@ -923,7 +921,7 @@ public final class StockCalendarAndNewDbOperation
 	                connectdb.sqlInsertStatExecute(sqlstatementlabel);
 			 }
 			
-			insertedMeeting = new InsertedMeeting(meeting, meetingID);
+			InsertedNews = new InsertedNews(meeting, meetingID);
 			
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -933,13 +931,13 @@ public final class StockCalendarAndNewDbOperation
 	    	
 	    }
 		
-		return insertedMeeting;
+		return InsertedNews;
 
 	}
     /*
 	 * 增加板块新闻
 	 */
-	public InsertedMeeting createRequiredRelatedInfoForNewsAndOthers (Meeting meeting)
+	public InsertedNews createRequiredRelatedInfoForNewsAndOthers (Meeting meeting)
 	{
     	if(meeting.getMeetingType() == Meeting.ZHISHUDATE ) { //放入指数关键日期表
     		return createZhiShuGuanJianRiQi (meeting);
@@ -954,14 +952,13 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private InsertedMeeting deleteNodeNews (InsertedMeeting meeting)
+	public InsertedNews deleteNews (InsertedNews meeting)
 	{
-		InsertedMeeting deletedMeeting = null;
+		InsertedNews deletedMeeting = null;
 		int newsid = meeting.getID();
 
 		try {
 			String deletestat = "DELETE  FROM 商业新闻 WHERE news_id =" + newsid;
-			logger.debug(deletestat);
 			connectdb.sqlDeleteStatExecute (deletestat);
 
 			String sqlstatement = "DELETE FROM meetingLabel "
@@ -969,6 +966,11 @@ public final class StockCalendarAndNewDbOperation
 									+ " AND fromtable = '商业新闻' "
 									;
 			int key = connectdb.sqlDeleteStatExecute(sqlstatement);
+			
+//			sqlstatement = "DELETE FROM 产业链板块国新闻对应表 "
+//					+ " WHERE news_id = " + newsid 
+//					;
+//			key = connectdb.sqlDeleteStatExecute(sqlstatement);
 			
 			deletedMeeting = meeting;
 		}catch(java.lang.NullPointerException e){ 
@@ -981,9 +983,9 @@ public final class StockCalendarAndNewDbOperation
 		
 		return deletedMeeting;
 	}
-	private InsertedMeeting deleteQianRuoShiInfo (InsertedMeeting meeting)
+	private InsertedNews deleteQianRuoShiInfo (InsertedNews meeting)
 	{
-		InsertedMeeting deletedMeeting = null;
+		InsertedNews deletedMeeting = null;
 		
 		int newsid = meeting.getID();
     	
@@ -1010,9 +1012,9 @@ public final class StockCalendarAndNewDbOperation
 		
 		return deletedMeeting;
 	}
-	private InsertedMeeting deleteZhiShuGuanJianRiQi (InsertedMeeting meeting )
+	private InsertedNews deleteZhiShuGuanJianRiQi (InsertedNews meeting )
 	{
-		InsertedMeeting deletedMeeting = null;
+		InsertedNews deletedMeeting = null;
 		
 		int newsid = meeting.getID();
 
@@ -1042,7 +1044,7 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	public InsertedMeeting deleteRequiredRelatedInfoForNewsAndOthers(InsertedMeeting meeting)
+	public InsertedNews deleteRequiredRelatedInfoForNewsAndOthers(InsertedNews meeting)
 	{
 		if(meeting.getMeetingType() == Meeting.NODESNEWS || meeting.getMeetingType() == Meeting.CHANGQIJILU 
 				|| meeting.getMeetingType() == Meeting.JINQIGUANZHU ) {
@@ -1062,9 +1064,9 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private InsertedMeeting updateQianRuoShiBanKuai(InsertedMeeting event) throws SQLException
+	private InsertedNews updateQianRuoShiBanKuai(InsertedNews event) throws SQLException
 	{
-		InsertedMeeting updatedMeeting = null;
+		InsertedNews updatedMeeting = null;
     	LocalDate starttime = event.getStart();
 		String title = event.getTitle();
 		String desc = event.getDescription();
@@ -1089,7 +1091,7 @@ public final class StockCalendarAndNewDbOperation
         							;
         		connectdb.sqlUpdateStatExecute(sqlupatestatement);
 
-              for (InsertedMeeting.Label l : event.getLabels()) {
+              for (InsertedNews.Label l : event.getLabels()) {
                   int labelid = l.getID();
                   sqlupatestatement = "INSERT INTO meetingLabel (news_id, LABEL_ID ,fromtable) VALUES ("
     			            		    +  newsid + ","
@@ -1112,9 +1114,9 @@ public final class StockCalendarAndNewDbOperation
    		
    		return updatedMeeting;
 	}
-	private InsertedMeeting updateZhiShuGuanJIanRiQi(InsertedMeeting meeting) throws SQLException
+	private InsertedNews updateZhiShuGuanJIanRiQi(InsertedNews meeting) throws SQLException
 	{
-		InsertedMeeting updatedMeeting = null;
+		InsertedNews updatedMeeting = null;
     	LocalDate starttime = meeting.getStart();
     	LocalDate endtime = meeting.getEnd();
 		String title = meeting.getTitle();
@@ -1153,7 +1155,7 @@ public final class StockCalendarAndNewDbOperation
 							;
 		connectdb.sqlUpdateStatExecute(sqlupatestatement);
 
-      for (InsertedMeeting.Label l : meeting.getLabels()) {
+      for (InsertedNews.Label l : meeting.getLabels()) {
           int labelid = l.getID();
           sqlupatestatement = "INSERT INTO meetingLabel (news_id, LABEL_ID,fromtable ) VALUES ("
 		            		    +  newsid + ","
@@ -1166,15 +1168,15 @@ public final class StockCalendarAndNewDbOperation
       return updatedMeeting;
 
 	}
-	private InsertedMeeting updateNodeNews (InsertedMeeting meeting)
+	public InsertedNews updateNews (InsertedNews meeting)
 	{
-		InsertedMeeting updatedMeeting = null;
+		InsertedNews updatedMeeting = null;
     	LocalDate starttime = meeting.getStart();
 		String title = meeting.getTitle();
 		String desc = meeting.getDescription();
 		String keywordsurl = meeting.getKeyWords();
 		String newsowners = meeting.getNewsOwnerCodes();
-		String slackurl = meeting.getSlackUrl();
+		String slackurl = meeting.getNewsUrl();
 		int newsid = meeting.getID();
 		
 		try {
@@ -1193,7 +1195,7 @@ public final class StockCalendarAndNewDbOperation
     		sqlupatestatement = "DELETE FROM meetingLabel WHERE news_ID = " + newsid ;
     		connectdb.sqlUpdateStatExecute(sqlupatestatement);
     		
-          for (InsertedMeeting.Label l : meeting.getLabels()) {
+          for (InsertedNews.Label l : meeting.getLabels()) {
               int labelid = l.getID();
               sqlupatestatement = "INSERT INTO meetingLabel (news_id, LABEL_ID,fromtable ) VALUES ("
 			            		    +  newsid + ","
@@ -1221,9 +1223,9 @@ public final class StockCalendarAndNewDbOperation
 	 * @return
 	 * @throws SQLException
 	 */
-	public InsertedMeeting updateRequiredRelatedInfoForNewsAndOthers(InsertedMeeting meeting) throws SQLException 
+	public InsertedNews updateRequiredRelatedInfoForNewsAndOthers(InsertedNews meeting) throws SQLException 
 	{
-//    	InsertedMeeting updatedMeeting = null;
+//    	InsertedNews updatedMeeting = null;
     	if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI) {
     		return updateQianRuoShiBanKuai (meeting);
     	}
@@ -1242,9 +1244,9 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-    public Collection<InsertedMeeting.Label> getLabels() throws SQLException {
+    public Collection<InsertedNews.Label> getLabels() throws SQLException {
 
-        Collection<InsertedMeeting.Label> labels = new ArrayList<>();
+        Collection<InsertedNews.Label> labels = new ArrayList<>();
         String sqlstatement = "SELECT * FROM label "
                 ;
  
@@ -1257,7 +1259,7 @@ public final class StockCalendarAndNewDbOperation
 	                String name = result.getString("NAME");
 	                Color colour = Color.decode(result.getString("COLOUR"));
 	                boolean active = result.getBoolean("ACTIVE");
-	                InsertedMeeting.Label label = new InsertedMeeting.Label(new Meeting.Label(name, colour, active), id);
+	                InsertedNews.Label label = new InsertedNews.Label(new Meeting.Label(name, colour, active), id);
 	                labels.add(label);
 	          }
             
@@ -1285,9 +1287,9 @@ public final class StockCalendarAndNewDbOperation
      * @return
      * @throws SQLException
      */
-    public InsertedMeeting.Label createMeetingLabel(Meeting.Label label) throws SQLException {
+    public InsertedNews.Label createMeetingLabel(Meeting.Label label) throws SQLException {
 
-        InsertedMeeting.Label insertedLabel = null;
+        InsertedNews.Label insertedLabel = null;
         
         String labelname = label.getName();
         String color =  "#" + Integer.toHexString(label.getColor().getRGB()).substring(2);
@@ -1296,7 +1298,7 @@ public final class StockCalendarAndNewDbOperation
                 ;
 		try {
 			int key = connectdb.sqlInsertStatExecute(sqlstatement);
-			insertedLabel = new InsertedMeeting.Label(label, key);
+			insertedLabel = new InsertedNews.Label(label, key);
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
 	    } catch(Exception e){
@@ -1309,9 +1311,9 @@ public final class StockCalendarAndNewDbOperation
         return insertedLabel;
     }
 
-    public InsertedMeeting.Label deleteMeetingLabel(InsertedMeeting.Label label) throws SQLException 
+    public InsertedNews.Label deleteMeetingLabel(InsertedNews.Label label) throws SQLException 
     {
-    	InsertedMeeting.Label deletedLabel = null;
+    	InsertedNews.Label deletedLabel = null;
     	int labelid = label.getID();
     	String meetingsqlstatement = "DELETE FROM meetingLabel WHERE LABEL_ID = " + labelid 
                 ;
@@ -1337,9 +1339,9 @@ public final class StockCalendarAndNewDbOperation
        return deletedLabel;
     }
 
-    public InsertedMeeting.Label updateMeetingLabel(InsertedMeeting.Label label) throws SQLException 
+    public InsertedNews.Label updateMeetingLabel(InsertedNews.Label label) throws SQLException 
     {
-    	InsertedMeeting.Label updatedLabel = null;
+    	InsertedNews.Label updatedLabel = null;
     
     	int labelid = label.getID();
     	String labelname = label.getName();
@@ -1360,7 +1362,7 @@ public final class StockCalendarAndNewDbOperation
  
 //        Connection connection = DriverManager.getConnection(this.url);
 //        PreparedStatement statement = null;
-//        InsertedMeeting.Label updatedLabel = null;
+//        InsertedNews.Label updatedLabel = null;
 //
 //        try {
 //            statement = connection.prepareStatement(

@@ -6,7 +6,8 @@ public class InsertedNews extends News {
 
     private int id;
 
-    public InsertedNews(News news , int id) {
+    public InsertedNews(News news , int id)
+    {
         super(news.getTitle(), news.getStart(),  news.getDescription(), news.getKeyWords(),
             news.getLabels(),news.getNewsUrl(),news.getNewsOwnerCodes());
         this.setID(id);

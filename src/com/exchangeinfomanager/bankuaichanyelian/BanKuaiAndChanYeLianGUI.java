@@ -51,9 +51,12 @@ import javax.swing.table.DefaultTableModel;
 
 import javax.swing.tree.TreePath;
 
-import com.exchangeinfomanager.ServicesForNodes.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.TagLabel.TagsPanel;
+import com.exchangeinfomanager.TagServices.TagCache;
+import com.exchangeinfomanager.TagServices.TagsServiceForSystemTags;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
@@ -65,9 +68,6 @@ import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.labelmanagement.TagCache;
-import com.exchangeinfomanager.labelmanagement.TagsServiceForSystemTags;
-import com.exchangeinfomanager.labelmanagement.LblMComponents.TagsPanel;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;

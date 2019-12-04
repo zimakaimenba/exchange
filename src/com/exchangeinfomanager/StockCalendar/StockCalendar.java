@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.StockCalendar;
 
+import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
@@ -9,7 +10,6 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.labelmanagement.TagSearch.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
