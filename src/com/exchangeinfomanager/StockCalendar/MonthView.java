@@ -2,11 +2,12 @@ package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
-
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.InsertedNews.Label;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
+import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.JMultiLineToolTip;
 import com.exchangeinfomanager.commonlib.WrapLayout;
@@ -23,23 +24,33 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 
 @SuppressWarnings("all")
 public class MonthView extends View 
 {
-
-    private JPanel calendar = new JPanel();
+	private static final Dimension SIZE = new Dimension(1050, 700);
+    private static final Dimension MIN_SIZE = new Dimension(1050, 700);
+      
+    private JPanel calendar = new JPanel();//JPanelFactory.createFixedSizePanel (MONTHVIEWWIDTH,800);;
     private JLabel dateLabel = new JLabel();
     private SettingOfDisplayNewsArea settingsofnewsdisplay;
     
-    public MonthView(EventService meetingService, Cache cache, SettingOfDisplayNewsArea settingsofnewsdisplay) 
+    public MonthView( Collection<ServicesForNews> newssvs, SettingOfDisplayNewsArea settingsofnewsdisplay) 
     {
-        super(meetingService, cache);
+        super(newssvs);
         this.settingsofnewsdisplay = settingsofnewsdisplay;
         
-        cache.addCacheListener(this);
-        this.onMeetingChange(cache); //获取本月的信息
+//        Collection<NewsCache> caches = new HashSet<> ();
+        for (Iterator<ServicesForNews> lit = newssvs.iterator(); lit.hasNext(); ) {
+    		ServicesForNews f = lit.next();
+    		f.getCache().addCacheListener(this);
+    		
+//    		caches.add(f.getCache());
+    	}
+        
+        this.onNewsChange(caches); //获取本月的信息
         this.initMonthView();
     }
     /*
@@ -56,11 +67,19 @@ public class MonthView extends View
         this.calendar.setBackground(ColorScheme.GREY_LINE);
 
         super.add(this.calendar);
+        
+        this.setPreferredSize(SIZE);
+        this.setMinimumSize(MIN_SIZE);
+        
+      
     }
 
     private JPanel getWeekdaysPanel() {
 
         JPanel weekdays = JPanelFactory.createFixedSizePanel(new GridLayout(1, 7));
+        
+//        JPanel weekdays = JPanelFactory.createFixedSizePanel (MONTHVIEWWIDTH,12);
+        weekdays.setLayout(new GridLayout(1, 7));
         weekdays.add(new JLabel("MonDay"));
         weekdays.add(new JLabel("Tuesday"));
         weekdays.add(new JLabel("Wednesday"));
@@ -89,7 +108,7 @@ public class MonthView extends View
                 color = ColorScheme.BACKGROUND;
                 
                 panel.setLayout(new BorderLayout());
-                panel.addMouseListener(new CreateMeetingController());
+                panel.addMouseListener(new CreateNewsController());
                 JLabel dayLabel = new JLabel(String.valueOf(d.getDayOfMonth()));
                 if(d.equals(LocalDate.now()))
                 	dayLabel.setForeground(ColorScheme.TODAY);
@@ -129,18 +148,33 @@ public class MonthView extends View
     @Override
     /*
      * (non-Javadoc)
-     * @see com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener#onMeetingChange(com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache)
+     * @see com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener#onNewsChange(com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache)
      */
-    public void onMeetingChange(Cache cache) 
+    public void onNewsChange(Collection<NewsCache> caches) 
     {
     	LocalDate firstdayofmonth = this.initView();
     	
-    	
-        Collection<InsertedMeeting> meetings = cache.produceMeetings(firstdayofmonth);
-        Collection<InsertedMeeting.Label> labels = cache.produceLabels();
-        
-        for (InsertedMeeting m : meetings) {
-        	
+//    	for (Iterator<NewsCache> lit = caches.iterator(); lit.hasNext(); ) {
+//    		NewsCache f = lit.next();
+//    		
+//    		createNewsInPnl (f,firstdayofmonth);
+//    	}
+
+        this.calendar.validate();
+        this.calendar.repaint();
+    }
+    private void createNewsInPnl (NewsCache cache, LocalDate firstdayofmonth)
+    {
+    	Collection<News> news = cache.produceNews(firstdayofmonth);
+		Collection<Label> labels = cache.produceLabels();
+		
+		for (News m : news) {
+			Integer dbid = null ;
+			if( m instanceof InsertedNews ) 
+				dbid = ((InsertedNews)m).getID();
+			else if (m instanceof InsertedExternalNews )
+				dbid = ((InsertedExternalNews)m).getID ();
+			
             LocalDate mDate = m.getStart();
             
             if(!shouldBeDisplayedOnPanel (m) )
@@ -153,8 +187,8 @@ public class MonthView extends View
                     
                     label.setToolTipText( getLabelToolTipText(m) );
                     label.setOpaque(true);
-                    label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()));
-                    label.addMouseListener(new ReviseMeetingController());
+                    label.setName( m.getClass().toString() + String.valueOf(dbid));
+                    label.addMouseListener(new ReviseNewsController());
                     label.setForeground(ColorScheme.BLACK_FONT);
                     label.setBackground(ColorScheme.GREY_WHITER_DARKER);
                     label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
@@ -162,14 +196,13 @@ public class MonthView extends View
                     continue;
                 }
                 
-                
-                for (Meeting.Label l : labels) { //有LABEL的情况
-                    if (l.isActive() && m.getLabels().contains(l)) {
+                for (News.Label l : labels) { //有LABEL的情况
+                    if ( m.getLabels().contains(l)) {
                     	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
                         label.setToolTipText(getLabelToolTipText(m) );
                         label.setOpaque(true);
-                        label.setName( String.valueOf(m.getMeetingType()) + String.valueOf(m.getID()));
-                        label.addMouseListener(new ReviseMeetingController());
+                        label.setName( m.getClass().toString() + String.valueOf(dbid));
+                        label.addMouseListener(new ReviseNewsController());
 //                        label.setForeground(ColorScheme.BACKGROUND);
                         label.setForeground(Color.BLACK);
                         label.setBackground(l.getColor());
@@ -179,57 +212,54 @@ public class MonthView extends View
                     }
                 }
             }
-        }
-
-        this.calendar.validate();
-        this.calendar.repaint();
+		}
     }
 
     
-    private Boolean shouldBeDisplayedOnPanel(InsertedMeeting m) 
+    private Boolean shouldBeDisplayedOnPanel(News m) 
     {
-    	if( settingsofnewsdisplay.shouldDisplayAllExtraNews() )
-    		return true;
-    	
-//    	String ownersid = m.getNewsOwnerCodes();
-    	if(m.getMeetingType() == Meeting.JINQIGUANZHU ) {
-    		if( settingsofnewsdisplay.shouldDisplayGuanZhuNews() )
-    			return true;
-    		else
-    			return false;
-    	}
-    	
-    	if(m.getMeetingType() == Meeting.QIANSHI || m.getMeetingType() == Meeting.RUOSHI ) {
-    		if( settingsofnewsdisplay.shouldDisplayQiangRuoNews() )
-    			return true;
-    		else
-    			return false;
-    	}
-    	
-    	if(m.getMeetingType() == Meeting.CHANGQIJILU  ) {
-    		if( settingsofnewsdisplay.shouldDisplayMonthNews() )
-    			return true;
-    		else
-    			return false;
-    	}
-		
-    	if(m.getMeetingType() == Meeting.ZHISHUDATE  ) {
-    		if( settingsofnewsdisplay.shouldDisplayZhishuDate() )
-    			return true;
-    		else
-    			return false;
-    	}
-    	
+//    	if( settingsofnewsdisplay.shouldDisplayAllExtraNews() )
+//    		return true;
+//    	
+////    	String ownersid = m.getNewsOwnerCodes();
+//    	if(m.getNewsType() == News.JINQIGUANZHU ) {
+//    		if( settingsofnewsdisplay.shouldDisplayGuanZhuNews() )
+//    			return true;
+//    		else
+//    			return false;
+//    	}
+//    	
+//    	if(m.getNewsType() == News.QIANSHI || m.getNewsType() == News.RUOSHI ) {
+//    		if( settingsofnewsdisplay.shouldDisplayQiangRuoNews() )
+//    			return true;
+//    		else
+//    			return false;
+//    	}
+//    	
+//    	if(m.getNewsType() == News.CHANGQIJILU  ) {
+//    		if( settingsofnewsdisplay.shouldDisplayMonthNews() )
+//    			return true;
+//    		else
+//    			return false;
+//    	}
+//		
+//    	if(m.getNewsType() == News.ZHISHUDATE  ) {
+//    		if( settingsofnewsdisplay.shouldDisplayZhishuDate() )
+//    			return true;
+//    		else
+//    			return false;
+//    	}
+//    	
     	return true;
 	}
 	@Override
-    public void onLabelChange(Cache cache) {
-        this.onMeetingChange(cache);
+    public void onLabelChange(Collection<NewsCache> cache) {
+        this.onNewsChange(cache);
     }
     /*
      * 
      */
-    private class CreateMeetingController extends MouseAdapter 
+    private class CreateNewsController extends MouseAdapter 
     { 
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -243,52 +273,52 @@ public class MonthView extends View
         		setDate (mDate);
         	}
         	
-        	if (e.getClickCount() == 2) { //增加一个新的meeting
-                Meeting meeting = new Meeting("新闻标题",mDate,
-                     "描述", "关键词", new HashSet<>(),"SlackURL","000000",Meeting.NODESNEWS);
-                getCreateDialog().setMeeting(meeting);
-                getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-                getCreateDialog().setVisible(true);
-        	}
+//        	if (e.getClickCount() == 2) { //增加一个新的News
+//                News News = new News("新闻标题",mDate,
+//                     "描述", "关键词", new HashSet<>(),"SlackURL","000000",News.NODESNEWS);
+//                getCreateDialog().setNews(News);
+//                getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+//                getCreateDialog().setVisible(true);
+//        	}
             
         }
     }
 
 	
-    private class ReviseMeetingController extends MouseAdapter 
+    private class ReviseNewsController extends MouseAdapter 
     {
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             JLabel label = (JLabel) e.getSource();
             String labelname = label.getName();
-//            Optional<InsertedMeeting> meeting = getCache().produceMeetings()
+//            Optional<InsertedNews> News = getCache().produceNewss()
 //                                                  .stream()
-//                                                  .filter(   label.getName().equals(m -> (m.getMeetingType() + m.getID() )) )
+//                                                  .filter(   label.getName().equals(m -> (m.getNewsType() + m.getID() )) )
 //                                                  .findFirst();
-            Meeting meeting = null;
-            Collection<InsertedMeeting> meetingslist = getCache().produceMeetings();
-            for(InsertedMeeting m : meetingslist) {
-            	String searchname = String.valueOf(m.getMeetingType()  ) + String.valueOf(m.getID() );
-            	if(searchname.equals(labelname)) {
-            		meeting = m;
-            		break;
-            	}
-            }
+//            News News = null;
+//            Collection<InsertedNews> Newsslist = getCache().produceNewss();
+//            for(InsertedNews m : Newsslist) {
+//            	String searchname = String.valueOf(m.getNewsType()  ) + String.valueOf(m.getID() );
+//            	if(searchname.equals(labelname)) {
+//            		News = m;
+//            		break;
+//            	}
+//            }
             
-//            JLabel source = (JLabel) e.getSource();
-            String title = label.getText();
-            LocalDate date = LocalDate.parse(label.getParent().getParent().getName());
-            
-//            InsertedMeeting selectedmeeting = meeting.get();
-//            String owner = selectedmeeting.getNewsOwnerCodes();
-            if( meeting.getMeetingType() == Meeting.WKZONGJIE ) { //说明是大盘一周总结，内容是XML，用DaPanWeeklyFengXi显示内容
-            	showWeeklyFenXiWizardDialog  ("000000",date);
-            } else {
-            	getModifyDialog().setMeeting(meeting);
-            	getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-                getModifyDialog().setVisible(true);
-            }
+////            JLabel source = (JLabel) e.getSource();
+//            String title = label.getText();
+//            LocalDate date = LocalDate.parse(label.getParent().getParent().getName());
+//            
+////            InsertedNews selectedNews = News.get();
+////            String owner = selectedNews.getNewsOwnerCodes();
+//            if( News.getNewsType() == News.WKZONGJIE ) { //说明是大盘一周总结，内容是XML，用DaPanWeeklyFengXi显示内容
+//            	showWeeklyFenXiWizardDialog  ("000000",date);
+//            } else {
+//            	getModifyDialog().setNews(News);
+//            	getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+//                getModifyDialog().setVisible(true);
+//            }
             
         }
 
@@ -309,12 +339,23 @@ public class MonthView extends View
     	ggfx = null;
 	}
 	@Override
-	public void onMeetingAdded(Meeting m) 
-	{
-		String de = m.getDescription();
-		String kw = m.getKeyWords();
-		String url = m.getSlackUrl();
+	public void onNewsAdded(News m) {
+		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void onNewsChange(NewsCache cache) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onLabelChange(NewsCache cache) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+
+
 
 }

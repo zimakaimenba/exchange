@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.News.ChangQiGuanZhu;
+package com.exchangeinfomanager.News.ExternalNewsType;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -62,7 +62,7 @@ import com.exchangeinfomanager.guifactory.JTextFactory;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.lc.nlp.keyword.algorithm.TextRank;
 
-public class ChangQiGuanZhuDialog <T extends ChangQiGuanZhu> extends JDialog 
+public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog 
 {
 	  protected static final int WIDTH = 400;
 	    protected static final int HEIGHT = 600;
@@ -89,7 +89,7 @@ public class ChangQiGuanZhuDialog <T extends ChangQiGuanZhu> extends JDialog
 	    private T event;
 		private JLabel kwbutton;
 
-	    public ChangQiGuanZhuDialog(ServicesForNews NewsService, NewsCache cache) 
+	    public ExternalNewsDialog(ServicesForNews NewsService, NewsCache cache) 
 	    {
 	        this.NewsService = NewsService;
 	        this.cache = cache;
@@ -158,8 +158,8 @@ public class ChangQiGuanZhuDialog <T extends ChangQiGuanZhu> extends JDialog
 	    
 	    private void createUIComponents() 
 	    {
-//	    	this.newsownersField = (JUpdatedTextField) JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
-//	    	this.newsownersField.setMouseLeftClearEnabled(false);
+	    	this.newsownersField = (JUpdatedTextField) JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
+	    	this.newsownersField.setMouseLeftClearEnabled(false);
 	        this.newstitleField = (JUpdatedTextField) JTextFactory.createTextField(TITLE_SIZE, TITLE_SIZE, TITLE_FONT_SIZE);
 	        this.newstitleField.setMouseLeftClearEnabled(false);
 	        this.keywordsField = (JUpdatedTextField) JTextFactory.createTextField();
@@ -185,7 +185,7 @@ public class ChangQiGuanZhuDialog <T extends ChangQiGuanZhu> extends JDialog
 	        JPanel p = JPanelFactory.createPanel(new FlowLayout(FlowLayout.CENTER));
 	        this.centerPanel.add(p);
 	        this.centerPanel.add(Box.createVerticalStrut(PADDING));
-//	        this.centerPanel.add(this.newsownersField);
+	        this.centerPanel.add(this.newsownersField);
 	        this.centerPanel.add(this.newstitleField);
 	        this.centerPanel.add(Box.createVerticalStrut(30));
 	                this.centerPanel.add(this.getTimeChooserPanel());
@@ -245,10 +245,11 @@ public class ChangQiGuanZhuDialog <T extends ChangQiGuanZhu> extends JDialog
 	        this.event = event;
 
 	        newstitleField.setText(event.getTitle());
-//	        newsownersField.setText(event.getNewsOwnerCodes());
+	        newsownersField.setText(event.getNewsOwnerCodes());
 	        keywordsField.setText(event.getKeyWords());
 	        descriptionArea.setText(event.getDescription());
 	        startTimeChooser.setLocalDate( event.getStart() );
+	        endTimeChooser.setLocalDate( event.getEnd() );
 	        newsurlField.setText(event.getNewsUrl());
 	        
 	        return true;
@@ -256,12 +257,14 @@ public class ChangQiGuanZhuDialog <T extends ChangQiGuanZhu> extends JDialog
 
 	    public T getNews() 
 	    {
-//	    	event.setNewsOwnerCodes(newsownersField.getText());
+	    	event.setNewsOwnerCodes(newsownersField.getText());
 	    	event.setTitle(newstitleField.getText());
 	    	event.setStart(startTimeChooser.getLocalDate() );
 	    	event.setKeyWords(keywordsField.getText());
 	    	event.setDescription(descriptionArea.getText());
 	    	event.setNewsUrl(newsurlField.getText());
+	    	event.setStart(startTimeChooser.getLocalDate());
+	    	event.setEnd(endTimeChooser.getLocalDate());
 	        return event;
 	    }
 

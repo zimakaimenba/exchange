@@ -2,12 +2,12 @@ package com.exchangeinfomanager.StockCalendar;
 
 
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsCacheListener;
+import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.guifactory.DialogFactory;
 import com.toedter.calendar.JDayChooser;
 
@@ -22,6 +22,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 
 /**
@@ -29,15 +32,15 @@ import java.time.LocalDate;
  * and provide update (consumeMeetings) method implementation.
  */
 @SuppressWarnings("all")
-public abstract class View extends JPanel implements CacheListener 
+public abstract class View extends JPanel implements NewsCacheListener 
 {
 
     // create and modify meeting dialogs, which user uses to interact with the program
-    private MeetingDialog createDialog;
-    private MeetingDialog modifyDialog;
+//    private MeetingDialog createDialog;
+//    private MeetingDialog modifyDialog;
 
     // each view needs data (meetings) to display
-    protected Cache cache;
+    protected Collection<NewsCache>  caches;
 
     // date of the view
     private LocalDate date = LocalDate.now();
@@ -48,10 +51,17 @@ public abstract class View extends JPanel implements CacheListener
      * @param meetingService used by meeting dialogs
      * @param cache used by the views
      */
-    public View(EventService meetingService, Cache cache) {
-        this.cache = cache;
-        this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
-        this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
+    public View(Collection<ServicesForNews> meetingServices) {
+    	
+    	caches = new HashSet<> ();
+    	for (Iterator<ServicesForNews> lit = meetingServices.iterator(); lit.hasNext(); ) {
+    		ServicesForNews f = lit.next();
+    		this.caches.add( f.getCache() );
+    	}
+//        this.cache = cache;
+        
+//        this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
+//        this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
     }
     
     /**
@@ -59,28 +69,28 @@ public abstract class View extends JPanel implements CacheListener
      *
      * @return meeting dialog
      */
-    protected MeetingDialog getCreateDialog() {
-    	this.createDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-        return this.createDialog;
-    }
-
-    /**
-     * Accessor for the modify meeting dialog.
-     *
-     * @return meeting dialog
-     */
-    protected MeetingDialog getModifyDialog() {
-    	this.modifyDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-        return this.modifyDialog;
-    }
+//    protected MeetingDialog getCreateDialog() {
+//    	this.createDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+//        return this.createDialog;
+//    }
+//
+//    /**
+//     * Accessor for the modify meeting dialog.
+//     *
+//     * @return meeting dialog
+//     */
+//    protected MeetingDialog getModifyDialog() {
+//    	this.modifyDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+//        return this.modifyDialog;
+//    }
 
     /**
      * Accessor for the meeting cache.
      *
      * @return cache
      */
-    protected Cache getCache() {
-        return this.cache;
+    protected  Collection<NewsCache> getCaches() {
+        return this.caches;
     }
 
     /**
@@ -91,7 +101,7 @@ public abstract class View extends JPanel implements CacheListener
      */
     public void setDate(LocalDate date) {
         this.date = date;
-        this.onMeetingChange(this.cache);
+        this.onNewsChange(this.caches);
     }
 
 
@@ -131,7 +141,7 @@ public abstract class View extends JPanel implements CacheListener
     	return Color.BLACK;
     }
 
-    protected String getLabelToolTipText (InsertedMeeting m)
+    protected String getLabelToolTipText (News m)
     {
     	return m.getTitle() + "\n \n" + m.getDescription();
     }

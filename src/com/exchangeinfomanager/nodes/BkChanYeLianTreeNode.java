@@ -3,6 +3,8 @@ package com.exchangeinfomanager.nodes;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
+import com.exchangeinfomanager.News.QiangRuoShiNode.QiangRuoShiNode;
 import com.exchangeinfomanager.Trees.InvisibleNode;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
@@ -106,6 +108,35 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) o;
+        
+        if( ! this.getMyOwnCode().equals(node.getMyOwnCode() ) )
+        	return false;
+        
+        if( this.getType() != node.getType()  )
+        	return false;
+        
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+    	int result = 0;
+
+		result = this.getMyOwnCode().hashCode();
+        result = 31 * result + this.getType();
+        
+        return result;
+    }
+
 }
 
 

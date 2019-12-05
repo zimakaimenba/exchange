@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class News 
 {
-    private LocalDate starttime;
+    protected LocalDate starttime;
     private String title;
     private String description;
     private String keywords; //keywrods

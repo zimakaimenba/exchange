@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.NewsServices;
+package com.exchangeinfomanager.News;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -6,9 +6,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import com.exchangeinfomanager.News.InsertedNews;
-import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;
@@ -19,14 +16,15 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 public class NewsServices implements ServicesForNews
 {
 
-    private StockCalendarAndNewDbOperation database;
-    private TagsNewsDbOperation tagsdboptfornews;
-    private NewsCache cache;
+    protected StockCalendarAndNewDbOperation database;
+    protected TagsNewsDbOperation tagsdboptfornews;
+    protected NewsCache cache;
     
     public NewsServices()  
     {
         super();
         this.database = new StockCalendarAndNewDbOperation ();
+        this.tagsdboptfornews = new  TagsNewsDbOperation ();
     }
 
     public void setCache (NewsCache cache)
@@ -34,9 +32,9 @@ public class NewsServices implements ServicesForNews
     	this.cache = cache;
     }
     @Override
-    public Collection<InsertedNews> getNews(String nodeid,LocalDate startdate, LocalDate enddate) throws SQLException 
+    public Collection<News> getNews(String nodeid,LocalDate startdate, LocalDate enddate) throws SQLException 
     {
-        Collection<InsertedNews> result = this.database.getNodeRelatedNews (nodeid, startdate,  enddate);
+        Collection<News> result = this.database.getNodeRelatedNews (nodeid, startdate,  enddate);
         return result;
     }
 
@@ -86,6 +84,12 @@ public class NewsServices implements ServicesForNews
         
         return m;
     }
+
+	@Override
+	public NewsCache getCache() 
+	{
+		return this.cache;
+	}
     
     
 

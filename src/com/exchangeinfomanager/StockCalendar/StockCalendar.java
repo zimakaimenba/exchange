@@ -1,5 +1,14 @@
 package com.exchangeinfomanager.StockCalendar;
 
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsLabelServices;
+import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
+import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
@@ -27,15 +36,17 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 
 @SuppressWarnings("all")
 public class StockCalendar extends JCalendar 
 {
 
-    private static final Dimension SIZE = new Dimension(1150, 900);
-    private static final Dimension MIN_SIZE = new Dimension(1150, 900);
+//    private static final Dimension SIZE = new Dimension(1250, 900);
+//    private static final Dimension MIN_SIZE = new Dimension(1250, 900);
 
     private static final String MONTH = "month";
     private static final String YEAR = "year";
@@ -44,47 +55,82 @@ public class StockCalendar extends JCalendar
     private MonthView monthView;
     private YearView yearView;
     private WholeMonthNewsView wholemonthview;
+    private JPanel sidebar;
 
     private CardLayout layout = new CardLayout();
     private JPanel headerPanel = JPanelFactory.createPanel();
-    private JPanel sidebar;
     private JPanel viewDeck = JPanelFactory.createPanel(layout);
     private LocalDate calrightdate = LocalDate.now();
     private JLabel dateLabel = new JLabel();
     private JPanel currentView;
-	private Cache cache;
-	private Cache cachewholemonth;
+//	private Cache cache;
+//	private Cache cachewholemonth;
 	private SettingOfDisplayNewsArea settingsofnewsdisplay;
     
-    public StockCalendar ()
-    {
-    	super ();
-    	
-    	//所有过去一年的新闻，
-    	settingsofnewsdisplay = new SettingOfDisplayNewsArea ();
-    	
-    	EventService eventDbService = new DBMeetingService ();
-    	LabelService labelService = new DBLabelService ();
-    	Integer[] wantednewstypeforall = { Integer.valueOf(Meeting.CHANGQIJILU),Integer.valueOf(Meeting.NODESNEWS),
-    			Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI),Integer.valueOf(Meeting.JINQIGUANZHU),Integer.valueOf(Meeting.ZHISHUDATE),
-    			Integer.valueOf(Meeting.WKZONGJIE)
-    			};
-        cache = new Cache("ALL",eventDbService, labelService,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6),wantednewstypeforall);
-        
-        this.monthView = new MonthView(eventDbService, cache,settingsofnewsdisplay);
-        this.yearView = new YearView(eventDbService, cache);
-        this.sidebar = new Sidebar(eventDbService,labelService, cache);
-        
-        //每月固定信息，用于记录长期月度重复信息,显示在Cal星期的上部
-        this.wholemonthview = new WholeMonthNewsView (eventDbService, cache);
-        
-        //有新的新闻，加到同关键字的节点上
-        JDialogForTagSearchMatrixPanelForAddNewsToNode addkwtoothernode = new JDialogForTagSearchMatrixPanelForAddNewsToNode (cache);
+	   public StockCalendar ()
+	    {
+	    	super ();
+	    	
+	    	//所有过去一年的新闻，
+	    	settingsofnewsdisplay = new SettingOfDisplayNewsArea ();
+	    	
+	    	ServicesForNewsLabel svslabel = new NewsLabelServices ();
+	    	
+	    	ServicesForNews svsnews = new NewsServices ();
+	    	NewsCache newcache = new NewsCache ("ALL",svsnews,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+	    	svsnews.setCache(newcache);
+	    	
+	    	ServicesForNews svscqgz = new ChangQiGuanZhuServices ();
+	    	NewsCache cqgzcache = new NewsCache ("ALL",svscqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+	    	svscqgz.setCache(cqgzcache);
+	    	
+	    	ServicesForNews svsqs = new QiangShiServices ();
+	    	NewsCache qiangshicache = new NewsCache ("ALL",svsqs,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+	    	svsqs.setCache(qiangshicache);
+	    	
+	    	ServicesForNews svsrs = new RuoShiServices ();
+	    	NewsCache ruoshicache = new NewsCache ("ALL",svsrs,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+	    	svsrs.setCache(ruoshicache);
+	    	
+	    	ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
+	    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+	    	svsdqgz.setCache(dqgzcache);
+	    	
+	    	Collection<ServicesForNews> monthservices = new HashSet<> ();
+	    	monthservices.add(svsnews);
+	    	monthservices.add(svsrs);
+	    	monthservices.add(svsqs);
+	    	monthservices.add(svscqgz);
+	    	monthservices.add(svsdqgz);
+	    	
+	        this.monthView = new MonthView(monthservices, settingsofnewsdisplay);
+	        this.yearView = new YearView(monthservices);
+	        this.sidebar = new Sidebar(monthservices,svslabel);
+	        
+	        //每月固定信息，用于记录长期月度重复信息,显示在Cal星期的上部
+	        Collection<ServicesForNews> wholemonthservices = new HashSet<> ();
+	        wholemonthservices.add(svsrs);
+	        wholemonthservices.add(svsqs);
+	        wholemonthservices.add(svscqgz);
+	        wholemonthservices.add(svsdqgz);
+	        
+	        this.wholemonthview = new WholeMonthNewsView (wholemonthservices);
+	        
+	        //有新的新闻，加到同关键字的节点上
+//	        JDialogForTagSearchMatrixPanelForAddNewsToNode addkwtoothernode = new JDialogForTagSearchMatrixPanelForAddNewsToNode (cache);
 
-	    this.initHeaderPanel(); //
-	    this.initViewDeck();
-	    this.initJFrame();
-    }
+		    this.initHeaderPanel(); //
+		    this.initViewDeck();
+		    this.initJFrame();
+	        
+//	        testJFrame ();
+	    }
+	   
+	   private void testJFrame ()
+	   {
+		   this.setLayout(new BorderLayout() );
+		   this.add(this.monthView, BorderLayout.CENTER);
+	   }
     /*
      * 
      */
@@ -96,35 +142,40 @@ public class StockCalendar extends JCalendar
         //方案3
         this.add(monthChooser.getParent(),new GBC(0,0,1,1).  
                 setFill(GBC.BOTH).setIpad(50,50).setWeight(0, 0));
+        
         this.add(headerPanel, new GBC(1,0,6,1).  
                 setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0));
+        
         this.add(dayChooser,new GBC(0,1,1,1).  
                 setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0)); 
+      
         this.add(wholemonthview,new GBC(1,1,6,1).  
                 setFill(GBC.BOTH).setIpad(0,0).setWeight(0, 0)); 
+        
         this.add(sidebar,new GBC(0,2,1,2).  
                 setFill(GBC.BOTH).setIpad(0, 0).setWeight(0, 0)); 
+//        
         this.add(viewDeck,new GBC(1,2,6,2).setFill(GBC.BOTH).setWeight(0, 0).setIpad(0,0));
 
-        this.setPreferredSize(SIZE);
-        this.setMinimumSize(MIN_SIZE);
+//        this.setPreferredSize(SIZE);
+//        this.setMinimumSize(MIN_SIZE);
         
        
-        
     }
 	/*
 	 * 
 	 */
-    private void initViewDeck() {
+    private void initViewDeck()
+    {
         viewDeck.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
         monthView.setName(MONTH);
-        yearView.setName(YEAR);       
+//        yearView.setName(YEAR);       
 
         viewDeck.add(monthView, MONTH);
-        viewDeck.add(yearView, YEAR);
+//        viewDeck.add(yearView, YEAR);
 
         currentView = monthView;
-        layout.show(viewDeck, currentView.getName());
+        layout.show(viewDeck, currentView.getName() );
     }
     /*
      * 
@@ -139,28 +190,28 @@ public class StockCalendar extends JCalendar
         syncdate.setToolTipText("同步左边日期");
         syncdate.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/right-dark-arrow.png")));
 //        syncdate.setEnabled(false);
-        syncdate.addMouseListener( new DateController(this,null));
+//        syncdate.addMouseListener( new DateController(this,null));
         		
         
         JLabel today = JLabelFactory.createButton("Today");
-        today.addMouseListener(new DateController(this,0));
+//        today.addMouseListener(new DateController(this,0));
 
         JLabel previous = JLabelFactory.createButton("<", 40);
-        previous.addMouseListener(new DateController(this,-1));
+//        previous.addMouseListener(new DateController(this,-1));
 
         JLabel next = JLabelFactory.createButton(">", 40);
-        next.addMouseListener(new DateController(this,1));
+//        next.addMouseListener(new DateController(this,1));
 
         JLabel month = JLabelFactory.createButton("Month");
-        month.addMouseListener(new ViewController(monthView));
+//        month.addMouseListener(new ViewController(monthView));
 
         JLabel year = JLabelFactory.createButton("Year");
-        year.addMouseListener(new ViewController(yearView));
+//        year.addMouseListener(new ViewController(yearView));
         
         JLabel setting = JLabelFactory.createButton("", 40);
         setting.setToolTipText("设置显示新闻范围");
         setting.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/gear-black-shape.png")));
-        setting.addMouseListener(new settingController ());
+//        setting.addMouseListener(new settingController ());
         
         
         //布局界面
@@ -169,7 +220,9 @@ public class StockCalendar extends JCalendar
 
         JPanel tempPanel = JPanelFactory.createPanel();
         tempPanel.add(syncdate);
+        
         tempPanel.add(Box.createHorizontalStrut(20));
+        
         tempPanel.add(dateLabel);
         
         tempPanel.add(Box.createHorizontalStrut(40));

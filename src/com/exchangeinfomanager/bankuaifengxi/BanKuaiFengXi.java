@@ -176,12 +176,12 @@ public class BanKuaiFengXi extends JDialog
 		this.globecalwholeweek = true; //º∆À„’˚÷‹
 
 		initializeGui ();
-		createEvents ();
-		setUpChartDataListeners ();
-
-		initializePaoMaDeng ();
-		
-		adjustDate (LocalDate.now());
+//		createEvents ();
+//		setUpChartDataListeners ();
+//
+//		initializePaoMaDeng ();
+//		
+//		adjustDate (LocalDate.now());
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);

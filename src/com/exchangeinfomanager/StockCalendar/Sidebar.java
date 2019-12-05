@@ -1,16 +1,13 @@
 package com.exchangeinfomanager.StockCalendar;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelDialog;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.MeetingDialog;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodesZhiShuGJRQPnl;
+
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsCacheListener;
+import com.exchangeinfomanager.News.Labels.LabelDialog;
+import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.guifactory.DialogFactory;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
@@ -26,13 +23,16 @@ import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 
 @SuppressWarnings("all")
-public class Sidebar extends View implements CacheListener {
+public class Sidebar extends View implements NewsCacheListener 
+{
 
-    private LabelService labelService;
+    private ServicesForNewsLabel labelService;
     private JPanel labels;
     private JLabel colorButton;
     private JLabel createLabel;
@@ -41,26 +41,42 @@ public class Sidebar extends View implements CacheListener {
     private JTextField nameField;
     private LabelDialog modifyLabelDialog;
     private LabelDialog createLabelDialog;
-    private Cache cache;
+    private NewsCache cache;
 	private JScrollPane labelsscrollpane;
 
-    public Sidebar(EventService meetingService, LabelService labelService, Cache cache) {
-    	super (meetingService,cache);
+    public Sidebar(Collection<ServicesForNews> newssvs, ServicesForNewsLabel labelService) 
+    {
+    	super (newssvs);
+    	
         this.labelService = labelService;
-        this.cache = cache;
-        this.createLabelDialog = DialogFactory.createLabelDialog(labelService);
-        this.modifyLabelDialog = DialogFactory.modifyLabelDialog(labelService);
+        
+        Collection<NewsCache> caches = new HashSet<> ();
+        for (Iterator<ServicesForNews> lit = newssvs.iterator(); lit.hasNext(); ) {
+    		ServicesForNews f = lit.next();
+    		f.getCache().addCacheListener(this);
+    		
+    		caches.add(f.getCache());
+    		
+    		cache = f.getCache();
+    	}
+        
+        
+//        this.createLabelDialog = DialogFactory.createLabelDialog(labelService);
+//        this.modifyLabelDialog = DialogFactory.modifyLabelDialog(labelService);
+        
         this.initUI();
         this.initSidebar();
-        cache.addCacheListener(this);
+        
         this.onLabelChange(cache);
     }
 
     private void initUI() {
         this.labels = JPanelFactory.createPanel();
         this.createLabel = JLabelFactory.createButton("New label");
+        
         this.createMilestoneDateForZhiShu = JLabelFactory.createButton("指数关键日期");
         this.createMilestoneDateForZhiShu.setToolTipText("点击右键生产指数关键日期通达信代码");
+        
         this.colorButton = JLabelFactory.createLabel("", 40, 30);
         this.nameField = JTextFactory.createTextField();
     }
@@ -96,14 +112,11 @@ public class Sidebar extends View implements CacheListener {
     }
 
     @Override
-    public void onMeetingChange(Cache cache) {
-
-    }
-
-    @Override
-    public void onLabelChange(Cache cache) {
+    public void onLabelChange(NewsCache cache) 
+    {
         this.labels.removeAll();
-        for (InsertedMeeting.Label label : cache.produceLabels()) {
+        
+        for (InsertedNews.Label label : cache.produceLabels()) {
             JPanel mPanel = JPanelFactory.createFixedSizePanel(new BorderLayout());
             mPanel.setName(String.valueOf(label.getID()));
             mPanel.setPreferredSize(labelsscrollpane.getPreferredSize());
@@ -111,7 +124,7 @@ public class Sidebar extends View implements CacheListener {
             JLabel name = JLabelFactory.createLabel("  " + label.getName());
             name.setOpaque(true);
             name.addMouseListener(new NameController());
-            name.setBackground(label.isActive()? label.getColor(): ColorScheme.BACKGROUND);
+            name.setBackground( ColorScheme.BACKGROUND );
 //            name.setForeground(label.isActive()? ColorScheme.BACKGROUND: ColorScheme.BLACK_FONT);
             name.setForeground( ColorScheme.BLACK_FONT);
             name.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, ColorScheme.GREY_LINE));
@@ -134,13 +147,10 @@ public class Sidebar extends View implements CacheListener {
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             int id = Integer.valueOf(((Component) e.getSource()).getParent().getName());
-            Optional<InsertedMeeting.Label> label = cache.produceLabels().stream().filter(l -> l.getID() == id).findFirst();
+            Optional<InsertedNews.Label> label = cache.produceLabels().stream().filter(l -> l.getID() == id).findFirst();
             if (label.isPresent()) {
-                InsertedMeeting.Label lbl = label.get();
-                if(lbl.isActive())
-                    lbl.setActive(false);
-                else
-                    lbl.setActive(true);
+                InsertedNews.Label lbl = label.get();
+                
                 try {
                     labelService.updateLabel(lbl);
                 } catch (SQLException e1) {
@@ -154,7 +164,7 @@ public class Sidebar extends View implements CacheListener {
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
-            createLabelDialog.setLabel(new Meeting.Label("New label", ColorScheme.ORANGE_LIGHT, true));
+            createLabelDialog.setLabel(new News.Label("New label", ColorScheme.ORANGE_LIGHT));
             getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
             createLabelDialog.setVisible(true);
         }
@@ -194,7 +204,26 @@ public class Sidebar extends View implements CacheListener {
     }
 
 	@Override
-	public void onMeetingAdded(Meeting m) {
+	public void onNewsChange(Collection<NewsCache> caches) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onNewsChange(NewsCache cache) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLabelChange(Collection<NewsCache> cache) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	@Override
+	public void onNewsAdded(News m) {
 		// TODO Auto-generated method stub
 		
 	}
