@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.News;
+package com.exchangeinfomanager.News.ExternalNewsType;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,38 +12,40 @@ import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 
-public class ModifyNewsDiaLog extends NewsDialog<InsertedNews> 
+public class ModifyExternalNewsDialog extends ExternalNewsDialog<ExternalNewsType> 
 {
 
-    public ModifyNewsDiaLog(ServicesForNews NewsService) 
+
+    public ModifyExternalNewsDialog(ServicesForNews NewsService) 
     {
-        super(NewsService);
+    	super(NewsService);
         super.setTitle("修改");
 
         // let's create delete and update buttons
         JLabel deleteButton = JLabelFactory.createPinkButton("删除");
-//        JLabel removeButton = JLabelFactory.createOrangeButton("解除关联");
         JLabel updateButton = JLabelFactory.createOrangeButton("更新");
 
         // then add controllers (listeners)
         deleteButton.addMouseListener(new DeleteController());
-//        removeButton.addMouseListener(new RemoveController());
         updateButton.addMouseListener(new UpdateController());
 
         // and add them to the panel
         JPanel layoutPanel = JPanelFactory.createFixedSizePanel(TITLE_SIZE);
         layoutPanel.add(deleteButton);
         layoutPanel.add(Box.createHorizontalStrut(5));
-//        layoutPanel.add(removeButton);
         layoutPanel.add(Box.createHorizontalStrut(20));
         layoutPanel.add(updateButton);
         this.centerPanel.add(layoutPanel);
         this.centerPanel.add(Box.createVerticalStrut(PADDING));
     }
     
-    public Boolean setNews(InsertedNews event)
+    public Boolean setMeeting(ExternalNewsType event)
     {
       	super.setNews( event);
+        
+    	centerPanel.revalidate();
+    	centerPanel.repaint();
+    	
         return true;
     }
 
@@ -53,7 +55,7 @@ public class ModifyNewsDiaLog extends NewsDialog<InsertedNews>
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             try {
-                newsService.deleteNews(getNews());
+            	NewsService.deleteNews(getNews());
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
@@ -67,7 +69,7 @@ public class ModifyNewsDiaLog extends NewsDialog<InsertedNews>
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             try {
-                newsService.updateNews(getNews());
+            	NewsService.updateNews(getNews());
             } catch (SQLException e1) {
                 e1.printStackTrace();
             } 
@@ -75,5 +77,6 @@ public class ModifyNewsDiaLog extends NewsDialog<InsertedNews>
         }
     }
 
-}
 
+
+}

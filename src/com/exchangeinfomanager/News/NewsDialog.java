@@ -83,10 +83,10 @@ public class NewsDialog <T extends News> extends JDialog
     private T event;
 	private JLabel kwbutton;
 
-    public NewsDialog(ServicesForNews meetingService, NewsCache cache) 
+    public NewsDialog(ServicesForNews meetingService) 
     {
         this.newsService = meetingService;
-        this.cache = cache;
+        this.cache = meetingService.getCache();
         
         this.createUIComponents();
         this.createCenterPanel();

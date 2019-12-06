@@ -33,21 +33,36 @@ public class DuanQiGuanZhuServices implements ServicesForNews
 	}
 
 	@Override
-	public News createNews(News News) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public News createNews(News news) throws SQLException 
+	{
+		 InsertedExternalNews m = this.database.createDuanQiJiLuInfo (news);
+//	   	 this.tagsdboptfornews.storeNewsKeyWordsToDataBase (m);
+	       
+	   	 if(m != null && cache != null)
+	   		 cache.addNews(m);
+	   	 
+	   	 return m;
 	}
 
 	@Override
-	public void deleteNews(InsertedNews News) throws SQLException {
-		// TODO Auto-generated method stub
+	public void deleteNews(News news) throws SQLException 
+	{
+		News m = this.database.deleteGuanZhuJiLuInfo(news);
+//      this.tagsdboptfornews.deleteKeyWordsMapsOfDeletedNews (m);
+      
+      if(m != null && cache != null)
+      	cache.removeNews(m);
+	}
+
+	@Override
+	public News updateNews(News news) throws SQLException 
+	{
+		News m = this.database.updateGuanZhuJiLuInfo(news);
+
+		if(m != null && cache != null)
+        	cache.removeNews(m);
 		
-	}
-
-	@Override
-	public News updateNews(InsertedNews News) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return m;
 	}
 
 	@Override

@@ -63,6 +63,11 @@ public abstract class View extends JPanel implements NewsCacheListener
 //        this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
 //        this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
     }
+    public View(ServicesForNews meetingServices) 
+    {
+    	caches = new HashSet<> ();
+    	caches.add( meetingServices.getCache() );
+    }
     
     /**
      * Accessor for the create meeting dialog.

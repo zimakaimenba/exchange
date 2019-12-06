@@ -215,12 +215,10 @@ public class StockInfoManager
 		for(String tmpsgstockcodename:tmpchicangname) {
 			BkChanYeLianTreeNode tmpstock = allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpsgstockcodename.substring(0, 6), BkChanYeLianTreeNode.TDXGG);
 			( (JStockComboBoxModel)cBxstockcode.getModel() ).addElement(tmpstock);
-
 		}
 		try {
 			kspanel.setStockcode(cBxstockcode.getSelectedItem().toString().substring(0, 6));
 		} catch (java.lang.NullPointerException e) {
-			
 		}
 		
 //		((JStockComboBoxRenderer)cBxstockcode.getRenderer()).setChiCangGeGuList(new HashSet<String> (tmpchicangname));

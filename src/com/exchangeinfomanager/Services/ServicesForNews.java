@@ -14,9 +14,9 @@ public interface ServicesForNews
 
     News createNews(News News) throws SQLException;
 
-    void deleteNews(InsertedNews News) throws SQLException;
+    void deleteNews(News News) throws SQLException;
 
-    News updateNews(InsertedNews News) throws SQLException;
+    News updateNews(News News) throws SQLException;
     
     void setCache (NewsCache cache);
     

@@ -154,7 +154,7 @@ public class StockCalendar extends JCalendar
         
         this.add(sidebar,new GBC(0,2,1,2).  
                 setFill(GBC.BOTH).setIpad(0, 0).setWeight(0, 0)); 
-//        
+       
         this.add(viewDeck,new GBC(1,2,6,2).setFill(GBC.BOTH).setWeight(0, 0).setIpad(0,0));
 
 //        this.setPreferredSize(SIZE);
@@ -189,29 +189,29 @@ public class StockCalendar extends JCalendar
         JLabel syncdate = JLabelFactory.createButton("", 40);
         syncdate.setToolTipText("同步左边日期");
         syncdate.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/right-dark-arrow.png")));
-//        syncdate.setEnabled(false);
-//        syncdate.addMouseListener( new DateController(this,null));
+        syncdate.setEnabled(false);
+        syncdate.addMouseListener( new DateController(this,null));
         		
         
         JLabel today = JLabelFactory.createButton("Today");
-//        today.addMouseListener(new DateController(this,0));
+        today.addMouseListener(new DateController(this,0));
 
         JLabel previous = JLabelFactory.createButton("<", 40);
-//        previous.addMouseListener(new DateController(this,-1));
+        previous.addMouseListener(new DateController(this,-1));
 
         JLabel next = JLabelFactory.createButton(">", 40);
-//        next.addMouseListener(new DateController(this,1));
+        next.addMouseListener(new DateController(this,1));
 
         JLabel month = JLabelFactory.createButton("Month");
-//        month.addMouseListener(new ViewController(monthView));
+        month.addMouseListener(new ViewController(monthView));
 
         JLabel year = JLabelFactory.createButton("Year");
-//        year.addMouseListener(new ViewController(yearView));
+        year.addMouseListener(new ViewController(yearView));
         
         JLabel setting = JLabelFactory.createButton("", 40);
         setting.setToolTipText("设置显示新闻范围");
         setting.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/gear-black-shape.png")));
-//        setting.addMouseListener(new settingController ());
+        setting.addMouseListener(new settingController ());
         
         
         //布局界面

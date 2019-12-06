@@ -4,10 +4,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
-import com.exchangeinfomanager.News.NewsServices;
+
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -46,9 +45,9 @@ public class ChangQiGuanZhuServices implements ServicesForNews
 	}
 
 	@Override
-	public void deleteNews(InsertedNews news) throws SQLException 
+	public void deleteNews(News news) throws SQLException 
 	{
-		 News m = this.database.deleteChangQiJiLuInfo(news);
+		 News m = this.database.deleteGuanZhuJiLuInfo(news);
 //        this.tagsdboptfornews.deleteKeyWordsMapsOfDeletedNews (m);
         
         if(m != null && cache != null)
@@ -56,10 +55,14 @@ public class ChangQiGuanZhuServices implements ServicesForNews
 	}
 
 	@Override
-	public News updateNews(InsertedNews News) throws SQLException 
+	public News updateNews(News news) throws SQLException 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		News m = this.database.updateGuanZhuJiLuInfo(news);
+
+		if(m != null && cache != null)
+        	cache.removeNews(m);
+		
+		return m;
 	}
 
 	@Override

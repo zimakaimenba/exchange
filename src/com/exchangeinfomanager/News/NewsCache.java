@@ -103,7 +103,7 @@ public class NewsCache
         return this.NewsLabels;
     }
 
-    public void updateNews(InsertedNews News) {
+    public void updateNews(News News) {
         this.refreshNews(nodecode,this.cashestartdate,this.casheenddate);
         this.listeners.forEach(l -> l.onNewsChange(this));
     }

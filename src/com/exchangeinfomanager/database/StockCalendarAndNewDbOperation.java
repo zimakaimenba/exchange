@@ -7,10 +7,10 @@ import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShi;
-import com.exchangeinfomanager.News.QiangRuoShiNode.QiangRuoShiNode;
+
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedNews;
+
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
@@ -777,6 +777,65 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
+	public InsertedExternalNews createDuanQiJiLuInfo (News news)
+	{
+		BkChanYeLianTreeNode node = ((ExternalNewsType)news).getNode();
+		String nodecode = node.getMyOwnCode();
+		Integer nodetype = node.getType();
+		
+		LocalDate start = news.getStart();
+		LocalDate end = ((ExternalNewsType)news).getEnd();
+		
+    	String description = news.getTitle();
+    	String detail = news.getDescription();
+    	String keywords = news.getKeyWords();
+    	String slackurl = news.getNewsUrl();
+    	
+    	InsertedExternalNews InsertedNews = null;
+    	
+    			try {
+    					String sqlinsertstat = "INSERT INTO 关注个股板块表(代码,类型,关注类型,日期,截至日期,说明,具体描述,url, 关键词) values ("
+    							+ "'" + nodecode + "'" + ","
+    							+ nodetype  + ","
+    							+ false + ","
+    							+ "'" + start + "'" + ","
+    							+ "'" + end  + "'" + ","
+    							+ "'" +  description + "'" + ","
+    							+ "'" +  detail +  "|'" + ","
+    							+ "'" +  slackurl + "'"  + ","
+    	    					+ "'" +  keywords + "'"
+    							+ ")"
+    							;
+    					int meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
+    					int labelid = 0;
+    					String area = "关注个股板块表";
+    					for (InsertedNews.Label label : news.getLabels()) {
+    			                labelid = label.getID();
+    			                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID,fromtable) VALUES( " 
+    			                							+ meetingID + "," 
+    			                							+ labelid + ","
+    			                							+ "'"+ area + "'"
+    			                							+ ")";
+    			   			 	
+    			                connectdb.sqlInsertStatExecute(sqlstatementlabel);
+    					}
+    					
+    					InsertedNews = new InsertedExternalNews( (ExternalNewsType)news, meetingID);
+    					
+    				}catch(java.lang.NullPointerException e){ 
+    			    	e.printStackTrace();
+    			    } catch(Exception e){
+    			    	e.printStackTrace();
+    			    }  finally {
+    			    	
+    			    }
+    			
+    	return InsertedNews;
+		
+	}
+	/*
+	 * 
+	 */
 	public InsertedExternalNews createChangQiJiLuInfo (News news)
 	{
 		BkChanYeLianTreeNode node = ((ExternalNewsType)news).getNode();
@@ -945,31 +1004,32 @@ public final class StockCalendarAndNewDbOperation
 		
 	}
 	
-	public InsertedNews createQiangInfo (News meeting)
+	public InsertedExternalNews createQiangInfo (News news)
 	{
-		String newsownercode = meeting.getNewsOwnerCodes();
-		LocalDate newdate = meeting.getStart();
-    	String title = meeting.getTitle();
-    	String description = meeting.getDescription().replace("'", " ");
+		ExternalNewsType meeting = (ExternalNewsType) news;
+		BkChanYeLianTreeNode node = meeting.getNode();
+		String newsownercode = node.getMyOwnCode();
+		int newstype = node.getType();
+		LocalDate start = meeting.getStart();
+		LocalDate end = meeting.getStart();
+    	String description = meeting.getTitle();
+    	String detail = meeting.getDescription().replace("'", " ");
     	String keywords = meeting.getKeyWords();
     	String slackurl = meeting.getNewsUrl();
     	
-    	InsertedNews InsertedNews = null;
     	
-    	String leixing = null; 
-		if(newsownercode.toLowerCase().contains("bk")) { //指数和个股代码可能相同，前端通过加后缀来区别
-				leixing = "强势板块";
-		} else
-				leixing = "强势个股";
-		
-		
-		
+    	InsertedExternalNews InsertedNews = null;
 		try {
-			String sqlinsertstat = "INSERT INTO 强弱势板块个股表(代码,日期,强弱类型,说明) VALUES ("
-    				+ "'"  + newsownercode.subSequence(0, 6)  + "'" + ","
-    				+ "'"  + newdate  + "'" + ","
-    				+ "'" + leixing + "'" + ","
-    				+ "'"  + description  + "'"
+			String sqlinsertstat = "INSERT INTO 强弱势板块个股表(代码,类型,日期,截至日期,强弱类型,说明,具体描述,URL,关键字) VALUES ("
+    				+ "'"  + newsownercode  + "'" + ","
+    				+  newstype   + ","
+    				+ "'"  + start  + "'" + ","
+    				+ "'"  + end  + "'" + ","
+    				+ true + ","
+    				+ "'"  + description  + "'" + ","
+    				+ "'"  + detail  + "'" + ","
+    				+ "'"  + slackurl  + "'" + ","
+    				+ "'"  + keywords  + "'" 
     				+ ")"
     				;
     		
@@ -983,7 +1043,7 @@ public final class StockCalendarAndNewDbOperation
     		}
     		
 			int labelid = 0;
-			String area = "强弱势板块个股";
+			String area = "强弱势板块个股表";
 			for (InsertedNews.Label label : meeting.getLabels()) {
 	                labelid = label.getID();
 	                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID,fromtable) VALUES( " 
@@ -995,7 +1055,7 @@ public final class StockCalendarAndNewDbOperation
 	                connectdb.sqlInsertStatExecute(sqlstatementlabel);
 			 }
 			
-			InsertedNews = new InsertedNews(meeting, meetingID);
+			InsertedNews = new InsertedExternalNews(meeting, meetingID);
 			
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -1008,43 +1068,47 @@ public final class StockCalendarAndNewDbOperation
 		return InsertedNews;
 
 	}
-	public InsertedNews createRuoShiInfo (News meeting)
+	public InsertedExternalNews createRuoShiInfo (News news)
 	{
-		String newsownercode = meeting.getNewsOwnerCodes();
-		LocalDate newdate = meeting.getStart();
-    	String title = meeting.getTitle();
-    	String description = meeting.getDescription().replace("'", " ");
-    	String keywords = meeting.getKeyWords();
-    	String slackurl = meeting.getNewsUrl();
-    	
-    	InsertedNews InsertedNews = null;
-    	
-    	String leixing = null; 
-		if(newsownercode.toLowerCase().contains("bk")) { //指数和个股代码可能相同，前端通过加后缀来区别
-				leixing = "弱势板块";
-		} else
-				leixing = "弱势个股";
-
+		ExternalNewsType meeting = (ExternalNewsType) news;
 		
+		BkChanYeLianTreeNode node = meeting.getNode();
+		String newsownercode = node.getMyOwnCode();
+		int newstype = node.getType();
+		LocalDate start = meeting.getStart();
+		LocalDate end = meeting.getStart();
+		String description = meeting.getTitle();
+		String detail = meeting.getDescription().replace("'", " ");
+		String keywords = meeting.getKeyWords();
+		String slackurl = meeting.getNewsUrl();
+		
+		
+		InsertedExternalNews InsertedNews = null;
 		try {
-			String sqlinsertstat = "INSERT INTO 强弱势板块个股表(代码,日期,强弱类型,说明) VALUES ("
-    				+ "'"  + newsownercode.subSequence(0, 6)  + "'" + ","
-    				+ "'"  + newdate  + "'" + ","
-    				+ "'" + leixing + "'" + ","
-    				+ "'"  + description  + "'"
-    				+ ")"
-    				;
-    		
-    		int meetingID = 0;
-    		try{
-    			meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
-    		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException ex) {
-    			String cause = ex.getMessage();
-    			logger.debug(cause);
-    			return null;
-    		}
+			String sqlinsertstat = "INSERT INTO 强弱势板块个股表(代码,类型,日期,截至日期,强弱类型,说明,具体描述,URL,关键字) VALUES ("
+					+ "'"  + newsownercode  + "'" + ","
+					+  newstype   + ","
+					+ "'"  + start  + "'" + ","
+					+ "'"  + end  + "'" + ","
+					+ false + ","
+					+ "'"  + description  + "'" + ","
+					+ "'"  + detail  + "'" + ","
+					+ "'"  + slackurl  + "'" + ","
+					+ "'"  + keywords  + "'" 
+					+ ")"
+					;
+			
+			int meetingID = 0;
+			try{
+				meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
+			} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException ex) {
+				String cause = ex.getMessage();
+				logger.debug(cause);
+				return null;
+			}
+			
 			int labelid = 0;
-			String area = "强弱势板块个股";
+			String area = "强弱势板块个股表";
 			for (InsertedNews.Label label : meeting.getLabels()) {
 	                labelid = label.getID();
 	                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID,fromtable) VALUES( " 
@@ -1056,7 +1120,7 @@ public final class StockCalendarAndNewDbOperation
 	                connectdb.sqlInsertStatExecute(sqlstatementlabel);
 			 }
 			
-			InsertedNews = new InsertedNews(meeting, meetingID);
+			InsertedNews = new InsertedExternalNews(meeting, meetingID);
 			
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -1067,27 +1131,16 @@ public final class StockCalendarAndNewDbOperation
 	    }
 		
 		return InsertedNews;
-
 	}
-    /*
-	 * 增加板块新闻
-	 */
-	public InsertedNews createRequiredRelatedInfoForNewsAndOthers (Meeting meeting)
-	{
-    	if(meeting.getMeetingType() == Meeting.ZHISHUDATE ) { //放入指数关键日期表
-    		return createZhiShuGuanJianRiQi (meeting);
-    	}
-    	
 
-	}
-	public News deleteChangQiJiLuInfo (News news)
+	public News deleteGuanZhuJiLuInfo (News news)
 	{
 		InsertedExternalNews in = (InsertedExternalNews) news;
 		
 		int newsid = in.getID();
 
 		try {
-			String deletestat = "DELETE  FROM 关注个股板块表    WHERE news_id =" + newsid;
+			String deletestat = "DELETE  FROM 关注个股板块表    WHERE id =" + newsid;
 			connectdb.sqlDeleteStatExecute (deletestat);
 
 			String sqlstatement = "DELETE FROM meetingLabel "
@@ -1110,15 +1163,69 @@ public final class StockCalendarAndNewDbOperation
 	    }
 		
 		return news;
+	}
+	public News updateGuanZhuJiLuInfo (News news)
+	{
+		InsertedExternalNews event = (InsertedExternalNews) news;
 		
+		int newsid = event.getID();
+    	LocalDate starttime = event.getStart();
+    	LocalDate endtime = event.getEnd();
+		String desc = event.getTitle();
+		String detail = event.getDescription();
+		String keywordsurl = event.getKeyWords();
+		String newsowners = event.getNode().getMyOwnCode();
+		Integer newstype = event.getNode().getType();
+		String slackurl = event.getNewsUrl();
+		
+   		try {
+        		String sqlupatestatement =  "UPDATE 关注个股板块表  SET 日期 = '" + starttime + "', "
+        				+ " 截至日期 = '" + endtime + "', "
+        				+ " 代码 = '" + newsowners + "', "
+        				+ " 类型 = '" + newstype + "', "
+        				+ " 说明  = '" + desc + "', "
+        				+ " 具体描述  = '" + detail + "', "
+        				+ " url  = '" + slackurl + "', "
+        				+ " 关键词  = '" + keywordsurl + "' "
+        				  
+        				+ " WHERE id =  " + newsid
+        				;
+        		
+        		connectdb.sqlUpdateStatExecute(sqlupatestatement);
+        		
+        		sqlupatestatement = "DELETE FROM meetingLabel WHERE news_ID = " + newsid
+        							+ " AND fromtable = '强弱势板块个股' "
+        							;
+        		connectdb.sqlUpdateStatExecute(sqlupatestatement);
+
+              for (InsertedNews.Label l : event.getLabels()) {
+                  int labelid = l.getID();
+                  sqlupatestatement = "INSERT INTO meetingLabel (news_id, LABEL_ID ,fromtable) VALUES ("
+    			            		    +  newsid + ","
+    									+  labelid  + ","
+    									+ " '强弱势板块个股' " 
+    									+ ")"
+                		  				;
+                	connectdb.sqlUpdateStatExecute(sqlupatestatement);
+              }
+   		} catch(java.lang.NullPointerException e){ 
+   	    	e.printStackTrace();
+   	    } catch(Exception e){
+   	    	e.printStackTrace();
+   	    }  finally {
+   	    
+   	    }
+   		
+   		return event;
+	
 	}
 	/*
 	 * 
 	 */
-	public InsertedNews deleteNews (InsertedNews meeting)
+	public InsertedNews deleteNews (News meeting)
 	{
-		InsertedNews deletedMeeting = null;
-		int newsid = meeting.getID();
+		InsertedNews deletedMeeting = (InsertedNews) meeting;
+		int newsid = deletedMeeting.getID();
 
 		try {
 			String deletestat = "DELETE  FROM 商业新闻 WHERE news_id =" + newsid;
@@ -1135,7 +1242,6 @@ public final class StockCalendarAndNewDbOperation
 //					;
 //			key = connectdb.sqlDeleteStatExecute(sqlstatement);
 			
-			deletedMeeting = meeting;
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
 	    } catch(Exception e){
@@ -1146,11 +1252,11 @@ public final class StockCalendarAndNewDbOperation
 		
 		return deletedMeeting;
 	}
-	private InsertedNews deleteQianRuoShiInfo (InsertedNews meeting)
+	public InsertedExternalNews deleteQiangRuoShiInfo (News meeting)
 	{
-		InsertedNews deletedMeeting = null;
+		InsertedExternalNews deletedMeeting =  (InsertedExternalNews) meeting;
 		
-		int newsid = meeting.getID();
+		int newsid = deletedMeeting.getID();
     	
 		
 		try {
@@ -1163,8 +1269,6 @@ public final class StockCalendarAndNewDbOperation
 									+ " AND fromtable = '强弱势板块个股' "
 									;
 			int key = connectdb.sqlDeleteStatExecute(sqlstatement);
-			
-			deletedMeeting = meeting;
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
 	    } catch(Exception e){
@@ -1174,6 +1278,64 @@ public final class StockCalendarAndNewDbOperation
 	    }
 		
 		return deletedMeeting;
+	}
+	/*
+	 * 
+	 */
+	public InsertedExternalNews  updatedQiangRuoShiInfo (News meeting) throws SQLException
+	{
+		InsertedExternalNews event = (InsertedExternalNews) meeting;
+		
+		int newsid = event.getID();
+		BkChanYeLianTreeNode node = event.getNode();
+    	LocalDate starttime = event.getStart();
+    	LocalDate endtime = event.getStart();
+		String desc = event.getTitle();
+		String detail = event.getDescription();
+		String keywordsurl = event.getKeyWords();
+		String newsowners = event.getNewsOwnerCodes();
+		String slackurl = event.getNewsUrl();
+		String keywords = event.getKeyWords();
+    	
+   		try {
+        		String sqlupatestatement =  "UPDATE 强弱势板块个股表  SET 日期 = '" + starttime + "', "
+        				+ " 代码 = '" + node.getMyOwnCode() + "', "
+        				+ " 类型 = " + node.getType() + ", "
+        				+ " 说明  = '" + desc + "', "
+        				+ " 具体描述= '" + detail + "', " 
+        				+ " URL = '" + slackurl   + "', "
+        				+ " 关键字 = '" + keywords   + "', "
+        				+ " WHERE id =  " + newsid
+        				;
+        		
+        		connectdb.sqlUpdateStatExecute(sqlupatestatement);
+        		
+        		sqlupatestatement = "DELETE FROM meetingLabel WHERE news_ID = " + newsid
+        							+ " AND fromtable = '强弱势板块个股' "
+        							;
+        		connectdb.sqlUpdateStatExecute(sqlupatestatement);
+
+              for (InsertedNews.Label l : event.getLabels()) {
+                  int labelid = l.getID();
+                  sqlupatestatement = "INSERT INTO meetingLabel (news_id, LABEL_ID ,fromtable) VALUES ("
+    			            		    +  newsid + ","
+    									+  labelid  + ","
+    									+ " '强弱势板块个股' " 
+    									+ ")"
+                		  				;
+                	connectdb.sqlUpdateStatExecute(sqlupatestatement);
+              }
+        		
+
+   		} catch(java.lang.NullPointerException e){ 
+   	    	e.printStackTrace();
+   	    } catch(Exception e){
+   	    	e.printStackTrace();
+   	    }  finally {
+   	    
+   	    }
+   		
+   		return event;
 	}
 	private InsertedNews deleteZhiShuGuanJianRiQi (InsertedNews meeting )
 	{
@@ -1224,59 +1386,7 @@ public final class StockCalendarAndNewDbOperation
 		
 		return null;
 	}
-	/*
-	 * 
-	 */
-	private InsertedNews updateQianRuoShiBanKuai(InsertedNews event) throws SQLException
-	{
-		InsertedNews updatedMeeting = null;
-    	LocalDate starttime = event.getStart();
-		String title = event.getTitle();
-		String desc = event.getDescription();
-		String keywordsurl = event.getKeyWords();
-		String newsowners = event.getNewsOwnerCodes();
-		String slackurl = event.getSlackUrl();
-		int newsid = event.getID();
-//		logger.debug("test");
-    	
-   		try {
-        		String sqlupatestatement =  "UPDATE 强弱势板块个股表  SET 日期 = '" + starttime + "', "
-        				+ " 代码 = '" + newsowners.subSequence(0, 6) + "', "
-        				+ " 说明  = '" + desc + "', "
-        				+ " 强弱类型 = '" + keywordsurl + "'"  
-        				+ " WHERE id =  " + newsid
-        				;
-        		
-        		connectdb.sqlUpdateStatExecute(sqlupatestatement);
-        		
-        		sqlupatestatement = "DELETE FROM meetingLabel WHERE news_ID = " + newsid
-        							+ " AND fromtable = '强弱势板块个股' "
-        							;
-        		connectdb.sqlUpdateStatExecute(sqlupatestatement);
 
-              for (InsertedNews.Label l : event.getLabels()) {
-                  int labelid = l.getID();
-                  sqlupatestatement = "INSERT INTO meetingLabel (news_id, LABEL_ID ,fromtable) VALUES ("
-    			            		    +  newsid + ","
-    									+  labelid  + ","
-    									+ " '强弱势板块个股' " 
-    									+ ")"
-                		  				;
-                	connectdb.sqlUpdateStatExecute(sqlupatestatement);
-              }
-        		
-              updatedMeeting = event;
-
-   		} catch(java.lang.NullPointerException e){ 
-   	    	e.printStackTrace();
-   	    } catch(Exception e){
-   	    	e.printStackTrace();
-   	    }  finally {
-   	    
-   	    }
-   		
-   		return updatedMeeting;
-	}
 	private InsertedNews updateZhiShuGuanJIanRiQi(InsertedNews meeting) throws SQLException
 	{
 		InsertedNews updatedMeeting = null;
@@ -1331,16 +1441,16 @@ public final class StockCalendarAndNewDbOperation
       return updatedMeeting;
 
 	}
-	public InsertedNews updateNews (InsertedNews meeting)
+	public InsertedNews updateNews (News meeting)
 	{
-		InsertedNews updatedMeeting = null;
+		InsertedNews updatedMeeting = (InsertedNews) meeting;
     	LocalDate starttime = meeting.getStart();
 		String title = meeting.getTitle();
 		String desc = meeting.getDescription();
 		String keywordsurl = meeting.getKeyWords();
 		String newsowners = meeting.getNewsOwnerCodes();
 		String slackurl = meeting.getNewsUrl();
-		int newsid = meeting.getID();
+		int newsid = updatedMeeting.getID();
 		
 		try {
 
@@ -1367,9 +1477,6 @@ public final class StockCalendarAndNewDbOperation
             		  				;
             	connectdb.sqlUpdateStatExecute(sqlupatestatement);
           }
-    		
-          updatedMeeting = meeting;
-
 		} catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
 	    } catch(Exception e){

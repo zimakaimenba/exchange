@@ -89,10 +89,10 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	    private T event;
 		private JLabel kwbutton;
 
-	    public ExternalNewsDialog(ServicesForNews NewsService, NewsCache cache) 
+	    public ExternalNewsDialog(ServicesForNews NewsService) 
 	    {
 	        this.NewsService = NewsService;
-	        this.cache = cache;
+	        this.cache = NewsService.getCache();
 	        this.bkdbopt = new BanKuaiDbOperation ();
 	        
 	        this.createUIComponents();

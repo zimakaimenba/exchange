@@ -33,21 +33,33 @@ public class RuoShiServices implements ServicesForNews
 	}
 
 	@Override
-	public News createNews(News News) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void deleteNews(InsertedNews News) throws SQLException {
-		// TODO Auto-generated method stub
+	public News createNews(News news) throws SQLException
+	{
+		InsertedExternalNews n = this.database.createRuoShiInfo(news);
 		
+//		this.tagsdboptfornews.storeNewsKeyWordsToDataBase (n);
+        
+    	 if(n!= null && cache != null)
+    		 cache.addNews(n);
+    	 
+    	 return n;
+	}
+	@Override
+	public void deleteNews(News news) throws SQLException 
+	{
+		InsertedExternalNews n = this.database.deleteQiangRuoShiInfo (news);
+		 if(n!= null && cache != null)
+    		 cache.removeNews(n);
 	}
 
 	@Override
-	public News updateNews(InsertedNews News) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public News updateNews(News news) throws SQLException 
+	{
+		InsertedExternalNews n = this.database.updatedQiangRuoShiInfo (news);
+		if(n!= null && cache != null)
+			cache.updateNews(n);
+		
+		return n;
 	}
 
 	@Override

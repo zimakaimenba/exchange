@@ -50,7 +50,7 @@ public class NewsServices implements ServicesForNews
     	 return m;
     }
     @Override
-    public void deleteNews(InsertedNews News) throws SQLException {
+    public void deleteNews(News News) throws SQLException {
         
         InsertedNews m = this.database.deleteNews(News);
         this.tagsdboptfornews.deleteKeyWordsMapsOfDeletedNews (m);
@@ -75,7 +75,7 @@ public class NewsServices implements ServicesForNews
     	return news;
     }
     @Override
-    public News updateNews(InsertedNews news) throws SQLException {
+    public News updateNews(News news) throws SQLException {
     	
         InsertedNews m = this.database.updateNews(news);
         

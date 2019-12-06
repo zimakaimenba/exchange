@@ -19,9 +19,9 @@ public class CreateNewsDialog  extends NewsDialog<News> {
 
 //  private News News;
 
-  public CreateNewsDialog(ServicesForNews NewsService, NewsCache cache)
+  public CreateNewsDialog(ServicesForNews NewsService)
   {
-      super(NewsService, cache);
+      super(NewsService);
       super.setTitle("Create");
       
       // lets create button and add controller to it

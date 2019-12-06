@@ -2,11 +2,24 @@ package com.exchangeinfomanager.StockCalendar;
 
 import javax.swing.*;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.exchangeinfomanager.News.CreateNewsDialog;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.InsertedNews.Label;
+import com.exchangeinfomanager.News.ModifyNewsDiaLog;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
+import com.exchangeinfomanager.News.ExternalNewsType.ModifyExternalNewsDialog;
+import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
+import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.RuoShi;
+import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.JMultiLineToolTip;
@@ -36,23 +49,146 @@ public class MonthView extends View
     private JPanel calendar = new JPanel();//JPanelFactory.createFixedSizePanel (MONTHVIEWWIDTH,800);;
     private JLabel dateLabel = new JLabel();
     private SettingOfDisplayNewsArea settingsofnewsdisplay;
+	private NewsServices svsns;
+	private ChangQiGuanZhuServices svscqgz;
+	private QiangShiServices svsqs;
+	private RuoShiServices svsrs;
+	private DuanQiGuanZhuServices svsdqgz;
     
     public MonthView( Collection<ServicesForNews> newssvs, SettingOfDisplayNewsArea settingsofnewsdisplay) 
     {
         super(newssvs);
         this.settingsofnewsdisplay = settingsofnewsdisplay;
         
-//        Collection<NewsCache> caches = new HashSet<> ();
         for (Iterator<ServicesForNews> lit = newssvs.iterator(); lit.hasNext(); ) {
     		ServicesForNews f = lit.next();
     		f.getCache().addCacheListener(this);
     		
-//    		caches.add(f.getCache());
+    		if(f instanceof NewsServices)
+    			this.svsns = (NewsServices) f;
+    		if( f instanceof ChangQiGuanZhuServices) {
+    			this.svscqgz = (ChangQiGuanZhuServices) f;
+    		}
+    		if( f instanceof QiangShiServices) {
+    			this.svsqs = (QiangShiServices) f;
+    		}
+    		if( f instanceof RuoShiServices) {
+    			this.svsrs = (RuoShiServices) f;
+    		}
+    		if( f instanceof DuanQiGuanZhuServices) {
+    			this.svsdqgz = (DuanQiGuanZhuServices) f;
+    		}
     	}
         
-        this.onNewsChange(caches); //获取本月的信息
+        this.onNewsChange(super.caches); //获取本月的信息
+        
         this.initMonthView();
     }
+    @Override
+    /*
+     * (non-Javadoc)
+     * @see com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener#onNewsChange(com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache)
+     */
+    public void onNewsChange(Collection<NewsCache> caches) 
+    {
+    	LocalDate firstdayofmonth = this.initView();
+    	
+    	for (Iterator<NewsCache> lit = caches.iterator(); lit.hasNext(); ) {
+    		NewsCache f = lit.next();
+    		
+    		createNewsInPnl (f,firstdayofmonth);
+    	}
+
+        this.calendar.validate();
+        this.calendar.repaint();
+    }
+    private void createNewsInPnl (NewsCache cache, LocalDate firstdayofmonth)
+    {
+    	Collection<News> news = cache.produceNews(firstdayofmonth);
+		Collection<Label> labels = cache.produceLabels();
+		
+		for (News m : news) {
+			Integer dbid = null ;
+			if( m instanceof InsertedNews ) 
+				dbid = ((InsertedNews)m).getID();
+			else if (m instanceof InsertedExternalNews )
+				dbid = ((InsertedExternalNews)m).getID ();
+			
+            LocalDate mDate = m.getStart();
+            
+            if(!shouldBeDisplayedOnPanel (m) )
+            	continue;
+            
+            if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
+            	
+                if (m.getLabels().isEmpty()) { //没有Label的情况
+                	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
+                    
+                    label.setToolTipText( getLabelToolTipText(m) );
+                    label.setOpaque(true);
+                    label.setName( String.valueOf(dbid));
+                    label.addMouseListener(getNeededMouseAdapter(cache));
+                    label.setForeground(ColorScheme.BLACK_FONT);
+                    label.setBackground(ColorScheme.GREY_WHITER_DARKER);
+                    label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
+                    this.getMonthDayPnl(mDate).add(label);
+                    continue;
+                }
+                
+                for (News.Label l : labels) { //有LABEL的情况
+                    if ( m.getLabels().contains(l)) {
+                    	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
+                        label.setToolTipText(getLabelToolTipText(m) );
+                        label.setOpaque(true);
+                        label.setName(  String.valueOf(dbid));
+                        label.addMouseListener(getNeededMouseAdapter(cache));
+//                        label.setForeground(ColorScheme.BACKGROUND);
+                        label.setForeground(Color.BLACK);
+                        label.setBackground(l.getColor());
+                        label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
+                        this.getMonthDayPnl(mDate).add(label);
+                        break;
+                    }
+                }
+            }
+		}
+    }
+    private MouseAdapter getNeededMouseAdapter (NewsCache cache)
+    {
+    	ServicesForNews svs = cache.getServicesForNews();
+    	if(svs instanceof NewsServices)
+    		return new ReviseNewsController ();
+    	
+    	if( svs instanceof ChangQiGuanZhuServices) {
+    		return new ReviseExternalNewsController (svscqgz);
+		}
+		if( svs instanceof QiangShiServices) {
+			return new ReviseExternalNewsController (svsqs);
+		}
+		if( svs instanceof RuoShiServices) {
+			return new ReviseExternalNewsController (svsrs);
+		}
+		if( svs instanceof DuanQiGuanZhuServices) {
+			return new ReviseExternalNewsController (svsdqgz);
+		}
+		return null;
+    }
+
+    @Override
+	public void onNewsAdded(News m) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onNewsChange(NewsCache cache) {
+		this.onNewsChange (super.caches);
+		
+	}
+	@Override
+	public void onLabelChange(NewsCache cache) {
+		// TODO Auto-generated method stub
+		
+	}
     /*
      * 
      */
@@ -73,11 +209,12 @@ public class MonthView extends View
         
       
     }
-
-    private JPanel getWeekdaysPanel() {
-
+    /*
+     * 
+     */
+    private JPanel getWeekdaysPanel() 
+    {
         JPanel weekdays = JPanelFactory.createFixedSizePanel(new GridLayout(1, 7));
-        
 //        JPanel weekdays = JPanelFactory.createFixedSizePanel (MONTHVIEWWIDTH,12);
         weekdays.setLayout(new GridLayout(1, 7));
         weekdays.add(new JLabel("MonDay"));
@@ -89,7 +226,9 @@ public class MonthView extends View
         weekdays.add(new JLabel("Sunday"));
         return weekdays;
     }
-
+    /*
+     * 
+     */
     private LocalDate initView() 
     {
         this.calendar.removeAll();
@@ -145,76 +284,7 @@ public class MonthView extends View
         return null;
     }
 
-    @Override
-    /*
-     * (non-Javadoc)
-     * @see com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener#onNewsChange(com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache)
-     */
-    public void onNewsChange(Collection<NewsCache> caches) 
-    {
-    	LocalDate firstdayofmonth = this.initView();
-    	
-//    	for (Iterator<NewsCache> lit = caches.iterator(); lit.hasNext(); ) {
-//    		NewsCache f = lit.next();
-//    		
-//    		createNewsInPnl (f,firstdayofmonth);
-//    	}
-
-        this.calendar.validate();
-        this.calendar.repaint();
-    }
-    private void createNewsInPnl (NewsCache cache, LocalDate firstdayofmonth)
-    {
-    	Collection<News> news = cache.produceNews(firstdayofmonth);
-		Collection<Label> labels = cache.produceLabels();
-		
-		for (News m : news) {
-			Integer dbid = null ;
-			if( m instanceof InsertedNews ) 
-				dbid = ((InsertedNews)m).getID();
-			else if (m instanceof InsertedExternalNews )
-				dbid = ((InsertedExternalNews)m).getID ();
-			
-            LocalDate mDate = m.getStart();
-            
-            if(!shouldBeDisplayedOnPanel (m) )
-            	continue;
-            
-            if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
-            	
-                if (m.getLabels().isEmpty()) { //没有Label的情况
-                	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
-                    
-                    label.setToolTipText( getLabelToolTipText(m) );
-                    label.setOpaque(true);
-                    label.setName( m.getClass().toString() + String.valueOf(dbid));
-                    label.addMouseListener(new ReviseNewsController());
-                    label.setForeground(ColorScheme.BLACK_FONT);
-                    label.setBackground(ColorScheme.GREY_WHITER_DARKER);
-                    label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
-                    this.getMonthDayPnl(mDate).add(label);
-                    continue;
-                }
-                
-                for (News.Label l : labels) { //有LABEL的情况
-                    if ( m.getLabels().contains(l)) {
-                    	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
-                        label.setToolTipText(getLabelToolTipText(m) );
-                        label.setOpaque(true);
-                        label.setName( m.getClass().toString() + String.valueOf(dbid));
-                        label.addMouseListener(new ReviseNewsController());
-//                        label.setForeground(ColorScheme.BACKGROUND);
-                        label.setForeground(Color.BLACK);
-                        label.setBackground(l.getColor());
-                        label.setBorder(BorderFactory.createEmptyBorder(1, 4, 1, 4));
-                        this.getMonthDayPnl(mDate).add(label);
-                        break;
-                    }
-                }
-            }
-		}
-    }
-
+    
     
     private Boolean shouldBeDisplayedOnPanel(News m) 
     {
@@ -273,18 +343,50 @@ public class MonthView extends View
         		setDate (mDate);
         	}
         	
-//        	if (e.getClickCount() == 2) { //增加一个新的News
-//                News News = new News("新闻标题",mDate,
-//                     "描述", "关键词", new HashSet<>(),"SlackURL","000000",News.NODESNEWS);
-//                getCreateDialog().setNews(News);
-//                getCreateDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-//                getCreateDialog().setVisible(true);
-//        	}
-            
+        	if (e.getClickCount() == 2) { //增加一个新的News
+                News News = new News("新闻标题",mDate,"描述", "", new HashSet<>(),"URL","000000");
+                
+                CreateNewsDialog cd = new CreateNewsDialog (svsns);
+                cd.setNews(News);
+                cd.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                cd.setVisible(true);
+        	}
         }
     }
 
-	
+    private class ReviseExternalNewsController extends MouseAdapter 
+    {
+    	private ServicesForNews service;
+		public ReviseExternalNewsController (ServicesForNews service)
+    	{
+    		this.service = service;
+    	}
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+			 super.mouseClicked(e);
+	            JLabel label = (JLabel) e.getSource();
+	            String labelname = label.getName();
+	            
+	            InsertedExternalNews n = null ;
+	            Collection<News> cqjlist = service.getCache().produceNews();
+	            for (Iterator<News> it = cqjlist.iterator(); it.hasNext(); ) {
+	            	News f = it.next();
+	            	Integer dbid  = ((InsertedExternalNews)f).getID ();
+	            	
+	            	if(dbid == Integer.parseInt(labelname)) {
+	            		n = (InsertedExternalNews) f;
+	            		break;
+	            	}
+	            	
+	            }
+	            
+	            ModifyExternalNewsDialog mod = new ModifyExternalNewsDialog (service);
+	            mod.setNews(n);
+	            mod.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+	            mod.setVisible(true);
+        }
+    }
     private class ReviseNewsController extends MouseAdapter 
     {
         @Override
@@ -292,6 +394,27 @@ public class MonthView extends View
             super.mouseClicked(e);
             JLabel label = (JLabel) e.getSource();
             String labelname = label.getName();
+            
+            InsertedNews n = null ;
+            Collection<News> cqjlist = svsns.getCache().produceNews();
+            for (Iterator<News> it = cqjlist.iterator(); it.hasNext(); ) {
+            	News f = it.next();
+            	Integer dbid  = ((InsertedNews)f).getID ();
+            	
+            	if(dbid == Integer.parseInt(labelname)) {
+            		n = (InsertedNews) f;
+            		break;
+            	}
+            	
+            }
+            
+            ModifyNewsDiaLog mod = new ModifyNewsDiaLog (svsns);
+            mod.setNews(n);
+            mod.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+            mod.setVisible(true);
+            
+          
+            
 //            Optional<InsertedNews> News = getCache().produceNewss()
 //                                                  .stream()
 //                                                  .filter(   label.getName().equals(m -> (m.getNewsType() + m.getID() )) )
@@ -323,39 +446,5 @@ public class MonthView extends View
         }
 
     }
-    /*
-	 * 
-	 */
-	private void showWeeklyFenXiWizardDialog(String nodeshouldbedisplayed, LocalDate selectdate) 
-	{
-		WeeklyFenXiWizard ggfx = new WeeklyFenXiWizard ( nodeshouldbedisplayed,BkChanYeLianTreeNode.DAPAN,selectdate);
-    	ggfx.setSize(new Dimension(1400, 800));
-    	ggfx.setModalityType(Dialog.ModalityType.APPLICATION_MODAL); // prevent user from doing something else
-    	ggfx.setLocationRelativeTo(null);
-    	if(!ggfx.isVisible() ) 
-    		ggfx.setVisible(true);
-    	ggfx.toFront();
-    	
-    	ggfx = null;
-	}
-	@Override
-	public void onNewsAdded(News m) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void onNewsChange(NewsCache cache) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void onLabelChange(NewsCache cache) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-
-
 
 }

@@ -33,32 +33,33 @@ public class QiangShiServices  implements ServicesForNews
 	}
 
 	@Override
-	public News createNews(News News) throws SQLException {
-		InsertedNews n = null;
-		if( this.qiangruoshitype == "RUOSHI") {
-			 n = this.database.createRuoShiInfo (news);
-		} else if(this.qiangruoshitype == "QIANSHI" ) {
-			 n = this.database.createQiangInfo(news);
-		}
+	public News createNews(News news) throws SQLException
+	{
+		InsertedExternalNews n = this.database.createQiangInfo(news);
 		
-		this.tagsdboptfornews.storeNewsKeyWordsToDataBase (n);
+//		this.tagsdboptfornews.storeNewsKeyWordsToDataBase (n);
         
     	 if(n!= null && cache != null)
     		 cache.addNews(n);
     	 
     	 return n;
 	}
-
 	@Override
-	public void deleteNews(InsertedNews News) throws SQLException {
-		// TODO Auto-generated method stub
-		
+	public void deleteNews(News news) throws SQLException 
+	{
+		InsertedExternalNews n = this.database.deleteQiangRuoShiInfo (news);
+		 if(n!= null && cache != null)
+    		 cache.removeNews(n);
 	}
 
 	@Override
-	public News updateNews(InsertedNews News) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public News updateNews(News news) throws SQLException 
+	{
+		InsertedExternalNews n = this.database.updatedQiangRuoShiInfo (news);
+		if(n!= null && cache != null)
+			cache.updateNews(n);
+		
+		return n;
 	}
 
 	@Override
