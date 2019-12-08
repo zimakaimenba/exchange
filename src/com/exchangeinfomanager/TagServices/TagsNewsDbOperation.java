@@ -18,11 +18,11 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Set;
 
 import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.google.common.base.Splitter;
@@ -267,16 +267,16 @@ public class TagsNewsDbOperation
 			e.printStackTrace();
 		}
 	}
-	public Collection<InsertedMeeting> getNewsSetWithOneOfSpecificTags (String tagnames)
+	public Collection<InsertedNews> getNewsSetWithOneOfSpecificTags (String tagnames)
 	{
 		return null;
 		
 	}
-	public Collection<InsertedMeeting> getNewsSetWithAllSpecificTags (String tagnames)
+	public Collection<News> getNewsSetWithAllSpecificTags (String tagnames)
 	{
 //		String join = Joiner.on("','").skipNulls().join(tagnames);
 //		Joiner.on(" ").skipNulls().join(tagnames);
-		Collection<InsertedMeeting> nodecodeset = new HashSet<> ();
+		Collection<News> nodecodeset = new HashSet<> ();
 		CachedRowSetImpl result = null;
 		try {
 			String newtagnames = tagnames.trim().replaceAll(" +", " ").replaceAll("\\s", "' , '");
@@ -301,8 +301,8 @@ public class TagsNewsDbOperation
 			     String description = result.getString("¾ßÌåÃèÊö");
 			     String keywords = result.getString("¹Ø¼ü´Ê");
 			     
-			     InsertedMeeting newmeeting = new InsertedMeeting(
-			                new Meeting(title, recorddate,  description, keywords, new HashSet<InsertedMeeting.Label>(),null,null,Meeting.NODESNEWS), newsid);
+			     News news = new News(title, recorddate,  description, keywords, new HashSet<InsertedNews.Label>(),null,null); 
+			     InsertedNews newmeeting = new InsertedNews(news, newsid);
 			     
 			     nodecodeset.add (newmeeting);
 			}

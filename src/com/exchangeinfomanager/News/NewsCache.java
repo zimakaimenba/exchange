@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class NewsCache 
 {
@@ -24,6 +25,24 @@ public class NewsCache
 	private LocalDate casheenddate;
 	private Integer[] eventtype;
 
+    public NewsCache(BkChanYeLianTreeNode node,ServicesForNews Newservice, ServicesForNewsLabel labelService,LocalDate startdate, LocalDate enddate) 
+    {
+    	this.nodecode = node.getMyOwnCode();
+        this.Newservice = Newservice;
+        this.Newservice.setCache(this);
+        this.labelService = labelService;
+        if(this.labelService != null)
+        	this.labelService.setCache(this);
+        this.listeners = new HashSet<>();
+        this.News = new HashSet<>();
+        this.NewsLabels = new HashSet<>();
+        this.cashestartdate = startdate;
+        this.casheenddate = enddate;
+        
+        this.refreshNews(node,cashestartdate,casheenddate);
+        if(this.labelService != null)
+        	this.refreshLabels();
+    }
     public NewsCache(String nodecode,ServicesForNews Newservice, ServicesForNewsLabel labelService,LocalDate startdate, LocalDate enddate) 
     {
     	this.nodecode = nodecode;
@@ -148,7 +167,17 @@ public class NewsCache
             e.printStackTrace();
         } 
     }
+    private void refreshNews(BkChanYeLianTreeNode node,LocalDate startdate,LocalDate enddate) 
+    {
+        this.News.clear();
 
+        try {
+            this.News.addAll(Newservice.getNews(node,startdate,enddate));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } 
+    }
+    
     private void refreshLabels() {
         this.NewsLabels.clear();
 

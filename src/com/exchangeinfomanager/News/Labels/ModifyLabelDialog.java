@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 @SuppressWarnings("all")
-public class ModifyLabelDialog extends LabelDialog<InsertedNews.Label>
+public class ModifyLabelDialog extends NewsLabelDialog<InsertedNews.Label>
 {
     public ModifyLabelDialog(ServicesForNewsLabel labelService) {
         super(labelService);

@@ -17,13 +17,17 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsLabelServices;
+import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
+import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -91,89 +95,115 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
 		LocalDate monday = displayeddate.with( DayOfWeek.MONDAY );
 		LocalDate sunday = displayeddate.with( DayOfWeek.SUNDAY );
 		
-		EventService eventDbService = new DBMeetingService ();
-
-		Integer[] wantednewstypeforall = {Integer.valueOf(Meeting.NODESNEWS), Integer.valueOf(Meeting.CHANGQIJILU), Integer.valueOf(Meeting.JINQIGUANZHU),
-				Integer.valueOf(Meeting.QIANSHI),Integer.valueOf(Meeting.RUOSHI)   };
-        Cache cache = new Cache("ALL",eventDbService, null,monday,sunday,wantednewstypeforall);
+		ServicesForNewsLabel svslabel = new NewsLabelServices ();
 		
-		Collection<InsertedMeeting> curnewlist = cache.produceMeetings();
+		ServicesForNews svsnews = new NewsServices ();
+    	NewsCache newcache = new NewsCache ("ALL",svsnews,svslabel,monday,sunday);
+    	svsnews.setCache(newcache);
+    	
+    	ServicesForNews svscqgz = new ChangQiGuanZhuServices ();
+    	NewsCache cqgzcache = new NewsCache ("ALL",svscqgz,svslabel,monday,sunday);
+    	svscqgz.setCache(cqgzcache);
+    	
+    	ServicesForNews svsqs = new QiangShiServices ();
+    	NewsCache qiangshicache = new NewsCache ("ALL",svsqs,svslabel,monday,sunday);
+    	svsqs.setCache(qiangshicache);
+    	
+    	ServicesForNews svsrs = new RuoShiServices ();
+    	NewsCache ruoshicache = new NewsCache ("ALL",svsrs,svslabel,monday,sunday);
+    	svsrs.setCache(ruoshicache);
+    	
+    	ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
+    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,monday,sunday);
+    	svsdqgz.setCache(dqgzcache);
+    	
+    	ServicesForNews svsbolang = new ZhiShuBoLangServices ();
+    	NewsCache bolangcache = new NewsCache ("ALL",svsbolang,svslabel,monday,sunday);
+    	svsbolang.setCache(dqgzcache);
+    	
+		
+		Collection<News> curnewlist = new ArrayList<> ();
+		curnewlist.addAll(newcache.produceNews());
+		curnewlist.addAll(cqgzcache.produceNews());
+		curnewlist.addAll(qiangshicache.produceNews());
+		curnewlist.addAll(ruoshicache.produceNews());
+		curnewlist.addAll(dqgzcache.produceNews());
+		curnewlist.addAll(bolangcache.produceNews());
+		
 		
 		String htmlstring = this.getText();
 		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 		org.jsoup.select.Elements content = doc.select("body");
 		       
 		content.append( "<h4>周新闻:" + monday + "到" + sunday + "</h4>");
-		for(InsertedMeeting cylnew : curnewlist ) {
+		for(News cylnew : curnewlist ) {
 	   		String title = cylnew.getTitle();
 	   		String newdate = cylnew.getStart().toString(); 
-	   		String slackurl = cylnew.getSlackUrl();
+	   		String slackurl = cylnew.getNewsUrl();
 	   		if(slackurl != null && !slackurl.isEmpty() )	    		
 	   			content.append( "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
 	   		else
 	   			content.append( "<p>" + newdate  + title + "</p> ");
 		}
 		
-		//说明该周的指数关键日期
-		Integer[]  wantednewstypeforall2 = { Integer.valueOf(Meeting.ZHISHUDATE)  };
-        Cache cachezhishu = new Cache("ALL",eventDbService, null,monday,sunday,wantednewstypeforall2);
-        
-		Collection<InsertedMeeting> curzhishuguanjianriqi = cachezhishu.produceMeetings();
-		if(curzhishuguanjianriqi.size() >=1) {
-			content.append( "<h4>周指数关键日期:" + monday + "到" + sunday + "</h4>");
-			for(InsertedMeeting zsgjrq : curzhishuguanjianriqi ) {
-		   		String title = zsgjrq.getTitle();
-		   		String newstartdate = zsgjrq.getStart().toString();
-		   		try {
-		   			String newenddate = zsgjrq.getEnd().toString();
-		   			String detail =zsgjrq.getDescription();
-		   			content.append( "<p>" + newstartdate + "~" + newenddate +":" + title + ",\"" + detail + "\"</p> ");
-		   		} catch (java.lang.NullPointerException e ) {
-		   			String detail =zsgjrq.getDescription();
-		   			content.append( "<p>" + newstartdate  +":" + title + ",\"" + detail + "\"</p> ");
-		   		}
-		   		
-			}
-		}
-		
-		
 	   	htmlstring = doc.toString();
 	   	this.setText(htmlstring);
 	   	
-	   	eventDbService = null;
-	   	wantednewstypeforall = null;
-	   	cache = null;
-	   	curnewlist = null;
-	   	
-	   	wantednewstypeforall2 = null;
-	   	cachezhishu = null;
-	   	curzhishuguanjianriqi = null;
 	   	
 	}
 	 /*
      * 显示板块新闻连接
      */
-    public void displayChanYeLianNewsHtml(BkChanYeLianTreeNode curselectedbknodecode)
+    public void displayChanYeLianNewsHtml(BkChanYeLianTreeNode node)
     {
-    	String curselectedbknodename = curselectedbknodecode.getMyOwnName();
-	    String curbknodecode = curselectedbknodecode.getMyOwnCode();
+    	String curselectedbknodename = node.getMyOwnName();
+	    String curbknodecode = node.getMyOwnCode();
 	    
-	    EventService eventDbService = new DBMeetingService ();
-//    	LabelService labelService = new DBLabelService ();
-		Integer[] wantednewstype = {Integer.valueOf(Meeting.NODESNEWS) , Integer.valueOf(Meeting.QIANSHI), Integer.valueOf(Meeting.RUOSHI)  };
-        Cache cache = new Cache(curbknodecode,eventDbService, null,LocalDate.now().minusMonths(3),LocalDate.now(),wantednewstype);
-	    Collection<InsertedMeeting> curnewlist = cache.produceMeetings();
+		ServicesForNewsLabel svslabel = new NewsLabelServices ();
+		
+		ServicesForNews svsnews = new NewsServices ();
+    	NewsCache newcache = new NewsCache (node,svsnews,svslabel,LocalDate.now().minusMonths(3),LocalDate.now());
+    	svsnews.setCache(newcache);
+    	
+    	ServicesForNews svscqgz = new ChangQiGuanZhuServices ();
+    	NewsCache cqgzcache = new NewsCache (node,svscqgz,svslabel,LocalDate.now().minusMonths(3),LocalDate.now());
+    	svscqgz.setCache(cqgzcache);
+    	
+    	ServicesForNews svsqs = new QiangShiServices ();
+    	NewsCache qiangshicache = new NewsCache (node,svsqs,svslabel,LocalDate.now().minusMonths(3),LocalDate.now());
+    	svsqs.setCache(qiangshicache);
+    	
+    	ServicesForNews svsrs = new RuoShiServices ();
+    	NewsCache ruoshicache = new NewsCache (node,svsrs,svslabel,LocalDate.now().minusMonths(3),LocalDate.now());
+    	svsrs.setCache(ruoshicache);
+    	
+    	ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
+    	NewsCache dqgzcache = new NewsCache (node,svsdqgz,svslabel,LocalDate.now().minusMonths(3),LocalDate.now());
+    	svsdqgz.setCache(dqgzcache);
+    	
+    	ServicesForNews svsbolang = new ZhiShuBoLangServices ();
+    	NewsCache bolangcache = new NewsCache (node,svsbolang,svslabel,LocalDate.now().minusMonths(3),LocalDate.now());
+    	svsbolang.setCache(dqgzcache);
+    	
+		
+		Collection<News> curnewlist = new ArrayList<> ();
+		curnewlist.addAll(newcache.produceNews());
+		curnewlist.addAll(cqgzcache.produceNews());
+		curnewlist.addAll(qiangshicache.produceNews());
+		curnewlist.addAll(ruoshicache.produceNews());
+		curnewlist.addAll(dqgzcache.produceNews());
+		curnewlist.addAll(bolangcache.produceNews());
 	    
 	     String htmlstring = this.getText();
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 //		 logger.debug(doc.toString());
 		 org.jsoup.select.Elements content = doc.select("body");
 		       
-		content.append( "<h4>\""+ curselectedbknodecode + curselectedbknodename + "\"相关新闻</h4>");
-    	for(InsertedMeeting cylnew : curnewlist ) {
+		content.append( "<h4>\""+ node.getMyOwnCode() + node.getMyOwnName() + curselectedbknodename + "\"相关新闻</h4>");
+    	for(News cylnew : curnewlist ) {
     		String title = cylnew.getTitle();
     		String newdate = cylnew.getStart().toString(); 
-    		String slackurl = cylnew.getSlackUrl();
+    		String slackurl = cylnew.getNewsUrl();
     		String keywords = cylnew.getKeyWords();
     		if(slackurl != null && !slackurl.isEmpty() )	    		
     			content.append( "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
@@ -185,9 +215,6 @@ public class DisplayBkGgInfoEditorPane extends JEditorPane
     	htmlstring = doc.toString();
     	this.setText(htmlstring);
     	
-    	eventDbService = null;
-	   	wantednewstype = null;
-	   	cache = null;
 	   	curnewlist = null;
 	}
     /*

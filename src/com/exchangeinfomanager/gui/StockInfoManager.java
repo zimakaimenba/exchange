@@ -25,8 +25,14 @@ import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.License.License;
+import com.exchangeinfomanager.News.CreateNewsDialog;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.Search.SearchDialog;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
+import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
+import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
 import com.exchangeinfomanager.TagManagment.NodeLabelMatrixManagement;
 import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
@@ -221,7 +227,6 @@ public class StockInfoManager
 		} catch (java.lang.NullPointerException e) {
 		}
 		
-//		((JStockComboBoxRenderer)cBxstockcode.getRenderer()).setChiCangGeGuList(new HashSet<String> (tmpchicangname));
 		((JStockComboBoxNodeRenderer)cBxstockcode.getRenderer()).setChiCangGeGuList(new HashSet<String> (tmpchicangname));
 	}
 	private void initializePaoMaDeng() 
@@ -315,24 +320,6 @@ public class StockInfoManager
 		bkstkkwcache = new TagCache (lbnodedbservice);
 		lbnodedbservice.setCache(bkstkkwcache);
 		pnltags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
-		
-//		count = pnltags.getComponentCount();
-//		for(int i=0;i<count;i++) {
-//			Component comp = pnltags.getComponent(i);
-//			String name = comp.getName();
-//			Class<? extends Component> classes = comp.getClass();
-//			comp.getLocation();
-//		}
-		
-//		pnltags.revalidate();
-//		pnltags.repaint();
-////		
-////		panel_3.revalidate();
-////		panel_3.repaint();
-//		
-//		frame.validate ();
-//		frame.repaint();
-		
 	}
 	/*
 	 * 
@@ -667,28 +654,23 @@ public class StockInfoManager
 		btnSearch.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) 
 			{
-				
-				
-				try{
-					BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
-					TDXNodsInforPnl cylnews = new TDXNodsInforPnl (node);
-					cylnews.setModal(false);
-					cylnews.setVisible(true);
-				} catch (java.lang.NullPointerException ex) {
-					ex.printStackTrace();
-				} catch (java.lang.ClassCastException ex) {
-					ex.printStackTrace();
-				}
-				
-//				try{
-//					BkChanYeLianTreeNode stockcode = (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
-//					ChanYeLianNewsPanel cylnews = new ChanYeLianNewsPanel (stockcode);
-//					cylnews.setVisible(true);
-//				} catch (java.lang.NullPointerException ex) {
-//					ex.printStackTrace();
-//				} catch (java.lang.ClassCastException ex) {
-//					ex.printStackTrace();
-//				}
+//				NewsServices svsns = new NewsServices ();
+//				NewsCache newcache = new NewsCache (nodeshouldbedisplayed.getMyOwnCode(),svsns,null,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+//				svsns.setCache(newcache);
+//
+//				JDialogForTagSearchMatrixPanelForAddNewsToNode pnlsearchtags = new JDialogForTagSearchMatrixPanelForAddNewsToNode(newcache);
+//				
+//                News News = new News("新闻标题",LocalDate.now() ,"描述", "", new HashSet<>(),"URL",((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode()  );
+//                
+//                CreateNewsDialog cd = new CreateNewsDialog (svsns);
+//                cd.setNews(News);
+//                cd.setVisible(true);
+                
+                JDialogForTagSearchMatrixPanelForAddSysNewsToNode newlog 
+                	= new JDialogForTagSearchMatrixPanelForAddSysNewsToNode (  (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem() );
+                newlog.setModal(false);
+                newlog.setVisible(true);
+                
 			}
 		});
 		

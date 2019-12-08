@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -38,7 +39,19 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsLabelServices;
+import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ExternalNewsType.CreateExternalNewsDialog;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
+import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
 import com.exchangeinfomanager.Tag.Tag;
@@ -55,11 +68,6 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
@@ -176,12 +184,12 @@ public class BanKuaiFengXi extends JDialog
 		this.globecalwholeweek = true; //计算整周
 
 		initializeGui ();
-//		createEvents ();
-//		setUpChartDataListeners ();
-//
-//		initializePaoMaDeng ();
-//		
-//		adjustDate (LocalDate.now());
+		createEvents ();
+		setUpChartDataListeners ();
+
+		initializePaoMaDeng ();
+		
+		adjustDate (LocalDate.now());
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
@@ -202,7 +210,7 @@ public class BanKuaiFengXi extends JDialog
 	private ArrayList<ExportCondition> exportcond;
 	
 	private NodeInfoToCsv nodeinfotocsv;
-	private Collection<InsertedMeeting> zhishukeylists; //指数关键日期
+	
 	
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelbankuaidatachangelisteners;
@@ -1046,22 +1054,16 @@ public class BanKuaiFengXi extends JDialog
 
 		paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
 
-		Integer[] wantedzhishutype = {Integer.valueOf(Meeting.ZHISHUDATE)};
-		EventService allDbmeetingService = new DBMeetingService ();
-	    Cache cacheAll = new Cache("ALL",allDbmeetingService, null,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,wantedzhishutype);
-	    
-	    Integer[] wantednewstype = {Integer.valueOf(Meeting.NODESNEWS)};
-	    Cache cacheNode = new Cache(selectnode.getMyOwnCode(),allDbmeetingService, null,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,wantednewstype);
-	    
-		zhishukeylists = cacheAll.produceMeetings();
-		Collection<InsertedMeeting> newslist = cacheNode.produceMeetings();
-		
-		zhishukeylists.addAll(newslist);
-		paneldayCandle.updateNewAndZhiShuKeyDates (zhishukeylists); //指数关键日期
-		
-		cacheAll = null;
-		cacheNode = null;
-		allDbmeetingService = null;
+		ServicesForNewsLabel svslabel = new NewsLabelServices ();
+		ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
+    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	svsdqgz.setCache(dqgzcache);
+    	paneldayCandle.displayZhiShuGuanJianRiQiToGui(dqgzcache.produceNews());
+    	
+    	ServicesForNews svsnews = new NewsServices ();
+    	NewsCache newcache = new NewsCache ("ALL",svsnews,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	svsnews.setCache(newcache);
+    	paneldayCandle.displayNodeNewsToGui (newcache.produceNews() );
 	}
 	/*
 	 * 
@@ -1156,36 +1158,12 @@ public class BanKuaiFengXi extends JDialog
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
 				StockOfBanKuai stock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
 
-				
-        		String title = "强势个股板块";
-        		String owner = "";
-        		String keywords = "强势个股板块";
-        		LocalDate mDate = dateChooser.getLocalDate();
-        		int meetingtype = Meeting.QIANSHI;
-        		
-        		//Set up description of all GPC
-//        		String descriptions = "";
-//        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
-//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-//    			for(int i=0;i< bankuaicount; i++) {
-//    				
-//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-//    				String nodename = childnode.getMyOwnName();
-//    				String nodecode = childnode.getMyOwnCode();
-//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-//    			}
-				
-				Meeting meeting = new Meeting(title, mDate,
-		        		"", keywords, new HashSet<>(),"URL",owner,meetingtype);
-				meeting.setNewsOwnerCodes(stock.getMyOwnCode() + "gg"); //
-				EventService newsDbService = new DBMeetingService ();
-				try {
-					newsDbService.createMeeting(meeting);
-					dateChooser.getStockCalendar().refreshStockCalander ();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-//				newsdbopt.addBanKuaiNews(meeting);
+        		QiangShi qs =  new 	QiangShi(stock.getStock(), "描述", LocalDate.now(), LocalDate.now(), "详细描述", "强势个股",new HashSet<>(),"URL");
+        		ServicesForNews svsqs = new QiangShiServices ();
+        		CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (svsqs);
+                createnewDialog.setNews(qs);
+                createnewDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                createnewDialog.setVisible(true);
 		
 			}
 			
@@ -1202,38 +1180,12 @@ public class BanKuaiFengXi extends JDialog
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
 				StockOfBanKuai stock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
 
-				
-        		String title = "弱势个股板块";
-        		String owner = "";
-        		String keywords = "弱势个股板块"; 
-        		
-        		LocalDate mDate = dateChooser.getLocalDate();
-        		int meetingtype = Meeting.RUOSHI;
-        		
-        		//Set up description of all GPC
-//        		String descriptions = "";
-//        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
-//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-//    			for(int i=0;i< bankuaicount; i++) {
-//    				
-//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-//    				String nodename = childnode.getMyOwnName();
-//    				String nodecode = childnode.getMyOwnCode();
-//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-//    			}
-        		
-				
-				Meeting meeting = new Meeting(title, mDate,
-		        		"", keywords, new HashSet<>(),"URL",owner,meetingtype);
-				meeting.setNewsOwnerCodes(stock.getMyOwnCode() + "gg"); //
-				EventService newsDbService = new DBMeetingService ();
-				try {
-					newsDbService.createMeeting(meeting);
-					dateChooser.getStockCalendar().refreshStockCalander ();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-//				newsdbopt.addBanKuaiNews(meeting);
+        		QiangShi qs =  new 	QiangShi(stock.getStock(), "描述", LocalDate.now(), LocalDate.now(), "详细描述", "强势个股",new HashSet<>(),"URL");
+        		ServicesForNews svsqs = new RuoShiServices ();
+        		CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (svsqs);
+                createnewDialog.setNews(qs);
+                createnewDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                createnewDialog.setVisible(true);
         		
 			}
 			
@@ -1251,35 +1203,13 @@ public class BanKuaiFengXi extends JDialog
 				BanKuai bankuai = ((BanKuaiInfoTableModel) tableBkZhanBi.getModel()).getBanKuai(modelRow);
 
 				
-        		String title = "强势板块";
-        		String owner = bankuai.getMyOwnCode();
-        		String keywords = "强势板块";
-        		LocalDate mDate = dateChooser.getLocalDate();
-        		int meetingtype = Meeting.QIANSHI;
-        		
-        		//Set up description of all GPC
-//        		String descriptions = "";
-//        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
-//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-//    			for(int i=0;i< bankuaicount; i++) {
-//    				
-//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-//    				String nodename = childnode.getMyOwnName();
-//    				String nodecode = childnode.getMyOwnCode();
-//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-//    			}
-        		
-				
-				Meeting meeting = new Meeting(title, mDate,
-		        		"", keywords, new HashSet<>(),"URL",owner,meetingtype);
-				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); //
-				EventService newsDbService = new DBMeetingService ();
-				try {
-					newsDbService.createMeeting(meeting);
-					dateChooser.getStockCalendar().refreshStockCalander ();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				QiangShi qs =  new 	QiangShi(bankuai, "描述", LocalDate.now(), LocalDate.now(), "详细描述", "强势个股",new HashSet<>(),"URL");
+        		ServicesForNews svsqs = new QiangShiServices ();
+        		CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (svsqs);
+                createnewDialog.setNews(qs);
+                createnewDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                createnewDialog.setVisible(true);
+		
 			}
 			
 		});
@@ -1295,39 +1225,14 @@ public class BanKuaiFengXi extends JDialog
 				}
 				int modelRow = tableBkZhanBi.convertRowIndexToModel(row); 
 				BanKuai bankuai = ((BanKuaiInfoTableModel) tableBkZhanBi.getModel()).getBanKuai(modelRow);
-
 				
-        		String title = "弱势个股板块";
-        		String owner = "";
-        		String keywords = "弱势个股板块"; 
-        		
-        		LocalDate mDate = dateChooser.getLocalDate();
-        		int meetingtype = Meeting.RUOSHI;
-        		
-        		//Set up description of all GPC
-//        		String descriptions = "";
-//        		BanKuaiAndStockTree cyltree = bkcyl.getBkChanYeLianTree();
-//        		int bankuaicount = cyltree.getModel().getChildCount(cyltree.getModel().getRoot());
-//    			for(int i=0;i< bankuaicount; i++) {
-//    				
-//    				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)cyltree.getModel().getChild(cyltree.getModel().getRoot(), i);
-//    				String nodename = childnode.getMyOwnName();
-//    				String nodecode = childnode.getMyOwnCode();
-//    				descriptions = descriptions + nodecode.toUpperCase() + "-" + nodename +   "\n";
-//    			}
-        		
+				QiangShi qs =  new 	QiangShi(bankuai, "描述", LocalDate.now(), LocalDate.now(), "详细描述", "强势个股",new HashSet<>(),"URL");
+        		ServicesForNews svsqs = new RuoShiServices ();
+        		CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (svsqs);
+                createnewDialog.setNews(qs);
+                createnewDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                createnewDialog.setVisible(true);
 				
-				Meeting meeting = new Meeting(title, mDate,
-		        		"", keywords, new HashSet<>(),"URL",owner,meetingtype);
-				meeting.setNewsOwnerCodes(bankuai.getMyOwnCode() + "bk"); 
-				EventService newsDbService = new DBMeetingService ();
-				try {
-					newsDbService.createMeeting(meeting);
-					dateChooser.getStockCalendar().refreshStockCalander ();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-//				newsdbopt.addBanKuaiNews(meeting);
 			}
 			
 		});

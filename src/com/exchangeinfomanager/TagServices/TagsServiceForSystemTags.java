@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+
 
 public class TagsServiceForSystemTags implements TagService  
 {
@@ -141,9 +141,9 @@ public class TagsServiceForSystemTags implements TagService
 //		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithOneOfSpecificTags (tags);
 //		 return nodesetfortagname;
 //	}
-	public Collection<InsertedMeeting> getNewsSetWithAllSpecificTags(String tagname)
+	public Collection<News> getNewsSetWithAllSpecificTags(String tagname)
 	{
-		Collection<InsertedMeeting> newsset = dboptfornews.getNewsSetWithAllSpecificTags (tagname);
+		Collection<News> newsset = dboptfornews.getNewsSetWithAllSpecificTags (tagname);
 		return newsset;
 	}
 }

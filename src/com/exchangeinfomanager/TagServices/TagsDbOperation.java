@@ -17,8 +17,6 @@ import org.apache.poi.util.StringUtil;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;

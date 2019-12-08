@@ -1,7 +1,10 @@
-package com.exchangeinfomanager.bankuaichanyelian.chanyeliannews;
+package com.exchangeinfomanager.News.Labels;
 
 import javax.swing.*;
 
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsLabelServices;
+import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 
@@ -12,8 +15,8 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 @SuppressWarnings("all")
-public class CreateLabelDialog extends LabelDialog<Meeting.Label> {
-    public CreateLabelDialog(LabelService labelService) {
+public class CreateLabelDialog extends NewsLabelDialog<News.Label> {
+    public CreateLabelDialog(ServicesForNewsLabel labelService) {
         super(labelService);
         JLabel createButton = JLabelFactory.createOrangeButton("Create");
 
@@ -29,7 +32,7 @@ public class CreateLabelDialog extends LabelDialog<Meeting.Label> {
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             try {
-                labelService.createLabel(getLabel());
+            	labelservice.createLabel(getLabel());
             } catch (SQLException e1) {
                 e1.printStackTrace();
             } 

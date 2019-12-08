@@ -31,39 +31,33 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-
-
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.StockCalendar.View;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
-
 
 public class TDXNodesInfomationListsView extends View
 {
 
-	private EventService meetingService;
+	private ServicesForNews NewsService;
 	private String nodecode;
+	private NewsCache cache;
 	
-		public TDXNodesInfomationListsView(EventService meetingService,Cache cache,AbstractTableModel tablemodle)
+	public TDXNodesInfomationListsView(ServicesForNews NewsService,AbstractTableModel tablemodle)
 	{
-		super(meetingService, cache);
-		this.meetingService = meetingService;
-		this.nodecode = cache.getNodeCode();
-		this.cache = cache;
+		super(NewsService);
+		this.NewsService = NewsService;
+		this.nodecode = NewsService.getCache().getNodeCode();
+		this.cache = NewsService.getCache();
 	
 		cache.addCacheListener(this);
 		
 		initializeGui (tablemodle);
 		createEvents ();
-		
-		JDialogForTagSearchMatrixPanelForAddNewsToNode addkwtoothernode = new JDialogForTagSearchMatrixPanelForAddNewsToNode (cache);
-		
-        this.onMeetingChange(cache);
+	
+        this.onNewsChange(cache);
 	}
 		
 	public static final String ANEWSADDED = "addednews";
@@ -72,32 +66,32 @@ public class TDXNodesInfomationListsView extends View
         pcs.addPropertyChangeListener(listener);
 	}
 	
-	protected  Meeting addNews() 
+	protected  News addNews() 
 	{
 		String newsbelogns = cache.getNodeCode();
 		if(newsbelogns.toLowerCase().equals("all") )
 			newsbelogns = "000000";
 		
-		Meeting meeting = new Meeting("新闻标题",LocalDate.now(),
-                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.NODESNEWS);
-        getCreateDialog().setMeeting(meeting);
+		News News = new News("新闻标题",LocalDate.now(),
+                     "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns);
+        getCreateDialog().setNews(News);
         getCreateDialog().setVisible(true);
         
-        return meeting;
+        return News;
 	}
 	
-	protected  Meeting addZhiShuGJRQ ()
+	protected  News addZhiShuGJRQ ()
 	{
 		String newsbelogns = cache.getNodeCode();
 		if(newsbelogns.toLowerCase().equals("all") )
 			newsbelogns = "999999";
 		
-		Meeting meeting = new Meeting("指数日期",LocalDate.now(),
-                    "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns,Meeting.ZHISHUDATE);
-	    getCreateDialog().setMeeting(meeting);
+		News News = new News("指数日期",LocalDate.now(),
+                    "描述", "关键词", new HashSet<>(),"SlackURL",newsbelogns);
+	    getCreateDialog().setNews(News);
 	    getCreateDialog().setVisible(true);
 	    
-	    return meeting;
+	    return News;
 	}
 	
 	private void createEvents() 
@@ -106,16 +100,16 @@ public class TDXNodesInfomationListsView extends View
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				Integer meetingtype = ((InformationTableModelBasic)tableCurCylNews.getModel()).getMainInforTypeForCreating();
-				Meeting mt = null;
-				if(meetingtype == Meeting.NODESNEWS)
+				Integer Newstype = ((InformationTableModelBasic)tableCurCylNews.getModel()).getMainInforTypeForCreating();
+				News mt = null;
+				if(Newstype == News.NODESNEWS)
 					mt = addNews ();
-				else if(meetingtype == Meeting.ZHISHUDATE)
+				else if(Newstype == News.ZHISHUDATE)
 					mt = addZhiShuGJRQ ();
 				
-				onMeetingChange(cache);
+				onNewsChange(cache);
 				
-				InsertedMeeting selectednews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getLastestInformation();
+				InsertedNews selectednews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getLastestInformation();
 				if(selectednews!= null && mt.getTitle().equals(selectednews.getTitle() )  ) { //无法取得用户是否取消添加的状态，只好用这种方式来确定用户是否真的已经加了一条新新闻
 					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, TDXNodesInfomationListsView.ANEWSADDED, "", selectednews );
 		            pcs.firePropertyChange(evtzd);
@@ -142,12 +136,12 @@ public class TDXNodesInfomationListsView extends View
 							return ;
 						}
 						
-					  InsertedMeeting stocknews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getRequiredInformationOfTheRow(model_row);
-					  Optional<InsertedMeeting> meeting = getCache().produceMeetings()
+					  InsertedNews stocknews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getRequiredInformationOfTheRow(model_row);
+					  Optional<InsertedNews> News = getCache().produceNewss()
                               .stream()
                               .filter(m -> m.getID() == Integer.valueOf(stocknews.getID()))
                               .findFirst();
-					  getModifyDialog().setMeeting(meeting.get());
+					  getModifyDialog().setNews(News.get());
 		              getModifyDialog().setVisible(true);
 				 }
 
@@ -158,7 +152,7 @@ public class TDXNodesInfomationListsView extends View
 	/*
 	 * 
 	 */
-	public InsertedMeeting getCurSelectedNews ()
+	public InsertedNews getCurSelectedNews ()
 	{
 		int row = tableCurCylNews.getSelectedRow();
 		if(row <0) {
@@ -167,7 +161,7 @@ public class TDXNodesInfomationListsView extends View
 		}
 		
 		int  model_row = tableCurCylNews.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		InsertedMeeting selectednews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getRequiredInformationOfTheRow(model_row);
+		InsertedNews selectednews = ((InformationTableModelBasic)tableCurCylNews.getModel()).getRequiredInformationOfTheRow(model_row);
 		
 		return selectednews;
 	}
@@ -235,10 +229,10 @@ public class TDXNodesInfomationListsView extends View
 		        Color foreground = Color.BLACK, background = Color.white; 
 		        InformationTableModelBasic tablemodel =  (InformationTableModelBasic)this.getModel() ;
 		        int modelRow = this.convertRowIndexToModel(row);
-		        InsertedMeeting event = tablemodel.getRequiredInformationOfTheRow(modelRow);
+		        InsertedNews event = tablemodel.getRequiredInformationOfTheRow(modelRow);
 		        
-		        Collection<InsertedMeeting.Label> labels = cache.produceLabels();
-		        for (Meeting.Label l : labels) { //有LABEL的情况
+		        Collection<InsertedNews.Label> labels = cache.produceLabels();
+		        for (News.Label l : labels) { //有LABEL的情况
                     if (l.isActive() && event.getLabels().contains(l)) {
                         background = l.getColor();
                     }
@@ -260,10 +254,10 @@ public class TDXNodesInfomationListsView extends View
 	}
 
 	@Override
-	public void onMeetingChange(Cache cache) 
+	public void onNewsChange(NewsCache cache) 
 	{
-		Collection<InsertedMeeting> meetings = cache.produceMeetings();
-		((InformationTableModelBasic)tableCurCylNews.getModel()).refresh(meetings);
+		Collection<News> News = cache.produceNews();
+		((InformationTableModelBasic)tableCurCylNews.getModel()).refresh(News);
 		
 //		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)tableCurCylNews.getRowSorter();
 //		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
@@ -274,7 +268,7 @@ public class TDXNodesInfomationListsView extends View
 	}
 
 	@Override
-	public void onLabelChange(Cache cache) {
+	public void onLabelChange(NewsCache cache) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -289,7 +283,19 @@ public class TDXNodesInfomationListsView extends View
 	}
 
 	@Override
-	public void onMeetingAdded(Meeting m) {
+	public void onNewsAdded(News m) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onNewsChange(Collection<NewsCache> caches) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLabelChange(Collection<NewsCache> cache) {
 		// TODO Auto-generated method stub
 		
 	}

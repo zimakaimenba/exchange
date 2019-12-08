@@ -9,12 +9,9 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.TagManagment.TagSearchMatrixPanelForWholeSearchTags.SearchController;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -22,7 +19,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 public class TagSearchMatrixPanelForAddNewsToNode extends TagSearchMatrixPanel 
 {
 	private JLabel searchbtn;
-	private Meeting news;
+	private News news;
 
 	public TagSearchMatrixPanelForAddNewsToNode ()
 	{
@@ -48,11 +45,11 @@ public class TagSearchMatrixPanelForAddNewsToNode extends TagSearchMatrixPanel
             } catch (Exception e1) {
                 e1.printStackTrace();
             } 
-            setVisible(true);
+            setVisible(false);
         }
     }
 	
-	public void setNews (Meeting m)
+	public void setNews (News m)
 	{
 		this.news = m;
 		
@@ -72,17 +69,19 @@ public class TagSearchMatrixPanelForAddNewsToNode extends TagSearchMatrixPanel
 				continue;
 			else {
 				String nodecode = (String) ((TagSearchOnNodesTableModel)super.tblofnodes.getModel()).getValueAt(i, 2);
-				this.news.addMeetingToSpecificOwner(nodecode);
+				this.news.addNewsToSpecificOwner(nodecode);
 			}
 		}
 		
-		DBMeetingService servicefornews = new DBMeetingService ();
+		NewsServices servicefornews = new NewsServices ();
 		try {
-			servicefornews.updateMeeting((InsertedMeeting) this.news);
+			servicefornews.updateNews( this.news);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 	}
 
 }

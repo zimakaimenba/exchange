@@ -30,11 +30,15 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsLabelServices;
+import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
+import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -50,16 +54,35 @@ import com.google.common.collect.Multimap;
 abstract public class TDXNodesInfomationListsPnlBasic extends JDialog 
 {
 	protected BkChanYeLianTreeNode node;
-	protected DBMeetingService curmeetingService;
-	protected DBLabelService alllabelService;
 	private AllCurrentTdxBKAndStoksTree bkstk;
 	private BanKuaiDbOperation bkopt;
 
 	public TDXNodesInfomationListsPnlBasic (BkChanYeLianTreeNode curnode)
 	{
 		this.node = curnode;
-		curmeetingService = new DBMeetingService ();
-		alllabelService = new DBLabelService ();
+		
+		ServicesForNewsLabel svslabel = new NewsLabelServices ();
+    	
+    	ServicesForNews svsnews = new NewsServices ();
+    	NewsCache newcache = new NewsCache ("ALL",svsnews,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	svsnews.setCache(newcache);
+    	
+    	ServicesForNews svscqgz = new ChangQiGuanZhuServices ();
+    	NewsCache cqgzcache = new NewsCache ("ALL",svscqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	svscqgz.setCache(cqgzcache);
+    	
+    	ServicesForNews svsqs = new QiangShiServices ();
+    	NewsCache qiangshicache = new NewsCache ("ALL",svsqs,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	svsqs.setCache(qiangshicache);
+    	
+    	ServicesForNews svsrs = new RuoShiServices ();
+    	NewsCache ruoshicache = new NewsCache ("ALL",svsrs,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	svsrs.setCache(ruoshicache);
+    	
+    	ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
+    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	svsdqgz.setCache(dqgzcache);
+    	
 		bkstk = AllCurrentTdxBKAndStoksTree.getInstance();
 		bkopt = new BanKuaiDbOperation ();
 		

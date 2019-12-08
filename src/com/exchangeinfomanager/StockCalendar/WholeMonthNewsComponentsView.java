@@ -109,7 +109,7 @@ public class WholeMonthNewsComponentsView extends View
         contentpnl = JPanelFactory.createPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
         contentpnl.setName("CHANGQIGUANZHU" + "CONTENT");
         
-        pnlmonthnews.add(newscontentsLabel, BorderLayout.NORTH);
+        pnlmonthnews.add(newscontentsLabel, BorderLayout.PAGE_START);
         pnlmonthnews.add(contentpnl, BorderLayout.CENTER); //中间用来显示信息的panel
 
         sclpmonthnews.setViewportView (pnlmonthnews);
@@ -126,11 +126,16 @@ public class WholeMonthNewsComponentsView extends View
 
         for (News m : meetings) {
             LocalDate mDate = m.getStart();
+            LocalDate superdate = super.getDate();
             String actioncode = m.getNewsOwnerCodes();
             LocalDate firstDayInMonth = mDate.withDayOfMonth(1);
             
-        	if ( !mDate.getMonth().equals(super.getDate().getMonth())  ) 
-        		continue;
+            if( !( cache.getServicesForNews() instanceof ChangQiGuanZhuServices) ) //除长期记录外，都要关心年是否一样
+            	if ( mDate.getYear() != super.getDate().getYear()    )  
+            		continue;
+            
+            if( ! mDate.getMonth().equals(super.getDate().getMonth()) )
+            	continue;
         	
             if (m.getLabels().isEmpty()) {
                 	JUpdatedLabel label = getFormatedLabelForNoneLabel (m);
@@ -172,7 +177,7 @@ public class WholeMonthNewsComponentsView extends View
 		else if (m instanceof InsertedExternalNews )
 			dbid = ((InsertedExternalNews)m).getID ();
 		
-    	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
+    	JUpdatedLabel label = new JUpdatedLabel(m.getNewsOwnerCodes() + m.getTitle());
         label.setToolTipText( getLabelToolTipText(m) );
         label.setOpaque(true);
         label.setName( String.valueOf(  dbid ) );
@@ -192,7 +197,7 @@ public class WholeMonthNewsComponentsView extends View
 		else if (m instanceof InsertedExternalNews )
 			dbid = ((InsertedExternalNews)m).getID ();
 		
-		JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
+		JUpdatedLabel label = new JUpdatedLabel(m.getNewsOwnerCodes() + m.getTitle());
         label.setToolTipText( getLabelToolTipText(m) );
         label.setOpaque(true);
         label.setName( String.valueOf( dbid ) );
@@ -205,9 +210,9 @@ public class WholeMonthNewsComponentsView extends View
 	}
 
 	@Override
-	public void onNewsChange(Collection<NewsCache> caches) {
-		// TODO Auto-generated method stub
-		
+	public void onNewsChange(Collection<NewsCache> caches)
+	{
+		this.onNewsChange(this.svsofexternalnews.getCache()); //获取本月的信息
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.exchangeinfomanager.StockCalendar;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
@@ -38,7 +39,6 @@ import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 
 import com.exchangeinfomanager.commonlib.WrapLayout;
 
@@ -53,6 +53,9 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
  */
 public class WholeMonthNewsView extends View 
 {
+	private static final Dimension SIZE = new Dimension(1050, 70);
+    private static final Dimension MIN_SIZE = new Dimension(1050, 70);
+    
 	private JPanel wholemonthpnl = new JPanel(); //
 	
 	private ChangQiGuanZhuServices svscqgz;
@@ -123,14 +126,21 @@ public class WholeMonthNewsView extends View
       super.setLayout(new BorderLayout());
       super.add(Box.createVerticalStrut(10));
       super.add(this.wholemonthpnl,BorderLayout.CENTER);
+      
+      this.setPreferredSize(SIZE);
+      this.setMinimumSize(MIN_SIZE);
     }
     @Override
-    /*
+    /*当日期变化时候，通知几个下面的comp同时刷新相关数据
      * (non-Javadoc)
      * @see com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CacheListener#onNewsChange(com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache)
      */
     public void onNewsChange(Collection<NewsCache> caches) 
     {
+    	cqjlview.setDate(this.getDate());
+    	dqgzview.setDate(this.getDate());
+    	qsview.setDate(this.getDate());
+        rsview.setDate(this.getDate());
 //    	LocalDate firstdayofmonth = this.initView();
 //    	
 //    	for (Iterator<NewsCache> lit = caches.iterator(); lit.hasNext(); ) {

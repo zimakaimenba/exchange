@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.exchangeinfomanager.Tag.Tag;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
 
 public class JDialogForTagSearchMatrixPanelForWholeSearchTags extends JDialog {
 
@@ -33,11 +32,7 @@ public class JDialogForTagSearchMatrixPanelForWholeSearchTags extends JDialog {
 	{
 		pnlofsearchmatrix.setPreSearchMustHaveTags(musthavetags);
 	}
-//	public void setPreSearchOrHaveTags (Collection<Tag> musthavetags)
-//	{
-//
-//	}
-	
+
 	private void initializeGui() 
 	{
 		setBounds(100, 100, 1200, 789);

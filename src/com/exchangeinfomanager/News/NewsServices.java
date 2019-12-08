@@ -32,6 +32,13 @@ public class NewsServices implements ServicesForNews
     	this.cache = cache;
     }
     @Override
+	public Collection<News> getNews(BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate)
+			throws SQLException 
+    {
+		return this.getNews(node.getMyOwnCode(), startdate, enddate); 
+		
+	}
+    @Override
     public Collection<News> getNews(String nodeid,LocalDate startdate, LocalDate enddate) throws SQLException 
     {
         Collection<News> result = this.database.getNodeRelatedNews (nodeid, startdate,  enddate);
@@ -90,6 +97,8 @@ public class NewsServices implements ServicesForNews
 	{
 		return this.cache;
 	}
+
+	
     
     
 

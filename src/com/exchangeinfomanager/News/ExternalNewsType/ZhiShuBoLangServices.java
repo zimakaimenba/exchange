@@ -6,45 +6,40 @@ import java.util.Collection;
 
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
-
 import com.exchangeinfomanager.Services.ServicesForNews;
-import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-public class ChangQiGuanZhuServices implements ServicesForNews 
+public class ZhiShuBoLangServices implements ServicesForNews 
 {
 
 	private StockCalendarAndNewDbOperation database;
-    private TagsNewsDbOperation tagsdboptfornews;
     private NewsCache cache;
     
-    public ChangQiGuanZhuServices ()
+    public ZhiShuBoLangServices ()
     {
     	 super();
          this.database = new StockCalendarAndNewDbOperation ();
-         this.tagsdboptfornews = new  TagsNewsDbOperation ();
     }
     
     @Override
 	public Collection<News> getNews(BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate)
 			throws SQLException 
     {
-    	Collection<News> news = this.database.getChangQiJiLuInfo ( node,  startdate,  enddate);
+    	Collection<News> news = this.database.getZhiShuKeyDates (node.getMyOwnCode(), startdate,  enddate);
 		return news;
 	}
-    
 	@Override
 	public Collection<News> getNews(String nodeid, LocalDate startdate, LocalDate enddate) throws SQLException 
 	{
-		Collection<News> news = this.database.getChangQiJiLuInfo (startdate,  enddate);
+		Collection<News> news = this.database.getZhiShuKeyDates (nodeid, startdate,  enddate);
 		return news;
 	}
 
 	@Override
 	public News createNews(News news) throws SQLException
 	{
-		 InsertedExternalNews m = this.database.createChangQiJiLuInfo (news);
+		 News m = this.database.createZhiShuGuanJianRiQi ((ZhiShuBoLang)news);
 //	   	 this.tagsdboptfornews.storeNewsKeyWordsToDataBase (m);
 	       
 	   	 if(m != null && cache != null)
@@ -56,7 +51,7 @@ public class ChangQiGuanZhuServices implements ServicesForNews
 	@Override
 	public void deleteNews(News news) throws SQLException 
 	{
-		 News m = this.database.deleteGuanZhuJiLuInfo(news);
+		 News m = this.database.deleteZhiShuGuanJianRiQi(news);
 //        this.tagsdboptfornews.deleteKeyWordsMapsOfDeletedNews (m);
         
         if(m != null && cache != null)
@@ -66,7 +61,7 @@ public class ChangQiGuanZhuServices implements ServicesForNews
 	@Override
 	public News updateNews(News news) throws SQLException 
 	{
-		News m = this.database.updateGuanZhuJiLuInfo(news);
+		News m = this.database.updateZhiShuGuanJIanRiQi(news);
 
 		if(m != null && cache != null)
         	cache.removeNews(m);
@@ -91,3 +86,4 @@ public class ChangQiGuanZhuServices implements ServicesForNews
 	
 
 }
+

@@ -10,12 +10,6 @@ import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBLabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
@@ -63,9 +57,9 @@ public class StockCalendar extends JCalendar
     private LocalDate calrightdate = LocalDate.now();
     private JLabel dateLabel = new JLabel();
     private JPanel currentView;
-//	private Cache cache;
-//	private Cache cachewholemonth;
+
 	private SettingOfDisplayNewsArea settingsofnewsdisplay;
+	private JDialogForTagSearchMatrixPanelForAddNewsToNode pnlsearchtags;
     
 	   public StockCalendar ()
 	    {
@@ -115,6 +109,8 @@ public class StockCalendar extends JCalendar
 	        wholemonthservices.add(svsdqgz);
 	        
 	        this.wholemonthview = new WholeMonthNewsView (wholemonthservices);
+	        
+            pnlsearchtags = new JDialogForTagSearchMatrixPanelForAddNewsToNode(newcache);
 	        
 	        //有新的新闻，加到同关键字的节点上
 //	        JDialogForTagSearchMatrixPanelForAddNewsToNode addkwtoothernode = new JDialogForTagSearchMatrixPanelForAddNewsToNode (cache);
@@ -215,7 +211,7 @@ public class StockCalendar extends JCalendar
         
         
         //布局界面
-        dateLabel = new JLabel(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+        dateLabel = new JLabel(calrightdate.format(DateTimeFormatter.ofPattern("MMM uuuu")));
         dateLabel.setForeground(ColorScheme.BLACK_FONT);
 
         JPanel tempPanel = JPanelFactory.createPanel();
@@ -257,10 +253,10 @@ public class StockCalendar extends JCalendar
     /*
      * 
      */
-    public void refreshStockCalander ()
-    {
-    	this.cache.refresh();
-    }
+//    public void refreshStockCalander ()
+//    {
+//    	this.cache.refresh();
+//    }
    /*
     * 用户更改设置
     */
@@ -294,9 +290,9 @@ public class StockCalendar extends JCalendar
             currentView = view;
             layout.show(viewDeck, currentView.getName());
             if (currentView == monthView)
-                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("MMM uuuu")));
             else if (currentView == yearView)
-                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("MMM uuuu")));
         }
     }
 
@@ -342,35 +338,39 @@ public class StockCalendar extends JCalendar
             else
             	setNewDate(action);
         }
-
+        /*
+         * 
+         */
         private void nowDate() 
         {
         	calrightdate = LocalDate.now();
             if (currentView == monthView) {
                 monthView.setDate(calrightdate);
-                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("MMM uuuu")));
             } else if (currentView == yearView) {
                 yearView.setDate(calrightdate);
-                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("MMM uuuu")));
             }
             wholemonthview.setDate(calrightdate);
             
             firePropertyChange("day", 0, dateLabel);
         }
-
+        /*
+         * 
+         */
         private void setNewDate(int action) 
         {
             if (currentView == monthView) {
             	calrightdate = calrightdate.plusMonths(action);
                 monthView.setDate(calrightdate);
                 wholemonthview.setDate(calrightdate);
-                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("MMM uuuu")));
         		
             } else if (currentView == yearView) {
             	calrightdate = calrightdate.minusYears(action);
                 yearView.setDate(calrightdate);
                 wholemonthview.setDate(calrightdate);
-                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("dd MMM uuuu")));
+                dateLabel.setText(calrightdate.format(DateTimeFormatter.ofPattern("MMM uuuu")));
             }
             
             firePropertyChange("day", 0, dateLabel);

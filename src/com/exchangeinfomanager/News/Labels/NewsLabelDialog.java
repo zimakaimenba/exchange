@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.ColorChooser;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.guifactory.JTextFactory;
@@ -14,7 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 @SuppressWarnings("all")
-public class LabelDialog<T extends News.Label> extends JDialog 
+public class NewsLabelDialog<T extends News.Label> extends JDialog 
 {
 
     protected static final int WIDTH = 270;
@@ -29,7 +28,7 @@ public class LabelDialog<T extends News.Label> extends JDialog
 
     private T NewsLabel;
 
-    public LabelDialog(ServicesForNewsLabel labelservice) {
+    public NewsLabelDialog(ServicesForNewsLabel labelservice) {
         this.labelservice = labelservice;
         this.createUI();
         this.createCenterPanel();

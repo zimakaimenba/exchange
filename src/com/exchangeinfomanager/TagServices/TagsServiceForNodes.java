@@ -10,8 +10,6 @@ import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagsServiceForNodes implements TagService  

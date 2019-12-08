@@ -5,7 +5,9 @@ import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsCacheListener;
-import com.exchangeinfomanager.News.Labels.LabelDialog;
+import com.exchangeinfomanager.News.Labels.CreateLabelDialog;
+import com.exchangeinfomanager.News.Labels.ModifyLabelDialog;
+import com.exchangeinfomanager.News.Labels.NewsLabelDialog;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.guifactory.DialogFactory;
@@ -39,8 +41,8 @@ public class Sidebar extends View implements NewsCacheListener
     private JLabel createMilestoneDateForZhiShu;
 
     private JTextField nameField;
-    private LabelDialog modifyLabelDialog;
-    private LabelDialog createLabelDialog;
+    private NewsLabelDialog modifyLabelDialog;
+    private NewsLabelDialog createLabelDialog;
     private NewsCache cache;
 	private JScrollPane labelsscrollpane;
 
@@ -107,8 +109,6 @@ public class Sidebar extends View implements NewsCacheListener
         this.createMilestoneDateForZhiShu.addMouseListener(new CreateDapanMileStoneDateController());
         createDapanDatePanel.add(this.createMilestoneDateForZhiShu, BorderLayout.CENTER);
         super.add(createDapanDatePanel);
-        
-        
     }
 
     @Override
@@ -124,8 +124,7 @@ public class Sidebar extends View implements NewsCacheListener
             JLabel name = JLabelFactory.createLabel("  " + label.getName());
             name.setOpaque(true);
             name.addMouseListener(new NameController());
-            name.setBackground( ColorScheme.BACKGROUND );
-//            name.setForeground(label.isActive()? ColorScheme.BACKGROUND: ColorScheme.BLACK_FONT);
+            name.setBackground( label.getColor() ); // ColorScheme.BACKGROUND
             name.setForeground( ColorScheme.BLACK_FONT);
             name.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, ColorScheme.GREY_LINE));
 
@@ -164,8 +163,9 @@ public class Sidebar extends View implements NewsCacheListener
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
+            CreateLabelDialog createLabelDialog = new CreateLabelDialog (labelService);
             createLabelDialog.setLabel(new News.Label("New label", ColorScheme.ORANGE_LIGHT));
-            getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+            createLabelDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
             createLabelDialog.setVisible(true);
         }
     }
@@ -175,16 +175,16 @@ public class Sidebar extends View implements NewsCacheListener
 		@Override
         public void mouseClicked(MouseEvent e) {
 			super.mouseClicked(e);
-			if (e.getButton() == MouseEvent.BUTTON1) {
-				
-				TDXNodesZhiShuGJRQPnl gjrq = new TDXNodesZhiShuGJRQPnl (null);
-				gjrq.setVisible(true);
-				
-				cache.refresh();
-		               
-            } else if (e.getButton() == MouseEvent.BUTTON3) {
-            	TDXFormatedOpt.parserZhiShuGuanJianRiQiToTDXCode();
-            }
+//			if (e.getButton() == MouseEvent.BUTTON1) {
+//				
+//				TDXNodesZhiShuGJRQPnl gjrq = new TDXNodesZhiShuGJRQPnl (null);
+//				gjrq.setVisible(true);
+//				
+//				cache.refresh();
+//		               
+//            } else if (e.getButton() == MouseEvent.BUTTON3) {
+//            	TDXFormatedOpt.parserZhiShuGuanJianRiQiToTDXCode();
+//            }
         }
     }
 
@@ -194,10 +194,11 @@ public class Sidebar extends View implements NewsCacheListener
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             int id = Integer.valueOf(((Component) e.getSource()).getParent().getName());
-            Optional<InsertedMeeting.Label> label = cache.produceLabels().stream().filter(l -> l.getID() == id).findFirst();
+            Optional<InsertedNews.Label> label = cache.produceLabels().stream().filter(l -> l.getID() == id).findFirst();
             if (label.isPresent()) {
+            	ModifyLabelDialog modifyLabelDialog = new ModifyLabelDialog (labelService);
                 modifyLabelDialog.setLabel(label.get());
-                getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                modifyLabelDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 modifyLabelDialog.setVisible(true);
             }
         }

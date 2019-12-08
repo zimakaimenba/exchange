@@ -9,13 +9,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagServices.CacheForInsertedTag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.TagServices.TagsServiceForSystemTags;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
@@ -341,7 +342,7 @@ class TagSearchOnNodesTableModel extends DefaultTableModel
 
 class TagSearchOnNewsTableModel extends DefaultTableModel 
 {
-	private List<InsertedMeeting> info;
+	private List<InsertedNews> info;
 	String[] jtableTitleStrings = { "选择","关键词", "新闻","详细信息"};
 	private Set<Integer> selectedrowindex ;
 	
@@ -350,7 +351,7 @@ class TagSearchOnNewsTableModel extends DefaultTableModel
 		selectedrowindex = new HashSet<> ();
 	}
 	
-	public void refresh (Collection<InsertedMeeting> searchresult)
+	public void refresh (Collection<News> searchresult)
 	{
 		if (searchresult instanceof List)
 		  info = (List)searchresult;
@@ -368,12 +369,17 @@ class TagSearchOnNewsTableModel extends DefaultTableModel
 	        return jtableTitleStrings.length;
 	    } 
 	    
+	    public News getNews (int row)
+	    {
+	    	return this.info.get(row);
+	    }
+	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
 	    	if(this.info.isEmpty())
 	    		return null;
 	    	
-	    	InsertedMeeting news = info.get(rowIndex);
+	    	InsertedNews news = info.get(rowIndex);
 	    	
 	    	Object value = "??";
 	    	switch (columnIndex) {

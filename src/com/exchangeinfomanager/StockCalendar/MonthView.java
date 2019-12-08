@@ -21,6 +21,8 @@ import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShi;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
+import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForWholeSearchTags;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.JMultiLineToolTip;
 import com.exchangeinfomanager.commonlib.WrapLayout;
@@ -122,7 +124,7 @@ public class MonthView extends View
             if (mDate.getMonth().equals(super.getDate().getMonth()) && (mDate.getYear() == super.getDate().getYear()) ) {
             	
                 if (m.getLabels().isEmpty()) { //没有Label的情况
-                	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
+                	JUpdatedLabel label = new JUpdatedLabel( getCorrectDiaplayInfo (cache,m) );
                     
                     label.setToolTipText( getLabelToolTipText(m) );
                     label.setOpaque(true);
@@ -137,7 +139,7 @@ public class MonthView extends View
                 
                 for (News.Label l : labels) { //有LABEL的情况
                     if ( m.getLabels().contains(l)) {
-                    	JUpdatedLabel label = new JUpdatedLabel(m.getTitle());
+                    	JUpdatedLabel label = new JUpdatedLabel( getCorrectDiaplayInfo (cache,m) );
                         label.setToolTipText(getLabelToolTipText(m) );
                         label.setOpaque(true);
                         label.setName(  String.valueOf(dbid));
@@ -152,6 +154,25 @@ public class MonthView extends View
                 }
             }
 		}
+    }
+    private String getCorrectDiaplayInfo (NewsCache cache, News news)
+    {
+    	ServicesForNews svs = cache.getServicesForNews();
+    	if(svs instanceof NewsServices)
+    		return news.getTitle();
+    	if( svs instanceof ChangQiGuanZhuServices) {
+    		return news.getNewsOwnerCodes() + news.getTitle();
+		}
+		if( svs instanceof QiangShiServices) {
+			return news.getNewsOwnerCodes() + news.getTitle();
+		}
+		if( svs instanceof RuoShiServices) {
+			return news.getNewsOwnerCodes() + news.getTitle();
+		}
+		if( svs instanceof DuanQiGuanZhuServices) {
+			return news.getNewsOwnerCodes() + news.getTitle();
+		}
+		return null;
     }
     private MouseAdapter getNeededMouseAdapter (NewsCache cache)
     {
@@ -248,6 +269,7 @@ public class MonthView extends View
                 
                 panel.setLayout(new BorderLayout());
                 panel.addMouseListener(new CreateNewsController());
+                
                 JLabel dayLabel = new JLabel(String.valueOf(d.getDayOfMonth()));
                 if(d.equals(LocalDate.now()))
                 	dayLabel.setForeground(ColorScheme.TODAY);
@@ -256,6 +278,7 @@ public class MonthView extends View
                 dayLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 5));
                 dayLabel.setBackground(ColorScheme.BACKGROUND);
                 dayLabel.setOpaque(true);
+                
                 panel.add(dayLabel, BorderLayout.PAGE_START);
                 panel.add(JPanelFactory.createPanel(new WrapLayout(WrapLayout.LEFT, 5, 5)), BorderLayout.CENTER);
                 
@@ -427,20 +450,6 @@ public class MonthView extends View
 //            		News = m;
 //            		break;
 //            	}
-//            }
-            
-////            JLabel source = (JLabel) e.getSource();
-//            String title = label.getText();
-//            LocalDate date = LocalDate.parse(label.getParent().getParent().getName());
-//            
-////            InsertedNews selectedNews = News.get();
-////            String owner = selectedNews.getNewsOwnerCodes();
-//            if( News.getNewsType() == News.WKZONGJIE ) { //说明是大盘一周总结，内容是XML，用DaPanWeeklyFengXi显示内容
-//            	showWeeklyFenXiWizardDialog  ("000000",date);
-//            } else {
-//            	getModifyDialog().setNews(News);
-//            	getModifyDialog().setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-//                getModifyDialog().setVisible(true);
 //            }
             
         }

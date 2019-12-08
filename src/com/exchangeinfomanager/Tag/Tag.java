@@ -3,7 +3,6 @@ package com.exchangeinfomanager.Tag;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 
 
@@ -64,8 +63,8 @@ public class Tag
         if (this == o)
             return true;
         
-        if (o == null || getClass() != o.getClass())
-            return false;
+//        if (o == null || getClass() != o.getClass())
+//            return false;
 
         Tag label = (Tag) o;
         if(!name.equals(label.getName()))

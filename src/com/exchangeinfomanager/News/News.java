@@ -177,17 +177,19 @@ public class News
     	int result = 0;
 
     			result = starttime.hashCode();
-	            result = 31 * result + title.hashCode();
+    			try {
+    				result = 31 * result + title.hashCode();
+    			}	catch (java.lang.NullPointerException e) {
+    	        	result = 31 * result + "".hashCode();
+    	        }
 	            try{
 	            	result = 31 * result + description.hashCode();
 	            } catch (java.lang.NullPointerException e) {
-//	        		e.printStackTrace();
 	        		result = 31 * result + "".hashCode();
 	        	}
 	            try{
 	            	result = 31 * result + keywords.hashCode();
 	            } catch (java.lang.NullPointerException e) {
-//	        		e.printStackTrace();
 	        		result = 31 * result + "".hashCode();
 	        	}
             
@@ -256,6 +258,8 @@ public class News
             return result;
         }
     }
+
+	
 
 
 }

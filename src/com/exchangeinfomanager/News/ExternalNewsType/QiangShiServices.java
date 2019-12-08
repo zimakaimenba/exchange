@@ -10,6 +10,7 @@ import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class QiangShiServices  implements ServicesForNews 
 {
@@ -25,6 +26,13 @@ public class QiangShiServices  implements ServicesForNews
          this.tagsdboptfornews = new  TagsNewsDbOperation ();
     }
 
+    @Override
+	public Collection<News> getNews(BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate)
+			throws SQLException 
+    {
+    	Collection<News> qiangruoshilist = this.database.getQiangShiBanKuaiAndStock(node.getMyOwnCode(),startdate,enddate);
+		return qiangruoshilist;
+	}
 	@Override
 	public Collection<News> getNews(String nodeid, LocalDate startdate, LocalDate enddate) throws SQLException 
 	{
@@ -74,7 +82,5 @@ public class QiangShiServices  implements ServicesForNews
 		// TODO Auto-generated method stub
 		return this.cache;
 	}
- 
-
 
 }

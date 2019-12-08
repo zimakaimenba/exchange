@@ -106,8 +106,9 @@ import org.jfree.ui.TextAnchor;
 import org.joda.time.Interval;
 import org.ta4j.core.Bar;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLang;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
@@ -581,31 +582,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	/*
 	 * 指数关键日期
 	 */
-	public void updateNewAndZhiShuKeyDates( Collection<InsertedMeeting> newszhishukeylists ) 
-	{     
-		if(newszhishukeylists == null || newszhishukeylists.size() == 0)
-			return ;
-		
-		 ohlcSeries.setNotify(true);
-	     candlestickDataset.setNotify(true);
-	     candlestickChart.setNotify(true);
-	     ohlcSeries.setNotify(true);
-	     candlestickDataset.setNotify(true);
-	     candlestickChart.setNotify(true);
-	     
-		for (InsertedMeeting tmpmeeting: newszhishukeylists ) {
-			if(tmpmeeting.getMeetingType() == Meeting.ZHISHUDATE) {
-				displayZhiShuGuanJianRiQiToGui (tmpmeeting);
-			} else if (tmpmeeting.getMeetingType() == Meeting.NODESNEWS) {
-				displayNodeNewsToGui (tmpmeeting);
-			}
-		}
-    
-		candlestickChart.fireChartChanged();
-//		this.repaint();
-	}
-	private void displayNodeNewsToGui(InsertedMeeting tmpmeeting)
+	public void displayNodeNewsToGui( Collection<News> newszhishukeylists)
 	{
+		for (News tmpmeeting: newszhishukeylists ) {
 		Paint drawcolor;
 		
 		LocalDate zhishudate = tmpmeeting.getStart();
@@ -642,10 +621,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	    } catch (java.lang.NullPointerException e) {
 	        	e.printStackTrace();
 	    }
+		
+		}
 	}
 	
-	private void displayZhiShuGuanJianRiQiToGui(InsertedMeeting tmpmeeting) 
+	public void displayZhiShuGuanJianRiQiToGui(Collection<News> newszhishukeylists) 
 	{
+		for (News tmpmeeting: newszhishukeylists ) {
 		SystemConfigration syscon = SystemConfigration.getInstance();
 		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
 		
@@ -670,7 +652,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				
 				drawDefinedMarker (zhishudate,zhishucolor ); 
 				
-				LocalDate zhishuend = tmpmeeting.getEnd();
+				LocalDate zhishuend = ((ZhiShuBoLang)tmpmeeting).getEnd();
 				if(zhishuend == null)
 					break;
 				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
@@ -683,7 +665,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				Color bankuaicolor = new Color(51,255,153);
 				drawDefinedMarker (zhishudate,bankuaicolor ); 
 				
-				LocalDate zhishuend = tmpmeeting.getEnd();
+				LocalDate zhishuend =  ((ZhiShuBoLang)tmpmeeting).getEnd();
 				if(zhishuend == null)
 					continue;
 				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
@@ -693,7 +675,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				Color bankuaicolor = new Color(51,255,153);
 				drawDefinedMarker (zhishudate,bankuaicolor ); 
 				
-				LocalDate zhishuend = tmpmeeting.getEnd();
+				LocalDate zhishuend =  ((ZhiShuBoLang)tmpmeeting).getEnd();
 				if(zhishuend == null)
 					continue;
 				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
@@ -701,6 +683,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				drawDefinedMarker (zhishuend,bankuaicolor );
 			}
 			
+		}
 		}
 		
 	}

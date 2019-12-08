@@ -35,14 +35,15 @@ import javax.swing.JTextArea;
 
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsLabelServices;
+import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
+import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.DBMeetingService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.InsertedMeeting;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
@@ -310,18 +311,16 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
 		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  NodeGivenPeriodDataItem.DAY);
 		
-		Integer[] wantedzhishutype = {Integer.valueOf(Meeting.ZHISHUDATE)};
-		EventService allDbmeetingService = new DBMeetingService ();
-	    Cache cacheAll = new Cache("ALL",allDbmeetingService, null,displayedstartdate1,displayedenddate1,wantedzhishutype);
-	    
-	    Integer[] wantednewstype = {Integer.valueOf(Meeting.NODESNEWS)};
-	    Cache cacheNode = new Cache(node.getMyOwnCode(),allDbmeetingService, null,displayedstartdate1,displayedenddate1,wantednewstype);
-	    
-		Collection<InsertedMeeting> zhishukeylists = cacheAll.produceMeetings();
-		Collection<InsertedMeeting> newslist = cacheNode.produceMeetings();
-		
-		zhishukeylists.addAll(newslist);
-		nodekpnl.updateNewAndZhiShuKeyDates (zhishukeylists); //指数关键日期
+		ServicesForNewsLabel svslabel = new NewsLabelServices ();
+		ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
+    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,displayedstartdate1,displayedenddate1);
+    	svsdqgz.setCache(dqgzcache);
+    	nodekpnl.displayZhiShuGuanJianRiQiToGui(dqgzcache.produceNews());
+    	
+    	ServicesForNews svsnews = new NewsServices ();
+    	NewsCache newcache = new NewsCache ("ALL",svsnews,svslabel,displayedstartdate1,displayedenddate1);
+    	svsnews.setCache(newcache);
+    	nodekpnl.displayNodeNewsToGui (newcache.produceNews() );
 	}
 	
 	@Override

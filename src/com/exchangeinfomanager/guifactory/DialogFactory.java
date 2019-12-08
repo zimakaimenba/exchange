@@ -1,7 +1,7 @@
 package com.exchangeinfomanager.guifactory;
 
+import com.exchangeinfomanager.News.Labels.CreateLabelDialog;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Cache;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CreateLabelDialog;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.CreateMeetingDialog;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.EventService;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.LabelDialog;
@@ -23,7 +23,7 @@ public class DialogFactory {
         return new ModifyMeetingDialog(meetingService, cache);
     }
 
-    public static LabelDialog createLabelDialog(LabelService service){
+    public static LabelDialog createLabelDialog(NewsLabelService service){
         return new CreateLabelDialog(service);
     }
 

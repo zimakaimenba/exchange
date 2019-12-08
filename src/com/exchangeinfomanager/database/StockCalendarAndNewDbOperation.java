@@ -7,7 +7,7 @@ import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShi;
-
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLang;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 
@@ -61,45 +61,11 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	public Collection<InsertedNews> getRequiredRelatedInfoForNewsAndOthers(String bankuaiid,LocalDate startdate, LocalDate enddate,Integer[] requiredtype)
+	public Collection<News> getZhiShuKeyDates (String bankuaiid,LocalDate startdate, LocalDate enddate)
 	{
-		Collection<InsertedNews> events = new ArrayList<InsertedNews>();
+		Collection<News> meetings = new ArrayList<>();
 		
-		for(int i=0;i<requiredtype.length;i++) {
-			int type = requiredtype[i];
-			if(type == Meeting.NODESNEWS) {
-				
-			} else if(type == Meeting.CHANGQIJILU) {
-				Collection<InsertedNews> cqlist = this.getChangQiJiLuInfo (startdate,enddate);
-				events.addAll(cqlist);
-			} else if(type == Meeting.JINQIGUANZHU) {
-				Collection<InsertedNews> jqgzlist = this.getJiQiGuanZhuInfo (startdate,enddate);
-				events.addAll(jqgzlist);
-			} else if( type == Meeting.RUOSHI) {
-				Collection<InsertedNews> qiangruoshilist = this.getRuoShiBanKuaiAndStock (bankuaiid,startdate,enddate);
-				events.addAll(qiangruoshilist);
-			} else if(type == Meeting.QIANSHI ) {
-				Collection<InsertedNews> qiangruoshilist = this.getQiangShiBanKuaiAndStock(bankuaiid,startdate,enddate);
-				events.addAll(qiangruoshilist);
-			} else if(type == Meeting.WKZONGJIE) {
-				Collection<InsertedNews> wkslist = this.getWeeklySummary(startdate, enddate);
-				events.addAll(wkslist);
-			} else if(type == Meeting.ZHISHUDATE) {
-				Collection<InsertedNews> zhishudatelist = this.getZhiShuKeyDates (bankuaiid,startdate,enddate);
-				events.addAll(zhishudatelist);
-			} 
-		}
-		
-		return events;
-	}
-	/*
-	 * 
-	 */
-	private Collection<InsertedNews> getZhiShuKeyDates (String bankuaiid,LocalDate startdate, LocalDate enddate)
-	{
-		Collection<InsertedNews> meetings = new ArrayList<InsertedNews>();
-//		System.out.print("getZhiShuKeyDates");
-		
+		BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		 //找出指数关键日期  
 		CachedRowSetImpl rspd = null;
 		try {
@@ -112,17 +78,18 @@ public final class StockCalendarAndNewDbOperation
 		        			;
 			else
 				sqlquerystat = "SELECT * FROM 指数关键日期表 \r\n"
-	        					+ "WHERE 日期 BETWEEN '" + startdate + "' AND '" + enddate + "'"
-	        					+ " AND ( 关联板块 like '%" + bankuaiid.trim() +  "%' ) \r\n"
-	        					+ " ORDER BY  日期  DESC"
-	        					;
-
+	        			+ " WHERE  ( 日期 BETWEEN '" + startdate + "' AND '" + enddate + "'"
+	        			+ " OR 截至日期 BETWEEN '" + startdate + "' AND '" + enddate + "')"
+	        			+ " AND 代码 = '" + bankuaiid + "'"
+	        			+ " ORDER BY  日期 DESC"
+	        			;
+	
 			 rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
 			 while(rspd.next())  {
 				 int meetingID = rspd.getInt("id");
-				 String nodecode = rspd.getString("关联板块");
-			     java.sql.Date recordstartdate = rspd.getDate("日期"); 
-		         LocalDate start = recordstartdate.toLocalDate();
+				 String nodecode = rspd.getString("代码");
+				 Integer nodetype = rspd.getInt("类型");
+				 LocalDate start = rspd.getDate("日期").toLocalDate(); 
 		         java.sql.Date recordenddate = rspd.getDate("截至日期");
 		         LocalDate end ;
 		         try{
@@ -130,19 +97,25 @@ public final class StockCalendarAndNewDbOperation
 		         } catch (java.lang.NullPointerException ex) {
 		        	 end =  null; 
 		         }
-		         
 		         String shuoming = rspd.getString("说明");
+		         String detail = rspd.getString("详细说明");
+		         String url = rspd.getString("URL");
+		         String keywords = rspd.getString("关键词");
 		         
-		         InsertedNews newmeeting = new InsertedNews(
-			                new Meeting(nodecode + shuoming, start,  end, shuoming, "指数关键日期", new HashSet<InsertedNews.Label>(),null,nodecode,Meeting.ZHISHUDATE), meetingID);
+		         BkChanYeLianTreeNode node = treeofbkstk.getSpecificNodeByHypyOrCode(nodecode, nodetype);
+		         
+		         ZhiShuBoLang zs = new ZhiShuBoLang(node, shuoming, start, end, detail, keywords, 
+		        		 new HashSet<InsertedNews.Label>(), url, "A" );
+		         
+		         InsertedExternalNews newmeeting = new InsertedExternalNews(zs, meetingID);
+			                
 		         meetings.add(newmeeting);
 			 }
 			 
 			//label 	 
-	  		 for (InsertedNews m : meetings) {
-	        	int meetingid = m.getID();
-	        	int meetingtype = m.getMeetingType();
-	        	
+	  		 for (News m : meetings) {
+	        	int meetingid = ((InsertedExternalNews)m).getID();
+
 	        	String area = "指数关键日期";
 	        	
 	        	sqlquerystat = "SELECT label.* FROM label INNER "
@@ -159,7 +132,7 @@ public final class StockCalendarAndNewDbOperation
 	                String name = set.getString("NAME");
 	                Color colour = Color.decode(set.getString("COLOUR"));
 	                boolean active = set.getBoolean("ACTIVE");
-	                InsertedNews.Label label = new InsertedNews.Label(new Meeting.Label(name, colour, active), labelID);
+	                InsertedNews.Label label = new InsertedNews.Label(new News.Label(name, colour), labelID);
 	                m.getLabels().add(label);
 	            }
 	            
@@ -187,6 +160,54 @@ public final class StockCalendarAndNewDbOperation
 		 
 		 return meetings;
 	}
+//	public void refactoryNews ()
+//	{
+//		String sqlquerystat = "SELECT * FROM 商业新闻  \r\n"
+//				+ "  where  关联板块  LIKE '%gzgzgz%' " //长期记录 
+//				+ " ORDER BY 录入日期 DESC"
+//				;
+//		CachedRowSetImpl result = null;
+//		try {
+//			result = connectdb.sqlQueryStatExecute(sqlquerystat);
+//   		 	while(result.next()) {
+//	   		 	int meetingID = result.getInt("news_id");
+//		        java.sql.Date recorddate = result.getDate("录入日期"); 
+//	            LocalDate start = recorddate.toLocalDate();
+//	            String title = result.getString("新闻标题");
+//	            String description = result.getString("具体描述");
+//	            if(Strings.isNullOrEmpty(description))
+//	            	description = "描述";
+//	            
+//	            String sql = "INSERT INTO 关注个股板块表(代码,类型,关注类型,日期,说明,具体描述) VALUES("
+//	            		+ "'999999', 4, false, '" + start + "', '" + title + "'," + "'" + description + "'"
+//	            		+ ")";
+//	            
+//	            connectdb.sqlInsertStatExecute(sql);
+//	            
+//	            sql = "DELETE FROM 商业新闻 WHERE news_id = " + meetingID;
+//	            connectdb.sqlDeleteStatExecute(sql);
+//	            
+//	            sql = "DELETE FROM meetinglabel where news_ID = " + meetingID + " AND fromtable = '商业新闻'";
+//	            connectdb.sqlDeleteStatExecute(sql);
+//	         }
+//		}catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    } catch (SQLException e) {
+//	    	e.printStackTrace();
+//	    }catch(Exception e){
+//	    	e.printStackTrace();
+//	    }  finally {
+//	    	if(result != null)
+//				try {
+//					result.close();
+//					result = null;
+//					
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//	    }
+//
+//	}
 	/*
 	 * 
 	 */
@@ -232,7 +253,6 @@ public final class StockCalendarAndNewDbOperation
 	            String keywords = result.getString("关键词");
 	            String slackurl = result.getString("SLACK链接");
 	            String ownercodes = result.getString("关联板块");
-	            int type = Meeting.NODESNEWS;
 	            
 	            InsertedNews newmeeting = new InsertedNews(
 		                new News(title, start,  description, keywords, new HashSet<InsertedNews.Label>(),slackurl,ownercodes), meetingID);
@@ -583,6 +603,102 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
+	public Collection<News> getDuanQiJiLuInfo (BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate)
+	{
+		String nodecode = node.getMyOwnCode();
+		int nodetype = node.getType();
+		
+		Collection<News> cqjllist = new ArrayList<>();
+		
+		String timerangesql = null ;
+		if(startdate == null && enddate != null) {
+			timerangesql = "WHERE 日期  < '" + enddate + "' \r\n" ;
+		} else if(startdate != null && enddate == null) {
+			timerangesql = "WHERE 日期 > '" + startdate + "' \r\n" ;
+		} else if(startdate != null && enddate != null) {
+			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
+		}
+		
+		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
+								+ timerangesql
+								+ "  AND  关注类型 = false " //长期记录
+								+ " AND 代码= '" + nodecode + "'"
+								+ " AND 类型 = " + nodetype
+								+ "  ORDER BY 日期 DESC"
+								;
+		
+		CachedRowSetImpl result = null;
+		try {
+			result = connectdb.sqlQueryStatExecute(sqlquerystat);
+			
+			while(result.next()) {
+	   		 	int meetingID = result.getInt("ID");
+	   		 	LocalDate start  = result.getDate("日期").toLocalDate(); 
+//	   		 	LocalDate end  = result.getDate("截至日期").toLocalDate();
+	            String description = result.getString("说明");
+	            String detail = result.getString("具体描述");
+	            if(Strings.isNullOrEmpty(detail))
+	            	description = "";
+	            String keywords = result.getString("关键词");
+	            String slackurl = result.getString("URL");
+	            String ownercodes = result.getString("代码");
+	            Integer ownertype = result.getInt("类型");
+	            
+	            ExternalNewsType news = new GuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
+
+	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
+
+	            cqjllist.add(newmeeting);
+   		  }
+			
+			
+			//label 	 
+	   		 for (News m : cqjllist) {
+	         	int meetingid = ((InsertedExternalNews)m).getID();
+	         	
+	         	String area = "关注个股板块表";
+
+	         	sqlquerystat = "SELECT label.* FROM label INNER "
+	         					+" JOIN meetingLabel "
+	         					+" ON label.LABEL_ID = meetingLabel.LABEL_ID " 
+	         					+" WHERE meetingLabel.NEWS_ID = " + meetingid
+	         					+" AND meetingLabel.fromtable = " + "'" + area + "'"
+	         					;
+	         	
+	         	CachedRowSetImpl set = connectdb.sqlQueryStatExecute(sqlquerystat);
+	             while (set.next()) {
+	                 int labelID = set.getInt("LABEL_ID");
+	                 String name = set.getString("NAME");
+	                 Color colour = Color.decode(set.getString("COLOUR"));
+//	                 boolean active = set.getBoolean("ACTIVE");
+	                 InsertedNews.Label label = new InsertedNews.Label(new ExternalNewsType.Label(name, colour), labelID);
+	                 m.getLabels().add(label);
+	             }
+	             
+	             set.close();
+	             set = null;
+	         }
+		} catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    }  finally {
+	    	if(result != null)
+				try {
+					result.close();
+					result = null;
+					
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+		
+		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
+
+        return cqjllist;
+	}
 	public  Collection<News> getDuanQiJiLuInfo (LocalDate startdate, LocalDate enddate)
 	{
 		BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
@@ -680,7 +796,104 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	public  Collection<News> getChangQiJiLuInfo (LocalDate startdate, LocalDate enddate)
+	public  Collection<News> getChangQiJiLuInfo (BkChanYeLianTreeNode node, LocalDate startdate, LocalDate enddate)
+	{
+		String nodeid = node.getMyOwnCode();
+		Integer nodetype = node.getType();
+		
+		Collection<News> cqjllist = new ArrayList<>();
+		
+		String timerangesql = null ;
+		if(startdate == null && enddate != null) {
+			timerangesql = "WHERE 日期  < '" + enddate + "' \r\n" ;
+		} else if(startdate != null && enddate == null) {
+			timerangesql = "WHERE 日期 > '" + startdate + "' \r\n" ;
+		} else if(startdate != null && enddate != null) {
+			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
+		}
+		
+		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
+								+ timerangesql
+								+ "  AND  关注类型 = true " //长期记录
+								+ " AND 代码= '" + nodeid + "'"
+								+ " AND 类型 = " + nodetype
+								+ "  ORDER BY 日期 DESC"
+								;
+		
+		CachedRowSetImpl result = null;
+		try {
+			result = connectdb.sqlQueryStatExecute(sqlquerystat);
+			
+			while(result.next()) {
+	   		 	int meetingID = result.getInt("ID");
+	   		 	LocalDate start  = result.getDate("日期").toLocalDate(); 
+//	   		 	LocalDate end  = result.getDate("截至日期").toLocalDate();
+	            String description = result.getString("说明");
+	            String detail = result.getString("具体描述");
+	            if(Strings.isNullOrEmpty(detail))
+	            	description = "";
+	            String keywords = result.getString("关键词");
+	            String slackurl = result.getString("URL");
+	            String ownercodes = result.getString("代码");
+	            Integer ownertype = result.getInt("类型");
+	            
+	            ExternalNewsType news = new GuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,true);
+
+	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
+
+	            cqjllist.add(newmeeting);
+   		  }
+			
+			
+			//label 	 
+	   		 for (News m : cqjllist) {
+	         	int meetingid = ((InsertedExternalNews)m).getID();
+	         	
+	         	String area = "关注个股板块表";
+
+	         	sqlquerystat = "SELECT label.* FROM label INNER "
+	         					+" JOIN meetingLabel "
+	         					+" ON label.LABEL_ID = meetingLabel.LABEL_ID " 
+	         					+" WHERE meetingLabel.NEWS_ID = " + meetingid
+	         					+" AND meetingLabel.fromtable = " + "'" + area + "'"
+	         					;
+	         	
+	         	CachedRowSetImpl set = connectdb.sqlQueryStatExecute(sqlquerystat);
+	             while (set.next()) {
+	                 int labelID = set.getInt("LABEL_ID");
+	                 String name = set.getString("NAME");
+	                 Color colour = Color.decode(set.getString("COLOUR"));
+//	                 boolean active = set.getBoolean("ACTIVE");
+	                 InsertedNews.Label label = new InsertedNews.Label(new ExternalNewsType.Label(name, colour), labelID);
+	                 m.getLabels().add(label);
+	             }
+	             
+	             set.close();
+	             set = null;
+	         }
+		} catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    }  finally {
+	    	if(result != null)
+				try {
+					result.close();
+					result = null;
+					
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+		
+		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
+
+        return cqjllist;
+		
+	}
+	public  Collection<News> getChangQiJiLuInfo ( LocalDate startdate, LocalDate enddate)
 	{
 		BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		
@@ -945,7 +1158,7 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private InsertedNews createZhiShuGuanJianRiQi (Meeting meeting)
+	public News createZhiShuGuanJianRiQi (ZhiShuBoLang meeting)
 	{
 		String newsownercode = meeting.getNewsOwnerCodes();
 		LocalDate start = meeting.getStart();
@@ -953,7 +1166,7 @@ public final class StockCalendarAndNewDbOperation
     	String title = meeting.getTitle();
     	String description = meeting.getDescription().replace("'", " ");
     	String keywords = meeting.getKeyWords();
-    	String slackurl = meeting.getSlackUrl();
+    	String slackurl = meeting.getNewsUrl();
     	
     	InsertedNews InsertedNews = null;
     	
@@ -1001,7 +1214,6 @@ public final class StockCalendarAndNewDbOperation
 	    }
 		
 		return InsertedNews;
-		
 	}
 	
 	public InsertedExternalNews createQiangInfo (News news)
@@ -1337,11 +1549,11 @@ public final class StockCalendarAndNewDbOperation
    		
    		return event;
 	}
-	private InsertedNews deleteZhiShuGuanJianRiQi (InsertedNews meeting )
+	public News deleteZhiShuGuanJianRiQi (News meeting )
 	{
-		InsertedNews deletedMeeting = null;
+		InsertedExternalNews deletedMeeting = (InsertedExternalNews) meeting;
 		
-		int newsid = meeting.getID();
+		int newsid = deletedMeeting.getID();
 
 		try {
 			String deletestat = "DELETE  FROM 指数关键日期表  WHERE id =" + newsid;
@@ -1354,7 +1566,6 @@ public final class StockCalendarAndNewDbOperation
 									;
 			int key = connectdb.sqlDeleteStatExecute(sqlstatement);
 			
-			deletedMeeting = meeting;
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
 	    } catch(Exception e){
@@ -1366,44 +1577,25 @@ public final class StockCalendarAndNewDbOperation
 		return deletedMeeting;
 		
 	}
-	/*
-	 * 
-	 */
-	public InsertedNews deleteRequiredRelatedInfoForNewsAndOthers(InsertedNews meeting)
-	{
-		if(meeting.getMeetingType() == Meeting.NODESNEWS || meeting.getMeetingType() == Meeting.CHANGQIJILU 
-				|| meeting.getMeetingType() == Meeting.JINQIGUANZHU ) {
-			return this.deleteNodeNews(meeting);
-		}
-		
-		if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI) {
-			return this.deleteQianRuoShiInfo(meeting);
-		}
-		
-		if(meeting.getMeetingType() == Meeting.ZHISHUDATE) {
-			return this.deleteZhiShuGuanJianRiQi(meeting);
-		}
-		
-		return null;
-	}
 
-	private InsertedNews updateZhiShuGuanJIanRiQi(InsertedNews meeting) throws SQLException
+
+	public InsertedExternalNews updateZhiShuGuanJIanRiQi(News meeting) throws SQLException
 	{
-		InsertedNews updatedMeeting = null;
-    	LocalDate starttime = meeting.getStart();
-    	LocalDate endtime = meeting.getEnd();
-		String title = meeting.getTitle();
-		String desc = meeting.getDescription();
-		String keywordsurl = meeting.getKeyWords();
-		String newsowners = meeting.getNewsOwnerCodes();
-		String slackurl = meeting.getSlackUrl();
-		int newsid = meeting.getID();
+		InsertedExternalNews updatedMeeting = (InsertedExternalNews) meeting;
+    	LocalDate starttime = updatedMeeting.getStart();
+    	LocalDate endtime = updatedMeeting.getEnd();
+		String title = updatedMeeting.getTitle();
+		String desc = updatedMeeting.getDescription();
+		String keywordsurl = updatedMeeting.getKeyWords();
+		String newsowners = updatedMeeting.getNewsOwnerCodes();
+		String slackurl = updatedMeeting.getNewsUrl();
+		int newsid = updatedMeeting.getID();
 //		logger.debug("test");
 		
 		String sqlupatestatement = null;
 		if(Strings.isNullOrEmpty(newsowners)) {
 			this.deleteZhiShuGuanJianRiQi(meeting);
-			return meeting;
+			return updatedMeeting;
 		} else	if(endtime != null)
 			sqlupatestatement =  "UPDATE 指数关键日期表  SET"
 					+ " 日期 = '" + starttime + "', "
@@ -1487,30 +1679,6 @@ public final class StockCalendarAndNewDbOperation
 
 		return updatedMeeting;
 	}
-	/**
-	 * 
-	 * @param meeting
-	 * @return
-	 * @throws SQLException
-	 */
-	public InsertedNews updateRequiredRelatedInfoForNewsAndOthers(InsertedNews meeting) throws SQLException 
-	{
-//    	InsertedNews updatedMeeting = null;
-    	if(meeting.getMeetingType() == Meeting.QIANSHI || meeting.getMeetingType() == Meeting.RUOSHI) {
-    		return updateQianRuoShiBanKuai (meeting);
-    	}
-    	
-    	if(meeting.getMeetingType() == Meeting.ZHISHUDATE) {
-    		return updateZhiShuGuanJIanRiQi (meeting);
-    	}
-    	
-    	if(meeting.getMeetingType() == Meeting.NODESNEWS || meeting.getMeetingType() == Meeting.CHANGQIJILU
-    			|| meeting.getMeetingType() == Meeting.JINQIGUANZHU ) {
-    		return this.updateNodeNews(meeting);
-    	}
-    	
-        return null;
-    }
 	/*
 	 * 
 	 */

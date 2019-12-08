@@ -12,19 +12,20 @@ import javax.swing.border.EmptyBorder;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsCacheListener;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-
-public class JDialogForTagSearchMatrixPanelForAddNewsToNode  extends JDialog implements NewsCacheListener
+public class JDialogForTagSearchMatrixPanelForAddSysNewsToNode extends JDialog implements NewsCacheListener
 {
 	private final JPanel contentPanel = new JPanel();
-	private TagSearchMatrixPanelForAddNewsToNode pnlofaddnewstonode;
-	private News news;
+	private TagSearchMatrixPanelForAddSysNewsToNode pnlofaddnewstonode;
+	private BkChanYeLianTreeNode node;
 	
-	public JDialogForTagSearchMatrixPanelForAddNewsToNode (NewsCache cache)
+	
+	public JDialogForTagSearchMatrixPanelForAddSysNewsToNode (BkChanYeLianTreeNode node)
 	{
-		initializeGui ();
+		this.node = node;
 		
-		cache.addCacheListener(this);
+		initializeGui();
 	}
 	
 	private void initializeGui() 
@@ -35,7 +36,7 @@ public class JDialogForTagSearchMatrixPanelForAddNewsToNode  extends JDialog imp
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
-			pnlofaddnewstonode = new TagSearchMatrixPanelForAddNewsToNode();
+			pnlofaddnewstonode = new TagSearchMatrixPanelForAddSysNewsToNode(this.node);
 			contentPanel.add(pnlofaddnewstonode, BorderLayout.CENTER);
 		}
 		{
@@ -55,30 +56,6 @@ public class JDialogForTagSearchMatrixPanelForAddNewsToNode  extends JDialog imp
 			}
 		}
 		
-	}
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			JDialogForTagSearchMatrixPanelForWholeSearchTags dialog = new JDialogForTagSearchMatrixPanelForWholeSearchTags();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-
-	
-
-	@Override
-	public void onNewsAdded(News m) 
-	{
-		((TagSearchMatrixPanelForAddNewsToNode)pnlofaddnewstonode).setNews(m);
-		this.toFront();
-		this.setVisible(true);
 	}
 
 	@Override
@@ -104,6 +81,10 @@ public class JDialogForTagSearchMatrixPanelForAddNewsToNode  extends JDialog imp
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
+
+	@Override
+	public void onNewsAdded(News m) {
+		// TODO Auto-generated method stub
+		
+	}
 }
