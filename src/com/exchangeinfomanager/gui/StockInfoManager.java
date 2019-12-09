@@ -668,7 +668,7 @@ public class StockInfoManager
                 
                 JDialogForTagSearchMatrixPanelForAddSysNewsToNode newlog 
                 	= new JDialogForTagSearchMatrixPanelForAddSysNewsToNode (  (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem() );
-                newlog.setModal(false);
+                newlog.setModal(true);
                 newlog.setVisible(true);
                 
 			}

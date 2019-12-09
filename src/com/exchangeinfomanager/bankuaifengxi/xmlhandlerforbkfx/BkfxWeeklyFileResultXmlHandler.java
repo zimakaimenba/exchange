@@ -1,13 +1,12 @@
-package com.exchangeinfomanager.nodes.operations;
+package com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.io.FileOutputStream;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,6 +25,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.InvisibleTreeModel;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetBanKuaisProcessor;
@@ -34,17 +34,17 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
+
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
+
 
 public class BkfxWeeklyFileResultXmlHandler 
 {
@@ -329,23 +329,23 @@ public class BkfxWeeklyFileResultXmlHandler
 					continue;
             	
             	nodeinallbktree = this.allbksks.getAllGeGuOfBanKuai(nodeinallbktree, NodeGivenPeriodDataItem.WEEK);
-            	Set<BkChanYeLianTreeNode> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0,NodeGivenPeriodDataItem.WEEK);
-            	HashSet<String> stkofbkset = new HashSet<String>  ();
-            	for(BkChanYeLianTreeNode stkofbk : curbkallbkset) {
-            		stkofbkset.add(  ((StockOfBanKuai)stkofbk).getMyOwnCode());
-            	}
+            	java.util.Collection<BkChanYeLianTreeNode> curbkallbkset = nodeinallbktree.getSpecificPeriodBanKuaiGeGu(localDate,0);
+//            	HashSet<String> stkofbkset = new HashSet<String>  ();
+//            	for(BkChanYeLianTreeNode stkofbk : curbkallbkset) {
+//            		stkofbkset.add(  ((StockOfBanKuai)stkofbk).getMyOwnCode());
+//            	}
             	
             	//不管有没有，板块和个股都必须设置，这样可以把上一个XML的信息抹去
-            	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, stkofbkset);
+            	SetView<String>  intersectionbankuai = Sets.intersection(stockinfile, (HashSet) curbkallbkset);
 	    		BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
     			treerelated.setStocksNumInParsedFile (localDate,intersectionbankuai.size());
             	if(bkinfile.contains(tmpbkcode))
             		treerelated.setSelfIsMatchModel(localDate);
             	//设置个股是否在分析文件中
 				for(BkChanYeLianTreeNode stkofbk : curbkallbkset ) {
-					Stock tmpstk = ((StockOfBanKuai)stkofbk).getStock();
-					NodesTreeRelated stofbktree = tmpstk.getNodeTreeRelated();
-					if( intersectionbankuai.contains(((StockOfBanKuai)stkofbk).getMyOwnCode() ) ) 
+					
+					NodesTreeRelated stofbktree = stkofbk.getNodeTreeRelated();
+					if( intersectionbankuai.contains( stkofbk.getMyOwnCode() ) ) 
 						stofbktree.setSelfIsMatchModel(localDate);
 				}
 
@@ -353,7 +353,7 @@ public class BkfxWeeklyFileResultXmlHandler
 				this.addBanKuaiFxSetToXml (nodeinallbktree.getMyOwnCode(),bkinfile.contains(tmpbkcode),intersectionbankuai,localDate);
 				
 				curbkallbkset = null;
-				stkofbkset= null;
+				
 	        } 
 	          
 	        patchParsedFileToTrees(treeChild,localDate,stockinfile,bkinfile);

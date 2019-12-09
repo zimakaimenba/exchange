@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.InvisibleTreeModel;
+import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.BkfxWeeklyFileResultXmlHandler;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -23,7 +24,6 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.operations.BkfxWeeklyFileResultXmlHandler;
 import com.exchangeinfomanager.nodes.services.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
@@ -290,8 +290,6 @@ class BanKuaiAndChanYeLian2
 					break;
 				}
 			}
-			
-			
 		}
 		differencegpc = null;
 		gpcintree = null;

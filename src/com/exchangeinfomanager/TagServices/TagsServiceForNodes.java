@@ -103,7 +103,14 @@ public class TagsServiceForNodes implements TagService
 	@Override
 	public void deleteTag(Tag label) throws SQLException 
 	{
-//		this.db.unattachedTagFromNode ( nodesets, label);
+		for (Iterator<BkChanYeLianTreeNode> it = nodesets.iterator(); it.hasNext(); ) { //必须从自己CACHE里面找，因为有可能并不是自己cache里面的tag,颜色不一样
+			BkChanYeLianTreeNode f = it.next();
+			
+			this.dboptfornode.unattachedTagFromNode ( f, label);
+		}
+		
+		if(label != null && cache != null) 
+			cache.removeTag(label);
 	}
 	@Override
 	public void deleteTags(Collection<Tag> label) throws SQLException 

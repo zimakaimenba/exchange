@@ -24,6 +24,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
@@ -275,8 +276,11 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
 		Stock stock = ((BanKuaiGeGuTableModel) this.getModel()).getStock (model_row).getStock();
-		TDXNodsInforPnl cylnews = new TDXNodsInforPnl (stock);
-		cylnews.setVisible(true);
+		
+		JDialogForTagSearchMatrixPanelForAddSysNewsToNode newlog 
+			= new JDialogForTagSearchMatrixPanelForAddSysNewsToNode (  stock);
+	    newlog.setModal(true);
+	    newlog.setVisible(true);
 
 	}
 //	/*

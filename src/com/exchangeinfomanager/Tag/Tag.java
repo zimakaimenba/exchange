@@ -21,6 +21,12 @@ public class Tag
     		this.color = color1;
     }
     
+    public Tag (String name)
+    {
+    	this.name = name;
+   		this.color = Color.WHITE;
+    }
+    
     public Boolean checkHanYuPinYing (String checkedhypy)
     {	
     	HanYuPinYing hypy = new HanYuPinYing ();

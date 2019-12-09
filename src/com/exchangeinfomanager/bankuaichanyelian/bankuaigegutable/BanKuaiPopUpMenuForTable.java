@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 
+import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiShuXingSheZhi;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodesZhiShuGJRQPnl;
@@ -146,8 +147,10 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 	@Override
 	public void addBanKuaiNews(BkChanYeLianTreeNode node) 
 	{
-		TDXNodsInforPnl cylnews = new TDXNodsInforPnl (node);
-		cylnews.setVisible(true);
+		JDialogForTagSearchMatrixPanelForAddSysNewsToNode newlog 
+    		= new JDialogForTagSearchMatrixPanelForAddSysNewsToNode (  node);
+	    newlog.setModal(true);
+	    newlog.setVisible(true);
 		
 	}
 

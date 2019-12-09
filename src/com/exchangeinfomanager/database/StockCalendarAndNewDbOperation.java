@@ -11,7 +11,6 @@ import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLang;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.Meeting;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
@@ -644,7 +643,7 @@ public final class StockCalendarAndNewDbOperation
 	            String ownercodes = result.getString("¥˙¬Î");
 	            Integer ownertype = result.getInt("¿‡–Õ");
 	            
-	            ExternalNewsType news = new GuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
+	            GuanZhu news = new GuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
 
 	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
 

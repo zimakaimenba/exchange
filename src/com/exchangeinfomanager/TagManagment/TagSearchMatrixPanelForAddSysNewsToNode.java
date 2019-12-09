@@ -57,6 +57,7 @@ public class TagSearchMatrixPanelForAddSysNewsToNode extends TagSearchMatrixPane
 		svsns.setCache(newcache);
 		
 		((TagSearchOnNewsTableModel)super.tblnews.getModel()).refresh(newcache.produceNews());
+		((TagSearchOnNewsTableModel)super.tblnews.getModel()).unselectAll ();
         
 	}
 	class CreateController extends MouseAdapter

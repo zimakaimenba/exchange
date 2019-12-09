@@ -41,7 +41,9 @@ import org.joda.time.LocalDate;
 
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.InvisibleTreeModel;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI;
@@ -234,10 +236,10 @@ public class CylTreeDbOperation
 	 */
 	public void addNodeToNestedDatabase (CylTreeNestedSetNode topNode,CylTreeNestedSetNode childrennode)
 	{
-			   int treeid = topNode.getNestedId ();
+		int treeid = topNode.getNestedId ();
 			   
-			   CachedRowSetImpl rsagu = null;
-				try{
+		CachedRowSetImpl rsagu = null;
+		try{
 					   String query = "{CALL r_tree_traversal(?,?,?)}";
 					    java.sql.CallableStatement stm = connectdb.getCurrentDataBaseConnect().prepareCall(query); 
 					    stm.setString(1, "insert");
@@ -261,45 +263,100 @@ public class CylTreeDbOperation
 					    						+ " where tree_id=" + lstid
 					    						;
 					    connectdb.sqlInsertStatExecute(sqlquerystat);
-					} catch (Exception e) {
+			} catch (Exception e) {
 						e.printStackTrace();
-					} finally {
-						try {
-							if(rsagu != null)
-							rsagu.close();
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						rsagu = null;
-					}
+			} finally {
+				try {
+				if(rsagu != null)
+					rsagu.close();
+				} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				}
+				rsagu = null;
+			}
+				
+		createTagsOnCurrentTreePathForChanYeLianNode (childrennode);
 	}
 	public void moveNodeInNestedDatabase (CylTreeNestedSetNode movedNode,CylTreeNestedSetNode parentsnode)
 	{
-			   int movednodetreeid = movedNode.getNestedId ();
-			   int parentnodetreeid = parentsnode.getNestedId();
-			   
-			   CachedRowSetImpl rsagu = null;
-				try{
-					   String query = "{CALL r_tree_move(?,?)}";
-					    java.sql.CallableStatement stm = connectdb.getCurrentDataBaseConnect().prepareCall(query); 
-					    stm.setInt(1, movednodetreeid);
-					    stm.setInt(2, parentnodetreeid);
-					    stm.executeQuery();
-					    stm.close();
-					    
-					} catch (Exception e) {
-						e.printStackTrace();
-					} finally {
-						try {
+		int movednodetreeid = movedNode.getNestedId ();
+		TreeNode[] path = movedNode.getPath();
+		int parentnodetreeid = parentsnode.getNestedId();
+		
+//		this.deleteTagsToChanYeLianNode (movedNode);
+		
+		CachedRowSetImpl rsagu = null;
+		try{
+			String query = "{CALL r_tree_move(?,?)}";
+			java.sql.CallableStatement stm = connectdb.getCurrentDataBaseConnect().prepareCall(query); 
+			stm.setInt(1, movednodetreeid);
+			stm.setInt(2, parentnodetreeid);
+			stm.executeQuery();
+			stm.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
 							if(rsagu != null)
 							rsagu.close();
-						} catch (SQLException e) {
+			} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}
-						rsagu = null;
-					}
+			}
+			rsagu = null;
+		}
+		
+//		this.setTagsToChanYeLianNode (movedNode);
+	}
+	/*
+	 * 
+	 */
+	public void createTagsOnCurrentTreePathForChanYeLianNode (CylTreeNestedSetNode node)
+	{
+		BanKuaiAndStockTree treebkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType());
+		if(treenode == null)
+			return;
+		
+		TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
+		
+		TreeNode[] path = node.getPath();
+    	for(int i=1;i<path.length-1;i++) {
+    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
+    		if(tmpnode.getType() == BkChanYeLianTreeNode.SUBGPC) {
+    			Tag nodetag = new Tag (tmpnode.getMyOwnName());
+    			try {
+					nodetagservice.createTag(nodetag);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    	}
+	}
+	public void deleteTagsOnCurrentTreePathForChanYeLianNode (CylTreeNestedSetNode node)
+	{
+		BanKuaiAndStockTree treebkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType());
+		if(treenode == null)
+			return;
+		
+		TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
+		
+		TreeNode[] path = node.getPath();
+    	for(int i=1;i<path.length-1;i++) {
+    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
+    		if(tmpnode.getType() == BkChanYeLianTreeNode.SUBGPC) {
+    			Tag nodetag = new Tag (tmpnode.getMyOwnName());
+    			try {
+					nodetagservice.deleteTag(nodetag);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    	}
 	}
 	/*
 	 * 

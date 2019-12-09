@@ -364,17 +364,24 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
             	((JLabel)comp).setText(valuepect);
 	        }
 	        
-	        if( col == 1 && !bktype.equals(BanKuai.NOGGWITHSELFCJL) ) {
+	        if( col == 1  ) {
 	        	
 	        	try {
-	        		BkChanYeLianTreeNode node = allbkskstree.getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
-	        		NodesTreeRelated tmptreerelated = node.getNodeTreeRelated();
-	        		Integer patchfilestocknum = tmptreerelated.getStocksNumInParsedFileForSpecificDate (curdate);
-        	 
-		        	if(patchfilestocknum != null && patchfilestocknum > 0 )
+	        			String m;
+					//BkChanYeLianTreeNode node = allbkskstree.getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
+	        		NodesTreeRelated tmptreerelated = bankuai.getNodeTreeRelated();
+//	        		Integer patchfilestocknum = tmptreerelated.getStocksNumInParsedFileForSpecificDate (curdate);
+//	        		if(patchfilestocknum != null && patchfilestocknum > 0 )
+//			        	background = Color.ORANGE;
+//			        else
+//			        	background = Color.white;
+	        		
+	        		Boolean matchmodel = tmptreerelated.selfIsMatchModel(curdate);
+	        		if(matchmodel )
 			        	background = Color.ORANGE;
 			        else
 			        	background = Color.white;
+		        	
 	        	} catch (java.lang.NullPointerException e) {
 	        		background = Color.white;
 	        	}

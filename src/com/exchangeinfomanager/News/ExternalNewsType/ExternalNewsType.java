@@ -17,7 +17,7 @@ public abstract class ExternalNewsType extends News
 	public ExternalNewsType(BkChanYeLianTreeNode node, String description, LocalDate starttime, LocalDate endtime, String detail, String keywords,
 			Collection<InsertedNews.Label> labels, String newsUrl)
 	{
-		super(description, starttime, detail, keywords, labels, newsUrl, node.getMyOwnCode() + node.getMyOwnName() );
+		super(description, starttime, detail, keywords, labels, newsUrl, node.getMyOwnCode() );
 		
 		this.node = node;
 		

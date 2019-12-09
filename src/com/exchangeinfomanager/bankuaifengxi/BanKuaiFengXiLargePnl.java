@@ -318,7 +318,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
     	nodekpnl.displayZhiShuGuanJianRiQiToGui(dqgzcache.produceNews());
     	
     	ServicesForNews svsnews = new NewsServices ();
-    	NewsCache newcache = new NewsCache ("ALL",svsnews,svslabel,displayedstartdate1,displayedenddate1);
+    	NewsCache newcache = new NewsCache (node.getMyOwnCode(),svsnews,svslabel,displayedstartdate1,displayedenddate1);
     	svsnews.setCache(newcache);
     	nodekpnl.displayNodeNewsToGui (newcache.produceNews() );
 	}

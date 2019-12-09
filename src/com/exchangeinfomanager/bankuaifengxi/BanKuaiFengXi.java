@@ -39,8 +39,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.exchangeinfomanager.News.InsertedNews;
-import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
@@ -61,7 +59,6 @@ import com.exchangeinfomanager.TagServices.CacheForInsertedTag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.Trees.InvisibleTreeModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuExternalInfoTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
@@ -75,7 +72,10 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombin
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartPnl;
-
+import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.BkfxWeeklyFileResultXmlHandler;
+import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServiceOfBkFxEbkXml;
+import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServicesForBkfxEbkOutPutFile;
+import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServicesForBkfxEbkOutPutFileDirectRead;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
 import com.exchangeinfomanager.commonlib.ReminderPopToolTip;
@@ -95,7 +95,6 @@ import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.nodes.operations.BkfxWeeklyFileResultXmlHandler;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
@@ -179,7 +178,8 @@ public class BanKuaiFengXi extends JDialog
 		this.nodeinfotocsv = new NodeInfoToCsv ();
 		this.displayexpc = new ExportCondition () ;
 		this.bkfxremind = new BanKuaiFengXiRemindXmlHandler ();
-		this.bkfxfh = new BkfxWeeklyFileResultXmlHandler ();
+		
+		this.bkfxfh = new ServicesForBkfxEbkOutPutFileDirectRead ();
 
 		this.globecalwholeweek = true; //计算整周
 
@@ -203,7 +203,7 @@ public class BanKuaiFengXi extends JDialog
 	private SystemConfigration sysconfig;
 	private StockInfoManager stockmanager;
 	private BanKuaiDbOperation bkdbopt;
-	private BkfxWeeklyFileResultXmlHandler bkfxfh;
+	private ServicesForBkfxEbkOutPutFile bkfxfh;
 
 	private ExportTask2 exporttask;
 
@@ -1061,7 +1061,7 @@ public class BanKuaiFengXi extends JDialog
     	paneldayCandle.displayZhiShuGuanJianRiQiToGui(dqgzcache.produceNews());
     	
     	ServicesForNews svsnews = new NewsServices ();
-    	NewsCache newcache = new NewsCache ("ALL",svsnews,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	NewsCache newcache = new NewsCache (selectnode.getMyOwnCode(),svsnews,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
     	svsnews.setCache(newcache);
     	paneldayCandle.displayNodeNewsToGui (newcache.produceNews() );
 	}
@@ -2503,42 +2503,6 @@ public class BanKuaiFengXi extends JDialog
 		setUserSelectedColumnMessage( (TDXNodes)selectednode, this.dateChooser.getLocalDate());
 	}
 	/*
-	 * 顯示用户選擇的個股的基本信息
-	 */
-//	private void displayStockCurrentFxResult(BanKuaiGeGuBasicTable curtable) 
-//	{
-//		int row = curtable.getSelectedRow();
-//		if(row <0) {
-//			JOptionPane.showMessageDialog(null,"请先选择一个个股","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
-//		
-//		int modelRow = curtable.convertRowIndexToModel(row);
-//		StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)curtable.getModel()).getStock (modelRow);
-//		LocalDate curtableshowwknum = ((BanKuaiGeGuBasicTableModel)curtable.getModel()).getShowCurDate ();
-//		int columncount = curtable.getColumnCount();
-//		String result = "";
-//		for(int i=0; i<columncount;i ++) {
-//			result = result + curtable.getColumnName(i) + ":" + curtable.getValueAt(row, i) +";";
-//		}
-//		NodeXPeriodData nodexdata = selectstock.getStock().getNodeXPeroidData(globeperiod);
-//		Double liutongshizhi = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(curtableshowwknum, 0);
-//		Double zongshizhi = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(curtableshowwknum, 0);
-//		if(liutongshizhi != null  )
-//			result = result + "流通市值:" + liutongshizhi/100000000 + "亿";
-//		if(zongshizhi != null)
-//			result = result + "总市值:" + zongshizhi/100000000 + "\n";
-//
-//		result = null;
-//		
-//		//顯示個股的信息
-//		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (false);
-//		editorPanenodeinfo.displayNodeAllInfo(selectstock.getStock());
-//		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (true);
-//		
-//		setUserSelectedColumnMessage(selectstock.getStock(),this.dateChooser.getLocalDate() );
-//	}
-	/*
 	 * 用户双击某个node占比chart，则放大显示该node一年内的占比所有数据
 	 */
 	protected void displayNodeLargerPeriodData(TDXNodes node, LocalDate datekey) 
@@ -2820,89 +2784,19 @@ public class BanKuaiFengXi extends JDialog
 			ckboxparsefile.setSelected(false);
 			return;
 		}
-			
-			//找到对应的XML
-			boolean xmlfileexist = false;
-			File filexminconfigpath = null;
-			if(filename.endsWith("EBK")) {
-				File fileebk = new File( filename );
-				String exportxmlfilename = sysconfig.getTDXModelMatchExportFile () +  fileebk.getName();
-				String xmlfilename = exportxmlfilename.replace(".EBK", ".XML");
-				filexminconfigpath = new File(xmlfilename);
-				try {
-						if (filexminconfigpath.exists()) 
-							xmlfileexist = true;
-				} catch (Exception e) {
-						e.printStackTrace();
-						return ;
-				}
+		
+		LocalDate edbfiledate = this.bkfxfh.setBkfeOutPutFile(filename);
+		int exchangeresult = JOptionPane.showConfirmDialog(null,"文件指定日期是" + edbfiledate + "。是否更改到该日期？", "是否更改日期？", JOptionPane.OK_CANCEL_OPTION);
+		if(exchangeresult != JOptionPane.CANCEL_OPTION) {
+			LocalDate curselectdate = dateChooser.getLocalDate();
+			if(!curselectdate.equals(edbfiledate) ) 
+				this.dateChooser.setLocalDate(edbfiledate);
+		 } else { //用户可以作为本周文件
+			 this.bkfxfh.resetBkfxFileDate();
+		 }
 				
-//				 filenamedate = fileebk.getName().replaceAll("\\D+","");
-			}
-			
-			if(filename.endsWith("XML")) {
-				filexminconfigpath = new File(filename);
-				Path inputfilepath = FileSystems.getDefault().getPath(filexminconfigpath.getParent());
-				Path systemrequiredpath = FileSystems.getDefault().getPath(sysconfig.getTDXModelMatchExportFile ());
-				try {
-					boolean cresult = java.nio.file.Files.isSameFile(systemrequiredpath, inputfilepath);
-					if(!cresult ) {
-						tfldparsedfile.setText("XML文件位置错误！请在指定的目录里重新选择文件！");
-						ckboxparsefile.setSelected(false);
-						return;
-					} else {
-						xmlfileexist = true;
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			LocalDate localDate = null;
-			try{
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-				
-				String filenamedate = filexminconfigpath.getName().replaceAll("\\D+","");
-					 localDate = LocalDate.parse(filenamedate, formatter);
-					 int exchangeresult = JOptionPane.showConfirmDialog(null,"文件指定日期是" + localDate + "。是否更改到该日期？", "是否更改日期？", JOptionPane.OK_CANCEL_OPTION);
-					 if(exchangeresult != JOptionPane.CANCEL_OPTION) {
-						 	LocalDate curselectdate = dateChooser.getLocalDate();
-							if(!curselectdate.equals(localDate) ) 
-								this.dateChooser.setLocalDate(localDate);
-					 } else { //用户可以作为本周文件
-						 localDate = dateChooser.getLocalDate();
-					 }
-			} catch (java.time.format.DateTimeParseException e) {
-					tfldparsedfile.setText("文件名未标明日期，作为本周文件处理！");
-					localDate = dateChooser.getLocalDate();
-			}
-			
-			ckboxparsefile.setSelected(true);
-			tfldparsedfile.setText(filename);
-
-			if(xmlfileexist) {
-				InvisibleTreeModel treeModel = (InvisibleTreeModel)this.allbksks.getAllBkStocksTree().getModel();
-				BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
-				
-				this.bkfxfh.setXmlRootFileForBkfxWeeklyFile(new File(filename));
-				this.bkfxfh.patchParsedResultXmlToTrees (treeroot,localDate);
-				
-				this.allbksks.getAllBkStocksTree().setCurrentDisplayedWk (localDate);
-				
-				treeModel.reload(treeroot);
-			}
-			else
-				this.bkfxfh.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (new File( filename ),localDate);
-			
-			//产业链树暂时不更新
-//			this.cyltreecopy.setCurrentDisplayedWk (localDate);
-//			InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyltreecopy.getModel();
-//			BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
-//			treeModel.reload(treeroot);
-
-			filexminconfigpath = null;
-			filexminconfigpath = null;
-
+		 this.bkfxfh.patchOutPutFileToTrees (this.allbksks.getAllBkStocksTree() );
+		 tfldparsedfile.setText(filename);
 	}
 	
 	

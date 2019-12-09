@@ -196,7 +196,7 @@ public class BanKuaiAndStockTree extends JTree
 	/*
 	 * 
 	 */
-	private void createEvents() 
+	protected void createEvents() 
 	{
         this.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
             public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {

@@ -222,13 +222,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 	}
 	private void addSubGpcButtonActionPerformed(ActionEvent evt) 
 	{
-//		int row = tablesubcyl.getSelectedRow() ;
-//		if( row <0) {
-//			 JOptionPane.showMessageDialog(null,"请选择一个子板块!");
-//			 return;
-//		}
-//		BkChanYeLianTreeNode subcode = ((BkChanYeLianTreeNodeListTableModel)(tablesubcyl.getModel())).getNode(row);
-		 
 		Collection<Tag> selectedlbl = allsyskwcache.produceSelectedTags();
 		if(selectedlbl.size() > 1)
 			JOptionPane.showMessageDialog(null,"一次只能添加一个TAG!");
@@ -422,61 +415,9 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 			}
 		});
 
-//		tfldfindgegu.addActionListener(new AbstractAction() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				String nodeid = tfldfindgegu.getText().trim();
-//				int rowindex = ((BkChanYeLianTreeNodeListTableModel)(tablebkgegu.getModel())).getNodeLineIndex(nodeid);
-//				
-//				if(rowindex != -1) {
-//					tablebkgegu.setRowSelectionInterval(rowindex, rowindex);
-//					tablebkgegu.scrollRectToVisible(new Rectangle(tablebkgegu.getCellRect(rowindex, 0, true)));
-//				} else 	{
-//					JOptionPane.showMessageDialog(null,"股票/板块代码或名称拼音有误！","Warning", JOptionPane.WARNING_MESSAGE);
-//				}
-//			}
-//		});
-//		btnfindgegu.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) {
-//				String nodeid = tfldfindgegu.getText().trim();
-//				int rowindex = ((BkChanYeLianTreeNodeListTableModel)(tablebkgegu.getModel())).getNodeLineIndex(nodeid);
-//				
-//				if(rowindex != -1) {
-//					tablebkgegu.setRowSelectionInterval(rowindex, rowindex);
-//					tablebkgegu.scrollRectToVisible(new Rectangle(tablebkgegu.getCellRect(rowindex, 0, true)));
-//				} else 	{
-//					JOptionPane.showMessageDialog(null,"股票/板块代码有误！","Warning", JOptionPane.WARNING_MESSAGE);
-//				}
-//
-//			}
-//		});
-		
-	
-		
-//		/*
-//		 * 查找板块
-//		 */
-//		tfldfindbk.addActionListener(new AbstractAction() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				String bkinputed = tfldfindbk.getText();
-//				findBanKuaiInTree (bkinputed);
-//			}
-//		});
-//		
-//		btnfindbk.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) 
-//			{
-//				String bkinputed = tfldfindbk.getText();
-//				findBanKuaiInTree (bkinputed);
-//			}
-//		});
-		
 		btnAddGeGutotree.addMouseMotionListener(new mousemotionadapter() );
 		btnAddGeGutotree.addMouseListener(new java.awt.event.MouseAdapter() {
 	            public void mouseExited(java.awt.event.MouseEvent evt) {
-//	            	addGeGuButton.setIcon(addSubnodeIcon);
-//	    	    	addGeGuButton.setToolTipText("添加个股");
 	            }
 	        });
 		btnAddGeGutotree.addActionListener(new java.awt.event.ActionListener() {

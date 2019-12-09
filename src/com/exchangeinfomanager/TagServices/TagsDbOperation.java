@@ -7,12 +7,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.util.StringUtil;
+import org.apache.log4j.Logger;
+
 
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.NodeInsertedTag;
@@ -35,6 +36,9 @@ public class TagsDbOperation
 		connectdb = ConnectDataBase.getInstance();
 		this.bkstk = AllCurrentTdxBKAndStoksTree.getInstance();
 	}
+	
+	private static Logger logger = Logger.getLogger(TagsDbOperation.class);
+	
 	private InsertedTag checkTagExistInSystem (String tagname)
 	{
 		try {
@@ -251,13 +255,12 @@ public class TagsDbOperation
 		try {
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlquery);
 		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
-			e.printStackTrace();
+			logger.info ("插入失败，可能是记录已经存在，请检查！");
+
 		} catch (MysqlDataTruncation e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -353,15 +356,26 @@ public class TagsDbOperation
 	}
 	public void unattachedTagFromNode(BkChanYeLianTreeNode node, Tag l)
 	{
-		int id = ((InsertedTag)l).getID();
+		
 		String nodecode = node.getMyOwnCode();
 		int nodetype = node.getType ();
-		
-		String sqlquery = "DELETE FROM 产业链板块国个股板块对应表 WHERE  "
-				+ " 板块国ID = '" + id + "'"
-				+ " AND 个股板块 = '" + nodecode + "'" 
-				+ " AND 个股板块类型 = " + nodetype 
-				;
+		String sqlquery;
+		if(l instanceof InsertedTag) {
+			int id= ((InsertedTag)l).getID();
+			sqlquery = "DELETE FROM 产业链板块国个股板块对应表 WHERE  "
+					+ " 板块国ID = '" + id + "'"
+					+ " AND 个股板块 = '" + nodecode + "'" 
+					+ " AND 个股板块类型 = " + nodetype 
+					;
+		} else {
+			sqlquery = "DELETE FROM 产业链板块国个股板块对应表   "
+					+ " WHERE  ( 板块国ID  IN ("
+					+ " SELECT 产业链板块国列表.id FROM 产业链板块国列表"
+					+ " WHERE  产业链板块国列表.板块国名称 = '" + l.getName()  + "' ) )"
+					+ " AND 个股板块 = '" + nodecode + "'" 
+					+ " AND 个股板块类型 = " + nodetype 
+					;
+		}
 		
 		int autoIncKeyFromApi = 0;
 		try {

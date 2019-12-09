@@ -106,20 +106,19 @@ import org.jfree.ui.TextAnchor;
 import org.joda.time.Interval;
 import org.ta4j.core.Bar;
 
-import com.exchangeinfomanager.News.InsertedNews;
+
 import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
 import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLang;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
+
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForTA4J.TDXNodesXPeriodDataForTA4J;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
@@ -627,9 +626,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	
 	public void displayZhiShuGuanJianRiQiToGui(Collection<News> newszhishukeylists) 
 	{
-		for (News tmpmeeting: newszhishukeylists ) {
 		SystemConfigration syscon = SystemConfigration.getInstance();
 		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
+		
+		for (News tmpmeeting: newszhishukeylists ) {
+		
 		
 		LocalDate zhishudate = tmpmeeting.getStart();
 		if(zhishudate == null)
@@ -652,7 +653,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				
 				drawDefinedMarker (zhishudate,zhishucolor ); 
 				
-				LocalDate zhishuend = ((ZhiShuBoLang)tmpmeeting).getEnd();
+				LocalDate zhishuend = ((InsertedExternalNews)tmpmeeting).getEnd();
 				if(zhishuend == null)
 					break;
 				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
@@ -665,7 +666,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				Color bankuaicolor = new Color(51,255,153);
 				drawDefinedMarker (zhishudate,bankuaicolor ); 
 				
-				LocalDate zhishuend =  ((ZhiShuBoLang)tmpmeeting).getEnd();
+				LocalDate zhishuend =  ((InsertedExternalNews)tmpmeeting).getEnd();
 				if(zhishuend == null)
 					continue;
 				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))
@@ -675,7 +676,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				Color bankuaicolor = new Color(51,255,153);
 				drawDefinedMarker (zhishudate,bankuaicolor ); 
 				
-				LocalDate zhishuend =  ((ZhiShuBoLang)tmpmeeting).getEnd();
+				LocalDate zhishuend =  ((InsertedExternalNews)tmpmeeting).getEnd();
 				if(zhishuend == null)
 					continue;
 				if(zhishuend.isBefore(this.getDispalyStartDate()) || zhishuend.isAfter(this.getDispalyEndDate() ))

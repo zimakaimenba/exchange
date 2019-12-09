@@ -16,6 +16,8 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -38,7 +40,50 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 		
 		dboptforcyl = new CylTreeDbOperation (this);
 		createTreeOfChanYeLian ();
+		
+		createOwnEvents ();
 	}
+	
+	private void createOwnEvents ()
+	{
+		((InvisibleTreeModel)this.getModel()).addTreeModelListener(new CylTreeModelListener () );
+	}
+	
+	class CylTreeModelListener implements TreeModelListener 
+	{//https://stackoverflow.com/questions/12607688/jtree-node-title-edited-listener
+		public void treeNodesChanged(TreeModelEvent e) {
+		}
+		
+		public void treeNodesInserted(TreeModelEvent e)
+		{
+			CylTreeNestedSetNode node;
+		    node = (CylTreeNestedSetNode) (e.getTreePath().getLastPathComponent());
+		    TreeNode[] nodepath = node.getPath();
+
+		    /*
+		     * If the event lists children, then the changed
+		     * node is the child of the node we have already
+		     * gotten.  Otherwise, the changed node and the
+		     * specified node are the same.
+		     */
+		    try {
+		        int index = e.getChildIndices()[0];
+		        CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode) (node.getChildAt(index));
+		        TreeNode[] path = tmpnode.getPath();
+	            dboptforcyl.createTagsOnCurrentTreePathForChanYeLianNode( (CylTreeNestedSetNode) tmpnode);
+	            
+		        
+		    } catch (NullPointerException exc) {}
+		}
+		public void treeNodesRemoved(TreeModelEvent e) 
+		{
+		}
+		public void treeStructureChanged(TreeModelEvent e) 
+		{
+		}
+	}
+	
+
 	
 	private void createTreeOfChanYeLian ()
 	{
@@ -67,29 +112,31 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	/*
 	 * 
 	 */
-	public void addNewNodeToTree (BkChanYeLianTreeNode newNode, int direction)
+	public void addNewNodeToTree (BkChanYeLianTreeNode node, int direction)
 	{
+		CylTreeNestedSetNode cylnode = new CylTreeNestedSetNode (node.getMyOwnCode(),node.getMyOwnName(),node.getType());
+
 		BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
 		if(parent.getType() == BkChanYeLianTreeNode.GPC  ) {
 			if (direction == BanKuaiAndChanYeLianGUI.DOWN || direction == BanKuaiAndChanYeLianGUI.UP ) 
 				direction = BanKuaiAndChanYeLianGUI.RIGHT;
 		}
 		
-		boolean enableoperation = this.checkNodeDuplicate (parent,newNode);
+		boolean enableoperation = this.checkNodeDuplicate (parent,cylnode);
     	if( enableoperation ) {
         		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
         		return;
         }
     	
         if (direction == BanKuaiAndChanYeLianGUI.RIGHT) {
-        	parent.add(newNode);
+        	parent.add(cylnode);
         } 
         
         if (direction != BanKuaiAndChanYeLianGUI.RIGHT) {
         	BkChanYeLianTreeNode currentNode = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
         	parent = (BkChanYeLianTreeNode) currentNode.getParent();
 
-        	enableoperation = this.checkNodeDuplicate (parent,newNode);
+        	enableoperation = this.checkNodeDuplicate (parent,cylnode);
         	if( enableoperation ) {
             		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
             		return;
@@ -97,20 +144,20 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
             
             int childIndex = parent.getIndex(currentNode);
             if (direction == BanKuaiAndChanYeLianGUI.DOWN) 
-            	parent.insert(newNode, childIndex+1);
+            	parent.insert(cylnode, childIndex+1);
             else if (direction == BanKuaiAndChanYeLianGUI.UP) 
-            	parent.insert(newNode, childIndex);
+            	parent.insert(cylnode, childIndex);
         }
         
-        this.dboptforcyl.addNodeToNestedDatabase ((CylTreeNestedSetNode)parent,(CylTreeNestedSetNode)newNode);
+        this.dboptforcyl.addNodeToNestedDatabase ((CylTreeNestedSetNode)parent,(CylTreeNestedSetNode)cylnode);
         
 
        InvisibleTreeModel treeModel = (InvisibleTreeModel)this.getModel();
        BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
-       treeModel.nodesWereInserted(newNode.getParent(), new int[] {newNode.getParent().getIndex(newNode)});
+       treeModel.nodesWereInserted(cylnode.getParent(), new int[] {cylnode.getParent().getIndex(cylnode)});
        treeModel.reload(treeroot);
-       this.setSelectionPath(new TreePath(((BkChanYeLianTreeNode)newNode.getParent()).getPath()));
-       this.scrollPathToVisible( new TreePath(newNode.getPath()));
+       this.setSelectionPath(new TreePath(((BkChanYeLianTreeNode)cylnode.getParent()).getPath()));
+       this.scrollPathToVisible( new TreePath(cylnode.getPath()));
 	}
 	
 	
@@ -219,6 +266,12 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	            Collections.sort(copies, new FatherNodeIdComparator () );
 	            BkChanYeLianTreeNode[] nodes =   copies.toArray(new CylTreeNestedSetNode[copies.size()]);
 	            nodesToRemove =    toRemove.toArray(new CylTreeNestedSetNode[toRemove.size()]);
+	            
+	            for(int i=0; i<nodesToRemove.length; i++) { //把node的产业链上的所有TAG删除
+	            	TreeNode[] nodepa = nodesToRemove[i].getPath();
+	            	dboptforcyl.deleteTagsOnCurrentTreePathForChanYeLianNode( (CylTreeNestedSetNode) nodesToRemove[i]);
+	            }
+	            
 	            return new NodesTransferable(nodes);
 	            
 	        }
@@ -237,7 +290,6 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 		    {
 		    	findNodeSubNodes((BkChanYeLianTreeNode)parentnode.getChildAt(i),copylist, removelist);
 		    }
-	    	
 	    }
 	    /** Defensive copy used in createTransferable. */
 	    private BkChanYeLianTreeNode copy(BkChanYeLianTreeNode node) 
@@ -260,9 +312,13 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	            DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
 	            // Remove nodes saved in nodesToRemove in createTransferable.
 	            for(int i = 0; i < nodesToRemove.length; i++) {
+	            	TreeNode[] nodep = nodesToRemove[i].getPath();
+	            	
+	            	nodesToRemove[i].getParent();
 	                model.removeNodeFromParent(nodesToRemove[i]);
 	            }
 	        }
+	        
 	        nodesToRemove = null;
 	    }
 	  
@@ -297,6 +353,8 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	        if(childIndex == -1) {     // DropMode.ON
 	            index = parent.getChildCount();
 	        }
+	        
+	        
 	        // Add data to model.
 	        BkChanYeLianTreeNode tmpfather = null;
 	        for(int i = 0; i < nodes.length; i++) {
@@ -376,13 +434,17 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) child.getParent();
 	                if (parent != null){
 	                    int childIndex = parent.getIndex(child);
+	                    //删除node在产业链上的TAG
+	                    dboptforcyl.deleteTagsOnCurrentTreePathForChanYeLianNode ((CylTreeNestedSetNode)child);
+	                    
 	                    parent.remove(child);
+
 	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
 	                }
 	      }
 	            
 	      if (this.getVisibleRowCount()>0) 
-	            	this.setSelectionRow(topRow);
+	           this.setSelectionRow(topRow);
 	   
 	   return true;
 	}
@@ -457,5 +519,7 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	{
 		return dboptforcyl.addNewGuoPiaoChi( gpccode,  gpcname);
 	}
+	
+	
 
 }

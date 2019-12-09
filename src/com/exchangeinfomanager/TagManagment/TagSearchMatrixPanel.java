@@ -154,10 +154,10 @@ public class TagSearchMatrixPanel extends JPanel
             public void actionPerformed(ActionEvent e)
             {
                 TableCellListener tcl = (TableCellListener)e.getSource();
-                System.out.println("Row   : " + tcl.getRow());
-                System.out.println("Column: " + tcl.getColumn());
-                System.out.println("Old   : " + tcl.getOldValue());
-                System.out.println("New   : " + tcl.getNewValue());
+//                System.out.println("Row   : " + tcl.getRow());
+//                System.out.println("Column: " + tcl.getColumn());
+//                System.out.println("Old   : " + tcl.getOldValue());
+//                System.out.println("New   : " + tcl.getNewValue());
             }
         };
 
@@ -357,10 +357,18 @@ class TagSearchOnNewsTableModel extends DefaultTableModel
 		  info = (List)searchresult;
 		else
 		  info = new ArrayList(searchresult);
-		
+
 		selectedrowindex.clear();
-		
+		for(int i=0;i<info.size();i++)
+			selectedrowindex.add(i);
+
 		fireTableDataChanged();
+	}
+	
+	public void unselectAll ()
+	{
+//		this.selectedrowindex.clear();
+//		this.fireTableDataChanged();
 	}
 	
 	    @Override
@@ -443,10 +451,10 @@ class TagSearchOnNewsTableModel extends DefaultTableModel
 	    
 	    public void setValueAt(Object value, int row, int column)
 	    {
-	    	if(column == 0 && (Boolean)value == false)
-	    		selectedrowindex.add(row);
-	    	else if(column == 0 && (Boolean)value == true)
+	    	if(column == 0 && (Boolean)value == true)
 	    		selectedrowindex.remove(row);
+	    	else if(column == 0 && (Boolean)value == false)
+	    		selectedrowindex.add(row);
 	     }
 
 }
