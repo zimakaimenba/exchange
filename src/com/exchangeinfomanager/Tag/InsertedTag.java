@@ -9,12 +9,10 @@ public class InsertedTag extends Tag
 	private Set<BkChanYeLianTreeNode> owners ;
 	private int id;
 	private Tag tag;
-	private String des;
 	
-
     public InsertedTag(Tag label, Integer id) 
     {
-    	super(label.getName(), label.getColor() );
+    	super(label.getName(), label.getColor(), label.getDescription() );
     	this.tag = label;
         this.id = id;
 	}
@@ -27,16 +25,6 @@ public class InsertedTag extends Tag
     public int getID() {
         return this.id;
     }
-    
-    public void setDescription (String des)
-    {
-    	this.des = des;
-    }
-    public String getDescription ()
-    {
-    	return this.des ;
-    } 
-    
     public void addOwners (BkChanYeLianTreeNode newowner)
     {
     	this.owners.add(newowner);

@@ -25,4 +25,9 @@ public interface ServicesForNode
 	public BkChanYeLianTreeNode getNodeQueKouInfo (String bkcode,LocalDate requiredrecordsday,LocalDate requiredendday,String period);
 	public BkChanYeLianTreeNode getNodeQueKouInfo (BkChanYeLianTreeNode bk,LocalDate requiredstartday,LocalDate requiredendday,String period);
 	public void syncNodeData (BkChanYeLianTreeNode bk);
+	
+	List<BkChanYeLianTreeNode> getNodeChanYeLianInfo (String nodecode  );
+	List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo (String nodecode );
+	List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo (String nodecode );
+	
 }

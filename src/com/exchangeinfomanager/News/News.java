@@ -9,12 +9,14 @@ import java.util.Set;
 
 public class News 
 {
-    protected LocalDate starttime;
+    public static final String KEYWORDSADD = "KEYWORDSADDED";
+	protected LocalDate starttime;
     private String title;
     private String description;
     private String keywords; //keywrods
     private String newsUrl;
     protected String newsownercodes;
+    protected String attachment;
 
     private Collection<InsertedNews.Label> labels;
 
@@ -30,6 +32,14 @@ public class News
         this.setNewsOwnerCodes(ownercodes);
     }
     
+    public void setAttachment (String attach)
+    {
+    	this.attachment = attach;
+    }
+    public String getAttachment ()
+    {
+    	return this.attachment;
+    }
 
 	public Collection<InsertedNews.Label> getLabels() {
         return this.labels;
@@ -123,6 +133,9 @@ public class News
      */
     public Boolean addNewsToSpecificOwner (String newowner)
     {
+    	if(newsownercodes.length() == 6)
+    		newsownercodes = newsownercodes + "|";
+    	
     	if(!newsownercodes.contains(newowner)) {
     		newsownercodes = newsownercodes + newowner + "|";
     		return true;

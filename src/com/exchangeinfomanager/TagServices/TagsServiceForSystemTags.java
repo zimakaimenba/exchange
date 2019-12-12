@@ -97,7 +97,6 @@ public class TagsServiceForSystemTags implements TagService
 		// TODO Auto-generated method stub
 		
 	}
-
 	@Override
 	public Tag combinTags(Collection<Tag> oldlabels, Tag newlabel) throws SQLException 
 	{
@@ -119,8 +118,9 @@ public class TagsServiceForSystemTags implements TagService
 		
 		return m;
 	}
-	
-	
+	/*
+	 * 必须包含所有这些TAG	
+	 */
 	public   Collection<BkChanYeLianTreeNode> getNodesSetWithAllSpecificTags (String tagname)
 	{
 		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithAllSpecificTags (tagname);

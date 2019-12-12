@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.TagServices.TagServicesForNews;
 import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -36,7 +37,6 @@ public class NewsServices implements ServicesForNews
 			throws SQLException 
     {
 		return this.getNews(node.getMyOwnCode(), startdate, enddate); 
-		
 	}
     @Override
     public Collection<News> getNews(String nodeid,LocalDate startdate, LocalDate enddate) throws SQLException 
@@ -44,13 +44,14 @@ public class NewsServices implements ServicesForNews
         Collection<News> result = this.database.getNodeRelatedNews (nodeid, startdate,  enddate);
         return result;
     }
-
     @Override
     public News createNews(News News) throws SQLException {
 
     	 InsertedNews m  = this.database.createNodeNews (News);
-    	 this.tagsdboptfornews.storeNewsKeyWordsToDataBase (m);
-        
+    	 
+    	 TagServicesForNews tagfornews = new TagServicesForNews (m);
+    	 tagfornews.createTag(new Tag("") ) ;
+    	 
     	 if(m != null && cache != null)
     		 cache.addNews(m);
     	 

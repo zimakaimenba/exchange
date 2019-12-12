@@ -11,6 +11,8 @@ import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
@@ -19,10 +21,13 @@ public class TagServicesForTreeChanYeLian implements TagService
 	private CylTreeDbOperation dboptforcyltree;
 	private Set<BkChanYeLianTreeNode> nodeset;
 	private TagsDbOperation dboptfornode;
+	private TreeOfChanYeLian cyltree;
 
 	public TagServicesForTreeChanYeLian (Set<BkChanYeLianTreeNode> node)
 	{
-		dboptforcyltree = new CylTreeDbOperation ();
+		this.cyltree = CreateExchangeTree.CreateTreeOfChanYeLian();
+		
+		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
 		
 		dboptfornode = new TagsDbOperation ();
 		
@@ -45,6 +50,7 @@ public class TagServicesForTreeChanYeLian implements TagService
 			cylnodes.addAll (cylinfo);
 			cylnodes.addAll (cylsliding);
 			cylnodes.addAll (cylchildren);
+			
 			for(BkChanYeLianTreeNode tmpnode : cylnodes) {
 				if( tmpnode.getType() == BkChanYeLianTreeNode.TDXBK || tmpnode.getType() == BkChanYeLianTreeNode.TDXGG) {
 					Collection<NodeInsertedTag> result = this.dboptfornode.getNodeTagsFromDataBase ( tmpnode.getMyOwnCode(), tmpnode.getType() );

@@ -319,7 +319,7 @@ public class BanKuaiFengXi extends JDialog
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
 		}
-//		// 表的定位表中定位该表中
+		// 定位
 //		Integer rowindex = ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel() ).getBanKuaiRowIndex(selectedbk.getMyOwnCode());
 //		if(rowindex != null && rowindex >0) {
 //				int modelRow = tableselectedwkbkzb.convertRowIndexToView(rowindex);
@@ -474,6 +474,7 @@ public class BanKuaiFengXi extends JDialog
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 			setCursor(hourglassCursor2);
 	}
+
 	private void refreshCurrentStockTags(Stock selectedstock) 
 	{
 		Collection<BkChanYeLianTreeNode> bkstock = new HashSet<> ();
@@ -483,6 +484,114 @@ public class BanKuaiFengXi extends JDialog
 		lbnodedbservice.setCache(bkstkkwcache);
 		pnlstocktags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
 	}
+	/*
+	 * 在个股表中发现输入的个股
+	 */
+	protected boolean findInputedNodeInTable(String nodecode) 
+	{
+		Boolean notfound = false; int rowindex;
+		nodecode = nodecode.substring(0,6);
+		if(((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
+			 rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
+			 
+			if(rowindex <0) {
+				notfound = true;
+			} else {
+//				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+				int modelRow = rowindex;
+				int curselectrow = tableGuGuZhanBiInBk.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
+					tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
+					
+					//在当前表就有的话，就把相关PANEL清空
+					panelGgDpCjeZhanBi.resetDate();
+				}
+			}
+		}
+		
+		
+		if( ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
+//				notfound = true;
+			} else {
+//				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
+				int modelRow = rowindex;
+				int curselectrow = tablexuandingzhou.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tablexuandingzhou.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingzhou.scrollRectToVisible(new Rectangle(tablexuandingzhou.getCellRect(modelRow, 0, true)));
+				}
+			}
+		}
+		
+		
+		if( ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
+//				notfound = true;
+			} else {
+//				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
+				int modelRow = rowindex;
+				int curselectrow = tablexuandingminusone.getSelectedRow();
+				if( curselectrow != modelRow)  {
+					tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingminusone.scrollRectToVisible(new Rectangle(tablexuandingminusone.getCellRect(modelRow, 0, true)));
+				}
+			}
+		}
+		
+
+		if( ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
+//				notfound = true;
+			} else {
+//				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
+				int modelRow = rowindex;
+				int curselectrow = tablexuandingminustwo.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tablexuandingminustwo.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingminustwo.scrollRectToVisible(new Rectangle(tablexuandingminustwo.getCellRect(modelRow, 0, true)));
+				}
+			}
+		}
+
+		if(((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
+			rowindex = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
+				tablexuandingplusone.getSelectionModel().clearSelection();
+			} else {
+//				int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
+				int modelRow = rowindex;
+				int curselectrow = tablexuandingplusone.getSelectedRow();
+				if( curselectrow != modelRow)  {
+					tablexuandingplusone.setRowSelectionInterval(modelRow, modelRow);
+					tablexuandingplusone.scrollRectToVisible(new Rectangle(tablexuandingplusone.getCellRect(modelRow, 0, true)));
+				}
+			}
+		}
+		
+		
+		if(((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getRowCount() >0 ) {
+			rowindex = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex <0) {
+//				notfound = true;
+			} else {
+//				int modelRow = tableExternalInfo.convertRowIndexToView(rowindex);
+				int modelRow = rowindex;
+				int curselectrow = tableExternalInfo.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tableExternalInfo.setRowSelectionInterval(modelRow, modelRow);
+					tableExternalInfo.scrollRectToVisible(new Rectangle(tableExternalInfo.getCellRect(modelRow, 0, true)));
+				}
+			}
+		}
+		
+		return !notfound;
+	}
+
 	
 	/*
 	 * 
@@ -1992,10 +2101,6 @@ public class BanKuaiFengXi extends JDialog
 //							String stockcodeincbx = ((BkChanYeLianTreeNode)combxstockcode.getSelectedItem()).getMyOwnCode();
 							displayStockSuoShuBanKuai((Stock)userinputnode);
 							
-//							if(cbxstockcode.isEnabled() ) { //避免和
-//								displayStockSuoShuBanKuai((Stock)userinputnode);
-//							} else
-//								cbxstockcode.setEnabled(true);
 						} catch (java.lang.NullPointerException e) {
 							e.printStackTrace();
 //							cbxstockcode.updateUserSelectedNode (selectstock.getStock());
@@ -2006,7 +2111,11 @@ public class BanKuaiFengXi extends JDialog
 					}
 					
 					int rowindex = tableGuGuZhanBiInBk.getSelectedRow();
-//					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+					if(findInputedNodeInTable (nodecode)) { 
+						panelGgDpCjeZhanBi.resetDate();
+						paneldayCandle.resetDate();
+					}
 					
 //					if(!findInputedNodeInTable (nodecode)) { //如果没有找到
 //						tableGuGuZhanBiInBk.setRowSelectionInterval(rowindex,rowindex);
@@ -2020,7 +2129,7 @@ public class BanKuaiFengXi extends JDialog
 //						paneldayCandle.resetDate();
 //					}
 						
-				}
+			}
 				
 				if(arg0.getStateChange() == ItemEvent.DESELECTED) {
 				}
@@ -2800,114 +2909,7 @@ public class BanKuaiFengXi extends JDialog
 	}
 	
 	
-	/*
-	 * 在个股表中发现输入的个股
-	 */
-	protected boolean findInputedNodeInTable(String nodecode) 
-	{
-		Boolean notfound = false; int rowindex;
-		nodecode = nodecode.substring(0,6);
-		if(((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
-			 rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
-			 
-			if(rowindex <0) {
-				notfound = true;
-			} else {
-//				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
-				int modelRow = rowindex;
-				int curselectrow = tableGuGuZhanBiInBk.getSelectedRow();
-				if( curselectrow != modelRow) {
-					tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
-					tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
-					
-					//在当前表就有的话，就把相关PANEL清空
-					panelGgDpCjeZhanBi.resetDate();
-				}
-			}
-		}
-		
-		
-		if( ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
-			rowindex = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
-			if(rowindex <0) {
-//				notfound = true;
-			} else {
-//				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
-				int modelRow = rowindex;
-				int curselectrow = tablexuandingzhou.getSelectedRow();
-				if( curselectrow != modelRow) {
-					tablexuandingzhou.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingzhou.scrollRectToVisible(new Rectangle(tablexuandingzhou.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		
-		
-		if( ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
-			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
-			if(rowindex <0) {
-//				notfound = true;
-			} else {
-//				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
-				int modelRow = rowindex;
-				int curselectrow = tablexuandingminusone.getSelectedRow();
-				if( curselectrow != modelRow)  {
-					tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingminusone.scrollRectToVisible(new Rectangle(tablexuandingminusone.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		
-
-		if( ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
-			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
-			if(rowindex <0) {
-//				notfound = true;
-			} else {
-//				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
-				int modelRow = rowindex;
-				int curselectrow = tablexuandingminustwo.getSelectedRow();
-				if( curselectrow != modelRow) {
-					tablexuandingminustwo.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingminustwo.scrollRectToVisible(new Rectangle(tablexuandingminustwo.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-
-		if(((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
-			rowindex = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
-			if(rowindex <0) {
-				tablexuandingplusone.getSelectionModel().clearSelection();
-			} else {
-//				int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
-				int modelRow = rowindex;
-				int curselectrow = tablexuandingplusone.getSelectedRow();
-				if( curselectrow != modelRow)  {
-					tablexuandingplusone.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingplusone.scrollRectToVisible(new Rectangle(tablexuandingplusone.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		
-		
-		if(((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getRowCount() >0 ) {
-			rowindex = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getStockRowIndex(nodecode);
-			if(rowindex <0) {
-//				notfound = true;
-			} else {
-//				int modelRow = tableExternalInfo.convertRowIndexToView(rowindex);
-				int modelRow = rowindex;
-				int curselectrow = tableExternalInfo.getSelectedRow();
-				if( curselectrow != modelRow) {
-					tableExternalInfo.setRowSelectionInterval(modelRow, modelRow);
-					tableExternalInfo.scrollRectToVisible(new Rectangle(tableExternalInfo.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		
-		return !notfound;
-	}
-	/*
+		/*
 	 * 跑马灯
 	 */
 	private void initializePaoMaDeng() 

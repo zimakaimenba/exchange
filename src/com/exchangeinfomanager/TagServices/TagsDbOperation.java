@@ -50,11 +50,15 @@ public class TagsDbOperation
 							Color color = Color.WHITE;
 							try {
 								color = Color.decode( checkresult.getString("DefaultCOLOUR")) ;
+							} catch (java.lang.Exception e)  {}
+							String desc;
+							try {
+								desc = checkresult.getString("板块国名称").trim();
 							} catch (java.lang.Exception e)  {
-								
+								desc = "";
 							}
-							InsertedTag anewtag = new InsertedTag (new Tag (checkresult.getString("板块国名称"), color ) , 
-									 checkresult.getInt("id"));
+							Tag newtag = new Tag (checkresult.getString("板块国名称"), color, desc ) ;
+							InsertedTag anewtag = new InsertedTag (newtag, checkresult.getInt("id"));
 							
 							anewtag.setDescription( checkresult.getString("板块国说明") );
 							
@@ -84,9 +88,12 @@ public class TagsDbOperation
 			return checktag;
 		
 		String color =  "#"+Integer.toHexString(  newtag.getColor() .getRGB()).substring(2);
-		String sqlinsertquery = "INSERT INTO 产业链板块国列表 (板块国名称, DefaultCOLOUR) VALUES("
-								+ "'" + tagname + "',"
-								+ "'" + color.toString() + "'" 
+		String desc = newtag.getDescription();
+		
+		String sqlinsertquery = "INSERT INTO 产业链板块国列表 (板块国名称, DefaultCOLOUR,板块国说明) VALUES("
+								+ "'" + tagname + "', "
+								+ "'" + color.toString() + "', "
+								+ "'" + desc + "'"
 								+ ")"
 								;
 		int autoIncKeyFromApi = 0;
@@ -116,17 +123,21 @@ public class TagsDbOperation
  			result = connectdb.sqlQueryStatExecute(sqlquerystat);
  			while (result.next()) {
 		        	String bkzname = result.getString("板块国名称");
-//					if(bkzname.contains("edit"))
-//						System.out.println("test");
  		        	String tagcolor = result.getString("DefaultCOLOUR") ;
  		        	Color defaultColor = Color.WHITE;
  		        	try {
  		        		defaultColor = Color.decode( tagcolor);
  		        	} catch (java.lang.Exception e) {
  		        	}
- 		        	
+ 		        	String desc;
+					try {
+						desc = result.getString("板块国说明").trim();
+					} catch (java.lang.Exception e)  {
+						desc = "";
+					}
  		        	int id = result.getInt ("id");
- 		        	InsertedTag label = new InsertedTag(new Tag(bkzname,defaultColor),id );
+ 		        	Tag newtag = new Tag(bkzname,defaultColor,desc);
+ 		        	InsertedTag label = new InsertedTag(newtag,id );
  	                labels.add(label);
  	        }
  		} catch(java.lang.NullPointerException e) { 
@@ -179,12 +190,16 @@ public class TagsDbOperation
 			     	Color defaultColor = Color.WHITE;
 					try {
 						defaultColor = Color.decode( result.getString("DefaultCOLOUR")  ) ;
+					} catch (java.lang.Exception e)  {}
+					String desc;
+					try {
+						desc = result.getString("板块国说明").trim();
 					} catch (java.lang.Exception e)  {
-						
+						desc = "";
 					}
-
 			     	int id = result.getInt("id");
-			     	InsertedTag intag = new InsertedTag (new Tag(bkzname,defaultColor), id);
+			     	Tag newtag = new Tag(bkzname,defaultColor,desc);
+			     	InsertedTag intag = new InsertedTag (newtag, id);
 			     	
 			     	int matchid = result.getInt("matchid");
 			     	String gegubk = result.getString("个股板块");
@@ -393,17 +408,22 @@ public class TagsDbOperation
 		String lname = l.getName();
 		Color lcolor = l.getColor();
 		String color =   "#"+Integer.toHexString( lcolor.getRGB()).substring(2);
+		String desc = l.getDescription();
+		desc.replaceAll(",", ".");
+		desc.replaceAll("，", ". ");
 		
 		String sqlupdated;
-		if( l  instanceof NodeInsertedTag) { //NodeInsertedTag就不改自己的颜色)
+		if( l  instanceof NodeInsertedTag) { //NodeInsertedTag就不改系统的颜色)
 			 sqlupdated = "UPDATE 产业链板块国列表 SET "
-					+ "  板块国名称 = '" + lname + "' " 
+					+ "  板块国名称 = '" + lname + "', " 
+					+ " 板块国说明 = '" + desc + "' "
 					+ "  WHERE id = " + id
 					;
 		} else {
 			sqlupdated = "UPDATE 产业链板块国列表 SET "
 					+ " 板块国名称 = '" + lname + "', " 
-					+ " DefaultCOLOUR= '" + color + "' "
+					+ " DefaultCOLOUR= '" + color + "', "
+					+ " 板块国说明 = '" + desc + "'"
 					+ " WHERE id = " + id
 					;
 		}
@@ -450,8 +470,16 @@ public class TagsDbOperation
 		 		while(checkresult.next()) {
 				int count = checkresult.getInt ("COUNT");
 				if(count > 0) {
-					return  new InsertedTag (new Tag (checkresult.getString("板块国名称"), Color.decode( checkresult.getString("DefaultCOLOUR")) ) , 
-							 checkresult.getInt("id"));
+					String desc;
+					try {
+						desc = checkresult.getString("板块国名称").trim();
+					} catch (java.lang.Exception e)  {
+						desc = "";
+					}
+					String name = checkresult.getString("板块国名称");
+					Color color = Color.decode( checkresult.getString("DefaultCOLOUR"));
+					Tag newtag = new Tag (name , color, desc );
+					return  new InsertedTag ( newtag, checkresult.getInt("id"));
 				}
 			}
 		} catch (SQLException e) {

@@ -69,16 +69,14 @@ public class JDialogForTagSearchMatrixPanelForAddNewsToNode  extends JDialog imp
 			e.printStackTrace();
 		}
 	}
-
-
-	
-
 	@Override
 	public void onNewsAdded(News m) 
 	{
-		((TagSearchMatrixPanelForAddNewsToNode)pnlofaddnewstonode).setNews(m);
-		this.toFront();
-		this.setVisible(true);
+		int countnode = ((TagSearchMatrixPanelForAddNewsToNode)pnlofaddnewstonode).setNews(m);
+		if(countnode >0) {
+			this.toFront();
+			this.setVisible(true);
+		}
 	}
 
 	@Override

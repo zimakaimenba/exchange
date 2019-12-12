@@ -55,9 +55,9 @@ public class TagsNewsDbOperation
         return labels;
 	}
 	
-	private Collection<? extends Tag> getNodeNewsTagsFromDataBase (String nodecode) 
+	private Collection<Tag> getNodeNewsTagsFromDataBase (String nodecode) 
 	{
-		Collection<InsertedTag> labels = new HashSet<>();
+		Collection<Tag> labels = new HashSet<>();
 		
 		String sqlquerystat = "SELECT * FROM 商业新闻   "
 					+ " WHERE 关联板块 like '%" + nodecode +  "%'  \r\n"
@@ -69,16 +69,41 @@ public class TagsNewsDbOperation
 			result = connectdb.sqlQueryStatExecute(sqlquerystat);
    		 	while(result.next()) {
 	   		 	int newsID = result.getInt("news_id");
-	            String keywords = result.getString("关键词");
-	            
-	            List<String> tmpkwlist = Splitter.on(" ").omitEmptyStrings().splitToList(keywords);
-	            for(String tmpkwname : tmpkwlist) {
-	            	if(   !tmpkwname.equals("关键词")) {
-	            		Tag tag = new Tag (tmpkwname, Color.decode( "#ffffff"));
-	                	InsertedTag itag = new InsertedTag(tag,  newsID);
-	        	        labels.add(itag);
-	            	}
-	            }
+	   		 	String sql = "SELECT * FROM 产业链板块国新闻对应表\r\n" + 
+	   		 			"INNER JOIN 产业链板块国列表\r\n" + 
+	   		 			"ON 产业链板块国新闻对应表.`板块国id` = 产业链板块国列表.id\r\n" + 
+	   		 			"WHERE 产业链板块国新闻对应表.news_id = " + newsID
+	   		 			;
+	   		 	CachedRowSetImpl tagresult = connectdb.sqlQueryStatExecute(sql);
+				while(tagresult.next()) {
+					String bkzname = tagresult.getString("板块国名称");
+ 		        	String tagcolor = tagresult.getString("DefaultCOLOUR") ;
+ 		        	Color defaultColor = Color.WHITE;
+ 		        	try {
+ 		        		defaultColor = Color.decode( tagcolor);
+ 		        	} catch (java.lang.Exception e) {}
+ 		        	
+ 		        	String desc;
+					try {
+						desc = tagresult.getString("板块国说明").trim();
+					} catch (java.lang.Exception e)  {
+						desc = "";
+					}
+ 		        	int id = tagresult.getInt ("板块国id");
+ 		        	Tag newtag = new Tag(bkzname,defaultColor,desc);
+ 		        	InsertedTag label = new InsertedTag(newtag,id );
+ 	                labels.add(label);
+				}
+	   		 	
+//	            String keywords = result.getString("关键词");
+//	            List<String> tmpkwlist = Splitter.on(" ").omitEmptyStrings().splitToList(keywords);
+//	            for(String tmpkwname : tmpkwlist) {
+//	            	if(   !tmpkwname.equals("关键词")) {
+//	            		Tag tag = new Tag (tmpkwname, Color.decode( "#ffffff"));
+//	                	InsertedTag itag = new InsertedTag(tag,  newsID);
+//	        	        labels.add(itag);
+//	            	}
+//	            }
    		 	}
 		}catch(java.lang.NullPointerException e){ 
 	    	e.printStackTrace();
@@ -112,20 +137,23 @@ public class TagsNewsDbOperation
 		
 		
 	}
-
-	public void storeNewsKeyWordsToDataBase(InsertedNews m)
+	/*
+	 * 
+	 */
+	public void storeNewsKeyWordsToDataBase(News m)
 	{
 		Collection<InsertedTag> labels = new HashSet<>();
-		
-		int newsid = m.getID();
-		
+
 		String kwds = m.getKeyWords();
 		List<String> kwlist = Splitter.on(" ").omitEmptyStrings().splitToList(kwds);
 		for(String tmpkw : kwlist) {
 
 			Integer bkID = null;
    		 	try {
-   		 		String sqlq = "SELECT COUNT(*) AS COUNT , id, 板块国名称 FROM 产业链板块国列表 where 板块国名称 = '" +tmpkw+ "'";
+   		 		String sqlq = "SELECT COUNT(*) AS COUNT , id, 板块国名称, 板块国说明  "
+   		 				+ " FROM 产业链板块国列表  "
+   		 				+ " where 板块国名称 = '" +tmpkw+ "'"
+   		 				;
    		 		CachedRowSetImpl checkresult = connectdb.sqlQueryStatExecute(sqlq);
 				while(checkresult.next()) {
 					int count = checkresult.getInt ("COUNT");
@@ -136,18 +164,18 @@ public class TagsNewsDbOperation
 				e.printStackTrace();
 			}
 			if(bkID != null) { //已经存在
-				storeNewsKeyWordToDataBase ( new InsertedTag (new Tag(tmpkw,null),bkID) , m ) ;
+				storeNewsKeyWordToDataBase ( new InsertedTag (new Tag(tmpkw ),bkID) , m ) ;
 				
 			} else {
-				InsertedTag inserttag = tagdboptforsys.createSystemTags( new Tag(tmpkw,Color.WHITE) );
+				InsertedTag inserttag = tagdboptforsys.createSystemTags( new Tag(tmpkw) );
 				storeNewsKeyWordToDataBase (inserttag,m);
 			}
 		}
 	}
-	public void storeNewsKeyWordToDataBase (InsertedTag l, InsertedNews m)
+	public void storeNewsKeyWordToDataBase (Tag l, News m)
 	{
-		int kwid = l.getID();
-		int mid = m.getID();
+		int kwid = ((com.exchangeinfomanager.Tag.InsertedTag)l).getID();
+		int mid = ((InsertedNews)m).getID();
 		
 		String sql = "INSERT INTO 产业链板块国新闻对应表(板块国id, news_id) VALUES ("
 				+ kwid + ","

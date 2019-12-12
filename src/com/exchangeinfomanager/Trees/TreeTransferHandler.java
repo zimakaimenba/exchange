@@ -284,15 +284,15 @@ public class TreeTransferHandler extends TransferHandler
 /*
  * °´¸¸Ç×½Úµã
  */
-class FatherNodeIdComparator implements Comparator<BkChanYeLianTreeNode> {
-	
-	public FatherNodeIdComparator ( )
-	{
-	}
-    public int compare(BkChanYeLianTreeNode node1, BkChanYeLianTreeNode node2) {
-    	 Integer node1p = ( (CylTreeNestedSetNode)node1).getNestedParent ();
-    	 Integer node2p = ( (CylTreeNestedSetNode)node2).getNestedParent ();
-        
-        return node1p.compareTo(node2p);
-    }
-}
+//class FatherNodeIdComparator implements Comparator<BkChanYeLianTreeNode> {
+//	
+//	public FatherNodeIdComparator ( )
+//	{
+//	}
+//    public int compare(BkChanYeLianTreeNode node1, BkChanYeLianTreeNode node2) {
+//    	 Integer node1p = ( (CylTreeNestedSetNode)node1).getNestedParent ();
+//    	 Integer node2p = ( (CylTreeNestedSetNode)node2).getNestedParent ();
+//        
+//        return node1p.compareTo(node2p);
+//    }
+//}

@@ -31,8 +31,8 @@ public class CreateNewsDialog  extends NewsDialog<News> {
       // add button to the main panel
       JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new FlowLayout(FlowLayout.RIGHT), 35);
       layoutPanel.add(createButton);
-      super.centerPanel.add(layoutPanel);
-      super.centerPanel.add(Box.createVerticalStrut(PADDING));
+      super.newCenterPanel.add(layoutPanel);
+      super.newCenterPanel.add(Box.createVerticalStrut(PADDING));
   }
   /*
    * (non-Javadoc)

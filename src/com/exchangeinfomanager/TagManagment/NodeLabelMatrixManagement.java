@@ -37,8 +37,8 @@ import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagServices.CacheForInsertedTag;
 import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.TagServices.TagServicesForTreeChanYeLian;
-import com.exchangeinfomanager.TagServices.TagsServiceForNews;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
+import com.exchangeinfomanager.TagServices.TagsServiceForNodesNews;
 import com.exchangeinfomanager.TagServices.TagsServiceForSystemTags;
 import com.exchangeinfomanager.TagServices.TagsServiceForURLAndFile;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
@@ -67,7 +67,7 @@ public class NodeLabelMatrixManagement extends JDialog
 	private TagCache allsyskwcache;
 	private TagsServiceForNodes lbnodedbservice;
 	private TagCache bkstkkwcache;
-	private TagsServiceForNews lbnewsdbservice;
+	private TagsServiceForNodesNews lbnewsdbservice;
 	private TagCache newskwcache;
 	private AllCurrentTdxBKAndStoksTree allbkstk;
 	private BanKuaiDbOperation nodedbopt;
@@ -130,7 +130,7 @@ public class NodeLabelMatrixManagement extends JDialog
 		Set<BkChanYeLianTreeNode> nodewithbankuais = new HashSet<> () ;
 		nodewithbankuais.add(this.node);
 		nodewithbankuais.addAll(suosusysbankuai);
-		lbnewsdbservice = new TagsServiceForNews (nodewithbankuais);
+		lbnewsdbservice = new TagsServiceForNodesNews (nodewithbankuais);
 		newskwcache = new TagCache (lbnewsdbservice);
 		lbnewsdbservice.setCache(newskwcache);
 		pnldisplayallnewskw.initializeTagsPanel (lbnewsdbservice,newskwcache);

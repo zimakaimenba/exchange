@@ -12,6 +12,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.exchangeinfomanager.News.Labels.ColorChooser;
@@ -25,9 +27,10 @@ public class TagDialog<T extends Tag> extends JDialog
 {
 
     protected static final int WIDTH = 270;
-    protected static final int HEIGHT = 150;
+    protected static final int HEIGHT = 250;
     protected static final int PADDING = 20;
 
+    protected JTextArea descriptionField;
     protected JTextField nameField;
     protected JLabel colorButton;
     protected JPanel centerPanel;
@@ -35,6 +38,7 @@ public class TagDialog<T extends Tag> extends JDialog
     protected TagService labelService;
 
     private T meetingLabel;
+	
 
     public TagDialog(TagService labelService) {
         this.labelService = labelService;
@@ -48,6 +52,10 @@ public class TagDialog<T extends Tag> extends JDialog
         this.colorButton.addMouseListener(new ColorChooserController());
         this.nameField = JTextFactory.createTextField();
         this.nameField.setBorder(BorderFactory.createMatteBorder(0, 10, 0, 0, this.centerPanel.getBackground()));
+        
+        this.descriptionField = JTextFactory.createTextArea();
+        this.descriptionField.setBorder(BorderFactory.createMatteBorder(0, 10, 0, 0, this.centerPanel.getBackground()));
+        descriptionField.setLineWrap(true);
     }
 
 
@@ -56,14 +64,18 @@ public class TagDialog<T extends Tag> extends JDialog
         this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.Y_AXIS));
 
         JPanel panel = JPanelFactory.createFixedSizePanel(new BorderLayout());
-
         panel.add(this.colorButton, BorderLayout.LINE_START);
         panel.add(this.nameField, BorderLayout.CENTER);
         this.centerPanel.add(panel);
         this.centerPanel.add(Box.createVerticalStrut(20));
+        
+        JScrollPane sclpmonthnews = new JScrollPane ();
+        sclpmonthnews.setViewportView(this.descriptionField);
+        
+        this.centerPanel.add(sclpmonthnews);
 
         super.add(this.centerPanel);
-        super.setTitle("Modify label");
+        super.setTitle("Create Tag");
         super.setModalityType(ModalityType.APPLICATION_MODAL);
         super.setSize(new Dimension(WIDTH, HEIGHT));
         super.setResizable(false);
@@ -72,12 +84,14 @@ public class TagDialog<T extends Tag> extends JDialog
     public T getLabel() {
         meetingLabel.setName(nameField.getText().trim () );
         meetingLabel.setColor(colorButton.getBackground());
+        meetingLabel.setDescription(this.descriptionField.getText().trim() );
         return meetingLabel;
     }
 
     public void setLabel(T label) {
         this.meetingLabel = label;
         this.nameField.setText(label.getName());
+        this.descriptionField.setText(label.getDescription() );
         
         if(label instanceof NodeInsertedTag)
         	this.colorButton.setBackground(  ((NodeInsertedTag)label).getNodeMachColor()   );

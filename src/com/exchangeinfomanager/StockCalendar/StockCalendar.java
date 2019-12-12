@@ -7,6 +7,7 @@ import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
@@ -90,12 +91,17 @@ public class StockCalendar extends JCalendar
 	    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
 	    	svsdqgz.setCache(dqgzcache);
 	    	
+	    	ServicesForNews svszsbl = new ZhiShuBoLangServices ();
+	    	NewsCache zsblcache = new NewsCache ("ALL",svszsbl,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+	    	svszsbl.setCache(zsblcache);
+	    	
 	    	Collection<ServicesForNews> monthservices = new HashSet<> ();
 	    	monthservices.add(svsnews);
 	    	monthservices.add(svsrs);
 	    	monthservices.add(svsqs);
 	    	monthservices.add(svscqgz);
 	    	monthservices.add(svsdqgz);
+	    	monthservices.add(svszsbl);
 	    	
 	        this.monthView = new MonthView(monthservices, settingsofnewsdisplay);
 	        this.yearView = new YearView(monthservices);
@@ -107,14 +113,11 @@ public class StockCalendar extends JCalendar
 	        wholemonthservices.add(svsqs);
 	        wholemonthservices.add(svscqgz);
 	        wholemonthservices.add(svsdqgz);
-	        
+	        wholemonthservices.add(svszsbl);
 	        this.wholemonthview = new WholeMonthNewsView (wholemonthservices);
 	        
             pnlsearchtags = new JDialogForTagSearchMatrixPanelForAddNewsToNode(newcache);
 	        
-	        //有新的新闻，加到同关键字的节点上
-//	        JDialogForTagSearchMatrixPanelForAddNewsToNode addkwtoothernode = new JDialogForTagSearchMatrixPanelForAddNewsToNode (cache);
-
 		    this.initHeaderPanel(); //
 		    this.initViewDeck();
 		    this.initJFrame();

@@ -68,6 +68,15 @@ public class TagCache
 	    	
 	    return selectedtag;
     }
+    public void unSelectAllTags ()
+    {
+    	Collection<Tag> tagslist = this.produceTags ();
+    	for(Tag tmptag : tagslist) 
+	    	if(  tmptag.isSelected() )
+	    		tmptag.setSelected(false);
+    	
+    	this.listeners.forEach(l -> l.onTagChange(this));
+    }
     
     
     public void addTags(Collection<Tag> label) 

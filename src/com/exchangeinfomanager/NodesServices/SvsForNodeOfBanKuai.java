@@ -16,8 +16,10 @@ import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
@@ -30,11 +32,16 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 
 	private BanKuaiAndStockTree allbkstk;
 	private BanKuaiDbOperation bkdbopt;
+	private CylTreeDbOperation dboptforcyltree;
+	private TreeOfChanYeLian cyltree;
 
 	public SvsForNodeOfBanKuai ()
 	{
-		this.bkdbopt = new BanKuaiDbOperation ();
 		allbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		this.cyltree = CreateExchangeTree.CreateTreeOfChanYeLian();
+		
+		this.bkdbopt = new BanKuaiDbOperation ();
+		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
 	}
 	@Override
 	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames)
@@ -364,6 +371,26 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 				this.getNodeZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
 			}
 		}
+	}
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeChanYeLianInfo(String nodecode) 
+	{
+		List<BkChanYeLianTreeNode> cylinfo = this.dboptforcyltree.getChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXBK);
+		return cylinfo;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo(String nodecode) 
+	{
+		List<BkChanYeLianTreeNode> cylsliding = this.dboptforcyltree.getSlidingInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXBK);
+		return cylsliding;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo(String nodecode) 
+	{
+		List<BkChanYeLianTreeNode> cylchildren  = this.dboptforcyltree.getChildrenInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXBK);
+		return cylchildren;
 	}
 
 }

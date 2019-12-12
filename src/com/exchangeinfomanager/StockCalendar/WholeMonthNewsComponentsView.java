@@ -34,6 +34,8 @@ import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShi;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLang;
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
@@ -246,13 +248,18 @@ public class WholeMonthNewsComponentsView extends View
 			
 			super.mouseClicked(e);
             JPanel panel = (JPanel) e.getSource();
-
-            ExternalNewsType gz = getRequiredObject ();
-           
-            CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (svsofexternalnews);
-            createnewDialog.setNews(gz);
-            createnewDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-            createnewDialog.setVisible(true);
+            
+            if (e.getClickCount() == 1) { 
+            	
+            }
+            if (e.getClickCount() == 2) { 
+            	ExternalNewsType gz = getRequiredObject ();
+                
+                CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (svsofexternalnews);
+                createnewDialog.setNews(gz);
+                createnewDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                createnewDialog.setVisible(true);
+            }
 		}
 
 		public ExternalNewsType getRequiredObject ()
@@ -278,6 +285,10 @@ public class WholeMonthNewsComponentsView extends View
     		if( svsofexternalnews instanceof DuanQiGuanZhuServices) {
     			return new GuanZhu(treeroot, "√Ë ˆ", createDate, createDate, "œÍœ∏√Ë ˆ", viewtitle,  new HashSet<>(),"URL",false);
     		}
+    		if( svsofexternalnews instanceof ZhiShuBoLangServices) {
+    			return new ZhiShuBoLang(treeroot, "√Ë ˆ", createDate, createDate, "œÍœ∏√Ë ˆ", viewtitle,  new HashSet<>(),"URL","A");
+    		}
+    		
 			return null;
 		}
 	}

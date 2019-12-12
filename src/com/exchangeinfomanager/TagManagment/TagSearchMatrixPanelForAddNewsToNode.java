@@ -3,13 +3,16 @@ package com.exchangeinfomanager.TagManagment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.TagManagment.TagSearchMatrixPanelForWholeSearchTags.SearchController;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
@@ -45,11 +48,10 @@ public class TagSearchMatrixPanelForAddNewsToNode extends TagSearchMatrixPanel
             } catch (Exception e1) {
                 e1.printStackTrace();
             } 
-            setVisible(false);
         }
     }
 	
-	public void setNews (News m)
+	public int setNews (News m)
 	{
 		this.news = m;
 		
@@ -57,6 +59,13 @@ public class TagSearchMatrixPanelForAddNewsToNode extends TagSearchMatrixPanel
 		
 		Collection<BkChanYeLianTreeNode> searchresult = super.sysservice.getNodesSetWithOneOfSpecificTags(m.getKeyWords());
 		((TagSearchOnNodesTableModel)super.tblofnodes.getModel()).refresh(searchresult);
+		
+		Collection<News> newsset = new HashSet<> ();
+		newsset.add(m);
+		((TagSearchOnNewsTableModel)super.tblnews.getModel()).refresh(newsset);
+		((TagSearchOnNewsTableModel)super.tblnews.getModel()).setRowSelected (0);
+		
+		return searchresult.size(); 
 	}
 	
 	public void addNewsToSameTagsNodes ()
@@ -80,8 +89,5 @@ public class TagSearchMatrixPanelForAddNewsToNode extends TagSearchMatrixPanel
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
-
 }

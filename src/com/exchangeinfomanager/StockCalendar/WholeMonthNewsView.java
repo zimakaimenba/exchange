@@ -36,6 +36,7 @@ import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
 import com.exchangeinfomanager.News.ExternalNewsType.ModifyExternalNewsDialog;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
@@ -62,6 +63,7 @@ public class WholeMonthNewsView extends View
 	private QiangShiServices svsqs;
 	private RuoShiServices svsrs;
 	private DuanQiGuanZhuServices svsdqgz;
+	private ZhiShuBoLangServices svszsbl;
 	
 	private WholeMonthNewsComponentsView cqjlview;
 
@@ -72,6 +74,9 @@ public class WholeMonthNewsView extends View
 	private WholeMonthNewsComponentsView dqgz;
 
 	private WholeMonthNewsComponentsView dqgzview;
+	
+	private WholeMonthNewsComponentsView zsblview;
+	
 	
 	public WholeMonthNewsView(Collection<ServicesForNews> newssvs) 
 	{
@@ -89,18 +94,23 @@ public class WholeMonthNewsView extends View
 	    			
 	    			LocalDate firstDayInMonth = super.getDate().withDayOfMonth(1);
 	    			cqjlview = new WholeMonthNewsComponentsView (svscqgz, "长期关注" + String.valueOf(firstDayInMonth.getMonth()) );
-	    		}
+	    		} else
 	    		if( f instanceof QiangShiServices) {
 	    			svsqs = (QiangShiServices) f;
 	    			qsview = new WholeMonthNewsComponentsView (svsqs, "强势板块个股");
-	    		}
+	    		} else
 	    		if( f instanceof RuoShiServices) {
 	    			svsrs = (RuoShiServices) f;
 	    			rsview = new WholeMonthNewsComponentsView (svsrs, "弱势板块个股");
-	    		}
+	    		} else
 	    		if( f instanceof DuanQiGuanZhuServices) {
 	    			svsdqgz = (DuanQiGuanZhuServices) f;
 	    			dqgzview = new WholeMonthNewsComponentsView (svsdqgz, "近期关注");
+	    		} else
+	    		if( f instanceof ZhiShuBoLangServices) {
+	    			svszsbl = (ZhiShuBoLangServices) f;
+	    			zsblview = new WholeMonthNewsComponentsView (svszsbl, "指数关键日期");
+	    			
 	    		}
 	    	}
 	        
@@ -118,8 +128,10 @@ public class WholeMonthNewsView extends View
     	this.wholemonthpnl.add(dqgzview);
     	this.wholemonthpnl.add(qsview);
         this.wholemonthpnl.add(rsview);
-    	
-      this.wholemonthpnl.setLayout(new GridLayout(1, 4));
+        this.wholemonthpnl.add(zsblview);
+        
+        int cachesize = super.caches.size();
+      this.wholemonthpnl.setLayout(new GridLayout(1, super.caches.size()));
       this.wholemonthpnl.setBackground(ColorScheme.GREY_LINE);
      
       super.setBackground(ColorScheme.BACKGROUND);
@@ -141,6 +153,7 @@ public class WholeMonthNewsView extends View
     	dqgzview.setDate(this.getDate());
     	qsview.setDate(this.getDate());
         rsview.setDate(this.getDate());
+        zsblview.setDate(this.getDate());
 //    	LocalDate firstdayofmonth = this.initView();
 //    	
 //    	for (Iterator<NewsCache> lit = caches.iterator(); lit.hasNext(); ) {

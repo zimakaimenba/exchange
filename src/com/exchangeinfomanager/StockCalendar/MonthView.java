@@ -5,9 +5,11 @@ import javax.swing.*;
 import org.apache.commons.lang3.StringUtils;
 
 import com.exchangeinfomanager.News.CreateNewsDialog;
+import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.InsertedNews.Label;
 import com.exchangeinfomanager.News.ModifyNewsDiaLog;
+import com.exchangeinfomanager.News.ModifyNewsWithFurtherOperationDialog;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsServices;
@@ -20,6 +22,7 @@ import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShi;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForWholeSearchTags;
@@ -56,6 +59,7 @@ public class MonthView extends View
 	private QiangShiServices svsqs;
 	private RuoShiServices svsrs;
 	private DuanQiGuanZhuServices svsdqgz;
+	private ZhiShuBoLangServices svszsbl;
     
     public MonthView( Collection<ServicesForNews> newssvs, SettingOfDisplayNewsArea settingsofnewsdisplay) 
     {
@@ -68,17 +72,21 @@ public class MonthView extends View
     		
     		if(f instanceof NewsServices)
     			this.svsns = (NewsServices) f;
+    		else
     		if( f instanceof ChangQiGuanZhuServices) {
     			this.svscqgz = (ChangQiGuanZhuServices) f;
-    		}
+    		} else
     		if( f instanceof QiangShiServices) {
     			this.svsqs = (QiangShiServices) f;
-    		}
+    		} else
     		if( f instanceof RuoShiServices) {
     			this.svsrs = (RuoShiServices) f;
-    		}
+    		} else
     		if( f instanceof DuanQiGuanZhuServices) {
     			this.svsdqgz = (DuanQiGuanZhuServices) f;
+    		} else
+    		if( f instanceof ZhiShuBoLangServices) {
+    			this.svszsbl = (ZhiShuBoLangServices) f;
     		}
     	}
         
@@ -172,6 +180,10 @@ public class MonthView extends View
 		if( svs instanceof DuanQiGuanZhuServices) {
 			return news.getNewsOwnerCodes() + news.getTitle();
 		}
+		if( svs instanceof ZhiShuBoLangServices) {
+			return news.getNewsOwnerCodes() + news.getTitle();
+		}
+		
 		return null;
     }
     private MouseAdapter getNeededMouseAdapter (NewsCache cache)
@@ -192,6 +204,10 @@ public class MonthView extends View
 		if( svs instanceof DuanQiGuanZhuServices) {
 			return new ReviseExternalNewsController (svsdqgz);
 		}
+		if( svs instanceof ZhiShuBoLangServices) {
+			return new ReviseExternalNewsController (svszsbl);
+		}
+			
 		return null;
     }
 
@@ -369,10 +385,15 @@ public class MonthView extends View
         	if (e.getClickCount() == 2) { //增加一个新的News
                 News News = new News("新闻标题",mDate,"描述", "", new HashSet<>(),"URL","000000");
                 
-                CreateNewsDialog cd = new CreateNewsDialog (svsns);
-                cd.setNews(News);
-                cd.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-                cd.setVisible(true);
+                CreateNewsWithFurtherOperationDialog cnd = new CreateNewsWithFurtherOperationDialog (svsns);
+                cnd.setNews(News);
+                cnd.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                cnd.setVisible(true);
+                
+//                CreateNewsDialog cd = new CreateNewsDialog (svsns);
+//                cd.setNews(News);
+//                cd.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+//                cd.setVisible(true);
         	}
         }
     }
@@ -431,7 +452,7 @@ public class MonthView extends View
             	
             }
             
-            ModifyNewsDiaLog mod = new ModifyNewsDiaLog (svsns);
+            ModifyNewsWithFurtherOperationDialog mod = new ModifyNewsWithFurtherOperationDialog (svsns);
             mod.setNews(n);
             mod.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
             mod.setVisible(true);

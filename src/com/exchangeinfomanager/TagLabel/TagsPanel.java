@@ -421,6 +421,7 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	   	 Collection<Tag> tagslist = cache.produceSelectedTags();
 	   	 if(tagslist.size() >1) {
 	   		 JOptionPane.showMessageDialog(null,"请只选择一个Tag做修改!","Warning",JOptionPane.WARNING_MESSAGE);
+	   		 cache.unSelectAllTags();
 	   		 return;
 	   	 }
 	   	 

@@ -279,8 +279,8 @@ public class BanKuaiAndStockTree extends JTree
 		TreePath bkpath = null ;
 		
     	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
-    	if(nodecode.equals("000000"))
-    		return treeroot;
+//    	if(nodecode.equals("000000"))
+//    		return treeroot;
     	
 	    @SuppressWarnings("unchecked")
 		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();

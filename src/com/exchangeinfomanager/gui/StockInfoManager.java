@@ -26,6 +26,7 @@ import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.License.License;
 import com.exchangeinfomanager.News.CreateNewsDialog;
+import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsServices;
@@ -41,6 +42,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeet
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
+import com.exchangeinfomanager.bankuaichanyelian.JDialogOfBanKuaiChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
@@ -203,6 +205,7 @@ public class StockInfoManager
 	private AllCurrentTdxBKAndStoksTree allbkstock;
 	private BanKuaiAndStockTree bkcyl;
 	private TagCache bkstkkwcache;
+	private JDialogOfBanKuaiChanYeLian cyldialog;
 	/*
 	 * 
 	 */
@@ -576,7 +579,7 @@ public class StockInfoManager
 			}
 		});
 				
-		menuItemChanYeLian.addActionListener(new ActionListener()
+		menuItembkconfg.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -584,6 +587,15 @@ public class StockInfoManager
 				
 			}
 		});
+		menuItemChanYeLian.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				startChanyeLianDlg ();
+				
+			}
+		});
+
 		
 		menuItemRfshBk.addActionListener(new ActionListener() 
 		{
@@ -666,11 +678,23 @@ public class StockInfoManager
 //                cd.setNews(News);
 //                cd.setVisible(true);
                 
-                JDialogForTagSearchMatrixPanelForAddSysNewsToNode newlog 
-                	= new JDialogForTagSearchMatrixPanelForAddSysNewsToNode (  (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem() );
-                newlog.setModal(true);
-                newlog.setVisible(true);
+//                JDialogForTagSearchMatrixPanelForAddSysNewsToNode newlog 
+//                	= new JDialogForTagSearchMatrixPanelForAddSysNewsToNode (  (BkChanYeLianTreeNode) cBxstockcode.getSelectedItem() );
+//                newlog.setModal(true);
+//                newlog.setVisible(true);
                 
+                News News = new News("新闻标题",LocalDate.now() ,"描述", "", new HashSet<>(),"URL",
+                		((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode()  );
+                
+                NewsServices svsns = new NewsServices ();
+                NewsCache newcache = new NewsCache (nodeshouldbedisplayed.getMyOwnCode(),svsns,null,LocalDate.now().minusMonths(1),LocalDate.now().plusMonths(6));
+				svsns.setCache(newcache);
+                
+                CreateNewsWithFurtherOperationDialog newdlg = 
+                		new CreateNewsWithFurtherOperationDialog (svsns);
+                
+                newdlg.setNews(News);
+                newdlg.setVisible(true);
 			}
 		});
 		
@@ -1451,6 +1475,21 @@ public class StockInfoManager
 			}
 		});
 }
+	protected void startChanyeLianDlg() 
+	{
+		if(cyldialog == null ) {
+			cyldialog = new JDialogOfBanKuaiChanYeLian();
+			cyldialog.setModal(false);
+
+			cyldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		} 
+		
+		if(!cyldialog.isVisible() ) {
+			cyldialog.toFront();
+			cyldialog.setVisible(true);
+		 } 
+		
+	}
 	public BanKuaiFengXi getBanKuaiFengXi ()
 	{
 			return bkfx;
@@ -1528,12 +1567,13 @@ public class StockInfoManager
 		{
 			if(bkgldialog == null ) {
 				bkgldialog = new BanKuaiGuanLi();
-				bkgldialog.setModal(true);
+				bkgldialog.setModal(false);
 
 				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			} 
 			
 			if(!bkgldialog.isVisible() ) {
+				bkgldialog.toFront();
 				bkgldialog.setVisible(true);
 			 } 
 
@@ -2146,6 +2186,7 @@ public class StockInfoManager
 	private JButton btnyituishi;
 	private JComboBox cobxgpc;
 	private TagsPanel pnltags;
+	private JMenuItem menuItembkconfg;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2804,14 +2845,19 @@ public class StockInfoManager
 		
 		menuOperationList.add(menuItembkfx);
 		
+		menuItemChanYeLian = new JMenuItem("\u4EA7\u4E1A\u94FE\u8BBE\u7F6E");
+		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
+		
+		menuOperationList.add(menuItemChanYeLian);
+		
 		menuItemTongdaxinbb = new JMenuItem("\u751F\u6210\u901A\u8FBE\u4FE1\u62A5\u8868");
 		menuItemTongdaxinbb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_reports_49615 (1).png")));
 		menuOperationList.add(menuItemTongdaxinbb);
 		
-		menuItemChanYeLian = new JMenuItem("\u91CD\u70B9\u5173\u6CE8\u4E0E\u4EA7\u4E1A\u94FE");
-		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
+		menuItembkconfg = new JMenuItem("板块设置");
+		menuItembkconfg.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
 		
-		menuOperationList.add(menuItemChanYeLian);
+		menuOperationList.add(menuItembkconfg);
 		
 		menuItemimportrecords = new JMenuItem("\u5BFC\u5165\u4EA4\u6613\u8BB0\u5F55");
 		menuItemimportrecords.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/import.png")));

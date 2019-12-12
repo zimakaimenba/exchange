@@ -249,7 +249,9 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	        keywordsField.setText(event.getKeyWords());
 	        descriptionArea.setText(event.getDescription());
 	        startTimeChooser.setLocalDate( event.getStart() );
-	        endTimeChooser.setLocalDate( event.getEnd() );
+	        try {
+	        	endTimeChooser.setLocalDate( event.getEnd() );
+	        } catch (java.lang.NullPointerException e) {}
 	        newsurlField.setText(event.getNewsUrl());
 	        
 	        return true;

@@ -11,7 +11,18 @@ public class Tag
     private Color color;
     private String name;
     private boolean selected;
+    private String description;
 
+    public Tag(  String name, Color color1, String description) 
+    {
+    	this.name = name;
+    	if(color1 == null)
+    		this.color = Color.WHITE;
+    	else 
+    		this.color = color1;
+    	
+    	this.description = description; 
+    }
     public Tag(  String name, Color color1) 
     {
     	this.name = name;
@@ -19,12 +30,14 @@ public class Tag
     		this.color = Color.WHITE;
     	else 
     		this.color = color1;
+    	
+    	this.description = ""; 
     }
-    
     public Tag (String name)
     {
     	this.name = name;
    		this.color = Color.WHITE;
+   		this.description = "";
     }
     
     public Boolean checkHanYuPinYing (String checkedhypy)
@@ -42,7 +55,15 @@ public class Tag
 		else
 			return false;
     }
-
+    
+    public void setDescription (String desc)
+    {
+    	this.description = desc;
+    }
+    public String getDescription ()
+    {
+    	return this.description;
+    }
     public Color getColor() {
         return color;
     }

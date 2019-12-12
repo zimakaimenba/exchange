@@ -37,8 +37,8 @@ public class ModifyNewsDiaLog extends NewsDialog<InsertedNews>
 //        layoutPanel.add(removeButton);
         layoutPanel.add(Box.createHorizontalStrut(20));
         layoutPanel.add(updateButton);
-        this.centerPanel.add(layoutPanel);
-        this.centerPanel.add(Box.createVerticalStrut(PADDING));
+        this.newCenterPanel.add(layoutPanel);
+        this.newCenterPanel.add(Box.createVerticalStrut(PADDING));
     }
     
     public Boolean setNews(InsertedNews event)

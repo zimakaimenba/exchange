@@ -10,7 +10,7 @@ import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-public class TagsServiceForNews implements TagService
+public class TagsServiceForNodesNews implements TagService
 {
 	private TagsNewsDbOperation dboptfornews;
 	private TagsDbOperation dboptforsys;
@@ -19,7 +19,7 @@ public class TagsServiceForNews implements TagService
 	private TagCache cache;
 	
 
-	public TagsServiceForNews (Set<BkChanYeLianTreeNode> nodeset)
+	public TagsServiceForNodesNews (Set<BkChanYeLianTreeNode> nodeset)
 	{
 		this.dboptfornews = new TagsNewsDbOperation ();
 		this.nodeset = nodeset;
@@ -38,7 +38,6 @@ public class TagsServiceForNews implements TagService
 	{
 		return label;
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -77,22 +76,17 @@ public class TagsServiceForNews implements TagService
 		return label;
 		
 	}
-
 	@Override
 	public void setCache(TagCache cache) 
 	{
 		this.cache = cache;
 		
 	}
-
 	@Override
 	public Collection<Tag> createTags(Collection<Tag> label) throws SQLException {
 		return label;
 		// TODO Auto-generated method stub
-		
 	}
-
-
 	@Override
 	public void setDbOptNodesSet(Set<BkChanYeLianTreeNode> nodesets) {
 		// TODO Auto-generated method stub

@@ -13,6 +13,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -35,6 +39,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -48,6 +53,7 @@ import org.jsoup.Jsoup;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.TagLabel.LabelTag;
 import com.exchangeinfomanager.TagServices.TagsServiceForURLAndFile;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
@@ -59,10 +65,12 @@ import com.lc.nlp.keyword.algorithm.TextRank;
 
 public class NewsDialog <T extends News> extends JDialog
 {
-
-    protected static final int WIDTH = 400;
-    protected static final int HEIGHT = 600;
+	protected static final int WHOLESIZEWIDTH = 1200;
+	protected static final int WHOLESIZEHIGHT = 700;
+    protected static final int NEWSWIDTH = 400;
+    protected static final int NEWSHEIGHT = 500;
     protected static final int PADDING = 20;
+    
     protected static final int TITLE_SIZE = 40;
     protected static final int TITLE_FONT_SIZE = 20;
 
@@ -74,15 +82,21 @@ public class NewsDialog <T extends News> extends JDialog
     protected JTextArea descriptionArea;
     protected JLocalDateChooser startTimeChooser;
     
-    protected JPanel centerPanel;
+    protected JPanel newCenterPanel;
     protected JLabel labelButton;
     protected NewsCache cache;
     protected ServicesForNews newsService;
     protected LabelListDialog labelListDialog;
 
-    private T event;
+    protected T event;
 	private JLabel kwbutton;
+	private JUpdatedTextField attachmentField;
+	private JLabel attachbutton;
 
+	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+	}
     public NewsDialog(ServicesForNews meetingService) 
     {
         this.newsService = meetingService;
@@ -96,53 +110,27 @@ public class NewsDialog <T extends News> extends JDialog
 
     private void createEvent() 
     {
+    	 labelButton.addMouseListener(new MouseAdapter() {
+             @Override
+             public void mouseClicked(MouseEvent e) {
+                 super.mouseClicked(e);
+                 labelListDialog.display();
+             }
+         });
+    	 
+    	attachbutton.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent arg0) {
+        		selectAttachmets ();
+        	}
+    	});
+    	
     	kwbutton.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) {
-        		String urlcontent = "";
-        		if( ! newsurlField.getText().toLowerCase ().equals("slackurl")) {
-        			
-        			Collection<String> urlset = new HashSet<> ();
-        			urlset.add(newsurlField.getText().trim() );
-        			TagsServiceForURLAndFile internet = new TagsServiceForURLAndFile (urlset);
-        			try {
-						Collection<Tag> tags = internet.getTags();
-						
-						String keywords = "";
-						for (Iterator<Tag> lit = tags.iterator(); lit.hasNext(); ) {
-					        Tag f = lit.next();
-					        
-					        keywords = keywords + f.getName() + " ";
-						}
-						keywordsField.setText(keywords );
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-//        			try {
-//        				URL slkurl = new URL(newsurlField.getText().trim() );
-//        				
-//        				HttpURLConnection connection = (HttpURLConnection)  slkurl.openConnection();
-//        				connection.setRequestMethod("HEAD");
-//        				connection.connect();
-//        				String contentType = connection.getContentType();
-//        				
-//						urlcontent = new Scanner(slkurl.openStream(), "UTF-8").useDelimiter("\\A").next();
-//					} catch (MalformedURLException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-        		}
         		
-//        		TextRank.setKeywordNumber(20);
-//        		TextRank.setWindowSize(20);
-//        		
-//        		String title = newstitleField.getText();
-//        		String content = descriptionArea.getText() +  Jsoup.parse(urlcontent).text(); 
-//        		List<String> keywordslist = TextRank.getKeyword(title, content); 
+        		if( ! newsurlField.getText().toLowerCase ().equals("slackurl")) 
+        			createKeyWords ();
         	}
         });
     	
@@ -166,9 +154,51 @@ public class NewsDialog <T extends News> extends JDialog
 		
 	}
 
+	protected void createKeyWords() 
+	{
+		Collection<String> urlset = new HashSet<> ();
+		urlset.add(newsurlField.getText().trim() );
+		TagsServiceForURLAndFile internet = new TagsServiceForURLAndFile (urlset);
+		try {
+			Collection<Tag> tags = internet.getTags();
+			
+			String keywords = "";
+			for (Iterator<Tag> lit = tags.iterator(); lit.hasNext(); ) {
+		        Tag f = lit.next();
+		        
+		        keywords = keywords + f.getName() + " ";
+			}
+			keywordsField.setText(keywords );
+			
+			PropertyChangeEvent evtzd = new PropertyChangeEvent(this, News.KEYWORDSADD , "", tags  );
+		    pcs.firePropertyChange(evtzd);
+		    
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+	}
+
+	protected void selectAttachmets() 
+	{
+		String parsedpath = "";//sysconfig.getTDXModelMatchExportFile ();
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		chooser.setCurrentDirectory(new File(parsedpath) );
+		
+		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+		    String filename;
+			if(chooser.getSelectedFile().isDirectory())
+		    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+		    else
+		    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
+		} else
+			return;
+	}
+
 	public JPanel getNewsPanel ()
     {
-    	return this.centerPanel;
+    	return this.newCenterPanel;
     }
     
     private void createUIComponents() 
@@ -185,69 +215,78 @@ public class NewsDialog <T extends News> extends JDialog
         this.descriptionArea = JTextFactory.createTextArea();
         this.descriptionArea.setLineWrap(true);
         this.startTimeChooser = new JLocalDateChooser();
-
-        this.centerPanel = new JPanel();
+        
+        this.attachmentField = (JUpdatedTextField) JTextFactory.createTextField();
+        this.attachbutton = JLabelFactory.createButton("Attachments:");
+        this.newCenterPanel = new JPanel();
         this.labelListDialog = new LabelListDialog();
     }
 
 
     private void createCenterPanel()
     {
-        this.centerPanel = JPanelFactory.createFixedSizePanel(WIDTH, HEIGHT, PADDING);
-        this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.PAGE_AXIS));
+        this.newCenterPanel = JPanelFactory.createFixedSizePanel(NEWSWIDTH, NEWSHEIGHT, PADDING);
+        this.newCenterPanel.setLayout(new BoxLayout(this.newCenterPanel, BoxLayout.PAGE_AXIS));
 
-        JPanel p = JPanelFactory.createPanel(new FlowLayout(FlowLayout.CENTER));
-        this.centerPanel.add(p);
-        this.centerPanel.add(Box.createVerticalStrut(PADDING));
-        this.centerPanel.add(this.newsownersField);
-        this.centerPanel.add(this.newstitleField);
-        this.centerPanel.add(Box.createVerticalStrut(30));
-                this.centerPanel.add(this.getTimeChooserPanel());
-        this.centerPanel.add(Box.createVerticalStrut(10));
-
+//        JPanel p = JPanelFactory.createPanel(new FlowLayout(FlowLayout.CENTER));
+//        this.newCenterPanel.add(p);
+//        this.newCenterPanel.add(Box.createVerticalStrut(PADDING));
+        this.newCenterPanel.add(this.newsownersField);
+        
+        this.newCenterPanel.add(this.newstitleField);
+        
+        this.newCenterPanel.add(Box.createVerticalStrut(30));
+        
+        this.newCenterPanel.add(this.getTimeChooserPanel());
+        
+        this.newCenterPanel.add(Box.createVerticalStrut(10));
+        
         JPanel labelPanel = JPanelFactory.createFixedSizePanel(new GridLayout(1, 2));
         labelPanel.add(new JLabel("设置 labels: "));
         labelButton = JLabelFactory.createButton("Labels");
-        labelButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                labelListDialog.display();
-            }
-        });
-
         labelPanel.add(labelButton);
-        this.centerPanel.add(labelPanel);
+        this.newCenterPanel.add(labelPanel);
 
-        this.centerPanel.add(Box.createVerticalStrut(PADDING));
+        this.newCenterPanel.add(Box.createVerticalStrut(PADDING));
         JScrollPane despane = new JScrollPane ();
         despane.setAutoscrolls(true);
         despane.setViewportView(this.descriptionArea);
-        this.centerPanel.add(despane);
-        this.centerPanel.add(Box.createVerticalStrut(10));
-        this.centerPanel.add(this.newsurlField);
-        this.centerPanel.add(Box.createVerticalStrut(10));
+        this.newCenterPanel.add(despane);
+        this.newCenterPanel.add(Box.createVerticalStrut(10));
+        this.newCenterPanel.add(this.newsurlField);
+        
+        this.newCenterPanel.add(Box.createVerticalStrut(10));
+        
+        JPanel attachpanel = JPanelFactory.createFixedSizePanel(new GridLayout(1, 3) );
+        attachpanel.add(new JLabel("Attachment:"));
+        attachpanel.add(this.attachmentField);
+        attachpanel.add(this.attachbutton);
+        this.newCenterPanel.add(attachpanel);
+        
+        this.newCenterPanel.add(Box.createVerticalStrut(10));
         
         JPanel kwPanel = JPanelFactory.createFixedSizePanel(new BorderLayout());
         kwbutton = JLabelFactory.createButton("关键词");
         kwPanel.add(kwbutton,BorderLayout.WEST);
 //        kwPanel.add(new JLabel(" "));
         kwPanel.add(this.keywordsField,BorderLayout.CENTER);
-        this.centerPanel.add(kwPanel);
+        this.newCenterPanel.add(kwPanel);
         
-        this.centerPanel.add(Box.createVerticalStrut(PADDING));
+        this.newCenterPanel.add(Box.createVerticalStrut(PADDING));
 
         // add main panel to the dialog
         getContentPane().setLayout(new BorderLayout());
-        super.add(this.centerPanel, BorderLayout.CENTER);
+        super.add(this.newCenterPanel, BorderLayout.CENTER);
+        
         super.setModalityType(ModalityType.APPLICATION_MODAL);
-        super.setSize(new Dimension(WIDTH, HEIGHT));
-        super.setResizable(false);
+//        super.setSize(new Dimension(WHOLESIZEWIDTH, WHOLESIZEHIGHT));
+        super.setSize(new Dimension(NEWSWIDTH, NEWSHEIGHT));
+        super.setResizable(true);
     }
 
     private JPanel getTimeChooserPanel() 
     {
-        JPanel panel = JPanelFactory.createPanel(new GridLayout(1, 3) );
+        JPanel panel = JPanelFactory.createFixedSizePanel(new GridLayout(1, 3) );
         panel.add(new JLabel("日期:"));
         panel.add(this.startTimeChooser);
         return panel;
@@ -263,9 +302,10 @@ public class NewsDialog <T extends News> extends JDialog
         descriptionArea.setText(event.getDescription());
         startTimeChooser.setLocalDate( event.getStart() );
         newsurlField.setText(event.getNewsUrl());
-    	
-        centerPanel.revalidate();
-    	centerPanel.repaint();
+        attachmentField.setText(event.getAttachment());
+        
+        newCenterPanel.revalidate();
+    	newCenterPanel.repaint();
         
         return true;
     }

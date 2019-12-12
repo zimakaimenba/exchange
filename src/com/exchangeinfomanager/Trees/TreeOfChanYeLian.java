@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -522,4 +523,19 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	
 	
 
+}
+/*
+ * °´¸¸Ç×½Úµã
+ */
+class FatherNodeIdComparator implements Comparator<BkChanYeLianTreeNode> {
+	
+	public FatherNodeIdComparator ( )
+	{
+	}
+    public int compare(BkChanYeLianTreeNode node1, BkChanYeLianTreeNode node2) {
+    	 Integer node1p = ( (CylTreeNestedSetNode)node1).getNestedParent ();
+    	 Integer node2p = ( (CylTreeNestedSetNode)node2).getNestedParent ();
+        
+        return node1p.compareTo(node2p);
+    }
 }

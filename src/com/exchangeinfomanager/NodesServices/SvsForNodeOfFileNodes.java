@@ -151,4 +151,22 @@ public class SvsForNodeOfFileNodes implements ServicesForNode
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeChanYeLianInfo(String nodecode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo(String nodecode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo(String nodecode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -2,6 +2,7 @@ package com.exchangeinfomanager.NodesServices;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import com.exchangeinfomanager.Services.ServicesForNode;
@@ -35,8 +36,7 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 
 	@Override
 	public BkChanYeLianTreeNode getNode(String nodenames) {
-		// TODO Auto-generated method stub
-		return null;
+		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.DAPAN);
 	}
 
 	@Override
@@ -131,6 +131,24 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		
 		this.getNodeKXian ("",bkstartday,bkendday,NodeGivenPeriodDataItem.DAY);
 		
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeChanYeLianInfo(String nodecode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo(String nodecode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo(String nodecode) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

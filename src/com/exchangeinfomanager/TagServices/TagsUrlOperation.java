@@ -64,7 +64,7 @@ public class TagsUrlOperation
 			List<String> keywords = TextRank.getKeyword(path, body);
 	        for(String tmpkwname : keywords) {
 	        	if( !tmpkwname.equals("¹Ø¼ü´Ê")) {
-	        		Tag tag = new Tag (tmpkwname, Color.WHITE);
+	        		Tag tag = new Tag (tmpkwname, Color.WHITE, "");
 	    	        labels.add(tag);
 	        	}
 	        }
@@ -150,7 +150,7 @@ public class TagsUrlOperation
 			List<String> keywords = TextRank.getKeyword(title, body);
 	        for(String tmpkwname : keywords) {
 	        	if( !tmpkwname.equals("¹Ø¼ü´Ê")) {
-	        		Tag tag = new Tag (tmpkwname, Color.WHITE);
+	        		Tag tag = new Tag (tmpkwname, Color.WHITE, "");
 	    	        labels.add(tag);
 	        	}
 	        }

@@ -381,7 +381,7 @@ public class BanKuaiGuanLi extends JDialog
 	private void initializeGui2() 
 	{
 		setTitle("\u901A\u8FBE\u4FE1\u677F\u5757/\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E");
-		setBounds(100, 100, 1576, 988);
+		setBounds(100, 100, 550, 988);
 		getContentPane().setLayout(new BorderLayout());
 		
 		JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new BorderLayout ());
@@ -628,12 +628,12 @@ public class BanKuaiGuanLi extends JDialog
 		westbankuaipnl.add(allbkfriendspnl);
 		
 		layoutPanel.add(westbankuaipnl, BorderLayout.WEST);
-		layoutPanel.setPreferredSize(new Dimension(751, 677));
+//		layoutPanel.setPreferredSize(new Dimension(751, 677));
 		
 		
-		BanKuaiAndChanYeLianGUI bkcylpnl = new BanKuaiAndChanYeLianGUI() ;
-		bkcylpnl.setPreferredSize(new Dimension(751, 677));
-		layoutPanel.add(bkcylpnl, BorderLayout.CENTER);
+//		BanKuaiAndChanYeLianGUI bkcylpnl = new BanKuaiAndChanYeLianGUI() ;
+//		bkcylpnl.setPreferredSize(new Dimension(751, 677));
+//		layoutPanel.add(bkcylpnl, BorderLayout.CENTER);
 		
 		menuBar = new JMenuBar();
 		menuBar.setBorderPainted(false);

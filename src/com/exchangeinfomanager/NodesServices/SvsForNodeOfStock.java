@@ -13,9 +13,11 @@ import org.joda.time.Interval;
 import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -25,11 +27,16 @@ public class SvsForNodeOfStock implements ServicesForNode
 {
 	private BanKuaiAndStockTree allbkstk;
 	private BanKuaiDbOperation bkdbopt;
+	private CylTreeDbOperation dboptforcyltree;
+	private TreeOfChanYeLian cyltree;
 
 	public SvsForNodeOfStock ()
 	{
-		this.bkdbopt = new BanKuaiDbOperation ();
 		allbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		this.cyltree = CreateExchangeTree.CreateTreeOfChanYeLian();
+		
+		this.bkdbopt = new BanKuaiDbOperation ();
+		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
 	}
 
 	@Override
@@ -330,6 +337,27 @@ public class SvsForNodeOfStock implements ServicesForNode
 		}
 		
 		return result;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeChanYeLianInfo(String nodecode) 
+	{
+		List<BkChanYeLianTreeNode> cylinfo = this.dboptforcyltree.getChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXGG);
+		return cylinfo;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo(String nodecode) 
+	{
+		List<BkChanYeLianTreeNode> cylsliding = this.dboptforcyltree.getSlidingInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXGG);
+		return cylsliding;
+	}
+
+	@Override
+	public List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo(String nodecode) 
+	{
+		List<BkChanYeLianTreeNode> cylchildren  = this.dboptforcyltree.getChildrenInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXGG);
+		return cylchildren;
 	}
 
 }

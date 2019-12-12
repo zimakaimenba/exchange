@@ -8,6 +8,7 @@ public class NodeInsertedTag extends InsertedTag
 	private int matchid;
 	private String gegubk;
 	private Color nodematchcolor;
+	private String des;
 	
 	public NodeInsertedTag (InsertedTag label, int nodematchid, String bkstkcode, Color nodematchcolor)
 	{
@@ -22,6 +23,15 @@ public class NodeInsertedTag extends InsertedTag
 	{
 		return inserttag;
 	}
+	
+	 public void setNodeInsertedTagDescription (String des)
+	 {
+	    this.des = des;
+	 }
+	 public String getNodeInsertedTagDescription ()
+	 {
+	    return this.des ;
+	 } 
 
     public int getMatchID() {
         return this.matchid;

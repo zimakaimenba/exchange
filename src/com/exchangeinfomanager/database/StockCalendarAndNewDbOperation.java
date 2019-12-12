@@ -1124,7 +1124,7 @@ public final class StockCalendarAndNewDbOperation
     							+ "'" + keywords + "'" + ","
     							+ "'" + slackurl  + "'" + ","
     							+ "'" +  newdate + "'" + ","
-    							+ "'" +  newsownercode +  "|'" + ","
+    							+ "'" +  newsownercode +  "'" + ","
     							+ "'" +  description + "'"
     							+ ")"
     							;
@@ -1159,7 +1159,7 @@ public final class StockCalendarAndNewDbOperation
 	 */
 	public News createZhiShuGuanJianRiQi (ZhiShuBoLang meeting)
 	{
-		String newsownercode = meeting.getNewsOwnerCodes();
+		BkChanYeLianTreeNode node = meeting.getNode();
 		LocalDate start = meeting.getStart();
 		LocalDate end = meeting.getEnd();
     	String title = meeting.getTitle();
@@ -1172,18 +1172,26 @@ public final class StockCalendarAndNewDbOperation
     	try {
     		String sqlinsertstat = null ;
     		if(end != null)
-    			sqlinsertstat = "INSERT INTO 指数关键日期表(关联板块,日期,截至日期,说明) VALUES ("
-    				+ "'"  + newsownercode + "|',"
+    			sqlinsertstat = "INSERT INTO 指数关键日期表(代码, 类型 ,  日期, 截至日期,说明,  详细说明, URL,关键词 ) VALUES ("
+    				+ "'"  + node.getMyOwnCode() + "',"
+    				+ ""  + node.getType() + ","
     				+ "'" + start  + "',"
     				+ "'" + end + "',"
-    				+ "'"  + description  + "'"
+    				+ "'"  + title  + "',"
+    				+ "'"  + description  + "',"
+    				+ "'"  + slackurl  + "',"
+    				+ "'"  + keywords  + "'"
     				+ ")"
     				;
     		else
-    			sqlinsertstat = "INSERT INTO 指数关键日期表(关联板块,日期,说明) VALUES ("
-        				+ "'"  + newsownercode + "|',"
+    			sqlinsertstat = "INSERT INTO 指数关键日期表(代码, 类型,,日期,  说明,  详细说明, URL,关键词 ) VALUES ("
+    					+ "'"  + node.getMyOwnCode() + "',"
+        				+ ""  + node.getType() + ","
         				+ "'" + start  + "',"
-        				+ "'"  + description  + "'"
+        				+ "'"  + title  + "',"
+        				+ "'"  + description  + "',"
+        				+ "'"  + slackurl  + "',"
+        				+ "'"  + keywords  + "'"
         				+ ")"
         				;
     		
@@ -1405,16 +1413,17 @@ public final class StockCalendarAndNewDbOperation
         		connectdb.sqlUpdateStatExecute(sqlupatestatement);
         		
         		sqlupatestatement = "DELETE FROM meetingLabel WHERE news_ID = " + newsid
-        							+ " AND fromtable = '强弱势板块个股' "
+        							+ " AND fromtable = '关注个股板块表' "
         							;
         		connectdb.sqlUpdateStatExecute(sqlupatestatement);
 
               for (InsertedNews.Label l : event.getLabels()) {
                   int labelid = l.getID();
+                  String area = "关注个股板块表";
                   sqlupatestatement = "INSERT INTO meetingLabel (news_id, LABEL_ID ,fromtable) VALUES ("
     			            		    +  newsid + ","
     									+  labelid  + ","
-    									+ " '强弱势板块个股' " 
+    									+ " '" + area + "' " 
     									+ ")"
                 		  				;
                 	connectdb.sqlUpdateStatExecute(sqlupatestatement);
@@ -1515,7 +1524,7 @@ public final class StockCalendarAndNewDbOperation
         				+ " 说明  = '" + desc + "', "
         				+ " 具体描述= '" + detail + "', " 
         				+ " URL = '" + slackurl   + "', "
-        				+ " 关键字 = '" + keywords   + "', "
+        				+ " 关键字 = '" + keywords   + "' "
         				+ " WHERE id =  " + newsid
         				;
         		
@@ -1581,6 +1590,7 @@ public final class StockCalendarAndNewDbOperation
 	public InsertedExternalNews updateZhiShuGuanJIanRiQi(News meeting) throws SQLException
 	{
 		InsertedExternalNews updatedMeeting = (InsertedExternalNews) meeting;
+		BkChanYeLianTreeNode node = updatedMeeting.getNode() ;
     	LocalDate starttime = updatedMeeting.getStart();
     	LocalDate endtime = updatedMeeting.getEnd();
 		String title = updatedMeeting.getTitle();
@@ -1597,16 +1607,24 @@ public final class StockCalendarAndNewDbOperation
 			return updatedMeeting;
 		} else	if(endtime != null)
 			sqlupatestatement =  "UPDATE 指数关键日期表  SET"
-					+ " 日期 = '" + starttime + "', "
-					+ " 截至日期 = '" + endtime +"',"
-					+ " 关联板块  = '" + newsowners + "', "
+					+ "  日期 = '" + starttime + "', "
+					+ "  截至日期 = '" + endtime +"',"
+					+ "  代码  = '" + node.getMyOwnCode() + "', "
+					+ " 类型 = " + node.getType() + ", "
+					+ " 详细说明 =  ' " + desc +  "', "
+					+ " URL = '" + slackurl +  "', "
+					+ " 关键词 = '" + keywordsurl +  "' , "
 					+ " 说明  = '" + desc + "' "
 					+ " WHERE id =  " + newsid
 					;
 		else
-			sqlupatestatement =  "UPDATE 指数关键日期表  SET"
-					+ " 日期 = '" + starttime + "', "
-					+ " 关联板块  = '" + newsowners + "', "
+			sqlupatestatement =   "UPDATE 指数关键日期表  SET"
+					+ "  日期 = '" + starttime + "', "
+					+ "  代码  = '" + node.getMyOwnCode() + "', "
+					+ " 类型 = " + node.getType() + ", "
+					+ " 详细说明 =  ' " + desc +  "', "
+					+ " URL = '" + slackurl +  "', "
+					+ " 关键词 = '" + keywordsurl +  "' , "
 					+ " 说明  = '" + desc + "' "
 					+ " WHERE id =  " + newsid
 					;

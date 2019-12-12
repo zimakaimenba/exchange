@@ -58,10 +58,6 @@ public abstract class View extends JPanel implements NewsCacheListener
     		ServicesForNews f = lit.next();
     		this.caches.add( f.getCache() );
     	}
-//        this.cache = cache;
-        
-//        this.createDialog = DialogFactory.createMeetingDialog(meetingService, cache);
-//        this.modifyDialog = DialogFactory.modifyMeetingDialog(meetingService, cache);
     }
     public View(ServicesForNews meetingServices) 
     {

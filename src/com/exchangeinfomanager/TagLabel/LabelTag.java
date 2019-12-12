@@ -67,7 +67,7 @@ public class LabelTag extends JPanel
 		label.addMouseListener(new ChangeKeyWordsPanelController());
 	    label.setOpaque(true);
 	    label.setName( l.getName() );
-	    label.setToolTipText(l.getName() );
+	    label.setToolTipText(l.getDescription() );
 	    label.setForeground(Color.BLACK);
 	    label.setBackground(this.tagcolor);  //
 	    

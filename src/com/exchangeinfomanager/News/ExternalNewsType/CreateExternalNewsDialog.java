@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
@@ -69,11 +70,13 @@ public class CreateExternalNewsDialog  extends ExternalNewsDialog<ExternalNewsTy
           	} else { 
           		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
           		SvsForNodeOfStock svsstock = new SvsForNodeOfStock (); 
+          		SvsForNodeOfDaPan svsdapan = new SvsForNodeOfDaPan (); 
           		
           		BkChanYeLianTreeNode bk = svsbk.getNode(mt.getNewsOwnerCodes());
           		BkChanYeLianTreeNode stock = svsstock.getNode(mt.getNewsOwnerCodes());
+          		BkChanYeLianTreeNode dapan = svsdapan.getNode(mt.getNewsOwnerCodes());
           		
-          		if(bk == null && stock == null) {
+          		if(bk == null && stock == null && dapan == null) {
           			JOptionPane.showMessageDialog(null,"板块或个股代码不存在！");
               		setVisible(true);
               		return;
@@ -83,6 +86,8 @@ public class CreateExternalNewsDialog  extends ExternalNewsDialog<ExternalNewsTy
           			mt.setNode(bk);
           		else if(stock != null)
           			mt.setNode(stock);
+          		else if(dapan != null)
+          			mt.setNode(dapan);
           		
           		Boolean check = checkDuplicate (mt);
                 if(check) {
