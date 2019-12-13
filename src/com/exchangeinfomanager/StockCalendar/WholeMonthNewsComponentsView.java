@@ -48,8 +48,11 @@ public class WholeMonthNewsComponentsView extends View
 
 	private JPanel cqjlpnl = new JPanel ();
 	private ServicesForNews svsofexternalnews;
-	private JPanel contentpnl;
+	protected JPanel contentpnl;
 	private String viewtitle;
+	protected JLabel titleLable;
+	protected JPanel pnlmonthnews;
+	protected JPanel pnmmonthnresnorth;
 
 	public WholeMonthNewsComponentsView(ServicesForNews meetingServices,String title)
 	{
@@ -77,7 +80,7 @@ public class WholeMonthNewsComponentsView extends View
 	{
 		LocalDate firstdayofmonth = this.initView();
 		
-		for (Iterator<NewsCache> lit = caches.iterator(); lit.hasNext(); ) {
+		for (Iterator<NewsCache> lit = super.caches.iterator(); lit.hasNext(); ) {
     		NewsCache f = lit.next();
     		
     		updateView (f, firstdayofmonth );
@@ -96,22 +99,26 @@ public class WholeMonthNewsComponentsView extends View
         LocalDate firstDayInMonth = super.getDate().withDayOfMonth(1);
         //每月新闻
        	JScrollPane sclpmonthnews = new JScrollPane ();
-       	JPanel pnlmonthnews = new JPanel();
+       	pnlmonthnews = new JPanel();
        	pnlmonthnews.setName(firstDayInMonth + "CHANGQIGUANZHU");
         pnlmonthnews.setLayout(new BorderLayout());
         pnlmonthnews.setBackground(ColorScheme.BACKGROUND);
-        pnlmonthnews.addMouseListener(new CreateCQJLController(firstDayInMonth));
+        pnlmonthnews.addMouseListener(new CreateController(firstDayInMonth));
+        
+        pnmmonthnresnorth = new JPanel();
                 
-        JLabel newscontentsLabel = new JLabel(this.viewtitle);
-        newscontentsLabel.setForeground(ColorScheme.GREY_LINE_DARKER);
-        newscontentsLabel.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 5));
-        newscontentsLabel.setBackground(ColorScheme.BACKGROUND);
-        newscontentsLabel.setOpaque(true);
+        titleLable = new JLabel(this.viewtitle);
+        titleLable.setForeground(ColorScheme.GREY_LINE_DARKER);
+        titleLable.setBorder(BorderFactory.createEmptyBorder(5, 2, 2, 5));
+        titleLable.setBackground(ColorScheme.BACKGROUND);
+        titleLable.setOpaque(true);
+        
+        pnmmonthnresnorth.add(titleLable);
         
         contentpnl = JPanelFactory.createPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
         contentpnl.setName("CHANGQIGUANZHU" + "CONTENT");
         
-        pnlmonthnews.add(newscontentsLabel, BorderLayout.PAGE_START);
+        pnlmonthnews.add(pnmmonthnresnorth, BorderLayout.PAGE_START);
         pnlmonthnews.add(contentpnl, BorderLayout.CENTER); //中间用来显示信息的panel
 
         sclpmonthnews.setViewportView (pnlmonthnews);
@@ -235,11 +242,11 @@ public class WholeMonthNewsComponentsView extends View
 		
 	}
 	
-	private class CreateCQJLController extends MouseAdapter
+	private class CreateController extends MouseAdapter
 	{
 		private LocalDate firstDayInMonth;
 
-		public CreateCQJLController(LocalDate firstDayInMonth) {
+		public CreateController(LocalDate firstDayInMonth) {
 			this.firstDayInMonth = firstDayInMonth;
 		}
 

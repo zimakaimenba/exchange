@@ -38,8 +38,6 @@ public class Sidebar extends View implements NewsCacheListener
     private JPanel labels;
     private JLabel colorButton;
     private JLabel createLabel;
-    private JLabel createMilestoneDateForZhiShu;
-
     private JTextField nameField;
     private NewsLabelDialog modifyLabelDialog;
     private NewsLabelDialog createLabelDialog;
@@ -76,9 +74,6 @@ public class Sidebar extends View implements NewsCacheListener
         this.labels = JPanelFactory.createPanel();
         this.createLabel = JLabelFactory.createButton("New label");
         
-        this.createMilestoneDateForZhiShu = JLabelFactory.createButton("指数关键日期");
-        this.createMilestoneDateForZhiShu.setToolTipText("点击右键生产指数关键日期通达信代码");
-        
         this.colorButton = JLabelFactory.createLabel("", 40, 30);
         this.nameField = JTextFactory.createTextField();
     }
@@ -104,11 +99,6 @@ public class Sidebar extends View implements NewsCacheListener
         this.createLabel.addMouseListener(new CreateNewLabelController());
         createLabelPanel.add(this.createLabel, BorderLayout.CENTER);
         super.add(createLabelPanel);
-        
-        JPanel createDapanDatePanel = JPanelFactory.createFixedSizePanel(new BorderLayout());
-        this.createMilestoneDateForZhiShu.addMouseListener(new CreateDapanMileStoneDateController());
-        createDapanDatePanel.add(this.createMilestoneDateForZhiShu, BorderLayout.CENTER);
-        super.add(createDapanDatePanel);
     }
 
     @Override
@@ -170,23 +160,7 @@ public class Sidebar extends View implements NewsCacheListener
         }
     }
 
-    private class CreateDapanMileStoneDateController extends MouseAdapter {
-
-		@Override
-        public void mouseClicked(MouseEvent e) {
-			super.mouseClicked(e);
-//			if (e.getButton() == MouseEvent.BUTTON1) {
-//				
-//				TDXNodesZhiShuGJRQPnl gjrq = new TDXNodesZhiShuGJRQPnl (null);
-//				gjrq.setVisible(true);
-//				
-//				cache.refresh();
-//		               
-//            } else if (e.getButton() == MouseEvent.BUTTON3) {
-//            	TDXFormatedOpt.parserZhiShuGuanJianRiQiToTDXCode();
-//            }
-        }
-    }
+   
 
     private class ModifyLabelController extends MouseAdapter {
 

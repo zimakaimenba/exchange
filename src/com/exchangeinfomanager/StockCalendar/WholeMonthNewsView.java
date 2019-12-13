@@ -109,7 +109,7 @@ public class WholeMonthNewsView extends View
 	    		} else
 	    		if( f instanceof ZhiShuBoLangServices) {
 	    			svszsbl = (ZhiShuBoLangServices) f;
-	    			zsblview = new WholeMonthNewsComponentsView (svszsbl, "指数关键日期");
+	    			zsblview = new WholeMonthCompViewOfZSBL (svszsbl, "指数关键日期");
 	    			
 	    		}
 	    	}

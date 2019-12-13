@@ -88,19 +88,14 @@ public class TDXFormatedOpt {
 		SystemConfigration syscon = SystemConfigration.getInstance();
 		
 		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
-		
-		String sqlquerystat = "SELECT * FROM 指数关键日期表 ORDER BY 日期 DESC";
-		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		List<String> lineinfo = new ArrayList<>();
 		List<String> remindinfo = new ArrayList<>();
+		ResultSet rs = null;
 		try {
-			rs.last();  
-	        int rows = rs.getRow();
-	        
-	        rs.first();
-	        int lineindex =0;
-	        for(int j=0;j<rows;j++) {
-				String zhishucode = rs.getString("关联板块").trim();
+			String sqlquerystat = "SELECT * FROM 指数关键日期表 ORDER BY 日期 DESC";
+			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+			while (rs.next()) {
+				String zhishucode = rs.getString("代码").trim();
 				LocalDate startdate = rs.getDate("日期").toLocalDate();
 				LocalDate enddate = null;
 				try {
@@ -109,73 +104,55 @@ public class TDXFormatedOpt {
 					
 				}
 				String zhishushuoming = rs.getString("说明");
-
-				List<String> zhishulist = Splitter.on("|").omitEmptyStrings().splitToList(zhishucode); //0|000001|T1001|440101
-				for(String tmpzhishu : zhishulist) {
+				
+				if(corezhishu.contains(zhishucode)) { //核心指数肯定要显示
+					setTDXDrawLineInfo (zhishucode,zhishushuoming,"",startdate, lineinfo, remindinfo );
+					if(enddate != null) {
+						setTDXDrawLineInfo (zhishucode,zhishushuoming,"",enddate, lineinfo, remindinfo );
+					} 				
+				} else {  //板块指数只在是该板块的时候显示
+					AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
+					TDXNodes tmpzhishunode = (TDXNodes)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(zhishucode, BkChanYeLianTreeNode.TDXBK);
+					String extrainfo = "   AND INBLOCK('" + tmpzhishunode.getMyOwnName() + "')";
+					setTDXDrawLineInfo (zhishucode,zhishushuoming,extrainfo,startdate, lineinfo, remindinfo );
 					
-					if(corezhishu.contains(tmpzhishu)) { //核心指数肯定要显示
-						setTDXDrawLineInfo (tmpzhishu,zhishushuoming,"",startdate, lineinfo, remindinfo );
-						
-						lineindex ++;
-						if(enddate != null) {
-							setTDXDrawLineInfo (tmpzhishu,zhishushuoming,"",enddate, lineinfo, remindinfo );
-							lineindex ++;
-						}
-						
-						break;//核心指数和普通板块指数都在，就只导出核心指数信息，否则会重复显示
-						
-					} else {  //板块指数只在是该板块的时候显示
-						AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-						TDXNodes tmpzhishunode = (TDXNodes)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpzhishu, BkChanYeLianTreeNode.TDXBK);
-						String extrainfo = "   AND INBLOCK('" + tmpzhishunode.getMyOwnName() + "')";
-						setTDXDrawLineInfo (tmpzhishu,zhishushuoming,extrainfo,startdate, lineinfo, remindinfo );
-						
-						lineindex++ ;
-						
-						if(enddate != null) {
-							setTDXDrawLineInfo (tmpzhishu,zhishushuoming,extrainfo,enddate, lineinfo, remindinfo );
-							lineindex ++;
-						}
+					if(enddate != null) {
+						setTDXDrawLineInfo (zhishucode,zhishushuoming,extrainfo,enddate, lineinfo, remindinfo );
 					}
-	
 				}
 				
-				
-				rs.next();
-	        }
-	        
-	        if(lineinfo.isEmpty())
-	        	return false;
-	        
-	        for(String info : lineinfo)
-	        	try {
-	        			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-	        
-	        for (String info : remindinfo)
-	        	try {
-	        			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-	        
+				if(lineinfo.isEmpty())
+		        	return false;
+			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}  finally {
-			    	if(rs != null)
+					if(rs != null)
 						try {
 							rs.close();
 							rs = null;
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-			    	lineinfo = null;
-					remindinfo = null;
-		}
+//			    	lineinfo = null;
+//					remindinfo = null;
+		} 
 		
+		for(String info : lineinfo)
+        	try {
+        			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        
+        for (String info : remindinfo)
+        	try {
+        			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		try {
 			String cmd = "rundll32 url.dll,FileProtocolHandler " + tongdaxinfile.getAbsolutePath();
 			Process p  = Runtime.getRuntime().exec(cmd);
