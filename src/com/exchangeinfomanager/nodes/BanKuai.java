@@ -204,6 +204,9 @@ public class BanKuai extends TDXNodes
 	 */
 	public Collection<BkChanYeLianTreeNode> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference)
 	{
+		if(this.stockofbklist == null)
+			return null;
+		
 		Collection<BkChanYeLianTreeNode> nodefortags = new HashSet<> ();
 		for(BkChanYeLianTreeNode tmpstkofbks :  this.stockofbklist) {
 			if(  ((StockOfBanKuai)tmpstkofbks).isInBanKuaiAtSpecificDate(requireddate)) {

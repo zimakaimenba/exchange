@@ -106,21 +106,21 @@ public class SvsForNodeOfFileNodes implements ServicesForNode
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
-			String period) {
+			String period,Boolean calwholeweek) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeKXian(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
-			String period) {
+			String period,Boolean calwholeweek) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeKXian(BkChanYeLianTreeNode bk, LocalDate requiredstartday,
-			LocalDate requiredendday, String period) {
+			LocalDate requiredendday, String period,Boolean calwholeweek) {
 		// TODO Auto-generated method stub
 		return null;
 	}

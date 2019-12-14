@@ -389,6 +389,18 @@ public class DaPanXPeriodDataForTA4J implements NodeXPeriodData
 		return null;
 	}
 
+	@Override
+	public LocalDate getAmoRecordsStartDate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDate getAmoRecordsEndDate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 //	@Override
 //	public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {

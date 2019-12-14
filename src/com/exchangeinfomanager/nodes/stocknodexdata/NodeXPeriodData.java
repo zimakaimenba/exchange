@@ -13,11 +13,7 @@ import com.google.common.collect.Multimap;
 
 public interface NodeXPeriodData 
 {
-	
-	
-	
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata);
-	
 	
 	public void resetAllData ();
 		
@@ -39,7 +35,9 @@ public interface NodeXPeriodData
 	
 	public void addZhangDieTingTongJiJieGuo (LocalDate tjdate,Integer nodeztnum,Integer nodedtnum,Boolean addbasedoncurdata);
 	public Integer getZhangTingTongJi (LocalDate requireddate, Integer difference);
+	
 	public Integer getDieTingTongJi (LocalDate requireddate, Integer difference);
+	
 	public Integer getQueKouTongJiOpenUp (LocalDate requireddate, Integer difference);
 	public Integer getQueKouTongJiOpenDown (LocalDate requireddate, Integer difference);
 	public Integer getQueKouTongJiHuiBuUp (LocalDate requireddate, Integer difference);
@@ -67,6 +65,9 @@ public interface NodeXPeriodData
 	
 	public LocalDate getOHLCRecordsStartDate ();
 	public LocalDate getOHLCRecordsEndDate ();
+	
+	public LocalDate getAmoRecordsStartDate ();
+	public LocalDate getAmoRecordsEndDate ();
 	
 	public Double getChengJiaoEr (LocalDate requireddate,int difference);
 	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate,int difference);

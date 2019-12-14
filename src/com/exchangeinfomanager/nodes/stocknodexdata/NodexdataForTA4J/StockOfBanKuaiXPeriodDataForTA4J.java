@@ -349,6 +349,16 @@ public class StockOfBanKuaiXPeriodDataForTA4J implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public LocalDate getAmoRecordsStartDate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public LocalDate getAmoRecordsEndDate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	
 

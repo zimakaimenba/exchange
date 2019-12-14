@@ -107,6 +107,48 @@ import com.udojava.evalex.Expression;
 		
 		super.addNewXPeriodData(kdata);
 	}
+	public LocalDate getAmoRecordsStartDate ()
+	{
+		if(super.nodeamozhanbi.getItemCount() == 0)
+			return null;
+		
+		int itemcount = super.nodeamozhanbi.getItemCount();
+		TimeSeriesDataItem dataitem = super.nodeamozhanbi.getDataItem(0);
+		Date start = dataitem.getPeriod().getStart();
+		LocalDate startdate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+	
+		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
+			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
+			LocalDate mondayday = startdate.with(fieldUS, 2);
+			return mondayday;
+		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
+			return startdate;
+		}
+		
+		return null;
+	}
+	public LocalDate getAmoRecordsEndDate ()
+	{
+		if(super.nodeamozhanbi.getItemCount() == 0)
+			return null;
+		
+		int itemcount = super.nodeamozhanbi.getItemCount();
+		TimeSeriesDataItem dataitem = super.nodeamozhanbi.getDataItem(itemcount - 1);
+		Date start = dataitem.getPeriod().getStart();
+		LocalDate startdate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+	
+		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
+			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
+			LocalDate mondayday = startdate.with(fieldUS, 2);
+			return mondayday;
+		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
+			return startdate;
+		}
+		
+		return null;
+	}
 	public void resetAllData ()
 	{
 		super.resetAllData();
@@ -503,7 +545,7 @@ import com.udojava.evalex.Expression;
 	 * 每日均量和上周均量的差额
 	 */
 	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate,int difference)
-	{
+	{String i ="";
 		if(nodeohlc == null)
 			return null;
 		
@@ -622,7 +664,9 @@ import com.udojava.evalex.Expression;
 		String nodept = getNodeperiodtype();
 		NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
 		Double bkcjediff = bkxdata.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
-		if( bkcjediff == null || bkcjediff < 0   ) {//板块缩量，
+		if(bkcjediff == null )
+			return null;
+		if(  bkcjediff < 0   ) {//板块缩量，
 			return -100.0;
 		}
 		

@@ -133,6 +133,8 @@ public class AllCurrentTdxBKAndStoksTree
 	    			 TagsServiceForNodes tagsevofnode = new TagsServiceForNodes (stock);
 	    			 Collection<Tag> tagsofstock = tagsevofnode.getTags();
 	    			 stock.setNodeTags(tagsofstock);
+	    			 
+	    			 tagsevofnode = null;
 		    	 }
 			}
 			
@@ -167,13 +169,13 @@ public class AllCurrentTdxBKAndStoksTree
 			}
 		}
 
-		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
+		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiZhanBi (bankuai,requiredstartday,requiredendday,period);
 			return bankuai;
 		}
 		
 		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-				(requiredstartday,requiredendday,nodedayperioddata.getOHLCRecordsStartDate(),nodedayperioddata.getOHLCRecordsEndDate());
+				(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),nodedayperioddata.getAmoRecordsEndDate() );
 		if(timeintervallist == null) 
 			return bankuai;
 		
@@ -243,6 +245,7 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public BanKuai getBanKuaiKXian (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period)
 	{
+//		this.getBanKuai(bk, requiredstartday, requiredendday, period,true);
 		
 		NodeXPeriodData nodedayperioddata = bk.getNodeXPeroidData(period);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
@@ -265,7 +268,7 @@ public class AllCurrentTdxBKAndStoksTree
 				
 				bk = bkdbopt.getBanKuaiKXianZouShi (bk,requiredstartday,requiredendday,period);
 		}
-		
+
 		return bk;
 	}
 	/*
@@ -383,14 +386,34 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public void syncBanKuaiData (BanKuai bk)
 	{
-//		if(bk.isNodeDataAtNotCalWholeWeekMode() )
-//			return;
+		LocalDate bkohlcstartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
+		LocalDate bkohlcendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
 		
-		LocalDate bkstartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
-		LocalDate bkendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
+		LocalDate bkamostartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
+		LocalDate bkamoendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
 		
-		this.getBanKuaiKXian(bk, bkstartday, bkendday, NodeGivenPeriodDataItem.DAY);
-//		this.getBanKuaiQueKouInfo(bk, bkstartday, bkendday, NodeGivenPeriodDataItem.WEEK);
+		if(bkohlcstartday == null) {
+			bkohlcstartday = bkamostartday;
+			bkohlcendday = bkamoendday;
+			bk = this.getBanKuaiKXian(bk, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY);
+			return;
+		}
+		
+		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+				(bkohlcstartday,bkohlcendday,bkamostartday,bkamoendday );
+		
+		if(timeintervallist == null)
+			return ;
+		
+		for(Interval tmpinterval : timeintervallist) {
+				DateTime newstartdt = tmpinterval.getStart();
+				DateTime newenddt = tmpinterval.getEnd();
+				
+				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
+				bk = this.getBanKuaiKXian(bk, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY);
+		}
 	}
 	/*
 	 * 
@@ -470,6 +493,8 @@ public class AllCurrentTdxBKAndStoksTree
 		szdpbankuai = (BanKuai) this.getBanKuaiKXian(szdpbankuai, requiredstartday, requiredendday,period);
 		cybdpbankuai = (BanKuai) this.getBanKuaiKXian(cybdpbankuai, requiredstartday, requiredendday, period);
 		
+		this.getDaPan(requiredstartday, requiredendday, period, true);
+		
 	}
 	/*
 	 * ͬ�����̳ɽ���
@@ -483,14 +508,18 @@ public class AllCurrentTdxBKAndStoksTree
 		shdpbankuai = this.getBanKuai (shdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
 		szdpbankuai = this.getBanKuai (szdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
 		cybdpbankuai = this.getBanKuai (cybdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
+		
 	}
 	public void syncDaPanData() 
 	{
 		BanKuai shdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
-		LocalDate bkstartday = shdpbankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
-		LocalDate bkendday = shdpbankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
+		this.syncBanKuaiData(shdpbankuai);
 		
-		this.getDaPanKXian (bkstartday,bkendday,NodeGivenPeriodDataItem.DAY);
+		BanKuai szdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+		this.syncBanKuaiData(szdpbankuai);
+		
+		BanKuai cybdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
+		this.syncBanKuaiData(cybdpbankuai);
 	}
 	/*
 	 * 
@@ -687,15 +716,37 @@ public class AllCurrentTdxBKAndStoksTree
 	}
 	public void syncStockData (Stock stock)
 	{
-		LocalDate bkstartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
-		LocalDate bkendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
+		LocalDate bkohlcstartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
+		LocalDate bkohlcendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
 		
-		if(bkstartday != null) 
-			this.getStockKXian(stock, bkstartday, bkendday, NodeGivenPeriodDataItem.DAY);
+		LocalDate bkamostartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
+		LocalDate bkamoendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
+		
+		if(bkohlcstartday == null) {
+			bkohlcstartday = bkamostartday;
+			bkohlcendday = bkamoendday;
+			stock = this.getStockKXian(stock, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY);
+			return;
+		}
+		
+		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+				(bkohlcstartday,bkohlcendday,bkamostartday,bkamoendday );
+		
+		if(timeintervallist == null)
+			return ;
+		
+		for(Interval tmpinterval : timeintervallist) {
+				DateTime newstartdt = tmpinterval.getStart();
+				DateTime newenddt = tmpinterval.getEnd();
+				
+				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
+				this.getStockKXian(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY);
 
-		if(bkstartday != null && !stock.isNodeDataAtNotCalWholeWeekMode() )
-			this.getStockQueKouInfo(stock, bkstartday, bkendday, NodeGivenPeriodDataItem.DAY);
-		
+				if( !stock.isNodeDataAtNotCalWholeWeekMode() )
+					this.getStockQueKouInfo(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY);
+		}
 	}
 	/*
 	 * ȷ���û�Ҫ���ʱ��κ�node��ǰ�����ݵ�ʱ��εĲ�ֵʱ���

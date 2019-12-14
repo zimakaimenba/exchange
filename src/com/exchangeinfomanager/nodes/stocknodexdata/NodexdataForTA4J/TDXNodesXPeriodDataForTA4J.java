@@ -83,6 +83,14 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 		LocalDate end = this.ohlcvaseries.getBar(length -1).getBeginTime().toLocalDate();
 		return end;
 	}
+	public LocalDate getAmoRecordsStartDate ()
+	{
+		return this.getOhlcRecordsStartDate ();
+	}
+	public LocalDate getAmoRecordsEndDate ()
+	{
+		return this.getOhlcRecordsEndDate ();
+	}
 	/*
 	 * 
 	 */

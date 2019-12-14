@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -27,11 +28,19 @@ public class WholeMonthCompViewOfZSBL extends WholeMonthNewsComponentsView
 	public WholeMonthCompViewOfZSBL(ServicesForNews meetingServices, String title) 
 	{
 		super(meetingServices, title);
+	}
+	
+	protected LocalDate initView() 
+	{
+		LocalDate resultdate = super.initView();
+		
 		// TODO Auto-generated constructor stub
 		this.createMilestoneDateForZhiShu = JLabelFactory.createButton("导出指数关键日期");
 		super.pnmmonthnresnorth.add(createMilestoneDateForZhiShu);
-		
+				
 		createMilestoneDateForZhiShu.addMouseListener( new CreateDapanMileStoneDateController () );
+		
+		return resultdate;
 	}
 	
 	 private class CreateDapanMileStoneDateController extends MouseAdapter 

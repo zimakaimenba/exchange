@@ -218,6 +218,9 @@ public class NodeInfoToCsv extends JPanel
 				
 				LocalDate tmpdate = tmpstartdate;
 				do  {
+					if(dapan.isDaPanXiuShi(tmpdate, 0, NodeGivenPeriodDataItem.WEEK))
+						continue;
+					
 					 String[] nodecsvline = nodexdata.getNodeXDataCsvData(dapan, tmpdate, 0);						
 					 String[] csvheadline = {	"'" + node.getMyOwnCode() + "'", node.getMyOwnName(), tmpdate.with(DayOfWeek.FRIDAY).toString()	};
 					

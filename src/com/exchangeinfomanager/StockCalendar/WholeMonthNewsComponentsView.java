@@ -91,7 +91,7 @@ public class WholeMonthNewsComponentsView extends View
 		
 	}
 
-	private LocalDate initView() 
+	protected LocalDate initView() 
 	{
 		this.cqjlpnl.removeAll();
 		this.cqjlpnl.setLayout(new BorderLayout() );

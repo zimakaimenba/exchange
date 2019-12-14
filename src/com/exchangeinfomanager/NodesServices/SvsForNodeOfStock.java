@@ -131,22 +131,24 @@ public class SvsForNodeOfStock implements ServicesForNode
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
-			String period) {
+			String period, Boolean calwholeweek) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeKXian(String stockcode, LocalDate requiredstartday, LocalDate requiredendday,
-			String period) 
+			String period,Boolean calwholeweek) 
 	{
 		return null;
 	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeKXian(BkChanYeLianTreeNode stock, LocalDate requiredstartday,
-			LocalDate requiredendday, String period)
+			LocalDate requiredendday, String period,Boolean calwholeweek)
 	{
+		this.getNodeData(stock, requiredstartday, requiredendday, period, calwholeweek);
+		
 		NodeXPeriodData nodedayperioddata = ((Stock)stock).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
 			stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (((Stock)stock),requiredstartday,requiredendday,period);
@@ -167,6 +169,8 @@ public class SvsForNodeOfStock implements ServicesForNode
 				
 				stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (((Stock)stock),requiredstartday,requiredendday,period);
 		}
+		
+		
 		return stock;
 	}
 
@@ -278,17 +282,40 @@ public class SvsForNodeOfStock implements ServicesForNode
 	}
 
 	@Override
-	public void syncNodeData(BkChanYeLianTreeNode stock) 
+	public void syncNodeData(BkChanYeLianTreeNode stk) 
 	{
-		LocalDate bkstartday = ((Stock)stock).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
-		LocalDate bkendday = ((Stock)stock).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
+		Stock stock = (Stock)stk;
+		LocalDate bkohlcstartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
+		LocalDate bkohlcendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
 		
-		if(bkstartday != null) 
-			this.getNodeKXian(((Stock)stock), bkstartday, bkendday, NodeGivenPeriodDataItem.DAY);
+		LocalDate bkamostartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
+		LocalDate bkamoendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
+		
+		if(bkohlcstartday == null) {
+			bkohlcstartday = bkamostartday;
+			bkohlcendday = bkamoendday;
+			stk = this.getNodeKXian(stk, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
+			return;
+		}
+		
+		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+				(bkohlcstartday,bkohlcendday,bkamostartday,bkamoendday );
+		
+		if(timeintervallist == null)
+			return ;
+		
+		for(Interval tmpinterval : timeintervallist) {
+				DateTime newstartdt = tmpinterval.getStart();
+				DateTime newenddt = tmpinterval.getEnd();
+				
+				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
+				this.getNodeKXian(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY, true);
 
-		if(bkstartday != null && !((Stock)stock).isNodeDataAtNotCalWholeWeekMode() )
-			this.getNodeQueKouInfo(((Stock)stock), bkstartday, bkendday, NodeGivenPeriodDataItem.DAY);
-		
+				if( !stock.isNodeDataAtNotCalWholeWeekMode() )
+					this.getNodeQueKouInfo(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY);
+		}
 	}
 	
 	private List<Interval> getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
@@ -359,5 +386,66 @@ public class SvsForNodeOfStock implements ServicesForNode
 		List<BkChanYeLianTreeNode> cylchildren  = this.dboptforcyltree.getChildrenInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXGG);
 		return cylchildren;
 	}
+	public  Number[] getTDXNodeNoneFixPeriodDpMinMaxWk (Stock stock, LocalDate requiredstartday, LocalDate requiredendday)
+	{
+//		if(node.getType() == BkChanYeLianTreeNode.TDXBK )
+//			this.getBanKuai((BanKuai)node, requiredstartday, requiredendday, NodeGivenPeriodDataItem.WEEK);
+//		else if(node.getType() == BkChanYeLianTreeNode.TDXGG ||  node.getType() == BkChanYeLianTreeNode.BKGEGU)
+//			this.getStock((Stock)node, requiredstartday, requiredendday, NodeGivenPeriodDataItem.WEEK);
+		
+		NodeGivenPeriodDataItem dataresult = bkdbopt.getStockNoFixPerioidZhanBiByWeek (stock,requiredstartday,requiredendday,NodeGivenPeriodDataItem.WEEK);
+		Double zhanbi = dataresult.getNodeToDpChenJiaoErZhanbi();
+		
+		NodeXPeriodData nodexdate = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		LocalDate recordstart = nodexdate.getOHLCRecordsStartDate();
+		LocalDate recordend = nodexdate.getOHLCRecordsEndDate();
+		LocalDate tmpdate = requiredstartday.minusWeeks(1).with(DayOfWeek.FRIDAY);
+		 
+		if(tmpdate.isBefore(recordstart)) {
+			Number[] zhanbiresult = {zhanbi, null};
+			return zhanbiresult;
+		}
+			 
+		
+		Integer dpminwk = 0; Integer dpmaxwk = 0;
+		while (tmpdate.isAfter(recordstart) ) {
+			Double tmpzb = nodexdate.getChenJiaoErZhanBi(tmpdate, 0);
+			
+			try {
+				if(tmpzb >= zhanbi) {
+					dpminwk ++;
+					tmpdate = tmpdate.minusWeeks(1).with(DayOfWeek.FRIDAY);
+				} else if(tmpzb < zhanbi) {
+					break;
+				}
+			} catch (java.lang.NullPointerException e) {
+				tmpdate = tmpdate.minusWeeks(1).with(DayOfWeek.FRIDAY);
+			}
+		}
+		tmpdate = requiredstartday.minusWeeks(1).with(DayOfWeek.FRIDAY);
+		while (tmpdate.isAfter(recordstart) ) {
+			Double tmpzb = nodexdate.getChenJiaoErZhanBi(tmpdate, 0);
+			try {
+				if(tmpzb < zhanbi) {
+					dpmaxwk ++;
+					tmpdate = tmpdate.minusWeeks(1).with(DayOfWeek.FRIDAY);
+				} else if(tmpzb >= zhanbi) {
+					break;
+				}
+			} catch (java.lang.NullPointerException e) {
+				tmpdate = tmpdate.minusWeeks(1).with(DayOfWeek.FRIDAY);
+			}
+		}
+		
+		Integer zbresult;
+		if(dpminwk != 0)
+			zbresult = 0 - dpminwk;
+		else
+			zbresult = dpmaxwk;
+		Number[] zhanbiresult = {zhanbi,zbresult};
+		return zhanbiresult;
+				
+	}
+	
 
 }
