@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 
+import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 
 public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxModel 
 {

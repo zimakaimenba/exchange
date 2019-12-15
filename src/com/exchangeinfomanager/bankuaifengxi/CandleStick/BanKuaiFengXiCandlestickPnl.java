@@ -175,6 +175,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	}
 	public LocalDate getDispalyStartDate ()
 	{
+		if (ohlcSeries.getItemCount() ==0 )
+			return null;
+		
 		OHLCItem kxiandatacurwk = (OHLCItem) ohlcSeries.getDataItem(0);
 		RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
 		LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -184,6 +187,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	}
 	public LocalDate getDispalyEndDate ()
 	{
+		if (ohlcSeries.getItemCount() ==0 )
+			return null;
+		
 		OHLCItem kxiandatacurwk = (OHLCItem) ohlcSeries.getDataItem(ohlcSeries.getItemCount()-1);
 		RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
 		LocalDate curend = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

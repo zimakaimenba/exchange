@@ -71,7 +71,6 @@ import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
-import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.google.common.collect.Lists;
 
 import com.google.common.io.LineProcessor;

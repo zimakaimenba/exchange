@@ -21,6 +21,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.table.DefaultTableModel;
 
+import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 
@@ -31,7 +32,6 @@ import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.operations.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -218,8 +218,10 @@ public class NodeInfoToCsv extends JPanel
 				
 				LocalDate tmpdate = tmpstartdate;
 				do  {
-					if(dapan.isDaPanXiuShi(tmpdate, 0, NodeGivenPeriodDataItem.WEEK))
+					if(dapan.isDaPanXiuShi(tmpdate, 0, NodeGivenPeriodDataItem.WEEK)) {
+						tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 						continue;
+					}
 					
 					 String[] nodecsvline = nodexdata.getNodeXDataCsvData(dapan, tmpdate, 0);						
 					 String[] csvheadline = {	"'" + node.getMyOwnCode() + "'", node.getMyOwnName(), tmpdate.with(DayOfWeek.FRIDAY).toString()	};
@@ -231,8 +233,6 @@ public class NodeInfoToCsv extends JPanel
 					
 					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 				} while (tmpdate.isBefore( tmpenddate) || tmpdate.isEqual(tmpenddate));
-				
-				
 			}
 		}
 

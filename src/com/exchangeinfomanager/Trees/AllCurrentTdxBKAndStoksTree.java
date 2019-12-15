@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.nodes.operations;
+package com.exchangeinfomanager.Trees;
 
 import java.sql.SQLException;
 import java.time.DayOfWeek;
@@ -17,7 +17,6 @@ import org.joda.time.Interval;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
-import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -121,6 +120,7 @@ public class AllCurrentTdxBKAndStoksTree
 		 TagsServiceForNodes tagsevofbk = new TagsServiceForNodes (bk);
 		 Collection<Tag> tags = tagsevofbk.getTags();
 		 bk.setNodeTags(tags);
+		 tagsevofbk = null;
 		
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { 
 			bk = this.getAllGeGuOfBanKuai (bk,period); 
@@ -694,7 +694,12 @@ public class AllCurrentTdxBKAndStoksTree
 	{
 		NodeXPeriodData nodedayperioddata = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
-			stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (stock,requiredstartday,requiredendday,period);
+			try {
+				stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (stock,requiredstartday,requiredendday,period);
+			} catch (java.lang.NullPointerException e) {
+				e.printStackTrace();
+			}
+			
 			return stock;
 		}
 		
@@ -721,6 +726,9 @@ public class AllCurrentTdxBKAndStoksTree
 		
 		LocalDate bkamostartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
 		LocalDate bkamoendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
+		
+		if(bkohlcstartday == null && bkamostartday == null)
+			return;
 		
 		if(bkohlcstartday == null) {
 			bkohlcstartday = bkamostartday;

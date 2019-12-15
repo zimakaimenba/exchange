@@ -3,6 +3,7 @@ package com.exchangeinfomanager.NodesServices;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +45,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		this.bkdbopt = new BanKuaiDbOperation ();
 		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
 	}
+	/*
+	 * 
+	 */
 	public List<TDXNodes> getBanKuaiFenXiQualifiedNodes (LocalDate checkdate,
 			 String globeperiod, Boolean globecalwholeweek, Boolean forcetogetnodedataagain)
 	{
@@ -226,7 +230,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 				bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
 		}
 		
-		this.getNodeData(bankuai, requiredstartday, requiredendday, period, calwholeweek);
+//		this.getNodeData(bankuai, requiredstartday, requiredendday, period, calwholeweek);
 		
 		return bankuai;
 	}
@@ -235,8 +239,49 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	public BkChanYeLianTreeNode getNodeZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		BanKuai bk = (BanKuai) bankuai;
+		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		
+		LocalDate tmpdate = requiredstartday;
+		do {
+			 Integer zhangtingnum = 0;
+			 Integer dietingnum = 0;
+			 
+			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
+				if( !((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(tmpdate)  )  //ȷ�ϵ�ǰ���ڰ����?
+					continue;
+
+				Stock stock = ((StockOfBanKuai)stockofbk).getStock();
+				NodeXPeriodData stockxdate = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+				Integer stockzt = stockxdate .getZhangTingTongJi (tmpdate,0);
+				if(stockzt != null)
+					zhangtingnum = zhangtingnum + stockzt;
+				
+				Integer stockdt =  stockxdate .getDieTingTongJi(tmpdate, 0);
+				if(stockdt != null)
+					dietingnum = dietingnum + stockdt;
+				
+			}
+			
+			if(zhangtingnum == 0)
+				zhangtingnum = null;
+			if(dietingnum == 0)
+				dietingnum = null;
+			
+			bkwkdate.addZhangDieTingTongJiJieGuo(tmpdate, zhangtingnum, dietingnum, false);
+			
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			
+		} while (tmpdate.isBefore( requiredendday) || tmpdate.isEqual(requiredendday));
+
+		return bk;
+	
 	}
 
 	@Override
@@ -248,9 +293,61 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 
 	@Override
 	public BkChanYeLianTreeNode getNodeQueKouInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
-			LocalDate requiredendday, String period) {
-		// TODO Auto-generated method stub
-		return null;
+			LocalDate requiredendday, String period) 
+	{
+		BanKuai bk = (BanKuai) bankuai;
+//		bk = this.getAllGeGuOfBanKuai (bk,period); //��ȡ���������Ǹð��ĸ���
+		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		
+		LocalDate tmpdate = requiredstartday;
+		do {
+			 Integer openup = 0;
+			 Integer opendown = 0;
+			 Integer huibuup = 0;
+			 Integer huibudown = 0;
+			 
+			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
+				if( ! ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(tmpdate)  )  //ȷ�ϵ�ǰ���ڰ����?
+					continue;
+				
+				Stock stock = ((StockOfBanKuai)stockofbk).getStock();
+				NodeXPeriodData stockxdate = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+				Integer stockopenup = stockxdate.getQueKouTongJiOpenUp (tmpdate,0);
+				if(stockopenup != null && stockopenup != 0)
+					openup = openup + stockopenup;
+				Integer stockopendown = stockxdate.getQueKouTongJiOpenDown(tmpdate, 0);
+				if(stockopendown != null && stockopendown !=0 )
+					opendown = opendown + stockopendown;
+				Integer stockhbdown =  stockxdate.getQueKouTongJiHuiBuDown(tmpdate, 0);
+				if(stockhbdown != null && stockhbdown !=0)
+					huibudown = huibudown + stockhbdown;
+				Integer stockhbup =stockxdate.getQueKouTongJiHuiBuUp(tmpdate, 0);
+				if(stockhbup != null && stockhbup  != 0)
+					huibuup =  huibuup + stockhbup;
+			}
+			
+			if(openup == 0)
+				openup = null;
+			if(huibuup == 0)
+				huibuup = null;
+			if(opendown == 0)
+				opendown = null;
+			if(huibudown == 0)
+				huibudown = null;
+			bkwkdate.addQueKouTongJiJieGuo(tmpdate, openup, huibuup, opendown, huibudown, false);
+			
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			
+		} while (tmpdate.isBefore( requiredendday) || tmpdate.isEqual(requiredendday));
+
+		return bk;
+	
 	}
 
 	@Override
@@ -263,6 +360,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		
 		LocalDate bkamostartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
 		LocalDate bkamoendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
+		
+		if(bkohlcstartday == null && bkamostartday == null) 
+			return ;
 		
 		if(bkohlcstartday == null) {
 			bkohlcstartday = bkamostartday;
@@ -397,31 +497,30 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	public void syncBanKuaiAndItsStocksForSpecificTime (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek  ) throws SQLException
 	{
 		this.getNodeData(bk, requiredstartday, requiredendday, period,calwholeweek);
-		
 		this.syncNodeData(bk);
-		
-		 TagsServiceForNodes tagsevofbk = new TagsServiceForNodes (bk);
-		 Collection<Tag> tags = tagsevofbk.getTags();
-		 bk.setNodeTags(tags);
-		
-		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { 
-			SvsForNodeOfStock svsforstock = new SvsForNodeOfStock (); 
+	
+//		 TagsServiceForNodes tagsevofbk = new TagsServiceForNodes (bk);
+//		 Collection<Tag> tags = tagsevofbk.getTags();
+//		 bk.setNodeTags(tags);
+//		 tagsevofbk = null;
+	
+		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
+			
+			SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
+			
 			bk = this.getAllGeGuOfBanKuai (bk); 
-//			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
-			Collection<BkChanYeLianTreeNode> allbkgg = bk.getSpecificPeriodBanKuaiGeGu (requiredendday,0);
+			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
-//		    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
-		    		 BkChanYeLianTreeNode stock = svsforstock.getNodeData(stockofbk, requiredstartday, requiredendday, period,calwholeweek);
-		    		 svsforstock.syncNodeData(stock);
+		    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
+		    		 Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
+	    			 svstock.syncNodeData(stock);
 	    			 
-	    			 TagsServiceForNodes tagsevofnode = new TagsServiceForNodes (stock);
-	    			 Collection<Tag> tagsofstock = tagsevofnode.getTags();
-	    			 ((Stock)stock).setNodeTags(tagsofstock);
-	    			 
-	    			 tagsofstock  = null;
-	    			 tagsevofnode = null;
-	    			 
-//		    	 }
+//	    			 TagsServiceForNodes tagsevofnode = new TagsServiceForNodes (stock);
+//	    			 Collection<Tag> tagsofstock = tagsevofnode.getTags();
+//	    			 stock.setNodeTags(tagsofstock);
+//	    			 
+//	    			 tagsevofnode = null;
+		    	 }
 			}
 			
 			if(calwholeweek ) { //

@@ -84,36 +84,37 @@ public class SvsForNodeOfStock implements ServicesForNode
 	}
 
 	@Override
-	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode stock, LocalDate requiredstartday,
+	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode stk, LocalDate requiredstartday,
 			LocalDate requiredendday, String period, Boolean calwholeweek)
 	{
-		NodeXPeriodData nodedayperioddata = ((Stock)stock).getNodeXPeroidData(period);
+		Stock stock = (Stock) stk;
+		NodeXPeriodData nodedayperioddata = stock.getNodeXPeroidData(period);
 		
-		if(!calwholeweek) {
-			LocalDate curdate = ((Stock)stock).getNodeDataAtNotCalWholeWeekModeLastDate();
+		if(!calwholeweek) { //不是计算完整周，要做复杂设置
+			LocalDate curdate = stock.getNodeDataAtNotCalWholeWeekModeLastDate();
 			if(curdate == null) {
-				((Stock)stock).setNodeDataAtNotCalWholeWeekMode(requiredendday);
+				stock.setNodeDataAtNotCalWholeWeekMode(requiredendday);
 				nodedayperioddata.resetAllData();
 			} else if(!curdate.isEqual(requiredendday)) {
-				((Stock)stock).setNodeDataAtNotCalWholeWeekMode(requiredendday);
+				stock.setNodeDataAtNotCalWholeWeekMode(requiredendday);
 				nodedayperioddata.resetAllData();
 			} else
 				return stock;
 		}
 		if(calwholeweek) {
-			if(((Stock)stock).isNodeDataAtNotCalWholeWeekMode() ) {
-				((Stock)stock).setNodeDataAtNotCalWholeWeekMode(null);
+			if( stock.isNodeDataAtNotCalWholeWeekMode() ) {
+				stock.setNodeDataAtNotCalWholeWeekMode(null);
 				nodedayperioddata.resetAllData();
 			}
 		}
 		
-		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
-			stock = bkdbopt.getStockZhanBi ((Stock) stock,requiredstartday,requiredendday,period);
+		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
+			stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
 			return stock;
 		}
 		
 		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-				(requiredstartday,requiredendday,nodedayperioddata.getOHLCRecordsStartDate(),nodedayperioddata.getOHLCRecordsEndDate()  );
+				(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),nodedayperioddata.getAmoRecordsEndDate()  );
 		if(timeintervallist == null)
 			return stock;
 		
@@ -124,7 +125,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth());
 				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
 				
-				stock = bkdbopt.getStockZhanBi (((Stock)stock),requiredstartday,requiredendday,period);
+				stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
 		}
 		return stock;
 	}
@@ -147,11 +148,15 @@ public class SvsForNodeOfStock implements ServicesForNode
 	public BkChanYeLianTreeNode getNodeKXian(BkChanYeLianTreeNode stock, LocalDate requiredstartday,
 			LocalDate requiredendday, String period,Boolean calwholeweek)
 	{
-		this.getNodeData(stock, requiredstartday, requiredendday, period, calwholeweek);
+//		this.getNodeData(stock, requiredstartday, requiredendday, period, calwholeweek);
 		
 		NodeXPeriodData nodedayperioddata = ((Stock)stock).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
-			stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (((Stock)stock),requiredstartday,requiredendday,period);
+			try {
+				stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (((Stock)stock),requiredstartday,requiredendday,period);
+			} catch (java.lang.NullPointerException e) {
+				e.printStackTrace();
+			}
 			return stock;
 		}
 		
