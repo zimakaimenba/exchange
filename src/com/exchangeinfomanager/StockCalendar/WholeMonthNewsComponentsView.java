@@ -46,7 +46,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 public class WholeMonthNewsComponentsView extends View 
 {
 
-	private JPanel cqjlpnl = new JPanel ();
+	protected JPanel cqjlpnl = new JPanel ();
 	private ServicesForNews svsofexternalnews;
 	protected JPanel contentpnl;
 	private String viewtitle;
@@ -76,7 +76,7 @@ public class WholeMonthNewsComponentsView extends View
 	        super.add(this.cqjlpnl,BorderLayout.CENTER);
 	 }
 
-	 public void onNewsChange(NewsCache cache) 
+	public void onNewsChange(NewsCache cache) 
 	{
 		LocalDate firstdayofmonth = this.initView();
 		
@@ -178,7 +178,7 @@ public class WholeMonthNewsComponentsView extends View
 	/*
 	 * 
 	 */
-	private JUpdatedLabel getFormatedLabelForWithLabels(News m, News.Label l) 
+	protected JUpdatedLabel getFormatedLabelForWithLabels(News m, News.Label l) 
     {
     	Integer dbid = null ;
 		if( m instanceof InsertedNews ) 
@@ -198,7 +198,7 @@ public class WholeMonthNewsComponentsView extends View
 		return label;
 	}
 
-	private JUpdatedLabel getFormatedLabelForNoneLabel(News m) 
+	protected JUpdatedLabel getFormatedLabelForNoneLabel(News m) 
     {
 		Integer dbid = null ;
 		if( m instanceof InsertedNews ) 

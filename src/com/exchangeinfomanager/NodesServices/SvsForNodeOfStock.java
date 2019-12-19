@@ -296,6 +296,9 @@ public class SvsForNodeOfStock implements ServicesForNode
 		LocalDate bkamostartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
 		LocalDate bkamoendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
 		
+		if(bkohlcstartday == null && bkamostartday == null) 
+			return ;
+		
 		if(bkohlcstartday == null) {
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;

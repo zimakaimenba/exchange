@@ -431,17 +431,19 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 		sortPaths(this,treePaths);
 	    int topRow = this.getRowForPath(treePaths[0]);
 	    for (TreePath path : treePaths) {
-	            	BkChanYeLianTreeNode child = (BkChanYeLianTreeNode) path.getLastPathComponent();
-	            	BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) child.getParent();
-	                if (parent != null){
-	                    int childIndex = parent.getIndex(child);
-	                    //删除node在产业链上的TAG
-	                    dboptforcyl.deleteTagsOnCurrentTreePathForChanYeLianNode ((CylTreeNestedSetNode)child);
+	    	BkChanYeLianTreeNode child = (BkChanYeLianTreeNode) path.getLastPathComponent();
+	    	removeTagesFromNodeWhenDeleteNodes (child);
+	            	
+	        BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) child.getParent();
+	        if (parent != null){
+	            int childIndex = parent.getIndex(child);
+	            //删除node在产业链上的TAG
+	            dboptforcyl.deleteTagsOnCurrentTreePathForChanYeLianNode ((CylTreeNestedSetNode)child);
 	                    
-	                    parent.remove(child);
+	             parent.remove(child);
 
-	                    treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
-	                }
+	             treeModel.nodesWereRemoved(parent, new int[] {childIndex}, new Object[] {child});
+	        }
 	      }
 	            
 	      if (this.getVisibleRowCount()>0) 
@@ -449,6 +451,17 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	   
 	   return true;
 	}
+	private void removeTagesFromNodeWhenDeleteNodes (BkChanYeLianTreeNode deletenode)
+	{
+		int childcount = deletenode.getChildCount();
+    	for(int i=0;i<childcount;i++) {
+    		TreeNode childnode = deletenode.getChildAt(i);
+    		dboptforcyl.deleteTagsOnCurrentTreePathForChanYeLianNode ((CylTreeNestedSetNode)childnode);
+    		
+    		removeTagesFromNodeWhenDeleteNodes ((BkChanYeLianTreeNode) childnode);
+    	}
+	}
+	
 	public boolean isolatedNodes(TreePath selectednode) 
 	{
 		this.setSelectionPath(selectednode);

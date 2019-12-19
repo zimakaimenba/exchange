@@ -262,11 +262,10 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	    	event.setNewsOwnerCodes(newsownersField.getText());
 	    	event.setTitle(newstitleField.getText());
 	    	event.setStart(startTimeChooser.getLocalDate() );
+	    	event.setEnd(endTimeChooser.getLocalDate());
 	    	event.setKeyWords(keywordsField.getText());
 	    	event.setDescription(descriptionArea.getText());
 	    	event.setNewsUrl(newsurlField.getText());
-	    	event.setStart(startTimeChooser.getLocalDate());
-	    	event.setEnd(endTimeChooser.getLocalDate());
 	        return event;
 	    }
 

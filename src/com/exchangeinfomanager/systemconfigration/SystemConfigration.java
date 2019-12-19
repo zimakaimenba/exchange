@@ -1033,7 +1033,7 @@ public class SystemConfigration
 		{
 			List<String> zhishu = new ArrayList<> ();
 			zhishu.add("999999");
-//			zhishu.add("399001");
+			zhishu.add("399001");
 			zhishu.add("399006");
 			zhishu.add("000016");
 			

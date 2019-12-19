@@ -30,7 +30,10 @@ import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Search.SearchDialog;
+import com.exchangeinfomanager.Services.ServicesOfPaoMaDeng;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
@@ -47,6 +50,7 @@ import com.exchangeinfomanager.bankuaichanyelian.JDialogOfBanKuaiChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxNodeRenderer;
@@ -177,11 +181,7 @@ public class StockInfoManager
 		
 		accountschicangconfig = AccountAndChiCangConfiguration.getInstance();
 		acntdbopt = new AccountDbOperation();
-		
-		
-		allbkstock = AllCurrentTdxBKAndStoksTree.getInstance();
 		bkdbopt = new BanKuaiDbOperation ();
-//		this.cyltreedb = new CylTreeDbOperation ();
 		
 		initializeGui();
 		displayAccountAndChiCang ();
@@ -195,15 +195,13 @@ public class StockInfoManager
 	private SystemConfigration sysconfig = null;
 	private AccountAndChiCangConfiguration accountschicangconfig;
 	private BkChanYeLianTreeNode nodeshouldbedisplayed; 
-	private BuyCheckListTreeDialog buychklstdialog;
+//	private BuyCheckListTreeDialog buychklstdialog;
 	private BanKuaiDbOperation bkdbopt;
 	private AccountDbOperation acntdbopt;
 	private BanKuaiGuanLi bkgldialog = null;
 	private BanKuaiFengXi bkfx ;
 	private SearchDialog searchdialog;
 	private WeeklyExportFileFengXi effx;
-	private AllCurrentTdxBKAndStoksTree allbkstock;
-	private BanKuaiAndStockTree bkcyl;
 	private TagCache bkstkkwcache;
 	private JDialogOfBanKuaiChanYeLian cyldialog;
 	/*
@@ -221,8 +219,9 @@ public class StockInfoManager
 		//在checkbox添加现有持仓，方便启动后就可以查询现有持仓
 		ArrayList<String> tmpchicangname = accountschicangconfig.getStockChiCangName();
 		cBxstockcode.removeAllItems();
+		SvsForNodeOfStock svsstock = new SvsForNodeOfStock ();
 		for(String tmpsgstockcodename:tmpchicangname) {
-			BkChanYeLianTreeNode tmpstock = allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpsgstockcodename.substring(0, 6), BkChanYeLianTreeNode.TDXGG);
+			BkChanYeLianTreeNode tmpstock = svsstock.getNode(tmpsgstockcodename.substring(0, 6) );
 			( (JStockComboBoxModel)cBxstockcode.getModel() ).addElement(tmpstock);
 		}
 		try {
@@ -236,15 +235,14 @@ public class StockInfoManager
 	{
 		// TODO Auto-generated method stub
 		String title = "明日计划:";
-//		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.DAY_OF_MONTH, -1);
-//		Date ystday = cal.getTime();
-		//asinglestockinfomation = new ASingleStockOperations("");
-		String paomad = bkdbopt.getMingRiJiHua();
+		ServicesOfPaoMaDeng svspmd = new PaoMaDengServices ();
+		String paomad = svspmd.getPaoMaDengInfo();
 		
 		if(!paomad.isEmpty())
 			pnl_paomd.refreshMessage(title+paomad);
 		else pnl_paomd.refreshMessage(null);
+		
+		svspmd = null;
 	}
 
 		private void displayDbInfo() 
@@ -417,10 +415,12 @@ public class StockInfoManager
     				else
     					return;
     				
-            		LocalDate requirestart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-    				BanKuai bankuai = (BanKuai) allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selbkcode, BkChanYeLianTreeNode.TDXBK);
+//            		LocalDate requirestart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+//    				BanKuai bankuai = (BanKuai) allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selbkcode, BkChanYeLianTreeNode.TDXBK);
+    				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+    				BkChanYeLianTreeNode bankuai = svsbk.getNode(selbkcode);
     				editorPanenodeinfo.displayNodeAllInfo(bankuai);
-            		
+    				svsbk = null;
             	}
             }
 		});

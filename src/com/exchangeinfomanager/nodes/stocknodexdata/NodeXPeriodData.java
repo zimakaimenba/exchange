@@ -71,7 +71,6 @@ public interface NodeXPeriodData
 	
 	public Double getChengJiaoEr (LocalDate requireddate,int difference);
 	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate,int difference);
-	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod (LocalDate requireddate,int difference);
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference);
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (TDXNodes superbk, LocalDate requireddate,int difference);
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate,int difference);
@@ -79,6 +78,8 @@ public interface NodeXPeriodData
 	public Integer getCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk);
 	
 	public Double getAverageDailyChengJiaoErOfWeek (LocalDate requireddate,int difference);
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod (LocalDate requireddate,int difference);
+	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference);
 	
 	public Double getChengJiaoLiang(LocalDate requireddate, int difference);
 	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference);

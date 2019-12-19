@@ -40,6 +40,8 @@ import org.ta4j.core.Bar;
 
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 
@@ -53,7 +55,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 
 
-public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxDataValueListener
+public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxDataValueListener, BanKuaiGeGuMatchConditionListener
 {
 	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
@@ -394,6 +396,12 @@ public class BanKuaiInfoTable extends JTable implements BarChartHightLightFxData
 		    	comp.setBackground(Color.blue);
 		    }
 	        return comp;
+	}
+	@Override
+	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 

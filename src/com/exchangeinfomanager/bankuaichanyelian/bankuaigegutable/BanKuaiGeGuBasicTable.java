@@ -26,6 +26,8 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -35,7 +37,7 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
-public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHightLightFxDataValueListener
+public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHightLightFxDataValueListener, BanKuaiGeGuMatchConditionListener
 {
 	public BanKuaiGeGuBasicTable (StockInfoManager stockmanager1)
 	{
@@ -283,54 +285,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 	    newlog.setVisible(true);
 
 	}
-//	/*
-//     * 设置该板块个股的权重
-//     */
-//	private void setGeGuWeightInBanKuai()
-//    {
-//		int row = this.getSelectedRow();
-//		if(row < 0)
-//			return;
-//		int modelRow = this.convertRowIndexToModel(row);
-//		
-////		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
-//		BanKuai bkcode = ((BanKuaiGeGuTableModel)this.getModel()).getCurDispalyBandKuai();
-//		String stockcode = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCode(modelRow);
-//		int weight = ((BanKuaiGeGuTableModel)(this.getModel())).getStockCurWeight (modelRow);
-//		
-//		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重！\n\r"
-//											+ "10~1 ：占主业营收比重,\n\r 0 : 营收占比几乎没有概念阶段,\n\r -1 : 毫无关系"
-//				,weight);
-//		try {
-//			int newweight = Integer.parseInt(weightresult);
-//			if(newweight> 10 || newweight < -1)
-//				JOptionPane.showMessageDialog(null,"权重值范围10 ~ -1！\n\r"
-//						,"Warning",JOptionPane.WARNING_MESSAGE);
-//			
-//			if(weight != newweight) {
-//				bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
-//				( (BanKuaiGeGuTableModel)this.getModel() ).setStockCurWeight (modelRow,newweight);
-//			}
-//		} catch (java.lang.NumberFormatException e) {
-//			return;
-//		}
-//	}
-	
-//	public void hideZhanBiColumn (int hidecolumn) 
-//	{
-//		TableColumnModel tcm = this.getColumnModel();
-//		if(hidecolumn >1) {
-//			//在板块分析界面不需要3个column
-//			this.removeColumn(tcm.getColumn(3));
-//			this.removeColumn(tcm.getColumn(3));
-//			this.removeColumn(tcm.getColumn(3));
-//			this.removeColumn(tcm.getColumn(3));
-//
-//		} 
-////		else if (hidecolumn == 1) {
-////			this.removeColumn(tcm.getColumn(6));
-////		}
-//	}
+
 	
 	public void removeRows () 
 	{
@@ -342,7 +297,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHi
 		}
 	}
 
-
+	
 
 
 }

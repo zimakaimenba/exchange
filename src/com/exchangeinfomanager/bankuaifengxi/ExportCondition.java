@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import java.util.Set;
 
+import com.exchangeinfomanager.News.NewsCacheListener;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -23,10 +24,13 @@ import com.google.common.base.Strings;
 
 public class ExportCondition 
 {
+	private Set<BarChartHightLightFxDataValueListener> bkfxhighlightvaluesoftableslisteners;
 
 	public ExportCondition ()
 	{
 		extracon = new ExtraExportConditions ();
+		
+		this.bkfxhighlightvaluesoftableslisteners = new HashSet<>();
 	}
 	private  ExtraExportConditions extracon;
 	
@@ -47,6 +51,10 @@ public class ExportCondition
 	private Integer settindpgminwk;
 
 	private String settingmaformula;
+	
+	 public void addCacheListener(BarChartHightLightFxDataValueListener listener) {
+	        this.bkfxhighlightvaluesoftableslisteners.add(listener);
+	 }
 	
 	/*
 	 * 检查所有的node是否符合当前设置
@@ -459,7 +467,6 @@ public class ExportCondition
 			return true;
 		} else 
 			return false;
-		
 	}
 	//
 	public Double getCjeLevelUnderCertaincChenJiaoErOfLianXuFangLiang ()

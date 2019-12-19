@@ -12,6 +12,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.gui.StockInfoManager;
 
@@ -87,31 +88,38 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
             }
         };
     }
-
+    @Override
+	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
+    {
+    	((BanKuaiGeGuTableModel)this.getModel()).setDisplayMatchCondition(expc);
+    	this.repaint();
+	}
 	@Override
 	public void hightLightFxValues(ExportCondition expc) 
 	{
-//		Integer cjezbbkmax = expc.getSettinBkmaxwk();
-		Integer cjemaxwk = expc.getSettingCjemaxwk();
-		Integer cjezbdpmax = expc.getSettinDpmaxwk();
-		Integer cjezbdpmin = expc.getSettingDpminwk();
-		Double cjemin = expc.getSettingCjemin();
-		Double cjemax = expc.getSettingCjeMax();
-		Double showhsl = expc.getSettingHsl();
-		Double showltszmax = expc.getLiuTongShiZhiMax();
-		Double showltszmin = expc.getLiuTongShiZhiMin();
-		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
-		String displayma = expc.getSettingMAFormula();
 		
-		
-//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeZhanBiDPMaxMinWk (cjezbdpmax,cjezbdpmin);
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
-			((BanKuaiGeGuTableModel)this.getModel()).setHighLightHuiBuDownQueKou(showhuibudownquekou);
-			((BanKuaiGeGuTableModel)this.getModel()).setDisplayMAFormula(displayma);
+//		
+////		Integer cjezbbkmax = expc.getSettinBkmaxwk();
+//		Integer cjemaxwk = expc.getSettingCjemaxwk();
+//		Integer cjezbdpmax = expc.getSettinDpmaxwk();
+//		Integer cjezbdpmin = expc.getSettingDpminwk();
+//		Double cjemin = expc.getSettingCjemin();
+//		Double cjemax = expc.getSettingCjeMax();
+//		Double showhsl = expc.getSettingHsl();
+//		Double showltszmax = expc.getLiuTongShiZhiMax();
+//		Double showltszmin = expc.getLiuTongShiZhiMin();
+//		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
+//		String displayma = expc.getSettingMAFormula();
+//		
+//		
+////			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayCjeZhanBiDPMaxMinWk (cjezbdpmax,cjezbdpmin);
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
+//			((BanKuaiGeGuTableModel)this.getModel()).setHighLightHuiBuDownQueKou(showhuibudownquekou);
+//			((BanKuaiGeGuTableModel)this.getModel()).setDisplayMAFormula(displayma);
 		
 		this.repaint();
 		

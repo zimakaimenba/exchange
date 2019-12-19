@@ -605,6 +605,36 @@ import com.udojava.evalex.Expression;
 
 		return maxweek;
 	}
+	@Override
+	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference)
+	{
+		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if( curcjlrecord == null) 
+			return null;
+		
+		int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
+		Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
+		int maxweek = 0;
+		
+		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+		
+		for(int i = index-1;i >=0; i--) {
+			
+			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( i );
+			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+				return maxweek;
+			
+			LocalDate lastdate = lastcjlrecord.getPeriod().getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			int lastexchangedaynum = this.getExchangeDaysNumberForthePeriod(lastdate, 0);
+			Double lastcje = lastcjlrecord.getValue().doubleValue() / lastexchangedaynum;
+			if(curcje > lastcje)
+				maxweek ++;
+			else
+				break;
+		}
+
+		return maxweek;
+	}
 	/*
 	 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率，
 	 */
@@ -1333,14 +1363,14 @@ import com.udojava.evalex.Expression;
 				 
 				 Integer cjemaxwk = null;
 			     try{
-			    		cjemaxwk = this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+			    		cjemaxwk = this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
 			     } catch (java.lang.NullPointerException e) {
 			    		
 			     }
 				 if(cjemaxwk>0) {
 					 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
 					 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
-					 fontcjemaxwk.appendText("成交额MaxWk=" + cjemaxwk);
+					 fontcjemaxwk.appendText("周日平均成交额MaxWk=" + cjemaxwk);
 					 fontcjemaxwk.attr("color", "#AF7AC5 ");
 				 } 
 				 

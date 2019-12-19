@@ -1086,6 +1086,10 @@ public abstract class TDXNodesXPeriodDataForTA4J extends TDXNodesXPeriodExternal
 	{
 		return null;
 	}
+	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference)
+	{
+		return null;
+	}
 	
 		 
 }

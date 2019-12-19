@@ -315,48 +315,134 @@ public class CylTreeDbOperation
 	public void createTagsOnCurrentTreePathForChanYeLianNode (CylTreeNestedSetNode node)
 	{
 		BanKuaiAndStockTree treebkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-		BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType());
-		if(treenode == null)
-			return;
-		
-		TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
-		
-		TreeNode[] path = node.getPath();
-    	for(int i=1;i<path.length-1;i++) {
-    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
-    		if(tmpnode.getType() == BkChanYeLianTreeNode.SUBGPC) {
-    			Tag nodetag = new Tag (tmpnode.getMyOwnName());
-    			try {
+		if(node.getType() == BkChanYeLianTreeNode.SUBGPC ) { //如果插入一个SUBPC，他的所有上级中如果有板块或者个股，必须具有这个subpc 的tag
+			TreeNode[] path = node.getPath();
+	    	for(int i=1;i<path.length-1;i++) {
+	    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
+	    		if(tmpnode.getType() == BkChanYeLianTreeNode.SUBGPC || tmpnode.getType() == BkChanYeLianTreeNode.GPC
+	    				|| tmpnode.getType() == BkChanYeLianTreeNode.DAPAN ) 
+	    			continue;
+	    		
+	    		BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(tmpnode.getMyOwnCode(), tmpnode.getType());
+	    		if(treenode == null)
+					continue;
+	    		
+	    		TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
+	    		Tag nodetag = new Tag (node.getMyOwnName());
+	    		try {
+					nodetagservice.createTag(nodetag);
+				} catch (SQLException e) {
+						e.printStackTrace();
+				}
+	    		
+	    		nodetagservice = null;
+	    		nodetag = null;
+	     }
+	  } 
+	  else {
+			BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType());
+			if(treenode == null)
+				return;
+			
+			TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
+			
+			TreeNode[] path = node.getPath();
+	    	for(int i=1;i<path.length-1;i++) {
+	    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
+	    		if(tmpnode.getType() != BkChanYeLianTreeNode.SUBGPC) 
+	    			continue;
+	    		
+	    		Tag nodetag = new Tag (tmpnode.getMyOwnName());
+	    		try {
 					nodetagservice.createTag(nodetag);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    		}
-    	}
+	    		nodetag = null;
+	    	}
+	    	nodetagservice = null;
+	 }
+		
+	 treebkstk = null;
 	}
+	/*
+	 * 
+	 */
 	public void deleteTagsOnCurrentTreePathForChanYeLianNode (CylTreeNestedSetNode node)
 	{
-		BanKuaiAndStockTree treebkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-		BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType());
-		if(treenode == null)
-			return;
-		
-		TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
-		
-		TreeNode[] path = node.getPath();
-    	for(int i=1;i<path.length-1;i++) {
-    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
-    		if(tmpnode.getType() == BkChanYeLianTreeNode.SUBGPC) {
-    			Tag nodetag = new Tag (tmpnode.getMyOwnName());
-    			try {
-					nodetagservice.deleteTag(nodetag);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    		}
-    	}
+			BanKuaiAndStockTree treebkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+			if(node.getType() == BkChanYeLianTreeNode.SUBGPC ) { //如果删除是一个SUBPC，他的所有上级中如果有板块或者个股，必须删除这个subpc 的tag
+				TreeNode[] path = node.getPath();
+		    	for(int i=1;i<path.length-1;i++) {
+		    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
+		    		if(tmpnode.getType() == BkChanYeLianTreeNode.SUBGPC || tmpnode.getType() == BkChanYeLianTreeNode.GPC
+		    				|| tmpnode.getType() == BkChanYeLianTreeNode.DAPAN ) 
+		    			continue;
+		    		
+		    		BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(tmpnode.getMyOwnCode(), tmpnode.getType());
+		    		if(treenode == null)
+						continue;
+		    		
+		    		TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
+		    		Tag nodetag = new Tag (node.getMyOwnName());
+		    		try {
+						nodetagservice.deleteTag(nodetag);
+					} catch (SQLException e) {
+							e.printStackTrace();
+					}
+		    		
+		    		nodetagservice = null;
+		    		nodetag = null;
+		     }
+		  } 
+		  else {
+				BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType());
+				if(treenode == null)
+					return;
+				
+				TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
+				
+				TreeNode[] path = node.getPath();
+		    	for(int i=1;i<path.length-1;i++) {
+		    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
+		    		if(tmpnode.getType() != BkChanYeLianTreeNode.SUBGPC) 
+		    			continue;
+		    		
+		    		Tag nodetag = new Tag (tmpnode.getMyOwnName());
+		    		try {
+						nodetagservice.deleteTag(nodetag);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    		nodetag = null;
+		    	}
+		    	nodetagservice = null;
+		 }
+			
+		 treebkstk = null;
+	 
+//		BanKuaiAndStockTree treebkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+//		BkChanYeLianTreeNode treenode = treebkstk.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType());
+//		if(treenode == null)
+//			return;
+//		
+//		TagsServiceForNodes nodetagservice = new TagsServiceForNodes (treenode);
+//		
+//		TreeNode[] path = node.getPath();
+//    	for(int i=1;i<path.length-1;i++) {
+//    		CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode)path[i];
+//    		if(tmpnode.getType() == BkChanYeLianTreeNode.SUBGPC) {
+//    			Tag nodetag = new Tag (tmpnode.getMyOwnName());
+//    			try {
+//					nodetagservice.deleteTag(nodetag);
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//    		}
+//    	}
 	}
 	/*
 	 * 
@@ -448,7 +534,7 @@ public class CylTreeDbOperation
 					rsagu = null;
 			}
 			 
-			deleteNodeInDb (aNode);
+//			deleteNodeInDb (aNode);
 	}
 
 	public BkChanYeLianTreeNode getChanYeLianInfo(BkChanYeLianTreeNode node) 

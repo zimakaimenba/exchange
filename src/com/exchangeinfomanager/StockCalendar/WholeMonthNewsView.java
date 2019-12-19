@@ -73,7 +73,7 @@ public class WholeMonthNewsView extends View
 
 	private WholeMonthNewsComponentsView dqgz;
 
-	private WholeMonthNewsComponentsView dqgzview;
+	private WholeMonthCompViewOfDQGZ dqgzview;
 	
 	private WholeMonthNewsComponentsView zsblview;
 	
@@ -105,7 +105,7 @@ public class WholeMonthNewsView extends View
 	    		} else
 	    		if( f instanceof DuanQiGuanZhuServices) {
 	    			svsdqgz = (DuanQiGuanZhuServices) f;
-	    			dqgzview = new WholeMonthNewsComponentsView (svsdqgz, "近期关注");
+	    			dqgzview = new WholeMonthCompViewOfDQGZ (svsdqgz, "近期关注");
 	    		} else
 	    		if( f instanceof ZhiShuBoLangServices) {
 	    			svszsbl = (ZhiShuBoLangServices) f;

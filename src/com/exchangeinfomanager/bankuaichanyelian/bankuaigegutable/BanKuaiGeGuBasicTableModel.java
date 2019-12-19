@@ -244,6 +244,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 			   		}
 	    		}
 	   		
+	    		hypy = null;
 	    		return index;
 	    }
 

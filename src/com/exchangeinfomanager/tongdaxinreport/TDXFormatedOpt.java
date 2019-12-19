@@ -106,7 +106,7 @@ public class TDXFormatedOpt {
 				
 				if(corezhishu.contains(zhishucode)) { //核心指数肯定要显示
 					setTDXDrawLineInfo (zhishucode,zhishushuoming,"",startdate, lineinfo, remindinfo );
-					if(enddate != null) {
+					if(enddate != null && !enddate.isEqual(startdate) ) {
 						setTDXDrawLineInfo (zhishucode,zhishushuoming,"",enddate, lineinfo, remindinfo );
 					} 				
 				} else {  //板块指数只在是该板块的时候显示

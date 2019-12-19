@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.DaPan;
@@ -36,32 +37,17 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 		
 		super.setTableHeader(jtableTitleStrings);
 		
-		this.setDisplayChenJiaoEr(null, null);
-		this.setDisplayCjeBKMaxWk(null);
-		this.setDisplayCjeZhanBiDPMaxMinWk(null,null);
-		this.setDisplayHuanShouLv(null);
-		this.setDisplayCjeMaxWk(null);
-		this.setDisplayLiuTongShiZhi(null, null);
-		this.setHighLightHuiBuDownQueKou(false);
+//		this.setDisplayChenJiaoEr(null, null);
+//		this.setDisplayCjeZhanBiDPMaxMinWk(null,null);
+//		this.setDisplayHuanShouLv(null);
+//		this.setDisplayCjeMaxWk(null);
+//		this.setDisplayLiuTongShiZhi(null, null);
+//		this.setHighLightHuiBuDownQueKou(false);
 	}
 
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
-	
-	private Double showcjemin ;
-	private Double showcjemax ;
-	private Integer cjemaxwk ;
-	private Integer cjezbdpmaxwk ;
-	private Integer cjezbbkmaxwk ;
-	private Double huanshoulv ;
-	private Double showltszmin;
-	private Double showltszmax;
-	private Boolean showhuibudownquekou;
-	private Integer cjezbdpminwk;
+	private BanKuaiGeGuMatchCondition condition;
 
-//	private Integer displayma;
-	private String displaymaformula;
-
-	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
 //	    	logger.debug(rowIndex + "col" + columnIndex  + "  ");
@@ -218,158 +204,164 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 		      
 		      return clazz;
 	 }
-	    
-		//设置突出显示成交额阀值
-		public void setDisplayChenJiaoEr (Double cjemin, Double cjemax)
-		{
-			if(cjemin != null && cjemax == null) {
-				this.showcjemin  = cjemin;
-				this.showcjemax = 1000000000000.0;
-			} else
-			if(cjemax != null && cjemin == null) {
-				this.showcjemin  = 0.0;
-				this.showcjemax  = cjemax;
-			} else
-			if(cjemax != null && cjemin != null) {
-				this.showcjemin  = cjemin;
-				this.showcjemax  = cjemax;
-			} else
-			if(cjemin == null && cjemax == null) {
-				this.showcjemin = 1000000000000.0;
-				this.showcjemax = 1000000000000.0;
-			}
-		}
-		public Double getDisplayChenJiaoErMin ()
-		{
-			return this.showcjemin ;
-			
-		}
-		public Double getDisplayChenJiaoErMax ()
-		{
-			return this.showcjemax ;
-		}
-		//设置bkMAXWK阀值
-		public void setDisplayCjeMaxWk (Integer cjemax)
-		{
-			if(cjemax != null)
-				this.cjemaxwk = cjemax;
-			else
-				this.cjemaxwk =  10000000;
-		}
-		public Integer getDisplayCjeMaxWk ()
-		{
-			return this.cjemaxwk;
-		}
-		//设置显示每日板块文件
-//		public void setShowParsedFile (Boolean onoff)
+      
+//     private Double showcjemin ;
+//  	private Double showcjemax ;
+//  	private Integer cjemaxwk ;
+//  	private Integer cjezbdpmaxwk ;
+//  	private Integer cjezbbkmaxwk ;
+//  	private Double huanshoulv ;
+//  	private Double showltszmin;
+//  	private Double showltszmax;
+//  	private Boolean showhuibudownquekou;
+//  	private Integer cjezbdpminwk;
+//
+////  	private Integer displayma;
+//  	private String displaymaformula;
+    public void setDisplayMatchCondition (BanKuaiGeGuMatchCondition cond)
+    {
+    	  this.condition = cond;
+    }
+    public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
+    {
+    	return this.condition;
+    }
+//	    
+//		//设置突出显示成交额阀值
+//		private void setDisplayChenJiaoEr (Double cjemin, Double cjemax)
 //		{
-//			this.showparsedfile = onoff;
+//			if(cjemin != null && cjemax == null) {
+//				this.showcjemin  = cjemin;
+//				this.showcjemax = 1000000000000.0;
+//			} else
+//			if(cjemax != null && cjemin == null) {
+//				this.showcjemin  = 0.0;
+//				this.showcjemax  = cjemax;
+//			} else
+//			if(cjemax != null && cjemin != null) {
+//				this.showcjemin  = cjemin;
+//				this.showcjemax  = cjemax;
+//			} else
+//			if(cjemin == null && cjemax == null) {
+//				this.showcjemin = 1000000000000.0;
+//				this.showcjemax = 1000000000000.0;
+//			}
 //		}
-//		public Boolean showParsedFile ()
+//		private Double getDisplayChenJiaoErMin ()
 //		{
-//			return this.showparsedfile ;
+//			return this.showcjemin ;
+//			
 //		}
-		//设置成交额dpMAXWK阀值
-		public void setDisplayCjeZhanBiDPMaxMinWk (Integer bkmax, Integer bkmin)
-		{
-			if(bkmax != null)
-				this.cjezbdpmaxwk = bkmax;
-			else
-				cjezbdpmaxwk = 10000000;
-			
-			if(bkmin != null)
-				this.cjezbdpminwk = bkmin;
-			else
-				cjezbdpminwk = 10000000;
-		}
-		public Integer getDisplayCjeZhanBiDPMaxWk ()
-		{
-			return this.cjezbdpmaxwk;
-		}
-		public Integer getDisplayCjeZhanBiDPMinWk ()
-		{
-			return this.cjezbdpminwk;
-		}
-		//设置bkMAXWK阀值
-		private void setDisplayCjeBKMaxWk (Integer bkmax)
-		{
-			if(bkmax != null)
-				this.cjezbbkmaxwk = bkmax;
-			else
-				this.cjezbbkmaxwk = 10000000;
-		}
-		public Integer getDisplayCjeBKMaxWk ()
-		{
-			return this.cjezbbkmaxwk;
-		}
-
-		public void setDisplayHuanShouLv (Double hsl)
-		{
-			if(hsl != null)
-				this.huanshoulv = hsl;
-			else
-				huanshoulv = 1000000.0;
-		}
-		public Double getDisplayHuanShouLv ()
-		{
-			return this.huanshoulv;
-		}
-		public void setDisplayLiuTongShiZhi(Double ltszmin, Double ltszmax)
-		{
-			if(ltszmin != null && ltszmax == null) {
-				this.showltszmin  = ltszmin;
-				this.showltszmax = 10000000000000.0;
-			} else
-			if(ltszmax != null && ltszmin == null) {
-				this.showltszmin  = 0.0;
-				this.showltszmax  = ltszmax;
-			} else
-			if(ltszmax != null && ltszmin != null) {
-				this.showltszmin  = ltszmin;
-				this.showltszmax  = ltszmax;
-			} else
-			if(ltszmin == null && ltszmax == null) {
-				this.showltszmin = 10000000000000.0;
-				this.showltszmax = 10000000000000.0;
-			}
-			
-		}
-		public Double getDisplayLiuTongShiZhiMin ()
-		{
-			if(this.showltszmin != null)
-				return this.showltszmin ;
-			else
-				return 10000000000000.0;
-		}
-		public Double getDisplayLiuTongShiZhiMax ()
-		{
-			if(this.showltszmax != null)
-				return this.showltszmax ;
-			else
-				return 10000000000000.0;
-		}
-		public void setHighLightHuiBuDownQueKou(Boolean showhuibudownquekou1) 
-		{
-			this.showhuibudownquekou = showhuibudownquekou1;
-			
-		}
-		public Boolean shouldHighlightHuiBuDownQueKou ()
-		{
-			return this.showhuibudownquekou;
-		}
-		
-		public void setDisplayMAFormula(String displayma)
-		{
-			this.displaymaformula = displayma;
-			
-		}
-		public String getDisplayMAFormula ()
-		{
-			if(displaymaformula != null)
-				return this.displaymaformula;
-			else
-				 return null;
-		}
+//		private Double getDisplayChenJiaoErMax ()
+//		{
+//			return this.showcjemax ;
+//		}
+//		//设置bkMAXWK阀值
+//		private void setDisplayCjeMaxWk (Integer cjemax)
+//		{
+//			if(cjemax != null)
+//				this.cjemaxwk = cjemax;
+//			else
+//				this.cjemaxwk =  10000000;
+//		}
+//		private Integer getDisplayCjeMaxWk ()
+//		{
+//			return this.cjemaxwk;
+//		}
+//		//设置成交额dpMAXWK阀值
+//		private void setDisplayCjeZhanBiDPMaxMinWk (Integer bkmax, Integer bkmin)
+//		{
+//			if(bkmax != null)
+//				this.cjezbdpmaxwk = bkmax;
+//			else
+//				cjezbdpmaxwk = 10000000;
+//			
+//			if(bkmin != null)
+//				this.cjezbdpminwk = bkmin;
+//			else
+//				cjezbdpminwk = 10000000;
+//		}
+//		private Integer getDisplayCjeZhanBiDPMaxWk ()
+//		{
+//			return this.cjezbdpmaxwk;
+//		}
+//		private Integer getDisplayCjeZhanBiDPMinWk ()
+//		{
+//			return this.cjezbdpminwk;
+//		}
+//		//
+//		private Integer getDisplayCjeBKMaxWk ()
+//		{
+//			return this.cjezbbkmaxwk;
+//		}
+//
+//		private void setDisplayHuanShouLv (Double hsl)
+//		{
+//			if(hsl != null)
+//				this.huanshoulv = hsl;
+//			else
+//				huanshoulv = 1000000.0;
+//		}
+//		private Double getDisplayHuanShouLv ()
+//		{
+//			return this.huanshoulv;
+//		}
+//		private void setDisplayLiuTongShiZhi(Double ltszmin, Double ltszmax)
+//		{
+//			if(ltszmin != null && ltszmax == null) {
+//				this.showltszmin  = ltszmin;
+//				this.showltszmax = 10000000000000.0;
+//			} else
+//			if(ltszmax != null && ltszmin == null) {
+//				this.showltszmin  = 0.0;
+//				this.showltszmax  = ltszmax;
+//			} else
+//			if(ltszmax != null && ltszmin != null) {
+//				this.showltszmin  = ltszmin;
+//				this.showltszmax  = ltszmax;
+//			} else
+//			if(ltszmin == null && ltszmax == null) {
+//				this.showltszmin = 10000000000000.0;
+//				this.showltszmax = 10000000000000.0;
+//			}
+//			
+//		}
+//		private Double getDisplayLiuTongShiZhiMin ()
+//		{
+//			if(this.showltszmin != null)
+//				return this.showltszmin ;
+//			else
+//				return 10000000000000.0;
+//		}
+//		private Double getDisplayLiuTongShiZhiMax ()
+//		{
+//			if(this.showltszmax != null)
+//				return this.showltszmax ;
+//			else
+//				return 10000000000000.0;
+//		}
+//		private void setHighLightHuiBuDownQueKou(Boolean showhuibudownquekou1) 
+//		{
+//			this.showhuibudownquekou = showhuibudownquekou1;
+//			
+//		}
+//		private Boolean shouldHighlightHuiBuDownQueKou ()
+//		{
+//			return this.showhuibudownquekou;
+//		}
+//		
+//		private void setDisplayMAFormula(String displayma)
+//		{
+//			this.displaymaformula = displayma;
+//			
+//		}
+//		public String getDisplayMAFormula ()
+//		{
+//			if(displaymaformula != null)
+//				return this.displaymaformula;
+//			else
+//				 return null;
+//		}
 		
 
 }

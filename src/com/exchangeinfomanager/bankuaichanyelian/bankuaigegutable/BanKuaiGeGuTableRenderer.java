@@ -34,6 +34,7 @@ import org.bouncycastle.util.Integers;
 import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
@@ -91,10 +92,10 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         }
 	    
 	    BanKuaiGeGuTableModel tablemodel =  (BanKuaiGeGuTableModel)table.getModel() ;
+	    BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
 	    int modelRow = table.convertRowIndexToModel(row);
 	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
 	    Stock stock = stockofbank.getStock();
-//	    BanKuai bankuai = stockofbank.getBanKuai();
 	    
 	    if(stock.wetherHasReiewedToday()) {
         	Font defaultFont = this.getFont();
@@ -145,7 +146,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 //		    	background = new Color(0,153,0);
 //		    else if(close < closelast && dieting == 0 && zhangtingnum ==0)
 //		    	background = new Color(51,255,51);
-	    }
+	    } 
 	    
 	    if( col == 1 ) { //个股名称
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
@@ -162,10 +163,20 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	else 
 	    		foreground = Color.BLACK;
 
-	    } else if( col == 2) { //流通市值
-	    	Double ltszmin = tablemodel.getDisplayLiuTongShiZhiMin() ;
-		    Double ltszmax = tablemodel.getDisplayLiuTongShiZhiMax() ;
-		    
+	    } else 
+	    if( col == 2) { //流通市值
+	    	Double ltszmin ;
+		    Double ltszmax ;
+		    try {
+		    	ltszmax = matchcond.getSettingLiuTongShiZhiMax().doubleValue() *  100000000;
+		    } catch (Exception e) {
+		    	ltszmax = 10000000000000.0;
+		    }
+		    try {
+		    	ltszmin = matchcond.getSettingLiuTongShiZhiMin() * 100000000;
+		    } catch (Exception e) {
+		    	ltszmin = 10000000000000.0;
+		    }
 		    LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
 		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
@@ -179,10 +190,23 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	background = Color.white;
 		    }
 	    	
-	    } else  if( col == 4 && value != null ) { //成交额>=
-		    Double cjemin = tablemodel.getDisplayChenJiaoErMin ();
-		    Double cjemax = tablemodel.getDisplayChenJiaoErMax ();
-		    
+	    } else  
+	    if( col == 4 && value != null ) { //成交额>=
+	    	Double cjemax = matchcond.getSettingChenJiaoErMax();
+	    	Double cjemin = matchcond.getSettingChenJiaoErMin();
+	    	if(cjemin != null && cjemax == null) {
+	    		cjemax = 1000000000000.0;
+			} else
+			if(cjemax != null && cjemin == null) {
+				cjemin  = 0.0;
+			} else
+			if(cjemin == null && cjemax == null) {
+				cjemax = 1000000000000.0;
+				cjemin = 1000000000000.0;
+			}
+	    	cjemax = cjemax * 100000000.0;
+			cjemin = cjemin * 100000000.0;
+	    
 		    LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
 		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
@@ -191,10 +215,11 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	background = Color.yellow ;
 		    else
 		    	background = Color.white;
-	    }  else if(col == 3   && value != null) { //突出回补缺口
-	    	
-		    Boolean hlqk = tablemodel.shouldHighlightHuiBuDownQueKou();
-		    if(!hlqk)
+	    }  else 
+	    if(col == 3   && value != null) { //突出回补缺口
+	    	Boolean zt = matchcond.hasZhangTing();
+		    Boolean hlqk = matchcond.hasHuiBuDownQueKou();
+		    if(!hlqk && !zt)
 		    	background = Color.white ;
 		    else {
 		    	LocalDate requireddate = tablemodel.getShowCurDate();
@@ -202,16 +227,28 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 			    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(requireddate, 0);
 			    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(requireddate, 0);
+			    Integer zhangting = nodexdata.getZhangTingTongJi(requireddate, 0);
+			    
 			    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  )
 			    	 background = Color.PINK ;
-		    	 else 
-		    		 background = Color.white ;
+		    	else 
+		    	if( zhangting != null && zhangting >0)
+		    		background = Color.PINK ;
+		    	else
+		    		background = Color.white ;
 		    }
-		    
-	    } else  if( col == 5    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股
+	    } else  
+	    if( col == 5    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股
 	    	int cjedpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
-	    	int maxfazhi = tablemodel.getDisplayCjeZhanBiDPMaxWk();
+	    	
 	    	if(cjedpmaxwk > 0 ) {
+	    		int maxfazhi;
+		    	try {
+		    		maxfazhi = matchcond.getSettingDpMaxWk();
+		    	} catch (java.lang.NullPointerException e) {
+		    		maxfazhi = 100000000;
+		    	}
+		    	
 	    		LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
 			    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
@@ -223,18 +260,34 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    		 background = new Color(255,0,0) ;
 		    	else 
 		    		 background = Color.white ;
-	    	} else {
-	    		int minfazhi = 0 - tablemodel.getDisplayCjeZhanBiDPMinWk(); //min都用负数表示
+	    	} 
+	    	
+	    	if(cjedpmaxwk < 0 ) {
+	    		int minfazhi;
+		    	try {
+		    		minfazhi = matchcond.getSettingDpMinWk();
+		    	} catch (java.lang.NullPointerException e) {
+		    		minfazhi = 100000000;
+		    	}
+		    	
+	    		minfazhi = 0 - minfazhi; //min都用负数表示
 	    		if(cjedpmaxwk <= minfazhi)
 	    			background = Color.GREEN ;
 	    		else
 	    			background = Color.white ;
-	    		
 	    	} 
-	    } else  if( col == 7   && value != null  ) { 	    //突出显示cjldpMAXWK>=的个股
+	    } else  
+	    if( col == 7   && value != null  ) { 	    //突出显示cjldpMAXWK>=的个股
 		    	int cjldpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
-		    	int maxfazhi = tablemodel.getDisplayCjeZhanBiDPMaxWk();
+		    	
 		    	if(cjldpmaxwk > 0 ) {
+		    		int maxfazhi;
+			    	try {
+			    		maxfazhi = matchcond.getSettingDpMaxWk();
+			    	} catch (java.lang.NullPointerException e) {
+			    		maxfazhi = 100000000;
+			    	}
+			    	
 		    		LocalDate requireddate = tablemodel.getShowCurDate();
 				    String period = tablemodel.getCurDisplayPeriod();
 				    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
@@ -246,15 +299,25 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 			    		 background = new Color(255,0,0) ;
 			    	else 
 			    		 background = Color.white ;
-		    	} else {
-		    		int minfazhi = 0 - tablemodel.getDisplayCjeZhanBiDPMinWk(); //min都用负数表示
+		    	}
+		    	
+		    	if(cjldpmaxwk < 0 ) {
+		    		int minfazhi;
+			    	try {
+			    		minfazhi = matchcond.getSettingDpMinWk();
+			    	} catch (java.lang.NullPointerException e) {
+			    		minfazhi = 100000000;
+			    	}
+			    	
+		    		minfazhi = 0 - minfazhi; //min都用负数表示
 		    		if(cjldpmaxwk <= minfazhi)
 		    			background = Color.GREEN ;
 		    		else
 		    			background = Color.white ;
 		    	}
-	    } else if( col == 6   && value != null) { //突出MA,默认为大于
-	    	String displayma = tablemodel.getDisplayMAFormula();
+	    } else 
+	    if( col == 6   && value != null) { //突出MA,默认为大于
+	    	String displayma = matchcond.getSettingMaFormula();
 	    	background = Color.white ;
 	    	if (!Strings.isNullOrEmpty(displayma)) {
 	    		NodeXPeriodData nodexdataday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
@@ -267,95 +330,10 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		
 	    }
 	    
-	    
-	    
-    	comp.setBackground(background);
+	    comp.setBackground(background);
     	comp.setForeground(foreground);
     	
-	    
-	    
 	    return comp;
 	}
-	
-//	private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula)
-//	{
-//		try{
-//			if(maformula.contains(">\'250\'") || maformula.contains(">=\'250\'") || maformula.contains("<\'250\'") || maformula.contains("<=\'250\'") ) {
-//				if (maresult[6] != null)
-//					maformula = maformula.replace("\'250\'",  maresult[6].toString() ) ;
-//				else
-//					maformula = maformula.replace("\'250\'",  String.valueOf( 10000000000.0 ) ) ;
-//			}
-//		} catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-//		}
-//		
-//	    if(maformula.contains(">\'120\'") || maformula.contains(">=\'120\'") || maformula.contains("<\'120\'") || maformula.contains("<=\'120\'")) {
-//	    	if (maresult[5] != null)
-//	    		maformula = maformula.replace("\'120\'",  maresult[5].toString() ) ;
-//	    	else
-//				maformula = maformula.replace("\'120\'",  String.valueOf( 10000000000.0 ) ) ;
-//	    }
-//	    
-//	    if(maformula.contains(">\'60\'") || maformula.contains(">=\'60\'") || maformula.contains("<\'60\'") || maformula.contains("<=\'60\'") ) {
-//	    	if(maresult[4] != null)
-//	    		maformula = maformula.replace("\'60\'",  maresult[4].toString() ) ;
-//	    	else
-//				maformula = maformula.replace("\'60\'",  String.valueOf( 10000000000.0 ) ) ;
-//	    }
-//	    	
-//	    
-//	    if(maformula.contains(">\'30\'") || maformula.contains(">=\'30\'") || maformula.contains("<\'30\'") || maformula.contains("<=\'30\'") ) {
-//	    	if(maresult[3] != null)
-//	    		maformula = maformula.replace("\'30\'",  maresult[3].toString() ) ;
-//	    	else
-//				maformula = maformula.replace("\'30\'",  String.valueOf( 10000000000.0 ) ) ;
-//	    }
-//	    
-//	    if(maformula.contains(">\'20\'") || maformula.contains(">=\'20\'") || maformula.contains("<\'20\'") || maformula.contains("<=\'20\'") ) {
-//	    	if(maresult[2] != null)
-//	    		maformula = maformula.replace("\'20\'",  maresult[2].toString() ) ;
-//	    	else
-//				maformula = maformula.replace("\'20\'",  String.valueOf( 10000000000.0 ) ) ;
-//	    }
-//	    
-//	    if(maformula.contains(">\'10\'") || maformula.contains(">=\'10\'") || maformula.contains("<\'10\'") || maformula.contains("<=\'10\'")) {
-//	    	if(maresult[1] != null)
-//	    		maformula = maformula.replace("\'10\'",  maresult[1].toString() ) ;
-//	    	else
-//				maformula = maformula.replace("\'10\'",  String.valueOf( 10000000000.0 ) ) ;
-//	    }
-//	    
-//	    if(maformula.contains(">\'5\'") || maformula.contains(">=\'5\'") || maformula.contains("<\'5\'") || maformula.contains("<=\'5\'") ) {
-//	    	if(maresult[0] != null)
-//	    		maformula = maformula.replace("\'5\'",  maresult[0].toString() ) ;
-//	    	else
-//				maformula = maformula.replace("\'5\'",  String.valueOf( 10000000000.0 ) ) ;
-//	    }
-//	    
-//	    BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close)).eval(); //https://github.com/uklimaschewski/EvalEx
-//	    String sesultstr = result1.toString();
-//	    if(sesultstr.equals("0"))
-//	    	return false;
-//	    else 
-//	    	return true;
-//	    
-//	    
-////		ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
-////	      Map<String, Object> vars = new HashMap<String, Object>();
-////	      vars.put("x", close);
-//////	      vars.put("y", 2);
-//////	      vars.put("z", 1);
-////      try {
-////    	  Boolean result = (Boolean)engine.eval(maformula, new SimpleBindings(vars));
-////		  return result;
-////		} catch (ScriptException e) {
-////			// TODO Auto-generated catch block
-////			e.printStackTrace();
-////			return null;
-////		}
-//      
-//
-//	}
 	
 }

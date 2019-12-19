@@ -633,7 +633,9 @@ public final class StockCalendarAndNewDbOperation
 			while(result.next()) {
 	   		 	int meetingID = result.getInt("ID");
 	   		 	LocalDate start  = result.getDate("日期").toLocalDate(); 
-//	   		 	LocalDate end  = result.getDate("截至日期").toLocalDate();
+	   		 	LocalDate end  = result.getDate("截至日期").toLocalDate();
+	   		 	if(end == null)
+	   		 		end =  LocalDate.parse("3000-01-01");
 	            String description = result.getString("说明");
 	            String detail = result.getString("具体描述");
 	            if(Strings.isNullOrEmpty(detail))
@@ -643,7 +645,7 @@ public final class StockCalendarAndNewDbOperation
 	            String ownercodes = result.getString("代码");
 	            Integer ownertype = result.getInt("类型");
 	            
-	            GuanZhu news = new GuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
+	            GuanZhu news = new GuanZhu(node, description, start, end, detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
 
 	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
 
@@ -726,7 +728,12 @@ public final class StockCalendarAndNewDbOperation
 			while(result.next()) {
 	   		 	int meetingID = result.getInt("ID");
 	   		 	LocalDate start  = result.getDate("日期").toLocalDate(); 
-//	   		 	LocalDate end  = result.getDate("截至日期").toLocalDate();
+	   		 	LocalDate end;
+	   		 	try {
+	   		 		end  = result.getDate("截至日期").toLocalDate();
+	   		 	} catch (java.lang.NullPointerException e) {
+	   		 		end = LocalDate.parse("3000-01-01");
+	   		 	}
 	            String description = result.getString("说明");
 	            String detail = result.getString("具体描述");
 	            if(Strings.isNullOrEmpty(detail))
@@ -737,7 +744,7 @@ public final class StockCalendarAndNewDbOperation
 	            Integer ownertype = result.getInt("类型");
 	            
 	            BkChanYeLianTreeNode node = treeofbkstk.getSpecificNodeByHypyOrCode(ownercodes, ownertype);
-	            ExternalNewsType news = new GuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
+	            ExternalNewsType news = new GuanZhu(node, description, start, end , detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
 
 	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
 

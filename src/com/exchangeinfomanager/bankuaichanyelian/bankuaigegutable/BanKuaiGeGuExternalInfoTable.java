@@ -21,6 +21,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.commonlib.JTableToolTipHeader;
@@ -118,30 +119,36 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 		}
 	}
 	@Override
+	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
+	{
+		((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayMatchCondition(expc);
+    	this.repaint();
+		
+	}
+	@Override
 	public void hightLightFxValues(ExportCondition expc) 
 	{
-//		Integer cjezbbkmax = expc.getSettinBkmaxwk();
-		Integer cjemaxwk = expc.getSettingCjemaxwk();
-		Integer cjezbdpmax = expc.getSettinDpmaxwk();
-		Integer cjezbdpmin = expc.getSettingDpminwk();
-		Double cjemin = expc.getSettingCjemin();
-		Double cjemax = expc.getSettingCjeMax();
-		Double showhsl = expc.getSettingHsl();
-		Double showltszmax = expc.getLiuTongShiZhiMax();
-		Double showltszmin = expc.getLiuTongShiZhiMin();
-		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
-		
-		
-//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
-			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
-			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeZhanBiDPMaxMinWk (cjezbdpmax,cjezbdpmin);
-			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
-			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
-			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
-			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setHighLightHuiBuDownQueKou(showhuibudownquekou);
-		
-		this.repaint();
-		
+////		Integer cjezbbkmax = expc.getSettinBkmaxwk();
+//		Integer cjemaxwk = expc.getSettingCjemaxwk();
+//		Integer cjezbdpmax = expc.getSettinDpmaxwk();
+//		Integer cjezbdpmin = expc.getSettingDpminwk();
+//		Double cjemin = expc.getSettingCjemin();
+//		Double cjemax = expc.getSettingCjeMax();
+//		Double showhsl = expc.getSettingHsl();
+//		Double showltszmax = expc.getLiuTongShiZhiMax();
+//		Double showltszmin = expc.getLiuTongShiZhiMin();
+//		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
+//		
+//		
+////			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
+//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
+//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeZhanBiDPMaxMinWk (cjezbdpmax,cjezbdpmin);
+//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
+//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
+//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
+//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setHighLightHuiBuDownQueKou(showhuibudownquekou);
+//		
+//		this.repaint();
 	}
 	
 	/*
@@ -155,6 +162,8 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 	        if(tablemodel.getRowCount() == 0) {
 	        	return null;
 	        }
+	        
+	        BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
 	        
 	        String value =  ((JLabel)comp).getText();
 
@@ -205,9 +214,20 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 		    		foreground = Color.RED;
 		    	else 
 		    		foreground = Color.BLACK;
-		    } else if( col ==3) { //{ "代码", "名称","权重","高级排序排名","CjeMaxWk","换手率"};
-		    	Double ltszmin = tablemodel.getDisplayLiuTongShiZhiMin() ;
-			    Double ltszmax = tablemodel.getDisplayLiuTongShiZhiMax() ;
+		    } else 
+		    if( col ==3) { //{ "代码", "名称","权重","高级排序排名","CjeMaxWk","换手率"};
+		    	Double ltszmin ;
+			    Double ltszmax ;
+			    try {
+			    	ltszmax = matchcond.getSettingLiuTongShiZhiMax().doubleValue();
+			    } catch (Exception e) {
+			    	ltszmax = 10000000000000.0;
+			    }
+			    try {
+			    	ltszmin = matchcond.getSettingLiuTongShiZhiMin();
+			    } catch (Exception e) {
+			    	ltszmin = 10000000000000.0;
+			    }
 			    
 			    LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
@@ -222,23 +242,33 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 			    	background = Color.white;
 			    }
 		    	
-		    }  else  if( col == 4  && value != null ) { //突出显示CjeMAXWK>=的个股
+		    }  else  
+		    if( col == 4  && value != null ) { //突出显示CjeMAXWK>=的个股
 		    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 4).toString() );
 		    	
-		    	int fazhi = tablemodel.getDisplayCjeMaxWk();
-		    	 if( dpmaxwk >=fazhi )
+		    	Integer cjemaxwk = matchcond.getSettingChenJiaoErMaxWk();
+		    	if(cjemaxwk == null)
+		    		cjemaxwk =  10000000;
+		    	
+		    	if( dpmaxwk >=cjemaxwk )
 		    		 background = Color.CYAN ;
-		    	 else 
+		    	else 
 		    		 background = Color.white ;
-		    } else   if( col == 5 && value != null  ) {	    //突出换手率
+		    } else   
+		    if( col == 5 && value != null  ) {	    //突出换手率
 		    	double hsl;
 		    	try{
 		    		 hsl = Double.parseDouble( tablemodel.getValueAt(modelRow, 5).toString() );
-		    	 } catch (java.lang.NullPointerException e) {
+		    	} catch (java.lang.NullPointerException e) {
 		    		 hsl = 0.0;
-		    	 }
+		    	}
 		    	
-		    	double shouldhsl = tablemodel.getDisplayHuanShouLv();
+		    	double shouldhsl;
+		    	try{
+		    		shouldhsl = matchcond.getSettingHuanShouLv();
+		    	} catch (java.lang.NullPointerException e) {
+		    		shouldhsl = 1000.0;
+		    	}
 		    	if(hsl >= shouldhsl)
 		    		 background = Color.BLUE.brighter() ;
 		    	 else 

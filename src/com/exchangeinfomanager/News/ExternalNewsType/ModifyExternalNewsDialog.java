@@ -6,11 +6,16 @@ import java.sql.SQLException;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class ModifyExternalNewsDialog extends ExternalNewsDialog<ExternalNewsType> 
 {
@@ -69,7 +74,35 @@ public class ModifyExternalNewsDialog extends ExternalNewsDialog<ExternalNewsTyp
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
             try {
-            	NewsService.updateNews(getNews());
+            	ExternalNewsType mt = getNews();
+            	String owncode = mt.getNewsOwnerCodes();
+            	
+            	SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+          		SvsForNodeOfStock svsstock = new SvsForNodeOfStock (); 
+          		SvsForNodeOfDaPan svsdapan = new SvsForNodeOfDaPan (); 
+          		
+          		BkChanYeLianTreeNode bk = svsbk.getNode(owncode);
+          		BkChanYeLianTreeNode stock = svsstock.getNode(owncode);
+          		BkChanYeLianTreeNode dapan = svsdapan.getNode(owncode);
+          		
+          		if(bk == null && stock == null && dapan == null) {
+          			JOptionPane.showMessageDialog(null,"板块或个股代码不存在！");
+              		setVisible(true);
+              		return;
+          		}
+          		
+          		if(bk != null)
+          			mt.setNode(bk);
+          		else if(stock != null)
+          			mt.setNode(stock);
+          		else if(dapan != null)
+          			mt.setNode(dapan);
+          		
+            	NewsService.updateNews(mt);
+            	
+            	svsbk = null;
+            	svsstock = null;
+            	svsdapan = null;
             } catch (SQLException e1) {
                 e1.printStackTrace();
             } 
