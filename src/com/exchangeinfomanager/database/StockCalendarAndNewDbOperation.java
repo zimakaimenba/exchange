@@ -700,7 +700,7 @@ public final class StockCalendarAndNewDbOperation
 
         return cqjllist;
 	}
-	public  Collection<News> getDuanQiJiLuInfo (LocalDate startdate, LocalDate enddate)
+	public  Collection<News> getDuanQiJiLuInfo (String nodeid, LocalDate startdate, LocalDate enddate)
 	{
 		BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		
@@ -718,6 +718,7 @@ public final class StockCalendarAndNewDbOperation
 		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
 								+ timerangesql
 								+ "  AND  关注类型 = false " //长期记录
+								+ "  AND 代码 = '" + nodeid + "'"
 								+ " ORDER BY 日期 DESC"
 								;
 		
@@ -899,7 +900,7 @@ public final class StockCalendarAndNewDbOperation
         return cqjllist;
 		
 	}
-	public  Collection<News> getChangQiJiLuInfo ( LocalDate startdate, LocalDate enddate)
+	public  Collection<News> getChangQiJiLuInfo (String nodeid,  LocalDate startdate, LocalDate enddate)
 	{
 		BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		
@@ -917,6 +918,7 @@ public final class StockCalendarAndNewDbOperation
 		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
 								+ timerangesql
 								+ "  AND  关注类型 = true " //长期记录
+								+ "  AND 代码= '"  + nodeid + "'" 
 								+ " ORDER BY 日期 DESC"
 								;
 		

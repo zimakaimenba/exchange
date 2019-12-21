@@ -21,17 +21,17 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.TitledBorder;
 
-import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
-import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.nodes.TDXNodes;
 
 public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel 
-		implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener,PropertyChangeListener
+		implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,PropertyChangeListener,BanKuaiGeGuMatchConditionListener
 {
 	/**
 	 * Create the panel.
@@ -123,10 +123,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selecteddate));
 	}
 	@Override
-	public void hightLightFxValues(ExportCondition expc) 
+	public void BanKuaiGeGuMatchConditionValuesChanges (BanKuaiGeGuMatchCondition expc)
 	{
-		cjezblargepnl.hightLightFxValues(expc) ;
-		cjelargepnl.hightLightFxValues(expc) ;
+		cjezblargepnl.BanKuaiGeGuMatchConditionValuesChanges(expc) ;
+		cjelargepnl.BanKuaiGeGuMatchConditionValuesChanges(expc) ;
 	}
 
 	@Override

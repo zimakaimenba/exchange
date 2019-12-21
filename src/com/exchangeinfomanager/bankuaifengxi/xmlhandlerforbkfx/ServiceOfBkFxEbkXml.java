@@ -29,7 +29,7 @@ public class ServiceOfBkFxEbkXml implements ServicesForBkfxEbkOutPutFile
 	}
 
 	@Override
-	public void setBkfeOutPutFile(String ebkfile) 
+	public LocalDate setBkfeOutPutFile(String ebkfile) 
 	{
 		if(ebkfile.endsWith("XML")) 
 			this.setBkFxXmlFile(ebkfile);
@@ -44,9 +44,10 @@ public class ServiceOfBkFxEbkXml implements ServicesForBkfxEbkOutPutFile
 						xmlfile = null;
 			} catch (Exception e) {
 					e.printStackTrace();
-					return ;
+					return null;
 			}
 		}
+		return null;
 		
 	}
 
@@ -111,6 +112,12 @@ public class ServiceOfBkFxEbkXml implements ServicesForBkfxEbkOutPutFile
 	private void createXmlAndPatchOutPutFileToTree ()
 	{
 		this.bkfxfh.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (this.fileebk,this.getBkfxFileDate() );
+	}
+
+	@Override
+	public void resetBkfxFileDate() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

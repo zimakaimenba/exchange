@@ -30,7 +30,7 @@ import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 
-import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -59,7 +59,7 @@ import javax.swing.JMenuItem;
 
 
 public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel 
-	implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,BarChartHightLightFxDataValueListener
+	implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener , BanKuaiGeGuMatchConditionListener
 {
 	/**
 	 * 

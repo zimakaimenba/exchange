@@ -13,7 +13,9 @@ public interface ServicesForNode
 	
 	public Collection<BkChanYeLianTreeNode> getNodes (Collection<String> nodenames);
 	public BkChanYeLianTreeNode getNode (String nodenames);
+	
 	public BkChanYeLianTreeNode getNodeJiBenMian (BkChanYeLianTreeNode node);
+	
 	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes (Set<String> subtypesset);
 
 	public BkChanYeLianTreeNode getNodeData (BkChanYeLianTreeNode bankuai,LocalDate requiredstartday,LocalDate requiredendday,String period ,Boolean calwholeweek );

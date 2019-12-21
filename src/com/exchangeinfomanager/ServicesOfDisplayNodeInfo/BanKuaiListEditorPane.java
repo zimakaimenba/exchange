@@ -1,7 +1,7 @@
 /*
  * 为板块列表专门设计的类，
  */
-package com.exchangeinfomanager.gui.subgui;
+package com.exchangeinfomanager.ServicesOfDisplayNodeInfo;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +43,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 
-public class BanKuaiListEditorPane extends JEditorPane 
+class BanKuaiListEditorPane extends JEditorPane 
 {
 	
 	
@@ -124,10 +124,8 @@ public class BanKuaiListEditorPane extends JEditorPane
 			    
 			    dl.appendChild(font);
 			}
-
 		}
 		String head = selectbody.get(0).text();
-		
 		
 		org.jsoup.nodes.Document tflddoc = Jsoup.parse(this.getText());
 		org.jsoup.select.Elements content = tflddoc.select("body");
@@ -135,60 +133,8 @@ public class BanKuaiListEditorPane extends JEditorPane
 		
 		String htmlstring = tflddoc.toString();
 		this.setText(htmlstring);
-//		try {
-//			this.setPage(htmlstring);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
-	/*
-	 * 
-	 */
-	public void displayBanKuaiListContentsForStock (Stock stock)
-	{
-		this.setText("");
-		Set<BkChanYeLianTreeNode> suosusysbankuai = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
-		 
-		 
-
-		String htmlstring = this.getText();
-		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-		 
-		 org.jsoup.select.Elements content = doc.select("body");
-		 
-		 content.append( "<html> "
-		 		+ "<body>"
-		 		);
-		 
-		 boolean shuyuruoshibankuai = false;
-		 for ( java.util.Iterator<BkChanYeLianTreeNode> it = suosusysbankuai.iterator(); it.hasNext(); ) {
-			 BkChanYeLianTreeNode f = it.next();
-		      
-	    	 String displayedbkformate = "\"" + f.getMyOwnCode() + f.getMyOwnName() + "\"";
-	    	 try {
-	    		 boolean inrsbk = false; 
-    			 if(inrsbk ) {
-    				 content.append("<a style=\"color:green\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + "</a> " );
-	    			 shuyuruoshibankuai = true ;
-	    		 } else
-	    			 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ");
-	    	 } catch (java.lang.NullPointerException e) {
-	    		 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ");
-	    	 }
-	     } 
-	     
-	     if(shuyuruoshibankuai)
-	    	 JOptionPane.showMessageDialog(this, "<html><font face='Calibri' size='8' color='red'>该个股属于近期弱势或要回避的板块！");
-	     
-	     content.append( "</body>"
-					+ "</html>");
-	    
-	     htmlstring = doc.toString();
-	     this.setText(htmlstring);
-	     this.setCaretPosition(this.getDocument().getLength());
-	}
-	
+		
 	private void createEvents() 
 	{
 		menuItemgcsv.addActionListener(new ActionListener() {
@@ -208,24 +154,7 @@ public class BanKuaiListEditorPane extends JEditorPane
         });
 
  
-		this.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				//System.out.println("this is the test");
-				
-			}
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-                  
-              } else if (e.getButton() == MouseEvent.BUTTON3) {
-            	  showpopupMenu (e);
-
-              }
-				
-			}
-			
-		});
+		
 
 		//为个股板块信息的hyperlink注册时间  http://www.javalobby.org/java/forums/t19716.html
 		 ActionMap actionMap = new ActionMap(); 
@@ -257,14 +186,7 @@ public class BanKuaiListEditorPane extends JEditorPane
 //		PropertyChangeEvent evt = new PropertyChangeEvent(this, EXPORTCSV_PROPERTY, "",  htmlstring );
 		this.firePropertyChange(EXPORTCSV_PROPERTY, "", htmlstring);
 	}
-	/*
-	 * 
-	 */
-	protected void showpopupMenu(MouseEvent e) 
-	{
-		jPopupMenue.show(this, e.getX(),   e.getY());
-		
-	}
+	
 	protected void formateHyperLink(HyperlinkEvent hle) 
 	{
 		String link = null;

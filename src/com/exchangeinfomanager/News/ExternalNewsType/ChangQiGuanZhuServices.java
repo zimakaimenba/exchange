@@ -37,7 +37,7 @@ public class ChangQiGuanZhuServices implements ServicesForNews
 	@Override
 	public Collection<News> getNews(String nodeid, LocalDate startdate, LocalDate enddate) throws SQLException 
 	{
-		Collection<News> news = this.database.getChangQiJiLuInfo (startdate,  enddate);
+		Collection<News> news = this.database.getChangQiJiLuInfo (nodeid, startdate,  enddate);
 		return news;
 	}
 

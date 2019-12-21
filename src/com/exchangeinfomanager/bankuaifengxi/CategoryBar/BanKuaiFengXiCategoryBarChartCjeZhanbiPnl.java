@@ -20,7 +20,7 @@ import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.TextAnchor;
 
-import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -444,11 +444,31 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		super.decorateXaxisWithYearOrMonth("month".trim());
 	}
 
+	
+
 	@Override
-	public void hightLightFxValues(ExportCondition expc) 
+	public String getToolTipSelected() 
 	{
-		Integer cjezbdporbkmax = expc.getSettinDpmaxwk();
-		Integer cjezbdporbkmin = expc.getSettingDpminwk();
+		int indexx = barchartdataset.getColumnIndex(super.dateselected);
+		
+		BanKuaiFengXiCategoryBarToolTipGenerator ttpg = 	
+		(CustomCategroyToolTipGeneratorForCjeZhanBi)(((CustomCategroyRendererForCjeZhanBi) plot.getRenderer()).getBaseToolTipGenerator());
+		
+		String tooltips = ttpg.generateToolTip(super.barchartdataset, 0, indexx);
+		
+		return tooltips;
+	}
+	@Override
+	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc) 
+	{
+		Integer cjezbtoupleveldpmax = expc.getSettingDpMaxWk();
+		Double cjemin = expc.getSettingChenJiaoErMin();
+		Double cjemax = expc.getSettingChenJiaoErMax();
+		Integer cjemaxwk = expc.getSettingChenJiaoErMaxWk();
+		Double shoowhsl = expc.getSettingHuanShouLv();
+	
+		Integer cjezbdporbkmax = expc.getSettingDpMaxWk();
+		Integer cjezbdporbkmin = expc.getSettingDpMinWk();
 //		Double cjemin = expc.getSettingCjemin();
 //		Double cjemax = expc.getSettingCjeMax();
 //		Integer cjemaxwk = expc.getSettingCjemaxwk();
@@ -462,19 +482,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMinwkLevel (cjezbdporbkmin);
 			this.barchart.fireChartChanged();//必须有这句
 		}
-	}
-
-	@Override
-	public String getToolTipSelected() 
-	{
-		int indexx = barchartdataset.getColumnIndex(super.dateselected);
 		
-		BanKuaiFengXiCategoryBarToolTipGenerator ttpg = 	
-		(CustomCategroyToolTipGeneratorForCjeZhanBi)(((CustomCategroyRendererForCjeZhanBi) plot.getRenderer()).getBaseToolTipGenerator());
-		
-		String tooltips = ttpg.generateToolTip(super.barchartdataset, 0, indexx);
-		
-		return tooltips;
 	}
 
 }

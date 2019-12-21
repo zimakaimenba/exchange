@@ -49,12 +49,15 @@ class ExtraExportConditions extends JPanel
 	private JCheckBox chkbxexportyangxianbk;
 	private JCheckBox chkbxonlyexportbk;
 	private JCheckBox chkbxonlycurstock;
+	private BanKuaiGeGuMatchCondition cond;
 	/**
 	 * Create the panel.
 	 */
 	
-	public ExtraExportConditions() 
+	public ExtraExportConditions(BanKuaiGeGuMatchCondition cond) 
 	{
+		this.cond  = cond;
+		
 		initializeGui ();
 		
 		huchixuanzebasic = new ArrayList<JCheckBox> ();
@@ -73,8 +76,75 @@ class ExtraExportConditions extends JPanel
 		huchixuanzeaboutstock.add(chkbxonlycurstock);
 		
 		createEvents ();
+	}
+	/*
+	 * 
+	 */
+	public BanKuaiGeGuMatchCondition getSettingCondition ()
+	{
+		if(chkbxexportallbk.isSelected())
+			this.cond.setExportAllBanKuai(true);
+		else
+			this.cond.setExportAllBanKuai(false);
 		
+		if(chkbxexporbkallowedinsetting.isSelected() )
+			this.cond.setExportBankuaiInConfig(true);
+		else
+			this.cond.setExportBankuaiInConfig(false);
 		
+		if(!cbxOnlyCurBk.isSelected() )
+			this.cond.setSettingBanKuai(null);
+		
+		if(chkbxzhbiup.isSelected() )
+			this.cond.setExportChenJiaoErZhanbiUpBanKuai(true);
+		else
+			this.cond.setExportChenJiaoErZhanbiUpBanKuai(false);
+		
+		if(chkbxexportyangxianbk.isSelected() )
+			this.cond.setExportYangXianBanKuai(true);
+		else
+			this.cond.setExportYangXianBanKuai(false);
+		
+		if( chkbxonlyexportbk.isSelected() )
+			this.cond.setExportOnlyBankuaiNotGeGu(true);
+		else
+			this.cond.setExportOnlyBankuaiNotGeGu(false);
+		
+		if( chkbxonlybkstock.isSelected() )
+			this.cond.setExportOnlyGeGuNotBanKuai(true);
+		else
+			this.cond.setExportOnlyGeGuNotBanKuai(false);
+		
+		if( chkbxonlycurstock.isSelected() )
+			this.cond.setExportOnlyCurrentGeGu(true);
+		else
+			this.cond.setExportOnlyCurrentGeGu(false);
+		
+		if( chckbxexportyangxiangegu.isSelected() )
+			this.cond.setExportYangXianGeGu( Double.parseDouble(tfldwkyingxiandayu.getText() ) );
+		else
+			this.cond.setExportYangXianGeGu( null );
+		
+		if( cbxShiZhilevelyangxian.isSelected() ) {
+			this.cond.setChenJiaoErBottomForYangXianLevle( Double.parseDouble(tfldshizhilevelyangxian.getText() ) );
+			this.cond.setChenJiaoErBottomYangXianLevel ( Double.parseDouble(tfldyangxian.getText() ) );
+		}
+		else
+			this.cond.setChenJiaoErBottomForYangXianLevle( null );
+		
+		if(chckbxshizhilevellianxu.isSelected() ) {
+			this.cond.setChenJiaoErBottomForFangLiangLevle( Double.parseDouble( tfldshizhilevellianxu.getText() ) );
+			this.cond.setChenJiaoErFangLiangLevel ( Integer.parseInt( tfldwkyangxian.getText() ));
+		}
+		else
+			this.cond.setChenJiaoErBottomForFangLiangLevle( null );
+		
+		if(cbxExceptSt.isSelected() )
+			this.cond.setExportST(true);
+		else
+			this.cond.setExportST(false);
+		
+		return this.cond;
 	}
 	/*
 	 * 
@@ -522,23 +592,24 @@ class ExtraExportConditions extends JPanel
 			return false;
 	}
 	
-	public static void main(String[] args) {
-		try {
-			ExtraExportConditions dialog = new ExtraExportConditions();
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			
-			 JDialog  testlog = new  JDialog  ();
-			 testlog.setTitle("About");
-			 testlog.setSize(620, 400);
-			 testlog.setVisible(true);
-
-			 testlog.getContentPane().add(dialog, BorderLayout.CENTER);
-			
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
+//	public static void main(String[] args) {
+//		try {
+//			ExtraExportConditions dialog = new ExtraExportConditions();
+////			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//			
+//			 JDialog  testlog = new  JDialog  ();
+//			 testlog.setTitle("About");
+//			 testlog.setSize(620, 400);
+//			 testlog.setVisible(true);
+//
+//			 testlog.getContentPane().add(dialog, BorderLayout.CENTER);
+//			
+//			dialog.setVisible(true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 }
 

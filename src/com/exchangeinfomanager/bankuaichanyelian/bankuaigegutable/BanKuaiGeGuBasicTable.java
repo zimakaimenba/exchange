@@ -28,7 +28,6 @@ import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAdd
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
-import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -37,7 +36,7 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
-public abstract class BanKuaiGeGuBasicTable extends JTable implements BarChartHightLightFxDataValueListener, BanKuaiGeGuMatchConditionListener
+public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGeGuMatchConditionListener
 {
 	public BanKuaiGeGuBasicTable (StockInfoManager stockmanager1)
 	{

@@ -22,8 +22,7 @@ import javax.swing.table.TableRowSorter;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
-import com.exchangeinfomanager.bankuaifengxi.BarChartHightLightFxDataValueListener;
-import com.exchangeinfomanager.bankuaifengxi.ExportCondition;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.commonlib.JTableToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -38,7 +37,7 @@ import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 
-public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implements BarChartHightLightFxDataValueListener
+public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implements BanKuaiGeGuMatchConditionListener
 {
 	
 
@@ -124,31 +123,6 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 		((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayMatchCondition(expc);
     	this.repaint();
 		
-	}
-	@Override
-	public void hightLightFxValues(ExportCondition expc) 
-	{
-////		Integer cjezbbkmax = expc.getSettinBkmaxwk();
-//		Integer cjemaxwk = expc.getSettingCjemaxwk();
-//		Integer cjezbdpmax = expc.getSettinDpmaxwk();
-//		Integer cjezbdpmin = expc.getSettingDpminwk();
-//		Double cjemin = expc.getSettingCjemin();
-//		Double cjemax = expc.getSettingCjeMax();
-//		Double showhsl = expc.getSettingHsl();
-//		Double showltszmax = expc.getLiuTongShiZhiMax();
-//		Double showltszmin = expc.getLiuTongShiZhiMin();
-//		Boolean showhuibudownquekou = expc.shouldHighLightHuiBuDownQueKou();
-//		
-//		
-////			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeBKMaxWk( cjezbbkmax);
-//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeMaxWk (cjemaxwk);
-//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayCjeZhanBiDPMaxMinWk (cjezbdpmax,cjezbdpmin);
-//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayChenJiaoEr (cjemin,cjemax);
-//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayHuanShouLv(showhsl);
-//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setDisplayLiuTongShiZhi(showltszmin,showltszmax);
-//			((BanKuaiGeGuExternalInfoTableModel)this.getModel()).setHighLightHuiBuDownQueKou(showhuibudownquekou);
-//		
-//		this.repaint();
 	}
 	
 	/*

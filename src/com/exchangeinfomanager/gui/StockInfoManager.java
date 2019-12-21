@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.ScrollUtil;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
@@ -27,6 +28,7 @@ import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.License.License;
 import com.exchangeinfomanager.News.CreateNewsDialog;
 import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog;
+import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsServices;
@@ -34,6 +36,13 @@ import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Search.SearchDialog;
 import com.exchangeinfomanager.Services.ServicesOfPaoMaDeng;
+
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListServices;
+
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeInfoPanel;
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeJiBenMianService;
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodesRelatedNewsServices;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
@@ -47,7 +56,6 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.JDialogOfBanKuaiChanYeLian;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.DisplayBkGgInfoEditorPane;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
@@ -78,6 +86,7 @@ import javax.swing.Action;
 import javax.swing.ButtonGroup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import java.util.HashMap;
@@ -105,7 +114,6 @@ import com.exchangeinfomanager.tongdaxinreport.*;
 import com.google.common.base.Strings;
 
 import com.exchangeinfomanager.database.*;
-import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
@@ -154,6 +162,7 @@ import net.miginfocom.swing.MigLayout;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import javax.swing.JComboBox;
 import java.awt.BorderLayout;
+import javax.swing.BoxLayout;
 
 
 public class StockInfoManager 
@@ -284,9 +293,6 @@ public class StockInfoManager
 					 displaySellBuyZdgzInfoToGui ();
 				 }
 				 
-				
-//				nodeshouldbedisplayed = cyltreedb.getChanYeLianInfo(nodeshouldbedisplayed);
-				 
 				 if(nodeshouldbedisplayed.getType() == 6) { //是个股
 					if(accountschicangconfig.isSystemChiCang(stockcode)) 
 						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
@@ -404,26 +410,26 @@ public class StockInfoManager
 			}
 		});
 		
-		editorpansuosubk.addPropertyChangeListener(new PropertyChangeListener() {
-
-            public void propertyChange(PropertyChangeEvent evt) {
-            	if (evt.getPropertyName().equals(BanKuaiListEditorPane.URLSELECTED_PROPERTY)) {
-            		String selbk = evt.getNewValue().toString();
-            		String selbkcode;
-            		if(selbk != null)
-    					selbkcode = selbk.trim().substring(1, 7);
-    				else
-    					return;
-    				
-//            		LocalDate requirestart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-//    				BanKuai bankuai = (BanKuai) allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selbkcode, BkChanYeLianTreeNode.TDXBK);
-    				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-    				BkChanYeLianTreeNode bankuai = svsbk.getNode(selbkcode);
-    				editorPanenodeinfo.displayNodeAllInfo(bankuai);
-    				svsbk = null;
-            	}
-            }
-		});
+//		editorpansuosubk.addPropertyChangeListener(new PropertyChangeListener() {
+//
+//            public void propertyChange(PropertyChangeEvent evt) {
+//            	if (evt.getPropertyName().equals(BanKuaiListEditorPane.URLSELECTED_PROPERTY)) {
+//            		String selbk = evt.getNewValue().toString();
+//            		String selbkcode;
+//            		if(selbk != null)
+//    					selbkcode = selbk.trim().substring(1, 7);
+//    				else
+//    					return;
+//    				
+////            		LocalDate requirestart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+////    				BanKuai bankuai = (BanKuai) allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selbkcode, BkChanYeLianTreeNode.TDXBK);
+//    				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+//    				BkChanYeLianTreeNode bankuai = svsbk.getNode(selbkcode);
+////    				editorPanenodeinfo.displayNodeAllInfo(bankuai);
+//    				svsbk = null;
+//            	}
+//            }
+//		});
 
 //		editorpansuosubk.addMouseListener(new MouseAdapter() {
 //			@Override
@@ -683,7 +689,7 @@ public class StockInfoManager
 //                newlog.setModal(true);
 //                newlog.setVisible(true);
                 
-                News News = new News("新闻标题",LocalDate.now() ,"描述", "", new HashSet<>(),"URL",
+                News News = new News("新闻标题",LocalDate.now() ,"描述", "", new HashSet<InsertedNews.Label>(),"URL",
                 		((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode()  );
                 
                 NewsServices svsns = new NewsServices ();
@@ -1678,57 +1684,67 @@ public class StockInfoManager
  */
 	private void displayStockSuoShuBanKuai() 
 	{
-//		 HashMap<String, String> suosusysbankuai = ((Stock)nodeshouldbedisplayed).getGeGuCurSuoShuTDXSysBanKuaiList();
-		 editorpansuosubk.displayBanKuaiListContentsForStock((Stock)nodeshouldbedisplayed);
-		 
-//		 Set<String> union =  suosusysbankuai.keySet();
-//		 Multimap<String,String> suoshudaleibank = bkcyl.checkBanKuaiSuoSuTwelveDaLei (  union ); //获得板块是否属于12个大类板块
-//		 
-//		 String htmlstring = editorpansuosubk.getText();
-//		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//		 logger.debug(doc.toString());
-//		 org.jsoup.select.Elements content = doc.select("body");
-//		 
-//		 content.append( "<html> "
-//		 		+ "<body>"
-//		 		+ " <p>所属板块:");
-//		 
-//	     for(String suoshubankcode : union ) {
-//	    	 String displayedbkformate = "\"" + suoshubankcode + suosusysbankuai.get(suoshubankcode) + "\"";
-//	    	 
-//	    	 try {
-//	    		 Collection<String> daleilist = suoshudaleibank.get(suoshubankcode);
-//	    		 content.append("<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + daleilist.toString()  + "</a> " );
-//	    	 } catch (java.lang.NullPointerException e) {
-//	    		 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a> ");
-//	    	 }
-//	     } 
-//	     content.append( "</p>");
-//	     		
-//	     
-////	     String stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
-////	     ArrayList<String> gegucyl = ((Stock)nodeshouldbedisplayed).getGeGuAllChanYeLianInfo();
-////	     for(String cyl : gegucyl) {
-////	    	 content.append( " <p>个股产业链:"
-////	    	 		+ "<a  href=\"openBanKuaiAndChanYeLianDialog\">  " + cyl)
-////	    	 		;
-////	     }
-////	     if(gegucyl.size()>0)
-////	    	 content.append( "</p>");
-//	     
-//	     content.append( "</body>"
-//					+ "</html>");
-//	    
-//	     htmlstring = doc.toString();
-//	     editorpansuosubk.setText(htmlstring);
-//	     editorpansuosubk.setCaretPosition(0);
-	     
+//		scrlnodebankuai.removeAll();
+		DisPlayNodeSuoShuBanKuaiListServices svsstkbk = new DisPlayNodeSuoShuBanKuaiListServices (nodeshouldbedisplayed);
+		DisPlayNodeSuoShuBanKuaiListPanel stkbkpnl = new DisPlayNodeSuoShuBanKuaiListPanel (svsstkbk);
+		stkbkpnl.setPreferredSize(new Dimension(200,30));
+		scrlnodebankuai.setViewportView(stkbkpnl);
+		
+//		stkbkpnl.revalidate();
+//		stkbkpnl.repaint();
+//		
+//		scrlnodebankuai.getViewport().revalidate();
+//		scrlnodebankuai.getViewport().repaint();
+//		scrlnodebankuai.revalidate();
+//		scrlnodebankuai.repaint();
+		
+		stkbkpnl.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+            	if (evt.getPropertyName().equals(DisPlayNodeSuoShuBanKuaiListPanel.URLSELECTED_PROPERTY)) {
+            		String selbk = evt.getNewValue().toString();
+            		String selbkcode;
+            		if(selbk != null)
+    					selbkcode = selbk.trim().substring(1, 7);
+    				else
+    					return;
+    				
+    				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+    				BkChanYeLianTreeNode bankuai = svsbk.getNode(selbkcode);
+    				svsbk = null;
+    				
+    				DisplayNodeJiBenMianService bkjbm = new DisplayNodeJiBenMianService (bankuai);
+    				DisplayNodeInfoPanel displaybkpnl = new DisplayNodeInfoPanel (bkjbm);
+    				pnlextrainfo.add (displaybkpnl,0);
+    				
+    				DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (bankuai);
+    				DisplayNodeInfoPanel displaybknewspnl = new DisplayNodeInfoPanel (bknews);
+    				pnlextrainfo.add (displaybknewspnl,0);
+//    				editorPanenodeinfo.displayNodeAllInfo(bankuai);
+    				
+    				pnlextrainfo.revalidate();
+    				pnlextrainfo.repaint();
+    				
+    				ScrollUtil.scroll(scrlpanofInfo, ScrollUtil.BOTTOM);
+    				
+            	}
+            }
+		});
+		
+//		 editorpansuosubk.displayBanKuaiListContentsForStock((Stock)nodeshouldbedisplayed);
 	}
 	
 	private void displayBanKuaiAndStockNews()
 	{
-		editorPanenodeinfo.displayChanYeLianNewsHtml (nodeshouldbedisplayed);
-		editorPanenodeinfo.displayChanYeLianInfo(nodeshouldbedisplayed);
+		DisplayNodesRelatedNewsServices svsnews = new DisplayNodesRelatedNewsServices (this.nodeshouldbedisplayed);
+		svsnews.setTimeRangeForInfoRange(LocalDate.now().minusMonths(12), LocalDate.now());
+		DisplayNodeInfoPanel newspnl = new DisplayNodeInfoPanel (svsnews);
+		
+		pnlextrainfo.add (newspnl);
+
+//		editorPanenodeinfo.displayJSTestHtml();
+//		editorPanenodeinfo.displayChanYeLianNewsHtml (nodeshouldbedisplayed);
+//		editorPanenodeinfo.displayChanYeLianInfo(nodeshouldbedisplayed);
 	}
 
 
@@ -1833,11 +1849,7 @@ public class StockInfoManager
 				} catch (java.lang.NullPointerException e) {
 					txtFldStockName.setText("");
 				}
-				
-				
-//				spinnerChicanggushu.setValue(asinglestockinfomation.getChicanggushu());
-//				NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();  
-//				tfldchicangchenbentxt.setText(currencyFormat.format(asinglestockinfomation.getChicangchengben()));
+
 				
 			
 				try {
@@ -1923,8 +1935,8 @@ public class StockInfoManager
 //		tfdCustom.setText("");
 //		tfdJingZhengDuiShou.setText("");
 		
-		editorpansuosubk.setText("");
-		editorPanenodeinfo.setText("");
+//		editorpansuosubk.setText("");
+//		editorPanenodeinfo.setText("");
 	
 		((DefaultTableModel)tblzhongdiangz.getModel()).setRowCount(0);
 		//tableStockAccountsInfo.setModel( new DefaultTableModel()  );
@@ -2153,13 +2165,13 @@ public class StockInfoManager
 	private JButton btnSell;
 	private JButton btnjiaruzdgz;
 	private JScrollPane sclpaneJtable;
-	private BanKuaiListEditorPane  editorpansuosubk;
+//	private DisPlayNodeSuoShuBanKuaiListPanel  editorpansuosubk;
 	private JPopupMenu popupMenu;
 	private JMenuItem mntmChengjiao;
 	private JButton btnSongZhuanGu;
 	private JPanel panel_1;
 	private JPanel panel_2;
-	private JPanel panel_3;
+	private JPanel panelinfo;
 	private JMenuItem menuItem;
 	private JTable tableStockAccountsInfo;
 	private JScrollPane scrollPane;
@@ -2182,11 +2194,13 @@ public class StockInfoManager
 //	private BkChanYeLianTree tree_1;
 	private JButton btndetailfx;
 	private JMenuItem menuItembkfx;
-	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JButton btnyituishi;
 	private JComboBox cobxgpc;
 	private TagsPanel pnltags;
 	private JMenuItem menuItembkconfg;
+	private JScrollPane scrlpanofInfo;
+	private JPanel pnlextrainfo;
+	private JScrollPane scrlnodebankuai;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2207,16 +2221,16 @@ public class StockInfoManager
 		
 		JPanel panelStatusBar = new JPanel();
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
+		scrlnodebankuai = new JScrollPane();
 		
-		editorpansuosubk = new BanKuaiListEditorPane ();
+//		editorpansuosubk = new DisPlayNodeSuoShuBanKuaiListPanel ();
 		
-		editorpansuosubk.setPreferredSize(new Dimension(200,30));
+//		editorpansuosubk.setPreferredSize(new Dimension(200,30));
 		//txaBanKuai.setEditorKit(new WrapEditorKit());
 		//txaBanKuai.setLineWrap(true);
 //		editorpansuosubk.setEditable(false);
 //		editorpansuosubk.setContentType("text/html");
-		scrollPane_1.setViewportView(editorpansuosubk);
+//		scrlnodebankuai.setViewportView(editorpansuosubk);
 		
 		sclpaneJtable = new JScrollPane();
 		
@@ -2358,8 +2372,8 @@ public class StockInfoManager
 		panel_2 = new JPanel();
 		panel_2.setBorder(null);
 		
-		panel_3 = new JPanel();
-		panel_3.setBorder(null);
+		panelinfo = new JPanel();
+		panelinfo.setBorder(null);
 		
 		scrollPane = new JScrollPane();
 		
@@ -2401,7 +2415,7 @@ public class StockInfoManager
 											.addComponent(sclpaneJtable, 0, 0, Short.MAX_VALUE)
 											.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 368, Short.MAX_VALUE)))
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 458, GroupLayout.PREFERRED_SIZE)))
+									.addComponent(panelinfo, GroupLayout.PREFERRED_SIZE, 458, GroupLayout.PREFERRED_SIZE)))
 							.addGap(1067)
 							.addComponent(btnRemvZdy, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -2421,7 +2435,7 @@ public class StockInfoManager
 							.addComponent(sclpaneJtable, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 755, GroupLayout.PREFERRED_SIZE))
+						.addComponent(panelinfo, GroupLayout.PREFERRED_SIZE, 755, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
@@ -2543,7 +2557,7 @@ public class StockInfoManager
 		
 		
 		
-		JScrollPane scrollPane_2 = new JScrollPane();
+		scrlpanofInfo = new JScrollPane();
 		
 		JLabel label_2 = new JLabel("\u540C\u6B65\u597D\u53CB\u677F\u5757");
 		
@@ -2561,87 +2575,81 @@ public class StockInfoManager
 		cobxgpc.setFont(new Font("宋体", Font.PLAIN, 12));
 		
 		pnltags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.FULLCONTROLMODE);
-		GroupLayout gl_panel_3 = new GroupLayout(panel_3);
-		gl_panel_3.setHorizontalGroup(
-			gl_panel_3.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panel_3.createSequentialGroup()
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.LEADING)
+		GroupLayout gl_panelinfo = new GroupLayout(panelinfo);
+		gl_panelinfo.setHorizontalGroup(
+			gl_panelinfo.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panelinfo.createSequentialGroup()
+					.addGroup(gl_panelinfo.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrollPanefumian, Alignment.TRAILING)
-						.addComponent(scrollPane_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
-						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
+						.addComponent(scrlnodebankuai, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+						.addGroup(Alignment.TRAILING, gl_panelinfo.createSequentialGroup()
 							.addGap(4)
 							.addComponent(lblfumianxiaoxi)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE))
-						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
+						.addGroup(Alignment.TRAILING, gl_panelinfo.createSequentialGroup()
 							.addComponent(lblstockinfo)
 							.addGap(14)
 							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE))
 						.addComponent(scrollPanegainian, Alignment.TRAILING)
-						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
+						.addGroup(Alignment.TRAILING, gl_panelinfo.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(lblquanshangpj)
 							.addGap(32)
 							.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE))
-						.addGroup(Alignment.TRAILING, gl_panel_3.createSequentialGroup()
+						.addGroup(Alignment.TRAILING, gl_panelinfo.createSequentialGroup()
 							.addComponent(label_2)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(cobxgpc, 0, 372, Short.MAX_VALUE))
-						.addComponent(scrollPane_2, Alignment.TRAILING)
-						.addGroup(gl_panel_3.createSequentialGroup()
+						.addComponent(scrlpanofInfo, Alignment.TRAILING)
+						.addGroup(gl_panelinfo.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(pnltags, GroupLayout.PREFERRED_SIZE, 437, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
-		gl_panel_3.setVerticalGroup(
-			gl_panel_3.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_3.createSequentialGroup()
+		gl_panelinfo.setVerticalGroup(
+			gl_panelinfo.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelinfo.createSequentialGroup()
 					.addGap(7)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.BASELINE)
+					.addGroup(gl_panelinfo.createParallelGroup(Alignment.BASELINE)
 						.addComponent(label_2)
 						.addComponent(cobxgpc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_panelinfo.createParallelGroup(Alignment.TRAILING)
 						.addComponent(dateChsgainian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblstockinfo))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPanegainian, GroupLayout.PREFERRED_SIZE, 123, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_panelinfo.createParallelGroup(Alignment.TRAILING)
 						.addComponent(dateChsefumian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblfumianxiaoxi))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(scrollPanefumian, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panel_3.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_panelinfo.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblquanshangpj)
 						.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(txtfldquanshangpj, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(4)
 					.addComponent(pnltags, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrlnodebankuai, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
+					.addComponent(scrlpanofInfo, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		
-		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();
-		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo(false);
-		scrollPane_2.setViewportView(editorPanenodeinfo);
-		panel_3.setLayout(gl_panel_3);
+		pnlextrainfo = new JPanel();
+		scrlpanofInfo.setViewportView(pnlextrainfo);
+		pnlextrainfo.setLayout(new BoxLayout(pnlextrainfo, BoxLayout.Y_AXIS));
+		panelinfo.setLayout(gl_panelinfo);
 		
 		cBxstockcode = new JStockComboBox();
 
-//		for(String stockcode:accountschicangconfig.getStockChiCang())
-		//HashMap<String, ASingleStockInfo> tmpchicanginfo = accountschicangconfig.getStockChiCangdetailmap ();
-		
-//		cBxstockcode.setForeground(Color.RED);
-//		
-//		cBxstockcode.setEditable(true);
-		
+	
 		btnSearchCode = new JButton("\u67E5\u627E");
 		
 		

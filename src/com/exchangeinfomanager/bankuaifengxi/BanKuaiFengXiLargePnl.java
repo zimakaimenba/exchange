@@ -41,21 +41,20 @@ import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServices;
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServicesPanel;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenu;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
+
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
-import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarRenderer;
+
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
-import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
+
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.Stock;
+
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -139,13 +138,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
             public void propertyChange(PropertyChangeEvent evt) {
 
-                if (evt.getPropertyName().equals(BanKuaiListEditorPane.EXPORTCSV_PROPERTY)) {
-        			//如果是从tfldselectedmsg导出CSV，当前不能和从板块和个股导出CSV一起用，时间线的问题还没有解决方案
-//                	int extraresult = JOptionPane.showConfirmDialog(null,"要导出到CSV，当前导出CSV的设置都将被清空，是否继续？" , "Warning", JOptionPane.OK_CANCEL_OPTION);
-//            		if(extraresult == JOptionPane.CANCEL_OPTION)
-//            			return;
-            	
-            		exportuserselectedinfotocsv = true;
+                if (evt.getPropertyName().equals(DisplayNodeExchangeDataServicesPanel.EXPORTCSV_PROPERTY)) {
+//            		exportuserselectedinfotocsv = true;
                 }
                 	
             }
@@ -278,24 +272,27 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	 */
 	private void setUserSelectedColumnMessage(TDXNodes node, String selttooltips) 
 	{
-		String htmlstring = node.getNodeXPeroidDataInHtml(LocalDate.parse(selttooltips),this.globeperiod);
-		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
+		DisplayNodeExchangeDataServices svsnodedata = new DisplayNodeExchangeDataServices (node, LocalDate.parse(selttooltips), this.globeperiod);
+		DisplayNodeExchangeDataServicesPanel nodedatapnl = new DisplayNodeExchangeDataServicesPanel (svsnodedata) ;
+		tfldselectedmsg.add(nodedatapnl);
+		tfldselectedmsg.revalidate();
+		tfldselectedmsg.repaint();
 	}
 	/*
 	 * 用户选择了导出CSV，把信息传递到上一级才有意义，否则就是NULL 
 	 */
 	public String getUserSelectedColumnMessage( )
 	{
-		if(exportuserselectedinfotocsv != null && exportuserselectedinfotocsv == true) {
-			org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
-//			org.jsoup.select.Elements content = doc.select("body");
-//			String text = content.text();
-//			return text;
-			
-//			return doc.toString();
-			exportuserselectedinfotocsv = false;
-			return tfldselectedmsg.getText();
-		}
+//		if(exportuserselectedinfotocsv != null && exportuserselectedinfotocsv == true) {
+//			org.jsoup.nodes.Document doc = Jsoup.parse(tfldselectedmsg.getText());
+////			org.jsoup.select.Elements content = doc.select("body");
+////			String text = content.text();
+////			return text;
+//			
+////			return doc.toString();
+//			exportuserselectedinfotocsv = false;
+//			return tfldselectedmsg.getText();
+//		}
 		
 		return null;
 	}
@@ -343,7 +340,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private JPanel centerPanel;
 	private BanKuaiFengXiNodeCombinedCategoryPnl nodecombinedpnl;
 	private BanKuaiFengXiCategoryBarChartPnl nodebkcjezblargepnl;
-	private BanKuaiListEditorPane tfldselectedmsg;
+	private JPanel tfldselectedmsg;
 	private BanKuaiFengXiCandlestickPnl nodekpnl;
 	private JPopupMenu saveImage;
 	private JMenuItem mntmsaveimage; 
@@ -373,7 +370,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.add(this.nodebkcjezblargepnl);
 		
 //		JPanel eastpanel;
-		tfldselectedmsg = new BanKuaiListEditorPane();
+		tfldselectedmsg = new JPanel();
+		tfldselectedmsg.setLayout(new BoxLayout(tfldselectedmsg, BoxLayout.Y_AXIS));
 //		tfldselectedmsg.setLineWrap(true);
 		JScrollPane scrollPaneuserselctmsg = new JScrollPane (); 
 //		JScrollBar bar = scrollPaneuserselctmsg.getHorizontalScrollBar();

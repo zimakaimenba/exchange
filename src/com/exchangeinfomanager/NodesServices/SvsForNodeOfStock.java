@@ -455,5 +455,18 @@ public class SvsForNodeOfStock implements ServicesForNode
 				
 	}
 	
+	public BkChanYeLianTreeNode getNodeMrmcYingKuiInfo (BkChanYeLianTreeNode node)
+	{
+		node =  bkdbopt.getZdgzMrmcZdgzYingKuiFromDB(node);
+		
+		return node;
+	}
+	
+	public BkChanYeLianTreeNode getNodeSuoShuBanKuaiList (BkChanYeLianTreeNode node)
+	{
+		node = bkdbopt.getTDXBanKuaiForAStock ((Stock)node); //通达信板块信息
+		return node;
+	}
+	
 
 }

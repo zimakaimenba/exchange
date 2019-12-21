@@ -3,22 +3,16 @@ package com.exchangeinfomanager.TagManagment;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
-import java.awt.Label;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
+
 import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -28,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import org.jsoup.Jsoup;
+
 
 import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.Tag;
@@ -42,18 +36,14 @@ import com.exchangeinfomanager.TagServices.TagsServiceForNodesNews;
 import com.exchangeinfomanager.TagServices.TagsServiceForSystemTags;
 import com.exchangeinfomanager.TagServices.TagsServiceForURLAndFile;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.commonlib.JUpdatedTextField;
+
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.database.CylTreeDbOperation;
-import com.exchangeinfomanager.gui.subgui.BanKuaiListEditorPane;
+
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.guifactory.JTextFactory;
+
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
-import com.lc.nlp.keyword.algorithm.TextRank;
-
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;

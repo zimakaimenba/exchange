@@ -383,7 +383,7 @@ public class MonthView extends View
         	}
         	
         	if (e.getClickCount() == 2) { //增加一个新的News
-                News News = new News("新闻标题",mDate,"描述", "", new HashSet<>(),"URL","000000");
+                News News = new News("新闻标题",mDate,"描述", "", new HashSet<InsertedNews.Label>(),"URL","000000");
                 
                 CreateNewsWithFurtherOperationDialog cnd = new CreateNewsWithFurtherOperationDialog (svsns);
                 cnd.setNews(News);
