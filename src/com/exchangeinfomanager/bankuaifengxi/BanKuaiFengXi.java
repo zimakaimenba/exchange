@@ -1052,9 +1052,10 @@ public class BanKuaiFengXi extends JDialog
 	{
 		DisPlayNodeSuoShuBanKuaiListServices svsstkbk = new DisPlayNodeSuoShuBanKuaiListServices (selectstock);
 		DisPlayNodeSuoShuBanKuaiListPanel stkbkpnl = new DisPlayNodeSuoShuBanKuaiListPanel (svsstkbk);
-//		stkbkpnl.setPreferredSize(new Dimension(200,30));
+//		stkbkpnl.setPreferredSize(new Dimension(107,60));
 		editorPanebankuai.setViewportView(stkbkpnl);
 		ScrollUtil.scroll(editorPanebankuai, ScrollUtil.BOTTOM);
+		ScrollUtil.scroll(editorPanebankuai, ScrollUtil.LEFT);
 		
 		stkbkpnl.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -2344,23 +2345,22 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 		String nodecode = userinputnode.getMyOwnCode();
-		int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex( nodecode );
+		Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex( nodecode );
 		
-		if(rowindex != -1) {
-			    int curselectrow = tableBkZhanBi.getSelectedRow();
-			    int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-			    if(modelRow == curselectrow)
-			    	return;		    
-				
-				tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
-				
-				unifiedOperationsAfterUserSelectABanKuai (selectedbk);
-		} else	{
+		if(rowindex == null || rowindex == -1) {
 			JOptionPane.showMessageDialog(null,"股票/板块代码有误！或板块不在分析表中，可到板块设置修改！","Warning", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
-		
+
+		int curselectrow = tableBkZhanBi.getSelectedRow();
+		int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+		if(modelRow == curselectrow)
+		    	return;		    
+		tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+		tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+		BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
+				
+		unifiedOperationsAfterUserSelectABanKuai (selectedbk);
 	}
 	
 	/*
@@ -2699,21 +2699,21 @@ public class BanKuaiFengXi extends JDialog
 		int extraresult = JOptionPane.showConfirmDialog(null,extraexportcondition , "附加导出条件:", JOptionPane.OK_CANCEL_OPTION);
 		if(extraresult == JOptionPane.OK_OPTION) { //其他导出条件 
 			
-		if( expc.shouldExportOnlyCurrentBanKuai() ) {
-				int row = tableBkZhanBi.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
-					return ;
+			expc = extraexportcondition.getSettingCondition ();
+			if( expc.shouldExportOnlyCurrentBanKuai() ) {
+					int row = tableBkZhanBi.getSelectedRow();
+					if(row <0) {
+						JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+						return ;
+					}
+					
+					int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+					BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+					String exportbk = selectedbk.getMyOwnCode();
+					expc.setSettingBanKuai(exportbk);
 				}
-				
-				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-				String exportbk = selectedbk.getMyOwnCode();
-				expc.setSettingBanKuai(exportbk);
-			}
+			exportcond.add(expc);
 		}
-		
-		exportcond.add(expc);
 		
 //		decrorateExportButton (expc);
 		

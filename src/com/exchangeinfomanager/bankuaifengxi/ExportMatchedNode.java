@@ -69,8 +69,9 @@ public class ExportMatchedNode
 						if(!matchednodeset.contains(childnode)) 
 							matchednodeset.add((TDXNodes) childnode);
 					
-				}  else
-					continue;
+				}  
+//				else
+//					continue;
 					
 				if(this.cond.shouldExportOnlyBankuaiNotGeGu() )
 					continue;
@@ -81,17 +82,12 @@ public class ExportMatchedNode
 				childnode = svsbk.getAllGeGuOfBanKuai((BanKuai) childnode);
 				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
 				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
-//					 if( testcheck.contains(ggstock.getMyOwnCode()))
-//							System.out.print("checkTDXNodeMatchedCurSettingConditons");
-					 
 					 if(matchednodeset.contains( (TDXNodes)ggstock ) )
 						 continue;
 					 if( checkednodesset.contains(ggstock.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
 						 continue;
 					 
 					 ggstock = svsstk.getNodeData(ggstock,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
-//					 if(!Strings.isNullOrEmpty(this.getSettingMAFormula() ) || this.shouldOnlyExportStocksWithWkYangXian() != null )
-//						 allbksks.syncStockData(ggstock);
 
 					 Boolean stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA((Stock)ggstock, exportdate, period);
 					 if(stkcheckresult == null) {//停牌股
@@ -99,11 +95,16 @@ public class ExportMatchedNode
 						 continue;
 					 }
 					 
-					 if(stkcheckresult 
-							 && (!Strings.isNullOrEmpty(this.cond.getSettingMaFormula() ) || this.cond.getChenJiaoErBottomForYangXianLevle() != null ) ) {
+					 if(stkcheckresult  &&  this.cond.getExportYangXianGeGu() != null  ) {
+						 svsstk.getNodeKXian( ggstock, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
+						 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfZhangFu((Stock)ggstock, exportdate, period);
+					 }
+					 
+					 if(stkcheckresult  && !Strings.isNullOrEmpty(this.cond.getSettingMaFormula() ) ) {
 						 svsstk.getNodeKXian( ggstock, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 						 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfCheckMA((Stock)ggstock, exportdate, period);
 					 }
+					 
 					 try{
 					 if(stkcheckresult)
 						 matchednodeset.add((TDXNodes) ggstock);
@@ -138,6 +139,7 @@ public class ExportMatchedNode
 					
 					childnode = svsstk.getNodeKXian( (Stock)childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 					try{
+					stkcheckresult = this.checkStockMatchedCurSettingConditonsOfZhangFu((Stock)childnode, exportdate, period);
 					stkcheckresult = this.checkStockMatchedCurSettingConditonsOfCheckMA((Stock)childnode, exportdate, period);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -223,13 +225,16 @@ public class ExportMatchedNode
 			return checkresult;
 	}
 	/*
-	 * MA需要K线数据，很耗时，最好是其他条件如果都满足再检查MA
+	 * 涨幅需要K线数据，很耗时，
 	 */
-	public Boolean checkStockMatchedCurSettingConditonsOfCheckMA(Stock stock, LocalDate exportdate, String period) 
+	public Boolean checkStockMatchedCurSettingConditonsOfZhangFu (Stock stock, LocalDate exportdate, String period)
 	{
 		Boolean checkresult = null; 
 		if( this.cond.getExportYangXianGeGu() != null ) {
 			NodeXPeriodData nodexdata = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			if(nodexdata == null)
+				return false;
+			
 			double zhangfu = nodexdata.getSpecificOHLCZhangDieFu(exportdate,0);
 			
 			double settinglevel = this.cond.getExportYangXianGeGu();
@@ -238,6 +243,15 @@ public class ExportMatchedNode
 			else
 				return false;
 		}
+		
+		return checkresult;
+	}
+	/*
+	 * MA需要K线数据，很耗时，最好是其他条件如果都满足再检查MA
+	 */
+	public Boolean checkStockMatchedCurSettingConditonsOfCheckMA (Stock stock, LocalDate exportdate, String period) 
+	{
+		Boolean checkresult = null; 
 		
 		String maf = this.cond.getSettingMaFormula();
 		if(maf != null) {
@@ -255,9 +269,7 @@ public class ExportMatchedNode
 		try {
 			 if(stock.getMyOwnName().toUpperCase().contains("ST") && this.cond.shouldExportST() )
 					return false;
-		 } catch (java.lang.NullPointerException e) {
-
-		 }
+		} catch (java.lang.NullPointerException e) {}
 		
 		if( stock.isVeryVeryNewXinStock(exportdate) ) // 刚上市的新股也不考虑
 			 return false;
@@ -266,7 +278,7 @@ public class ExportMatchedNode
 		Double recordcje = nodexdata.getChengJiaoEr(exportdate, 0);
 		if(recordcje == null) //停牌股
 			return null;
-		
+		//条件设定
 		Double settingcjemin = this.cond.getSettingChenJiaoErMin() ;
 		if( settingcjemin == null)
 			settingcjemin = -1.0;
@@ -282,72 +294,81 @@ public class ExportMatchedNode
 		Double settinghsl = this.cond.getSettingHuanShouLv();
 		if( settinghsl == null)
 			settinghsl = -1.0;
+		Double settinggeguyangxianuplevel = this.cond.getExportYangXianGeGu ();
+		if(settinggeguyangxianuplevel == null)
+			settinggeguyangxianuplevel = -200.0;
 		
 		Boolean shouldhavedayangxian = true;
 		Double cjelevelofyangxian = this.cond.getChenJiaoErBottomForYangXianLevle();
 		if(cjelevelofyangxian == null)
 			shouldhavedayangxian = false;
-		Double yangxianlevelofyangxian = this.cond.getChenJiaoErBottomYangXianLevel();
 		
 		Boolean shouldhavelianxufl = true;
 		Double cjeleveloflianxufl = this.cond.getChenJiaoErBottomForFangLiangLevle();
 		if(cjeleveloflianxufl == null)
 			shouldhavelianxufl = false;
-
+		//个股本周数据
 		Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(exportdate,0);
 		Integer recordmaxcjewk = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(exportdate,0);
 		Double recordhsl = ((StockNodesXPeriodData)nodexdata).getSpecificTimeHuanShouLv(exportdate, 0);
+//		Double recordzhangfu = nodexdata.getSpecificOHLCZhangDieFu(exportdate,0);
 		
-		Boolean cjematch;
+		//逐步计较
+		Boolean cjematch = null;
 		if(recordcje != null  && recordcje >= settingcjemin && recordcje <= settingcjemax )
 			cjematch = true;
 		else if(recordcje != null  && ( recordcje < settingcjemin || recordcje > settingcjemax ))
 			cjematch = false;
-		else
-			cjematch = true;
 		
-		Boolean dpmaxwkmatch;
+		Boolean dpmaxwkmatch = null;
 		if(recordmaxbkwk != null  && recordmaxbkwk >= settindpgmaxwk)
 			dpmaxwkmatch = true;
 		else if(recordmaxbkwk != null  && recordmaxbkwk < settindpgmaxwk)
 			dpmaxwkmatch = false;
-		else
-			dpmaxwkmatch = true;
 		
-		Boolean cjewkmatch;
+		Boolean cjewkmatch = null;
 		if(recordmaxcjewk != null && recordmaxcjewk >= seetingcjemaxwk)
 			cjewkmatch = true;
 		else if(recordmaxcjewk != null && recordmaxcjewk < seetingcjemaxwk)
 			cjewkmatch = false;
-		else
-			cjewkmatch = true;
 		
-		Boolean hslmatch;
+		Boolean hslmatch = null;
 		if(recordhsl != null && recordhsl >= settinghsl)
 			hslmatch = true;
 		else if(recordhsl != null && recordhsl < settinghsl)
 			hslmatch = false;
-		else
-			hslmatch = true;
 		
-		if(cjematch && dpmaxwkmatch && cjewkmatch && hslmatch) {	
+//		Boolean zhouzhangfumatch = null;
+//		if(recordzhangfu != null &&  recordzhangfu > settinggeguyangxianuplevel)
+//			zhouzhangfumatch = true;
+//		else 
+//			zhouzhangfumatch = false;
+		
+		if(cjematch && dpmaxwkmatch && cjewkmatch && hslmatch  ) {	
 			Boolean notskiptonextstock = true;
 			
-			if( shouldhavedayangxian && recordcje < cjelevelofyangxian  ) { //如果成交量小于于一定量，就前3周必须有大阳线或者连续2周满足条件
-					Integer searchyangxianrange = -3;//设定往前回溯几周找大阳线，现在定为3周
-					
-					for(int wkindex = 0;wkindex > searchyangxianrange;wkindex--) { //找前3周的数据，看看有没有大阳线
-						Double hzdf = ((StockXPeriodDataForJFC)nodexdata).getSpecificTimeHighestZhangDieFu(exportdate, wkindex);
-						if(hzdf != null && hzdf >= yangxianlevelofyangxian) { //大阳线涨幅
-							notskiptonextstock = true;
-							break;
-						} else 
-						if(hzdf == null) { //说明改周停牌或者是大盘休市，那要往前多回溯
-							searchyangxianrange = searchyangxianrange -1;
-						} else
-							notskiptonextstock = false;
-						
-					}
+			if( shouldhavedayangxian && recordcje < cjelevelofyangxian  ) { //如果成交量小于于一定量，就必须有大阳线或者连续2周满足条件
+				Double hzdf = ((StockXPeriodDataForJFC)nodexdata).getSpecificTimeHighestZhangDieFu(exportdate, 0);
+				Double yangxianlevelofyangxian = this.cond.getChenJiaoErBottomYangXianLevel();
+				if(hzdf != null && hzdf >= yangxianlevelofyangxian) { //大阳线涨幅
+					notskiptonextstock = true;
+				} else
+					notskiptonextstock = false;
+				
+				
+//					Integer searchyangxianrange = -3;//设定往前回溯几周找大阳线，现在定为3周
+//					
+//					for(int wkindex = 0;wkindex > searchyangxianrange;wkindex--) { //找前3周的数据，看看有没有大阳线
+//						Double hzdf = ((StockXPeriodDataForJFC)nodexdata).getSpecificTimeHighestZhangDieFu(exportdate, wkindex);
+//						if(hzdf != null && hzdf >= yangxianlevelofyangxian) { //大阳线涨幅
+//							notskiptonextstock = true;
+//							break;
+//						} else 
+//						if(hzdf == null) { //说明改周停牌或者是大盘休市，那要往前多回溯
+//							searchyangxianrange = searchyangxianrange -1;
+//						} else
+//							notskiptonextstock = false;
+//				}
 			} 
 			
 			if( shouldhavelianxufl && recordcje < cjeleveloflianxufl && notskiptonextstock == false) { //如果成交量小于于一定量，就前3周必须有大阳线或者连续2周满足条件

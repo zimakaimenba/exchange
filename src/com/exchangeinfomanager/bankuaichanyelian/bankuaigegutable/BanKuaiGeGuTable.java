@@ -1,8 +1,8 @@
 package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 
 import java.awt.event.MouseEvent;
-
-
+import java.time.LocalDate;
+import java.util.Set;
 
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -11,9 +11,12 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
 public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable 
 { 
@@ -99,7 +102,21 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
         int colIndex = columnAtPoint(p);
-        tip =  getValueAt(rowIndex, colIndex).toString();
+        if(colIndex == 1) {
+        	StockOfBanKuai stkofbk = ((BanKuaiGeGuTableModel)this.getModel()).getStock(rowIndex);
+        	Set<Interval> timeinbk = stkofbk.getInAndOutBanKuaiInterval ();
+        	String timett = "";
+        	for(Interval tmpinterval : timeinbk ) {
+        		DateTime newstartdt = tmpinterval.getStart();
+				DateTime newenddt = tmpinterval.getEnd();
+				
+				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth());
+				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+        		timett = "[" + requiredstartday + "~" + requiredendday + "]";
+        	}
+        	tip = timett;
+        } else        
+        	tip =  getValueAt(rowIndex, colIndex).toString();
 //        try {
 //        	if(colIndex == 2) { //权重column的tip要具体
 //				org.jsoup.nodes.Document doc = Jsoup.parse("");

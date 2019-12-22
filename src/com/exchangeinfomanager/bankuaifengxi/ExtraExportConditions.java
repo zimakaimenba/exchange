@@ -92,8 +92,10 @@ class ExtraExportConditions extends JPanel
 		else
 			this.cond.setExportBankuaiInConfig(false);
 		
-		if(!cbxOnlyCurBk.isSelected() )
-			this.cond.setSettingBanKuai(null);
+		if(cbxOnlyCurBk.isSelected() )
+			this.cond.setExportOnlyCurrentBanKuai (true);
+		else
+			this.cond.setExportOnlyCurrentBanKuai (false);
 		
 		if(chkbxzhbiup.isSelected() )
 			this.cond.setExportChenJiaoErZhanbiUpBanKuai(true);
@@ -121,28 +123,28 @@ class ExtraExportConditions extends JPanel
 			this.cond.setExportOnlyCurrentGeGu(false);
 		
 		if( chckbxexportyangxiangegu.isSelected() )
-			this.cond.setExportYangXianGeGu( Double.parseDouble(tfldwkyingxiandayu.getText() ) );
+			this.cond.setExportYangXianGeGu( Double.parseDouble(tfldwkyingxiandayu.getText() ) / 100 );
 		else
 			this.cond.setExportYangXianGeGu( null );
 		
 		if( cbxShiZhilevelyangxian.isSelected() ) {
-			this.cond.setChenJiaoErBottomForYangXianLevle( Double.parseDouble(tfldshizhilevelyangxian.getText() ) );
+			this.cond.setChenJiaoErBottomForYangXianLevle( 100000000 * Double.parseDouble(tfldshizhilevelyangxian.getText() ) );
 			this.cond.setChenJiaoErBottomYangXianLevel ( Double.parseDouble(tfldyangxian.getText() ) );
 		}
 		else
 			this.cond.setChenJiaoErBottomForYangXianLevle( null );
 		
 		if(chckbxshizhilevellianxu.isSelected() ) {
-			this.cond.setChenJiaoErBottomForFangLiangLevle( Double.parseDouble( tfldshizhilevellianxu.getText() ) );
+			this.cond.setChenJiaoErBottomForFangLiangLevle( 100000000 * Double.parseDouble( tfldshizhilevellianxu.getText() ) );
 			this.cond.setChenJiaoErFangLiangLevel ( Integer.parseInt( tfldwkyangxian.getText() ));
 		}
 		else
 			this.cond.setChenJiaoErBottomForFangLiangLevle( null );
 		
 		if(cbxExceptSt.isSelected() )
-			this.cond.setExportST(true);
-		else
 			this.cond.setExportST(false);
+		else
+			this.cond.setExportST(true);
 		
 		return this.cond;
 	}

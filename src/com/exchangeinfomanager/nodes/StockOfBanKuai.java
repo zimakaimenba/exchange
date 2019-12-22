@@ -49,6 +49,10 @@ public class StockOfBanKuai extends TDXNodes
 
 		this.inAndOutBanKuaiInterval.add(newitvl);
 	}
+	public Set<Interval> getInAndOutBanKuaiInterval ()
+	{
+		return this.inAndOutBanKuaiInterval;
+	}
 	public Boolean isInBanKuaiAtSpecificDate (LocalDate checkdate) 
 	{
 		Boolean inbk = false;
