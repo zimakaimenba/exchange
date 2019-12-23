@@ -34,7 +34,8 @@ public class DisPlayNodeSuoShuBanKuaiListPanel  extends DisplayNodeInfoPanel
 			}
 	     }); 
 	     
-	     super.infoeditor.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
+//	     super.infoeditor.addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap)); 
+	     addHyperlinkListener(new ActionBasedBanKuaiAndChanYeLianHyperlinkListener(actionMap));
 	}
 	
 	protected void formateHyperLink(HyperlinkEvent hle) 

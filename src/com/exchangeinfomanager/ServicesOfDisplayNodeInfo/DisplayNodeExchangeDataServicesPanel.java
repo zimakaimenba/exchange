@@ -38,7 +38,7 @@ public class DisplayNodeExchangeDataServicesPanel extends DisplayNodeInfoPanel
 
 	private void createEvents() 
 	{
-		super.infoeditor.addMouseListener(new MouseAdapter() {
+		super.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				//System.out.println("this is the test");
@@ -80,7 +80,7 @@ public class DisplayNodeExchangeDataServicesPanel extends DisplayNodeInfoPanel
 	 */
 	protected void clearPaneContents()
 	{
-		super.infoeditor.setText("");
+		super.setText("");
 //		this.displayedBankuaiinfomap.clear();
 //		this.displayedStockinfomap.clear();
 	}
@@ -89,7 +89,7 @@ public class DisplayNodeExchangeDataServicesPanel extends DisplayNodeInfoPanel
 	 */
 	protected void exportContentsToCsv() 
 	{
-		String htmlstring = super.infoeditor.getText();
+		String htmlstring = super.getText();
 		
 //		PropertyChangeEvent evt = new PropertyChangeEvent(this, EXPORTCSV_PROPERTY, "",  htmlstring );
 		this.firePropertyChange(EXPORTCSV_PROPERTY, "", htmlstring);

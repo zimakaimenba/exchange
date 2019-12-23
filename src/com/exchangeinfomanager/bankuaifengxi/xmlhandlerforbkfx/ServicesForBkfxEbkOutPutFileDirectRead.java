@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
@@ -71,9 +72,9 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
 				return null;
 		}
 	}
-	public void resetBkfxFileDate ()
+	public void resetBkfxFileDate (LocalDate localDate)
 	{
-		this.edbfiledate = LocalDate.now();
+		this.edbfiledate = localDate.with(DayOfWeek.FRIDAY);
 	}
 
 	@Override

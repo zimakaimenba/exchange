@@ -715,12 +715,20 @@ public final class StockCalendarAndNewDbOperation
 			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
 		}
 		
-		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
-								+ timerangesql
-								+ "  AND  关注类型 = false " //长期记录
-								+ "  AND 代码 = '" + nodeid + "'"
-								+ " ORDER BY 日期 DESC"
-								;
+		String sqlquerystat;
+		if(nodeid.toUpperCase().equals("ALL")) 
+			sqlquerystat = 	" SELECT * FROM 关注个股板块表"
+									+ timerangesql
+									+ "  AND  关注类型 = false " //长期记录
+									+ " ORDER BY 日期 DESC"
+									;
+		else
+			sqlquerystat = 	" SELECT * FROM 关注个股板块表"
+					+ timerangesql
+					+ "  AND  关注类型 = false " //长期记录
+					+ "  AND 代码 = '" + nodeid + "'"
+					+ " ORDER BY 日期 DESC"
+					;
 		
 		CachedRowSetImpl result = null;
 		try {
@@ -903,7 +911,7 @@ public final class StockCalendarAndNewDbOperation
 	public  Collection<News> getChangQiJiLuInfo (String nodeid,  LocalDate startdate, LocalDate enddate)
 	{
 		BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-		
+			
 		Collection<News> cqjllist = new ArrayList<>();
 		
 		String timerangesql = null ;
@@ -915,12 +923,18 @@ public final class StockCalendarAndNewDbOperation
 			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
 		}
 		
-		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
-								+ timerangesql
-								+ "  AND  关注类型 = true " //长期记录
-								+ "  AND 代码= '"  + nodeid + "'" 
-								+ " ORDER BY 日期 DESC"
-								;
+		String sqlquerystat;
+		if(nodeid.toUpperCase().equals("ALL"))
+			 sqlquerystat = 	" SELECT * FROM 关注个股板块表"
+					+ " WHERE   关注类型 = true " //长期记录
+					+ " ORDER BY 日期 DESC"
+					;
+		else
+			sqlquerystat = 	" SELECT * FROM 关注个股板块表"
+									+ " WHERE 关注类型 = true " //长期记录
+									+ "  AND 代码= '"  + nodeid + "'" 
+									+ " ORDER BY 日期 DESC"
+									;
 		
 		CachedRowSetImpl result = null;
 		try {
@@ -928,8 +942,13 @@ public final class StockCalendarAndNewDbOperation
 			
 			while(result.next()) {
 	   		 	int meetingID = result.getInt("ID");
-	   		 	LocalDate start  = result.getDate("日期").toLocalDate(); 
-//	   		 	LocalDate end  = result.getDate("截至日期").toLocalDate();
+	   		 	LocalDate start  = result.getDate("日期").toLocalDate();
+	   		 	LocalDate end;
+	   		 	try {
+	   		 		end  = result.getDate("截至日期").toLocalDate();
+	   		 	} catch (java.lang.NullPointerException e) {
+	   		 		end = LocalDate.parse("3000-01-01");
+	   		 	}
 	            String description = result.getString("说明");
 	            String detail = result.getString("具体描述");
 	            if(Strings.isNullOrEmpty(detail))
@@ -940,7 +959,10 @@ public final class StockCalendarAndNewDbOperation
 	            Integer ownertype = result.getInt("类型");
 	            
 	            BkChanYeLianTreeNode node = treeofbkstk.getSpecificNodeByHypyOrCode(ownercodes, ownertype);
-	            ExternalNewsType news = new GuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,true);
+	            if(node == null)
+	            	node = treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
+	            
+	            ExternalNewsType news = new GuanZhu(node, description, start,  end, detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,true);
 
 	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
 
@@ -1614,7 +1636,8 @@ public final class StockCalendarAndNewDbOperation
 		if(Strings.isNullOrEmpty(newsowners)) {
 			this.deleteZhiShuGuanJianRiQi(meeting);
 			return updatedMeeting;
-		} else	if(endtime != null)
+		} else	
+		if(endtime != null)
 			sqlupatestatement =  "UPDATE 指数关键日期表  SET"
 					+ "  日期 = '" + starttime + "', "
 					+ "  截至日期 = '" + endtime +"',"
@@ -1623,7 +1646,7 @@ public final class StockCalendarAndNewDbOperation
 					+ " 详细说明 =  ' " + desc +  "', "
 					+ " URL = '" + slackurl +  "', "
 					+ " 关键词 = '" + keywordsurl +  "' , "
-					+ " 说明  = '" + desc + "' "
+					+ " 说明  = '" + title + "' "
 					+ " WHERE id =  " + newsid
 					;
 		else
@@ -1634,7 +1657,7 @@ public final class StockCalendarAndNewDbOperation
 					+ " 详细说明 =  ' " + desc +  "', "
 					+ " URL = '" + slackurl +  "', "
 					+ " 关键词 = '" + keywordsurl +  "' , "
-					+ " 说明  = '" + desc + "' "
+					+ " 说明  = '" + title + "' "
 					+ " WHERE id =  " + newsid
 					;
 			

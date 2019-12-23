@@ -12,7 +12,7 @@ public interface ServicesForBkfxEbkOutPutFile
 //	File getBkfxXmlFiel ();
 	
 	void patchOutPutFileToTrees (BanKuaiAndStockTree treeroot);
-	void resetBkfxFileDate ();
+	void resetBkfxFileDate (LocalDate date);
 
 //	void setBkfeOutPutFile(String ebkfile, Boolean usingfiledate);
 

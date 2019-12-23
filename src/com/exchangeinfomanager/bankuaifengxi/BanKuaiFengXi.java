@@ -99,6 +99,7 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
+import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -1052,7 +1053,7 @@ public class BanKuaiFengXi extends JDialog
 	{
 		DisPlayNodeSuoShuBanKuaiListServices svsstkbk = new DisPlayNodeSuoShuBanKuaiListServices (selectstock);
 		DisPlayNodeSuoShuBanKuaiListPanel stkbkpnl = new DisPlayNodeSuoShuBanKuaiListPanel (svsstkbk);
-//		stkbkpnl.setPreferredSize(new Dimension(107,60));
+//		stkbkpnl.setPreferredSize(new Dimension(200,30));
 		editorPanebankuai.setViewportView(stkbkpnl);
 		ScrollUtil.scroll(editorPanebankuai, ScrollUtil.BOTTOM);
 		ScrollUtil.scroll(editorPanebankuai, ScrollUtil.LEFT);
@@ -1940,7 +1941,8 @@ public class BanKuaiFengXi extends JDialog
 						Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 						setCursor(hourglassCursor2);
 					}
-				}
+				} else
+					tfldparsedfile.setText("");
 			}
 		});
 		
@@ -2536,30 +2538,26 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void displayNodeInfo(BkChanYeLianTreeNode selectednode) 
 	{
-//		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (false);
-		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXBK) {
 			DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (selectednode);
 			bknews.setTimeRangeForInfoRange(this.dateChooser.getLocalDate(), this.dateChooser.getLocalDate());
 			DisplayNodeInfoPanel displaybknewspnl = new DisplayNodeInfoPanel (bknews);
+//			displaybknewspnl.setPreferredSize(new Dimension(200,30));
 			pnlextrainfo.add (displaybknewspnl);
-			
-//			editorPanenodeinfo.displayAllNewsOfSpecificWeek ( this.dateChooser.getLocalDate() );
 		}
 		
 		DisplayNodeJiBenMianService nodejbm = new DisplayNodeJiBenMianService (selectednode);
 		DisplayNodeInfoPanel displaybkjbmpnl = new DisplayNodeInfoPanel (nodejbm);
+//		displaybkjbmpnl.setPreferredSize(new Dimension(200,30));
 		pnlextrainfo.add (displaybkjbmpnl);
 		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXGG) {
 			DisplayNodeSellBuyInfoServices nodesellbuy = new DisplayNodeSellBuyInfoServices (selectednode);
 			DisplayNodeInfoPanel displaybksbpnl = new DisplayNodeInfoPanel (nodesellbuy);
+//			displaybksbpnl.setPreferredSize(new Dimension(200,30));
 			pnlextrainfo.add (displaybksbpnl);
 		}
-		
-//		editorPanenodeinfo.displayNodeAllInfo(selectednode);
-//		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo (true);
-		
+
 		setUserSelectedColumnMessage( (TDXNodes)selectednode, this.dateChooser.getLocalDate());
 	}
 	/*
@@ -2854,7 +2852,7 @@ public class BanKuaiFengXi extends JDialog
 			if(!curselectdate.equals(edbfiledate) ) 
 				this.dateChooser.setLocalDate(edbfiledate);
 		 } else { //用户可以作为本周文件
-			 bkfxfh.resetBkfxFileDate();
+			 bkfxfh.resetBkfxFileDate(this.dateChooser.getLocalDate());
 		 }
 				
 		 bkfxfh.patchOutPutFileToTrees (treeofbkstk );

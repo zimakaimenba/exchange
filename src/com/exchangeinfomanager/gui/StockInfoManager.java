@@ -1690,14 +1690,6 @@ public class StockInfoManager
 		stkbkpnl.setPreferredSize(new Dimension(200,30));
 		scrlnodebankuai.setViewportView(stkbkpnl);
 		
-//		stkbkpnl.revalidate();
-//		stkbkpnl.repaint();
-//		
-//		scrlnodebankuai.getViewport().revalidate();
-//		scrlnodebankuai.getViewport().repaint();
-//		scrlnodebankuai.revalidate();
-//		scrlnodebankuai.repaint();
-		
 		stkbkpnl.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {

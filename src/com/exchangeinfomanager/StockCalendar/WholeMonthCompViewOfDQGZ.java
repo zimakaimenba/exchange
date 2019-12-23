@@ -52,7 +52,12 @@ public class WholeMonthCompViewOfDQGZ extends WholeMonthNewsComponentsView
             
             LocalDate superdate = super.getDate();
             LocalDate firstDayInMonth = superdate.withDayOfMonth(1);
-            LocalDate lastDayInMonth = superdate.withDayOfMonth(30);
+            LocalDate lastDayInMonth;
+            try {
+            	lastDayInMonth = superdate.withDayOfMonth(30);
+            } catch (java.time.DateTimeException e) {
+            	lastDayInMonth = superdate.withDayOfMonth(28);
+            }
             
 //    		DateTime requiredstartdt= new DateTime(firstDayInMonth.getYear(), firstDayInMonth.getMonthValue(), firstDayInMonth.getDayOfMonth(), 0, 0, 0, 0);
 //    		DateTime requiredenddt = new DateTime(lastDayInMonth.getYear(), lastDayInMonth.getMonthValue(), lastDayInMonth.getDayOfMonth(), 0, 0, 0, 0);

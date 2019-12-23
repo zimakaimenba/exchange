@@ -91,9 +91,7 @@ public class WholeMonthNewsView extends View
 	    		
 	    		if( f instanceof ChangQiGuanZhuServices) {
 	    			svscqgz = (ChangQiGuanZhuServices) f;
-	    			
-	    			LocalDate firstDayInMonth = super.getDate().withDayOfMonth(1);
-	    			cqjlview = new WholeMonthNewsComponentsView (svscqgz, "长期关注" + String.valueOf(firstDayInMonth.getMonth()) );
+	    			cqjlview = new WholeMonthNewsComponentsView (svscqgz, "长期关注"  );
 	    		} else
 	    		if( f instanceof QiangShiServices) {
 	    			svsqs = (QiangShiServices) f;
