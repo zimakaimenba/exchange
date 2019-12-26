@@ -324,7 +324,7 @@ public class SystemConfigration
 	  */
 	 public String getTdxFenXiReportFile ()
 	 {
-		 String path = this.getSystemInstalledPath() + "/reports/TDX个股分析报告.txt";
+		 String path = this.getSystemInstalledPath() + "/reports/StockMiningToTdxReports/TDX个股分析报告.txt";
 		 
 		 if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
 			 try {
@@ -341,7 +341,7 @@ public class SystemConfigration
 	  */
 	 public String getTdxZdgzReportFile ()
 	 {
-		 String path = this.getSystemInstalledPath() + "/reports/TDX重点关注历史报告.txt";
+		 String path = this.getSystemInstalledPath() + "/reports/StockMiningToTdxReports/TDX重点关注历史报告.txt";
 		 
 		 if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
 			 try {
@@ -358,7 +358,7 @@ public class SystemConfigration
 		 */
 		public String getTdxBbFileGaiNianTiShi() 
 		{
-			 String path = this.getSystemInstalledPath() + "/reports/TDX概念提示报告.txt";
+			 String path = this.getSystemInstalledPath() + "/reports/StockMiningToTdxReports/TDX概念提示报告.txt";
 			 
 			 if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
 				 try {
@@ -375,7 +375,7 @@ public class SystemConfigration
 		 */
 		public String getTdxBbfileFuMianXiaoXi() 
 		{
-			String path =  this.getSystemInstalledPath()  + "/reports/TDX负面消息报告.txt";
+			String path =  this.getSystemInstalledPath()  + "/reports/StockMiningToTdxReports/TDX负面消息报告.txt";
 			
 			if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
 				 try {
@@ -391,7 +391,7 @@ public class SystemConfigration
 		 * @return the tdxbbfilenamezfxgkhzd
 		 */
 		public String getTdxBbFileZzfxgkhzd() {
-			String path =  this.getSystemInstalledPath() + "/reports/TDX正负相关客户竞对报告.txt";
+			String path =  this.getSystemInstalledPath() + "/reports/StockMiningToTdxReports/TDX个股关键词报告.txt";
 			
 			if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
 				 try {
@@ -405,7 +405,7 @@ public class SystemConfigration
 		}
 		public String getTDXChanYeLianReportFile() 
 		{
-			String path =   this.getSystemInstalledPath() + "/reports/TDX个股产业链报告报告.txt";
+			String path =   this.getSystemInstalledPath() + "/reports/StockMiningToTdxReports/TDX个股产业链报告.txt";
 			
 			if (java.nio.file.Files.notExists(Paths.get(path).getParent())) {
 				 try {
@@ -422,7 +422,7 @@ public class SystemConfigration
 		 */
 		public String getTDXModelMatchExportFile ()
 		{
-			String path =    this.getSystemInstalledPath() + "/weeklyreports/占比模型输出/";
+			String path =    this.getSystemInstalledPath() + "/reports/占比模型输出/";
 			
 			if (java.nio.file.Files.notExists(Paths.get(path))) {
 				 try {
@@ -439,7 +439,7 @@ public class SystemConfigration
 		 */
 		 public String getShiZhiFenXiFilesStoredPath ()
 		 {
-			 String path =  this.getSystemInstalledPath() + "/weeklyreports/市值分析输出/";
+			 String path =  this.getSystemInstalledPath() + "/reports/市值分析输出/";
 			 
 			 if (java.nio.file.Files.notExists(Paths.get(path))) {
 				 try {
@@ -456,7 +456,7 @@ public class SystemConfigration
 		  */
 		 public String getGephiFenXiFilesStoredPath ()
 		 {
-			 String path =  this.getSystemInstalledPath() + "/weeklyreports/Gephi分析输出/";
+			 String path =  this.getSystemInstalledPath() + "/reports/Gephi分析输出/";
 			 
 			 if (java.nio.file.Files.notExists(Paths.get(path))) {
 				 try {
@@ -883,7 +883,7 @@ public class SystemConfigration
 		}
 		public String getYanJiuBaoGaoDownloadedFilePath ()
 		{
-			String path = this.systeminstalledpath + "weeklyreports/研究报告/";
+			String path = this.systeminstalledpath + "reports/研究报告/";
 			 if (java.nio.file.Files.notExists(Paths.get(path))) {
 				 try {
 					java.nio.file.Files.createDirectories(Paths.get(path) );
@@ -994,6 +994,14 @@ public class SystemConfigration
 			 }
 			return path;
 			
+		}
+		/*
+		 * 
+		 */
+		public String getFreeMindInstallationPath ()
+		{
+			String path = "C:\\Program Files\\FreeMind\\Freemind.bat"; //D:\\tools\\HeidiSQL\\heidisql.exe
+			return path;
 		}
 		/*
 		 * 

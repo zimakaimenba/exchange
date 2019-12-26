@@ -1,12 +1,13 @@
 package com.exchangeinfomanager.Trees;
 
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 
 public class CreateExchangeTree 
 {
 	public static TreeOfChanYeLian CreateTreeOfChanYeLian ()
 	{
-		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","两交易所",0);
+		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","两交易所",BkChanYeLianTreeNode.DAPAN);
 		TreeOfChanYeLian treecyl = new TreeOfChanYeLian(alltopNode,"CYLTREE");
 		return treecyl;
 	}

@@ -10,10 +10,12 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,13 +30,21 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXiXmlHandler;
 import com.exchangeinfomanager.bankuaifengxi.ai.ZdgzItem;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
@@ -543,6 +553,75 @@ public class TDXFormatedOpt {
 		
 		return filezdgz.getAbsolutePath();
 	}
+	/*
+	 * 
+	 */
+	public static String parseBanKuaiGeGuTagsToTDXReport ()
+	{
+		ConnectDataBase connectdb = ConnectDataBase.getInstance();
+		SystemConfigration sysconfig = SystemConfigration.getInstance();
+		File filezzfxgkzd = new File( sysconfig.getTdxBbFileZzfxgkhzd() );
+		 
+		try {
+			if (filezzfxgkzd.exists()) {
+				filezzfxgkzd.delete();
+				filezzfxgkzd.createNewFile();
+			} else
+				filezzfxgkzd.createNewFile();
+		} catch (java.io.IOException e) {
+			filezzfxgkzd.getParentFile().mkdirs(); //目录不存在，先创建目录
+			try {
+				filezzfxgkzd.createNewFile();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			filezzfxgkzd.delete();
+			return null;
+		}
+		
+		BanKuaiAndStockTree allbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) allbkstk.getModel().getRoot();
+		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);
+
+		for(int i=0;i< bankuaicount; i++) {
+			
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) allbkstk.getModel().getChild(treeroot, i);
+			TagsServiceForNodes tagsvsnode = new TagsServiceForNodes (childnode);
+			Collection<Tag> tagset = null;
+			try {
+				tagset = tagsvsnode.getTags();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String tags = "";
+			for (Iterator<Tag> lit = tagset.iterator(); lit.hasNext(); ) {
+		        Tag f = lit.next();
+		        tags = tags + "  " + f.getName();
+		    }
+			
+			if( Strings.isNullOrEmpty(tags) ) {
+				tagsvsnode = null;
+				continue;
+			}
+			
+			String resulttags = "关键词(#" + tags +  "#) " ;
+			resulttags = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(childnode.getMyOwnCode(),
+					Strings.nullToEmpty(resulttags) );
+			
+			try {
+				Files.append(resulttags,filezzfxgkzd, charset);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			tagsvsnode = null;
+		}
+		allbkstk = null;
+		return filezzfxgkzd.getParent();
+	}
 /*
  * 所有个股的基本信息
  */
@@ -551,9 +630,9 @@ public class TDXFormatedOpt {
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
 		SystemConfigration sysconfig = SystemConfigration.getInstance();
 		
-		 File filegnts = new File( sysconfig.getTdxBbFileGaiNianTiShi() );
-		 File filefmxx = new File( sysconfig.getTdxBbfileFuMianXiaoXi() );
-		 File filezzfxgkzd = new File( sysconfig.getTdxBbFileZzfxgkhzd() );
+		File filegnts = new File( sysconfig.getTdxBbFileGaiNianTiShi() );
+		File filefmxx = new File( sysconfig.getTdxBbfileFuMianXiaoXi() );
+		File filezzfxgkzd = new File( sysconfig.getTdxBbFileZzfxgkhzd() );
 		 
 		try {
 			if (filegnts.exists()) {
@@ -644,25 +723,25 @@ public class TDXFormatedOpt {
 					}
 				}
 				
-				String formatedzhengxiangguan = null;
-				if( !Strings.isNullOrEmpty(rsgg.getString("正相关及客户") ) || !Strings.isNullOrEmpty(rsgg.getString("客户")) ) {
-					formatedzhengxiangguan = "正相关及客户(#" + Strings.nullToEmpty(rsgg.getString("正相关及客户"))
-											 + " " + Strings.nullToEmpty(rsgg.getString("客户") ) + "#) " ;
-				}
-				
-				String formatedfuxiangguan = null;
-				if( !Strings.isNullOrEmpty(rsgg.getString("负相关及竞争对手") ) || !Strings.isNullOrEmpty(rsgg.getString("竞争对手") ) ) {
-					formatedfuxiangguan = "负相关及竞争对手(#" + Strings.nullToEmpty(rsgg.getString("负相关及竞争对手") )
-											 + " " + Strings.nullToEmpty(rsgg.getString("竞争对手") ) + "#) " ;
-				}
-				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
-					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan) );
-					 try {
-						Files.append(lineformatedresult,filezzfxgkzd, charset);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+//				String formatedzhengxiangguan = null;
+//				if( !Strings.isNullOrEmpty(rsgg.getString("正相关及客户") ) || !Strings.isNullOrEmpty(rsgg.getString("客户")) ) {
+//					formatedzhengxiangguan = "正相关及客户(#" + Strings.nullToEmpty(rsgg.getString("正相关及客户"))
+//											 + " " + Strings.nullToEmpty(rsgg.getString("客户") ) + "#) " ;
+//				}
+//				
+//				String formatedfuxiangguan = null;
+//				if( !Strings.isNullOrEmpty(rsgg.getString("负相关及竞争对手") ) || !Strings.isNullOrEmpty(rsgg.getString("竞争对手") ) ) {
+//					formatedfuxiangguan = "负相关及竞争对手(#" + Strings.nullToEmpty(rsgg.getString("负相关及竞争对手") )
+//											 + " " + Strings.nullToEmpty(rsgg.getString("竞争对手") ) + "#) " ;
+//				}
+//				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
+//					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan) );
+//					 try {
+//						Files.append(lineformatedresult,filezzfxgkzd, charset);
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}
 
 				
 			}
@@ -729,25 +808,25 @@ public class TDXFormatedOpt {
 					}
 				}
 				
-				String formatedzhengxiangguan = null;
-				if( !Strings.isNullOrEmpty(rsbk.getString("正相关及客户") ) || !Strings.isNullOrEmpty(rsbk.getString("客户")) ) {
-					formatedzhengxiangguan = "正相关及客户(#" + Strings.nullToEmpty(rsbk.getString("正相关及客户"))
-											 + " " + Strings.nullToEmpty(rsbk.getString("客户") ) + "#) " ;
-				}
-				
-				String formatedfuxiangguan = null;
-				if( !Strings.isNullOrEmpty(rsbk.getString("负相关及竞争对手") ) || !Strings.isNullOrEmpty(rsbk.getString("竞争对手") ) ) {
-					formatedfuxiangguan = "负相关及竞争对手(#" + Strings.nullToEmpty(rsbk.getString("负相关及竞争对手") )
-											 + " " + Strings.nullToEmpty(rsbk.getString("竞争对手") ) + "#) " ;
-				}
-				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
-					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan), "sh" );
-					 try {
-						Files.append(lineformatedresult,filezzfxgkzd, charset);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+//				String formatedzhengxiangguan = null;
+//				if( !Strings.isNullOrEmpty(rsbk.getString("正相关及客户") ) || !Strings.isNullOrEmpty(rsbk.getString("客户")) ) {
+//					formatedzhengxiangguan = "正相关及客户(#" + Strings.nullToEmpty(rsbk.getString("正相关及客户"))
+//											 + " " + Strings.nullToEmpty(rsbk.getString("客户") ) + "#) " ;
+//				}
+//				
+//				String formatedfuxiangguan = null;
+//				if( !Strings.isNullOrEmpty(rsbk.getString("负相关及竞争对手") ) || !Strings.isNullOrEmpty(rsbk.getString("竞争对手") ) ) {
+//					formatedfuxiangguan = "负相关及竞争对手(#" + Strings.nullToEmpty(rsbk.getString("负相关及竞争对手") )
+//											 + " " + Strings.nullToEmpty(rsbk.getString("竞争对手") ) + "#) " ;
+//				}
+//				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
+//					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan), "sh" );
+//					 try {
+//						Files.append(lineformatedresult,filezzfxgkzd, charset);
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}
 
 				
 			}

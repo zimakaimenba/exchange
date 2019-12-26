@@ -19,7 +19,7 @@ public class CacheForInsertedTag extends TagCache
 	
 	  public Set<BkChanYeLianTreeNode> getTagOwners (String tagname) 
 	  {
-		  if( ! this.hasBeenInCache(tagname) )
+		  if(  this.hasBeenInCache(tagname) == null)
 			  return null;
 		  
 		  Set<BkChanYeLianTreeNode> nodeset = new HashSet<> ();

@@ -79,14 +79,10 @@ public class AllCurrentTdxBKAndStoksTree
 		    alltopNode.add(stock);
 
 		allbkggtree = new BanKuaiAndStockTree(alltopNode,"ALLBKSTOCKS");
+		
 		allstocks = null;
+		allbkandzs = null;
 	}
-//	private void initializeChanYeLianTree() 
-//	{
-//		this.cyltreedb = new CylTreeDbOperation ();
-//		this.cyltree = this.cyltreedb.getBkChanYeLianTree();
-//		
-//	}
 	
 	public  BanKuaiAndStockTree getAllBkStocksTree()
 	{

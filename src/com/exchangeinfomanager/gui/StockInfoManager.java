@@ -390,6 +390,19 @@ public class StockInfoManager
 	 */
 	private void createEvents()
 	{
+		mntmFreemind.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				try {
+					String cmd = "rundll32 url.dll,FileProtocolHandler " + sysconfig.getFreeMindInstallationPath() ;
+					logger.debug(cmd);
+					Process p  = Runtime.getRuntime().exec(cmd);
+					p.waitFor();
+				} catch (Exception e1){
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		tblzhongdiangz.addMouseListener(new MouseAdapter() {
         	@Override
@@ -1448,12 +1461,16 @@ public class StockInfoManager
 		{
 			public void actionPerformed(ActionEvent e) 
 			{			
-				String jbmexportresult = TDXFormatedOpt.stockJiBenMianToReports();
-				String nodefenxiportresult = TDXFormatedOpt.stockAndBanKuaiFenXiReports ();
-				String xmlexportresult = TDXFormatedOpt.parseChanYeLianXmlToTDXReport();
-				String zdgzexportresult = TDXFormatedOpt.getStockZdgzInfo ();
+				String jbmexportresult = TDXFormatedOpt.stockJiBenMianToReports(); //基本面
+				String nodefenxiportresult = TDXFormatedOpt.stockAndBanKuaiFenXiReports (); //个股分析
+				String xmlexportresult = TDXFormatedOpt.parseChanYeLianXmlToTDXReport(); //产业链
+				String zdgzexportresult = TDXFormatedOpt.getStockZdgzInfo (); //历史关注信息
+				String tagsreportresult = TDXFormatedOpt.parseBanKuaiGeGuTagsToTDXReport (); //关键词
 				
-				if(Strings.isNullOrEmpty(xmlexportresult) && Strings.isNullOrEmpty(jbmexportresult) && Strings.isNullOrEmpty(zdgzexportresult) ) {
+				if(Strings.isNullOrEmpty(xmlexportresult) 
+						&& Strings.isNullOrEmpty(jbmexportresult) 
+						&& Strings.isNullOrEmpty(zdgzexportresult)
+						&& Strings.isNullOrEmpty(tagsreportresult) ) {
 					int exchangeresult = JOptionPane.showConfirmDialog(null, "报表生成失败，请检查原因！","报表完毕", JOptionPane.OK_CANCEL_OPTION);
 					return;
 				}
@@ -1467,6 +1484,8 @@ public class StockInfoManager
 					reportsummary = reportsummary + "重点关注报表生成失败。";
 				if(Strings.isNullOrEmpty(nodefenxiportresult))
 					reportsummary = reportsummary + "分析结果报表生成失败。";
+				if(Strings.isNullOrEmpty(tagsreportresult) ) 
+					reportsummary = reportsummary + "个股板块关键词报表生成失败";
 				
 				int exchangeresult = JOptionPane.showConfirmDialog(null, reportsummary + "其他报表生成成功，是否打开报表目录？","报表完毕", JOptionPane.OK_CANCEL_OPTION);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
@@ -1707,12 +1726,19 @@ public class StockInfoManager
     				
     				DisplayNodeJiBenMianService bkjbm = new DisplayNodeJiBenMianService (bankuai);
     				DisplayNodeInfoPanel displaybkpnl = new DisplayNodeInfoPanel (bkjbm);
+    				Dimension size = new Dimension(scrlpanofInfo.getViewport().getSize().width, displaybkpnl.getContentHeight() + 10 );
+    				displaybkpnl.setPreferredSize(size);
+    				displaybkpnl.setMinimumSize(size);
+    				displaybkpnl.setMaximumSize(size);
     				pnlextrainfo.add (displaybkpnl,0);
     				
     				DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (bankuai);
     				DisplayNodeInfoPanel displaybknewspnl = new DisplayNodeInfoPanel (bknews);
+    				Dimension size2 = new Dimension(scrlpanofInfo.getViewport().getSize().width, displaybknewspnl.getContentHeight() + 10 );
+    				displaybknewspnl.setPreferredSize(size2);
+    				displaybknewspnl.setMinimumSize(size2);
+    				displaybknewspnl.setMaximumSize(size2);
     				pnlextrainfo.add (displaybknewspnl,0);
-//    				editorPanenodeinfo.displayNodeAllInfo(bankuai);
     				
     				pnlextrainfo.revalidate();
     				pnlextrainfo.repaint();
@@ -2193,6 +2219,8 @@ public class StockInfoManager
 	private JScrollPane scrlpanofInfo;
 	private JPanel pnlextrainfo;
 	private JScrollPane scrlnodebankuai;
+	private JMenu mnThirdparty;
+	private JMenuItem mntmFreemind;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2870,9 +2898,16 @@ public class StockInfoManager
 		
 		menuOperationList.add(mntmNewMenuItem_1);
 		
-		mntmopenlcldbfile = new JMenuItem("\u6253\u5F00\u6570\u636E\u5E93");
+		mnThirdparty = new JMenu("ThirdParty");
+		menuBar.add(mnThirdparty);
+		
+		mntmFreemind = new JMenuItem("FreeMind");
+		mntmFreemind.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/open24.png")));
+		mnThirdparty.add(mntmFreemind);
+		
+		mntmopenlcldbfile = new JMenuItem("\u6570\u636E\u5E93");
+		mnThirdparty.add(mntmopenlcldbfile);
 		mntmopenlcldbfile.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/open24.png")));
-		menuOperationList.add(mntmopenlcldbfile);
 		
 		JMenu menuConfigration = new JMenu("\u76F8\u5173\u8BBE\u7F6E");
 		menuBar.add(menuConfigration);

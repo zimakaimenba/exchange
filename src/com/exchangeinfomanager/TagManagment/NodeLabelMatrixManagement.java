@@ -226,7 +226,7 @@ public class NodeLabelMatrixManagement extends JDialog
     				Collection<Tag> sltlbs = urlcache.produceSelectedTags();
     				for(Tag tmpsltlbs : sltlbs) {
     					
-    					if( !bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())   )
+    					if( bkstkkwcache.hasBeenInCache (tmpsltlbs.getName() ) == null  )
     						try {
     							lbnodedbservice.createTag (tmpsltlbs);
     						} catch (SQLException e) {
@@ -248,7 +248,7 @@ public class NodeLabelMatrixManagement extends JDialog
     				Collection<Tag> sltlbs = newskwcache.produceSelectedTags();
     				for(Tag tmpsltlbs : sltlbs) {
     					
-    					if(  !bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())   )
+    					if(  bkstkkwcache.hasBeenInCache (tmpsltlbs.getName()) == null   )
     						try {
     							lbnodedbservice.createTag(tmpsltlbs);
     						} catch (SQLException e) {
@@ -267,7 +267,7 @@ public class NodeLabelMatrixManagement extends JDialog
     				Collection<Tag> sltlbs = bankuaikwcache.produceSelectedTags();
     				for(Tag tmpsltlbs : sltlbs) {
     					
-    					if( !bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())   )
+    					if( bkstkkwcache.hasBeenInCache (tmpsltlbs.getName()) == null  )
     						try {
     							lbnodedbservice.createTag( tmpsltlbs);
     						} catch (SQLException e) {
@@ -286,7 +286,7 @@ public class NodeLabelMatrixManagement extends JDialog
     				Collection<Tag> sltlbs = cylkwcache.produceSelectedTags();
     				for(Tag tmpsltlbs : sltlbs) {
     					
-    					if( !bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())   )
+    					if( bkstkkwcache.hasBeenInCache (tmpsltlbs.getName())  == null )
     						try {
     							lbnodedbservice.createTag(tmpsltlbs);
     						} catch (SQLException e) {

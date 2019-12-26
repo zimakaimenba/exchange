@@ -80,7 +80,6 @@ public class SystemSetting extends JDialog
 	private boolean  newsystemsetting = false;
 	private String LicenseMacString;
 
-	
 	private void initializeSystemSettingGui()  
 	{
 		File directory = new File(this.systemxmlfile);//设定为当前文件夹
@@ -555,6 +554,8 @@ public class SystemSetting extends JDialog
 	private JButton saveButton;
 	private JTextField tfldzdyguanzhu;
 	private JLabel lblblocknewcfg;
+	private JTextField txtCprogramFilesfreemind;
+	private JTextField textField_1;
 	private void initializeGui() 
 	{
 		saveButton = new JButton ();
@@ -730,17 +731,51 @@ public class SystemSetting extends JDialog
 		btnchoosepython = new JButton("");
 		
 		btnchoosepython.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		
+		JLabel lblFreemindPath = new JLabel("FreeMind Path");
+		
+		txtCprogramFilesfreemind = new JTextField();
+		txtCprogramFilesfreemind.setText("C:\\Program Files\\FreeMind\\Freemind.bat");
+		txtCprogramFilesfreemind.setEnabled(false);
+		txtCprogramFilesfreemind.setEditable(false);
+		txtCprogramFilesfreemind.setColumns(10);
+		
+		JButton btnNewButton = new JButton("");
+		btnNewButton.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		
+		JLabel lblDatabaseGui = new JLabel("DataBase Gui");
+		
+		textField_1 = new JTextField();
+		textField_1.setEnabled(false);
+		textField_1.setEditable(false);
+		textField_1.setColumns(10);
+		
+		JButton btnNewButton_1 = new JButton("");
+		btnNewButton_1.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblPythonInterpreter)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnchoosepython)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addComponent(lblDatabaseGui)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(textField_1))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addComponent(lblFreemindPath)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(txtCprogramFilesfreemind))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addComponent(lblPythonInterpreter)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnchoosepython)
+						.addComponent(btnNewButton)
+						.addComponent(btnNewButton_1))
+					.addContainerGap(33, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -751,7 +786,17 @@ public class SystemSetting extends JDialog
 						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 							.addComponent(lblPythonInterpreter)
 							.addComponent(tfldpythonptah, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(160, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblFreemindPath)
+						.addComponent(txtCprogramFilesfreemind, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnNewButton))
+					.addGap(18)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblDatabaseGui)
+						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnNewButton_1))
+					.addContainerGap(249, Short.MAX_VALUE))
 		);
 		panel.setLayout(gl_panel);
 		

@@ -52,9 +52,9 @@ public class JDislogForTagSearchMatrixPanelForTagsBundleAdd extends JDialog {
 		}
 	}
 	
-	public void setPreSearchMustHaveTags (Collection<Tag> musthavetags)
+	public String setPreSearchMustHaveTags (Collection<Tag> musthavetags)
 	{
-		bundlepnl.setTags(musthavetags);
+		return bundlepnl.setTags(musthavetags);
 	}
 	
 	/**

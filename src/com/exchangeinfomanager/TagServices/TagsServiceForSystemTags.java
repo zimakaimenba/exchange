@@ -43,8 +43,11 @@ public class TagsServiceForSystemTags implements TagService
 	@Override
 	public  Tag createTag(Tag label) throws SQLException 
 	{
-		if( cache != null && cache.hasBeenInCache (label.getName())   ) 
-			return label;
+		if( cache != null)    {
+			 InsertedTag checkresult = cache.hasBeenInCache (label.getName() );
+			 if(checkresult != null)
+				 return checkresult;
+		}
 			
 		Tag m = this.dboptforsys.createSystemTags(label);
 		if(m != null && cache != null)

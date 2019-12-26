@@ -387,11 +387,12 @@ public class BanKuaiFengXi extends JDialog
 		DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (dp);
 		bknews.setTimeRangeForInfoRange(selectdate, selectdate);
 		DisplayNodeInfoPanel displaybknewspnl = new DisplayNodeInfoPanel (bknews);
+//		System.out.println("Height : " + sclpinfosummary.getViewport().getSize().height + "\nWidth :" + sclpinfosummary.getViewport().getSize().width);
+		Dimension size4 = new Dimension(sclpinfosummary.getViewport().getSize().width,  displaybknewspnl.getContentHeight() + 10 );
+		displaybknewspnl.setPreferredSize(size4);
+		displaybknewspnl.setMinimumSize(size4);
+		displaybknewspnl.setMaximumSize(size4);
 		pnlextrainfo.add (displaybknewspnl,0);
-		
-		
-		
-//		editorPanenodeinfo.displayAllNewsOfSpecificWeek (selectdate);
 		
 		setUserSelectedColumnMessage(bkcur,selectdate);
 		
@@ -1113,6 +1114,10 @@ public class BanKuaiFengXi extends JDialog
 	{
 		DisplayNodeExchangeDataServices svsnodedata = new DisplayNodeExchangeDataServices (node, seldate, this.globeperiod);
 		DisplayNodeExchangeDataServicesPanel nodedatapnl = new DisplayNodeExchangeDataServicesPanel (svsnodedata) ;
+		Dimension size = new Dimension(scrldailydata.getViewport().getSize().width, nodedatapnl.getContentHeight() + 10  );
+		nodedatapnl.setPreferredSize(size);
+		nodedatapnl.setMinimumSize(size);
+		nodedatapnl.setMaximumSize(size);
 		tfldselectedmsg.add(nodedatapnl);
 		tfldselectedmsg.revalidate();
 		tfldselectedmsg.repaint();
@@ -2538,23 +2543,32 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void displayNodeInfo(BkChanYeLianTreeNode selectednode) 
 	{
+		DisplayNodeJiBenMianService nodejbm = new DisplayNodeJiBenMianService (selectednode);
+		DisplayNodeInfoPanel displaybkjbmpnl = new DisplayNodeInfoPanel (nodejbm);
+		Dimension size = new Dimension(sclpinfosummary.getViewport().getSize().width,  displaybkjbmpnl.getContentHeight() + 10 );
+		displaybkjbmpnl.setPreferredSize(size);
+		displaybkjbmpnl.setMinimumSize(size);
+		displaybkjbmpnl.setMaximumSize(size);
+		pnlextrainfo.add (displaybkjbmpnl);
+		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXBK) {
 			DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (selectednode);
 			bknews.setTimeRangeForInfoRange(this.dateChooser.getLocalDate(), this.dateChooser.getLocalDate());
 			DisplayNodeInfoPanel displaybknewspnl = new DisplayNodeInfoPanel (bknews);
-//			displaybknewspnl.setPreferredSize(new Dimension(200,30));
+			Dimension size2 = new Dimension(sclpinfosummary.getViewport().getSize().width, displaybknewspnl.getContentHeight() + 10 );
+			displaybknewspnl.setPreferredSize(size2);
+			displaybknewspnl.setMinimumSize(size2);
+			displaybknewspnl.setMaximumSize(size2);
 			pnlextrainfo.add (displaybknewspnl);
 		}
-		
-		DisplayNodeJiBenMianService nodejbm = new DisplayNodeJiBenMianService (selectednode);
-		DisplayNodeInfoPanel displaybkjbmpnl = new DisplayNodeInfoPanel (nodejbm);
-//		displaybkjbmpnl.setPreferredSize(new Dimension(200,30));
-		pnlextrainfo.add (displaybkjbmpnl);
 		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXGG) {
 			DisplayNodeSellBuyInfoServices nodesellbuy = new DisplayNodeSellBuyInfoServices (selectednode);
 			DisplayNodeInfoPanel displaybksbpnl = new DisplayNodeInfoPanel (nodesellbuy);
-//			displaybksbpnl.setPreferredSize(new Dimension(200,30));
+			Dimension size3 = new Dimension(sclpinfosummary.getViewport().getSize().width, displaybksbpnl.getContentHeight() + 10);
+			displaybksbpnl.setPreferredSize(size3);
+			displaybksbpnl.setMinimumSize(size3);
+			displaybksbpnl.setMaximumSize(size3);
 			pnlextrainfo.add (displaybksbpnl);
 		}
 
@@ -3000,6 +3014,8 @@ public class BanKuaiFengXi extends JDialog
 	private TagsPanel pnlbktags;
 	private TagsPanel pnlstocktags;
 	private JPanel pnlextrainfo;
+	private JScrollPane scrldailydata;
+	private JScrollPane sclpinfosummary;
 	
 	
 	private void initializeGui() {
@@ -3026,7 +3042,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
-		JScrollPane scrollPane_3 = new JScrollPane();
+		scrldailydata = new JScrollPane();
 		
 		editorPanebankuai = new JScrollPane();
 		
@@ -3055,7 +3071,7 @@ public class BanKuaiFengXi extends JDialog
 								.addComponent(panelLastWkGeGucjeZhanBi, 0, 0, Short.MAX_VALUE)))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(18)
-							.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 375, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(scrldailydata, GroupLayout.PREFERRED_SIZE, 375, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		gl_contentPanel.setVerticalGroup(
@@ -3087,12 +3103,12 @@ public class BanKuaiFengXi extends JDialog
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(panelLastWkGeGucjeZhanBi, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(scrollPane_3, GroupLayout.PREFERRED_SIZE, 303, GroupLayout.PREFERRED_SIZE)))
+									.addComponent(scrldailydata, GroupLayout.PREFERRED_SIZE, 303, GroupLayout.PREFERRED_SIZE)))
 							.addGap(34))))
 		);
 		
 		tfldselectedmsg = new JPanel ();
-		scrollPane_3.setViewportView(tfldselectedmsg);
+		scrldailydata.setViewportView(tfldselectedmsg);
 		tfldselectedmsg.setLayout(new BoxLayout(tfldselectedmsg, BoxLayout.Y_AXIS));
 //		tfldselectedmsg.setEditable(false);
 		
@@ -3245,7 +3261,7 @@ public class BanKuaiFengXi extends JDialog
 		tableselectedwkbkzb = new BanKuaiInfoTable(this.stockmanager);
 		scrollPane_1.setViewportView(tableselectedwkbkzb);
 		
-		JScrollPane sclpinfosummary = new JScrollPane();
+		sclpinfosummary = new JScrollPane();
 		tabbedPanebk.addTab("\u7EFC\u5408\u4FE1\u606F", null, sclpinfosummary, null);
 		
 		pnlextrainfo = new JPanel();

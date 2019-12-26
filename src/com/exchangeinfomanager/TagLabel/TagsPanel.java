@@ -189,8 +189,6 @@ public class TagsPanel extends JPanel implements TagCacheListener
 
 	private JUpdatedTextField tfldsearchkw;
 
-//	private JButton btnkaddtocur;
-
 	private JMenuItem menuItemAddToCur;
 	private JPopupMenu selfMenu;
 	private JMenuItem menuItemAddNew;
@@ -387,7 +385,10 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	private void bundleAddMenuAction ()
 	{
 		JDislogForTagSearchMatrixPanelForTagsBundleAdd bnndladd = new JDislogForTagSearchMatrixPanelForTagsBundleAdd ();
-		bnndladd.setPreSearchMustHaveTags (this.cache.produceSelectedTags());
+		String filename = bnndladd.setPreSearchMustHaveTags (this.cache.produceSelectedTags());
+		if(filename == null)
+			return;
+		
 		bnndladd.toFront();
 		bnndladd.setVisible(true);
 		

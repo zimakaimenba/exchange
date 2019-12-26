@@ -55,7 +55,7 @@ public class TagSearchMatrixPanelForTagsBundleAdd extends TagSearchMatrixPanel
             setVisible(true);
         }
     }
-	public void setTags (Collection<Tag> tags)
+	public String setTags (Collection<Tag> tags)
 	{
 		this.taglist = tags;
 		super.setPreSearchMustHaveTags(tags);
@@ -72,17 +72,19 @@ public class TagSearchMatrixPanelForTagsBundleAdd extends TagSearchMatrixPanel
 		    else
 		    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
 		} else
-			return;
+			return  null;
 	
 		if(!filename.endsWith("EBK") ) { //不是板块文件
 			JOptionPane.showMessageDialog(null,"不是通达信板块导出文件，请使用正确格式文件。","Warning",JOptionPane.WARNING_MESSAGE);
-	   		return;
+	   		return null;
 		}
 		
 		SvsForNodeOfFileNodes svsfornodefile = new SvsForNodeOfFileNodes (filename);
 		Collection<BkChanYeLianTreeNode> addnodeset = svsfornodefile.getAllNodes();
 		
 		((TagSearchOnNodesTableModel)super.tblofnodes.getModel()).refresh(addnodeset);
+		
+		return filename;
 		
 	}
 	public void addTagsToSelectedNodes() 

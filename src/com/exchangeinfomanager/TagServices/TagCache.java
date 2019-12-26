@@ -96,16 +96,16 @@ public class TagCache
 	  }
 	    
     
-	  public Boolean hasBeenInCache (String tagname)
+	  public InsertedTag hasBeenInCache (String tagname)
 	  {
 			Collection<Tag> curlbs = this.produceTags();
 			for ( Iterator<Tag> it = curlbs.iterator(); it.hasNext(); ) {
 		        Tag f = it.next();
 		        if (f.getName().equals(tagname ))
-		            return true;
+		            return (InsertedTag) f;
 		    }
 
-			return false;
+			return null;
 	  }
 	  public void removeTags(Collection<Tag> label) 
 	  {

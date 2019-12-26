@@ -28,6 +28,7 @@ import com.exchangeinfomanager.StockCalendar.JUpdatedLabel;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
+import com.google.common.base.Strings;
 
 
 
@@ -67,7 +68,8 @@ public class LabelTag extends JPanel
 		label.addMouseListener(new ChangeKeyWordsPanelController());
 	    label.setOpaque(true);
 	    label.setName( l.getName() );
-	    label.setToolTipText(l.getDescription() );
+	    if(!Strings.isNullOrEmpty( l.getDescription() ) )
+	    	label.setToolTipText( l.getDescription() );
 	    label.setForeground(Color.BLACK);
 	    label.setBackground(this.tagcolor);  //
 	    
