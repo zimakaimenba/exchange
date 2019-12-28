@@ -185,8 +185,27 @@ public class BanKuaiGeGuMatchCondition
 		public String getSettingMaFormula() {
 			return settingMaFormula;
 		}
-		public void setSettingMaFormula (String settingMaFormula) {
-			this.settingMaFormula = settingMaFormula;
+		public void setSettingMaFormula (String maformula) {
+			if(maformula != null ) {
+				maformula = maformula.replace(">", "x>");
+				maformula = maformula.replace("<", "x<");
+				
+				if(maformula.contains(">250") || maformula.contains(">=250") || maformula.contains("<250") )
+					maformula = maformula.replace("250", "\'250\'"  ) ;
+			    if(maformula.contains(">120") || maformula.contains(">=120") || maformula.contains("<120") )
+			    	maformula = maformula.replace("120", "\'120\'" ) ;
+			    if(maformula.contains(">60") || maformula.contains(">=60") || maformula.contains("<60") ) 
+			    	maformula = maformula.replace("60", "\'60\'"   ) ;
+			    if(maformula.contains(">30") || maformula.contains(">=30") || maformula.contains("<30") ) 
+			    	maformula = maformula.replace("30", "\'30\'"  ) ;
+			    if(maformula.contains(">20") || maformula.contains(">=20") || maformula.contains("<20") ) 
+			    	maformula = maformula.replace("20", "\'20\'"  ) ;
+			    if(maformula.contains(">10") || maformula.contains(">=10") || maformula.contains("<10") ) 
+			    	maformula = maformula.replace("10", "\'10\'"  ) ;
+			    if(maformula.contains(">5") || maformula.contains(">=5") || maformula.contains("<5") ) 
+			    	maformula = maformula.replace("5","\'5\'"   ) ;
+			}
+			this.settingMaFormula =  maformula;
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}

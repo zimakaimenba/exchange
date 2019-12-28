@@ -158,11 +158,17 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	else
 		    		background = Color.white;
 	    	
+	    	Integer weight = stockofbank.getBanKuai().getGeGuSuoShuBanKuaiWeight(stock.getMyOwnCode());
 	    	if(stockofbank.isBkLongTou())
 	    		foreground = Color.RED;
 	    	else 
+	    	if(weight <6 && weight >3) 
+	    		foreground = new Color(128,128,128);
+	    	else 
+	    	if(weight <=3 )
+	    		foreground = new Color(192,192,192);
+	    	else
 	    		foreground = Color.BLACK;
-
 	    } else 
 	    if( col == 2) { //流通市值
 	    	Double ltszmin ;

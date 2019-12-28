@@ -60,8 +60,8 @@ public abstract class BanKuaiPopUpMenu extends JPopupMenu
 		this.add(menuItemBkInfo);
 		this.add(menuItemSetting);
 		this.add(menuItemAddToGz);
-		this.add(menuItemAddNews);
-		this.add(menuItemAddBkGJRQ);
+//		this.add(menuItemAddNews);
+//		this.add(menuItemAddBkGJRQ);
 //		this.add(menuItemRuoShi);
 		
 	}

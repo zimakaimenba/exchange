@@ -3756,8 +3756,8 @@ public class BanKuaiFengXi extends JDialog
        menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
        menuItemQiangShibk = new JMenuItem("设为强势板块");
 	   menuItemRuoShibk = new JMenuItem("设为弱势板块");
-	   tableBkZhanBi.getPopupMenu().add(menuItemQiangShibk);
-	   tableBkZhanBi.getPopupMenu().add(menuItemRuoShibk);
+//	   tableBkZhanBi.getPopupMenu().add(menuItemQiangShibk);
+//	   tableBkZhanBi.getPopupMenu().add(menuItemRuoShibk);
 	   tableBkZhanBi.getPopupMenu().add(menuItemsiglebktocsv);
        
 //       menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
@@ -3766,8 +3766,8 @@ public class BanKuaiFengXi extends JDialog
 		
 	   menuItemQiangShigg = new JMenuItem("设为强势个股");
 	   menuItemRuoShigg = new JMenuItem("设为弱势个股");
-	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemQiangShigg);
-	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRuoShigg);
+//	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemQiangShigg);
+//	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRuoShigg);
 	   
        menuItemsiglestocktocsv = new JMenuItem("导出个股到CSV");
        tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsiglestocktocsv);

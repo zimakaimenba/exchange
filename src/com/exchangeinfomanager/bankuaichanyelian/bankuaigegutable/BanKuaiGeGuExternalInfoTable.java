@@ -184,11 +184,26 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 		    	else
 			    		background = Color.white;
 		    	
+		    	Integer weight = bankuai.getGeGuSuoShuBanKuaiWeight(stock.getMyOwnCode());
 		    	if(stockofbank.isBkLongTou())
 		    		foreground = Color.RED;
 		    	else 
+		    	if(weight <6 && weight >3) 
+		    		foreground = new Color(128,128,128);
+		    	else if(weight <=3 )
+		    		foreground = new Color(192,192,192);
+		    	else
 		    		foreground = Color.BLACK;
-		    } else 
+		    } else
+		    if ( col == 2) {
+		    	Integer weight = bankuai.getGeGuSuoShuBanKuaiWeight(stock.getMyOwnCode());
+		    	if(weight <6 && weight >3) 
+		    		foreground = new Color(128,128,128);
+		    	else if(weight <=3 )
+		    		foreground = new Color(192,192,192);
+		    	else
+		    		foreground = Color.BLACK;
+		    }
 		    if( col ==3) { //{ "代码", "名称","权重","高级排序排名","CjeMaxWk","换手率"};
 		    	Double ltszmin ;
 			    Double ltszmax ;

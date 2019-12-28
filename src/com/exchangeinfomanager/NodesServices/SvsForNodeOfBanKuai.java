@@ -239,6 +239,21 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	public BkChanYeLianTreeNode getNodeZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period) 
 	{
+		if(bankuai.getMyOwnCode().equals("999999") ) {
+			this.getShangZhengZhangDieTingInfo (bankuai,requiredstartday,requiredendday,period);
+			return bankuai;
+		}
+		else
+		if(bankuai.getMyOwnCode().equals("399001") ) {
+			this.getShenZhenZhangDieTingInfo (bankuai,requiredstartday,requiredendday,period);
+			return bankuai;
+		}
+		else
+		if(bankuai.getMyOwnCode().equals("399006") ) {
+			this.getChuangYeBanZhangDieTingInfo (bankuai,requiredstartday,requiredendday,period);
+			return bankuai;
+		}
+		
 		BanKuai bk = (BanKuai) bankuai;
 		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
@@ -284,6 +299,70 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	
 	}
 
+	private BkChanYeLianTreeNode getChuangYeBanZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
+			LocalDate requiredendday, String period) 
+	{
+		BanKuai bk = (BanKuai) bankuai;
+		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		
+		bk = this.bkdbopt.getChuangYeBanZhangDieTingInfo (bk,  requiredstartday, requiredendday,  period);
+		
+//		LocalDate tmpdate = requiredstartday;
+//		do {
+//			 
+//			bk = this.bkdbopt.getChangYeBanZhangDieTingInfo (bk,  tmpdate, tmpdate.with(DayOfWeek.FRIDAY),  period);
+//			
+//			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+//				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+//			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+//					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+//			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+//					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+//			
+//		} while (tmpdate.isBefore( requiredendday) || tmpdate.isEqual(requiredendday));
+		
+		return bankuai;
+		
+	}
+	private BkChanYeLianTreeNode getShenZhenZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
+			LocalDate requiredendday, String period) {
+		BanKuai bk = (BanKuai) bankuai;
+		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		
+		bk = this.bkdbopt.getShenZhenZhangDieTingInfo (bk,  requiredstartday, requiredendday,  period);
+		
+//		LocalDate tmpdate = requiredstartday;
+//		do {
+//			 
+//			bk = this.bkdbopt.getShenZhenZhangDieTingInfo (bk,  tmpdate, tmpdate.with(DayOfWeek.FRIDAY),  period);
+//			
+//			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+//				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+//			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+//					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+//			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+//					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+//			
+//		} while (tmpdate.isBefore( requiredendday) || tmpdate.isEqual(requiredendday));
+		
+		return bankuai;
+	}
+	private BkChanYeLianTreeNode getShangZhengZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
+			LocalDate requiredendday, String period) 
+	{
+		BanKuai bk = (BanKuai) bankuai;
+		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		
+		bk = this.bkdbopt.getShangZhengZhangDieTingInfo (bk,  requiredstartday, requiredendday,  period);
+		
+		return bankuai;
+	}
+	private BkChanYeLianTreeNode getKeChuangBanZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
+			LocalDate requiredendday, String period) 
+	{
+		
+		return null;
+	}
 	@Override
 	public BkChanYeLianTreeNode getNodeQueKouInfo(String bkcode, LocalDate requiredrecordsday, LocalDate requiredendday,
 			String period) {
@@ -499,11 +578,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		this.getNodeData(bk, requiredstartday, requiredendday, period,calwholeweek);
 		this.syncNodeData(bk);
 	
-//		 TagsServiceForNodes tagsevofbk = new TagsServiceForNodes (bk);
-//		 Collection<Tag> tags = tagsevofbk.getTags();
-//		 bk.setNodeTags(tags);
-//		 tagsevofbk = null;
-	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
 			
 			SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
@@ -514,12 +588,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
 		    		 Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
 	    			 svstock.syncNodeData(stock);
-	    			 
-//	    			 TagsServiceForNodes tagsevofnode = new TagsServiceForNodes (stock);
-//	    			 Collection<Tag> tagsofstock = tagsevofnode.getTags();
-//	    			 stock.setNodeTags(tagsofstock);
-//	    			 
-//	    			 tagsevofnode = null;
 		    	 }
 			}
 			
@@ -527,6 +595,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 				this.getNodeQueKouInfo(bk, requiredstartday, requiredendday, period);
 				this.getNodeZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
 			}
+		} else
+		if(bk.getMyOwnCode().equals("999999")) {
+			this.getNodeZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
 		}
 	}
 	@Override

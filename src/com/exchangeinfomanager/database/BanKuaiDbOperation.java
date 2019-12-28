@@ -3135,7 +3135,6 @@ public class BanKuaiDbOperation
 				" GROUP BY year(t.workday),week(t.workday)"
 				;
 							
-//		logger.debug(sqlquerystat);
 		logger.debug("为板块" + bankuai.getMyOwnCode() + bankuai.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
 		
 		String sqlquerystatfx = "SELECT 操作记录重点关注.`日期`, COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
@@ -3423,9 +3422,9 @@ public class BanKuaiDbOperation
 						+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` >= 9.0,1,NULL) ) AS 涨停, \r\n"
 						+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` <= -9.0,1,NULL) ) AS 跌停  \r\n"
 						+ " from " + bkcjltable + "\r\n" +  
-				"Where 代码 = '" + stockcode + "'\r\n" + 
+				" Where 代码 = '" + stockcode + "'\r\n" + 
 				" AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
-				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
+				" GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
 				") M\r\n" + 
 				"WHERE YEAR(T.WORKDAY) = YEAR(M.WORKDAY) AND  WEEK(T.WORKDAY) = WEEK(M.WORKDAY)\r\n" + 
 				
@@ -4061,13 +4060,159 @@ public class BanKuaiDbOperation
 			searchtable = null;
 			nodenewohlc = null;
 		}
-		
-//		Double[] sma = tdxnodexdata.getNodeOhlcMA(LocalDate.parse("2019-03-05"), 0);
-		
 
 		return bk;
 	}
-	
+	public BanKuai getShangZhengZhangDieTingInfo(BanKuai bk, LocalDate requiredstartday, LocalDate requiredendday, String period) 
+	{
+		String sql = "SELECT A.`EndOfWeekDate`, A.DIETING, B.ZHANGTING FROM\r\n" + 
+				"\r\n" + 
+				"( SELECT 通达信上交所股票每日交易信息.`交易日期`, COUNT(*) AS DIETING , DATE(通达信上交所股票每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信上交所股票每日交易信息.交易日期)) DAY) as EndOfWeekDate\r\n" + 
+				"FROM 通达信上交所股票每日交易信息\r\n" + 
+				"WHERE  涨跌幅 BETWEEN -20.0 AND -9.9\r\n" + 
+				"AND 通达信上交所股票每日交易信息.`交易日期` BETWEEN ' " + requiredstartday + "' AND '" + requiredendday + "'\r\n" + 
+				"AND  代码 NOT LIKE  '688%'\r\n" + 
+				"GROUP BY YEAR (通达信上交所股票每日交易信息.`交易日期`),  WEEK(通达信上交所股票每日交易信息.`交易日期`)\r\n" + 
+				") A\r\n" + 
+				"\r\n" + 
+				"LEFT JOIN \r\n" + 
+				"( SELECT 通达信上交所股票每日交易信息.`交易日期`, COUNT(*) AS ZHANGTING, DATE(通达信上交所股票每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信上交所股票每日交易信息.交易日期)) DAY) as EndOfWeekDate\r\n" + 
+				"FROM 通达信上交所股票每日交易信息\r\n" + 
+				"WHERE  涨跌幅 BETWEEN 9.9 AND 20\r\n" + 
+				"AND 通达信上交所股票每日交易信息.`交易日期` BETWEEN ' " + requiredstartday + "' AND '" + requiredendday + "'\r\n" + 
+				"AND  代码 NOT LIKE  '688%'\r\n" + 
+				"GROUP BY YEAR (通达信上交所股票每日交易信息.`交易日期`),  WEEK(通达信上交所股票每日交易信息.`交易日期`)\r\n" + 
+				") B\r\n" + 
+				"ON A.`EndOfWeekDate` = B.`EndOfWeekDate`\r\n" + 
+				";\r\n" + 
+				""
+				;
+		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sql);
+		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		try {
+			while(rsfx.next()) {
+				LocalDate actiondate = rsfx.getDate("EndOfWeekDate").toLocalDate();
+				Integer diefu = rsfx.getInt("DIETING");
+				Integer zhangfu = rsfx.getInt("ZHANGTING");
+				bkwkdate.addZhangDieTingTongJiJieGuo(actiondate.with(DayOfWeek.FRIDAY), zhangfu, diefu, false);
+			}
+		} catch(java.lang.NullPointerException e){ 
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rsfx != null)
+					rsfx.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rsfx = null;
+			sql = null;
+		}
+		
+		return bk;
+	}
+	public BanKuai getShenZhenZhangDieTingInfo(BanKuai bk, LocalDate requiredstartday, LocalDate requiredendday, String period) 
+	{
+		String sql = "SELECT A.`EndOfWeekDate`, A.DIETING, B.ZHANGTING FROM\r\n" + 
+				"\r\n" + 
+				"( SELECT 通达信深交所股票每日交易信息.`交易日期`, COUNT(*) AS DIETING , DATE(通达信深交所股票每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信深交所股票每日交易信息.交易日期)) DAY) as EndOfWeekDate\r\n" + 
+				"FROM 通达信深交所股票每日交易信息\r\n" + 
+				"WHERE  涨跌幅 BETWEEN -20.0 AND -9.9\r\n" + 
+				"AND 通达信深交所股票每日交易信息.`交易日期` BETWEEN ' " + requiredstartday + "' AND '" + requiredendday + "'\r\n" + 
+				"GROUP BY YEAR (通达信深交所股票每日交易信息.`交易日期`),  WEEK(通达信深交所股票每日交易信息.`交易日期`)\r\n" + 
+				") A\r\n" + 
+				"\r\n" + 
+				"LEFT JOIN \r\n" + 
+				"( SELECT 通达信深交所股票每日交易信息.`交易日期`, COUNT(*) AS ZHANGTING, DATE(通达信深交所股票每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信深交所股票每日交易信息.交易日期)) DAY) as EndOfWeekDate\r\n" + 
+				"FROM 通达信深交所股票每日交易信息\r\n" + 
+				"WHERE  涨跌幅 BETWEEN 9.9 AND 20\r\n" + 
+				"AND 通达信深交所股票每日交易信息.`交易日期` BETWEEN ' " + requiredstartday + "' AND '" + requiredendday + "'\r\n" + 
+				"GROUP BY YEAR (通达信深交所股票每日交易信息.`交易日期`),  WEEK(通达信深交所股票每日交易信息.`交易日期`)\r\n" + 
+				") B\r\n" + 
+				"ON A.`EndOfWeekDate` = B.`EndOfWeekDate`\r\n"  
+				;
+		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sql);
+		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		try {
+			while(rsfx.next()) {
+				LocalDate actiondate = rsfx.getDate("EndOfWeekDate").toLocalDate();
+				Integer diefu = rsfx.getInt("DIETING");
+				Integer zhangfu = rsfx.getInt("ZHANGTING");
+				bkwkdate.addZhangDieTingTongJiJieGuo(actiondate.with(DayOfWeek.FRIDAY), zhangfu, diefu, false);
+			}
+		} catch(java.lang.NullPointerException e){ 
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rsfx != null)
+					rsfx.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rsfx = null;
+			sql = null;
+		}
+		
+		return bk;
+	}
+	public BanKuai getChuangYeBanZhangDieTingInfo(BanKuai bk, LocalDate requiredstartday, LocalDate requiredendday, String period) 
+	{
+		 String sql = "SELECT A.`EndOfWeekDate`, A.DIETING, B.ZHANGTING FROM\r\n" + 
+					"\r\n" + 
+					"( SELECT 通达信深交所股票每日交易信息.`交易日期`, COUNT(*) AS DIETING , DATE(通达信深交所股票每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信深交所股票每日交易信息.交易日期)) DAY) as EndOfWeekDate\r\n" + 
+					"FROM 通达信深交所股票每日交易信息\r\n" + 
+					"WHERE  涨跌幅 BETWEEN -20.0 AND -9.9\r\n" + 
+					"AND 通达信深交所股票每日交易信息.`交易日期` BETWEEN ' " + requiredstartday + "' AND '" + requiredendday + "'\r\n" +
+					"AND   代码 LIKE  '300%'\r\n" +
+					"GROUP BY YEAR (通达信深交所股票每日交易信息.`交易日期`),  WEEK(通达信深交所股票每日交易信息.`交易日期`)\r\n" + 
+					") A\r\n" + 
+					"\r\n" + 
+					"LEFT JOIN \r\n" + 
+					"( SELECT 通达信深交所股票每日交易信息.`交易日期`, COUNT(*) AS ZHANGTING, DATE(通达信深交所股票每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信深交所股票每日交易信息.交易日期)) DAY) as EndOfWeekDate\r\n" + 
+					"FROM 通达信深交所股票每日交易信息\r\n" + 
+					"WHERE  涨跌幅 BETWEEN 9.9 AND 20\r\n" + 
+					"AND 通达信深交所股票每日交易信息.`交易日期` BETWEEN ' " + requiredstartday + "' AND '" + requiredendday + "'\r\n" +
+					"AND   代码 LIKE  '300%'\r\n" +
+					"GROUP BY YEAR (通达信深交所股票每日交易信息.`交易日期`),  WEEK(通达信深交所股票每日交易信息.`交易日期`)\r\n" + 
+					") B\r\n" + 
+					"ON A.`EndOfWeekDate` = B.`EndOfWeekDate`\r\n"  
+					;
+		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sql);
+		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		try {
+			while(rsfx.next()) {
+				LocalDate actiondate = rsfx.getDate("EndOfWeekDate").toLocalDate();
+				Integer diefu = rsfx.getInt("DIETING");
+				Integer zhangfu = rsfx.getInt("ZHANGTING");
+				bkwkdate.addZhangDieTingTongJiJieGuo(actiondate.with(DayOfWeek.FRIDAY), zhangfu, diefu, false);
+			}
+		} catch(java.lang.NullPointerException e){ 
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rsfx != null)
+					rsfx.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rsfx = null;
+			sql = null;
+		}
+		
+		return bk;
+	}
 	/*
 	 * 同步个股成交量信息，参数为交易所 SH/SZ
 	 */
@@ -7653,8 +7798,6 @@ public class BanKuaiDbOperation
 			
 		
 		}
-		
-
 		
 }
 

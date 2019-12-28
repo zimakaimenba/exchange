@@ -116,7 +116,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 		
 		
 		popupMenuGeguNews.add(menuItemGeguInfo);
-		popupMenuGeguNews.add(menuItemAddNews);
+//		popupMenuGeguNews.add(menuItemAddNews);
 		popupMenuGeguNews.add(menuItemAddGz);
 		popupMenuGeguNews.add(menuItemLongTou);
 		

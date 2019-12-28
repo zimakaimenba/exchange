@@ -1118,6 +1118,7 @@ import com.udojava.evalex.Expression;
 		    
 		 if (ohlcdata != null) {
 		    	Double close = (Double)ohlcdata.getCloseValue();
+		    	String i = "";
 			    Double[] maresult = this.getNodeOhlcSMA(tmpdate, 0);
 			    Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
 			    if( result != null )
@@ -1184,13 +1185,14 @@ import com.udojava.evalex.Expression;
 		    }
 		    
 		    try{
-		    	BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close)).eval(); //https://github.com/uklimaschewski/EvalEx
+		    	BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close) ).eval(); //https://github.com/uklimaschewski/EvalEx
 		    	String sesultstr = result1.toString();
 			    if(sesultstr.equals("0"))
 			    	return false;
 			    else 
 			    	return true;
 		    } catch (com.udojava.evalex.Expression.ExpressionException e) {
+		    	e.printStackTrace();
 		    	return false;
 		    }
 		    
