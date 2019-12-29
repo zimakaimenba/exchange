@@ -17,6 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
@@ -110,16 +112,34 @@ public class NewsFutherOperationDialog extends NewsDialog<News>
         nodepane.setAutoscrolls(true);
         TagSearchOnNodesTableModel nodetablemodel = new TagSearchOnNodesTableModel ();
         tblofnodes = new JTable (nodetablemodel);
+        tblofnodes.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(35);
+        tblofnodes.getTableHeader().getColumnModel().getColumn(0).setMinWidth(35);
+        tblofnodes.getTableHeader().getColumnModel().getColumn(0).setWidth(35);
+        tblofnodes.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(35);
+//        tblofnodes.getTableHeader().getColumnModel().getColumn(2).setMaxWidth(90);
+//        tblofnodes.getTableHeader().getColumnModel().getColumn(2).setMinWidth(90);
+//        tblofnodes.getTableHeader().getColumnModel().getColumn(2).setWidth(90);
+//        tblofnodes.getTableHeader().getColumnModel().getColumn(2).setPreferredWidth(90);
+        TableRowSorter<TableModel> sorterfortblofnodes = new TableRowSorter<TableModel>(tblofnodes.getModel());
+        tblofnodes.setRowSorter(sorterfortblofnodes);
         nodepane.setViewportView(tblofnodes);
-        
         nodesandnewsPanel.add(nodepane);
         
         JScrollPane newspane = new JScrollPane ();
         newspane.setAutoscrolls(true);
         TagSearchOnNewsTableModel newstablemodel = new TagSearchOnNewsTableModel ();
         tblnews = new JTable (newstablemodel);
-        newspane.setViewportView(tblnews);
-        
+        tblnews.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(35);
+		tblnews.getTableHeader().getColumnModel().getColumn(0).setMinWidth(35);
+		tblnews.getTableHeader().getColumnModel().getColumn(0).setWidth(35);
+		tblnews.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(35);
+		tblnews.getTableHeader().getColumnModel().getColumn(2).setMaxWidth(90);
+		tblnews.getTableHeader().getColumnModel().getColumn(2).setMinWidth(90);
+		tblnews.getTableHeader().getColumnModel().getColumn(2).setWidth(90);
+		tblnews.getTableHeader().getColumnModel().getColumn(2).setPreferredWidth(90);
+		TableRowSorter<TableModel> sorterfortblnews = new TableRowSorter<TableModel>(tblnews.getModel());
+		tblnews.setRowSorter(sorterfortblnews);
+		newspane.setViewportView(tblnews);
         nodesandnewsPanel.add(newspane);
         
         Action action = new AbstractAction()

@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.TagManagment;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,7 +15,7 @@ import com.exchangeinfomanager.News.News;
 public class TagSearchOnNewsTableModel extends DefaultTableModel 
 {
 	private List<InsertedNews> info;
-	String[] jtableTitleStrings = { "选择","关键词", "新闻","详细信息"};
+	String[] jtableTitleStrings = { "选择","关键词","日期", "新闻","详细信息"};
 	private Set<Integer> selectedrowindex ;
 	
 	public TagSearchOnNewsTableModel ()
@@ -69,9 +70,13 @@ public class TagSearchOnNewsTableModel extends DefaultTableModel
             	value = news.getKeyWords();
             	break;
             case 2:
+            	value = news.getStart();
+            	break;
+            case 3:
             	value = news.getTitle();
                 break;
-            case 3:
+            
+            case 4:
             	value = news.getDescription();
                 break;
 
@@ -90,9 +95,12 @@ public class TagSearchOnNewsTableModel extends DefaultTableModel
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = String.class;
+		        	  clazz = LocalDate.class;
 			          break;
 		        case 3:
+			          clazz = String.class;
+			          break;
+		        case 4:
 			          clazz = String.class;
 			          break;
 		      }

@@ -2354,20 +2354,7 @@ public class StockInfoManager
 	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
 	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
 	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
-//	    RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tblzhongdiangz.getModel());  
-//	    tblzhongdiangz.setRowSorter(sorter);
-//		 DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
-//			              public Component getTableCellRendererComponent(JTable table, Object value,
-//			                      boolean isSelected, boolean hasFocus, int row, int column) {
-//			            	  
-//			                  JLabel cell = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//			                  Object value = this.getModel().getValueAt(row, column);
-//			                  if(cell.getText().equals("买入") )
-//			                	  cell.setForeground(Color.RED);
-//			                  return cell;
-//			              }
-//			          };
-//	    tblzhongdiangz.setDefaultRenderer(Object.class, tcr);
+
 		sclpaneJtable.setViewportView(tblzhongdiangz);
 
 		popupMenu = new JPopupMenu();
@@ -2480,57 +2467,6 @@ public class StockInfoManager
 		pnl_paomd.setLayout(gl_pnl_paomd);
 		
 		JLabel lblNewLabel_5 = new JLabel("\u8D70\u9A6C\u706F");
-		
-		
-		//kspanel = new BuyStockNumberPrice(null,accountschicangconfig,true);
-		
-		
-//		tableStockAccountsInfo = new JTable();
-//		String[] jtableTitleStrings2 = { "账户名称", "信用操作","持仓成本", "持仓股数","持仓均价" };
-//		tableStockAccountsInfo.setModel(new DefaultTableModel(
-//				new Object[][] {
-//				},
-//				jtableTitleStrings2) {
-//					
-//					private static final long serialVersionUID = 1L;
-//					public boolean isCellEditable(int row,int column) {
-//						if(2 == column) return true;
-//						else return false;
-//					}
-////					public Class getColumnClass(int column) {  
-////				        Class returnValue;  
-////				        if ((column >= 0) && (column < getColumnCount())) {  
-////				            returnValue = getValueAt(0, column).getClass();  
-////				        } else {  
-////				            returnValue = Object.class;  
-////				        }  
-////				        return returnValue;  
-////				    }  
-//			});
-//		scrollPane.setViewportView(tableStockAccountsInfo);
-		
-//		ArrayList<AccountInfoBasic> rongquanaccountslist = accountsconfig.getRongquanaccountslist();
-//		AccountsInfoTableModel stockaccount = new AccountsInfoTableModel(rongquanaccountslist,(String)cBxstockcode.getSelectedItem());
-//		tableStockAccountsInfo = new  JTable(stockaccount)
-//		{
-//			private static final long serialVersionUID = 1L;
-//			public String getToolTipText(MouseEvent e) 
-//			{
-//                String tip = null;
-//                java.awt.Point p = e.getPoint();
-//                int rowIndex = rowAtPoint(p);
-//                int colIndex = columnAtPoint(p);
-//
-//                try {
-//                    tip = getValueAt(rowIndex, colIndex).toString();
-//                } catch (RuntimeException e1) {
-//                    //catch null pointer exception if mouse is over an empty line
-//                }
-//                return tip;
-//            } 
-//		};
-//		scrollPane.setViewportView(tableStockAccountsInfo);
-	
 		
 		JLabel lblstockinfo = new JLabel("\u6982\u5FF5\u63D0\u793A");
 		dateChsgainian = new JLocalDateChooser();

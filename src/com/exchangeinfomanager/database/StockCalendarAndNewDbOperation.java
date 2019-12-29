@@ -212,7 +212,7 @@ public final class StockCalendarAndNewDbOperation
 	 */
 	public Collection<News> getNodeRelatedNews(String bankuaiid,LocalDate startdate, LocalDate enddate) 
 	{
-		Collection<News> meetings = new ArrayList<>();
+		List<News> meetings = new ArrayList<> ();
 		
 		String timerangesql = null ;
 		if(startdate == null && enddate != null) {
