@@ -24,7 +24,9 @@ import java.util.Set;
 //import org.jfree.data.general.DefaultPieDataset;
 //import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.joda.time.DateTime;
 //import org.jfree.data.time.Week;
+import org.joda.time.Interval;
 
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.BanKuaiXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -62,6 +64,7 @@ public class BanKuai extends TDXNodes
 	private Boolean exporttowklyfile ;
 	private List<BkChanYeLianTreeNode> stockofbklist; //存放所有的个股
 	private Set<String> socialfriends;
+	private Interval bkgegusearchtimerange;
 	
 	public void addSocialFriends (String friend)
 	{
@@ -76,8 +79,6 @@ public class BanKuai extends TDXNodes
 			this.socialfriends = new HashSet<String> ();
 		
 		return this.socialfriends;
-		
-			
 	}
 	public  Boolean isExportTowWlyFile ()
 	{
@@ -184,6 +185,17 @@ public class BanKuai extends TDXNodes
 	{
 		return this.stockofbklist;
     }
+	public Interval getBanKuaiGeGuTimeRange ()
+	{
+		return this.bkgegusearchtimerange;
+	}
+	public void setBanKuaiGeGuTimeRange (LocalDate requiredstartday, LocalDate requiredendday)
+	{
+		DateTime requiredstartdt= new DateTime(requiredstartday.getYear(), requiredstartday.getMonthValue(), requiredstartday.getDayOfMonth(), 0, 0, 0, 0);
+		DateTime requiredenddt= new DateTime(requiredendday.getYear(), requiredendday.getMonthValue(), requiredendday.getDayOfMonth(), 0, 0, 0, 0);
+		this.bkgegusearchtimerange = new Interval(requiredstartdt,requiredenddt);
+		 
+	}
 	/*
 	 * 返回stockofBanKuai
 	 */
@@ -220,7 +232,7 @@ public class BanKuai extends TDXNodes
 	/*
 	 * 
 	 */
-	public BkChanYeLianTreeNode getStockOfBanKuai (String stockcode)
+	public StockOfBanKuai getStockOfBanKuai (String stockcode)
 	{
 		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
@@ -230,7 +242,7 @@ public class BanKuai extends TDXNodes
 		
 		return null;
 	}
-	public BkChanYeLianTreeNode getBanKuaiGeGu (String stockcode)
+	public Stock getBanKuaiGeGu (String stockcode)
 	{
 		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {

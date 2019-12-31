@@ -164,20 +164,9 @@ public class JStockComboBox extends  JComboBox<String>
 		 } else
 			 nodeshouldbedisplayed = nodeslist.get(0);
 		 
-		 if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG) { //是个股
-//					if(accountschicangconfig.isSystemChiCang(stockcode)) {
-//						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
-//					} 
-					
-//					nodeshouldbedisplayed = bkdbopt.getCheckListsXMLInfo ((Stock)nodeshouldbedisplayed);
-//					nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB((Stock)nodeshouldbedisplayed);
-					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
-					
-					
-//					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
-					
-//					nodeshouldbedisplayed = bkcyl.getStockChanYeLianInfo ((Stock)nodeshouldbedisplayed);
-		 }	
+//		 if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG) { //是个股
+//					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
+//		 }	
 		 
 		 return nodeshouldbedisplayed;
 	}

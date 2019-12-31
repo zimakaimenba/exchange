@@ -292,8 +292,6 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        	comp.setFont(font);
 	        }
 	        
-	       
-	        
 	      //为不同情况突出显示不同的颜色
 	        Color foreground = super.getForeground(), background = Color.white;
 	        if(!bankuai.isExportTowWlyFile() )
@@ -309,7 +307,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 		        	jc.setBorder( highlight );
 	        }
 	       
-	        if (comp instanceof JLabel && col == 7) {
+	        if (comp instanceof JLabel && col == 0) {
 	        	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
 	        	double open = weekohlc.getOpenValue();
@@ -385,9 +383,9 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	       comp.setBackground(background);
 	       comp.setForeground(foreground);
 
-	       if(this.isRowSelected(row) && col == 0 ) {
-		    	comp.setBackground(Color.blue);
-		    }
+//	       if(this.isRowSelected(row) && col == 0 ) {
+//		    	comp.setBackground(Color.blue);
+//		    }
 	        return comp;
 	}
 	@Override

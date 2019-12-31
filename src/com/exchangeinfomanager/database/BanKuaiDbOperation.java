@@ -71,6 +71,7 @@ import org.ta4j.core.num.PrecisionNum;
 
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -2867,8 +2868,9 @@ public class BanKuaiDbOperation
 	/*
 	 * 找出某个时间点 行业/概念/风格/指数 通达信某个板块的所有个股及权重,不找成交额,存放在系统的两个树的BanKuaiAndStockTree,来反应板块和个股的关系。
 	 */
-	public BanKuai getTDXBanKuaiGeGuOfHyGnFg(BanKuai currentbk,LocalDate selecteddatestart , LocalDate selecteddateend, BanKuaiAndStockTree treeallstocks)
+	public BanKuai getTDXBanKuaiGeGuOfHyGnFg(BanKuai currentbk,LocalDate selecteddatestart , LocalDate selecteddateend  )
 	{
+		BanKuaiAndStockTree treeallstocks = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		String currentbkcode = currentbk.getMyOwnCode();
 		
 		HashMap<String, String> actiontables = this.getActionRelatedTables(currentbk,null);
@@ -2921,8 +2923,6 @@ public class BanKuaiDbOperation
 //			 ArrayList<StockOfBanKuai> allcurstkofbk = currentbk.getAllGeGuOfBanKuaiInHistory ();
 			 while(rs1.next()) {  
 				String tmpstockcode = rs1.getString("股票代码");
-//				if(tmpstockcode.equals("603259"))
-//					logger.debug("test");
 
 				String tmpstockname;
 				try {
@@ -2958,9 +2958,11 @@ public class BanKuaiDbOperation
 				DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
 				Interval joinleftinterval = new Interval(joindt, leftdt);
 				
-				if(currentbk.getBanKuaiGeGu(tmpstockcode) != null ) {//已经有了
-//					StockOfBanKuai bkofst = (StockOfBanKuai) currentbk.getBanKuaiGeGu(tmpstockcode);
-//					bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
+				if(currentbk.getStockOfBanKuai(tmpstockcode) != null ) {//已经有了
+					StockOfBanKuai bkofst =  currentbk.getStockOfBanKuai(tmpstockcode);
+					bkofst.setStockQuanZhong(weight);
+					bkofst.setBkLongTou(longtou);
+					bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
 				} else {
 					Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (tmpstockcode,BkChanYeLianTreeNode.TDXGG);
 					if(tmpstock != null) {
@@ -5181,18 +5183,26 @@ public class BanKuaiDbOperation
 
 		public Stock getTDXBanKuaiForAStock(Stock stockbasicinfo) 
 		{
+			BanKuaiAndStockTree treeofstkbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks() ;
 			String stockcode = stockbasicinfo.getMyOwnCode();
 			Set<BkChanYeLianTreeNode> stockbanks = new HashSet<>();
 
 			String sqlquerystat =null;
-			sqlquerystat=  "SELECT gpgn.板块代码 板块代码, tdxbk.`板块名称` 板块名称 FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk"
-					+ "  WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gpgn.板块代码 = tdxbk.`板块ID` AND ISNULL(移除时间)"
-					+ "UNION " 
-					+ " SELECT gphy.板块代码 板块代码, tdxbk.`板块名称` 板块名称 FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk "
-					+ " WHERE 股票代码=" + "'" +  stockcode.trim() + "'" + "AND gphy.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)"
-					+ "UNION " 
-					+ " SELECT gpfg.`板块代码` 板块代码, tdxbk.`板块名称` 板块名称  FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk"
-					+ "  WHERE 股票代码= "+ "'" +  stockcode.trim() + "'" + "AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)"
+			sqlquerystat=  "SELECT gpgn.板块代码 板块代码, tdxbk.`板块名称` 板块名称 ,  gpgn.`股票权重`\r\n" + 
+					"FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk  \r\n" + 
+					"WHERE 股票代码='" + stockcode + "'AND gpgn.板块代码 = tdxbk.`板块ID` AND ISNULL(移除时间)\r\n" + 
+					"\r\n" + 
+					"UNION  \r\n" + 
+					"\r\n" + 
+					"SELECT gphy.板块代码 板块代码, tdxbk.`板块名称` 板块名称 , gphy.`股票权重`\r\n" + 
+					"FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk  \r\n" + 
+					"WHERE 股票代码='" + stockcode + "'AND gphy.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)\r\n" + 
+					"\r\n" + 
+					"UNION \r\n" + 
+					" \r\n" + 
+					"SELECT gpfg.`板块代码` 板块代码, tdxbk.`板块名称` 板块名称  ,  gpfg.`股票权重`\r\n" + 
+					"FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk \r\n" + 
+					" WHERE 股票代码= '" + stockcode + "'AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)"
 					;
 			
 			logger.debug(sqlquerystat);
@@ -5200,7 +5210,12 @@ public class BanKuaiDbOperation
 			try  {     
 		        while(rs_gn.next()) {
 		        	String bkcode = rs_gn.getString("板块代码");
-		        	BkChanYeLianTreeNode bk = this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
+		        	Integer quanzhong = rs_gn.getInt("股票权重");
+		        	BanKuai bk = (BanKuai)treeofstkbk.getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
+		        	Stock tmpstock = (Stock)treeofstkbk.getSpecificNodeByHypyOrCode (stockbasicinfo.getMyOwnCode(),BkChanYeLianTreeNode.TDXGG);
+					StockOfBanKuai bkofst = new StockOfBanKuai(bk,tmpstock);
+					bkofst.setStockQuanZhong (quanzhong);
+					bk.addNewBanKuaiGeGu(bkofst);
 		        	stockbanks.add(bk);
 		        } 
 		        

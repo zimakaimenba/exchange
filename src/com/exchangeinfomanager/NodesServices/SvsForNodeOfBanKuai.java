@@ -527,11 +527,42 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		if(bkstartday == null || bkendday == null)  {
 			bkstartday = CommonUtility.getSettingRangeDate(LocalDate.now(), "middle");
 			bkendday = LocalDate.now();
-//			return bankuai;
+			
+			bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday);
+			bankuai.setBanKuaiGeGuTimeRange (bkstartday,bkendday);
+			return bankuai;
+		} 
+		
+		Interval alreadyinggtimerange = bankuai.getBanKuaiGeGuTimeRange();
+		LocalDate alreadystartday; LocalDate alreadyendday ;
+		if(alreadyinggtimerange == null) {
+			alreadystartday = bkstartday;
+			alreadyendday = bkendday;
+			
+			bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,alreadystartday,alreadyendday);
+			bankuai.setBanKuaiGeGuTimeRange (bkstartday,bkendday);
+			return bankuai;
+		} 
+		
+		DateTime tmpnewstartdt = alreadyinggtimerange.getStart();
+		DateTime tmpnewenddt = alreadyinggtimerange.getEnd();
+		alreadystartday = LocalDate.of(tmpnewstartdt.getYear(), tmpnewstartdt.getMonthOfYear(), tmpnewstartdt.getDayOfMonth());
+		alreadyendday = LocalDate.of(tmpnewenddt.getYear(), tmpnewenddt.getMonthOfYear(), tmpnewenddt.getDayOfMonth());
+
+		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval(bkstartday,bkendday,alreadystartday,alreadyendday);
+		if(timeintervallist == null)
+			return bankuai;
+		
+		for(Interval tmpinterval : timeintervallist) {
+				DateTime newstartdt = tmpinterval.getStart();
+				DateTime newenddt = tmpinterval.getEnd();
+				
+				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
+				bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,requiredstartday,requiredendday);
 		}
-		
-		bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday,allbkstk);
-		
+
 		return bankuai;
 	}
 	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, StockOfBanKuai stockofbk,String period)
@@ -547,15 +578,15 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		return stockofbk;
 	}
 	/*
-	 * �����������ĳ�����ɵĳɽ���?,��������Ƿ�����ø��ɵļ��?
+	 * 
 	 */
 	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, String stockcode,String period)
 	{
-		BkChanYeLianTreeNode stock = bankuai.getBanKuaiGeGu(stockcode);
+		StockOfBanKuai stock = bankuai.getStockOfBanKuai(stockcode);
 		if(stock == null)
 			return null;
 		
-		stock = this.getGeGuOfBanKuai( bankuai,  (StockOfBanKuai) stock,period);
+		stock = this.getGeGuOfBanKuai( bankuai,  stock,period);
 		return (StockOfBanKuai) stock;
 	}
 	public StockOfBanKuai getGeGuOfBanKuai(String bkcode, String stockcode,String period) 
@@ -564,7 +595,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		if(bankuai == null)
 			return null;
 		
-		StockOfBanKuai stock = (StockOfBanKuai) bankuai.getBanKuaiGeGu(stockcode);
+		StockOfBanKuai stock = bankuai.getStockOfBanKuai(stockcode);
 		if(stock == null)
 			return null;
 		

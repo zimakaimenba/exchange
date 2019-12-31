@@ -19,6 +19,7 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -465,6 +466,16 @@ public class SvsForNodeOfStock implements ServicesForNode
 	public BkChanYeLianTreeNode getNodeSuoShuBanKuaiList (BkChanYeLianTreeNode node)
 	{
 		node = bkdbopt.getTDXBanKuaiForAStock ((Stock)node); //通达信板块信息
+		
+//		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+//		Set<BkChanYeLianTreeNode> bklist = ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList();
+//		for(BkChanYeLianTreeNode bk : bklist) {
+//			BanKuai tmpbk = (BanKuai)bk;
+//			if(tmpbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL))
+//				svsbk.getAllGeGuOfBanKuai((BanKuai) bk);
+//		}
+//		svsbk = null;
+		
 		return node;
 	}
 	
