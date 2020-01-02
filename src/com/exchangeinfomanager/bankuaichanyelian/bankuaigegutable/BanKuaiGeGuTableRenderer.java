@@ -197,30 +197,36 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    }
 	    	
 	    } else  
-	    if( col == 4 && value != null ) { //成交额>=
-	    	Double cjemax = matchcond.getSettingChenJiaoErMax();
-	    	Double cjemin = matchcond.getSettingChenJiaoErMin();
-	    	if(cjemin != null && cjemax == null) {
-	    		cjemax = 1000000000000.0;
-			} else
-			if(cjemax != null && cjemin == null) {
-				cjemin  = 0.0;
-			} else
-			if(cjemin == null && cjemax == null) {
-				cjemax = 1000000000000.0;
-				cjemin = 1000000000000.0;
-			}
-	    	cjemax = cjemax * 100000000.0;
-			cjemin = cjemin * 100000000.0;
-	    
-		    LocalDate requireddate = tablemodel.getShowCurDate();
-		    String period = tablemodel.getCurDisplayPeriod();
-		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-		    Double curcje = nodexdata.getChengJiaoEr(requireddate, 0);
-		    if( curcje >= cjemin && curcje <= cjemax ) 
-		    	background = Color.yellow ;
-		    else
-		    	background = Color.white;
+	    if( col == 4 && value != null ) { //涨幅>=
+	    	Double zfmax = matchcond.getSettingZhangFuMax();
+	    	Double zfmin = matchcond.getSettingZhangFuMin();
+	    	
+	    	if(zfmax == null && zfmin == null ) {
+	    		background = Color.white;
+	    	} else {
+	    		if(zfmax == null && zfmin != null )
+		    		zfmax = 1000000.0;
+		    	else 
+		    	if(zfmax != null && zfmin == null )
+		    		zfmin = -1000000.0;
+		    	else
+		    	if(zfmax == null && zfmin == null ) {
+		    		zfmin = 1000000.0;
+		    		zfmax = -1000000.0;
+		    	}
+
+		    	LocalDate requireddate = tablemodel.getShowCurDate();
+			    String period = tablemodel.getCurDisplayPeriod();
+			    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			    Double wkzhangfu = nodexdata.getSpecificOHLCZhangDieFu(requireddate, 0);
+			    if(wkzhangfu == null)
+			    	background = Color.white;
+			    else if( wkzhangfu >= zfmin && wkzhangfu <= zfmax ) 
+			    	background = Color.pink ;
+			    else
+			    	background = Color.white;
+	    	}
+	    	
 	    }  else 
 	    if(col == 3   && value != null) { //突出回补缺口
 	    	Boolean zt = matchcond.hasZhangTing();
@@ -233,13 +239,13 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 			    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(requireddate, 0);
 			    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(requireddate, 0);
-			    Integer zhangting = nodexdata.getZhangTingTongJi(requireddate, 0);
+//			    Integer zhangting = nodexdata.getZhangTingTongJi(requireddate, 0);
 			    
 			    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  )
 			    	 background = Color.PINK ;
-		    	else 
-		    	if( zhangting != null && zhangting >0)
-		    		background = Color.PINK ;
+//		    	else 
+//		    	if( zhangting != null && zhangting >0)
+//		    		background = Color.PINK ;
 		    	else
 		    		background = Color.white ;
 		    }

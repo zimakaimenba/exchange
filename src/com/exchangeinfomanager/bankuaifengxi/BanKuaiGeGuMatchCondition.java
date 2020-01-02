@@ -54,6 +54,8 @@ public class BanKuaiGeGuMatchCondition
 		Double cjebottomforfanglianglevle;
 		Integer cjefanglianglevel;
 		Boolean exportST;
+		private Double zhangfumax;
+		private Double zhangfumin;
 		
 		/*
 		 * 
@@ -307,9 +309,29 @@ public class BanKuaiGeGuMatchCondition
 		public void setExportST(Boolean exportST) {
 			this.exportST = exportST;
 		}
-		
-		
-		
-		
+
+		public void setSettingZhangFuMax(Double zhangfumax1) 
+		{
+			if (zhangfumax1 != null)
+				this.zhangfumax = zhangfumax1/100;
+			else
+				this.zhangfumax = zhangfumax1;
+		}
+		public Double getSettingZhangFuMax() 
+		{
+			return this.zhangfumax ;
+		}
+
+		public void setSettingZhangFuMin(Double zhangfumin1) 
+		{
+			if(zhangfumin1 != null)
+				this.zhangfumin = zhangfumin1/100;
+			else
+				this.zhangfumin = zhangfumin1;
+		}
+		public Double getSettingZhangFuMin() 
+		{
+			return this.zhangfumin;
+		}
 
 }

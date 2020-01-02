@@ -76,7 +76,7 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 	
 	//Implement table header tool tips.
 	String[] jtableTitleStringsTooltips = { "代码(周阳线阴线)", "名称(是否包含在分析文件)","高级排序排名(流通市值)",
-			"板块成交额贡献(跳空缺口)","大盘CJEZB增长率(成交额区间)","CJEDpMaxWk(突出DPMAXWK)","大盘CJLZB增长率(大于指定均线)","CJLDpMaxWk(突出DPMAXWK)"};
+			"板块成交额贡献(跳空缺口)","大盘CJEZB增长率(突出涨幅)","CJEDpMaxWk(突出DPMAXWK)","大盘CJLZB增长率(大于指定均线)","CJLDpMaxWk(突出DPMAXWK)"};
     protected JTableHeader createDefaultTableHeader() 
     {
         return new JTableHeader(columnModel) {

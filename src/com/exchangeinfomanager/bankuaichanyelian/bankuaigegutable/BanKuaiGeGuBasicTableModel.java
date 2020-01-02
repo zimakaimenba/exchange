@@ -156,8 +156,9 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	    		return ;
 		  
 		  StockOfBanKuai stock = (StockOfBanKuai) entryList.get(row);
-		  String stockcode = stock.getMyOwnCode();
-	      curbk.setGeGuSuoShuBanKuaiWeight(stockcode,newweight);
+		  ((StockOfBanKuai)stock).setStockQuanZhong(newweight);
+//		  String stockcode = stock.getMyOwnCode();
+//	      curbk.setGeGuSuoShuBanKuaiWeight(stockcode,newweight);
 		  this.fireTableDataChanged();
 	  }
 	 public int getRowCount() 

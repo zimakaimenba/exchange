@@ -271,8 +271,6 @@ public class BanKuai extends TDXNodes
 	 */
 	public void setGeGuSuoShuBanKuaiWeight(String stockcode , Integer quanzhong) 
 	{
-
-		
 		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
 				((StockOfBanKuai)stockofbk).setStockQuanZhong(quanzhong);

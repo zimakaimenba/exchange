@@ -19,7 +19,7 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 	{
 		super ();
 		
-		String[] jtableTitleStrings = { "代码", "名称","权重","高级排序排名","CjeMaxWk","换手率"};
+		String[] jtableTitleStrings = { "代码", "名称","权重","高级排序排名(突出成交额)","CjeMaxWk","换手率"};
 		super.setTableHeader(jtableTitleStrings);
 		
 //		this.setDisplayChenJiaoEr(null, null);

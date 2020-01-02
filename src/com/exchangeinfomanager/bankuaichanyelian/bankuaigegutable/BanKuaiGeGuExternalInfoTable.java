@@ -205,31 +205,54 @@ public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implemen
 		    		foreground = Color.BLACK;
 		    }
 		    if( col ==3) { //{ "代码", "名称","权重","高级排序排名","CjeMaxWk","换手率"};
-		    	Double ltszmin ;
-			    Double ltszmax ;
-			    try {
-			    	ltszmax = matchcond.getSettingLiuTongShiZhiMax().doubleValue();
-			    } catch (Exception e) {
-			    	ltszmax = 10000000000000.0;
-			    }
-			    try {
-			    	ltszmin = matchcond.getSettingLiuTongShiZhiMin();
-			    } catch (Exception e) {
-			    	ltszmin = 10000000000000.0;
-			    }
-			    
+		    	Double cjemax = matchcond.getSettingChenJiaoErMax();
+		    	Double cjemin = matchcond.getSettingChenJiaoErMin();
+		    	if(cjemin != null && cjemax == null) {
+		    		cjemax = 1000000000000.0;
+				} else
+				if(cjemax != null && cjemin == null) {
+					cjemin  = 0.0;
+				} else
+				if(cjemin == null && cjemax == null) {
+					cjemax = 1000000000000.0;
+					cjemin = 1000000000000.0;
+				}
+		    	cjemax = cjemax * 100000000.0;
+				cjemin = cjemin * 100000000.0;
+		    
 			    LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
 			    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-			    Double curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, 0);
-			    try {
-				    if( curltsz >= ltszmin && curltsz <= ltszmax ) 
-				    	background = Color.MAGENTA ;
-				    else
-				    	background = Color.white;
-			    } catch (java.lang.NullPointerException e) {
+			    Double curcje = nodexdata.getChengJiaoEr(requireddate, 0);
+			    if( curcje >= cjemin && curcje <= cjemax ) 
+			    	background = Color.yellow ;
+			    else
 			    	background = Color.white;
-			    }
+//		    	Double ltszmin ;
+//			    Double ltszmax ;
+//			    try {
+//			    	ltszmax = matchcond.getSettingLiuTongShiZhiMax().doubleValue();
+//			    } catch (Exception e) {
+//			    	ltszmax = 10000000000000.0;
+//			    }
+//			    try {
+//			    	ltszmin = matchcond.getSettingLiuTongShiZhiMin();
+//			    } catch (Exception e) {
+//			    	ltszmin = 10000000000000.0;
+//			    }
+//			    
+//			    LocalDate requireddate = tablemodel.getShowCurDate();
+//			    String period = tablemodel.getCurDisplayPeriod();
+//			    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+//			    Double curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, 0);
+//			    try {
+//				    if( curltsz >= ltszmin && curltsz <= ltszmax ) 
+//				    	background = Color.MAGENTA ;
+//				    else
+//				    	background = Color.white;
+//			    } catch (java.lang.NullPointerException e) {
+//			    	background = Color.white;
+//			    }
 		    	
 		    }  else  
 		    if( col == 4  && value != null ) { //突出显示CjeMAXWK>=的个股
