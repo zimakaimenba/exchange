@@ -3113,7 +3113,7 @@ public class BanKuaiDbOperation
 				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
 				"FROM 通达信板块每日交易信息 \r\n" + 
 				"WHERE 代码 = '999999' AND 通达信板块每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
-				"GROUP by year(通达信板块每日交易信息.`交易日期`),week(通达信板块每日交易信息.`交易日期`)\r\n" + 
+				" GROUP by YEARWEEK(通达信板块每日交易信息.`交易日期`,2)\r\n" + 
 				"\r\n" + 
 				"UNION ALL\r\n" + 
 				"\r\n" + 
@@ -3121,7 +3121,7 @@ public class BanKuaiDbOperation
 				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
 				"from 通达信交易所指数每日交易信息\r\n" + 
 				"where 代码 = '399001' AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
-				"group by year(通达信交易所指数每日交易信息.`交易日期`),week(通达信交易所指数每日交易信息.`交易日期`)\r\n" + 
+				" group by YEARWEEK(通达信交易所指数每日交易信息.`交易日期`,2)\r\n" + 
 				") T,\r\n" + 
 				"\r\n" + 
 				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
@@ -3131,10 +3131,10 @@ public class BanKuaiDbOperation
 						+ "from " + bkcjltable + "\r\n" +
 						
 				"where 代码 = '" + bkcode + "' AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
-				"GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
+				"GROUP BY YEARWEEK( " + bkcjltable + ".`交易日期`,2)\r\n" + 
 				") M\r\n" + 
-				"WHERE YEAR(T.WORKDAY) = YEAR(M.WORKDAY) AND  WEEK(T.WORKDAY) = WEEK(M.WORKDAY)\r\n" + 
-				" GROUP BY year(t.workday),week(t.workday)"
+				" WHERE YEARWEEK(T.WORKDAY,2) = YEARWEEK(M.WORKDAY,2) \r\n" + 
+				"  GROUP BY YEARWEEK(t.workday,2)"
 				;
 							
 		logger.debug("为板块" + bankuai.getMyOwnCode() + bankuai.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
@@ -3388,28 +3388,33 @@ public class BanKuaiDbOperation
 		String formatedenddate  = selecteddateend.toString();
 		
 		//包含成交量和成交额的SQL
-		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday,1) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
+		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday,1) AS CALWEEK, M.BKCODE AS BKCODE, \r\n"
+				+ "t.StartOfWeekDate AS StartOfWeekDate, t.EndOfWeekDate AS EndOfWeekDate, \r\n" +
 				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比, \r\n" +
 				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
 				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU , M.周最大涨跌幅,M.周最小涨跌幅   ,M.涨停,M.跌停        \r\n" +
 				 
 				"FROM\r\n" + 
 				"(\r\n" + 
-				"select  通达信板块每日交易信息.`交易日期` as workday, DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
-				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
+				"select 通达信板块每日交易信息.`交易日期` as workday, "
+				+ " 	DATE(通达信板块每日交易信息.交易日期 + INTERVAL (2 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as StartOfWeekDate, \r\n"
+				+ "		DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+				"		sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
 				"from 通达信板块每日交易信息\r\n" + 
 				"where 代码 = '999999'\r\n" + 
 				" AND 通达信板块每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"+
-				"group by year(通达信板块每日交易信息.`交易日期`), week(通达信板块每日交易信息.`交易日期`)\r\n" + 
+				" group by YEARWEEK(通达信板块每日交易信息.`交易日期`,2)\r\n" + 
 				"\r\n" + 
 				"UNION ALL\r\n" + 
 				"\r\n" + 
-				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
-				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
+				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   "
+				+"		DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (2 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as StartOfWeekDate, \r\n"
+				+" 		DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+				"		sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
 				"from 通达信交易所指数每日交易信息\r\n" + 
 				"where 代码 = '399001' "
 				+" AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"+ 
-				"group by year(通达信交易所指数每日交易信息.`交易日期`),week(通达信交易所指数每日交易信息.`交易日期`)\r\n" + 
+				"group by YEARWEEK(通达信交易所指数每日交易信息.`交易日期`,2)\r\n" + 
 				") T,\r\n" + 
 				"\r\n" + 
 				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
@@ -3426,11 +3431,10 @@ public class BanKuaiDbOperation
 						+ " from " + bkcjltable + "\r\n" +  
 				" Where 代码 = '" + stockcode + "'\r\n" + 
 				" AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
-				" GROUP BY YEAR( " + bkcjltable + ".`交易日期`), WEEK( " + bkcjltable +".`交易日期`)\r\n" + 
+				" GROUP BY  YEARWEEK( " + bkcjltable +".`交易日期`,2)\r\n" + 
 				") M\r\n" + 
-				"WHERE YEAR(T.WORKDAY) = YEAR(M.WORKDAY) AND  WEEK(T.WORKDAY) = WEEK(M.WORKDAY)\r\n" + 
-				
-				" GROUP BY year(t.workday),week(t.workday)"
+				" WHERE   YEARWEEK(T.WORKDAY,2) = YEARWEEK(M.WORKDAY,2)\r\n" + 
+				" GROUP BY YEARWEEK(t.workday,2)"
 				;
 				
 		try {
@@ -3480,23 +3484,25 @@ public class BanKuaiDbOperation
 			//交易数据
 			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rs.next()) {
-				double stockcje = rs.getDouble("板块周交易额");
-				double dapancje = rs.getDouble("大盘周交易额");
-				double cjezb = rs.getDouble("CJE占比");
+				java.sql.Date startdayofweek = rs.getDate("StartOfWeekDate");
 				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
-				ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
+				
+				double stockcje = rs.getDouble("板块周交易额") ;
+				double dapancje = rs.getDouble("大盘周交易额") ;
+				double cjezb = rs.getDouble("CJE占比") ;
+				double stockcjl = rs.getDouble("板块周交易量") ;
+				double dapancjl = rs.getDouble("大盘周交易量") ;
+				double cjlzb = rs.getDouble("VOL占比") ;
+				double huanshoulv = rs.getDouble("板块周换手率") ;
+				double pingjunzongshizhi = rs.getDouble("周平均总市值") ;
+				double pingjunliutongshizhi = rs.getDouble("周平均流通市值") ;
+				double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅") ;
+				double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅") ;
+				int exchengdaysnumber = rs.getInt("JILUTIAOSHU") ;
+				int zhangtingnum = rs.getInt("涨停") ;
+				int dietingnum = rs.getInt("跌停") ;
+				
 				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
-				double stockcjl = rs.getDouble("板块周交易量");
-				double dapancjl = rs.getDouble("大盘周交易量");
-				double cjlzb = rs.getDouble("VOL占比");
-				double huanshoulv = rs.getDouble("板块周换手率");
-				double pingjunzongshizhi = rs.getDouble("周平均总市值");
-				double pingjunliutongshizhi = rs.getDouble("周平均流通市值");
-				double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅");
-				double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅");
-				int exchengdaysnumber = rs.getInt("JILUTIAOSHU");
-				int zhangtingnum = rs.getInt("涨停");
-				int dietingnum = rs.getInt("跌停");
 
 				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
 						recordwk, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 

@@ -319,24 +319,32 @@ public class ExportMatchedNode
 			cjematch = true;
 		else if(recordcje != null  && ( recordcje < settingcjemin || recordcje > settingcjemax ))
 			cjematch = false;
+		else 
+			cjematch = true;
 		
 		Boolean dpmaxwkmatch = null;
 		if(recordmaxbkwk != null  && recordmaxbkwk >= settindpgmaxwk)
 			dpmaxwkmatch = true;
 		else if(recordmaxbkwk != null  && recordmaxbkwk < settindpgmaxwk)
 			dpmaxwkmatch = false;
+		else
+			dpmaxwkmatch = true;
 		
 		Boolean cjewkmatch = null;
 		if(recordmaxcjewk != null && recordmaxcjewk >= seetingcjemaxwk)
 			cjewkmatch = true;
 		else if(recordmaxcjewk != null && recordmaxcjewk < seetingcjemaxwk)
 			cjewkmatch = false;
+		else
+			cjewkmatch = true;
 		
 		Boolean hslmatch = null;
 		if(recordhsl != null && recordhsl >= settinghsl)
 			hslmatch = true;
 		else if(recordhsl != null && recordhsl < settinghsl)
 			hslmatch = false;
+		else
+			hslmatch = true;
 		
 //		Boolean zhouzhangfumatch = null;
 //		if(recordzhangfu != null &&  recordzhangfu > settinggeguyangxianuplevel)
@@ -344,7 +352,7 @@ public class ExportMatchedNode
 //		else 
 //			zhouzhangfumatch = false;
 		
-		if(cjematch && dpmaxwkmatch && cjewkmatch && hslmatch  ) {	
+		if( cjematch && dpmaxwkmatch && cjewkmatch && hslmatch  ) {	
 			Boolean notskiptonextstock = true;
 			
 			if( shouldhavedayangxian && recordcje < cjelevelofyangxian  ) { //如果成交量小于于一定量，就必须有大阳线或者连续2周满足条件
