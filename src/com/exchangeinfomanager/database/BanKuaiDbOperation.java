@@ -3439,8 +3439,7 @@ public class BanKuaiDbOperation
 				
 		try {
 			logger.debug("为板块:" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
-		} catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
+		} catch (java.lang.NullPointerException e) {e.printStackTrace();
 		}
 		
 		String sqlquerystatfx = "SELECT 操作记录重点关注.`日期`, COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
