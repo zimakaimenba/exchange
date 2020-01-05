@@ -117,13 +117,13 @@ public class NodeGivenPeriodDataItemForJFC extends OHLCItem implements NodeGiven
 		return periodhighestzhangdiefu;
 	}
 	public void setPeriodHighestZhangDieFu(Double periodhighestzhangdiefu) {
-		this.periodhighestzhangdiefu = periodhighestzhangdiefu;
+		this.periodhighestzhangdiefu = periodhighestzhangdiefu / 100;
 	}
 	public Double getPeriodLowestZhangDieFu() {
 		return periodlowestzhangdiefu;
 	}
 	public void setPeriodLowestZhangDieFu(Double periodlowestzhangdiefu) {
-		this.periodlowestzhangdiefu = periodlowestzhangdiefu;
+		this.periodlowestzhangdiefu = periodlowestzhangdiefu / 100;
 	}
 	public Integer getHasFengXiJieGuo() {
 		return hasfengxijieguo;

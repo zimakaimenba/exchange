@@ -1,7 +1,10 @@
 package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Locale;
 
@@ -62,6 +65,46 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		Integer value = (Integer)gzjlitem.getValue();
 		return value;
 	}
+	public void addPeriodHighestZhangDieFu (LocalDate requireddate,Double zhangfu)
+	{
+		try {	
+			periodhighestzhangdiefu.setNotify(false);
+			
+			java.sql.Date sqldate = null;
+			try {
+				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+				 sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			try{
+				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
+				periodhighestzhangdiefu.add(recordwk, zhangfu, false );
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		} catch (org.jfree.data.general.SeriesException e) {}
+	}
+	public void addPeriodLowestZhangDieFu (LocalDate requireddate,Double diefu)
+	{
+		try {	
+			periodlowestzhangdiefu.setNotify(false);
+			
+			java.sql.Date sqldate = null;
+			try {
+				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+				 sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			try{
+				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
+				periodlowestzhangdiefu.add(recordwk, diefu, false );
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		} catch (org.jfree.data.general.SeriesException e) {}
+	}
 	/*
 	 * 
 	 */
@@ -113,19 +156,13 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			if( kdata.getPeriodHighestZhangDieFu() != null && kdata.getPeriodHighestZhangDieFu() != 0)
 				periodhighestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getPeriodHighestZhangDieFu(),false);
 			
-		} catch (org.jfree.data.general.SeriesException e) {
-//			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
-//			e.printStackTrace();
-		}
+		} catch (org.jfree.data.general.SeriesException e) {}
 		try {	
 			periodlowestzhangdiefu.setNotify(false);
 			if( kdata.getPeriodLowestZhangDieFu() != null && kdata.getPeriodLowestZhangDieFu() != 0)
 				periodlowestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()), kdata.getPeriodLowestZhangDieFu(),false);
 			
-		} catch (org.jfree.data.general.SeriesException e) {
-//			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在（" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
-//			e.printStackTrace();
-		}
+		} catch (org.jfree.data.general.SeriesException e) {}
 	}
 	public void resetAllData ()
 	{

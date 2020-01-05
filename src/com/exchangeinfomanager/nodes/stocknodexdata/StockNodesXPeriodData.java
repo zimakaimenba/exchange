@@ -8,7 +8,9 @@ public interface StockNodesXPeriodData
 {
 	public Double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference);
 	public Double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference);
+	public void addPeriodHighestZhangDieFu (LocalDate requireddate,Double zhangfu);
 	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference);
+	public void addPeriodLowestZhangDieFu (LocalDate requireddate,Double zhangfu);
 	public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference);
 	public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference);
 	

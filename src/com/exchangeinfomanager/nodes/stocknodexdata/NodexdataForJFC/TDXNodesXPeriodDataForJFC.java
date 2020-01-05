@@ -141,10 +141,10 @@ import com.udojava.evalex.Expression;
 	
 		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
 			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
-			LocalDate mondayday = startdate.with(fieldUS, 2);
-			return mondayday;
+			LocalDate fridayday = enddate.with(fieldUS, 6);
+			return fridayday;
 		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
-			return startdate;
+			return enddate;
 		}
 		
 		return null;

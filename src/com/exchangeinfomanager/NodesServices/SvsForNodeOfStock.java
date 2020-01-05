@@ -224,7 +224,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 			}
 		}
 		
-		if(period.equals(NodeGivenPeriodDataItem.DAY)) { //���߼������ˣ����߸���ͳ������
+		if(period.equals(NodeGivenPeriodDataItem.DAY)) { //Calculate the weekly QueKou info for Stock
 
 			List<QueKou> qklist = nodedayperioddata .getPeriodQueKou();
 			if(qklist == null || qklist.size() == 0)
@@ -243,18 +243,18 @@ public class SvsForNodeOfStock implements ServicesForNode
 					LocalDate tmpqkdate = tmpqk.getQueKouDate();
 					
 					if(CommonUtility.isInSameWeek(tmpqkdate, tmpdate)) {
-						if(tmpqk.getQueKouLeiXing()) { //upȱ��
+						if(tmpqk.getQueKouLeiXing()) { 
 							
 							stockxwkdate.addQueKouTongJiJieGuo(tmpqkdate, 1, null, null, null, true);
-							if(tmpqk.getQueKouHuiBuDate() != null) { //�Ѿ����ز�
+							if(tmpqk.getQueKouHuiBuDate() != null) { 
 								LocalDate tmpqkhbdate = tmpqk.getQueKouHuiBuDate();
 							
 								stockxwkdate.addQueKouTongJiJieGuo(tmpqkhbdate, null, 1, null, null, true);
 							} 
-						} else { //downȱ��
+						} else { 
 							
 							stockxwkdate.addQueKouTongJiJieGuo(tmpqkdate, null, null, 1, null, true);
-							if(tmpqk.getQueKouHuiBuDate() != null) { //�Ѿ����ز�
+							if(tmpqk.getQueKouHuiBuDate() != null) { 
 								LocalDate tmpqkhbdate = tmpqk.getQueKouHuiBuDate();
 							
 								stockxwkdate.addQueKouTongJiJieGuo(tmpqkhbdate, null, null, null, 1, true);
@@ -277,10 +277,10 @@ public class SvsForNodeOfStock implements ServicesForNode
 				
 			} while (tmpdate.isBefore( qkenddate) || tmpdate.isEqual(qkenddate));
 			
-			 if(!qkstartdate.equals(requiredstartday) && requiredstartday.isBefore(qkstartdate)) { //�ر���������openupquekou����ʼ���ڣ����ڻ��ȱ��ͳ�Ƶ���ʼʱ��?
+			 if(!qkstartdate.equals(requiredstartday) && requiredstartday.isBefore(qkstartdate)) { 
 				 stockxwkdate.addQueKouTongJiJieGuo ( requiredstartday, 0, null, null, null,true);
         	 }  
-			 if(!qkenddate.equals(requiredendday)  && requiredendday.isAfter(qkenddate) )  //�ر���������openupquekou�Ľ������ڣ����ڻ��ȱ��ͳ�ƵĽ���ʱ��?
+			 if(!qkenddate.equals(requiredendday)  && requiredendday.isAfter(qkenddate) )  
         		 stockxwkdate.addQueKouTongJiJieGuo ( requiredendday, 0, null, null, null,true);
 		}
 
@@ -304,6 +304,10 @@ public class SvsForNodeOfStock implements ServicesForNode
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
 			stk = this.getNodeKXian(stk, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
+			
+			if( !stock.isNodeDataAtNotCalWholeWeekMode() )
+				this.getNodeQueKouInfo(stock, bkohlcstartday, bkohlcendday, NodeGivenPeriodDataItem.DAY);
+			
 			return;
 		}
 		

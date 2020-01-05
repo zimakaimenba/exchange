@@ -41,6 +41,7 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
@@ -217,8 +218,8 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 
 		    	LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
-			    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-			    Double wkzhangfu = nodexdata.getSpecificOHLCZhangDieFu(requireddate, 0);
+			    StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			    Double wkzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(requireddate, 0);
 			    if(wkzhangfu == null)
 			    	background = Color.white;
 			    else if( wkzhangfu >= zfmin && wkzhangfu <= zfmax ) 
@@ -229,23 +230,17 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	
 	    }  else 
 	    if(col == 3   && value != null) { //Í»³ö»Ø²¹È±¿Ú
-	    	Boolean zt = matchcond.hasZhangTing();
+	    	background = Color.white ;
 		    Boolean hlqk = matchcond.hasHuiBuDownQueKou();
-		    if(!hlqk && !zt)
-		    	background = Color.white ;
-		    else {
+		    if(hlqk ) {
 		    	LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
 		    	NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 			    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(requireddate, 0);
 			    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(requireddate, 0);
-//			    Integer zhangting = nodexdata.getZhangTingTongJi(requireddate, 0);
 			    
 			    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  )
 			    	 background = Color.PINK ;
-//		    	else 
-//		    	if( zhangting != null && zhangting >0)
-//		    		background = Color.PINK ;
 		    	else
 		    		background = Color.white ;
 		    }

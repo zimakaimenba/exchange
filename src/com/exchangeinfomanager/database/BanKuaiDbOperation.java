@@ -3894,12 +3894,12 @@ public class BanKuaiDbOperation
 		} catch (java.lang.IndexOutOfBoundsException e) {
 			e.printStackTrace();
 		}
-		
-		
-		OHLCItem newohlcdatalast = (OHLCItem) nodenewohlc.getDataItem(nodenewohlc.getItemCount()-1);
+
+		//Close Of this week
+		OHLCItem newohlcdatalast = (OHLCItem) nodenewohlc.getDataItem(nodenewohlc.getItemCount()-1); 
 		Double weeklyclose = newohlcdatalast.getCloseValue();
-		
-		Double weeklyhigh=0.0; Double weeklylow=10000000.0;
+
+		Double weeklyhigh=0.0; Double weeklylow=10000000.0; 
 		for(int i=0;i<nodenewohlc.getItemCount();i++) {
 			OHLCItem newohlctmp = (OHLCItem) nodenewohlc.getDataItem(i);
 			if( newohlctmp.getHighValue() > weeklyhigh)
@@ -3916,46 +3916,41 @@ public class BanKuaiDbOperation
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		try{
+		try {
 			org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
 			nodexdata.getOHLCData().add(new OHLCItem(recordwk,weeklyopen,weeklyhigh,weeklylow,weeklyclose) );
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
+		//This part is for get stock highest and lowest zhangfu in the week. //Temperailly abandon.
+//		if(tdxnode instanceof Stock) {
+//			if(spcohlcdataindex == 0) {
+//				((StockNodesXPeriodData)nodexdata).addPeriodHighestZhangDieFu (friday,-100.0);
+//				((StockNodesXPeriodData)nodexdata).addPeriodLowestZhangDieFu (friday,-100.0);
+//				return tdxnode;
+//			}
+//				
+//			OHLCItem weeklyohlcdatalast = (OHLCItem) nodexdata.getOHLCData().getDataItem(spcohlcdataindex-1);
+//			Double lastwkclose = weeklyohlcdatalast.getCloseValue();
+//			Double weeklyhighzhangfu = (   ((OHLCItem) nodenewohlc.getDataItem(0)).getCloseValue() - lastwkclose) / lastwkclose;
+//			Double weeklylowestzhangfu = (   ((OHLCItem) nodenewohlc.getDataItem(0)).getCloseValue() - lastwkclose) / lastwkclose;
+//			for(int i=1;i<nodenewohlc.getItemCount();i++) {
+//				OHLCItem curohlctmp = (OHLCItem) nodenewohlc.getDataItem(i);
+//				OHLCItem lastohlctmp = (OHLCItem) nodenewohlc.getDataItem(i-1);
+//				
+//				Double zhangfu = (lastohlctmp.getCloseValue() - curohlctmp.getCloseValue() ) /  lastohlctmp.getCloseValue() ; 
+//				if( zhangfu > weeklyhighzhangfu)
+//					weeklyhighzhangfu = zhangfu;
+//				if( zhangfu < weeklylowestzhangfu)
+//					weeklylowestzhangfu = zhangfu;
+//			}
+//			((StockNodesXPeriodData)nodexdata).addPeriodHighestZhangDieFu (friday,weeklyhighzhangfu);
+//			((StockNodesXPeriodData)nodexdata).addPeriodLowestZhangDieFu (friday,weeklylowestzhangfu);
+//		}
+		
+		
  		return tdxnode;
-	}
-	private void teststub (TDXNodes bk,String period) 
-	{
-		if(bk.getMyOwnCode().equals("399006") || bk.getMyOwnCode().equals("999999") || bk.getMyOwnCode().equals("399001"))
-			return ;
-		
-		period = NodeGivenPeriodDataItem.WEEK;
-		NodeXPeriodData nodexdata = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		LocalDate start = nodexdata.getOHLCRecordsStartDate();
-		LocalDate end = nodexdata.getOHLCRecordsEndDate();
-		
-		LocalDate tmpdate = start;
-		do  {
-			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
-			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
-			Double cje = nodexdata.getChengJiaoEr(wkfriday, 0);
-			Double zdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday, 0);
-			if(zdf!=null)
-				logger.info(wkfriday + "::" + zdf.toString() );
-			else
-				logger.info(wkfriday + ":: null" );
-			
-				
-			if(period.equals(NodeGivenPeriodDataItem.WEEK))
-				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-			else if(period.equals(NodeGivenPeriodDataItem.DAY))
-				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
-				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
-		} while (tmpdate.isBefore( end) || tmpdate.isEqual(end));
-		
-		return ;
 	}
 	/*
 	 * 从数据库中获取板块某时间段的日线走势，而个股是从CSV中读取
@@ -7213,6 +7208,9 @@ public class BanKuaiDbOperation
 				RegularTimePeriod curperiod = kxiandatacurwk.getPeriod();
 				LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//				if(curend.equals(LocalDate.parse("2019-12-27"))) {
+//					String tempstr = "";
+//				}
 				
 				Double curhigh = kxiandatacurwk.getHighValue();
 				Double curlow = kxiandatacurwk.getLowValue();
@@ -7404,7 +7402,6 @@ public class BanKuaiDbOperation
 			Collections.sort(qklist, new NodeLocalDateComparator() );
 			stockdailyxdate.setPeriodQueKou(qklist);
 			
-			
 //			//标记缺口统计的时间，
 //			NodeXPeriodData stockxwkdate = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 //			LocalDate qkstartdate = qklist.get(0).getQueKouDate();
@@ -7414,8 +7411,6 @@ public class BanKuaiDbOperation
 //			 }  
 //			 if(!qkenddate.equals(requiredendday)  && requiredendday.isAfter(qkenddate) )  //特别标记完整的openupquekou的结束日期，用于获得缺口统计的结束时间
 //       		 ( (TDXNodesXPeriodData)stockxwkdate ).addQueKouTongJiJieGuo ( requiredendday, -1, null, null, null,true);
-			
-			
 			 
 			 return stock;
 			
