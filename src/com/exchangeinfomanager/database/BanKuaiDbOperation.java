@@ -84,6 +84,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItemForJFC;
@@ -3787,6 +3788,10 @@ public class BanKuaiDbOperation
 			 //目前算法最后一周要跳出循环后才能计算
 			this.getTDXNodesWeeklyKXianZouShiForJFC(stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 			
+			//Former ZhangFu can be get from Netease, but for the lastest, sometimes Neteast data is still not imported,
+			//so must cal the zhangfu by CSV data.
+			this.calTDXNodesWeekyHighestAndLowestZhangFuForJFC (stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);;
+			
 			nodenewohlc = null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -3795,6 +3800,35 @@ public class BanKuaiDbOperation
 
 		return stock;
 
+	}
+	/*
+	 * 
+	 */
+	private void calTDXNodesWeekyHighestAndLowestZhangFuForJFC(Stock stock, LocalDate friday, OHLCSeries nodenewohlc) 
+	{
+		//This part is for get stock highest and lowest zhangfu in the week. //Temperailly abandon.
+		StockXPeriodDataForJFC nodexdata =  (StockXPeriodDataForJFC) stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+
+		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
+		OHLCItem weeklyohlcdatalast = (OHLCItem) nodexdata.getOHLCData().getDataItem(spcohlcdataindex-1);
+		Double lastwkclose = weeklyohlcdatalast.getCloseValue();
+		Double curwkclose = ((OHLCItem) nodenewohlc.getDataItem(0)  ).getCloseValue();
+		Double weeklyhighzhangfu = (  curwkclose  - lastwkclose) / lastwkclose;
+		Double weeklylowestzhangfu = (  curwkclose - lastwkclose) / lastwkclose;
+		for(int i=1;i<nodenewohlc.getItemCount();i++) {
+				OHLCItem curohlctmp = (OHLCItem) nodenewohlc.getDataItem(i);
+				OHLCItem lastohlctmp = (OHLCItem) nodenewohlc.getDataItem(i-1);
+				
+				Double lastdayclose = lastohlctmp.getCloseValue();
+				Double curdayclose = curohlctmp.getCloseValue();
+				Double zhangfu = (curdayclose - lastdayclose ) /  lastdayclose; 
+				if( zhangfu > weeklyhighzhangfu)
+					weeklyhighzhangfu = zhangfu;
+				if( zhangfu < weeklylowestzhangfu)
+					weeklylowestzhangfu = zhangfu;
+		}
+		((StockNodesXPeriodData)nodexdata).addPeriodHighestZhangDieFu (friday,weeklyhighzhangfu);
+		((StockNodesXPeriodData)nodexdata).addPeriodLowestZhangDieFu (friday,weeklylowestzhangfu);
 	}
 	/*
 	 *
@@ -3922,35 +3956,8 @@ public class BanKuaiDbOperation
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		//This part is for get stock highest and lowest zhangfu in the week. //Temperailly abandon.
-//		if(tdxnode instanceof Stock) {
-//			if(spcohlcdataindex == 0) {
-//				((StockNodesXPeriodData)nodexdata).addPeriodHighestZhangDieFu (friday,-100.0);
-//				((StockNodesXPeriodData)nodexdata).addPeriodLowestZhangDieFu (friday,-100.0);
-//				return tdxnode;
-//			}
-//				
-//			OHLCItem weeklyohlcdatalast = (OHLCItem) nodexdata.getOHLCData().getDataItem(spcohlcdataindex-1);
-//			Double lastwkclose = weeklyohlcdatalast.getCloseValue();
-//			Double weeklyhighzhangfu = (   ((OHLCItem) nodenewohlc.getDataItem(0)).getCloseValue() - lastwkclose) / lastwkclose;
-//			Double weeklylowestzhangfu = (   ((OHLCItem) nodenewohlc.getDataItem(0)).getCloseValue() - lastwkclose) / lastwkclose;
-//			for(int i=1;i<nodenewohlc.getItemCount();i++) {
-//				OHLCItem curohlctmp = (OHLCItem) nodenewohlc.getDataItem(i);
-//				OHLCItem lastohlctmp = (OHLCItem) nodenewohlc.getDataItem(i-1);
-//				
-//				Double zhangfu = (lastohlctmp.getCloseValue() - curohlctmp.getCloseValue() ) /  lastohlctmp.getCloseValue() ; 
-//				if( zhangfu > weeklyhighzhangfu)
-//					weeklyhighzhangfu = zhangfu;
-//				if( zhangfu < weeklylowestzhangfu)
-//					weeklylowestzhangfu = zhangfu;
-//			}
-//			((StockNodesXPeriodData)nodexdata).addPeriodHighestZhangDieFu (friday,weeklyhighzhangfu);
-//			((StockNodesXPeriodData)nodexdata).addPeriodLowestZhangDieFu (friday,weeklylowestzhangfu);
-//		}
-		
-		
- 		return tdxnode;
+
+		return tdxnode;
 	}
 	/*
 	 * 从数据库中获取板块某时间段的日线走势，而个股是从CSV中读取
