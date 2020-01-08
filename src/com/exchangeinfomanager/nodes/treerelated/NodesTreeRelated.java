@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public interface  NodesTreeRelated
 {
-	public void setSelfIsMatchModel (LocalDate selfinsetdate);
+	public void setSelfIsMatchModel (LocalDate selfinsetdate, Boolean inorout);
 	public Boolean selfIsMatchModel (LocalDate selfinsetdate);
 	public void setStocksNumInParsedFile (LocalDate parsefiledate, Integer stocksnum);
 	public Integer getStocksNumInParsedFileForSpecificDate (LocalDate requiredate);

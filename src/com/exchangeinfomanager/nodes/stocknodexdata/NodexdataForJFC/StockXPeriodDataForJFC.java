@@ -295,7 +295,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		try {
 			curlzdf = curlowzdfrecord.getValue().doubleValue();
 		} catch (Exception e) {	
-			logger.info( super.getNodeCode() + ":" + requireddate + difference    + "周没有数据，可能是停牌" );
+//			logger.info( super.getNodeCode() + ":" + requireddate + difference    + "周没有数据，可能是停牌" );
 			return null;
 		}
 		

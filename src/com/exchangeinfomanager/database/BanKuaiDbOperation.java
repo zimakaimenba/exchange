@@ -3810,7 +3810,13 @@ public class BanKuaiDbOperation
 		StockXPeriodDataForJFC nodexdata =  (StockXPeriodDataForJFC) stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 
 		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
-		OHLCItem weeklyohlcdatalast = (OHLCItem) nodexdata.getOHLCData().getDataItem(spcohlcdataindex-1);
+		OHLCItem weeklyohlcdatalast;
+		try {
+			weeklyohlcdatalast = (OHLCItem) nodexdata.getOHLCData().getDataItem(spcohlcdataindex-1);
+		} catch (java.lang.IndexOutOfBoundsException e) {
+//			e.printStackTrace();
+			return;
+		}
 		Double lastwkclose = weeklyohlcdatalast.getCloseValue();
 		Double curwkclose = ((OHLCItem) nodenewohlc.getDataItem(0)  ).getCloseValue();
 		Double weeklyhighzhangfu = (  curwkclose  - lastwkclose) / lastwkclose;

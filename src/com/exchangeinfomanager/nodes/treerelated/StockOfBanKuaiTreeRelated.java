@@ -22,15 +22,17 @@ public class StockOfBanKuaiTreeRelated implements NodesTreeRelated
 	private Set<LocalDate> isinparsedfile; //表明个股在指定日期是否在分析文件中
 	
 	@Override
-	public void setSelfIsMatchModel(LocalDate selfinsetdate)
+	public void setSelfIsMatchModel(LocalDate selfinsetdate, Boolean inorout)
 	{
 		if(isinparsedfile == null) 
 			isinparsedfile = new HashSet<LocalDate> ();
 		
 		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
-		if(!isinparsedfile.contains(friday))
+		if(inorout && !isinparsedfile.contains(friday))
 			isinparsedfile.add(friday);
-		
+		else 
+		if(!inorout)
+			isinparsedfile.remove(friday);
 	}
 	@Override
 	public Boolean selfIsMatchModel(LocalDate selfinsetdate) 

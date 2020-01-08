@@ -25,13 +25,17 @@ public class BanKuaiTreeRelated implements NodesTreeRelated
 	/*
 	 * 
 	 */
-	public void setSelfIsMatchModel (LocalDate selfinsetdate)
+	public void setSelfIsMatchModel (LocalDate selfinsetdate, Boolean inorout)
 	{
 		if(bkselfinparsedfile == null)
 			this.bkselfinparsedfile = new HashSet<LocalDate> ();
 		
 		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
-		this.bkselfinparsedfile.add(friday);
+		if(inorout && !this.bkselfinparsedfile.contains(friday) )
+			this.bkselfinparsedfile.add(friday);
+		else
+		if(!inorout)
+			this.bkselfinparsedfile.remove(friday);
 	}
 	public Boolean selfIsMatchModel (LocalDate selfinsetdate)
 	{ 

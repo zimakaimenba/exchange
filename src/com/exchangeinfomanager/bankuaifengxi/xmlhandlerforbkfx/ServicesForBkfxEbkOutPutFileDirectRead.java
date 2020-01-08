@@ -117,16 +117,17 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
             	treerelated.setStocksNumInParsedFile (localDate, 0);
             	
             	if(!bkinfile.contains(nodecode))
-            		continue;
-    			
-            	treerelated.setSelfIsMatchModel(localDate);
-            } else if( nodetype == BkChanYeLianTreeNode.TDXGG) {
+            		treerelated.setSelfIsMatchModel(localDate, false);
+            	else
+            		treerelated.setSelfIsMatchModel(localDate, true);
+            } else 
+            if( nodetype == BkChanYeLianTreeNode.TDXGG) {
             	NodesTreeRelated stofbktree = treeChild.getNodeTreeRelated();
 
             	if(!stockinfile.contains(nodecode))
-            		continue;
-    			
-            	stofbktree.setSelfIsMatchModel(localDate);
+            		stofbktree.setSelfIsMatchModel(localDate,false);
+            	else
+            		stofbktree.setSelfIsMatchModel(localDate,true);
             }
   	          
 	        patchParsedFileToTrees(treeChild,localDate,stockinfile,bkinfile);
