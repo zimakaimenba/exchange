@@ -278,7 +278,7 @@ public class WholeMonthNewsComponentsView extends View
             	createDate = firstDayInMonth;
 			
 			BanKuaiAndStockTree treebkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks(); 
-            BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treebkstk.getModel().getRoot();
+            BkChanYeLianTreeNode treeroot = treebkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);//(BkChanYeLianTreeNode)treebkstk.getModel().getRoot();
             
             if( svsofexternalnews instanceof ChangQiGuanZhuServices) {
             	return new GuanZhu(treeroot, "√Ë ˆ", createDate, createDate, "œÍœ∏√Ë ˆ", viewtitle,  new HashSet<>(),"URL",true);

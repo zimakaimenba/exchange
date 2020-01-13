@@ -3515,7 +3515,7 @@ public class BanKuaiFengXi extends JDialog
 			tfldweight.setToolTipText("\u4F8B\uFF1A(>=250 && <60) || >30");
 			tfldweight.setForeground(new Color(0,153,153) );
 			tfldweight.setText(">=250");
-			tfldweight.setColumns(5);
+//			tfldweight.setColumns(5);
 			
 			ckboxshowcje = new JCheckBox("\u7A81\u51FA\u6210\u4EA4\u989D\u533A\u95F4(\u4EBF)");
 			ckboxshowcje.setBackground(Color.LIGHT_GRAY);
@@ -3527,7 +3527,7 @@ public class BanKuaiFengXi extends JDialog
 			tfldshowcje.setPreferredSize(new Dimension(30, 25));
 			tfldshowcje.setText("2.18");
 			tfldshowcje.setForeground(Color.BLUE);
-			tfldshowcje.setColumns(4);
+//			tfldshowcje.setColumns(4);
 			
 			ckboxparsefile = new JCheckBox("\u5206\u6790\u6587\u4EF6");
 			ckboxparsefile.setToolTipText("\u5206\u6790\u6587\u4EF6");
@@ -3548,7 +3548,7 @@ public class BanKuaiFengXi extends JDialog
 			tflddisplaydpmaxwk.setPreferredSize(new Dimension(20, 25));
 			tflddisplaydpmaxwk.setForeground(Color.RED);
 			tflddisplaydpmaxwk.setText("4");
-			tflddisplaydpmaxwk.setColumns(2);
+//			tflddisplaydpmaxwk.setColumns(2);
 			
 			chkliutongsz = new JCheckBox("\u7A81\u51FA\u6D41\u901A\u5E02\u503C(\u4EBF)");
 			chkliutongsz.setBackground(Color.WHITE);
@@ -3558,8 +3558,8 @@ public class BanKuaiFengXi extends JDialog
 			tfldltszmin = new JTextField();
 			tfldltszmin.setPreferredSize(new Dimension(30, 25));
 			tfldltszmin.setForeground(Color.MAGENTA);
-			tfldltszmin.setText("30");
-			tfldltszmin.setColumns(2);
+			tfldltszmin.setText("5");
+//			tfldltszmin.setColumns(2);
 			
 			ckbxcjemaxwk = new JCheckBox("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
 			ckbxcjemaxwk.setToolTipText("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
@@ -3570,7 +3570,7 @@ public class BanKuaiFengXi extends JDialog
 			tfldcjemaxwk.setText("7");
 			tfldcjemaxwk.setPreferredSize(new Dimension(20, 25));
 			tfldcjemaxwk.setForeground(Color.CYAN);
-			tfldcjemaxwk.setColumns(2);
+//			tfldcjemaxwk.setColumns(2);
 			
 			btnaddexportcond = JLabelFactory.createButton("",35, 25);
 //			btnaddexportcond = new JButton("") {
@@ -3593,7 +3593,7 @@ public class BanKuaiFengXi extends JDialog
 			tfldhuanshoulv = new JTextField();
 			tfldhuanshoulv.setPreferredSize(new Dimension(25, 25));
 			tfldhuanshoulv.setText("30");
-			tfldhuanshoulv.setColumns(2);
+//			tfldhuanshoulv.setColumns(2);
 			
 //			btnexportmodelgegu = new JButton("\u5BFC\u51FA\u6761\u4EF6\u4E2A\u80A1");
 			
@@ -3629,7 +3629,7 @@ public class BanKuaiFengXi extends JDialog
 			
 			tfldltszmax = new JTextField();
 			tfldltszmax.setPreferredSize(new Dimension(30, 25));
-			tfldltszmax.setText("300");
+			tfldltszmax.setText("80");
 			tfldltszmax.setForeground(Color.MAGENTA);
 //			tfldltszmax.setColumns(10);
 			
@@ -3657,12 +3657,12 @@ public class BanKuaiFengXi extends JDialog
 			tfldzhangfumin = new JTextField();
 			tfldzhangfumin.setPreferredSize(new Dimension(25, 25));
 			tfldzhangfumin.setText("5");
-			tfldzhangfumin.setColumns(2);
+//			tfldzhangfumin.setColumns(2);
 			
 			tfldzhangfumax = new JTextField();
 			tfldzhangfumax.setPreferredSize(new Dimension(25, 25));
 			tfldzhangfumax.setText("20");
-			tfldzhangfumax.setColumns(2);
+//			tfldzhangfumax.setColumns(2);
 			
 			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 			buttonPane.add(btnaddexportcond);
