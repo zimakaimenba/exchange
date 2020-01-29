@@ -173,11 +173,11 @@ public class StockInfoManager
 	public StockInfoManager() 
 	{
 		License license = new License ();
-		if( !license.isLicenseValide() ) {
-			JOptionPane.showMessageDialog(null,"License非法！再见！");
-			System.exit(0);
-		}
-		license = null;
+//		if( !license.isLicenseValide() ) {
+//			JOptionPane.showMessageDialog(null,"License非法！再见！");
+//			System.exit(0);
+//		}
+//		license = null;
 			
 	    
 		sysconfig = SystemConfigration.getInstance();

@@ -2,6 +2,7 @@ package com.exchangeinfomanager.commonlib;
 
 import java.awt.BorderLayout;   
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;   
 import java.awt.GraphicsEnvironment;  
@@ -30,7 +31,7 @@ public class ReminderPopToolTip
     private int _width = 300;  
   
       
-    private int _height = 100;  
+    private int _height = 200;//Short.MAX_VALUE;
   
     
     private int _step = 30;  
@@ -92,7 +93,9 @@ public class ReminderPopToolTip
             _useTop = false;  
         }  
   
-    }  
+    } 
+    
+  
   
     /** 
      * 重构JWindow用于显示单一气泡提示�? 
@@ -138,7 +141,6 @@ public class ReminderPopToolTip
             _message.setFont(getMessageFont());  
             JPanel externalPanel = new JPanel(new BorderLayout(1, 1));  
             externalPanel.setBackground(_bgColor);  
-            
             
             //   
             JPanel innerPanel = new JPanel(new BorderLayout(getGap(), getGap()));  
@@ -296,6 +298,10 @@ public class ReminderPopToolTip
             single._iconLabel.setIcon(icon);  
         }  
         single._message.setText(msg);  
+        Dimension size2 = new Dimension(300, (single._message).getPreferredSize().height + 10 );
+        (single._message).setPreferredSize(size2);
+        (single._message).setMinimumSize(size2);
+        (single._message).setMaximumSize(size2);
         single.animate();  
     }  
     /** 

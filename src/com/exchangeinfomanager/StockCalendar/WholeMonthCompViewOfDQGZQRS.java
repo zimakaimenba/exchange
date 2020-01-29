@@ -17,10 +17,10 @@ import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 
 
-public class WholeMonthCompViewOfDQGZ extends WholeMonthNewsComponentsView 
+public class WholeMonthCompViewOfDQGZQRS extends WholeMonthNewsComponentsView 
 {
 
-	public WholeMonthCompViewOfDQGZ(ServicesForNews meetingServices, String title) 
+	public WholeMonthCompViewOfDQGZQRS(ServicesForNews meetingServices, String title) 
 	{
 		super(meetingServices, title);
 		// TODO Auto-generated constructor stub
@@ -67,14 +67,14 @@ public class WholeMonthCompViewOfDQGZ extends WholeMonthNewsComponentsView
     			continue;
         	
             if (m.getLabels().isEmpty()) {
-                	JUpdatedLabel label = getFormatedLabelForNoneLabel (m);
+                	JUpdatedLabel label = super.getFormatedLabelForNoneLabel (m);
                    	this.contentpnl.add(label);
                     continue;
             }
                 
             for (News.Label l : labels) {
                     if (m.getLabels().contains(l)) {
-                    	JUpdatedLabel label = getFormatedLabelForWithLabels (m,l);
+                    	JUpdatedLabel label = super.getFormatedLabelForWithLabels (m,l);
                        	this.contentpnl.add(label);
                         continue;
                     }

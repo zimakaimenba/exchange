@@ -224,8 +224,7 @@ public class BanKuaiFengXi extends JDialog
 	private ArrayList<BanKuaiGeGuMatchCondition> exportcond;
 	
 	private NodeInfoToCsv nodeinfotocsv;
-	
-	
+
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelbankuaidatachangelisteners;
 	private Set<PieChartPanelDataChangedListener> piechartpanelbankuaidatachangelisteners;

@@ -42,6 +42,7 @@ import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.google.common.base.Strings;
 
 public class WholeMonthNewsComponentsView extends View 
 {
@@ -186,7 +187,12 @@ public class WholeMonthNewsComponentsView extends View
 		else if (m instanceof InsertedExternalNews )
 			dbid = ((InsertedExternalNews)m).getID ();
 		
-    	JUpdatedLabel label = new JUpdatedLabel(m.getNewsOwnerCodes() + m.getTitle());
+		String displayedmsg = "";
+		if(Strings.isNullOrEmpty ( m.getTitle() ) || m.getTitle().equals("√Ë ˆ") )
+			displayedmsg = m.getNewsOwnerCodes() + ((ExternalNewsType)m).getNode().getMyOwnName();
+		else
+			displayedmsg = m.getNewsOwnerCodes() + m.getTitle();
+		JUpdatedLabel label = new JUpdatedLabel(displayedmsg);
         label.setToolTipText( getLabelToolTipText(m) );
         label.setOpaque(true);
         label.setName( String.valueOf(  dbid ) );
@@ -206,7 +212,12 @@ public class WholeMonthNewsComponentsView extends View
 		else if (m instanceof InsertedExternalNews )
 			dbid = ((InsertedExternalNews)m).getID ();
 		
-		JUpdatedLabel label = new JUpdatedLabel(m.getNewsOwnerCodes() + m.getTitle());
+		String displayedmsg = "";
+		if(Strings.isNullOrEmpty ( m.getTitle() ) || m.getTitle().equals("√Ë ˆ") )
+			displayedmsg = m.getNewsOwnerCodes() + ((ExternalNewsType)m).getNode().getMyOwnName();
+		else
+			displayedmsg = m.getNewsOwnerCodes() + m.getTitle();
+		JUpdatedLabel label = new JUpdatedLabel(displayedmsg);
         label.setToolTipText( getLabelToolTipText(m) );
         label.setOpaque(true);
         label.setName( String.valueOf( dbid ) );

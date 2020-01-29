@@ -152,11 +152,17 @@ public class BanKuaiDbOperation
 			while(rsagu.next()) {
 				String friendcodeleft = rsagu.getString("板块左"); 
 				String friendcoderight = rsagu.getString("板块右");
-				if(!friendcodeleft.equals(bkcode))
-					bkbasicinfo.addSocialFriends(friendcodeleft);
-				if(!friendcoderight.equals(bkcode))
-					bkbasicinfo.addSocialFriends(friendcoderight);
-				
+				Boolean relationship = rsagu.getBoolean("关系");
+				if(relationship == null)
+					relationship = true;
+				if(!friendcodeleft.equals(bkcode) && relationship )
+					bkbasicinfo.addSocialFriendsPostive(friendcodeleft);
+				if(!friendcoderight.equals(bkcode) && relationship )
+					bkbasicinfo.addSocialFriendsPostive(friendcoderight);
+				if(!friendcodeleft.equals(bkcode) && !relationship )
+					bkbasicinfo.addSocialFriendsNegtive(friendcodeleft);
+				if(!friendcoderight.equals(bkcode) && !relationship )
+					bkbasicinfo.addSocialFriendsNegtive(friendcoderight);	
 			}
 			
 
@@ -7777,12 +7783,20 @@ public class BanKuaiDbOperation
 		/*
 		 * 
 		 */
-		public Boolean updateNodeSocialFriendShips(BanKuai mainnode, BanKuai friend)
+		public Boolean updateNodeSocialFriendShips(BanKuai mainnode, BanKuai friend, Boolean relationship)
 		{
-			Set<String> friendset = mainnode.getSocialFriendsSet();
-			String friendcode = friend.getMyOwnCode();
+			Set<String>	friendsetpostive = mainnode.getSocialFriendsSetPostive();
+			Set<String>	friendsetnegtive = mainnode.getSocialFriendsSetNegtive();
 			
-			if( friendset.contains(friendcode ) ) { //已经是朋友了要取消
+			String friendcode = friend.getMyOwnCode();
+			Boolean alreadyinpostive = false;
+			if( friendsetpostive.contains(friendcode ) )
+				alreadyinpostive = true;
+			Boolean alreadyinnegtive = false;
+			if( friendsetnegtive.contains(friendcode ) )
+				alreadyinnegtive = true;
+				
+			if( (alreadyinpostive && relationship) || (alreadyinnegtive && !relationship) ) { //已经是朋友了要取消
 				String sqlupdatestat = "DELETE FROM 通达信板块社交关系表  "
 						+ " WHERE ( "
 						+ "( '板块左' = '" + mainnode.getMyOwnCode() + "'"
@@ -7801,11 +7815,44 @@ public class BanKuaiDbOperation
 				    
 				}
 				
-				friendset.remove(friendcode );
-			} else { //不是朋友，要加入
-				String sqlinsertstat =  "INSERT INTO  通达信板块社交关系表(板块左,板块右) values ("
+				if(alreadyinpostive)
+					friendsetpostive.remove(friendcode );
+				if(alreadyinnegtive)
+					friendsetnegtive.remove(friendcode );
+			} else 
+			if( (alreadyinpostive && !relationship) || (alreadyinnegtive && relationship) ) { //已经是朋友,要取反
+				String sqlupdatestat = "UPDATE  通达信板块社交关系表  SET 关系= " + relationship
+						+ " WHERE ( "
+						+ "( '板块左' = '" + mainnode.getMyOwnCode() + "'"
+						+ " AND '板块右' = '" + friend.getMyOwnCode() + "') " 
+						+ " OR "
+						+ "( '板块右' = '" + mainnode.getMyOwnCode() + "'"
+						+ " AND '板块左' = '" + friend.getMyOwnCode() + "') ) "
+						;
+				try {
+					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+				} catch(java.lang.NullPointerException e){ 
+				    	e.printStackTrace();
+				} catch(Exception e){
+				    	e.printStackTrace();
+				} finally {
+				    
+				}
+				if(alreadyinpostive) {
+					friendsetpostive.remove(friendcode );
+					friendsetnegtive.add(friendcode );
+				}
+				if(alreadyinnegtive){
+					friendsetpostive.add(friendcode );
+					friendsetnegtive.remove(friendcode );
+				}
+				
+			}
+			else { //不是朋友，要加入
+				String sqlinsertstat =  "INSERT INTO  通达信板块社交关系表(板块左,板块右,关系) values ("
    						+ " '" + mainnode.getMyOwnCode() + "'" + ","
-   						+ " '" + friend.getMyOwnCode() + "'" 
+   						+ " '" + friend.getMyOwnCode() + "'"  + ","
+   						+ relationship
    						+ ")"
    						;
 				try {
@@ -7818,13 +7865,13 @@ public class BanKuaiDbOperation
 				} finally {
 				    
 				}
-				
-				friendset.add(friendcode );
+				if(relationship)
+					friendsetpostive.add(friendcode );
+				else
+					friendsetnegtive.add(friendcode );
 			}
-			return null;
-
 			
-		
+			return null;
 		}
 		
 }

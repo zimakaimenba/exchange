@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -108,9 +109,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	 * @see javax.swing.JTable#getToolTipText(java.awt.event.MouseEvent)
 	 */
     public String getToolTipText(MouseEvent e) 
-    {
- 
-	        
+    {   
         String tip = null;
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
@@ -125,8 +124,12 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        
 	     int modelRow = convertRowIndexToModel(rowIndex);
 	     BanKuai bankuai = tablemodel.getBanKuai(modelRow);
-	     Set<String> socialset = bankuai.getSocialFriendsSet();
-
+	     Set<String> socialsetneg = bankuai.getSocialFriendsSetNegtive();
+	     Set<String> socialsetpos = bankuai.getSocialFriendsSetPostive();
+	     Set<String>  socialset = new HashSet<> ();
+	     socialset.addAll(socialsetneg);
+	     socialset.addAll(socialsetpos);
+	     
 	     if(colIndex != 1) {
 	    	 try {
 	             tip = getValueAt(rowIndex, colIndex).toString();
@@ -266,9 +269,13 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#prepareRenderer(javax.swing.table.TableCellRenderer, int, int)
 	 */
-	private Border outside = new MatteBorder(1, 0, 1, 0, Color.RED);
-	private Border inside = new EmptyBorder(0, 1, 0, 1);
-	private Border highlight = new CompoundBorder(outside, inside);
+	private Border outsidepos = new MatteBorder(1, 0, 1, 0, Color.RED);
+	private Border insidepos = new EmptyBorder(0, 1, 0, 1);
+	private Border highlightpos = new CompoundBorder(outsidepos, insidepos);
+	
+	private Border outsideneg = new MatteBorder(1, 0, 1, 0, Color.GREEN);
+	private Border insideneg = new EmptyBorder(0, 1, 0, 1);
+	private Border highlightneg = new CompoundBorder(outsideneg, insideneg);
 	
 	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
 		
@@ -300,11 +307,16 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        int rowcurselected = this.getSelectedRow();
 	        if(rowcurselected != -1) {
 	        	int modelRowcurselected = this.convertRowIndexToModel(rowcurselected);
-				BanKuai bkcurselected = ((BanKuaiInfoTableModel)this.getModel()).getBanKuai(modelRowcurselected);
-		        Set<String> socialset = bkcurselected.getSocialFriendsSet();
-		        String bkcode =   bankuai.getMyOwnCode();
-		        if(socialset.contains(bkcode)) 
-		        	jc.setBorder( highlight );
+	        	String bkcode =   bankuai.getMyOwnCode();
+				BanKuai bkcurselected = ((BanKuaiInfoTableModel)this.getModel()).getBanKuai(modelRowcurselected);  
+		        Set<String> socialsetpos = bkcurselected.getSocialFriendsSetPostive();
+		        if(socialsetpos.contains(bkcode)) {
+		        		jc.setBorder( highlightpos );
+	        	}
+		        Set<String> socialsetneg = bkcurselected.getSocialFriendsSetNegtive();
+		        if(socialsetneg.contains(bkcode)) {
+		        		jc.setBorder( highlightneg );
+	        	}	
 	        }
 	       
 	        if (comp instanceof JLabel && col == 0) {

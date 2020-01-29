@@ -174,7 +174,8 @@ class DataBaseConnection
 				logger.info("begin to connect database");
 				
 				EncryptAndDecypt encyptanddecypt = new EncryptAndDecypt ();
-				String decryptedpassword = encyptanddecypt.getDecryptedPassowrd(password);
+//				String decryptedpassword = encyptanddecypt.getDecryptedPassowrd(password);
+				String decryptedpassword = password;
 				encyptanddecypt = null;
 				
 				tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,decryptedpassword);

@@ -1539,7 +1539,7 @@ public final class StockCalendarAndNewDbOperation
 		
 		int newsid = event.getID();
 		BkChanYeLianTreeNode node = event.getNode();
-    	LocalDate starttime = event.getStart();
+    	LocalDate starttime = event.getEnd();
     	LocalDate endtime = event.getStart();
 		String desc = event.getTitle();
 		String detail = event.getDescription();
@@ -1549,7 +1549,9 @@ public final class StockCalendarAndNewDbOperation
 		String keywords = event.getKeyWords();
     	
    		try {
-        		String sqlupatestatement =  "UPDATE 强弱势板块个股表  SET 日期 = '" + starttime + "', "
+        		String sqlupatestatement =  "UPDATE 强弱势板块个股表  SET "
+        				+ "日期 = '" + starttime + "', "
+        				+ "截至日期 = '" + endtime + "', "
         				+ " 代码 = '" + node.getMyOwnCode() + "', "
         				+ " 类型 = " + node.getType() + ", "
         				+ " 说明  = '" + desc + "', "

@@ -67,13 +67,11 @@ public class WholeMonthNewsView extends View
 	
 	private WholeMonthNewsComponentsView cqjlview;
 
-	private WholeMonthNewsComponentsView qsview;
+	private WholeMonthCompViewOfDQGZQRS qsview;
 
 	private WholeMonthNewsComponentsView rsview;
 
-	private WholeMonthNewsComponentsView dqgz;
-
-	private WholeMonthCompViewOfDQGZ dqgzview;
+	private WholeMonthCompViewOfDQGZQRS dqgzview;
 	
 	private WholeMonthNewsComponentsView zsblview;
 	
@@ -95,7 +93,7 @@ public class WholeMonthNewsView extends View
 	    		} else
 	    		if( f instanceof QiangShiServices) {
 	    			svsqs = (QiangShiServices) f;
-	    			qsview = new WholeMonthNewsComponentsView (svsqs, "强势板块个股");
+	    			qsview = new WholeMonthCompViewOfDQGZQRS (svsqs, "强势板块个股");
 	    		} else
 	    		if( f instanceof RuoShiServices) {
 	    			svsrs = (RuoShiServices) f;
@@ -103,7 +101,7 @@ public class WholeMonthNewsView extends View
 	    		} else
 	    		if( f instanceof DuanQiGuanZhuServices) {
 	    			svsdqgz = (DuanQiGuanZhuServices) f;
-	    			dqgzview = new WholeMonthCompViewOfDQGZ (svsdqgz, "近期关注");
+	    			dqgzview = new WholeMonthCompViewOfDQGZQRS (svsdqgz, "近期关注");
 	    		} else
 	    		if( f instanceof ZhiShuBoLangServices) {
 	    			svszsbl = (ZhiShuBoLangServices) f;
