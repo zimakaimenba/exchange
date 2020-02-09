@@ -511,8 +511,15 @@ public class BanKuaiGuanLi extends JDialog
 		allbkfriendspnl.add(scrollPanebkfriends);
 		JPopupMenu popupMenusocial = new JPopupMenu();
 		this.addPopup (tableBkfriends,popupMenusocial);
+		
 		menuItemSocialFriendNegtivefortoppesttable = new JMenuItem("设置/取消好友负相关关系");
+		menuItemSocialFriendNegtivefortoppesttable.setOpaque(true);
+		menuItemSocialFriendNegtivefortoppesttable.setBackground(Color.GREEN);
+		
 		menuItemSocialFriendPostivefortoppesttable = new JMenuItem("设置/取消好友正相关关系");
+		menuItemSocialFriendPostivefortoppesttable.setOpaque(true);
+		menuItemSocialFriendPostivefortoppesttable.setBackground(Color.RED);
+		
 		popupMenusocial.add(menuItemSocialFriendPostivefortoppesttable);
 		popupMenusocial.add(menuItemSocialFriendNegtivefortoppesttable);
 		TableRowSorter<TableModel> sorterofbkfriends = new TableRowSorter<TableModel> (tableBkfriends.getModel() );
@@ -585,7 +592,13 @@ public class BanKuaiGuanLi extends JDialog
 		JPopupMenu popupMenunogegubk = new JPopupMenu();
 		this.addPopup (tablenoggbk,popupMenunogegubk);
 		menuItemSocialFriendNegtiveformiddletable = new JMenuItem("设置/取消好友负相关关系");
+		menuItemSocialFriendNegtiveformiddletable.setOpaque(true);
+		menuItemSocialFriendNegtiveformiddletable.setBackground(Color.GREEN);
+		
 		menuItemSocialFriendPostiveformiddletable = new JMenuItem("设置/取消好友正相关关系");
+		menuItemSocialFriendPostiveformiddletable.setOpaque(true);
+		menuItemSocialFriendPostiveformiddletable.setBackground(Color.RED);
+		
 		popupMenunogegubk.add(menuItemSocialFriendPostiveformiddletable);
 		popupMenunogegubk.add(menuItemSocialFriendNegtiveformiddletable);
 

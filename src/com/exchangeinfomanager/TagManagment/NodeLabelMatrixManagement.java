@@ -107,8 +107,12 @@ public class NodeLabelMatrixManagement extends JDialog
 			pnldisplayallbkskw.initializeTagsPanel (lbbkdbservice,bankuaikwcache);
 		} if(node.getType () == BkChanYeLianTreeNode.TDXBK) {
 			node = this.nodedbopt.getBanKuaiBasicInfo ((BanKuai) node);
-			Set<String> friends = ((BanKuai)node).getSocialFriendsSet();
-			for(String tmpfri : friends) 
+			Set<String> friendspos = ((BanKuai)node).getSocialFriendsSetPostive();
+			for(String tmpfri : friendspos) 
+				suosusysbankuai.add( this.allbkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpfri, BkChanYeLianTreeNode.TDXBK) );
+			
+			Set<String> friendsneg = ((BanKuai)node).getSocialFriendsSetNegtive();
+			for(String tmpfri : friendsneg) 
 				suosusysbankuai.add( this.allbkstk.getAllBkStocksTree().getSpecificNodeByHypyOrCode(tmpfri, BkChanYeLianTreeNode.TDXBK) );
 			
 			lbbkdbservice = new TagsServiceForNodes (suosusysbankuai);

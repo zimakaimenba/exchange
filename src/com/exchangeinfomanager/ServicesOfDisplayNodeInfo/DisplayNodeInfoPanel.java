@@ -33,6 +33,9 @@ public class DisplayNodeInfoPanel extends JEditorPane //extends JPanel
         this.setText("<b><font face=\"Arial\" size=\"50\" align=\"center\" > Unfortunately when I display this string it is too long and doesn't wrap to new line!</font></b>");
         
 		setHtmlInfo ();
+		
+		this.revalidate();
+		this.repaint();
 	}
 	/*
 	 * 

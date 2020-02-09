@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -173,11 +175,11 @@ public class StockInfoManager
 	public StockInfoManager() 
 	{
 		License license = new License ();
-//		if( !license.isLicenseValide() ) {
-//			JOptionPane.showMessageDialog(null,"License非法！再见！");
-//			System.exit(0);
-//		}
-//		license = null;
+		if( !license.isLicenseValide() ) {
+			JOptionPane.showMessageDialog(null,"License非法！再见！");
+			System.exit(0);
+		}
+		license = null;
 			
 	    
 		sysconfig = SystemConfigration.getInstance();
@@ -306,21 +308,19 @@ public class StockInfoManager
 				 
 				 
 				 displayBanKuaiAndStockNews (); //显示板块和个股新闻
-				 displayNodeTags ();
+				 displayNodeTags (); // 显示关键信息
 				 enableGuiEditable();
 		}
 		
 	private void displayNodeTags() 
 	{
-		int count = pnltags.getComponentCount();
-		for(int i=0;i<count;i++) {
-			Component comp = pnltags.getComponent(i);
-			String name = comp.getName();
-			Class<? extends Component> classes = comp.getClass();
-			comp.getLocation();
-		}
-		
-		
+//		int count = pnltags.getComponentCount();
+//		for(int i=0;i<count;i++) {
+//			Component comp = pnltags.getComponent(i);
+//			String name = comp.getName();
+//			Class<? extends Component> classes = comp.getClass();
+//			comp.getLocation();
+//		}
 		Set<BkChanYeLianTreeNode> bkstk = new HashSet<> ();
 		bkstk.add(this.nodeshouldbedisplayed);
 		TagsServiceForNodes lbnodedbservice = new TagsServiceForNodes (bkstk);
@@ -1703,11 +1703,17 @@ public class StockInfoManager
  */
 	private void displayStockSuoShuBanKuai() 
 	{
-//		scrlnodebankuai.removeAll();
 		DisPlayNodeSuoShuBanKuaiListServices svsstkbk = new DisPlayNodeSuoShuBanKuaiListServices (nodeshouldbedisplayed);
 		DisPlayNodeSuoShuBanKuaiListPanel stkbkpnl = new DisPlayNodeSuoShuBanKuaiListPanel (svsstkbk);
 		stkbkpnl.setPreferredSize(new Dimension(200,30));
+		
 		scrlnodebankuai.setViewportView(stkbkpnl);
+		
+		stkbkpnl.revalidate();
+		stkbkpnl.repaint();
+		
+		scrlnodebankuai.revalidate();
+		scrlnodebankuai.repaint();
 		
 		stkbkpnl.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -1963,6 +1969,11 @@ public class StockInfoManager
 		
 		kspanel.resetInput ();
 		
+		Component view = scrlnodebankuai.getViewport().getView();
+		if(view != null)
+			scrlnodebankuai.getViewport().remove(view);
+		scrlnodebankuai.getViewport().revalidate();
+		scrlnodebankuai.getViewport().repaint();
 			
 		pnltags.removeAll();
 //		editorPaneBanKuai.setText("");

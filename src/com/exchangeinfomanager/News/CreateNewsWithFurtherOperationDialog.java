@@ -37,7 +37,7 @@ import com.exchangeinfomanager.nodes.Stock;
 public class CreateNewsWithFurtherOperationDialog extends NewsFutherOperationDialog 
 {
 
-	private ArrayList<BkChanYeLianTreeNode> searchresult;
+	private List<BkChanYeLianTreeNode> searchresult;
 
 	public CreateNewsWithFurtherOperationDialog(ServicesForNews NewsService)
 	{
@@ -130,8 +130,12 @@ public class CreateNewsWithFurtherOperationDialog extends NewsFutherOperationDia
 	  	if(chkbxaddnewtofriends.isSelected() ) {
 		  	if(bankuai != null) {
 		  		svsbankuai.getNodeJiBenMian(bankuai);
-		  		Set<String> friset = ((BanKuai)bankuai).getSocialFriendsSet ();
-		  		for(String fricode : friset) 
+		  		Set<String> frisetpos = ((BanKuai)bankuai).getSocialFriendsSetPostive();
+		  		for(String fricode : frisetpos) 
+		  			searchresult.add(svsbankuai.getNode(fricode));
+		  		
+		  		Set<String> frisetneg = ((BanKuai)bankuai).getSocialFriendsSetNegtive();
+		  		for(String fricode : frisetneg) 
 		  			searchresult.add(svsbankuai.getNode(fricode));
 		  	}
 	  	}
