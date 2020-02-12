@@ -18,9 +18,11 @@ public boolean processLine(String line) throws IOException {
 			if(line.startsWith("16")) { //上海的个股
 				stocklists.add(line.substring(1));
 			}
-		} else  {
-			if(line.startsWith("00") || line.startsWith("03") ) { //深圳的个股
-				stocklists.add(line.substring(1));
+		} 
+		else {
+			if(!line.startsWith("0399") )
+					if(line.startsWith("00") || line.startsWith("03") ) { //深圳的个股
+						stocklists.add(line.substring(1));
 			}
 		}
 	}

@@ -68,12 +68,9 @@ public class ExportMatchedNode
 					if( !this.cond.shouldExportOnlyGeGuNotBanKuai() ) //只导出板块个股
 						if(!matchednodeset.contains(childnode)) 
 							matchednodeset.add((TDXNodes) childnode);
-					
 				}  
-//				else
-//					continue;
 					
-				if(this.cond.shouldExportOnlyBankuaiNotGeGu() )
+				if( this.cond.shouldExportOnlyBankuaiNotGeGu() )
 					continue;
 								
 				if( !checkresult.toUpperCase().contains("WITHCHECKGEGU") )
@@ -89,7 +86,7 @@ public class ExportMatchedNode
 					 
 					 ggstock = svsstk.getNodeData(ggstock,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 
-					 Boolean stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA((Stock)ggstock, exportdate, period);
+					 Boolean stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA( (Stock)ggstock, exportdate, period);
 					 if(stkcheckresult == null) {//停牌股
 						 checkednodesset.add( ggstock.getMyOwnCode() );
 						 continue;

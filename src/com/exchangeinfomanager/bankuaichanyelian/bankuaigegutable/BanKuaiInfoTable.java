@@ -321,17 +321,24 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	       
 	        if (comp instanceof JLabel && col == 0) {
 	        	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
-	        	double open = weekohlc.getOpenValue();
-	        	double close = weekohlc.getCloseValue();
-	        	if(weekohlc != null) {
-	        		if (close < open)
-	        			background = Color.GREEN;
-			        else if (open < close )
-			        	background = Color.RED;
-			        else
-			        	background = Color.WHITE;
-	        	}
+//	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
+//	        	double open = weekohlc.getOpenValue();
+//	        	double close = weekohlc.getCloseValue();
+//	        	if(weekohlc != null) {
+//	        		if (close < open)
+//	        			background = Color.GREEN;
+//			        else if (open < close )
+//			        	background = Color.RED;
+//			        else
+//			        	background = Color.WHITE;
+//	        	}
+	        	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (curdate,0);
+			    if(zhangdiefu != null  && zhangdiefu > 0 )
+			    	background = Color.RED;
+			    else if(zhangdiefu != null  &&  zhangdiefu < 0 )
+			    	background = Color.GREEN;
+			    else
+			    	background = Color.WHITE;
 	        	
 	        } 
 	        if (comp instanceof JLabel && ( col == 3 ||   col == 5  )) {

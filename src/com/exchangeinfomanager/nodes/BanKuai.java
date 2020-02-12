@@ -63,7 +63,6 @@ public class BanKuai extends TDXNodes
 	private Boolean showincyltree = true;
 	private Boolean exporttowklyfile ;
 	private List<BkChanYeLianTreeNode> stockofbklist; //存放所有的个股
-//	private Set<String> socialfriends;
 	private Set<String> socialfriendspos;
 	private Set<String> socialfriendsneg;
 	private Interval bkgegusearchtimerange;
@@ -96,20 +95,6 @@ public class BanKuai extends TDXNodes
 		
 		return this.socialfriendsneg;
 	}
-//	public void addSocialFriends (String friend)
-//	{
-//		if(socialfriends == null)
-//			socialfriends = new HashSet<String> ();
-//		
-//		socialfriends.add(friend);
-//	}
-//	public Set<String> getSocialFriendsSet ()
-//	{
-//		if(this.socialfriends == null)
-//			this.socialfriends = new HashSet<String> ();
-//		
-//		return this.socialfriends;
-//	}
 	public  Boolean isExportTowWlyFile ()
 	{
 		if(exporttowklyfile == null)
@@ -198,13 +183,16 @@ public class BanKuai extends TDXNodes
 	public String getBanKuaiLeiXing ()	{
 		return this.bankuaileixing;
 	}
-	
 	/*
 	 * 
 	 */
 	public void addNewBanKuaiGeGu (StockOfBanKuai stockofbk) 
 	{
-		if( this.stockofbklist.indexOf(stockofbk) < 0 )
+		if(this.stockofbklist == null) {
+			this.stockofbklist = new ArrayList<> ();
+			
+		}
+		else if( this.stockofbklist.indexOf(stockofbk) < 0 )
 			this.stockofbklist.add(stockofbk);
 	}
 	 /**
@@ -224,7 +212,6 @@ public class BanKuai extends TDXNodes
 		DateTime requiredstartdt= new DateTime(requiredstartday.getYear(), requiredstartday.getMonthValue(), requiredstartday.getDayOfMonth(), 0, 0, 0, 0);
 		DateTime requiredenddt= new DateTime(requiredendday.getYear(), requiredendday.getMonthValue(), requiredendday.getDayOfMonth(), 0, 0, 0, 0);
 		this.bkgegusearchtimerange = new Interval(requiredstartdt,requiredenddt);
-		 
 	}
 	/*
 	 * 返回stockofBanKuai

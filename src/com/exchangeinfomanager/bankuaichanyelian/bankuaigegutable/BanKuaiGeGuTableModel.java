@@ -75,7 +75,10 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
             	break;
             case 3: // "板块成交额贡献",
             	Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
-            	value = cjechangegrowthrate;
+            	if(cjechangegrowthrate != null)
+            		value = cjechangegrowthrate;
+            	else
+            		value = -1;
             	
 //            	cjechangegrowthrate = null;
 //            	curdisplaystockofbankuai = null;
@@ -86,8 +89,10 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
             	break;
             case 4://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
             	Double cjedpgrowthrate = stockxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
-            	value = cjedpgrowthrate;
-            	
+            	if(cjedpgrowthrate != null)
+            		value = cjedpgrowthrate;
+            	else
+            		value = -1;
 //            	cjedpgrowthrate = null;
 //            	curdisplaystockofbankuai = null;
 //            	stockxdataforbk = null;

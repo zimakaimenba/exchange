@@ -99,8 +99,9 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
 		InvisibleTreeModel treeModel = (InvisibleTreeModel)tree.getModel();
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
 		patchParsedFileToTrees(treeroot,this.edbfiledate,stockinfile,bkinfile);
-		
 	}
+	
+	
 	
 	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot, LocalDate localDate, Set<String> stockinfile, Set<String> bkinfile)
 	{

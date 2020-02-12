@@ -706,12 +706,14 @@ import com.udojava.evalex.Expression;
 			lastcjlrecord = nodeamo.getDataItem( index - 1);
 		}	catch (java.lang.IndexOutOfBoundsException ex) {
 			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
-			return null;
+			Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate,difference); 
+			if(reachfirstday != null && reachfirstday == true)
+				return null;
 		}
 		if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate,0)) { //说明是停牌后复牌了，或者新股
 			try {
-			Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
-			return curggcje/bkcjediff;
+				Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
+				return curggcje/bkcjediff;
 			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 				e.printStackTrace();
 			}
@@ -1604,7 +1606,10 @@ import com.udojava.evalex.Expression;
 			TimeSeriesDataItem lastcjlrecord = null;
 			try{
 				lastcjlrecord = nodeamo.getDataItem( index - 1);
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+			} catch (java.lang.ArrayIndexOutOfBoundsException e ) {
+				logger.debug("index = 0，可能是新股第一周");
+				return true;
+			} catch (java.lang.IndexOutOfBoundsException ex ) {
 				logger.debug("index = 0，可能是新股第一周");
 				return true;
 			}

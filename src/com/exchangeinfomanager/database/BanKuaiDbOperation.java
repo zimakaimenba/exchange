@@ -3076,10 +3076,10 @@ public class BanKuaiDbOperation
 	 */
 	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{
-		if(bankuai.getMyOwnCode().equals("399001"))
-			logger.debug("");
-		if(bankuai.getMyOwnCode().equals("999999"))
-			logger.debug("");
+//		if(bankuai.getMyOwnCode().equals("399001"))
+//			logger.debug("");
+//		if(bankuai.getMyOwnCode().equals("999999"))
+//			logger.debug("");
 		
 		if(bankuai == null  )
 			return null;

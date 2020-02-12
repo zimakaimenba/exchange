@@ -388,6 +388,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	 */
 	public void displayMACDDivergenceToChart (String checkperiod)
 	{
+		if(this.getDispalyEndDate() == null)
+			return;
+		
 		NodeXPeriodData nodexdata = this.curdisplayednode.getNodeXPeroidData(checkperiod);
 		Multimap<LocalDate, LocalDate> mdvgc = nodexdata.isMacdButtomDivergenceInSpecificMonthRange(this.getDispalyEndDate(), 0, 4);
 		
@@ -632,6 +635,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	
 	public void displayZhiShuGuanJianRiQiToGui(Collection<News> newszhishukeylists) 
 	{
+		if(this.getDispalyStartDate() == null)
+			return;
+		
 		SystemConfigration syscon = SystemConfigration.getInstance();
 		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
 		

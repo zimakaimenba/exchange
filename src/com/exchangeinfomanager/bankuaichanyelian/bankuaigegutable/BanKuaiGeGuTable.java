@@ -115,8 +115,11 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
         		timett = "[" + requiredstartday + "~" + requiredendday + "]";
         	}
         	tip = timett;
-        } else        
-        	tip =  getValueAt(rowIndex, colIndex).toString();
+        } else {
+        	try {
+        		tip =  getValueAt(rowIndex, colIndex).toString();
+        	} catch ( java.lang.NullPointerException ex) {}
+        }
 //        try {
 //        	if(colIndex == 2) { //权重column的tip要具体
 //				org.jsoup.nodes.Document doc = Jsoup.parse("");

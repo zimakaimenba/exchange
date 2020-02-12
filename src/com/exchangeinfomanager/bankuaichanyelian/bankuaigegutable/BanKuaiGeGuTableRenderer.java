@@ -94,6 +94,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    
 	    BanKuaiGeGuTableModel tablemodel =  (BanKuaiGeGuTableModel)table.getModel() ;
 	    BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
+	    
 	    int modelRow = table.convertRowIndexToModel(row);
 	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
 	    Stock stock = stockofbank.getStock();
@@ -103,7 +104,6 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         	Font font = new Font(defaultFont.getName(), Font.BOLD + Font.ITALIC,defaultFont.getSize());
         	comp.setFont(font);
         }
-	    
 	    
 	    Collection<Tag> keywordsset = tablemodel.getCurrentHighlightKeyWords ();
 	    if(keywordsset != null) {
@@ -160,6 +160,9 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    		background = Color.white;
 	    	
 	    	Integer weight = stockofbank.getBanKuai().getGeGuSuoShuBanKuaiWeight(stock.getMyOwnCode());
+	    	if(weight == null)
+	    		foreground = Color.BLACK;
+	    	else
 	    	if(stockofbank.isBkLongTou())
 	    		foreground = Color.RED;
 	    	else 
@@ -198,7 +201,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    }
 	    	
 	    } else  
-	    if( col == 4 && value != null ) { //ÕÇ·ù>=
+	    if( col == 4  ) { //ÕÇ·ù>=
 	    	Double zfmax = matchcond.getSettingZhangFuMax();
 	    	Double zfmin = matchcond.getSettingZhangFuMin();
 	    	
@@ -229,7 +232,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	}
 	    	
 	    }  else 
-	    if(col == 3   && value != null) { //Í»³ö»Ø²¹È±¿Ú
+	    if(col == 3   ) { //Í»³ö»Ø²¹È±¿Ú
 	    	background = Color.white ;
 		    Boolean hlqk = matchcond.hasHuiBuDownQueKou();
 		    if(hlqk ) {
