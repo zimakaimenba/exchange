@@ -712,7 +712,7 @@ import com.udojava.evalex.Expression;
 		}
 		if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate,0)) { //说明是停牌后复牌了，或者新股
 			try {
-				Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
+				Double curggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
 				return curggcje/bkcjediff;
 			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 				e.printStackTrace();
