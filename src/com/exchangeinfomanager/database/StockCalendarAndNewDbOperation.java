@@ -1539,8 +1539,8 @@ public final class StockCalendarAndNewDbOperation
 		
 		int newsid = event.getID();
 		BkChanYeLianTreeNode node = event.getNode();
-    	LocalDate starttime = event.getEnd();
-    	LocalDate endtime = event.getStart();
+    	LocalDate starttime = event.getStart();
+    	LocalDate endtime = event.getEnd();
 		String desc = event.getTitle();
 		String detail = event.getDescription();
 		String keywordsurl = event.getKeyWords();

@@ -598,8 +598,12 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		LocalDate zhishudate = tmpmeeting.getStart();
 		if(zhishudate == null)
 			return;
-		if(zhishudate.isBefore(this.getDispalyStartDate()) || zhishudate.isAfter(this.getDispalyEndDate() ))
+		try {
+			if(zhishudate.isBefore(this.getDispalyStartDate()) || zhishudate.isAfter(this.getDispalyEndDate() ))
+				return;
+		} catch (java.lang.NullPointerException e) {
 			return;
+		}
 		
 		java.sql.Date sqlqkhbdate = null;
 		try {

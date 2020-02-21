@@ -718,9 +718,9 @@ public class BanKuaiFengXi extends JDialog
 		try {
 				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
 				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lblszcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+				lblhscje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
 		} catch (java.lang.NullPointerException e) {
-				lblszcje.setText( "本周没有数据" );
+				lblhscje.setText( "本周没有数据" );
 		}
 			
 		childnode =  (TDXNodes) svsbk.getNode("999999"); 
@@ -1169,6 +1169,65 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void createEvents() 
 	{
+		lblshcje.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
+				unifiedOperationsAfterUserSelectABanKuai (shanghai);
+			}
+		});
+		lblshanghai.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
+				unifiedOperationsAfterUserSelectABanKuai (shanghai);
+			}
+		});
+		lblhscje.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BanKuai husheng = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
+				unifiedOperationsAfterUserSelectABanKuai (husheng);
+			}
+		});
+		lblhusheng.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BanKuai husheng = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
+				unifiedOperationsAfterUserSelectABanKuai (husheng);
+			}
+		});
+		lbl50cje.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK);
+				unifiedOperationsAfterUserSelectABanKuai (szfifty);
+			}
+			
+		});
+		lblfifty.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK);
+				unifiedOperationsAfterUserSelectABanKuai (szfifty);
+			}
+			
+		});
+		lblcybcje.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);
+				unifiedOperationsAfterUserSelectABanKuai (cyb);
+			}
+		});
+		lblchuangyeban.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);
+				unifiedOperationsAfterUserSelectABanKuai (cyb);
+			}
+		});
+		
 		menuItemTempGeGu.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -3103,9 +3162,9 @@ public class BanKuaiFengXi extends JDialog
 	private JCheckBox ckboxshowcje;
 	private JCheckBox ckboxparsefile;
 //	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
-	private JLabel lblszcje;
+	private JLabel lblhscje;
 	private JLabel lblshcje;
-	private JLabel lblNewLabel;
+	private JLabel lblshanghai;
 	
 
 	
@@ -3173,16 +3232,20 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiGeGuTable tableTempGeGu;
 
 	private JMenuItem menuItemTempGeGu;
+	private JLabel lblchuangyeban;
+	private JLabel lblfifty;
+	private JLabel lblhusheng;
 	
 	
 	private void initializeGui() {
-		
 		setTitle("\u677F\u5757\u5206\u6790");
 		setBounds(100, 100, 1923, 1033);
 		getContentPane().setLayout(new BorderLayout());
 		
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.EAST);
+		
+		UIManager.put("TabbedPane.selected", Color.yellow); 
 		
 		JPanel panel = new JPanel();
 		JPanel panel_1 = new JPanel();
@@ -3461,7 +3524,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		JScrollPane scrollPanexuandingminusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
-		tabbedPanegegu.setBackgroundAt(3, Color.LIGHT_GRAY);
+//		tabbedPanegegu.setBackgroundAt(3, Color.LIGHT_GRAY);
 		tablexuandingminusone = new BanKuaiGeGuTable (this.stockmanager);
 		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
 		
@@ -3521,19 +3584,20 @@ public class BanKuaiFengXi extends JDialog
 		btnresetdate = new JButton(bkfxCancelAction);
 		btnresetdate.setText("\u4ECA\u5929");
 		
-		lblNewLabel = new JLabel("\u4E0A\u8BC1");
+		lblshanghai = new JLabel("\u4E0A\u8BC1");
 		
-		JLabel lblNewLabel_1 = new JLabel("\u6CAA\u6DF1300");
+		
+		lblhusheng = new JLabel("\u6CAA\u6DF1300");
 		
 		lblshcje = new JLabel("New label");
 		
-		lblszcje = new JLabel("New label");
+		lblhscje = new JLabel("New label");
 		
-		JLabel label = new JLabel("\u521B\u4E1A\u677F");
+		lblchuangyeban = new JLabel("\u521B\u4E1A\u677F");
 		
 		lblcybcje = new JLabel("New label");
 		
-		JLabel label_1 = new JLabel("50\u6307");
+		lblfifty = new JLabel("50\u6307");
 		
 		lbl50cje = new JLabel("New label");
 		
@@ -3556,21 +3620,21 @@ public class BanKuaiFengXi extends JDialog
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
 								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(label)
+									.addComponent(lblchuangyeban)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(lblcybcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblNewLabel)
+									.addComponent(lblshanghai)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(lblshcje, GroupLayout.PREFERRED_SIZE, 124, GroupLayout.PREFERRED_SIZE)))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblNewLabel_1)
+									.addComponent(lblhusheng)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblszcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(lblhscje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(label_1)
+									.addComponent(lblfifty)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(lbl50cje, GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)))))
 					.addContainerGap(22, Short.MAX_VALUE))
@@ -3586,15 +3650,15 @@ public class BanKuaiFengXi extends JDialog
 							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblNewLabel)
+						.addComponent(lblshanghai)
 						.addComponent(lblshcje)
-						.addComponent(lblNewLabel_1)
-						.addComponent(lblszcje))
+						.addComponent(lblhusheng)
+						.addComponent(lblhscje))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label)
+						.addComponent(lblchuangyeban)
 						.addComponent(lblcybcje)
-						.addComponent(label_1)
+						.addComponent(lblfifty)
 						.addComponent(lbl50cje))
 					.addGap(9))
 		);

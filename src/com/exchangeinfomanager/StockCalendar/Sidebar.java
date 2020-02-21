@@ -10,7 +10,6 @@ import com.exchangeinfomanager.News.Labels.ModifyLabelDialog;
 import com.exchangeinfomanager.News.Labels.NewsLabelDialog;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
-import com.exchangeinfomanager.guifactory.DialogFactory;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.guifactory.JTextFactory;

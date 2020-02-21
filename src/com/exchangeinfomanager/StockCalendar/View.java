@@ -8,7 +8,6 @@ import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsCacheListener;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
-import com.exchangeinfomanager.guifactory.DialogFactory;
 import com.toedter.calendar.JDayChooser;
 
 

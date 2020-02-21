@@ -389,11 +389,6 @@ public class MonthView extends View
                 cnd.setNews(News);
                 cnd.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 cnd.setVisible(true);
-                
-//                CreateNewsDialog cd = new CreateNewsDialog (svsns);
-//                cd.setNews(News);
-//                cd.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
-//                cd.setVisible(true);
         	}
         }
     }

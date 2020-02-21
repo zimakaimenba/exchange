@@ -33,10 +33,12 @@ import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Search.SearchDialog;
+import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.Services.ServicesOfPaoMaDeng;
 
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
@@ -706,13 +708,15 @@ public class StockInfoManager
                 		((BkChanYeLianTreeNode) cBxstockcode.getSelectedItem()).getMyOwnCode()  );
                 
                 NewsServices svsns = new NewsServices ();
-                NewsCache newcache = new NewsCache (nodeshouldbedisplayed.getMyOwnCode(),svsns,null,LocalDate.now().minusMonths(1),LocalDate.now().plusMonths(6));
+                ServicesForNewsLabel svslabel = new NewsLabelServices ();
+                NewsCache newcache = new NewsCache (nodeshouldbedisplayed.getMyOwnCode(),svsns,svslabel,LocalDate.now().minusMonths(1),LocalDate.now().plusMonths(6));
 				svsns.setCache(newcache);
                 
                 CreateNewsWithFurtherOperationDialog newdlg = 
                 		new CreateNewsWithFurtherOperationDialog (svsns);
                 
                 newdlg.setNews(News);
+                newdlg.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - newdlg.getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - newdlg.getHeight()/2);
                 newdlg.setVisible(true);
 			}
 		});
