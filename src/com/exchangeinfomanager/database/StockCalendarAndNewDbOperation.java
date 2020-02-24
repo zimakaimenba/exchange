@@ -310,57 +310,57 @@ public final class StockCalendarAndNewDbOperation
 	/*
 	 * 
 	 */
-	private Collection<InsertedNews> getWeeklySummary(LocalDate startdate, LocalDate enddate)
-	{
-		Collection<InsertedNews> meetings = new ArrayList<InsertedNews>();
-		
-		//如果是ALL，还要从操作记录重点关注中读取每周总结报告
-		String 	sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
-			  " WHERE 股票代码= '999999'" + 
-			  " AND  日期  BETWEEN '" + startdate + "' AND '" + enddate + "'" +
-			  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' OR 加入移出标志 = '重点关注' )" 
-			  ;
-
-    	logger.debug(sqlquerystat);
-    	
-    	CachedRowSetImpl result = null;
-    	try{
-    		result = connectdb.sqlQueryStatExecute(sqlquerystat);
-    		
-    		while(result.next())  {
-    	        	int meetingID = result.getInt("id");
-    		        java.sql.Date recorddate = result.getDate("日期"); 
-    	            LocalDate start = recorddate.toLocalDate();
-    	            String description = result.getString("原因描述");
-    	            if(Strings.isNullOrEmpty(description))
-    	            	description = "描述";
-
-    	            InsertedNews newmeeting = new InsertedNews(
-    		                new Meeting("一周总结", start,  description, "一周总结", new HashSet<InsertedNews.Label>(),null,"000000",Meeting.WKZONGJIE), meetingID);
-    	            meetings.add(newmeeting);
-    	    }
-    		
-    	}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    	if(result != null)
-				try {
-					result.close();
-					result = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-	    }
-		
-		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
-
-        return meetings;
-	}
+//	private Collection<InsertedNews> getWeeklySummary(LocalDate startdate, LocalDate enddate)
+//	{
+//		Collection<InsertedNews> meetings = new ArrayList<InsertedNews>();
+//		
+//		//如果是ALL，还要从操作记录重点关注中读取每周总结报告
+//		String 	sqlquerystat = "SELECT * FROM 操作记录重点关注 " +
+//			  " WHERE 股票代码= '999999'" + 
+//			  " AND  日期  BETWEEN '" + startdate + "' AND '" + enddate + "'" +
+//			  " AND (加入移出标志 = '加入关注' OR 加入移出标志 = '移除重点' OR 加入移出标志 = '分析结果' OR 加入移出标志 = '重点关注' )" 
+//			  ;
+//
+//    	logger.debug(sqlquerystat);
+//    	
+//    	CachedRowSetImpl result = null;
+//    	try{
+//    		result = connectdb.sqlQueryStatExecute(sqlquerystat);
+//    		
+//    		while(result.next())  {
+//    	        	int meetingID = result.getInt("id");
+//    		        java.sql.Date recorddate = result.getDate("日期"); 
+//    	            LocalDate start = recorddate.toLocalDate();
+//    	            String description = result.getString("原因描述");
+//    	            if(Strings.isNullOrEmpty(description))
+//    	            	description = "描述";
+//
+//    	            InsertedNews newmeeting = new InsertedNews(
+//    		                new Meeting("一周总结", start,  description, "一周总结", new HashSet<InsertedNews.Label>(),null,"000000",Meeting.WKZONGJIE), meetingID);
+//    	            meetings.add(newmeeting);
+//    	    }
+//    		
+//    	}catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    } catch (SQLException e) {
+//	    	e.printStackTrace();
+//	    }catch(Exception e){
+//	    	e.printStackTrace();
+//	    }  finally {
+//	    	if(result != null)
+//				try {
+//					result.close();
+//					result = null;
+//					
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//	    }
+//		
+//		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
+//
+//        return meetings;
+//	}
 	/*
 	 * 
 	 */

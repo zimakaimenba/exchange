@@ -25,7 +25,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		super ();
 	}
 	
-	String[] jtableTitleStrings = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率(成交额上周变化)","周日平均成交额MAXWK(近期关注板块)"};
+	String[] jtableTitleStrings = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比","大盘成交额增长贡献率(成交额上周变化升降)","周日平均成交额MAXWK(近期关注板块)","周日平均成交额连续"};
 	List<TDXNodes> entryList;
 	LocalDate showzhbiwknum;
 	private String curperiod;
@@ -134,15 +134,15 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	bankuai = null;
             	
             	break;
+//            case 4:
+//            	Double cjlzhanbigrowthrate = bkxdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum,0);
+//            	value = cjlzhanbigrowthrate;
+//            	
+//            	cjlzhanbigrowthrate = null;
+//            	bkxdata = null;
+//            	bankuai = null;
+//            	break;
             case 4:
-            	Double cjlzhanbigrowthrate = bkxdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum,0);
-            	value = cjlzhanbigrowthrate;
-            	
-            	cjlzhanbigrowthrate = null;
-            	bkxdata = null;
-            	bankuai = null;
-            	break;
-            case 5:
             	Double cjlzhanbi = bkxdata.getChenJiaoLiangZhanBi(showzhbiwknum, 0);
             	value = cjlzhanbi;
             	
@@ -151,7 +151,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	bankuai = null;
             	
             	break;
-            case 6:
+            case 5:
             	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(dapan,showzhbiwknum,0);
             	value = cjegrowthrate;
             	
@@ -161,15 +161,23 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
             	
             	break;
 
-            case 7: 
+            case 6: 
             	if(bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) {
             		Integer avgdailycjemaxwk = bkxdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showzhbiwknum,0);
             		value = avgdailycjemaxwk;
             	} else 
             		value = -5000;
             	
-            	break;
-	    	}
+            		break;
+           case 7:
+        	   if(bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) {
+	           		Integer avgdailycjemaxwk = bkxdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(showzhbiwknum,0);
+	           		value = avgdailycjemaxwk;
+           		} else 
+           			value = -5000;
+        	   
+           		break;
+	       }
 
 	    	return value;
 	    

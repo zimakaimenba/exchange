@@ -19,7 +19,7 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 	{
 		super ();
 		
-		String[] jtableTitleStrings = { "代码", "名称","权重","高级排序排名(突出成交额)","CjeMaxWk","换手率"};
+		String[] jtableTitleStrings = { "代码", "名称","权重","高级排序排名(突出成交额)","周日成交额连续涨","换手率"};
 		super.setTableHeader(jtableTitleStrings);
 		
 //		this.setDisplayChenJiaoEr(null, null);
@@ -106,7 +106,7 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 	        	
 	        	break;
 	       case 4: //周日平均成交额MAXWK
-	        	Integer cjemaxwk = stockxdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgbkcjemaxweek(); 
+	        	Integer cjemaxwk = stockxdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(showwknum,0);//.getGgbkcjemaxweek(); 
 	        	value = cjemaxwk;
 	        	
 	//        	cjemaxwk = null;

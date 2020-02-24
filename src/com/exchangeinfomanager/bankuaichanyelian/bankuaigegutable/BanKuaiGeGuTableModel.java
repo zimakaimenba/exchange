@@ -17,7 +17,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	{
 		super ();
 		
-		String[] jtableTitleStrings = { "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+		String[] jtableTitleStrings = { "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","周平均成交额MAXWK"};
 		
 		super.setTableHeader(jtableTitleStrings);
 		
@@ -134,16 +134,11 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
             	
                 break;
             case 7:
-            	Integer cjldpmaxwk = stockxdata.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
-            	if(cjldpmaxwk > 0) {
+            	Integer cjldpmaxwk = stockxdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+            	if(cjldpmaxwk != null && cjldpmaxwk > 0) {
             		value = cjldpmaxwk;
-            		break;
-            	} else	if(cjldpmaxwk == 0) {
-            		Integer cjldpminwk = stockxdata.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
-            		value = 0 - cjldpminwk;
-            		break;
-            	}
-            	
+            	} else	
+            		value = 0;
             	
 //            	dpmaxwk = null;
 //            	curdisplaystockofbankuai = null;

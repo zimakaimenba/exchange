@@ -377,7 +377,7 @@ public class ExportMatchedNode
 			} 
 			
 			if( shouldhavelianxufl && recordcje < cjeleveloflianxufl && notskiptonextstock == false) { //如果成交量小于于一定量，就前3周必须有大阳线或者连续2周满足条件
-				Integer lianxunum = nodexdata.getCjlLianXuFangLiangPeriodNumber (exportdate,0,settindpgmaxwk);
+				Integer lianxunum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (exportdate,0,settindpgmaxwk);
 				Integer lianxuleveloflianxufl = this.cond.getChenJiaoErFangLiangLevel();
 				if(lianxunum >= lianxuleveloflianxufl)
 					notskiptonextstock = true;

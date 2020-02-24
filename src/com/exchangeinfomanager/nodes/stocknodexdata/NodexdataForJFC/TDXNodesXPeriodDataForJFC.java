@@ -727,7 +727,42 @@ import com.udojava.evalex.Expression;
 	  * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getLianXuFangLiangPeriodNumber(java.time.LocalDate, int, int)
 	  * 计算连续放指定的量的周期数
 	  */
-	 public Integer getCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk)
+	 public Integer getAverageDailyCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference)
+	 {
+		 TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		 if( curcjlrecord == null) 
+				return null;
+			
+		 int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
+		 Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
+		 int maxweek = 0;
+			
+		 int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+			
+		 for(int i = index-1;i >=0; i--) {
+				
+				TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( i );
+				if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+					return maxweek;
+				
+				LocalDate lastdate = lastcjlrecord.getPeriod().getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				int lastexchangedaynum = this.getExchangeDaysNumberForthePeriod(lastdate, 0);
+				Double lastcje = lastcjlrecord.getValue().doubleValue() / lastexchangedaynum;
+				if(curcje > lastcje) {
+					maxweek ++;
+					curcje = lastcje;
+				}
+				else
+					break;
+		}
+
+		return maxweek;
+		 
+	 }
+	 /*
+	  *  @Override
+	  */
+	 public Integer getCjeDpMaxLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk)
 	 {
 		 	
 		 	int recordnum = this.nodeohlc.getItemCount();
@@ -738,12 +773,9 @@ import com.udojava.evalex.Expression;
 					lianxu ++;
 				else if( recordmaxbkwklast != null && recordmaxbkwklast < settindpgmaxwk)
 					return lianxu;
-//				else if(recordmaxbkwklast == null )
-//						;
 			}
 			
 			return -1;
-
 	 }
 	 @Override
 		public Double getChengJiaoLiang(LocalDate requireddate, int difference) 
@@ -853,23 +885,39 @@ import com.udojava.evalex.Expression;
 			
 			return cjechange/bkcjediff;
 		}
-		@Override
-		public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) 
-		{
-			int recordnum = this.nodeohlc.getItemCount();
-			int lianxu = 0;
-			for(int wkindex = 0;wkindex > (0 - recordnum) ; wkindex--) { 
-				Integer recordmaxbkwklast = this.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(requireddate,wkindex);
-				if( recordmaxbkwklast != null && recordmaxbkwklast >= settindpgmaxwk) 
-					lianxu ++;
-				else if( recordmaxbkwklast != null && recordmaxbkwklast < settindpgmaxwk)
-					return lianxu;
-//				else if(recordmaxbkwklast == null )
-//						;
-			}
-			
-			return -1;
-		}
+//		@Override
+//		public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference) 
+//		{
+//			int recordnum = this.nodevol.getItemCount();
+//			int lianxu = 0;
+//			Double curcje = this.getChengJiaoEr(requireddate,difference);
+//			for(int wkindex = 1;wkindex > (0 - recordnum) ; wkindex--) { 
+//				Double recordcjelast = this.getChengJiaoEr(requireddate, difference - wkindex);
+//				if( curcje >= recordcjelast ) 
+//					lianxu ++;
+//				else
+//					break;
+//			}
+//			
+//			return lianxu;
+//		}
+//		@Override
+//		public Integer getCjlDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate,int difference,int settindpgmaxwk)
+//		{
+//			int recordnum = this.nodeohlc.getItemCount();
+//			int lianxu = 0;
+//			for(int wkindex = 0;wkindex > (0 - recordnum) ; wkindex--) { 
+//				Integer recordmaxbkwklast = this.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(requireddate,wkindex);
+//				if( recordmaxbkwklast != null && recordmaxbkwklast >= settindpgmaxwk) 
+//					lianxu ++;
+//				else if( recordmaxbkwklast != null && recordmaxbkwklast < settindpgmaxwk)
+//					return lianxu;
+////				else if(recordmaxbkwklast == null )
+////						;
+//			}
+//			
+//			return -1;
+//		}
 	
 	 /*
 	  * 周线计算 1，2，4，6，12，24，55 对应日线5，10，20，30，60，120，250，
@@ -1334,7 +1382,7 @@ import com.udojava.evalex.Expression;
 					 font12.appendText("涨跌幅" + percentFormat.format (zhangfu)  );
 					 font12.attr("color", "#1B2631");
 				 }
-				 
+				 //
 				 Double curcje = this.getChengJiaoEr(requireddate, 0);
 				 String cjedanwei = null;
 				 try{
@@ -1364,7 +1412,7 @@ import com.udojava.evalex.Expression;
 				 org.jsoup.nodes.Element fontavecje = liavecje.appendElement("font");
 				 fontavecje.appendText("周日平均成交额" + decimalformate.format(avecje) + cjedanwei);
 				 fontavecje.attr("color", "#AF7AC5");
-				 
+				 //
 				 Integer cjemaxwk = null;
 			     try{
 			    		cjemaxwk = this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
@@ -1377,7 +1425,20 @@ import com.udojava.evalex.Expression;
 					 fontcjemaxwk.appendText("周日平均成交额MaxWk=" + cjemaxwk);
 					 fontcjemaxwk.attr("color", "#AF7AC5 ");
 				 } 
-				 
+				 //
+				 Integer avcjelxwk = null;
+				 try {
+					 avcjelxwk = this.getAverageDailyCjeLianXuFangLiangPeriodNumber(requireddate,0);
+				 } catch (java.lang.NullPointerException e) {
+			    		
+			     }
+				 if(avcjelxwk != null && avcjelxwk >0) {
+					 org.jsoup.nodes.Element liavcjelxwk = dl.appendElement("li");
+					 org.jsoup.nodes.Element fontavcjelxwk = liavcjelxwk.appendElement("font");
+					 fontavcjelxwk.appendText("周日平均成交额连续涨=" + avcjelxwk);
+					 fontavcjelxwk.attr("color", "#AF7AC5 ");
+				 }
+				 //
 				 try{
 					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate,0);//成交额大盘变化贡献率
 					 if( cjechangerate != -100.0) {

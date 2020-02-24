@@ -148,7 +148,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
     }
     
   //Implement table header tool tips.
-  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率(成交额上周变化)","成交额排名(突出周线阳线阴线)"};
+  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比","大盘成交额增长贡献率(成交额上周变化升降)","周日平均成交额MAXWK(近期关注板块)","周日平均成交额连续"};
       protected JTableHeader createDefaultTableHeader() 
       {
           return new JTableHeader(columnModel) {
@@ -182,11 +182,16 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 		
 				for(String friend : socialset) {
 					 BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
-					 int rowIndex = tablemodel.getBanKuaiRowIndex (friend);
-					 if(rowIndex == -1)
-						 continue;
-					 int modelRow = this.convertRowIndexToView(rowIndex);
-
+					 int modelRow = 0;
+					 try {
+						 int rowIndex = tablemodel.getBanKuaiRowIndex (friend);
+						 if(rowIndex == -1)
+							 continue;
+						 modelRow = this.convertRowIndexToView(rowIndex);
+					 } catch (java.lang.NullPointerException e) {
+						 e.printStackTrace();
+					 }
+					 
 					 String frbkcode = (String) this.getValueAt(modelRow, 0);
 					 String frbkname = (String) this.getValueAt(modelRow, 1);
 					 Double cjezbchangerate = (Double)this.getValueAt(modelRow, 2);
@@ -341,10 +346,10 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 			    	background = Color.WHITE;
 	        	
 	        } 
-	        if (comp instanceof JLabel && ( col == 3 ||   col == 5  )) {
+	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
 	        	background = new Color(51,204,255);
 	        }
-	        if (comp instanceof JLabel && ( col == 6   )) {
+	        if (comp instanceof JLabel && ( col == 5   )) {
 	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 	        	Double cjediff = nodexdata.getChengJiaoErDifferenceWithLastPeriod(curdate, 0);
 	        	if(cjediff != null && cjediff > 0) 
@@ -355,7 +360,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 			       	background = Color.WHITE;
 	        }
 	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||  col == 4 ||  col == 5 ||  col == 6  )) {
+	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||  col == 4 ||  col == 5  )) {
             	String value =  ((JLabel)comp).getText();
             	if(value == null || value.length() == 0)
             		return null;

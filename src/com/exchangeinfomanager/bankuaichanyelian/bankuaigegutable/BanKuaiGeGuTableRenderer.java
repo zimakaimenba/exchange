@@ -262,7 +262,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    		LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
 			    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-		    	Integer lianxuflnum = nodexdata.getCjeLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
+		    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
 		    	 
 		    	if(cjedpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) //连续放量,深色显示
 		    		background = new Color(102,0,0) ;
@@ -287,44 +287,17 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    			background = Color.white ;
 	    	} 
 	    } else  
-	    if( col == 7   && value != null  ) { 	    //突出显示cjldpMAXWK>=的个股
-		    	int cjldpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
-		    	
-		    	if(cjldpmaxwk > 0 ) {
-		    		int maxfazhi;
-			    	try {
-			    		maxfazhi = matchcond.getSettingDpMaxWk();
-			    	} catch (java.lang.NullPointerException e) {
-			    		maxfazhi = 100000000;
-			    	}
-			    	
-		    		LocalDate requireddate = tablemodel.getShowCurDate();
-				    String period = tablemodel.getCurDisplayPeriod();
-				    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-			    	Integer lianxuflnum = nodexdata.getCjlLianXuFangLiangPeriodNumber (requireddate,0, maxfazhi);
-			    	 
-			    	if(cjldpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) //连续放量,深色显示
-			    		background = new Color(102,0,0) ;
-			    	else if( cjldpmaxwk >= maxfazhi &&  lianxuflnum <2 )
-			    		 background = new Color(255,0,0) ;
-			    	else 
-			    		 background = Color.white ;
-		    	}
-		    	
-		    	if(cjldpmaxwk < 0 ) {
-		    		int minfazhi;
-			    	try {
-			    		minfazhi = matchcond.getSettingDpMinWk();
-			    	} catch (java.lang.NullPointerException e) {
-			    		minfazhi = 100000000;
-			    	}
-			    	
-		    		minfazhi = 0 - minfazhi; //min都用负数表示
-		    		if(cjldpmaxwk <= minfazhi)
-		    			background = Color.GREEN ;
-		    		else
-		    			background = Color.white ;
-		    	}
+	    if( col == 7   && value != null  ) {
+	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
+	    	
+	    	Integer cjemaxwk = matchcond.getSettingChenJiaoErMaxWk();
+	    	if(cjemaxwk == null)
+	    		cjemaxwk =  10000000;
+	    	
+	    	if( dpmaxwk >=cjemaxwk )
+	    		 background = Color.CYAN ;
+	    	else 
+	    		 background = Color.white ;
 	    } else 
 	    if( col == 6   && value != null) { //突出MA,默认为大于
 	    	String displayma = matchcond.getSettingMaFormula();

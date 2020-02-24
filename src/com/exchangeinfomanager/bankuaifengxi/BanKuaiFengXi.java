@@ -3742,7 +3742,7 @@ public class BanKuaiFengXi extends JDialog
 			ckbxcjemaxwk.setForeground(Color.CYAN);
 			
 			tfldcjemaxwk = new JTextField();
-			tfldcjemaxwk.setText("7");
+			tfldcjemaxwk.setText("3");
 			tfldcjemaxwk.setPreferredSize(new Dimension(20, 25));
 			tfldcjemaxwk.setForeground(Color.CYAN);
 //			tfldcjemaxwk.setColumns(2);

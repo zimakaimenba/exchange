@@ -456,12 +456,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
-	@Override
-	public Integer getCjeLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public Double getChengJiaoLiang(LocalDate requireddate, int difference) 
 	{
@@ -508,11 +503,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
-	@Override
-	public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
 	public Double[] getNodeOhlcSMA(LocalDate requireddate, int difference) {
@@ -625,6 +616,22 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 
 	@Override
 	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public Integer getCjeDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public Integer getAverageDailyCjeLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference) {
 		// TODO Auto-generated method stub
 		return null;
 	}
