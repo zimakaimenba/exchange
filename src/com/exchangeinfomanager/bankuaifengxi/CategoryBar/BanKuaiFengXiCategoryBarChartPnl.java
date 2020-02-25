@@ -193,6 +193,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		NodeXPeriodData nodexdata = this.curdisplayednode.getNodeXPeroidData(period);
 		render.setDisplayNodeXPeriod(nodexdata);
 		
+		if(curdisplayednode1.getMyOwnCode().equals("999999")) {
+			this.setDaZiJinValueMarker(100000000000.0);
+		} else 
+		if(curdisplayednode1.getType() == BkChanYeLianTreeNode.DAPAN ) {
+			this.setDaZiJinValueMarker(300000000000.0);
+		}
+		
 		
 	}
 	public TDXNodes getCurDisplayedNode ()
@@ -212,7 +219,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //		marker.setLabel("热点占比警戒线");
 		marker.setLabelTextAnchor(TextAnchor.TOP_CENTER);
 		marker.setPaint(Color.BLACK);
-		this.plot.addRangeMarker(marker);
+		this.plot.addRangeMarker(3,marker, Layer.FOREGROUND);
 	}
 	/*
 	 * 
@@ -365,7 +372,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				
-				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE, "", "averagedailycjeline" );
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE, curdisplayednode.getMyOwnCode(), "averagedailycjeline" );
 	            pcs.firePropertyChange(evtzd);
 			}
 			
@@ -377,13 +384,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 				if(mntmCjeCjlZblineDate.getText().contains("X")) {
 					setDisplayZhanBiInLine (false);
 					
-					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, "", "notcjecjlzbtoline" );
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, curdisplayednode.getMyOwnCode(), "notcjecjlzbtoline" );
 		            pcs.firePropertyChange(evtzd);
 		            
 				} else {
 					setDisplayZhanBiInLine (true);
 					
-					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, "", "cjecjlzbtoline" );
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, curdisplayednode.getMyOwnCode(), "cjecjlzbtoline" );
 		            pcs.firePropertyChange(evtzd);
 				}
 				
@@ -396,7 +403,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 
-				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING, "", "zhangdieting" );
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING, curdisplayednode.getMyOwnCode(), "zhangdieting" );
 	            pcs.firePropertyChange(evtzd);
 			}
 			
@@ -405,7 +412,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				
-				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA, "", "quekou" );
+				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA, curdisplayednode.getMyOwnCode(), "quekou" );
 	            pcs.firePropertyChange(evtqk);
 		
 			}
@@ -415,7 +422,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				
-				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWBARDATA, "", "onlyshowbardata" );
+				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWBARDATA, curdisplayednode.getMyOwnCode(), "onlyshowbardata" );
 	            pcs.firePropertyChange(evtqk);
 		
 			}
@@ -432,9 +439,9 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	    	if (me.getClickCount() == 2) {
     	    		PropertyChangeEvent evt;
     	    		if(dateselected != null)
-    	    			evt = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY, "", dateselected.toString() );
+    	    			evt = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY, curdisplayednode.getMyOwnCode(), dateselected.toString() );
     	    		else
-    	    			evt = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY, "", "MoustDoubleClicked" );
+    	    			evt = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY, curdisplayednode.getMyOwnCode(), "MoustDoubleClicked" );
     	    		
     	            pcs.firePropertyChange(evt);
     	    		

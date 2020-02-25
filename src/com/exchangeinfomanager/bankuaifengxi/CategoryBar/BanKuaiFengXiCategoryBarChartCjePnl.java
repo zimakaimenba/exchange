@@ -327,7 +327,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		return avecjeaxix;
 	}
 	/*
-	 * 
+	 * 显示缺口数据
 	 */
 	public Integer displayQueKouLineDataToGui (NodeXPeriodData nodexdata,String period) 
 	{
@@ -340,7 +340,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		} else
 			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
-		if(super.barchartdataset.getColumnCount() ==0 )
+		if(super.barchartdataset.getColumnCount() == 0 )
 			return null;
 		
 		LocalDate indexrequirestart = (LocalDate) barchartdataset.getColumnKey(0);

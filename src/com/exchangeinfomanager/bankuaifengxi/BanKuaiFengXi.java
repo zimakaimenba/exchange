@@ -370,13 +370,7 @@ public class BanKuaiFengXi extends JDialog
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
 		}
-		// 定位
-//		Integer rowindex = ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel() ).getBanKuaiRowIndex(selectedbk.getMyOwnCode());
-//		if(rowindex != null && rowindex >0) {
-//				int modelRow = tableselectedwkbkzb.convertRowIndexToView(rowindex);
-//				tableselectedwkbkzb.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
-//				tableselectedwkbkzb.setRowSelectionInterval(modelRow, modelRow);
-//		}
+
 	}
 	/*
 	 * 用户选择一个板块的column后的相应操作
@@ -1174,6 +1168,14 @@ public class BanKuaiFengXi extends JDialog
 			public void mouseClicked(MouseEvent e) {
 				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (shanghai);
+				
+				// 定位
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("999999");
+				if(rowindex != null && rowindex >0) {
+						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+				}
 			}
 		});
 		lblshanghai.addMouseListener(new MouseAdapter() {
@@ -1181,6 +1183,14 @@ public class BanKuaiFengXi extends JDialog
 			public void mouseClicked(MouseEvent e) {
 				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (shanghai);
+				
+				// 定位
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("999999");
+				if(rowindex != null && rowindex >0) {
+						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+				}
 			}
 		});
 		lblhscje.addMouseListener(new MouseAdapter() {
@@ -1188,6 +1198,14 @@ public class BanKuaiFengXi extends JDialog
 			public void mouseClicked(MouseEvent e) {
 				BanKuai husheng = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (husheng);
+				
+				// 定位
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("000300");
+				if(rowindex != null && rowindex >0) {
+						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+				}
 			}
 		});
 		lblhusheng.addMouseListener(new MouseAdapter() {
@@ -1195,6 +1213,14 @@ public class BanKuaiFengXi extends JDialog
 			public void mouseClicked(MouseEvent e) {
 				BanKuai husheng = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (husheng);
+				
+				// 定位
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("000300");
+				if(rowindex != null && rowindex >0) {
+						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+				}
 			}
 		});
 		lbl50cje.addMouseListener(new MouseAdapter() {
@@ -1202,6 +1228,14 @@ public class BanKuaiFengXi extends JDialog
 			public void mouseClicked(MouseEvent e) {
 				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (szfifty);
+				
+				// 定位
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("000016");
+				if(rowindex != null && rowindex >0) {
+						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+				}
 			}
 			
 		});
@@ -1210,6 +1244,14 @@ public class BanKuaiFengXi extends JDialog
 			public void mouseClicked(MouseEvent e) {
 				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (szfifty);
+				
+				// 定位
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("000016");
+				if(rowindex != null && rowindex >0) {
+						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+				}
 			}
 			
 		});
@@ -1218,6 +1260,14 @@ public class BanKuaiFengXi extends JDialog
 			public void mouseClicked(MouseEvent e) {
 				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (cyb);
+				
+				// 定位
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("399006");
+				if(rowindex != null && rowindex >0) {
+						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+				}
 			}
 		});
 		lblchuangyeban.addMouseListener(new MouseAdapter() {
@@ -1225,6 +1275,14 @@ public class BanKuaiFengXi extends JDialog
 			public void mouseClicked(MouseEvent e) {
 				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (cyb);
+				
+				// 定位
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("399006");
+				if(rowindex != null && rowindex >0) {
+						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+				}
 			}
 		});
 		
@@ -1731,13 +1789,13 @@ public class BanKuaiFengXi extends JDialog
 				if(rowbk <0) 
 					return;
 				
+				String nodecode = evt.getOldValue().toString();
+				
 				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 				setCursor(hourglassCursor);
 
 				int modelRow = tableBkZhanBi.convertRowIndexToModel(rowbk);
 				BanKuai bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-				
-				
 
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
                     @SuppressWarnings("unchecked")
