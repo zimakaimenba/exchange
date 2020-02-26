@@ -526,7 +526,7 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
    
     public CustomRendererForCje() {
         super();
-        super.displayedmaxwklevel = 7;
+        super.displayedmaxwklevel = 3;
         super.displayedcolumncolorindex = Color.ORANGE;
         super.lastdisplayedcolumncolorindex = Color.ORANGE;
         
@@ -551,7 +551,7 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
 		
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	 
-		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
+		Integer maxweek = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
 		
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel)
 			return new Color(0,204,204);
@@ -590,7 +590,7 @@ class BkfxItemLabelGeneratorForCje extends BkfxItemLabelGenerator
 
     	Integer maxweek;
     	try{
-    		maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
+    		maxweek = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
     	} catch ( java.lang.NullPointerException e) {
     		return null;
     	}
@@ -598,7 +598,8 @@ class BkfxItemLabelGeneratorForCje extends BkfxItemLabelGenerator
 		String result = "";
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
 			NumberFormat nf = this.getNumberFormat();
-			result =  nf.format(dataset.getValue(row, column));
+//			result =  nf.format(dataset.getValue(row, column));
+			result =  maxweek.toString();
 		} 
 		
 		return result;

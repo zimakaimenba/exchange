@@ -127,8 +127,7 @@ class BanKuaiFengXiCategoryLineToolTipGenerator implements CategoryToolTipGenera
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	
     	Number quekounumber = (Number)dataset.getValue(row, column);
-    	
-    	
+
     	return selecteddate.toString() + rowkey.toString() + ":" + quekounumber.toString();
 	}
 	
