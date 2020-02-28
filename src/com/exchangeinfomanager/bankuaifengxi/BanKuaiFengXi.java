@@ -2844,40 +2844,31 @@ public class BanKuaiFengXi extends JDialog
 			overlapldstartday = overlapldstartday.with(DayOfWeek.MONDAY).minus( (36-numberOfMonth) ,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 
 		//同步数据
+		BanKuai bkcur = null; 
 		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
-//			node = this.allbksks.getBanKuai((BanKuai)node, overlapldstartday,overlapldendday,globeperiod,true);
-//			this.allbksks.syncBanKuaiData( (BanKuai)node );
-			
 			node = (TDXNodes) svsbk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
 			svsbk.syncNodeData(node);
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
 			SvsForNodeOfStock svsstk = new SvsForNodeOfStock	();
 			svsstk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, true);
 			svsstk.syncNodeData(node);
-//			node = this.allbksks.getStock((Stock)node, overlapldstartday,overlapldendday,globeperiod,true);
-//			this.allbksks.syncStockData( (Stock)node );
 			//如果是个股的话，还要显示其当前所属的板块占比信息，所以要把板块的数据也找出来。
-//			int row = tableBkZhanBi.getSelectedRow();
-//			if(row != -1) {
-//				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-//				bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-//				bkcur = this.allbksks.getBanKuai((BanKuai)bkcur, overlapldstartday,overlapldendday,	globeperiod,false);
-//				this.allbksks.syncBanKuaiData( (BanKuai)bkcur );
-//			}
-			
+			int row = tableBkZhanBi.getSelectedRow();
+			if(row != -1) {
+				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+				bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+				bkcur = (BanKuai) svsbk.getNodeData(bkcur, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
+				svsbk.syncNodeData(bkcur);
+			}
 		} else if(node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
 			BanKuai bk = ((StockOfBanKuai)node).getBanKuai();
 			node = (TDXNodes) svsbk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
 			svsbk.syncNodeData(node);
-//			this.allbksks.getBanKuai((BanKuai)bk, overlapldstartday,overlapldendday,globeperiod,true);
-//			node = this.allbksks.getGeGuOfBanKuai(bk, node.getMyOwnCode() ,globeperiod);
 		} else if(node.getType() == BkChanYeLianTreeNode.DAPAN ) {
 //			node = this.allbksks.getDaPan (requirestart.plusWeeks(1),globeperiod); //同步大盘数据,否则在其他地方会出错
 		}
 		
-//		this.allbksks.getDaPan (overlapldstartday,overlapldendday,globeperiod,false); //同步大盘数据,否则在其他地方会出错
-//		this.allbksks.syncDaPanData ();
 		SvsForNodeOfDaPan	svsdp = new SvsForNodeOfDaPan ();
 		svsdp.getNodeData("", overlapldstartday, overlapldendday, globeperiod, this.globecalwholeweek);
 		svsdp = null;
@@ -2889,7 +2880,7 @@ public class BanKuaiFengXi extends JDialog
 			
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod);
+			largeinfo = new BanKuaiFengXiLargePnl ( bkcur , node, overlapldstartday, overlapldendday, globeperiod);
 		}
 		
 		if(datekey != null)

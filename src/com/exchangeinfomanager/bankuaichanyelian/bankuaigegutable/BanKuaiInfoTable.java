@@ -189,7 +189,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 							 continue;
 						 modelRow = this.convertRowIndexToView(rowIndex);
 					 } catch (java.lang.NullPointerException e) {
-						 e.printStackTrace();
+//						 e.printStackTrace();
 					 }
 					 
 					 String frbkcode = (String) this.getValueAt(modelRow, 0);

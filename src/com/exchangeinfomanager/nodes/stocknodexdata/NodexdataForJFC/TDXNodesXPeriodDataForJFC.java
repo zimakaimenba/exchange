@@ -92,7 +92,7 @@ import com.udojava.evalex.Expression;
 		} catch (org.jfree.data.general.SeriesException e) {
 			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
 		} catch (java.lang.IllegalArgumentException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		
 		try {

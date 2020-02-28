@@ -39,12 +39,14 @@ import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServicesPanel;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
-
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
@@ -54,7 +56,7 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombin
 
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-
+import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -161,7 +163,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
                 		
                     } else if(zhishuinfo.toLowerCase().equals("dapanzhishu") ) {
                     	String danpanzhishu = JOptionPane.showInputDialog(null,"请输入叠加的大盘指数", "999999");
-                    	BanKuai zhishubk =  (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(danpanzhishu.toLowerCase(),BkChanYeLianTreeNode.TDXBK);
+                    	BanKuai zhishubk =  (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(danpanzhishu.toLowerCase(),BkChanYeLianTreeNode.TDXBK);
+//                    	BanKuai zhishubk =  (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(danpanzhishu.toLowerCase(),BkChanYeLianTreeNode.TDXBK);
                     	if(zhishubk == null)  {
         					JOptionPane.showMessageDialog(null,"指数代码有误！","Warning",JOptionPane.WARNING_MESSAGE);
         					return;
@@ -302,7 +305,10 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	{
 		if(nodebkbelogned != null) {
 			this.nodebkcjezblargepnl.setDrawAverageDailyCjeOfWeekLine(true);
-			this.nodebkcjezblargepnl.updatedDate(nodebkbelogned, displayedstartdate1, displayedenddate1, period);
+			//实践后决定永远显示大盘的成交量。
+			BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
+			this.nodebkcjezblargepnl.updatedDate(treeroot, displayedstartdate1, displayedenddate1, period);
 		}
 		
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
@@ -356,15 +362,18 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.setPreferredSize(new Dimension(1640, 705)); //设置显示框的大小
 		
 		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical","CJE");
-		
-		if(nodebkbelonged.getType() == BkChanYeLianTreeNode.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
-			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
-			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());
-		} else if(nodebkbelonged.getType() == BkChanYeLianTreeNode.DAPAN) {//如果上级node是大盘，显示是大盘的成交量
-			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
-			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
-		}
 		this.nodecombinedpnl.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上日均成交额，下占比线
+		
+		this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
+		this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
+		
+//		if(nodebkbelonged.getType() == BkChanYeLianTreeNode.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
+//			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
+//			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());
+//		} else if(nodebkbelonged.getType() == BkChanYeLianTreeNode.DAPAN) {//如果上级node是大盘，显示是大盘的成交量
+//			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
+//			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
+//		}
 		
 		this.centerPanel.add(this.nodecombinedpnl);
 		this.centerPanel.add(this.nodebkcjezblargepnl);
