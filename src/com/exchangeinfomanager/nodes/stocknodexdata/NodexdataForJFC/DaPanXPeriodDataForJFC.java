@@ -182,6 +182,12 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			 fontavecje.appendText("周日平均成交额" + decimalformate.format(avecje) + cjedanwei);
 			 fontavecje.attr("color", "#AF7AC5");
 			 
+			 Integer avecjemaxwk = this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);
+			 org.jsoup.nodes.Element liavecjemaxwk = dl.appendElement("li");
+			 org.jsoup.nodes.Element fontavecjemaxwk = liavecjemaxwk.appendElement("font");
+			 fontavecjemaxwk.appendText("周日平均成交额MaxWK= " + avecjemaxwk);
+			 fontavecjemaxwk.attr("color", "#AF7AC5");
+			 
 			 Integer cjemaxwk = null;
 		     try{
 		    	cjemaxwk = this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
@@ -544,6 +550,31 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		} else
 			return null;
 	}
+	
+	@Override
+	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
+	{
+		Double curcje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference);
+		int maxweek = 0;
+		
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		int index = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
+		for(int i = index-1;i >=0; i--) {
+			
+			LocalDate lastcjlrecorddate = shanghaiperiodrecords.getLocalDateOfSpecificIndexOfOHLCData(i);
+			if(lastcjlrecorddate == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+				return maxweek;
+			
+			Double lastcje = this.getAverageDailyChengJiaoErOfWeek(lastcjlrecorddate,0);
+			if(curcje > lastcje)
+				maxweek ++;
+			else
+				break;
+		}
+
+		return maxweek;
+	}
 
 	@Override
 	public Double getSpecificTimeRangeOHLCHightestZhangFu(LocalDate requiredstart, LocalDate requiredend) {
@@ -614,15 +645,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
-	@Override
-	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-	@Override
+		@Override
 	public Integer getCjeDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
 		// TODO Auto-generated method stub
 		return null;
@@ -636,52 +659,6 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
-//	@Override
-//	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(DaPan superbk, LocalDate requireddate,
-//			int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
-	
-
-	
-
-	
-
-	
-
-//	@Override
-//	public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public Double getSpecificTimeZongShiZhi(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public Double getSpecificTimeLiuTongShiZhi(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
-	
 
 }
 
