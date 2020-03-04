@@ -1219,7 +1219,7 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
 	private static final long serialVersionUID = 1L;
 	
 	//不同的涨跌用不同的K线颜色标记，和TDX一样
-	private final Paint colorZhangTing = Color.RED;
+	private final Paint colorZhangTing = Color.RED; 
 	private final Paint colorDaDaZhang = Color.YELLOW;
 	private final Paint colorDaZhang = Color.YELLOW.brighter();
 	private final Paint colorRaising = Color.RED;
@@ -1256,11 +1256,14 @@ class BanKuaiFengXiCandlestickRenderer extends CandlestickRenderer
              
              if(  this.datebeselectedinweeklast !=null && ldate.equals(this.datebeselectedinweeklast.with(DayOfWeek.FRIDAY) ) )
             	 return colorFormerSelected;
-             else if(  datebeselectedinweek !=null && ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) )
+             else 
+             if(  datebeselectedinweek !=null && ldate.equals(datebeselectedinweek.with(DayOfWeek.FRIDAY) ) )
             	 return colorSelected;
-             else if(prevClose.doubleValue() <=  curClose.doubleValue() && closepercent>=0.095 )
+             else 
+             if(prevClose.doubleValue() <=  curClose.doubleValue() && closepercent>=0.095 )
             	 return this.colorZhangTing;
-             else if (prevClose.doubleValue() <=  curClose.doubleValue() && closepercent<0.095 && closepercent >=0.075) {
+             else 
+             if (prevClose.doubleValue() <=  curClose.doubleValue() && closepercent<0.095 && closepercent >=0.075) {
                  return colorDaDaZhang;
              } else if (prevClose.doubleValue() <=  curClose.doubleValue() && closepercent<0.075 && closepercent >=0.05) {
                  return colorDaZhang;

@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC;
 
+import org.apache.log4j.Logger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -26,6 +28,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.google.common.collect.Multimap;
+
 
 
 public class DaPanXPeriodDataForJFC implements NodeXPeriodData
@@ -46,6 +49,8 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	{
 		return this.nodeperiodtype;
 	}
+	
+	private static Logger logger = Logger.getLogger(DaPanXPeriodDataForJFC.class);
 	
 	private BanKuai shanghai;
 	private BanKuai shenzhen;
@@ -565,12 +570,16 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			LocalDate lastcjlrecorddate = shanghaiperiodrecords.getLocalDateOfSpecificIndexOfOHLCData(i);
 			if(lastcjlrecorddate == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
 				return maxweek;
-			
-			Double lastcje = this.getAverageDailyChengJiaoErOfWeek(lastcjlrecorddate,0);
-			if(curcje > lastcje)
-				maxweek ++;
-			else
+			try {
+				Double lastcje = this.getAverageDailyChengJiaoErOfWeek(lastcjlrecorddate,0);
+				if(curcje > lastcje)
+					maxweek ++;
+				else
+					break;
+			} catch (java.lang.NullPointerException e) {
+				logger.info(requireddate.toString() + " value is null.");
 				break;
+			}
 		}
 
 		return maxweek;

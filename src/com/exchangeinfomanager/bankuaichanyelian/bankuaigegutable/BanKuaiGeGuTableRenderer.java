@@ -35,6 +35,7 @@ import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.CandleStick.CandleStickColorFactory;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
@@ -122,31 +123,15 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    String period = tablemodel.getCurDisplayPeriod();
 		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
 		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+		    
+		    background = CandleStickColorFactory.getCandelStickColor(zhangdiefu);
 	    
-		    if(zhangdiefu != null  && zhangdiefu > 0 )
-		    	background = Color.RED;
-		    else if(zhangdiefu != null  &&  zhangdiefu < 0 )
-		    	background = Color.GREEN;
-		    else
-		    	background = Color.WHITE;
-//		    //周线阳线
-//		    if(close >= closelast && zhangtingnum >0 && dieting == 0)
-//		    	background =  new Color(255,255,255);
-//		    else if(close >= closelast && dieting >0 && zhangtingnum >0)
-//		    	background = new Color(255,102,102);
-//		    else if(close >= closelast && dieting >0 && zhangtingnum == 0)
-//		    	background = new Color(255,128,0);
-//		    else if(close >= closelast && dieting == 0 && zhangtingnum ==0)
-//		    	background = new Color(255,153,153);
-//		    //周线阴线
-//		    else if(close < closelast && dieting == 0 && zhangtingnum >0)
-//		    	background = new Color(204,153,153)	;
-//		    else if(close < closelast && dieting >0 && zhangtingnum >0)
-//		    	background = new Color(128,255,0);
-//		    else if(close < closelast && dieting >0 && zhangtingnum ==0)
-//		    	background = new Color(0,153,0);
-//		    else if(close < closelast && dieting == 0 && zhangtingnum ==0)
-//		    	background = new Color(51,255,51);
+//		    if(zhangdiefu != null  && zhangdiefu > 0 )
+//		    	background = Color.RED;
+//		    else if(zhangdiefu != null  &&  zhangdiefu < 0 )
+//		    	background = Color.GREEN;
+//		    else
+//		    	background = Color.WHITE;
 	    } 
 	    
 	    if( col == 1 ) { //个股名称

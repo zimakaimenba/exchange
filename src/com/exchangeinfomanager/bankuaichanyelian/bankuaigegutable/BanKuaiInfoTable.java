@@ -326,17 +326,6 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	       
 	        if (comp instanceof JLabel && col == 0) {
 	        	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-//	        	OHLCItem weekohlc = nodexdata.getSpecificDateOHLCData(curdate, 0);
-//	        	double open = weekohlc.getOpenValue();
-//	        	double close = weekohlc.getCloseValue();
-//	        	if(weekohlc != null) {
-//	        		if (close < open)
-//	        			background = Color.GREEN;
-//			        else if (open < close )
-//			        	background = Color.RED;
-//			        else
-//			        	background = Color.WHITE;
-//	        	}
 	        	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (curdate,0);
 			    if(zhangdiefu != null  && zhangdiefu > 0 )
 			    	background = Color.RED;
@@ -349,12 +338,12 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
 	        	background = new Color(51,204,255);
 	        }
-	        if (comp instanceof JLabel && ( col == 5   )) {
+	        if (comp instanceof JLabel && ( col == 6   )) {
 	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-	        	Double cjediff = nodexdata.getChengJiaoErDifferenceWithLastPeriod(curdate, 0);
-	        	if(cjediff != null && cjediff > 0) 
+	        	Integer avgdailycjemaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(curdate,0);
+	        	if(avgdailycjemaxwk != null && avgdailycjemaxwk > 0) 
 	        		background = Color.RED;
-			    else if ( cjediff != null && cjediff < 0 )
+			    else if ( avgdailycjemaxwk != null && avgdailycjemaxwk <= 0 )
 			       	background = Color.GREEN;
 			    else
 			       	background = Color.WHITE;
