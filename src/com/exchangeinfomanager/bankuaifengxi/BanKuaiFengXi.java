@@ -1054,8 +1054,14 @@ public class BanKuaiFengXi extends JDialog
     					 selbkcode = selbk.trim().substring(1, 7);
     				else 
     					return;
-
-    				int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
+    				
+    				int rowindex = 0;
+    				try {
+    					rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
+    				} catch (java.lang.NullPointerException  e) {
+    					e.printStackTrace();
+    					return;
+    				}
     				if(rowindex != -1) {
     					
     					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);

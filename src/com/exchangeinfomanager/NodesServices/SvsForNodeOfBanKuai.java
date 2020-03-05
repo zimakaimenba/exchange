@@ -440,7 +440,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		LocalDate bkamostartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
 		LocalDate bkamoendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
 		
-		if(bkohlcstartday == null && bkamostartday == null) 
+		if(bkohlcstartday == null && bkamostartday == null) //都为空，
 			return ;
 		
 		if(bkohlcstartday == null) {
@@ -608,6 +608,10 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	{
 		this.getNodeData(bk, requiredstartday, requiredendday, period,calwholeweek);
 		this.syncNodeData(bk);
+		//板块数据同步后，板块个股的时间轴要和板块的时间轴一致
+		NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(period); 
+		requiredstartday = bknodexdata.getAmoRecordsStartDate();
+		requiredendday = bknodexdata.getAmoRecordsEndDate();
 	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
 			
