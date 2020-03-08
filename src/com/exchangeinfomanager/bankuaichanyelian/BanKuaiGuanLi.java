@@ -25,10 +25,13 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.StockCalendar.GBC;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuExternalInfoTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
@@ -139,7 +142,7 @@ public class BanKuaiGuanLi extends JDialog
 		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 		
-		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
+//		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
 		
 		
 		initializeBaiKuaiOfNoGeGuWithSelfCJLTree ();
@@ -164,14 +167,15 @@ public class BanKuaiGuanLi extends JDialog
 
 	private void initializeBaiKuaiOfNoGeGuWithSelfCJLTree() 
 	{
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstks.getAllBkStocksTree().getModel().getRoot();
-        int bankuaicount = this.allbkstks.getAllBkStocksTree().getModel().getChildCount(treeroot);
+		BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeofbkstk.getModel().getRoot();
+        int bankuaicount = treeofbkstk.getModel().getChildCount(treeroot);
 		
         DaPan alltopNode = new DaPan("000000","两交易所");
 	
 		for(int i=0;i < bankuaicount; i++) {
 			try {
-				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbkstks.getAllBkStocksTree().getModel().getChild(treeroot, i);
+				BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)treeofbkstk.getModel().getChild(treeroot, i);
 				if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
 					continue;
 				
@@ -334,13 +338,16 @@ public class BanKuaiGuanLi extends JDialog
 				tfldsearchsysbk.setText(selectnode.getMyOwnCode());
 				
 				LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
-				selectnode = allbkstks.getBanKuai( (BanKuai)selectnode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
-				selectnode = bkdbopt.getBanKuaiBasicInfo( (BanKuai)selectnode);
+				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+				selectnode = svsbk.getNodeData(selectnode, requiredstart,  LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
+				selectnode = svsbk.getNodeJiBenMian(selectnode);
 
 				panelsetting.setSettingNode(selectnode);
 				
 				tablenoggbk.repaint();
 				tableBkfriends.repaint();
+				
+				svsbk = null;
 			}
 		});
 		
@@ -380,31 +387,34 @@ public class BanKuaiGuanLi extends JDialog
 		LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
 	
 		Set<BkChanYeLianTreeNode> bkrelatedbks = new HashSet<> ();
-		selectnode = this.allbkstks.getAllGeGuOfBanKuai (selectnode,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
+		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+		selectnode = svsbk.getAllGeGuOfBanKuai (selectnode);
 		List<BkChanYeLianTreeNode> bkgg = selectnode.getAllGeGuOfBanKuaiInHistory();
+		SvsForNodeOfStock svsstock = new SvsForNodeOfStock ();
 		for(BkChanYeLianTreeNode sob : bkgg) {
 			Stock stock = ((StockOfBanKuai)sob).getStock();
-			stock = this.allbkstks.getStock(stock, requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
-			stock = bkdbopt.getTDXBanKuaiForAStock ( stock ); //通达信板块信息
+//			stock = (Stock) svsstock.getNodeData(stock, requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
+			stock = (Stock) svsstock.getNodeSuoShuBanKuaiList ( stock ); //通达信板块信息
 			Set<BkChanYeLianTreeNode> bkcodeset = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
 			bkrelatedbks.addAll(bkcodeset);
 		}
 		
 		ArrayList<BanKuai> bklist = new ArrayList<BanKuai> ();
+		
 		for(BkChanYeLianTreeNode bkcode : bkrelatedbks) {
 			if(bkcode.getMyOwnCode().equals(selectnode.getMyOwnCode()))
 				continue;
 			
 			BanKuai tmpbk;
-			tmpbk = this.allbkstks.getBanKuai( bkcode.getMyOwnCode(),  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK);
-			tmpbk = bkdbopt.getBanKuaiBasicInfo(tmpbk);
-			tmpbk = this.allbkstks.getAllGeGuOfBanKuai (tmpbk,NodeGivenPeriodDataItem.WEEK); //获取所有曾经是该板块的个股
+//			tmpbk = (BanKuai) svsbk.getNodeData( bkcode,  requiredstart, LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
+//			tmpbk = (BanKuai) svsbk.getNodeJiBenMian(tmpbk);
+			tmpbk = svsbk.getAllGeGuOfBanKuai ((BanKuai)bkcode); //获取所有曾经是该板块的个股
 			
 			bklist.add(tmpbk);
 		}
 		
 		((BanKuaiSocialFriendsTableModel)tableBkfriends.getModel()).refresh(selectnode, bklist);
-		
+		svsbk = null; svsstock = null;
 		hourglassCursor = null;
 		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 		setCursor(hourglassCursor2);
@@ -417,7 +427,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JButton okButton;
 	private JTreeTable tableSysBk;
 	private final JPanel contentPanel = new JPanel();
-	private AllCurrentTdxBKAndStoksTree allbkstks;
+//	private AllCurrentTdxBKAndStoksTree allbkstks;
 	private JPanel panelSys;
 	private JTable tableZdy;
 	private BanKuaiAndStockTree cyltree;
@@ -647,7 +657,7 @@ public class BanKuaiGuanLi extends JDialog
 			
 		 JScrollPane scrollPanesysbk = new JScrollPane (); //
 //			初始化jtreetable
-			BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (this.allbkstks.getAllBkStocksTree() );
+			BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (CreateExchangeTree.CreateTreeOfBanKuaiAndStocks() );
 			tableSysBk = new JTreeTable(treetablemodel) {
 				
 				private static final long serialVersionUID = 1L;

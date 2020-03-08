@@ -192,7 +192,8 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
-			String period, Boolean calwholeweek) {
+			String period, Boolean calwholeweek) 
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -608,10 +609,14 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	{
 		this.getNodeData(bk, requiredstartday, requiredendday, period,calwholeweek);
 		this.syncNodeData(bk);
-		//板块数据同步后，板块个股的时间轴要和板块的时间轴一致
-		NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(period); 
-		requiredstartday = bknodexdata.getAmoRecordsStartDate();
-		requiredendday = bknodexdata.getAmoRecordsEndDate();
+		//板块数据同步后，板块个股的时间轴如果比板块短，要和板块的时间轴一致。如果比板块时间长，不需要同步时间轴
+		NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(period);
+		LocalDate bkdatastartday = bknodexdata.getAmoRecordsStartDate();
+		if(bkdatastartday.isBefore(requiredstartday) )
+			requiredstartday = bkdatastartday;
+		LocalDate bkdataendday = bknodexdata.getAmoRecordsEndDate();
+		if(bkdataendday.isAfter(requiredendday) )
+			requiredendday = bkdataendday;
 	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
 			
