@@ -9,27 +9,31 @@ import com.google.common.io.LineProcessor;
 public class ParseBanKuaiWeeklyFielGetStocksProcessor implements LineProcessor<List<String>> 
 {
 
-private List<String> stocklists = Lists.newArrayList();
+	private List<String> stocklists = Lists.newArrayList();
 
-@Override
-public boolean processLine(String line) throws IOException {
-	if(line.trim().length() ==7) {
-		if(line.startsWith("1")) { //上海的个股或板块
-			if(line.startsWith("16")) { //上海的个股
-				stocklists.add(line.substring(1));
-			}
-		} 
-		else {
-			if(!line.startsWith("0399") )
-					if(line.startsWith("00") || line.startsWith("03") ) { //深圳的个股
-						stocklists.add(line.substring(1));
+	@Override
+	public boolean processLine(String line) throws IOException {
+		if(line.trim().length() ==7) 
+		{
+			if(line.contains("#")) //港股TDX保存时候有#
+	    		return true;
+			else
+			if(line.startsWith("1")) { //上海的个股或板块
+				if(line.startsWith("16")) { //上海的个股
+					stocklists.add(line.substring(1));
+				}
+			} 
+			else {
+				if(!line.startsWith("0399") )
+						if(line.startsWith("00") || line.startsWith("03") ) { //深圳的个股
+							stocklists.add(line.substring(1));
+				}
 			}
 		}
+	 return true;
 	}
- return true;
-}
-@Override
-public List<String> getResult() {
- return stocklists;
-}
+	@Override
+	public List<String> getResult() {
+	 return stocklists;
+	}
 }

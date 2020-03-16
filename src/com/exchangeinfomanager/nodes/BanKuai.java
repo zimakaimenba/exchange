@@ -190,7 +190,7 @@ public class BanKuai extends TDXNodes
 	{
 		if(this.stockofbklist == null) {
 			this.stockofbklist = new ArrayList<> ();
-			
+			this.stockofbklist.add(stockofbk);
 		}
 		else if( this.stockofbklist.indexOf(stockofbk) < 0 )
 			this.stockofbklist.add(stockofbk);

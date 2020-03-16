@@ -14,7 +14,7 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
 
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
-
+import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
 import com.google.common.io.Files;
 
 import javax.swing.GroupLayout;
@@ -114,7 +114,9 @@ public class ImportTDXData extends JDialog {
 	
 	private void iniiazlizeZdyGui() 
 	{
-		zdybkmap = this.bkdbopt.getTDXZiDingYiBanKuaiList ();
+		TDXZhiDingYiBanKuaiServices tdxzdysvs = new TDXZhiDingYiBanKuaiServices ();
+		zdybkmap = tdxzdysvs.getZhiDingYiBanKuaiLists();
+		
 		ArrayList<String> zdybknames = new ArrayList<String> ();
 		try {
 			zdybknames.addAll(zdybkmap.keySet());

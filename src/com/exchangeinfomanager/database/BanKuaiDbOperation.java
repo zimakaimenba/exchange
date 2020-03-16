@@ -73,9 +73,8 @@ import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
-
 import com.exchangeinfomanager.commonlib.CommonUtility;
-
+import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
@@ -4503,7 +4502,7 @@ public class BanKuaiDbOperation
 			File zdybk = new File(filename);
 			List<String> readLines = null;
 			try {
-				readLines = Files.readLines(zdybk,Charsets.UTF_8,new TDXBanKuaiFielProcessor ());
+				readLines = Files.readLines(zdybk,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetStocksProcessor ());
 			} catch (java.io.FileNotFoundException e) {
 				logger.info("自定义板块文件没有找到，导入自定义板块失败！");
 				return null;
@@ -7876,31 +7875,6 @@ public class BanKuaiDbOperation
 		
 }
 
-/*
- * google guava files 类，可以直接处理读出的line
- */
-class TDXBanKuaiFielProcessor implements LineProcessor<List<String>> 
-{
-   
-    private List<String> stocklists = Lists.newArrayList();
-   
-    @Override
-    public boolean processLine(String line) throws IOException {
-    	
-    	if(line.contains("#")) //港股TDX保存时候有#
-    		return true;
-    	else if(line.length() <6)
-    		return true;
-    	else if(line.length() >=7)
-    		stocklists.add(line.substring(1));
-    	
-        return true;
-    }
-    @Override
-    public List<String> getResult() {
-        return stocklists;
-    }
-}
 
 class NodeLocalDateComparator implements Comparator<QueKou> 
 {

@@ -113,6 +113,8 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.zhidingyibankuai.PnlZhiDingYiBanKuai;
+import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
@@ -150,7 +152,7 @@ import java.beans.PropertyChangeEvent;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-
+import javax.swing.event.TableModelEvent;
 import javax.swing.UIManager;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -1292,11 +1294,21 @@ public class BanKuaiFengXi extends JDialog
 			}
 		});
 		
-		menuItemTempGeGu.addActionListener(new ActionListener() {
+		menuItemTempGeGuFromFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				
-				parseTempGeGuFunciotns ();
+				parseTempGeGuFromFileFunciotns ();
+        		
+			}
+			
+		});
+		
+		menuItemTempGeGuFromTDXSw.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				
+				parseTempGeGuFromTDXSwFunciotns();
         		
 			}
 			
@@ -2492,7 +2504,6 @@ public class BanKuaiFengXi extends JDialog
 				BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
 				unifiedOperationsAfterUserSelectABanKuai (selectedbk);
 				
-				
 				hourglassCursor = null;
 				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 				setCursor(hourglassCursor2);
@@ -2505,40 +2516,27 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
-	protected void parseTempGeGuFunciotns()
+	protected void parseTempGeGuFromTDXSwFunciotns()
 	{
-		String parsedpath = sysconfig.getTDXModelMatchExportFile ();
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		chooser.setCurrentDirectory(new File(parsedpath) );
+		TDXZhiDingYiBanKuaiServices svstdxzdy = new TDXZhiDingYiBanKuaiServices ();
+		PnlZhiDingYiBanKuai pnltdxzdy = new PnlZhiDingYiBanKuai (svstdxzdy);
 		
-		String filename;
-		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			if(chooser.getSelectedFile().isDirectory())
-		    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-		    else
-		    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
-		} else
+		int action = JOptionPane.showConfirmDialog(null, pnltdxzdy, "导入通达信个股", JOptionPane.OK_CANCEL_OPTION);
+		if(0 != action) 
 			return;
 		
-		File fileebk = null;
-		if(filename.endsWith("EBK")) {
-			fileebk = new File( filename );
-			try {
-					if (!fileebk.exists()) 
-						return ;
-			} catch (Exception e) {
-					e.printStackTrace();
-					return ;
-			}
-		}
+		List<String> result = pnltdxzdy.getSelectedZdyBkGeGu ();
+		parseTempGeGeFromList (result);
 		
-		List<String> readparsefileLines = null;
-		try { //读出个股
-			readparsefileLines = Files.readLines(fileebk,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetStocksProcessor ());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		tabbedPanegegu.setToolTipTextAt(6,filename);
+	}
+	/*
+	 * 
+	 */
+	private void parseTempGeGeFromList (List<String> readparsefileLines )
+	{
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		setCursor(hourglassCursor);
 		
 		LocalDate curselectdate = null;
 		try{
@@ -2575,9 +2573,93 @@ public class BanKuaiFengXi extends JDialog
 		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);
 		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod);
 		
+		svstock = null;
+		
+		hourglassCursor = null;
+		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+		setCursor(hourglassCursor2);
+
+		SystemAudioPlayed.playSound();
+	}
+	
+	
+	/*
+	 * 
+	 */
+	protected void parseTempGeGuFromFileFunciotns()
+	{
+		String parsedpath = sysconfig.getTDXModelMatchExportFile ();
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		chooser.setCurrentDirectory(new File(parsedpath) );
+		
+		String filename;
+		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			if(chooser.getSelectedFile().isDirectory())
+		    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+		    else
+		    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
+		} else
+			return;
+		
+		File fileebk = null;
+		if(filename.endsWith("EBK")) {
+			fileebk = new File( filename );
+			try {
+					if (!fileebk.exists()) 
+						return ;
+			} catch (Exception e) {
+					e.printStackTrace();
+					return ;
+			}
+		}
+		
+		List<String> readparsefileLines = null;
+		try { //读出个股
+			readparsefileLines = Files.readLines(fileebk,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetStocksProcessor ());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		parseTempGeGeFromList (readparsefileLines);
+//		LocalDate curselectdate = null;
+//		try{
+//			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//		} catch (java.lang.NullPointerException e) {
+//			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
+//			return;
+//		}
+//		
+//		BanKuai tempbankuai = new BanKuai ("TEMPBANKUAI","TEMPBANKUAI");
+//		SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
+//		for(String tmpgegu : readparsefileLines) {
+//			Stock tmpstock = (Stock) treeofbkstk.getSpecificNodeByHypyOrCode(tmpgegu, BkChanYeLianTreeNode.TDXGG);
+//			try {
+//				tmpstock = (Stock) svstock.getNodeData( tmpstock , CommonUtility.getSettingRangeDate(curselectdate,"middle"), curselectdate,
+//						globeperiod,this.globecalwholeweek);
+//				svstock.syncNodeData(tmpstock);
+//			} catch (java.lang.NullPointerException e) {
+//				logger.info(tmpgegu + "数据有误！");
+//				e.printStackTrace();
+//			}
+//
+//			StockOfBanKuai bkofst = new StockOfBanKuai(tempbankuai,tmpstock);
+//			LocalDate joindate = LocalDate.parse("1997-01-01");
+//			LocalDate leftdate = LocalDate.parse("3000-01-01");
+//			DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
+//			DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
+//			Interval joinleftinterval = new Interval(joindt, leftdt);
+//			bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
+//			
+//			tempbankuai.addNewBanKuaiGeGu(bkofst);
+//		}
+//		
+//		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);
+//		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod);
+		
 		tabbedPanegegu.setToolTipTextAt(6,filename);
 		
-		svstock = null;
+//		svstock = null;
 	}
 	/*
 	 * 
@@ -3286,7 +3368,8 @@ public class BanKuaiFengXi extends JDialog
 	private JTextField tfldzhangfumax;
 	private BanKuaiGeGuTable tableTempGeGu;
 
-	private JMenuItem menuItemTempGeGu;
+	private JMenuItem menuItemTempGeGuFromFile;
+	private JMenuItem menuItemTempGeGuFromTDXSw;
 	private JLabel lblchuangyeban;
 	private JLabel lblfifty;
 	private JLabel lblhusheng;
@@ -4007,9 +4090,13 @@ public class BanKuaiFengXi extends JDialog
        panelbkwkcjezhanbi.addMenuItem (menuItemnonshowselectbkinfo,null);
        
        JPopupMenu popupMenuGeguNews = new JPopupMenu () ;
-       menuItemTempGeGu = new JMenuItem("从文件导入个股");
-       popupMenuGeguNews.add(menuItemTempGeGu);
+       menuItemTempGeGuFromFile = new JMenuItem("文件导入");
+       popupMenuGeguNews.add(menuItemTempGeGuFromFile);
+       menuItemTempGeGuFromTDXSw = new JMenuItem("通达信自定义板块导入");
+       popupMenuGeguNews.add(menuItemTempGeGuFromTDXSw);
        tableTempGeGu.getTableHeader().setComponentPopupMenu (popupMenuGeguNews);
+       
+       
        
 	}
 	/*

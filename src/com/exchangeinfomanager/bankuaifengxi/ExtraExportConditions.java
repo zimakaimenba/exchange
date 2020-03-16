@@ -397,7 +397,7 @@ class ExtraExportConditions extends JPanel
 		chkbxzhbiup = new JCheckBox("\u4EC5\u5BFC\u51FA\u6210\u4EA4\u989D/\u6210\u4EA4\u91CF\u5360\u6BD4\u73AF\u6BD4\u4E0A\u5347\u7684\u677F\u5757(\u677F\u5757\u8BBE\u7F6E\u65E0\u6548)");
 		
 		chkbxzhbiup.setEnabled(false);
-		setLayout(new MigLayout("", "[205px,grow][48px,grow][17px][8px][54px][20px][10px][8px][26px][36px]", "[23px][][23px][23px][][][][23px][][][][][23px][23px][][][][23px]"));
+		setLayout(new MigLayout("", "[205px,grow][48px,grow][17px][8px][54px][20px][10px][8px][26px][36px]", "[23px][][23px][23px][][][][][23px][][][][][23px][23px][][][][23px]"));
 		add(chkbxexportallbk, "cell 0 0,alignx left,aligny top");
 		
 		chkbxexporbkallowedinsetting = new JCheckBox("\u5BFC\u51FA\u677F\u5757\u8BBE\u7F6E\u5141\u8BB8\u7684\u677F\u5757");
@@ -408,46 +408,46 @@ class ExtraExportConditions extends JPanel
 		
 		chkbxexportyangxianbk = new JCheckBox("\u4EC5\u5BFC\u51FA\u5468\u7EBF\u9633\u7EBF\u7684\u677F\u5757(\u677F\u5757\u8BBE\u7F6E\u65E0\u6548)");
 		chkbxexportyangxianbk.setEnabled(false);
-		add(chkbxexportyangxianbk, "cell 0 4");
+		add(chkbxexportyangxianbk, "cell 0 5");
 		
 		chkbxonlyexportbk = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757\u4E2A\u80A1");
-		add(chkbxonlyexportbk, "cell 0 5");
+		add(chkbxonlyexportbk, "cell 0 6");
 		
 		lblNewLabel_2 = new JLabel("-----------------------");
-		add(lblNewLabel_2, "cell 0 8");
+		add(lblNewLabel_2, "cell 0 9");
 		
 		chkbxonlybkstock = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\u7684\u4E2A\u80A1\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757");
-		add(chkbxonlybkstock, "cell 0 9,alignx left,aligny top");
+		add(chkbxonlybkstock, "cell 0 10,alignx left,aligny top");
 		
 		chkbxonlycurstock = new JCheckBox("\u4EC5\u5BFC\u51FA\u5F53\u524D\u4E2A\u80A1");
-		add(chkbxonlycurstock, "cell 0 10");
+		add(chkbxonlycurstock, "cell 0 11");
 		
 		chckbxexportyangxiangegu = new JCheckBox("\u4EC5\u5BFC\u51FA\u4E2A\u80A1\u5468\u7EBF\u9633\u7EBF\u6216\u5468\u7EBF\u9634\u7EBF>=");
-		add(chckbxexportyangxiangegu, "cell 0 11");
+		add(chckbxexportyangxiangegu, "cell 0 12");
 		
 		tfldwkyingxiandayu = new JTextField();
 		tfldwkyingxiandayu.setText("-1.9");
-		add(tfldwkyingxiandayu, "cell 1 11,growx");
+		add(tfldwkyingxiandayu, "cell 1 12,growx");
 		tfldwkyingxiandayu.setColumns(10);
 		
 		label_3 = new JLabel("%");
-		add(label_3, "cell 4 11");
-		add(cbxShiZhilevelyangxian, "cell 0 12,alignx left,aligny top");
-		add(tfldshizhilevelyangxian, "cell 1 12 2 1,growx,aligny center");
-		add(label, "cell 4 12,alignx left,aligny center");
-		add(tfldyangxian, "cell 6 12 3 1,growx,aligny center");
-		add(label_1, "cell 9 12,alignx center,aligny center");
-		add(chckbxshizhilevellianxu, "cell 0 13,alignx left,aligny top");
-		add(tfldshizhilevellianxu, "cell 1 13 2 1,growx,aligny top");
-		add(lblNewLabel, "cell 4 13 3 1,alignx left,aligny center");
-		add(tfldwkyangxian, "cell 8 13,growx,aligny top");
-		add(lblNewLabel_1, "cell 9 13,alignx left,aligny top");
+		add(label_3, "cell 4 12");
+		add(cbxShiZhilevelyangxian, "cell 0 13,alignx left,aligny top");
+		add(tfldshizhilevelyangxian, "cell 1 13 2 1,growx,aligny center");
+		add(label, "cell 4 13,alignx left,aligny center");
+		add(tfldyangxian, "cell 6 13 3 1,growx,aligny center");
+		add(label_1, "cell 9 13,alignx center,aligny center");
+		add(chckbxshizhilevellianxu, "cell 0 14,alignx left,aligny top");
+		add(tfldshizhilevellianxu, "cell 1 14 2 1,growx,aligny top");
+		add(lblNewLabel, "cell 4 14 3 1,alignx left,aligny center");
+		add(tfldwkyangxian, "cell 8 14,growx,aligny top");
+		add(lblNewLabel_1, "cell 9 14,alignx left,aligny top");
 		cbxExceptSt = new JCheckBox("\u4E0D\u5BFC\u51FAST\u4E2A\u80A1");
 		cbxExceptSt.setSelected(true);
-		add(cbxExceptSt, "cell 0 14,alignx left,aligny top");
+		add(cbxExceptSt, "cell 0 15,alignx left,aligny top");
 		
 		label_2 = new JLabel("-----------------------");
-		add(label_2, "flowy,cell 0 15");
+		add(label_2, "flowy,cell 0 16");
 	}
 	/*
 	 * 
@@ -595,23 +595,7 @@ class ExtraExportConditions extends JPanel
 	}
 	
 	
-//	public static void main(String[] args) {
-//		try {
-//			ExtraExportConditions dialog = new ExtraExportConditions();
-////			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			
-//			 JDialog  testlog = new  JDialog  ();
-//			 testlog.setTitle("About");
-//			 testlog.setSize(620, 400);
-//			 testlog.setVisible(true);
-//
-//			 testlog.getContentPane().add(dialog, BorderLayout.CENTER);
-//			
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+
 
 }
 

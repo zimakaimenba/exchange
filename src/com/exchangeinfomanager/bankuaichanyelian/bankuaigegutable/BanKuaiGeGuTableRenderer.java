@@ -88,7 +88,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	}catch (java.lang.NumberFormatException e)   	{
         		e.printStackTrace();
         	} catch (ParseException e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
         	((JLabel)comp).setText(valuepect);
         }

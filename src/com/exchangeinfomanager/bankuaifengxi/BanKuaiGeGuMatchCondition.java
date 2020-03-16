@@ -57,6 +57,9 @@ public class BanKuaiGeGuMatchCondition
 		private Double zhangfumax;
 		private Double zhangfumin;
 		
+//		Boolean exportAverageWkCjeMaxWk;
+//		Integer averageWkCjeMaxWkLevel;
+		
 		/*
 		 * 
 		 */
@@ -333,5 +336,23 @@ public class BanKuaiGeGuMatchCondition
 		{
 			return this.zhangfumin;
 		}
+		
+//		public Boolean shouldExportAverageWkCjeMaxWk() {
+//			return exportAverageWkCjeMaxWk;
+//		}
+//
+//		public void setExportAverageWkCjeMaxWk(Boolean exportAverageWkCjeMaxWk) {
+//			this.exportAverageWkCjeMaxWk = exportAverageWkCjeMaxWk;
+//		}
+//
+//		public Integer getAverageWkCjeMaxWkLevel() 
+//		{
+//			return averageWkCjeMaxWkLevel;
+//		}
+//
+//		public void setAverageWkCjeMaxWkLevel(Integer averageWkCjeMaxWkLevel) 
+//		{
+//			this.averageWkCjeMaxWkLevel = averageWkCjeMaxWkLevel;
+//		}
 
 }

@@ -4,6 +4,8 @@ import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.util.Set;
 
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
@@ -55,8 +57,6 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 //		for (int i = 0; i < myJTable.getModel().getColumnCount(); i++) {
 //		        this.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
 //		}
-		
-		
 		
 	}
 	
