@@ -39,6 +39,7 @@ import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Search.SearchDialog;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
+import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.Services.ServicesOfPaoMaDeng;
 
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
@@ -1576,7 +1577,7 @@ public class StockInfoManager
 			int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
 			
 			if(autoIncKeyFromApi > 0) {
-				cBxstockcode.updateUserSelectedNode(kspanel.getStockcode(),BkChanYeLianTreeNode.TDXGG);
+				cBxstockcode.updateUserSelectedNode(kspanel.getStockcode());
 				preUpdateSearchResultToGui(kspanel.getStockcode());
 //				updateStockCombox();
 				
@@ -1870,7 +1871,13 @@ public class StockInfoManager
 	
 	private void displayStockJibenmianInfotoGui() 
 	{
-
+		ServicesForNode svsnode;
+		if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXBK) {
+			 svsnode = new SvsForNodeOfBanKuai ();
+		} else
+			 svsnode = new SvsForNodeOfStock ();
+		svsnode.getNodeJiBenMian(nodeshouldbedisplayed);
+		
 		try	{   
 				try {
 					txtFldStockName.setText(nodeshouldbedisplayed.getMyOwnName().trim());
@@ -2258,14 +2265,7 @@ public class StockInfoManager
 		
 		scrlnodebankuai = new JScrollPane();
 		
-//		editorpansuosubk = new DisPlayNodeSuoShuBanKuaiListPanel ();
-		
-//		editorpansuosubk.setPreferredSize(new Dimension(200,30));
-		//txaBanKuai.setEditorKit(new WrapEditorKit());
-		//txaBanKuai.setLineWrap(true);
-//		editorpansuosubk.setEditable(false);
-//		editorpansuosubk.setContentType("text/html");
-//		scrlnodebankuai.setViewportView(editorpansuosubk);
+
 		
 		sclpaneJtable = new JScrollPane();
 		

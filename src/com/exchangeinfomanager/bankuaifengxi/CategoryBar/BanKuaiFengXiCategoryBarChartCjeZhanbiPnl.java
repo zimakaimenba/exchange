@@ -162,7 +162,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 							label = "yc";
 						}
 						CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, wkfriday , cjezb, angle);
-//						CategoryTextAnnotation cpa = new CategoryTextAnnotation (label, wkfriday , cjezb);
 	//					cpa.setBaseRadius(0.0);
 	//			        cpa.setTipRadius(25.0);
 				        cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
@@ -170,6 +169,37 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 				        cpa.setTextAnchor(TextAnchor.CENTER);
 						super.plot.addAnnotation(cpa);
 					}
+			}
+			//对个股有买入卖出记录的时候
+			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG) { 
+				Integer mrjl = ((StockNodesXPeriodData)nodexdata).hasMaiRuJiLuInPeriod(wkfriday, 0);
+				if(mrjl != null) {
+					double angle; Color paintcolor;String label;
+					angle = 10 * Math.PI/4;
+					paintcolor = Color.RED;
+					label = "mr";
+					CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, wkfriday , cjezb, angle);
+//					cpa.setBaseRadius(0.0);
+//			        cpa.setTipRadius(25.0);
+			        cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+			        cpa.setPaint(paintcolor);
+			        cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				}
+				Integer mcjl = ((StockNodesXPeriodData)nodexdata).hasMaiChuJiLuInPeriod(wkfriday, 0);
+				if(mcjl != null) {
+					double angle; Color paintcolor;String label;
+					angle = 10 * Math.PI/4;
+					paintcolor = Color.GREEN.darker();
+					label = "mc";
+					CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, wkfriday , cjezb, angle);
+//					cpa.setBaseRadius(0.0);
+//			        cpa.setTipRadius(25.0);
+			        cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+			        cpa.setPaint(paintcolor);
+			        cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				}
 			}
 			
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))

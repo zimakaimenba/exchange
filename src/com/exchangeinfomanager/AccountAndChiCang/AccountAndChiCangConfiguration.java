@@ -111,7 +111,7 @@ public class AccountAndChiCangConfiguration
 	{
 			acntChiCangdetailmap = acntdbop.getStockChiCang ();
 //			stockChiCangdetailmap =  ArrayListMultimap.create();
-			curChiCangStockCodeNamelist = new ArrayList<String> ();
+			curChiCangStockCodeNamelist = new ArrayList<> ();
 			for (Map.Entry<String,StockChiCangInfo> entry : acntChiCangdetailmap.entries()) {
 				String tmpstockacntname = (String) entry.getKey();
 				StockChiCangInfo tmpstockchicanginfo = (StockChiCangInfo)entry.getValue();

@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -21,7 +22,7 @@ public class SelectMultiNode extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public SelectMultiNode(ArrayList<BkChanYeLianTreeNode> multinode) 
+	public SelectMultiNode(List<BkChanYeLianTreeNode> nodeslist) 
 	{
 		
 		JLabel lblNewLabel = new JLabel("\u8BF7\u9009\u62E9:");
@@ -50,7 +51,7 @@ public class SelectMultiNode extends JPanel {
 		DefaultListModel  listModel = new DefaultListModel();
 		list = new JList(listModel);
 		
-		for(BkChanYeLianTreeNode tmpnode : multinode) {
+		for(BkChanYeLianTreeNode tmpnode : nodeslist) {
 			String nodecode = tmpnode.getMyOwnCode();
 			String nodename = tmpnode.getMyOwnName();
 

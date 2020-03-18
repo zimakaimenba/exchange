@@ -16,6 +16,8 @@ public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer
 
     private Set<String> guanzhugegulist;
 	private Set<String> chicanggegulist;
+	private Set<String> previouschicanggegulist;
+	
 	@Override
     public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected,
             final boolean cellHasFocus) 
@@ -35,6 +37,9 @@ public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer
 	           if(this.chicanggegulist !=null && (this.chicanggegulist.contains(stockcode) || this.chicanggegulist.contains(value.toString()) )) {
 	          	  comp.setForeground(Color.red);
 	           } else
+	           if(this.previouschicanggegulist !=null && (this.previouschicanggegulist.contains(stockcode) || this.previouschicanggegulist.contains(value.toString()) )) {
+	 	          comp.setForeground(Color.CYAN.darker());
+	 	        } else
 	        	   comp.setForeground(Color.BLACK);
 	            
 	           final BkChanYeLianTreeNode item = (BkChanYeLianTreeNode) value;
@@ -57,6 +62,10 @@ public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer
     public void setChiCangGeGuList(Set<String> ccgegulist)
     {
     	this.chicanggegulist = ccgegulist;
+    }
+    public void setPreviousChicangGeGuList (Set<String> pccgegulist)
+    {
+    	this.previouschicanggegulist = pccgegulist;
     }
 
 }

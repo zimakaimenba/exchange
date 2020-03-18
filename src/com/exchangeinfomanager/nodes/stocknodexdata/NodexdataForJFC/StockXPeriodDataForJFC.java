@@ -48,7 +48,64 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	private  TimeSeries periodhighestzhangdiefu; //最高涨幅
 	private  TimeSeries periodlowestzhangdiefu; //最高涨幅
 	private  TimeSeries stockgzjl; //关注记录
+	private  TimeSeries stockmairujl; //买入记录
+	private  TimeSeries stockmaichuujl; //卖出记录
 	
+	/*
+	 * 
+	 */
+	public void addMaiRuJiLu (RegularTimePeriod period,Integer fxjg) 
+	{
+		if(this.stockmairujl == null)
+			stockmairujl = new TimeSeries(super.getNodeperiodtype() );
+		
+		try {
+			stockmairujl.add(period,fxjg);
+		} catch (org.jfree.data.general.SeriesException e) {
+		}
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
+	 */
+	public Integer hasMaiRuJiLuInPeriod (LocalDate requireddate,int difference)
+	{
+		if(this.stockmairujl == null)
+			return null;
+		
+		TimeSeriesDataItem gzjlitem = stockmairujl.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(gzjlitem == null)
+			return null;
+		
+		Integer value = (Integer)gzjlitem.getValue();
+		return value;
+	}
+	public void addMaiChuJiLu (RegularTimePeriod period,Integer fxjg) 
+	{
+		if(this.stockmaichuujl == null)
+			stockmaichuujl = new TimeSeries(super.getNodeperiodtype() );
+		
+		try {
+			stockmaichuujl.add(period,fxjg);
+		} catch (org.jfree.data.general.SeriesException e) {
+		}
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
+	 */
+	public Integer hasMaiChuJiLuInPeriod (LocalDate requireddate,int difference)
+	{
+		if(this.stockmaichuujl == null)
+			return null;
+		
+		TimeSeriesDataItem gzjlitem = stockmaichuujl.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		if(gzjlitem == null)
+			return null;
+		
+		Integer value = (Integer)gzjlitem.getValue();
+		return value;
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
