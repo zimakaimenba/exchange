@@ -175,7 +175,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 				Integer mrjl = ((StockNodesXPeriodData)nodexdata).hasMaiRuJiLuInPeriod(wkfriday, 0);
 				if(mrjl != null) {
 					double angle; Color paintcolor;String label;
-					angle = 10 * Math.PI/4;
+					angle = 30 * Math.PI/4;
 					paintcolor = Color.RED;
 					label = "mr";
 					CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, wkfriday , cjezb, angle);
@@ -189,7 +189,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 				Integer mcjl = ((StockNodesXPeriodData)nodexdata).hasMaiChuJiLuInPeriod(wkfriday, 0);
 				if(mcjl != null) {
 					double angle; Color paintcolor;String label;
-					angle = 10 * Math.PI/4;
+					angle = 30 * Math.PI/4;
 					paintcolor = Color.GREEN.darker();
 					label = "mc";
 					CategoryPointerAnnotation cpa = new CategoryPointerAnnotation(label, wkfriday , cjezb, angle);

@@ -482,7 +482,7 @@ public class BanKuaiFengXi extends JDialog
 			clearTheGuiBeforDisplayNewInfoSection3 ();
 			tabbedPanebk.setSelectedIndex(2);
 			
-			this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上日均成交额，下占比线
+			this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上边是日均成交额，下边是占比线
 			
 			findInputedNodeInTable ( selectstock.getMyOwnCode() );
 			hightlightSpecificSector (selectstock); //餅圖
@@ -2937,7 +2937,8 @@ public class BanKuaiFengXi extends JDialog
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
 			node = (TDXNodes) svsbk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
 			svsbk.syncNodeData(node);
-		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
+		} else 
+		if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
 			SvsForNodeOfStock svsstk = new SvsForNodeOfStock	();
 			svsstk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, true);
 			svsstk.syncNodeData(node);

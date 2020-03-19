@@ -452,7 +452,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		}
 		
 		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-				(bkohlcstartday,bkohlcendday,bkamostartday,bkamoendday );
+				(bkamostartday,bkamoendday,bkohlcstartday,bkohlcendday );
 		
 		if(timeintervallist == null)
 			return ;

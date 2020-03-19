@@ -289,7 +289,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 
 	@Override
 	public void syncNodeData(BkChanYeLianTreeNode stk) 
-	{
+	{System.out.print(true);
 		Stock stock = (Stock)stk;
 		LocalDate bkohlcstartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
 		LocalDate bkohlcendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
@@ -312,7 +312,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 		}
 		
 		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-				(bkohlcstartday,bkohlcendday,bkamostartday,bkamoendday );
+				(bkamostartday,bkamoendday, bkohlcstartday,bkohlcendday );
 		
 		if(timeintervallist == null)
 			return ;
