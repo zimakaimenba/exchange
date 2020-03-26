@@ -3,6 +3,7 @@ package com.exchangeinfomanager.News.ExternalNewsType;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Iterator;
 
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
@@ -40,7 +41,29 @@ public class DuanQiGuanZhuServices implements ServicesForNews
 		Collection<News> news = this.database.getDuanQiJiLuInfo ( nodeid, startdate,  enddate);
 		return news;
 	}
-
+	/*
+	 * 
+	 */
+	public Collection<News> getCurrentNews(LocalDate curdate)  
+	{
+		Collection<News> news = null;
+		try {
+			news = this.getNews("ALL", LocalDate.now().minusMonths(6), LocalDate.now().plusMonths(6) );
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for (Iterator<News> lit = news.iterator(); lit.hasNext(); ) {
+			InsertedExternalNews f = (InsertedExternalNews)lit.next();
+    		LocalDate start = f.getStart();
+    		LocalDate end = f.getEnd();
+    		if( curdate.isBefore(start) || curdate.isAfter(end)   )
+    			lit.remove();
+    	}
+		
+		return news;
+	}
 	@Override
 	public News createNews(News news) throws SQLException 
 	{

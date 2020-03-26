@@ -22,6 +22,7 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 public class SvsForNodeOfStock implements ServicesForNode
@@ -111,6 +112,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 		
 		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
 			stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
+			((TDXNodesXPeriodExternalData)nodedayperioddata).getKLearnResult ();
 			return stock;
 		}
 		
@@ -128,6 +130,8 @@ public class SvsForNodeOfStock implements ServicesForNode
 				
 				stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
 		}
+		
+//		((TDXNodesXPeriodExternalData)nodedayperioddata).getKLearnResult ();
 		return stock;
 	}
 
@@ -289,7 +293,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 
 	@Override
 	public void syncNodeData(BkChanYeLianTreeNode stk) 
-	{System.out.print(true);
+	{
 		Stock stock = (Stock)stk;
 		LocalDate bkohlcstartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
 		LocalDate bkohlcendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();

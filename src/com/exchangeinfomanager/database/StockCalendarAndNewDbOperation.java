@@ -595,7 +595,7 @@ public final class StockCalendarAndNewDbOperation
 				}
 	    }
 		
-		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
+//		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
 
         return meetings;
 	}
@@ -620,7 +620,7 @@ public final class StockCalendarAndNewDbOperation
 		
 		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
 								+ timerangesql
-								+ "  AND  关注类型 = false " //长期记录
+								+ "  AND  关注类型 = false " //短期记录
 								+ " AND 代码= '" + nodecode + "'"
 								+ " AND 类型 = " + nodetype
 								+ "  ORDER BY 日期 DESC"
@@ -696,7 +696,7 @@ public final class StockCalendarAndNewDbOperation
 				}
 	    }
 		
-		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
+//		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
 
         return cqjllist;
 	}

@@ -26,6 +26,15 @@ import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
+import net.sf.javaml.clustering.Clusterer;
+import net.sf.javaml.clustering.KMeans;
+import net.sf.javaml.core.Dataset;
+import net.sf.javaml.core.DefaultDataset;
+import net.sf.javaml.core.DenseInstance;
+import net.sf.javaml.core.Instance;
+import net.sf.javaml.core.SparseInstance;
+import net.sf.javaml.tools.InstanceTools;
+
 /*
  * node的OHLC数据有JFC/TA4J两种存储方式，该类是这2中的所有公共方法 
  */
@@ -917,4 +926,39 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 						
 			return expectedate;
 		 }
+			
+		 /*
+		  * 
+		  */
+		 public void getKLearnResult ()
+		 {
+			 Dataset data = new DefaultDataset();
+			 
+			 for(int i=0; i< this.nodeamozhanbi.getItemCount(); i++ ) {
+				 TimeSeriesDataItem record = this.nodeamozhanbi.getDataItem(i);
+				 double recordvalue = record.getValue().doubleValue();
+				 RegularTimePeriod curperiod = record.getPeriod();
+				 LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				 LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				 
+				 double[] dr = {recordvalue};
+				 Instance instance = new DenseInstance(dr,curend.toString());
+				 data.add(instance);
+		 	}
+			 
+			 Clusterer km = new KMeans(4);
+			 Dataset[] clusters = km.cluster(data);
+			 
+//			 for(int i=0; i<clusters.length; i++) {
+//				 Dataset temp = clusters[i];
+//				 for(int j=0;j<temp.size();j++) {
+//					 System.out.print(temp.get(j) + "    " + "\n");
+//				 }
+//				 System.out.print("*********************\n");
+//			 }
+			 
+			 return;
+			 
+		 }
+		 
 }

@@ -234,7 +234,8 @@ public class ReminderPopToolTip
                 }  
                 _maxToolTipSceen = screenHeight / _height;  
                 
-                int posx = (int) screenRect.width - _width - 1;  
+//                int posx = (int) screenRect.width - _width - 1;
+                int posx = 0;  
                 _single.setLocation(posx, screenHeight);  
                 
                 _single.setVisible(true);  

@@ -163,6 +163,12 @@ import java.awt.FlowLayout;
 
 import javax.swing.JTabbedPane;
 import net.miginfocom.swing.MigLayout;
+import net.sf.javaml.clustering.Clusterer;
+import net.sf.javaml.clustering.KMeans;
+import net.sf.javaml.core.Dataset;
+import net.sf.javaml.core.DefaultDataset;
+import net.sf.javaml.core.DenseInstance;
+import net.sf.javaml.core.Instance;
 
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import javax.swing.JComboBox;
