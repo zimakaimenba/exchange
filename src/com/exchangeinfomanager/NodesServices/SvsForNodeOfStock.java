@@ -112,7 +112,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 		
 		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
 			stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
-			((TDXNodesXPeriodExternalData)nodedayperioddata).getKLearnResult ();
+//			((TDXNodesXPeriodExternalData)nodedayperioddata).getKLearnResult ();
 			return stock;
 		}
 		

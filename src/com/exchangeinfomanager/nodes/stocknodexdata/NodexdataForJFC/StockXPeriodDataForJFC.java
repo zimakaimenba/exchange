@@ -142,6 +142,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 				recordwk = new org.jfree.data.time.Week (sqldate);
 			} catch (ParseException e) {
 				e.printStackTrace();
+				return ;
 			}
 			
 			Double curzhangfu = this.getSpecificTimeHighestZhangDieFu(requireddate, 0);
@@ -150,6 +151,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 					periodhighestzhangdiefu.add(recordwk, zhangfu, false );
 				} catch(Exception e) {
 					e.printStackTrace();
+					return;
 				}
 				return;
 			}
@@ -160,6 +162,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 					periodhighestzhangdiefu.add(recordwk, zhangfu, false );
 				} catch(Exception e) {
 					e.printStackTrace();
+					return;
 				}
 				return;
 			}
@@ -185,6 +188,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 					periodlowestzhangdiefu.add(recordwk, diefu, false );
 				} catch(Exception e) {
 					e.printStackTrace();
+					return;
 				}
 				return;
 			}
@@ -195,6 +199,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 					periodlowestzhangdiefu.add(recordwk, diefu, false );
 				} catch(Exception e) {
 					e.printStackTrace();
+					return;
 				}
 				return;
 			}

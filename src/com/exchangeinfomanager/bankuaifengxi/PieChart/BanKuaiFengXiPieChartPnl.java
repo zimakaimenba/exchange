@@ -107,9 +107,10 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements PieChar
 //        pieplot.setLabelOutlineStroke(null);
 //        pieplot.setLabelPaint(Color.WHITE);
 //        pieplot.setLabelBackgroundPaint(null);
-//        pieplot.setLabelGenerator(null);
-    	PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator("{0}{1}({2})"); //If you need the %, use in label format {0} = {2} instead of {0} = {1} and will be displayed California = 10%.
-    	pieplot.setLabelGenerator(labelGenerator);
+        pieplot.setLabelGenerator(null);
+//    	PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator("{0}{1}({2})"); //If you need the %, use in label format {0} = {2} instead of {0} = {1} and will be displayed California = 10%.
+//    	pieplot.setLabelGenerator(labelGenerator);
+    	
         
     	piechartdataset = new DefaultPieDataset();
     	pieplot.setDataset(piechartdataset);

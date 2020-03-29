@@ -16,7 +16,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;  
-import javax.swing.JPanel;  
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;  
 import javax.swing.JWindow;  
 import javax.swing.border.EtchedBorder;
@@ -158,7 +159,11 @@ public class ReminderPopToolTip
             externalPanel.add(innerPanel);  
             _message.setForeground(getMessageColor());  
             innerPanel.add(_iconLabel, BorderLayout.WEST);  
-            innerPanel.add(_message, BorderLayout.CENTER);  
+            
+            JScrollPane scrollmessage = new JScrollPane();
+            scrollmessage.setViewportView(_message);
+            
+            innerPanel.add(scrollmessage, BorderLayout.CENTER);  
             
             _openMatrixButn.setToolTipText("´ò¿ªMatrix");
             _openMatrixButn.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/endit-16.png")) );
