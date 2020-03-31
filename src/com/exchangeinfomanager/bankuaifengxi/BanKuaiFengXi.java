@@ -61,6 +61,7 @@ import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeInfoPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeJiBenMianService;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeSellBuyInfoServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodesRelatedNewsServices;
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodesRelatedTagsServices;
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
 import com.exchangeinfomanager.Tag.Tag;
@@ -2870,6 +2871,14 @@ public class BanKuaiFengXi extends JDialog
 		displaybkjbmpnl.setMinimumSize(size);
 		displaybkjbmpnl.setMaximumSize(size);
 		pnlextrainfo.add (displaybkjbmpnl);
+		
+		DisplayNodesRelatedTagsServices nodetags =  new DisplayNodesRelatedTagsServices (selectednode);
+		DisplayNodeInfoPanel displaybktagspnl = new DisplayNodeInfoPanel (nodetags);
+		Dimension size4 = new Dimension(sclpinfosummary.getViewport().getSize().width,  displaybktagspnl.getContentHeight() + 10 );
+		displaybktagspnl.setPreferredSize(size4);
+		displaybktagspnl.setMinimumSize(size4);
+		displaybktagspnl.setMaximumSize(size4);
+		pnlextrainfo.add (displaybktagspnl);
 		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXBK) {
 			DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (selectednode);
