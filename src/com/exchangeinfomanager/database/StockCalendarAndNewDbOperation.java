@@ -1326,7 +1326,7 @@ public final class StockCalendarAndNewDbOperation
 		String newsownercode = node.getMyOwnCode();
 		int newstype = node.getType();
 		LocalDate start = meeting.getStart();
-		LocalDate end = meeting.getStart();
+		LocalDate end = meeting.getEnd();
 		String description = meeting.getTitle();
 		String detail = meeting.getDescription().replace("'", " ");
 		String keywords = meeting.getKeyWords();
@@ -1358,7 +1358,7 @@ public final class StockCalendarAndNewDbOperation
 			}
 			
 			int labelid = 0;
-			String area = "强弱势板块个股表";
+			String area = "强弱势板块个股";
 			for (InsertedNews.Label label : meeting.getLabels()) {
 	                labelid = label.getID();
 	                String sqlstatementlabel = "INSERT INTO meetingLabel (news_ID, LABEL_ID,fromtable) VALUES( " 

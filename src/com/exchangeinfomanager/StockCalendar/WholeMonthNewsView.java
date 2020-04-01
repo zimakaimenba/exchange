@@ -69,7 +69,7 @@ public class WholeMonthNewsView extends View
 
 	private WholeMonthCompViewOfDQGZQRS qsview;
 
-	private WholeMonthNewsComponentsView rsview;
+	private WholeMonthCompViewOfDQGZQRS rsview;
 
 	private WholeMonthCompViewOfDQGZQRS dqgzview;
 	
@@ -97,7 +97,7 @@ public class WholeMonthNewsView extends View
 	    		} else
 	    		if( f instanceof RuoShiServices) {
 	    			svsrs = (RuoShiServices) f;
-	    			rsview = new WholeMonthNewsComponentsView (svsrs, "弱势板块个股");
+	    			rsview = new WholeMonthCompViewOfDQGZQRS (svsrs, "弱势板块个股");
 	    		} else
 	    		if( f instanceof DuanQiGuanZhuServices) {
 	    			svsdqgz = (DuanQiGuanZhuServices) f;
