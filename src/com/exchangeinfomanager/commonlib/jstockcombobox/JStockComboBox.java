@@ -57,7 +57,6 @@ public class JStockComboBox extends  JComboBox<String>
 		
 		this.onlyselectnodetype = -1;
 		generalSetup ();
-		
 	}
 	
 	public JStockComboBox(int onlyselecttype) //用户可以指定只选择从数据库中读出某种类型的node
@@ -82,10 +81,22 @@ public class JStockComboBox extends  JComboBox<String>
 		sysconfig = SystemConfigration.getInstance();
 		
 		createEvents ();
+		
+		jPopupMenue = new JPopupMenu();
+		if(this.onlyselectnodetype != null && this.onlyselectnodetype == BkChanYeLianTreeNode.TDXBK ) {
+			this.createMenuForBanKuai();
+		} else
+		if(this.onlyselectnodetype != null && this.onlyselectnodetype == BkChanYeLianTreeNode.TDXGG ) {
+			this.createMenuForStock();
+		} else
+		if(this.onlyselectnodetype == -1)  {
+			this.createMenuForBanKuai();
+			this.createMenuForStock();
+		}
 	}
 
-//	private BanKuaiDbOperation bkdbopt;
 	private Integer onlyselectnodetype;
+	private JPopupMenu jPopupMenue;
 	/*
 	 * 
 	 */
@@ -187,53 +198,45 @@ public class JStockComboBox extends  JComboBox<String>
 		
 		return nodeshouldbedisplayed;
 	}
-	/*
-	 * 获取用户code的板块或个股的基本信息 
-	 */
-//	private BkChanYeLianTreeNode preSearch(String nodecode,Integer nodetype) 
-//	{
-//		 BkChanYeLianTreeNode nodeshouldbedisplayed = null;
-//		 ArrayList<BkChanYeLianTreeNode> nodeslist = bkdbopt.getNodesBasicInfo (nodecode);
-//		 if(nodeslist.size() == 0) {
-//			 setEditorToNull ();
-//			 JOptionPane.showMessageDialog(null,"股票/板块代码不存在，请再次输入正确股票代码！");
-//			 return null;
-//		 }
-//		 
-//		 if( nodeslist.size() > 1 ) { 
-//			 if(nodetype != -1) { //用户指定了只要什么类型的node
-//				 for( BkChanYeLianTreeNode tmpnode : nodeslist) 
-//					 if(tmpnode.getType() == nodetype) {
-//						 nodeshouldbedisplayed = tmpnode;
-//						 break;
-//					 }
-//				 
-//			 } else { //没有指定，就显示JLIST，让用户选择
-//				 SelectMultiNode userselection = new SelectMultiNode(nodeslist);
-//				 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
-//				 if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//						return null;
-//				 
-//				 try {
-//					 int userselected = userselection.getUserSelection();
-//					 nodeshouldbedisplayed = nodeslist.get(userselected);
-//				 } catch (java.lang.ArrayIndexOutOfBoundsException e) { //用户没有选择直接回车的情况
-//					 nodeshouldbedisplayed = nodeslist.get(0);
-//				 }
-//			 }
-//		 } else
-//			 nodeshouldbedisplayed = nodeslist.get(0);
-//		 
-////		 if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG) { //是个股
-////					nodeshouldbedisplayed = bkdbopt.getTDXBanKuaiForAStock ((Stock)nodeshouldbedisplayed); //通达信板块信息
-////		 }	
-//		 
-//		 return nodeshouldbedisplayed;
-//	}
 	
-	private void createEvents() 
+	private void createMenuForBanKuai ()
 	{
-		JPopupMenu jPopupMenue = new JPopupMenu();
+		JMenuItem menuItemgjqgz = new JMenuItem("同步近期关注板块");
+		JMenuItem menuItemgqsbk = new JMenuItem("同步强势板块");
+		JMenuItem menuItemrsbk = new JMenuItem("同步弱势板块");
+		menuItemgjqgz.setEnabled(false);
+		menuItemgqsbk.setEnabled(false);
+		menuItemrsbk.setEnabled(false);
+		jPopupMenue.add(menuItemgjqgz);
+		jPopupMenue.add(menuItemgqsbk);
+		jPopupMenue.add(menuItemrsbk);
+		
+		menuItemrsbk.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            }
+        });
+		menuItemgqsbk.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            }
+        });
+		menuItemgjqgz.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            }
+        });
+
+
+	}
+	private void createMenuForStock ()
+	{
 		JMenuItem menuItemgchicang = new JMenuItem("同步持仓");
 		JMenuItem menuItemgpreviouschicang = new JMenuItem("同步历史持仓");
 		JMenuItem menuItemguanzhu = new JMenuItem("同步近期关注个股"); 
@@ -242,10 +245,6 @@ public class JStockComboBox extends  JComboBox<String>
 		jPopupMenue.add(menuItemgpreviouschicang);
 		jPopupMenue.add(menuItemguanzhu);
 		
-		if(this.onlyselectnodetype != null && this.onlyselectnodetype == BkChanYeLianTreeNode.TDXBK ) {
-			menuItemguanzhu.setEnabled(false);
-			menuItemgpreviouschicang.setEnabled(false);
-		}
 		menuItemgpreviouschicang.addActionListener(new ActionListener() {
 
             @Override
@@ -261,7 +260,11 @@ public class JStockComboBox extends  JComboBox<String>
 	            	sysnRecentGuanZhu ();
 	            }
 	        });
-		 
+
+	}
+	private void createEvents() 
+	{
+				 
 		this.getEditor().getEditorComponent().addMouseListener(new MouseAdapter() 
 		{
 			@Override

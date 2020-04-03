@@ -1,14 +1,18 @@
 package com.exchangeinfomanager.nodes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import org.joda.time.Interval;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.google.common.collect.Range;
 
 public abstract class TDXNodes extends BkChanYeLianTreeNode
 {
@@ -25,6 +29,88 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	
 	private String suoshujiaoyisuo;
 	private LocalDate lastdayofbxfx;
+	
+	private List<Range<LocalDate>> qiangshirange;
+	private List<Range<LocalDate>> ruoshirange;
+	private List<Range<LocalDate>> dqguangzhurange;
+	
+	public void addNewDuanQiGuanZhuRange (Range<LocalDate> inter) 
+	{
+//		for(int i=0; i<qiangshiinterval.size();i++) {
+//			Interval tmpin = qiangshiinterval.get(i);
+//			
+//		}
+		if(dqguangzhurange == null)
+			dqguangzhurange = new ArrayList<> ();
+		
+		if( !dqguangzhurange.contains(inter) )
+			dqguangzhurange.add(inter);
+	}
+	public Range<LocalDate> isInDuanQiGuanZhuRange (LocalDate date) 
+	{
+		if(dqguangzhurange == null)
+			return null;
+		
+		for(int i=0; i<dqguangzhurange.size();i++) {
+			Range<LocalDate> tmpin = dqguangzhurange.get(i);
+			if( tmpin.contains(date) ) {
+				return tmpin;
+			}
+		}
+		
+		return null;
+	}
+	public void addNewQiangShiRange (Range<LocalDate> inter) 
+	{
+//		for(int i=0; i<qiangshiinterval.size();i++) {
+//			Interval tmpin = qiangshiinterval.get(i);
+//			
+//		}
+		if(qiangshirange == null)
+			qiangshirange = new ArrayList<> ();
+		
+		if( !qiangshirange.contains(inter) )
+			qiangshirange.add(inter);
+	}
+	public Range<LocalDate> isInQiangShiBanKuaiRange (LocalDate date)
+	{
+		if(qiangshirange == null)
+			return null;
+		
+		for(int i=0; i<qiangshirange.size();i++) {
+			Range<LocalDate> tmpin = qiangshirange.get(i);
+			if( tmpin.contains(date) ) {
+				return tmpin;
+			}
+		}
+		
+		return null;
+	}
+	public void addNewRuoShiRange (Range<LocalDate> inter) 
+	{
+//		for(int i=0; i<qiangshiinterval.size();i++) {
+//			Interval tmpin = qiangshiinterval.get(i);
+//			
+//		}
+		if(ruoshirange == null)
+			ruoshirange = new ArrayList<> ();
+		
+		if( !ruoshirange.contains(inter) )
+			ruoshirange.add(inter);
+	}
+	public Range<LocalDate> isInRuoShiBanKuaiRange (LocalDate date) 
+	{
+		if(ruoshirange == null)
+			return null;
+		
+		for(int i=0; i<ruoshirange.size();i++) {
+			Range<LocalDate> tmpin = ruoshirange.get(i);
+			if(tmpin.contains(date) )
+				return tmpin;
+		}
+		
+		return null;
+	}
 		
 	public String getSuoShuJiaoYiSuo ()
 	{

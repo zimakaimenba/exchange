@@ -61,6 +61,8 @@ public class StockCalendar extends JCalendar
 
 	private SettingOfDisplayNewsArea settingsofnewsdisplay;
 	private JDialogForTagSearchMatrixPanelForAddNewsToNode pnlsearchtags;
+	
+	private ServicesForNews svsdqgz ;
     
 	   public StockCalendar ()
 	    {
@@ -87,7 +89,7 @@ public class StockCalendar extends JCalendar
 	    	NewsCache ruoshicache = new NewsCache ("ALL",svsrs,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
 	    	svsrs.setCache(ruoshicache);
 	    	
-	    	ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
+	    	svsdqgz = new DuanQiGuanZhuServices ();
 	    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
 	    	svsdqgz.setCache(dqgzcache);
 	    	
@@ -129,6 +131,11 @@ public class StockCalendar extends JCalendar
 	   {
 		   this.setLayout(new BorderLayout() );
 		   this.add(this.monthView, BorderLayout.CENTER);
+	   }
+	   
+	   public ServicesForNews getDuanQiGuanZhuService ()
+	   {
+		   return this.svsdqgz;
 	   }
     /*
      * 

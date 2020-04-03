@@ -3,7 +3,13 @@ package com.exchangeinfomanager.News.ExternalNewsType;
 import java.time.LocalDate;
 import java.util.Collection;
 
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.google.common.collect.Range;
+
 
 public class GuanZhu extends ExternalNewsType
 {
@@ -18,6 +24,12 @@ public class GuanZhu extends ExternalNewsType
 			this.guanzhutype = "CHANGQI";
 		else
 			this.guanzhutype = "DUANQI";
+		
+		Range<LocalDate> range = Range.closed(starttime, endtime);
+		if(changqiorduanqi)
+			;
+		else
+			((TDXNodes)node).addNewDuanQiGuanZhuRange (range);
 	}
 
 	@Override

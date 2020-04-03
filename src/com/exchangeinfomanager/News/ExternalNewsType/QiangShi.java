@@ -5,13 +5,19 @@ import java.util.Collection;
 
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.google.common.collect.Range;
 
 public class QiangShi extends ExternalNewsType 
 {
 
 	public QiangShi(BkChanYeLianTreeNode node, String description, LocalDate starttime, LocalDate endtime, String detail, String keywords,
-			Collection<InsertedNews.Label> labels, String newsUrl) {
+			Collection<InsertedNews.Label> labels, String newsUrl) 
+	{
 		super(node, description , starttime, endtime, detail, keywords, labels, newsUrl);
+		
+		Range<LocalDate> range = Range.closed(starttime, endtime);
+		((TDXNodes)node).addNewQiangShiRange (range);
 	}
 	
 	@Override

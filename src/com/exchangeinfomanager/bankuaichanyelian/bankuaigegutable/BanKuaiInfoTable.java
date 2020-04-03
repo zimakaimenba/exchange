@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +40,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.ta4j.core.Bar;
 
+import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.NewsCacheListener;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
@@ -53,14 +57,16 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPer
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+import com.google.common.collect.Range;
 
 
-public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditionListener
+public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditionListener , NewsCacheListener
 {
 	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
 	private StockInfoManager stockmanager;
 	private BanKuaiAndStockTree allbkskstree;
+	
 	
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 
@@ -369,26 +375,31 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
             	((JLabel)comp).setText(valuepect);
 	        }
 	        
-	        if( col == 1  ) {
+	        if( col == 1  ) { //关注/在板块文件中 这2个操作互斥，优先关注板块的颜色
 	        	
 	        	try {
-	        			String m;
-					//BkChanYeLianTreeNode node = allbkskstree.getSpecificNodeByHypyOrCode(bankuai.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
 	        		NodesTreeRelated tmptreerelated = bankuai.getNodeTreeRelated();
-//	        		Integer patchfilestocknum = tmptreerelated.getStocksNumInParsedFileForSpecificDate (curdate);
-//	        		if(patchfilestocknum != null && patchfilestocknum > 0 )
-//			        	background = Color.ORANGE;
-//			        else
-//			        	background = Color.white;
-	        		
 	        		Boolean matchmodel = tmptreerelated.selfIsMatchModel(curdate);
 	        		if(matchmodel )
 			        	background = Color.ORANGE;
 			        else
 			        	background = Color.white;
+	        		
+	        		Range<LocalDate> indqgz = bankuai.isInDuanQiGuanZhuRange (curdate);
+	        		if(indqgz != null)
+	        			background = new Color(102,178,255);
+	        		
+	        		Range<LocalDate> inqsgz = bankuai.isInQiangShiBanKuaiRange (curdate);
+	        		if(inqsgz != null)
+	        			foreground = Color.RED;
+	        		
+	        		Range<LocalDate> inrsgz = bankuai.isInRuoShiBanKuaiRange (curdate);
+	        		if(inrsgz != null)
+	        			foreground = Color.GREEN;
 		        	
 	        	} catch (java.lang.NullPointerException e) {
 	        		background = Color.white;
+	        		foreground = Color.BLACK;
 	        	}
 
 	        }
@@ -396,15 +407,37 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	       comp.setBackground(background);
 	       comp.setForeground(foreground);
 
-//	       if(this.isRowSelected(row) && col == 0 ) {
-//		    	comp.setBackground(Color.blue);
-//		    }
-	        return comp;
+	       return comp;
 	}
 	@Override
 	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
 	{
 		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onNewsChange(Collection<NewsCache> caches) {
+		System.out.print("test");
+		
+	}
+	@Override
+	public void onNewsChange(NewsCache cache)
+	{
+		System.out.print("test");
+	}
+	@Override
+	public void onLabelChange(Collection<NewsCache> cache) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onLabelChange(NewsCache cache) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onNewsAdded(News m) {
+		System.out.print("test");
 		
 	}
 

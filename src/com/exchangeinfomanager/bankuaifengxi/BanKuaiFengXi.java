@@ -210,6 +210,8 @@ public class BanKuaiFengXi extends JDialog
 		initializePaoMaDeng ();
 		
 		adjustDate (LocalDate.now());
+		
+		setUpZhongDianGuanZhuBanKuai ();
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
@@ -258,7 +260,6 @@ public class BanKuaiFengXi extends JDialog
 		tableBkZhanBi.repaint(); //
 		
 		cyltreecopy.searchAndLocateNodeInTree (selectedbk);
-		
 		
 		showReminderMessage (bkfxremind.getBankuairemind());
 	}
@@ -638,6 +639,12 @@ public class BanKuaiFengXi extends JDialog
 					this.dateChooser.setDate(new Date ());
 				btnresetdate.setEnabled(false);
 
+	}
+	private void setUpZhongDianGuanZhuBanKuai ()
+	{
+		ServicesForNews zdgzsvs = this.dateChooser.getStockCalendar().getDuanQiGuanZhuService();
+		//DuanQiGuanZhuServices
+		zdgzsvs.getCache().addCacheListener(tableBkZhanBi);
 	}
 	/*
 	 * 用户在界面的操作，各个模块的协同操作

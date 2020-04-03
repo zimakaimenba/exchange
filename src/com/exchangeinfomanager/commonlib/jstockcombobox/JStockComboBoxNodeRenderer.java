@@ -13,8 +13,8 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer 
 {
-
     private Set<String> guanzhugegulist;
+    private Set<String> guanzhubankuailist;
 	private Set<String> chicanggegulist;
 	private Set<String> previouschicanggegulist;
 	
@@ -39,7 +39,10 @@ public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer
 	           } else
 	           if(this.previouschicanggegulist !=null && (this.previouschicanggegulist.contains(stockcode) || this.previouschicanggegulist.contains(value.toString()) )) {
 	 	          comp.setForeground(Color.CYAN.darker());
-	 	        } else
+	 	       } else
+	 	       if(this.guanzhubankuailist !=null && (this.guanzhubankuailist.contains(stockcode) || this.guanzhubankuailist.contains(value.toString()) )) {
+		          	  comp.setForeground(Color.red);
+		       } else	   
 	        	   comp.setForeground(Color.BLACK);
 	            
 	           final BkChanYeLianTreeNode item = (BkChanYeLianTreeNode) value;
@@ -54,18 +57,21 @@ public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer
         return this;
         
     }
-
-    public void setGuanZhuGeGuList(Set<String> guanzhugegulist)
+	public void setGuanZhuBanKuaiList(Set<String> guanzhubankuailist1)
     {
-        this.guanzhugegulist = guanzhugegulist;
+        this.guanzhubankuailist = guanzhubankuailist1;
     }
-    public void setChiCangGeGuList(Set<String> ccgegulist)
+    public void setGuanZhuGeGuList(Set<String> guanzhugegulist1)
     {
-    	this.chicanggegulist = ccgegulist;
+        this.guanzhugegulist = guanzhugegulist1;
     }
-    public void setPreviousChicangGeGuList (Set<String> pccgegulist)
+    public void setChiCangGeGuList(Set<String> ccgegulist1)
     {
-    	this.previouschicanggegulist = pccgegulist;
+    	this.chicanggegulist = ccgegulist1;
+    }
+    public void setPreviousChicangGeGuList (Set<String> pccgegulist1)
+    {
+    	this.previouschicanggegulist = pccgegulist1;
     }
 
 }

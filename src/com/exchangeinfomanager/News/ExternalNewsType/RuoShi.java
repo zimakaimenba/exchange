@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.google.common.collect.Range;
 
 public class RuoShi extends ExternalNewsType 
 {
@@ -12,6 +14,9 @@ public class RuoShi extends ExternalNewsType
 			Collection<com.exchangeinfomanager.News.InsertedNews.Label> labels, String newsUrl)
 	{
 		super(node, description, starttime, endtime, detail, keywords, labels, newsUrl);
+		
+		Range<LocalDate> range = Range.closed(starttime, endtime);
+		((TDXNodes)node).addNewRuoShiRange (range);
 	}
 
 	@Override
