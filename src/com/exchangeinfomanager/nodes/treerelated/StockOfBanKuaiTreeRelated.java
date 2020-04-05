@@ -44,7 +44,7 @@ public class StockOfBanKuaiTreeRelated implements NodesTreeRelated
 			 else
 				  return false;
 		} catch(java.lang.NullPointerException e) {
-			return null;
+			return false;
 		}
 	}
 	@Override

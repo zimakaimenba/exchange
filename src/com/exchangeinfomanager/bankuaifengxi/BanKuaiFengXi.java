@@ -112,7 +112,7 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-
+import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.zhidingyibankuai.PnlZhiDingYiBanKuai;
 import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
@@ -1536,6 +1536,23 @@ public class BanKuaiFengXi extends JDialog
              }
         });
 
+		menuItemAddRmvBkToYellow.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	int row = tableBkZhanBi.getSelectedRow();
+    			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+    			BanKuai bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+    			NodesTreeRelated filetree = bk.getNodeTreeRelated ();
+    			if(filetree.selfIsMatchModel(dateChooser.getLocalDate() ) ) 
+    				filetree.setSelfIsMatchModel(dateChooser.getLocalDate(), false);
+    			else
+    				filetree.setSelfIsMatchModel(dateChooser.getLocalDate(), true);
+    			
+    			tableBkZhanBi.repaint();
+            }
+        });
+		
 		menuItemsiglebktocsv.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1562,6 +1579,24 @@ public class BanKuaiFengXi extends JDialog
     			tmplist = null;
             }
         });
+		menuItemAddRmvStockToYellow.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	int row = tableGuGuZhanBiInBk.getSelectedRow();
+    			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
+    			StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			Stock stock = selectstock.getStock();
+    			NodesTreeRelated filetree = stock.getNodeTreeRelated ();
+    			if(filetree.selfIsMatchModel(dateChooser.getLocalDate() ) ) 
+    				filetree.setSelfIsMatchModel(dateChooser.getLocalDate(), false);
+    			else
+    				filetree.setSelfIsMatchModel(dateChooser.getLocalDate(), true);
+    			
+    			tableGuGuZhanBiInBk.repaint();
+            }
+        });
+		
 		
 		menuItemnonshowselectbkinfo.addActionListener(new ActionListener() {
             @Override
@@ -1970,10 +2005,10 @@ public class BanKuaiFengXi extends JDialog
 			{
 				if(SwingUtilities.isLeftMouseButton(arg0) ) {
 					
-					if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !chkliutongsz.isSelected() && !ckbxcjemaxwk.isSelected()){
-						JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-						return;
-					} 
+//					if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !chkliutongsz.isSelected() && !ckbxcjemaxwk.isSelected()){
+//						JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
+//						return;
+//					} 
 					
 					initializeExportConditions ();
 					
@@ -3392,6 +3427,10 @@ public class BanKuaiFengXi extends JDialog
 	private JLabel lblchuangyeban;
 	private JLabel lblfifty;
 	private JLabel lblhusheng;
+
+	private JMenuItem menuItemAddRmvStockToYellow;
+
+	private JMenuItem menuItemAddRmvBkToYellow;
 	
 	
 	private void initializeGui() {
@@ -4079,6 +4118,9 @@ public class BanKuaiFengXi extends JDialog
 //       menuItemyangxianbktocsv = new JMenuItem("导出周线阳线板块到CSV");
 //       jPopupMenuoftabbedpanebk.add(menuItemyangxianbktocsv);
        
+       menuItemAddRmvBkToYellow = new JMenuItem("设置/取消黄标");
+       tableBkZhanBi.getPopupMenu().add(menuItemAddRmvBkToYellow);
+       
        menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
        menuItemQiangShibk = new JMenuItem("设为强势板块");
 	   menuItemRuoShibk = new JMenuItem("设为弱势板块");
@@ -4100,6 +4142,9 @@ public class BanKuaiFengXi extends JDialog
        
        menuItemnonfixperiod = new JMenuItem("不定周期DPM??WK");
        tableGuGuZhanBiInBk.getPopupMenu().add(menuItemnonfixperiod);
+       
+       menuItemAddRmvStockToYellow = new JMenuItem("设置/取消黄标");
+       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemAddRmvStockToYellow);
        
        menuItemnonshowselectbkinfo = new JMenuItem("同时计算选定周分析数据");
        panelbkwkcjezhanbi.addMenuItem (menuItemnonshowselectbkinfo,null);

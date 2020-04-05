@@ -19,6 +19,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.base.Strings;
 
 public class ExportMatchedNode
@@ -170,6 +171,11 @@ public class ExportMatchedNode
 	public String checkBanKuaiMatchedCurSettingConditons (BanKuai node, LocalDate exportdate, String period)
 	{
 			String settingbk = this.cond.getSettingBanKuai();
+			if(this.cond.shouldExportOnlyYellowSignBkStk() ) {
+				NodesTreeRelated filetree = node.getNodeTreeRelated ();
+    			if(!filetree.selfIsMatchModel(exportdate) )
+    				return "UNMATCH";
+			}
 			if( this.cond.shouldExportOnlyCurrentBanKuai()  && !Strings.isNullOrEmpty( settingbk ) )  {//仅限当前板块
 				if(!node.getMyOwnCode().equals(settingbk))
 					return "UNMATCH";
@@ -216,7 +222,6 @@ public class ExportMatchedNode
 					if( recordmaxbkwk >= settindpgmaxwk && recordmaxcjewk >= seetingcjemaxwk ) { //满足条件，导出 ; 板块和个股不一样，只有一个占比
 							checkresult = checkresult + "MATCHED";
 					}
-					
 			}
 			
 			return checkresult;
@@ -263,6 +268,11 @@ public class ExportMatchedNode
 	 */
 	public Boolean checkStockMatchedCurSettingConditonsWithoutCheckMA (Stock stock,LocalDate exportdate, String period) 
 	{
+		if(this.cond.shouldExportOnlyYellowSignBkStk() ) {
+			NodesTreeRelated filetree = stock.getNodeTreeRelated ();
+			if(!filetree.selfIsMatchModel(exportdate) )
+				return false;
+		}
 		try {
 			 if(stock.getMyOwnName().toUpperCase().contains("ST") && this.cond.shouldExportST() )
 					return false;

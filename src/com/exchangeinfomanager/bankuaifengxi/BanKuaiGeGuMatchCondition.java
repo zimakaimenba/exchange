@@ -56,6 +56,7 @@ public class BanKuaiGeGuMatchCondition
 		Boolean exportST;
 		private Double zhangfumax;
 		private Double zhangfumin;
+		private boolean onlyexportyellowsignbkstk;
 		
 //		Boolean exportAverageWkCjeMaxWk;
 //		Integer averageWkCjeMaxWkLevel;
@@ -336,6 +337,17 @@ public class BanKuaiGeGuMatchCondition
 		{
 			return this.zhangfumin;
 		}
+
+		public void setExportOnlyYellowSignBkStk(boolean export) 
+		{
+			this.onlyexportyellowsignbkstk = export;
+			
+		}
+		public Boolean shouldExportOnlyYellowSignBkStk() 
+		{
+			return this.onlyexportyellowsignbkstk ;
+			
+		} 
 		
 //		public Boolean shouldExportAverageWkCjeMaxWk() {
 //			return exportAverageWkCjeMaxWk;

@@ -50,6 +50,7 @@ class ExtraExportConditions extends JPanel
 	private JCheckBox chkbxonlyexportbk;
 	private JCheckBox chkbxonlycurstock;
 	private BanKuaiGeGuMatchCondition cond;
+	private JCheckBox chckbxexportyellowbkstk;
 	/**
 	 * Create the panel.
 	 */
@@ -145,6 +146,11 @@ class ExtraExportConditions extends JPanel
 			this.cond.setExportST(false);
 		else
 			this.cond.setExportST(true);
+		
+		if(chckbxexportyellowbkstk.isSelected())
+			this.cond.setExportOnlyYellowSignBkStk (true);
+		else
+			this.cond.setExportOnlyYellowSignBkStk (false);
 		
 		return this.cond;
 	}
@@ -350,6 +356,56 @@ class ExtraExportConditions extends JPanel
 			}
 		});
 		
+		chckbxexportyellowbkstk.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(chckbxexportyellowbkstk.isSelected()) {
+					cbxShiZhilevelyangxian.setEnabled(false);
+					cbxShiZhilevelyangxian.setSelected(false);
+					chckbxshizhilevellianxu.setEnabled(false);
+					chckbxshizhilevellianxu.setSelected(false);
+					tfldshizhilevelyangxian.setEnabled(false);
+					
+					tfldyangxian.setEnabled(false);
+					tfldshizhilevellianxu.setEnabled(false);
+					tfldwkyangxian.setEnabled(false);
+					
+					chkbxonlyexportbk.setEnabled(false);
+					chkbxonlyexportbk.setSelected(false);
+					
+					chkbxonlybkstock.setEnabled(false);
+					chkbxonlybkstock.setSelected(false);
+					
+					chkbxonlycurstock.setEnabled(false);
+					chkbxonlycurstock.setSelected(false);
+					
+					chckbxexportyangxiangegu.setEnabled(false);
+					chckbxexportyangxiangegu.setSelected(false);
+					
+					tfldwkyingxiandayu.setEnabled(false);
+
+				} else {
+					cbxShiZhilevelyangxian.setEnabled(true);
+					cbxShiZhilevelyangxian.setSelected(true);
+					chckbxshizhilevellianxu.setEnabled(true);
+					chckbxshizhilevellianxu.setSelected(true);
+					tfldshizhilevelyangxian.setEnabled(true);
+					tfldyangxian.setEnabled(true);
+					tfldshizhilevellianxu.setEnabled(true);
+					tfldwkyangxian.setEnabled(true);
+					chkbxonlyexportbk.setEnabled(true);
+					chkbxonlycurstock.setEnabled(true);
+					chkbxonlybkstock.setEnabled(true);
+					chckbxexportyangxiangegu.setEnabled(true);
+					tfldwkyingxiandayu.setEnabled(true);
+				}
+				
+				huchiOperationsForJCheckBox (huchixuanzebasic,chckbxexportyellowbkstk);
+				huchiOperationsForJCheckBox (huchixuanzeupdate,chckbxexportyellowbkstk);
+			}
+		});
+
+		
 	}
 	/*
 	 * 
@@ -448,6 +504,9 @@ class ExtraExportConditions extends JPanel
 		
 		label_2 = new JLabel("-----------------------");
 		add(label_2, "flowy,cell 0 16");
+		
+		chckbxexportyellowbkstk = new JCheckBox ("导出黄标板块和个股");
+		add(chckbxexportyellowbkstk, "flowy,cell 0 17");
 	}
 	/*
 	 * 
