@@ -47,9 +47,9 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 //		sorter.sort();
 		
 		this.getColumnModel().getColumn(1).setPreferredWidth(110);
-		this.getColumnModel().getColumn(2).setPreferredWidth(30);
-		this.getColumnModel().getColumn(5).setPreferredWidth(40);
-		this.getColumnModel().getColumn(7).setPreferredWidth(40);
+		this.getColumnModel().getColumn(7).setPreferredWidth(30);
+		this.getColumnModel().getColumn(4).setPreferredWidth(40);
+		this.getColumnModel().getColumn(6).setPreferredWidth(40);
 		
 //		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
 //		headerRenderer.setBackground(new Color(239, 198, 46));
@@ -75,8 +75,8 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
 	}
 	
 	//Implement table header tool tips.
-	String[] jtableTitleStringsTooltips = { "代码(周阳线阴线)", "名称(是否包含在分析文件)","高级排序排名(流通市值)",
-			"板块成交额贡献(跳空缺口)","大盘CJEZB增长率(突出涨幅)","CJEDpMaxWk(突出DPMAXWK)","大盘CJLZB增长率(大于指定均线)","周平均成交额MAXWK"};
+	String[] jtableTitleStringsTooltips = { "代码(周阳线阴线)", "名称(是否包含在分析文件)",
+			"板块成交额贡献(跳空缺口)","大盘CJEZB增长率(突出涨幅)","CJEDpMaxWk(突出DPMAXWK)","大盘CJLZB增长率(大于指定均线)","周平均成交额MAXWK","高级排序排名(流通市值)"};
 //	{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","周平均成交额MAXWK"};
     protected JTableHeader createDefaultTableHeader() 
     {

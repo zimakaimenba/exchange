@@ -211,7 +211,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		adjustDate (LocalDate.now());
 		
-		setUpZhongDianGuanZhuBanKuai ();
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
@@ -638,14 +637,16 @@ public class BanKuaiFengXi extends JDialog
 				} else
 					this.dateChooser.setDate(new Date ());
 				btnresetdate.setEnabled(false);
+				
+				
 
 	}
-	private void setUpZhongDianGuanZhuBanKuai ()
-	{
-		ServicesForNews zdgzsvs = this.dateChooser.getStockCalendar().getDuanQiGuanZhuService();
-		//DuanQiGuanZhuServices
-		zdgzsvs.getCache().addCacheListener(tableBkZhanBi);
-	}
+//	private void setUpZhongDianGuanZhuBanKuai ()
+//	{
+//		ServicesForNews zdgzsvs = this.dateChooser.getStockCalendar().getDuanQiGuanZhuService();
+//		//DuanQiGuanZhuServices
+//		zdgzsvs.getCache().addCacheListener(tableBkZhanBi);
+//	}
 	/*
 	 * 用户在界面的操作，各个模块的协同操作
 	 */
@@ -755,6 +756,9 @@ public class BanKuaiFengXi extends JDialog
 		} catch (java.lang.NullPointerException e) {
 				lbl50cje.setText( "本周没有数据" );
 		}
+		//设置下拉框的当前时间，为显示关注板块个股使用
+		((JStockComboBoxModel)combxsearchbk.getModel() ).setCurrentDataDate(curselectdate);
+		((JStockComboBoxModel)combxstockcode.getModel() ).setCurrentDataDate(curselectdate);
 		
 		curselectdate = null;
 		svsbk = null;

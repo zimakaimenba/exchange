@@ -486,6 +486,8 @@ public class SvsForNodeOfStock implements ServicesForNode
 		
 		return node;
 	}
+
+	
 	
 
 }

@@ -61,13 +61,18 @@ public class CreateExternalNewsDialog  extends ExternalNewsDialog<ExternalNewsTy
       public void mouseClicked(MouseEvent e) {
           super.mouseClicked(e);
 
-          try {
-        	  ExternalNewsType mt = getNews();
+            ExternalNewsType mt = getNews();
           	if(mt.getTitle().length() >150) {
           		JOptionPane.showMessageDialog(null,"新闻标题过长！");
           		setVisible(true);
           		return;
-          	} else { 
+          	} else
+          	if(mt.getStart().isAfter(mt.getEnd() )) {
+          		JOptionPane.showMessageDialog(null,"起始日期晚于截止日期，不合理！");
+          		setVisible(true);
+          		return;
+          	}
+          	 
           		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
           		SvsForNodeOfStock svsstock = new SvsForNodeOfStock (); 
           		SvsForNodeOfDaPan svsdapan = new SvsForNodeOfDaPan (); 
@@ -94,16 +99,15 @@ public class CreateExternalNewsDialog  extends ExternalNewsDialog<ExternalNewsTy
                 	JOptionPane.showMessageDialog(null,"信息已经在系统中，无需重复添加！");
                 	return;
                 }
-
-                NewsService.createNews(mt);
-          		
-          		setVisible(false);
-          	}
-          } catch (com.mysql.jdbc.MysqlDataTruncation e2) {
-          	e2.printStackTrace();
-      	}catch (SQLException e1) {
-              e1.printStackTrace();
-        }
+                
+                try {
+                	NewsService.createNews(mt);
+                	setVisible(false);
+                } catch (com.mysql.jdbc.MysqlDataTruncation e2) {
+                	e2.printStackTrace();
+                }catch (SQLException e1) {
+                	e1.printStackTrace();
+                }
       }
       
       private Boolean checkDuplicate(ExternalNewsType ExternalNewsType)

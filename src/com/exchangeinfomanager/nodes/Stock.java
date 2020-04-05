@@ -22,6 +22,7 @@ import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Range;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
@@ -57,7 +58,6 @@ public class Stock extends TDXNodes {
 	
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; 
 	private Set<BkChanYeLianTreeNode> suoShuCurSysBanKuai; 
-	
 	
 	public void setHasReviewedToday ()
 	{

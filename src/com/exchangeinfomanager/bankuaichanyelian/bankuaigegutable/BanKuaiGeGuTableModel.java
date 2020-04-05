@@ -17,7 +17,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	{
 		super ();
 		
-		String[] jtableTitleStrings = { "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","周平均成交额MAXWK"};
+		String[] jtableTitleStrings = { "代码", "名称","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","周平均成交额MAXWK","高级排序排名"};
 		
 		super.setTableHeader(jtableTitleStrings);
 		
@@ -62,18 +62,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 //            	thisbkname = null;
             	
             	break;
-            case 2://{ "代码", "名称","权重","流通市值排名",
-            	Integer paiming = this.entryList.indexOf(curdisplaystockofbankuai) + 1;
-            	value = paiming;
-            	
-//            	zhanbigrowthrate = null;
-//            	curdisplaystockofbankuai = null;
-//            	stockxdataforbk = null;
-//            	stock = null;
-//            	stockxdata = null;
-            	
-            	break;
-            case 3: // "板块成交额贡献",
+            case 2: // "板块成交额贡献",
             	Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
             	if(cjechangegrowthrate != null)
             		value = cjechangegrowthrate;
@@ -87,7 +76,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 //            	stockxdata = null;
             	
             	break;
-            case 4://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+            case 3://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
             	Double cjedpgrowthrate = stockxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
             	if(cjedpgrowthrate != null)
             		value = cjedpgrowthrate;
@@ -100,7 +89,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 //            	stockxdata = null;
             	
                 break;
-            case 5:
+            case 4:
             	Integer cjedpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
             	try{
             		if(cjedpmaxwk > 0) {
@@ -122,7 +111,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 //            	stockxdata = null;
             	
                 break;
-            case 6://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+            case 5://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
             	Double cjldpgrowthrate = stockxdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
             	value = cjldpgrowthrate;
             	
@@ -133,7 +122,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 //            	stockxdata = null;
             	
                 break;
-            case 7:
+            case 6:
             	Integer cjldpmaxwk = stockxdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
             	if(cjldpmaxwk != null && cjldpmaxwk > 0) {
             		value = cjldpmaxwk;
@@ -147,6 +136,17 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 //            	stockxdata = null;
             	
                 break;
+            case 7://{ "代码", "名称","权重","流通市值排名",
+            	Integer paiming = this.entryList.indexOf(curdisplaystockofbankuai) + 1;
+            	value = paiming;
+            	
+//            	zhanbigrowthrate = null;
+//            	curdisplaystockofbankuai = null;
+//            	stockxdataforbk = null;
+//            	stock = null;
+//            	stockxdata = null;
+            	
+            	break;
 	    	}
 	    	
 	    	return value;
@@ -160,26 +160,26 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
       public Class<?> getColumnClass(int columnIndex) { 
 		      Class clazz = String.class;
 		      switch (columnIndex) {
-		      case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+		      	case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
 		    	  clazz = String.class;
 		    	  break;
 		        case 1:
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = Integer.class;
+			          clazz = Double.class;
 			          break;
 		        case 3:
 			          clazz = Double.class;
 			          break;
 		        case 4:
-			          clazz = Double.class;
-			          break;
-		        case 5:
 		        	  clazz = Integer.class;
 			          break;
-		        case 6:
+		        case 5:
 			          clazz = Double.class;
+			          break;
+		        case 6:
+			          clazz = Integer.class;
 			          break;
 		        case 7:
 			          clazz = Integer.class;

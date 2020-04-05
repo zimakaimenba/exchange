@@ -60,6 +60,13 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		
 		return null;
 	}
+	public Boolean isEverBeingDuanQiGuanZhu ()
+	{
+		if(this.dqguangzhurange != null && dqguangzhurange.size() >0 )
+			return true;
+		else
+			return false;
+	}
 	public void addNewQiangShiRange (Range<LocalDate> inter) 
 	{
 //		for(int i=0; i<qiangshiinterval.size();i++) {

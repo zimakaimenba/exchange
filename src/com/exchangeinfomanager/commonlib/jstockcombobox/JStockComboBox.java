@@ -126,36 +126,6 @@ public class JStockComboBox extends  JComboBox<String>
 	/*
 	 * 
 	 */
-//	public BkChanYeLianTreeNode updateUserSelectedNode (Stock stock)
-//	{
-////		SvsForNodeOfStock svsbk = new SvsForNodeOfStock ();
-////		svsbk.getNodeJiBenMian(stock);
-//		
-//		Integer alreadyin = ((JStockComboBoxModel)getModel()).hasTheNode(stock.getMyOwnCode());
-//		if(alreadyin == -1) {
-//			((JStockComboBoxModel)getModel()).addElement( stock );
-//			((JStockComboBoxModel)getModel()).setSelectedItem(stock);
-//		}
-//		return stock;
-//	}
-//	/*
-//	 * 
-//	 */
-//	public BkChanYeLianTreeNode updateUserSelectedNode (BanKuai bk)
-//	{
-////		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-////		svsbk.getNodeJiBenMian(bk);
-//		
-//		Integer alreadyin = ((JStockComboBoxModel)getModel()).hasTheNode(bk.getMyOwnCode());
-//		if(alreadyin == -1) {
-//			((JStockComboBoxModel)getModel()).addElement( bk );
-//			((JStockComboBoxModel)getModel()).setSelectedItem(bk );
-//		}
-//		return bk;
-//	}
-	/*
-	 * 
-	 */
 	public BkChanYeLianTreeNode updateUserSelectedNode (String nodecode)
 	{
 //		BkChanYeLianTreeNode nodeshouldbedisplayed = preSearch (nodecode,nodetype);
@@ -331,16 +301,13 @@ public class JStockComboBox extends  JComboBox<String>
 		
 		String zdyguanzhubkname = sysconfig.getCurZdyBanKuaiOfGuanZhuGeGu ();
 		BanKuaiDbOperation bkdbopt = new BanKuaiDbOperation ();
-		Set<String> result = bkdbopt.sysnRecentGuanZhuGeGu (zdyguanzhubkname,searchstart,searchend);
-		for(String geguname : result ) {
-			Stock node = (Stock)bkstktree.getSpecificNodeByHypyOrCode(geguname, BkChanYeLianTreeNode.TDXGG);
-			if(node != null)
-				this.updateUserSelectedNode (node);
-			else
-				System.out.println(geguname + "Œ¥’“µΩ∏√π…°£");
+		 Set<BkChanYeLianTreeNode> result = bkdbopt.sysnRecentGuanZhuGeGu (zdyguanzhubkname,searchstart,searchend);
+		for(BkChanYeLianTreeNode node : result ) {
+//			Stock node = (Stock)bkstktree.getSpecificNodeByHypyOrCode(geguname, BkChanYeLianTreeNode.TDXGG);
+			this.updateUserSelectedNode (node);
 		}
 		
-		((JStockComboBoxNodeRenderer)this.getRenderer()).setGuanZhuGeGuList(result);
+//		((JStockComboBoxNodeRenderer)this.getRenderer()).setGuanZhuGeGuList(result);
 		
 		hourglassCursor = null;
 		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);

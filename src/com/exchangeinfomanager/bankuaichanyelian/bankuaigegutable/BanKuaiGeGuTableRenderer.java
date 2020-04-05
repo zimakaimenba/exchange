@@ -75,24 +75,6 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 	    JComponent jc = (JComponent)comp;
 	    
-	    if (comp instanceof JLabel && (col == 3 || col == 4 || col == 6)) { //用百分比显示
-	    	String valuepect = "";
-	    	try {
-        		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
-        		 
-        		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-	    	     percentFormat.setMinimumFractionDigits(1);
-            	 valuepect = percentFormat.format (formatevalue );
-        	} catch (java.lang.NullPointerException e) {
-        		valuepect = "";
-	    	}catch (java.lang.NumberFormatException e)   	{
-        		e.printStackTrace();
-        	} catch (ParseException e) {
-//				e.printStackTrace();
-			}
-        	((JLabel)comp).setText(valuepect);
-        }
-	    
 	    BanKuaiGeGuTableModel tablemodel =  (BanKuaiGeGuTableModel)table.getModel() ;
 	    BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
 	    
@@ -115,10 +97,30 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    }
 	    }
 	    
+	    String columnname = tablemodel.getColumnName(col);
+	    
+	    if (comp instanceof JLabel && (columnname.contains("大盘CJEZB增长率") 
+	    		|| columnname.contains("板块成交额贡献") || columnname.contains("大盘CJLZB增长率"))) { //用百分比显示  col == 3 || col == 4 || col == 6
+	    	String valuepect = "";
+	    	try {
+        		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
+        		 
+        		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+	    	     percentFormat.setMinimumFractionDigits(1);
+            	 valuepect = percentFormat.format (formatevalue );
+        	} catch (java.lang.NullPointerException e) {
+        		valuepect = "";
+	    	}catch (java.lang.NumberFormatException e)   	{
+        		e.printStackTrace();
+        	} catch (ParseException e) {
+//				e.printStackTrace();
+			}
+        	((JLabel)comp).setText(valuepect);
+        }
 	    
 	    Color foreground = Color.BLACK, background = Color.white;
 	    
-	    if( (table.isRowSelected(row) || stock.wetherHasReiewedToday() ) && col == 0 ) { //当前选择选择
+	    if( (table.isRowSelected(row) || stock.wetherHasReiewedToday() ) && columnname.contains("代码") ) { //当前选择选择
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
 		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
@@ -134,7 +136,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 //		    	background = Color.WHITE;
 	    } 
 	    
-	    if( col == 1 ) { //个股名称
+	    if( columnname.equals("名称") ) { //个股名称
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
 	 		NodesTreeRelated stofbktree = stock.getNodeTreeRelated();
     	
@@ -159,7 +161,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	else
 	    		foreground = Color.BLACK;
 	    } else 
-	    if( col == 2) { //流通市值
+	    if( columnname.contains("排序排名")) { //流通市值 col == 2
 	    	Double ltszmin ;
 		    Double ltszmax ;
 		    try {
@@ -186,7 +188,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    }
 	    	
 	    } else  
-	    if( col == 4  ) { //涨幅>=
+	    if( columnname.contains("大盘CJEZB增长率")  ) { //涨幅>= col == 4
 	    	Double zfmax = matchcond.getSettingZhangFuMax();
 	    	Double zfmin = matchcond.getSettingZhangFuMin();
 	    	
@@ -217,7 +219,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	}
 	    	
 	    }  else 
-	    if(col == 3   ) { //突出回补缺口
+	    if(columnname.contains("板块成交额贡献")   ) { //突出回补缺口 col == 3
 	    	background = Color.white ;
 		    Boolean hlqk = matchcond.hasHuiBuDownQueKou();
 		    if(hlqk ) {
@@ -233,8 +235,8 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    		background = Color.white ;
 		    }
 	    } else  
-	    if( col == 5    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股
-	    	int cjedpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 5).toString() );
+	    if( columnname.contains("CJEDpMaxWk")    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股 col == 5
+	    	int cjedpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, col).toString() );
 	    	
 	    	if(cjedpmaxwk > 0 ) {
 	    		int maxfazhi;
@@ -272,8 +274,8 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    			background = Color.white ;
 	    	} 
 	    } else  
-	    if( col == 7   && value != null  ) {
-	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, 7).toString() );
+	    if( columnname.contains("周平均成交额MAXWK")   && value != null  ) { //col == 7
+	    	int dpmaxwk = Integer.parseInt( tablemodel.getValueAt(modelRow, col).toString() );
 	    	
 	    	Integer cjemaxwk = matchcond.getSettingChenJiaoErMaxWk();
 	    	if(cjemaxwk == null)
@@ -284,7 +286,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	else 
 	    		 background = Color.white ;
 	    } else 
-	    if( col == 6   && value != null) { //突出MA,默认为大于
+	    if( columnname.contains("大盘CJLZB增长率")   && value != null) { //突出MA,默认为大于 col == 6
 	    	String displayma = matchcond.getSettingMaFormula();
 	    	background = Color.white ;
 	    	if (!Strings.isNullOrEmpty(displayma)) {

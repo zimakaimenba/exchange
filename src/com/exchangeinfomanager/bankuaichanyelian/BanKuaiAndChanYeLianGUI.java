@@ -694,11 +694,11 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		
 		btnAddBktotree = new SubnodeButton();
 		pnldown.add(btnAddBktotree, "cell 5 0");
-		btnAddBktotree.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
+		btnAddBktotree.setIcon(new ImageIcon(BanKuaiAndChanYeLianGUI.class.getResource("/images/subnode24.png")));
 		
 		btnAddGeGutotree = new SubnodeButton();
 		pnldown.add(btnAddGeGutotree, "cell 6 0");
-		btnAddGeGutotree.setIcon(new ImageIcon(BanKuaiAndChanYeLian2.class.getResource("/images/subnode24.png")));
+		btnAddGeGutotree.setIcon(new ImageIcon(BanKuaiAndChanYeLianGUI.class.getResource("/images/subnode24.png")));
 		
 		tfldfindgegu =  new JUpdatedTextField();
 		tfldfindgegu.setColumns(10);

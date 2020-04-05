@@ -39,6 +39,7 @@ import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
@@ -122,14 +123,17 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		}
 		
 		 if(superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
-			 superbankuai = allbksks.getBanKuai( (BanKuai)superbankuai, requirestart,requireend, NodeGivenPeriodDataItem.WEEK,true);
-			 this.allbksks.syncBanKuaiData( (BanKuai)superbankuai);
+			 SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+			 superbankuai = (TDXNodes) svsbk.getNodeData(superbankuai,requirestart,requireend, NodeGivenPeriodDataItem.WEEK,true);
+			 svsbk.syncNodeData(superbankuai);
+			 
+			 svsbk = null;
 		 }
 		
-		
-		this.allbksks.getDaPanKXian (requirestart,requireend,NodeGivenPeriodDataItem.DAY); 
-
-		nodekpnl.updatedDate(superbankuai,tmpnode,requirestart,requireend,NodeGivenPeriodDataItem.DAY);
+		 SvsForNodeOfDaPan svsdp = new SvsForNodeOfDaPan ();
+		 svsdp.getNodeData ("", requirestart,requireend,NodeGivenPeriodDataItem.DAY,true);
+		 
+		 nodekpnl.updatedDate(superbankuai,tmpnode,requirestart,requireend,NodeGivenPeriodDataItem.DAY);
 	}
 	/*
 	 * 

@@ -1,19 +1,24 @@
 package com.exchangeinfomanager.commonlib.jstockcombobox;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 
-import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxModel 
 {
-	 private ArrayList<BkChanYeLianTreeNode> nodelist;
-	 private AllCurrentTdxBKAndStoksTree allbkstock;
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private ArrayList<BkChanYeLianTreeNode> nodelist;
+//	 private AllCurrentTdxBKAndStoksTree allbkstock;
 
 	 BkChanYeLianTreeNode selection = null;
 	private int onlyselectnodetype;
+	private LocalDate curdisplaydate;
 	
 	  
 	  public JStockComboBoxModel (int onlyselectnodetype)
@@ -22,6 +27,14 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 		  this.onlyselectnodetype = onlyselectnodetype;
 	  }
 
+	  public void setCurrentDataDate (LocalDate date)
+	  {
+		  this.curdisplaydate = date;
+	  }
+	  public LocalDate getCurrentDataDate ()
+	  {
+		  return this.curdisplaydate;
+	  }
 	  public void addElement (Object node)
 	  {
 		  int nodetype = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) node).getType();

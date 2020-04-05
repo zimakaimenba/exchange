@@ -94,6 +94,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
@@ -7224,11 +7225,11 @@ public class BanKuaiDbOperation
 		/*
 		 * 
 		 */
-		public Set<String> sysnRecentGuanZhuGeGu(String zdybkname, LocalDate searchstartdate,LocalDate searchenddate) 
+		public Set<BkChanYeLianTreeNode> sysnRecentGuanZhuGeGu(String zdybkname, LocalDate searchstartdate,LocalDate searchenddate) 
 		{
-//			LocalDate searchstart = searchenddate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+			BanKuaiAndStockTree treeallstocks = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 
-			Set<String> namelist = new HashSet<String> ();
+			Set<BkChanYeLianTreeNode> namelist = new HashSet<> ();
 			CachedRowSetImpl rspd = null;
 			try {
 				String sqlquerystat = "SELECT * FROM 股票通达信自定义板块对应表 " +
@@ -7241,7 +7242,20 @@ public class BanKuaiDbOperation
 			    	
 			        while(rspd.next())  {
 			        	String stockcode=  rspd.getString("股票代码");
-			        	namelist.add(stockcode);
+			        	
+			        	Stock tmpstock = (Stock)treeallstocks.getSpecificNodeByHypyOrCode (stockcode,BkChanYeLianTreeNode.TDXGG);
+			        	
+			        	LocalDate joindate = rspd.getDate("加入时间").toLocalDate();
+			        	LocalDate removedate;
+			        	try {
+			        		removedate = rspd.getDate("移除时间").toLocalDate();
+			        	} catch (java.lang.NullPointerException e) {
+			        		removedate = LocalDate.parse("3000-01-01");
+			        	}
+			        	Range<LocalDate> rangedate = Range.closed(joindate, removedate);
+			        	
+			        	tmpstock.addNewDuanQiGuanZhuRange (rangedate);
+			        	namelist.add(tmpstock);
 			        }
 			} catch(java.lang.NullPointerException e){ 
 			    	e.printStackTrace();
