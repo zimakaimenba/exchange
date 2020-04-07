@@ -261,6 +261,8 @@ public class BanKuaiFengXi extends JDialog
 		cyltreecopy.searchAndLocateNodeInTree (selectedbk);
 		
 		showReminderMessage (bkfxremind.getBankuairemind());
+		
+		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股做准备
 	}
 	private void refreshCurrentBanKuaiTags(BanKuai selectedbk, String globeperiod2) 
 	{

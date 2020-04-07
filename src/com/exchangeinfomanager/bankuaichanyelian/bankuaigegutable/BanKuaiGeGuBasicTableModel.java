@@ -39,6 +39,8 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	protected String period;
 
 	private Collection<Tag> tags;
+
+	private BanKuai intersectionbankuai;
 	/*
 	 * 
 	 */
@@ -86,6 +88,9 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	{
 		return this.showwknum;
 	}
+	/*
+	 * 
+	 */
 	public String getCurDisplayPeriod ()
 	{
 		return this.period;
@@ -138,6 +143,17 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	public BanKuai getCurDispalyBandKuai ()
 	{
 		return this.curbk;
+	}
+	/*
+	 * 
+	 */
+	public BanKuai getInterSetctionBanKuai ()
+	{
+		return this.intersectionbankuai;
+	}
+	public void setInterSectionBanKuai (BanKuai bk)
+	{
+		this.intersectionbankuai = bk;
 	}
 	/*
 	 * 

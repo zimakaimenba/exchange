@@ -63,10 +63,14 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableRenderer.class);
-	
-	private Border outside = new MatteBorder(1, 0, 1, 0, Color.RED);
-	private Border inside = new EmptyBorder(0, 1, 0, 1);
-	private Border highlight = new CompoundBorder(outside, inside);
+	//
+	private Border outsidefortag = new MatteBorder(1, 0, 1, 0, Color.RED);
+	private Border insidefortag = new EmptyBorder(0, 1, 0, 1);
+	private Border highlightfortag = new CompoundBorder(outsidefortag, insidefortag);
+	//
+	private Border outsideforintersectionbk = new MatteBorder(1, 0, 1, 0, Color.YELLOW);
+	private Border insideforintersectionbk = new EmptyBorder(0, 1, 0, 1);
+	private Border highlightforintersectionbk = new CompoundBorder(outsideforintersectionbk, insideforintersectionbk);
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
 	{
@@ -87,13 +91,19 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         	Font font = new Font(defaultFont.getName(), Font.BOLD + Font.ITALIC,defaultFont.getSize());
         	comp.setFont(font);
         }
-	    
+	    //对于临时个股表，可以突出显示出正表中该板块的所有个股
+	    BanKuai interbk = tablemodel.getInterSetctionBanKuai();
+	    if(interbk!= null) {
+	    	if( interbk.getBanKuaiGeGu (stock.getMyOwnCode())  != null)
+	    		jc.setBorder( highlightforintersectionbk );
+	    }
+	    //
 	    Collection<Tag> keywordsset = tablemodel.getCurrentHighlightKeyWords ();
 	    if(keywordsset != null) {
 	    	Collection<Tag> curtags = stock.getNodeTags ();
 		    SetView<Tag> intersection = Sets.intersection((HashSet<Tag>)keywordsset, (HashSet<Tag>)curtags);
 		    if( !intersection.isEmpty() && intersection.size() == keywordsset.size() ) {
-		    	jc.setBorder( highlight );
+		    	jc.setBorder( highlightfortag );
 		    }
 	    }
 	    
