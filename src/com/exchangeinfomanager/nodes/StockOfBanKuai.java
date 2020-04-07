@@ -55,6 +55,9 @@ public class StockOfBanKuai extends TDXNodes
 	}
 	public Boolean isInBanKuaiAtSpecificDate (LocalDate checkdate) 
 	{
+		if(inAndOutBanKuaiInterval == null)
+			return false;
+		
 		Boolean inbk = false;
 		for(Interval tmpintvl : this.inAndOutBanKuaiInterval) {
 			DateTime checkdt= new DateTime(checkdate.getYear(), checkdate.getMonthValue(), checkdate.getDayOfMonth(), 0, 0, 0, 0);

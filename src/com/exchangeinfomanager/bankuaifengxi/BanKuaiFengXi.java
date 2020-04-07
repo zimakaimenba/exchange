@@ -3881,7 +3881,7 @@ public class BanKuaiFengXi extends JDialog
 			tfldweight.setPreferredSize(new Dimension(30, 25));
 			tfldweight.setToolTipText("\u4F8B\uFF1A(>=250 && <60) || >30");
 			tfldweight.setForeground(new Color(0,153,153) );
-			tfldweight.setText(">=250");
+			tfldweight.setText(">=250 || >60");
 //			tfldweight.setColumns(5);
 			
 			ckboxshowcje = new JCheckBox("\u7A81\u51FA\u6210\u4EA4\u989D\u533A\u95F4(\u4EBF)");

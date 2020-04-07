@@ -59,6 +59,8 @@ public class DisplayNodeSellBuyInfoServices implements ServicesOfDisplayNodeInfo
 	    			   outpu3part = tmpoutput3.get(0);
 	    		   } catch (java.lang.NullPointerException e) {
 	    			   
+	    		   } catch (java.lang.IndexOutOfBoundsException e) {
+	    			   
 	    		   }
 	    		   output =  output1 + " " + output2 + " " + outpu3part;
 	    	   } catch (java.lang.Exception e) {
