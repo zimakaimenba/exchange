@@ -87,6 +87,8 @@ public interface NodeXPeriodData
 //	public Integer getAverageDailyCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference);
 //	public Integer getCjlDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate,int difference,int settindpgmaxwk);
 	
+	public void calNodeOhlcMA ();
+	public Double[] getNodeOhlcMA (LocalDate  requireddate,int difference);
 	public Double[] getNodeOhlcSMA (LocalDate  requireddate,int difference);
 	public Boolean checkCloseComparingToMAFormula (String maformula, LocalDate requireddate, int difference);
 	

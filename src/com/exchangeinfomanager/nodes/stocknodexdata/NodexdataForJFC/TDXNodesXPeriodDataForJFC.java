@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.math.stat.StatUtils;
 import org.apache.log4j.Logger;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
@@ -58,7 +59,15 @@ import com.udojava.evalex.Expression;
 		
 		nodeohlc = new OHLCSeries(nodeperiodtype);
 		nodeamo = new TimeSeries(nodeperiodtype);
-		nodevol = new TimeSeries(nodeperiodtype);;
+		nodevol = new TimeSeries(nodeperiodtype);
+		
+		this.nodeohlcma5 = new TimeSeries(nodeperiodtype);
+		this.nodeohlcma10 = new TimeSeries(nodeperiodtype);
+		this.nodeohlcma20 = new TimeSeries(nodeperiodtype);
+		this.nodeohlcma30 = new TimeSeries(nodeperiodtype);
+		this.nodeohlcma60 = new TimeSeries(nodeperiodtype);
+		this.nodeohlcma120 = new TimeSeries(nodeperiodtype);
+		this.nodeohlcma250 = new TimeSeries(nodeperiodtype);
 	}
 	
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodDataForJFC.class);
@@ -90,7 +99,7 @@ import com.udojava.evalex.Expression;
 			nodeohlc.setNotify(false);
 			nodeohlc.add( (NodeGivenPeriodDataItemForJFC)kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+//			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
 		} catch (java.lang.IllegalArgumentException e) {
 //			e.printStackTrace();
 		}
@@ -102,11 +111,12 @@ import com.udojava.evalex.Expression;
 			nodevol.add(kdata.getJFreeChartPeriod( super.getNodeperiodtype() ), kdata.getMyOwnChengJiaoLiang(),false);
 
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+//			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
 		}
 		
 		super.addNewXPeriodData(kdata);
 	}
+	
 	public LocalDate getAmoRecordsStartDate ()
 	{
 		if(super.nodeamozhanbi.getItemCount() == 0)
@@ -265,7 +275,7 @@ import com.udojava.evalex.Expression;
 		org.ta4j.core.TimeSeries ohlcvaseries = new BaseTimeSeries.SeriesBuilder().withName(super.getNodeCode() + super.getNodeperiodtype()).build();
 		LocalDate tmpdate = requiredstart;
 		for(int i=0;i<this.nodeohlc.getItemCount();i++) {
-			OHLCItem dataitem = (OHLCItem)this.nodeohlc.getDataItem(i);
+			 OHLCItem dataitem = (OHLCItem)this.nodeohlc.getDataItem(i);
 			 RegularTimePeriod period = dataitem.getPeriod();
 			 tmpdate = period.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			 if(tmpdate.isBefore(requiredstart) )
@@ -918,9 +928,138 @@ import com.udojava.evalex.Expression;
 //			
 //			return -1;
 //		}
-	
+	/**
+	 * 
+	 */
+	public void calNodeOhlcMA ()
+	{
+		int itemcount = this.nodeohlc.getItemCount();
+		double[] closedata = new double[itemcount];
+		for(int i=0;i < this.nodeohlc.getItemCount();i++) {
+			OHLCItem dataitem = (OHLCItem)this.nodeohlc.getDataItem(i);
+			double close = dataitem.getCloseValue();
+			closedata[i] = close;
+		}
+		
+		Double ma5 = null;Double ma10 = null;Double ma20 = null;Double ma60 = null;Double ma250 = null;
+		for(int i= itemcount-1;i >=0;i--) {
+			OHLCItem dataitem = (OHLCItem)this.nodeohlc.getDataItem(i);
+			RegularTimePeriod period = dataitem.getPeriod();
+			
+			if(i>=5) {
+				if( this.nodeohlcma5.getIndex(period) <0  )
+				ma5 = StatUtils.mean(closedata, i-4, 5);
+				if(ma5 != null)
+					nodeohlcma5.add(period,ma5,false);
+			}
+			if(i>=10) {
+				if( this.nodeohlcma10.getIndex(period) <0  )
+				ma10 = StatUtils.mean(closedata, i-9, 10);
+				if(ma10 != null)
+					nodeohlcma10.add(period,ma10,false);
+			}
+			if(i>=20) {
+				if( this.nodeohlcma20.getIndex(period) <0  )
+				ma20 = StatUtils.mean(closedata, i-19, 20);
+				if(ma20 != null)
+					nodeohlcma20.add(period,ma20,false);
+			}
+			if(i>=60) {
+				if( this.nodeohlcma60.getIndex(period) <0  )
+				ma60 = StatUtils.mean(closedata, i-59, 60);
+				if(ma60 != null)
+					nodeohlcma60.add(period,ma60,false);
+			}
+			if(i>=250) {
+				if( this.nodeohlcma250.getIndex(period) <0  )
+				ma250 = StatUtils.mean(closedata, i-249, 250);
+				if(ma250 != null)
+					nodeohlcma250.add(period,ma250,false);
+			}
+		}
+	}
+	/*
+	 * 通过apache math计算MA
+	 */
+	 public Double[] getNodeOhlcMA (LocalDate  requireddate,int difference)
+	 {
+		int itemcount = this.nodeohlc.getItemCount();
+		double[] closedata = new double[itemcount];
+		for(int i=0;i < this.nodeohlc.getItemCount();i++) {
+			OHLCItem dataitem = (OHLCItem)this.nodeohlc.getDataItem(i);
+			double close = dataitem.getCloseValue();
+			closedata[i] = close;
+		}
+		
+		requireddate = super.adjustDate(requireddate, difference); //先确保日期是在交易日内
+		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriod(requireddate,difference);
+		Integer itemindex = this.getIndexOfSpecificDateOHLCData(requireddate,difference);
+		
+		Double ma5 = null;
+		Integer ma5index = this.nodeohlcma5.getIndex(expectedperiod);
+		if(ma5index == -1 && itemindex>=5) {
+			ma5 = StatUtils.mean(closedata, itemindex-4, 5);
+			nodeohlcma5.add(expectedperiod,ma5,false);
+		} else
+		{
+			TimeSeriesDataItem ma5item = this.nodeohlcma5.getDataItem(expectedperiod);
+			if(ma5item != null)
+			ma5 = ma5item.getValue().doubleValue();
+		}
+		 
+		Double ma10 = null;
+		Integer ma10index = this.nodeohlcma10.getIndex(expectedperiod);
+		if(ma10index == -1 && itemindex>=10) {
+			ma10 = StatUtils.mean(closedata, itemindex-9, 10);
+			nodeohlcma10.add(expectedperiod,ma10,false);
+		} else
+		{
+			TimeSeriesDataItem ma10item = this.nodeohlcma10.getDataItem(expectedperiod);
+			if(ma10item != null)
+				ma10 = ma10item.getValue().doubleValue();
+		} 
+		
+		Double ma20 = null;
+		Integer ma20index = this.nodeohlcma20.getIndex(expectedperiod);
+		if(ma20index == -1 && itemindex>=20) {
+			ma20 = StatUtils.mean(closedata, itemindex-19, 20);
+			nodeohlcma20.add(expectedperiod,ma20,false);
+		} else
+		{
+			TimeSeriesDataItem ma20item = this.nodeohlcma20.getDataItem(expectedperiod);
+			if(ma20item != null)
+				ma20 = ma20item.getValue().doubleValue();
+		}
+		
+		Double ma60 = null;
+		Integer ma60index = this.nodeohlcma60.getIndex(expectedperiod);
+		if(ma60index == -1 && itemindex>=60) {
+			ma60 = StatUtils.mean(closedata, itemindex-59, 60);
+			nodeohlcma60.add(expectedperiod,ma60,false);
+		} else
+		{
+			TimeSeriesDataItem ma60item = this.nodeohlcma60.getDataItem(expectedperiod);
+			if(ma60item != null)
+			ma60 = ma60item.getValue().doubleValue();
+		} 
+		
+		Double ma250 = null;
+		Integer ma250index = this.nodeohlcma250.getIndex(expectedperiod);
+		if(ma250index == -1 && itemindex>=250) {
+			ma250 = StatUtils.mean(closedata, itemindex-249, 250);
+			nodeohlcma250.add(expectedperiod,ma250,false);
+		} else
+		{
+			TimeSeriesDataItem ma250item = this.nodeohlcma250.getDataItem(expectedperiod);
+			if(ma250item != null)
+			ma250 = ma250item.getValue().doubleValue();
+		} 
+		 
+		Double sma[] = {ma5,ma10,ma20,null,ma60,null,ma250};
+		return sma;
+	 }
 	 /*
-	  * 周线计算 1，2，4，6，12，24，55 对应日线5，10，20，30，60，120，250，
+	  * 
 	  */
 	 public Double[] getNodeOhlcSMA (LocalDate  requireddate,int difference)
 	 {
@@ -928,7 +1067,7 @@ import com.udojava.evalex.Expression;
 		 
 		 org.ta4j.core.TimeSeries ohlcvaseries = this.getOHLCDataOfTa4jFormat(this.getOHLCRecordsStartDate(), this.getOHLCRecordsEndDate() );
 		 
-		 Integer location = null;
+		 	Integer location = null; //获取该日期在数据集中的位置
 			for(int i = 0;i<ohlcvaseries.getBarCount();i++) {
 				Bar bar = ohlcvaseries.getBar(i);
 				ZonedDateTime time = bar.getEndTime();
@@ -1169,7 +1308,8 @@ import com.udojava.evalex.Expression;
 		 if (ohlcdata != null) {
 		    	Double close = (Double)ohlcdata.getCloseValue();
 		    	String i = "";
-			    Double[] maresult = this.getNodeOhlcSMA(tmpdate, 0);
+//			    Double[] maresult = this.getNodeOhlcSMA(tmpdate, 0);
+		    	Double[] maresult = this.getNodeOhlcMA(tmpdate, 0);
 			    Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
 			    if( result != null )
 			    	return result;
@@ -1618,48 +1758,6 @@ import com.udojava.evalex.Expression;
 			return doc.toString();
 		}
 		
-//		protected Boolean isNodeDataFuPaiAfterTingPai (DaPan superbk, LocalDate requireddate,int difference)
-//		{
-//			int index = this.nodeamo.getIndex( super.getJFreeChartFormateTimePeriod(requireddate,difference) );
-//			
-//			TimeSeriesDataItem lastcjlrecord = null;
-//			try{
-//				lastcjlrecord = nodeamo.getDataItem( index - 1);
-//			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-//				logger.debug("index = 0，可能是新股第一周");
-//				return true;
-//			}
-//			Date lastdate = lastcjlrecord.getPeriod().getEnd();
-//			LocalDate lastld = lastdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			//和大盘上周的日期比较
-//			String nodept = getNodeperiodtype();
-//			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-//			int superbkindex = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, 0);
-//			int bklstindex = 0;
-//			for(int i= -1;;i--) {
-//				Integer bklastxdata = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, i);
-//				if(bklastxdata != null) {
-//					bklstindex = bklastxdata;
-//					break;
-//				}
-//			}
-//			LocalDate bklastlocaldate = bkxdata.getLocalDateOfSpecificIndexOfOHLCData(bklstindex);
-//			
-//			
-//			WeekFields weekFields = WeekFields.of(Locale.getDefault());
-//			int year2 = lastld.getYear();
-//			int weeknumber2 = lastld.get(weekFields.weekOfWeekBasedYear());
-//			
-//			int year1 = bklastlocaldate.getYear();
-//			int weeknumber1 = bklastlocaldate.get(weekFields.weekOfWeekBasedYear());
-//			
-//			if(year1 != year2)
-//				return true;
-//			else if(year1 == year2 && weeknumber1 != weeknumber2  ) //板块一般不会停牌，以板块为基准
-//				return true;
-//			else 
-//				return false;
-//		}
 		protected Boolean isNodeDataFuPaiAfterTingPai (TDXNodes superbk, LocalDate requireddate,int difference)
 		{
 			int index = this.nodeamo.getIndex( super.getJFreeChartFormateTimePeriod(requireddate,difference) );
