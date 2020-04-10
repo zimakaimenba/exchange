@@ -18,9 +18,11 @@ import java.util.Locale;
 
 import org.apache.commons.math.stat.StatUtils;
 import org.apache.log4j.Logger;
+import org.jfree.data.ComparableObjectItem;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.time.Week;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 import org.jsoup.Jsoup;
@@ -257,6 +259,10 @@ import com.udojava.evalex.Expression;
 	{
 		return this.nodeohlc;
 	}
+	public TimeSeries getMA250 ()
+	{
+		return this.nodeohlcma250;
+	}
 	/*
 	 * 
 	 */
@@ -305,20 +311,60 @@ import com.udojava.evalex.Expression;
 	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate,int difference)
 	{
 		int itemcount = this.nodeohlc.getItemCount();
-
-		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriod(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForOHLC (requireddate, difference);
+		if(curperiod == null)
+			return null;
 		
 		for(int i=0;i<itemcount;i++) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-			if(dataitemp.equals(expectedperiod) )
-				return i;
+			if(dataitemp.equals(curperiod) )
+				 return i ;
+		}
+
+		return null;
+	}
+	/*
+	 * 
+	 */
+	protected RegularTimePeriod getJFreeChartFormateTimePeriodForOHLC (LocalDate requireddate,int difference) 
+	{
+		int itemcount = this.nodeohlc.getItemCount();
+		String nodeperiod = this.getNodeperiodtype();
+		RegularTimePeriod period = null;
+		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+			period = new org.jfree.data.time.Week (lastdayofweek);
+		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+			period = new org.jfree.data.time.Day (lastdayofweek);
+		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
+		}
+
+		int curindex = 0;
+		for(int i=0;i<itemcount;i++) {
+			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
+			if(dataitemp.equals(period) ) {
+				curindex = i;
+				
+				try {
+					OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(curindex + difference);
+					if(result != null) {
+						RegularTimePeriod ep = result.getPeriod();
+						return result.getPeriod();
+					}
+				} catch ( java.lang.IndexOutOfBoundsException e) {
+					return null;
+				}
+				
+				break;
+			}
 		}
 		
 		return null;
 	}
 	public LocalDate getLocalDateOfSpecificIndexOfOHLCData (Integer index)
 	{
-		TimeSeriesDataItem indexrecord = this.nodeamo.getDataItem(index);
+		OHLCItem indexrecord = (OHLCItem)this.nodeohlc.getDataItem(index);
 		Date end = indexrecord.getPeriod().getEnd();
 		return end.toInstant()
 			      .atZone(ZoneId.systemDefault())
@@ -331,12 +377,14 @@ import com.udojava.evalex.Expression;
 	public OHLCItem getSpecificDateOHLCData (LocalDate requireddate,int difference)
 	{
 		int itemcount = this.nodeohlc.getItemCount();
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForOHLC (requireddate,difference);
+		
 		for(int i=0;i<itemcount;i++) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-			if(dataitemp.equals(this.getJFreeChartFormateTimePeriod(requireddate,0)) )
-				return (OHLCItem) this.nodeohlc.getDataItem(i);
+			if(dataitemp.equals(curperiod) )
+				 return (OHLCItem)this.nodeohlc.getDataItem(i);
 		}
-		
+
 		return null;
 	}
 	
@@ -496,11 +544,12 @@ import com.udojava.evalex.Expression;
 	 */
 	public Double getChengJiaoEr (LocalDate requireddate,int difference)
 	{
-		
 		TimeSeriesDataItem curcjlrecord = null;
-//		if(difference >=0 )
-			curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
-		
+		RegularTimePeriod period = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		if(period == null)
+			return null;
+					
+		curcjlrecord = nodeamo.getDataItem(period);
 		if( curcjlrecord == null) 
 			return null;
 		else
@@ -532,11 +581,15 @@ import com.udojava.evalex.Expression;
 		if(nodeohlc == null)
 			return null;
 		
-		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+		if(curperiod == null)
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( curperiod);
 		if( curcjlrecord == null) 
 			return null;
 		
-		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
+		int index = nodeamo.getIndex(curperiod);
 		try{
 			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( index -1 );
 			if(lastcjlrecord == null) //休市前还是空，说明要是新板块。板块没有停牌的
@@ -555,17 +608,20 @@ import com.udojava.evalex.Expression;
 	 * 每日均量和上周均量的差额
 	 */
 	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate,int difference)
-	{String i ="";
+	{
 		if(nodeohlc == null)
 			return null;
 		
-		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+		if(curperiod == null)
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( curperiod );
 		if( curcjlrecord == null) 
 			return null;
 		
 		Integer curexchangedaynum = super.getExchangeDaysNumberForthePeriod(requireddate,difference);
-		
-		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
+		int index = nodeamo.getIndex(curperiod);
 		try{
 			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( index -1 );
 			if(lastcjlrecord == null) 
@@ -591,14 +647,18 @@ import com.udojava.evalex.Expression;
 	@Override
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
-		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+		if(curperiod == null)
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem(curperiod);
 		if( curcjlrecord == null) 
 			return null;
 		
 		Double curcje = curcjlrecord.getValue().doubleValue();
 		int maxweek = 0;
 		
-		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+		int index = nodeamo.getIndex(curperiod );
 		
 		for(int i = index-1;i >=0; i--) {
 			
@@ -618,7 +678,11 @@ import com.udojava.evalex.Expression;
 	@Override
 	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference)
 	{
-		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+		if(curperiod == null)
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( curperiod);
 		if( curcjlrecord == null) 
 			return null;
 		
@@ -626,7 +690,7 @@ import com.udojava.evalex.Expression;
 		Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
 		int maxweek = 0;
 		
-		int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+		int index = nodeamo.getIndex(curperiod );
 		
 		for(int i = index-1;i >=0; i--) {
 			
@@ -650,7 +714,11 @@ import com.udojava.evalex.Expression;
 	 */
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (TDXNodes superbk, LocalDate requireddate,int difference) 
 	{
-		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+		if(curperiod == null)
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( curperiod );
 		if( curcjlrecord == null) 
 			return null;
 		
@@ -663,7 +731,7 @@ import com.udojava.evalex.Expression;
 		}
 		
 		TimeSeriesDataItem lastcjlrecord = null;
-		int index = this.nodeamo.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		int index = this.nodeamo.getIndex( curperiod );
 		try{
 			lastcjlrecord = nodeamo.getDataItem( index - 1);
 		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
@@ -691,8 +759,11 @@ import com.udojava.evalex.Expression;
 	 */
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate,int difference) 
 	{	
-		String nodecode = super.getNodeCode();
-		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+		if(curperiod == null)
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( curperiod );
 		if( curcjlrecord == null) 
 			return null;
 		
@@ -711,7 +782,7 @@ import com.udojava.evalex.Expression;
 		}
 		
 		TimeSeriesDataItem lastcjlrecord = null;
-		int index = this.nodeamo.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
+		int index = this.nodeamo.getIndex( curperiod );
 		try{
 			lastcjlrecord = nodeamo.getDataItem( index - 1);
 		}	catch (java.lang.IndexOutOfBoundsException ex) {
@@ -739,7 +810,11 @@ import com.udojava.evalex.Expression;
 	  */
 	 public Integer getAverageDailyCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference)
 	 {
-		 TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		 RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			if(curperiod == null)
+				return null;
+			
+		 TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( curperiod);
 		 if( curcjlrecord == null) 
 				return null;
 			
@@ -747,7 +822,7 @@ import com.udojava.evalex.Expression;
 		 Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
 		 int maxweek = 0;
 			
-		 int index = nodeamo.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+		 int index = nodeamo.getIndex(curperiod );
 			
 		 for(int i = index-1;i >=0; i--) {
 				
@@ -790,9 +865,12 @@ import com.udojava.evalex.Expression;
 	 @Override
 		public Double getChengJiaoLiang(LocalDate requireddate, int difference) 
 		{
+		 	RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			if(curperiod == null)
+				return null;
+			
 			TimeSeriesDataItem curcjlrecord = null;
-//			if(difference >=0 )
-				curcjlrecord = nodevol.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			curcjlrecord = nodevol.getDataItem( curperiod);
 			
 			if( curcjlrecord == null) 
 				return null;
@@ -805,11 +883,15 @@ import com.udojava.evalex.Expression;
 			if(nodeohlc == null)
 				return null;
 			
-			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			if(curperiod == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( curperiod);
 			if( curcjlrecord == null) 
 				return null;
 			
-			int index = nodevol.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference));
+			int index = nodevol.getIndex(curperiod);
 //			DaPan dapan = (DaPan)getRoot();
 //			while ( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) {  //上周可能大盘修饰
 //				index --;
@@ -830,7 +912,11 @@ import com.udojava.evalex.Expression;
 	 @Override
 		public Integer getChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
 		{
-			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		 	RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			if(curperiod == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( curperiod);
 			if( curcjlrecord == null) 
 				return null;
 			
@@ -838,7 +924,7 @@ import com.udojava.evalex.Expression;
 			int itemcount = nodevol.getItemCount();
 			int maxweek = 0;
 			
-			int index = nodevol.getIndex(getJFreeChartFormateTimePeriod(requireddate,difference) );
+			int index = nodevol.getIndex(curperiod );
 			
 			for(int i = index-1;i >=0; i--) {
 				
@@ -858,7 +944,11 @@ import com.udojava.evalex.Expression;
 		@Override
 		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,	int difference) 
 		{
-			TimeSeriesDataItem curcjlrecord = this.nodevol.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			if(curperiod == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = this.nodevol.getDataItem( curperiod );
 			if( curcjlrecord == null) 
 				return null;
 			
@@ -872,7 +962,7 @@ import com.udojava.evalex.Expression;
 			}
 			
 			TimeSeriesDataItem lastcjlrecord = null;
-			int index = this.nodevol.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			int index = this.nodevol.getIndex( curperiod );
 			try{
 				lastcjlrecord = nodevol.getDataItem( index - 1);
 			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
@@ -977,6 +1067,7 @@ import com.udojava.evalex.Expression;
 					nodeohlcma250.add(period,ma250,false);
 			}
 		}
+		
 	}
 	/*
 	 * 通过apache math计算MA
@@ -991,8 +1082,8 @@ import com.udojava.evalex.Expression;
 			closedata[i] = close;
 		}
 		
-		requireddate = super.adjustDate(requireddate, difference); //先确保日期是在交易日内
-		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriod(requireddate,difference);
+		requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
+		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriodForOHLC(requireddate,difference);
 		Integer itemindex = this.getIndexOfSpecificDateOHLCData(requireddate,difference);
 		
 		Double ma5 = null;
@@ -1063,7 +1154,7 @@ import com.udojava.evalex.Expression;
 	  */
 	 public Double[] getNodeOhlcSMA (LocalDate  requireddate,int difference)
 	 {
-		 requireddate = super.adjustDate(requireddate, difference); //先确保日期是在交易日内
+		 requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
 		 
 		 org.ta4j.core.TimeSeries ohlcvaseries = this.getOHLCDataOfTa4jFormat(this.getOHLCRecordsStartDate(), this.getOHLCRecordsEndDate() );
 		 
@@ -1124,7 +1215,7 @@ import com.udojava.evalex.Expression;
 	  */
 	 public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange)
 	 {
-		 requireddate = this.adjustDate(requireddate, difference); //先确保日期是在交易日内
+		 requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
 		 
 		 org.ta4j.core.TimeSeries ohlcvaseries = this.getOHLCDataOfTa4jFormat(requireddate.minusMonths(monthrange + 3),requireddate);
 		 
@@ -1208,7 +1299,7 @@ import com.udojava.evalex.Expression;
 	  */
 	 public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange)
 	 {
-		 requireddate = this.adjustDate(requireddate, difference); //先确保日期是在交易日内
+		 requireddate = this.adjustDate(requireddate); //先确保日期是在交易日内
 		 
 		 org.ta4j.core.TimeSeries ohlcvaseries = this.getOHLCDataOfTa4jFormat(requireddate.minusMonths(monthrange + 3),requireddate);
 		 
@@ -1307,9 +1398,7 @@ import com.udojava.evalex.Expression;
 		    
 		 if (ohlcdata != null) {
 		    	Double close = (Double)ohlcdata.getCloseValue();
-		    	String i = "";
-//			    Double[] maresult = this.getNodeOhlcSMA(tmpdate, 0);
-		    	Double[] maresult = this.getNodeOhlcMA(tmpdate, 0);
+		    	Double[] maresult = this.getNodeOhlcMA(tmpdate, difference);
 			    Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
 			    if( result != null )
 			    	return result;
@@ -1760,7 +1849,11 @@ import com.udojava.evalex.Expression;
 		
 		protected Boolean isNodeDataFuPaiAfterTingPai (TDXNodes superbk, LocalDate requireddate,int difference)
 		{
-			int index = this.nodeamo.getIndex( super.getJFreeChartFormateTimePeriod(requireddate,difference) );
+			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			if(curperiod == null)
+				return null;
+			
+			int index = this.nodeamo.getIndex( curperiod );
 			
 			TimeSeriesDataItem lastcjlrecord = null;
 			try{

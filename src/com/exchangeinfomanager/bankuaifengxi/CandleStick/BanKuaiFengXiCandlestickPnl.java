@@ -83,6 +83,7 @@ import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.chart.renderer.xy.HighLowRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRendererState;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.ComparableObjectItem;
 import org.jfree.data.general.SeriesDataset;
 import org.jfree.data.time.Day;
@@ -103,6 +104,7 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.ta4j.core.Bar;
 
@@ -156,6 +158,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 
 	private NumberAxis priceAxis;
 	private ChartPanel chartPanel;
+	
+	private TimeSeriesCollection maDataSet ;
 
 	private JFreeChart candlestickChart;
 
@@ -234,8 +238,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.setNotify(false);
 		this.resetDate();
 		
-		setNodeCandleStickDate ( node,  requirestart,  requireend, period , 0);
-		setNodeCandleStickDate ( superbk,  requirestart,  requireend, period , 1);
+		setNodeCandleStickDate2 ( node,  requirestart,  requireend, period , 0);
+		setNodeCandleStickDate2 ( superbk,  requirestart,  requireend, period , 1);
 		
 
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
@@ -264,8 +268,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		LocalDate tmpdate = requirestart;
 		double lowestLow =10000.0;  double highestHigh = 0.0;
 		do  {
-			OHLCItem tmpohlic = nodexdata.getSpecificDateOHLCData(tmpdate, 0);
-			if(tmpohlic == null) {
+			OHLCItem tmpohlc = nodexdata.getSpecificDateOHLCData(tmpdate, 0);
+			if(tmpohlc == null) {
 				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 				else if(period.equals(NodeGivenPeriodDataItem.DAY))
@@ -275,11 +279,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				
 				continue;
 			}
-
-			tmpohlcSeries.add(tmpohlic);
 			
-			Double low = tmpohlic.getLowValue();
-			Double high = tmpohlic.getHighValue();
+			try {
+				tmpohlcSeries.add(tmpohlc);
+			} catch (org.jfree.data.general.SeriesException e) {
+				e.printStackTrace();
+			}
+			
+			Double low = tmpohlc.getLowValue();
+			Double high = tmpohlc.getHighValue();
 			
 			if(low < lowestLow && low !=0) {//股价不可能为0，为0，说明停牌，无需计算
 				lowestLow = low;
@@ -319,6 +327,105 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         tmpohlcSeries.setNotify(false);
         tmpcandlestickDataset.setNotify(false);
         candlestickChart.setNotify(false);
+	}
+	/*
+	 * 
+	 */
+	private Interval getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+	(LocalDate requiredstartday,LocalDate requiredendday,LocalDate nodestart,LocalDate nodeend)
+	{
+		if(nodestart == null)
+		return null;
+		
+		DateTime nodestartdt= new DateTime(nodestart.getYear(), nodestart.getMonthValue(), nodestart.getDayOfMonth(), 0, 0, 0, 0);
+		DateTime nodeenddt = new DateTime(nodeend.getYear(), nodeend.getMonthValue(), nodeend.getDayOfMonth(), 0, 0, 0, 0);
+		Interval nodeinterval = new Interval(nodestartdt, nodeenddt);
+		
+		DateTime requiredstartdt= new DateTime(requiredstartday.getYear(), requiredstartday.getMonthValue(), requiredstartday.getDayOfMonth(), 0, 0, 0, 0);
+		DateTime requiredenddt= new DateTime(requiredendday.getYear(), requiredendday.getMonthValue(), requiredendday.getDayOfMonth(), 0, 0, 0, 0);
+		Interval requiredinterval = new Interval(requiredstartdt,requiredenddt);
+		
+		Interval overlapinterval = requiredinterval.overlap(nodeinterval);
+		
+		return overlapinterval;
+	}
+	/*
+	 * 个股和板块的K线可以重叠显示 
+	 */
+	private void setNodeCandleStickDate2(TDXNodes node, LocalDate requirestart, LocalDate requireend,
+			String period, int indexofseries) 
+	{
+		// TODO Auto-generated method stub
+		OHLCSeries tmpohlcSeries =  new OHLCSeries ("Kxian"); ;
+		OHLCSeriesCollection tmpcandlestickDataset;
+		tmpcandlestickDataset = (OHLCSeriesCollection)candlestickChart.getXYPlot().getDataset(indexofseries);
+			
+		tmpohlcSeries.setNotify(false);
+		tmpcandlestickDataset.setNotify(false);
+		
+		TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) node.getNodeXPeroidData(period);
+		LocalDate nodestart = nodexdata.getOHLCRecordsStartDate();
+		LocalDate nodeend = nodexdata.getOHLCRecordsEndDate();
+		Interval result = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval (nodestart,nodeend, requirestart, requireend);
+		DateTime overlapstartdt = result.getStart();
+		DateTime overlapenddt = result.getEnd();
+		
+		LocalDate overlapldstartday = LocalDate.of(overlapstartdt.getYear(), overlapstartdt.getMonthOfYear(), overlapstartdt.getDayOfMonth());//.with(DayOfWeek.MONDAY);
+		LocalDate overlapldendday = LocalDate.of(overlapenddt.getYear(), overlapenddt.getMonthOfYear(), overlapenddt.getDayOfMonth());//.with(DayOfWeek.FRIDAY);
+		
+		Integer indexstart = nodexdata.getIndexOfSpecificDateOHLCData(overlapldstartday, 0);
+		Integer indexend = nodexdata.getIndexOfSpecificDateOHLCData(overlapldendday, 0);
+		double lowestLow =10000.0;  double highestHigh = 0.0;
+		for(int i= indexstart; i<= indexend; i++) {
+			OHLCItem tmpohlc =  (OHLCItem) nodexdata.getOHLCData().getDataItem(i);
+			
+			try {
+				tmpohlcSeries.add(tmpohlc);
+			} catch (org.jfree.data.general.SeriesException e) {
+				e.printStackTrace();
+			}
+			
+			Double low = tmpohlc.getLowValue();
+			Double high = tmpohlc.getHighValue();
+			
+			if(low < lowestLow && low !=0) {//股价不可能为0，为0，说明停牌，无需计算
+				lowestLow = low;
+			}
+			if(high > highestHigh && high !=0) {
+				highestHigh = high;
+			}
+
+		}
+
+
+		tmpohlcSeries.setNotify(false);
+		tmpcandlestickDataset.setNotify(false);
+		
+		try {
+			candlestickChart.getXYPlot().getRangeAxis(indexofseries).setRange(lowestLow*0.98, highestHigh*1.02);
+		} catch (java.lang.IllegalArgumentException e ) {
+//			e.printStackTrace();
+		}
+		
+		if(indexofseries == 0) {
+			ohlcSeries = tmpohlcSeries;
+		} else {
+			dapanohlcSeries = tmpohlcSeries;
+		}
+		tmpcandlestickDataset.addSeries(tmpohlcSeries);
+		
+		TimeSeries ma250ts = nodexdata.getMA250();
+		if(ma250ts != null)
+			this.maDataSet.addSeries(ma250ts);
+		
+		this.maDataSet.setNotify(true);
+		tmpohlcSeries.setNotify(true);
+        tmpcandlestickDataset.setNotify(true);
+        candlestickChart.setNotify(true);
+        tmpohlcSeries.setNotify(false);
+        tmpcandlestickDataset.setNotify(false);
+        candlestickChart.setNotify(false);
+        this.maDataSet.setNotify(false);
 	}
 	/*
 	 * 
@@ -1012,13 +1119,19 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		dapancandlestickDataset = new OHLCSeriesCollection();
 		candlestickChart.getXYPlot().setDataset(1,dapancandlestickDataset);
 		candlestickChart.getXYPlot().setRenderer(1, new BanKuaiFengXiCandlestickZhiShuRenderer());
+		
+		maDataSet = new TimeSeriesCollection();
+		candlestickChart.getXYPlot().setDataset(3, maDataSet);
+		candlestickChart.getXYPlot().setRenderer(3, new  XYLineAndShapeRenderer (true, false) );
+		
 		ValueAxis rangeAxis2 = new NumberAxis("");
 		rangeAxis2.setUpperMargin(0.0);   
 		rangeAxis2.setLowerMargin(0.0); 
 		candlestickChart.getXYPlot().setRangeAxis(1, rangeAxis2);
       
 		candlestickChart.getXYPlot().mapDatasetToRangeAxis(0, 0);
-		candlestickChart.getXYPlot().mapDatasetToRangeAxis(1, 1); 
+		candlestickChart.getXYPlot().mapDatasetToRangeAxis(1, 1);
+		candlestickChart.getXYPlot().mapDatasetToRangeAxis(3, 0);
       // change the rendering order so the primary dataset appears "behind" the 
       // other datasets...
 		candlestickChart.getXYPlot().setDatasetRenderingOrder(DatasetRenderingOrder.REVERSE);
@@ -1104,6 +1217,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		} catch (java.lang.NullPointerException e) {
 			
 		}
+		
+		this.maDataSet.removeAllSeries();
 		
 		this.hasmacddivergence = false;
 	

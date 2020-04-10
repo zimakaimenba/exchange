@@ -21,6 +21,12 @@ public class BanKuaiXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC
 			super(nodecode,nodeperiodtype1);
 		}
 
+		@Override
+		public Boolean hasFxjgInPeriod(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 //		@Override
 //		public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {
 //			// TODO Auto-generated method stub

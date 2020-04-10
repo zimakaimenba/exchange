@@ -73,13 +73,16 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		if(this.stockmairujl == null)
 			return null;
 		
-		TimeSeriesDataItem gzjlitem = stockmairujl.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem gzjlitem = stockmairujl.getDataItem( getJFreeChartFormateTimePeriodForAMO(requireddate,difference));
 		if(gzjlitem == null)
 			return null;
 		
 		Integer value = (Integer)gzjlitem.getValue();
 		return value;
 	}
+	/*
+	 * 
+	 */
 	public void addMaiChuJiLu (RegularTimePeriod period,Integer fxjg) 
 	{
 		if(this.stockmaichuujl == null)
@@ -99,7 +102,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		if(this.stockmaichuujl == null)
 			return null;
 		
-		TimeSeriesDataItem gzjlitem = stockmaichuujl.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem gzjlitem = stockmaichuujl.getDataItem( getJFreeChartFormateTimePeriodForAMO(requireddate,difference));
 		if(gzjlitem == null)
 			return null;
 		
@@ -115,7 +118,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		if(this.stockgzjl == null)
 			return null;
 		
-		TimeSeriesDataItem gzjlitem = stockgzjl.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem gzjlitem = stockgzjl.getDataItem( getJFreeChartFormateTimePeriodForAMO(requireddate,difference));
 		if(gzjlitem == null)
 			return null;
 		
@@ -304,7 +307,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	public Double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference)
 	{
 		try{
-			TimeSeriesDataItem curhslrecord = stockhuanshoulv.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			TimeSeriesDataItem curhslrecord = stockhuanshoulv.getDataItem( getJFreeChartFormateTimePeriodForAMO(requireddate,difference));
 			Double curhsl = curhslrecord.getValue().doubleValue();
 			
 			return curhsl;
@@ -320,7 +323,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 */
 	public Double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference)
 	{
-		TimeSeriesDataItem curzszrecord = stockzongshizhi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem curzszrecord = stockzongshizhi.getDataItem( getJFreeChartFormateTimePeriodForAMO(requireddate,difference));
 		Double curzsz = null ;
 		try {
 			curzsz = curzszrecord.getValue().doubleValue();
@@ -336,7 +339,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 */
 	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
 	{
-		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriodForAMO(requireddate,difference));
 		Double curhzdf = null ;
 		try {
 			curhzdf = curhighzdfrecord.getValue().doubleValue();
@@ -352,7 +355,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 */
 	public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference)
 	{
-		TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem( getJFreeChartFormateTimePeriodForAMO(requireddate,difference));
 		Double curlzdf = null ;
 		try {
 			curlzdf = curlowzdfrecord.getValue().doubleValue();
@@ -369,7 +372,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 */
 	public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference)
 	{
-		TimeSeriesDataItem curltszrecord = stockliutongshizhi.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+		TimeSeriesDataItem curltszrecord = stockliutongshizhi.getDataItem( getJFreeChartFormateTimePeriodForAMO(requireddate,difference));
 		try{
 			Double curltsz = curltszrecord.getValue().doubleValue();
 			return curltsz;
@@ -457,6 +460,11 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			}
 		
 		return doc.toString();
+	}
+	@Override
+	public Boolean hasFxjgInPeriod(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
