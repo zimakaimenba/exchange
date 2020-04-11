@@ -417,6 +417,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		TimeSeries ma250ts = nodexdata.getMA250();
 		if(ma250ts != null)
 			this.maDataSet.addSeries(ma250ts);
+		TimeSeries ma60ts = nodexdata.getMA60();
+		if(ma60ts != null)
+			this.maDataSet.addSeries(ma60ts);
 		
 		this.maDataSet.setNotify(true);
 		tmpohlcSeries.setNotify(true);

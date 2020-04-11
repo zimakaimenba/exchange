@@ -707,7 +707,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 if(curperiod == null )
 				return null;
 		 
-		 TimeSeriesDataItem curdaynumberrecord = this.nodeexchangedaysnumber.getDataItem( curperiod);
+		 TimeSeriesDataItem curdaynumberrecord = this.nodeexchangedaysnumber.getDataItem(curperiod);
 		 if( curdaynumberrecord == null) 
 				return 5;
 		 else
@@ -974,14 +974,11 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				return null;
 			
 			String nodeperiod = this.getNodeperiodtype();
-//			LocalDate expectedate = null;
 			RegularTimePeriod period = null;
 			if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-//				expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-				java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
-				period = new org.jfree.data.time.Week (lastdayofweek);
+				java.sql.Date lastweek = java.sql.Date.valueOf(requireddate);
+				period = new org.jfree.data.time.Week (lastweek);
 			} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-//				expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
 				java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
 				period = new org.jfree.data.time.Day (lastdayofweek);
 			}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
@@ -999,6 +996,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				}
 			} catch (java.lang.IndexOutOfBoundsException e) {
 				e.printStackTrace();
+				return null;
 			}
 			return null;
 		}

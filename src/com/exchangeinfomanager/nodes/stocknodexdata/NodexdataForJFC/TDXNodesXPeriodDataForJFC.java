@@ -263,6 +263,10 @@ import com.udojava.evalex.Expression;
 	{
 		return this.nodeohlcma250;
 	}
+	public TimeSeries getMA60 ()
+	{
+		return this.nodeohlcma60;
+	}
 	/*
 	 * 
 	 */
@@ -688,10 +692,9 @@ import com.udojava.evalex.Expression;
 		
 		int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
 		Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
+		
 		int maxweek = 0;
-		
 		int index = nodeamo.getIndex(curperiod );
-		
 		for(int i = index-1;i >=0; i--) {
 			
 			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( i );

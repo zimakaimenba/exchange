@@ -56,7 +56,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) allbkstk.getModel().getRoot();
 		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);
 
-		LocalDate requirestart = CommonUtility.getSettingRangeDate(checkdate,"middle").with(DayOfWeek.MONDAY);
+		LocalDate requirestart = CommonUtility.getSettingRangeDate(checkdate,"large").with(DayOfWeek.MONDAY);
 		for(int i=0;i< bankuaicount; i++) {
 			
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) allbkstk.getModel().getChild(treeroot, i);
