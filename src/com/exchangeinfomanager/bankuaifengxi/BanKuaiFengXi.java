@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -616,6 +618,19 @@ public class BanKuaiFengXi extends JDialog
 				}
 			}
 		}
+		if(((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getRowCount() >0 ) {
+			rowindex = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getStockRowIndex(nodecode);
+			if(rowindex >= 0) {
+				int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
+//				int modelRow = rowindex;
+				int curselectrow = tableTempGeGu.getSelectedRow();
+				if( curselectrow != modelRow) {
+					tableTempGeGu.setRowSelectionInterval(modelRow, modelRow);
+					tableTempGeGu.scrollRectToVisible(new Rectangle(tableTempGeGu.getCellRect(modelRow, 0, true)));
+				}
+			}
+		}
+		
 		
 		return found;
 	}
@@ -1325,6 +1340,14 @@ public class BanKuaiFengXi extends JDialog
         		
 			}
 			
+		});
+		menuItemTempGeGuFromZhidingbk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				
+				parseTempGeGuFromZhiDingBanKuaiFunciotn();
+        		
+			}
 		});
 		
 		pnlbktags.addPropertyChangeListener(new PropertyChangeListener() {
@@ -2564,6 +2587,23 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
+	private void parseTempGeGuFromZhiDingBanKuaiFunciotn ()
+	{
+		String result = JOptionPane.showInputDialog("请输入板块代码");
+		if(result != null) {
+			BanKuai bk = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode(result.trim(), BkChanYeLianTreeNode.TDXBK);
+			if(bk != null) {
+				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+				bk = svsbk.getAllGeGuOfBanKuai (bk); 
+				List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+				List<String> listNames = allbkgg.stream().map(u -> u.getMyOwnCode()).collect(Collectors.toList());
+				parseTempGeGeFromList (listNames);
+			}
+		}
+	}
+	/*
+	 * 
+	 */
 	protected void parseTempGeGuFromTDXSwFunciotns()
 	{
 		TDXZhiDingYiBanKuaiServices svstdxzdy = new TDXZhiDingYiBanKuaiServices ();
@@ -3433,6 +3473,8 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemAddRmvStockToYellow;
 
 	private JMenuItem menuItemAddRmvBkToYellow;
+
+	private JMenuItem menuItemTempGeGuFromZhidingbk;
 	
 	
 	private void initializeGui() {
@@ -4156,6 +4198,8 @@ public class BanKuaiFengXi extends JDialog
        popupMenuGeguNews.add(menuItemTempGeGuFromFile);
        menuItemTempGeGuFromTDXSw = new JMenuItem("通达信自定义板块导入");
        popupMenuGeguNews.add(menuItemTempGeGuFromTDXSw);
+       menuItemTempGeGuFromZhidingbk = new JMenuItem("指定板块导入");
+       popupMenuGeguNews.add(menuItemTempGeGuFromZhidingbk);
        tableTempGeGu.getTableHeader().setComponentPopupMenu (popupMenuGeguNews);
        
        

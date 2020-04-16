@@ -63,6 +63,7 @@ import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.JDialogOfBanKuaiChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.GeGuTDXFengXi;
 import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
@@ -220,6 +221,7 @@ public class StockInfoManager
 	private AccountDbOperation acntdbopt;
 	private BanKuaiGuanLi bkgldialog = null;
 	private BanKuaiFengXi bkfx ;
+	private GeGuTDXFengXi ggfx ;
 	private SearchDialog searchdialog;
 	private WeeklyExportFileFengXi effx;
 	private TagCache bkstkkwcache;
@@ -431,60 +433,19 @@ public class StockInfoManager
 				}
 			}
 		});
-		
-//		editorpansuosubk.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//            public void propertyChange(PropertyChangeEvent evt) {
-//            	if (evt.getPropertyName().equals(BanKuaiListEditorPane.URLSELECTED_PROPERTY)) {
-//            		String selbk = evt.getNewValue().toString();
-//            		String selbkcode;
-//            		if(selbk != null)
-//    					selbkcode = selbk.trim().substring(1, 7);
-//    				else
-//    					return;
-//    				
-////            		LocalDate requirestart = LocalDate.now().with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 3,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-////    				BanKuai bankuai = (BanKuai) allbkstock.getAllBkStocksTree().getSpecificNodeByHypyOrCode(selbkcode, BkChanYeLianTreeNode.TDXBK);
-//    				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-//    				BkChanYeLianTreeNode bankuai = svsbk.getNode(selbkcode);
-////    				editorPanenodeinfo.displayNodeAllInfo(bankuai);
-//    				svsbk = null;
-//            	}
-//            }
-//		});
-
-//		editorpansuosubk.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				String selbk = editorpansuosubk.getSelectedBanKuai();
-//				String selbkcode;
-//				if(selbk != null)
-//					selbkcode = selbk.trim().substring(1, 7);
-//				else
-//					return;
-//				
-//				BanKuai bankuai = allbkstock.getBanKuai(selbkcode, (new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), TDXNodeGivenPeriodDataItem.WEEK);
-//				editorPanenodeinfo.displayNodeAllInfo(bankuai);
-//			}
-//		});
-		
 		menuItembkfx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				startBanKuaiFengXi ();
-////				if(bkfx == null ) {
-//				BanKuaiFengXi bkfx = new BanKuaiFengXi (bkcyl.getBkChanYeLianTree(),"","",dateChsBanKuaiZhanbi.getDate());
-//				bkfx.setModal(false);
-//				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//				bkfx.setVisible(true);
-////			} 
-//			
-////			if(!bkfx.isVisible() ) {
-////				bkfx.setVisible(true);
-////			 } 
-//			bkfx.toFront();
 			}
 		});
+		menuItemggfx.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				startGeGuFengXi ();
+			}
+		});
+		
 		
 		btndetailfx.addMouseListener(new MouseAdapter() {
 			@Override
@@ -493,31 +454,6 @@ public class StockInfoManager
 				startBanKuaiFengXi ();
 			}
 		});
-		
-//		cBxstockcode.getEditor().getEditorComponent().addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mousePressed(MouseEvent arg0) {
-//				//logger.debug("this is the test");
-//				
-//			}
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				
-//				cBxstockcode.getEditor().setItem("");
-//			}
-//			
-//		});
-		
-//		cBxstockcode.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
-//			public void keyPressed(KeyEvent  e)
-//			{
-//				if(e.getKeyCode() == KeyEvent.VK_ENTER)
-//				{
-//				}
-//			}
-//			
-//		});
-		
 		
 		cBxstockcode.addItemListener(new ItemListener() {
 			@Override
@@ -1531,6 +1467,31 @@ public class StockInfoManager
 			return bkfx;
 	}
 		
+	protected void startGeGuFengXi() 
+	{
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		this.frame.setCursor(hourglassCursor);
+		
+			if(ggfx == null ) {
+				ggfx = new GeGuTDXFengXi (this);
+				ggfx.setModal(false);
+				ggfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			} 
+			
+			if(!ggfx.isVisible() ) {
+
+				ggfx.setVisible(true);
+			} 
+			
+			ggfx.toFront();
+			
+//			SystemAudioPlayed.playSound();
+			
+			hourglassCursor = null;
+			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+			this.frame.setCursor(hourglassCursor2);
+	}
+	
 	protected void startBanKuaiFengXi() 
 	{
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
@@ -2249,6 +2210,7 @@ public class StockInfoManager
 	private JScrollPane scrlnodebankuai;
 	private JMenu mnThirdparty;
 	private JMenuItem mntmFreemind;
+	private JMenuItem menuItemggfx;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2829,6 +2791,12 @@ public class StockInfoManager
 		menuItembkfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
 		
 		menuOperationList.add(menuItembkfx);
+		
+		menuItemggfx = new JMenuItem("¸ö¹É·ÖÎö");
+		menuItemggfx.setEnabled(false);
+		menuItemggfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
+		
+		menuOperationList.add(menuItemggfx);
 		
 		menuItemChanYeLian = new JMenuItem("\u4EA7\u4E1A\u94FE\u8BBE\u7F6E");
 		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));

@@ -13,12 +13,12 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
-
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.services.AllCurrentTdxBKAndStoksTree;
+
 import com.github.cjwizard.APageFactory;
 import com.github.cjwizard.StackWizardSettings;
 import com.github.cjwizard.WizardContainer;
@@ -37,10 +37,10 @@ public class WeeklyFenXiWizard  extends JDialog {
 		{
 			this.selectdate = selectdate2;
 			
-			AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-			displaygegunode = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(nodecodeshouldbedisplayed, nodetype);
+			BanKuaiAndStockTree allbksks = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+			displaygegunode = allbksks.getSpecificNodeByHypyOrCode(nodecodeshouldbedisplayed, nodetype);
 			
-			dapan = allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+			dapan = allbksks.getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
 			
 			setupWizard ();
 		}

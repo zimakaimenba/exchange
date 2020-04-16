@@ -93,6 +93,7 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.Week;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
@@ -260,6 +261,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		OHLCSeries tmpohlcSeries =  new OHLCSeries ("Kxian"); ;
 		OHLCSeriesCollection tmpcandlestickDataset;
 		tmpcandlestickDataset = (OHLCSeriesCollection)candlestickChart.getXYPlot().getDataset(indexofseries);
+		
+		TimeSeries tmpma250ts = new TimeSeries ("ma250"); 
+		TimeSeries tmpma60ts = new TimeSeries ("ma60");
 			
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
@@ -295,6 +299,14 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			if(high > highestHigh && high !=0) {
 				highestHigh = high;
 			}
+			
+			RegularTimePeriod tmpperiod = tmpohlc.getPeriod();
+			TimeSeriesDataItem tmpma250 = nodexdata.getMA250().getDataItem(tmpperiod);
+			TimeSeriesDataItem tmpma60 = nodexdata.getMA60().getDataItem(tmpperiod);
+			if(tmpma250 != null)
+				tmpma250ts.add(tmpma250);
+			if(tmpma60 != null)
+				tmpma60ts.add(tmpma60);
 			
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
@@ -359,6 +371,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		OHLCSeries tmpohlcSeries =  new OHLCSeries ("Kxian"); ;
 		OHLCSeriesCollection tmpcandlestickDataset;
 		tmpcandlestickDataset = (OHLCSeriesCollection)candlestickChart.getXYPlot().getDataset(indexofseries);
+		
+		TimeSeries tmpma250ts = new TimeSeries ("ma250"); 
+		TimeSeries tmpma60ts = new TimeSeries ("ma60");
 			
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
@@ -366,15 +381,41 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) node.getNodeXPeroidData(period);
 		LocalDate nodestart = nodexdata.getOHLCRecordsStartDate();
 		LocalDate nodeend = nodexdata.getOHLCRecordsEndDate();
+		if(nodestart == null)
+			return;
+		
 		Interval result = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval (nodestart,nodeend, requirestart, requireend);
 		DateTime overlapstartdt = result.getStart();
 		DateTime overlapenddt = result.getEnd();
 		
-		LocalDate overlapldstartday = LocalDate.of(overlapstartdt.getYear(), overlapstartdt.getMonthOfYear(), overlapstartdt.getDayOfMonth());//.with(DayOfWeek.MONDAY);
-		LocalDate overlapldendday = LocalDate.of(overlapenddt.getYear(), overlapenddt.getMonthOfYear(), overlapenddt.getDayOfMonth());//.with(DayOfWeek.FRIDAY);
+		LocalDate overlapldstartday = LocalDate.of(overlapstartdt.getYear(), overlapstartdt.getMonthOfYear(), overlapstartdt.getDayOfMonth());
+		LocalDate overlapldendday = LocalDate.of(overlapenddt.getYear(), overlapenddt.getMonthOfYear(), overlapenddt.getDayOfMonth());
 		
-		Integer indexstart = nodexdata.getIndexOfSpecificDateOHLCData(overlapldstartday, 0);
-		Integer indexend = nodexdata.getIndexOfSpecificDateOHLCData(overlapldendday, 0);
+		Integer indexstart = null; //确保START/END日期都有数据
+		do {
+			indexstart = nodexdata.getIndexOfSpecificDateOHLCData(overlapldstartday, 0);
+			if(indexstart == null) {
+				if(period.equals(NodeGivenPeriodDataItem.WEEK))
+					overlapldstartday = overlapldstartday.plus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					overlapldstartday = overlapldstartday.plus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					overlapldstartday = overlapldstartday.plus(1, ChronoUnit.MONTHS) ;
+			}
+		} while (indexstart == null);
+		Integer indexend = null;
+		do {
+			indexend = nodexdata.getIndexOfSpecificDateOHLCData(overlapldendday, 0);
+			if(indexend == null) {
+				if(period.equals(NodeGivenPeriodDataItem.WEEK))
+					overlapldendday = overlapldendday.minus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					overlapldendday = overlapldendday.minus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					overlapldendday = overlapldendday.minus(1, ChronoUnit.MONTHS) ;
+			}
+		} while (indexend == null);
+		
 		double lowestLow =10000.0;  double highestHigh = 0.0;
 		for(int i= indexstart; i<= indexend; i++) {
 			OHLCItem tmpohlc =  (OHLCItem) nodexdata.getOHLCData().getDataItem(i);
@@ -394,6 +435,14 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			if(high > highestHigh && high !=0) {
 				highestHigh = high;
 			}
+			
+			RegularTimePeriod tmpperiod = tmpohlc.getPeriod();
+			TimeSeriesDataItem tmpma250 = nodexdata.getMA250().getDataItem(tmpperiod);
+			TimeSeriesDataItem tmpma60 = nodexdata.getMA60().getDataItem(tmpperiod);
+			if(tmpma250 != null)
+				tmpma250ts.add(tmpma250);
+			if(tmpma60 != null)
+				tmpma60ts.add(tmpma60);
 
 		}
 
@@ -413,13 +462,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			dapanohlcSeries = tmpohlcSeries;
 		}
 		tmpcandlestickDataset.addSeries(tmpohlcSeries);
-		
-		TimeSeries ma250ts = nodexdata.getMA250();
-		if(ma250ts != null)
-			this.maDataSet.addSeries(ma250ts);
-		TimeSeries ma60ts = nodexdata.getMA60();
-		if(ma60ts != null)
-			this.maDataSet.addSeries(ma60ts);
+		this.maDataSet.addSeries(tmpma250ts);
+		this.maDataSet.addSeries(tmpma60ts);
 		
 		this.maDataSet.setNotify(true);
 		tmpohlcSeries.setNotify(true);

@@ -34,7 +34,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
-
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -127,7 +129,8 @@ public class DaPanWeeklyFengXi extends WeeklyFenXiWizardPage
 			public void mouseClicked(MouseEvent arg0) {
 				String zhishucode = tfldbkcode.getText();
 				if( Pattern.matches("\\d{6}$",zhishucode)   ) {
-					BanKuai bknode = (BanKuai)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(zhishucode, BkChanYeLianTreeNode.TDXBK);
+					BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+					BanKuai bknode = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode(zhishucode, BkChanYeLianTreeNode.TDXBK);
 					if(bknode !=null) {
 						((DaPanTableModel)tablebk.getModel()).addNewZhiShu(bknode);
 						
@@ -385,11 +388,12 @@ class DaPanTableModel extends AbstractTableModel
 		LocalDate requirestart = this.showdate.with(DayOfWeek.MONDAY).minus(9,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		ArrayList<ZdgzItem> zhishulist = zdgzinfo.getDapanZhiShuLists();
-		AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
+		BanKuaiAndStockTree allbksks = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai (); 
 		this.dapanzhishu = new ArrayList<BkChanYeLianTreeNode>();
 		for( ZdgzItem zhishuitem :  zhishulist) {
 			String zhishucode  = zhishuitem.getValue();
-			BanKuai dapanitem = allbksks.getBanKuai(zhishucode, requirestart,this.showdate, NodeGivenPeriodDataItem.WEEK);
+			BanKuai dapanitem = (BanKuai) svsbk.getNodeData(zhishucode, requirestart,this.showdate, NodeGivenPeriodDataItem.WEEK,true);
 			this.dapanzhishu.add(dapanitem);
 		}
 		

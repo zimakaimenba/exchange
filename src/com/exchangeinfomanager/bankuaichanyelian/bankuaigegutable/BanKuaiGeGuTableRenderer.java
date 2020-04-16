@@ -189,8 +189,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		    Double curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, 0);
 		    try {
-			    if( curltsz >= ltszmin && curltsz <= ltszmax ) 
-			    	background = Color.MAGENTA ;
+			    if( curltsz >= ltszmin && curltsz <= ltszmax ) {
+			    	if(curltsz >= 1500000000.0 && curltsz <= 3900000000.0)  //对于这个范围内的个股要特别重视，特别显示
+			    		background = new Color(201,0,102) ;
+			    	else  
+			    		background = Color.MAGENTA ;
+			    }
 			    else
 			    	background = Color.white;
 		    } catch (java.lang.NullPointerException e) {

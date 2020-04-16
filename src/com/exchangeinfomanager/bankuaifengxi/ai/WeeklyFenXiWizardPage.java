@@ -4,14 +4,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLian2;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.services.AllCurrentTdxBKAndStoksTree;
+
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.github.cjwizard.WizardPage;
 
@@ -21,8 +16,6 @@ public abstract class WeeklyFenXiWizardPage extends WizardPage
 	protected BkChanYeLianTreeNode displaynode;
 	protected LocalDate displaydate;
 	protected WeeklyFengXiXmlHandler fxmlhandler;
-	protected AllCurrentTdxBKAndStoksTree allbksks;
-	protected BanKuaiAndChanYeLian2 bkcyl;
 	protected SystemConfigration sysconfig;
 	protected BanKuaiDbOperation bkdbopt;
 	protected ZhongDianGuanZhu zdgzinfo;
@@ -42,9 +35,6 @@ public abstract class WeeklyFenXiWizardPage extends WizardPage
 		this.fxmlhandler = xmlhandler2;
 		this.displaydate = selectdate2;
 
-		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
-		
 		this.sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 		
