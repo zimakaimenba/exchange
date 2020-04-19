@@ -1320,7 +1320,7 @@ import com.udojava.evalex.Expression;
 		 LocalDate requrestart = requireddate.minusMonths(monthrange);
 		 int indexcursor = ohlcvaseries.getEndIndex();
 		 
-		 ZonedDateTime endtime = ohlcvaseries.getBar(indexcursor).getEndTime();
+//		 ZonedDateTime endtime = ohlcvaseries.getBar(indexcursor).getEndTime();
 		 for(int i = indexcursor-2; i>=0; i--) {
 			 double macdsecond = macd.getValue(i+1).doubleValue();
 			 Bar barsecond = ohlcvaseries.getBar(i +1);

@@ -16,6 +16,7 @@ import org.jfree.chart.LegendItem;
 import org.jfree.chart.annotations.CategoryTextAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -45,13 +46,13 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	{
 		super ();
 		super.plot.setRenderer(0,new CustomRendererForCje() );
-		
+        super.plot.setRenderer(3, new BanKuaiFengXiCategoryLineRenderer ());
+        
 		averagelinechartdataset = new DefaultCategoryDataset();
-		plot.setDataset(4, averagelinechartdataset);
-	    BanKuaiFengXiCategoryLineRenderer lineqkrenderer = new BanKuaiFengXiCategoryLineRenderer ();
-        plot.setRenderer(4, lineqkrenderer);
+		super.plot.setDataset(4, averagelinechartdataset);
+		super.plot.setRenderer(4, new BanKuaiFengXiCategoryLineRenderer () );
         ValueAxis rangeaxis = plot.getRangeAxis(0);
-        plot.setRangeAxis(4, rangeaxis);
+        super.plot.setRangeAxis(4, rangeaxis);
         super.plot.getRenderer(4).setSeriesPaint(1, Color.CYAN );
 	}
 	
@@ -68,7 +69,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 */
 	private void preparingdisplayDataToGui (TDXNodes node,LocalDate startdate,LocalDate enddate,String period)
 	{
-		super.resetDate();
+		this.resetDate();
 		super.barchart.setNotify(false);
 		
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
@@ -457,7 +458,6 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			}
 		}
 		
-		
 		super.plot.getRenderer(3).setSeriesPaint(0, new Color(0,102,0) );
 		super.plot.getRenderer(3).setSeriesPaint(1, new Color(102,255,102) );
 		super.plot.getRenderer(3).setSeriesPaint(2, new Color(178,102,255) );
@@ -484,6 +484,23 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			averagelinechartdataset.clear();
 	}
 
+	@Override
+    public void highLightSpecificBarColumn (LocalDate selecteddate)
+    {
+		if(selecteddate == null)
+    		return;
+		
+		super.highLightSpecificBarColumn (selecteddate);
+		
+		int indexforline = super.linechartdataset.getColumnIndex(selecteddate) ;
+    	if(indexforline != -1) {
+    		CategoryItemRenderer fourthrenderer = plot.getRenderer(4);
+    		if(fourthrenderer instanceof BanKuaiFengXiCategoryLineRenderer)
+    			((BanKuaiFengXiCategoryLineRenderer)fourthrenderer).setBarColumnShouldChangeColor(indexforline);
+    	}
+    	
+        super.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰
+    }
 	/*
 	 * 
 	 */

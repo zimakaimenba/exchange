@@ -14,10 +14,12 @@ import java.time.temporal.ChronoUnit;
 import org.apache.log4j.Logger;
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
 import org.jfree.chart.annotations.CategoryTextAnnotation;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
-
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
@@ -30,6 +32,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
 
 public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl
 {
@@ -38,10 +41,18 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private DefaultCategoryDataset linechartdatasetforcjezb;
 	public BanKuaiFengXiCategoryBarChartCjeZhanbiPnl() 
 	{
 		super ();
-		super.plot.setRenderer(0,new CustomCategroyRendererForCjeZhanBi() );
+		super.plot.setRenderer(0, new CustomCategroyRendererForCjeZhanBi() );
+        super.plot.setRenderer(3, new BanKuaiFengXiCategoryCjeZhanbiLineRenderer () );
+        
+        linechartdatasetforcjezb = new DefaultCategoryDataset();
+		super.plot.setDataset(2, linechartdatasetforcjezb);
+		super.plot.setRenderer(2, new BanKuaiFengXiCategoryCjeZhanbiLineRenderer () );
+        ValueAxis rangeaxis = plot.getRangeAxis(0);
+        super.plot.setRangeAxis(2, rangeaxis);
 	}
 	
 	
@@ -67,13 +78,15 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	 */
 	private void preparingdisplayDataToGui (TDXNodes node,LocalDate startdate,LocalDate enddate,String period)
 	{
-		super.resetDate();
+		this.resetDate();
 		
 		super.barchart.setNotify(false);
 		
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 		
 		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+//		((TDXNodesXPeriodExternalData)nodexdata).calulateKLearnResult ();
+		((TDXNodesXPeriodExternalData)nodexdata).calulateApacheMathKLearnResult ();
 		
 		Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
 		
@@ -217,7 +230,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 
 	}
 	/*
-	 * 
+	 * 成交额占比线形数据
 	 */
 	public Double dipalyCjeCjlZBLineDataToGui (NodeXPeriodData nodexdata,String period)
 	{
@@ -249,13 +262,12 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			Double cjezb = nodexdata.getChenJiaoErZhanBi(wkfriday, 0);
 			
 			if(cjezb != null) {
-				super.linechartdataset.setValue(cjezb,super.getRowKey(), wkfriday);
-//				super.linechartdataset.setValue(cjezb,"nodezb", wkfriday);
+				this.linechartdatasetforcjezb.setValue(cjezb,super.getRowKey(), wkfriday);
 				
 				if(cjezb > highestHigh)
 					highestHigh = cjezb;
 			} else if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
-					super.linechartdataset.setValue(0.0,super.getRowKey(),wkfriday);
+				this.linechartdatasetforcjezb.setValue(0.0,super.getRowKey(),wkfriday);
 
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
 				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
@@ -266,15 +278,12 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
-		
-		
-		
 		this.xiuShiRightRangeAxixAfterDispalyDate(nodexdata, highestHigh, true);
 		
 		return highestHigh;
 	}
 	/*
-	 * 
+	 * 涨跌停线型数据
 	 */
 	Integer displayZhangDieTingLineDataToGui(NodeXPeriodData nodexdata, String period) 
 	{
@@ -433,10 +442,8 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			}
 		}
 		
-		
 		super.plot.getRenderer(3).setSeriesPaint(0, new Color(0,102,0) );
 		super.plot.getRenderer(3).setSeriesPaint(1, new Color(102,255,102) );
-//		super.plot.getRenderer(3).setSeriesPaint(2, new Color(255,255,51) );
 		super.plot.getRenderer(3).setSeriesPaint(2, Color.RED.darker() );
 				
 	}
@@ -454,9 +461,13 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		if(highestHigh == 0.0)
 			return;
 		
-		BanKuaiFengXiCategoryBarRenderer render = (BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer();
-		render.setDisplayNode(this.getCurDisplayedNode());
-		render.setDisplayNodeXPeriod (nodexdata);
+		BanKuaiFengXiCategoryBarRenderer render0 = (BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer(0);
+		render0.setDisplayNode(this.getCurDisplayedNode());
+		render0.setDisplayNodeXPeriod (nodexdata);
+		
+		BanKuaiFengXiCategoryCjeZhanbiLineRenderer render2 = (BanKuaiFengXiCategoryCjeZhanbiLineRenderer)super.plot.getRenderer(2);
+		render2.setDisplayNode(this.getCurDisplayedNode());
+		render2.setDisplayNodeXPeriod (nodexdata);
 		
 		//如有分析结果，ticklable显示红色
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis(0);
@@ -467,14 +478,58 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		} catch (java.lang.IllegalArgumentException e) {
 			e.printStackTrace();
 			super.plot.getRangeAxis(0).setRange(0, 1);
-			
 		}
 		
 //		setPanelTitle ("成交额",enddate);
 		super.decorateXaxisWithYearOrMonth("month".trim());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl#resetLineDate()
+	 */
+	public void resetLineDate ()
+	{
+		super.resetLineDate();
+		if(linechartdatasetforcjezb != null)
+			linechartdatasetforcjezb.clear();
+		
+		plot.getRangeAxis(3).setRange(0.0, 1.0);
+	}
+	public void resetDate ()
+	{
+		super.resetDate();
+		
+		if(linechartdatasetforcjezb != null)
+			linechartdatasetforcjezb.clear();
+		
+		CategoryItemRenderer fourthrenderer = plot.getRenderer(2);
+		((BanKuaiFengXiCategoryCjeZhanbiLineRenderer)fourthrenderer).setKLearningClusterBaseLineId (-1);
+	}
 	
+	@Override
+    public void highLightSpecificBarColumn (LocalDate selecteddate)
+    {
+		if(selecteddate == null)
+    		return;
+		
+		super.highLightSpecificBarColumn (selecteddate);
+		
+		int indexforline = this.linechartdatasetforcjezb.getColumnIndex(selecteddate) ;
+    	if(indexforline != -1) {
+    		CategoryItemRenderer fourthrenderer = plot.getRenderer(2);
+    		if(fourthrenderer instanceof BanKuaiFengXiCategoryCjeZhanbiLineRenderer) {
+    			((BanKuaiFengXiCategoryLineRenderer)fourthrenderer).setBarColumnShouldChangeColor(indexforline);
+    			
+    			NodeXPeriodData nodexdata = super.getCurDisplayedNode().getNodeXPeroidData(super.globeperiod);
+    			Integer selectclusteringid = ((TDXNodesXPeriodExternalData)nodexdata).getApacheMathKLearnClusteringID (selecteddate);
+    			if(selectclusteringid != null)
+    				((BanKuaiFengXiCategoryCjeZhanbiLineRenderer)fourthrenderer).setKLearningClusterBaseLineId (selectclusteringid);
+    		}
+    	}
+    	
+        super.barchart.fireChartChanged();//必须有这句
+    }
 
 	@Override
 	public String getToolTipSelected() 
@@ -536,8 +591,7 @@ class CustomCategroyRendererForCjeZhanBi extends BanKuaiFengXiCategoryBarRendere
 		
 //		DecimalFormat decimalformate = new DecimalFormat("%#0.000");
 //		this.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",decimalformate));
-
-		
+        
 		BkfxItemLabelGenerator labelgenerator = new BkfxItemLabelGeneratorForCjeZhanBi ();
 		this.setBaseItemLabelGenerator(labelgenerator);
 		this.setBaseItemLabelsVisible(true);

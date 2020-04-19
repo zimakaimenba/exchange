@@ -482,8 +482,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     {
     	if(selecteddate == null)
     		return;
-//    	this.dateselected = null;
-    	
+   	
     	int indexforbar = this.barchartdataset.getColumnIndex(selecteddate) ;
     	if(indexforbar != -1)
     		((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer(0)).setBarColumnShouldChangeColor(indexforbar);
@@ -491,10 +490,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	int indexforline = this.linechartdataset.getColumnIndex(selecteddate) ;
     	if(indexforline != -1) {
     		((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(3)).setBarColumnShouldChangeColor(indexforline);
-    		
-    		CategoryItemRenderer fourthrenderer = plot.getRenderer(4);
-    		if(fourthrenderer instanceof BanKuaiFengXiCategoryLineRenderer)
-    			((BanKuaiFengXiCategoryLineRenderer)plot.getRenderer(4)).setBarColumnShouldChangeColor(indexforline);
     	}
     	
         this.dateselected = selecteddate;
@@ -586,19 +581,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        renderer.setMinimumBarLength(.5);
 //        renderer.setItemMargin(-2);
         
-        barchartdataset = new DefaultCategoryDataset(); 
-        
         plot = new CategoryPlot(); 
 //        plot.setBackgroundPaint(Color.GRAY); 
 //        plot.setDomainGridlinePaint(Color.white); 
 //        plot.setRangeGridlinePaint(Color.white);
 //        LegendTitle legend = new LegendTitle(plot); 
 //        legend.setPosition(RectangleEdge.TOP); 
-        plot.setDataset(0,barchartdataset); 
-//        
-        plot.setRangeAxis(0,new NumberAxis(""));
         plot.setRangePannable(true);
-        plot.getRangeAxis(0).setVisible(false);
+        
 
         CategoryLabelCustomizableCategoryAxis domainaxis = new CategoryLabelCustomizableCategoryAxis("");
         plot.setDomainAxis(domainaxis);
@@ -607,17 +597,19 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        domainaxis.setTickLabelsVisible(true);
 //        domainaxis.setTickMarksVisible(true);
         
+        barchartdataset = new DefaultCategoryDataset();
+        plot.setDataset(0,barchartdataset);
+        plot.setRangeAxis(0,new NumberAxis(""));
+        plot.getRangeAxis(0).setVisible(false);
+        plot.mapDatasetToRangeAxis(0, 0);
         //line part
-        linechartdataset = new DefaultCategoryDataset();  
-        BanKuaiFengXiCategoryLineRenderer lineqkrenderer = new BanKuaiFengXiCategoryLineRenderer ();
+        linechartdataset = new DefaultCategoryDataset();
         plot.setDataset(3, linechartdataset);
-        plot.setRenderer(3, lineqkrenderer);
+//        BanKuaiFengXiCategoryLineRenderer lineqkrenderer = new BanKuaiFengXiCategoryLineRenderer ();
+//        plot.setRenderer(3, lineqkrenderer);
         ValueAxis rangeAxis2 = new NumberAxis("");
         plot.setRangeAxis(3, rangeAxis2);
-
-        plot.mapDatasetToRangeAxis(0, 0);
 		plot.mapDatasetToRangeAxis(3, 3);
-//		plot.mapDatasetToRangeAxis(4, 3);
 		
 //		plot.mapDatasetToDomainAxis(0, 0);
 //		plot.mapDatasetToDomainAxis(3, 0);

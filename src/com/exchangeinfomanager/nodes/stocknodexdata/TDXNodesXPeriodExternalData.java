@@ -1,16 +1,22 @@
 package com.exchangeinfomanager.nodes.stocknodexdata;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.DoublePoint;
+import org.apache.commons.math3.ml.clustering.FuzzyKMeansClusterer;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.log4j.Logger;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
@@ -41,6 +47,7 @@ import net.sf.javaml.tools.InstanceTools;
  */
 public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData 
 {
+	private static final String Collection = null;
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodExternalData.class);
 	
 	public TDXNodesXPeriodExternalData (String nodecode,String nodeperiodtype1)
@@ -1021,10 +1028,12 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 /*
 		  * 
 		  */
-		 public void getKLearnResult ()
+		 protected TimeSeries amozbclusterfromml;
+		 public void calulateKLearnResult ()
 		 {
 			 Dataset data = new DefaultDataset();
-			 
+			 amozbclusterfromml = null;
+			 amozbclusterfromml = new TimeSeries("amozbclusterfromml");
 			 for(int i=0; i< this.nodeamozhanbi.getItemCount(); i++ ) {
 				 TimeSeriesDataItem record = this.nodeamozhanbi.getDataItem(i);
 				 double recordvalue = record.getValue().doubleValue();
@@ -1040,15 +1049,107 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			 Clusterer km = new KMeans(4);
 			 Dataset[] clusters = km.cluster(data);
 			 
-//			 for(int i=0; i<clusters.length; i++) {
-//				 Dataset temp = clusters[i];
-//				 for(int j=0;j<temp.size();j++) {
-//					 System.out.print(temp.get(j) + "    " + "\n");
-//				 }
-//				 System.out.print("*********************\n");
-//			 }
+			 for(int i=0; i<clusters.length; i++) {
+				 Dataset temp = clusters[i];
+				 for(int j=0;j<temp.size();j++) {
+					 DenseInstance instance = (DenseInstance)temp.get(j);
+					 LocalDate dil = LocalDate.parse( instance.classValue().toString() );
+					 java.sql.Date lastdayofweek =  java. sql. Date. valueOf(dil);
+					 org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
+					 amozbclusterfromml.add(wknum, i);
+					 
+					 Iterator<Double> it = instance.iterator();
+					 Double doubleresult = it.next();
+					 
+//					 System.out.print("(" + dil.toString() + ":" + doubleresult + ")\n");
+				 }
+				 
+//				 System.out.print("(**********************************)\n");
+			 }
 			 
+//			 for(int i=0; i< amozbclusterfromml.getItemCount() ;i ++) {
+//				 TimeSeriesDataItem dataitem = amozbclusterfromml.getDataItem(i);
+//				 int value = dataitem.getValue().intValue();
+//				 System.out.print(value);
+//			 }
 			 return;
+		 }
+		 /*
+		  * 
+		  */
+		 protected TimeSeries amozbclusterfromapache;
+		 public void calulateApacheMathKLearnResult ()
+		 {
+			 amozbclusterfromapache = null;
+			 amozbclusterfromapache = new TimeSeries("amozbclusterfromapache");
+			 java.util.Collection<StockDoublePoint> amozhanbiset = new HashSet<> ();
+			 for(int i=0; i< this.nodeamozhanbi.getItemCount(); i++ ) {
+				 TimeSeriesDataItem record = this.nodeamozhanbi.getDataItem(i);
+				 double recordvalue = record.getValue().doubleValue();
+				 RegularTimePeriod curperiod = record.getPeriod();
+				 LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				 LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				 
+				 double[] dr = {recordvalue};
+				 StockDoublePoint sdp = new StockDoublePoint (curend, dr);
+				 amozhanbiset.add(sdp);
+		 	}
+			 
+			 if(amozhanbiset.size() < 5)
+				 return ;
+//			 KMeansPlusPlusClusterer<StockDoublePoint> kmeans = new KMeansPlusPlusClusterer<StockDoublePoint>(5);
+			 FuzzyKMeansClusterer<StockDoublePoint> kmeans = new FuzzyKMeansClusterer<StockDoublePoint>(5,1.1);
+			 List<CentroidCluster<TDXNodesXPeriodExternalData.StockDoublePoint>> result = kmeans.cluster(amozhanbiset);
+			 for(int i =0 ; i<result.size(); i++) {
+				 CentroidCluster<StockDoublePoint> temp = result.get(i);
+				 List<StockDoublePoint> templist = temp.getPoints();
+				 for(int j=0; j<templist.size(); j++) {
+					 double[] pr = ((StockDoublePoint)templist.get(j)).getPoint();
+					 LocalDate pl = ((StockDoublePoint)templist.get(j)).getPointLocalDate();
+					 java.sql.Date lastdayofweek =  java. sql. Date. valueOf(pl);
+					 org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
+					 amozbclusterfromapache.add(wknum, i);
+					 
+//					 System.out.print("(" + pl.toString() + ":" + pr[0] + ")\n"); 
+				 }
+				 
+//				 System.out.print("(**********************************)\n");
+			 }
+			 
+//			 for(int i=0; i< amozbclusterfromapache.getItemCount() ;i ++) {
+//				 TimeSeriesDataItem dataitem = amozbclusterfromapache.getDataItem(i);
+//				 int value = dataitem.getValue().intValue();
+//				 System.out.print(value);
+//			 }
+			 return;
+		 }
+		 public Integer getApacheMathKLearnClusteringID (LocalDate date)
+		 {
+			 java.sql.Date lastdayofweek =  java. sql. Date. valueOf(date);
+			 org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
+			 TimeSeriesDataItem dataitem = this.amozbclusterfromapache.getDataItem(wknum);
+			 try {
+				 Integer clusteringid = dataitem.getValue().intValue();
+				 return clusteringid;
+			 } catch (java.lang.NullPointerException e) {
+				 return null;
+			 }
+			 
+		 }
+		 
+		 class StockDoublePoint extends DoublePoint
+		 {
+			private LocalDate pointdate;
+
+			public StockDoublePoint( LocalDate date , double[] point) {
+				super(point);
+				this.pointdate = date;
+			}
+			
+			public LocalDate getPointLocalDate ()
+			{
+				return this.pointdate;
+			}
 			 
 		 }
 		 

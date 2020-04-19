@@ -15,15 +15,12 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private NodeXPeriodData nodexdata;
-	private int shouldcolumn = -1;
-	private int shouldcolumnlast = -2;
-	private TDXNodes node;
-	private Color displayedcolumncolorindex;
+	protected NodeXPeriodData nodexdata;
+	protected int shouldcolumn = -1;
+	protected int shouldcolumnlast = -2;
+	protected TDXNodes node;
+	protected Color displayedcolumncolorindex;
 	
 	public BanKuaiFengXiCategoryLineRenderer ()
 	{
@@ -63,8 +60,6 @@ class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 //		return displayedcolumncolorindex;
 //		 
 //	 }
-	 
-	
 	 /*
 		 * 单个个股用这个
 		 */
@@ -86,7 +81,6 @@ class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 				this.shouldcolumnlast = this.shouldcolumn;
 				this.shouldcolumn = column;
 			}
-			
 	    }
 		/*
 		 * 
@@ -97,15 +91,6 @@ class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 //	    	BanKuaiFengXiCategoryBarToolTipGenerator tooltipgenerator = (BanKuaiFengXiCategoryBarToolTipGenerator)this.getBaseToolTipGenerator();
 //	    	tooltipgenerator.setDisplayNode(curdisplayednode);
 	    }
-	    /*
-	     * 
-	     */
-//	    public void setDisplayMaxwkLevel (int maxl) 
-//	    {
-//	    	this.displayedmaxwklevel = maxl;
-//	    	BkfxItemLabelGenerator lbg = (BkfxItemLabelGenerator)this.getBaseItemLabelGenerator();
-//	    	lbg.setDisplayedMaxWkLevel(maxl);
-//	    }
 	    /*
 	     * 用户可以自定义显示颜色
 	     */
