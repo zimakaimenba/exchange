@@ -43,7 +43,7 @@ public class BanKuaiFengXiCategoryCjeZhanbiLineRenderer extends BanKuaiFengXiCat
 	    	
 			String selected =  linechartdatasetforcjezb.getColumnKey(col).toString();
 	    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-	    	Integer klearnclusterid = ((TDXNodesXPeriodExternalData)super.nodexdata).getApacheMathKLearnClusteringID(selecteddate);
+	    	Integer klearnclusterid = ((TDXNodesXPeriodExternalData)super.nodexdata).getSpecificDateAMOZhanBiApacheMathKLearnClusteringID(selecteddate);
 	    	
 			if ( col == shouldcolumn) {
 	            return ShapeUtilities.createUpTriangle(5);

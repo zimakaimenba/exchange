@@ -1078,7 +1078,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		  * 
 		  */
 		 protected TimeSeries amozbclusterfromapache;
-		 public void calulateApacheMathKLearnResult ()
+		 public void calulateCurrentAMOZhanBiApacheMathKLearnResult ()
 		 {
 			 amozbclusterfromapache = null;
 			 amozbclusterfromapache = new TimeSeries("amozbclusterfromapache");
@@ -1097,8 +1097,8 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			 
 			 if(amozhanbiset.size() < 5)
 				 return ;
-//			 KMeansPlusPlusClusterer<StockDoublePoint> kmeans = new KMeansPlusPlusClusterer<StockDoublePoint>(5);
-			 FuzzyKMeansClusterer<StockDoublePoint> kmeans = new FuzzyKMeansClusterer<StockDoublePoint>(5,1.1);
+//			 KMeansPlusPlusClusterer<StockDoublePoint> kmeans = new KMeansPlusPlusClusterer<StockDoublePoint>(5); //标准算法
+			 FuzzyKMeansClusterer<StockDoublePoint> kmeans = new FuzzyKMeansClusterer<StockDoublePoint>(5,2); //模糊算法
 			 List<CentroidCluster<TDXNodesXPeriodExternalData.StockDoublePoint>> result = kmeans.cluster(amozhanbiset);
 			 for(int i =0 ; i<result.size(); i++) {
 				 CentroidCluster<StockDoublePoint> temp = result.get(i);
@@ -1109,21 +1109,57 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 					 java.sql.Date lastdayofweek =  java. sql. Date. valueOf(pl);
 					 org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
 					 amozbclusterfromapache.add(wknum, i);
-					 
-//					 System.out.print("(" + pl.toString() + ":" + pr[0] + ")\n"); 
 				 }
-				 
-//				 System.out.print("(**********************************)\n");
 			 }
-			 
-//			 for(int i=0; i< amozbclusterfromapache.getItemCount() ;i ++) {
-//				 TimeSeriesDataItem dataitem = amozbclusterfromapache.getDataItem(i);
-//				 int value = dataitem.getValue().intValue();
-//				 System.out.print(value);
-//			 }
+
 			 return;
 		 }
-		 public Integer getApacheMathKLearnClusteringID (LocalDate date)
+		 public void calulateSpecificDateAMOZhanBiApacheMathKLearnResult (LocalDate date)
+		 {
+			 amozbclusterfromapache = null;
+			 amozbclusterfromapache = new TimeSeries("amozbclusterfromapache");
+			 
+			 java.sql.Date lastdayofweek =  java. sql. Date. valueOf(date);
+			 org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
+			 Integer dateindex = this.nodeamozhanbi.getIndex(wknum);
+			 if(dateindex == null || dateindex <0)
+				 return;
+			 
+			 java.util.Collection<StockDoublePoint> amozhanbiset = new HashSet<> ();
+			 for(int i=0; i<= dateindex; i++ ) {
+				 TimeSeriesDataItem record = this.nodeamozhanbi.getDataItem(i);
+				 double recordvalue = record.getValue().doubleValue();
+				 RegularTimePeriod curperiod = record.getPeriod();
+				 LocalDate curstart = curperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				 LocalDate curend = curperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				 
+				 double[] dr = {recordvalue};
+				 StockDoublePoint sdp = new StockDoublePoint (curend, dr);
+				 amozhanbiset.add(sdp);
+		 	}
+			 
+			 if(amozhanbiset.size() < 5)
+				 return ;
+			 
+			 FuzzyKMeansClusterer<StockDoublePoint> kmeans = new FuzzyKMeansClusterer<StockDoublePoint>(5,2); //模糊算法
+			 List<CentroidCluster<TDXNodesXPeriodExternalData.StockDoublePoint>> result = kmeans.cluster(amozhanbiset);
+			 for(int i =0 ; i<result.size(); i++) {
+				 CentroidCluster<StockDoublePoint> temp = result.get(i);
+				 List<StockDoublePoint> templist = temp.getPoints();
+				 for(int j=0; j<templist.size(); j++) {
+					 double[] pr = ((StockDoublePoint)templist.get(j)).getPoint();
+					 LocalDate pl = ((StockDoublePoint)templist.get(j)).getPointLocalDate();
+					 java.sql.Date plsqldate =  java. sql. Date. valueOf(pl);
+					 org.jfree.data.time.Week plwknum = new org.jfree.data.time.Week(plsqldate);
+					 amozbclusterfromapache.add(plwknum, i);
+				 }
+			 }
+
+			 return;
+			 
+			 
+		 }
+		 public Integer getSpecificDateAMOZhanBiApacheMathKLearnClusteringID (LocalDate date)
 		 {
 			 java.sql.Date lastdayofweek =  java. sql. Date. valueOf(date);
 			 org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);

@@ -86,7 +86,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
 //		((TDXNodesXPeriodExternalData)nodexdata).calulateKLearnResult ();
-		((TDXNodesXPeriodExternalData)nodexdata).calulateApacheMathKLearnResult ();
+//		((TDXNodesXPeriodExternalData)nodexdata).calulateApacheMathKLearnResult ();
 		
 		Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
 		
@@ -522,7 +522,8 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
     			((BanKuaiFengXiCategoryLineRenderer)fourthrenderer).setBarColumnShouldChangeColor(indexforline);
     			
     			NodeXPeriodData nodexdata = super.getCurDisplayedNode().getNodeXPeroidData(super.globeperiod);
-    			Integer selectclusteringid = ((TDXNodesXPeriodExternalData)nodexdata).getApacheMathKLearnClusteringID (selecteddate);
+    			((TDXNodesXPeriodExternalData)nodexdata).calulateSpecificDateAMOZhanBiApacheMathKLearnResult(selecteddate);
+    			Integer selectclusteringid = ((TDXNodesXPeriodExternalData)nodexdata).getSpecificDateAMOZhanBiApacheMathKLearnClusteringID (selecteddate);
     			if(selectclusteringid != null)
     				((BanKuaiFengXiCategoryCjeZhanbiLineRenderer)fourthrenderer).setKLearningClusterBaseLineId (selectclusteringid);
     		}
@@ -647,11 +648,13 @@ class BkfxItemLabelGeneratorForCjeZhanBi extends BkfxItemLabelGenerator
 		
 		String result = "";
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
-			NumberFormat nf = this.getNumberFormat();
-			result =  nf.format(dataset.getValue(row, column));
+//			NumberFormat nf = this.getNumberFormat(); //显示占比数字
+//			result =  nf.format(dataset.getValue(row, column));
+			result = maxweek.toString(); //显示占比MAXWEEK
 		} else if (minweek != null && minweek != 0 && minweek >=  super.displayedminwklevel) {
-			NumberFormat nf = this.getNumberFormat();
-			result =  nf.format(dataset.getValue(row, column));
+//			NumberFormat nf = this.getNumberFormat();
+//			result =  nf.format(dataset.getValue(row, column));
+			result = "-" + minweek.toString();
 		}
 		
 		return result;
