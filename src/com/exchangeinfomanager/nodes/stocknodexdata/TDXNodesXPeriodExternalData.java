@@ -99,7 +99,6 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			nodeexchangedaysnumber.setNotify(false);
 			if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //
 				nodeexchangedaysnumber.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getExchangeDaysNumber(),false);
-			
 		} catch (org.jfree.data.general.SeriesException e) {
 		}
 		

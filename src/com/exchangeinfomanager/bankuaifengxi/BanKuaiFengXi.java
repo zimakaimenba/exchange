@@ -1045,11 +1045,14 @@ public class BanKuaiFengXi extends JDialog
 				 superbankuai = (TDXNodes) svsbk.getNodeData(superbankuai, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, 
 						 NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
 				 svsbk.syncNodeData(superbankuai);
-			 }
-		 }
+				 
+				 paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
+			 } else //Ã»ÓÐsuperbankuai,
+				 paneldayCandle.updatedDate(tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
+		 } else
+			 paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
 
-		paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
-
+		
 		ServicesForNewsLabel svslabel = new NewsLabelServices ();
 		ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
     	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
