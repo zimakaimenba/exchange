@@ -3819,18 +3819,6 @@ public class BanKuaiFengXi extends JDialog
 						}
 		    		}
 		    	}
-//		    	List<BkChanYeLianTreeNode> allgg = interbk.getAllGeGuOfBanKuaiInHistory();
-//		    	for(BkChanYeLianTreeNode tmpnode : allgg) {
-//					Integer rowindex = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
-//					if( rowindex  != null && rowindex >=0 ) {
-//						int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
-//					    Rectangle r = new Rectangle(tableTempGeGu.getCellRect(modelRow, 0, true));
-//					    Rectangle s = at.createTransformedShape(r).getBounds();
-//					    int h = 2; //Math.max(2, s.height-2);
-//				        g.fillRect(trackBounds.x+2, trackBounds.y+1+s.y, trackBounds.width, h);
-//					}
-//				}
-		    	
 		    }
 	      }
 	    });
@@ -3975,6 +3963,7 @@ public class BanKuaiFengXi extends JDialog
 			}
 			
 			ckbxma = new JCheckBox("\u7A81\u51FACLOSE vs. MA");
+			ckbxma.setSelected(true);
 			ckbxma.setFont(new Font("ËÎÌו", Font.PLAIN, 12));
 			ckbxma.setForeground(new Color(0,153,153) );
 			
@@ -4010,6 +3999,7 @@ public class BanKuaiFengXi extends JDialog
 			tfldparsedfile.setToolTipText(tfldparsedfile.getText());
 			
 			ckbxdpmaxwk = new JCheckBox("\u7A81\u51FADPMAXWK>=");
+			ckbxdpmaxwk.setSelected(true);
 			
 			ckbxdpmaxwk.setForeground(Color.RED);
 			
@@ -4020,6 +4010,7 @@ public class BanKuaiFengXi extends JDialog
 //			tflddisplaydpmaxwk.setColumns(2);
 			
 			chkliutongsz = new JCheckBox("\u7A81\u51FA\u6D41\u901A\u5E02\u503C(\u4EBF)");
+			chkliutongsz.setSelected(true);
 			chkliutongsz.setBackground(Color.WHITE);
 			
 			chkliutongsz.setForeground(Color.MAGENTA);
@@ -4031,6 +4022,7 @@ public class BanKuaiFengXi extends JDialog
 //			tfldltszmin.setColumns(2);
 			
 			ckbxcjemaxwk = new JCheckBox("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
+			ckbxcjemaxwk.setSelected(true);
 			ckbxcjemaxwk.setToolTipText("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
 			ckbxcjemaxwk.setFont(new Font("ËÎÌו", Font.PLAIN, 12));
 			ckbxcjemaxwk.setForeground(Color.CYAN);
@@ -4119,13 +4111,14 @@ public class BanKuaiFengXi extends JDialog
 //			tflddpminwk.setColumns(10);
 			
 			chbxzhangfu = new JCheckBox("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
+			chbxzhangfu.setSelected(true);
 			chbxzhangfu.setToolTipText("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
 			chbxzhangfu.setForeground(Color.PINK);
 			chbxzhangfu.setFont(new Font("ËÎÌו", Font.ITALIC, 12));
 			
 			tfldzhangfumin = new JTextField();
 			tfldzhangfumin.setPreferredSize(new Dimension(25, 25));
-			tfldzhangfumin.setText("5");
+			tfldzhangfumin.setText("7.5");
 //			tfldzhangfumin.setColumns(2);
 			
 			tfldzhangfumax = new JTextField();
