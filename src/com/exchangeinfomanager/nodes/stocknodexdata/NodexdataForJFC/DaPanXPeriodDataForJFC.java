@@ -680,6 +680,18 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		
 	}
 
+	@Override
+	public void calNodeAMOMA() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Double[] getNodeAMOMA(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }
 

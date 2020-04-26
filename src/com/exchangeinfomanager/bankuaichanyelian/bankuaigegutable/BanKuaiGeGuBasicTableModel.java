@@ -238,7 +238,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	    	this.fireTableDataChanged();
 	    }
 	    
-	    public int getStockRowIndex (String neededfindstring) //可以查找code也可以查找name
+	    public Integer getStockRowIndex (String neededfindstring) //可以查找code也可以查找name
 	    {
 	    		int index = -1;
 	    		HanYuPinYing hypy = new HanYuPinYing ();

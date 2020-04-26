@@ -164,7 +164,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 
 	private JFreeChart candlestickChart;
 
-	private DateAxis dayAxis;
+	
 	private JMenuItem mntmbankuai;
 	private JMenuItem mntmzhishu;
 	private boolean displayhuibuquekou;
@@ -1221,7 +1221,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickDataset = new OHLCSeriesCollection();
 //		ohlcSeries = new OHLCSeries("KXian");
 //		candlestickDataset.addSeries(ohlcSeries);
-		dayAxis = new DateAxis ();
+		DateAxis dayAxis = new DateAxis ();
 		
 		// Create candlestick chart renderer
 		candlestickChart = ChartFactory.createCandlestickChart("", "","", candlestickDataset, true);
@@ -1248,7 +1248,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.setNotify(true);
 		
         //dapan zhishu/bankuai zhishu part
-		
 		dapancandlestickDataset = new OHLCSeriesCollection();
 		candlestickChart.getXYPlot().setDataset(1,dapancandlestickDataset);
 		candlestickChart.getXYPlot().setRenderer(1, new BanKuaiFengXiCandlestickZhiShuRenderer());
@@ -1256,8 +1255,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		maDataSet = new TimeSeriesCollection();
 		candlestickChart.getXYPlot().setDataset(3, maDataSet);
 		candlestickChart.getXYPlot().setRenderer(3, new  XYLineAndShapeRenderer (true, false) );
+
 		//成交额数据
-		
 		ValueAxis rangeAxis2 = new NumberAxis("");
 		rangeAxis2.setUpperMargin(0.0);   
 		rangeAxis2.setLowerMargin(0.0); 

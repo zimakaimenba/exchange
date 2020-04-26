@@ -154,7 +154,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
     }
     
   //Implement table header tool tips.
-  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比","大盘成交额增长贡献率(成交额上周变化升降)","周日平均成交额MAXWK(近期关注板块)","周日平均成交额连续"};
+  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJLZBMAXWK","大盘成交额增长贡献率","周日平均成交额MAXWK","周日平均成交额连续(成交额上周变化升降)"};
       protected JTableHeader createDefaultTableHeader() 
       {
           return new JTableHeader(columnModel) {
@@ -344,7 +344,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
 	        	background = new Color(51,204,255);
 	        }
-	        if (comp instanceof JLabel && ( col == 6   )) {
+	        if (comp instanceof JLabel && ( col == 7 || col == 6   )) {
 	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 	        	Integer avgdailycjemaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(curdate,0);
 	        	if(avgdailycjemaxwk != null && avgdailycjemaxwk > 0) 
@@ -355,7 +355,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 			       	background = Color.WHITE;
 	        }
 	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||  col == 4 ||  col == 5  )) {
+	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||    col == 5  )) {
             	String value =  ((JLabel)comp).getText();
             	if(value == null || value.length() == 0)
             		return null;
@@ -388,6 +388,9 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        		Range<LocalDate> indqgz = bankuai.isInDuanQiGuanZhuRange (curdate);
 	        		if(indqgz != null)
 	        			background = new Color(102,178,255);
+	        		
+	        		if(this.isRowSelected(row))
+	    	    		background = new Color(102,102,255);
 	        		
 	        		Range<LocalDate> inqsgz = bankuai.isInQiangShiBanKuaiRange (curdate);
 	        		if(inqsgz != null)

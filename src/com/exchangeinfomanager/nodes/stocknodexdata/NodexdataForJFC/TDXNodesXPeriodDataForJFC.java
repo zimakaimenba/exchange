@@ -70,6 +70,9 @@ import com.udojava.evalex.Expression;
 		this.nodeohlcma60 = new TimeSeries(nodeperiodtype);
 		this.nodeohlcma120 = new TimeSeries(nodeperiodtype);
 		this.nodeohlcma250 = new TimeSeries(nodeperiodtype);
+		
+		this.nodeamoma5 = new TimeSeries(nodeperiodtype);
+		this.nodeamoma10 = new TimeSeries(nodeperiodtype);
 	}
 	
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodDataForJFC.class);
@@ -1021,6 +1024,87 @@ import com.udojava.evalex.Expression;
 //			
 //			return -1;
 //		}
+		/*
+		 * 通过apache math计算AMO的MA
+		 */
+		public Double[] getNodeAMOMA (LocalDate  requireddate,int difference)
+		{
+			int itemcount = this.nodeamo.getItemCount();
+			double[] amodata = new double[itemcount];
+			for(int i=0;i < this.nodeamo.getItemCount();i++) {
+				TimeSeriesDataItem dataitem = this.nodeamo.getDataItem(i);
+				double close = dataitem.getValue().doubleValue();
+				amodata[i] = close;
+			}
+			
+			requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
+			RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriodForOHLC(requireddate,difference);
+			Integer itemindex = this.nodeamo.getIndex(expectedperiod);
+			
+			Double ma5 = null;
+			Integer ma5index = this.nodeamoma5.getIndex(expectedperiod);
+			if(ma5index == -1 && itemindex>=5) {
+				ma5 = StatUtils.mean(amodata, itemindex-4, 5);
+				nodeamoma5.add(expectedperiod,ma5,false);
+			} else
+			{
+				TimeSeriesDataItem ma5item = this.nodeamoma5.getDataItem(expectedperiod);
+				if(ma5item != null)
+					ma5 = ma5item.getValue().doubleValue();
+			}
+			
+			Double ma10 = null;
+			Integer ma10index = this.nodeamoma10.getIndex(expectedperiod);
+			if(ma10index == -1 && itemindex>=10) {
+				ma10 = StatUtils.mean(amodata, itemindex-9, 10);
+				nodeamoma10.add(expectedperiod,ma10,false);
+			} else
+			{
+				TimeSeriesDataItem ma10item = this.nodeamoma10.getDataItem(expectedperiod);
+				if(ma10item != null)
+					ma10 = ma10item.getValue().doubleValue();
+			}
+			
+			Double amoma[] = {ma5,ma10};
+			return amoma;
+		}
+		/*
+		 * 
+		 */
+		public void calNodeAMOMA ()
+		{
+			int itemcount = this.nodeamo.getItemCount();
+			double[] amodata = new double[itemcount];
+			for(int i=0;i < this.nodeamo.getItemCount();i++) {
+				TimeSeriesDataItem dataitem = this.nodeamo.getDataItem(i);
+				double close = dataitem.getValue().doubleValue();
+				amodata[i] = close;
+			}
+			
+			Double ma5 = null;Double ma10 = null;
+			for(int i= itemcount-1;i >=0;i--) {
+				TimeSeriesDataItem dataitem = this.nodeamo.getDataItem(i);
+				RegularTimePeriod period = dataitem.getPeriod();
+				
+				if(this.nodeamoma5.getIndex(period) <0 ) {
+					if(i>=5) {
+						ma5 = StatUtils.mean(amodata, i-4, 5);
+						if(ma5 != null)
+							this.nodeamoma5.add(period , ma5, false);
+					}
+				}
+				
+				if(this.nodeamoma10.getIndex(period) <0 ) {
+					if(i>=10) {
+						ma10 = StatUtils.mean(amodata, i-9, 10);
+						if(ma10 != null)
+							this.nodeamoma10.add(period , ma10, false);
+					}
+				}
+			}
+			
+			return;
+		}
 	/**
 	 * 
 	 */
@@ -1071,7 +1155,9 @@ import com.udojava.evalex.Expression;
 			}
 		}
 		
+		return;
 	}
+	
 	/*
 	 * 通过apache math计算MA
 	 */
@@ -1153,7 +1239,7 @@ import com.udojava.evalex.Expression;
 		return sma;
 	 }
 	 /*
-	  * 
+	  * 用TA4J计算均线
 	  */
 	 public Double[] getNodeOhlcSMA (LocalDate  requireddate,int difference)
 	 {

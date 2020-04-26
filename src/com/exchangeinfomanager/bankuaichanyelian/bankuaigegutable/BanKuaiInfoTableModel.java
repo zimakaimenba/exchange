@@ -25,7 +25,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		super ();
 	}
 	
-	String[] jtableTitleStrings = { "板块代码", "名称","CJE占比增长率","CJE占比","CJL占比","大盘成交额增长贡献率(成交额上周变化升降)","周日平均成交额MAXWK(近期关注板块)","周日平均成交额连续"};
+	String[] jtableTitleStrings = { "板块代码", "名称","CJE占比增长率","CJE占比","CJEZBMAXWK","大盘成交额增长贡献率(成交额上周变化升降)","周日平均成交额MAXWK(近期关注板块)","周日平均成交额连续"};
 	List<TDXNodes> entryList;
 	LocalDate showzhbiwknum;
 	private String curperiod;
@@ -143,21 +143,21 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 //            	bankuai = null;
 //            	break;
             case 4:
-            	Double cjlzhanbi = bkxdata.getChenJiaoLiangZhanBi(showzhbiwknum, 0);
-            	value = cjlzhanbi;
+            	Integer cjlzhanbimaxwk = bkxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showzhbiwknum, 0);
+            	value = cjlzhanbimaxwk;
             	
-            	cjlzhanbi = null;
-            	bkxdata = null;
-            	bankuai = null;
+//            	cjlzhanbimaxwk = null;
+//            	bkxdata = null;
+//            	bankuai = null;
             	
             	break;
             case 5:
             	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(dapan,showzhbiwknum,0);
             	value = cjegrowthrate;
             	
-            	cjegrowthrate = null;
-            	bkxdata = null;
-            	bankuai = null;
+//            	cjegrowthrate = null;
+//            	bkxdata = null;
+//            	bankuai = null;
             	
             	break;
 
@@ -199,7 +199,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			          clazz = Double.class;
 			          break;
 		        case 4:
-			          clazz = Double.class;
+			          clazz = Integer.class;
 			          break;
 		        case 5:
 			          clazz = Double.class;

@@ -442,6 +442,16 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void calNodeAMOMA() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public Double[] getNodeAMOMA(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	

@@ -160,6 +160,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 			try {
 				stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (((Stock)stock),requiredstartday,requiredendday,period);
 				nodedayperioddata.calNodeOhlcMA();
+				nodedayperioddata.calNodeAMOMA ();
 			} catch (java.lang.NullPointerException e) {
 				e.printStackTrace();
 			}
@@ -181,6 +182,7 @@ public class SvsForNodeOfStock implements ServicesForNode
 				stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (((Stock)stock),requiredstartday,requiredendday,period);
 		}
 		nodedayperioddata.calNodeOhlcMA();
+		nodedayperioddata.calNodeAMOMA ();
 		return stock;
 	}
 

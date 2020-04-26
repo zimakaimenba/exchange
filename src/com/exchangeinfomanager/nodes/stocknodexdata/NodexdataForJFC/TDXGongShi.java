@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.ohlc.OHLCItem;
 
 public class TDXGongShi 
@@ -195,7 +196,30 @@ public class TDXGongShi
 				ma20biggerrefma20 ++;
 		}
 		
+		return ;
+	}
+	/*
+	 * {MA5 4日平均增长率}RA_MA5AVEPCET:= (POW(MAAMO5/REF(MAAMO5,3),1/3)-1)*100;
+	 */
+	public Double RA_MA5AVEPCET  (TDXNodesXPeriodDataForJFC tdxxdata, LocalDate date)
+	{
+		Double[] curamoma = tdxxdata.getNodeAMOMA (date, 0);
+		Double[] refamoma = tdxxdata.getNodeAMOMA (date, -3);
 		
+		double pow = java.lang.Math.pow(curamoma[0]/refamoma[0], 1/3);
+		
+		return (pow -1) /100;
+	}
+	/*
+	 * {4日平均放量增长率}RA_4DAYRIJUN:= (POW(AMO/REF(AMO,3),1/3)-1)*100 ;
+	 */
+	public Double RA_4DAYRIJUN (TDXNodesXPeriodDataForJFC tdxxdata, LocalDate date)
+	{
+		 Double curamo = tdxxdata.getChengJiaoEr(date, 0);
+		 Double refamo = tdxxdata.getChengJiaoEr(date, -3);
+		
+		 double pow = java.lang.Math.pow(curamo/refamo, 1/3);
+		 return (pow -1) /100;
 	}
 	
 }

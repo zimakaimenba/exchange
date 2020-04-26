@@ -68,7 +68,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	private Border insidefortag = new EmptyBorder(0, 1, 0, 1);
 	private Border highlightfortag = new CompoundBorder(outsidefortag, insidefortag);
 	//
-	private Border outsideforintersectionbk = new MatteBorder(1, 0, 1, 0, Color.YELLOW);
+	private Border outsideforintersectionbk = new MatteBorder(1, 0, 1, 0, Color.BLUE.brighter());
 	private Border insideforintersectionbk = new EmptyBorder(0, 1, 0, 1);
 	private Border highlightforintersectionbk = new CompoundBorder(outsideforintersectionbk, insideforintersectionbk);
 
@@ -130,20 +130,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    
 	    Color foreground = Color.BLACK, background = Color.white;
 	    
-	    if( (table.isRowSelected(row) || stock.wetherHasReiewedToday() ) && columnname.contains("代码") ) { //当前选择选择
+	    if( comp instanceof JLabel &&  columnname.contains("代码")  ) { //当前选择选择 // ||   stock.wetherHasReiewedToday()
 	    	LocalDate requireddate = tablemodel.getShowCurDate();
 		    String period = tablemodel.getCurDisplayPeriod();
 		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
 		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
-		    
 		    background = CandleStickColorFactory.getCandelStickColor(zhangdiefu);
-	    
-//		    if(zhangdiefu != null  && zhangdiefu > 0 )
-//		    	background = Color.RED;
-//		    else if(zhangdiefu != null  &&  zhangdiefu < 0 )
-//		    	background = Color.GREEN;
-//		    else
-//		    	background = Color.WHITE;
 	    } 
 	    
 	    if( columnname.equals("名称") ) { //个股名称
@@ -153,8 +145,11 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	 		Boolean isin = stofbktree.selfIsMatchModel(requireddate);
 	    	if(isin != null && isin  ) 
 		    		background = Color.ORANGE;  
-	    	else
-		    		background = Color.white;
+	    	else 
+	    		background = Color.white;
+	    	
+	    	if(table.isRowSelected(row))
+	    		background = new Color(102,102,255);
 	    	
 	    	Integer weight = stockofbank.getBanKuai().getGeGuSuoShuBanKuaiWeight(stock.getMyOwnCode());
 	    	if(weight == null)
