@@ -2992,13 +2992,17 @@ class AccountsInfoTableModel extends DefaultTableModel
             	try {
             		value = currencyFormat.format(0 - tmpstkcc.getChicangchenben()); //因为成本为负
             	} catch (java.lang.NullPointerException e) {
-        			e.printStackTrace();
+//        			e.printStackTrace();
         		}
 
             	break;
             case 2:
             	//NumberFormat currencyFormat1 = NumberFormat.getCurrencyInstance();
-                value = tmpstkcc.getChicanggushu();
+            	try {
+            		value = tmpstkcc.getChicanggushu();
+            	} catch (java.lang.NullPointerException e) {
+//        			e.printStackTrace();
+        		}
                 break;
             case 3:
             	NumberFormat currencyFormat2 = NumberFormat.getCurrencyInstance();

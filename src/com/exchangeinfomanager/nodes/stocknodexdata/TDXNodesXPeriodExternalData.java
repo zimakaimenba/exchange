@@ -1142,21 +1142,61 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			 
 			 FuzzyKMeansClusterer<StockDoublePoint> kmeans = new FuzzyKMeansClusterer<StockDoublePoint>(5,2); //模糊算法
 			 List<CentroidCluster<TDXNodesXPeriodExternalData.StockDoublePoint>> result = kmeans.cluster(amozhanbiset);
+//			 for(int i =0 ; i<result.size(); i++) {
+//				 CentroidCluster<StockDoublePoint> temp = result.get(i);
+//				 List<StockDoublePoint> templist = temp.getPoints();
+//				 for(int j=0; j<templist.size(); j++) {
+//					 double[] pr = ((StockDoublePoint)templist.get(j)).getPoint();
+//					 LocalDate pl = ((StockDoublePoint)templist.get(j)).getPointLocalDate();
+//					 java.sql.Date plsqldate =  java. sql. Date. valueOf(pl);
+//					 org.jfree.data.time.Week plwknum = new org.jfree.data.time.Week(plsqldate);
+//					 amozbclusterfromapache.add(plwknum, i);
+//				 }
+//			 }
+			 
+			 int curclusterindex = -1;
 			 for(int i =0 ; i<result.size(); i++) {
 				 CentroidCluster<StockDoublePoint> temp = result.get(i);
 				 List<StockDoublePoint> templist = temp.getPoints();
 				 for(int j=0; j<templist.size(); j++) {
-					 double[] pr = ((StockDoublePoint)templist.get(j)).getPoint();
-					 LocalDate pl = ((StockDoublePoint)templist.get(j)).getPointLocalDate();
+					 LocalDate pl = ((StockDoublePoint)templist.get(j)).getPointLocalDate().with(DayOfWeek.FRIDAY);
+					 if(pl.equals(date)) {
+						 curclusterindex = i;
+						 break;
+					 }
+				 }
+				 if(curclusterindex != -1)
+					 break;
+			 }
+			 
+			 if(curclusterindex == -1)
+				 return;
+			 
+			 CentroidCluster<StockDoublePoint> curdateincluster = result.get(curclusterindex);
+			 List<StockDoublePoint> curdateinlist = curdateincluster.getPoints();
+			 if(curdateinlist.size() >= dateindex * 0.45) { //如果目标list数目过多，要做二次klearning
+				 FuzzyKMeansClusterer<StockDoublePoint> kmeansagain = new FuzzyKMeansClusterer<StockDoublePoint>(3,2); //模糊算法
+				 List<CentroidCluster<TDXNodesXPeriodExternalData.StockDoublePoint>> resultagain = kmeansagain.cluster(curdateinlist);
+				 for(int i = 0 ; i<resultagain.size(); i++) {
+					 CentroidCluster<StockDoublePoint> temp = resultagain.get(i);
+					 List<StockDoublePoint> templist = temp.getPoints();
+					 for(int j=0; j<templist.size(); j++) {
+						 LocalDate pl = ((StockDoublePoint)templist.get(j)).getPointLocalDate();
+						 java.sql.Date plsqldate =  java. sql. Date. valueOf(pl);
+						 org.jfree.data.time.Week plwknum = new org.jfree.data.time.Week(plsqldate);
+						 amozbclusterfromapache.add(plwknum, i);
+					 }
+				 }
+			 } else { //没有过多，就直接保存
+				 for(int i=0; i <curdateinlist.size(); i++) {
+					 LocalDate pl = ((StockDoublePoint)curdateinlist.get(i)).getPointLocalDate();
 					 java.sql.Date plsqldate =  java. sql. Date. valueOf(pl);
 					 org.jfree.data.time.Week plwknum = new org.jfree.data.time.Week(plsqldate);
-					 amozbclusterfromapache.add(plwknum, i);
+					 amozbclusterfromapache.add(plwknum, curclusterindex);
 				 }
 			 }
 
 			 return;
-			 
-			 
 		 }
 		 public Integer getSpecificDateAMOZhanBiApacheMathKLearnClusteringID (LocalDate date)
 		 {

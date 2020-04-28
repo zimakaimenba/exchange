@@ -319,10 +319,10 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  NodeGivenPeriodDataItem.DAY);
 		
 		ServicesForNewsLabel svslabel = new NewsLabelServices ();
-		ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
-    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,displayedstartdate1,displayedenddate1);
-    	svsdqgz.setCache(dqgzcache);
-    	nodekpnl.displayZhiShuGuanJianRiQiToGui(dqgzcache.produceNews());
+//		ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
+//    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,displayedstartdate1,displayedenddate1);
+//    	svsdqgz.setCache(dqgzcache);
+//    	nodekpnl.displayZhiShuGuanJianRiQiToGui(dqgzcache.produceNews());
     	
     	ServicesForNews svsnews = new NewsServices ();
     	NewsCache newcache = new NewsCache (node.getMyOwnCode(),svsnews,svslabel,displayedstartdate1,displayedenddate1);

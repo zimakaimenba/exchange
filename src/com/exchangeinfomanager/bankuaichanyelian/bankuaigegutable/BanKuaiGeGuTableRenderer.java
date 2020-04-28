@@ -183,6 +183,8 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    String period = tablemodel.getCurDisplayPeriod();
 		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		    Double curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, 0);
+		    if(curltsz == null) //有时候周一网易的数据还没有导入，导致没有流通市值数据，先用上一周的数据顶一下，毕竟不会相差太大
+		    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, -1);
 		    try {
 			    if( curltsz >= ltszmin && curltsz <= ltszmax ) {
 			    	if(curltsz >= 1500000000.0 && curltsz <= 3900000000.0)  //对于这个范围内的个股要特别重视，特别显示
