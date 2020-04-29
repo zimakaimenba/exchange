@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -97,6 +98,7 @@ import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcesso
 import com.exchangeinfomanager.commonlib.ReminderPopToolTip;
 import com.exchangeinfomanager.commonlib.ScrollUtil;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
+import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
@@ -187,6 +189,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.BoxLayout;
 import java.awt.FlowLayout;
 import javax.swing.JTable;
+import javax.swing.JComboBox;
 
 
 public class BanKuaiFengXi extends JDialog 
@@ -813,10 +816,11 @@ public class BanKuaiFengXi extends JDialog
 	{
 	
 		if(exportcond == null || exportcond.size() == 0) {
-			if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !chkliutongsz.isSelected() && !ckbxcjemaxwk.isSelected()){
-				JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-				return;
-			} else if(exportcond == null) { //用户设置条件后可能直接点击导出，而没有先点击加入，这里是统一界面的行为
+//			if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !chkliutongsz.isSelected() && !ckbxcjemaxwk.isSelected()){
+//				JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
+//				return;
+//			} else 
+			if(exportcond == null) { //用户设置条件后可能直接点击导出，而没有先点击加入，这里是统一界面的行为
 				exportcond = new ArrayList<BanKuaiGeGuMatchCondition> ();
 				initializeExportConditions ();
 			} else
@@ -1209,6 +1213,68 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void createEvents() 
 	{
+		cbbxmore.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) 
+			{
+				SwingUtilities.invokeLater(new Runnable()
+			    {
+			        public void run()
+			        {
+			        	if(e.getStateChange() == ItemEvent.SELECTED) { //被选中，行为简单，就是显示选中项的数据
+							JCheckBox selectitem = (JCheckBox)e.getItem();
+							if(selectitem.getText().contains("股价")) {
+								if(bkggmatchcondition.getSettingSotckPriceMax() == null || bkggmatchcondition.getSettingSotckPriceMax() >100000)
+					    			tfldshowcjemax.setText("12");
+					    		else
+					    			tfldshowcjemax.setText(bkggmatchcondition.getSettingSotckPriceMax().toString());
+					    		
+					    		if(bkggmatchcondition.getSettingSotckPriceMin() == null || bkggmatchcondition.getSettingSotckPriceMin() <0)
+					    			tfldshowcje.setText("3");
+					    		else
+					    			tfldshowcje.setText(bkggmatchcondition.getSettingSotckPriceMin().toString());
+							} 
+							if(selectitem.getText().contains("成交额")) {
+								if(bkggmatchcondition.getSettingChenJiaoErMin() == null)
+			            			tfldshowcje.setText("2.18");
+			            		else
+			            			tfldshowcje.setText(bkggmatchcondition.getSettingChenJiaoErMin().toString());
+			            		
+			            		if(bkggmatchcondition.getSettingChenJiaoErMax() == null)
+			            			tfldshowcjemax.setText(" ");
+			            		else
+			            			tfldshowcjemax.setText(bkggmatchcondition.getSettingChenJiaoErMax().toString());
+							}
+						}
+						
+						if(e.getStateChange() == ItemEvent.DESELECTED) {
+						}
+			        }
+			    });
+				
+			}
+		});
+		cbbxmore.addActionListener( new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                    	JComboCheckBox check = ( JComboCheckBox ) e.getSource();
+                    	JCheckBox selectitem = (JCheckBox)check.getSelectedItem();
+                    	if(selectitem.getText().contains("股价")) {
+                    		operationsForButtomExportCondtionOfGuJia (selectitem);
+                   			refreshBanKuaiGeGuTableHightLight ();
+                    	} else 
+                    	if(selectitem.getText().contains("成交额")) {
+                    		operationsForButtomExportCondtionOfChenJiaoEr (selectitem);
+                    		refreshBanKuaiGeGuTableHightLight ();
+                    	}
+                    }
+                });
+            }
+        } );
+		
 		lblshcje.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -2193,18 +2259,6 @@ public class BanKuaiFengXi extends JDialog
 				refreshBanKuaiGeGuTableHightLight ();
 			}
 		});
-		ckboxshowcje.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent arg0) 
-			{
-				if( Strings.isNullOrEmpty(tfldshowcje.getText()) &&  Strings.isNullOrEmpty(tfldshowcjemax.getText()) ) {
-					JOptionPane.showMessageDialog(null,"请设置突出显示的成交额！");
-					ckboxshowcje.setSelected(false);
-					return;
-				}
-				refreshBanKuaiGeGuTableHightLight ();
-			}
-		});
 		/*
 		 * 查找pie chart内点击的那个个股 
 		 */
@@ -3150,29 +3204,6 @@ public class BanKuaiFengXi extends JDialog
 		
 //		return expc;
 	}
-//	/*
-//	 * 用户设置条件后，在buttion 的toolstip显示用户设置的条件
-//	 */
-//	private void decrorateExportButton(BanKuaiGeGuMatchCondition expc) 
-//	{
-//				//在tooltips显示当前有几个已经添加的条件及内容
-//				String htmlstring = btnaddexportcond.getToolTipText();
-//				org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//				org.jsoup.select.Elements content = doc.select("body");
-//				content.append(expc.getTooltips());
-//				htmlstring = doc.toString();
-//				btnaddexportcond.setToolTipText(htmlstring);
-//				
-//				int curconditionnum;
-//				try {
-//					String num = btnaddexportcond.getText() ;
-//				 curconditionnum = Integer.parseInt(btnaddexportcond.getText() ) ;
-//				 curconditionnum ++ ;
-//				} catch (java.lang.NumberFormatException e) {
-//					curconditionnum = 1;
-//				}
-//				btnaddexportcond.setText(String.valueOf(curconditionnum));
-//	}
 	/*
 	 * 同时兼任 界面显示的选择 
 	 */
@@ -3218,27 +3249,6 @@ public class BanKuaiFengXi extends JDialog
 			expc.setSettingDpMinWk(Integer.parseInt(tflddpminwk.getText())  );
 		} else
 			expc.setSettingDpMinWk (null);
-		
-		if(ckboxshowcje.isSelected()) {
-			String showcjemin; String showcjemax;
-			if( !Strings.isNullOrEmpty(tfldshowcje.getText()) ) {
-				showcjemin =  tfldshowcje.getText() ;
-				expc.setSettingChenJiaoErMin (Double.parseDouble(showcjemin) );
-			} else {
-				expc.setSettingChenJiaoErMin (Double.parseDouble(null) );
-			}
-			
-			if( !Strings.isNullOrEmpty(tfldshowcjemax.getText()) ) {
-				showcjemax =  tfldshowcjemax.getText() ;
-				expc.setSettingChenJiaoErMax (Double.parseDouble(showcjemax) );
-			} else {
-				expc.setSettingChenJiaoErMax (null );
-			}
-		} else {
-			expc.setSettingChenJiaoErMax (null );
-			expc.setSettingChenJiaoErMin (null );
-		}
-		
 		if(ckbxhuanshoulv.isSelected())
 			expc.setSettingHuanShouLv(Double.parseDouble( tfldhuanshoulv.getText() ) );
 		else 
@@ -3269,6 +3279,46 @@ public class BanKuaiFengXi extends JDialog
 		} else {
 			expc.setHuiBuDownQueKou(false);
 			expc.setZhangTing(false);
+		}
+	}
+	private void operationsForButtomExportCondtionOfGuJia (JCheckBox selectitem)
+	{
+		if(selectitem.isSelected() ) {
+			double pricemin = 0; double pricemax = 0;
+			if(Strings.isNullOrEmpty(tfldshowcje.getText()  ) )  
+				pricemin = -1;
+			else
+				pricemin = Double.parseDouble(tfldshowcje.getText()  );
+			
+			if(Strings.isNullOrEmpty(tfldshowcjemax.getText()  ) )  
+				pricemax = 1000000;
+			else
+				pricemax = Double.parseDouble(tfldshowcjemax.getText()  );
+			bkggmatchcondition.setSettingStockPriceLevel(pricemin,pricemax);
+		} else	{
+			bkggmatchcondition.setSettingStockPriceLevel(-1.0,null);
+		}
+	}
+	private void operationsForButtomExportCondtionOfChenJiaoEr (JCheckBox selectitem)
+	{
+		if(selectitem.isSelected()) {
+			String showcjemin; String showcjemax;
+			if( !Strings.isNullOrEmpty(tfldshowcje.getText().trim()) ) {
+				showcjemin =  tfldshowcje.getText() ;
+				bkggmatchcondition.setSettingChenJiaoErMin (Double.parseDouble(showcjemin) );
+			} else {
+				bkggmatchcondition.setSettingChenJiaoErMin (Double.parseDouble(null) );
+			}
+			
+			if( !Strings.isNullOrEmpty(tfldshowcjemax.getText().trim()) ) {
+				showcjemax =  tfldshowcjemax.getText() ;
+				bkggmatchcondition.setSettingChenJiaoErMax (Double.parseDouble(showcjemax) );
+			} else {
+				bkggmatchcondition.setSettingChenJiaoErMax (null );
+			}
+		} else {
+			bkggmatchcondition.setSettingChenJiaoErMax (null );
+			bkggmatchcondition.setSettingChenJiaoErMin (null );
 		}
 	}
 	/*
@@ -3383,7 +3433,6 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiGeGuExternalInfoTable tableExternalInfo;
 	
 	private final JPanel contentPanel = new JPanel();
-	private JButton okButton;
 	private JStockCalendarDateChooser dateChooser; //https://toedter.com/jcalendar/
 	private JScrollPane sclpleft;
 	
@@ -3402,7 +3451,6 @@ public class BanKuaiFengXi extends JDialog
 //	private JTextArea tfldselectedmsg;
 	private JPanel tfldselectedmsg;
 	private JStockComboBox combxsearchbk;
-	private JCheckBox ckboxshowcje;
 	private JCheckBox ckboxparsefile;
 //	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JLabel lblhscje;
@@ -3479,7 +3527,7 @@ public class BanKuaiFengXi extends JDialog
 	private JLabel lblchuangyeban;
 	private JLabel lblfifty;
 	private JLabel lblhusheng;
-
+	private JComboBox cbbxmore;
 	private JMenuItem menuItemAddRmvStockToYellow;
 
 	private JMenuItem menuItemAddRmvBkToYellow;
@@ -3949,18 +3997,6 @@ public class BanKuaiFengXi extends JDialog
 		{
 			JPanel buttonPane = new JPanel();
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				okButton = new JButton("\u5173\u95ED");
-				okButton.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent arg0) {
-						BanKuaiFengXi.this.setVisible(false);
-						BanKuaiFengXi.this.dispatchEvent(new WindowEvent(BanKuaiFengXi.this, WindowEvent.WINDOW_CLOSING));
-					}
-				});
-				okButton.setActionCommand("OK");
-				getRootPane().setDefaultButton(okButton);
-			}
 			
 			ckbxma = new JCheckBox("\u7A81\u51FACLOSE vs. MA");
 			ckbxma.setSelected(true);
@@ -3973,18 +4009,6 @@ public class BanKuaiFengXi extends JDialog
 			tfldweight.setToolTipText("\u4F8B\uFF1A(>=250 && <60) || >30");
 			tfldweight.setForeground(new Color(0,153,153) );
 			tfldweight.setText(">=250 || >60");
-//			tfldweight.setColumns(5);
-			
-			ckboxshowcje = new JCheckBox("\u7A81\u51FA\u6210\u4EA4\u989D\u533A\u95F4(\u4EBF)");
-			ckboxshowcje.setBackground(Color.LIGHT_GRAY);
-			ckboxshowcje.setForeground(Color.YELLOW);
-			
-	
-			
-			tfldshowcje = new JTextField();
-			tfldshowcje.setPreferredSize(new Dimension(30, 25));
-			tfldshowcje.setText("2.18");
-			tfldshowcje.setForeground(Color.BLUE);
 //			tfldshowcje.setColumns(4);
 			
 			ckboxparsefile = new JCheckBox("\u5206\u6790\u6587\u4EF6");
@@ -3995,7 +4019,7 @@ public class BanKuaiFengXi extends JDialog
 			
 			tfldparsedfile = new JTextField();
 			tfldparsedfile.setForeground(Color.ORANGE);
-			tfldparsedfile.setColumns(18);
+			tfldparsedfile.setColumns(12);
 			tfldparsedfile.setToolTipText(tfldparsedfile.getText());
 			
 			ckbxdpmaxwk = new JCheckBox("\u7A81\u51FADPMAXWK>=");
@@ -4018,7 +4042,7 @@ public class BanKuaiFengXi extends JDialog
 			tfldltszmin = new JTextField();
 			tfldltszmin.setPreferredSize(new Dimension(30, 25));
 			tfldltszmin.setForeground(Color.MAGENTA);
-			tfldltszmin.setText("5");
+			tfldltszmin.setText("9");
 //			tfldltszmin.setColumns(2);
 			
 			ckbxcjemaxwk = new JCheckBox("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
@@ -4054,16 +4078,10 @@ public class BanKuaiFengXi extends JDialog
 			tfldhuanshoulv = new JTextField();
 			tfldhuanshoulv.setPreferredSize(new Dimension(25, 25));
 			tfldhuanshoulv.setText("30");
-//			tfldhuanshoulv.setColumns(2);
-			
-//			btnexportmodelgegu = new JButton("\u5BFC\u51FA\u6761\u4EF6\u4E2A\u80A1");
-			
-			tfldshowcjemax = new JTextField();
-			tfldshowcjemax.setPreferredSize(new Dimension(30, 25));
 //			tfldshowcjemax.setColumns(10);
 			
 			progressBarExport = new JProgressBar();
-			progressBarExport.setPreferredSize(new Dimension(95, 25));
+			progressBarExport.setPreferredSize(new Dimension(85, 25));
 			progressBarExport.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
@@ -4126,14 +4144,32 @@ public class BanKuaiFengXi extends JDialog
 			tfldzhangfumax.setText("20");
 //			tfldzhangfumax.setColumns(2);
 			
-			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			JLabel morelabel = new JLabel("更多:  ");
+			Vector<JCheckBox> v = new Vector<>();
+			JCheckBox tuchupricelevel = new JCheckBox("突出股价区间",true);
+			tuchupricelevel.setForeground(Color.CYAN);
+			v.add(tuchupricelevel);
+			JCheckBox tuchucjeevel = new JCheckBox("突出成交额区间",false);
+			tuchucjeevel.setBackground(Color.YELLOW);
+			v.add(tuchucjeevel);
+			cbbxmore = new JComboCheckBox(v);
+//			cbbxmore = new JComboBox(v);
+			cbbxmore.setPreferredSize(new Dimension(120, 25));
+//			cbbxmore.setFont(new Font("宋体", Font.PLAIN, 12));
+			
+			tfldshowcje = new JTextField();
+			tfldshowcje.setPreferredSize(new Dimension(30, 25));
+			tfldshowcje.setText("2.18");
+			tfldshowcje.setForeground(Color.BLUE);
+			
+			tfldshowcjemax = new JTextField();
+			tfldshowcjemax.setPreferredSize(new Dimension(30, 25));
+			
+			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));
 			buttonPane.add(btnaddexportcond);
 			buttonPane.add(progressBarExport);
 			buttonPane.add(ckbxma);
 			buttonPane.add(tfldweight);
-			buttonPane.add(ckboxshowcje);
-			buttonPane.add(tfldshowcje);
-			buttonPane.add(tfldshowcjemax);
 			buttonPane.add(ckbxdpmaxwk);
 			buttonPane.add(tflddisplaydpmaxwk);
 			buttonPane.add(chckbxdpminwk);
@@ -4151,7 +4187,10 @@ public class BanKuaiFengXi extends JDialog
 			buttonPane.add(tfldzhangfumax);
 			buttonPane.add(ckboxparsefile);
 			buttonPane.add(tfldparsedfile);
-			buttonPane.add(okButton);
+			buttonPane.add(morelabel);
+			buttonPane.add(cbbxmore);
+			buttonPane.add(tfldshowcje);
+			buttonPane.add(tfldshowcjemax);
 		}
 		
 		reFormatGui ();

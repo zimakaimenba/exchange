@@ -58,12 +58,29 @@ public class BanKuaiGeGuMatchCondition
 		private Double zhangfumin;
 		private boolean onlyexportyellowsignbkstk;
 		
-//		Boolean exportAverageWkCjeMaxWk;
-//		Integer averageWkCjeMaxWkLevel;
+		private Double pricemin;
+		private Double pricemax;
 		
 		/*
 		 * 
 		 */
+		public void setSettingStockPriceLevel (Double min, Double max)
+		{
+			if(min != null)
+				this.pricemin = min;
+			
+			if(max != null)
+				this.pricemax = max;
+		}
+		public Double getSettingSotckPriceMin ()
+		{
+			return this.pricemin;
+		}
+		public Double getSettingSotckPriceMax ()
+		{
+			return this.pricemax;
+		}
+		
 		public String getConditionsDescriptions ()
 		{
 			String outputfilehead = "[导出条件:";

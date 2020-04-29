@@ -16,7 +16,12 @@ public class QiangShi extends ExternalNewsType
 	{
 		super(node, description , starttime, endtime, detail, keywords, labels, newsUrl);
 		
-		Range<LocalDate> range = Range.closed(starttime, endtime);
+		Range<LocalDate> range;
+		try {
+			range = Range.closed(starttime, endtime);
+		} catch (java.lang.IllegalArgumentException e) {
+			range = Range.closed(endtime, starttime);
+		}
 		((TDXNodes)node).addNewQiangShiRange (range);
 	}
 	

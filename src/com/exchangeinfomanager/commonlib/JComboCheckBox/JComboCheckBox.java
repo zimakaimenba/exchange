@@ -7,6 +7,7 @@ import java.util.*;
   
 public class JComboCheckBox extends JComboBox
 {
+	private Boolean newitembeenset = false;
    public JComboCheckBox() {
       init();
    }
@@ -26,16 +27,43 @@ public class JComboCheckBox extends JComboBox
       init();
    }
     
-   private void init() {
+   private void init() 
+   {
       setRenderer(new JComboCheckBoxRenderer());
+      
       addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent ae) {
             itemSelected();
          }
       });
+      
+      addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) 
+			{
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					newitembeenset = true;
+//					JCheckBox selectitem = (JCheckBox)e.getItem();
+//					selectitem.setSelected(false);
+					
+				}
+				
+//				if(e.getStateChange() == ItemEvent.DESELECTED) {
+//					JCheckBox deselectitem = (JCheckBox)e.getItem();
+//					deselectitem.setSelected(false);
+//				}
+			}
+			
+		});
    }
   
-   private void itemSelected() {
+   private void itemSelected()
+   {
+	   if(newitembeenset == true) {
+		   newitembeenset = false;
+		   return;
+	   }
+	   
       if (getSelectedItem() instanceof JCheckBox) {
          JCheckBox jcb = (JCheckBox)getSelectedItem();
          jcb.setSelected(!jcb.isSelected());
@@ -64,13 +92,22 @@ public class JComboCheckBox extends JComboBox
                                                     boolean isSelected, boolean cellHasFocus) {
          if (value instanceof Component) {
             Component c = (Component)value;
-            if (isSelected) {
-               c.setBackground(list.getSelectionBackground());
-               c.setForeground(list.getSelectionForeground());
-            } else {
-               c.setBackground(list.getBackground());
-               c.setForeground(list.getForeground());
-            }
+            Color bg = ((JCheckBox) value).getBackground();
+            Color fg = ((JCheckBox) value).getForeground();
+//            if (isSelected) {
+//               c.setBackground(list.getSelectionBackground());
+//               c.setForeground(list.getSelectionForeground());
+//            } else {
+//               c.setBackground(list.getBackground());
+//               c.setForeground(list.getForeground());
+//            }
+//            if (isSelected) {
+//                c.setBackground(((JCheckBox) value).getBackground());
+//                c.setForeground(((JCheckBox) value).getForeground());
+//             } else {
+//                c.setBackground(list.getBackground());
+//                c.setForeground(list.getForeground());
+//             }
               
             return c;
          } else {

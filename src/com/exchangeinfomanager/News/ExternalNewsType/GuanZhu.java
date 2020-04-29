@@ -25,7 +25,12 @@ public class GuanZhu extends ExternalNewsType
 		else
 			this.guanzhutype = "DUANQI";
 		
-		Range<LocalDate> range = Range.closed(starttime, endtime);
+		Range<LocalDate> range;
+		try {
+			range = Range.closed(starttime, endtime);
+		} catch (java.lang.IllegalArgumentException e) {
+			range = Range.closed(endtime, starttime);
+		}
 		if(changqiorduanqi)
 			;
 		else
