@@ -88,6 +88,8 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombin
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartPnl;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.VoiceEngine;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.WeeklyAnalysis;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.BkfxWeeklyFileResultXmlHandler;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServiceOfBkFxEbkXml;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServicesForBkfxEbkOutPutFile;
@@ -520,11 +522,23 @@ public class BanKuaiFengXi extends JDialog
 			
 			showReminderMessage (bkfxremind.getStockremind());
 			
+			readAnalysisResult ( selectstock.getBanKuai(),  selectstock.getStock());
+			
 			hourglassCursor = null;
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 			setCursor(hourglassCursor2);
 	}
+	private void readAnalysisResult(BanKuai banKuai, Stock stock) 
+	{
+		String anaresult = WeeklyAnalysis.BanKuaiGeGuMatchConditionAnalysis(stock, this.dateChooser.getLocalDate(), this.bkggmatchcondition);
+		if(!Strings.isNullOrEmpty(anaresult)) {
+			VoiceEngine readengin = new VoiceEngine (anaresult);
+//			readengin.readInformation (anaresult);
+			readengin.execute();
+		}
 
+			
+	}
 	private void refreshCurrentStockTags(Stock selectedstock) 
 	{
 		Collection<BkChanYeLianTreeNode> bkstock = new HashSet<> ();
@@ -3296,7 +3310,7 @@ public class BanKuaiFengXi extends JDialog
 				pricemax = Double.parseDouble(tfldshowcjemax.getText()  );
 			bkggmatchcondition.setSettingStockPriceLevel(pricemin,pricemax);
 		} else	{
-			bkggmatchcondition.setSettingStockPriceLevel(-1.0,null);
+			bkggmatchcondition.setSettingStockPriceLevel(null,null);
 		}
 	}
 	private void operationsForButtomExportCondtionOfChenJiaoEr (JCheckBox selectitem)
@@ -4146,7 +4160,7 @@ public class BanKuaiFengXi extends JDialog
 			
 			JLabel morelabel = new JLabel("更多:  ");
 			Vector<JCheckBox> v = new Vector<>();
-			JCheckBox tuchupricelevel = new JCheckBox("突出股价区间",true);
+			JCheckBox tuchupricelevel = new JCheckBox("突出股价区间",false);
 			tuchupricelevel.setForeground(Color.CYAN);
 			v.add(tuchupricelevel);
 			JCheckBox tuchucjeevel = new JCheckBox("突出成交额区间",false);
@@ -4159,10 +4173,11 @@ public class BanKuaiFengXi extends JDialog
 			
 			tfldshowcje = new JTextField();
 			tfldshowcje.setPreferredSize(new Dimension(30, 25));
-			tfldshowcje.setText("2.18");
+			tfldshowcje.setText("3");
 			tfldshowcje.setForeground(Color.BLUE);
 			
 			tfldshowcjemax = new JTextField();
+			tfldshowcjemax.setText("12");
 			tfldshowcjemax.setPreferredSize(new Dimension(30, 25));
 			
 			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));

@@ -66,11 +66,10 @@ public class BanKuaiGeGuMatchCondition
 		 */
 		public void setSettingStockPriceLevel (Double min, Double max)
 		{
-			if(min != null)
-				this.pricemin = min;
+			this.pricemin = min;
+			this.pricemax = max;
 			
-			if(max != null)
-				this.pricemax = max;
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
 		public Double getSettingSotckPriceMin ()
 		{

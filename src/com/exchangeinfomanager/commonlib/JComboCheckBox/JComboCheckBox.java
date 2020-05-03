@@ -1,6 +1,8 @@
 package com.exchangeinfomanager.commonlib.JComboCheckBox;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
@@ -80,7 +82,7 @@ public class JComboCheckBox extends JComboBox
    }
    
   
-   class JComboCheckBoxRenderer implements ListCellRenderer
+   class JComboCheckBoxRenderer  extends BasicComboBoxRenderer //implements ListCellRenderer //
    {
       private JLabel label;
        
@@ -89,25 +91,24 @@ public class JComboCheckBox extends JComboBox
       }
        
       public Component getListCellRendererComponent(JList list, Object value, int index,
-                                                    boolean isSelected, boolean cellHasFocus) {
-         if (value instanceof Component) {
-            Component c = (Component)value;
-            Color bg = ((JCheckBox) value).getBackground();
-            Color fg = ((JCheckBox) value).getForeground();
-//            if (isSelected) {
-//               c.setBackground(list.getSelectionBackground());
-//               c.setForeground(list.getSelectionForeground());
-//            } else {
-//               c.setBackground(list.getBackground());
-//               c.setForeground(list.getForeground());
-//            }
-//            if (isSelected) {
-//                c.setBackground(((JCheckBox) value).getBackground());
-//                c.setForeground(((JCheckBox) value).getForeground());
-//             } else {
-//                c.setBackground(list.getBackground());
-//                c.setForeground(list.getForeground());
-//             }
+                                                    boolean isSelected, boolean cellHasFocus) 
+      {
+    	 Component com =  super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus); 
+         if (value instanceof JCheckBox) {
+        	 Component c = (Component)value;
+           
+            if (isSelected) {
+            	Color bg = ((JCheckBox) value).getBackground();
+                Color fg = ((JCheckBox) value).getForeground();
+                
+                c.setBackground(bg);
+                c.setForeground(fg);
+             } else {
+            	Color bg = list.getBackground();
+            	Color fg = list.getForeground();
+                c.setBackground(bg);
+                c.setForeground(fg);
+             }
               
             return c;
          } else {

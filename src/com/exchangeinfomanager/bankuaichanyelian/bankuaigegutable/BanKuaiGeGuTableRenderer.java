@@ -30,8 +30,9 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.util.Integers;
+//import org.bouncycastle.util.Integers;
 import org.jfree.data.time.ohlc.OHLCItem;
+//import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
@@ -43,6 +44,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
@@ -199,36 +201,65 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    }
 	    	
 	    } else  
-	    if( columnname.contains("大盘CJEZB增长率")  ) { //涨幅>= col == 4
+	    if( columnname.contains("大盘CJEZB增长率")  ) { //涨幅>= col == 4  和股价区间
 	    	Double zfmax = matchcond.getSettingZhangFuMax();
 	    	Double zfmin = matchcond.getSettingZhangFuMin();
 	    	
+	    	Double pricemin = matchcond.getSettingSotckPriceMin();
+	    	Double pricemax = matchcond.getSettingSotckPriceMax();
+	    	
 	    	if(zfmax == null && zfmin == null ) {
 	    		background = Color.white;
-	    	} else {
-	    		if(zfmax == null && zfmin != null )
+	    	} else
+    		if(zfmax == null && zfmin != null )
 		    		zfmax = 1000000.0;
-		    	else 
-		    	if(zfmax != null && zfmin == null )
-		    		zfmin = -1000000.0;
-		    	else
-		    	if(zfmax == null && zfmin == null ) {
-		    		zfmin = 1000000.0;
-		    		zfmax = -1000000.0;
-		    	}
+	    	else 
+	    	if(zfmax != null && zfmin == null )
+	    		zfmin = -1000000.0;
+	    	else
+	    	if(zfmax == null && zfmin == null ) {
+	    		zfmin = 1000000.0;
+	    		zfmax = -1000000.0;
+	    	}
+    		if(pricemin == null && pricemax == null ) {
+	    		foreground = Color.BLACK;
+	    	} else
+    		if(pricemax == null && pricemin != null )
+    			pricemax = 1000000.0;
+	    	else 
+	    	if(pricemax != null && pricemin == null )
+	    		pricemin = -1000000.0;
+	    	else
+	    	if(pricemax == null && pricemin == null ) {
+	    		pricemin = 1000000.0;
+	    		pricemax = -1000000.0;
+	    	}
 
-		    	LocalDate requireddate = tablemodel.getShowCurDate();
-			    String period = tablemodel.getCurDisplayPeriod();
-			    StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-			    Double wkzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(requireddate, 0);
-			    if(wkzhangfu == null)
+		   	LocalDate requireddate = tablemodel.getShowCurDate();
+			String period = tablemodel.getCurDisplayPeriod();
+			StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (requireddate,0);
+		    Double close = ohlcdata.getCloseValue();
+			Double wkzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(requireddate, 0);
+			
+			if(zfmax != null || zfmin != null ) {
+				if(wkzhangfu == null)
 			    	background = Color.white;
 			    else if( wkzhangfu >= zfmin && wkzhangfu <= zfmax ) 
 			    	background = Color.pink ;
 			    else
 			    	background = Color.white;
-	    	}
-	    	
+			}
+			if(pricemin != null || pricemax != null ) {
+				if(close == null)
+					foreground = Color.black;
+				else 
+				if(close >= pricemin && close <= pricemax)
+					foreground = Color.blue;
+				else
+					foreground = Color.BLACK;
+			}
+
 	    }  else 
 	    if(columnname.contains("板块成交额贡献")   ) { //突出回补缺口 col == 3
 	    	background = Color.white ;
@@ -237,10 +268,11 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 		    	LocalDate requireddate = tablemodel.getShowCurDate();
 			    String period = tablemodel.getCurDisplayPeriod();
 		    	NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+		    	
 			    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(requireddate, 0);
 			    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(requireddate, 0);
 			    
-			    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  )
+			    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  ) //缺口
 			    	 background = Color.PINK ;
 		    	else
 		    		background = Color.white ;

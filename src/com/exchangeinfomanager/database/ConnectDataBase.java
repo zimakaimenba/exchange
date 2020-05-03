@@ -14,7 +14,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.util.Strings;
+//import org.bouncycastle.util.Strings;
 
 
 

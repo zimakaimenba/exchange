@@ -13,6 +13,7 @@
   <StockRemind value="个股提醒">
     <item id="sk01">大盘占比增率高的多关注。</item>
     <item id="sk02">个股占比和成交额/成交量是否背离。</item>
+   <item id="sk03">个股周日平均成交额是否逐渐上升。</item>
   </StockRemind>
   <StockColumnRemind value="板块Column提醒">
     <item id="skc01" >个股的占比和成交量/成交额是否背离？ </item>

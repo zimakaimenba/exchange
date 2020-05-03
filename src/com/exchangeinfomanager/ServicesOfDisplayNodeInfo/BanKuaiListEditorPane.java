@@ -31,7 +31,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 
-import org.bouncycastle.util.Arrays.Iterator;
+//import org.bouncycastle.util.Arrays.Iterator;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;

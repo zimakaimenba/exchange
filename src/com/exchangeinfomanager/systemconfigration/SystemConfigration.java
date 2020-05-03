@@ -851,9 +851,9 @@ public class SystemConfigration
 		public String getPythonScriptsPath() 
 		{
 			if(this.systeminstalledpath.contains(" ")) {
-				return "\"" + this.systeminstalledpath + "dailydata/python/execscripts/" ;
+				return "\"" + this.systeminstalledpath + "thirdparty/python/execscripts/" ;
 			} else 
-				return this.systeminstalledpath + "dailydata/python/execscripts/";
+				return this.systeminstalledpath + "thirdparty/python/execscripts/";
 		}
 		public String getPythonScriptsExecExportsPath ()
 		{
@@ -867,6 +867,19 @@ public class SystemConfigration
 				}
 			 }
 			 return path; 
+		}
+		public String getPowerShellScriptsPath ()
+		{
+			String path = this.systeminstalledpath + "thirdparty/powershell/execscripts/";
+			if (java.nio.file.Files.notExists(Paths.get(path))) {
+				 try {
+					java.nio.file.Files.createDirectories(Paths.get(path).getParent() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+			 return path;
 		}
 		public String getNetEaseDownloadedFilePath() 
 		{

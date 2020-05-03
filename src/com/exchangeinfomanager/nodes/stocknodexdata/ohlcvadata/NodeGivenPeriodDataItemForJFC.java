@@ -24,7 +24,7 @@ public class NodeGivenPeriodDataItemForJFC extends OHLCItem implements NodeGiven
 	private static final long serialVersionUID = 1L;
 	
 	public NodeGivenPeriodDataItemForJFC(String nodecode,String datatype,RegularTimePeriod period,
-			Num open, Num high, Num low, Num close,Num myvolumne,Num myamount) 
+			Double open, Double high, Double low, Double close,Double myvolumne,Double myamount) 
 	{
 		super (period,open.doubleValue(),high.doubleValue(),low.doubleValue(),close.doubleValue());
 		

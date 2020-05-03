@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-import org.bouncycastle.util.Arrays.Iterator;
+//import org.bouncycastle.util.Arrays.Iterator;
 
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.ZiJingHuaZhuan;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;

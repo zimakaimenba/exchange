@@ -3185,8 +3185,7 @@ public class BanKuaiDbOperation
 				int exchangedaysnumber = rs.getInt("JILUTIAOSHU");
 				
 				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bkcode, NodeGivenPeriodDataItem.WEEK,
-						wknum, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
-						PrecisionNum.valueOf(bankuaicjl), PrecisionNum.valueOf(bankuaicje) );
+						wknum, 0.0, 0.0,  0.0,  0.0,bankuaicjl, bankuaicje );
 				
 //				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bkcode, NodeGivenPeriodDataItem.WEEK,
 //						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
@@ -3325,8 +3324,8 @@ public class BanKuaiDbOperation
 				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 				
 				NodeGivenPeriodDataItem sobperiodrecord = new NodeGivenPeriodDataItemForJFC( stockofbk.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
-						recordwk, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
-						PrecisionNum.valueOf(stcokcjl), PrecisionNum.valueOf(stcokcje) );
+						recordwk, 0.0, 0.0,  0.0, 0.0, 
+						stcokcjl, stcokcje );
 //				NodeGivenPeriodDataItem sobperiodrecord = new NodeGivenPeriodDataItemForTA4J( stockofbk.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
 //						zdtime, DoubleNum.valueOf(0.0), DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0), 
 //						PrecisionNum.valueOf(stcokcjl), PrecisionNum.valueOf(stcokcje) );
@@ -3477,8 +3476,8 @@ public class BanKuaiDbOperation
 				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
 
 				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
-						recordwk, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
-						PrecisionNum.valueOf(stockcjl), PrecisionNum.valueOf(stockcje) );
+						recordwk, 0.0, 0.0,  0.0,  0.0, 
+						stockcjl, stockcje );
 				
 //				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
 //						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
@@ -3825,8 +3824,8 @@ public class BanKuaiDbOperation
 					int exchengdaysnumber = rs.getInt("JILUTIAOSHU");
 		
 					stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
-							recordwk, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
-							PrecisionNum.valueOf(stockcjl), PrecisionNum.valueOf(stockcje) );
+							recordwk,0.0, 0.0,  0.0,  0.0, 
+							stockcjl, stockcje );
 					
 //					stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
 //							zdtime, DoubleNum.valueOf(0.0), DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0),  DoubleNum.valueOf(0.0), 
@@ -3948,8 +3947,8 @@ public class BanKuaiDbOperation
 				String cje = linevalue[6];
 				
 				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
-						recordday, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
-						PrecisionNum.valueOf(cjl), PrecisionNum.valueOf(cje) );
+						recordday, Double.valueOf( open), Double.valueOf(high), Double.valueOf( low), Double.valueOf( close), 
+						Double.valueOf(cjl), Double.valueOf(cje) );
 				 
 //				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
 //						zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
@@ -4314,8 +4313,8 @@ public class BanKuaiDbOperation
 				 org.jfree.data.time.Day recordday = new org.jfree.data.time.Day (actiondate);
 				 
 				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
-						 recordday, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
-							PrecisionNum.valueOf(cjl), PrecisionNum.valueOf(cje) );
+						 recordday, open, high,  low,  close, 
+							cjl, cje );
 				 
 //				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
 //							zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
