@@ -16,10 +16,11 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 
 @Rule(name = "ChenJiaoEr Rule", description = "if it rains then take an umbrella" )
-public class RuleOfChenJiaoEr //extends BasicRule //extends RuleOfNodeXdataBasic
+public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBasic
 {
 	private Color foreground = Color.BLACK, background = Color.white; 
 	private Boolean specialarea = false;
+	private String analysisresultforvoice = "";
 	@Condition
     public boolean evaluate(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
@@ -46,13 +47,18 @@ public class RuleOfChenJiaoEr //extends BasicRule //extends RuleOfNodeXdataBasic
 		    if( curltsz >= ltszmin && curltsz <= ltszmax ) {
 		    	if(curltsz >= 1500000000.0 && curltsz <= 3900000000.0) { //对于这个范围内的个股要特别重视，特别显示
 		    		specialarea = true ;
+		    		analysisresultforvoice = analysisresultforvoice + "流通市值" + Math.floor(curltsz/100000000) + "亿。";
 		    		return true;
 		    	}
-		    	else  
+		    	else  {
+		    		analysisresultforvoice = analysisresultforvoice + "流通市值" + Math.floor(curltsz/100000000) + "亿。";
 		    		return true;
+		    	}
 		    }
-		    else
+		    else {
+		    	analysisresultforvoice = analysisresultforvoice + "流通市值" + Math.floor(curltsz/100000000) + "亿。";
 		    	return false;
+		    }
 	    } catch (java.lang.NullPointerException e) {
 	    	return false;
 	    }
@@ -76,6 +82,11 @@ public class RuleOfChenJiaoEr //extends BasicRule //extends RuleOfNodeXdataBasic
     public Color getBackGround ()
     {
     	return this.background;
+    }
+    
+    public String getAnalysisResult ()
+    {
+    	return this.analysisresultforvoice;
     }
 
     // MUST IMPLEMENT THIS METHOD

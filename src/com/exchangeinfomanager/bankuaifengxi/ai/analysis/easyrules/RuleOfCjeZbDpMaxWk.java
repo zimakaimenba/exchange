@@ -18,6 +18,7 @@ public class RuleOfCjeZbDpMaxWk
 {
 	private Color foreground = Color.BLACK, background = Color.white;
 	boolean lianxufangliang = false;
+	String analysisresultforvoice = "";
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
@@ -36,10 +37,12 @@ public class RuleOfCjeZbDpMaxWk
 	    	 
 	    	if(cjedpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) {//连续放量,深色显示
 	    		background = new Color(102,0,0) ;
+	    		analysisresultforvoice = analysisresultforvoice + "成交额占比MAXWEEK等于" + cjedpmaxwk + "周。" + "成交额占比连续达标" + lianxuflnum + "周。"; 
 	    		return true;
 	    	}
 	    	else if( cjedpmaxwk >= maxfazhi &&  lianxuflnum <2 ) {
 	    		background = new Color(255,0,0) ;
+	    		analysisresultforvoice = analysisresultforvoice + "成交额占比MAXWEEK等于" + cjedpmaxwk + "周。";
 	    		return true;
 	    	}
 	    	else 
@@ -82,6 +85,11 @@ public class RuleOfCjeZbDpMaxWk
     public Color getBackGround ()
     {
     	return this.background;
+    }
+    
+    public String getAnalysisResult ()
+    {
+    	return this.analysisresultforvoice;
     }
 
     // MUST IMPLEMENT THIS METHOD

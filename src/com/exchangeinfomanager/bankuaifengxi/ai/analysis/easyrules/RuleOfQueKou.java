@@ -17,6 +17,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 public class RuleOfQueKou
 {
 	private Color foreground = Color.BLACK, background = Color.white;
+	private String analysisresultforvoice = "";
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
@@ -29,11 +30,15 @@ public class RuleOfQueKou
 	    	
 		    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(evadate, 0);
 		    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(evadate, 0);
-		    
-		    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  ) //缺口
-		    	 return true;
-	    	else
-	    		return false;
+		    Integer opendown = nodexdata.getQueKouTongJiOpenDown(evadate,0);
+		    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  ) {//缺口 
+		    	analysisresultforvoice = analysisresultforvoice + "本周有向上跳空缺口。";
+		    	return true;
+		    } 	else {
+		    	if(opendown != null  && opendown >0)
+		    		analysisresultforvoice = analysisresultforvoice + "本周有向下跳空缺口。";
+		    	return false;
+		    }
 	    } else
 	    	return false;
 	}
@@ -53,6 +58,11 @@ public class RuleOfQueKou
     public Color getBackGround ()
     {
     	return this.background;
+    }
+    
+    public String getAnalysisResult ()
+    {
+    	return this.analysisresultforvoice;
     }
 
     // MUST IMPLEMENT THIS METHOD

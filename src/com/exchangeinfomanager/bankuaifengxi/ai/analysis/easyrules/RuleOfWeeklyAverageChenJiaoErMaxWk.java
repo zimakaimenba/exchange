@@ -17,6 +17,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 public class RuleOfWeeklyAverageChenJiaoErMaxWk 
 {
 	private Color foreground = Color.BLACK, background = Color.white;
+	private String analysisresultforvoice = "";
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
@@ -29,8 +30,10 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     	if(cjemaxwk == null)
     		cjemaxwk =  10000000;
     	
-    	if( dpmaxwk >=cjemaxwk )
-    		 return true;
+    	if( dpmaxwk >=cjemaxwk ) {
+    		analysisresultforvoice = analysisresultforvoice + "周平均成交额MAXWEEK等于" + dpmaxwk + "。" ;
+    		return true;
+    	}
     	else 
     		 return false;
 	}
@@ -50,6 +53,11 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     public Color getBackGround ()
     {
     	return this.background;
+    }
+    
+    public String getAnalysisResult ()
+    {
+    	return this.analysisresultforvoice;
     }
 
     // MUST IMPLEMENT THIS METHOD

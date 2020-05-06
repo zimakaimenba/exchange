@@ -19,6 +19,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPer
 public class RuleOfGeGuPrice
 {
 	private Color foreground = Color.BLACK, background = Color.white;
+	private String analysisresultforvoice = "";
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
@@ -73,6 +74,11 @@ public class RuleOfGeGuPrice
     public Color getForeGround ()
     {
     	return this.foreground;
+    }
+    
+    public String getAnalysisResult ()
+    {
+    	return this.analysisresultforvoice;
     }
 
     // MUST IMPLEMENT THIS METHOD

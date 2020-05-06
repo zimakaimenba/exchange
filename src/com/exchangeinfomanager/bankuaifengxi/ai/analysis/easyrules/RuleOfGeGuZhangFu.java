@@ -16,7 +16,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriod
 @Rule(name = "GeGuZhangFu Rule", description = "if it rains then take an umbrella" )
 public class RuleOfGeGuZhangFu 
 {
-	
+	private String analysisresultforvoice = "";
 	private Color foreground = Color.BLACK, background = Color.white;
 	
 	@Condition
@@ -43,12 +43,18 @@ public class RuleOfGeGuZhangFu
     	StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 //		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
 		Double wkzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, 0);
+		Double wkdiefu = nodexdata.getSpecificTimeLowestZhangDieFu(evadate, 0);
+		if(wkdiefu != null && wkdiefu < -0.09)
+			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" + wkdiefu * 100;
 		
 		if(zfmax != null || zfmin != null ) {
 			if(wkzhangfu == null)
 		    	return false;
-		    else if( wkzhangfu >= zfmin && wkzhangfu <= zfmax ) 
+		    else if( wkzhangfu >= zfmin && wkzhangfu <= zfmax ) {
+		    	analysisresultforvoice = analysisresultforvoice + "本周最高涨幅百分之" + wkzhangfu * 100; 
+		    	
 		    	return true;
+		    }
 		    else
 		    	return false;
 		} else
@@ -70,6 +76,11 @@ public class RuleOfGeGuZhangFu
     public Color getBackGround ()
     {
     	return this.background;
+    }
+    
+    public String getAnalysisResult ()
+    {
+    	return this.analysisresultforvoice;
     }
 
     // MUST IMPLEMENT THIS METHOD
