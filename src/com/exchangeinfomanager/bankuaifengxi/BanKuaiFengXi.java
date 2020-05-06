@@ -522,18 +522,18 @@ public class BanKuaiFengXi extends JDialog
 			
 			showReminderMessage (bkfxremind.getStockremind());
 			
-			readAnalysisResult ( selectstock.getBanKuai(),  selectstock.getStock());
+			readAnalysisResult ( selectstock.getBanKuai(),  selectstock.getStock(), this.dateChooser.getLocalDate() );
 			
 			hourglassCursor = null;
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 			setCursor(hourglassCursor2);
 	}
-	private void readAnalysisResult(BanKuai banKuai, Stock stock) 
+	private void readAnalysisResult(BanKuai banKuai, Stock stock, LocalDate analysisdate) 
 	{
-		String anaresult = WeeklyAnalysis.BanKuaiGeGuMatchConditionAnalysis(stock, this.dateChooser.getLocalDate(), this.bkggmatchcondition);
+		String anaresult = WeeklyAnalysis.BanKuaiGeGuMatchConditionAnalysis(stock, analysisdate, this.bkggmatchcondition);
 		if(!Strings.isNullOrEmpty(anaresult)) {
 			VoiceEngine readengin = new VoiceEngine (anaresult);
-//			readengin.readInformation (anaresult);
+//			readengin.readInformation (anaresult); //for testing
 			readengin.execute();
 		}
 
@@ -2091,12 +2091,8 @@ public class BanKuaiFengXi extends JDialog
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
     				setUserSelectedColumnMessage(selectstock, datekey);
-    				
-    				String reminder = "提示: \n"
-    						+ "1. 个股的占比和成交量/成交额是否背离？ \n"
-    						+ "2. K线和大盘关键日期的对应走势。"
-    						;
     				showReminderMessage (bkfxremind.getStockcolumnremind() );
+    				readAnalysisResult ( null,  selectstock, datekey );
     				
 //    				if(cbxshizhifx.isSelected()) { //显示市值排名
 //						dispalyStockShiZhiFengXiResult (selectstock,datekey);
@@ -3449,8 +3445,7 @@ public class BanKuaiFengXi extends JDialog
 	private final JPanel contentPanel = new JPanel();
 	private JStockCalendarDateChooser dateChooser; //https://toedter.com/jcalendar/
 	private JScrollPane sclpleft;
-	
-	
+
 	private JTextField tfldweight;
 	
 	private JScrollPane editorPanebankuai;
@@ -3470,8 +3465,6 @@ public class BanKuaiFengXi extends JDialog
 	private JLabel lblhscje;
 	private JLabel lblshcje;
 	private JLabel lblshanghai;
-	
-
 	
 	private JCheckBox ckbxdpmaxwk;
 	private JTextField tflddisplaydpmaxwk;

@@ -13,10 +13,10 @@ import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.CandleStickColorFactory;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfChenJiaoEr;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuZhangFu;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTongShiZhi;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfWeeklyAverageChenJiaoErMaxWk;
@@ -44,8 +44,8 @@ public class WeeklyAnalysis
 	        facts.put("evacond", matchcond);
 	        
 	        Rules rules = new Rules();
-	        RuleOfChenJiaoEr cjeRule =  new RuleOfChenJiaoEr ();
-	        rules.register(cjeRule);
+	        RuleOfLiuTongShiZhi ltszRule =  new RuleOfLiuTongShiZhi ();
+	        rules.register(ltszRule);
 	        
 	        RuleOfGeGuZhangFu zfRule = new RuleOfGeGuZhangFu ();
 	        rules.register(zfRule);
@@ -68,15 +68,22 @@ public class WeeklyAnalysis
 	        RulesEngine rulesEngine = new DefaultRulesEngine();
 	        rulesEngine.fire(rules, facts);	
 	        
-	        if(!maRule.getBackGround().equals(Color.WHITE)) {
-	        	
-	        	
+	        analysisresult = analysisresult + maRule.getAnalysisResult(); //MA·ÖÎö
+	        if(!Strings.isNullOrEmpty( dpmaxwkRule.getAnalysisResult()  )  ) {
+	        	analysisresult = analysisresult + dpmaxwkRule.getAnalysisResult() ;
 	        }
-	        if(!dpmaxwkRule.getBackGround().equals(Color.WHITE)) {
-	        	
+	        if(!Strings.isNullOrEmpty( averagecjemaxwkRule.getAnalysisResult()  )  ) {
+	        	analysisresult = analysisresult + averagecjemaxwkRule.getAnalysisResult() ;
 	        }
-	        
-		return analysisresult;
-
+	        if(!Strings.isNullOrEmpty( ltszRule.getAnalysisResult()  )  ) {
+	        	analysisresult = analysisresult + ltszRule.getAnalysisResult() ;
+	        }
+	        if(!Strings.isNullOrEmpty( zfRule.getAnalysisResult()  )  ) {
+	        	analysisresult = analysisresult + zfRule.getAnalysisResult() ;
+	        }
+	        if(!Strings.isNullOrEmpty( qkRule.getAnalysisResult()  )  ) {
+	        	analysisresult = analysisresult + qkRule.getAnalysisResult() ;
+	        }
+		return node.getMyOwnName() + analysisresult;
 	}
 }

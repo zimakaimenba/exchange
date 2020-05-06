@@ -45,13 +45,13 @@ public class RuleOfGeGuZhangFu
 		Double wkzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, 0);
 		Double wkdiefu = nodexdata.getSpecificTimeLowestZhangDieFu(evadate, 0);
 		if(wkdiefu != null && wkdiefu < -0.09)
-			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" + wkdiefu * 100;
+			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" +  Math.floor(wkdiefu * 100);
 		
 		if(zfmax != null || zfmin != null ) {
 			if(wkzhangfu == null)
 		    	return false;
 		    else if( wkzhangfu >= zfmin && wkzhangfu <= zfmax ) {
-		    	analysisresultforvoice = analysisresultforvoice + "本周最高涨幅百分之" + wkzhangfu * 100; 
+		    	analysisresultforvoice = analysisresultforvoice + "本周最高涨幅百分之" +  Math.floor(wkzhangfu * 100); 
 		    	
 		    	return true;
 		    }
