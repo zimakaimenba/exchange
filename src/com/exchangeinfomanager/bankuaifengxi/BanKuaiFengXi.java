@@ -365,7 +365,7 @@ public class BanKuaiFengXi extends JDialog
 		((JStockComboBoxModel)combxsearchbk.getModel() ).setCurrentDataDate(curselectdate);
 		((JStockComboBoxModel)combxstockcode.getModel() ).setCurrentDataDate(curselectdate);
 		
-		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);
+		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);//设置突出显示条件
 		
 		curselectdate = null;
 		svsbk = null;

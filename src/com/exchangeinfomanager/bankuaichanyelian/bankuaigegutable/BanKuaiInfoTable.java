@@ -191,7 +191,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 				 org.jsoup.nodes.Element thel2 = trelheader.appendElement("th");
 				 thel2.appendText("CJE占比增长率");
 				 org.jsoup.nodes.Element thel3 = trelheader.appendElement("th");
-				 thel3.appendText("CJL占比增长率");
+				 thel3.appendText("CJEDPMAXWK");
 		
 				for(String friend : socialset) {
 					 BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
@@ -208,12 +208,11 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 					 String frbkcode = (String) this.getValueAt(modelRow, 0);
 					 String frbkname = (String) this.getValueAt(modelRow, 1);
 					 Double cjezbchangerate = (Double)this.getValueAt(modelRow, 2);
-					 Double cjlzbchangrate = (Double)this.getValueAt(modelRow, 4);
+					 Integer cjedpmaxwk = (Integer)this.getValueAt(modelRow, 4);
 		    		 
 		    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
 		 	    	 percentFormat.setMinimumFractionDigits(1);
 		        	 String cjezbchangeratepect = percentFormat.format (cjezbchangerate );
-		        	 String cjlbchangeratepect = percentFormat.format (cjlzbchangrate );
 		        	 
 		        	 org.jsoup.nodes.Element trelline = tableel.appendElement("tr");
 					 org.jsoup.nodes.Element tdel1 = trelline.appendElement("td");
@@ -221,12 +220,10 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 					 org.jsoup.nodes.Element tdel2 = trelline.appendElement("td");
 					 tdel2.appendText(cjezbchangeratepect);
 					 org.jsoup.nodes.Element tdel3 = trelline.appendElement("td");
-					 tdel3.appendText(cjlbchangeratepect);
-		        	 
+					 tdel3.appendText(cjedpmaxwk.toString());
 				}	 
  			
 		}
-		
 		 
 		return doc.toString();
 	}
@@ -372,13 +369,13 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 		        rulesEngine.fire(rules, facts);
 	        }
 
-	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
-	        	try {
-	        		background = new Color(51,204,255);
-	        	} catch (java.lang.NullPointerException e) {
-	        		background = Color.WHITE;
-	        	}
-	        }
+//	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
+//	        	try {
+//	        		background = new Color(51,204,255);
+//	        	} catch (java.lang.NullPointerException e) {
+//	        		background = Color.WHITE;
+//	        	}
+//	        }
 	        if (comp instanceof JLabel &&   col == 4  ) {
 	        	try {
 	        		background = dpmaxwkRule.getBackGround();
@@ -393,16 +390,16 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        		background = Color.WHITE;
 	        	}
 	        }
-	        if (comp instanceof JLabel && ( col == 7  ) ) {
-	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-	        	Integer avgdailycjemaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(curdate,0);
-	        	if(avgdailycjemaxwk != null && avgdailycjemaxwk > 0) 
-	        		background = Color.RED;
-			    else if ( avgdailycjemaxwk != null && avgdailycjemaxwk <= 0 )
-			       	background = Color.GREEN;
-			    else
-			       	background = Color.WHITE;
-	        }
+//	        if (comp instanceof JLabel && ( col == 7  ) ) {
+//	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+//	        	Integer avgdailycjemaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(curdate,0);
+//	        	if(avgdailycjemaxwk != null && avgdailycjemaxwk > 0) 
+//	        		background = Color.RED;
+//			    else if ( avgdailycjemaxwk != null && avgdailycjemaxwk <= 0 )
+//			       	background = Color.GREEN;
+//			    else
+//			       	background = Color.WHITE;
+//	        }
 	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
 	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||    col == 5  )) {
             	String value =  ((JLabel)comp).getText();

@@ -84,6 +84,7 @@ public class WeeklyAnalysis
 	        if(!Strings.isNullOrEmpty( qkRule.getAnalysisResult()  )  ) {
 	        	analysisresult = analysisresult + qkRule.getAnalysisResult() ;
 	        }
-		return node.getMyOwnName() + analysisresult;
+		return node.getMyOwnName() + requireddate.getYear() + "Äê" + requireddate.getMonthValue() + "ÔÂ" + requireddate.getDayOfMonth() + "ÈÕ"
+	        + analysisresult;
 	}
 }
