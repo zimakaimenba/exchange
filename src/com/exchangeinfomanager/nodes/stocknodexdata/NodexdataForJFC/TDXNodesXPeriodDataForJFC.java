@@ -339,10 +339,13 @@ import com.udojava.evalex.Expression;
 		String nodeperiod = this.getNodeperiodtype();
 		RegularTimePeriod period = null;
 		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
 			period = new org.jfree.data.time.Week (lastdayofweek);
 		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
+			expectdate = super.adjustDate(expectdate);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
 			period = new org.jfree.data.time.Day (lastdayofweek);
 		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
 		}
@@ -354,7 +357,7 @@ import com.udojava.evalex.Expression;
 				curindex = i;
 				
 				try {
-					OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(curindex + difference);
+					OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(curindex);
 					if(result != null) {
 						RegularTimePeriod ep = result.getPeriod();
 						return result.getPeriod();
@@ -1163,6 +1166,11 @@ import com.udojava.evalex.Expression;
 	 */
 	 public Double[] getNodeOhlcMA (LocalDate  requireddate,int difference)
 	 {
+		requireddate = super.adjustDate(requireddate); //先确保日期是在交易周内
+		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriodForOHLC(requireddate,difference);
+		if(expectedperiod == null)
+			return null;
+			
 		int itemcount = this.nodeohlc.getItemCount();
 		double[] closedata = new double[itemcount];
 		for(int i=0;i < this.nodeohlc.getItemCount();i++) {
@@ -1171,10 +1179,8 @@ import com.udojava.evalex.Expression;
 			closedata[i] = close;
 		}
 		
-		requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
-		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriodForOHLC(requireddate,difference);
-		Integer itemindex = this.getIndexOfSpecificDateOHLCData(requireddate,difference);
 		
+		Integer itemindex = this.getIndexOfSpecificDateOHLCData(requireddate,difference);
 		Double ma5 = null;
 		Integer ma5index = this.nodeohlcma5.getIndex(expectedperiod);
 		if(ma5index == -1 && itemindex>=5) {

@@ -1009,7 +1009,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 /*
 		  * 用户如果传来的是周六/日的日期，最好转为当周的周五
 		  */
-		 protected LocalDate adjustDate(LocalDate dateneedtobeadjusted )
+		 protected LocalDate adjustDate(LocalDate dateneedtobeadjusted)
 		 {
 			 LocalDate friday;
 			 DayOfWeek dayofweek = dateneedtobeadjusted.getDayOfWeek();

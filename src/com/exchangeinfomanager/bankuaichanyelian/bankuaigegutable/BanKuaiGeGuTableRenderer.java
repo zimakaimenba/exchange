@@ -43,10 +43,10 @@ import org.jfree.data.time.ohlc.OHLCItem;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.CandleStickColorFactory;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfChenJiaoEr;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuZhangFu;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTongShiZhi;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfWeeklyAverageChenJiaoErMaxWk;
@@ -154,7 +154,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         facts.put("evacond", matchcond);
         
         Rules rules = new Rules();
-        RuleOfChenJiaoEr cjeRule =  new RuleOfChenJiaoEr ();
+        RuleOfLiuTongShiZhi cjeRule =  new RuleOfLiuTongShiZhi ();
         rules.register(cjeRule);
         
         RuleOfGeGuZhangFu zfRule = new RuleOfGeGuZhangFu ();

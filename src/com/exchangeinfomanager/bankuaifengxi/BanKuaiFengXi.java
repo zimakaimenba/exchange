@@ -239,7 +239,7 @@ public class BanKuaiFengXi extends JDialog
 	BanKuaiGeGuMatchCondition bkggmatchcondition;
 
 	private ExportTask2 exporttask;
-
+	VoiceEngine readengine;
 	private ArrayList<BanKuaiGeGuMatchCondition> exportcond;
 	
 	private NodeInfoToCsv nodeinfotocsv;
@@ -250,6 +250,128 @@ public class BanKuaiFengXi extends JDialog
 //	private Set<BarChartPanelDataChangedListener> barchartpanelstockofbankuaidatachangelisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelstockdatachangelisteners;
 		
+	/*
+	 * 用户在界面的操作，各个模块的协同操作
+	 */
+	private void setUpChartDataListeners ()
+	{
+		this.chartpanelhighlightlisteners = new HashSet<>();
+//		this.barchartpanelstockofbankuaidatachangelisteners = new HashSet<>();
+		this.barchartpanelbankuaidatachangelisteners = new HashSet<>();
+		this.piechartpanelbankuaidatachangelisteners = new HashSet<>();
+		this.barchartpanelstockdatachangelisteners = new HashSet<>();
+		
+		
+		barchartpanelbankuaidatachangelisteners.add(panelbkwkcjezhanbi);
+		barchartpanelbankuaidatachangelisteners.add(pnlbkwkcjlzhanbi);
+		//板块pie chart
+		piechartpanelbankuaidatachangelisteners.add(pnlcurwkggcjezhanbi);
+		piechartpanelbankuaidatachangelisteners.add(panelLastWkGeGucjeZhanBi);
+		
+		
+		//个股对板块
+//		barchartpanelstockofbankuaidatachangelisteners.add(panelgegucje); //个股对于板块交易额,一般看个股对大盘的成交额，这个就不看了
+//		barchartpanelstockofbankuaidatachangelisteners.add(panelggbkcjezhanbi);
+		barchartpanelstockdatachangelisteners.add(panelGgDpCjeZhanBi);
+		barchartpanelstockdatachangelisteners.add(panelggdpcjlwkzhanbi);
+		//用户点击bar chart的一个column, highlight bar chart
+		chartpanelhighlightlisteners.add(panelGgDpCjeZhanBi);
+		chartpanelhighlightlisteners.add(panelbkwkcjezhanbi);
+		chartpanelhighlightlisteners.add(paneldayCandle);
+		chartpanelhighlightlisteners.add(panelggdpcjlwkzhanbi);
+		chartpanelhighlightlisteners.add(pnlbkwkcjlzhanbi);
+		
+		//同步几个表要highlight的数据
+		this.bkggmatchcondition.addCacheListener(tableGuGuZhanBiInBk);
+		this.bkggmatchcondition.addCacheListener(tableExternalInfo);
+		this.bkggmatchcondition.addCacheListener(tablexuandingzhou);
+		this.bkggmatchcondition.addCacheListener(tablexuandingminusone);
+		this.bkggmatchcondition.addCacheListener(tablexuandingminustwo);
+		this.bkggmatchcondition.addCacheListener(tablexuandingplusone);
+		this.bkggmatchcondition.addCacheListener(tableTempGeGu);
+		this.bkggmatchcondition.addCacheListener(tableBkZhanBi);
+		this.bkggmatchcondition.addCacheListener(tableselectedwkbkzb);
+		
+		this.bkggmatchcondition.addCacheListener(panelbkwkcjezhanbi);
+		this.bkggmatchcondition.addCacheListener(panelGgDpCjeZhanBi);
+		
+	}
+	/*
+	 * 所有板块占比增长率的排名
+	 */
+	private void gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (String period)
+	{
+		this.globeperiod = period;
+		if(chxbxwholeweek.isSelected())
+			globecalwholeweek = true;
+		else
+			globecalwholeweek = false;
+		
+    	LocalDate curselectdate = dateChooser.getLocalDate(); 
+    	LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"middle").with(DayOfWeek.MONDAY);
+    	
+    	SvsForNodeOfDaPan	svsdp = new SvsForNodeOfDaPan ();
+    	svsdp.getNodeData("",requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
+    	svsdp = null;
+    	SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+		List<TDXNodes> bkwithcje = svsbk.getBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
+		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai( bkwithcje );
+		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,0,globeperiod);
+		
+    	//显示大盘成交量
+		NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+    	percentFormat.setMinimumFractionDigits(1);
+    	DecimalFormat df2 = new DecimalFormat(".##");
+    	TDXNodes childnode = (TDXNodes) svsbk.getNode("000300");
+    	NodeXPeriodData bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		try {
+				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
+				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
+				lblhscje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+		} catch (java.lang.NullPointerException e) {
+				lblhscje.setText( "本周没有数据" );
+		}
+			
+		childnode =  (TDXNodes) svsbk.getNode("999999"); 
+		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		try {
+				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
+				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
+				lblshcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+		} catch (java.lang.NullPointerException e) {
+				lblshcje.setText( "本周没有数据" );
+		}
+		 
+		childnode =  (TDXNodes) svsbk.getNode("399006");	
+		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		try {
+				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
+				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
+				lblcybcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+		} catch (java.lang.NullPointerException e) {
+				lblcybcje.setText( "本周没有数据" );
+		}
+			
+		childnode =  (TDXNodes) svsbk.getNode("000016");//(TDXNodes)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK); 
+		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		try {
+				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
+				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
+				lbl50cje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+		} catch (java.lang.NullPointerException e) {
+				lbl50cje.setText( "本周没有数据" );
+		}
+		//设置下拉框的当前时间，为显示关注板块个股使用
+		((JStockComboBoxModel)combxsearchbk.getModel() ).setCurrentDataDate(curselectdate);
+		((JStockComboBoxModel)combxstockcode.getModel() ).setCurrentDataDate(curselectdate);
+		
+		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);
+		
+		curselectdate = null;
+		svsbk = null;
+//		cacheAll = null;
+		SystemAudioPlayed.playSound();
+	}
 	/*
 	 * 点击一个板块
 	 */
@@ -325,6 +447,9 @@ public class BanKuaiFengXi extends JDialog
 		lbnodedbservice.setCache(bkstkkwcache);
 		pnlbktags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
 	}
+	/*
+	 * 
+	 */
 	protected void refreshCurentBanKuaiFengXiResult(BanKuai selectedbk,String period)  
 	{
 		clearTheGuiBeforDisplayNewInfoSection2 ();
@@ -388,7 +513,7 @@ public class BanKuaiFengXi extends JDialog
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
 		}
-
+		
 	}
 	/*
 	 * 用户选择一个板块的column后的相应操作
@@ -532,12 +657,22 @@ public class BanKuaiFengXi extends JDialog
 	{
 		String anaresult = WeeklyAnalysis.BanKuaiGeGuMatchConditionAnalysis(stock, analysisdate, this.bkggmatchcondition);
 		if(!Strings.isNullOrEmpty(anaresult)) {
-			VoiceEngine readengin = new VoiceEngine (anaresult);
+			readengine = new VoiceEngine (anaresult);
 //			readengin.readInformation (anaresult); //for testing
-			readengin.execute();
-		}
-
+			readengine.execute();
 			
+//			if( readengine == null) {
+//				readengine = new VoiceEngine (anaresult);
+////				readengin.readInformation (anaresult); //for testing
+//				readengine.execute();
+//			} else {
+//				readengine.cancel(true);
+//				readengine = null;
+//				readengine = new VoiceEngine (anaresult);
+////				readengin.readInformation (anaresult); //for testing
+//				readengine.execute();
+//			}
+		}
 	}
 	private void refreshCurrentStockTags(Stock selectedstock) 
 	{
@@ -688,124 +823,7 @@ public class BanKuaiFengXi extends JDialog
 //		//DuanQiGuanZhuServices
 //		zdgzsvs.getCache().addCacheListener(tableBkZhanBi);
 //	}
-	/*
-	 * 用户在界面的操作，各个模块的协同操作
-	 */
-	private void setUpChartDataListeners ()
-	{
-		this.chartpanelhighlightlisteners = new HashSet<>();
-//		this.barchartpanelstockofbankuaidatachangelisteners = new HashSet<>();
-		this.barchartpanelbankuaidatachangelisteners = new HashSet<>();
-		this.piechartpanelbankuaidatachangelisteners = new HashSet<>();
-		this.barchartpanelstockdatachangelisteners = new HashSet<>();
-		
-		
-		barchartpanelbankuaidatachangelisteners.add(panelbkwkcjezhanbi);
-		barchartpanelbankuaidatachangelisteners.add(pnlbkwkcjlzhanbi);
-		//板块pie chart
-		piechartpanelbankuaidatachangelisteners.add(pnlcurwkggcjezhanbi);
-		piechartpanelbankuaidatachangelisteners.add(panelLastWkGeGucjeZhanBi);
-		
-		
-		//个股对板块
-//		barchartpanelstockofbankuaidatachangelisteners.add(panelgegucje); //个股对于板块交易额,一般看个股对大盘的成交额，这个就不看了
-//		barchartpanelstockofbankuaidatachangelisteners.add(panelggbkcjezhanbi);
-		barchartpanelstockdatachangelisteners.add(panelGgDpCjeZhanBi);
-		barchartpanelstockdatachangelisteners.add(panelggdpcjlwkzhanbi);
-		//用户点击bar chart的一个column, highlight bar chart
-		chartpanelhighlightlisteners.add(panelGgDpCjeZhanBi);
-		chartpanelhighlightlisteners.add(panelbkwkcjezhanbi);
-		chartpanelhighlightlisteners.add(paneldayCandle);
-		chartpanelhighlightlisteners.add(panelggdpcjlwkzhanbi);
-		chartpanelhighlightlisteners.add(pnlbkwkcjlzhanbi);
-		
-		//同步几个表要highlight的数据
-		this.bkggmatchcondition.addCacheListener(tableGuGuZhanBiInBk);
-		this.bkggmatchcondition.addCacheListener(tableExternalInfo);
-		this.bkggmatchcondition.addCacheListener(tablexuandingzhou);
-		this.bkggmatchcondition.addCacheListener(tablexuandingminusone);
-		this.bkggmatchcondition.addCacheListener(tablexuandingminustwo);
-		this.bkggmatchcondition.addCacheListener(tablexuandingplusone);
-		this.bkggmatchcondition.addCacheListener(tableTempGeGu);
-		
-		this.bkggmatchcondition.addCacheListener(panelbkwkcjezhanbi);
-		this.bkggmatchcondition.addCacheListener(panelGgDpCjeZhanBi);
-		
-	}
-	/*
-	 * 所有板块占比增长率的排名
-	 */
-	private void gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (String period)
-	{
-		this.globeperiod = period;
-		if(chxbxwholeweek.isSelected())
-			globecalwholeweek = true;
-		else
-			globecalwholeweek = false;
-		
-    	LocalDate curselectdate = dateChooser.getLocalDate(); 
-    	LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"middle").with(DayOfWeek.MONDAY);
-    	
-    	SvsForNodeOfDaPan	svsdp = new SvsForNodeOfDaPan ();
-    	svsdp.getNodeData("",requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
-    	svsdp = null;
-    	SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-		List<TDXNodes> bkwithcje = svsbk.getBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
-		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai( bkwithcje );
-		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,0,globeperiod);
-		
-    	//显示大盘成交量
-		NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-    	percentFormat.setMinimumFractionDigits(1);
-    	DecimalFormat df2 = new DecimalFormat(".##");
-    	TDXNodes childnode = (TDXNodes) svsbk.getNode("000300");
-    	NodeXPeriodData bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		try {
-				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
-				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lblhscje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
-		} catch (java.lang.NullPointerException e) {
-				lblhscje.setText( "本周没有数据" );
-		}
-			
-		childnode =  (TDXNodes) svsbk.getNode("999999"); 
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		try {
-				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
-				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lblshcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
-		} catch (java.lang.NullPointerException e) {
-				lblshcje.setText( "本周没有数据" );
-		}
-		 
-		childnode =  (TDXNodes) svsbk.getNode("399006");	
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		try {
-				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
-				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lblcybcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
-		} catch (java.lang.NullPointerException e) {
-				lblcybcje.setText( "本周没有数据" );
-		}
-			
-		childnode =  (TDXNodes) svsbk.getNode("000016");//(TDXNodes)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK); 
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		try {
-				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
-				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lbl50cje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
-		} catch (java.lang.NullPointerException e) {
-				lbl50cje.setText( "本周没有数据" );
-		}
-		//设置下拉框的当前时间，为显示关注板块个股使用
-		((JStockComboBoxModel)combxsearchbk.getModel() ).setCurrentDataDate(curselectdate);
-		((JStockComboBoxModel)combxstockcode.getModel() ).setCurrentDataDate(curselectdate);
-		
-		curselectdate = null;
-		svsbk = null;
-//		cacheAll = null;
-		SystemAudioPlayed.playSound();
-	}
+
 	/*
 	 * 对板块个股表高亮
 	 */

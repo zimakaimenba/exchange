@@ -34,6 +34,10 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
+import org.jeasy.rules.api.Facts;
+import org.jeasy.rules.api.Rules;
+import org.jeasy.rules.api.RulesEngine;
+import org.jeasy.rules.core.DefaultRulesEngine;
 import org.jfree.data.time.ohlc.OHLCItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -47,8 +51,13 @@ import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
-
-
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuZhangFu;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTongShiZhi;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfWeeklyAverageChenJiaoErMaxWk;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -90,8 +99,6 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 //	    header.setToolTipStrings(bkmodel.getTableHeader());
 //	    header.setToolTipText("Default ToolTip TEXT");
 //	    this.setTableHeader(header);
-	    
-		
 		
 //		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		this.getColumnModel().getColumn(0).setPreferredWidth(105);
@@ -299,7 +306,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        }
 	        
 	        LocalDate curdate = tablemodel.getCurDisplayedDate();
-	        
+	       
 	        int modelRow = convertRowIndexToModel(row);
 	        BanKuai bankuai = tablemodel.getBanKuai(modelRow);
 	        
@@ -341,10 +348,52 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 			    	background = Color.WHITE;
 	        	
 	        } 
-	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
-	        	background = new Color(51,204,255);
+	        
+	        BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
+	        RuleOfCjeZbDpMaxWk dpmaxwkRule = null;
+	        RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = null;
+	        if(matchcond != null) {
+	        	Facts facts = new Facts();
+		        facts.put("evanode", bankuai);
+		        facts.put("evadate", curdate);
+		        facts.put("evaperiod", NodeGivenPeriodDataItem.WEEK);
+		        facts.put("evacond", matchcond);
+		        
+		        Rules rules = new Rules();
+		        
+		        dpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
+		        rules.register(dpmaxwkRule);
+		        
+		        averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
+		        rules.register(averagecjemaxwkRule);
+		        
+		     // fire rules on known facts
+		        RulesEngine rulesEngine = new DefaultRulesEngine();
+		        rulesEngine.fire(rules, facts);
 	        }
-	        if (comp instanceof JLabel && ( col == 7 || col == 6   )) {
+
+	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
+	        	try {
+	        		background = new Color(51,204,255);
+	        	} catch (java.lang.NullPointerException e) {
+	        		background = Color.WHITE;
+	        	}
+	        }
+	        if (comp instanceof JLabel &&   col == 4  ) {
+	        	try {
+	        		background = dpmaxwkRule.getBackGround();
+	        	} catch (java.lang.NullPointerException e) {
+	        		background = Color.WHITE;
+	        	}
+	        }
+	        if (comp instanceof JLabel && ( col == 6  ) ) {
+	        	try {
+	        		background = averagecjemaxwkRule.getBackGround();
+		        } catch (java.lang.NullPointerException e) {
+	        		background = Color.WHITE;
+	        	}
+	        }
+	        if (comp instanceof JLabel && ( col == 7  ) ) {
 	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 	        	Integer avgdailycjemaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(curdate,0);
 	        	if(avgdailycjemaxwk != null && avgdailycjemaxwk > 0) 
@@ -415,7 +464,8 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	@Override
 	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
 	{
-		// TODO Auto-generated method stub
+		((BanKuaiInfoTableModel)this.getModel()).setDisplayMatchCondition(expc);
+    	this.repaint();
 		
 	}
 	@Override

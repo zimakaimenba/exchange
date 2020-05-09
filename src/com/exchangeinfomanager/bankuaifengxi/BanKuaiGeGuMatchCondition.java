@@ -230,6 +230,8 @@ public class BanKuaiGeGuMatchCondition
 			this.settingMaFormula =  maformula;
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
+			
+			return;
 		}
 		
 		public boolean shouldExportAllBanKuai () {

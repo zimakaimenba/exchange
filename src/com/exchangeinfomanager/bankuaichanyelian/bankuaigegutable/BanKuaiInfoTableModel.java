@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
@@ -30,6 +31,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 	LocalDate showzhbiwknum;
 	private String curperiod;
 	private int difference;
+	private BanKuaiGeGuMatchCondition condition;
 	
 	private static Logger logger = Logger.getLogger(BanKuaiInfoTableModel.class);
 	
@@ -274,6 +276,15 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 		{
 			return this.jtableTitleStrings;
 		}
+		
+		public void setDisplayMatchCondition (BanKuaiGeGuMatchCondition cond)
+	    {
+	    	  this.condition = cond;
+	    }
+	    public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
+	    {
+	    	return this.condition;
+	    }
 
 }
 
