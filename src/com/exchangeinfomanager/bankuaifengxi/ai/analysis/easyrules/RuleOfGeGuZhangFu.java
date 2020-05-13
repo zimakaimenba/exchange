@@ -42,17 +42,20 @@ public class RuleOfGeGuZhangFu
     	
     	StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 //		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
-		Double wkzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, 0);
-		Double wkdiefu = nodexdata.getSpecificTimeLowestZhangDieFu(evadate, 0);
-		if(wkdiefu != null && wkdiefu < -0.09)
-			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" +  Math.floor(wkdiefu * 100);
+    	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, 0);
+    	if(wkzhangdiefu != null)
+    		analysisresultforvoice = analysisresultforvoice + "本周涨幅百分之" +  Math.floor(wkzhangdiefu * 100);
+    	
+		Double wkhighdiefu = nodexdata.getSpecificTimeLowestZhangDieFu(evadate, 0);
+		if(wkhighdiefu != null && wkhighdiefu < -0.09)
+			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" +  Math.floor(wkhighdiefu * 100);
 		
+		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, 0);
 		if(zfmax != null || zfmin != null ) {
-			if(wkzhangfu == null)
+			if(wkhighzhangfu == null)
 		    	return false;
-		    else if( wkzhangfu >= zfmin && wkzhangfu <= zfmax ) {
-		    	analysisresultforvoice = analysisresultforvoice + "本周最高涨幅百分之" +  Math.floor(wkzhangfu * 100); 
-		    	
+		    else if( wkhighzhangfu >= zfmin && wkhighzhangfu <= zfmax ) {
+		    	analysisresultforvoice = analysisresultforvoice + "本周最高涨幅百分之" +  Math.floor(wkhighzhangfu * 100); 
 		    	return true;
 		    }
 		    else

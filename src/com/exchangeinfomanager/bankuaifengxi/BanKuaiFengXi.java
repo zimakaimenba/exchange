@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -656,7 +657,23 @@ public class BanKuaiFengXi extends JDialog
 	private void readAnalysisResult(BanKuai banKuai, Stock stock, LocalDate analysisdate) 
 	{
 		String anaresult = WeeklyAnalysis.BanKuaiGeGuMatchConditionAnalysis(stock, analysisdate, this.bkggmatchcondition);
-		if(!Strings.isNullOrEmpty(anaresult)) {
+		
+		if(analysisdate.equals(this.dateChooser.getLocalDate()) ) { //过去的信息就不要在读里面这些信息了，已经读过了
+			if(!Strings.isNullOrEmpty(stock.getNodeJiBenMian().getGainiantishi()  ) 
+					|| !Strings.isNullOrEmpty(stock.getNodeJiBenMian().getFumianxiaoxi()  )  )
+				anaresult = anaresult + "有概念提示。";
+			
+			Collection<Tag> nodetags = stock.getNodeTags();
+			if(!nodetags.isEmpty() ) {
+				anaresult = anaresult + "关键词有";
+				for (Iterator<Tag> lit = nodetags.iterator(); lit.hasNext(); ) {
+			        Tag f = lit.next();
+			        anaresult = anaresult + f.getName() ;
+			    }
+			}
+		}
+		
+		if(!Strings.isNullOrEmpty(anaresult) ) {
 			readengine = new VoiceEngine (anaresult);
 //			readengin.readInformation (anaresult); //for testing
 			readengine.execute();

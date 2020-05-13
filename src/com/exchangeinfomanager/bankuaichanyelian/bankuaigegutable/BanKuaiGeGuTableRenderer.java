@@ -125,7 +125,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    String columnname = tablemodel.getColumnName(col);
 	    
 	    if (comp instanceof JLabel && (columnname.contains("大盘CJEZB增长率") 
-	    		|| columnname.contains("板块成交额贡献") || columnname.contains("大盘CJLZB增长率"))) { //用百分比显示  col == 3 || col == 4 || col == 6
+	    		|| columnname.contains("板块成交额贡献") )) { //用百分比显示
 	    	String valuepect = "";
 	    	try {
         		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
@@ -229,7 +229,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    if( columnname.contains("周平均成交额MAXWK")   && value != null  ) { //col == 7
 	    	background = averagecjemaxwkRule.getBackGround();
 	    } else 
-	    if( columnname.contains("大盘CJLZB增长率")   && value != null) { //突出MA,默认为大于 col == 6
+	    if( columnname.contains("周日平均成交额连续")   && value != null) { //突出MA,默认为大于 
 	    	background = maRule.getBackGround();
 	    }
 	    
