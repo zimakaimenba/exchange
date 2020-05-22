@@ -552,7 +552,7 @@ public class BanKuaiDbOperation
 		 
 //		return null;
 //	}
-	/*
+	/*https://www.55188.com/thread-9111311-1-1.html
 	 * 通达信的概念板块与个股对应
 	 */
 	private int refreshTDXGaiNianBanKuaiToGeGu (File tmprecordfile)

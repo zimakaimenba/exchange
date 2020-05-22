@@ -23,6 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
+
+import javax.swing.JCheckBox;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -39,6 +42,7 @@ import com.exchangeinfomanager.bankuaifengxi.ai.GeGuWeeklyFengXiXmlHandler;
 import com.exchangeinfomanager.bankuaifengxi.ai.ZdgzItem;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -52,6 +56,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.io.Files;
+import com.sun.rowset.CachedRowSetImpl;
 
 public class TDXFormatedOpt {
 	
@@ -65,7 +70,7 @@ public class TDXFormatedOpt {
 	private static String formateStockCodeForTDX(String formatedstockcode) 
 	{
 		String result = new String();
-		if(formatedstockcode.trim().startsWith("00") || formatedstockcode.trim().startsWith("30") )  //Í¨´ïĞÅÉî½»Ëù ´úÂëÇ°Òª¼Ó0
+		if(formatedstockcode.trim().startsWith("00") || formatedstockcode.trim().startsWith("30") )  //é€šè¾¾ä¿¡æ·±äº¤æ‰€ ä»£ç å‰è¦åŠ 0
 			result = "0|"  +  formatedstockcode.trim();
 		else
 			result = "1|"  +  formatedstockcode.trim();
@@ -88,10 +93,106 @@ public class TDXFormatedOpt {
 	/*
 	 * 
 	 */
+	public static Boolean parserDuanQiGuanZhuToTDXCode ()
+	{
+		File tmpfilefoler = Files.createTempDir();
+		File tongdaxinfile = new File(tmpfilefoler + "å½“å‰çŸ­æœŸå…³æ³¨.txt");
+		
+		List<String> gpcresult = new ArrayList<> ();
+		CylTreeDbOperation cyldbopt = new CylTreeDbOperation ();
+    	Set<BkChanYeLianTreeNode> gpcset = cyldbopt.getGuPiaoChi();
+    	for(BkChanYeLianTreeNode tmpgpc : gpcset ) {
+    		gpcresult.add("è‚¡ç¥¨æ± " + tmpgpc.getMyOwnName() + ":");
+    	}
+		
+		BanKuaiAndStockTree bkstktree = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		
+		ConnectDataBase connectdb = ConnectDataBase.getInstance();
+		
+		String sqlquerystat = 	" SELECT * FROM å…³æ³¨ä¸ªè‚¡æ¿å—è¡¨"
+								+ "  WHERE " + "'" + LocalDate.now().toString() + "' BETWEEN å…³æ³¨ä¸ªè‚¡æ¿å—è¡¨.`æ—¥æœŸ`    AND  å…³æ³¨ä¸ªè‚¡æ¿å—è¡¨.`æˆªè‡³æ—¥æœŸ` "      
+								+ "  AND  å…³æ³¨ç±»å‹ = false " //çŸ­æœŸè®°å½•
+								+ "  ORDER BY æ—¥æœŸ DESC"
+								;
+		CachedRowSetImpl result = null;
+		try {
+			result = connectdb.sqlQueryStatExecute(sqlquerystat);
+			
+			while(result.next()) {
+				String gpctype = result.getString("è‚¡ç¥¨æ± ç±»å‹");
+				if(gpctype == null)
+					gpctype = "å…¶ä»–";
+				
+				LocalDate start  = result.getDate("æ—¥æœŸ").toLocalDate(); 
+	   		 	LocalDate end  = result.getDate("æˆªè‡³æ—¥æœŸ").toLocalDate();
+	   		 	if(end == null)
+	   		 		end =  LocalDate.parse("3000-01-01");
+	            String description = result.getString("è¯´æ˜");
+	            String ownercodes = result.getString("ä»£ç ");
+	            Integer ownertype = result.getInt("ç±»å‹");
+	            
+	            BkChanYeLianTreeNode node = bkstktree.getSpecificNodeByHypyOrCode(ownercodes, ownertype);
+	            if(node == null)
+	            	continue;
+	            
+	            for(int i=0;i<gpcresult.size(); i++ ) {
+	            	String tmpgpc = gpcresult.get(i);
+	            	if(tmpgpc.contains(gpctype)) {
+	            		gpcresult.set(i,  tmpgpc +  "[" + node.getMyOwnName() + "]");
+	            		break;
+	            	}
+	            }
+			}
+		} catch(java.lang.NullPointerException e){ 
+	    	e.printStackTrace();
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }catch(Exception e){
+	    	e.printStackTrace();
+	    }  finally {
+	    	if(result != null)
+				try {
+					result.close();
+					result = null;
+					
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+		
+		//DRAWTEXT_FIX( NOT(CODELIKE('880')), PSTN_ULX_C2,PSTN_ULY+0*PSTN_STEP_ULY,0, ' Â¹Ã‰Ã†Â±Â³Ã˜.Â³Â¬ÂµÃ¸Â·Â´ÂµÂ¯ :   ')    {};
+		for(int i=0;i < gpcresult.size(); i++) {
+			String tmpgpc = gpcresult.get(i);
+			tmpgpc = "DRAWTEXT_FIX( NOT(CODELIKE('880')), PSTN_ULX_C2,PSTN_ULY+" + String.valueOf(i) 
+					+ "*PSTN_STEP_ULY,0, '" + tmpgpc + " ');"
+					;
+			
+			try {
+    			Files.append( tmpgpc + System.getProperty("line.separator") ,tongdaxinfile,charset);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			String cmd = "rundll32 url.dll,FileProtocolHandler " + tongdaxinfile.getAbsolutePath();
+			Process p  = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+		} catch (Exception e1) 	{
+			e1.printStackTrace();
+		}
+		
+		return true;
+		
+		
+	}
+	/*
+	 * 
+	 */
 	public static Boolean parserZhiShuGuanJianRiQiToTDXCode ()
 	{
 		File tmpfilefoler = Files.createTempDir();
-		File tongdaxinfile = new File(tmpfilefoler + "Ö¸Êı¹Ø¼üÈÕÆÚ.txt");
+		File tongdaxinfile = new File(tmpfilefoler + "æŒ‡æ•°å…³é”®æ—¥æœŸ.txt");
 		
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
 		SystemConfigration syscon = SystemConfigration.getInstance();
@@ -101,25 +202,25 @@ public class TDXFormatedOpt {
 		List<String> remindinfo = new ArrayList<>();
 		ResultSet rs = null;
 		try {
-			String sqlquerystat = "SELECT * FROM Ö¸Êı¹Ø¼üÈÕÆÚ±í ORDER BY ÈÕÆÚ DESC";
+			String sqlquerystat = "SELECT * FROM æŒ‡æ•°å…³é”®æ—¥æœŸè¡¨ ORDER BY æ—¥æœŸ DESC";
 			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			while (rs.next()) {
-				String zhishucode = rs.getString("´úÂë").trim();
-				LocalDate startdate = rs.getDate("ÈÕÆÚ").toLocalDate();
+				String zhishucode = rs.getString("ä»£ç ").trim();
+				LocalDate startdate = rs.getDate("æ—¥æœŸ").toLocalDate();
 				LocalDate enddate = null;
 				try {
-					enddate = rs.getDate("½ØÖÁÈÕÆÚ").toLocalDate();
+					enddate = rs.getDate("æˆªè‡³æ—¥æœŸ").toLocalDate();
 				} catch (java.lang.NullPointerException e) {
 					
 				}
-				String zhishushuoming = rs.getString("ËµÃ÷");
+				String zhishushuoming = rs.getString("è¯´æ˜");
 				
-				if(corezhishu.contains(zhishucode)) { //ºËĞÄÖ¸Êı¿Ï¶¨ÒªÏÔÊ¾
+				if(corezhishu.contains(zhishucode)) { //æ ¸å¿ƒæŒ‡æ•°è‚¯å®šè¦æ˜¾ç¤º
 					setTDXDrawLineInfo (zhishucode,zhishushuoming,"",startdate, lineinfo, remindinfo );
 					if(enddate != null && !enddate.isEqual(startdate) ) {
 						setTDXDrawLineInfo (zhishucode,zhishushuoming,"",enddate, lineinfo, remindinfo );
 					} 				
-				} else {  //°å¿éÖ¸ÊıÖ»ÔÚÊÇ¸Ã°å¿éµÄÊ±ºòÏÔÊ¾
+				} else {  //æ¿å—æŒ‡æ•°åªåœ¨æ˜¯è¯¥æ¿å—çš„æ—¶å€™æ˜¾ç¤º
 					AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 					TDXNodes tmpzhishunode = (TDXNodes)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(zhishucode, BkChanYeLianTreeNode.TDXBK);
 					String extrainfo = "   AND INBLOCK('" + tmpzhishunode.getMyOwnName() + "')";
@@ -176,15 +277,15 @@ public class TDXFormatedOpt {
 	private static void setTDXDrawLineInfo(String zhishucode, String zhishushuoming, String extrainfo, LocalDate startdate, List<String> lineinfo, List<String> remindinfo) 
 	{
 		String colorcode = getColorCodeForSpecificZhiShuCode(zhishucode);
-		//DRAWSL(DATE = 1190506  ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF ; {2000ÒÚ¼ÓË°}
-//		DRAWSL(DATE =   1190830 AND INBLOCK('Äğ¾Æ')   ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF; {999999ÉÏÖ¤µøµ½Ç°ÆÚ×îµÍµãºó¿ªÊ¼·´µ¯}
+		//DRAWSL(DATE = 1190506  ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF ; {2000äº¿åŠ ç¨}
+//		DRAWSL(DATE =   1190830 AND INBLOCK('é…¿é…’')   ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF; {999999ä¸Šè¯è·Œåˆ°å‰æœŸæœ€ä½ç‚¹åå¼€å§‹åå¼¹}
 		String lineresult = "DRAWSL(DATE =   " 
 						 + String.valueOf(Integer.parseInt(startdate.toString().replace("-", "") ) - 19000000)
 						 + extrainfo
 						 + "   ,CLOSE,10000,1000,2) LINETHICK1 " + colorcode + "; "
 						 + "{" + zhishucode + zhishushuoming + "}"
 						 ;
-//		DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+0*PSTN_STEP_DLY,0, '20190826:ÖĞÃÀ»¥¼Ó¹ØË°' ) COLOR80FFFF  ; {};
+//		DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+0*PSTN_STEP_DLY,0, '20190826:ä¸­ç¾äº’åŠ å…³ç¨' ) COLOR80FFFF  ; {};
 		String remindresult = "DRAWTEXT_FIX(1,PSTN_DLX_C4,PSTN_DLY+"
 						 + remindinfo.size() + "*PSTN_STEP_DLY,0, '" 
 						 + startdate.toString() + ":"
@@ -221,7 +322,7 @@ public class TDXFormatedOpt {
 //		Iterator<String> bankuaidaleiname = zdgzbkmap.keySet().iterator();
 //
 //		File tmpfilefoler = Files.createTempDir();
-//		File tongdaxinfile = new File(tmpfilefoler + "Í¨´ïĞÅÖØµã¹Ø×¢´úÂë.txt");
+//		File tongdaxinfile = new File(tmpfilefoler + "é€šè¾¾ä¿¡é‡ç‚¹å…³æ³¨ä»£ç .txt");
 //	
 //		
 //		boolean runresult = false;
@@ -237,7 +338,7 @@ public class TDXFormatedOpt {
 //			e.printStackTrace();
 //		}
 //			
-//			int nullsteps =0 ; //Í¨´ïĞÅ´úÂëÖĞ£¬ÓĞÄÚÈİµÄ°å¿éÔÚÇ°£¬ÎŞÄÚÈİµÄ°å¿é×Ô¶¯±»×¢ÊÍ
+//			int nullsteps =0 ; //é€šè¾¾ä¿¡ä»£ç ä¸­ï¼Œæœ‰å†…å®¹çš„æ¿å—åœ¨å‰ï¼Œæ— å†…å®¹çš„æ¿å—è‡ªåŠ¨è¢«æ³¨é‡Š
 //			while(bankuaidaleiname.hasNext())
 //			{
 //				String siglebkname = bankuaidaleiname.next().toString() ;
@@ -256,7 +357,7 @@ public class TDXFormatedOpt {
 //		   		}
 //
 //        		try {
-//					Files.append( formatedWholeContents(nullsteps,"¹ÉÆ±³Ø"+siglebkname,result) + System.getProperty("line.separator") ,tongdaxinfile,charset);
+//					Files.append( formatedWholeContents(nullsteps,"è‚¡ç¥¨æ± "+siglebkname,result) + System.getProperty("line.separator") ,tongdaxinfile,charset);
 //				} catch (IOException e) {
 //					e.printStackTrace();
 //				}
@@ -279,7 +380,7 @@ public class TDXFormatedOpt {
 //		return runresult;
 //	}
 	/*
-	 *Éú³ÉÖØµã¹Ø×¢µÄÍ¨´ïĞÅ´úÂë 
+	 *ç”Ÿæˆé‡ç‚¹å…³æ³¨çš„é€šè¾¾ä¿¡ä»£ç  
 	 */
 	public  static String getStockZdgzInfo()
 	{
@@ -287,32 +388,32 @@ public class TDXFormatedOpt {
 		
 		
 		Map<String,String> stockresult = new HashMap<String,String> ();
-		String sqlquerystat = "SELECT * FROM ¹ÉÆ±Í¨´ïĞÅ×Ô¶¨Òå°å¿é¶ÔÓ¦±í  WHERE ¼ÓÈëÊ±¼ä > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) + 300 ) DAY ) ORDER BY ¼ÓÈëÊ±¼ä  DESC";
+		String sqlquerystat = "SELECT * FROM è‚¡ç¥¨é€šè¾¾ä¿¡è‡ªå®šä¹‰æ¿å—å¯¹åº”è¡¨  WHERE åŠ å…¥æ—¶é—´ > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) + 300 ) DAY ) ORDER BY åŠ å…¥æ—¶é—´  DESC";
 		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		try {
 			while(rs.next()) {
-				String formatedstockcode = rs.getString("¹ÉÆ±´úÂë");
-//				if(formatedstockcode.trim().equals("000000")) // 000000²»ĞèÒªµ¼³ö
+				String formatedstockcode = rs.getString("è‚¡ç¥¨ä»£ç ");
+//				if(formatedstockcode.trim().equals("000000")) // 000000ä¸éœ€è¦å¯¼å‡º
 //					continue;
 				
-				java.sql.Date jrdate = rs.getDate("¼ÓÈëÊ±¼ä");
+				java.sql.Date jrdate = rs.getDate("åŠ å…¥æ—¶é—´");
 //				LocalDate ljrdate = jrdate.toLocalDate(); 
 				
-				java.sql.Date ycdate = rs.getDate("ÒÆ³ıÊ±¼ä");
+				java.sql.Date ycdate = rs.getDate("ç§»é™¤æ—¶é—´");
 				
 //				LocalDate lycdate = ycdate.toLocalDate();
 				
 				String stockzdgz;
 				try {
 					stockzdgz = stockresult.get(formatedstockcode);
-					stockzdgz = stockzdgz.trim() + "[" + jrdate.toLocalDate().toString() + "¼ÓÈë¹Ø×¢" + "]";
+					stockzdgz = stockzdgz.trim() + "[" + jrdate.toLocalDate().toString() + "åŠ å…¥å…³æ³¨" + "]";
 				} catch ( java.lang.NullPointerException e) {
-					stockzdgz = "[" + jrdate.toLocalDate().toString() + "¼ÓÈë¹Ø×¢" + "]";
+					stockzdgz = "[" + jrdate.toLocalDate().toString() + "åŠ å…¥å…³æ³¨" + "]";
 				}
 				
 				
 				try {
-					stockzdgz = stockzdgz + "[" + ycdate.toString() + "ÒÆ³ö¹Ø×¢" + "]";
+					stockzdgz = stockzdgz + "[" + ycdate.toString() + "ç§»å‡ºå…³æ³¨" + "]";
 				} catch ( java.lang.NullPointerException e) {
 					
 				}
@@ -342,7 +443,7 @@ public class TDXFormatedOpt {
 				} else
 					filezdgz.createNewFile();
 		 } catch (java.io.IOException e) {
-			 filezdgz.getParentFile().mkdirs(); //Ä¿Â¼²»´æÔÚ£¬ÏÈ´´½¨Ä¿Â¼
+			 filezdgz.getParentFile().mkdirs(); //ç›®å½•ä¸å­˜åœ¨ï¼Œå…ˆåˆ›å»ºç›®å½•
 				try {
 					filezdgz.createNewFile();
 				} catch (IOException e1) {
@@ -379,19 +480,19 @@ public class TDXFormatedOpt {
 	 */
 	private static String formatedWholeContents(int i, String daleibankuai, String result) 
 	{
-		//DRAWTEXT_FIX( NOT(CODELIKE('880')), PSTN_ULX_C2,PSTN_ULY+0*PSTN_STEP_ULY,0, ' ¹úĞÂÕş²ß:¸ÖÌúĞĞÒµ(17-04-05) ¾©½ò¼½(17-04-05) ZDYÏîÄ¿PPP(17-04-05)   ')    {};
+		//DRAWTEXT_FIX( NOT(CODELIKE('880')), PSTN_ULX_C2,PSTN_ULY+0*PSTN_STEP_ULY,0, ' å›½æ–°æ”¿ç­–:é’¢é“è¡Œä¸š(17-04-05) äº¬æ´¥å†€(17-04-05) ZDYé¡¹ç›®PPP(17-04-05)   ')    {};
 		String part1 = "DRAWTEXT_FIX( NOT(CODELIKE('880')), PSTN_ULX_C2,PSTN_ULY+" ;
 		String part2 = "*PSTN_STEP_ULY,0, ' ";
 		String part3 = " ')    {}; "; 
 		
-		if(result.isEmpty()) //ÁĞ±íÎª¿Õ£¬×Ô¶¯Éú³É×¢ÊÍ´úÂë
+		if(result.isEmpty()) //åˆ—è¡¨ä¸ºç©ºï¼Œè‡ªåŠ¨ç”Ÿæˆæ³¨é‡Šä»£ç 
 			return "{" + part1  + i + part2 + daleibankuai +" : " + result + part3;
 		else 
 			return part1  + i + part2 + daleibankuai +" : " + result + part3;
 		
 	}
 	/*
-	 * ²úÒµÁ´ to Í¨´ïĞÅ±¨¸æ
+	 * äº§ä¸šé“¾ to é€šè¾¾ä¿¡æŠ¥å‘Š
 	 */
 	public static String parseChanYeLianXmlToTDXReport () 
 	{
@@ -420,7 +521,7 @@ public class TDXFormatedOpt {
 			} else
 				cylreport.createNewFile();
 		} catch (java.io.IOException e) {
-			cylreport.getParentFile().mkdirs(); //Ä¿Â¼²»´æÔÚ£¬ÏÈ´´½¨Ä¿Â¼
+			cylreport.getParentFile().mkdirs(); //ç›®å½•ä¸å­˜åœ¨ï¼Œå…ˆåˆ›å»ºç›®å½•
 			try {
 				cylreport.createNewFile();
 			} catch (IOException e1) {
@@ -448,7 +549,7 @@ public class TDXFormatedOpt {
 					geguchanyelian = geguchanyelian + elechanyelian.getText() + "] ";
 				}
 				
-				//´Ë´¦Ó¦¸ÃĞ´ÈëÎÄ¼ş»òÕßĞ´Èëlist
+				//æ­¤å¤„åº”è¯¥å†™å…¥æ–‡ä»¶æˆ–è€…å†™å…¥list
 				try {
 					Files.append(TDXFormatedOpt.formateToTDXWaiBuShuJuLine(stockcode,geguchanyelian),cylreport, charset);
 				} catch (IOException e) {
@@ -457,7 +558,7 @@ public class TDXFormatedOpt {
 				
 			}
 		} catch (DocumentException e) {
-			logger.debug(cylxml+ "´æÔÚ´íÎó");
+			logger.debug(cylxml+ "å­˜åœ¨é”™è¯¯");
 			cylreport.delete();
 			return null;
 		}
@@ -465,7 +566,7 @@ public class TDXFormatedOpt {
 		return cylreport.getParent();
 	}
 	/*
-	 * °å¿é¸ö¹É·ÖÎö¼ÇÂ¼ĞÅÏ¢£¬ÊÇ´æÔÚ²Ù×÷¼ÇÂ¼ÖØµã¹Ø×¢ ±íµÄ¡£ ÏÖÔÚ¹Ø×¢ÀúÊ·ÊÇÍ¨¹ı×Ô¶¨Òå±íÕÒ³öÀ´µÄ¡£
+	 * æ¿å—ä¸ªè‚¡åˆ†æè®°å½•ä¿¡æ¯ï¼Œæ˜¯å­˜åœ¨æ“ä½œè®°å½•é‡ç‚¹å…³æ³¨ è¡¨çš„ã€‚ ç°åœ¨å…³æ³¨å†å²æ˜¯é€šè¿‡è‡ªå®šä¹‰è¡¨æ‰¾å‡ºæ¥çš„ã€‚
 	 */
 	public static String stockAndBanKuaiFenXiReports ()
 	{
@@ -480,7 +581,7 @@ public class TDXFormatedOpt {
 				} else
 					filezdgz.createNewFile();
 		 } catch (java.io.IOException e) {
-			 filezdgz.getParentFile().mkdirs(); //Ä¿Â¼²»´æÔÚ£¬ÏÈ´´½¨Ä¿Â¼
+			 filezdgz.getParentFile().mkdirs(); //ç›®å½•ä¸å­˜åœ¨ï¼Œå…ˆåˆ›å»ºç›®å½•
 				try {
 					filezdgz.createNewFile();
 				} catch (IOException e1) {
@@ -492,7 +593,7 @@ public class TDXFormatedOpt {
 				return null;
 			}
 		 
-		String sqlquerystat = "SELECT * FROM ²Ù×÷¼ÇÂ¼ÖØµã¹Ø×¢ WHERE ÈÕÆÚ > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) + 300 ) DAY )  ";
+		String sqlquerystat = "SELECT * FROM æ“ä½œè®°å½•é‡ç‚¹å…³æ³¨ WHERE æ—¥æœŸ > DATE_SUB( CURDATE( ) , INTERVAL( DAYOFWEEK( CURDATE( ) ) + 300 ) DAY )  ";
 				
 //			logger.debug(sqlquerystat);
 		ResultSet rs = connectdb.sqlQueryStatExecute(sqlquerystat);
@@ -500,11 +601,11 @@ public class TDXFormatedOpt {
 		ArrayListMultimap<String ,String> treemap = ArrayListMultimap.create();
 		try {
 			while(rs.next()) {
-				String formatedstockcode = rs.getString("¹ÉÆ±´úÂë");
-				if(formatedstockcode.trim().equals("000000")) // 000000²»ĞèÒªµ¼³ö
+				String formatedstockcode = rs.getString("è‚¡ç¥¨ä»£ç ");
+				if(formatedstockcode.trim().equals("000000")) // 000000ä¸éœ€è¦å¯¼å‡º
 					continue;
 				
-				java.sql.Date dateindb = rs.getDate("ÈÕÆÚ");
+				java.sql.Date dateindb = rs.getDate("æ—¥æœŸ");
 				LocalDate recorddate = dateindb.toLocalDate(); 
 				
 				GeGuWeeklyFengXiXmlHandler xmlhandler = new GeGuWeeklyFengXiXmlHandler (formatedstockcode,recorddate);
@@ -529,7 +630,7 @@ public class TDXFormatedOpt {
 						}
 		}
 		
-		//±éÀútreemap
+		//éå†treemap
 		Set<String> stockcodeset = treemap.keySet();
 		for(String stockcode : stockcodeset) {
 			List<String> keyvalues = treemap.get(stockcode);
@@ -569,7 +670,7 @@ public class TDXFormatedOpt {
 			} else
 				filezzfxgkzd.createNewFile();
 		} catch (java.io.IOException e) {
-			filezzfxgkzd.getParentFile().mkdirs(); //Ä¿Â¼²»´æÔÚ£¬ÏÈ´´½¨Ä¿Â¼
+			filezzfxgkzd.getParentFile().mkdirs(); //ç›®å½•ä¸å­˜åœ¨ï¼Œå…ˆåˆ›å»ºç›®å½•
 			try {
 				filezzfxgkzd.createNewFile();
 			} catch (IOException e1) {
@@ -607,7 +708,7 @@ public class TDXFormatedOpt {
 				continue;
 			}
 			
-			String resulttags = "¹Ø¼ü´Ê(#" + tags +  "#) " ;
+			String resulttags = "å…³é”®è¯(#" + tags +  "#) " ;
 			resulttags = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(childnode.getMyOwnCode(),
 					Strings.nullToEmpty(resulttags) );
 			
@@ -623,7 +724,7 @@ public class TDXFormatedOpt {
 		return filezzfxgkzd.getParent();
 	}
 /*
- * ËùÓĞ¸ö¹ÉµÄ»ù±¾ĞÅÏ¢
+ * æ‰€æœ‰ä¸ªè‚¡çš„åŸºæœ¬ä¿¡æ¯
  */
 	public static String stockJiBenMianToReports ()
 	{
@@ -641,7 +742,7 @@ public class TDXFormatedOpt {
 			} else
 				filegnts.createNewFile();
 		} catch (java.io.IOException e) {
-			filegnts.getParentFile().mkdirs(); //Ä¿Â¼²»´æÔÚ£¬ÏÈ´´½¨Ä¿Â¼
+			filegnts.getParentFile().mkdirs(); //ç›®å½•ä¸å­˜åœ¨ï¼Œå…ˆåˆ›å»ºç›®å½•
 			try {
 				filegnts.createNewFile();
 			} catch (IOException e1) {
@@ -673,32 +774,32 @@ public class TDXFormatedOpt {
 			return null;
 		}
 		
-		//¸ö¹É»ù±¾Ãæ
-		String sqlquerystat = "SELECT * FROM A¹É ";
+		//ä¸ªè‚¡åŸºæœ¬é¢
+		String sqlquerystat = "SELECT * FROM Aè‚¡ ";
 //		logger.debug(sqlquerystat);
 		ResultSet rsgg = connectdb.sqlQueryStatExecute(sqlquerystat);
 		if(rsgg == null)	{   
-			logger.debug("¶ÁÈ¡Êı¾İ¿âÊ§°Ü");
+			logger.debug("è¯»å–æ•°æ®åº“å¤±è´¥");
 			return null;
 		}
 		
 		try {
 			while(rsgg.next()) {
-				String formatedstockcode = rsgg.getString("¹ÉÆ±´úÂë");
+				String formatedstockcode = rsgg.getString("è‚¡ç¥¨ä»£ç ");
 
 				String result = "";
-				if(!Strings.isNullOrEmpty(rsgg.getString("¸ÅÄî°å¿éÌáĞÑ"))) 
+				if(!Strings.isNullOrEmpty(rsgg.getString("æ¦‚å¿µæ¿å—æé†’"))) 
 					try {
-						result = result + Strings.nullToEmpty( rsgg.getDate("¸ÅÄîÊ±¼ä").toString()) + rsgg.getString("¸ÅÄî°å¿éÌáĞÑ");
+						result = result + Strings.nullToEmpty( rsgg.getDate("æ¦‚å¿µæ—¶é—´").toString()) + rsgg.getString("æ¦‚å¿µæ¿å—æé†’");
 					} catch (java.lang.NullPointerException e) {
-						result = result + Strings.nullToEmpty("") + rsgg.getString("¸ÅÄî°å¿éÌáĞÑ");
+						result = result + Strings.nullToEmpty("") + rsgg.getString("æ¦‚å¿µæ¿å—æé†’");
 					}
 				
-				if(!Strings.isNullOrEmpty(rsgg.getString("È¯ÉÌÆÀ¼¶ÌáĞÑ") ) ) 
+				if(!Strings.isNullOrEmpty(rsgg.getString("åˆ¸å•†è¯„çº§æé†’") ) ) 
 					try {
-						result = result + Strings.nullToEmpty(rsgg.getDate("È¯ÉÌÆÀ¼¶Ê±¼ä").toString()) + " " + rsgg.getString("È¯ÉÌÆÀ¼¶ÌáĞÑ");
+						result = result + Strings.nullToEmpty(rsgg.getDate("åˆ¸å•†è¯„çº§æ—¶é—´").toString()) + " " + rsgg.getString("åˆ¸å•†è¯„çº§æé†’");
 					} catch (java.lang.NullPointerException e) {
-						result = result + Strings.nullToEmpty("") + " " + rsgg.getString("È¯ÉÌÆÀ¼¶ÌáĞÑ");
+						result = result + Strings.nullToEmpty("") + " " + rsgg.getString("åˆ¸å•†è¯„çº§æé†’");
 					}
 				if(!Strings.isNullOrEmpty(result)  ) {
 					String lineformatedgainiantx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode, result );
@@ -709,12 +810,12 @@ public class TDXFormatedOpt {
 					}
 				}
 				
-				if(!Strings.isNullOrEmpty(rsgg.getString("¸ºÃæÏûÏ¢")) && !"null".equals(rsgg.getString("¸ºÃæÏûÏ¢")) ) { //nullÊÇÀúÊ·ÒÅÁô
+				if(!Strings.isNullOrEmpty(rsgg.getString("è´Ÿé¢æ¶ˆæ¯")) && !"null".equals(rsgg.getString("è´Ÿé¢æ¶ˆæ¯")) ) { //nullæ˜¯å†å²é—ç•™
 					CharSequence lineformatedfumianxx;
 					try {
-						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(rsgg.getDate("¸ºÃæÏûÏ¢Ê±¼ä").toString()) + " " + rsgg.getString("¸ºÃæÏûÏ¢"));
+						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(rsgg.getDate("è´Ÿé¢æ¶ˆæ¯æ—¶é—´").toString()) + " " + rsgg.getString("è´Ÿé¢æ¶ˆæ¯"));
 					} catch (java.lang.NullPointerException e) {
-						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty("") + " " + rsgg.getString("¸ºÃæÏûÏ¢"));
+						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty("") + " " + rsgg.getString("è´Ÿé¢æ¶ˆæ¯"));
 					}
 					try {
 						Files.append(lineformatedfumianxx,filefmxx, charset);
@@ -724,15 +825,15 @@ public class TDXFormatedOpt {
 				}
 				
 //				String formatedzhengxiangguan = null;
-//				if( !Strings.isNullOrEmpty(rsgg.getString("ÕıÏà¹Ø¼°¿Í»§") ) || !Strings.isNullOrEmpty(rsgg.getString("¿Í»§")) ) {
-//					formatedzhengxiangguan = "ÕıÏà¹Ø¼°¿Í»§(#" + Strings.nullToEmpty(rsgg.getString("ÕıÏà¹Ø¼°¿Í»§"))
-//											 + " " + Strings.nullToEmpty(rsgg.getString("¿Í»§") ) + "#) " ;
+//				if( !Strings.isNullOrEmpty(rsgg.getString("æ­£ç›¸å…³åŠå®¢æˆ·") ) || !Strings.isNullOrEmpty(rsgg.getString("å®¢æˆ·")) ) {
+//					formatedzhengxiangguan = "æ­£ç›¸å…³åŠå®¢æˆ·(#" + Strings.nullToEmpty(rsgg.getString("æ­£ç›¸å…³åŠå®¢æˆ·"))
+//											 + " " + Strings.nullToEmpty(rsgg.getString("å®¢æˆ·") ) + "#) " ;
 //				}
 //				
 //				String formatedfuxiangguan = null;
-//				if( !Strings.isNullOrEmpty(rsgg.getString("¸ºÏà¹Ø¼°¾ºÕù¶ÔÊÖ") ) || !Strings.isNullOrEmpty(rsgg.getString("¾ºÕù¶ÔÊÖ") ) ) {
-//					formatedfuxiangguan = "¸ºÏà¹Ø¼°¾ºÕù¶ÔÊÖ(#" + Strings.nullToEmpty(rsgg.getString("¸ºÏà¹Ø¼°¾ºÕù¶ÔÊÖ") )
-//											 + " " + Strings.nullToEmpty(rsgg.getString("¾ºÕù¶ÔÊÖ") ) + "#) " ;
+//				if( !Strings.isNullOrEmpty(rsgg.getString("è´Ÿç›¸å…³åŠç«äº‰å¯¹æ‰‹") ) || !Strings.isNullOrEmpty(rsgg.getString("ç«äº‰å¯¹æ‰‹") ) ) {
+//					formatedfuxiangguan = "è´Ÿç›¸å…³åŠç«äº‰å¯¹æ‰‹(#" + Strings.nullToEmpty(rsgg.getString("è´Ÿç›¸å…³åŠç«äº‰å¯¹æ‰‹") )
+//											 + " " + Strings.nullToEmpty(rsgg.getString("ç«äº‰å¯¹æ‰‹") ) + "#) " ;
 //				}
 //				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
 //					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedstockcode,Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan) );
@@ -758,32 +859,32 @@ public class TDXFormatedOpt {
 		}
 		
 		
-		//°å¿é»ù±¾Ãæ
-		sqlquerystat = "SELECT * FROM Í¨´ïĞÅ°å¿éÁĞ±í ";
+		//æ¿å—åŸºæœ¬é¢
+		sqlquerystat = "SELECT * FROM é€šè¾¾ä¿¡æ¿å—åˆ—è¡¨ ";
 //		logger.debug(sqlquerystat);
 		ResultSet rsbk = connectdb.sqlQueryStatExecute(sqlquerystat);
 		if(rsbk == null)	{   
-			logger.debug("¶ÁÈ¡Êı¾İ¿âÊ§°Ü");
+			logger.debug("è¯»å–æ•°æ®åº“å¤±è´¥");
 			return null;
 		}
 		
 		try {
 			while(rsbk.next()) {
-				String formatedbkcode = rsbk.getString("°å¿éID");
+				String formatedbkcode = rsbk.getString("æ¿å—ID");
 
 				String result = "";
-				if(!Strings.isNullOrEmpty(rsbk.getString("¸ÅÄî°å¿éÌáĞÑ"))) 
+				if(!Strings.isNullOrEmpty(rsbk.getString("æ¦‚å¿µæ¿å—æé†’"))) 
 					try {
-						result = result + Strings.nullToEmpty( rsbk.getDate("¸ÅÄîÊ±¼ä").toString()) + rsbk.getString("¸ÅÄî°å¿éÌáĞÑ");
+						result = result + Strings.nullToEmpty( rsbk.getDate("æ¦‚å¿µæ—¶é—´").toString()) + rsbk.getString("æ¦‚å¿µæ¿å—æé†’");
 					} catch (java.lang.NullPointerException e) {
-						result = result + Strings.nullToEmpty("") + rsbk.getString("¸ÅÄî°å¿éÌáĞÑ");
+						result = result + Strings.nullToEmpty("") + rsbk.getString("æ¦‚å¿µæ¿å—æé†’");
 					}
 				
-				if(!Strings.isNullOrEmpty(rsbk.getString("È¯ÉÌÆÀ¼¶ÌáĞÑ") ) ) 
+				if(!Strings.isNullOrEmpty(rsbk.getString("åˆ¸å•†è¯„çº§æé†’") ) ) 
 					try {
-						result = result + Strings.nullToEmpty(rsbk.getDate("È¯ÉÌÆÀ¼¶Ê±¼ä").toString()) + " " + rsbk.getString("È¯ÉÌÆÀ¼¶ÌáĞÑ");
+						result = result + Strings.nullToEmpty(rsbk.getDate("åˆ¸å•†è¯„çº§æ—¶é—´").toString()) + " " + rsbk.getString("åˆ¸å•†è¯„çº§æé†’");
 					} catch (java.lang.NullPointerException e) {
-						result = result + Strings.nullToEmpty("") + " " + rsbk.getString("È¯ÉÌÆÀ¼¶ÌáĞÑ");
+						result = result + Strings.nullToEmpty("") + " " + rsbk.getString("åˆ¸å•†è¯„çº§æé†’");
 					}
 				if(!Strings.isNullOrEmpty(result)  ) {
 					String lineformatedgainiantx = formateToTDXWaiBuShuJuLine(formatedbkcode, result, "sh" );
@@ -794,12 +895,12 @@ public class TDXFormatedOpt {
 					}
 				}
 				
-				if(!Strings.isNullOrEmpty(rsbk.getString("¸ºÃæÏûÏ¢")) && !"null".equals(rsbk.getString("¸ºÃæÏûÏ¢")) ) { //nullÊÇÀúÊ·ÒÅÁô
+				if(!Strings.isNullOrEmpty(rsbk.getString("è´Ÿé¢æ¶ˆæ¯")) && !"null".equals(rsbk.getString("è´Ÿé¢æ¶ˆæ¯")) ) { //nullæ˜¯å†å²é—ç•™
 					CharSequence lineformatedfumianxx;
 					try {
-						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty(rsbk.getDate("¸ºÃæÏûÏ¢Ê±¼ä").toString()) + " " + rsbk.getString("¸ºÃæÏûÏ¢"), "sh");
+						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty(rsbk.getDate("è´Ÿé¢æ¶ˆæ¯æ—¶é—´").toString()) + " " + rsbk.getString("è´Ÿé¢æ¶ˆæ¯"), "sh");
 					} catch (java.lang.NullPointerException e) {
-						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty("") + " " + rsbk.getString("¸ºÃæÏûÏ¢"), "sh");
+						 lineformatedfumianxx = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty("") + " " + rsbk.getString("è´Ÿé¢æ¶ˆæ¯"), "sh");
 					}
 					try {
 						Files.append(lineformatedfumianxx,filefmxx, charset);
@@ -809,15 +910,15 @@ public class TDXFormatedOpt {
 				}
 				
 //				String formatedzhengxiangguan = null;
-//				if( !Strings.isNullOrEmpty(rsbk.getString("ÕıÏà¹Ø¼°¿Í»§") ) || !Strings.isNullOrEmpty(rsbk.getString("¿Í»§")) ) {
-//					formatedzhengxiangguan = "ÕıÏà¹Ø¼°¿Í»§(#" + Strings.nullToEmpty(rsbk.getString("ÕıÏà¹Ø¼°¿Í»§"))
-//											 + " " + Strings.nullToEmpty(rsbk.getString("¿Í»§") ) + "#) " ;
+//				if( !Strings.isNullOrEmpty(rsbk.getString("æ­£ç›¸å…³åŠå®¢æˆ·") ) || !Strings.isNullOrEmpty(rsbk.getString("å®¢æˆ·")) ) {
+//					formatedzhengxiangguan = "æ­£ç›¸å…³åŠå®¢æˆ·(#" + Strings.nullToEmpty(rsbk.getString("æ­£ç›¸å…³åŠå®¢æˆ·"))
+//											 + " " + Strings.nullToEmpty(rsbk.getString("å®¢æˆ·") ) + "#) " ;
 //				}
 //				
 //				String formatedfuxiangguan = null;
-//				if( !Strings.isNullOrEmpty(rsbk.getString("¸ºÏà¹Ø¼°¾ºÕù¶ÔÊÖ") ) || !Strings.isNullOrEmpty(rsbk.getString("¾ºÕù¶ÔÊÖ") ) ) {
-//					formatedfuxiangguan = "¸ºÏà¹Ø¼°¾ºÕù¶ÔÊÖ(#" + Strings.nullToEmpty(rsbk.getString("¸ºÏà¹Ø¼°¾ºÕù¶ÔÊÖ") )
-//											 + " " + Strings.nullToEmpty(rsbk.getString("¾ºÕù¶ÔÊÖ") ) + "#) " ;
+//				if( !Strings.isNullOrEmpty(rsbk.getString("è´Ÿç›¸å…³åŠç«äº‰å¯¹æ‰‹") ) || !Strings.isNullOrEmpty(rsbk.getString("ç«äº‰å¯¹æ‰‹") ) ) {
+//					formatedfuxiangguan = "è´Ÿç›¸å…³åŠç«äº‰å¯¹æ‰‹(#" + Strings.nullToEmpty(rsbk.getString("è´Ÿç›¸å…³åŠç«äº‰å¯¹æ‰‹") )
+//											 + " " + Strings.nullToEmpty(rsbk.getString("ç«äº‰å¯¹æ‰‹") ) + "#) " ;
 //				}
 //				if(!Strings.isNullOrEmpty(formatedzhengxiangguan) || !Strings.isNullOrEmpty(formatedfuxiangguan)  ) {
 //					String lineformatedresult = TDXFormatedOpt.formateToTDXWaiBuShuJuLine(formatedbkcode, Strings.nullToEmpty(formatedzhengxiangguan) + Strings.nullToEmpty(formatedfuxiangguan), "sh" );

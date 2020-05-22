@@ -67,10 +67,10 @@ public class CylTreeDbOperation
 		
 		this.treecyl = treecyl;
 	}
-//	public CylTreeDbOperation ()
-//	{
-//		connectdb = ConnectDataBase.getInstance();
-//	}
+	public CylTreeDbOperation ()
+	{
+		connectdb = ConnectDataBase.getInstance();
+	}
 	public List<BkChanYeLianTreeNode> createTreeOfChanYeLian ()
 	{
 		List<BkChanYeLianTreeNode> nodelist = new ArrayList<>();

@@ -17,10 +17,10 @@ import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 
 
-public class WholeMonthCompViewOfDQGZQRS extends WholeMonthNewsComponentsView 
+public class WholeMonthCompViewOfQRS extends WholeMonthNewsComponentsView 
 {
 
-	public WholeMonthCompViewOfDQGZQRS(ServicesForNews meetingServices, String title) 
+	public WholeMonthCompViewOfQRS(ServicesForNews meetingServices, String title) 
 	{
 		super(meetingServices, title);
 		// TODO Auto-generated constructor stub

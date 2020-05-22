@@ -15,7 +15,6 @@ import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
-import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
 import com.exchangeinfomanager.News.ExternalNewsType.ModifyExternalNewsDialog;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;

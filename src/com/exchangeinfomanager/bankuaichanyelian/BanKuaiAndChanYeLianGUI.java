@@ -124,9 +124,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
  	
 	private void setupSubGpcAndBanKuai() 
 	{
-//		Set<String> all = new HashSet<> ();
-//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getAllBkStocksTree().getModel().getRoot();
-//		all.add("treeroot");
 		lballdbservice = new TagsServiceForSystemTags (); 
 		allsyskwcache = new TagCache (lballdbservice);
 		lballdbservice.setCache(allsyskwcache);

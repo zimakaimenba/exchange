@@ -32,7 +32,7 @@ public class QiangShi extends ExternalNewsType
         if (o == null || getClass() != o.getClass())
             return false;
 
-        GuanZhu gz = (GuanZhu) o;
+        QiangShi gz = (QiangShi) o;
         
         if(!node.equals(gz.getNode()))
         	return false;

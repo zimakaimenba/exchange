@@ -23,11 +23,12 @@ import javax.swing.JScrollPane;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.CreateExternalNewsDialog;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.ExternalNewsType;
-import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
 import com.exchangeinfomanager.News.ExternalNewsType.ModifyExternalNewsDialog;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
@@ -292,7 +293,7 @@ public class WholeMonthNewsComponentsView extends View
             BkChanYeLianTreeNode treeroot = treebkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);//(BkChanYeLianTreeNode)treebkstk.getModel().getRoot();
             
             if( svsofexternalnews instanceof ChangQiGuanZhuServices) {
-            	return new GuanZhu(treeroot, "ÃèÊö", createDate, createDate, "ÏêÏ¸ÃèÊö", viewtitle,  new HashSet<>(),"URL",true);
+            	return new ChangQiGuanZhu(treeroot, "ÃèÊö", createDate, createDate, "ÏêÏ¸ÃèÊö", viewtitle,  new HashSet<>(),"URL");
     		}
     		if( svsofexternalnews instanceof QiangShiServices) {
     			return new 	QiangShi(treeroot, "ÃèÊö", createDate, createDate, "ÏêÏ¸ÃèÊö", viewtitle,new HashSet<>(),"URL");
@@ -301,7 +302,7 @@ public class WholeMonthNewsComponentsView extends View
     			return new 	RuoShi(treeroot, "ÃèÊö", createDate, createDate, "ÏêÏ¸ÃèÊö", viewtitle,new HashSet<>(),"URL");
     		}
     		if( svsofexternalnews instanceof DuanQiGuanZhuServices) {
-    			return new GuanZhu(treeroot, "ÃèÊö", createDate, createDate, "ÏêÏ¸ÃèÊö", viewtitle,  new HashSet<>(),"URL",false);
+    			return new DuanQiGuanZhu(treeroot, "ÃèÊö", createDate, createDate, "ÏêÏ¸ÃèÊö", viewtitle,  new HashSet<>(),"URL");
     		}
     		if( svsofexternalnews instanceof ZhiShuBoLangServices) {
     			return new ZhiShuBoLang(treeroot, "ÃèÊö", createDate, createDate, "ÏêÏ¸ÃèÊö", viewtitle,  new HashSet<>(),"URL","A");

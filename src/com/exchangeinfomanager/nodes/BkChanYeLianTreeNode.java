@@ -3,7 +3,6 @@ package com.exchangeinfomanager.nodes;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
 import com.exchangeinfomanager.Trees.InvisibleNode;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;

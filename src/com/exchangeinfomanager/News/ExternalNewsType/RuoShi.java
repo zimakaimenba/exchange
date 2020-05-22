@@ -31,7 +31,7 @@ public class RuoShi extends ExternalNewsType
         if (o == null || getClass() != o.getClass())
             return false;
 
-        GuanZhu gz = (GuanZhu) o;
+        RuoShi gz = (RuoShi) o;
         
         if(!node.equals(gz.getNode()))
         	return false;

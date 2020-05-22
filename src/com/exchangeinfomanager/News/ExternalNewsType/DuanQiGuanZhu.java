@@ -11,19 +11,20 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.google.common.collect.Range;
 
 
-public class GuanZhu extends ExternalNewsType
+public class DuanQiGuanZhu extends ExternalNewsType
 {
 	private String guanzhutype;
+	private String gpc;
 
-	public GuanZhu(BkChanYeLianTreeNode node, String description, LocalDate starttime, LocalDate endtime, String detail, String keywords,
-			Collection<com.exchangeinfomanager.News.InsertedNews.Label> labels, String newsUrl,Boolean changqiorduanqi) 
+	public DuanQiGuanZhu(BkChanYeLianTreeNode node, String description, LocalDate starttime, LocalDate endtime, String detail, String keywords,
+			Collection<com.exchangeinfomanager.News.InsertedNews.Label> labels, String newsUrl) 
 	{
 		super(node, description, starttime, endtime, detail, keywords, labels, newsUrl);
 		
-		if(changqiorduanqi)
-			this.guanzhutype = "CHANGQI";
-		else
-			this.guanzhutype = "DUANQI";
+//		if(changqiorduanqi)
+//			this.guanzhutype = "CHANGQI";
+//		else
+//			this.guanzhutype = "DUANQI";
 		
 		Range<LocalDate> range;
 		try {
@@ -31,10 +32,16 @@ public class GuanZhu extends ExternalNewsType
 		} catch (java.lang.IllegalArgumentException e) {
 			range = Range.closed(endtime, starttime);
 		}
-		if(changqiorduanqi)
-			;
-		else
-			((TDXNodes)node).addNewDuanQiGuanZhuRange (range);
+		((TDXNodes)node).addNewDuanQiGuanZhuRange (range);
+	}
+	
+	public void setDqgzGuPiaoChi (String gpc)
+	{
+		this.gpc = gpc;
+	}
+	public String getDqgzGuPiaoChi ()
+	{
+		return this.gpc ;
 	}
 
 	@Override
@@ -44,7 +51,7 @@ public class GuanZhu extends ExternalNewsType
         if (o == null || getClass() != o.getClass())
             return false;
 
-        GuanZhu gz = (GuanZhu) o;
+        DuanQiGuanZhu gz = (DuanQiGuanZhu) o;
         
         if(!node.equals(gz.getNode()))
         	return false;

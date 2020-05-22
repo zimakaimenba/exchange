@@ -30,10 +30,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -53,8 +57,10 @@ import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForURLAndFile;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
+import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
@@ -84,22 +90,22 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	    protected NewsCache cache;
 	    protected ServicesForNews NewsService;
 	    protected LabelListDialog labelListDialog;
-	    private BanKuaiDbOperation bkdbopt;
+//	    private BanKuaiDbOperation bkdbopt;
 
 	    private T event;
 		private JLabel kwbutton;
+		private JComboBox cobxgupiaochi;
 
 	    public ExternalNewsDialog(ServicesForNews NewsService) 
 	    {
 	        this.NewsService = NewsService;
 	        this.cache = NewsService.getCache();
-	        this.bkdbopt = new BanKuaiDbOperation ();
+//	        this.bkdbopt = new BanKuaiDbOperation ();
 	        
 	        this.createUIComponents();
 	        this.createCenterPanel();
 	        
 	        this.createEvent ();
-	        
 	    }
 
 	    private void createEvent() 
@@ -174,6 +180,16 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 
 	        this.centerPanel = new JPanel();
 	        this.labelListDialog = new LabelListDialog();
+	        
+	        if(this.NewsService instanceof DuanQiGuanZhuServices) {
+	        	CylTreeDbOperation cyldbopt = new CylTreeDbOperation ();
+	        	Set<BkChanYeLianTreeNode> gpc = cyldbopt.getGuPiaoChi();
+	        	Vector v = new Vector();
+	        	for(BkChanYeLianTreeNode tmpgpc : gpc ) {
+	        		v.add(new JCheckBox(tmpgpc.getMyOwnName(),false));
+	        	}
+	        	this.cobxgupiaochi = new JComboCheckBox(v);
+	        }
 	    }
 
 
@@ -221,6 +237,11 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	        kwPanel.add(this.keywordsField,BorderLayout.CENTER);
 	        this.centerPanel.add(kwPanel);
 	        
+	        if(this.cobxgupiaochi != null) {
+	        	this.centerPanel.add(Box.createVerticalStrut(10));
+	        	this.centerPanel.add(this.cobxgupiaochi);
+	        }
+	        
 	        this.centerPanel.add(Box.createVerticalStrut(PADDING));
 
 	        // add main panel to the dialog
@@ -254,6 +275,22 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	        } catch (java.lang.NullPointerException e) {}
 	        newsurlField.setText(event.getNewsUrl());
 	        
+	        if(this.NewsService instanceof DuanQiGuanZhuServices) {
+	        	ExternalNewsType tmpevent = ((InsertedExternalNews)event).getNews();
+	        	String gpc = ((DuanQiGuanZhu)tmpevent).getDqgzGuPiaoChi();
+	        	for(int i = 0 ; i < this.cobxgupiaochi.getItemCount(); i++ ) {
+	        		JCheckBox tmpitem = (JCheckBox)this.cobxgupiaochi.getItemAt(i);
+	        		if(gpc == null)
+	        			tmpitem.setSelected(false);
+	        		else if( tmpitem.getText().equals(gpc) ) {
+	        			tmpitem.setSelected(true);
+	        			this.cobxgupiaochi.setSelectedIndex(i);
+	        		}
+	        		else
+	        			tmpitem.setSelected(false);
+	        	}
+	        }
+	        
 	        return true;
 	    }
 
@@ -266,7 +303,17 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	    	event.setKeyWords(keywordsField.getText());
 	    	event.setDescription(descriptionArea.getText());
 	    	event.setNewsUrl(newsurlField.getText());
-	        return event;
+	    	
+	    	if(this.NewsService instanceof DuanQiGuanZhuServices) {
+	    		ExternalNewsType tmpevent = ((InsertedExternalNews)event).getNews();
+	        	for(int i = 0 ; i < this.cobxgupiaochi.getItemCount(); i++ ) {
+	        		JCheckBox tmpitem = (JCheckBox)this.cobxgupiaochi.getItemAt(i);
+	        		if(tmpitem.isSelected()) 
+	        			((DuanQiGuanZhu)tmpevent).setDqgzGuPiaoChi(tmpitem.getText());
+	        	}
+	        }
+
+	    	return event;
 	    }
 
 	    private LocalTime toLocalTime(Instant instant) {

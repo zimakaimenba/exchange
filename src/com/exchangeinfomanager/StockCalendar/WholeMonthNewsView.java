@@ -31,7 +31,6 @@ import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.CreateExternalNewsDialog;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.ExternalNewsType;
-import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
 import com.exchangeinfomanager.News.ExternalNewsType.ModifyExternalNewsDialog;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
@@ -67,11 +66,11 @@ public class WholeMonthNewsView extends View
 	
 	private WholeMonthNewsComponentsView cqjlview;
 
-	private WholeMonthCompViewOfDQGZQRS qsview;
+	private WholeMonthCompViewOfQRS qsview;
 
-	private WholeMonthCompViewOfDQGZQRS rsview;
+	private WholeMonthCompViewOfQRS rsview;
 
-	private WholeMonthCompViewOfDQGZQRS dqgzview;
+	private WholeMonthCompViewOfDQGZ dqgzview;
 	
 	private WholeMonthNewsComponentsView zsblview;
 	
@@ -93,15 +92,15 @@ public class WholeMonthNewsView extends View
 	    		} else
 	    		if( f instanceof QiangShiServices) {
 	    			svsqs = (QiangShiServices) f;
-	    			qsview = new WholeMonthCompViewOfDQGZQRS (svsqs, "强势板块个股");
+	    			qsview = new WholeMonthCompViewOfQRS (svsqs, "强势板块个股");
 	    		} else
 	    		if( f instanceof RuoShiServices) {
 	    			svsrs = (RuoShiServices) f;
-	    			rsview = new WholeMonthCompViewOfDQGZQRS (svsrs, "弱势板块个股");
+	    			rsview = new WholeMonthCompViewOfQRS (svsrs, "弱势板块个股");
 	    		} else
 	    		if( f instanceof DuanQiGuanZhuServices) {
 	    			svsdqgz = (DuanQiGuanZhuServices) f;
-	    			dqgzview = new WholeMonthCompViewOfDQGZQRS (svsdqgz, "近期关注");
+	    			dqgzview = new WholeMonthCompViewOfDQGZ (svsdqgz, "近期关注");
 	    		} else
 	    		if( f instanceof ZhiShuBoLangServices) {
 	    			svszsbl = (ZhiShuBoLangServices) f;

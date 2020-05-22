@@ -2,8 +2,9 @@ package com.exchangeinfomanager.database;
 
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhu;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.ExternalNewsType;
-import com.exchangeinfomanager.News.ExternalNewsType.GuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShi;
@@ -644,8 +645,10 @@ public final class StockCalendarAndNewDbOperation
 	            String slackurl = result.getString("URL");
 	            String ownercodes = result.getString("代码");
 	            Integer ownertype = result.getInt("类型");
+	            String gpc = result.getString("股票池类型");
 	            
-	            GuanZhu news = new GuanZhu(node, description, start, end, detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
+	            DuanQiGuanZhu news = new DuanQiGuanZhu(node, description, start, end, detail, keywords, new HashSet<InsertedNews.Label>(),slackurl);
+	            news.setDqgzGuPiaoChi(gpc);
 
 	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
 
@@ -751,10 +754,12 @@ public final class StockCalendarAndNewDbOperation
 	            String slackurl = result.getString("URL");
 	            String ownercodes = result.getString("代码");
 	            Integer ownertype = result.getInt("类型");
+	            String gpc = result.getString("股票池类型");
 	            
 	            BkChanYeLianTreeNode node = treeofbkstk.getSpecificNodeByHypyOrCode(ownercodes, ownertype);
-	            ExternalNewsType news = new GuanZhu(node, description, start, end , detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,false);
-
+	            DuanQiGuanZhu news = new DuanQiGuanZhu(node, description, start, end , detail, keywords, new HashSet<InsertedNews.Label>(),slackurl);
+	            news.setDqgzGuPiaoChi(gpc);
+	            
 	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
 
 	            cqjllist.add(newmeeting);
@@ -852,7 +857,7 @@ public final class StockCalendarAndNewDbOperation
 	            String ownercodes = result.getString("代码");
 	            Integer ownertype = result.getInt("类型");
 	            
-	            ExternalNewsType news = new GuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,true);
+	            ExternalNewsType news = new ChangQiGuanZhu(node, description, start,  LocalDate.parse("3000-01-01"), detail, keywords, new HashSet<InsertedNews.Label>(),slackurl);
 
 	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
 
@@ -962,7 +967,7 @@ public final class StockCalendarAndNewDbOperation
 	            if(node == null)
 	            	node = treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
 	            
-	            ExternalNewsType news = new GuanZhu(node, description, start,  end, detail, keywords, new HashSet<InsertedNews.Label>(),slackurl,true);
+	            ExternalNewsType news = new ChangQiGuanZhu(node, description, start,  end, detail, keywords, new HashSet<InsertedNews.Label>(),slackurl);
 
 	            InsertedExternalNews newmeeting = new InsertedExternalNews(news, meetingID);
 
@@ -1034,10 +1039,12 @@ public final class StockCalendarAndNewDbOperation
     	String keywords = news.getKeyWords();
     	String slackurl = news.getNewsUrl();
     	
+    	String gpc = ((DuanQiGuanZhu)news).getDqgzGuPiaoChi();
+    	
     	InsertedExternalNews InsertedNews = null;
     	
     			try {
-    					String sqlinsertstat = "INSERT INTO 关注个股板块表(代码,类型,关注类型,日期,截至日期,说明,具体描述,url, 关键词) values ("
+    					String sqlinsertstat = "INSERT INTO 关注个股板块表(代码,类型,关注类型,日期,截至日期,说明,具体描述,url, 关键词,股票池类型) values ("
     							+ "'" + nodecode + "'" + ","
     							+ nodetype  + ","
     							+ false + ","
@@ -1046,7 +1053,8 @@ public final class StockCalendarAndNewDbOperation
     							+ "'" +  description + "'" + ","
     							+ "'" +  detail +  "|'" + ","
     							+ "'" +  slackurl + "'"  + ","
-    	    					+ "'" +  keywords + "'"
+    	    					+ "'" +  keywords + "'"  + ","
+    							+ "'" +  gpc + "'"
     							+ ")"
     							;
     					int meetingID = connectdb.sqlInsertStatExecute(sqlinsertstat) ;
@@ -1074,7 +1082,6 @@ public final class StockCalendarAndNewDbOperation
     			    }
     			
     	return InsertedNews;
-		
 	}
 	/*
 	 * 
@@ -1428,6 +1435,8 @@ public final class StockCalendarAndNewDbOperation
 		Integer newstype = event.getNode().getType();
 		String slackurl = event.getNewsUrl();
 		
+		String gpc = ((DuanQiGuanZhu)event.getNews() ).getDqgzGuPiaoChi();
+		
    		try {
         		String sqlupatestatement =  "UPDATE 关注个股板块表  SET 日期 = '" + starttime + "', "
         				+ " 截至日期 = '" + endtime + "', "
@@ -1436,8 +1445,8 @@ public final class StockCalendarAndNewDbOperation
         				+ " 说明  = '" + desc + "', "
         				+ " 具体描述  = '" + detail + "', "
         				+ " url  = '" + slackurl + "', "
-        				+ " 关键词  = '" + keywordsurl + "' "
-        				  
+        				+ " 关键词  = '" + keywordsurl +  "', "
+        				+ " 股票池类型='" + gpc + "'"  
         				+ " WHERE id =  " + newsid
         				;
         		

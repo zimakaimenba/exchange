@@ -24,7 +24,7 @@ public class ZhiShuBoLang extends ExternalNewsType
         if (o == null || getClass() != o.getClass())
             return false;
 
-        GuanZhu gz = (GuanZhu) o;
+        ZhiShuBoLang gz = (ZhiShuBoLang) o;
         
         if(!node.equals(gz.getNode()))
         	return false;
