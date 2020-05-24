@@ -64,7 +64,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	 */
 	public void updatedDate (TDXNodes node, LocalDate startdate, LocalDate enddate,String period)
 	{
-		super.setCurDisplayNode(node,period );
+		super.setCurDisplayNode(node,startdate, enddate, period );
 		
 		preparingdisplayDataToGui (node,startdate,enddate,period);
 	
@@ -106,7 +106,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	/*
 	 * 
 	 */
-	private Double displayBarDataToGui(NodeXPeriodData nodexdata, LocalDate startdate, LocalDate enddate,
+	public Double displayBarDataToGui(NodeXPeriodData nodexdata, LocalDate startdate, LocalDate enddate,
 			String period) 
 	{
 		DaPan dapan;

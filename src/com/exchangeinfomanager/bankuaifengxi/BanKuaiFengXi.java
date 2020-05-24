@@ -483,22 +483,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		//板块所属个股
 		if(selectedbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
-			
-			//如果板块的分析结果个股数目>0，则要把符合条件的个股标记好
-//			BkChanYeLianTreeNode nodeincyltree = this.bkcyl.getBkChanYeLianTree().getSpecificNodeByHypyOrCode(selectedbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
-//			BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)nodeincyltree.getNodeTreeRelated ();
-//			Integer patchfilestocknum = ((BanKuaiTreeRelated)treerelated).getStocksNumInParsedFileForSpecificDate (curselectdate);
-//			if(patchfilestocknum != null && patchfilestocknum >0) {
-//				Set<String> stkofbkset = this.bkcyl.getBanKuaiFxSetOfSpecificDate(selectedbk.getMyOwnCode(), curselectdate);
-//				
-//				for(String stkofbk : stkofbkset ) {
-//					StockOfBanKuai stkinbk = selectedbk.getBanKuaiGeGu(stkofbk);
-//	    			StockOfBanKuaiTreeRelated stofbktree = (StockOfBanKuaiTreeRelated)stkinbk.getNodeTreeRelated();
-//	        		stofbktree.setStocksNumInParsedFile (curselectdate,true);
-//				}
-//				
-//				stkofbkset= null;
-//			}
+
 			//板块所属个股占比info
 			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate,period);
 			((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).refresh(selectedbk, curselectdate,period);
@@ -510,6 +495,9 @@ public class BanKuaiFengXi extends JDialog
 			}
 		}
 		
+		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
+		DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
+		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (treeroot); 
 		//板块自身占比
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
@@ -605,7 +593,7 @@ public class BanKuaiFengXi extends JDialog
 	 * @param selectstock
 	 * @param selectedGeguTable
 	 */
-	protected void unifiedOperationsAfterUserSelectAStock(StockOfBanKuai selectstock) 
+	protected void unifiedOperationsAfterUserSelectAStock(StockOfBanKuai selectstock, Boolean readinfoout) 
 	{
 			Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 			setCursor(hourglassCursor);
@@ -647,8 +635,9 @@ public class BanKuaiFengXi extends JDialog
 			cyltreecopy.searchAndLocateNodeInTree (selectstock.getStock());
 			
 			showReminderMessage (bkfxremind.getStockremind());
-			
-			readAnalysisResult ( selectstock.getBanKuai(),  selectstock.getStock(), this.dateChooser.getLocalDate() );
+			//语言播报
+			if(readinfoout)
+				readAnalysisResult ( selectstock.getBanKuai(),  selectstock.getStock(), this.dateChooser.getLocalDate() );
 			
 			hourglassCursor = null;
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -2538,7 +2527,11 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
 				
 				if (arg0.getClickCount() == 1) { //用户点击一下
-					unifiedOperationsAfterUserSelectAStock (selectstock);
+					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
+					if(col == 1)
+						unifiedOperationsAfterUserSelectAStock (selectstock,true);
+					else
+						unifiedOperationsAfterUserSelectAStock (selectstock,false);
 				}
 				if (arg0.getClickCount() == 2) {
 				}
@@ -2562,7 +2555,11 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getStock (modelRow);
 				
 				if (arg0.getClickCount() == 1) { //用户点击一下
-					unifiedOperationsAfterUserSelectAStock (selectstock);
+					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
+					if(col == 1)
+						unifiedOperationsAfterUserSelectAStock (selectstock,true);
+					else
+						unifiedOperationsAfterUserSelectAStock (selectstock,false);
 				}
 				if (arg0.getClickCount() == 2) {
 				}
@@ -2584,7 +2581,11 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).getStock (modelRow);
 				
 				if (arg0.getClickCount() == 1) {
-					unifiedOperationsAfterUserSelectAStock (selectstock);
+					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
+					if(col == 1)
+						unifiedOperationsAfterUserSelectAStock (selectstock,true);
+					else
+						unifiedOperationsAfterUserSelectAStock (selectstock,false);
 				}
 				if (arg0.getClickCount() == 2) {
 				}
@@ -2603,7 +2604,11 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
-					unifiedOperationsAfterUserSelectAStock (selectstock);
+					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
+					if(col == 1)
+						unifiedOperationsAfterUserSelectAStock (selectstock,true);
+					else
+						unifiedOperationsAfterUserSelectAStock (selectstock,false);
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }
@@ -2622,7 +2627,11 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
-					unifiedOperationsAfterUserSelectAStock (selectstock);
+					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
+					if(col == 1)
+						unifiedOperationsAfterUserSelectAStock (selectstock,true);
+					else
+						unifiedOperationsAfterUserSelectAStock (selectstock,false);
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }
@@ -2641,7 +2650,11 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
-					unifiedOperationsAfterUserSelectAStock (selectstock);
+					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
+					if(col == 1)
+						unifiedOperationsAfterUserSelectAStock (selectstock,true);
+					else
+						unifiedOperationsAfterUserSelectAStock (selectstock,false);
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }
@@ -2660,7 +2673,11 @@ public class BanKuaiFengXi extends JDialog
 				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
-					unifiedOperationsAfterUserSelectAStock (selectstock);
+					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
+					if(col == 1)
+						unifiedOperationsAfterUserSelectAStock (selectstock,true);
+					else
+						unifiedOperationsAfterUserSelectAStock (selectstock,false); 
 				}
 				 if (arg0.getClickCount() == 2) {
 				 }

@@ -41,6 +41,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 */
 	private static final long serialVersionUID = 1L;
 	protected DefaultCategoryDataset averagelinechartdataset;
+	private  TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
 	
 	public BanKuaiFengXiCategoryBarChartCjePnl() 
 	{
@@ -55,10 +56,13 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
         super.plot.setRangeAxis(4, rangeaxis);
         super.plot.getRenderer(4).setSeriesPaint(1, Color.CYAN );
 	}
-	
+	public TDXNodes getSettingSpecificSuperBanKuai ()
+	{
+		return shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
+	}
 	public void updatedDate (TDXNodes node, LocalDate startdate, LocalDate enddate,String period)
 	{
-		super.setCurDisplayNode( node,period );
+		super.setCurDisplayNode( node,startdate, enddate, period );
 		
 		this.preparingdisplayDataToGui (node,startdate,enddate,period);
 	}
@@ -75,24 +79,100 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 		
 		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
-		Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
 		
-		if(super.shouldDrawQueKouLine()) {
-			Integer qkmax = displayQueKouLineDataToGui(nodexdata,period);
-		}
-		if(super.shouldDrawZhangDieTingLine() ) {
-			Integer zdt = displayZhangDieTingLineDataToGui(nodexdata,period);
-		}
-		if(super.shouldDrawAverageDailyCjeOfWeekLine() ) {
-			Double avecje = displayAverageDailyCjeOfWeekLineDataToGui(nodexdata,period);
+		 
+		if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) { //显示node自己的成交额
+			Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
+//			xiuShiLeftRangeAxixAfterDispalyDate (nodexdata,startdate,enddate,leftrangeaxix,period);
+			
+			Double avecje = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdata,startdate,enddate,period); //显示node的周线平均成交额的线形数据
+			
+			if(super.shouldDrawQueKouLine()) {
+				Integer qkmax = displayQueKouLineDataToGui(nodexdata,startdate,enddate,period);
+			}
+			if(super.shouldDrawZhangDieTingLine() ) {
+				Integer zdt = displayZhangDieTingLineDataToGui(nodexdata,startdate,enddate,period);
+			}
+			if(super.shouldDrawAverageDailyCjeOfWeekLine() ) {
+				((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
+				 Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdata,startdate,enddate,period);
+			}
+			
+		} else { //显示大盘的平均成交额
+			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
+//			Double leftrangeaxix = displayAverageBarDataToGui (nodexdataOfSuperBk,startdate,enddate,period);
+			Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
+			
+			Double avecjeaxix = displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdata,startdate,enddate,period);
 		}
 		
 		if(super.shouldDisplayZhanBiInLine() ) {
-			super.resetLineDate ();
-			this.dipalyCjeCjlZBLineDataToGui (super.getCurDisplayedNode().getNodeXPeroidData(period),period);
+			this.resetLineDate ();
+			this.dipalyCjeCjlZBLineDataToGui (nodexdata,startdate,enddate,period);
 		}
 
 		super.barchart.setNotify(true);
+	}
+	/*
+	 *显示的是周日平均数据 
+	 */
+	public Double displayAverageBarDataToGui(NodeXPeriodData nodexdata,LocalDate startdate,LocalDate enddate,String period)
+	{
+		DaPan dapan;
+		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
+			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
+			dapan = (DaPan)bk.getRoot();
+		} else
+			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
+		
+		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
+		
+		double highestHigh =0.0; //设置显示范围
+		
+		LocalDate tmpdate = requirestart;
+		do  {
+			//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
+			Double cje = nodexdata.getAverageDailyChengJiaoErOfWeek(tmpdate, 0);
+			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+			if(cje != null) {
+				barchartdataset.setValue( cje,super.getRowKey(), wkfriday);
+				
+				if(cje > highestHigh)
+					highestHigh = cje;
+				
+				//标记大盘成交量该周是涨还是跌
+				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+				Double dpdiff = dpnodexdata.getChengJiaoErDifferenceWithLastPeriod(tmpdate, 0);
+				if(dpdiff != null && dpdiff >0) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , 0.0);
+					//cpa.setBaseRadius(0.0);
+					//cpa.setTipRadius(25.0);
+					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.RED);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				}
+				
+			} else {
+				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
+					barchartdataset.setValue(0.0,super.getRowKey(),wkfriday);
+					this.averagelinechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
+				}
+			}
+
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+
+//		super.barchart.setNotify(true);
+		xiuShiLeftRangeAxixAfterDispalyDate (nodexdata,startdate,enddate,highestHigh,period);
+		
+		return highestHigh;
 	}
 	/*
 	 * 
@@ -123,10 +203,10 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 					highestHigh = cje;
 				
 				//标记周日平均成交额
-				if(!super.shouldDrawAverageDailyCjeOfWeekLine() ) { //如果已经要划线了，这里就不划了
-					Double avecje = 2 * nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday, 0);
-					averagelinechartdataset.setValue(avecje,"AverageDailyCje", wkfriday);
-				}
+//				if(!super.shouldDrawAverageDailyCjeOfWeekLine() ) { //如果已经要划线了，这里就不划了
+//					Double avecje = 2 * nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday, 0);
+//					this.averagelinechartdataset.setValue(avecje,"AverageDailyCje", wkfriday);
+//				}
 
 				//标记大盘成交量该周是涨还是跌
 				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
@@ -164,7 +244,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	public Integer displayZhangDieTingLineDataToGui(NodeXPeriodData nodexdata, String period) 
+	public Integer displayZhangDieTingLineDataToGui(NodeXPeriodData nodexdata, LocalDate startdate, LocalDate enddate, String period) 
 	{
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 		
@@ -222,7 +302,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	public Double dipalyCjeCjlZBLineDataToGui (NodeXPeriodData nodexdata,String period)
+	public Double dipalyCjeCjlZBLineDataToGui (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, String period)
 	{
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).hideBarMode();
 		
@@ -274,10 +354,8 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	public Double displayAverageDailyCjeOfWeekLineDataToGui (NodeXPeriodData nodexdata,String period)
+	public Double displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, String period)
 	{
-		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
-		
 		DaPan dapan;
 		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
 			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
@@ -285,11 +363,65 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		} else
 			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
-		if(super.barchartdataset.getColumnCount() ==0 )
-			return null;
+//		if(super.barchartdataset.getColumnCount() ==0 )
+//			return null;
 		
-		LocalDate indexrequirestart = (LocalDate) barchartdataset.getColumnKey(0);
-		LocalDate indexrequireend = (LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
+		LocalDate indexrequirestart = startdate;
+		LocalDate indexrequireend = enddate;
+		
+		LocalDate requireend = indexrequireend.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = indexrequirestart.with(DayOfWeek.SATURDAY);
+		
+		Double avecjeaxix = 0.0;
+		LocalDate tmpdate = requirestart; 
+		do  {
+			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+			
+//			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
+				Double avecje =  nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday, 0);
+				
+				if(avecje != null) {
+					averagelinechartdataset.setValue( avecje,"AverageDailyCje", wkfriday);
+					
+					if(avecje > avecjeaxix)
+						avecjeaxix = avecje;
+				} else {
+					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
+						averagelinechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
+				}
+				
+//			}
+			
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			
+		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+		
+//		this.xiuShiRightRangeAxixAfterDispalyDate(nodexdata, avecjeaxix, true);
+		
+		return avecjeaxix;
+	}
+	/*
+	 * 
+	 */
+	public Double displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, String period)
+	{
+		DaPan dapan;
+		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
+			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
+			dapan = (DaPan)bk.getRoot();
+		} else
+			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
+		
+//		if(super.barchartdataset.getColumnCount() ==0 )
+//			return null;
+		
+		LocalDate indexrequirestart = startdate;
+		LocalDate indexrequireend = enddate;//(LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
 		
 		LocalDate requireend = indexrequireend.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = indexrequirestart.with(DayOfWeek.SATURDAY);
@@ -330,7 +462,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 显示缺口数据
 	 */
-	public Integer displayQueKouLineDataToGui (NodeXPeriodData nodexdata,String period) 
+	public Integer displayQueKouLineDataToGui (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, String period) 
 	{
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 		
@@ -531,7 +663,13 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemaxwk);
 			this.barchart.fireChartChanged();//必须有这句
 		}
-		
+	}
+	/*
+	 * 
+	 */
+	public void setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (TDXNodes supernode) 
+	{
+		this.shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = supernode;
 	}
 
 }

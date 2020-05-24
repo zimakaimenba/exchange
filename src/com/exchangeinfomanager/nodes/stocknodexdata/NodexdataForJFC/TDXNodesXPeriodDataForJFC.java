@@ -674,7 +674,7 @@ import com.udojava.evalex.Expression;
 			
 			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( i );
 			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
-				return maxweek;
+			return maxweek;
 			
 			Double lastcje = lastcjlrecord.getValue().doubleValue();
 			if(curcje > lastcje)

@@ -104,9 +104,12 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public static final String ONLYSHOWBARDATA = "onlyshowbardata";
 	public static final String CJECJLZBTOLINE = "cjecjlzbtoline";
 	public static final String AVERAGEDAILYCJE = "averagedailycjeline";
+	public static final String COMPAREAVERAGEDAILYCJEWITHDAPAN = "compareaveragedailycjewithdapan";
 	protected boolean selectchanged;
 
 	protected LocalDate dateselected;
+	protected LocalDate displaydatestarted;
+	protected LocalDate displaydateended;
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -181,7 +184,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	/*
 	 * 
 	 */
-	protected void setCurDisplayNode (TDXNodes curdisplayednode1, String period) 
+	protected void setCurDisplayNode (TDXNodes curdisplayednode1, LocalDate start, LocalDate end , String period) 
 	{
 		this.curdisplayednode = curdisplayednode1;
 		this.globeperiod = period;
@@ -200,6 +203,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			this.setDaZiJinValueMarker(300000000000.0);
 		}
 		
+		displaydatestarted = start;
+		displaydateended = end;
 		
 	}
 	public TDXNodes getCurDisplayedNode ()
@@ -259,6 +264,17 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			this.plot.addAnnotation(pointeronemonth);
         } catch (java.lang.NullPointerException e) {
         }
+	}
+	/*
+	 * 
+	 */
+	public LocalDate getCurrentDisplayOhlcStartDate ()
+	{
+		return displaydatestarted;
+	}
+	public LocalDate getCurrentDisplayOhlcEndDate ()
+	{
+		return displaydateended;
 	}
 	/*
 	 * 区分出bar的年份或者月份
@@ -368,6 +384,15 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     */
     private void createEvent ()
     {
+    	mntmCompareAveCjeWithSpecificNode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.COMPAREAVERAGEDAILYCJEWITHDAPAN, curdisplayednode.getMyOwnCode(), "compareaveragedailycjewithdapan" );
+	            pcs.firePropertyChange(evtzd);
+			}
+			
+		});
+    	
     	mntmAveDailyCjeLineData.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -557,6 +582,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected JMenuItem mntmClearLineData;
 	protected JMenuItem mntmAveDailyCjeLineData;
 	protected JMenuItem mntmCjeCjlZblineDate;
+
+	private JMenuItem mntmCompareAveCjeWithSpecificNode;
 	
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
@@ -634,12 +661,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         mntmAveDailyCjeLineData = new JMenuItem("突出周日平均成交额");
         mntmCjeCjlZblineDate = new JMenuItem("占比柱图转线图");
         mntmClearLineData = new JMenuItem("突出占比数据");
+        mntmCompareAveCjeWithSpecificNode = new JMenuItem("与大盘对比周日平均CJE");
 
 		chartPanel.getPopupMenu().add(mntmHideZdt);
 		chartPanel.getPopupMenu().add(mntmHideQueKouData);
 		chartPanel.getPopupMenu().add(mntmAveDailyCjeLineData);
 		chartPanel.getPopupMenu().add(mntmClearLineData);
-		chartPanel.getPopupMenu().add(mntmCjeCjlZblineDate); 
+		chartPanel.getPopupMenu().add(mntmCjeCjlZblineDate);
+		chartPanel.getPopupMenu().add(mntmCompareAveCjeWithSpecificNode);
 
 		this.categorymarkerlist = new ArrayList<> ();
    }
