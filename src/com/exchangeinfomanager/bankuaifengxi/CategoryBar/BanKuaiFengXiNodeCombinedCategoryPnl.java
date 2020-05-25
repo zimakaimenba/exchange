@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 
 
+import java.awt.Color;
 import java.awt.Component;
 
 
@@ -28,6 +29,7 @@ import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListen
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
+import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
@@ -259,17 +261,17 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			String indictor = (String) evt.getNewValue();
 			if(indictor.equals("notcjecjlzbtoline")) {
-				cjelargepnl.setDisplayZhanBiInLine (false);
+//				cjelargepnl.setDisplayZhanBiInLine (false);
 				cjezblargepnl.setDisplayZhanBiInLine (false);
 			} else {
-				cjelargepnl.setDisplayZhanBiInLine (true);
+//				cjelargepnl.setDisplayZhanBiInLine (true);
 				cjezblargepnl.setDisplayZhanBiInLine (true);
 				
-				cjelargepnl.resetLineDate ();
+//				cjelargepnl.resetLineDate ();
 				cjezblargepnl.resetLineDate();
 				
 				if(this.pnltype.equals("CJE")) {
-					((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//					((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
 					((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjezblargepnl).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
 				}
 			}
@@ -293,11 +295,18 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			cjelargepnl.resetLineDate ();
 			cjelargepnl.resetDate();
-
+			
+			 ((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).setBarDisplayedColor(new Color(204,155,153) );
+			
 			TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = ((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).getSettingSpecificSuperBanKuai();
+			if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) {
+				DaPan treeroot = (DaPan) this.curdisplayednode.getRoot();
+				((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (treeroot);
+			}
 			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
-			Double avecje2 = ((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
-			Double avecjeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+			Double leftrangeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayAverageBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
+			Double avecjeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
 		}
 		
 		

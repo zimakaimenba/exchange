@@ -77,15 +77,14 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		super.barchart.setNotify(false);
 		
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
+		super.plot.getRangeAxis(0).setRange(0, 1);//重置坐标，否则会出现问题
 		
 		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
 		
 		 
 		if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) { //显示node自己的成交额
 			Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
-//			xiuShiLeftRangeAxixAfterDispalyDate (nodexdata,startdate,enddate,leftrangeaxix,period);
-			
-			Double avecje = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdata,startdate,enddate,period); //显示node的周线平均成交额的线形数据
+//			Double avecje = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdata,startdate,enddate,period); //显示node的周线平均成交额的线形数据
 			
 			if(super.shouldDrawQueKouLine()) {
 				Integer qkmax = displayQueKouLineDataToGui(nodexdata,startdate,enddate,period);
@@ -100,10 +99,10 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			
 		} else { //显示大盘的平均成交额
 			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
-//			Double leftrangeaxix = displayAverageBarDataToGui (nodexdataOfSuperBk,startdate,enddate,period);
-			Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
-			
-			Double avecjeaxix = displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdata,startdate,enddate,period);
+			Double leftrangeaxix = displayAverageBarDataToGui (nodexdata,startdate,enddate,period);
+//			Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
+			Double avecjeaxix = displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
+			setBarDisplayedColor(new Color(204,155,153) );
 		}
 		
 		if(super.shouldDisplayZhanBiInLine() ) {
@@ -179,6 +178,8 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	 */
 	public Double displayBarDataToGui (NodeXPeriodData nodexdata,LocalDate startdate,LocalDate enddate,String period) 
 	{
+		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
+		
 		DaPan dapan;
 		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
 			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
@@ -381,10 +382,10 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				Double avecje =  nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday, 0);
 				
 				if(avecje != null) {
-					averagelinechartdataset.setValue( avecje,"AverageDailyCje", wkfriday);
+					averagelinechartdataset.setValue( 5* avecje,"AverageDailyCje", wkfriday);
 					
-					if(avecje > avecjeaxix)
-						avecjeaxix = avecje;
+					if(5* avecje > avecjeaxix)
+						avecjeaxix = 5*avecje;
 				} else {
 					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
 						averagelinechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
@@ -402,6 +403,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
 //		this.xiuShiRightRangeAxixAfterDispalyDate(nodexdata, avecjeaxix, true);
+		xiuShiLeftRangeAxixAfterDispalyDate (nodexdata,startdate,enddate,avecjeaxix,period);
 		
 		return avecjeaxix;
 	}
@@ -546,6 +548,11 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis(0);
 		axis.setDisplayNode(this.getCurDisplayedNode(),period);
 		
+		Range curaxisrange = super.plot.getRangeAxis(0).getRange();
+		double curaxisupper = curaxisrange.getUpperBound();
+		if(curaxisupper > highestHigh*1.12)
+			return;
+		
 		try{
 			super.plot.getRangeAxis(0).setRange(0, highestHigh*1.12);
 		} catch(java.lang.IllegalArgumentException e) {
@@ -679,7 +686,8 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(CustomRendererForCje.class);
    
-    public CustomRendererForCje() {
+    public CustomRendererForCje() 
+    {
         super();
         super.displayedmaxwklevel = 3;
         super.displayedcolumncolorindex = Color.ORANGE;
