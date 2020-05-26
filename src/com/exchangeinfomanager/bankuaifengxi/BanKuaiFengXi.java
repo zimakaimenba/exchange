@@ -3191,7 +3191,7 @@ public class BanKuaiFengXi extends JDialog
 			
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl ( bkcur , node, overlapldstartday, overlapldendday, globeperiod);
+			largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, overlapldstartday, overlapldendday, globeperiod);
 		}
 		
 		if(datekey != null)

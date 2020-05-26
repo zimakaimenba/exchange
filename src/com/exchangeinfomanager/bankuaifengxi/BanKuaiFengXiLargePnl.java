@@ -249,9 +249,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
     				
     				setUserSelectedColumnMessage(nodebankuai,selectedinfo);
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE ) ) {
-                	nodebkcjezblargepnl.resetLineDate ();
-                	NodeXPeriodData dpnodexdata = nodebankuai.getNodeXPeroidData (NodeGivenPeriodDataItem.WEEK);
-        			((BanKuaiFengXiCategoryBarChartCjePnl)nodebkcjezblargepnl).displayAverageDailyCjeOfWeekLineDataToGui(dpnodexdata,NodeGivenPeriodDataItem.WEEK);
+//                	nodebkcjezblargepnl.resetLineDate ();
+//                	NodeXPeriodData dpnodexdata = nodebankuai.getNodeXPeroidData (NodeGivenPeriodDataItem.WEEK);
+//        			((BanKuaiFengXiCategoryBarChartCjePnl)nodebkcjezblargepnl).displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(dpnodexdata,NodeGivenPeriodDataItem.WEEK);
         		}
             }
         });

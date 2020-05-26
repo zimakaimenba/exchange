@@ -206,6 +206,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		displaydatestarted = start;
 		displaydateended = end;
 		
+		if(curdisplayednode1.getType() == BkChanYeLianTreeNode.DAPAN) {
+			mntmHideZdt.setEnabled(false); 
+	        mntmHideQueKouData.setEnabled(false);
+	        mntmAveDailyCjeLineData.setEnabled(false);
+	        mntmCjeCjlZblineDate.setEnabled(false);
+	        mntmClearLineData.setEnabled(false);
+	        mntmCompareAveCjeWithSpecificNode.setEnabled(false);
+		}
 	}
 	public TDXNodes getCurDisplayedNode ()
 	{
@@ -635,6 +643,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //        BanKuaiFengXiCategoryLineRenderer lineqkrenderer = new BanKuaiFengXiCategoryLineRenderer ();
 //        plot.setRenderer(3, lineqkrenderer);
         ValueAxis rangeAxis2 = new NumberAxis("");
+        rangeAxis2.setVisible(false);
         plot.setRangeAxis(3, rangeAxis2);
 		plot.mapDatasetToRangeAxis(3, 3);
 		
