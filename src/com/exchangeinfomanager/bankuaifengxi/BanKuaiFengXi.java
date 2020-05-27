@@ -83,7 +83,7 @@ import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTab
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTable;
 import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
-
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
@@ -2116,7 +2116,11 @@ public class BanKuaiFengXi extends JDialog
     				
     				setUserSelectedColumnMessage(selectstock, datekey);
     				showReminderMessage (bkfxremind.getStockcolumnremind() );
-    				readAnalysisResult ( null,  selectstock, datekey );
+    				
+    				Class<? extends Object> source = evt.getSource().getClass();
+    				Boolean result = source.equals(BanKuaiFengXiCategoryBarChartCjePnl.class);
+    				if(source.equals(BanKuaiFengXiCategoryBarChartCjePnl.class) )
+    					readAnalysisResult ( null,  selectstock, datekey );
     				
 //    				if(cbxshizhifx.isSelected()) { //显示市值排名
 //						dispalyStockShiZhiFengXiResult (selectstock,datekey);

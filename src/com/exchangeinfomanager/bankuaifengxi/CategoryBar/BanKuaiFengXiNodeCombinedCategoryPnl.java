@@ -198,6 +198,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	@Override
 	public void propertyChange(PropertyChangeEvent evt)
 	{
+		Object source = evt.getSource();
 		String evtpropertyname = evt.getPropertyName();
 		if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
 			
@@ -208,7 +209,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 				cjezblargepnl.setAnnotations( LocalDate.parse(selectedinfo)  );
 				cjelargepnl.setAnnotations( LocalDate.parse(selectedinfo)  );
 			}
-			PropertyChangeEvent evtnew = new PropertyChangeEvent(this, SELECTED_PROPERTY, "", selectedinfo );
+			PropertyChangeEvent evtnew = new PropertyChangeEvent(source, SELECTED_PROPERTY, "", selectedinfo );
 			pcs.firePropertyChange(evtnew);
 			
 		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
@@ -302,10 +303,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) {
 				DaPan treeroot = (DaPan) this.curdisplayednode.getRoot();
 				((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (treeroot);
+				shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = treeroot;
 			}
 			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
 			Double leftrangeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayAverageBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
-//			Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
 			Double avecjeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjelargepnl).displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
 		}
 		
