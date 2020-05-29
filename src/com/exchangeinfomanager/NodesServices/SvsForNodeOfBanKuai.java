@@ -612,10 +612,10 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		//板块数据同步后，板块个股的时间轴如果比板块短，要和板块的时间轴一致。如果比板块时间长，不需要同步时间轴
 		NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(period);
 		LocalDate bkdatastartday = bknodexdata.getAmoRecordsStartDate();
-		if(bkdatastartday.isBefore(requiredstartday) )
+		if(bkdatastartday != null  && bkdatastartday.isBefore(requiredstartday) )
 			requiredstartday = bkdatastartday;
 		LocalDate bkdataendday = bknodexdata.getAmoRecordsEndDate();
-		if(bkdataendday.isAfter(requiredendday) )
+		if(bkdataendday != null  && bkdataendday.isAfter(requiredendday) )
 			requiredendday = bkdataendday;
 	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
@@ -639,6 +639,8 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		if(bk.getMyOwnCode().equals("999999")) {
 			this.getNodeZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
 		}
+		
+		return;
 	}
 	@Override
 	public List<BkChanYeLianTreeNode> getNodeChanYeLianInfo(String nodecode) 

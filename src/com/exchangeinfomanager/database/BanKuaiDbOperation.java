@@ -2852,7 +2852,10 @@ public class BanKuaiDbOperation
 				
 				
 				String bkcjltable = null;
-				if(bankuai.getSuoShuJiaoYiSuo().toLowerCase().equals("sh"))
+				String jys = bankuai.getSuoShuJiaoYiSuo();
+				if(jys == null)
+					bkcjltable = "";
+				else if(bankuai.getSuoShuJiaoYiSuo().toLowerCase().equals("sh"))
 					bkcjltable = "通达信板块每日交易信息";
 				else 
 					bkcjltable = "通达信交易所指数每日交易信息";
@@ -3099,6 +3102,8 @@ public class BanKuaiDbOperation
 		String bkcode = bankuai.getMyOwnCode();
 		String bkcjltable;
 		String bkcys = bankuai.getSuoShuJiaoYiSuo();
+		if(bkcys == null)
+			return bankuai;
 		if(bkcys.toLowerCase().equals("sh"))
 			bkcjltable = "通达信板块每日交易信息";
 		else

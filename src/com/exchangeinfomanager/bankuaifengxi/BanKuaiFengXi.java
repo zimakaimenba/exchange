@@ -1804,27 +1804,46 @@ public class BanKuaiFengXi extends JDialog
         		
         		menuItemtimerangezhangfu.setText("X 按阶段涨幅排名" + searchstart.toString() + "~" + searchend.toString());
         		
-        		int row = tableBkZhanBi.getSelectedRow();
-    			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-    			BanKuai bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
-    			NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
-    			LocalDate curohlcstart = bknodexdata.getOHLCRecordsStartDate();
-    			LocalDate curohlcend = bknodexdata.getOHLCRecordsEndDate();
+        		BanKuai bk = null;
+        		String selecttitle = tabbedPanegegu.getTitleAt( tabbedPanegegu.getSelectedIndex() );
+        		if(selecttitle.contains("临时")) {
+        			bk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
+        		} else {
+        			int row = tableBkZhanBi.getSelectedRow();
+        			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+        			bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+        		}
+        		if(bk == null)
+        			return;
+        		
+    			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+    			//一次性同步板块数据以及所属个股数据
+    			try {
+    				svsbk.syncBanKuaiAndItsStocksForSpecificTime(bk, searchstart, searchend,globeperiod,globecalwholeweek);
+    			} catch (SQLException ex) {
+    				// TODO Auto-generated catch block
+    				ex.printStackTrace();
+    			}
     			
-    			if(searchstart.isBefore(curohlcstart) || searchend.isAfter(curohlcend) ) {
-    				JOptionPane.showMessageDialog(null,"选择时间段数据缺失，请先同步数据或者调整时间段。","Warning",JOptionPane.WARNING_MESSAGE);
-    				
-    				menuItemtimerangezhangfu.setText("按阶段涨幅排名");
-    				
-    				return ;
+//    			NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+//    			LocalDate curohlcstart = bknodexdata.getOHLCRecordsStartDate();
+//    			LocalDate curohlcend = bknodexdata.getOHLCRecordsEndDate();
+//    			if(searchstart.isBefore(curohlcstart) || searchend.isAfter(curohlcend) ) {
+//    				JOptionPane.showMessageDialog(null,"选择时间段数据缺失，请先同步数据或者调整时间段。","Warning",JOptionPane.WARNING_MESSAGE);
+//    				menuItemtimerangezhangfu.setText("按阶段涨幅排名");
+//    				return ;
+//    			}
+    			if(selecttitle.contains("临时")) {
+    				((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+    			} else {
+    				((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+                	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+            		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+            		((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+            		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+            		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
     			}
             	
-            	((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-            	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-        		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-        		((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-        		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-        		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
             }
         });
         
@@ -2765,6 +2784,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 		BanKuai tempbankuai = new BanKuai ("TEMPBANKUAI","TEMPBANKUAI");
+		tempbankuai.setBanKuaiLeiXing (BanKuai.HASGGWITHSELFCJL);
 		SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
 		for(String tmpgegu : readparsefileLines) {
 			Stock tmpstock = (Stock) treeofbkstk.getSpecificNodeByHypyOrCode(tmpgegu, BkChanYeLianTreeNode.TDXGG);
