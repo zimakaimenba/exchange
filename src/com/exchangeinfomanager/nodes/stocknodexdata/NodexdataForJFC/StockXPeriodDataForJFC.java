@@ -51,6 +51,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	private  TimeSeries stockmairujl; //买入记录
 	private  TimeSeries stockmaichuujl; //卖出记录
 	
+	
 	/*
 	 * 
 	 */
@@ -113,6 +114,21 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		
 		Integer value = (Integer)gzjlitem.getValue();
 		return value;
+	}
+	/*
+	 * 
+	 */
+	public Double getAverageDailyHuanShouLvOfWeek (LocalDate requireddate,int difference)
+	{
+		Double hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);
+		if(hsl != null) {
+			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, 0);
+			if(daynum != null)
+				return hsl/daynum;
+			else
+				return hsl/5;
+		} else
+			return null;
 	}
 	/*
 	 * (non-Javadoc)

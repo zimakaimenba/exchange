@@ -25,7 +25,7 @@ public interface StockNodesXPeriodData
 	public void addMaiChuJiLu (RegularTimePeriod period,Integer fxjg) ;
 	public Integer hasMaiChuJiLuInPeriod (LocalDate requireddate,int difference);
 	
-	
+	public Double getAverageDailyHuanShouLvOfWeek (LocalDate requireddate,int difference);
 	public static String[] NODEXDATACSVDATAHEADLINE = {
 							"换手率",
 							"周平均流通市值",

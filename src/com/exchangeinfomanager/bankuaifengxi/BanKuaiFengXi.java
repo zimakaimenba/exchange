@@ -653,7 +653,7 @@ public class BanKuaiFengXi extends JDialog
 				anaresult = anaresult + "有概念提示。";
 			
 			Collection<Tag> nodetags = stock.getNodeTags();
-			if(!nodetags.isEmpty() ) {
+			if(nodetags != null && !nodetags.isEmpty() ) {
 				anaresult = anaresult + "关键词有";
 				for (Iterator<Tag> lit = nodetags.iterator(); lit.hasNext(); ) {
 			        Tag f = lit.next();

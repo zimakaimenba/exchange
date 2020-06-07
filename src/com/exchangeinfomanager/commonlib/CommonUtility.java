@@ -22,12 +22,15 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 
 public class CommonUtility {
 
-	public static double round(double value, int places) {
+	public static Double round(double value, int places) {
 	    if (places < 0) throw new IllegalArgumentException();
-
-	    BigDecimal bd = BigDecimal.valueOf(value);
-	    bd = bd.setScale(places, RoundingMode.HALF_UP);
-	    return bd.doubleValue();
+	    try {
+	    	BigDecimal bd = BigDecimal.valueOf(value);
+	    	bd = bd.setScale(places, RoundingMode.HALF_UP);
+		    return bd.doubleValue();
+	    } catch ( java.lang.NumberFormatException e) {
+	    	return null;
+	    }
 	}
 	/*
 	 * 

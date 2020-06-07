@@ -581,7 +581,7 @@ import com.udojava.evalex.Expression;
 			return null;
 	}
 	
-		/*
+	/*
 	 * /*
 			 * 计算指定周期和上周期的成交额差额，适合stock/bankuai，dapan有自己的计算方法
 	 */
