@@ -5312,7 +5312,29 @@ public class BanKuaiDbOperation
 			
 			return pmdresult;
 		}
-		
+		public int setMingRiJiHua(BkChanYeLianTreeNode node, String msg)
+		{
+			String sqlinsertstat = "INSERT INTO  操作记录重点关注(股票代码,日期,加入移出标志,原因描述) values ("
+						+ " '" + node.getMyOwnCode() + "'" + ","
+						+ " '" + LocalDate.now().toString() + "'" + ","
+						+ " '明日计划'" + ","
+						+ " '" + msg + "'"
+						+ ")"
+						;
+    	   logger.debug(sqlinsertstat);
+    	   int autoIncKeyFromApi = 0;
+			try {
+				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (MysqlDataTruncation e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+				
+			return autoIncKeyFromApi;
+		}
 
 		
 		

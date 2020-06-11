@@ -1705,6 +1705,23 @@ public class BanKuaiFengXi extends JDialog
     			tmplist = null;
             }
         });
+		
+		menuItemsMrjh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	int row = tableGuGuZhanBiInBk.getSelectedRow();
+    			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
+    			StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			
+    			String mrjh = JOptionPane.showInputDialog(null,"请输入明日计划内容:","明日计划", JOptionPane.QUESTION_MESSAGE);
+    			if(mrjh.isEmpty()) 
+    				return;
+    			
+    			PaoMaDengServices pmdsvs = new PaoMaDengServices ();
+    			pmdsvs.setPaoMaDengInfo(selectstock.getStock(), mrjh);
+            }
+        });
 		menuItemsiglestocktocsv.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -3616,6 +3633,8 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemAddRmvBkToYellow;
 
 	private JMenuItem menuItemTempGeGuFromZhidingbk;
+
+	private JMenuItem menuItemsMrjh;
 	
 	
 	private void initializeGui() {
@@ -4354,6 +4373,9 @@ public class BanKuaiFengXi extends JDialog
 	   menuItemRuoShigg = new JMenuItem("设为弱势个股");
 //	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemQiangShigg);
 //	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRuoShigg);
+	   
+	   menuItemsMrjh = new JMenuItem("明日计划");
+	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsMrjh);
 	   
        menuItemsiglestocktocsv = new JMenuItem("导出个股到CSV");
        tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsiglestocktocsv);
