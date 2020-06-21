@@ -125,6 +125,7 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.zhidingyibankuai.PnlZhiDingYiBanKuai;
 import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
 import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 import com.google.common.collect.Multimap;
@@ -3492,17 +3493,21 @@ public class BanKuaiFengXi extends JDialog
 		//asinglestockinfomation = new ASingleStockOperations("");
 		PaoMaDengServices svspmd = new PaoMaDengServices ();
 		String paomad = svspmd.getPaoMaDengInfo();
+		List<String> pmdinfolist = Splitter.on("*").omitEmptyStrings().splitToList(paomad); //内蒙板块|880232|3|1|0|32
+		String[] pmdarray = new String[pmdinfolist.size()];
+		pmdinfolist.toArray(pmdarray);
 		
 		if(!paomad.isEmpty())
-			pnl_paomd.refreshMessage(title+paomad);
+//			pnl_paomd.refreshMessage(title+paomad);
+			pnl_paomd.refreshMessage(pmdarray);
 		else 
-			pnl_paomd.refreshMessage(null);
+			pnl_paomd.refreshMessage("");
 	}
 	/*
 	 * 在本周各個股票占比的餅圖顯示選中的股票
 	 */
 	protected void hightlightSpecificSector(StockOfBanKuai selectstock) 
-	{
+	{	
 		String stockcode = selectstock.getMyOwnCode();
 		try {
 			 String stockname = selectstock.getMyOwnName().trim(); 

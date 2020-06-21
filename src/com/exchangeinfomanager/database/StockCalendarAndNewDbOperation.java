@@ -1434,8 +1434,11 @@ public final class StockCalendarAndNewDbOperation
 		String newsowners = event.getNode().getMyOwnCode();
 		Integer newstype = event.getNode().getType();
 		String slackurl = event.getNewsUrl();
+		ExternalNewsType gz = event.getNews();
 		
-		String gpc = ((DuanQiGuanZhu)event.getNews() ).getDqgzGuPiaoChi();
+		String gpc = "";
+		if(gz instanceof DuanQiGuanZhu)
+			gpc = ((DuanQiGuanZhu)event.getNews() ).getDqgzGuPiaoChi();
 		
    		try {
         		String sqlupatestatement =  "UPDATE 关注个股板块表  SET 日期 = '" + starttime + "', "

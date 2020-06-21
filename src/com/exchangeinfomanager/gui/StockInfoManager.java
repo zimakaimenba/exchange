@@ -263,7 +263,7 @@ public class StockInfoManager
 		
 		if(!paomad.isEmpty())
 			pnl_paomd.refreshMessage(title+paomad);
-		else pnl_paomd.refreshMessage(null);
+		else pnl_paomd.refreshMessage("");
 		
 		svspmd = null;
 	}
