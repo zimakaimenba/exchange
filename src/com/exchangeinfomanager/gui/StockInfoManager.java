@@ -3007,7 +3007,11 @@ class AccountsInfoTableModel extends DefaultTableModel
                 break;
             case 3:
             	NumberFormat currencyFormat2 = NumberFormat.getCurrencyInstance();
-                value = currencyFormat2.format(tmpstkcc.getChicangchenben()/tmpstkcc.getChicanggushu()); 
+            	try {
+            		value = currencyFormat2.format(tmpstkcc.getChicangchenben()/tmpstkcc.getChicanggushu()); 
+            	} catch (java.lang.NullPointerException e) {
+            		value = null;
+            	}
                 break;
 
 	    	}

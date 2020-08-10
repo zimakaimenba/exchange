@@ -692,6 +692,13 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
+	@Override
+	public Integer getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(LocalDate requireddate, int difference,
+			int checkrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }
 

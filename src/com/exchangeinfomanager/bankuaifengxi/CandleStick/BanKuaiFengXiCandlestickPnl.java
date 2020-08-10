@@ -1037,7 +1037,15 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	 */
 	public void highLightSpecificDateCandleStick (LocalDate highlightweekdate,String period,boolean highlow)
 	{
-		OHLCSeries ohlcSeries = candlestickDataset.getSeries(0);
+		OHLCSeries ohlcSeries = null;
+		try {
+			ohlcSeries = candlestickDataset.getSeries(0);
+		} catch (java.lang.IllegalArgumentException e) {
+			logger.error(curdisplayednode.getMyOwnCode() + curdisplayednode.getMyOwnName() + "highLightSpecificDateCandleStick³ö´í¡£");
+			e.printStackTrace();
+			return;
+		}
+		
 		Integer ohlccount = candlestickDataset.getSeries(0).getItemCount();
 		if (ohlccount == null || ohlccount ==0 )
 			return ;

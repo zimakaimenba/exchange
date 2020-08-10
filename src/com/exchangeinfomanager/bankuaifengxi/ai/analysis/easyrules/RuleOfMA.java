@@ -78,7 +78,8 @@ public class RuleOfMA
     }
     
     @Priority //优先级注解：return 数值越小，优先级越高
-    public int getPriority(){
+    public int getPriority()
+    {
         return 1;
     }
     

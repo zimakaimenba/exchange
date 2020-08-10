@@ -276,6 +276,11 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	        newsurlField.setText(event.getNewsUrl());
 	        
 	        if(this.NewsService instanceof DuanQiGuanZhuServices) {
+	        	
+//	        	ExternalNewsType tmpevent = (ExternalNewsType)event;
+	        	if( !(event instanceof InsertedExternalNews ))
+	        		return true;
+	        	
 	        	ExternalNewsType tmpevent = ((InsertedExternalNews)event).getNews();
 	        	String gpc = ((DuanQiGuanZhu)tmpevent).getDqgzGuPiaoChi();
 	        	for(int i = 0 ; i < this.cobxgupiaochi.getItemCount(); i++ ) {
@@ -305,12 +310,21 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	    	event.setNewsUrl(newsurlField.getText());
 	    	
 	    	if(this.NewsService instanceof DuanQiGuanZhuServices) {
-	    		ExternalNewsType tmpevent = ((InsertedExternalNews)event).getNews();
-	        	for(int i = 0 ; i < this.cobxgupiaochi.getItemCount(); i++ ) {
-	        		JCheckBox tmpitem = (JCheckBox)this.cobxgupiaochi.getItemAt(i);
-	        		if(tmpitem.isSelected()) 
-	        			((DuanQiGuanZhu)tmpevent).setDqgzGuPiaoChi(tmpitem.getText());
-	        	}
+	    		if( event instanceof InsertedExternalNews ) {
+	    			ExternalNewsType tmpevent = ((InsertedExternalNews)event).getNews();
+		        	for(int i = 0 ; i < this.cobxgupiaochi.getItemCount(); i++ ) {
+		        		JCheckBox tmpitem = (JCheckBox)this.cobxgupiaochi.getItemAt(i);
+		        		if(tmpitem.isSelected()) 
+		        			((DuanQiGuanZhu)tmpevent).setDqgzGuPiaoChi(tmpitem.getText());
+		        	}
+	    		} else {
+	    			for(int i = 0 ; i < this.cobxgupiaochi.getItemCount(); i++ ) {
+		        		JCheckBox tmpitem = (JCheckBox)this.cobxgupiaochi.getItemAt(i);
+		        		if(tmpitem.isSelected()) 
+		        			((DuanQiGuanZhu)event).setDqgzGuPiaoChi(tmpitem.getText());
+		        	}
+	    			
+	    		}
 	        }
 
 	    	return event;

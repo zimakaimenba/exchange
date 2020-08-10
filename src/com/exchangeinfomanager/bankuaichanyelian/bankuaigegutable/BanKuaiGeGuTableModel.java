@@ -17,7 +17,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	{
 		super ();
 		
-		String[] jtableTitleStrings = { "代码", "名称","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","周日平均成交额连续","周平均成交额MAXWK","高级排序排名"};
+		String[] jtableTitleStrings = { "代码", "名称","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","N日内最小MinWk","周平均成交额MAXWK","高级排序排名"};
 		
 		super.setTableHeader(jtableTitleStrings);
 		
@@ -41,10 +41,10 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	    	StockOfBanKuai curdisplaystockofbankuai = (StockOfBanKuai) entryList.get(rowIndex);
 		    String stockcode = curdisplaystockofbankuai.getMyOwnCode();
 		    String bkcode = curbk.getMyOwnCode();
-		    NodeXPeriodData stockxdataforbk = curdisplaystockofbankuai.getNodeXPeroidData(period);
+//		    NodeXPeriodData stockxdataforbk = curdisplaystockofbankuai.getNodeXPeroidData(period);
 
 		    Stock stock = curdisplaystockofbankuai.getStock();
-		    DaPan dapan = (DaPan)stock.getRoot();
+//		    DaPan dapan = (DaPan)stock.getRoot();
 		    NodeXPeriodData stockxdata = stock.getNodeXPeroidData(period);
 
 		    Object value = "??";
@@ -112,7 +112,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
             	
                 break;
             case 5://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
-            	Integer cjldpgrowthrate = stockxdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(showwknum,0);//.getGgdpzhanbigrowthrate();
+            	Integer cjldpgrowthrate = stockxdata.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);//.getGgdpzhanbigrowthrate();
             	value = cjldpgrowthrate;
             	
 //            	cjedpgrowthrate = null;

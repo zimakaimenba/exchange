@@ -8,7 +8,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-
+import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
@@ -655,15 +655,13 @@ public class ImportTDXData extends JDialog {
 				partThatHasBeImportAfterWsork();
 
 				lblstatus.setText("同步结束");
+				SystemAudioPlayed.playSound();
 				
 				int exchangeresult = JOptionPane.showConfirmDialog(null, "数据导入完成！是否检查数据导入完整性？","导入完成", JOptionPane.OK_CANCEL_OPTION);
 	      		if(exchangeresult == JOptionPane.CANCEL_OPTION) 
 	      			return;
-	      		else {
+	      		else 
 	      			checkDataSyncResult ();
-	      		}
-	      			
-	      		
 			}
 		});
 		

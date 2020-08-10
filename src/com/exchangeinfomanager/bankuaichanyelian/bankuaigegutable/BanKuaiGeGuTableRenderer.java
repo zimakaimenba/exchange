@@ -229,7 +229,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    if( columnname.contains("周平均成交额MAXWK")   && value != null  ) { //col == 7
 	    	background = averagecjemaxwkRule.getBackGround();
 	    } else 
-	    if( columnname.contains("周日平均成交额连续")   && value != null) { //突出MA,默认为大于 
+	    if( columnname.contains("N日")   && value != null) { //突出MA,默认为大于 
 	    	background = maRule.getBackGround();
 	    }
 	    

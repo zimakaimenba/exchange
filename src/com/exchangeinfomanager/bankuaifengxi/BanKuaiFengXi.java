@@ -1142,6 +1142,7 @@ public class BanKuaiFengXi extends JDialog
     				try {
     					rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
     				} catch (java.lang.NullPointerException  e) {
+    					logger.info(selbkcode + "没有找到");
     					e.printStackTrace();
     					return;
     				}
@@ -3493,13 +3494,13 @@ public class BanKuaiFengXi extends JDialog
 		//asinglestockinfomation = new ASingleStockOperations("");
 		PaoMaDengServices svspmd = new PaoMaDengServices ();
 		String paomad = svspmd.getPaoMaDengInfo();
-		List<String> pmdinfolist = Splitter.on("*").omitEmptyStrings().splitToList(paomad); //内蒙板块|880232|3|1|0|32
-		String[] pmdarray = new String[pmdinfolist.size()];
-		pmdinfolist.toArray(pmdarray);
+//		List<String> pmdinfolist = Splitter.on("*").omitEmptyStrings().splitToList(paomad); //内蒙板块|880232|3|1|0|32
+//		String[] pmdarray = new String[pmdinfolist.size()];
+//		pmdinfolist.toArray(pmdarray);
 		
 		if(!paomad.isEmpty())
-//			pnl_paomd.refreshMessage(title+paomad);
-			pnl_paomd.refreshMessage(pmdarray);
+			pnl_paomd.refreshMessage(title+paomad);
+//			pnl_paomd.refreshMessage(pmdarray);
 		else 
 			pnl_paomd.refreshMessage("");
 	}
@@ -4478,8 +4479,11 @@ public class BanKuaiFengXi extends JDialog
 				try{
 				ExportMatchedNode exportaction = new ExportMatchedNode (expc);
 				Set<TDXNodes> outputnodes = exportaction.checkTDXNodeMatchedCurSettingConditons(selectiondate, globeperiod);
-				outputnodeslist.addAll(outputnodes);
-				
+				for(TDXNodes tmpnode : outputnodes) {
+					if(!outputnodeslist.contains(tmpnode))
+						outputnodeslist.add(tmpnode);
+				}
+//				outputnodeslist.addAll(outputnodes);
 				ouputfilehead2 = ouputfilehead2 + expc.getConditionsDescriptions ();
 				
 				} catch(Exception e) {

@@ -700,6 +700,43 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		
 		return minweek;
 	}
+	/*
+	 * 
+	 */
+	public Integer getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(LocalDate requireddate,int difference, int checkrange)
+	{
+		if(this.nodeamozhanbi == null)
+			return null;
+		
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		if(curperiod == null )
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem( curperiod);
+		if( curcjlrecord == null) 
+			return null;
+		
+		int index = nodeamozhanbi.getIndex(curperiod );
+		int bottomline;
+		if( index -20 >=0 )
+			bottomline = index -20;
+		else
+			bottomline = 0;
+		int minweek = 0;
+		for(int i = index ; i >= bottomline; i --) {
+			TimeSeriesDataItem lastcjlrecord = nodeamozhanbi.getDataItem( i );
+			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+				return minweek;
+			
+			RegularTimePeriod lstperiod = lastcjlrecord.getPeriod();
+			LocalDate curend = lstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			Integer lstminwk = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(curend, 0);
+			if(lstminwk > minweek)
+				minweek = lstminwk ;
+		}
+		
+		return minweek;
+	}
 	
 	/*
 	  * 计算指定周有几个交易日
