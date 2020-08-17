@@ -1068,8 +1068,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		try {
 			ohlcSeries = candlestickDataset.getSeries(0);
 		} catch (java.lang.IllegalArgumentException e) {
-			logger.error(curdisplayednode.getMyOwnCode() + curdisplayednode.getMyOwnName() + "highLightSpecificDateCandleStick出错。");
-			e.printStackTrace();
+//			logger.info("没有找到'" + curdisplayednode.getMyOwnName() + "'的CSV文件，无法显示K线请检查！");
+//			e.printStackTrace();
 			return;
 		}
 		
