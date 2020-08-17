@@ -180,7 +180,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	}
 	public LocalDate getDispalyStartDate ()
 	{
-		OHLCSeries ohlcSeries = candlestickDataset.getSeries(0);
+		OHLCSeries ohlcSeries = null;
+		try {
+        	ohlcSeries = candlestickDataset.getSeries(0);
+        } catch (java.lang.IllegalArgumentException e) {
+//        	logger.info("没有找到'" + curdisplayednode.getMyOwnName() + "'的CSV文件，无法显示K线请检查！");
+        	return null;
+        }
 		Integer ohlccount = candlestickDataset.getSeries(0).getItemCount();
 		if (ohlccount == null || ohlccount ==0 )
 			return null;
@@ -194,7 +200,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	}
 	public LocalDate getDispalyEndDate ()
 	{
-		OHLCSeries ohlcSeries = candlestickDataset.getSeries(0);
+		OHLCSeries ohlcSeries = null;
+		try {
+        	ohlcSeries = candlestickDataset.getSeries(0);
+        } catch (java.lang.IllegalArgumentException e) {
+//        	logger.info("没有找到'" + curdisplayednode.getMyOwnName() + "'的CSV文件，无法显示K线请检查！");
+        	return null;
+        }
 		Integer ohlccount = candlestickDataset.getSeries(0).getItemCount();
 		if (ohlccount == null || ohlccount ==0 )
 			return null;
@@ -382,7 +394,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		OHLCSeries dapanohlcSeries = new OHLCSeries ("AMO");
 		
-		OHLCSeries ohlcSeries = candlestickDataset.getSeries(0);
+		OHLCSeries ohlcSeries = null;
+        try {
+        	ohlcSeries = candlestickDataset.getSeries(0);
+        } catch (java.lang.IllegalArgumentException e) {
+        	logger.info("没有找到'" + curdisplayednode.getMyOwnName() + "'的CSV文件，无法显示成交量！请检查！");
+        	return;
+        }
 		OHLCSeriesCollection tmpdapanDataset = (OHLCSeriesCollection)candlestickChart.getXYPlot().getDataset(1);
 //		tmpdapanDataset.setNotify(false);
 		TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) node.getNodeXPeroidData(period);
@@ -657,7 +675,13 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         candlestickDataset.setNotify(false);
         candlestickChart.setNotify(false);
         
-        OHLCSeries ohlcSeries = candlestickDataset.getSeries(0);
+        OHLCSeries ohlcSeries = null;
+        try {
+        	ohlcSeries = candlestickDataset.getSeries(0);
+        } catch (java.lang.IllegalArgumentException e) {
+//        	logger.info("没有找到'" + curdisplayednode.getMyOwnName() + "'的CSV文件，无法显示K线请检查！");
+        	return;
+        }
 		Integer ohlccount = candlestickDataset.getSeries(0).getItemCount();
 		if (ohlccount == null || ohlccount ==0 )
 			return ;
@@ -807,6 +831,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	 */
 	public void displayNodeNewsToGui( Collection<News> newszhishukeylists)
 	{
+		if(this.getDispalyStartDate() == null)
+			return;
+		
 		for (News tmpmeeting: newszhishukeylists ) {
 		Paint drawcolor;
 		
