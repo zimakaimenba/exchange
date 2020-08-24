@@ -116,7 +116,10 @@ public class ExportMatchedNode
 				}
 			}
 			
-			if(childnode.getType() == BkChanYeLianTreeNode.TDXGG && this.cond.shouldExportAllBanKuai() ) { //只有在导出所有板块个股的时候才会用到这里，否则个股都在前面检查了
+			if(childnode.getType() == BkChanYeLianTreeNode.TDXGG  ) { //只有在导出所有板块个股的时候才会用到这里，否则个股都在前面检查了
+				if( !this.cond.shouldExportAllBanKuai() && !this.cond.shouldExportOnlyYellowSignBkStk() ) 
+					continue;
+			
 				this.checkStockMatchedCurSettingConditions ((Stock)childnode, checkednodesset, matchednodeset,requirestart,exportdate,period);
 //				if(matchednodeset.contains( (TDXNodes)childnode ) )
 //					 continue;
@@ -166,20 +169,31 @@ public class ExportMatchedNode
 	private Boolean checkStockMatchedCurSettingConditions (Stock childnode,
 			Set<String> checkednodesset, Set<TDXNodes> matchednodeset,LocalDate requirestart,LocalDate exportdate,String period)
 	{
-		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
 		if(matchednodeset.contains( (TDXNodes)childnode ) )
 			 return false;
 		if( checkednodesset.contains(childnode.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
 			 return false;
-		
-		childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
+		//检查黄标
 		Boolean stkcheckresult = null;
-		try{
-		stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA( (Stock)childnode, exportdate, period);
-		if(stkcheckresult == null) {//停牌股
+		stkcheckresult = this.checkStockMatchedCurSettingConditonsOfYellowSign( (Stock)childnode, exportdate, period);
+		if( stkcheckresult != null && stkcheckresult == false) {
 			 checkednodesset.add( childnode.getMyOwnCode() );
 			 return false;
+		} else if( stkcheckresult != null && stkcheckresult == true) {
+			matchednodeset.add(  (TDXNodes)childnode);
+			checkednodesset.add( childnode.getMyOwnCode() );
+			return stkcheckresult;
 		}
+		
+		//stkcheckresult == null 说明不是到处黄标个股,做下面的，这样提高效率
+		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
+		childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
+		try{
+			stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA( (Stock)childnode, exportdate, period);
+			if(stkcheckresult == null) {//停牌股
+				 checkednodesset.add( childnode.getMyOwnCode() );
+				 return false;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -197,13 +211,30 @@ public class ExportMatchedNode
 			matchednodeset.add(  (TDXNodes)childnode);
 		} catch(Exception e) {
 			checkednodesset.add( childnode.getMyOwnCode() );
-			e.printStackTrace();
+//			e.printStackTrace();
 		 }
 			 
 		 checkednodesset.add( childnode.getMyOwnCode() );
 		 svsstk = null;
 		 return stkcheckresult;
 	}
+	/*
+	 * 检查黄标
+	 */
+	private Boolean checkStockMatchedCurSettingConditonsOfYellowSign(Stock childnode, LocalDate exportdate,
+			String period) 
+	{
+		if(this.cond.shouldExportOnlyYellowSignBkStk() ) {
+			NodesTreeRelated filetree = childnode.getNodeTreeRelated ();
+			if(!filetree.selfIsMatchModel(exportdate) )
+				return false;
+			else
+				return true;
+		} 
+		
+		return null;
+	}
+
 	/*
 	 * 检查板块是否符合设定
 	 */
@@ -307,11 +338,11 @@ public class ExportMatchedNode
 	 */
 	public Boolean checkStockMatchedCurSettingConditonsWithoutCheckMA (Stock stock,LocalDate exportdate, String period) 
 	{
-		if(this.cond.shouldExportOnlyYellowSignBkStk() ) {
-			NodesTreeRelated filetree = stock.getNodeTreeRelated ();
-			if(!filetree.selfIsMatchModel(exportdate) )
-				return false;
-		}
+//		if(this.cond.shouldExportOnlyYellowSignBkStk() ) {
+//			NodesTreeRelated filetree = stock.getNodeTreeRelated ();
+//			if(!filetree.selfIsMatchModel(exportdate) )
+//				return false;
+//		}
 		try {
 			Boolean shouldexportst = this.cond.shouldExportST();
 			 if(stock.getMyOwnName().toUpperCase().contains("ST") &&  !shouldexportst)
