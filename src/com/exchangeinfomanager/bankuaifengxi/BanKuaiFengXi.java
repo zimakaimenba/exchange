@@ -855,15 +855,14 @@ public class BanKuaiFengXi extends JDialog
 	{
 	
 		if(exportcond == null || exportcond.size() == 0) {
-//			if(!ckboxshowcje.isSelected() && !ckbxdpmaxwk.isSelected() && !chkliutongsz.isSelected() && !ckbxcjemaxwk.isSelected()){
-//				JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-//				return;
-//			} else 
-			if(exportcond == null) { //用户设置条件后可能直接点击导出，而没有先点击加入，这里是统一界面的行为
-				exportcond = new ArrayList<BanKuaiGeGuMatchCondition> ();
-				initializeExportConditions ();
-			} else
-				initializeExportConditions ();
+			JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
+			return;
+  
+//			if(exportcond == null) { //用户设置条件后可能直接点击导出，而没有先点击加入，这里是统一界面的行为
+//				exportcond = new ArrayList<BanKuaiGeGuMatchCondition> ();
+//				initializeExportConditions ();
+//			} else
+//				initializeExportConditions ();
 		}
 
 		String msg =  "导出耗时较长，请先确认条件是否正确。\n是否导出？";
@@ -3303,6 +3302,9 @@ public class BanKuaiFengXi extends JDialog
 					expc.setSettingBanKuai(exportbk);
 				}
 			exportcond.add(expc);
+			
+			btnaddexportcond.setText(String.valueOf(exportcond.size() ));
+			btnaddexportcond.setToolTipText("<html>导出条件设置(鼠标右键删除设置)<br></html>");
 		}
 		
 //		decrorateExportButton (expc);

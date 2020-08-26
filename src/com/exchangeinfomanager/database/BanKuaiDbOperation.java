@@ -3886,10 +3886,14 @@ public class BanKuaiDbOperation
 //		else if(jiaoyisuo.toLowerCase().equals("sh") )
 //			optTable = "通达信上交所股票每日交易信息";
 		
-		String csvfilename = jiaoyisuo.toUpperCase() + stockcode + ".CSV";
+		List<String> volamooutput = getTDXVolFilesRule ();
+//		String exportath = volamooutput.get(0);
+		String filenamerule = volamooutput.get(1);
+		String csvfilename = (filenamerule.replaceAll("YY",jiaoyisuo.toUpperCase())).replaceAll("XXXXXX", stockcode).replace("TXT", "CSV") ;
+//		String csvfilename = jiaoyisuo.toUpperCase() + stockcode + ".CSV";
 		File csvfile = new File(csvfilepath + "/" + csvfilename);
 		if (!csvfile.exists() || csvfile.isDirectory() || !csvfile.canRead()) {  
-				logger.debug("读取" + csvfilename + "发生错误！");
+				logger.info("读取" + csvfilename + "发生错误！没有获得" + stock.getMyOwnName() +  "的K线数据。");
 				return stock;
 		} 
 		
