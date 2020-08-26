@@ -161,7 +161,7 @@ public class ImportTDXData extends JDialog {
 		
 		//同步自定义板块
 		if(chbxdaorutdxzdybk.isSelected() && chbxdaorutdxzdybk.isEnabled() && this.zdybkckbxs != null) { 
-			
+			System.out.println("------导入自定义板块开始于" + LocalTime.now() );
 			for(JCheckBox tmpbox:zdybkckbxs) {
 				if(! tmpbox.isSelected() )
 					zdybkmap.remove(tmpbox.getText() );
@@ -178,6 +178,8 @@ public class ImportTDXData extends JDialog {
 //				e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {
 			}
+			
+			System.out.println("......导入自定义板块结束"  + LocalTime.now()+ ".......\r\n");
 		}
 		if(cbximportzdyfromout.isSelected() && cbximportzdyfromout.isEnabled() ) {
 			File resulttmpfilezdy = bkdbopt.refreshTDXZDYBanKuai (zdybkmapfromfile);
