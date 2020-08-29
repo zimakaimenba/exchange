@@ -173,6 +173,10 @@ public class ExportMatchedNode
 			 return false;
 		if( checkednodesset.contains(childnode.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
 			 return false;
+		
+		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
+		childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
+		
 		//检查黄标
 		Boolean stkcheckresult = null;
 		stkcheckresult = this.checkStockMatchedCurSettingConditonsOfYellowSign( (Stock)childnode, exportdate, period);
@@ -186,8 +190,6 @@ public class ExportMatchedNode
 		}
 		
 		//stkcheckresult == null 说明不是到处黄标个股,做下面的，这样提高效率
-		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
-		childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 		try{
 			stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA( (Stock)childnode, exportdate, period);
 			if(stkcheckresult == null) {//停牌股
