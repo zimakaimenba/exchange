@@ -399,7 +399,12 @@ public class BanKuaiFengXi extends JDialog
 		
 		showReminderMessage (bkfxremind.getBankuairemind());
 		
-		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股做准备
+		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股突出和当前板块交集个股做准备
+		BanKuai tmpbk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
+		if(tmpbk != null) {
+			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
+		}
+		
 	}
 	private void refreshCurrentBanKuaiTags(BanKuai selectedbk, String globeperiod2) 
 	{
@@ -2826,8 +2831,15 @@ public class BanKuaiFengXi extends JDialog
 			tempbankuai.addNewBanKuaiGeGu(bkofst);
 		}
 		
-		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);
-		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod);
+		setExportMainConditionBasedOnUserSelection (bkggmatchcondition); //让tempbk也具备凸显
+		
+		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod); 
+		
+		BanKuai curmainbk = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getCurDispalyBandKuai(); //突出和当前主板块的交集个股
+		if(curmainbk != null) {
+			((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(curmainbk); 
+			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tempbankuai);
+		}
 		
 		svstock = null;
 		

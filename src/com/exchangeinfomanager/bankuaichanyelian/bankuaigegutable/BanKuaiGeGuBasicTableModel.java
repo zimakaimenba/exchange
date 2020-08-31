@@ -145,7 +145,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		return this.curbk;
 	}
 	/*
-	 * 
+	 * intersectionbk是用来显示和当前板块有交集的个股
 	 */
 	public BanKuai getInterSetctionBanKuai ()
 	{

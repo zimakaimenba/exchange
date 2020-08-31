@@ -101,7 +101,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuTableModel)table.getModel() ).getStock(modelRow);
 	    Stock stock = stockofbank.getStock();
 	    
-	    if(stock.wetherHasReiewedToday()) {
+	    if(stock.wetherHasReiewedToday() ) {
         	Font defaultFont = this.getFont();
         	Font font = new Font(defaultFont.getName(), Font.BOLD + Font.ITALIC,defaultFont.getSize());
         	comp.setFont(font);
