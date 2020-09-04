@@ -321,48 +321,48 @@ public class BanKuaiFengXi extends JDialog
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,0,globeperiod);
 		
     	//显示大盘成交量
-		NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-    	percentFormat.setMinimumFractionDigits(1);
-    	DecimalFormat df2 = new DecimalFormat(".##");
-    	TDXNodes childnode = (TDXNodes) svsbk.getNode("000300");
-    	NodeXPeriodData bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		try {
-				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
-				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lblhscje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
-		} catch (java.lang.NullPointerException e) {
-				lblhscje.setText( "本周没有数据" );
-		}
+//		NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+//    	percentFormat.setMinimumFractionDigits(1);
+//    	DecimalFormat df2 = new DecimalFormat(".##");
+//    	TDXNodes childnode = (TDXNodes) svsbk.getNode("000300");
+//    	NodeXPeriodData bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+//		try {
+//				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
+//				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
+//				lblhscje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+//		} catch (java.lang.NullPointerException e) {
+//				lblhscje.setText( "本周没有数据" );
+//		}
 			
-		childnode =  (TDXNodes) svsbk.getNode("999999"); 
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		try {
-				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
-				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lblshcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
-		} catch (java.lang.NullPointerException e) {
-				lblshcje.setText( "本周没有数据" );
-		}
-		 
-		childnode =  (TDXNodes) svsbk.getNode("399006");	
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		try {
-				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
-				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lblcybcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
-		} catch (java.lang.NullPointerException e) {
-				lblcybcje.setText( "本周没有数据" );
-		}
+//		childnode =  (TDXNodes) svsbk.getNode("999999"); 
+//		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+//		try {
+//				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
+//				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
+//				lblshcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+//		} catch (java.lang.NullPointerException e) {
+//				lblshcje.setText( "本周没有数据" );
+//		}
+//		 
+//		childnode =  (TDXNodes) svsbk.getNode("399006");	
+//		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+//		try {
+//				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
+//				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
+//				lblcybcje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+//		} catch (java.lang.NullPointerException e) {
+//				lblcybcje.setText( "本周没有数据" );
+//		}
 			
-		childnode =  (TDXNodes) svsbk.getNode("000016");//(TDXNodes)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK); 
-		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		try {
-				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
-				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
-				lbl50cje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
-		} catch (java.lang.NullPointerException e) {
-				lbl50cje.setText( "本周没有数据" );
-		}
+//		childnode =  (TDXNodes) svsbk.getNode("000016");//(TDXNodes)this.allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK); 
+//		bkdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+//		try {
+//				Double cjerec = bkdata.getChengJiaoEr(curselectdate,0);
+//				Double zhanbi = bkdata.getChenJiaoErZhanBi(curselectdate, 0);
+//				lbl50cje.setText( df2.format(cjerec /100000000.0) +  " (" + percentFormat.format (zhanbi) + ")");
+//		} catch (java.lang.NullPointerException e) {
+//				lbl50cje.setText( "本周没有数据" );
+//		}
 		//设置下拉框的当前时间，为显示关注板块个股使用
 		((JStockComboBoxModel)combxsearchbk.getModel() ).setCurrentDataDate(curselectdate);
 		((JStockComboBoxModel)combxstockcode.getModel() ).setCurrentDataDate(curselectdate);
@@ -1382,14 +1382,14 @@ public class BanKuaiFengXi extends JDialog
 				}
 			}
 		});
-		lbl50cje.addMouseListener(new MouseAdapter() {
+		lblkechuangban.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK);
+				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000688", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (szfifty);
 				
 				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("000016");
+				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getBanKuaiRowIndex("000688");
 				if(rowindex != null && rowindex >0) {
 						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
 						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
@@ -3623,7 +3623,7 @@ public class BanKuaiFengXi extends JDialog
 	private JTextField tfldltszmax;
 	private JCheckBox chbxquekou;
 	private JLabel lblcybcje;
-	private JLabel lbl50cje;
+	private JLabel lblkechuangban;
 	private JTextField tflddpminwk;
 	private JCheckBox chckbxdpminwk;
 	private JMenuItem menuItemnonfixperiod;
@@ -4095,7 +4095,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		lblfifty = new JLabel("50\u6307");
 		
-		lbl50cje = new JLabel("New label");
+		lblkechuangban = new JLabel("科创50");
 		
 		chxbxwholeweek = new JCheckBox("\u8BA1\u7B97\u5B8C\u6574\u5468");
 		chxbxwholeweek.setToolTipText("\u5982\u4E0D\u52FE\u9009\uFF0C\u5219\u8BA1\u7B97\u5230\u88AB\u9009\u62E9\u7684\u90A3\u4E00\u5929");
@@ -4132,7 +4132,7 @@ public class BanKuaiFengXi extends JDialog
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblfifty)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lbl50cje, GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)))))
+									.addComponent(lblkechuangban, GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)))))
 					.addContainerGap(22, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
@@ -4155,7 +4155,7 @@ public class BanKuaiFengXi extends JDialog
 						.addComponent(lblchuangyeban)
 						.addComponent(lblcybcje)
 						.addComponent(lblfifty)
-						.addComponent(lbl50cje))
+						.addComponent(lblkechuangban))
 					.addGap(9))
 		);
 		panel.setLayout(gl_panel);
