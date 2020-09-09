@@ -1414,10 +1414,10 @@ public class BanKuaiFengXi extends JDialog
 			}
 			
 		});
-		lblcybcje.addMouseListener(new MouseAdapter() {
+		lblcybzongzhi.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);
+				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399102", BkChanYeLianTreeNode.TDXBK);
 				unifiedOperationsAfterUserSelectABanKuai (cyb);
 				
 				// 定位
@@ -3622,7 +3622,7 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemsiglebktocsv;
 	private JTextField tfldltszmax;
 	private JCheckBox chbxquekou;
-	private JLabel lblcybcje;
+	private JLabel lblcybzongzhi;
 	private JLabel lblkechuangban;
 	private JTextField tflddpminwk;
 	private JCheckBox chckbxdpminwk;
@@ -4091,7 +4091,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		lblchuangyeban = new JLabel("\u521B\u4E1A\u677F");
 		
-		lblcybcje = new JLabel("New label");
+		lblcybzongzhi = new JLabel("创业板综");
 		
 		lblfifty = new JLabel("50\u6307");
 		
@@ -4118,7 +4118,7 @@ public class BanKuaiFengXi extends JDialog
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblchuangyeban)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblcybcje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(lblcybzongzhi, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblshanghai)
 									.addPreferredGap(ComponentPlacement.RELATED)
@@ -4153,7 +4153,7 @@ public class BanKuaiFengXi extends JDialog
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblchuangyeban)
-						.addComponent(lblcybcje)
+						.addComponent(lblcybzongzhi)
 						.addComponent(lblfifty)
 						.addComponent(lblkechuangban))
 					.addGap(9))
