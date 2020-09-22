@@ -4002,6 +4002,7 @@ public class BanKuaiFengXi extends JDialog
 		JScrollPane scrollPaneTempGeGu = new JScrollPane();
 		tableTempGeGu = new BanKuaiGeGuTable (this.stockmanager);
 		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
+		
 		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL);
 		scrollbarTempGeGu.setUnitIncrement(10);
 	    scrollbarTempGeGu.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
