@@ -146,19 +146,6 @@ public class ImportTDXData extends JDialog {
 
 	private void partThatCanImportDuringWork ()
 	{
-		
-		//从通达信中导入股票曾用名和现用名的信息
-		if(chbximportcym.isSelected() && chbximportcym.isEnabled())	{
-			System.out.println("------导入股票曾用名和现用名的信息开始" + LocalTime.now() );
-			long start=System.currentTimeMillis(); //获取开始时间
-			File resulttmpfilesys = bkdbopt.refreshEverUsedStorkName (); //股票曾用名的信息
-			Integer resulttmpfilesys2 = bkdbopt.refreshCurrentUsedStorkNameOfShangHai(); //上海股票现用名的信息
-			Integer resulttmpfilesys3 = bkdbopt.refreshCurrentUsedStorkNameOfShenZhen(); //深圳股票现用名的信息
-			long end=System.currentTimeMillis(); //获取结束时间
-			System.out.println("......导入股票曾用名和现用名的信息结束"  + LocalTime.now() + "导入耗费时间： "+(end-start)+"ms.......\r\n");
-			chbximportcym.setEnabled(false);
-		}
-		
 		//同步自定义板块
 		if(chbxdaorutdxzdybk.isSelected() && chbxdaorutdxzdybk.isEnabled() && this.zdybkckbxs != null) { 
 			System.out.println("------导入自定义板块开始于" + LocalTime.now() );
@@ -196,6 +183,18 @@ public class ImportTDXData extends JDialog {
 			}
 			
 			zdybkmapfromfile = null;
+		}
+		
+		//从通达信中导入股票曾用名和现用名的信息
+		if(chbximportcym.isSelected() && chbximportcym.isEnabled())	{
+			System.out.println("------导入股票曾用名和现用名的信息开始" + LocalTime.now() );
+			long start=System.currentTimeMillis(); //获取开始时间
+			File resulttmpfilesys = bkdbopt.refreshEverUsedStorkName (); //股票曾用名的信息
+			Integer resulttmpfilesys2 = bkdbopt.refreshCurrentUsedStorkNameOfShangHai(); //上海股票现用名的信息
+			Integer resulttmpfilesys3 = bkdbopt.refreshCurrentUsedStorkNameOfShenZhen(); //深圳股票现用名的信息
+			long end=System.currentTimeMillis(); //获取结束时间
+			System.out.println("......导入股票曾用名和现用名的信息结束"  + LocalTime.now() + "导入耗费时间： "+(end-start)+"ms.......\r\n");
+			chbximportcym.setEnabled(false);
 		}
 		
 	}
