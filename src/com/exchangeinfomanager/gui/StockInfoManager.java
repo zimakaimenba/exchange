@@ -187,8 +187,12 @@ public class StockInfoManager
 	{
 		License license = new License ();
 		if( !license.isLicenseValide() ) {
-			JOptionPane.showMessageDialog(null,"License非法！再见！");
-			System.exit(0);
+
+			String adminpw = JOptionPane.showInputDialog(null,"License非法！请输入管理员密码:","注意", JOptionPane.QUESTION_MESSAGE);
+			if( !license.isAdminPwvalide(adminpw.trim()) ) {
+				JOptionPane.showMessageDialog(null,"管理员密码错误！再见！");
+				System.exit(0);
+			}
 		}
 		license = null;
 			
