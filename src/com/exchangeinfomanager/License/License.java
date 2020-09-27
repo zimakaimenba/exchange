@@ -30,4 +30,12 @@ public class License
 			return false;
 		}
 	}
+	
+	public Boolean isAdminPwvalide (String testpw)
+	{
+		if(testpw.equals("987654321") )
+			return true;
+		else
+			return false;
+	}
 }
