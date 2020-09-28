@@ -195,6 +195,7 @@ public class StockInfoManager
 			}
 		}
 		license = null;
+
 			
 	    
 		sysconfig = SystemConfigration.getInstance();

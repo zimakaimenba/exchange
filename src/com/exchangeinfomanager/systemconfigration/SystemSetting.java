@@ -626,7 +626,7 @@ public class SystemSetting extends JDialog
 		syspnl.add(cbxprivatemode, "cell 0 2,alignx left,aligny top");
 		
 		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("\u6570\u636E\u5E93\u8BBE\u7F6E", null, panel_1, null);
+		tabbedPane.addTab("\u6570\u636E\u5E93", null, panel_1, null);
 		
 		scrollPanelocal = new JScrollPane();
 		DatabaseSourceTableModel localtablemodel = new DatabaseSourceTableModel( null ); 
@@ -688,7 +688,7 @@ public class SystemSetting extends JDialog
 		panel_1.setLayout(gl_panel_1);
 		
 		JPanel zdybkpnl = new JPanel();
-		tabbedPane.addTab("\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E", null, zdybkpnl, null);
+		tabbedPane.addTab("\u81EA\u5B9A\u4E49\u677F\u5757", null, zdybkpnl, null);
 		
 		ckbxzdy = new JCheckBox("\u81EA\u5B9A\u4E49\u677F\u5757\u8DEF\u5F84");
 		
@@ -719,7 +719,7 @@ public class SystemSetting extends JDialog
 		zdybkpnl.add(btnzdyselect, "cell 5 0 1 3,alignx left,aligny top");
 		
 		JPanel panel = new JPanel();
-		tabbedPane.addTab("\u5916\u90E8\u89E3\u91CA\u5668", null, panel, null);
+		tabbedPane.addTab("3rd_Party", null, panel, null);
 		
 		JLabel lblPythonInterpreter = new JLabel(" Python Interpreter\u8DEF\u5F84");
 		
@@ -801,7 +801,7 @@ public class SystemSetting extends JDialog
 		panel.setLayout(gl_panel);
 		
 		JPanel panel_2 = new JPanel();
-		tabbedPane.addTab("\u677F\u5757\u5206\u6790\u8BBE\u7F6E", null, panel_2, null);
+		tabbedPane.addTab("\u677F\u5757\u5206\u6790", null, panel_2, null);
 		
 		JLabel label_2 = new JLabel("\u6210\u4EA4\u5360\u6BD4\u5206\u6790\u5468\u671F\u8DE8\u5EA6(\u6708)");
 		
