@@ -1292,6 +1292,33 @@ public class BanKuaiFengXi extends JDialog
 			            		else
 			            			tfldshowcjemax.setText(bkggmatchcondition.getSettingChenJiaoErMax().toString());
 							}
+							if(selectitem.getText().contains("上周CJEZB增长率")) {
+								if(bkggmatchcondition.getLastWkCjezbGrowingRateMin() == null)
+			            			tfldshowcje.setText("100");
+			            		else
+			            			tfldshowcje.setText(bkggmatchcondition.getLastWkCjezbGrowingRateMin().toString());
+			            		
+			            		if(bkggmatchcondition.getLastWkCjezbGrowingRateMax() == null)
+			            			tfldshowcjemax.setText(" ");
+			            		else
+			            			tfldshowcjemax.setText(bkggmatchcondition.getLastWkCjezbGrowingRateMax().toString());
+							}
+							if(selectitem.getText().contains("突出上周阴线且CJEZBMaxWk")){
+								if(bkggmatchcondition.getLastWkCjezbmaxkwk() == null)
+			            			tfldshowcje.setText("4");
+			            		else
+			            			tfldshowcje.setText(bkggmatchcondition.getLastWkCjezbmaxkwk().toString());
+								
+								tfldshowcjemax.setText(" ");
+							}
+							if(selectitem.getText().contains("突出上周阴线且CJEMaxWk")){
+								if(bkggmatchcondition.getLastWkCjemaxkwk() == null)
+			            			tfldshowcje.setText("4");
+			            		else
+			            			tfldshowcje.setText(bkggmatchcondition.getLastWkCjemaxkwk().toString());
+								
+								tfldshowcjemax.setText(" ");
+							}
 						}
 						
 						if(e.getStateChange() == ItemEvent.DESELECTED) {
@@ -1317,12 +1344,24 @@ public class BanKuaiFengXi extends JDialog
                     		operationsForButtomExportCondtionOfChenJiaoEr (selectitem);
                     		refreshBanKuaiGeGuTableHightLight ();
                     	}
+                    	if(selectitem.getText().contains("上周CJEZB增长率")) {
+                    		operationsForButtomExportCondtionOfLastWkCjezbGrowingRate (selectitem);
+                    		refreshBanKuaiGeGuTableHightLight ();
+                    	}
+                    	if(selectitem.getText().contains("突出上周阴线且CJEZBMaxWk")){
+                    		operationsForButtomExportCondtionOfLastWkCjezbmaxwk(selectitem);
+                    		refreshBanKuaiGeGuTableHightLight ();
+                    	}
+                    	if(selectitem.getText().contains("突出上周阴线且CJEMaxWk")){
+                    		operationsForButtomExportCondtionOfLastWkCjemaxwk(selectitem);
+                    		refreshBanKuaiGeGuTableHightLight ();
+                    	}
                     }
                 });
             }
         } );
 		
-		lblshcje.addMouseListener(new MouseAdapter() {
+		lblshenzhen.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
@@ -3449,6 +3488,43 @@ public class BanKuaiFengXi extends JDialog
 			bkggmatchcondition.setSettingChenJiaoErMin (null );
 		}
 	}
+	private void operationsForButtomExportCondtionOfLastWkCjezbGrowingRate (JCheckBox selectitem)
+	{
+		if(selectitem.isSelected()) {
+			Double showcjemin = null; Double showcjemax = null;
+			if( !Strings.isNullOrEmpty(tfldshowcje.getText().trim()) ) {
+				showcjemin =  Double.parseDouble(tfldshowcje.getText() );
+			} 
+			
+			if( !Strings.isNullOrEmpty(tfldshowcjemax.getText().trim()) ) {
+				showcjemax =  Double.parseDouble(tfldshowcjemax.getText() );
+			} 
+			bkggmatchcondition.setLastWkCjezbGrowingRate (showcjemin, showcjemax);
+		} else 
+			bkggmatchcondition.setLastWkCjezbGrowingRate (null,null );
+	}
+	private void operationsForButtomExportCondtionOfLastWkCjezbmaxwk (JCheckBox selectitem)
+	{
+		if(selectitem.isSelected()) {
+			Integer showcjemin = null; 
+			if( !Strings.isNullOrEmpty(tfldshowcje.getText().trim()) ) {
+				showcjemin =  Integer.parseInt(tfldshowcje.getText() );
+			} 
+			bkggmatchcondition.setLastWkCjezbmaxkwk (showcjemin);
+		} else 
+			bkggmatchcondition.setLastWkCjezbmaxkwk (null );
+	}
+	private void operationsForButtomExportCondtionOfLastWkCjemaxwk (JCheckBox selectitem)
+	{
+		if(selectitem.isSelected()) {
+			Integer showcjemin = null; 
+			if( !Strings.isNullOrEmpty(tfldshowcje.getText().trim()) ) {
+				showcjemin =  Integer.parseInt(tfldshowcje.getText() );
+			} 
+			bkggmatchcondition.setLastWkCjemaxkwk (showcjemin);
+		} else 
+			bkggmatchcondition.setLastWkCjemaxkwk (null );
+	}
 	/*
 	 * 
 	 */
@@ -3585,7 +3661,7 @@ public class BanKuaiFengXi extends JDialog
 	private JCheckBox ckboxparsefile;
 //	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
 	private JLabel lblhscje;
-	private JLabel lblshcje;
+	private JLabel lblshenzhen;
 	private JLabel lblshanghai;
 	
 	private JCheckBox ckbxdpmaxwk;
@@ -4086,7 +4162,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		lblhusheng = new JLabel("\u6CAA\u6DF1300");
 		
-		lblshcje = new JLabel("New label");
+		lblshenzhen = new JLabel("\u6DF1\u5733\u7EFC\u5408");
 		
 		lblhscje = new JLabel("New label");
 		
@@ -4102,6 +4178,12 @@ public class BanKuaiFengXi extends JDialog
 		chxbxwholeweek.setToolTipText("\u5982\u4E0D\u52FE\u9009\uFF0C\u5219\u8BA1\u7B97\u5230\u88AB\u9009\u62E9\u7684\u90A3\u4E00\u5929");
 		chxbxwholeweek.setSelected(true);
 		
+		JLabel lblNewLabel = new JLabel("\u521B\u4E1A\u5927\u76D8");
+		
+		JLabel lblforfuture_1 = new JLabel("New label");
+		
+		JLabel lblforfuture_2 = new JLabel("New label");
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -4115,26 +4197,32 @@ public class BanKuaiFengXi extends JDialog
 							.addGap(18)
 							.addComponent(btnresetdate))
 						.addGroup(gl_panel.createSequentialGroup()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblchuangyeban)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblcybzongzhi, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+									.addComponent(lblcybzongzhi, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblshanghai)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblshcje, GroupLayout.PREFERRED_SIZE, 124, GroupLayout.PREFERRED_SIZE)))
+									.addGap(18)
+									.addComponent(lblshenzhen, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel)
+								.addComponent(lblhusheng))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblhusheng)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblhscje, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblfifty)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblkechuangban, GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)))))
-					.addContainerGap(22, Short.MAX_VALUE))
+									.addComponent(lblkechuangban, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(lblforfuture_2))
+								.addGroup(gl_panel.createSequentialGroup()
+									.addComponent(lblhscje, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(lblforfuture_1)))))
+					.addContainerGap(58, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.TRAILING)
@@ -4148,15 +4236,18 @@ public class BanKuaiFengXi extends JDialog
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblshanghai)
-						.addComponent(lblshcje)
 						.addComponent(lblhusheng)
-						.addComponent(lblhscje))
+						.addComponent(lblshenzhen)
+						.addComponent(lblhscje)
+						.addComponent(lblforfuture_1))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblchuangyeban)
 						.addComponent(lblcybzongzhi)
 						.addComponent(lblfifty)
-						.addComponent(lblkechuangban))
+						.addComponent(lblkechuangban)
+						.addComponent(lblNewLabel)
+						.addComponent(lblforfuture_2))
 					.addGap(9))
 		);
 		panel.setLayout(gl_panel);
@@ -4166,9 +4257,10 @@ public class BanKuaiFengXi extends JDialog
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			
 			ckbxma = new JCheckBox("\u7A81\u51FACLOSE vs. MA");
+			ckbxma.setBackground(new Color(32, 178, 170));
 			ckbxma.setSelected(true);
 			ckbxma.setFont(new Font("宋体", Font.PLAIN, 12));
-			ckbxma.setForeground(new Color(0,153,153) );
+			ckbxma.setForeground(new Color(0, 0, 0) );
 			
 			
 			tfldweight = new JTextField ();//JTextFactory.createTextField();
@@ -4179,9 +4271,10 @@ public class BanKuaiFengXi extends JDialog
 //			tfldshowcje.setColumns(4);
 			
 			ckboxparsefile = new JCheckBox("\u5206\u6790\u6587\u4EF6");
+			ckboxparsefile.setBackground(Color.ORANGE);
 			ckboxparsefile.setToolTipText("\u5206\u6790\u6587\u4EF6");
-			ckboxparsefile.setFont(new Font("宋体", Font.ITALIC, 12));
-			ckboxparsefile.setForeground(Color.ORANGE);
+			ckboxparsefile.setFont(new Font("宋体", Font.PLAIN, 12));
+			ckboxparsefile.setForeground(Color.BLACK);
 			
 			
 			tfldparsedfile = new JTextField();
@@ -4190,9 +4283,10 @@ public class BanKuaiFengXi extends JDialog
 			tfldparsedfile.setToolTipText(tfldparsedfile.getText());
 			
 			ckbxdpmaxwk = new JCheckBox("\u7A81\u51FADPMAXWK>=");
+			ckbxdpmaxwk.setBackground(Color.RED);
 			ckbxdpmaxwk.setSelected(true);
 			
-			ckbxdpmaxwk.setForeground(Color.RED);
+			ckbxdpmaxwk.setForeground(Color.BLACK);
 			
 			tflddisplaydpmaxwk = new JTextField();
 			tflddisplaydpmaxwk.setPreferredSize(new Dimension(20, 25));
@@ -4202,9 +4296,9 @@ public class BanKuaiFengXi extends JDialog
 			
 			chkliutongsz = new JCheckBox("\u7A81\u51FA\u6D41\u901A\u5E02\u503C(\u4EBF)");
 			chkliutongsz.setSelected(true);
-			chkliutongsz.setBackground(Color.WHITE);
+			chkliutongsz.setBackground(Color.MAGENTA);
 			
-			chkliutongsz.setForeground(Color.MAGENTA);
+			chkliutongsz.setForeground(Color.BLACK);
 			
 			tfldltszmin = new JTextField();
 			tfldltszmin.setPreferredSize(new Dimension(30, 25));
@@ -4213,10 +4307,11 @@ public class BanKuaiFengXi extends JDialog
 //			tfldltszmin.setColumns(2);
 			
 			ckbxcjemaxwk = new JCheckBox("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
+			ckbxcjemaxwk.setBackground(Color.CYAN);
 			ckbxcjemaxwk.setSelected(true);
 			ckbxcjemaxwk.setToolTipText("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
 			ckbxcjemaxwk.setFont(new Font("宋体", Font.PLAIN, 12));
-			ckbxcjemaxwk.setForeground(Color.CYAN);
+			ckbxcjemaxwk.setForeground(Color.BLACK);
 			
 			tfldcjemaxwk = new JTextField();
 			tfldcjemaxwk.setText("3");
@@ -4240,7 +4335,8 @@ public class BanKuaiFengXi extends JDialog
 			btnaddexportcond.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/add-circular-outlined-button.png")));
 			
 			ckbxhuanshoulv = new JCheckBox("\u7A81\u51FA\u6362\u624B\u7387>=");
-			ckbxhuanshoulv.setForeground(Color.BLUE);
+			ckbxhuanshoulv.setBackground(Color.BLUE);
+			ckbxhuanshoulv.setForeground(Color.BLACK);
 			
 			tfldhuanshoulv = new JTextField();
 			tfldhuanshoulv.setPreferredSize(new Dimension(25, 25));
@@ -4280,15 +4376,18 @@ public class BanKuaiFengXi extends JDialog
 //			tfldltszmax.setColumns(10);
 			
 			chbxquekou = new JCheckBox("\u7A81\u51FA\u56DE\u8865\u4E0B\u8DF3/\u4E0A\u8DF3");
+			chbxquekou.setSelected(true);
+			chbxquekou.setBackground(Color.PINK);
 			chbxquekou.setToolTipText("\u7A81\u51FA\u56DE\u8865\u4E0B\u8DF3/\u4E0A\u8DF3");
-			chbxquekou.setFont(new Font("宋体", Font.ITALIC, 12));
+			chbxquekou.setFont(new Font("宋体", Font.PLAIN, 12));
 			
-			chbxquekou.setForeground(Color.PINK);
+			chbxquekou.setForeground(Color.BLACK);
 			
 			chckbxdpminwk = new JCheckBox("\u7A81\u51FADPMINWK>=");
+			chckbxdpminwk.setBackground(Color.GREEN);
 			chckbxdpminwk.setToolTipText("\u7A81\u51FADPMINWK>=");
-			chckbxdpminwk.setFont(new Font("宋体", Font.ITALIC, 12));
-			chckbxdpminwk.setForeground(Color.GREEN);
+			chckbxdpminwk.setFont(new Font("宋体", Font.PLAIN, 12));
+			chckbxdpminwk.setForeground(Color.BLACK);
 			
 			tflddpminwk = new JTextField();
 			tflddpminwk.setPreferredSize(new Dimension(20, 25));
@@ -4296,10 +4395,11 @@ public class BanKuaiFengXi extends JDialog
 //			tflddpminwk.setColumns(10);
 			
 			chbxzhangfu = new JCheckBox("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
+			chbxzhangfu.setBackground(Color.PINK);
 			chbxzhangfu.setSelected(true);
 			chbxzhangfu.setToolTipText("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
-			chbxzhangfu.setForeground(Color.PINK);
-			chbxzhangfu.setFont(new Font("宋体", Font.ITALIC, 12));
+			chbxzhangfu.setForeground(Color.BLACK);
+			chbxzhangfu.setFont(new Font("宋体", Font.PLAIN, 12));
 			
 			tfldzhangfumin = new JTextField();
 			tfldzhangfumin.setPreferredSize(new Dimension(25, 25));
@@ -4319,10 +4419,22 @@ public class BanKuaiFengXi extends JDialog
 			JCheckBox tuchucjeevel = new JCheckBox("突出成交额区间",false);
 			tuchucjeevel.setBackground(Color.YELLOW);
 			v.add(tuchucjeevel);
+			JCheckBox tuchulwcjezbzjl = new JCheckBox("突出上周CJEZB增长率区间",false);
+			tuchulwcjezbzjl.setToolTipText("突出上周CJEZB增长率区间");
+			tuchulwcjezbzjl.setForeground(new Color(254,204,51));
+			v.add(tuchulwcjezbzjl);
+			JCheckBox tuchulwcjezbmaxwk = new JCheckBox("突出上周阴线且CJEZBMaxWk>=",false);
+			tuchulwcjezbmaxwk.setToolTipText("突出上周阴线且CJEZBMaxWk");
+			tuchulwcjezbmaxwk.setForeground(new Color(254,204,51));
+			v.add(tuchulwcjezbmaxwk);
+			JCheckBox tuchulwcjemaxwk = new JCheckBox("突出上周阴线且CJEMaxWk>=",false);
+			tuchulwcjemaxwk.setToolTipText("突出上周阴线且CJEMaxWk");
+			tuchulwcjemaxwk.setForeground(new Color(254,204,51));
+			v.add(tuchulwcjemaxwk);
+			
 			cbbxmore = new JComboCheckBox(v);
 //			cbbxmore = new JComboBox(v);
 			cbbxmore.setPreferredSize(new Dimension(120, 25));
-//			cbbxmore.setFont(new Font("宋体", Font.PLAIN, 12));
 			
 			tfldshowcje = new JTextField();
 			tfldshowcje.setPreferredSize(new Dimension(30, 25));
