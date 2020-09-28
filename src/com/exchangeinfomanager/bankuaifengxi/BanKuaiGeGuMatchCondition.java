@@ -366,7 +366,39 @@ public class BanKuaiGeGuMatchCondition
 			return this.onlyexportyellowsignbkstk ;
 			
 		} 
-		
+		private Double setttinglastwkcjezbgrowingratemin;
+		private Double setttinglastwkcjezbgrowingratemax;
+		public void setLastWkCjezbGrowingRate(Double min, Double max)
+		{
+			setttinglastwkcjezbgrowingratemin = min;
+			setttinglastwkcjezbgrowingratemax = max;
+		}
+		public Double getLastWkCjezbGrowingRateMin()
+		{
+			return setttinglastwkcjezbgrowingratemin;
+		}
+		public Double getLastWkCjezbGrowingRateMax()
+		{
+			return setttinglastwkcjezbgrowingratemax;
+		}
+		private Integer settinglastwkcjezbmaxkwk;
+		public void setLastWkCjezbmaxkwk (Integer maxwk) 
+		{
+			this.settinglastwkcjezbmaxkwk = maxwk;
+		}
+		public Integer getLastWkCjezbmaxkwk () 
+		{
+			return this.settinglastwkcjezbmaxkwk ;
+		}
+		private Integer settinglastwkcjemaxkwk;
+		public void setLastWkCjemaxkwk (Integer maxwk) 
+		{
+			this.settinglastwkcjemaxkwk = maxwk;
+		}
+		public Integer getLastWkCjemaxkwk () 
+		{
+			return this.settinglastwkcjezbmaxkwk ;
+		}
 //		public Boolean shouldExportAverageWkCjeMaxWk() {
 //			return exportAverageWkCjeMaxWk;
 //		}

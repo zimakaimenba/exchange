@@ -104,10 +104,16 @@ public class JComboCheckBox extends JComboBox
                 c.setBackground(bg);
                 c.setForeground(fg);
              } else {
-            	Color bg = list.getBackground();
-            	Color fg = list.getForeground();
-                c.setBackground(bg);
-                c.setForeground(fg);
+//            	Color bg = list.getBackground();
+//            	Color fg = list.getForeground();
+//                c.setBackground(bg);
+//                c.setForeground(fg);
+            	 
+            	 Color bg = ((JCheckBox) value).getBackground();
+                 Color fg = ((JCheckBox) value).getForeground();
+                 
+                 c.setBackground(bg);
+                 c.setForeground(fg);
              }
               
             return c;
