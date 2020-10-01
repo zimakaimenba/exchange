@@ -108,7 +108,7 @@ public class EncryptAndDecypt
     	  
     	EncryptAndDecypt tip = new EncryptAndDecypt();
     	
-      String originalPassword = "987654321";
+      String originalPassword = "123456789";
       
       System.out.println("Original password: " + originalPassword);
       String encryptedPassword = tip.getEncryptedPassowrd(originalPassword);

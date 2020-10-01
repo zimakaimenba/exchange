@@ -20,7 +20,9 @@ public class RuleOfGeGuZhangFu
 	private Color foreground = Color.BLACK, background = Color.white;
 	
 	@Condition
-	public boolean evaluate(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
+	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
+			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedfference, 
+			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		Double zfmax = evacond.getSettingZhangFuMax();
@@ -42,7 +44,7 @@ public class RuleOfGeGuZhangFu
     	
     	StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 //		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
-    	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, 0);
+    	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, evadatedfference);
     	if(wkzhangdiefu != null)
     		analysisresultforvoice = analysisresultforvoice + "本周涨幅百分之" +  Math.floor(wkzhangdiefu * 100);
     	
@@ -50,7 +52,7 @@ public class RuleOfGeGuZhangFu
 		if(wkhighdiefu != null && wkhighdiefu < -0.09)
 			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" +  Math.floor(wkhighdiefu * 100);
 		
-		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, 0);
+		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, evadatedfference);
 		if(zfmax != null || zfmin != null ) {
 			if(wkhighzhangfu == null)
 		    	return false;

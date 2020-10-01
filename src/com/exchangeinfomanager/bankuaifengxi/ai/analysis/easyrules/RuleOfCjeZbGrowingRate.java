@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules;
 
+
 import java.awt.Color;
 import java.time.LocalDate;
 
@@ -13,38 +14,49 @@ import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
-@Rule(name = "Weekly Average ChenJiaoEr Rule", description = "if it rains then take an umbrella" )
-public class RuleOfWeeklyAverageChenJiaoErMaxWk 
+@Rule(name = "ChenJiaoEr ZhanBi Growing Rate Rule", description = "if it rains then take an umbrella" )
+public class RuleOfCjeZbGrowingRate 
 {
 	private Color foreground = Color.BLACK, background = Color.white;
-	private String analysisresultforvoice = "";
+	boolean checkresult = false;
+	String analysisresultforvoice = "";
 	
 	@Condition
-	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
-			@Fact("evadate") LocalDate evadate,  @Fact("evadatedifference") Integer evadatedfference, 
+	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
+			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedfference, 
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
-		int dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(evadate,evadatedfference);
+		Double cjedpzbgr = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(evadate,evadatedfference);
+		if(cjedpzbgr!= null && cjedpzbgr > 0 ) {
+    		Double grmin = null; Double grmax = null;
+	    	try {
+	    		grmin = evacond.getCjezbGrowingRateMin() * 1;
+	    	} catch (java.lang.NullPointerException e) {
+	    		grmin = -100000000.0;
+	    	}
+	    	try {
+	    		grmax = evacond.getCjezbGrowingRateMax() * 1;
+	    	} catch (java.lang.NullPointerException e) {
+	    		grmax = 100000000.0;
+	    	}
+	    	
+	    	if(cjedpzbgr >= grmin && cjedpzbgr <= grmax) 	    		
+	    		return true;
+	    	else
+	    		return false;
+    	} 
     	
-    	Integer cjemaxwk = evacond.getSettingChenJiaoErMaxWk();
-    	if(cjemaxwk == null)
-    		cjemaxwk =  10000000;
-    	
-    	if( dpmaxwk >=cjemaxwk ) {
-    		analysisresultforvoice = analysisresultforvoice + "周平均成交额MAXWEEK等于" + dpmaxwk + "。" ;
-    		return true;
-    	}
-    	else 
-    		 return false;
+    	return false;
 	}
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
-		background = Color.CYAN ;
+		checkresult = true;
+		foreground = Color.yellow;
     }
     
     @Priority //优先级注解：return 数值越小，优先级越高
@@ -52,12 +64,12 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
         return 1;
     }
     
-    public Color getBackGround ()
+    public Color getForeGround ()
     {
-    	return this.background;
+    	return this.foreground;
     }
     
-    public String getAnalysisResult ()
+    public String getAnalysisResultVoiceMsg ()
     {
     	return this.analysisresultforvoice;
     }
@@ -65,7 +77,7 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     // MUST IMPLEMENT THIS METHOD
 //    @Override 
     public String getName() {
-        return "Weekly Average ChenJiaoEr Rule";
+        return "ChenJiaoEr ZhanBi Growing Rate Rules";
     }
 
 }

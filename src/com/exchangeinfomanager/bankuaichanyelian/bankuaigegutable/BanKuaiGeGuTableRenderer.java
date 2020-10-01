@@ -150,6 +150,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    Facts facts = new Facts();
         facts.put("evanode", stock);
         facts.put("evadate", requireddate);
+        facts.put("evadatedfference", 0);
         facts.put("evaperiod", period);
         facts.put("evacond", matchcond);
         

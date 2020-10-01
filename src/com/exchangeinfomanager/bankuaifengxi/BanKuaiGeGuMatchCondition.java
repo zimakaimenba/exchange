@@ -368,16 +368,16 @@ public class BanKuaiGeGuMatchCondition
 		} 
 		private Double setttinglastwkcjezbgrowingratemin;
 		private Double setttinglastwkcjezbgrowingratemax;
-		public void setLastWkCjezbGrowingRate(Double min, Double max)
+		public void setCjezbGrowingRate(Double min, Double max)
 		{
 			setttinglastwkcjezbgrowingratemin = min;
 			setttinglastwkcjezbgrowingratemax = max;
 		}
-		public Double getLastWkCjezbGrowingRateMin()
+		public Double getCjezbGrowingRateMin()
 		{
 			return setttinglastwkcjezbgrowingratemin;
 		}
-		public Double getLastWkCjezbGrowingRateMax()
+		public Double getCjezbGrowingRateMax()
 		{
 			return setttinglastwkcjezbgrowingratemax;
 		}

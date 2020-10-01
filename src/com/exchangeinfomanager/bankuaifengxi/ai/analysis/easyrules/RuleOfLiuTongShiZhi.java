@@ -22,7 +22,9 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
 	private Boolean specialarea = false;
 	private String analysisresultforvoice = "";
 	@Condition
-    public boolean evaluate(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
+    public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
+    		@Fact("evadate") LocalDate evadate,
+    		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		Double ltszmin ;

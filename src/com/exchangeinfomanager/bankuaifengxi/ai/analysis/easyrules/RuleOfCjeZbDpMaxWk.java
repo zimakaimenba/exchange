@@ -20,11 +20,13 @@ public class RuleOfCjeZbDpMaxWk
 	boolean lianxufangliang = false;
 	String analysisresultforvoice = "";
 	@Condition
-	public boolean evaluate(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
+	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
+			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedfference, 
+			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
-		Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (evadate,0);
+		Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (evadate,evadatedfference);
 		if(cjedpmaxwk!= null && cjedpmaxwk > 0 ) {
     		int maxfazhi;
 	    	try {
@@ -33,7 +35,7 @@ public class RuleOfCjeZbDpMaxWk
 	    		maxfazhi = 100000000;
 	    	}
 	    	
-	    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (evadate,0, maxfazhi);
+	    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (evadate,evadatedfference, maxfazhi);
 	    	 
 	    	if(cjedpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) {//连续放量,深色显示
 	    		background = new Color(102,0,0) ;
@@ -50,7 +52,7 @@ public class RuleOfCjeZbDpMaxWk
     	} 
     	
     	if(cjedpmaxwk == null || cjedpmaxwk <= 0 ) {
-    		Integer cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,0);
+    		Integer cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedfference);
     		int minfazhi;
 	    	try {
 	    		minfazhi = evacond.getSettingDpMinWk();
