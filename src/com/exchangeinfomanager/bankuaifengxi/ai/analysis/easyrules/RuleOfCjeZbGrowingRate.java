@@ -23,21 +23,24 @@ public class RuleOfCjeZbGrowingRate
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedfference, 
+			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
-		Double cjedpzbgr = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(evadate,evadatedfference);
+		Double cjedpzbgr = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(evadate,evadatedifference);
 		if(cjedpzbgr!= null && cjedpzbgr > 0 ) {
+			if(evacond.getCjezbGrowingRateMin() == null && evacond.getCjezbGrowingRateMax() == null)
+				return false;
+			
     		Double grmin = null; Double grmax = null;
 	    	try {
-	    		grmin = evacond.getCjezbGrowingRateMin() * 1;
+	    		grmin = evacond.getCjezbGrowingRateMin() * 1 /100;
 	    	} catch (java.lang.NullPointerException e) {
 	    		grmin = -100000000.0;
 	    	}
 	    	try {
-	    		grmax = evacond.getCjezbGrowingRateMax() * 1;
+	    		grmax = evacond.getCjezbGrowingRateMax() * 1 /100;
 	    	} catch (java.lang.NullPointerException e) {
 	    		grmax = 100000000.0;
 	    	}
@@ -52,7 +55,9 @@ public class RuleOfCjeZbGrowingRate
 	}
 	
 	@Action
-    public void execute(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
+    public void execute(@Fact("evanode") TDXNodes evanode, 
+    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
 		checkresult = true;
@@ -68,7 +73,7 @@ public class RuleOfCjeZbGrowingRate
     {
     	return this.foreground;
     }
-    
+        
     public String getAnalysisResultVoiceMsg ()
     {
     	return this.analysisresultforvoice;

@@ -48,7 +48,7 @@ public class BanKuaiGeGuMatchCondition
 		boolean exportOnlyBankuaiNotGeGu;
 		boolean exportOnlyGeGuOntBanKuai;
 		boolean exportOnlyCurrentGeGu;
-		Double exportYangXianGeGu;
+		
 		Double cjebottomforyangxianlevle;
 		Double cjeyangxianlevel;
 		Double cjebottomforfanglianglevle;
@@ -290,12 +290,26 @@ public class BanKuaiGeGuMatchCondition
 			this.exportOnlyCurrentGeGu = exportOnlyCurrentGeGu;
 		}
 		
-		public Double getExportYangXianGeGu() {
-			return exportYangXianGeGu;
+		Boolean exportGeGuZhangfuQuJian;
+		public Boolean shouldExporGeGuWithZhangFuQuJian() {
+			return exportGeGuZhangfuQuJian;
 		}
-		public void setExportYangXianGeGu(Double exportYangXianGeGu) {
-			this.exportYangXianGeGu = exportYangXianGeGu;
+		public void setExporGeGuWithZhangFuQuJian(Boolean exportgeguqujian) {
+			this.exportGeGuZhangfuQuJian = exportgeguqujian;
 		}
+		
+		private Double exportYinXianGeGumin;private Double exportYinXianGeGumax;
+		public Double getExportGeGuZhangfuQuJianMin() {
+			return exportYinXianGeGumin;
+		}
+		public Double getExportGeGuZhangfuQuJianMax() {
+			return exportYinXianGeGumax;
+		}
+		public void setExportGeGuZhangFuQuJian(Double min, Double max) {
+			this.exportYinXianGeGumin = min;
+			this.exportYinXianGeGumax = max;
+		}
+		
 		//³É½»¶îµÍÓÚ
 		public Double getChenJiaoErBottomForYangXianLevle() {
 			return cjebottomforyangxianlevle;

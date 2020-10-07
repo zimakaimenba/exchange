@@ -353,6 +353,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        	Facts facts = new Facts();
 		        facts.put("evanode", bankuai);
 		        facts.put("evadate", curdate);
+		        facts.put("evadatedifference", 0);
 		        facts.put("evaperiod", NodeGivenPeriodDataItem.WEEK);
 		        facts.put("evacond", matchcond);
 		        

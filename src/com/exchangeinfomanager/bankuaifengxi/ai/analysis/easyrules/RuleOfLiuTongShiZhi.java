@@ -23,7 +23,7 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
 	private String analysisresultforvoice = "";
 	@Condition
     public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate,
+    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
@@ -67,7 +67,9 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     }
     
     @Action
-    public void execute(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
+    public void execute(@Fact("evanode") TDXNodes evanode, 
+    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
     	if(specialarea)
@@ -86,7 +88,7 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     	return this.background;
     }
     
-    public String getAnalysisResult ()
+    public String getAnalysisResultVoice ()
     {
     	return this.analysisresultforvoice;
     }

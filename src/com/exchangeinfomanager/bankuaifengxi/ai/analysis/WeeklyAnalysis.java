@@ -40,6 +40,7 @@ public class WeeklyAnalysis
 		 	Facts facts = new Facts();
 	     	facts.put("evanode", node);
 	     	facts.put("evadate", requireddate);
+	     	facts.put("evadatedifference", 0);
 	        facts.put("evaperiod", NodeGivenPeriodDataItem.WEEK);
 	        facts.put("evacond", matchcond);
 	        
@@ -69,17 +70,17 @@ public class WeeklyAnalysis
 	        rulesEngine.fire(rules, facts);	
 	        
 	        analysisresult = analysisresult + maRule.getAnalysisResult(); //MA·ÖÎö
-	        if(!Strings.isNullOrEmpty( dpmaxwkRule.getAnalysisResult()  )  ) {
-	        	analysisresult = analysisresult + dpmaxwkRule.getAnalysisResult() ;
+	        if(!Strings.isNullOrEmpty( dpmaxwkRule.getAnalysisResultVoice()  )  ) {
+	        	analysisresult = analysisresult + dpmaxwkRule.getAnalysisResultVoice() ;
 	        }
-	        if(!Strings.isNullOrEmpty( averagecjemaxwkRule.getAnalysisResult()  )  ) {
-	        	analysisresult = analysisresult + averagecjemaxwkRule.getAnalysisResult() ;
+	        if(!Strings.isNullOrEmpty( averagecjemaxwkRule.getAnalysisResultVoice()  )  ) {
+	        	analysisresult = analysisresult + averagecjemaxwkRule.getAnalysisResultVoice() ;
 	        }
-	        if(!Strings.isNullOrEmpty( ltszRule.getAnalysisResult()  )  ) {
-	        	analysisresult = analysisresult + ltszRule.getAnalysisResult() ;
+	        if(!Strings.isNullOrEmpty( ltszRule.getAnalysisResultVoice()  )  ) {
+	        	analysisresult = analysisresult + ltszRule.getAnalysisResultVoice() ;
 	        }
-	        if(!Strings.isNullOrEmpty( zfRule.getAnalysisResult()  )  ) {
-	        	analysisresult = analysisresult + zfRule.getAnalysisResult() ;
+	        if(!Strings.isNullOrEmpty( zfRule.getAnalysisResultVoice()  )  ) {
+	        	analysisresult = analysisresult + zfRule.getAnalysisResultVoice() ;
 	        }
 	        if(!Strings.isNullOrEmpty( qkRule.getAnalysisResult()  )  ) {
 	        	analysisresult = analysisresult + qkRule.getAnalysisResult() ;

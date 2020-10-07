@@ -40,7 +40,7 @@ public class ExportMatchedNode
 		
 		Set<TDXNodes> matchednodeset = new HashSet<TDXNodes> ();
 		Set<String> checkednodesset = new HashSet<String> ();
-		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
+		
 		
 		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
 //		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
@@ -58,7 +58,7 @@ public class ExportMatchedNode
 						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
 					continue;
 				
-				
+				LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
 				childnode = svsbk.getNodeData( childnode, requirestart, exportdate,period,true);
 				if( this.cond.shouldExportYangXianBanKuai () ) //需要OHLC数据才同步K线数据，节约时间
 					svsbk.syncNodeData( childnode);
@@ -80,7 +80,7 @@ public class ExportMatchedNode
 				childnode = svsbk.getAllGeGuOfBanKuai((BanKuai) childnode);
 				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
 				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
-					this.checkStockMatchedCurSettingConditions ((Stock)ggstock, checkednodesset, matchednodeset,requirestart,exportdate,period);
+					this.checkStockMatchedCurSettingConditions ((Stock)ggstock, checkednodesset, matchednodeset,exportdate,period);
 //					 if(matchednodeset.contains( (TDXNodes)ggstock ) )
 //						 continue;
 //					 if( checkednodesset.contains(ggstock.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
@@ -120,7 +120,7 @@ public class ExportMatchedNode
 				if( !this.cond.shouldExportAllBanKuai() && !this.cond.shouldExportOnlyYellowSignBkStk() ) 
 					continue;
 			
-				this.checkStockMatchedCurSettingConditions ((Stock)childnode, checkednodesset, matchednodeset,requirestart,exportdate,period);
+				this.checkStockMatchedCurSettingConditions ((Stock)childnode, checkednodesset, matchednodeset,exportdate,period);
 //				if(matchednodeset.contains( (TDXNodes)childnode ) )
 //					 continue;
 //				if( checkednodesset.contains(childnode.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
@@ -167,13 +167,14 @@ public class ExportMatchedNode
 	 * 对个股进行检查
 	 */
 	private Boolean checkStockMatchedCurSettingConditions (Stock childnode,
-			Set<String> checkednodesset, Set<TDXNodes> matchednodeset,LocalDate requirestart,LocalDate exportdate,String period)
+			Set<String> checkednodesset, Set<TDXNodes> matchednodeset,LocalDate exportdate,String period)
 	{
 		if(matchednodeset.contains( (TDXNodes)childnode ) )
 			 return false;
 		if( checkednodesset.contains(childnode.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
 			 return false;
 		
+		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
 		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
 		childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 		
@@ -199,15 +200,22 @@ public class ExportMatchedNode
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(stkcheckresult  &&  this.cond.getExportYangXianGeGu() != null  ) {
-			 svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
+		
+		if(stkcheckresult )
+			if( this.cond.shouldExporGeGuWithZhangFuQuJian()  || !Strings.isNullOrEmpty(this.cond.getSettingMaFormula() )  )   
+				svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
+		
+		if(stkcheckresult  &&  this.cond.shouldExporGeGuWithZhangFuQuJian()   ) {
+//			 svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 			 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfZhangFu((Stock)childnode, exportdate, period);
 		 }
 		 
 		 if(stkcheckresult  && !Strings.isNullOrEmpty(this.cond.getSettingMaFormula() ) ) {
-			 svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
+//			 svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 			 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfCheckMA((Stock)childnode, exportdate, period);
 		 }
+		 
+		 
 		try{
 		if(stkcheckresult)
 			matchednodeset.add(  (TDXNodes)childnode);
@@ -304,15 +312,16 @@ public class ExportMatchedNode
 	public Boolean checkStockMatchedCurSettingConditonsOfZhangFu (Stock stock, LocalDate exportdate, String period)
 	{
 		Boolean checkresult = null; 
-		if( this.cond.getExportYangXianGeGu() != null ) {
+		if( this.cond.shouldExporGeGuWithZhangFuQuJian()  ) {
 			NodeXPeriodData nodexdata = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 			if(nodexdata == null)
 				return false;
 			
 			double zhangfu = nodexdata.getSpecificOHLCZhangDieFu(exportdate,0);
 			
-			double settinglevel = this.cond.getExportYangXianGeGu();
-			if(zhangfu >  settinglevel)
+			double settingzhangfumin = this.cond.getExportGeGuZhangfuQuJianMin();
+			double settingzhangfumax = this.cond.getExportGeGuZhangfuQuJianMax();
+			if(zhangfu >=  settingzhangfumin && zhangfu <=  settingzhangfumax)
 				checkresult =  true;
 			else
 				return false;
@@ -374,9 +383,9 @@ public class ExportMatchedNode
 		Double settinghsl = this.cond.getSettingHuanShouLv();
 		if( settinghsl == null)
 			settinghsl = -1.0;
-		Double settinggeguyangxianuplevel = this.cond.getExportYangXianGeGu ();
-		if(settinggeguyangxianuplevel == null)
-			settinggeguyangxianuplevel = -200.0;
+//		Double settinggeguyangxianuplevel = this.cond.getExportYangXianGeGu ();
+//		if(settinggeguyangxianuplevel == null)
+//			settinggeguyangxianuplevel = -200.0;
 		
 		Boolean shouldhavedayangxian = true;
 		Double cjelevelofyangxian = this.cond.getChenJiaoErBottomForYangXianLevle();

@@ -18,15 +18,15 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 {
 	private Color foreground = Color.BLACK, background = Color.white;
 	private String analysisresultforvoice = "";
-	
+	private Boolean isweeklyavergecjemaxwkmatched = false;
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
-			@Fact("evadate") LocalDate evadate,  @Fact("evadatedifference") Integer evadatedfference, 
+			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
-		int dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(evadate,evadatedfference);
+		int dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(evadate,evadatedifference);
     	
     	Integer cjemaxwk = evacond.getSettingChenJiaoErMaxWk();
     	if(cjemaxwk == null)
@@ -41,10 +41,13 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 	}
 	
 	@Action
-    public void execute(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
+    public void execute(@Fact("evanode") TDXNodes evanode, 
+    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
 		background = Color.CYAN ;
+		isweeklyavergecjemaxwkmatched = true;
     }
     
     @Priority //优先级注解：return 数值越小，优先级越高
@@ -56,8 +59,11 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     {
     	return this.background;
     }
-    
-    public String getAnalysisResult ()
+    public Boolean getRuleResult ()
+    {
+    	return isweeklyavergecjemaxwkmatched;
+    }
+    public String getAnalysisResultVoice ()
     {
     	return this.analysisresultforvoice;
     }

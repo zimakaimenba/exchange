@@ -21,7 +21,7 @@ public class RuleOfGeGuZhangFu
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedfference, 
+			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
@@ -44,7 +44,7 @@ public class RuleOfGeGuZhangFu
     	
     	StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 //		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
-    	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, evadatedfference);
+    	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, evadatedifference);
     	if(wkzhangdiefu != null)
     		analysisresultforvoice = analysisresultforvoice + "本周涨幅百分之" +  Math.floor(wkzhangdiefu * 100);
     	
@@ -52,7 +52,7 @@ public class RuleOfGeGuZhangFu
 		if(wkhighdiefu != null && wkhighdiefu < -0.09)
 			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" +  Math.floor(wkhighdiefu * 100);
 		
-		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, evadatedfference);
+		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, evadatedifference);
 		if(zfmax != null || zfmin != null ) {
 			if(wkhighzhangfu == null)
 		    	return false;
@@ -67,7 +67,9 @@ public class RuleOfGeGuZhangFu
 	}
 	
 	@Action
-    public void execute(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
+    public void execute(@Fact("evanode") TDXNodes evanode, 
+    		@Fact("evadate") LocalDate evadate,@Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
 		background = Color.pink ;
@@ -83,7 +85,7 @@ public class RuleOfGeGuZhangFu
     	return this.background;
     }
     
-    public String getAnalysisResult ()
+    public String getAnalysisResultVoice ()
     {
     	return this.analysisresultforvoice;
     }

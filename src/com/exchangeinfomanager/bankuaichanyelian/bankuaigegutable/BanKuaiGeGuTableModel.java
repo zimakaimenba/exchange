@@ -17,7 +17,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	{
 		super ();
 		
-		String[] jtableTitleStrings = { "代码", "名称","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","N日内最小MinWk","周平均成交额MAXWK","高级排序排名"};
+		String[] jtableTitleStrings = { "代码", "名称","板块成交额贡献","大盘CJEZB增长率","CJEZbDpMaxWk","N日内最小MinWk","周平均成交额MAXWK","高级排序排名"};
 		
 		super.setTableHeader(jtableTitleStrings);
 		

@@ -63,6 +63,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInf
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.JDialogOfBanKuaiChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
+import com.exchangeinfomanager.bankuaifengxi.BanKaiFengXi_2560ScrenResolution;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.GeGuTDXFengXi;
 import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
@@ -134,6 +135,8 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
@@ -228,6 +231,7 @@ public class StockInfoManager
 	private AccountDbOperation acntdbopt;
 	private BanKuaiGuanLi bkgldialog = null;
 	private BanKuaiFengXi bkfx ;
+	private BanKaiFengXi_2560ScrenResolution bkfx2560;
 	private GeGuTDXFengXi ggfx ;
 	private SearchDialog searchdialog;
 	private WeeklyExportFileFengXi effx;
@@ -1504,8 +1508,13 @@ public class StockInfoManager
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		this.frame.setCursor(hourglassCursor);
 		
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int width = gd.getDisplayMode().getWidth();
+		int height = gd.getDisplayMode().getHeight();
+		
+		if(width == 2560) { 
 			if(bkfx == null ) {
-				bkfx = new BanKuaiFengXi (this);
+				bkfx = new BanKuaiFengXi (this, "2560");
 				bkfx.setModal(false);
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			} 
@@ -1516,9 +1525,21 @@ public class StockInfoManager
 			} 
 			
 			bkfx.toFront();
+		} else {
+			if(bkfx == null ) {
+				bkfx = new BanKuaiFengXi (this, "");
+				bkfx.setModal(false);
+				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			} 
 			
-//			SystemAudioPlayed.playSound();
+			if(!bkfx.isVisible() ) {
+
+				bkfx.setVisible(true);
+			} 
 			
+			bkfx.toFront();
+		}
+
 			hourglassCursor = null;
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 			this.frame.setCursor(hourglassCursor2);

@@ -19,14 +19,15 @@ public class RuleOfCjeZbDpMaxWk
 	private Color foreground = Color.BLACK, background = Color.white;
 	boolean lianxufangliang = false;
 	String analysisresultforvoice = "";
+	boolean iszjezbdpmatched = false;
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedfference, 
+			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
-		Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (evadate,evadatedfference);
+		Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (evadate,evadatedifference);
 		if(cjedpmaxwk!= null && cjedpmaxwk > 0 ) {
     		int maxfazhi;
 	    	try {
@@ -35,7 +36,7 @@ public class RuleOfCjeZbDpMaxWk
 	    		maxfazhi = 100000000;
 	    	}
 	    	
-	    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (evadate,evadatedfference, maxfazhi);
+	    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (evadate,evadatedifference, maxfazhi);
 	    	 
 	    	if(cjedpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) {//连续放量,深色显示
 	    		background = new Color(102,0,0) ;
@@ -52,7 +53,7 @@ public class RuleOfCjeZbDpMaxWk
     	} 
     	
     	if(cjedpmaxwk == null || cjedpmaxwk <= 0 ) {
-    		Integer cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedfference);
+    		Integer cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedifference);
     		int minfazhi;
 	    	try {
 	    		minfazhi = evacond.getSettingDpMinWk();
@@ -66,17 +67,19 @@ public class RuleOfCjeZbDpMaxWk
     			return true;
     		}
     		else 
-    			return true;
+    			return false;
     	}
     	
     	return false;
 	}
 	
 	@Action
-    public void execute(@Fact("evanode") TDXNodes evanode, @Fact("evadate") LocalDate evadate, @Fact("evaperiod") String evaperiod,
+    public void execute(@Fact("evanode") TDXNodes evanode, 
+    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
-		
+		iszjezbdpmatched  = true;
     }
     
     @Priority //优先级注解：return 数值越小，优先级越高
@@ -88,8 +91,11 @@ public class RuleOfCjeZbDpMaxWk
     {
     	return this.background;
     }
-    
-    public String getAnalysisResult ()
+    public Boolean getRuleResult ()
+    {
+    	return iszjezbdpmatched;
+    }
+    public String getAnalysisResultVoice ()
     {
     	return this.analysisresultforvoice;
     }

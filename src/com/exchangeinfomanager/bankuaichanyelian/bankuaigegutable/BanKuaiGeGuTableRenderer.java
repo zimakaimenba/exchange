@@ -44,6 +44,7 @@ import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.CandleStickColorFactory;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbGrowingRate;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuZhangFu;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTongShiZhi;
@@ -150,7 +151,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    Facts facts = new Facts();
         facts.put("evanode", stock);
         facts.put("evadate", requireddate);
-        facts.put("evadatedfference", 0);
+        facts.put("evadatedifference", 0);
         facts.put("evaperiod", period);
         facts.put("evacond", matchcond);
         
@@ -167,8 +168,8 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         RuleOfQueKou qkRule = new RuleOfQueKou ();
         rules.register(qkRule);
         
-        RuleOfCjeZbDpMaxWk dpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
-        rules.register(dpmaxwkRule);
+        RuleOfCjeZbDpMaxWk cjezbdpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
+        rules.register(cjezbdpmaxwkRule);
         
         RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
         rules.register(averagecjemaxwkRule);
@@ -179,15 +180,35 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         RulesEngine rulesEngine = new DefaultRulesEngine();
         rulesEngine.fire(rules, facts);
         
-	    
+        Facts lwfacts = new Facts();
+        lwfacts.put("evanode", stock);
+        lwfacts.put("evadate", requireddate);
+        lwfacts.put("evadatedifference", -1);
+        lwfacts.put("evaperiod", period);
+        lwfacts.put("evacond", matchcond);
+        
+        Rules lwrules = new Rules();
+        
+        RuleOfCjeZbDpMaxWk lwdpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
+        lwrules.register(lwdpmaxwkRule);
+        
+        RuleOfCjeZbGrowingRate lwcjezbgr = new RuleOfCjeZbGrowingRate ();
+        lwrules.register(lwcjezbgr);
+        
+        RuleOfWeeklyAverageChenJiaoErMaxWk lwaveragecjemaxwk = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
+        lwrules.register(lwaveragecjemaxwk);
+        RulesEngine lwrulesEngine = new DefaultRulesEngine();
+        rulesEngine.fire(lwrules, lwfacts);
+        
+        NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
 	    if( comp instanceof JLabel &&  columnname.contains("代码")  ) { //当前选择选择 // ||   stock.wetherHasReiewedToday()
 	    	
-		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
+//		    NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
 		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
 		    background = CandleStickColorFactory.getCandelStickColor(zhangdiefu);
 	    } 
 	    
-	    if( columnname.equals("名称") ) { //个股名称
+	    if( columnname.equals("名称") ) { //个股名称, 是否在分析文件/权重/龙头
 	 		NodesTreeRelated stofbktree = stock.getNodeTreeRelated();
     	
 	 		Boolean isin = stofbktree.selfIsMatchModel(requireddate);
@@ -217,18 +238,27 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    if( columnname.contains("排序排名")) { //流通市值 col == 2
 	         background = cjeRule.getBackGround ();
 	    } else  
-	    if( columnname.contains("大盘CJEZB增长率")  ) { //涨幅>= col == 4  和股价区间
+	    if( columnname.contains("大盘CJEZB增长率")  ) { //涨幅>= col == 4  和上周增加率区间
 	    	background = zfRule.getBackGround();
-			foreground = priceRule.getForeGround();
+			foreground = lwcjezbgr.getForeGround();
 	    }  else 
-	    if(columnname.contains("板块成交额贡献")   ) { //突出回补缺口 col == 3
+	    if(columnname.contains("板块成交额贡献")   ) { //突出回补缺口 col == 3 和股价区间
 	    	background = qkRule.getBackGround();
+	    	foreground = priceRule.getForeGround();
 	    } else  
-	    if( columnname.contains("CJEDpMaxWk")    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股 col == 5
-	    	background = dpmaxwkRule.getBackGround(); 
+	    if( columnname.contains("CJEZbDpMaxWk")    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股   / 上周MAXWK达标且阴线
+	    	background = cjezbdpmaxwkRule.getBackGround(); 
+	    	
+	    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
+	    	if(zhangdiefu != null &&  zhangdiefu <0 && lwdpmaxwkRule.getRuleResult() )
+	    		foreground = Color.YELLOW;
 	    } else  
-	    if( columnname.contains("周平均成交额MAXWK")   && value != null  ) { //col == 7
+	    if( columnname.contains("周平均成交额MAXWK")   && value != null  ) { //col == 7 / 上周average cje WK达标且阴线
 	    	background = averagecjemaxwkRule.getBackGround();
+	    	
+	    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
+	    	if(zhangdiefu != null && zhangdiefu <0 && lwaveragecjemaxwk.getRuleResult() )
+	    		foreground = Color.YELLOW;
 	    } else 
 	    if( columnname.contains("N日")   && value != null) { //突出MA,默认为大于 
 	    	background = maRule.getBackGround();

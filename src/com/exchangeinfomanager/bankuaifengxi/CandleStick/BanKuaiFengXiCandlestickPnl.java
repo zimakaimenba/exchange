@@ -398,7 +398,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         try {
         	ohlcSeries = candlestickDataset.getSeries(0);
         } catch (java.lang.IllegalArgumentException e) {
-        	logger.info("没有找到'" + curdisplayednode.getMyOwnName() + "'的CSV文件，无法显示成交量！请检查！");
+        	logger.info( curdisplayednode.getMyOwnName() + "没有K线数据，无法显示个股K线！请检查！");
         	return;
         }
 		OHLCSeriesCollection tmpdapanDataset = (OHLCSeriesCollection)candlestickChart.getXYPlot().getDataset(1);

@@ -2435,17 +2435,21 @@ public class BanKuaiDbOperation
 	 */
 	private List<String> getTDXVolFilesRule ()
 	{
-		List<String> volamooutput = sysconfig.getTDXVOLFilesPath();
-		String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
-		String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
-		String dateRule = getTDXDateExportDateRule(Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(2)).get(1));
-		
-		List<String> tdxVolFileRule = new ArrayList<String> ();
-		tdxVolFileRule.add(exportath);
-		tdxVolFileRule.add(filenamerule);
-		tdxVolFileRule.add(dateRule);
-		
-		return tdxVolFileRule;
+		List<String> volamooutput = sysconfig.getTDXVOLFilesPath(); 
+		try {
+			String exportath = sysconfig.toUNIXpath(Splitter.on('=').trimResults().omitEmptyStrings().splitToList(volamooutput.get(0) ).get(1) );
+			String filenamerule = Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(1)).get(1);
+			String dateRule = getTDXDateExportDateRule(Splitter.on('=').trimResults().omitEmptyStrings().splitToList( volamooutput.get(2)).get(1));
+			
+			List<String> tdxVolFileRule = new ArrayList<String> ();
+			tdxVolFileRule.add(exportath);
+			tdxVolFileRule.add(filenamerule);
+			tdxVolFileRule.add(dateRule);
+			
+			return tdxVolFileRule;
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 	private String getTDXDateExportDateRule(String ruleindex) 
 	{
@@ -3887,6 +3891,8 @@ public class BanKuaiDbOperation
 //			optTable = "通达信上交所股票每日交易信息";
 		
 		List<String> volamooutput = getTDXVolFilesRule ();
+		if(volamooutput == null)
+			return stock;
 //		String exportath = volamooutput.get(0);
 		String filenamerule = volamooutput.get(1);
 		String csvfilename = (filenamerule.replaceAll("YY",jiaoyisuo.toUpperCase())).replaceAll("XXXXXX", stockcode).replace("TXT", "CSV") ;
@@ -3921,7 +3927,8 @@ public class BanKuaiDbOperation
 				String recordsdate = linevalue[0];
 				LocalDate curlinedate;
 				try {
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+//					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(volamooutput.get(2).trim() );
 					curlinedate = LocalDate.parse(recordsdate, formatter);
 					
 					if(linenumber == 1) //计算第一行的日期，给周K线的计算使用
@@ -3940,8 +3947,10 @@ public class BanKuaiDbOperation
 				// 为生成ohlc的时间做处理
 				java.sql.Date sqldate = null;
 				try {
-					DateFormat format = new SimpleDateFormat("ddMMyyyy", Locale.CHINA);
-					 sqldate = new java.sql.Date(format.parse(recordsdate).getTime());
+//					DateFormat format = new SimpleDateFormat("ddMMyyyy", Locale.CHINA);
+					String formatstr = volamooutput.get(2).trim();
+					DateFormat format = new SimpleDateFormat(formatstr, Locale.CHINA);
+					 sqldate = new java.sql.Date(format.parse(recordsdate).getTime()  );
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}

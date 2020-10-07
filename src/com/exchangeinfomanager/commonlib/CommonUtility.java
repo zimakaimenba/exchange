@@ -47,6 +47,8 @@ public class CommonUtility {
 			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(2*sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		else if(rangelevel.toLowerCase().equals("large"))
 			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(3,ChronoUnit.YEARS).with(DayOfWeek.MONDAY);
+		else if(rangelevel.toLowerCase().equals("2560"))
+			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange()+5,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
 		return requirestart;
 	}

@@ -337,38 +337,75 @@ import com.udojava.evalex.Expression;
 	{
 		int itemcount = this.nodeohlc.getItemCount();
 		String nodeperiod = this.getNodeperiodtype();
-		RegularTimePeriod period = null;
+		
+		RegularTimePeriod curperiod = null;
 		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
-			period = new org.jfree.data.time.Week (lastdayofweek);
+//			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+			curperiod = new org.jfree.data.time.Week (lastdayofweek);
 		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
-			expectdate = super.adjustDate(expectdate);
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
-			period = new org.jfree.data.time.Day (lastdayofweek);
+//			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
+			requireddate = super.adjustDate(requireddate); //make sure always check Monday to Friday
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+			curperiod = new org.jfree.data.time.Day (lastdayofweek);
 		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
 		}
 
-		int curindex = 0;
+		Integer curindex = null;
 		for(int i=0;i<itemcount;i++) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-			if(dataitemp.equals(period) ) {
-				curindex = i;
-				
-				try {
-					OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(curindex);
-					if(result != null) {
-						RegularTimePeriod ep = result.getPeriod();
-						return result.getPeriod();
-					}
-				} catch ( java.lang.IndexOutOfBoundsException e) {
-					return null;
-				}
-				
-				break;
-			}
+			if(dataitemp.equals(curperiod) )
+				curindex = i ;
 		}
+		
+		if(curindex == null)
+			return null;
+		
+		Integer requiredindex = curindex + difference;
+		RegularTimePeriod reqdataitemp = this.nodeohlc.getPeriod(requiredindex);
+		try {
+			OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(requiredindex );
+			if(result != null) {
+				RegularTimePeriod ep = result.getPeriod();
+				return result.getPeriod();
+			}
+		} catch ( java.lang.IndexOutOfBoundsException e) {
+			return null;
+		}
+		
+		
+//		RegularTimePeriod period = null;
+//		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
+//			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
+//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
+//			period = new org.jfree.data.time.Week (lastdayofweek);
+//		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
+//			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
+//			expectdate = super.adjustDate(expectdate);
+//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
+//			period = new org.jfree.data.time.Day (lastdayofweek);
+//		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
+//		}
+//
+//		int curindex = 0;
+//		for(int i=0;i<itemcount;i++) {
+//			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
+//			if(dataitemp.equals(period) ) {
+//				curindex = i;
+//				
+//				try {
+//					OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(curindex);
+//					if(result != null) {
+//						RegularTimePeriod ep = result.getPeriod();
+//						return result.getPeriod();
+//					}
+//				} catch ( java.lang.IndexOutOfBoundsException e) {
+//					return null;
+//				}
+//				
+//				break;
+//			}
+//		}
 		
 		return null;
 	}
