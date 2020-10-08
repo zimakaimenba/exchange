@@ -1,5 +1,7 @@
 package com.exchangeinfomanager.commonlib;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
@@ -37,18 +39,27 @@ public class CommonUtility {
 	 */
 	public static LocalDate getSettingRangeDate (LocalDate curselectdate, String rangelevel)
 	{
-		SystemConfigration sysconfig = SystemConfigration.getInstance();
-
-		LocalDate requirestart = null ;
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int width = gd.getDisplayMode().getWidth();
+		int height = gd.getDisplayMode().getHeight();
 		
-		if(rangelevel.toLowerCase().equals("basic"))
-			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() ,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		else if(rangelevel.toLowerCase().equals("middle"))
-			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(2*sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		else if(rangelevel.toLowerCase().equals("large"))
-			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(3,ChronoUnit.YEARS).with(DayOfWeek.MONDAY);
-		else if(rangelevel.toLowerCase().equals("2560"))
-			requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange()+5,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+		SystemConfigration sysconfig = SystemConfigration.getInstance();
+		LocalDate requirestart = null ;
+		if(width == 2560) {
+			if(rangelevel.toLowerCase().equals("basic"))
+				requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() + 4,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+			else if(rangelevel.toLowerCase().equals("middle"))
+				requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(2*sysconfig.banKuaiFengXiMonthRange() + 4,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+			else if(rangelevel.toLowerCase().equals("large"))
+				requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(3,ChronoUnit.YEARS).with(DayOfWeek.MONDAY);			
+		} else {
+			if(rangelevel.toLowerCase().equals("basic"))
+				requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(sysconfig.banKuaiFengXiMonthRange() ,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+			else if(rangelevel.toLowerCase().equals("middle"))
+				requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(2*sysconfig.banKuaiFengXiMonthRange(),ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+			else if(rangelevel.toLowerCase().equals("large"))
+				requirestart = curselectdate.with(DayOfWeek.MONDAY).minus(3,ChronoUnit.YEARS).with(DayOfWeek.MONDAY);
+		}
 		
 		return requirestart;
 	}

@@ -84,6 +84,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -190,8 +191,24 @@ public class StockInfoManager
 	{
 		License license = new License ();
 		if( !license.isLicenseValide() ) {
+			
+			JPanel panel = new JPanel();
+			JLabel label = new JLabel("Enter Admin password:");
+			JPasswordField pass = new JPasswordField(15);
+			panel.add(label);
+			panel.add(pass);
+			String[] options = new String[]{"OK", "Cancel"};
+			int option = JOptionPane.showOptionDialog(null, panel, "License非法！请输入管理员密码:",
+			                         JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+			                         null, options, options[1]);
+			String adminpw = null;
+			if(option == 0) // pressing OK button
+			{
+			    char[] password = pass.getPassword();
+			    adminpw = new String(password);
+			}
 
-			String adminpw = JOptionPane.showInputDialog(null,"License非法！请输入管理员密码:","注意", JOptionPane.QUESTION_MESSAGE);
+//			String adminpw = JOptionPane.showInputDialog(null,"License非法！请输入管理员密码:","注意", JOptionPane.QUESTION_MESSAGE);
 			
 			if( adminpw == null  || !license.isAdminPwvalide(adminpw.trim()) ) {
 				JOptionPane.showMessageDialog(null,"管理员密码错误！再见！");

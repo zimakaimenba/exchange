@@ -18,6 +18,7 @@ public class RuleOfQueKou
 {
 	private Color foreground = Color.BLACK, background = Color.white;
 	private String analysisresultforvoice = "";
+	private Boolean isquekoumatched = false;
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
@@ -52,13 +53,17 @@ public class RuleOfQueKou
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
 		background = Color.PINK ;
+		isquekoumatched = true;
     }
     
     @Priority //优先级注解：return 数值越小，优先级越高
     public int getPriority(){
         return 1;
     }
-    
+    public Boolean getRuleResult ()
+    {
+    	return isquekoumatched;
+    }
     public Color getBackGround ()
     {
     	return this.background;

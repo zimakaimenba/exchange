@@ -18,6 +18,7 @@ public class RuleOfGeGuZhangFu
 {
 	private String analysisresultforvoice = "";
 	private Color foreground = Color.BLACK, background = Color.white;
+	private Boolean isgeguzhangfumatched = false;
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
@@ -73,13 +74,17 @@ public class RuleOfGeGuZhangFu
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
 		background = Color.pink ;
+		isgeguzhangfumatched = true;
     }
     
     @Priority //优先级注解：return 数值越小，优先级越高
     public int getPriority(){
         return 1;
     }
-    
+    public Boolean getRuleResult ()
+    {
+    	return isgeguzhangfumatched;
+    }
     public Color getBackGround ()
     {
     	return this.background;

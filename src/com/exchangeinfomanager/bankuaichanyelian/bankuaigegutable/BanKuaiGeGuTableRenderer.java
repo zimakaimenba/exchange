@@ -239,11 +239,12 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	         background = cjeRule.getBackGround ();
 	    } else  
 	    if( columnname.contains("大盘CJEZB增长率")  ) { //涨幅>= col == 4  和上周增加率区间
-	    	background = zfRule.getBackGround();
+	    	
 			foreground = lwcjezbgr.getForeGround();
 	    }  else 
-	    if(columnname.contains("板块成交额贡献")   ) { //突出回补缺口 col == 3 和股价区间
-	    	background = qkRule.getBackGround();
+	    if(columnname.contains("板块成交额贡献")   ) { //突出回补缺口/ 日涨幅区间 col == 3 和股价区间
+	    	if(qkRule.getRuleResult() || zfRule.getRuleResult() )	
+	    		background = Color.PINK;
 	    	foreground = priceRule.getForeGround();
 	    } else  
 	    if( columnname.contains("CJEZbDpMaxWk")    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股   / 上周MAXWK达标且阴线

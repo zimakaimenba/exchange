@@ -4404,7 +4404,7 @@ public class BanKuaiFengXi extends JDialog
 			tflddpminwk.setText("8");
 //			tflddpminwk.setColumns(10);
 			
-			chbxzhangfu = new JCheckBox("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
+			chbxzhangfu = new JCheckBox("突出日涨幅区间");
 			chbxzhangfu.setBackground(Color.PINK);
 			chbxzhangfu.setSelected(true);
 			chbxzhangfu.setToolTipText("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
@@ -4752,41 +4752,41 @@ public class BanKuaiFengXi extends JDialog
 //		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
 		
-//		JScrollBar scrollbarGuGuZhanBiInBk = new JScrollBar(JScrollBar.VERTICAL);
-//		scrollbarGuGuZhanBiInBk.setUnitIncrement(10);
-//	    scrollbarGuGuZhanBiInBk.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
-//	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
-//	      @Override protected void paintTrack(
-//	            Graphics g, JComponent c, Rectangle trackBounds) {
-//	        super.paintTrack(g, c, trackBounds);
-////	        Rectangle rect = tabbedPanegegu.getBounds();
-////	        double sy = trackBounds.getHeight() / rect.getHeight();
-////	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
-//	        g.setColor(Color.BLUE.darker());
-//	        
-//	        BanKuai interbk = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
-//		    if(interbk!= null) {
-//		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
-//		    	int rownum = allstks.size();
-//		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
-//		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-//		    			Integer rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
-//						if( rowindex  != null && rowindex >=0 ) {
-//							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
-////							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
-////							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
-////						    Rectangle r = new Rectangle(width, height * modelRow);
-////						    Rectangle s = at.createTransformedShape(r).getBounds();
-//						    int h = 2; //Math.max(2, s.height-2);
-//						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
-//					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
-//						}
-//		    		}
-//		    	}
-//		    }
-//	      }
-//	    });
-//	    scrollPanedangqian.setVerticalScrollBar(scrollbarGuGuZhanBiInBk);
+		JScrollBar scrollbarGuGuZhanBiInBk = new JScrollBar(JScrollBar.VERTICAL); //如果要使用windowbuilder修改界面，这里需要修改
+		scrollbarGuGuZhanBiInBk.setUnitIncrement(10);
+	    scrollbarGuGuZhanBiInBk.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
+	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
+	      @Override protected void paintTrack(
+	            Graphics g, JComponent c, Rectangle trackBounds) {
+	        super.paintTrack(g, c, trackBounds);
+//	        Rectangle rect = tabbedPanegegu.getBounds();
+//	        double sy = trackBounds.getHeight() / rect.getHeight();
+//	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
+	        g.setColor(Color.BLUE.darker());
+	        
+	        BanKuai interbk = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
+		    if(interbk!= null) {
+		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
+		    	int rownum = allstks.size();
+		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
+		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
+		    			Integer rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+						if( rowindex  != null && rowindex >=0 ) {
+							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+//							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
+//							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
+//						    Rectangle r = new Rectangle(width, height * modelRow);
+//						    Rectangle s = at.createTransformedShape(r).getBounds();
+						    int h = 2; //Math.max(2, s.height-2);
+						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
+					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
+						}
+		    		}
+		    	}
+		    }
+	      }
+	    });
+	    scrollPanedangqian.setVerticalScrollBar(scrollbarGuGuZhanBiInBk);
 		
 		JScrollPane scrollPanGeGuExtralInfo = new JScrollPane();
 		tabbedPanegegu.addTab("\u5176\u4ED6\u4FE1\u606F", null, scrollPanGeGuExtralInfo, null);
@@ -4820,41 +4820,41 @@ public class BanKuaiFengXi extends JDialog
 		tableTempGeGu = new BanKuaiGeGuTable (this.stockmanager);
 		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
 		
-//		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL);
-//		scrollbarTempGeGu.setUnitIncrement(10);
-//	    scrollbarTempGeGu.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
-//	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
-//	      @Override protected void paintTrack(
-//	            Graphics g, JComponent c, Rectangle trackBounds) {
-//	        super.paintTrack(g, c, trackBounds);
-////	        Rectangle rect = tabbedPanegegu.getBounds();
-////	        double sy = trackBounds.getHeight() / rect.getHeight();
-////	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
-//	        g.setColor(Color.BLUE.darker());
-//	        
-//	        BanKuai interbk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getInterSetctionBanKuai();
-//		    if(interbk!= null) {
-//		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getAllStocks();
-//		    	int rownum = allstks.size();
-//		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
-//		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-//		    			Integer rowindex = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
-//						if( rowindex  != null && rowindex >=0 ) {
-//							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
-////							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
-////							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
-////						    Rectangle r = new Rectangle(width, height * modelRow);
-////						    Rectangle s = at.createTransformedShape(r).getBounds();
-//						    int h = 2; //Math.max(2, s.height-2);
-//						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
-//					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
-//						}
-//		    		}
-//		    	}
-//		    }
-//	      }
-//	    });
-//	    scrollPaneTempGeGu.setVerticalScrollBar(scrollbarTempGeGu);
+		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL); //如果要使用windowbuilder修改界面，这里需要修改
+		scrollbarTempGeGu.setUnitIncrement(10);
+	    scrollbarTempGeGu.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
+	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
+	      @Override protected void paintTrack(
+	            Graphics g, JComponent c, Rectangle trackBounds) {
+	        super.paintTrack(g, c, trackBounds);
+//	        Rectangle rect = tabbedPanegegu.getBounds();
+//	        double sy = trackBounds.getHeight() / rect.getHeight();
+//	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
+	        g.setColor(Color.BLUE.darker());
+	        
+	        BanKuai interbk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getInterSetctionBanKuai();
+		    if(interbk!= null) {
+		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getAllStocks();
+		    	int rownum = allstks.size();
+		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
+		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
+		    			Integer rowindex = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+						if( rowindex  != null && rowindex >=0 ) {
+							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
+//							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
+//							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
+//						    Rectangle r = new Rectangle(width, height * modelRow);
+//						    Rectangle s = at.createTransformedShape(r).getBounds();
+						    int h = 2; //Math.max(2, s.height-2);
+						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
+					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
+						}
+		    		}
+		    	}
+		    }
+	      }
+	    });
+	    scrollPaneTempGeGu.setVerticalScrollBar(scrollbarTempGeGu);
 		tabbedPanegegu.addTab("\u4E34\u65F6\u4E2A\u80A1", null, scrollPaneTempGeGu, null);
 		tabbedPanegegu.setBackgroundAt(6, Color.CYAN);
 		
@@ -5135,7 +5135,7 @@ public class BanKuaiFengXi extends JDialog
 			tflddpminwk.setText("8");
 //			tflddpminwk.setColumns(10);
 			
-			chbxzhangfu = new JCheckBox("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
+			chbxzhangfu = new JCheckBox("突出日涨幅区间");
 			chbxzhangfu.setBackground(Color.PINK);
 			chbxzhangfu.setSelected(true);
 			chbxzhangfu.setToolTipText("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
@@ -5173,8 +5173,8 @@ public class BanKuaiFengXi extends JDialog
 			tuchulwcjemaxwk.setForeground(new Color(254,204,51));
 			v.add(tuchulwcjemaxwk);
 			
-//			cbbxmore = new JComboCheckBox(v);
-			cbbxmore = new JComboBox(v);
+			cbbxmore = new JComboCheckBox(v);
+//			cbbxmore = new JComboBox(v); //如果要使用windowbuilder修改界面，这里需要修改
 			cbbxmore.setPreferredSize(new Dimension(120, 25));
 			
 			tfldshowcje = new JTextField();
