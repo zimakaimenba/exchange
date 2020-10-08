@@ -199,7 +199,7 @@ public class StockInfoManager
 			panel.add(pass);
 			String[] options = new String[]{"OK", "Cancel"};
 			int option = JOptionPane.showOptionDialog(null, panel, "License非法！请输入管理员密码:",
-			                         JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+			                         JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE,
 			                         null, options, options[1]);
 			String adminpw = null;
 			if(option == 0) // pressing OK button

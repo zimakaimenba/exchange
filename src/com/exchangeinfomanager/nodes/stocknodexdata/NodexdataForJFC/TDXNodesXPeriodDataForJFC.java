@@ -1167,31 +1167,31 @@ import com.udojava.evalex.Expression;
 				if( this.nodeohlcma5.getIndex(period) <0  )
 				ma5 = StatUtils.mean(closedata, i-4, 5);
 				if(ma5 != null)
-					nodeohlcma5.add(period,ma5,false);
+					nodeohlcma5.addOrUpdate(period,ma5);
 			}
 			if(i>=10) {
 				if( this.nodeohlcma10.getIndex(period) <0  )
 				ma10 = StatUtils.mean(closedata, i-9, 10);
 				if(ma10 != null)
-					nodeohlcma10.add(period,ma10,false);
+					nodeohlcma10.addOrUpdate(period,ma10);
 			}
 			if(i>=20) {
 				if( this.nodeohlcma20.getIndex(period) <0  )
 				ma20 = StatUtils.mean(closedata, i-19, 20);
 				if(ma20 != null)
-					nodeohlcma20.add(period,ma20,false);
+					nodeohlcma20.addOrUpdate(period,ma20);
 			}
 			if(i>=60) {
 				if( this.nodeohlcma60.getIndex(period) <0  )
 				ma60 = StatUtils.mean(closedata, i-59, 60);
 				if(ma60 != null)
-					nodeohlcma60.add(period,ma60,false);
+					nodeohlcma60.addOrUpdate(period,ma60);
 			}
 			if(i>=250) {
 				if( this.nodeohlcma250.getIndex(period) <0  )
 				ma250 = StatUtils.mean(closedata, i-249, 250);
 				if(ma250 != null)
-					nodeohlcma250.add(period,ma250,false);
+					nodeohlcma250.addOrUpdate(period,ma250);
 			}
 		}
 		

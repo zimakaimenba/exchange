@@ -317,7 +317,9 @@ public class ExportMatchedNode
 			if(nodexdata == null)
 				return false;
 			
-			double zhangfu = nodexdata.getSpecificOHLCZhangDieFu(exportdate,0);
+			Double zhangfu = nodexdata.getSpecificOHLCZhangDieFu(exportdate,0);
+			if(zhangfu == null)
+				return false;
 			
 			double settingzhangfumin = this.cond.getExportGeGuZhangfuQuJianMin();
 			double settingzhangfumax = this.cond.getExportGeGuZhangfuQuJianMax();
