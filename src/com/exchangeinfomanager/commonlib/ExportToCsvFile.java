@@ -5,19 +5,19 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Paths;
 import java.util.List;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 import com.opencsv.CSVWriter;
 
 public class ExportToCsvFile {
 
 	public ExportToCsvFile ()
 	{
-		this.sysconfig = SystemConfigration.getInstance();
+//		this.sysconfig = SystemConfigration.getInstance();
 //		this.bkdbopt = new BanKuaiDbOperation ();
 		
 //		nodecontentArrayList = new ArrayList<>();
 	}
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 //	private BanKuaiDbOperation bkdbopt;
 //	private AllCurrentTdxBKAndStoksTree bkcyl;
 	

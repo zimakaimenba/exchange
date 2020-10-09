@@ -14,7 +14,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -28,11 +28,11 @@ public class BuySellRecordsProcessorZhaoShang implements LineProcessor<List<Stri
     private List<String> recoreslists = Lists.newArrayList();
     private String zhanghuid = null;
     private boolean newformate = false;
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
    
 	public BuySellRecordsProcessorZhaoShang ()
 	{
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 		initializeIsBuySellList ();
 	}
 	@Override
@@ -187,7 +187,7 @@ public class BuySellRecordsProcessorZhaoShang implements LineProcessor<List<Stri
     private List<String> sellgjc = Lists.newArrayList(); //Âô³ö¹Ø¼ü´Ê
     public void initializeIsBuySellList ()
     {
-    	File sysconfigfilexml = new File (sysconfig.getQuanShangJiaoYiSheZhi());
+    	File sysconfigfilexml = new File ((new SetupSystemConfiguration()).getQuanShangJiaoYiSheZhi());
     	FileInputStream xmlfileinput = null;
 		try {
 			xmlfileinput = new FileInputStream(sysconfigfilexml);

@@ -49,7 +49,7 @@ import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 
 import com.mysql.jdbc.MysqlDataTruncation;
 import com.sun.rowset.CachedRowSetImpl;

@@ -23,7 +23,8 @@ import javax.swing.JWindow;
 import javax.swing.border.EtchedBorder;
 
 import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;   
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+  
 //https://xbgd.iteye.com/blog/755002
 public class ReminderPopToolTip 
 {  
@@ -123,7 +124,7 @@ public class ReminderPopToolTip
             	@Override
             	public void mouseClicked(MouseEvent arg0) 
             	{
-            		String bkfxmatrixfile = SystemConfigration.getInstance().getBanKuaiFengXiChecklistXmlFile();
+            		String bkfxmatrixfile = (new SetupSystemConfiguration() ).getBanKuaiFengXiChecklistXmlFile();
             		try {
     					String cmd = "rundll32 url.dll,FileProtocolHandler " + bkfxmatrixfile;
     					Process p  = Runtime.getRuntime().exec(cmd);

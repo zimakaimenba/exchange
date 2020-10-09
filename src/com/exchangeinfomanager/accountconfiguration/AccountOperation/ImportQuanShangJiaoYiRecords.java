@@ -23,7 +23,7 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.io.Files;
@@ -62,9 +62,6 @@ import javax.swing.JCheckBox;
 
 public class ImportQuanShangJiaoYiRecords extends JDialog {
 
-
-	
-
 	/**
 	 * Create the dialog.
 	 */
@@ -86,11 +83,11 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 	private AccountAndChiCangConfiguration acntstckconfig;
 	private AccountDbOperation acntdbopt;
 	private BanKuaiDbOperation stockdbopt;
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	
 	private void initializeSysConfig() 
 	{
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 	}
 	
 	
@@ -132,9 +129,9 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 		     List<String> readLines = null;
 		     try {
 		    	 switch(acntquanshang) {
-		    	 case "招商": readLines = Files.readLines(recordsfile,sysconfig.charSet(),new BuySellRecordsProcessorZhaoShang ());
+		    	 case "招商": readLines = Files.readLines(recordsfile,(new SetupSystemConfiguration()).charSet(),new BuySellRecordsProcessorZhaoShang ());
 		    	 				break;
-		    	 case "湘财": readLines = Files.readLines(recordsfile,sysconfig.charSet(),new BuySellRecordsProcessorXiangCai ());
+		    	 case "湘财": readLines = Files.readLines(recordsfile,(new SetupSystemConfiguration()).charSet(),new BuySellRecordsProcessorXiangCai ());
 	 				break;
 		    	 }
 					
@@ -275,7 +272,7 @@ public class ImportQuanShangJiaoYiRecords extends JDialog {
 			File recordsfile = new File(tfldrecordspath.getText() + str);
 		     List<String> readLines = null;
 		     try {
-					readLines = Files.readLines(recordsfile,sysconfig.charSet(),new MoneyFlowRecordsProcessorZhaoShang ());
+					readLines = Files.readLines(recordsfile,(new SetupSystemConfiguration()).charSet(),new MoneyFlowRecordsProcessorZhaoShang ());
 			 } catch (IOException ex) {
 					ex.printStackTrace();
 			 }

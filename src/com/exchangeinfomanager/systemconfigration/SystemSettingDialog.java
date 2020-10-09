@@ -56,17 +56,17 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import net.miginfocom.swing.MigLayout;
 
-public class SystemSetting extends JDialog 
+public class SystemSettingDialog extends JDialog 
 {
-	private SystemConfigration sysconf;
-
+	private DataBaseConfigration dbconf;
+	SetupSystemConfiguration systemconfig;
 	/**
 	 * Create the dialog.
 	 */
-	public SystemSetting(String systemxmlfile) 
+	public SystemSettingDialog() 
 	{
-		sysconf = SystemConfigration.getInstance();
-		this.systemxmlfile = sysconf.getSysSettingFile();
+		dbconf = DataBaseConfigration.getInstance();
+		systemconfig = new SetupSystemConfiguration ();
 		
 		initializeGui ();
 		createEvents ();
@@ -74,72 +74,50 @@ public class SystemSetting extends JDialog
 		initializeSystemSettingGui ();
 	}
 
-	private static Logger logger = Logger.getLogger(SystemSetting.class);
+	private static Logger logger = Logger.getLogger(SystemSettingDialog.class);
 	
 	private String systemxmlfile;
 	private boolean  newsystemsetting = false;
 	private String LicenseMacString;
+	
 
 	private void initializeSystemSettingGui()  
 	{
-		File directory = new File(this.systemxmlfile);//设定为当前文件夹
+		File directory = new File(systemconfig.getSystemInstalledPath() );//设定为当前文件夹
 		try{
 		    logger.debug(directory.getCanonicalPath());//获取标准的路径
 		    logger.debug(directory.getAbsolutePath());//获取绝对路径
 		    logger.debug(directory.getParent() );
 
 		    tfldSysInstallPath.setText( toUNIXpath(directory.getParent()+ "\\")  );
-		}catch(Exception e)
-		{
+		}catch(Exception e)	{
 			e.printStackTrace();
 			System.exit(0);
 		}
 		
-		Document document;
-    	Element xmlroot ;
-    	SAXReader reader ;
-    	
-    	FileInputStream xmlfileinput = null;
-		try {
-			xmlfileinput = new FileInputStream(this.systemxmlfile );
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		reader = new SAXReader();
-		try {
-			document = reader.read(xmlfileinput); 
-			xmlroot = document.getRootElement();
+		tfldTDXInstalledPath.setText( systemconfig.getTDXInstalledLocation()  );
+		if( systemconfig.getPrivateModeSetting() )
+			cbxprivatemode.setSelected(true);
+		else cbxprivatemode.setSelected(false);
+
+		((DatabaseSourceTableModel)tablelocal.getModel()).refresh(dbconf.getgetCurrentAllDatabaseSources()  );
+		((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 			
-			tfldTDXInstalledPath.setText(sysconf.getTDXInstalledLocation() );
-			tfldzdyguanzhu.setText(sysconf.getNameOfGuanZhuZdyBanKuai());
-			tfldzhanbizhouqi.setText(String.valueOf( sysconf.banKuaiFengXiMonthRange () ));
-			tfldzdyfilepath.setText(sysconf.getTDXSysZDYBanKuaiFile() );
-			cbxprivatemode.setSelected(sysconf.getPrivateModeSetting() );
-			tfldpythonptah.setText(sysconf.getPythonInterpreter() );
-			LicenseMacString = sysconf.getLinceseMac();
+		tfldzdyfilepath.setText( systemconfig.getTDXSysZDYBanKuaiFile() );
+		tfldzdyguanzhu.setText( systemconfig.getCurZdyBanKuaiOfGuanZhuGeGu () );
 		
-			((DatabaseSourceTableModel)tablelocal.getModel()).refresh(sysconf.getgetCurrentAllDatabaseSources()  );
-			((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
-			
-		} catch (DocumentException e) {
-			e.printStackTrace();
-			logger.debug("SystemSetting2 parse xml error");
-		}
+		tfldpythonptah.setText( systemconfig.getPythonInterpreter() );
+		txtCprogramFilesfreemind.setText( systemconfig.getFreeMindInstallationPath() );
 		
-		try {
-			xmlfileinput.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}catch (java.lang.NullPointerException e) {
-			e.printStackTrace();
-		}
+		
+		tfldzhanbizhouqi.setText( String.valueOf(systemconfig.banKuaiFengXiMonthRange() ) );
 	}
 	
-	public boolean isNewSystemSetting() 
-	{
-		return newsystemsetting;
-	}
+	
+//	public boolean isNewSystemSetting() 
+//	{
+//		return newsystemsetting;
+//	}
 	private void setTDXInstalledPath() 
 	{
 		JFileChooser chooser = new JFileChooser();
@@ -472,8 +450,8 @@ public class SystemSetting extends JDialog
 		    String linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
 		    logger.debug(linuxpath);
 		    tfldzdyfilepath.setText(linuxpath);
+		    ckbxzdy.setSelected(true);
 		}
-		
 	}
 	private boolean preSaveCheck() 
 	{
@@ -555,7 +533,7 @@ public class SystemSetting extends JDialog
 	private JTextField tfldzdyguanzhu;
 	private JLabel lblblocknewcfg;
 	private JTextField txtCprogramFilesfreemind;
-	private JTextField textField_1;
+	private JTextField dbguipath;
 	private void initializeGui() 
 	{
 		saveButton = new JButton ();
@@ -614,7 +592,7 @@ public class SystemSetting extends JDialog
 		tfldTDXInstalledPath.setColumns(10);
 		
 		btnChosTDXDict = new JButton("");
-		btnChosTDXDict.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		btnChosTDXDict.setIcon(new ImageIcon(SystemSettingDialog.class.getResource("/images/open24.png")));
 		
 		cbxprivatemode = new JCheckBox("\u9690\u79C1\u6A21\u5F0F");
 		syspnl.setLayout(new MigLayout("", "[73px][3px][8px][4px][289px][6px][57px]", "[42px][38px][23px]"));
@@ -651,13 +629,13 @@ public class SystemSetting extends JDialog
 		scrollPanelocal.setViewportView(tablelocal);
 		
 		btnEditDb = new JButton("");
-		btnEditDb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
+		btnEditDb.setIcon(new ImageIcon(SystemSettingDialog.class.getResource("/images/edit_23.851162790698px_1200630_easyicon.net.png")));
 		
 		btmaddnewdb = new JButton("");
-		btmaddnewdb.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/add_24px_1181422_easyicon.net.png")));
+		btmaddnewdb.setIcon(new ImageIcon(SystemSettingDialog.class.getResource("/images/add_24px_1181422_easyicon.net.png")));
 		
 		btndeletedbs = new JButton("");
-		btndeletedbs.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/minus_red.png")));
+		btndeletedbs.setIcon(new ImageIcon(SystemSettingDialog.class.getResource("/images/minus_red.png")));
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -701,7 +679,7 @@ public class SystemSetting extends JDialog
 		
 		btnzdyselect = new JButton("");
 		
-		btnzdyselect.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		btnzdyselect.setIcon(new ImageIcon(SystemSettingDialog.class.getResource("/images/open24.png")));
 		
 		JLabel lblNewLabel_3 = new JLabel("\u81EA\u5B9A\u4E49\u5173\u6CE8\u677F\u5757\u540D\u79F0");
 		
@@ -730,7 +708,7 @@ public class SystemSetting extends JDialog
 		
 		btnchoosepython = new JButton("");
 		
-		btnchoosepython.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		btnchoosepython.setIcon(new ImageIcon(SystemSettingDialog.class.getResource("/images/open24.png")));
 		
 		JLabel lblFreemindPath = new JLabel("FreeMind Path");
 		
@@ -741,17 +719,17 @@ public class SystemSetting extends JDialog
 		txtCprogramFilesfreemind.setColumns(10);
 		
 		JButton btnNewButton = new JButton("");
-		btnNewButton.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		btnNewButton.setIcon(new ImageIcon(SystemSettingDialog.class.getResource("/images/open24.png")));
 		
 		JLabel lblDatabaseGui = new JLabel("DataBase Gui");
 		
-		textField_1 = new JTextField();
-		textField_1.setEnabled(false);
-		textField_1.setEditable(false);
-		textField_1.setColumns(10);
+		dbguipath = new JTextField();
+		dbguipath.setEnabled(false);
+		dbguipath.setEditable(false);
+		dbguipath.setColumns(10);
 		
 		JButton btnNewButton_1 = new JButton("");
-		btnNewButton_1.setIcon(new ImageIcon(SystemSetting.class.getResource("/images/open24.png")));
+		btnNewButton_1.setIcon(new ImageIcon(SystemSettingDialog.class.getResource("/images/open24.png")));
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -761,7 +739,7 @@ public class SystemSetting extends JDialog
 						.addGroup(gl_panel.createSequentialGroup()
 							.addComponent(lblDatabaseGui)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(textField_1))
+							.addComponent(dbguipath))
 						.addGroup(gl_panel.createSequentialGroup()
 							.addComponent(lblFreemindPath)
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -794,7 +772,7 @@ public class SystemSetting extends JDialog
 					.addGap(18)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblDatabaseGui)
-						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+						.addComponent(dbguipath, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnNewButton_1))
 					.addContainerGap(249, Short.MAX_VALUE))
 		);

@@ -49,7 +49,8 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -195,7 +196,7 @@ public class TDXFormatedOpt {
 		File tongdaxinfile = new File(tmpfilefoler + "指数关键日期.txt");
 		
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
-		SystemConfigration syscon = SystemConfigration.getInstance();
+		SetupSystemConfiguration syscon = new SetupSystemConfiguration();
 		
 		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
 		List<String> lineinfo = new ArrayList<>();
@@ -433,9 +434,9 @@ public class TDXFormatedOpt {
 						}
 		}
 		
-		SystemConfigration sysconfig = SystemConfigration.getInstance();
+//		SystemConfigration sysconfig = SystemConfigration.getInstance();
 		
-		 File filezdgz = new File( sysconfig.getTdxZdgzReportFile() );
+		 File filezdgz = new File( (new SetupSystemConfiguration()).getTdxZdgzReportFile() );
 		 try {
 				if (filezdgz.exists()) {
 					filezdgz.delete();
@@ -496,7 +497,7 @@ public class TDXFormatedOpt {
 	 */
 	public static String parseChanYeLianXmlToTDXReport () 
 	{
-		SystemConfigration sysconfig = SystemConfigration.getInstance();
+		SetupSystemConfiguration sysconfig = new SetupSystemConfiguration();
 		String cylxml = sysconfig.getGeGuChanYeLianXmlFile();
 		String cylreportname = sysconfig.getTDXChanYeLianReportFile ();
 		Element xmlroot;
@@ -571,9 +572,9 @@ public class TDXFormatedOpt {
 	public static String stockAndBanKuaiFenXiReports ()
 	{
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
-		SystemConfigration sysconfig = SystemConfigration.getInstance();
+//		SystemConfigration sysconfig = SystemConfigration.getInstance();
 		
-		 File filezdgz = new File( sysconfig.getTdxFenXiReportFile() );
+		 File filezdgz = new File( (new SetupSystemConfiguration()).getTdxFenXiReportFile() );
 		 try {
 				if (filezdgz.exists()) {
 					filezdgz.delete();
@@ -660,8 +661,8 @@ public class TDXFormatedOpt {
 	public static String parseBanKuaiGeGuTagsToTDXReport ()
 	{
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
-		SystemConfigration sysconfig = SystemConfigration.getInstance();
-		File filezzfxgkzd = new File( sysconfig.getTdxBbFileZzfxgkhzd() );
+//		SystemConfigration sysconfig = SystemConfigration.getInstance();
+		File filezzfxgkzd = new File( (new SetupSystemConfiguration()).getTdxBbFileZzfxgkhzd() );
 		 
 		try {
 			if (filezzfxgkzd.exists()) {
@@ -729,7 +730,7 @@ public class TDXFormatedOpt {
 	public static String stockJiBenMianToReports ()
 	{
 		ConnectDataBase connectdb = ConnectDataBase.getInstance();
-		SystemConfigration sysconfig = SystemConfigration.getInstance();
+		SetupSystemConfiguration sysconfig = new SetupSystemConfiguration();
 		
 		File filegnts = new File( sysconfig.getTdxBbFileGaiNianTiShi() );
 		File filefmxx = new File( sysconfig.getTdxBbfileFuMianXiaoXi() );

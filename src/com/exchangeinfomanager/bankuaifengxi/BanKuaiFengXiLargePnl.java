@@ -62,7 +62,8 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+
 
 /*
  * 可以显示某个node大周期的占比数据
@@ -70,7 +71,7 @@ import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHightLightColumnListener
 {
 	private TDXNodes displaynode;
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	private TDXNodes nodebankuai;
 	private AllCurrentTdxBKAndStoksTree allbksks;
 	private Boolean exportuserselectedinfotocsv;
@@ -92,7 +93,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	
 	private void initialzieSysconf ()
 	{
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 	}
 	/*
@@ -195,7 +196,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
 			public void mousePressed(MouseEvent arg0)
 			{
-				String image = sysconfig.getSavedImageStoredPath () + displaynode.getMyOwnCode()+ displaynode.getMyOwnName() + LocalDateTime.now().toString();
+				String image = (new SetupSystemConfiguration()).getSavedImageStoredPath () + displaynode.getMyOwnCode()+ displaynode.getMyOwnName() + LocalDateTime.now().toString();
 				image = image.replace('.', ' ');
 				image = image.replace(":", "");
 				image = image.replace(" ", "");

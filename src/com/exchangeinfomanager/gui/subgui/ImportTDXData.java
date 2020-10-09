@@ -11,9 +11,7 @@ import javax.swing.border.EmptyBorder;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-
-
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
 import com.google.common.io.Files;
 
@@ -67,7 +65,7 @@ public class ImportTDXData extends JDialog {
 	public ImportTDXData() 
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
-		this.sysconfig = SystemConfigration.getInstance(); 
+		this.sysconfig = new SetupSystemConfiguration(); 
 //		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 		initializeGui ();
 
@@ -81,7 +79,7 @@ public class ImportTDXData extends JDialog {
 	JCheckBox[] zdybkckbxs;
 	Map<String, String> zdybkmap; //从tdx得到的自定义板块设置
 	Map<String, String> zdybkmapfromfile; //从用户选择的文件直接得到的自定义板块设置
-	private SystemConfigration sysconfig;
+	private SetupSystemConfiguration sysconfig;
 //	private AllCurrentTdxBKAndStoksTree allbksks;
 //	private BanKuaiAndChanYeLian2 bkcyl;
 	private BanKuaiDbOperation bkdbopt;
@@ -928,12 +926,7 @@ public class ImportTDXData extends JDialog {
 		}
 		this.setLocationRelativeTo(null);
 		
-		//根据系统model定制哪些components可以被用户使用
-		if(sysconfig.getSoftWareMode() == sysconfig.MODELCLIENT) {
-			
-		} else if(sysconfig.getSoftWareMode() == sysconfig.MODELSERVER) {
-			
-		}
+		
 		
 	}
 }

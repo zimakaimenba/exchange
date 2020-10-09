@@ -10,11 +10,12 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineEvent;
 
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+
 
 public class SystemAudioPlayed 
 {
-	protected static SystemConfigration sysconfig;
+	protected static SetupSystemConfiguration sysconfig;
 
 	public static synchronized void playSound() 
 	{
@@ -24,7 +25,7 @@ public class SystemAudioPlayed
 		  // Clip finishing; see comments.
 		    public void run()
 		    {
-		      sysconfig = SystemConfigration.getInstance();
+		      sysconfig = new SetupSystemConfiguration();
 		      try {
 		    	final String audiofilepath = sysconfig.getSystemAudioPlayed();
 //		    	URL url = this.getClass().getClassLoader().getResource( audiofilepath );

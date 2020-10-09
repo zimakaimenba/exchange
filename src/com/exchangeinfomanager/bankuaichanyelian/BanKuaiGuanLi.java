@@ -52,7 +52,7 @@ import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -139,7 +139,7 @@ public class BanKuaiGuanLi extends JDialog
 	 */
 	public BanKuaiGuanLi() 
 	{
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
 		
 //		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
@@ -154,7 +154,7 @@ public class BanKuaiGuanLi extends JDialog
 		
 	private BanKuaiDbOperation bkdbopt;
 	private HashMap<String,BanKuai> zhishulist;
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	private BanKuaiAndStockTree treebkonlynoggwithselfcjl;
 	
 	private Border outsidepos = new MatteBorder(1, 0, 1, 0, Color.RED);
@@ -334,6 +334,8 @@ public class BanKuaiGuanLi extends JDialog
 				((BkChanYeLianTreeNodeListTableModel)tablebkgegu.getModel()).deleteAllRows();
 				
 				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
+				if(selectnode.getType() != BkChanYeLianTreeNode.TDXBK)
+					return; 
 				
 				tfldsearchsysbk.setText(selectnode.getMyOwnCode());
 				

@@ -33,7 +33,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 
 
 public class CheckBoxTree extends JTree 
@@ -52,7 +52,7 @@ public class CheckBoxTree extends JTree
 	private Date updatedDate;
 	private boolean infochangedsign = false;
 	
-	SystemConfigration sysconfig;
+//	SystemConfigration sysconfig;
 
 	public CheckBoxTree(CheckBoxTreeNode checkNode, String stockcode) 
     {  
@@ -67,7 +67,7 @@ public class CheckBoxTree extends JTree
         this.epdTree(true);
         this.addLister(this);  
         
-        this.sysconfig = SystemConfigration.getInstance();
+//        this.sysconfig = SystemConfigration.getInstance();
         
     }  
 	

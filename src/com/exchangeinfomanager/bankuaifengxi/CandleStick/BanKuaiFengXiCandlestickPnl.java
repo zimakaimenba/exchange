@@ -123,7 +123,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Multimap;
 
@@ -886,8 +886,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		if(this.getDispalyStartDate() == null)
 			return;
 		
-		SystemConfigration syscon = SystemConfigration.getInstance();
-		List<String> corezhishu = syscon.getCoreZhiShuCodeList();
+//		SystemConfigration syscon = SystemConfigration.getInstance();
+		List<String> corezhishu = (new SetupSystemConfiguration()).getCoreZhiShuCodeList();
 		
 		for (News tmpmeeting: newszhishukeylists ) {
 		

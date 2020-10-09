@@ -13,7 +13,7 @@ import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 import com.google.common.base.Strings;
 import com.sun.rowset.CachedRowSetImpl;
 
@@ -42,11 +42,11 @@ public final class StockCalendarAndNewDbOperation
 
     public StockCalendarAndNewDbOperation() {
     	initializeDb ();
-		initialzieSysconf ();
+//		initialzieSysconf ();
 	}
 	
 	private  ConnectDataBase connectdb;
-	private  SystemConfigration sysconfig;
+//	private  SystemConfigration sysconfig;
 		
 	
 
@@ -54,10 +54,10 @@ public final class StockCalendarAndNewDbOperation
 	{
 		connectdb = ConnectDataBase.getInstance();
 	}
-	private void initialzieSysconf ()
-	{
-		sysconfig = SystemConfigration.getInstance();
-	}
+//	private void initialzieSysconf ()
+//	{
+//		sysconfig = SystemConfigration.getInstance();
+//	}
 	/*
 	 * 
 	 */

@@ -30,7 +30,8 @@ import org.dom4j.io.SAXReader;
 import org.hsqldb.lib.StringUtil;
 
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+
 import com.mysql.jdbc.StringUtils;
 import com.toedter.calendar.JDateChooser;
 import java.awt.event.ItemListener;
@@ -45,7 +46,7 @@ public class ZiJingHuaZhuan extends JPanel {
 	{
 		this.actionzhanghu = actionzhanghu2;
 		//this.hasxinyongzhanghu = hasxinyongzhanghu2; //标记是否有信用账户
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 		gjcbuysellmaps = new HashMap<String,String> ();
 		gjctosystemmaps = new HashMap<String,String> ();
 		gjcshuomingmmaps = new HashMap<String,String> ();
@@ -55,7 +56,7 @@ public class ZiJingHuaZhuan extends JPanel {
 	}
 
 //	private static Logger logger = Logger.getLogger(ImportQuanShangJiaoYiRecords.class);
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	private HashMap<String,String> gjcbuysellmaps ;
 	private HashMap<String,String> gjctosystemmaps;
 	private HashMap<String, String> gjcshuomingmmaps;
@@ -176,7 +177,7 @@ public class ZiJingHuaZhuan extends JPanel {
 		 
 		if(suoshuquanshang.contains("招商") ) {
 			
-			File sysconfigfilexml = new File (sysconfig.getQuanShangJiaoYiSheZhi());
+			File sysconfigfilexml = new File ( (new SetupSystemConfiguration() ).getQuanShangJiaoYiSheZhi());
 	    	FileInputStream xmlfileinput = null;
 			try {
 				xmlfileinput = new FileInputStream(sysconfigfilexml);

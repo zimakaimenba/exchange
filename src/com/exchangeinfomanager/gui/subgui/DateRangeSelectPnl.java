@@ -3,7 +3,7 @@ package com.exchangeinfomanager.gui.subgui;
 import javax.swing.JPanel;
 
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 
 import javax.swing.JLabel;
 
@@ -20,7 +20,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 public class DateRangeSelectPnl extends JPanel 
 {
 
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	private JLocalDateChooser datachoosestart;
 	private JLocalDateChooser datachooseend;
 	private Integer wknum;
@@ -60,7 +60,7 @@ public class DateRangeSelectPnl extends JPanel
 	private void initialGui() 
 	{
 		
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 		
 		JLabel lblNewLabel = new JLabel("\u65F6\u95F4\u8DE8\u5EA6");
 		

@@ -13,7 +13,8 @@ import java.util.Map;
 
 import javax.swing.SwingWorker;
 
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.jacob.activeX.ActiveXComponent;
@@ -28,12 +29,12 @@ import com.profesorfalken.jpowershell.PowerShellResponse;
 //https://my.oschina.net/fangliwen/blog/60041
 public class VoiceEngine extends SwingWorker<Integer, String>
 {
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	private String infoneededtoread;
 
 	public VoiceEngine (String readinfo)
 	{
-		this.sysconfig = SystemConfigration.getInstance();
+//		this.sysconfig = SystemConfigration.getInstance();
 		this.infoneededtoread = readinfo;
 	}
 	
@@ -57,7 +58,7 @@ public class VoiceEngine extends SwingWorker<Integer, String>
 	{
 //		File script = createPowerShellScirptFile ("≤‚ ‘≤‚ ‘≤‚ ‘≤‚ ‘");
 //		String powershell = script.getAbsolutePath();
-		String powershell = this.sysconfig.getPowerShellScriptsPath() + "readstockanalysisscript.ps1";
+		String powershell = (new SetupSystemConfiguration()).getPowerShellScriptsPath() + "readstockanalysisscript.ps1";
 		PowerShell powerShell = null;
 		try  {
 			 powerShell = PowerShell.openSession();

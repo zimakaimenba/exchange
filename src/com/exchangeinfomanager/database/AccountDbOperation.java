@@ -20,7 +20,7 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasi
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -31,10 +31,10 @@ public class AccountDbOperation
 	public AccountDbOperation() 
 	{
 		initializeDb ();
-		initialzieSysconf ();
+//		initialzieSysconf ();
 		
 	}
-	private SystemConfigration sysconfig ;
+//	private SystemConfigration sysconfig ;
 	private ConnectDataBase connectdb;
 	private static Logger logger = Logger.getLogger(AccountDbOperation.class);
 	
@@ -43,10 +43,10 @@ public class AccountDbOperation
 	{
 		connectdb = ConnectDataBase.getInstance();
 	}
-	private void initialzieSysconf ()
-	{
-		sysconfig = SystemConfigration.getInstance();
-	}
+//	private void initialzieSysconf ()
+//	{
+//		sysconfig = SystemConfigration.getInstance();
+//	}
 	/*
 	 * ¹ÉÆ±³Ö²Önamelist
 	 */

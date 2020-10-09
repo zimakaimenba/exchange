@@ -1,15 +1,16 @@
 package com.exchangeinfomanager.License;
 
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+
 
 //https://stackoverflow.com/questions/8462498/how-to-determine-internet-network-interface-in-java
 public class License 
 {
-	private SystemConfigration sysconf;
+	private SetupSystemConfiguration sysconf;
 
 	public License ()
 	{
-		sysconf = SystemConfigration.getInstance();
+		sysconf = new SetupSystemConfiguration();
 	}
 	
 	public Boolean isLicenseValide ()

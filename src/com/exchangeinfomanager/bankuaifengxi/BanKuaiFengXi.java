@@ -121,7 +121,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.exchangeinfomanager.zhidingyibankuai.PnlZhiDingYiBanKuai;
 import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
 import com.google.common.base.Charsets;
@@ -211,7 +211,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		
-		this.sysconfig = SystemConfigration.getInstance();
+		this.sysconfig = new SetupSystemConfiguration();
 		this.nodeinfotocsv = new NodeInfoToCsv ();
 		this.bkfxremind = new BanKuaiFengXiRemindXmlHandler ();
 		this.bkggmatchcondition = new BanKuaiGeGuMatchCondition ();
@@ -237,7 +237,7 @@ public class BanKuaiFengXi extends JDialog
 //	private ExportCondition displayexpc;
 	private LocalDate lastselecteddate;
 
-	private SystemConfigration sysconfig;
+	private SetupSystemConfiguration sysconfig;
 	private StockInfoManager stockmanager;
 	BanKuaiGeGuMatchCondition bkggmatchcondition;
 

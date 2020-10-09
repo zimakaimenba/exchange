@@ -87,7 +87,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriod
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItemForJFC;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
@@ -117,12 +117,12 @@ public class BanKuaiDbOperation
 	public BanKuaiDbOperation() 
 	{
 		connectdb = ConnectDataBase.getInstance();
-		sysconfig = SystemConfigration.getInstance();
+		sysconfig = new SetupSystemConfiguration();
 		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 	}
 	
 	private  ConnectDataBase connectdb;
-	private  SystemConfigration sysconfig;
+	private  SetupSystemConfiguration sysconfig;
 	private AllCurrentTdxBKAndStoksTree allbksks;
 	private static Logger logger = Logger.getLogger(BanKuaiDbOperation.class);
 

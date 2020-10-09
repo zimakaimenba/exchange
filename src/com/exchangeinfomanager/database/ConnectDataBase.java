@@ -37,12 +37,12 @@ public class ConnectDataBase
 		 
 		 private static Logger logger = Logger.getLogger(ConnectDataBase.class);
 		 DataBaseConnection localcon;
-		 SystemConfigration sysconfig = null;
+		 DataBaseConfigration sysconfig = null;
 
 
 		public void refreshDatabaseConnection ()
 		{
-			sysconfig = SystemConfigration.getInstance();
+			sysconfig = DataBaseConfigration.getInstance();
 			CurDataBase localcurdb = sysconfig.getCurrentDatabaseSource ();
 			
 			localcon = new DataBaseConnection (localcurdb);

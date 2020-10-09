@@ -20,7 +20,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+
 
 public class CommonUtility {
 
@@ -43,7 +44,7 @@ public class CommonUtility {
 		int width = gd.getDisplayMode().getWidth();
 		int height = gd.getDisplayMode().getHeight();
 		
-		SystemConfigration sysconfig = SystemConfigration.getInstance();
+		SetupSystemConfiguration sysconfig = new SetupSystemConfiguration();
 		LocalDate requirestart = null ;
 		if(width == 2560) {
 			if(rangelevel.toLowerCase().equals("basic"))

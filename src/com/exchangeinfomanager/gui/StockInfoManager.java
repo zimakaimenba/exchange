@@ -57,7 +57,7 @@ import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
-import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSeeting;
+import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSetting;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
@@ -131,7 +131,9 @@ import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.DataBaseConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+import com.exchangeinfomanager.systemconfigration.SystemSettingDialog;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -189,6 +191,7 @@ public class StockInfoManager
 	 */
 	public StockInfoManager() 
 	{
+		
 		License license = new License ();
 		if( !license.isLicenseValide() ) {
 			
@@ -217,9 +220,7 @@ public class StockInfoManager
 		}
 		license = null;
 
-			
-	    
-		sysconfig = SystemConfigration.getInstance();
+		dbconfig = DataBaseConfigration.getInstance();
 		connectdb = ConnectDataBase.getInstance();
 		boolean localconnect = connectdb.isLocalDatabaseconnected();
 		if(localconnect == false) {
@@ -227,6 +228,7 @@ public class StockInfoManager
 			System.exit(0);
 		}
 		
+		systemconfig = new SetupSystemConfiguration ();
 		accountschicangconfig = AccountAndChiCangConfiguration.getInstance();
 		acntdbopt = new AccountDbOperation();
 		bkdbopt = new BanKuaiDbOperation ();
@@ -240,7 +242,8 @@ public class StockInfoManager
 	
 	private static Logger logger = Logger.getLogger(StockInfoManager.class);
 	private ConnectDataBase connectdb = null;
-	private SystemConfigration sysconfig = null;
+	private DataBaseConfigration dbconfig = null;
+	private SetupSystemConfiguration systemconfig = null;
 	private AccountAndChiCangConfiguration accountschicangconfig;
 	private BkChanYeLianTreeNode nodeshouldbedisplayed; 
 //	private BuyCheckListTreeDialog buychklstdialog;
@@ -257,10 +260,10 @@ public class StockInfoManager
 	/*
 	 * 
 	 */
-	protected void refeshSystem() 
-	{
-		sysconfig.reconfigSystemSettings () ;  //新的采用直接重启系统的方法，简单
-	}
+//	protected void refeshSystem() 
+//	{
+//		dbconfig.reconfigSystemSettings () ;  //新的采用直接重启系统的方法，简单
+//	}
 	/*
 	 * 把持仓显示在相应的位置
 	 */
@@ -329,7 +332,7 @@ public class StockInfoManager
 				
 				 displayStockJibenmianInfotoGui (); //显示基本信息
 				 
-				 if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
+				 if(!systemconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 					 nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB(nodeshouldbedisplayed);
 					 displaySellBuyZdgzInfoToGui ();
 				 }
@@ -337,7 +340,7 @@ public class StockInfoManager
 				 if(nodeshouldbedisplayed.getType() == 6) { //是个股
 					if(accountschicangconfig.isSystemChiCang(stockcode)) 
 						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
-					if(!sysconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
+					if(!systemconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 						displayAccountTableToGui ();
 					}
 
@@ -433,7 +436,7 @@ public class StockInfoManager
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				try {
-					String cmd = "rundll32 url.dll,FileProtocolHandler " + sysconfig.getFreeMindInstallationPath() ;
+					String cmd = "rundll32 url.dll,FileProtocolHandler " + systemconfig.getFreeMindInstallationPath() ;
 					logger.debug(cmd);
 					Process p  = Runtime.getRuntime().exec(cmd);
 					p.waitFor();
@@ -547,7 +550,7 @@ public class StockInfoManager
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				AccountSeeting accountsetting= new AccountSeeting(accountschicangconfig,frame); 
+				AccountSetting accountsetting= new AccountSetting(accountschicangconfig,frame); 
 				accountsetting.setVisible(true);
 				
 			}
@@ -567,7 +570,9 @@ public class StockInfoManager
 		menuItemSysSet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				refeshSystem ();
+				SystemSettingDialog systemset = new SystemSettingDialog ( ); 
+				systemset.setModal(true);
+				systemset.setVisible(true);
 			}
 		});
 				
@@ -602,9 +607,9 @@ public class StockInfoManager
 			
 			private Boolean importPreCheckTDX()
 			{
-				String tdxpath = sysconfig.getTDXInstalledLocation();
+				String tdxpath = systemconfig.getTDXInstalledLocation();
 				
-				File file = new File(sysconfig.getTDXStockEverUsedNameFile() );
+				File file = new File(systemconfig.getTDXStockEverUsedNameFile() );
 				if(!file.exists() ) {
 					 System.out.println("通达信目录不正确:" + tdxpath ); 
 					 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前设置为:" + tdxpath);
@@ -624,7 +629,7 @@ public class StockInfoManager
 //				
 //				String actiontype = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 1);
 //				String actiondate = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
-//				if(actiontype.contains("挂单") && !actiondate.contains(sysconfig.formatDate(new Date()).substring(0, 10) )  ) { 
+//				if(actiontype.contains("挂单") && !actiondate.contains(dbconfig.formatDate(new Date()).substring(0, 10) )  ) { 
 //					JOptionPane.showMessageDialog(null,"只有今日挂单可以撤销，历史挂单不可以撤销！");
 //					return ;
 //				} else if( !actiontype.contains("挂单") ) {
@@ -742,7 +747,7 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				AccountSeeting accountsetting= new AccountSeeting(accountschicangconfig,frame); 
+				AccountSetting accountsetting= new AccountSetting(accountschicangconfig,frame); 
 				accountsetting.setVisible(true);
 
 				String stockcode = "";
@@ -1138,7 +1143,7 @@ public class StockInfoManager
 //			public void mousePressed(MouseEvent e) 
 //			{
 //				try {
-//					String cmd = "rundll32 url.dll,FileProtocolHandler " + sysconfig.getMoxingjilupath() + sysconfig.getMoxingjilufilename();
+//					String cmd = "rundll32 url.dll,FileProtocolHandler " + dbconfig.getMoxingjilupath() + dbconfig.getMoxingjilufilename();
 //					Process p  = Runtime.getRuntime().exec(cmd);
 //					p.waitFor();
 //				} catch (Exception e1) 
@@ -1681,7 +1686,7 @@ public class StockInfoManager
 
 	private void updatActionResultToGui(BuyStockNumberPrice stocknumberpricepanel) 
 	{
-		if(sysconfig.getPrivateModeSetting()) //隐私模式不显示买卖信息
+		if(systemconfig.getPrivateModeSetting()) //隐私模式不显示买卖信息
 			return;
 		
 		int stocknumber =  stocknumberpricepanel.getJiaoyiGushu();

@@ -10,16 +10,17 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+
 
 
 public class BanKuaiFengXiRemindXmlHandler 
 {
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 
 	public BanKuaiFengXiRemindXmlHandler ()
 	{
-		this.sysconfig = SystemConfigration.getInstance();
+//		this.sysconfig = SystemConfigration.getInstance();
 		
 		getSettingInfoFromXML();
 	}
@@ -53,7 +54,7 @@ public class BanKuaiFengXiRemindXmlHandler
     	
     	FileInputStream xmlfileinput = null;
 		try {
-			xmlfileinput = new FileInputStream(this.sysconfig.getBanKuaiFengXiChecklistXmlFile() );
+			xmlfileinput = new FileInputStream((new SetupSystemConfiguration()).getBanKuaiFengXiChecklistXmlFile() );
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

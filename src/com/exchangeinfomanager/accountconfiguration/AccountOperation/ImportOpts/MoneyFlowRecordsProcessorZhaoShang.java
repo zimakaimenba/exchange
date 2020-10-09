@@ -15,7 +15,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -31,12 +31,12 @@ public class MoneyFlowRecordsProcessorZhaoShang implements LineProcessor<List<St
 
 	private List<String> recoreslists = Lists.newArrayList();
     private String zhanghuid = null;
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	boolean newformate = false;
    
     public MoneyFlowRecordsProcessorZhaoShang ()
 	{
-		 sysconfig = SystemConfigration.getInstance();
+//		 sysconfig = SystemConfigration.getInstance();
 		 //initializeZhuanRuChuMap ();
 		 initializeZhuanRuChuList ();
 	}
@@ -201,7 +201,7 @@ public class MoneyFlowRecordsProcessorZhaoShang implements LineProcessor<List<St
 	    private List<String> zhuanchugjc = Lists.newArrayList(); //Âô³ö¹Ø¼ü´Ê
 	    public void initializeZhuanRuChuList ()
 	    {
-	    	File sysconfigfilexml = new File (sysconfig.getQuanShangJiaoYiSheZhi() );
+	    	File sysconfigfilexml = new File ((new SetupSystemConfiguration()).getQuanShangJiaoYiSheZhi() );
 	    	FileInputStream xmlfileinput = null;
 			try {
 				xmlfileinput = new FileInputStream(sysconfigfilexml);

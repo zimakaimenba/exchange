@@ -360,13 +360,13 @@ import com.udojava.evalex.Expression;
 		
 		if(curindex == null)
 			return null;
-		
-		Integer requiredindex = curindex + difference;
-		RegularTimePeriod reqdataitemp = this.nodeohlc.getPeriod(requiredindex);
+
 		try {
+			Integer requiredindex = curindex + difference;
+//			RegularTimePeriod reqdataitemp = this.nodeohlc.getPeriod(requiredindex);
 			OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(requiredindex );
 			if(result != null) {
-				RegularTimePeriod ep = result.getPeriod();
+//				RegularTimePeriod ep = result.getPeriod();
 				return result.getPeriod();
 			}
 		} catch ( java.lang.IndexOutOfBoundsException e) {
@@ -1978,7 +1978,9 @@ import com.udojava.evalex.Expression;
 			
 			return doc.toString();
 		}
-		
+		/*
+		 * 
+		 */
 		protected Boolean isNodeDataFuPaiAfterTingPai (TDXNodes superbk, LocalDate requireddate,int difference)
 		{
 			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
@@ -2001,17 +2003,18 @@ import com.udojava.evalex.Expression;
 			LocalDate lastld = lastdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			
 			String nodept = getNodeperiodtype();
-			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-			int superbkindex = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, 0);
+			DaPan dapan = (DaPan)superbk.getRoot();
+			NodeXPeriodData dpxata = dapan.getNodeXPeroidData(nodept);
+//			int superbkindex = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, 0);
 			int bklstindex = 0;
 			for(int i= -1;;i--) {
-				Integer bklastxdata = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, i);
+				Integer bklastxdata = dpxata.getIndexOfSpecificDateOHLCData(requireddate, i);
 				if(bklastxdata != null) {
 					bklstindex = bklastxdata;
 					break;
 				}
 			}
-			LocalDate bklastlocaldate = bkxdata.getLocalDateOfSpecificIndexOfOHLCData(bklstindex);
+			LocalDate bklastlocaldate = dpxata.getLocalDateOfSpecificIndexOfOHLCData(bklstindex);
 			
 			WeekFields weekFields = WeekFields.of(Locale.getDefault());
 			int year2 = lastld.getYear();
@@ -2022,7 +2025,7 @@ import com.udojava.evalex.Expression;
 			
 			if(year1 != year2)
 				return true;
-			else if(year1 == year2 && weeknumber1 != weeknumber2  ) //板块一般不会停牌，以板块为基准
+			else if(year1 == year2 && weeknumber1 != weeknumber2  ) //大盘一般不会停牌，以板块为基准
 				return true;
 			else 
 				return false;

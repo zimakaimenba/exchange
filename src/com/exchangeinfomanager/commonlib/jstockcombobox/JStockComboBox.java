@@ -37,7 +37,7 @@ import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.collect.Multimap;
 
 
@@ -47,7 +47,7 @@ public class JStockComboBox extends  JComboBox<String>
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private SystemConfigration sysconfig;
+	private SetupSystemConfiguration sysconfig;
 	private BanKuaiAndStockTree bkstktree;
 //	private AllCurrentTdxBKAndStoksTree allbkstock;
 
@@ -78,7 +78,7 @@ public class JStockComboBox extends  JComboBox<String>
 	     
 	    bkstktree = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		
-		sysconfig = SystemConfigration.getInstance();
+		sysconfig = new SetupSystemConfiguration();
 		
 		createEvents ();
 		

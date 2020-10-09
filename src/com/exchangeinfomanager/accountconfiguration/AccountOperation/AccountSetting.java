@@ -42,7 +42,7 @@ import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -64,12 +64,12 @@ import org.apache.log4j.Logger;
 
 import javax.swing.JLabel;
 
-public class AccountSeeting extends JDialog 
+public class AccountSetting extends JDialog 
 {
 	/**
 	 * Create the dialog.
 	 */
-	public AccountSeeting(AccountAndChiCangConfiguration acntstckconfig, JFrame frame)
+	public AccountSetting(AccountAndChiCangConfiguration acntstckconfig, JFrame frame)
 	{
 //		super(frame,true);
 //		this.setAlwaysOnTop(true);
@@ -80,11 +80,11 @@ public class AccountSeeting extends JDialog
 	}
 
 	//	private ConnectDatabase connectdb;
-	private SystemConfigration sysconfig ;
+//	private SystemConfigration sysconfig ;
 	private AccountAndChiCangConfiguration acntstckconfig;
 	private AccountDbOperation acntdbopt;
 	private BanKuaiDbOperation bkdbopt;
-	private static Logger logger = Logger.getLogger(AccountSeeting.class);
+	private static Logger logger = Logger.getLogger(AccountSetting.class);
 	
 	
 
@@ -98,7 +98,7 @@ public class AccountSeeting extends JDialog
 	
 	private void initializeSysConfig() 
 	{
-		sysconfig = SystemConfigration.getInstance();
+//		sysconfig = SystemConfigration.getInstance();
 	}
 	private void createEvents() 
 	{
