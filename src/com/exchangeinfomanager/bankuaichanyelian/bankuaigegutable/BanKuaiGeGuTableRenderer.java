@@ -250,15 +250,17 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    if( columnname.contains("CJEZbDpMaxWk")    && value != null  ) { 	    //突出显示cjedpMAXWK>=的个股   / 上周MAXWK达标且阴线
 	    	background = cjezbdpmaxwkRule.getBackGround(); 
 	    	
-	    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
-	    	if(zhangdiefu != null &&  zhangdiefu <0 && lwdpmaxwkRule.getRuleResult() )
+	    	Double lwzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
+	    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+	    	if(lwzhangdiefu != null &&  lwzhangdiefu <0 && lwdpmaxwkRule.getRuleResult() && zhangdiefu >0 )
 	    		foreground = Color.YELLOW;
 	    } else  
 	    if( columnname.contains("周平均成交额MAXWK")   && value != null  ) { //col == 7 / 上周average cje WK达标且阴线
 	    	background = averagecjemaxwkRule.getBackGround();
 	    	
-	    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
-	    	if(zhangdiefu != null && zhangdiefu <0 && lwaveragecjemaxwk.getRuleResult() )
+	    	Double lwzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
+	    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+	    	if(lwzhangdiefu != null && lwzhangdiefu <0 && lwaveragecjemaxwk.getRuleResult() && zhangdiefu >0 )
 	    		foreground = Color.YELLOW;
 	    } else 
 	    if( columnname.contains("N日")   && value != null) { //突出MA,默认为大于 

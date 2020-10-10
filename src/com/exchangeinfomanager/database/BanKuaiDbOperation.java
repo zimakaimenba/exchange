@@ -4619,7 +4619,7 @@ public class BanKuaiDbOperation
    			    		 try {
    			    			 ldlastestdbrecordsdate =lastestdbrecordsdate.toLocalDate();
    			    		 } catch (java.lang.NullPointerException e) {
-   			    			 logger.info(tmpbkcode + "似乎没有数据，请检查！");
+   			    			 logger.info(tmpbkcode + "从网易获取的数据文件没有相关数据，请检查！");
    			    		 }
 //   			    		 Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
 //   			    		ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
@@ -6335,15 +6335,15 @@ public class BanKuaiDbOperation
 					} catch (java.net.SocketTimeoutException e)  {
 						logger.info("获取" + stockcode + "网易数据超时！");
 					} catch ( IOException e) {
-						e.printStackTrace();
+//						e.printStackTrace();
 					}finally {
 						URLink = null;
 					}
 					//导入数据到数据库
 					if(!savedfile.exists()) {
-						System.out.println(stockcode + "：似乎未能从网易得到"+ stockcode + "的数据文件，请检查！");
+						System.out.println(stockcode + "：未能从网易获得"+ stockcode + "的数据文件，请检查！");
 						try {
-							Files.append(stockcode + "似乎未能从网易得到"+ stockcode + "的数据文件，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+							Files.append(stockcode + "未能从网易得到"+ stockcode + "的数据文件，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

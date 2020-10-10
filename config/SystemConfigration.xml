@@ -2,12 +2,12 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <comment>example</comment>
-  	<entry key="tdxpah">D://stock/zd_zsone/</entry>
+  	<entry key="tdxpah">E:/stock/zd_zszq/</entry>
   	<entry key="nameofguanzhubankuai">模型验证</entry>
   	<entry key="tdxzdybkpath">//jeffauas/blocknew/</entry>
   	<entry key="zhanbifengxizhouqi">10</entry>
   	<entry key="privatemode">false</entry>
-  	<entry key="License">3ucRKED85hfO0Ca/IKYcwA==:icL9MGsck90R4hXPQcshUsS847+J/8vtdQ6AOkact6Y=</entry>
+  	<entry key="License">e2W9VnZ/4FH+0wGz1zyiPg==:FdaFL8t2wQhKxcwOgkERyucw6YVc19QYz+Uqp956PRo=</entry>
   	<entry key="pythoninterper">C:/Users/Administrator.WIN7U-20140921O/Anaconda3</entry>
   	<entry key="shanghaistockcodeprefix">600/688</entry>
   	<entry key="shengzhengstockcodeprefix">000/300</entry>
