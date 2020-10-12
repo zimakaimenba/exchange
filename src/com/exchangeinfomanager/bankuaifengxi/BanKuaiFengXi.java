@@ -305,10 +305,10 @@ public class BanKuaiFengXi extends JDialog
 	private void gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (String period)
 	{
 		this.globeperiod = period;
-		if(chxbxwholeweek.isSelected())
-			globecalwholeweek = true;
-		else
-			globecalwholeweek = false;
+//		if(chxbxwholeweek.isSelected())
+//			globecalwholeweek = true;
+//		else
+//			globecalwholeweek = false;		
 		
     	LocalDate curselectdate = dateChooser.getLocalDate(); 
     	LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"middle").with(DayOfWeek.MONDAY);
@@ -398,7 +398,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		cyltreecopy.searchAndLocateNodeInTree (selectedbk);
 		
-		showReminderMessage (bkfxremind.getBankuairemind());
+		showReminderMessage (bkfxremind.getBankuairemind() );
 		
 		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股突出和当前板块交集个股做准备
 		BanKuai tmpbk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
@@ -461,6 +461,37 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
+	private void refreshDaPanFengXiResult ()
+	{
+		paneldayCandle.resetDate();
+		clearTheGuiBeforDisplayNewInfoSection2 ();
+		clearTheGuiBeforDisplayNewInfoSection3 ();
+		tabbedPanebk.setSelectedIndex(0);
+		tabbedPanebkzb.setSelectedIndex(0);
+		
+		LocalDate curselectdate = null;
+		try{
+			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		} catch (java.lang.NullPointerException e) {
+			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		SvsForNodeOfDaPan svsdp = new SvsForNodeOfDaPan ();
+		TDXNodes dapan = (TDXNodes)svsdp.getNode("000000");
+		svsdp.getNodeData(dapan, CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate,
+				globeperiod,this.globecalwholeweek );
+		svsdp = null;
+
+		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
+		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (dapan); 
+		//板块自身占比
+		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
+				tmplistener.updatedDate(dapan, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
+		}
+	}
+	/*
+	 * 
+	 */
 	protected void refreshCurentBanKuaiFengXiResult(BanKuai selectedbk,String period)  
 	{
 		clearTheGuiBeforDisplayNewInfoSection2 ();
@@ -512,12 +543,11 @@ public class BanKuaiFengXi extends JDialog
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
 		}
-		
 	}
 	/*
 	 * 用户选择一个板块的column后的相应操作
 	 */
-	protected void refreshAfterUserSelectBanKuaiColumn (BanKuai bkcur, String selectedinfo) 
+	protected void refreshAfterUserSelectBanKuaiColumn (TDXNodes bkcur, String selectedinfo) 
 	{
  		LocalDate selectdate = LocalDate.parse(selectedinfo);
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selectdate));
@@ -543,6 +573,9 @@ public class BanKuaiFengXi extends JDialog
 			return;
 		
 		//选定周的板块排名情况
+		if(bkcur.getType() != BkChanYeLianTreeNode.TDXBK ) // maybe selected node is DaPan, which has no gegu.
+			return ;
+		
 		LocalDate cursetdate = dateChooser.getLocalDate(); 
 		if(!CommonUtility.isInSameWeek(selectdate,cursetdate) ) {
 			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
@@ -552,29 +585,29 @@ public class BanKuaiFengXi extends JDialog
 			((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).refresh(selectdate,0,globeperiod);
 			
 			//显示板块个股
-			if(bkcur.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股，
+			if( ((BanKuai)bkcur).getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股，
 //				refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
 				
 				LocalDate formerdate = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).getShowCurDate();
 				if(formerdate != null) { //前面有显示过，把她挪到tab 4
 					//显示选定周+1股票排名情况
-					((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).refresh(bkcur, formerdate,globeperiod);
+					((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).refresh(((BanKuai)bkcur), formerdate,globeperiod);
 					tabbedPanegegu.setTitleAt(5,  formerdate.toString() );
 				}
 				
 				//显示选定周股票排名情况
-				((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).refresh(bkcur, selectdate,globeperiod);
+				((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).refresh(((BanKuai)bkcur), selectdate,globeperiod);
 				tabbedPanegegu.setTitleAt(2, this.getTabbedPanegeguTabTiles(2) + selectdate);
 				
 				//显示选定周-1股票排名情况
 				LocalDate selectdate2 = selectdate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
-				((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).refresh(bkcur, selectdate2,globeperiod);
+				((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).refresh(((BanKuai)bkcur), selectdate2,globeperiod);
 				tabbedPanegegu.setTitleAt(3,  selectdate2 + "(-1)");
 
 				
 				//显示选定周-2股票排名情况
 				LocalDate selectdate3 = selectdate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
-				((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).refresh(bkcur, selectdate3,globeperiod);
+				((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).refresh(((BanKuai)bkcur), selectdate3,globeperiod);
 				tabbedPanegegu.setTitleAt(4,  selectdate3 + "(+1)");
 				
 				refreshBanKuaiGeGuTableHightLight ();
@@ -979,7 +1012,7 @@ public class BanKuaiFengXi extends JDialog
 //			e.printStackTrace();
 //		}
 	}
-	/*
+	/**
 	 * 
 	 */
 	private void clearTheGuiBeforDisplayNewInfoSection1 ()
@@ -993,10 +1026,6 @@ public class BanKuaiFengXi extends JDialog
 		tfldparsedfile.setText("");
 		
 		paneldayCandle.resetDate();
-		
-//		editorPanebankuai.resetSelectedBanKuai ();
-		
-		
 	}
 	private void clearTheGuiBeforDisplayNewInfoSection2 ()
 	{
@@ -1387,6 +1416,12 @@ public class BanKuaiFengXi extends JDialog
 				}
 			}
 		});
+		lbldapan.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				refreshDaPanFengXiResult ();
+			}
+		});
 		lblshanghai.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -1558,21 +1593,20 @@ public class BanKuaiFengXi extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				if(chxbxwholeweek.isSelected() ) {
-					globecalwholeweek = true;
-				}	else {
-					globecalwholeweek = false;
-				}
-				
 				int action = JOptionPane.showConfirmDialog(null, "需要重新计算分析结果，是否继续？","警告", JOptionPane.YES_NO_OPTION);
 				if(0 == action) {
 					clearTheGuiBeforDisplayNewInfoSection1 ();
 					clearTheGuiBeforDisplayNewInfoSection2 ();
 					clearTheGuiBeforDisplayNewInfoSection3 ();
 					
+					if(chxbxwholeweek.isSelected())
+						globecalwholeweek = true;
+					else
+						globecalwholeweek = false;
+					
 					gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (globeperiod);
 				} else {
-					chxbxwholeweek.setSelected(!chxbxwholeweek.isSelected());
+					chxbxwholeweek.setSelected(!chxbxwholeweek.isSelected() );
 				}
 			}
 		});
@@ -2134,8 +2168,9 @@ public class BanKuaiFengXi extends JDialog
 				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 				setCursor(hourglassCursor);
 
-				int modelRow = tableBkZhanBi.convertRowIndexToModel(rowbk);
-				BanKuai bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+//				int modelRow = tableBkZhanBi.convertRowIndexToModel(rowbk);
+//				BanKuai bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+				TDXNodes bkcur = panelbkwkcjezhanbi.getCurDisplayedNode ();
 
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
                     @SuppressWarnings("unchecked")
@@ -3752,6 +3787,8 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemsMrjh;
 
 	private JMenuItem menuItemTempGeGuClear;
+
+	private JLabel lbldapan;
 	
 	
 	private void initializeGuiOfNormal() {
@@ -4192,7 +4229,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		JLabel lblforfuture_1 = new JLabel("New label");
 		
-		JLabel lblforfuture_2 = new JLabel("New label");
+		lbldapan = new JLabel("大盘");
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
@@ -4227,7 +4264,7 @@ public class BanKuaiFengXi extends JDialog
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(lblkechuangban, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblforfuture_2))
+									.addComponent(lbldapan))
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblhscje, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -4257,7 +4294,7 @@ public class BanKuaiFengXi extends JDialog
 						.addComponent(lblfifty)
 						.addComponent(lblkechuangban)
 						.addComponent(lblNewLabel)
-						.addComponent(lblforfuture_2))
+						.addComponent(lbldapan))
 					.addGap(9))
 		);
 		panel.setLayout(gl_panel);
@@ -4923,7 +4960,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		JLabel lblforfuture_1 = new JLabel("New label");
 		
-		JLabel lblforfuture_2 = new JLabel("New label");
+		lbldapan = new JLabel("大盘");
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
@@ -4958,7 +4995,7 @@ public class BanKuaiFengXi extends JDialog
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(lblkechuangban, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblforfuture_2))
+									.addComponent(lbldapan))
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblhscje, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -4988,7 +5025,7 @@ public class BanKuaiFengXi extends JDialog
 						.addComponent(lblfifty)
 						.addComponent(lblkechuangban)
 						.addComponent(lblNewLabel)
-						.addComponent(lblforfuture_2))
+						.addComponent(lbldapan))
 					.addGap(9))
 		);
 		panel.setLayout(gl_panel);

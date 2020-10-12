@@ -252,7 +252,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	
 	    	Double lwzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
 	    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
-	    	if(lwzhangdiefu != null &&  lwzhangdiefu <0 && lwdpmaxwkRule.getRuleResult() && zhangdiefu >0 )
+	    	if(lwzhangdiefu != null &&  lwzhangdiefu <0 && lwdpmaxwkRule.getRuleResult() && zhangdiefu !=null &&  zhangdiefu >0 )
 	    		foreground = Color.YELLOW;
 	    } else  
 	    if( columnname.contains("周平均成交额MAXWK")   && value != null  ) { //col == 7 / 上周average cje WK达标且阴线
@@ -260,7 +260,7 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	    	
 	    	Double lwzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
 	    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
-	    	if(lwzhangdiefu != null && lwzhangdiefu <0 && lwaveragecjemaxwk.getRuleResult() && zhangdiefu >0 )
+	    	if(lwzhangdiefu != null && lwzhangdiefu <0 && lwaveragecjemaxwk.getRuleResult() && zhangdiefu != null && zhangdiefu >0 )
 	    		foreground = Color.YELLOW;
 	    } else 
 	    if( columnname.contains("N日")   && value != null) { //突出MA,默认为大于 

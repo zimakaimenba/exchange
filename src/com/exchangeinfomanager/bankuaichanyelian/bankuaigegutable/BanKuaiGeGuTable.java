@@ -19,6 +19,7 @@ import org.joda.time.Interval;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable 
 { 
@@ -103,8 +104,17 @@ public class BanKuaiGeGuTable extends BanKuaiGeGuBasicTable
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
         int colIndex = columnAtPoint(p);
-        if(colIndex == 1) {
-        	StockOfBanKuai stkofbk = ((BanKuaiGeGuTableModel)this.getModel()).getStock(rowIndex);
+        StockOfBanKuai stkofbk = ((BanKuaiGeGuTableModel)this.getModel()).getStock(rowIndex);
+        if(colIndex == 0) { // highlight the zhangfu of the week
+        	String period = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDisplayPeriod();
+        	LocalDate requireddate = ((BanKuaiGeGuTableModel)this.getModel()).getShowCurDate ();
+        	NodeXPeriodData nodexdata = stkofbk.getStock().getNodeXPeroidData(period);
+        	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+        	if(zhangdiefu != null) {
+        		zhangdiefu = zhangdiefu * 100;
+        		tip = "ÖÜÕÇ·ù" + zhangdiefu .toString() + "%";
+        	}
+        } else if(colIndex == 1) { //highlight when the stock was added to the bankuai
         	Set<Interval> timeinbk = stkofbk.getInAndOutBanKuaiInterval ();
         	String timett = "";
         	for(Interval tmpinterval : timeinbk ) {
