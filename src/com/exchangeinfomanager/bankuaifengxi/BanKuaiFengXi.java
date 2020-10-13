@@ -3274,6 +3274,11 @@ public class BanKuaiFengXi extends JDialog
 			return;
 		}
 		
+		if(node.getType() == BkChanYeLianTreeNode.DAPAN) {
+			JOptionPane.showMessageDialog(null,"大盘 不支持更大范围显示分析结果数据，选用上证或其他指数分析效果更佳!","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
 		//保证显示时间范围为当前日期前后有数据的36个月(3年)
 		LocalDate curselectdate = dateChooser.getLocalDate().with(DayOfWeek.FRIDAY);
 		LocalDate requireend = curselectdate.with(DayOfWeek.MONDAY).plus(6,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
@@ -3323,16 +3328,17 @@ public class BanKuaiFengXi extends JDialog
 			BanKuai bk = ((StockOfBanKuai)node).getBanKuai();
 			node = (TDXNodes) svsbk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
 			svsbk.syncNodeData(node);
-		} else if(node.getType() == BkChanYeLianTreeNode.DAPAN ) {
-//			node = this.allbksks.getDaPan (requirestart.plusWeeks(1),globeperiod); //同步大盘数据,否则在其他地方会出错
-		}
+		} 
+//		else if(node.getType() == BkChanYeLianTreeNode.DAPAN ) {
+////			node = this.allbksks.getDaPan (requirestart.plusWeeks(1),globeperiod); //同步大盘数据,否则在其他地方会出错
+//		}
 		
 		SvsForNodeOfDaPan	svsdp = new SvsForNodeOfDaPan ();
 		svsdp.getNodeData("", overlapldstartday, overlapldendday, globeperiod, this.globecalwholeweek);
 		svsdp = null;
 		
 		BanKuaiFengXiLargePnl largeinfo = null;
-		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
+		if(node.getType() == BkChanYeLianTreeNode.TDXBK  ) {
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
 			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod);
 			

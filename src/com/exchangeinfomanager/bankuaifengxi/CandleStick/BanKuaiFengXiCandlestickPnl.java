@@ -118,7 +118,7 @@ import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListen
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
-
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
@@ -227,7 +227,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		this.curdisplayednode = node;
 		this.globeperiod = period;
-		setNodeCandleStickDate2 ( node,  startdate,  enddate, period , 0);
+		if(node.getType() != BkChanYeLianTreeNode.DAPAN)
+			setNodeCandleStickDate2 ( node,  startdate,  enddate, period , 0);
 		
 //		displayZhiShuGuanJianRiQi ();
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )

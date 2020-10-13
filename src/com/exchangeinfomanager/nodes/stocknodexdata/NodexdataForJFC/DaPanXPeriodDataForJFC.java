@@ -413,7 +413,10 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	@Override
 	public LocalDate getOHLCRecordsStartDate() {
 		// TODO Auto-generated method stub
-		return null;
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		return shanghaiperiodrecords.getOHLCRecordsStartDate ();
+		
 	}
 
 	@Override

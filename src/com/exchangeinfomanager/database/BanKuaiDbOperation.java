@@ -4619,7 +4619,7 @@ public class BanKuaiDbOperation
    			    		 try {
    			    			 ldlastestdbrecordsdate =lastestdbrecordsdate.toLocalDate();
    			    		 } catch (java.lang.NullPointerException e) {
-   			    			 logger.info(tmpbkcode + "从网易获取的数据文件没有相关数据，请检查！");
+   			    			 logger.info(tmpbkcode + "个股数据文件没有相关数据，请检查！");
    			    		 }
 //   			    		 Instant instant = Instant.ofEpochMilli(lastestdbrecordsdate.getTime());
 //   			    		ldlastestdbrecordsdate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
@@ -5993,7 +5993,9 @@ public class BanKuaiDbOperation
 			    
 			    return data;
 		}
-		
+		/*
+		 * 
+		 */
 		public File refreshStockJiBenMianInfoFromTdxFoxProFile ()
 		{
 			File tmpreportfolder = Files.createTempDir();
@@ -6029,7 +6031,6 @@ public class BanKuaiDbOperation
 	                Map<String, Object> jbminfomap = rec.toMap();
 	                String stockcode = jbminfomap.get("GPDM").toString();
 	                String datavalueindb = jbminfomap.get("GXRQ").toString() ;
-//	                if( !( stockcode.startsWith("00") || stockcode.startsWith("30") || stockcode.startsWith("60") )
 	                if( ! (sysconfig.isShangHaiStock(stockcode) || sysconfig.isShenZhengStock(stockcode) )
 	                		|| stockcode.equals("000003") 
 	                		|| datavalueindb.equals("0") )
