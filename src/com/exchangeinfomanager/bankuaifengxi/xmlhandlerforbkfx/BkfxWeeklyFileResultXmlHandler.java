@@ -37,7 +37,7 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.Charsets;
 
 import com.google.common.collect.Sets;
@@ -48,7 +48,7 @@ import com.google.common.io.Files;
 public class BkfxWeeklyFileResultXmlHandler 
 {
 	private static Logger logger = Logger.getLogger(BkfxWeeklyFileResultXmlHandler.class);
-	private SystemConfigration sysconfig;
+	private SetupSystemConfiguration sysconfig;
 	private String bkfwkfilexml;
 	private BanKuaiDbOperation bkopt;
 	private Document bkfxxmldoc;
@@ -57,7 +57,7 @@ public class BkfxWeeklyFileResultXmlHandler
 
 	public BkfxWeeklyFileResultXmlHandler() 
 	{
-		this.sysconfig = SystemConfigration.getInstance();
+		this.sysconfig = new SetupSystemConfiguration();
 		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 	}
 	/*

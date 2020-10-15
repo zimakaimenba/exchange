@@ -69,7 +69,7 @@ public class SetupSystemConfiguration
 //			}
 			
 			Properties propxml = new Properties();
-			 propxmlFileName =  this.systeminstalledpath  + "/config/SystemConfigration.xml";
+			propxmlFileName =  this.systeminstalledpath  + "/config/SystemConfigration.xml";
 			FileInputStream inputStreamxml = new FileInputStream(propxmlFileName);
 			if (inputStreamxml != null) {
 				propxml.loadFromXML(inputStreamxml);

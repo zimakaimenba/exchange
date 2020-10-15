@@ -2970,7 +2970,13 @@ public class BanKuaiDbOperation
 				}
 				DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
 				DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
-				Interval joinleftinterval = new Interval(joindt, leftdt);
+				Interval joinleftinterval = null ;
+				try {
+					joinleftinterval = new Interval(joindt, leftdt);
+				} catch (Exception e) {
+//					e.printStackTrace();
+					joinleftinterval = new Interval(leftdt,joindt );
+				}
 				
 				if(currentbk.getStockOfBanKuai(tmpstockcode) != null ) {//已经有了
 					StockOfBanKuai bkofst =  currentbk.getStockOfBanKuai(tmpstockcode);

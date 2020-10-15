@@ -12,12 +12,12 @@ import javax.swing.JOptionPane;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.InvisibleTreeModel;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 
 public class ServiceOfBkFxEbkXml implements ServicesForBkfxEbkOutPutFile
 {
 
-	private SystemConfigration sysconfig;
+	private SetupSystemConfiguration sysconfig;
 	private File xmlfile;
 	private File fileebk;
 	
@@ -25,7 +25,7 @@ public class ServiceOfBkFxEbkXml implements ServicesForBkfxEbkOutPutFile
 	
 	public ServiceOfBkFxEbkXml ()
 	{
-		this.sysconfig = SystemConfigration.getInstance();
+		this.sysconfig = new SetupSystemConfiguration();
 	}
 
 	@Override
@@ -115,10 +115,12 @@ public class ServiceOfBkFxEbkXml implements ServicesForBkfxEbkOutPutFile
 	}
 
 	@Override
-	public void resetBkfxFileDate() {
+	public void resetBkfxFileDate(LocalDate date) {
 		// TODO Auto-generated method stub
 		
 	}
+
+
 	
 
 }

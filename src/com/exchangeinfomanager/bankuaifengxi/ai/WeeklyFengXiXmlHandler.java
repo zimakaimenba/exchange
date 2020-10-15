@@ -10,8 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -23,7 +22,6 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Strings;
 
 public abstract class WeeklyFengXiXmlHandler 
@@ -33,7 +31,6 @@ public abstract class WeeklyFengXiXmlHandler
 	{
 		this.currentdate = date;
 		this.curnodecode = nodecode;
-		this.sysconfig = SystemConfigration.getInstance();
 		this.bkopt = new BanKuaiDbOperation ();
 		this.zdgzinfo = new ZhongDianGuanZhu ();
 		
@@ -53,7 +50,6 @@ public abstract class WeeklyFengXiXmlHandler
 	protected LocalDate currentdate;
 	protected Document xmlindbdoc;
 	protected Element xmlindbroot;
-	protected SystemConfigration sysconfig;
 	protected BanKuaiDbOperation bkopt;
 	protected String fxweeklyxmlmatrixfile;
 	protected String curnodecode;

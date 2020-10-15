@@ -21,19 +21,19 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEbkOutPutFile 
 {
 	private File fileebk;
-	private SystemConfigration sysconfig;
+//	private SystemConfigration sysconfig;
 	private LocalDate edbfiledate;
 
 	public ServicesForBkfxEbkOutPutFileDirectRead ()
 	{
-		this.sysconfig = SystemConfigration.getInstance();
+//		this.sysconfig = SystemConfigration.getInstance();
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.Strings;
 
 public class GeGuWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
@@ -23,7 +23,7 @@ public class GeGuWeeklyFengXiXmlHandler extends WeeklyFengXiXmlHandler
 	{
 		super (stockcode,date);
 		if(!stockcode.equals("000000"))
-			super.setupXmlHandler (sysconfig.getGeGuFengXiWeeklyXmlMatrixFile ());
+			super.setupXmlHandler ( (new SetupSystemConfiguration() ).getGeGuFengXiWeeklyXmlMatrixFile ());
 	}
 	/*
 	 * 

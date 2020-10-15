@@ -60,6 +60,7 @@ public class SystemSettingDialog extends JDialog
 {
 	private DataBaseConfigration dbconf;
 	SetupSystemConfiguration systemconfig;
+	private DataBaseConfigration dbconfig;
 	/**
 	 * Create the dialog.
 	 */
@@ -67,6 +68,7 @@ public class SystemSettingDialog extends JDialog
 	{
 		dbconf = DataBaseConfigration.getInstance();
 		systemconfig = new SetupSystemConfiguration ();
+		dbconfig = DataBaseConfigration.getInstance();
 		
 		initializeGui ();
 		createEvents ();
@@ -135,6 +137,20 @@ public class SystemSettingDialog extends JDialog
 	 }
 	private void createEvents() 
 	{
+		btnopensysconfigfile.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					String cmd = "rundll32 url.dll,FileProtocolHandler " + systemconfig.getSystemInstalledPath() + "/config/SystemConfigration.xml" ;
+					logger.debug(cmd);
+					Process p  = Runtime.getRuntime().exec(cmd);
+					p.waitFor();
+				} catch (Exception e1){
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		ckbxzdy.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -189,9 +205,9 @@ public class SystemSettingDialog extends JDialog
 					}
 				}
 				
-				sysconf.getgetCurrentAllDatabaseSources().put( dbnewname, tmpcur );
+				dbconfig.getgetCurrentAllDatabaseSources().put( dbnewname, tmpcur );
 				
-				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(sysconf.getgetCurrentAllDatabaseSources() );
+				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(dbconfig.getgetCurrentAllDatabaseSources() );
 				((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 				
 				saveButton.setEnabled(true);
@@ -254,7 +270,7 @@ public class SystemSettingDialog extends JDialog
 			{
 				String dbnewname = JOptionPane.showInputDialog(null,"请输入新的数据库源名:","加入数据库源", JOptionPane.QUESTION_MESSAGE);
 				KeyStroke escapeStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0); 
-				if(sysconf.getgetCurrentAllDatabaseSources().keySet().contains(dbnewname)) {
+				if(dbconfig.getgetCurrentAllDatabaseSources().keySet().contains(dbnewname)) {
 					JOptionPane.showMessageDialog(null,"数据库源名重复！");
 					return;
 				}
@@ -266,9 +282,9 @@ public class SystemSettingDialog extends JDialog
 					return;
 				
 				logger.debug(addnewsr.getCurDataBaseName());
-				sysconf.getgetCurrentAllDatabaseSources().put( dbnewname, addnewsr );
+				dbconfig.getgetCurrentAllDatabaseSources().put( dbnewname, addnewsr );
 				
-				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(sysconf.getgetCurrentAllDatabaseSources() );
+				((DatabaseSourceTableModel)tablelocal.getModel()).refresh(dbconfig.getgetCurrentAllDatabaseSources() );
 				((DatabaseSourceTableModel)tablelocal.getModel()).fireTableDataChanged();
 				
 				saveButton.setEnabled(true);
@@ -290,33 +306,13 @@ public class SystemSettingDialog extends JDialog
 				Document document = DocumentFactory.getInstance().createDocument();
 		        Element rootele = document.addElement("SystemSettings");//添加文档根
 		        
-				Element eletdx = rootele.addElement("tdxpah");
-				eletdx.setText( toUNIXpath(tfldTDXInstalledPath.getText() ) );
-				
-				Element eletbknameofguanzhu = rootele.addElement("nameofguanzhubankuai");
-				eletbknameofguanzhu.setText( toUNIXpath(tfldzdyguanzhu.getText() ) );
-				
-				if(ckbxzdy.isSelected() ) {
-					Element eletdxzdybkpath = rootele.addElement("tdxzdybkpath");
-					eletdxzdybkpath.setText(toUNIXpath(tfldzdyfilepath.getText()));
-				}
-				
-				Element zhanbifengxizhouqi = rootele.addElement("zhanbifengxizhouqi");
-				zhanbifengxizhouqi.setText(tfldzhanbizhouqi.getText());
-				
-				Element priavtemodesetting = rootele.addElement("privatemode");
-				priavtemodesetting.setText( String.valueOf(cbxprivatemode.isSelected() ) );
-				
-				Element elebpythoninterper = rootele.addElement("pythoninterper");
-				elebpythoninterper.setText(tfldpythonptah.getText().trim());
-
 				Element elesorce = rootele.addElement("databasesources");
-				Set<String> dbsnameset = sysconf.getgetCurrentAllDatabaseSources().keySet();
+				Set<String> dbsnameset = dbconfig.getgetCurrentAllDatabaseSources().keySet();
 				Iterator<String> dbsit = dbsnameset.iterator();
 				while(dbsit.hasNext()) {
 					String tmpdbsname = dbsit.next();
 					
-					CurDataBase tmpcurbs = sysconf.getgetCurrentAllDatabaseSources().get(tmpdbsname);
+					CurDataBase tmpcurbs = dbconfig.getgetCurrentAllDatabaseSources().get(tmpdbsname);
 					
 					Element eleonedbs = elesorce.addElement("singledbs");
 					
@@ -534,6 +530,8 @@ public class SystemSettingDialog extends JDialog
 	private JLabel lblblocknewcfg;
 	private JTextField txtCprogramFilesfreemind;
 	private JTextField dbguipath;
+	private JButton btnopensysconfigfile;
+	private JButton cancelButton;
 	private void initializeGui() 
 	{
 		saveButton = new JButton ();
@@ -817,17 +815,19 @@ public class SystemSettingDialog extends JDialog
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			
+			btnopensysconfigfile = new JButton("\u6253\u5F00\u7CFB\u7EDF\u8BBE\u7F6E\u6587\u4EF6");
+			
 			{
 				okButton = new JButton("\u4FDD\u5B58");
+				okButton.setEnabled(false);
 				
 				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
-				JButton cancelButton = new JButton("Cancel");
+				cancelButton = new JButton("Cancel");
 				cancelButton.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
@@ -835,8 +835,30 @@ public class SystemSettingDialog extends JDialog
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
 			}
+			GroupLayout gl_buttonPane = new GroupLayout(buttonPane);
+			gl_buttonPane.setHorizontalGroup(
+				gl_buttonPane.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_buttonPane.createSequentialGroup()
+						.addGap(18)
+						.addComponent(btnopensysconfigfile)
+						.addGap(262)
+						.addComponent(okButton)
+						.addGap(18)
+						.addComponent(cancelButton)
+						.addGap(74))
+			);
+			gl_buttonPane.setVerticalGroup(
+				gl_buttonPane.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_buttonPane.createSequentialGroup()
+						.addGap(5)
+						.addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING)
+							.addComponent(btnopensysconfigfile)
+							.addGroup(gl_buttonPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(okButton)
+								.addComponent(cancelButton))))
+			);
+			buttonPane.setLayout(gl_buttonPane);
 		}
 		
 		this.setLocationRelativeTo(null);
