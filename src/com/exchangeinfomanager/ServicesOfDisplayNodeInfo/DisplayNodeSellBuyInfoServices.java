@@ -7,11 +7,11 @@ import java.util.List;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Services.ServicesOfDisplayNodeInfo;
+import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.google.common.base.Splitter;
 
-public class DisplayNodeSellBuyInfoServices implements ServicesOfDisplayNodeInfo
+public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianInfo
 {
 	private BkChanYeLianTreeNode node;
 

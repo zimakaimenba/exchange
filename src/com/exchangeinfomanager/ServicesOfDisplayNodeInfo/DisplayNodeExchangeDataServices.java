@@ -2,11 +2,11 @@ package com.exchangeinfomanager.ServicesOfDisplayNodeInfo;
 
 import java.time.LocalDate;
 
-import com.exchangeinfomanager.Services.ServicesOfDisplayNodeInfo;
+import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 
-public class DisplayNodeExchangeDataServices implements ServicesOfDisplayNodeInfo
+public class DisplayNodeExchangeDataServices implements ServicesOfNodeJiBenMianInfo
 {
 	private BkChanYeLianTreeNode node;
 	private LocalDate date;

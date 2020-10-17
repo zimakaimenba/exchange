@@ -489,6 +489,18 @@ public class SvsForNodeOfStock implements ServicesForNode
 		return node;
 	}
 
+	@Override
+	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificGntxString(String requiredgntxstring) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificFmxxString(String requiredfmxxstring) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 	
 

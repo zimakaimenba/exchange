@@ -6,11 +6,11 @@ import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Services.ServicesOfDisplayNodeInfo;
+import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.google.common.base.Strings;
 
-public class DisplayNodeJiBenMianService implements ServicesOfDisplayNodeInfo
+public class DisplayNodeJiBenMianService implements ServicesOfNodeJiBenMianInfo
 {
 	private BkChanYeLianTreeNode node;
 

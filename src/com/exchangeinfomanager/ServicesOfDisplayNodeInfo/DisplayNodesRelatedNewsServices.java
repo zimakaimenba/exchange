@@ -18,11 +18,11 @@ import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
-import com.exchangeinfomanager.Services.ServicesOfDisplayNodeInfo;
+import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 
-public class DisplayNodesRelatedNewsServices implements ServicesOfDisplayNodeInfo
+public class DisplayNodesRelatedNewsServices implements ServicesOfNodeJiBenMianInfo
 {
 	private BkChanYeLianTreeNode node;
 	private LocalDate requiredstart;

@@ -662,5 +662,15 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		List<BkChanYeLianTreeNode> cylchildren  = this.dboptforcyltree.getChildrenInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXBK);
 		return cylchildren;
 	}
+	@Override
+	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificGntxString(String requiredgntxstring) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificFmxxString(String requiredfmxxstring) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

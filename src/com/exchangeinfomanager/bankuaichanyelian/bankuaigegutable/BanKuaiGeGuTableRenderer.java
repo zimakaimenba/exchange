@@ -198,7 +198,11 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
         RuleOfWeeklyAverageChenJiaoErMaxWk lwaveragecjemaxwk = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
         lwrules.register(lwaveragecjemaxwk);
         RulesEngine lwrulesEngine = new DefaultRulesEngine();
-        rulesEngine.fire(lwrules, lwfacts);
+        try {
+        	lwrulesEngine.fire(lwrules, lwfacts);
+        } catch (Exception ex  ) {
+        	ex.printStackTrace();
+        }
         
         NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
 	    if( comp instanceof JLabel &&  columnname.contains("代码")  ) { //当前选择选择 // ||   stock.wetherHasReiewedToday()

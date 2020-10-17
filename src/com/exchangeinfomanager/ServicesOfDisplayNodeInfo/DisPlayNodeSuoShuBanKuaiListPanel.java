@@ -12,14 +12,14 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 
-import com.exchangeinfomanager.Services.ServicesOfDisplayNodeInfo;
+import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 
 public class DisPlayNodeSuoShuBanKuaiListPanel  extends DisplayNodeInfoPanel 
 {
 	private String selectstring;
 	public static final String URLSELECTED_PROPERTY = "urlselected";
 	
-	public DisPlayNodeSuoShuBanKuaiListPanel(ServicesOfDisplayNodeInfo svsdisplay)
+	public DisPlayNodeSuoShuBanKuaiListPanel(ServicesOfNodeJiBenMianInfo svsdisplay)
 	{
 		super(svsdisplay);
 		

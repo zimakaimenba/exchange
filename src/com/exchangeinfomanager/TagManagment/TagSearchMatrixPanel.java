@@ -4,6 +4,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -54,6 +55,7 @@ public class TagSearchMatrixPanel extends JPanel
 	protected TagsServiceForSystemTags sysservice;
 	protected JUpdatedTextField tfldmusthavetags;
 	protected JUpdatedTextField tfldoneoftags;
+	private JCheckBox chkbxsearchgntsfmxx;
 
 	/**
 	 * Create the panel.
@@ -96,11 +98,26 @@ public class TagSearchMatrixPanel extends JPanel
 				tfldoneoftags.setText( tfldoneoftags.getText() + tagname + "  ");
 		}
 	}
+	/*
+	 * 
+	 */
 	public void setPreSearchOrHaveTags (String orhavetags)
 	{
 		tfldoneoftags.setText( tfldoneoftags.getText() + " " + orhavetags + "  ");
 	}
-	
+	/*
+	 * 
+	 */
+	public boolean shouldSearchGntsFmxx ()
+	{
+		if(chkbxsearchgntsfmxx.isSelected() )
+			return true;
+		else 
+			return false;
+	}
+	/*
+	 * 
+	 */
 	private void createEvents() 
 	{
 		pnldisplayallsyskw.addPropertyChangeListener(new PropertyChangeListener() {
@@ -162,12 +179,13 @@ public class TagSearchMatrixPanel extends JPanel
         };
 
         TableCellListener tcl = new TableCellListener(tblnews, action);
-		
 	}
-
+	/*
+	 * 
+	 */
 	public void createEastSeachPanel ()
 	{
-		pnldisplayallsyskw = new TagsPanel("所有系统关键字",null, TagsPanel.FULLCONTROLMODE);;
+		pnldisplayallsyskw = new TagsPanel("所有系统关键字",null, TagsPanel.FULLCONTROLMODE);
         
 		JScrollPane despane = new JScrollPane ();
         despane.setAutoscrolls(true);
@@ -201,6 +219,9 @@ public class TagSearchMatrixPanel extends JPanel
     	eastPanel.add(tflsearchfield);
     	
     	eastPanel.add(Box.createVerticalStrut(10));
+    	
+    	chkbxsearchgntsfmxx = new JCheckBox ("同时在概念提示和负面消息中搜索相同关键字。");
+    	eastPanel.add(chkbxsearchgntsfmxx);
 
 	}
 

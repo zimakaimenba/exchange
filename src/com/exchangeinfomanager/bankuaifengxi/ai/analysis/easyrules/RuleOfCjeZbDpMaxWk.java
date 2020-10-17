@@ -53,7 +53,14 @@ public class RuleOfCjeZbDpMaxWk
     	} 
     	
     	if(cjedpmaxwk == null || cjedpmaxwk <= 0 ) {
-    		Integer cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedifference);
+    		Integer cjedpminwk = null;
+    		try {
+    			cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedifference);
+    		} catch (java.lang.NullPointerException ex) {
+    			ex.printStackTrace();
+    			return false;
+    		}
+    		
     		int minfazhi;
 	    	try {
 	    		minfazhi = evacond.getSettingDpMinWk();

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import com.exchangeinfomanager.Services.ServicesOfDisplayNodeInfo;
+import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.google.common.collect.Multimap;
 
 public class DisplayNodeExchangeDataServicesPanel extends DisplayNodeInfoPanel 
@@ -22,7 +22,7 @@ public class DisplayNodeExchangeDataServicesPanel extends DisplayNodeInfoPanel
 //	private Multimap<String,LocalDate> displayedBankuaiinfomap;
 //	private Multimap<String,LocalDate> displayedStockinfomap;
 
-	public DisplayNodeExchangeDataServicesPanel(ServicesOfDisplayNodeInfo svsdisplay)
+	public DisplayNodeExchangeDataServicesPanel(ServicesOfNodeJiBenMianInfo svsdisplay)
 	{
 		super(svsdisplay);
 		

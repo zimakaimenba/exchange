@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 
 
 import com.exchangeinfomanager.News.News;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -64,6 +66,14 @@ public class TagSearchMatrixPanelForWholeSearchTags extends TagSearchMatrixPanel
 		
 		Collection<News> newsearchresult = super.sysservice.getNewsSetWithAllSpecificTags(tfldmusthavetags.getText());
 		((TagSearchOnNewsTableModel)tblnews.getModel()).refresh(newsearchresult);
+		
+		if(super.shouldSearchGntsFmxx() ) {
+			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+			SvsForNodeOfStock svsstk = new SvsForNodeOfStock (); 
+			
+			Collection<BkChanYeLianTreeNode> bkresult = svsbk.getSubSetOfTheNodesWithSpecificGntxString(tfldmusthavetags.getText() );
+			Collection<BkChanYeLianTreeNode> stkresult = svsstk.getSubSetOfTheNodesWithSpecificGntxString(tfldmusthavetags.getText() );
+		}
 		
 	}
 	

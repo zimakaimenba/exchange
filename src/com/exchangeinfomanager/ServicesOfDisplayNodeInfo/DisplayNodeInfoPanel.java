@@ -12,14 +12,14 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.Services.ServicesOfDisplayNodeInfo;
+import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 
 public class DisplayNodeInfoPanel extends JEditorPane //extends JPanel 
 {
 //	protected JEditorPane infoeditor;
-	private ServicesOfDisplayNodeInfo svsshow;
+	private ServicesOfNodeJiBenMianInfo svsshow;
 
-	public DisplayNodeInfoPanel (ServicesOfDisplayNodeInfo svsdisplay)
+	public DisplayNodeInfoPanel (ServicesOfNodeJiBenMianInfo svsdisplay)
 	{
 		this.svsshow = svsdisplay;
 		

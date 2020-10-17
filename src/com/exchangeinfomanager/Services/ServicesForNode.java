@@ -15,6 +15,8 @@ public interface ServicesForNode
 	public BkChanYeLianTreeNode getNode (String nodenames);
 	
 	public BkChanYeLianTreeNode getNodeJiBenMian (BkChanYeLianTreeNode node);
+	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificGntxString (String requiredgntxstring);
+	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificFmxxString (String requiredfmxxstring);
 	
 	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes (Set<String> subtypesset);
 

@@ -7,13 +7,13 @@ import java.util.Iterator;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.Services.ServicesOfDisplayNodeInfo;
+import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.CacheForInsertedTag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-public class DisplayNodesRelatedTagsServices implements ServicesOfDisplayNodeInfo 
+public class DisplayNodesRelatedTagsServices implements ServicesOfNodeJiBenMianInfo 
 {
 	private BkChanYeLianTreeNode node;
 

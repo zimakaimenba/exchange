@@ -1038,7 +1038,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 					}
 				}
 			} catch (java.lang.IndexOutOfBoundsException e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 				return null;
 			}
 			return null;
