@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
+package com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable;
 
 import java.awt.Cursor;
 import java.awt.Dialog;
@@ -54,7 +54,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 //		this.getColumnModel().getColumn(0).setPreferredWidth(10);
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuaiGeGuTable.class);
+	private static Logger logger = Logger.getLogger(BanKuaiGeGuBasicTable.class);
 	
 	protected StockCalendarAndNewDbOperation newsdbopt;
 	protected BanKuaiDbOperation bkdbopt;
@@ -183,11 +183,11 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 		}
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
+		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuBasicTableModel) this.getModel()).getStock(model_row);
 	
 		stockofbankuai.setBkLongTou(!stockofbankuai.isBkLongTou());
 
-		BanKuai bk = ((BanKuaiGeGuTableModel)this.getModel()).getCurDispalyBandKuai();
+		BanKuai bk = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDispalyBandKuai();
 		bkdbopt.setBanKuaiLongTou (bk,stockofbankuai.getMyOwnCode(),stockofbankuai.isBkLongTou());
 	}
 
@@ -242,9 +242,9 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 		}
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuTableModel) this.getModel()).getStock(model_row);
+		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuBasicTableModel) this.getModel()).getStock(model_row);
 
-		LocalDate fxdate = ((BanKuaiGeGuTableModel)this.getModel()).getShowCurDate();
+		LocalDate fxdate = ((BanKuaiGeGuBasicTableModel)this.getModel()).getShowCurDate();
 		
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);
@@ -276,7 +276,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 		}
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		Stock stock = ((BanKuaiGeGuTableModel) this.getModel()).getStock (model_row).getStock();
+		Stock stock = ((BanKuaiGeGuBasicTableModel) this.getModel()).getStock (model_row).getStock();
 		
 		JDialogForTagSearchMatrixPanelForAddSysNewsToNode newlog 
 			= new JDialogForTagSearchMatrixPanelForAddSysNewsToNode (  stock);
@@ -288,7 +288,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 	
 	public void removeRows () 
 	{
-		BanKuaiGeGuTableModel model = (BanKuaiGeGuTableModel)this.getModel(); 
+		BanKuaiGeGuBasicTableModel model = (BanKuaiGeGuBasicTableModel)this.getModel(); 
 		int rows = model.getRowCount(); 
 		for(int i = rows - 1; i >=0; i--)
 		{

@@ -69,6 +69,7 @@ import com.exchangeinfomanager.bankuaifengxi.GeGuTDXFengXi;
 import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuTableFromPropertiesFile;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxNodeRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -1547,6 +1548,13 @@ public class StockInfoManager
 			} 
 			
 			bkfx.toFront();
+			
+			//for test
+//			BanKaiFengXi_2560ScrenResolution bkfx2560 = new BanKaiFengXi_2560ScrenResolution (this);
+//			bkfx2560.setModal(false);
+//			bkfx2560.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//			bkfx2560.toFront();
+			
 		} else {
 			if(bkfx == null ) {
 				bkfx = new BanKuaiFengXi (this, "");

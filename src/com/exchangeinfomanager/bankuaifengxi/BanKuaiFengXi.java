@@ -77,11 +77,6 @@ import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuExternalInfoTable;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTable;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuTableModel;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTable;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
@@ -91,6 +86,10 @@ import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjlPn
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.VoiceEngine;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.WeeklyAnalysis;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable.BanKuaiGeGuBasicTableModel;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuExternalInfoTableFromPropertiesFile;
+import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTable;
+import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.BkfxWeeklyFileResultXmlHandler;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServiceOfBkFxEbkXml;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServicesForBkfxEbkOutPutFile;
@@ -184,8 +183,10 @@ import javax.swing.SwingWorker.StateValue;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollBar;
 
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuBasicTable;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiGeGuBasicTableModel;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuExternalInfoTableModelFromPropertiesFile;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuTableFromPropertiesFile;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuTableModelFromPropertiesFile;
+
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
@@ -400,12 +401,12 @@ public class BanKuaiFengXi extends JDialog
 		
 		showReminderMessage (bkfxremind.getBankuairemind() );
 		
-		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股突出和当前板块交集个股做准备
-		BanKuai tmpbk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
+		((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股突出和当前板块交集个股做准备
+		BanKuai tmpbk = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
 		if(tmpbk != null) {
-			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
+			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
 		} else
-			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(null); 
+			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(null); 
 	}
 	/*
 	 * 
@@ -526,8 +527,8 @@ public class BanKuaiFengXi extends JDialog
 		if(selectedbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
 
 			//板块所属个股占比info
-			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate,period);
-			((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).refresh(selectedbk, curselectdate,period);
+			((BanKuaiGeGuTableModelFromPropertiesFile)tableGuGuZhanBiInBk.getModel()).refresh(selectedbk, curselectdate,period);
+			((BanKuaiGeGuExternalInfoTableModelFromPropertiesFile)tableExternalInfo.getModel()).refresh(selectedbk, curselectdate,period); 
 			//更改显示日期
 			tabbedPanegegu.setTitleAt(0, "当前周" + curselectdate);
 			//显示2周的板块个股pie chart
@@ -588,26 +589,26 @@ public class BanKuaiFengXi extends JDialog
 			if( ((BanKuai)bkcur).getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股，
 //				refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
 				
-				LocalDate formerdate = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).getShowCurDate();
+				LocalDate formerdate = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getShowCurDate();
 				if(formerdate != null) { //前面有显示过，把她挪到tab 4
 					//显示选定周+1股票排名情况
-					((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).refresh(((BanKuai)bkcur), formerdate,globeperiod);
+					((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingplusone.getModel()).refresh(((BanKuai)bkcur), formerdate,globeperiod);
 					tabbedPanegegu.setTitleAt(5,  formerdate.toString() );
 				}
 				
 				//显示选定周股票排名情况
-				((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).refresh(((BanKuai)bkcur), selectdate,globeperiod);
+				((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingzhou.getModel()).refresh(((BanKuai)bkcur), selectdate,globeperiod);
 				tabbedPanegegu.setTitleAt(2, this.getTabbedPanegeguTabTiles(2) + selectdate);
 				
 				//显示选定周-1股票排名情况
 				LocalDate selectdate2 = selectdate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
-				((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).refresh(((BanKuai)bkcur), selectdate2,globeperiod);
+				((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingminusone.getModel()).refresh(((BanKuai)bkcur), selectdate2,globeperiod);
 				tabbedPanegegu.setTitleAt(3,  selectdate2 + "(-1)");
 
 				
 				//显示选定周-2股票排名情况
 				LocalDate selectdate3 = selectdate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
-				((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).refresh(((BanKuai)bkcur), selectdate3,globeperiod);
+				((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingminustwo.getModel()).refresh(((BanKuai)bkcur), selectdate3,globeperiod);
 				tabbedPanegegu.setTitleAt(4,  selectdate3 + "(+1)");
 				
 				refreshBanKuaiGeGuTableHightLight ();
@@ -739,8 +740,8 @@ public class BanKuaiFengXi extends JDialog
 	{
 		Boolean found = false; int rowindex;
 		nodecode = nodecode.substring(0,6);
-		if(((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
-			 rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
+		if(((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
+			 rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
 			 
 			if(rowindex >= 0) {
 				found = true;
@@ -759,8 +760,8 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 		
-		if( ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
-			rowindex = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
+		if( ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
+			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -773,8 +774,8 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 		
-		if( ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
-			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
+		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
+			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -787,8 +788,8 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 
-		if( ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
-			rowindex = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
+		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
+			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0){
 				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -800,8 +801,8 @@ public class BanKuaiFengXi extends JDialog
 			}
 		}
 
-		if(((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
-			rowindex = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
+		if(((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
+			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0)  {
 				int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -814,7 +815,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 		
-		if(((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getRowCount() >0 ) {
+		if(  ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getRowCount() >0 ) {
 			rowindex = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >= 0) {
 				int modelRow = tableExternalInfo.convertRowIndexToView(rowindex);
@@ -1048,14 +1049,13 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanegegu.setTitleAt(4, this.getTabbedPanegeguTabTiles(4) );
 		tabbedPanegegu.setTitleAt(5, this.getTabbedPanegeguTabTiles(5) );
 		
-		((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
+		((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).deleteAllRows();
 		((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).deleteAllRows();
-		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).deleteAllRows();
-		((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).deleteAllRows();
-		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).deleteAllRows();
-		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).deleteAllRows();
-		((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).deleteAllRows();
-		
+		((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).deleteAllRows();
+		((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).deleteAllRows();
+		((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).deleteAllRows();
+		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).deleteAllRows();
+				
 		menuItemchengjiaoer.setText("X 按成交额排名");
     	menuItemliutong.setText("按流通市值排名");
     	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
@@ -1560,7 +1560,7 @@ public class BanKuaiFengXi extends JDialog
 		menuItemTempGeGuClear.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).deleteAllRows();
+				((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).deleteAllRows();
 			}
 		});
 		
@@ -1570,7 +1570,7 @@ public class BanKuaiFengXi extends JDialog
 
                 if (evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDATAGWASSELECTED )) {
                 	Collection<Tag> newvalue = (Collection<Tag>) evt.getNewValue();
-                	 ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).setCurrentHighlightKeyWords (newvalue);
+                	 ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).setCurrentHighlightKeyWords (newvalue);
                 	 tableGuGuZhanBiInBk.repaint();
                 }
             }
@@ -1620,7 +1620,7 @@ public class BanKuaiFengXi extends JDialog
 					return;
 				}
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
-				StockOfBanKuai stock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+				StockOfBanKuai stock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
 
         		QiangShi qs =  new 	QiangShi(stock.getStock(), "描述", LocalDate.now(), LocalDate.now(), "详细描述", "强势个股",new HashSet<>(),"URL");
         		ServicesForNews svsqs = new QiangShiServices ();
@@ -1642,7 +1642,7 @@ public class BanKuaiFengXi extends JDialog
 					return;
 				}
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
-				StockOfBanKuai stock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+				StockOfBanKuai stock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
 
         		QiangShi qs =  new 	QiangShi(stock.getStock(), "描述", LocalDate.now(), LocalDate.now(), "详细描述", "强势个股",new HashSet<>(),"URL");
         		ServicesForNews svsqs = new RuoShiServices ();
@@ -1811,7 +1811,7 @@ public class BanKuaiFengXi extends JDialog
             	
             	int row = tableGuGuZhanBiInBk.getSelectedRow();
     			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-    			StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
     			
     			String mrjh = JOptionPane.showInputDialog(null,"请输入明日计划内容:","明日计划", JOptionPane.QUESTION_MESSAGE);
     			if(mrjh.isEmpty()) 
@@ -1827,7 +1827,7 @@ public class BanKuaiFengXi extends JDialog
             	
             	int row = tableGuGuZhanBiInBk.getSelectedRow();
     			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-    			StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
     			List<TDXNodes> tmplist = new ArrayList<TDXNodes> ();
     			tmplist.add(selectstock.getStock() );
     			exportTDXNodesDataToCsv (tmplist,"single");
@@ -1840,7 +1840,7 @@ public class BanKuaiFengXi extends JDialog
             	
             	int row = tableGuGuZhanBiInBk.getSelectedRow();
     			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-    			StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
     			Stock stock = selectstock.getStock();
     			NodesTreeRelated filetree = stock.getNodeTreeRelated ();
     			if(filetree.selfIsMatchModel(dateChooser.getLocalDate() ) ) 
@@ -1881,12 +1881,12 @@ public class BanKuaiFengXi extends JDialog
             	menuItemchengjiaoer.setText("按成交额排名");
             	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
             	
-            	((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByLiuTongShiZhi();
+            	((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByLiuTongShiZhi();
             	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByLiuTongShiZhi();
+            	((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).sortTableByLiuTongShiZhi();
+            	((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).sortTableByLiuTongShiZhi();
+            	((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).sortTableByLiuTongShiZhi();
+            	((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByLiuTongShiZhi();
             }
         });
         menuItemchengjiaoer.addActionListener(new ActionListener() {
@@ -1897,12 +1897,12 @@ public class BanKuaiFengXi extends JDialog
             	menuItemliutong.setText("按流通市值排名");
             	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
             	
-            	((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByChenJiaoEr();
+            	((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByChenJiaoEr();
             	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByChenJiaoEr();
-        		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).sortTableByChenJiaoEr();
-        		((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).sortTableByChenJiaoEr();
-        		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByChenJiaoEr();
-        		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByChenJiaoEr();
+        		((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).sortTableByChenJiaoEr();
+        		((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).sortTableByChenJiaoEr();
+        		((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).sortTableByChenJiaoEr();
+        		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByChenJiaoEr();
             }
         });
         menuItemtimerangezhangfu.addActionListener(new ActionListener() {
@@ -1923,7 +1923,7 @@ public class BanKuaiFengXi extends JDialog
         		BanKuai bk = null;
         		String selecttitle = tabbedPanegegu.getTitleAt( tabbedPanegegu.getSelectedIndex() );
         		if(selecttitle.contains("临时")) {
-        			bk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
+        			bk = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
         		} else {
         			int row = tableBkZhanBi.getSelectedRow();
         			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
@@ -1950,14 +1950,14 @@ public class BanKuaiFengXi extends JDialog
 //    				return ;
 //    			}
     			if(selecttitle.contains("临时")) {
-    				((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+    				((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
     			} else {
-    				((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+    				((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
                 	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-            		((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-            		((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-            		((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-            		((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+            		((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+            		((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+            		((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
+            		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
     			}
             	
             }
@@ -2445,7 +2445,7 @@ public class BanKuaiFengXi extends JDialog
 	                	String curstockcode = evt.getNewValue().toString();
 	                	findInputedNodeInTable (curstockcode);
 	                	
-	                	StockOfBanKuai sob = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStock(curstockcode.substring(0, 6));
+	                	StockOfBanKuai sob = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStock(curstockcode.substring(0, 6));
 	                	hightlightSpecificSector (sob);
 	                }
 	            }
@@ -2459,7 +2459,7 @@ public class BanKuaiFengXi extends JDialog
                 	String curstockcode = evt.getNewValue().toString();
                 	findInputedNodeInTable (curstockcode);
                 	
-                	StockOfBanKuai sob = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStock(curstockcode.substring(0, 6));
+                	StockOfBanKuai sob = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStock(curstockcode.substring(0, 6));
                 	hightlightSpecificSector (sob);
                 }
                 
@@ -2664,7 +2664,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
 				
 				if (arg0.getClickCount() == 1) { //用户点击一下
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2692,7 +2692,7 @@ public class BanKuaiFengXi extends JDialog
 				clearTheGuiBeforDisplayNewInfoSection3 ();
 				
 				int modelRow = tableTempGeGu.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getStock (modelRow);
 				
 				if (arg0.getClickCount() == 1) { //用户点击一下
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2701,8 +2701,8 @@ public class BanKuaiFengXi extends JDialog
 					else
 						unifiedOperationsAfterUserSelectAStock (selectstock,false);
 				}
-				if (arg0.getClickCount() == 2) {
-				}
+//				if (arg0.getClickCount() == 2) {
+//				}
 				
 				tabbedPanegegu.setSelectedIndex(6);
 			}
@@ -2718,7 +2718,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tablexuandingzhou.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingzhou.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getStock (modelRow);
 				
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2741,7 +2741,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tablexuandingminustwo.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingminustwo.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2764,7 +2764,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tablexuandingminusone.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingminusone.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2787,7 +2787,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tablexuandingplusone.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tablexuandingplusone.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).getStock (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2927,12 +2927,12 @@ public class BanKuaiFengXi extends JDialog
 		
 		setExportMainConditionBasedOnUserSelection (bkggmatchcondition); //让tempbk也具备凸显
 		
-		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod); 
+		((BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod); 
 		
-		BanKuai curmainbk = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getCurDispalyBandKuai(); //突出和当前主板块的交集个股
+		BanKuai curmainbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getCurDispalyBandKuai(); //突出和当前主板块的交集个股
 		if(curmainbk != null) {
-			((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(curmainbk); 
-			((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tempbankuai);
+			((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(curmainbk); 
+			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tempbankuai);
 		}
 		
 		svstock = null;
@@ -3069,7 +3069,7 @@ public class BanKuaiFengXi extends JDialog
 			return;
 		}
 		int ggmodelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(ggrow);
-		StockOfBanKuai selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
+		StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
 
 		SvsForNodeOfStock svsstk = new SvsForNodeOfStock	();
 		Number[] result = svsstk.getTDXNodeNoneFixPeriodDpMinMaxWk(selectstock.getStock(), searchstart, searchend);
@@ -3684,12 +3684,24 @@ public class BanKuaiFengXi extends JDialog
 	
 	private BanKuaiInfoTable tableBkZhanBi;
 	private BanKuaiInfoTable tableselectedwkbkzb;
-	private BanKuaiGeGuTable tableGuGuZhanBiInBk;
-	private BanKuaiGeGuTable tablexuandingzhou;
-	private BanKuaiGeGuTable tablexuandingminustwo; //new BanKuaiGeGuTable (this.stockmanager);
-	private BanKuaiGeGuTable tablexuandingminusone;
-	private BanKuaiGeGuTable tablexuandingplusone;
-	private BanKuaiGeGuExternalInfoTable tableExternalInfo;
+	
+	private BanKuaiGeGuTableFromPropertiesFile tableGuGuZhanBiInBk;
+	private BanKuaiGeGuExternalInfoTableFromPropertiesFile tableExternalInfo;
+	private BanKuaiGeGuTableFromPropertiesFile tablexuandingzhou;
+	private BanKuaiGeGuTableFromPropertiesFile tablexuandingminustwo; //new BanKuaiGeGuTable (this.stockmanager);
+	private BanKuaiGeGuTableFromPropertiesFile tablexuandingminusone;
+	private BanKuaiGeGuTableFromPropertiesFile tablexuandingplusone;
+	private BanKuaiGeGuTableFromPropertiesFile tableTempGeGu;
+	
+//	private BanKuaiInfoTable tableselectedwkbkzb;
+//	private BanKuaiGeGuTable tablexuandingzhou;
+//	private BanKuaiGeGuTable tablexuandingminustwo; //new BanKuaiGeGuTable (this.stockmanager);
+//	private BanKuaiGeGuTable tablexuandingminusone;
+//	private BanKuaiGeGuTable tablexuandingplusone;
+//	private BanKuaiGeGuTable tableGuGuZhanBiInBk;
+//	private BanKuaiGeGuExternalInfoTable tableExternalInfo;
+//	private BanKuaiGeGuTable tableTempGeGu;
+	
 	
 	private final JPanel contentPanel = new JPanel();
 	private JStockCalendarDateChooser dateChooser; //https://toedter.com/jcalendar/
@@ -3776,7 +3788,7 @@ public class BanKuaiFengXi extends JDialog
 	private JTextField tfldzhangfumin;
 
 	private JTextField tfldzhangfumax;
-	private BanKuaiGeGuTable tableTempGeGu;
+	
 
 	private JMenuItem menuItemTempGeGuFromFile;
 	private JMenuItem menuItemTempGeGuFromTDXSw;
@@ -4059,7 +4071,7 @@ public class BanKuaiFengXi extends JDialog
 		JScrollPane scrollPanedangqian = new JScrollPane();
 		tabbedPanegegu.addTab("当前周", null, scrollPanedangqian, null);
 		tabbedPanegegu.setBackgroundAt(0, Color.ORANGE);
-		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager);
+		tableGuGuZhanBiInBk = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 //		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
 //		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
@@ -4076,13 +4088,13 @@ public class BanKuaiFengXi extends JDialog
 //	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
 	        g.setColor(Color.BLUE.darker());
 	        
-	        BanKuai interbk = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
+	        BanKuai interbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
 		    if(interbk!= null) {
-		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
+		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
 		    	int rownum = allstks.size();
 		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
 		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-		    			Integer rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+		    			Integer rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
 						if( rowindex  != null && rowindex >=0 ) {
 							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
 //							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
@@ -4102,34 +4114,34 @@ public class BanKuaiFengXi extends JDialog
 		
 		JScrollPane scrollPanGeGuExtralInfo = new JScrollPane();
 		tabbedPanegegu.addTab("\u5176\u4ED6\u4FE1\u606F", null, scrollPanGeGuExtralInfo, null);
-		tableExternalInfo = new BanKuaiGeGuExternalInfoTable (this.stockmanager);
+		tableExternalInfo = new BanKuaiGeGuExternalInfoTableFromPropertiesFile (this.stockmanager);
 		scrollPanGeGuExtralInfo.setViewportView(tableExternalInfo);
 		
 		JScrollPane scrollPanexuanding = new JScrollPane();
 		tabbedPanegegu.addTab("选定周", null, scrollPanexuanding, null);
 		tabbedPanegegu.setBackgroundAt(2, UIManager.getColor("MenuItem.selectionBackground"));
-		tablexuandingzhou = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
 		JScrollPane scrollPanexuandingminusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
 //		tabbedPanegegu.setBackgroundAt(3, Color.LIGHT_GRAY);
-		tablexuandingminusone = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingminusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
 		
 		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
-		tablexuandingminustwo = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingminustwo = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
 		
 		JScrollPane scrollPanexuandingplusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
 		
-		tablexuandingplusone = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingplusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
 		
 		JScrollPane scrollPaneTempGeGu = new JScrollPane();
-		tableTempGeGu = new BanKuaiGeGuTable (this.stockmanager);
+		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
 		
 		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL);
@@ -4144,13 +4156,14 @@ public class BanKuaiFengXi extends JDialog
 //	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
 	        g.setColor(Color.BLUE.darker());
 	        
-	        BanKuai interbk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getInterSetctionBanKuai();
+	        BanKuaiGeGuTableModelFromPropertiesFile tableTempGeGuModel = (BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel(); 
+	        BanKuai interbk = tableTempGeGuModel.getInterSetctionBanKuai();
 		    if(interbk!= null) {
-		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getAllStocks();
+		    	List<BkChanYeLianTreeNode> allstks = tableTempGeGuModel.getAllStocks();
 		    	int rownum = allstks.size();
 		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
 		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-		    			Integer rowindex = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+		    			Integer rowindex = tableTempGeGuModel.getStockRowIndex(tmpnode.getMyOwnCode() );
 						if( rowindex  != null && rowindex >=0 ) {
 							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
 //							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
@@ -4790,7 +4803,7 @@ public class BanKuaiFengXi extends JDialog
 		JScrollPane scrollPanedangqian = new JScrollPane();
 		tabbedPanegegu.addTab("当前周", null, scrollPanedangqian, null);
 		tabbedPanegegu.setBackgroundAt(0, Color.ORANGE);
-		tableGuGuZhanBiInBk = new BanKuaiGeGuTable (this.stockmanager);
+		tableGuGuZhanBiInBk = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 //		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
 //		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
@@ -4807,13 +4820,13 @@ public class BanKuaiFengXi extends JDialog
 //	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
 	        g.setColor(Color.BLUE.darker());
 	        
-	        BanKuai interbk = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
+	        BanKuai interbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
 		    if(interbk!= null) {
-		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
+		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
 		    	int rownum = allstks.size();
 		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
 		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-		    			Integer rowindex = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+		    			Integer rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
 						if( rowindex  != null && rowindex >=0 ) {
 							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
 //							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
@@ -4833,34 +4846,34 @@ public class BanKuaiFengXi extends JDialog
 		
 		JScrollPane scrollPanGeGuExtralInfo = new JScrollPane();
 		tabbedPanegegu.addTab("\u5176\u4ED6\u4FE1\u606F", null, scrollPanGeGuExtralInfo, null);
-		tableExternalInfo = new BanKuaiGeGuExternalInfoTable (this.stockmanager);
+		tableExternalInfo = new BanKuaiGeGuExternalInfoTableFromPropertiesFile (this.stockmanager);
 		scrollPanGeGuExtralInfo.setViewportView(tableExternalInfo);
 		
 		JScrollPane scrollPanexuanding = new JScrollPane();
 		tabbedPanegegu.addTab("选定周", null, scrollPanexuanding, null);
 		tabbedPanegegu.setBackgroundAt(2, UIManager.getColor("MenuItem.selectionBackground"));
-		tablexuandingzhou = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
 		JScrollPane scrollPanexuandingminusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
 //		tabbedPanegegu.setBackgroundAt(3, Color.LIGHT_GRAY);
-		tablexuandingminusone = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingminusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
 		
 		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
-		tablexuandingminustwo = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingminustwo = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
 		
 		JScrollPane scrollPanexuandingplusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
 		
-		tablexuandingplusone = new BanKuaiGeGuTable (this.stockmanager);
+		tablexuandingplusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
 		
 		JScrollPane scrollPaneTempGeGu = new JScrollPane();
-		tableTempGeGu = new BanKuaiGeGuTable (this.stockmanager);
+		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
 		
 		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL); //如果要使用windowbuilder修改界面，这里需要修改
@@ -4875,13 +4888,14 @@ public class BanKuaiFengXi extends JDialog
 //	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
 	        g.setColor(Color.BLUE.darker());
 	        
-	        BanKuai interbk = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).getInterSetctionBanKuai();
+	        BanKuaiGeGuTableModelFromPropertiesFile tableTempGeGuModel = ((BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel()); 
+	        BanKuai interbk = tableTempGeGuModel.getInterSetctionBanKuai();
 		    if(interbk!= null) {
-		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getAllStocks();
+		    	List<BkChanYeLianTreeNode> allstks = tableTempGeGuModel.getAllStocks();
 		    	int rownum = allstks.size();
 		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
 		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-		    			Integer rowindex = ((BanKuaiGeGuTableModel)tableTempGeGu.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+		    			Integer rowindex = tableTempGeGuModel.getStockRowIndex(tmpnode.getMyOwnCode() );
 						if( rowindex  != null && rowindex >=0 ) {
 							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
 //							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;

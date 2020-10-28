@@ -3,7 +3,7 @@ package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
-
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable.BanKuaiGeGuBasicTableModel;
 import com.exchangeinfomanager.nodes.DaPan;
 
 import com.exchangeinfomanager.nodes.Stock;
@@ -11,7 +11,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 
-public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel 
+class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel 
 {
 	BanKuaiGeGuTableModel () 
 	{
@@ -30,7 +30,7 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 	}
 
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
-	private BanKuaiGeGuMatchCondition condition;
+//	private BanKuaiGeGuMatchCondition condition;
 
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
@@ -189,14 +189,14 @@ public class BanKuaiGeGuTableModel extends BanKuaiGeGuBasicTableModel
 		      return clazz;
 	 }
       
-    public void setDisplayMatchCondition (BanKuaiGeGuMatchCondition cond)
-    {
-    	  this.condition = cond;
-    }
-    public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
-    {
-    	return this.condition;
-    }
+//    public void setDisplayMatchCondition (BanKuaiGeGuMatchCondition cond)
+//    {
+//    	  this.condition = cond;
+//    }
+//    public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
+//    {
+//    	return this.condition;
+//    }
 	    
 		
 

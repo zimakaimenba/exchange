@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
+package com.exchangeinfomanager.bankuaifengxi.bankuaigegutable;
 
 import java.time.LocalDate;
 import java.util.Comparator;

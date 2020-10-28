@@ -60,7 +60,7 @@ import com.exchangeinfomanager.TagServices.TagsServiceForSystemTags;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiPopUpMenuForTable;
+import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiPopUpMenuForTable;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;

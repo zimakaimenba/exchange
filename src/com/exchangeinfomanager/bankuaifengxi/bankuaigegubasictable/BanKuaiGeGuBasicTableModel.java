@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
+package com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,15 +13,18 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.NodeChenJiaoErComparator;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.NodeTimeRangeZhangFuComparator;
 import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.TDXNodes;
+
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+
 
 public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 {
@@ -30,7 +33,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		super ();
 	}
 
-	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModel.class);
+	private static Logger logger = Logger.getLogger(BanKuaiGeGuBasicTableModel.class);
 	
 	protected String[] jtableTitleStrings ;
 	protected BanKuai curbk;
@@ -41,6 +44,8 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	private Collection<Tag> tags;
 
 	private BanKuai intersectionbankuai;
+
+	private BanKuaiGeGuMatchCondition matchcond;
 	/*
 	 * 
 	 */
@@ -81,6 +86,93 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
     	
     	this.fireTableDataChanged();
 	}
+	
+	 protected Object getColomnValue(String column_keyword, int rowIndex) 
+	  {
+		  Object value = "??";
+		  
+		  StockOfBanKuai curdisplaystockofbankuai = (StockOfBanKuai) entryList.get(rowIndex);
+//		  String bkcode = curbk.getMyOwnCode();
+		  Stock stock = curdisplaystockofbankuai.getStock();
+//		    DaPan dapan = (DaPan)stock.getRoot();
+		  NodeXPeriodData stockxdata = stock.getNodeXPeroidData(period);
+		    
+		  switch (column_keyword) {
+         case "nodecode":
+       	  String stockcode = curdisplaystockofbankuai.getMyOwnCode();
+       	  value = stockcode;
+       	  break;
+       	  
+         case "nodename":
+       	  String thisbkname = curdisplaystockofbankuai.getMyOwnName();
+         	  value = thisbkname;
+       	  break;
+       	  
+         case "bankuaichengjiaoergongxian":
+       	  Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
+         	  if(cjechangegrowthrate != null)
+         		value = cjechangegrowthrate;
+         	  else	value = -1;
+       	  break;
+       	  
+         case "cjezbgrowrate":
+       	  Double cjedpgrowthrate = stockxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
+         	  if(cjedpgrowthrate != null)
+         		value = cjedpgrowthrate;
+         	  else	value = -1;
+       	  break;
+       	  
+         case "CjeZbDpMaxWk":
+       	  Integer cjedpmaxwk = stockxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+	          try{
+	          		if(cjedpmaxwk > 0) {
+	              		value = cjedpmaxwk;
+	              		break;
+	              	} else	if(cjedpmaxwk == 0) {
+	              		Integer cjedpminwk = stockxdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
+	              		value = 0 - cjedpminwk;
+	              		break;
+	              	}
+	          } catch (java.lang.NullPointerException e) {
+	          		e.printStackTrace();
+	          }
+	          break;
+         case "NCjeZbDpMinWk":
+       	  Integer cjldpgrowthrate = stockxdata.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);//.getGgdpzhanbigrowthrate();
+         	  value = cjldpgrowthrate;
+         	  break;
+         case "averagecjemaxwk" :
+       	  Integer cjldpmaxwk = stockxdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+         	  if(cjldpmaxwk != null && cjldpmaxwk > 0) 
+         		value = cjldpmaxwk;
+          	  else value = 0;
+         	  break;
+         case "highlevelpanxurank" :
+       	  Integer paiming = this.entryList.indexOf(curdisplaystockofbankuai) + 1;
+         	  value = paiming;
+       	  break;
+         case "quanzhonginbankuai" :
+       	  Integer stockweight =  curbk.getGeGuSuoShuBanKuaiWeight( curdisplaystockofbankuai.getMyOwnCode() );
+	        	try {
+	        		value = (Integer)stockweight;
+	        	} catch (java.lang.NullPointerException e) {
+	        		value = 0;
+	        	}
+       	  break;
+         case "CjeLianXuZhang": //周日平均成交额MAXWK
+	        	Integer cjemaxwk = stockxdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(showwknum,0);//.getGgbkcjemaxweek(); 
+	        	value = cjemaxwk;
+	        	break;
+         case "huanshoulv": //周日平均成交额MAXWK
+	        	Double hsl = ((StockNodesXPeriodData)stockxdata).getSpecificTimeHuanShouLv(showwknum, 0);
+		    	value = hsl;
+		    	break;
+         	
+		  }
+		  
+		  return value;
+	  }
+	
 	/*
 	 * 
 	 */
@@ -281,6 +373,16 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		public Collection<Tag> getCurrentHighlightKeyWords ()
 		{
 			return this.tags ;
+		}
+		
+		public void setDisplayMatchCondition(BanKuaiGeGuMatchCondition expc) 
+		{
+			this.matchcond = expc;
+			
+		}
+		public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
+		{
+			return this.matchcond;
 		}
 	    
 				

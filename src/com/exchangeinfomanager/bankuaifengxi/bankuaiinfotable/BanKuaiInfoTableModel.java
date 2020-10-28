@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
+package com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.NodeChenJiaoErComparator;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;

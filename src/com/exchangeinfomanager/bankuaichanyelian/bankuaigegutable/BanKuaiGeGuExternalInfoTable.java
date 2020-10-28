@@ -23,6 +23,7 @@ import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable.BanKuaiGeGuBasicTable;
 import com.exchangeinfomanager.commonlib.JTableToolTipHeader;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -37,7 +38,7 @@ import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
 
-public class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implements BanKuaiGeGuMatchConditionListener
+class BanKuaiGeGuExternalInfoTable extends BanKuaiGeGuBasicTable implements BanKuaiGeGuMatchConditionListener
 {
 	
 

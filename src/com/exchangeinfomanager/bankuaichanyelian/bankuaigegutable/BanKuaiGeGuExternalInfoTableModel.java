@@ -7,13 +7,14 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable.BanKuaiGeGuBasicTableModel;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 
-public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableModel
+class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableModel
 {
 	public BanKuaiGeGuExternalInfoTableModel ()
 	{
@@ -46,7 +47,7 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 
 	private Collection<Tag> tags;
 
-	private BanKuaiGeGuMatchCondition matchcond;
+//	private BanKuaiGeGuMatchCondition matchcond;
 	
 	
 		public Object getValueAt(int rowIndex, int columnIndex) 
@@ -304,18 +305,5 @@ public class BanKuaiGeGuExternalInfoTableModel extends BanKuaiGeGuBasicTableMode
 //		{
 //			return this.showhuibudownquekou;
 //		}
-
-		public void setDisplayMatchCondition(BanKuaiGeGuMatchCondition expc) 
-		{
-			this.matchcond = expc;
-			
-		}
-		public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
-		{
-			return this.matchcond;
-		}
-		
-		
-
 
 }

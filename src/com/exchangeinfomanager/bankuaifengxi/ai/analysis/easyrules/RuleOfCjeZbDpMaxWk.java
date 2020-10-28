@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules;
 import java.awt.Color;
 import java.time.LocalDate;
 
+import org.apache.log4j.Logger;
 import org.jeasy.rules.annotation.Action;
 import org.jeasy.rules.annotation.Condition;
 import org.jeasy.rules.annotation.Fact;
@@ -10,12 +11,15 @@ import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable.BanKuaiGeGuBasicTable;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 @Rule(name = "ChenJiaoEr ZhanBi MaxWk Rule", description = "if it rains then take an umbrella" )
 public class RuleOfCjeZbDpMaxWk 
 {
+	private static Logger logger = Logger.getLogger(RuleOfCjeZbDpMaxWk.class);
+	
 	private Color foreground = Color.BLACK, background = Color.white;
 	boolean lianxufangliang = false;
 	String analysisresultforvoice = "";
@@ -57,7 +61,8 @@ public class RuleOfCjeZbDpMaxWk
     		try {
     			cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedifference);
     		} catch (java.lang.NullPointerException ex) {
-    			ex.printStackTrace();
+//    			ex.printStackTrace();
+    			logger.info(evanode.getMyOwnName() + "reach the oldest data!");
     			return false;
     		}
     		

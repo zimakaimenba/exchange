@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
+package com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable;
 
 import java.awt.Dialog;
 import java.awt.Dimension;

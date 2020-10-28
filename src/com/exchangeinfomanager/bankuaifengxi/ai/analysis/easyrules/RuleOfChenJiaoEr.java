@@ -3,7 +3,6 @@ package com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules;
 import java.awt.Color;
 import java.time.LocalDate;
 
-import org.apache.log4j.Logger;
 import org.jeasy.rules.annotation.Action;
 import org.jeasy.rules.annotation.Condition;
 import org.jeasy.rules.annotation.Fact;
@@ -11,44 +10,45 @@ import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
-import com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable.BanKuaiGeGuBasicTable;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
-@Rule(name = "Weekly Average ChenJiaoEr Rule", description = "if it rains then take an umbrella" )
-public class RuleOfWeeklyAverageChenJiaoErMaxWk 
+@Rule(name = "ChenJiaoEr  Rule", description = "if it rains then take an umbrella" )
+public class RuleOfChenJiaoEr 
 {
-	private static Logger logger = Logger.getLogger(RuleOfWeeklyAverageChenJiaoErMaxWk.class);
-	
 	private Color foreground = Color.BLACK, background = Color.white;
-	private String analysisresultforvoice = "";
-	private Boolean isweeklyavergecjemaxwkmatched = false;
+	boolean lianxufangliang = false;
+	String analysisresultforvoice = "";
+	boolean iszjezbdpmatched = false;
 	@Condition
-	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
+	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
-		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
-		int dpmaxwk;
-		try {
-			dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(evadate,evadatedifference);
-		} catch (java.lang.NullPointerException ex) {
-//			ex.printStackTrace();
-			logger.info(evanode.getMyOwnName() + "reach the oldest data!");
-			return false;
+		
+		Double cjemax = evacond.getSettingChenJiaoErMax();
+    	Double cjemin = evacond.getSettingChenJiaoErMin();
+    	if(cjemin != null && cjemax == null) {
+    		cjemax = 1000000000000.0;
+		} else
+		if(cjemax != null && cjemin == null) {
+			cjemin  = 0.0;
+		} else
+		if(cjemin == null && cjemax == null) {
+			cjemax = 1000000000000.0;
+			cjemin = 1000000000000.0;
 		}
+    	cjemax = cjemax * 100000000.0;
+		cjemin = cjemin * 100000000.0;
+    
+	    
+	    NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+	    Double curcje = nodexdata.getChengJiaoEr(evadate, 0);
+	    if( curcje >= cjemin && curcje <= cjemax ) 
+	    	return true;
     	
-    	Integer cjemaxwk = evacond.getSettingChenJiaoErMaxWk();
-    	if(cjemaxwk == null)
-    		cjemaxwk =  10000000;
-    	
-    	if( dpmaxwk >=cjemaxwk ) {
-    		analysisresultforvoice = analysisresultforvoice + "周平均成交额MAXWEEK等于" + dpmaxwk + "。" ;
-    		return true;
-    	}
-    	else 
-    		 return false;
+    	return false;
 	}
 	
 	@Action
@@ -57,8 +57,8 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
-		background = Color.CYAN ;
-		isweeklyavergecjemaxwkmatched = true;
+		iszjezbdpmatched  = true;
+		background = Color.yellow ;
     }
     
     @Priority //优先级注解：return 数值越小，优先级越高
@@ -72,7 +72,7 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     }
     public Boolean getRuleResult ()
     {
-    	return isweeklyavergecjemaxwkmatched;
+    	return iszjezbdpmatched;
     }
     public String getAnalysisResultVoice ()
     {
@@ -82,7 +82,7 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     // MUST IMPLEMENT THIS METHOD
 //    @Override 
     public String getName() {
-        return "Weekly Average ChenJiaoEr Rule";
+        return "ChenJiaoEr Rule";
     }
 
 }

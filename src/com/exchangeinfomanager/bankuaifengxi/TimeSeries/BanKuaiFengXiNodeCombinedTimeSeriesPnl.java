@@ -14,12 +14,12 @@ import org.jfree.chart.ChartMouseListener;
 import com.exchangeinfomanager.asinglestockinfo.BanKuai;
 import com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.asinglestockinfo.StockGivenPeriodDataItem;
-import com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightListener;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXiCandlestick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeLargePeriodChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.TimeSeries.BanKuaiFengXiBarCjeZhanBiLargePeriodChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.ai.JiaRuJiHua;
+import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 
 public class BanKuaiFengXiNodeCombinedTimeSeriesPnl extends JPanel {

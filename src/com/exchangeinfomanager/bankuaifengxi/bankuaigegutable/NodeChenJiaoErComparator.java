@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaichanyelian.bankuaigegutable;
+package com.exchangeinfomanager.bankuaifengxi.bankuaigegutable;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -13,7 +13,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 /*
  * 
  */
-class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode> 
+public class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode> 
 {
 	private String period;
 	private LocalDate compareDate;

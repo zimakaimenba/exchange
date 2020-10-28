@@ -69,7 +69,7 @@ import com.google.common.collect.Sets.SetView;
 import com.udojava.evalex.Expression;
 
 
-public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer 
+class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer 
 {
 
 	public BanKuaiGeGuTableRenderer() 
@@ -278,3 +278,5 @@ public class BanKuaiGeGuTableRenderer extends DefaultTableCellRenderer
 	}
 	
 }
+
+
