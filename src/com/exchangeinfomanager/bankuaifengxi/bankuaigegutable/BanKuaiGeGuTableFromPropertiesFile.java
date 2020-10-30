@@ -46,16 +46,13 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
+		
+		setColumnPreferredWidth ();
 //		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
 //		int columnIndexToSort = 3; //优先排序占比增长
 //		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
 //		sorter.setSortKeys(sortKeys);
 //		sorter.sort();
-		
-		this.getColumnModel().getColumn(1).setPreferredWidth(110);
-		this.getColumnModel().getColumn(7).setPreferredWidth(30);
-		this.getColumnModel().getColumn(4).setPreferredWidth(40);
-		this.getColumnModel().getColumn(6).setPreferredWidth(40);
 		
 //		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
 //		headerRenderer.setBackground(new Color(239, 198, 46));
@@ -118,6 +115,47 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 		} finally {
 			
 		}
+	}
+	
+	private void setColumnPreferredWidth ()
+	{
+		String column_width0  = prop.getProperty ("0column_preferredWidth");
+		if(column_width0 != null) {
+			this.getColumnModel().getColumn(0).setPreferredWidth(Integer.valueOf(column_width0) );
+		}
+		String column_width1  = prop.getProperty ("0column_preferredWidth");
+		if(column_width1 != null) {
+			this.getColumnModel().getColumn(1).setPreferredWidth(Integer.valueOf(column_width1) );
+		}
+		String column_width2  = prop.getProperty ("2column_preferredWidth");
+		if(column_width2 != null) {
+			this.getColumnModel().getColumn(2).setPreferredWidth(Integer.valueOf(column_width2) );
+		}
+		String column_width3  = prop.getProperty ("3column_preferredWidth");
+		if(column_width3 != null) {
+			this.getColumnModel().getColumn(3).setPreferredWidth(Integer.valueOf(column_width3) );
+		}
+		String column_width4  = prop.getProperty ("4column_preferredWidth");
+		if(column_width4 != null) {
+			this.getColumnModel().getColumn(4).setPreferredWidth(Integer.valueOf(column_width4) );
+		}
+		String column_width5  = prop.getProperty ("5column_preferredWidth");
+		if(column_width5 != null) {
+			this.getColumnModel().getColumn(5).setPreferredWidth(Integer.valueOf(column_width5) );
+		}
+		String column_width6  = prop.getProperty ("6column_preferredWidth");
+		if(column_width6 != null) {
+			this.getColumnModel().getColumn(6).setPreferredWidth(Integer.valueOf(column_width6) );
+		}
+		String column_width7  = prop.getProperty ("7column_preferredWidth");
+		if(column_width7 != null) {
+			this.getColumnModel().getColumn(7).setPreferredWidth(Integer.valueOf(column_width7) );
+		}
+//		this.getColumnModel().getColumn(1).setPreferredWidth(110);
+//		this.getColumnModel().getColumn(7).setPreferredWidth(30);
+//		this.getColumnModel().getColumn(4).setPreferredWidth(40);
+//		this.getColumnModel().getColumn(6).setPreferredWidth(40);
+		
 	}
 	
 	private void createTableHeaderTooltips (Properties prop)

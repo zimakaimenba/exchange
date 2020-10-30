@@ -135,6 +135,7 @@ import com.google.common.io.Files;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -1179,8 +1180,8 @@ public class BanKuaiFengXi extends JDialog
     				try {
     					rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
     				} catch (java.lang.NullPointerException  e) {
-    					logger.info(selbkcode + "没有找到");
-    					e.printStackTrace();
+    					logger.info("板块列表中没有找到 " + selbkcode + "，请转到板块设置中修改该板块设置。");
+//    					e.printStackTrace();
     					return;
     				}
     				if(rowindex != -1) {
@@ -1832,6 +1833,23 @@ public class BanKuaiFengXi extends JDialog
     			tmplist.add(selectstock.getStock() );
     			exportTDXNodesDataToCsv (tmplist,"single");
     			tmplist = null;
+            }
+        });
+		menuItemAddRmvStockToRed.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	int row = tableGuGuZhanBiInBk.getSelectedRow();
+    			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
+    			StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			Stock stock = selectstock.getStock();
+    			NodesTreeRelated filetree = stock.getNodeTreeRelated ();
+    			if(filetree.selfIsMatchModel(dateChooser.getLocalDate() ) ) 
+    				filetree.setSelfIsMatchModel(dateChooser.getLocalDate(), false);
+    			else
+    				filetree.setSelfIsMatchModel(dateChooser.getLocalDate(), true);
+    			
+    			tableGuGuZhanBiInBk.repaint();
             }
         });
 		menuItemAddRmvStockToYellow.addActionListener(new ActionListener() {
@@ -3807,6 +3825,8 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemTempGeGuClear;
 
 	private JLabel lbldapan;
+
+	private JMenuItem menuItemAddRmvStockToRed;
 	
 	
 	private void initializeGuiOfNormal() {
@@ -5331,8 +5351,15 @@ public class BanKuaiFengXi extends JDialog
 //       menuItemyangxianbktocsv = new JMenuItem("导出周线阳线板块到CSV");
 //       jPopupMenuoftabbedpanebk.add(menuItemyangxianbktocsv);
        
+       JMenu biaojiMenu = new JMenu("标记个股");
+       JMenuItem menuItemAddRmvBkToRedSign = new JMenuItem("设置/取消红标");
+       biaojiMenu .add(menuItemAddRmvBkToRedSign );
        menuItemAddRmvBkToYellow = new JMenuItem("设置/取消黄标");
-       tableBkZhanBi.getPopupMenu().add(menuItemAddRmvBkToYellow);
+       biaojiMenu .add(menuItemAddRmvBkToYellow );
+       tableBkZhanBi.getPopupMenu().add(biaojiMenu);
+       
+//       menuItemAddRmvBkToYellow = new JMenuItem("设置/取消黄标");
+//       tableBkZhanBi.getPopupMenu().add(menuItemAddRmvBkToYellow);
        
        menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
        menuItemQiangShibk = new JMenuItem("设为强势板块");
@@ -5359,8 +5386,12 @@ public class BanKuaiFengXi extends JDialog
        menuItemnonfixperiod = new JMenuItem("不定周期DPM??WK");
        tableGuGuZhanBiInBk.getPopupMenu().add(menuItemnonfixperiod);
        
+       JMenu stockbiaojiMenu = new JMenu("标记个股");
+       menuItemAddRmvStockToRed = new JMenuItem("设置/取消红标");
+       stockbiaojiMenu .add(menuItemAddRmvStockToRed );
        menuItemAddRmvStockToYellow = new JMenuItem("设置/取消黄标");
-       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemAddRmvStockToYellow);
+       stockbiaojiMenu .add(menuItemAddRmvStockToYellow );
+       tableGuGuZhanBiInBk.getPopupMenu().add(stockbiaojiMenu);
        
        menuItemnonshowselectbkinfo = new JMenuItem("同时计算选定周分析数据");
        panelbkwkcjezhanbi.addMenuItem (menuItemnonshowselectbkinfo,null);

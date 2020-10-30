@@ -373,12 +373,12 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
 		if(period == null)
 			return null;
-		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem( period);
+		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem(period);
 		Double curhzdf = null ;
 		try {
 			curhzdf = curhighzdfrecord.getValue().doubleValue();
 		} catch (Exception e) {
-			logger.info( super.getNodeCode() + ":" + requireddate + difference    + "周没有数据，可能是停牌" );
+			logger.info( super.getNodeCode() + ":" + requireddate + "-"+ difference    + "周没有涨跌幅数据，可能是停牌" );
 			return null;
 		}
 		
@@ -397,7 +397,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		try {
 			curlzdf = curlowzdfrecord.getValue().doubleValue();
 		} catch (Exception e) {	
-//			logger.info( super.getNodeCode() + ":" + requireddate + difference    + "周没有数据，可能是停牌" );
+//			logger.info( super.getNodeCode() + ":" + requireddate + "-"+ difference    + "周没有涨跌幅数据，可能是停牌" );
 			return null;
 		}
 		

@@ -24,6 +24,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.google.common.base.Strings;
 
 
 public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
