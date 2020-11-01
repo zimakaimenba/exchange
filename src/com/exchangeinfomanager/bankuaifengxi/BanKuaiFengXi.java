@@ -965,18 +965,18 @@ public class BanKuaiFengXi extends JDialog
 //		              bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (filefmxx,curselectdate.with(DayOfWeek.FRIDAY) );
 		              
 		              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
-		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
-		      			  progressBarExport.setString(" ");
-		      			  return;
-		      		  }
+//		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
+//		      			  progressBarExport.setString(" ");
+//		      			  return;
+//		      		  }
 		      		  try {
 		      			String path = filefmxx.getAbsolutePath();
 		      			Runtime.getRuntime().exec("explorer.exe /select," + path);
 		      		  } catch (IOException e1) {
 		      				e1.printStackTrace();
 		      		  }
-		      		progressBarExport.setString(" ");
-		      		System.gc();
+		      		  progressBarExport.setString(" ");
+		      		  System.gc();
 		            } catch (final CancellationException e) {
 		            	try {
 							exporttask.get();

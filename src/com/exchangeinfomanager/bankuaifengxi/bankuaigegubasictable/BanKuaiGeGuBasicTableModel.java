@@ -174,6 +174,25 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 		  return value;
 	  }
 	
+	  protected Class<?> getColomnValueType(String column_keyword, int columnIndex)
+      {
+    	  Class clazz = String.class;
+    	  column_keyword = column_keyword.toUpperCase();
+    	  
+    	  switch (column_keyword) {
+		    	case "STRING":
+			          clazz = String.class;
+			          break;
+		        case "INTEGER":
+			          clazz = Integer.class;
+			          break;
+		        case "DOUBLE":
+			          clazz = Double.class;
+			          break;
+    	  }
+    	  
+    	  return clazz;
+      }
 	/*
 	 * 
 	 */

@@ -23,6 +23,9 @@ import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
+import net.coderazzi.filters.gui.AutoChoices;
+import net.coderazzi.filters.gui.TableFilterHeader;
+
 
 public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable 
 { 
@@ -46,6 +49,8 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
+		
+		TableFilterHeader filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
 		
 		setColumnPreferredWidth ();
 //		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
