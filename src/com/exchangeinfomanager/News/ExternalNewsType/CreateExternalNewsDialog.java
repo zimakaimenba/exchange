@@ -112,7 +112,7 @@ public class CreateExternalNewsDialog  extends ExternalNewsDialog<ExternalNewsTy
       
       private Boolean checkDuplicate(ExternalNewsType ExternalNewsType)
 	  {
-    	 Collection<News> curnews = NewsService.getCache().produceNews();
+//    	 Collection<News> curnews = NewsService.getCache().produceNews();
     	 return false;
 	  }
       

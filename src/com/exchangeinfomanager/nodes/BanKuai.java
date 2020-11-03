@@ -261,6 +261,9 @@ public class BanKuai extends TDXNodes
 	}
 	public Stock getBanKuaiGeGu (String stockcode)
 	{
+		if (this.stockofbklist == null)
+			return null;
+		
 		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 			if(stockofbk.getMyOwnCode().toUpperCase().equals(stockcode.toUpperCase())) {
 				return ((StockOfBanKuai)stockofbk).getStock();

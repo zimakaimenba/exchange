@@ -23,9 +23,6 @@ public class SetupSystemConfiguration
 {
 	private String systeminstalledpath;
 	private String tdxinstalledpath;
-	
-//	private int tryingcount = 0; //系统如果出错，会重试3次，3次不成直接退出
-
 	private String tdxzdybkpath;
 	private int zhanbifengxizhouqi; //成交量占比分析周期
 	private Boolean priavtemode;

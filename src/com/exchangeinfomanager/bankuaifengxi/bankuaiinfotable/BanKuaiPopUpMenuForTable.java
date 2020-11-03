@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.HashSet;
 
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
@@ -98,9 +99,22 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 				int modelRow = bankuaitable.convertRowIndexToModel(row); 
 				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
 
-				BanKuaiShuXingSheZhi  bksetting = new BanKuaiShuXingSheZhi (bankuai);
-				JOptionPane.showMessageDialog(null, bksetting, bankuai.getMyOwnCode()+bankuai.getMyOwnName()+ "∞ÂøÈ…Ë÷√", JOptionPane.OK_CANCEL_OPTION);
-				bksetting = null;
+//				BanKuaiShuXingSheZhi  bksetting = new BanKuaiShuXingSheZhi (bankuai);
+//				JOptionPane.showMessageDialog(null, bksetting, bankuai.getMyOwnCode()+bankuai.getMyOwnName()+ "∞ÂøÈ…Ë÷√", JOptionPane.OK_CANCEL_OPTION);
+//				bksetting = null;
+				
+				if(bkgldialog == null ) {
+					bkgldialog = new BanKuaiGuanLi();
+					bkgldialog.setModal(false);
+
+					bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				} 
+				
+				if(!bkgldialog.isVisible() ) {
+					bkgldialog.toFront();
+					bkgldialog.setVisible(true);
+				 } 
+
 			}
 			
 		});

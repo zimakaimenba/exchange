@@ -95,36 +95,34 @@ public class BanKuaiGeGuExternalInfoTableModelFromPropertiesFile extends BanKuai
 	    	
 	    	return value;
 	  }
-		
-  
-	  /*
-	   * (non-Javadoc)
-	   * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
-	   * //for sorting http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
-	   */
-	    //{ "代码", "名称","权重","流通市值排名","板块成交额贡献","BkMaxWk","大盘占比增长率","DpMaxWk","CjeMaxWk","换手率"};
-	  public Class<?> getColumnClass(int columnIndex) 
-	  { //{ "代码", "名称","权重","占比增长率","MAX","成交额贡献"};
+	
+		public Class<?> getColumnClass(int columnIndex) { 
 		      Class clazz = String.class;
 		      switch (columnIndex) {
-		      case 0: //{ "代码", "名称","权重","高级排序排名","CjeMaxWk","换手率"};
-		    	  clazz = String.class;
-		    	  break;
+		      	case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+		      		String column_kwt0  = prop.getProperty ("0column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt0, columnIndex);
+	                break;
 		        case 1:
-			          clazz = String.class;
-			          break;
+		        	String column_kwt1  = prop.getProperty ("1column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt1, columnIndex);
+	                break;	
 		        case 2:
-			          clazz = String.class;
-			          break;
+		        	String column_kwt2  = prop.getProperty ("2column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt2, columnIndex);
+	                break;
 		        case 3:
-			          clazz = Integer.class;
-			          break;
+		        	String column_kwt3  = prop.getProperty ("3column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt3, columnIndex);
+	                break;
 		        case 4:
-			          clazz = Integer.class;
-			          break;
+		        	String column_kwt4  = prop.getProperty ("4column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt4, columnIndex);
+	                break;
 		        case 5:
-			          clazz = Double.class;
-			          break;    
+		        	String column_kwt5  = prop.getProperty ("5column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt5, columnIndex);
+	                break;
 		      }
 		      
 		      return clazz;

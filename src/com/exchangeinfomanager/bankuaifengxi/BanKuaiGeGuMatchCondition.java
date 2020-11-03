@@ -1,11 +1,18 @@
 package com.exchangeinfomanager.bankuaifengxi;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
+
+import com.google.common.base.Splitter;
 
 public class BanKuaiGeGuMatchCondition 
 {
 	private Set<BanKuaiGeGuMatchConditionListener> bkfxhighlightvaluesoftableslisteners;
+	private String systeminstalledpath;
+	private Properties prop;
 
 
 	public BanKuaiGeGuMatchCondition() 
@@ -17,7 +24,64 @@ public class BanKuaiGeGuMatchCondition
 	 {
 	        this.bkfxhighlightvaluesoftableslisteners.add(listener);
 	 }
+	 
+	 public void setConditionFromPropertiesFiles ()
+	 {
+			File directory = new File("");//设定为当前文件夹
+			try{
+//			    logger.debug(directory.getCanonicalPath());//获取标准的路径
+//			    logger.debug(directory.getAbsolutePath());//获取绝对路径
+//			    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
+			    Properties properties = System.getProperties();
+			    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				prop = new Properties();
+				String propFileName = this.systeminstalledpath  + "/config/bankuaifenxihighlightsetting.properties";
+				FileInputStream inputStream = new FileInputStream(propFileName);
+				if (inputStream != null) {
+					prop.load(inputStream);
+				} 
+				inputStream.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+			}
+			
+			String majunxian = prop.getProperty ("Dayujunxian");
+			this.setSettingMaFormula (majunxian.trim() );
+			
+			String cjeZbDpMaxWk = prop.getProperty ("CjeZbDpMaxWk");
+			if(cjeZbDpMaxWk != null)
+				this.setSettingDpMaxWk(Integer.parseInt(cjeZbDpMaxWk) ); 
+			
+			String cjeZbDpMinWk = prop.getProperty ("CjeZbDpMinWk");
+			if(cjeZbDpMinWk != null)
+				this.setSettingDpMinWk(Integer.parseInt(cjeZbDpMinWk));
+			
+			String liuTongShiZhiMin = prop.getProperty ("LiuTongShiZhiMin");
+			String liuTongShiZhiMax = prop.getProperty ("LiuTongShiZhiMax");
+			String averageCjeMaxWk = prop.getProperty ("AverageCjeMaxWk");
+			String huanShouLv = prop.getProperty ("HuanShouLv");
+			String zhangFuMin = prop.getProperty ("ZhangFuMin");
+			String zhangFuMax = prop.getProperty ("ZhangFuMax");
+			String guJiaMin = prop.getProperty ("GuJiaMin");
+			String guJiaMax = prop.getProperty ("GuJiaMax");
+			String chenJiaoErMin = prop.getProperty ("ChenJiaoErMin");
+			String chenJiaoErMax = prop.getProperty ("ChenJiaoErMax");
+			String lastWkDpcjezbGrowingRate = prop.getProperty ("LastWkDpcjezbGrowingRate");
+			
+			 
+		}
+		 private  String toUNIXpath(String filePath) 
+		 {
+		   		    return filePath.replace('\\', '/');
+		 }
 	//下面这些变量，有2个地方使用，界面突出显示和导出，标准不一，直接返回原始数据，由客户自己处理
+	 
 		private Double settingltszmax; //流通市值
 		private Double settingltszmin; //流通市值
 		

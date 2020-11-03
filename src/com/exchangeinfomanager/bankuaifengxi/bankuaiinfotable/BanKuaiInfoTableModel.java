@@ -208,7 +208,7 @@ public class BanKuaiInfoTableModel extends DefaultTableModel
 			          clazz = Double.class;
 			          break;
 		        case 6:
-			          clazz = Double.class;
+			          clazz = Integer.class;
 			          break;
 		        case 7:
 		        	clazz = Integer.class;

@@ -36,6 +36,9 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
+import net.coderazzi.filters.gui.AutoChoices;
+import net.coderazzi.filters.gui.TableFilterHeader;
+
 public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGeGuMatchConditionListener
 {
 	public BanKuaiGeGuBasicTable (StockInfoManager stockmanager1)
@@ -48,6 +51,8 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 				
 		createMenu ();
 		createEvents ();
+		
+		TableFilterHeader filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
 		
 //		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 //		this.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(30);

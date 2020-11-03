@@ -68,6 +68,9 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.collect.Range;
 
+import net.coderazzi.filters.gui.AutoChoices;
+import net.coderazzi.filters.gui.TableFilterHeader;
+
 
 public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditionListener , NewsCacheListener
 {
@@ -94,6 +97,8 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
 		this.sortByZhanBiGrowthRate ();
+		
+		TableFilterHeader filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
 		
 //		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
 //	    header.setToolTipStrings(bkmodel.getTableHeader());

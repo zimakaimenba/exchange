@@ -177,7 +177,10 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	  protected Class<?> getColomnValueType(String column_keyword, int columnIndex)
       {
     	  Class clazz = String.class;
-    	  column_keyword = column_keyword.toUpperCase();
+    	  if(column_keyword != null)
+    		  column_keyword = column_keyword.toUpperCase();
+    	  else
+    		  return clazz;
     	  
     	  switch (column_keyword) {
 		    	case "STRING":

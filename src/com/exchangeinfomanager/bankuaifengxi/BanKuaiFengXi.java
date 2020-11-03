@@ -49,6 +49,7 @@ import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.News.ExternalNewsType.CreateExternalNewsDialog;
+import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
@@ -227,7 +228,7 @@ public class BanKuaiFengXi extends JDialog
 
 		initializePaoMaDeng ();
 		
-		adjustDate (LocalDate.now());
+		adjustDate ( LocalDate.now());
 		
 	}
 	
@@ -1775,6 +1776,23 @@ public class BanKuaiFengXi extends JDialog
              }
         });
 
+		menuItemDuanQiGuanZhu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	int row = tableBkZhanBi.getSelectedRow();
+    			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+    			BanKuai bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
+    			
+    			DuanQiGuanZhu dqgz = new DuanQiGuanZhu(bk, "描述", dateChooser.getLocalDate(), dateChooser.getLocalDate(), "详细描述", "",  new HashSet<>(),"URL");
+    			DuanQiGuanZhuServices dqgzsvs = new DuanQiGuanZhuServices ();
+    			CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (dqgzsvs);
+                createnewDialog.setNews(dqgz);
+                createnewDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
+                createnewDialog.setVisible(true);
+            }
+        });
+		
 		menuItemAddRmvBkToYellow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -3827,6 +3845,8 @@ public class BanKuaiFengXi extends JDialog
 	private JLabel lbldapan;
 
 	private JMenuItem menuItemAddRmvStockToRed;
+
+	private JMenuItem menuItemDuanQiGuanZhu;
 	
 	
 	private void initializeGuiOfNormal() {
@@ -5299,37 +5319,6 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void reFormatGui ()
 	{
-//		tableGuGuZhanBiInBk.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
-//		tableGuGuZhanBiInBk.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
-//		tableGuGuZhanBiInBk.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
-//		tableGuGuZhanBiInBk.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
-//		
-//		tablexuandingzhou.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
-//		tablexuandingzhou.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
-//		tablexuandingzhou.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
-//		tablexuandingzhou.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
-		
-//		tableExternalInfo.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
-//		tableExternalInfo.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
-//		tableExternalInfo.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
-//		tableExternalInfo.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
-		
-//		tablexuandingplusone.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
-//		tablexuandingplusone.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
-//		tablexuandingplusone.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
-//		tablexuandingplusone.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
-//		
-//		tablexuandingminusone.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
-//		tablexuandingminusone.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
-//		tablexuandingminusone.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
-//		tablexuandingminusone.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
-//		
-//		tablexuandingminustwo.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
-//		tablexuandingminustwo.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
-//		tablexuandingminustwo.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
-//		tablexuandingminustwo.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
-		//
-		
 		jPopupMenuoftabbedpane = new JPopupMenu();
 		menuItemliutong = new JMenuItem(" 按流通市值排名"); 
 		menuItemzongshizhi = new JMenuItem("按总市值排名");
@@ -5362,10 +5351,12 @@ public class BanKuaiFengXi extends JDialog
 //       tableBkZhanBi.getPopupMenu().add(menuItemAddRmvBkToYellow);
        
        menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
-       menuItemQiangShibk = new JMenuItem("设为强势板块");
-	   menuItemRuoShibk = new JMenuItem("设为弱势板块");
+       menuItemQiangShibk = new JMenuItem("强势板块");
+	   menuItemRuoShibk = new JMenuItem("弱势板块");
+	   menuItemDuanQiGuanZhu = new JMenuItem("短期关注");
 //	   tableBkZhanBi.getPopupMenu().add(menuItemQiangShibk);
 //	   tableBkZhanBi.getPopupMenu().add(menuItemRuoShibk);
+	   tableBkZhanBi.getPopupMenu().add(menuItemDuanQiGuanZhu);
 	   tableBkZhanBi.getPopupMenu().add(menuItemsiglebktocsv);
        
 //       menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
