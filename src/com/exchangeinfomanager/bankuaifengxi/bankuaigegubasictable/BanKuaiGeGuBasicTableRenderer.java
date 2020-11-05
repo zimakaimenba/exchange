@@ -38,7 +38,7 @@ public class BanKuaiGeGuBasicTableRenderer extends DefaultTableCellRenderer
 	/*
 	 * 
 	 */
-	protected Color rendererOperationsForColumnForgroundHighLight ( StockOfBanKuai stockofbank, String column_keyword )
+	protected Color rendererOperationsForColumnForgroundHighLight ( StockOfBanKuai stockofbank, String column_keyword, String predefinedcolor )
 	{
 		Color foreground = Color.BLACK;
 		
@@ -125,7 +125,7 @@ public class BanKuaiGeGuBasicTableRenderer extends DefaultTableCellRenderer
 	/*
 	 * 
 	 */
-	protected Color rendererOperationsForColumnBackgroundHighLight ( StockOfBanKuai stockofbank, String column_keyword ) 
+	protected Color rendererOperationsForColumnBackgroundHighLight ( StockOfBanKuai stockofbank, String column_keyword, String predefinedcolor ) 
 	{
 		Stock stock = stockofbank.getStock();
 		LocalDate requireddate = tablemodel.getShowCurDate();
@@ -176,7 +176,11 @@ public class BanKuaiGeGuBasicTableRenderer extends DefaultTableCellRenderer
         case "zhangdiefu":
         	NodeXPeriodData nodexdata = stock.getNodeXPeroidData(period);
 		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
-		    background = CandleStickColorFactory.getCandelStickColor(zhangdiefu);
+		    if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
+		    	background = Color.decode( predefinedcolor );
+		    else if( predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+		    	background = CandleStickColorFactory.getCandelStickColor(zhangdiefu);
+		    else background = CandleStickColorFactory.getCandelStickColor(zhangdiefu);
         	break;
         	
         case "infengxifile":
@@ -184,32 +188,70 @@ public class BanKuaiGeGuBasicTableRenderer extends DefaultTableCellRenderer
         	
 	 		Boolean isin = stofbktree.selfIsMatchModel(requireddate);
 	    	if(isin != null && isin  ) 
-		    		background = Color.ORANGE;  
+	    		if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
+			    	background = Color.decode( predefinedcolor );
+	    		else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+	    			background = Color.ORANGE;
+			    else background = Color.ORANGE;  
 	    	else 
 	    		background = Color.white;
         	break;
         case "quekouzhangfu":
         	if(qkRule.getRuleResult() || zfRule.getRuleResult() )	
-	    		background = Color.PINK;
+        		if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
+    		    	background = Color.decode( predefinedcolor );
+        		else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        			background = Color.PINK;
+    		    else background = Color.PINK;
         	break;
         case "CjeZbDpMaxWk":
-        	background = cjezbdpmaxwkRule.getBackGround();
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && cjezbdpmaxwkRule.getRuleResult() )
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        		background = cjezbdpmaxwkRule.getBackGround();
+		    else background = cjezbdpmaxwkRule.getBackGround();
         	break;
         case "dayujunxian" :
-        	background = maRule.getBackGround();
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && maRule.getAnalysisResult() )
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        		background = maRule.getBackGround();
+		    else   	background = maRule.getBackGround();
         	break;
         case "averagecjemaxwk" :
-        	background = averagecjemaxwkRule.getBackGround();
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && averagecjemaxwkRule.getRuleResult() )
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        		background = averagecjemaxwkRule.getBackGround();
+		    else  	background = averagecjemaxwkRule.getBackGround();
         	break;
         case "liutongshizhi":
-        	background = ltszRule.getBackGround ();
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && ltszRule.getAnalysisResult())
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        		background = ltszRule.getBackGround ();
+		    else  	background = ltszRule.getBackGround ();
         	break;
         case "chengjiaoer" :
-        	background = cjeRule.getBackGround();
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && cjeRule.getRuleResult() )
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        		background = cjeRule.getBackGround();
+        	else background = cjeRule.getBackGround();
         	break;
         case "huanshoulv" :
-        	background = hslRule.getBackGround();
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && hslRule.getRuleResult() )
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        	 	background = hslRule.getBackGround();
+		    else   	background = hslRule.getBackGround();
         	break;
+        case "gujia" :
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && priceRule.getAnalysisResult() )
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        	  	background = priceRule.getBackGround();
+		    else   	background = priceRule.getBackGround();
 	    };
 	    
 	    return background;

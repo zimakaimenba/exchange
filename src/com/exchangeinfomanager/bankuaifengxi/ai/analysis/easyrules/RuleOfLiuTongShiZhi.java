@@ -82,7 +82,11 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     public int getPriority(){
         return 1;
     }
-    
+    private Boolean analysisresult = false;
+	public Boolean getAnalysisResult ()
+    {
+    	return this.analysisresult;
+    }
     public Color getBackGround ()
     {
     	return this.background;

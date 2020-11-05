@@ -168,7 +168,10 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
 	        	Double hsl = ((StockNodesXPeriodData)stockxdata).getSpecificTimeHuanShouLv(showwknum, 0);
 		    	value = hsl;
 		    	break;
-         	
+         case "chenjiaoer" :
+        	 Double curcje  = stockxdata.getChengJiaoEr(showwknum, 0) / 100000000;
+     	     value = curcje;
+     	     break;
 		  }
 		  
 		  return value;
@@ -178,7 +181,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
       {
     	  Class clazz = String.class;
     	  if(column_keyword != null)
-    		  column_keyword = column_keyword.toUpperCase();
+    		  column_keyword = column_keyword.trim().toUpperCase();
     	  else
     		  return clazz;
     	  

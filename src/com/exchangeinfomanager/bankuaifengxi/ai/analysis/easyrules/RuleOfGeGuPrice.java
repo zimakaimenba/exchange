@@ -20,7 +20,8 @@ public class RuleOfGeGuPrice
 {
 	private Color foreground = Color.BLACK, background = Color.white;
 	private String analysisresultforvoice = "";
-	
+	private Boolean analysisresult = false;
+		
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
@@ -38,20 +39,16 @@ public class RuleOfGeGuPrice
     	else 
     	if(pricemax != null && pricemin == null )
     		pricemin = -1000000.0;
-    	else
-    	if(pricemax == null && pricemin == null ) {
-    		pricemin = 1000000.0;
-    		pricemax = -1000000.0;
-    	}
+//    	else
+//    	if(pricemax == null && pricemin == null ) {
+//    		pricemin = 1000000.0;
+//    		pricemax = -1000000.0;
+//    	}
     	
     	StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
 	    Double close = ohlcdata.getCloseValue();
-	    
 	    if(pricemin != null || pricemax != null ) {
-			if(close == null)
-				return false;
-			else 
 			if(close >= pricemin && close <= pricemax)
 				return true;
 			else
@@ -67,9 +64,13 @@ public class RuleOfGeGuPrice
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
-		foreground = Color.blue;
+		background = Color.blue;
+		analysisresult = true;
     }
-    
+    public Boolean getAnalysisResult ()
+    {
+    	return this.analysisresult;
+    }
     @Priority //优先级注解：return 数值越小，优先级越高
     public int getPriority(){
         return 1;
@@ -80,7 +81,7 @@ public class RuleOfGeGuPrice
     	return this.foreground;
     }
     
-    public String getAnalysisResult ()
+    public String getAnalysisResultVoice ()
     {
     	return this.analysisresultforvoice;
     }
@@ -90,5 +91,10 @@ public class RuleOfGeGuPrice
     public String getName() {
         return "GeGuPrice Rule";
     }
+
+	public Color getBackGround()	{
+		// TODO Auto-generated method stub
+		return this.background;
+	}
 
 }

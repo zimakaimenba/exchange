@@ -91,8 +91,13 @@ public class RuleOfMA
     {
     	return this.background;
     }
+    private Boolean analysisresult = false;
+	public Boolean getAnalysisResult ()
+    {
+    	return this.analysisresult;
+    }
     
-    public String getAnalysisResult ()
+    public String getAnalysisResultVoice ()
     {
     	return this.analysisresultforvoice;
     }

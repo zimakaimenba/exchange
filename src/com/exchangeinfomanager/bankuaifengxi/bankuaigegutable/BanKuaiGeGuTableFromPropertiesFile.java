@@ -128,7 +128,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 		if(column_width0 != null) {
 			this.getColumnModel().getColumn(0).setPreferredWidth(Integer.valueOf(column_width0) );
 		}
-		String column_width1  = prop.getProperty ("0column_preferredWidth");
+		String column_width1  = prop.getProperty ("1column_preferredWidth");
 		if(column_width1 != null) {
 			this.getColumnModel().getColumn(1).setPreferredWidth(Integer.valueOf(column_width1) );
 		}
@@ -202,7 +202,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 		else column_background_highlight_info3 = "";
 		String column_foreground_highlight_info3  = prop.getProperty ("3column_foreground_highlight_info");
 		if(column_foreground_highlight_info3 != null)
-			column_foreground_highlight_info3 = "前突出:" + column_foreground_highlight_info1;
+			column_foreground_highlight_info3 = "前突出:" + column_foreground_highlight_info3;
 		else column_foreground_highlight_info3 = "";
 		
 		String column_name4  = prop.getProperty ("4column_name");
