@@ -113,7 +113,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends DefaultTableModel
        	  Double cjechangegrowthrate = stockxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
          	  if(cjechangegrowthrate != null)
          		value = cjechangegrowthrate;
-         	  else	value = -1;
+         	  else	value = -1.0;
        	  break;
        	  
          case "cjezbgrowrate":

@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi.bankuaigegutable;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -76,44 +77,73 @@ public class BanKuaiGeGuTableModelFromPropertiesFile extends BanKuaiGeGuBasicTab
             case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
             	String column_kw0  = prop.getProperty ("0column_info_keyword");
             	value = getColomnValue (column_kw0, rowIndex);
+            	value = reformateDoubleValue (columnIndex, value, "0column_info_value_decimal" );
                 break;
                 
             case 1: 
             	String column_kw1  = prop.getProperty ("1column_info_keyword");
             	value = getColomnValue (column_kw1, rowIndex);
+            	value = reformateDoubleValue (columnIndex, value, "1column_info_value_decimal" );
             	break;
             	
             case 2: // "板块成交额贡献",
             	String column_kw2  = prop.getProperty ("2column_info_keyword");
             	value = getColomnValue (column_kw2, rowIndex);
+            	value = reformateDoubleValue (columnIndex, value, "2column_info_value_decimal" );
             	break;
             	
             case 3://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
             	String column_kw3  = prop.getProperty ("3column_info_keyword");
             	value = getColomnValue (column_kw3, rowIndex);
+            	value = reformateDoubleValue (columnIndex, value, "3column_info_value_decimal" );
             	break;            	
                 
             case 4:
             	String column_kw4  = prop.getProperty ("4column_info_keyword");
             	value = getColomnValue (column_kw4, rowIndex);
+            	value = reformateDoubleValue (columnIndex, value, "4column_info_value_decimal" );
                 break;
                 
             case 5://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
             	String column_kw5  = prop.getProperty ("5column_info_keyword");
             	value = getColomnValue (column_kw5, rowIndex);
+            	value = reformateDoubleValue (columnIndex, value, "5column_info_value_decimal" );
                 break;
             case 6:
             	String column_kw6  = prop.getProperty ("6column_info_keyword");
             	value = getColomnValue (column_kw6, rowIndex);
+            	value = reformateDoubleValue (columnIndex, value, "6column_info_value_decimal" );
                 break;
             case 7://{ "代码", "名称","权重","流通市值排名",
             	String column_kw7  = prop.getProperty ("7column_info_keyword");
-            	value = getColomnValue (column_kw7, rowIndex);            	
+            	value = getColomnValue (column_kw7, rowIndex);    
+            	value = reformateDoubleValue (columnIndex, value, "7column_info_value_decimal" );
             	break;
 	    	}
 	    	
 	    	return value;
 	  }
+	    /**
+	     * for the Double, only keep the decimal based on config
+	     * @param columnIndex
+	     * @param value
+	     * @param columnIndexForDecimal
+	     * @return
+	     */
+	    private Object reformateDoubleValue (int columnIndex, Object value, String columnIndexForDecimal)
+	    {
+	    	Class<?> columncl = this.getColumnClass (columnIndex);
+	    	if (  columncl.equals(Double.class) ) {
+        		String decimal = prop.getProperty (columnIndexForDecimal);
+        		if(decimal != null) {
+        			int decimalnumber = Integer.parseInt(decimal);
+        			BigDecimal roundOff = new BigDecimal( (Double)value).setScale(decimalnumber, BigDecimal.ROUND_HALF_EVEN);
+        			value = roundOff;
+        		}
+        	}
+	    	
+	    	return value;
+	    }
 	/*
 	   * (non-Javadoc)
 	   * @see javax.swing.table.AbstractTableModel#getColumnClass(int)

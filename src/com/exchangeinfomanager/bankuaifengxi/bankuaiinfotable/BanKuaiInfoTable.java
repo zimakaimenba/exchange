@@ -80,7 +80,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	private BanKuaiAndStockTree allbkskstree;
 	
 	
-	private static Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
+	private Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 
 	public BanKuaiInfoTable(StockInfoManager stockmanager1) 
 	{

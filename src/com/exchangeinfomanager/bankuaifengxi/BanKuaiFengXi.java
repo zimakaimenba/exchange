@@ -749,11 +749,14 @@ public class BanKuaiFengXi extends JDialog
 				found = true;
 				
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
-//				int modelRow = rowindex;
 				int curselectrow = tableGuGuZhanBiInBk.getSelectedRow();
 				if( curselectrow != modelRow) {
-					tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
-					tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
+					try {
+						tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
+						tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
+					} catch (java.lang.IllegalArgumentException ex) {
+						ex.printStackTrace();
+					}
 					
 					//在当前表就有的话，就把相关PANEL清空
 					panelGgDpCjeZhanBi.resetDate();
@@ -2925,6 +2928,23 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void parseTempGeGeFromList (List<String> readparsefileLines )
 	{
+		BanKuai tempbankuai = null;
+		
+		List<BkChanYeLianTreeNode> curstocksintable = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getAllStocks();
+		if( curstocksintable != null && curstocksintable.size() >0) {
+			int extraresult = JOptionPane.showConfirmDialog(null,"临时个股表当前不为空，点击 是 先清空表，点击 否 把新个股添加表中." , "Warning!", JOptionPane.OK_CANCEL_OPTION);
+			if(extraresult == JOptionPane.OK_OPTION) { //其他导出条件
+				((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).deleteAllRows();
+				curstocksintable = null;
+				tempbankuai = new BanKuai ("TEMPBANKUAI","TEMPBANKUAI");
+				tempbankuai.setBanKuaiLeiXing (BanKuai.HASGGWITHSELFCJL);
+			} else
+				tempbankuai = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
+		} else {
+			tempbankuai = new BanKuai ("TEMPBANKUAI","TEMPBANKUAI");
+			tempbankuai.setBanKuaiLeiXing (BanKuai.HASGGWITHSELFCJL);
+		}
+		
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);
 		
@@ -2936,11 +2956,24 @@ public class BanKuaiFengXi extends JDialog
 			return;
 		}
 		
-		BanKuai tempbankuai = new BanKuai ("TEMPBANKUAI","TEMPBANKUAI");
-		tempbankuai.setBanKuaiLeiXing (BanKuai.HASGGWITHSELFCJL);
 		SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
 		for(String tmpgegu : readparsefileLines) {
+			if( curstocksintable != null) {
+				Boolean found = false; //if has already in tempbk, dont retrieve data again.
+				for (BkChanYeLianTreeNode tmpstockofbk : curstocksintable  ) {
+					if(tmpstockofbk.getMyOwnCode().equals(tmpgegu) ) {
+						found = true;
+						break;
+					}
+				}
+				
+				if(found)
+					continue;
+			}
+
 			Stock tmpstock = (Stock) treeofbkstk.getSpecificNodeByHypyOrCode(tmpgegu, BkChanYeLianTreeNode.TDXGG);
+			if(tmpstock == null)
+				continue;
 			try {
 				tmpstock = (Stock) svstock.getNodeData( tmpstock , CommonUtility.getSettingRangeDate(curselectdate,"middle"), curselectdate,
 						globeperiod,this.globecalwholeweek);
