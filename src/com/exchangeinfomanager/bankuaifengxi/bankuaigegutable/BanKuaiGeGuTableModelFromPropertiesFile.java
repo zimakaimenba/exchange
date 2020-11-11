@@ -137,8 +137,12 @@ public class BanKuaiGeGuTableModelFromPropertiesFile extends BanKuaiGeGuBasicTab
         		String decimal = prop.getProperty (columnIndexForDecimal);
         		if(decimal != null) {
         			int decimalnumber = Integer.parseInt(decimal);
-        			BigDecimal roundOff = new BigDecimal( (Double)value).setScale(decimalnumber, BigDecimal.ROUND_HALF_EVEN);
-        			value = roundOff;
+//        			BigDecimal roundOff = new BigDecimal( (Double)value).setScale(decimalnumber, BigDecimal.ROUND_HALF_EVEN);
+//        			value = roundOff;
+        			
+        			double count = Math.pow(10, decimalnumber);
+        			Double output = Math.round(  (Double)value * count) / count;
+        			value = output;
         		}
         	}
 	    	

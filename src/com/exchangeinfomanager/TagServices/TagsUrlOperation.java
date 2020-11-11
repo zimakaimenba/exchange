@@ -25,7 +25,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.Tag.Tag;
-import com.exchangeinfomanager.systemconfigration.SystemConfigration;
+import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.Splitter;
 import com.lc.nlp.keyword.algorithm.TextRank;
 
@@ -117,7 +117,7 @@ public class TagsUrlOperation
 			
 //			System.out.println(FilenameUtils.getBaseName(URLink.getPath())); // -> file
 //	        System.out.println(FilenameUtils.getExtension(URLink.getPath())); // -> xml
-			savedfilename = SystemConfigration.getInstance().getYanJiuBaoGaoDownloadedFilePath () + FilenameUtils.getName(URLink.getPath()); // -> file.xml
+			savedfilename = (new SetupSystemConfiguration()).getYanJiuBaoGaoDownloadedFilePath () + FilenameUtils.getName(URLink.getPath()); // -> file.xml
 	        
 			savedfile = new File (savedfilename);
 			if(savedfile.exists())
