@@ -52,7 +52,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 		createMenu ();
 		createEvents ();
 		
-		TableFilterHeader filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
+		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
 		
 //		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 //		this.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(30);
@@ -71,11 +71,16 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 	protected JMenuItem menuItemGeguInfo;
 	protected JMenuItem menuItemLongTou;
 	protected JPopupMenu popupMenuGeguNews;
-
+	
+	TableFilterHeader filterHeader;
 //	private JMenuItem menuItemQiangShi;
 //
 //	private JMenuItem menuItemRuoShi;
 	
+	public void resetTableHeaderFilter ()
+	{
+		filterHeader.resetFilter();
+	}
 	/*
 	 * 
 	 */

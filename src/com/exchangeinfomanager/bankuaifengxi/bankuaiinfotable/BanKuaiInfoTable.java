@@ -78,6 +78,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	private static final long serialVersionUID = 1L;
 	private StockInfoManager stockmanager;
 	private BanKuaiAndStockTree allbkskstree;
+	private TableFilterHeader filterHeader;
 	
 	
 	private Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
@@ -98,7 +99,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 		this.setRowSorter(sorter);
 		this.sortByZhanBiGrowthRate ();
 		
-		TableFilterHeader filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
+		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
 		
 //		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
 //	    header.setToolTipStrings(bkmodel.getTableHeader());
@@ -109,6 +110,12 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 		this.getColumnModel().getColumn(0).setPreferredWidth(105);
 		this.getColumnModel().getColumn(1).setPreferredWidth(115);
 //		this.getColumnModel().getColumn(2).setPreferredWidth(35);
+	}
+	
+	
+	public void resetTableHeaderFilter ()
+	{
+		filterHeader.resetFilter();
 	}
 	/*
 	 * 

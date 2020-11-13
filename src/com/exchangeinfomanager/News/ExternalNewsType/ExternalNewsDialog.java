@@ -357,7 +357,10 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	        void display() 
 	        {
 	            this.centerPanel.removeAll();
-	            Collection<InsertedNews.Label> labels = cache.produceLabels();
+	            Collection<InsertedNews.Label> labels = null;
+	            if(cache != null)
+	            	labels = cache.produceLabels();
+	            
 	            for (InsertedNews.Label label : labels) {
 	                JPanel mPanel = JPanelFactory.createFixedSizePanel(new BorderLayout());
 	                mPanel.setName(event.getLabels().contains(label) ? "selected" : "");

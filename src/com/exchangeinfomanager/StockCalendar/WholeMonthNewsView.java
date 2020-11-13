@@ -1,49 +1,36 @@
 package com.exchangeinfomanager.StockCalendar;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
+
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.time.LocalDate;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
 
-import javax.swing.BorderFactory;
+
 import javax.swing.Box;
 
-import javax.swing.JLabel;
+
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 
 
-import com.exchangeinfomanager.News.InsertedNews;
+
+
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
-import com.exchangeinfomanager.News.ExternalNewsType.CreateExternalNewsDialog;
+
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
-import com.exchangeinfomanager.News.ExternalNewsType.ExternalNewsType;
-import com.exchangeinfomanager.News.ExternalNewsType.InsertedExternalNews;
-import com.exchangeinfomanager.News.ExternalNewsType.ModifyExternalNewsDialog;
+
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
 import com.exchangeinfomanager.Services.ServicesForNews;
-import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
 
-import com.exchangeinfomanager.commonlib.WrapLayout;
-
-import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 /**
  * 

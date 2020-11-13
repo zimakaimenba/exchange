@@ -48,6 +48,7 @@ import org.jsoup.select.Elements;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.CreateExternalNewsDialog;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
@@ -743,6 +744,7 @@ public class BanKuaiFengXi extends JDialog
 		Boolean found = false; int rowindex;
 		nodecode = nodecode.substring(0,6);
 		if(((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
+			tableGuGuZhanBiInBk.resetTableHeaderFilter();
 			 rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
 			 
 			if(rowindex >= 0) {
@@ -766,6 +768,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
+			tablexuandingzhou.resetTableHeaderFilter();
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
@@ -780,6 +783,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
+			tablexuandingminusone.resetTableHeaderFilter();
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
@@ -794,6 +798,7 @@ public class BanKuaiFengXi extends JDialog
 		
 
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
+			tablexuandingminustwo.resetTableHeaderFilter();
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0){
 				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
@@ -807,6 +812,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 
 		if(((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
+			tablexuandingplusone.resetTableHeaderFilter();
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0)  {
 				int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
@@ -821,6 +827,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		
 		if(  ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getRowCount() >0 ) {
+			tableExternalInfo.resetTableHeaderFilter();
 			rowindex = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >= 0) {
 				int modelRow = tableExternalInfo.convertRowIndexToView(rowindex);
@@ -833,6 +840,7 @@ public class BanKuaiFengXi extends JDialog
 			}
 		}
 		if(((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getRowCount() >0 ) {
+			tableTempGeGu.resetTableHeaderFilter();
 			rowindex = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >= 0) {
 				int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
@@ -1182,6 +1190,7 @@ public class BanKuaiFengXi extends JDialog
     				
     				int rowindex = 0;
     				try {
+    					tableBkZhanBi.resetTableHeaderFilter ();
     					rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuaiRowIndex(selbkcode);
     				} catch (java.lang.NullPointerException  e) {
     					logger.info("板块列表中没有找到 " + selbkcode + "，请转到板块设置中修改该板块设置。");
@@ -1788,8 +1797,11 @@ public class BanKuaiFengXi extends JDialog
     			BanKuai bk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
     			
     			DuanQiGuanZhu dqgz = new DuanQiGuanZhu(bk, "描述", dateChooser.getLocalDate(), dateChooser.getLocalDate(), "详细描述", "",  new HashSet<>(),"URL");
-    			DuanQiGuanZhuServices dqgzsvs = new DuanQiGuanZhuServices ();
-    			CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (dqgzsvs);
+    			ServicesForNewsLabel svslabel = new NewsLabelServices ();
+    			DuanQiGuanZhuServices svsdqgz = new DuanQiGuanZhuServices ();
+    	    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
+    	    	svsdqgz.setCache(dqgzcache);
+    			CreateExternalNewsDialog createnewDialog = new CreateExternalNewsDialog (svsdqgz);
                 createnewDialog.setNews(dqgz);
                 createnewDialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - getHeight()/2);
                 createnewDialog.setVisible(true);
