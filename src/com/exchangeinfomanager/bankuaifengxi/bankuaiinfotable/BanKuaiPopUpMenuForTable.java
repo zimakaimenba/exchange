@@ -48,7 +48,7 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 		 int  view_row = this.bankuaitable.getSelectedRow();
 		 int  model_row = this.bankuaitable.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
 		 
-		 BanKuai bankuai = ((BanKuaiInfoTableModel)this.bankuaitable.getModel()).getBanKuai(model_row);
+		 BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel)this.bankuaitable.getModel()).getNode(model_row);
 		 this.stockmanager.getcBxstockcode().updateUserSelectedNode(bankuai );
 		 this.stockmanager.toFront();
 	}
@@ -64,7 +64,7 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 					return;
 				}
 				int modelRow = bankuaitable.convertRowIndexToModel(row); 
-				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
+				BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel) bankuaitable.getModel()).getNode(modelRow);
 
 				TDXNodesZhiShuGJRQPnl gjrq = new TDXNodesZhiShuGJRQPnl (bankuai);
 				gjrq.setVisible(true);
@@ -81,7 +81,7 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 					return;
 				}
 				int modelRow = bankuaitable.convertRowIndexToModel(row); 
-				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
+				BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel) bankuaitable.getModel()).getNode(modelRow);
 
 				showGeGuInfoWin ();
 			}
@@ -97,7 +97,7 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 					return;
 				}
 				int modelRow = bankuaitable.convertRowIndexToModel(row); 
-				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
+				BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel) bankuaitable.getModel()).getNode(modelRow);
 
 //				BanKuaiShuXingSheZhi  bksetting = new BanKuaiShuXingSheZhi (bankuai);
 //				JOptionPane.showMessageDialog(null, bksetting, bankuai.getMyOwnCode()+bankuai.getMyOwnName()+ "板块设置", JOptionPane.OK_CANCEL_OPTION);
@@ -129,7 +129,7 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 					return;
 				}
 				int modelRow = bankuaitable.convertRowIndexToModel(row); 
-				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
+				BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel) bankuaitable.getModel()).getNode(modelRow);
 
 				addBanKuaiNews (bankuai);
 			}
@@ -146,7 +146,7 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 					return;
 				}
 				int modelRow = bankuaitable.convertRowIndexToModel(row); 
-				BanKuai bankuai = ((BanKuaiInfoTableModel) bankuaitable.getModel()).getBanKuai(modelRow);
+				BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel) bankuaitable.getModel()).getNode(modelRow);
 				
 				
 				LocalDate fxdate = ((BanKuaiInfoTableModel)bankuaitable.getModel()).getCurDisplayedDate();

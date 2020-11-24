@@ -37,7 +37,12 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 		
 		BanKuaiGeGuTableModelFromPropertiesFile bkgegumapmdl = new BanKuaiGeGuTableModelFromPropertiesFile(prop);
 		this.setModel(bkgegumapmdl);
+		
+		createTableHeaderTooltips (prop);
+		
 		this.renderer =  new BanKuaiGeGuTableRendererFromPropertiesFile (prop); 
+		
+		
 //		this.setDefaultRenderer(Object.class, this.renderer );
 		
 		//http://esus.com/creating-a-jtable-with-headers-with-jtooltips/
@@ -113,7 +118,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 			} 
 			inputStream.close();
 			
-			createTableHeaderTooltips (prop);
+			
 			
 		} catch (Exception e) {
 			logger.info("property file '" + propxmlFileName + "' not found in the classpath") ;

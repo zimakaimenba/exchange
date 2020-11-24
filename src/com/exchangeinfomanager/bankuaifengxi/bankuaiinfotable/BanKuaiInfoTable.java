@@ -51,6 +51,7 @@ import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiandGeGuTableBasic;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuZhangFu;
@@ -72,7 +73,7 @@ import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.TableFilterHeader;
 
 
-public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditionListener , NewsCacheListener
+public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKuaiGeGuMatchConditionListener , NewsCacheListener
 {
 	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
@@ -85,9 +86,9 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 
 	public BanKuaiInfoTable(StockInfoManager stockmanager1) 
 	{
-		super ();
+		super ("/config/bankuaiweeklyfxdata.properties");
 		
-		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel ();
+		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel (super.prop);
 		this.setModel(bkmodel);
 		
 		this.allbkskstree = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree();
@@ -99,7 +100,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 		this.setRowSorter(sorter);
 		this.sortByZhanBiGrowthRate ();
 		
-		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
+//		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
 		
 //		ToolTipHeader header = new ToolTipHeader(this.getColumnModel() );
 //	    header.setToolTipStrings(bkmodel.getTableHeader());
@@ -113,10 +114,10 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	}
 	
 	
-	public void resetTableHeaderFilter ()
-	{
-		filterHeader.resetFilter();
-	}
+//	public void resetTableHeaderFilter ()
+//	{
+//		filterHeader.resetFilter();
+//	}
 	/*
 	 * 
 	 */
@@ -148,7 +149,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	     LocalDate curdate = tablemodel.getCurDisplayedDate();
 	        
 	     int modelRow = convertRowIndexToModel(rowIndex);
-	     BanKuai bankuai = tablemodel.getBanKuai(modelRow);
+	     BanKuai bankuai = (BanKuai) tablemodel.getNode(modelRow);
 	     Set<String> socialsetneg = bankuai.getSocialFriendsSetNegtive();
 	     Set<String> socialsetpos = bankuai.getSocialFriendsSetPostive();
 	     Set<String>  socialset = new HashSet<> ();
@@ -173,20 +174,20 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
     }
     
   //Implement table header tool tips.
-  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJLZBMAXWK","大盘成交额增长贡献率","周日平均成交额MAXWK","周日平均成交额连续(成交额上周变化升降)"};
-      protected JTableHeader createDefaultTableHeader() 
-      {
-          return new JTableHeader(columnModel) {
-              public String getToolTipText(MouseEvent e) {
-                  String tip = null;
-                  java.awt.Point p = e.getPoint();
-                  int index = columnModel.getColumnIndexAtX(p.x);
-                  int realIndex = 
-                          columnModel.getColumn(index).getModelIndex();
-                  return jtableTitleStringsTooltips[realIndex];
-              }
-          };
-      }
+//  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJLZBMAXWK","大盘成交额增长贡献率","周日平均成交额MAXWK","周日平均成交额连续(成交额上周变化升降)"};
+//      protected JTableHeader createDefaultTableHeader() 
+//      {
+//          return new JTableHeader(columnModel) {
+//              public String getToolTipText(MouseEvent e) {
+//                  String tip = null;
+//                  java.awt.Point p = e.getPoint();
+//                  int index = columnModel.getColumnIndexAtX(p.x);
+//                  int realIndex = 
+//                          columnModel.getColumn(index).getModelIndex();
+//                  return jtableTitleStringsTooltips[realIndex];
+//              }
+//          };
+//      }
     
 	private String createHtmlTipsOfSocailFriends(BanKuai bankuai, Set<String> socialset) 
 	{
@@ -209,7 +210,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 					 BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
 					 int modelRow = 0;
 					 try {
-						 int rowIndex = tablemodel.getBanKuaiRowIndex (friend);
+						 int rowIndex = tablemodel.getNodeRowIndex (friend);
 						 if(rowIndex == -1)
 							 continue;
 						 modelRow = this.convertRowIndexToView(rowIndex);
@@ -269,7 +270,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 		 int  view_row = this.getSelectedRow();
 		 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
 		 
-		 BanKuai bankuai = ((BanKuaiInfoTableModel)this.getModel()).getBanKuai(model_row);
+		 BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel)this.getModel()).getNode(model_row);
 		 this.stockmanager.getcBxstockcode().updateUserSelectedNode(bankuai );
 		 this.stockmanager.toFront();
 	}
@@ -317,7 +318,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        LocalDate curdate = tablemodel.getCurDisplayedDate();
 	       
 	        int modelRow = convertRowIndexToModel(row);
-	        BanKuai bankuai = tablemodel.getBanKuai(modelRow);
+	        BanKuai bankuai = (BanKuai) tablemodel.getNode(modelRow);
 	        
 	        String bktype = bankuai.getBanKuaiLeiXing();
 	        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
@@ -335,7 +336,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 	        if(rowcurselected != -1) {
 	        	int modelRowcurselected = this.convertRowIndexToModel(rowcurselected);
 	        	String bkcode =   bankuai.getMyOwnCode();
-				BanKuai bkcurselected = ((BanKuaiInfoTableModel)this.getModel()).getBanKuai(modelRowcurselected);  
+				BanKuai bkcurselected = (BanKuai) ((BanKuaiInfoTableModel)this.getModel()).getNode(modelRowcurselected);  
 		        Set<String> socialsetpos = bkcurselected.getSocialFriendsSetPostive();
 		        if(socialsetpos.contains(bkcode)) {
 		        		jc.setBorder( highlightpos );
@@ -414,7 +415,7 @@ public class BanKuaiInfoTable extends JTable implements  BanKuaiGeGuMatchConditi
 //			       	background = Color.WHITE;
 //	        }
 	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-	        if (comp instanceof JLabel && (col == 2 ||  col == 3 ||    col == 5  )) {
+	        if (comp instanceof JLabel && (col == 2 ||  col == 3   )) {
             	String value =  ((JLabel)comp).getText();
             	if(value == null || value.length() == 0)
             		return null;
