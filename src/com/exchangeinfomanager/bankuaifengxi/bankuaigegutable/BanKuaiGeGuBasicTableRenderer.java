@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable;
+package com.exchangeinfomanager.bankuaifengxi.bankuaigegutable;
 
 import java.awt.Color;
 import java.time.LocalDate;

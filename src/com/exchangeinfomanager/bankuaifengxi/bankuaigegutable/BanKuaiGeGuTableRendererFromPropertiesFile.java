@@ -38,8 +38,6 @@ import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTong
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfWeeklyAverageChenJiaoErMaxWk;
-import com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable.BanKuaiGeGuBasicTableModel;
-import com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable.BanKuaiGeGuBasicTableRenderer;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
@@ -84,11 +82,6 @@ public class BanKuaiGeGuTableRendererFromPropertiesFile extends BanKuaiGeGuBasic
 	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuBasicTableModel)table.getModel() ).getStock(modelRow);
 	    Stock stock = stockofbank.getStock();
 	    
-	    if(stock.wetherHasReiewedToday() ) {
-        	Font defaultFont = this.getFont();
-        	Font font = new Font(defaultFont.getName(), Font.BOLD + Font.ITALIC,defaultFont.getSize());
-        	comp.setFont(font);
-        }
 	    //对于临时个股表，可以突出显示出正表中该板块的所有个股
 	    BanKuai interbk = tablemodel.getInterSetctionBanKuai();
 	    if(interbk!= null) {
@@ -233,6 +226,18 @@ public class BanKuaiGeGuTableRendererFromPropertiesFile extends BanKuaiGeGuBasic
 
         	break;
 	    };
+	    
+	    if(stock.wetherHasReiewedToday() && table.isRowSelected(row) ) {
+        	Font defaultFont = this.getFont();
+        	Font font = new Font(defaultFont.getName(), Font.ITALIC,defaultFont.getSize());
+        	comp.setFont(font);
+        } else
+        if(stock.wetherHasReiewedToday() && !table.isRowSelected(row) ) { //已经浏览过的个股，全部灰色，不会混淆，更加清晰
+            	Font defaultFont = this.getFont();
+            	Font font = new Font(defaultFont.getName(), Font.ITALIC,defaultFont.getSize());
+            	comp.setFont(font);
+            	background = Color.gray;
+        }
 	    
 	    if( columnname.equals("名称") ) { //个股名称
 	    	if(table.isRowSelected(row))

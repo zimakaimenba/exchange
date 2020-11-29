@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi.bankuaigegubasictable;
+package com.exchangeinfomanager.bankuaifengxi.bankuaigegutable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,8 +14,6 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
-import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.NodeChenJiaoErComparator;
-import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.NodeTimeRangeZhangFuComparator;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
