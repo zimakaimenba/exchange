@@ -192,6 +192,7 @@ import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuTableMo
 
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.MouseInfo;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.BoxLayout;
@@ -230,6 +231,12 @@ public class BanKuaiFengXi extends JDialog
 		initializePaoMaDeng ();
 		
 		adjustDate ( LocalDate.now());
+		
+		//when system is idle, get node data to improve performance
+		GetNodeDataFromDbWhenSystemIdle test = new GetNodeDataFromDbWhenSystemIdle (this.dateChooser.getLocalDate(), this.globeperiod );
+		Thread t = new Thread(test);
+		t.start();
+		
 		
 	}
 	
@@ -636,13 +643,16 @@ public class BanKuaiFengXi extends JDialog
 			
 			showReminderMessage (bkfxremind.getStockremind());
 			//ÓïÑÔ²¥±¨
-			if(readinfoout)
-				readAnalysisResult ( selectstock.getBanKuai(),  selectstock.getStock(), this.dateChooser.getLocalDate() );
+//			if(readinfoout)
+//				readAnalysisResult ( selectstock.getBanKuai(),  selectstock.getStock(), this.dateChooser.getLocalDate() );
 			
 			hourglassCursor = null;
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 			setCursor(hourglassCursor2);
 	}
+	/*
+	 * 
+	 */
 	private void readAnalysisResult(BanKuai banKuai, Stock stock, LocalDate analysisdate) 
 	{
 		String anaresult = WeeklyAnalysis.BanKuaiGeGuMatchConditionAnalysis(stock, analysisdate, this.bkggmatchcondition);
@@ -710,7 +720,7 @@ public class BanKuaiFengXi extends JDialog
 		Boolean found = false; int rowindex;
 		nodecode = nodecode.substring(0,6);
 		if(((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
-//			tableGuGuZhanBiInBk.resetTableHeaderFilter();
+
 			 rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
 			 
 			if(rowindex >= 0) {
@@ -718,7 +728,7 @@ public class BanKuaiFengXi extends JDialog
 				
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
 				int curselectrow = tableGuGuZhanBiInBk.getSelectedRow();
-				if( curselectrow != -1 && curselectrow != modelRow) {
+				if(  curselectrow != modelRow) {
 					try {
 						tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
 						tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
@@ -734,13 +744,13 @@ public class BanKuaiFengXi extends JDialog
 		
 		
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
-//			tablexuandingzhou.resetTableHeaderFilter();
+
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
 				int curselectrow = tablexuandingzhou.getSelectedRow();
-				if( curselectrow != -1 && curselectrow != modelRow) {
+				if( curselectrow != modelRow) {
 					tablexuandingzhou.setRowSelectionInterval(modelRow, modelRow);
 					tablexuandingzhou.scrollRectToVisible(new Rectangle(tablexuandingzhou.getCellRect(modelRow, 0, true)));
 				}
@@ -749,13 +759,13 @@ public class BanKuaiFengXi extends JDialog
 		
 		
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
-//			tablexuandingminusone.resetTableHeaderFilter();
+
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
 				int curselectrow = tablexuandingminusone.getSelectedRow();
-				if( curselectrow != -1 && curselectrow != modelRow)  {
+				if(  curselectrow != modelRow)  {
 					tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);
 					tablexuandingminusone.scrollRectToVisible(new Rectangle(tablexuandingminusone.getCellRect(modelRow, 0, true)));
 				}
@@ -764,13 +774,13 @@ public class BanKuaiFengXi extends JDialog
 		
 
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
-//			tablexuandingminustwo.resetTableHeaderFilter();
+
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0){
 				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
 				int curselectrow = tablexuandingminustwo.getSelectedRow();
-				if( curselectrow != -1 && curselectrow != modelRow) {
+				if(  curselectrow != modelRow) {
 					tablexuandingminustwo.setRowSelectionInterval(modelRow, modelRow);
 					tablexuandingminustwo.scrollRectToVisible(new Rectangle(tablexuandingminustwo.getCellRect(modelRow, 0, true)));
 				}
@@ -778,13 +788,13 @@ public class BanKuaiFengXi extends JDialog
 		}
 
 		if(((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
-//			tablexuandingplusone.resetTableHeaderFilter();
+
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >=0)  {
 				int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
 				int curselectrow = tablexuandingplusone.getSelectedRow();
-				if( curselectrow != -1 &&  curselectrow != modelRow)  {
+				if(   curselectrow != modelRow)  {
 					tablexuandingplusone.setRowSelectionInterval(modelRow, modelRow);
 					tablexuandingplusone.scrollRectToVisible(new Rectangle(tablexuandingplusone.getCellRect(modelRow, 0, true)));
 				}
@@ -793,26 +803,26 @@ public class BanKuaiFengXi extends JDialog
 		
 		
 		if(  ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getRowCount() >0 ) {
-//			tableExternalInfo.resetTableHeaderFilter();
+
 			rowindex = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >= 0) {
 				int modelRow = tableExternalInfo.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
 				int curselectrow = tableExternalInfo.getSelectedRow();
-				if( curselectrow != -1 && curselectrow != modelRow) {
+				if(  curselectrow != modelRow) {
 					tableExternalInfo.setRowSelectionInterval(modelRow, modelRow);
 					tableExternalInfo.scrollRectToVisible(new Rectangle(tableExternalInfo.getCellRect(modelRow, 0, true)));
 				}
 			}
 		}
 		if(((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getRowCount() >0 ) {
-//			tableTempGeGu.resetTableHeaderFilter();
+
 			rowindex = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getStockRowIndex(nodecode);
 			if(rowindex >= 0) {
 				int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
 				int curselectrow = tableTempGeGu.getSelectedRow();
-				if( curselectrow != -1 && curselectrow != modelRow) {
+				if(  curselectrow != modelRow) {
 					tableTempGeGu.setRowSelectionInterval(modelRow, modelRow);
 					tableTempGeGu.scrollRectToVisible(new Rectangle(tableTempGeGu.getCellRect(modelRow, 0, true)));
 				}
@@ -5571,7 +5581,6 @@ public class BanKuaiFengXi extends JDialog
 	    }
 	}
 }
-
 /*
  * 
  */
