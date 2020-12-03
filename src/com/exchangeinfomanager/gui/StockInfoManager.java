@@ -66,6 +66,7 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNods
 import com.exchangeinfomanager.bankuaifengxi.BanKaiFengXi_2560ScrenResolution;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.GeGuTDXFengXi;
+import com.exchangeinfomanager.bankuaifengxi.GetNodeDataFromDbWhenSystemIdle;
 import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
@@ -132,6 +133,7 @@ import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.DataBaseConfigration;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.exchangeinfomanager.systemconfigration.SystemSettingDialog;
@@ -163,6 +165,7 @@ import org.apache.log4j.Logger;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.Thread.State;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EtchedBorder;
@@ -239,6 +242,11 @@ public class StockInfoManager
 		displayDbInfo();
 		createEvents();
     	initializePaoMaDeng ();
+    	
+    	//when system is idle, get node data to improve performance
+    	getnodedata = new GetNodeDataFromDbWhenSystemIdle (LocalDate.now(), NodeGivenPeriodDataItem.WEEK );
+    	threadgetnodedata = new Thread(getnodedata);
+    	threadgetnodedata.start();
  	}
 	
 	private static Logger logger = Logger.getLogger(StockInfoManager.class);
@@ -258,13 +266,21 @@ public class StockInfoManager
 	private WeeklyExportFileFengXi effx;
 	private TagCache bkstkkwcache;
 	private JDialogOfBanKuaiChanYeLian cyldialog;
-	/*
-	 * 
-	 */
-//	protected void refeshSystem() 
-//	{
-//		dbconfig.reconfigSystemSettings () ;  //新的采用直接重启系统的方法，简单
-//	}
+	
+	private GetNodeDataFromDbWhenSystemIdle getnodedata;
+	private Thread threadgetnodedata;
+
+	public void setGetNodeDataFromDbWhenSystemIdleThreadStatus (boolean alive)  
+	{
+		if ( !threadgetnodedata.isAlive() )
+			return;
+		
+		State status = threadgetnodedata.getState();
+		if(!alive)
+			getnodedata.pause();
+		if(alive)
+			getnodedata.resume ();
+	}
 	/*
 	 * 把持仓显示在相应的位置
 	 */
@@ -598,11 +614,15 @@ public class StockInfoManager
 		menuItemRfshBk.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent arg0) 
-			{
+			{  
 				if( this.importPreCheckTDX()) {
+					setGetNodeDataFromDbWhenSystemIdleThreadStatus (false);
+					
 					ImportTDXData importtdx= new ImportTDXData();
 					importtdx.setModal(true);
 					importtdx.setVisible(true);
+					
+					setGetNodeDataFromDbWhenSystemIdleThreadStatus (true);
 				}
 			}
 			

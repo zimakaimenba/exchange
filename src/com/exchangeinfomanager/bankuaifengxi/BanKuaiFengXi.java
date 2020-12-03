@@ -231,13 +231,6 @@ public class BanKuaiFengXi extends JDialog
 		initializePaoMaDeng ();
 		
 		adjustDate ( LocalDate.now());
-		
-		//when system is idle, get node data to improve performance
-		GetNodeDataFromDbWhenSystemIdle test = new GetNodeDataFromDbWhenSystemIdle (this.dateChooser.getLocalDate(), this.globeperiod );
-		Thread t = new Thread(test);
-		t.start();
-		
-		
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
@@ -900,7 +893,7 @@ public class BanKuaiFengXi extends JDialog
 		String msg =  "导出耗时较长，请先确认条件是否正确。\n是否导出？";
 		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-				return;
+			return;
 		
 		LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		String dateshowinfilename = null;
@@ -932,6 +925,9 @@ public class BanKuaiFengXi extends JDialog
 				e.printStackTrace();
 				return ;
 		}
+		
+		this.stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
+		
 //		pnl_paomd.refreshMessage(title+paomad);
 		exporttask = new ExportTask2(exportcond, curselectdate,globeperiod,filefmxx);
 		exporttask.addPropertyChangeListener(new PropertyChangeListener() {
@@ -964,6 +960,7 @@ public class BanKuaiFengXi extends JDialog
 		      				e1.printStackTrace();
 		      		  }
 		      		  progressBarExport.setString(" ");
+		      		  stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
 		      		  System.gc();
 		            } catch (final CancellationException e) {
 		            	try {
@@ -975,6 +972,7 @@ public class BanKuaiFengXi extends JDialog
 		            	progressBarExport.setValue(0);
 		            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
 		            	progressBarExport.setString("导出设置条件个股");
+		            	stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
 		            } catch (final Exception e) {
 //		              JOptionPane.showMessageDialog(Application.this, "The search process failed", "Search Words",
 //		                  JOptionPane.ERROR_MESSAGE);

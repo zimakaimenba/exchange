@@ -3412,7 +3412,11 @@ public class BanKuaiDbOperation
 				+ "t.StartOfWeekDate AS StartOfWeekDate, t.EndOfWeekDate AS EndOfWeekDate, \r\n" +
 				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比, \r\n" +
 				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
-				"M.板块周换手率 as 板块周换手率, M.总市值/M.JILUTIAOSHU as 周平均总市值, M.总流通市值/M.JILUTIAOSHU as 周平均流通市值, M.JILUTIAOSHU , M.周最大涨跌幅,M.周最小涨跌幅   ,M.涨停,M.跌停        \r\n" +
+				"M.板块周换手率 as 板块周换手率, "
+				+ "M.总市值/M.SHIZHIJILUTIAOSHU   as 周平均总市值, "
+				+ "M.总流通市值/M.SHIZHIJILUTIAOSHU   as 周平均流通市值, "
+				+ "M.JILUTIAOSHU , M.SHIZHIJILUTIAOSHU  , "
+				+ "M.周最大涨跌幅,M.周最小涨跌幅   ,M.涨停,M.跌停        \r\n" +
 				 
 				"FROM\r\n" + 
 				"(\r\n" + 
@@ -3443,7 +3447,9 @@ public class BanKuaiDbOperation
 						+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
 						+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
 						+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
-						+ "  count(1) as JILUTIAOSHU ,\r\n"
+						+ "  COUNT(1) as JILUTIAOSHU ,\r\n"
+						+ "  COUNT(" + bkcjltable + ".`总市值`) AS SHIZHIJILUTIAOSHU,"
+						+ ""
 						+ "max(" + bkcjltable + ".`涨跌幅`) as 周最大涨跌幅, \r\n"
 						+ "min(" + bkcjltable + ".`涨跌幅`) as 周最小涨跌幅, \r\n"
 						+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` >= 9.0,1,NULL) ) AS 涨停, \r\n"
@@ -3459,8 +3465,7 @@ public class BanKuaiDbOperation
 				
 		try {
 			logger.debug("为板块:" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
-		} catch (java.lang.NullPointerException e) {e.printStackTrace();
-		}
+		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		
 		CachedRowSetImpl rs = null;
 //		CachedRowSetImpl rsfx = null;
