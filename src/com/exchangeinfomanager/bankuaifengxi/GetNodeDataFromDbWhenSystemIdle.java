@@ -45,7 +45,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 		    long start = System.currentTimeMillis();
 		    Point currLocation = MouseInfo.getPointerInfo().getLocation();
 		    
-		    for(int i = globlenodeindex -1 ;i >= 0 ; i--) {
+		    for(int i = 0 ;i < bankuaicount ; i++) {
 		    	 while (running) {
 			            synchronized (pauseLock) {
 			                if (!running) { // may have changed while waiting to
@@ -73,7 +73,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			            }
 
 			            try {
-							Thread.sleep(500);
+							Thread.sleep(350);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -86,8 +86,11 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 						            idleTime = System.currentTimeMillis() - start;
 						            long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
-						            if( seconds > 60.0 ) {
-//						            	System.out.printf(" System has slept for enough seconds %s %s. Get Node data from Database starting...... \n", seconds, i);
+						            if( seconds > 50.0 ) {
+						            	if(restartscreentips) {
+						            		System.out.printf(" \n System slept long enough. Getting Node data from Database starting... \n");
+						            		restartscreentips = false;
+						            	}
 						            	
 						            	synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
 						            		BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
@@ -101,6 +104,8 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 						            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
 						            	idleTime=0;
 						            	start =  System.currentTimeMillis();
+						            	
+						            	restartscreentips = true; counttoentertonewline = 0;
 						            }
 						        }
 						        
@@ -112,7 +117,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			        }
 		    }
 		    
-		    System.out.printf(" Get Node data from Database Ended. \n");
+		    System.out.printf(" \n Done! All Nodes Data gotten.  \n");
 	 }
 	 
 	 public void stop() {
@@ -135,30 +140,57 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 	        }
 	 }
 
-	
+	Boolean restartscreentips = true;
+	int counttoentertonewline = 0;
 	private synchronized void getNodeData (BkChanYeLianTreeNode node) 
 	{
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
 		
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
-			System.out.printf("...Get BanKuai %s data from database on background.\n" , node.getMyOwnName() );
-			
 			if( !((BanKuai)node).isShowinbkfxgui() )
 				return;
 			
 			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
 					||  ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
 				return;
-			
+
+			animation ();
+//			System.out.print("bk" + node.getMyOwnName() + "\n");
 			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
 			node = svsbk.getNodeData( node, requirestart, exportdate,period,true);
 			
-		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
-			System.out.printf("...Get Stock %s data from database on background.\n" , node.getMyOwnName() );
+
 			
+		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
+			
+			animation ();
+			
+//			System.out.print("stock" + node.getMyOwnName() + "\n");
 			SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
 			node = (Stock) svsstk.getNodeData( (Stock)node,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 		}
+	}
+	
+	private void animation ()
+	{
+		if(counttoentertonewline == 0) {
+			System.out.print('\b');
+			System.out.print("-" );
+			counttoentertonewline ++;
+		} else if(counttoentertonewline == 1) {
+			System.out.print('\b');
+			System.out.print("\\" );
+			counttoentertonewline ++;
+		} else if(counttoentertonewline == 2) {
+			System.out.print('\b');
+			System.out.print("|" );
+			counttoentertonewline ++;
+		} else if(counttoentertonewline == 3) {
+			System.out.print('\b');
+			System.out.print("/" );
+			counttoentertonewline = 0;
+		}
+		
 	}
 			
 

@@ -243,7 +243,7 @@ public class BanKuaiFengXi extends JDialog
 
 	private SetupSystemConfiguration sysconfig;
 	private StockInfoManager stockmanager;
-	BanKuaiGeGuMatchCondition bkggmatchcondition;
+	private BanKuaiGeGuMatchCondition bkggmatchcondition;
 
 	private ExportTask2 exporttask;
 	VoiceEngine readengine;
@@ -825,8 +825,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		return found;
 	}
-
-	
 	/*
 	 * 
 	 */

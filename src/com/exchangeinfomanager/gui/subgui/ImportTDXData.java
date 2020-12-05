@@ -656,11 +656,12 @@ public class ImportTDXData extends JDialog {
 				lblstatus.setText("同步结束");
 				SystemAudioPlayed.playSound();
 				
-				int exchangeresult = JOptionPane.showConfirmDialog(null, "数据导入完成！是否检查数据导入完整性？","导入完成", JOptionPane.OK_CANCEL_OPTION);
-	      		if(exchangeresult == JOptionPane.CANCEL_OPTION) 
-	      			return;
-	      		else 
-	      			checkDataSyncResult ();
+				JOptionPane.showMessageDialog(null, "数据导入完成！请重启本系统！");
+//				int exchangeresult = JOptionPane.showConfirmDialog(null, "数据导入完成！是否检查数据导入完整性？","导入完成", JOptionPane.OK_CANCEL_OPTION);
+//	      		if(exchangeresult == JOptionPane.CANCEL_OPTION) 
+//	      			return;
+//	      		else 
+//	      			checkDataSyncResult ();
 			}
 		});
 		
