@@ -73,7 +73,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			            }
 
 			            try {
-							Thread.sleep(350);
+							Thread.sleep(250);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -117,7 +117,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			        }
 		    }
 		    
-		    System.out.printf(" \n Done! All Nodes Data gotten.  \n");
+		    System.out.printf(" \n Done! Gotten All Nodes Data.  \n");
 	 }
 	 
 	 public void stop() {

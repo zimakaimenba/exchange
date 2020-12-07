@@ -7,6 +7,8 @@ import java.util.Properties;
 
 import javax.swing.JPanel;
 
+import com.google.common.base.Strings;
+
 public class HighLightSevice  
 {
 	private BanKuaiGeGuMatchCondition condition;
@@ -53,10 +55,90 @@ public class HighLightSevice
 		}
 	}
 	
+	private boolean dyjx_status;
 	private void setPropertiesToCondition ()
 	{
-		String column_width0  = prop.getProperty ("Dayujunxian");
-		this.condition.setSettingMaFormula(column_width0);
+		String dayujunxian_status  = prop.getProperty ("Dayujunxian_status");
+		String dayujunxian  = prop.getProperty ("Dayujunxian");
+		if(dayujunxian_status != null && dayujunxian_status.trim().toUpperCase().equals("SELECTED")) {
+			this.dyjx_status = true;
+			this.condition.setSettingMaFormula(dayujunxian);
+		} else 
+			this.condition.setSettingMaFormula(null);
+
+		
+		if( chbxzhangfu.isSelected() ) {
+			String showzfmin; String showzfmax;
+			if( !Strings.isNullOrEmpty(tfldzhangfumin.getText()) ) {
+				showzfmin =  tfldzhangfumin.getText() ;
+				expc.setSettingZhangFuMin (Double.parseDouble(showzfmin) );
+			} else {
+				expc.setSettingZhangFuMin (Double.parseDouble(null) );
+			}
+			
+			if( !Strings.isNullOrEmpty(tfldzhangfumax.getText()) ) {
+				showzfmax =  tfldzhangfumax.getText() ;
+				expc.setSettingZhangFuMax (Double.parseDouble(showzfmax) );
+			} else {
+				expc.setSettingZhangFuMax (null );
+			}
+		} else {
+			expc.setSettingZhangFuMax (null );
+			expc.setSettingZhangFuMin (null );
+		}
+
+			
+		if(ckbxma.isSelected() ) 
+			expc.setSettingMaFormula(tfldweight.getText());
+		else
+			expc.setSettingMaFormula(null);
+	
+		if(ckbxcjemaxwk.isSelected() ) 
+			expc.setSettingChenJiaoErMaxWk(  Integer.parseInt( tfldcjemaxwk.getText()) );
+		else
+			expc.setSettingChenJiaoErMaxWk(null);
+		
+		if(ckbxdpmaxwk.isSelected() ) 
+			expc.setSettingDpMaxWk(Integer.parseInt( tflddisplaydpmaxwk.getText() ) );
+		else
+			expc.setSettingDpMaxWk(null );
+		
+		if(chckbxdpminwk.isSelected() ) {
+			expc.setSettingDpMinWk(Integer.parseInt(tflddpminwk.getText())  );
+		} else
+			expc.setSettingDpMinWk (null);
+		if(ckbxhuanshoulv.isSelected())
+			expc.setSettingHuanShouLv(Double.parseDouble( tfldhuanshoulv.getText() ) );
+		else 
+			expc.setSettingHuanShouLv( null );
+		
+		if(chkliutongsz.isSelected()) {
+			Double showltszmin;Double showltszmax;
+			if( !Strings.isNullOrEmpty(tfldltszmin.getText()) ) {
+				showltszmin =  Double.parseDouble( tfldltszmin.getText() );
+			} else
+				showltszmin = null;
+			
+			if( !Strings.isNullOrEmpty(tfldltszmax.getText()) ) {
+				showltszmax = Double.parseDouble( tfldltszmax.getText() );
+			} else
+				showltszmax = null;
+			
+			expc.setSettingLiuTongShiZhiMin(showltszmin );
+			expc.setSettingLiuTongShiZhiMax(showltszmax );
+		} else {
+			expc.setSettingLiuTongShiZhiMin(null );
+			expc.setSettingLiuTongShiZhiMax(null );
+		}
+
+		if(chbxquekou.isSelected()) {
+			expc.setHuiBuDownQueKou(true);
+			expc.setZhangTing(true);
+		} else {
+			expc.setHuiBuDownQueKou(false);
+			expc.setZhangTing(false);
+		}
+
 	}
 	
 	private  String toUNIXpath(String filePath) 

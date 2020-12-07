@@ -80,6 +80,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingWorker.StateValue;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
@@ -106,9 +107,12 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -614,30 +618,51 @@ public class StockInfoManager
 		menuItemRfshBk.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent arg0) 
-			{  
-				if( this.importPreCheckTDX()) {
-					setGetNodeDataFromDbWhenSystemIdleThreadStatus (false);
-					
-					ImportTDXData importtdx= new ImportTDXData();
-					importtdx.setModal(true);
-					importtdx.setVisible(true);
-					
-					setGetNodeDataFromDbWhenSystemIdleThreadStatus (true);
-				}
+			{ 
+				setGetNodeDataFromDbWhenSystemIdleThreadStatus (false);
+				
+				ImportTDXDataTask importtask = new ImportTDXDataTask ();
+				importtask.addPropertyChangeListener(new PropertyChangeListener() {
+				      @Override
+				      public void propertyChange(final PropertyChangeEvent eventexport) {
+				        switch (eventexport.getPropertyName()) {
+				        case "progress":
+				          break;
+				        case "state":
+				          switch ((StateValue) eventexport.getNewValue()) {
+				          case DONE:
+				        	setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
+				      		 break;
+				          case STARTED:
+				          case PENDING:
+				            break;
+				          }
+				          
+				          break;
+				        }
+				      }
+				});
+				importtask.execute();
+				
+//				if( this.importPreCheckTDX()) {
+//					ImportTDXData importtdx= new ImportTDXData();
+//					importtdx.setModal(true);
+//					importtdx.setVisible(true);
+//				}
 			}
 			
-			private Boolean importPreCheckTDX()
-			{
-				String tdxpath = systemconfig.getTDXInstalledLocation();
-				
-				File file = new File(systemconfig.getTDXStockEverUsedNameFile() );
-				if(!file.exists() ) {
-					 System.out.println("通达信目录不正确:" + tdxpath ); 
-					 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前设置为:" + tdxpath);
-					 return false;
-				 } else 
-					 return true;
-			}
+//			private Boolean importPreCheckTDX()
+//			{
+//				String tdxpath = systemconfig.getTDXInstalledLocation();
+//				
+//				File file = new File(systemconfig.getTDXStockEverUsedNameFile() );
+//				if(!file.exists() ) {
+//					 System.out.println("通达信目录不正确:" + tdxpath ); 
+//					 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前设置为:" + tdxpath);
+//					 return false;
+//				 } else 
+//					 return true;
+//			}
 		});
 		
 		
@@ -3145,3 +3170,58 @@ class AccountsInfoTableModel extends DefaultTableModel
 
 }
 
+class ImportTDXDataTask extends SwingWorker<Integer, String>  
+{
+	SetupSystemConfiguration systemconfig ;
+	public ImportTDXDataTask ()
+	{
+		systemconfig = new SetupSystemConfiguration ();
+	}
+	@Override
+	protected Integer doInBackground() throws Exception
+	{
+		if( this.importPreCheckTDX()) {
+			ImportTDXData importtdx= new ImportTDXData();
+			importtdx.setModal(true);
+			importtdx.setVisible(true);
+		}
+		
+		return 100;
+	}
+	
+	@Override
+    public void done() 
+    {
+    	try {
+			int i = get();
+		} catch (InterruptedException | ExecutionException | CancellationException e) {
+//			e.printStackTrace();
+		}
+      
+//    	Toolkit.getDefaultToolkit().beep();
+    	SystemAudioPlayed.playSound();
+    }
+
+    public void cancel ()
+    {
+    	try {
+			int i = get ();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+    }
+	
+	private Boolean importPreCheckTDX()
+	{
+		String tdxpath = systemconfig.getTDXInstalledLocation();
+		
+		File file = new File(systemconfig.getTDXStockEverUsedNameFile() );
+		if(!file.exists() ) {
+			 System.out.println("通达信目录不正确:" + tdxpath ); 
+			 JOptionPane.showMessageDialog(null,"通达信目录不正确，请重新设置!当前设置为:" + tdxpath);
+			 return false;
+		 } else 
+			 return true;
+	}
+	
+}
