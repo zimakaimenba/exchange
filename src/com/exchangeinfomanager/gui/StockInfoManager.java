@@ -2885,30 +2885,24 @@ public class StockInfoManager
 		buttonGroup.add(menuOperationList);
 		menuBar.add(menuOperationList);
 		
-		menuItemRfshBk = new JMenuItem("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
-		menuItemRfshBk.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/synchronization.png")));
-		
-		menuOperationList.add(menuItemRfshBk);
-		
 		menuItembkfx = new JMenuItem("\u677F\u5757\u5206\u6790");
 		menuItembkfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
 		
 		menuOperationList.add(menuItembkfx);
 		
-		menuItemggfx = new JMenuItem("个股分析");
-		menuItemggfx.setEnabled(false);
-		menuItemggfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
+		menuItemRfshBk = new JMenuItem("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
+		menuItemRfshBk.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/synchronization.png")));
 		
-		menuOperationList.add(menuItemggfx);
+		menuOperationList.add(menuItemRfshBk);
+		
+		menuItemTongdaxinbb = new JMenuItem("\u751F\u6210\u901A\u8FBE\u4FE1\u62A5\u8868");
+		menuItemTongdaxinbb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_reports_49615 (1).png")));
+		menuOperationList.add(menuItemTongdaxinbb);
 		
 		menuItemChanYeLian = new JMenuItem("\u4EA7\u4E1A\u94FE\u8BBE\u7F6E");
 		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
 		
 		menuOperationList.add(menuItemChanYeLian);
-		
-		menuItemTongdaxinbb = new JMenuItem("\u751F\u6210\u901A\u8FBE\u4FE1\u62A5\u8868");
-		menuItemTongdaxinbb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_reports_49615 (1).png")));
-		menuOperationList.add(menuItemTongdaxinbb);
 		
 		menuItembkconfg = new JMenuItem("板块设置");
 		menuItembkconfg.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
@@ -2919,6 +2913,12 @@ public class StockInfoManager
 		menuItemimportrecords.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/import.png")));
 		
 		menuOperationList.add(menuItemimportrecords);
+		
+		menuItemggfx = new JMenuItem("个股分析");
+		menuItemggfx.setEnabled(false);
+		menuItemggfx.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis.png")));
+		
+		menuOperationList.add(menuItemggfx);
 		
 		mntmNewMenuItem_1 = new JMenuItem("\u67E5\u8BE2");
 		mntmNewMenuItem_1.setEnabled(false);

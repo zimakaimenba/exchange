@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CancellationException;
@@ -45,6 +46,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog;
+import com.exchangeinfomanager.News.InsertedNews;
+import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
@@ -150,6 +154,7 @@ import javax.swing.JComponent;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
@@ -159,6 +164,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -222,9 +228,16 @@ public class BanKuaiFengXi extends JDialog
 		this.bkggmatchcondition = new BanKuaiGeGuMatchCondition ();
 
 		this.globecalwholeweek = true; //计算整周
+		
+		setupProperties ();
+		
 		if(screenresoltuion.equals("2560") )
 			initializeGuiOf2560Resolution ();
-		else initializeGuiOfNormal ();
+		else 
+			initializeGuiOfNormal ();
+		
+		initializeKuaiJieZhishuPnl ();
+			
 		createEvents ();
 		setUpChartDataListeners ();
 
@@ -235,6 +248,7 @@ public class BanKuaiFengXi extends JDialog
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
 	
+	Properties prop;
 	private String globeperiod;
 	private Boolean globecalwholeweek; //计算整周
 	private BanKuaiFengXiRemindXmlHandler bkfxremind;
@@ -256,7 +270,91 @@ public class BanKuaiFengXi extends JDialog
 	private Set<PieChartPanelDataChangedListener> piechartpanelbankuaidatachangelisteners;
 //	private Set<BarChartPanelDataChangedListener> barchartpanelstockofbankuaidatachangelisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelstockdatachangelisteners;
+
+	private void initializeKuaiJieZhishuPnl ()
+	{
+		String zhishunumber  = prop.getProperty ("kuaijiezhishunumber");
+		int count = Integer.parseInt(zhishunumber);
+		for(int i=1; i<=count; i++) {
+			String propname = "kuaijiezhishu" + String.valueOf(i) + "_name";
+			String zhishuname  = prop.getProperty (propname);
+			if(zhishuname == null)
+				continue;
+			
+			propname = "kuaijiezhishu" + String.valueOf(i) + "_code";
+			String zhishucode  = prop.getProperty (propname);
+			JLabel lblNewLabel = new JLabel(zhishuname);
+			if(zhishucode != null)
+				lblNewLabel.setName(zhishucode);
+			else
+				lblNewLabel.setName("NoCode");
+			pnlZhiShu.add(lblNewLabel);
+			pnlZhiShu.add(new JLabel("  "));
+			
+			lblNewLabel.addMouseListener(new MouseAdapter() {
+				 @Override
+			        public void mouseClicked(MouseEvent e) {
+			            super.mouseClicked(e);
+			            JLabel label = (JLabel) e.getSource();
+			            
+			        	if (e.getClickCount() == 1) { 
+			        		String zhishu_code = label.getName();
+			        		if(zhishu_code.trim().toUpperCase().equals("NOCODE"))
+			        			return;
+			        		
+			        		if(zhishu_code.trim().equals("000000"))
+			        			refreshDaPanFengXiResult ();
+			        		else {
+			        			BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode(zhishu_code, BkChanYeLianTreeNode.TDXBK);
+			    				unifiedOperationsAfterUserSelectABanKuai (shanghai);
+			    				
+			    				// 定位
+			    				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex(zhishu_code);
+			    				if(rowindex != null && rowindex >0) {
+			    						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+			    						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+			    						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+			    				}
+			        		}
+			        			
+			        	}
+			        }
+			});
+		}
 		
+	}
+	
+	private void setupProperties() 
+	{
+		// TODO Auto-generated method stub
+		File directory = new File("");//设定为当前文件夹
+		String systeminstalledpath = null;
+		try{
+		    Properties properties = System.getProperties();
+		    systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
+		} catch(Exception e) {
+			System.exit(0);
+		}
+		
+//		FileInputStream inputStream = null;
+		String propxmlFileName = null ;
+		try {
+			prop = new Properties();
+			String propFileName = systeminstalledpath  + "/config/bankuaifenxisetting.properties";
+			FileInputStream inputStream = new FileInputStream(propFileName);
+			if (inputStream != null) {
+				prop.load(inputStream);
+			} 
+			inputStream.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {}
+	}
+	private  String toUNIXpath(String filePath) 
+   	{
+   		    return filePath.replace('\\', '/');
+   	}
 	/*
 	 * 用户在界面的操作，各个模块的协同操作
 	 */
@@ -1388,134 +1486,134 @@ public class BanKuaiFengXi extends JDialog
             }
         } );
 		
-		lblshenzhen.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
-				unifiedOperationsAfterUserSelectABanKuai (shanghai);
-				
-				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("999999");
-				if(rowindex != null && rowindex >0) {
-						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				}
-			}
-		});
-		lbldapan.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				refreshDaPanFengXiResult ();
-			}
-		});
-		lblshanghai.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
-				unifiedOperationsAfterUserSelectABanKuai (shanghai);
-				
-				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("999999");
-				if(rowindex != null && rowindex >0) {
-						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				}
-			}
-		});
-		lblhscje.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BanKuai husheng = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
-				unifiedOperationsAfterUserSelectABanKuai (husheng);
-				
-				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("000300");
-				if(rowindex != null && rowindex >0) {
-						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				}
-			}
-		});
-		lblhusheng.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BanKuai husheng = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
-				unifiedOperationsAfterUserSelectABanKuai (husheng);
-				
-				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("000300");
-				if(rowindex != null && rowindex >0) {
-						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				}
-			}
-		});
-		lblkechuangban.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000688", BkChanYeLianTreeNode.TDXBK);
-				unifiedOperationsAfterUserSelectABanKuai (szfifty);
-				
-				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("000688");
-				if(rowindex != null && rowindex >0) {
-						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				}
-			}
-			
-		});
-		lblfifty.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK);
-				unifiedOperationsAfterUserSelectABanKuai (szfifty);
-				
-				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("000016");
-				if(rowindex != null && rowindex >0) {
-						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				}
-			}
-			
-		});
-		lblcybzongzhi.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399102", BkChanYeLianTreeNode.TDXBK);
-				unifiedOperationsAfterUserSelectABanKuai (cyb);
-				
-				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("399006");
-				if(rowindex != null && rowindex >0) {
-						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				}
-			}
-		});
-		lblchuangyeban.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);
-				unifiedOperationsAfterUserSelectABanKuai (cyb);
-				
-				// 定位
-				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("399006");
-				if(rowindex != null && rowindex >0) {
-						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-				}
-			}
-		});
+//		lblshenzhen.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
+//				unifiedOperationsAfterUserSelectABanKuai (shanghai);
+//				
+//				// 定位
+//				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("999999");
+//				if(rowindex != null && rowindex >0) {
+//						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+//						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+//						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+//				}
+//			}
+//		});
+//		lbldapan.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				refreshDaPanFengXiResult ();
+//			}
+//		});
+//		lblshanghai.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BanKuai shanghai = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
+//				unifiedOperationsAfterUserSelectABanKuai (shanghai);
+//				
+//				// 定位
+//				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("999999");
+//				if(rowindex != null && rowindex >0) {
+//						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+//						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+//						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+//				}
+//			}
+//		});
+//		lblhscje.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BanKuai husheng = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
+//				unifiedOperationsAfterUserSelectABanKuai (husheng);
+//				
+//				// 定位
+//				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("000300");
+//				if(rowindex != null && rowindex >0) {
+//						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+//						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+//						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+//				}
+//			}
+//		});
+//		lblhusheng.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BanKuai husheng = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000300", BkChanYeLianTreeNode.TDXBK);
+//				unifiedOperationsAfterUserSelectABanKuai (husheng);
+//				
+//				// 定位
+//				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("000300");
+//				if(rowindex != null && rowindex >0) {
+//						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+//						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+//						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+//				}
+//			}
+//		});
+//		lblkechuangban.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000688", BkChanYeLianTreeNode.TDXBK);
+//				unifiedOperationsAfterUserSelectABanKuai (szfifty);
+//				
+//				// 定位
+//				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("000688");
+//				if(rowindex != null && rowindex >0) {
+//						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+//						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+//						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+//				}
+//			}
+//			
+//		});
+//		lblfifty.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BanKuai szfifty = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("000016", BkChanYeLianTreeNode.TDXBK);
+//				unifiedOperationsAfterUserSelectABanKuai (szfifty);
+//				
+//				// 定位
+//				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("000016");
+//				if(rowindex != null && rowindex >0) {
+//						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+//						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+//						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+//				}
+//			}
+//			
+//		});
+//		lblcybzongzhi.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399102", BkChanYeLianTreeNode.TDXBK);
+//				unifiedOperationsAfterUserSelectABanKuai (cyb);
+//				
+//				// 定位
+//				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("399006");
+//				if(rowindex != null && rowindex >0) {
+//						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+//						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+//						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+//				}
+//			}
+//		});
+//		lblchuangyeban.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BanKuai cyb = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);
+//				unifiedOperationsAfterUserSelectABanKuai (cyb);
+//				
+//				// 定位
+//				Integer rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel() ).getNodeRowIndex("399006");
+//				if(rowindex != null && rowindex >0) {
+//						int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
+//						tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
+//						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
+//				}
+//			}
+//		});
 		
 		menuItemTempGeGuFromFile.addActionListener(new ActionListener() {
 			@Override
@@ -3776,9 +3874,7 @@ public class BanKuaiFengXi extends JDialog
 	private JStockComboBox combxsearchbk;
 	private JCheckBox ckboxparsefile;
 //	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
-	private JLabel lblhscje;
-	private JLabel lblshenzhen;
-	private JLabel lblshanghai;
+	
 	
 	private JCheckBox ckbxdpmaxwk;
 	private JTextField tflddisplaydpmaxwk;
@@ -3814,8 +3910,7 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemsiglebktocsv;
 	private JTextField tfldltszmax;
 	private JCheckBox chbxquekou;
-	private JLabel lblcybzongzhi;
-	private JLabel lblkechuangban;
+
 	private JTextField tflddpminwk;
 	private JCheckBox chckbxdpminwk;
 	private JMenuItem menuItemnonfixperiod;
@@ -3845,9 +3940,17 @@ public class BanKuaiFengXi extends JDialog
 
 	private JMenuItem menuItemTempGeGuFromFile;
 	private JMenuItem menuItemTempGeGuFromTDXSw;
-	private JLabel lblchuangyeban;
-	private JLabel lblfifty;
-	private JLabel lblhusheng;
+	
+//	private JLabel lblcybzongzhi;
+//	private JLabel lblkechuangban;
+//	private JLabel lblchuangyeban;
+//	private JLabel lblfifty;
+//	private JLabel lblhusheng;
+//	private JLabel lbldapan;
+//	private JLabel lblhscje;
+//	private JLabel lblshenzhen;
+//	private JLabel lblshanghai;
+	
 	private JComboBox cbbxmore;
 	private JMenuItem menuItemAddRmvStockToYellow;
 
@@ -3859,11 +3962,12 @@ public class BanKuaiFengXi extends JDialog
 
 	private JMenuItem menuItemTempGeGuClear;
 
-	private JLabel lbldapan;
+	
 
 	private JMenuItem menuItemAddRmvStockToRed;
 
 	private JMenuItem menuItemDuanQiGuanZhu;
+	private JPanel pnlZhiShu;
 	
 	
 	private void initializeGuiOfNormal() {
@@ -4133,41 +4237,41 @@ public class BanKuaiFengXi extends JDialog
 //		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
 		
-		JScrollBar scrollbarGuGuZhanBiInBk = new JScrollBar(JScrollBar.VERTICAL);
-		scrollbarGuGuZhanBiInBk.setUnitIncrement(10);
-	    scrollbarGuGuZhanBiInBk.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
-	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
-	      @Override protected void paintTrack(
-	            Graphics g, JComponent c, Rectangle trackBounds) {
-	        super.paintTrack(g, c, trackBounds);
-//	        Rectangle rect = tabbedPanegegu.getBounds();
-//	        double sy = trackBounds.getHeight() / rect.getHeight();
-//	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
-	        g.setColor(Color.BLUE.darker());
-	        
-	        BanKuai interbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
-		    if(interbk!= null) {
-		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
-		    	int rownum = allstks.size();
-		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
-		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-		    			Integer rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
-						if( rowindex  != null && rowindex >=0 ) {
-							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
-//							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
-//							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
-//						    Rectangle r = new Rectangle(width, height * modelRow);
-//						    Rectangle s = at.createTransformedShape(r).getBounds();
-						    int h = 2; //Math.max(2, s.height-2);
-						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
-					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
-						}
-		    		}
-		    	}
-		    }
-	      }
-	    });
-	    scrollPanedangqian.setVerticalScrollBar(scrollbarGuGuZhanBiInBk);
+//		JScrollBar scrollbarGuGuZhanBiInBk = new JScrollBar(JScrollBar.VERTICAL);
+//		scrollbarGuGuZhanBiInBk.setUnitIncrement(10);
+//	    scrollbarGuGuZhanBiInBk.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
+//	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
+//	      @Override protected void paintTrack(
+//	            Graphics g, JComponent c, Rectangle trackBounds) {
+//	        super.paintTrack(g, c, trackBounds);
+////	        Rectangle rect = tabbedPanegegu.getBounds();
+////	        double sy = trackBounds.getHeight() / rect.getHeight();
+////	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
+//	        g.setColor(Color.BLUE.darker());
+//	        
+//	        BanKuai interbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
+//		    if(interbk!= null) {
+//		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
+//		    	int rownum = allstks.size();
+//		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
+//		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
+//		    			Integer rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+//						if( rowindex  != null && rowindex >=0 ) {
+//							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+////							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
+////							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
+////						    Rectangle r = new Rectangle(width, height * modelRow);
+////						    Rectangle s = at.createTransformedShape(r).getBounds();
+//						    int h = 2; //Math.max(2, s.height-2);
+//						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
+//					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
+//						}
+//		    		}
+//		    	}
+//		    }
+//	      }
+//	    });
+//	    scrollPanedangqian.setVerticalScrollBar(scrollbarGuGuZhanBiInBk);
 		
 		JScrollPane scrollPanGeGuExtralInfo = new JScrollPane();
 		tabbedPanegegu.addTab("\u5176\u4ED6\u4FE1\u606F", null, scrollPanGeGuExtralInfo, null);
@@ -4201,42 +4305,42 @@ public class BanKuaiFengXi extends JDialog
 		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
 		
-		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL);
-		scrollbarTempGeGu.setUnitIncrement(10);
-	    scrollbarTempGeGu.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
-	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
-	      @Override protected void paintTrack(
-	            Graphics g, JComponent c, Rectangle trackBounds) {
-	        super.paintTrack(g, c, trackBounds);
-//	        Rectangle rect = tabbedPanegegu.getBounds();
-//	        double sy = trackBounds.getHeight() / rect.getHeight();
-//	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
-	        g.setColor(Color.BLUE.darker());
-	        
-	        BanKuaiGeGuTableModelFromPropertiesFile tableTempGeGuModel = (BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel(); 
-	        BanKuai interbk = tableTempGeGuModel.getInterSetctionBanKuai();
-		    if(interbk!= null) {
-		    	List<BkChanYeLianTreeNode> allstks = tableTempGeGuModel.getAllStocks();
-		    	int rownum = allstks.size();
-		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
-		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-		    			Integer rowindex = tableTempGeGuModel.getStockRowIndex(tmpnode.getMyOwnCode() );
-						if( rowindex  != null && rowindex >=0 ) {
-							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
-//							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
-//							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
-//						    Rectangle r = new Rectangle(width, height * modelRow);
-//						    Rectangle s = at.createTransformedShape(r).getBounds();
-						    int h = 2; //Math.max(2, s.height-2);
-						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
-					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
-						}
-		    		}
-		    	}
-		    }
-	      }
-	    });
-	    scrollPaneTempGeGu.setVerticalScrollBar(scrollbarTempGeGu);
+//		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL);
+//		scrollbarTempGeGu.setUnitIncrement(10);
+//	    scrollbarTempGeGu.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
+//	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
+//	      @Override protected void paintTrack(
+//	            Graphics g, JComponent c, Rectangle trackBounds) {
+//	        super.paintTrack(g, c, trackBounds);
+////	        Rectangle rect = tabbedPanegegu.getBounds();
+////	        double sy = trackBounds.getHeight() / rect.getHeight();
+////	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
+//	        g.setColor(Color.BLUE.darker());
+//	        
+//	        BanKuaiGeGuTableModelFromPropertiesFile tableTempGeGuModel = (BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel(); 
+//	        BanKuai interbk = tableTempGeGuModel.getInterSetctionBanKuai();
+//		    if(interbk!= null) {
+//		    	List<BkChanYeLianTreeNode> allstks = tableTempGeGuModel.getAllStocks();
+//		    	int rownum = allstks.size();
+//		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
+//		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
+//		    			Integer rowindex = tableTempGeGuModel.getStockRowIndex(tmpnode.getMyOwnCode() );
+//						if( rowindex  != null && rowindex >=0 ) {
+//							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
+////							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
+////							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
+////						    Rectangle r = new Rectangle(width, height * modelRow);
+////						    Rectangle s = at.createTransformedShape(r).getBounds();
+//						    int h = 2; //Math.max(2, s.height-2);
+//						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
+//					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
+//						}
+//		    		}
+//		    	}
+//		    }
+//	      }
+//	    });
+//	    scrollPaneTempGeGu.setVerticalScrollBar(scrollbarTempGeGu);
 		tabbedPanegegu.addTab("\u4E34\u65F6\u4E2A\u80A1", null, scrollPaneTempGeGu, null);
 		tabbedPanegegu.setBackgroundAt(6, Color.CYAN);
 		
@@ -4280,72 +4384,26 @@ public class BanKuaiFengXi extends JDialog
 		btnresetdate = new JButton(bkfxCancelAction);
 		btnresetdate.setText("\u4ECA\u5929");
 		
-		lblshanghai = new JLabel("\u4E0A\u8BC1");
-		
-		
-		lblhusheng = new JLabel("\u6CAA\u6DF1300");
-		
-		lblshenzhen = new JLabel("\u6DF1\u5733\u7EFC\u5408");
-		
-		lblhscje = new JLabel("New label");
-		
-		lblchuangyeban = new JLabel("\u521B\u4E1A\u677F");
-		
-		lblcybzongzhi = new JLabel("创业板综");
-		
-		lblfifty = new JLabel("50\u6307");
-		
-		lblkechuangban = new JLabel("科创50");
-		
 		chxbxwholeweek = new JCheckBox("\u8BA1\u7B97\u5B8C\u6574\u5468");
 		chxbxwholeweek.setToolTipText("\u5982\u4E0D\u52FE\u9009\uFF0C\u5219\u8BA1\u7B97\u5230\u88AB\u9009\u62E9\u7684\u90A3\u4E00\u5929");
 		chxbxwholeweek.setSelected(true);
 		
-		JLabel lblNewLabel = new JLabel("\u521B\u4E1A\u5927\u76D8");
-		
-		JLabel lblforfuture_1 = new JLabel("New label");
-		
-		lbldapan = new JLabel("大盘");
+		pnlZhiShu = new JPanel();
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
 							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(chxbxwholeweek)
 							.addGap(18)
 							.addComponent(btnresetdate))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblchuangyeban)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblcybzongzhi, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblshanghai)
-									.addGap(18)
-									.addComponent(lblshenzhen, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel)
-								.addComponent(lblhusheng))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblfifty)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblkechuangban, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lbldapan))
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblhscje, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblforfuture_1)))))
-					.addContainerGap(58, Short.MAX_VALUE))
+						.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.TRAILING)
@@ -4357,22 +4415,32 @@ public class BanKuaiFengXi extends JDialog
 							.addComponent(chxbxwholeweek)
 							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblshanghai)
-						.addComponent(lblhusheng)
-						.addComponent(lblshenzhen)
-						.addComponent(lblhscje)
-						.addComponent(lblforfuture_1))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblchuangyeban)
-						.addComponent(lblcybzongzhi)
-						.addComponent(lblfifty)
-						.addComponent(lblkechuangban)
-						.addComponent(lblNewLabel)
-						.addComponent(lbldapan))
-					.addGap(9))
+					.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
 		);
+				
+//		JLabel lblNewLabel = new JLabel("\u521B\u4E1A\u5927\u76D8");
+//		lblhusheng = new JLabel("\u6CAA\u6DF1300");
+//		lblkechuangban = new JLabel("科创50");
+//		lbldapan = new JLabel("大盘");
+//		JLabel lblforfuture_1 = new JLabel("New label");
+//		lblchuangyeban = new JLabel("\u521B\u4E1A\u677F");
+//		lblshanghai = new JLabel("\u4E0A\u8BC1");
+//		lblcybzongzhi = new JLabel("创业板综");
+//		lblshenzhen = new JLabel("\u6DF1\u5733\u7EFC\u5408");
+//		lblhscje = new JLabel("New label");
+//		lblfifty = new JLabel("50\u6307");
+//		pnlZhiShu.add(lblNewLabel);
+//		pnlZhiShu.add(lblhusheng);
+//		pnlZhiShu.add(lblkechuangban);
+//		pnlZhiShu.add(lbldapan);
+//		pnlZhiShu.add(lblforfuture_1);
+//		pnlZhiShu.add(lblchuangyeban);
+//		pnlZhiShu.add(lblshanghai);
+//		pnlZhiShu.add(lblcybzongzhi);
+//		pnlZhiShu.add(lblshenzhen);
+//		pnlZhiShu.add(lblhscje);
+//		pnlZhiShu.add(lblfifty);
+		
 		panel.setLayout(gl_panel);
 		contentPanel.setLayout(gl_contentPanel);
 		{
@@ -4555,8 +4623,8 @@ public class BanKuaiFengXi extends JDialog
 			tuchulwcjemaxwk.setForeground(new Color(254,204,51));
 			v.add(tuchulwcjemaxwk);
 			
-			cbbxmore = new JComboCheckBox(v);
-//			cbbxmore = new JComboBox(v);
+//			cbbxmore = new JComboCheckBox(v);
+			cbbxmore = new JComboBox(v);
 			cbbxmore.setPreferredSize(new Dimension(120, 25));
 			
 			tfldshowcje = new JTextField();
@@ -4603,7 +4671,7 @@ public class BanKuaiFengXi extends JDialog
 	{
 
 		setTitle("\u677F\u5757\u5206\u6790");
-		setBounds(100, 100, 2500, 1033);
+		setBounds(100, 100, 2520, 1033);
 		getContentPane().setLayout(new BorderLayout());
 		
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -4908,7 +4976,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		JScrollPane scrollPanexuanding = new JScrollPane();
 		tabbedPanegegu.addTab("选定周", null, scrollPanexuanding, null);
-		tabbedPanegegu.setBackgroundAt(2, UIManager.getColor("MenuItem.selectionBackground"));
+//		tabbedPanegegu.setBackgroundAt(10, UIManager.getColor("MenuItem.selectionBackground"));
 		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
@@ -5012,72 +5080,26 @@ public class BanKuaiFengXi extends JDialog
 		btnresetdate = new JButton(bkfxCancelAction);
 		btnresetdate.setText("\u4ECA\u5929");
 		
-		lblshanghai = new JLabel("\u4E0A\u8BC1");
-		
-		
-		lblhusheng = new JLabel("\u6CAA\u6DF1300");
-		
-		lblshenzhen = new JLabel("\u6DF1\u5733\u7EFC\u5408");
-		
-		lblhscje = new JLabel("New label");
-		
-		lblchuangyeban = new JLabel("\u521B\u4E1A\u677F");
-		
-		lblcybzongzhi = new JLabel("创业板综");
-		
-		lblfifty = new JLabel("50\u6307");
-		
-		lblkechuangban = new JLabel("科创50");
-		
 		chxbxwholeweek = new JCheckBox("\u8BA1\u7B97\u5B8C\u6574\u5468");
 		chxbxwholeweek.setToolTipText("\u5982\u4E0D\u52FE\u9009\uFF0C\u5219\u8BA1\u7B97\u5230\u88AB\u9009\u62E9\u7684\u90A3\u4E00\u5929");
 		chxbxwholeweek.setSelected(true);
 		
-		JLabel lblNewLabel = new JLabel("\u521B\u4E1A\u5927\u76D8");
-		
-		JLabel lblforfuture_1 = new JLabel("New label");
-		
-		lbldapan = new JLabel("大盘");
+		pnlZhiShu = new JPanel();
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
 							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(chxbxwholeweek)
 							.addGap(18)
 							.addComponent(btnresetdate))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblchuangyeban)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblcybzongzhi, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblshanghai)
-									.addGap(18)
-									.addComponent(lblshenzhen, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel)
-								.addComponent(lblhusheng))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblfifty)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblkechuangban, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lbldapan))
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblhscje, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblforfuture_1)))))
-					.addContainerGap(58, Short.MAX_VALUE))
+						.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 473, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.TRAILING)
@@ -5088,24 +5110,36 @@ public class BanKuaiFengXi extends JDialog
 						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 							.addComponent(chxbxwholeweek)
 							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblshanghai)
-						.addComponent(lblhusheng)
-						.addComponent(lblshenzhen)
-						.addComponent(lblhscje)
-						.addComponent(lblforfuture_1))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblchuangyeban)
-						.addComponent(lblcybzongzhi)
-						.addComponent(lblfifty)
-						.addComponent(lblkechuangban)
-						.addComponent(lblNewLabel)
-						.addComponent(lbldapan))
-					.addGap(9))
+					.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap())
 		);
+		
+//		lblshanghai = new JLabel("\u4E0A\u8BC1");
+//		lblshenzhen = new JLabel("\u6DF1\u5733\u7EFC\u5408");
+//		JLabel lblNewLabel = new JLabel("\u521B\u4E1A\u5927\u76D8");
+//		lblhusheng = new JLabel("\u6CAA\u6DF1300");
+//		lblfifty = new JLabel("50\u6307");
+//		lblhscje = new JLabel("New label");
+//		lblkechuangban = new JLabel("科创50");
+//		JLabel lblforfuture_1 = new JLabel("New label");
+//		lblcybzongzhi = new JLabel("创业板综");
+//		lblchuangyeban = new JLabel("\u521B\u4E1A\u677F");
+//		lbldapan = new JLabel("大盘");
+//		pnlZhiShu.add(lbldapan);
+//		pnlZhiShu.add(lblchuangyeban);
+//		pnlZhiShu.add(lblcybzongzhi);
+//		pnlZhiShu.add(lblforfuture_1);
+//		pnlZhiShu.add(lblkechuangban);
+//		pnlZhiShu.add(lblhscje);
+//		pnlZhiShu.add(lblfifty);
+//		pnlZhiShu.add(lblhusheng);
+//		pnlZhiShu.add(lblNewLabel);
+//		pnlZhiShu.add(lblshenzhen);
+//		pnlZhiShu.add(lblshanghai);
+		
 		panel.setLayout(gl_panel);
+		
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();
