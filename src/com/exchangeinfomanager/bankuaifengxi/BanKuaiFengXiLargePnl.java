@@ -364,7 +364,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //		this.centerPanel = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical");
 		this.centerPanel = new JPanel ();
 		this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.Y_AXIS));
-		this.centerPanel.setPreferredSize(new Dimension(1640, 705)); //设置显示框的大小
+		this.centerPanel.setPreferredSize(new Dimension(1800, 705)); //设置显示框的大小
 		
 		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical","CJE");
 		this.nodecombinedpnl.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上日均成交额，下占比线

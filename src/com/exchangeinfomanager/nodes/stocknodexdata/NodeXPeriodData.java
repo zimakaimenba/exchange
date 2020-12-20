@@ -131,6 +131,10 @@ public interface NodeXPeriodData
 			 "成交量MaxWK",
 //			 "成交量大盘贡献率",
 			 
-			 "涨跌幅"
+			 "涨跌幅",
+			 "开盘价",
+			 "最高价",
+			 "最低价",
+			 "收盘价"
 		};
 }

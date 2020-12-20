@@ -60,10 +60,6 @@ import org.joda.time.Interval;
 
 public class NodeInfoToCsv extends JPanel 
 {
-	
-//	private BanKuaiDbOperation bkdbopt;
-//	private SystemConfigration sysconfig;
-//	private BanKuaiAndChanYeLian2 bkcyl;
 	private AllCurrentTdxBKAndStoksTree allbksks;
 
 	/**
@@ -72,10 +68,7 @@ public class NodeInfoToCsv extends JPanel
 	public NodeInfoToCsv() 
 	{
 		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-//		this.bkcyl = BanKuaiAndChanYeLian2.getInstance();
-//		this.sysconfig = SystemConfigration.getInstance();
-//		this.bkdbopt = new BanKuaiDbOperation ();
-		
+
 		initializeGui ();
 		createEvents ();
 		nodecontentArrayList = new ArrayList<String[]> ();
@@ -227,10 +220,11 @@ public class NodeInfoToCsv extends JPanel
 					 String[] nodecsvline = nodexdata.getNodeXDataCsvData(dapan, tmpdate, 0);						
 					 String[] csvheadline = {	"'" + node.getMyOwnCode() + "'", node.getMyOwnName(), tmpdate.with(DayOfWeek.FRIDAY).toString()	};
 					
-					 String [] csvline = ObjectArrays.concat(csvheadline, nodecsvline, String.class);
-					 nodecontentArrayList.add(csvline);
-						
-					 csvline = null;
+					 if(nodecsvline != null  ) {
+						 String [] csvline = ObjectArrays.concat(csvheadline, nodecsvline, String.class);
+						 nodecontentArrayList.add(csvline);
+						 csvline = null;
+					 }
 					
 					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 				} while (tmpdate.isBefore( tmpenddate) || tmpdate.isEqual(tmpenddate));

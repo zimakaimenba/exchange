@@ -60,6 +60,14 @@ public class ExportToCsvFile {
 //							+ LocalDate.now().toString().replace("-", "")
 //							+ ".csv"
 //							;
+		if (java.nio.file.Files.notExists(Paths.get(csvparsedpath).getParent())) {
+			 try {
+				java.nio.file.Files.createDirectories(Paths.get(csvparsedpath).getParent() );
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }
 		
 		File csvfile = new File(csvparsedpath);
 		try	{

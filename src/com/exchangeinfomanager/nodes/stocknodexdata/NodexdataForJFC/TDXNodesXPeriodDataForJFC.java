@@ -1643,6 +1643,17 @@ import com.udojava.evalex.Expression;
 		
 		Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate,0);
 		
+		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
+		if(indexofcur == null)
+			return null;
+		
+		OHLCItem curohlc;
+		curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
+		Double curclose = curohlc.getCloseValue();
+		Double curopen = curohlc.getOpenValue();
+		Double curhigh = curohlc.getHighValue();
+		Double curlow = curohlc.getLowValue();
+		
 		String strcurcje = null;
 		String stravecje = null;
 		String strcjemaxwk =  null;
@@ -1652,6 +1663,7 @@ import com.udojava.evalex.Expression;
 		String strcjlmaxwk = null;
 //		String strcjlchangerate = null;
 		String strzhangfu = null;
+		String close = null;String open = null;String high = null;String low = null;
 		
 		try {
 			strcurcje = curcje.toString();
@@ -1695,7 +1707,26 @@ import com.udojava.evalex.Expression;
 			strzhangfu = String.valueOf("0");
 		}
 		
-		
+		try {
+			close = curclose.toString();
+		} catch (java.lang.NullPointerException e) {
+			close = String.valueOf("0");
+		}
+		try {
+			open = curclose.toString();
+		} catch (java.lang.NullPointerException e) {
+			open = String.valueOf("0");
+		}
+		try {
+			high = curclose.toString();
+		} catch (java.lang.NullPointerException e) {
+			high = String.valueOf("0");
+		}
+		try {
+			low = curclose.toString();
+		} catch (java.lang.NullPointerException e) {
+			low = String.valueOf("0");
+		}
 		
 		String[] curcsvline = {  strcurcje ,
 		 stravecje ,
@@ -1706,7 +1737,11 @@ import com.udojava.evalex.Expression;
 		 strcjlmaxwk ,
 //		 strcjlchangerate,
 		 
-		 strzhangfu
+		 strzhangfu ,
+		 open,
+		 high,
+		 low,
+		 close
 		}; 
 
 		String [] joined = ObjectArrays.concat(supcsv, curcsvline, String.class);
