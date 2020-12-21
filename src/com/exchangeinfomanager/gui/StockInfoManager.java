@@ -861,25 +861,25 @@ public class StockInfoManager
             }  
         });
 		
-		txtFldStockName.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent event) {
-				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
-					return;
-				
-				if (SwingUtilities.isRightMouseButton(event)) {
-					Toolkit toolkit = Toolkit.getDefaultToolkit();
-					Clipboard clipboard = toolkit.getSystemClipboard();
-					try	{
-						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-						txtFldStockName.setText(txtFldStockName.getText() + result);
-						btngengxinxx.setEnabled(true);
-					}catch(Exception ex)	{
-						logger.debug(ex);
-					}
-				}
-			}
-		});
+//		txtFldStockName.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mousePressed(MouseEvent event) {
+//				if(cBxstockcode.getSelectedItem().toString().trim().length() == 0)
+//					return;
+//				
+//				if (SwingUtilities.isRightMouseButton(event)) {
+//					Toolkit toolkit = Toolkit.getDefaultToolkit();
+//					Clipboard clipboard = toolkit.getSystemClipboard();
+//					try	{
+//						String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+//						txtFldStockName.setText(txtFldStockName.getText() + result);
+//						btngengxinxx.setEnabled(true);
+//					}catch(Exception ex)	{
+//						logger.debug(ex);
+//					}
+//				}
+//			}
+//		});
 		
 		/*
 		 * 加入重点关注
@@ -1301,14 +1301,14 @@ public class StockInfoManager
 			}
 		});
 		
-		txtFldStockName.addKeyListener(new KeyAdapter() 
-		{
-			@Override
-			public void keyTyped(KeyEvent e) 
-			{
-				btngengxinxx.setEnabled(true);
-			}
-		});
+//		txtFldStockName.addKeyListener(new KeyAdapter() 
+//		{
+//			@Override
+//			public void keyTyped(KeyEvent e) 
+//			{
+//				btngengxinxx.setEnabled(true);
+//			}
+//		});
 		
 		txtareagainiants.addKeyListener(new KeyAdapter() 
 		{

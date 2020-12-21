@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -11,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +39,9 @@ import javax.swing.tree.DefaultTreeModel;
 
 import javax.swing.tree.TreePath;
 
-
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.log4j.Logger;
 import org.jfree.data.time.TimeSeries;
 import org.joda.time.DateTime;
@@ -146,6 +150,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import com.toedter.calendar.JDateChooser;
@@ -154,6 +160,7 @@ import javax.swing.JComponent;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -1888,6 +1895,133 @@ public class BanKuaiFengXi extends JDialog
     			tmplist = null;
             }
         });
+		
+		historycsvfileMenu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				int row = tableBkZhanBi.getSelectedRow();
+    			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+    			BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
+    			
+    			if(historycsvfileMenu.getMenuComponentCount() >0) {
+//    				Component[] mc = historycsvfileMenu.getMenuComponents();
+    				Component curmenuitem = historycsvfileMenu.getMenuComponent(0);
+    				if(curmenuitem != null  && curmenuitem.getName().contains(bk.getMyOwnCode() ))
+    					return;
+    			}
+				
+				historycsvfileMenu.removeAll();
+				
+				String installpath = sysconfig.getSystemInstalledPath();
+    			File dir = new File(installpath + "/dailydata/csv");
+    			int csvfilecount = 0;
+    			
+    			FileFilter csvfileFilter = new WildcardFileFilter("*.CSV", IOCase.INSENSITIVE);      			// For taking both .JPG and .jpg files (useful in *nix env)  
+    			File[] csvfileList = dir.listFiles(csvfileFilter);      
+    			if (csvfileList.length > 0) {          
+    				/** The oldest file comes first **/     
+    				Arrays.sort(csvfileList, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR); //filesList now contains all the JPG/jpg files in sorted order    
+    			}  
+    			for (int i = 0; i < csvfileList.length; i++) {
+    				  if (csvfileList[i].isFile()) {
+//    				    System.out.println("File " + csvfileList[i].getName());
+    				    if(csvfileList[i].getName().contains(bk.getMyOwnCode() )   ) {
+    				    	String csvsinglefilename = csvfileList[i].getName() ;
+    				    	JMenuItem menuitemhistorycsvfile = new JMenuItem (csvsinglefilename ); 
+    				    	historycsvfileMenu.add(menuitemhistorycsvfile);
+    				    	menuitemhistorycsvfile.setName(csvsinglefilename );
+    				    	menuitemhistorycsvfile.addActionListener(new ActionListener() {
+    				            @Override
+    				            public void actionPerformed(ActionEvent e) {
+    				            	JMenuItem actionmenu = (JMenuItem)e.getSource();
+    				            	String actionmenufilename = actionmenu.getName();
+    				            	try {
+    				            		
+    									String cmd = "rundll32 url.dll,FileProtocolHandler " + installpath + "/dailydata/csv/" +  actionmenufilename;
+    									Process p  = Runtime.getRuntime().exec(cmd);
+    									p.waitFor();
+    								} catch (Exception e1){
+    									e1.printStackTrace();
+    								}
+    				            	
+    				            	try {
+    					      			File filecsv = new File( installpath + "/dailydata/csv/" +  actionmenufilename );
+    				            		String path = filecsv.getAbsolutePath();
+    					      			Runtime.getRuntime().exec("explorer.exe /select," + path );
+    					      		} catch (IOException e1) {
+    					      				e1.printStackTrace();
+    					      		}
+    				            }
+    				        });
+    				    	csvfilecount ++;
+    				    }
+    				    	
+    				  } else if (csvfileList[i].isDirectory()) {
+//    				    System.out.println("Directory " + csvfileList[i].getName());
+    				  }
+    			}
+    			FileFilter xlsfileFilter = new WildcardFileFilter("*.XLS", IOCase.INSENSITIVE);      			// For taking both .JPG and .jpg files (useful in *nix env)  
+    			File[] xlsfileList = dir.listFiles(xlsfileFilter);      
+    			if (xlsfileList.length > 0) {          
+    				/** The oldest file comes first **/     
+    				Arrays.sort(xlsfileList, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR); //filesList now contains all the JPG/jpg files in sorted order    
+    			}  
+    			for (int i = 0; i < xlsfileList.length; i++) {
+    				  if (xlsfileList[i].isFile()) {
+//    				    System.out.println("File " + xlsfileList[i].getName());
+    				    if(xlsfileList[i].getName().contains(bk.getMyOwnCode() )   ) {
+    				    	String xlssinglefilename = xlsfileList[i].getName() ;
+    				    	JMenuItem menuitemhistoryxlsfile = new JMenuItem (xlssinglefilename ); 
+    				    	historycsvfileMenu.add(menuitemhistoryxlsfile);
+    				    	menuitemhistoryxlsfile.setName(xlssinglefilename );
+    				    	menuitemhistoryxlsfile.addActionListener(new ActionListener() {
+    				            @Override
+    				            public void actionPerformed(ActionEvent e) {
+    				            	JMenuItem actionmenu = (JMenuItem)e.getSource();
+    				            	String actionmenufilename = actionmenu.getName();
+    				            	try {
+    									String cmd = "rundll32 url.dll,FileProtocolHandler " + installpath + "/dailydata/csv/" +  actionmenufilename;
+    									Process p  = Runtime.getRuntime().exec(cmd);
+    									p.waitFor();
+    								} catch (Exception e1){
+    									e1.printStackTrace();
+    								}
+    				            	
+    				            	try {
+    				            		File filexls = new File( installpath + "/dailydata/csv/" +  actionmenufilename );
+    				            		String path = filexls.getAbsolutePath();
+    					      			Runtime.getRuntime().exec("explorer.exe /select," + path );
+    					      		} catch (IOException e1) {
+    					      				e1.printStackTrace();
+    					      		}
+    				            }
+    				        });
+    				    	
+    				    	csvfilecount ++;
+    				    }
+    				    	
+    				  } else if (xlsfileList[i].isDirectory()) {
+//    				    System.out.println("Directory " + xlsfileList[i].getName());
+    				  }
+    			}
+    			if(csvfilecount == 0) {
+    				JMenuItem menuitemhistorycsvfile = new JMenuItem ("没有历史CSV文件" ); 
+			    	historycsvfileMenu.add(menuitemhistorycsvfile);
+    			}
+    			
+//    			MenuElement[] selectionPath = MenuSelectionManager.defaultManager().getSelectedPath();
+//    			MenuSelectionManager.defaultManager().clearSelectedPath();
+//    			MenuSelectionManager.defaultManager().setSelectedPath(selectionPath);
+			}
+			
+			public void mouseClicked(MouseEvent e) {}
+		});
+		
+//		historycsvfileMenu.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {}
+//        });
+//		
 		
 		menuItemsMrjh.addActionListener(new ActionListener() {
             @Override
@@ -3943,6 +4077,10 @@ public class BanKuaiFengXi extends JDialog
 
 	private JMenuItem menuItemDuanQiGuanZhu;
 	private JPanel pnlZhiShu;
+
+//	private JMenu menuItemhistorycsvfile;
+
+	private JMenu historycsvfileMenu;
 	
 	
 	private void initializeGuiOfNormal() {
@@ -5350,17 +5488,22 @@ public class BanKuaiFengXi extends JDialog
        biaojiMenu .add(menuItemAddRmvBkToYellow );
        tableBkZhanBi.getPopupMenu().add(biaojiMenu);
        
-//       menuItemAddRmvBkToYellow = new JMenuItem("设置/取消黄标");
-//       tableBkZhanBi.getPopupMenu().add(menuItemAddRmvBkToYellow);
+      
        
-       menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
        menuItemQiangShibk = new JMenuItem("强势板块");
-	   menuItemRuoShibk = new JMenuItem("弱势板块");
-	   menuItemDuanQiGuanZhu = new JMenuItem("短期关注");
 //	   tableBkZhanBi.getPopupMenu().add(menuItemQiangShibk);
+	   menuItemRuoShibk = new JMenuItem("弱势板块");
 //	   tableBkZhanBi.getPopupMenu().add(menuItemRuoShibk);
+	   menuItemDuanQiGuanZhu = new JMenuItem("短期关注");
 	   tableBkZhanBi.getPopupMenu().add(menuItemDuanQiGuanZhu);
-	   tableBkZhanBi.getPopupMenu().add(menuItemsiglebktocsv);
+	   
+	   JMenu csvMenu = new JMenu("CSV");
+	   tableBkZhanBi.getPopupMenu().add(csvMenu);
+       menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
+       csvMenu.add(menuItemsiglebktocsv);
+       historycsvfileMenu = new JMenu("历史CSV文件");
+       csvMenu.add(historycsvfileMenu);
+	   
        
 //       menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
 //       menuItemRmvNodeFmFile.setEnabled(false);
