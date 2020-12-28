@@ -924,6 +924,22 @@ import com.udojava.evalex.Expression;
 				return curcjlrecord.getValue().doubleValue();
 		}
 	 @Override
+	 /*
+		 * 
+		 */
+		public Double getAverageDailyChengJiaoLiangOfWeek (LocalDate requireddate,int difference)
+		{
+			Double cjl = this.getChengJiaoLiang(requireddate, 0);
+			if(cjl != null) {
+				Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, 0);
+				if(daynum != null)
+					return cjl/daynum;
+				else
+					return cjl/5;
+			} else
+				return null;
+		}
+	 @Override
 		public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
 		{
 			if(nodeohlc == null)
@@ -1638,6 +1654,7 @@ import com.udojava.evalex.Expression;
 		Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate,0);//成交额大盘变化贡献率
 		
 		Double curcjl = this.getChengJiaoLiang(requireddate, 0);
+		Double avecjl = this.getAverageDailyChengJiaoLiangOfWeek (requireddate, 0);
 		Integer cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
 //		Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
 		
@@ -1660,6 +1677,7 @@ import com.udojava.evalex.Expression;
 		String strcjechangerate = null;
 		
 		String strcurcjl = null;
+		String stravecjl = null;
 		String strcjlmaxwk = null;
 //		String strcjlchangerate = null;
 		String strzhangfu = null;
@@ -1690,6 +1708,11 @@ import com.udojava.evalex.Expression;
 			strcurcjl = curcjl.toString();
 		} catch (java.lang.NullPointerException e) {
 			strcurcjl = String.valueOf("0");
+		}
+		try {
+			stravecjl = avecjl.toString();
+		} catch (java.lang.NullPointerException e) {
+			stravecjl = String.valueOf("0");
 		}
 		try {
 			strcjlmaxwk =  cjlmaxwk.toString();
@@ -1734,6 +1757,7 @@ import com.udojava.evalex.Expression;
 		 strcjechangerate ,
 		
 		 strcurcjl ,
+		 stravecjl ,
 		 strcjlmaxwk ,
 //		 strcjlchangerate,
 		 
@@ -1899,6 +1923,14 @@ import com.udojava.evalex.Expression;
 				 org.jsoup.nodes.Element fontcjl = licjl.appendElement("font");
 				 fontcjl.appendText("成交量" + decimalformate.format(curcjl) + cjldanwei);
 				 fontcjl.attr("color", "#641E16");
+				 
+				 Double avecurcjl = this.getAverageDailyChengJiaoLiangOfWeek(requireddate, 0);
+		    	 String avecjldanwei = FormatDoubleToShort.getNumberChineseDanWei(avecurcjl);
+		    	 curcjl = FormatDoubleToShort.formateDoubleToShort (avecurcjl);
+				 org.jsoup.nodes.Element liavecjl = dl.appendElement("li");
+				 org.jsoup.nodes.Element fontavecjl = liavecjl.appendElement("font");
+				 fontavecjl.appendText("成交量" + decimalformate.format(avecurcjl) + avecjldanwei);
+				 fontavecjl.attr("color", "#641E16");
 				 //
 				 Integer cjlmaxwk = null;
 			     try{

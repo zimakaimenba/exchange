@@ -89,6 +89,8 @@ import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjlZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
@@ -1332,6 +1334,11 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void createEvents() 
 	{
+		panelGgDpCjeZhanBi.setProperties(this.prop);
+		panelbkwkcjezhanbi.setProperties(this.prop);
+		panelggdpcjlwkzhanbi.setProperties(this.prop);
+		pnlbkwkcjlzhanbi.setProperties(this.prop);
+		
 		cbbxmore.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) 
@@ -2005,7 +2012,8 @@ public class BanKuaiFengXi extends JDialog
     				  }
     			}
     			if(csvfilecount == 0) {
-    				JMenuItem menuitemhistorycsvfile = new JMenuItem ("没有历史CSV文件" ); 
+    				JMenuItem menuitemhistorycsvfile = new JMenuItem ("没有历史CSV文件" );
+    				menuitemhistorycsvfile.setName("没有历史CSV文件");
 			    	historycsvfileMenu.add(menuitemhistorycsvfile);
     			}
     			
@@ -2245,7 +2253,6 @@ public class BanKuaiFengXi extends JDialog
 
         });
 
-        
 		tabbedPanegegu.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -2376,11 +2383,12 @@ public class BanKuaiFengXi extends JDialog
                     refreshAfterUserSelectBanKuaiColumn (bkcur,selectedinfo);
                     
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
-                	String datekey = evt.getNewValue().toString();
+                	String key = evt.getNewValue().toString();
+                	List<String> tmpbkinfo = Splitter.on(",").omitEmptyStrings().splitToList(key); //内蒙板块|880232|3|1|0|32
                 	try{
-                		displayNodeLargerPeriodData (bkcur,LocalDate.parse(datekey));
+                		displayNodeLargerPeriodData (bkcur,LocalDate.parse(tmpbkinfo.get(1)),tmpbkinfo.get(0));
                 	} catch (java.time.format.DateTimeParseException e) {
-                		displayNodeLargerPeriodData (bkcur,null);
+                		displayNodeLargerPeriodData (bkcur,null,tmpbkinfo.get(0));
                 	}
                 }
                 
@@ -2413,11 +2421,12 @@ public class BanKuaiFengXi extends JDialog
                     refreshAfterUserSelectBanKuaiColumn (bkcur,selectedinfo);
                     
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
-                	String datekey = evt.getNewValue().toString();
+                	String key = evt.getNewValue().toString();
+                	List<String> tmpbkinfo = Splitter.on(",").omitEmptyStrings().splitToList(key); //内蒙板块|880232|3|1|0|32
                 	try{
-                		displayNodeLargerPeriodData (bkcur,LocalDate.parse(datekey));
+                		displayNodeLargerPeriodData (bkcur,LocalDate.parse(tmpbkinfo.get(1)),tmpbkinfo.get(0));
                 	} catch (java.time.format.DateTimeParseException e) {
-                		displayNodeLargerPeriodData (bkcur,null);
+                		displayNodeLargerPeriodData (bkcur,null,tmpbkinfo.get(0));
                 	}
                 }
                 
@@ -2461,11 +2470,12 @@ public class BanKuaiFengXi extends JDialog
 					
 //					SystemAudioPlayed.playSound();
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
-                	String datekey = evt.getNewValue().toString();
-       	        	try{
-                		displayNodeLargerPeriodData (selectstock,LocalDate.parse(datekey));
+                	String key = evt.getNewValue().toString();
+                	List<String> tmpbkinfo = Splitter.on(",").omitEmptyStrings().splitToList(key); //内蒙板块|880232|3|1|0|32
+                	try{
+                		displayNodeLargerPeriodData (selectstock,LocalDate.parse(tmpbkinfo.get(1)),tmpbkinfo.get(0));
                 	} catch (java.time.format.DateTimeParseException e) {
-                		displayNodeLargerPeriodData (selectstock,null);
+                		displayNodeLargerPeriodData (selectstock,null,tmpbkinfo.get(0));
                 	}
                 }
 			}
@@ -2501,11 +2511,13 @@ public class BanKuaiFengXi extends JDialog
 //					};
 					
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
-                	String datekey = evt.getNewValue().toString();
-       	        	try{
-                		displayNodeLargerPeriodData (selectstock,LocalDate.parse(datekey));
+                	String key = evt.getNewValue().toString();
+                	Class<? extends Object> source = evt.getSource().getClass();
+                	List<String> tmpbkinfo = Splitter.on(",").omitEmptyStrings().splitToList(key); //内蒙板块|880232|3|1|0|32
+                	try{
+                		displayNodeLargerPeriodData (selectstock,LocalDate.parse(tmpbkinfo.get(1)),tmpbkinfo.get(0));
                 	} catch (java.time.format.DateTimeParseException e) {
-                		displayNodeLargerPeriodData (selectstock,null);
+                		displayNodeLargerPeriodData (selectstock,null,tmpbkinfo.get(0));
                 	}
                 }
             }
@@ -3539,7 +3551,7 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 用户双击某个node占比chart，则放大显示该node一年内的占比所有数据
 	 */
-	protected void displayNodeLargerPeriodData(TDXNodes node, LocalDate datekey) 
+	protected void displayNodeLargerPeriodData(TDXNodes node, LocalDate datekey, String guisource) 
 	{
 		if(!this.globecalwholeweek) {
 			JOptionPane.showMessageDialog(null,"不是整周分析模式，不支持更大范围显示分析结果数据!","Warning",JOptionPane.WARNING_MESSAGE);
@@ -3610,13 +3622,19 @@ public class BanKuaiFengXi extends JDialog
 		svsdp = null;
 		
 		BanKuaiFengXiLargePnl largeinfo = null;
+		String guitype = "CJE";
+		if( guisource.contains("CJL") )
+			guitype = "CJL";
+		else if( guisource.contains("CJE") )
+			guitype = "CJE";
+		
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK  ) {
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod);
+			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod,guitype);
 			
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, overlapldstartday, overlapldendday, globeperiod);
+			largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, overlapldstartday, overlapldendday, globeperiod,guitype);
 		}
 		
 		if(datekey != null)
@@ -3624,6 +3642,7 @@ public class BanKuaiFengXi extends JDialog
 		else
 			largeinfo.highLightSpecificBarColumn(curselectdate);
 		
+		largeinfo.nodecombinedpnl.setProperties(this.prop);
 		JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
 
 		svsbk = null;
@@ -5530,7 +5549,7 @@ public class BanKuaiFengXi extends JDialog
        stockbiaojiMenu .add(menuItemAddRmvStockToYellow );
        tableGuGuZhanBiInBk.getPopupMenu().add(stockbiaojiMenu);
        
-       menuItemnonshowselectbkinfo = new JMenuItem("同时计算选定周分析数据");
+       menuItemnonshowselectbkinfo = new JMenuItem("同时分析选定周数据");
        panelbkwkcjezhanbi.addMenuItem (menuItemnonshowselectbkinfo,null);
        
        JPopupMenu popupMenuGeguNews = new JPopupMenu () ;

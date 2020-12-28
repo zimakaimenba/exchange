@@ -4,12 +4,16 @@ import java.awt.Color;
 
 import java.awt.Font;
 import java.awt.Paint;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
@@ -36,15 +40,9 @@ import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
 
 public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCategoryBarChartPnl
 {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private DefaultCategoryDataset linechartdatasetforcjezb;
 	public BanKuaiFengXiCategoryBarChartCjeZhanbiPnl() 
 	{
-		super ();
+		super ("CJEZHANBI");
 		super.plot.setRenderer(0, new CustomCategroyRendererForCjeZhanBi() );
         super.plot.setRenderer(3, new BanKuaiFengXiCategoryCjeZhanbiLineRenderer () );
         
@@ -53,10 +51,56 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		super.plot.setRenderer(2, new BanKuaiFengXiCategoryCjeZhanbiLineRenderer () );
         ValueAxis rangeaxis = plot.getRangeAxis(0);
         super.plot.setRangeAxis(2, rangeaxis);
+        
+        createGuiAndEvents ();
 	}
 	
-	
+	private static final long serialVersionUID = 1L;	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartCjeZhanbiPnl.class);
+	protected JMenuItem mntmCjeZblineDate;
+	protected JMenuItem mntmClearLineData;
+	private Boolean displayzhanbishujuinline = false;
+	private DefaultCategoryDataset linechartdatasetforcjezb;
+	
+	private void createGuiAndEvents () 
+	{
+		mntmCjeZblineDate = new JMenuItem("占比柱图转线图");
+		chartPanel.getPopupMenu().add(mntmCjeZblineDate);
+		
+		mntmClearLineData = new JMenuItem("突出占比数据");
+		chartPanel.getPopupMenu().add(mntmClearLineData);
+		
+		mntmCjeZblineDate.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				if(mntmCjeZblineDate.getText().contains("X")) {
+					setDisplayZhanBiInLine (false);
+					
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJEZBTOLINE, getCurDisplayedNode().getMyOwnCode(), "notcjecjlzbtoline" );
+		            pcs.firePropertyChange(evtzd);
+		            
+				} else {
+					setDisplayZhanBiInLine (true);
+					
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJEZBTOLINE, getCurDisplayedNode().getMyOwnCode(), "cjecjlzbtoline" );
+		            pcs.firePropertyChange(evtzd);
+				}
+				
+				
+			}
+		});
+		
+		mntmClearLineData.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				
+				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWCJEZBBARDATA, getCurDisplayedNode().getMyOwnCode(), "onlyshowcjezhanbibardata" );
+	            pcs.firePropertyChange(evtqk);
+		
+			}
+			
+		});
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode, java.time.LocalDate, int, java.lang.String)
@@ -66,11 +110,16 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	{
 		super.setCurDisplayNode(node,startdate, enddate, period );
 		
+		if(node.getType() == BkChanYeLianTreeNode.DAPAN) {
+			mntmCjeZblineDate.setEnabled(false);
+	        mntmClearLineData.setEnabled(false);
+		}
+		
 		preparingdisplayDataToGui (node,startdate,enddate,period);
 	
 //		//如有分析结果，ticklable显示红色
-		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
-		axis.setDisplayNode(this.getCurDisplayedNode(),period);
+//		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis();
+//		axis.setDisplayNode(this.getCurDisplayedNode(),period);
 		
 	}
 	/*
@@ -96,9 +145,9 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		if(super.shouldDrawZhangDieTingLine() ) {
 			Integer zdt = displayZhangDieTingLineDataToGui(nodexdata,period);
 		}
-		if(super.shouldDisplayZhanBiInLine() ) {
+		if(this.shouldDisplayZhanBiInLine() ) {
 			super.resetLineDate ();
-			this.dipalyCjeCjlZBLineDataToGui ( super.getCurDisplayedNode().getNodeXPeroidData(period),period );
+			this.dipalyCjeZBLineDataToGui ( super.getCurDisplayedNode().getNodeXPeroidData(period),period );
 		}
 		
 		super.barchart.setNotify(true);
@@ -232,9 +281,9 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	/*
 	 * 成交额占比线形数据
 	 */
-	public Double dipalyCjeCjlZBLineDataToGui (NodeXPeriodData nodexdata,String period)
+	public Double dipalyCjeZBLineDataToGui (NodeXPeriodData nodexdata,String period)
 	{
-		if(!super.shouldDisplayZhanBiInLine() ) 
+		if(!this.shouldDisplayZhanBiInLine() ) 
 			return null;
 		
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).hideBarMode();
@@ -507,6 +556,20 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		((BanKuaiFengXiCategoryCjeZhanbiLineRenderer)fourthrenderer).setKLearningClusterBaseLineId (-1);
 	}
 	
+	public void setDisplayZhanBiInLine (Boolean draw)
+	{
+		this.displayzhanbishujuinline = draw;
+		if(this.displayzhanbishujuinline) 
+			this.mntmCjeZblineDate.setText("X 占比柱图转线图");
+		else
+			this.mntmCjeZblineDate.setText("占比柱图转线图");
+	}
+	
+	public Boolean shouldDisplayZhanBiInLine ()
+	{
+		return this.displayzhanbishujuinline;
+	}
+	
 	@Override
     public void highLightSpecificBarColumn (LocalDate selecteddate)
     {
@@ -570,7 +633,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		}
 		
 	}
-
 }
 /*
  * 
@@ -584,8 +646,20 @@ class CustomCategroyRendererForCjeZhanBi extends BanKuaiFengXiCategoryBarRendere
         super();
         super.displayedmaxwklevel = 4;
         super.displayedminwklevel = 8;
-        super.displayedcolumncolorindex = new Color(255,153,153);//Color.RED.darker();
-        super.lastdisplayedcolumncolorindex = new Color(255,153,153);//Color.RED.darker();
+        try {
+        	String readingsettinginprop  = super.prop.getProperty ("CjeZhanbiColumnColor");
+            if(readingsettinginprop != null) {
+            	super.displayedcolumncolorindex = Color.decode( readingsettinginprop );
+                super.lastdisplayedcolumncolorindex = Color.decode( readingsettinginprop );
+            } else {
+            	super.displayedcolumncolorindex = Color.YELLOW;
+                super.lastdisplayedcolumncolorindex = Color.YELLOW;
+            }
+        } catch (java.lang.NullPointerException e) {
+        	super.displayedcolumncolorindex = Color.yellow;
+            super.lastdisplayedcolumncolorindex = Color.yellow;
+        }
+        
         
         BanKuaiFengXiCategoryBarToolTipGenerator custotooltip = new CustomCategroyToolTipGeneratorForCjeZhanBi();
 		this.setBaseToolTipGenerator(custotooltip);

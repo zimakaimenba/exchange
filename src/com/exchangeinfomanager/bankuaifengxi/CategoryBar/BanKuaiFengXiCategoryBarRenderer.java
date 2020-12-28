@@ -3,8 +3,11 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Paint;
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.labels.ItemLabelAnchor;
@@ -42,6 +45,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
         this.setBarPainter(new StandardBarPainter());
         this.setShadowVisible(false);
         
+//        setupProperties ();
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarRenderer.class);
@@ -57,6 +61,43 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	protected NodeXPeriodData nodexdata;
 	protected Color displayedcolumncolorindex;
 	protected Color lastdisplayedcolumncolorindex;
+	protected Properties prop;
+	
+//	private void setupProperties() 
+//	{
+//		// TODO Auto-generated method stub
+//		File directory = new File("");//设定为当前文件夹
+//		String systeminstalledpath = null;
+//		try{
+//		    Properties properties = System.getProperties();
+//		    systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
+//		} catch(Exception e) {
+//			System.exit(0);
+//		}
+//		
+////		FileInputStream inputStream = null;
+//		String propxmlFileName = null ;
+//		try {
+//			prop = new Properties();
+//			String propFileName = systeminstalledpath  + "/config/bankuaifenxisetting.properties";
+//			FileInputStream inputStream = new FileInputStream(propFileName);
+//			if (inputStream != null) {
+//				prop.load(inputStream);
+//			} 
+//			inputStream.close();
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {}
+//	}
+//	private  String toUNIXpath(String filePath) 
+//   	{
+//   		    return filePath.replace('\\', '/');
+//   	}
+	public void setProperties (Properties prop1)
+	{
+		this.prop = prop1;
+	}
 	/*
 	 * 
 	 */
@@ -125,6 +166,21 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	public void setBarDisplayedColor(Color colorindex) 
 	{
 		this.displayedcolumncolorindex = colorindex;
+	}
+	public void setBarDisplayedColor(String colorindexfrompropertiesfile) 
+	{
+		String readingsettinginprop  = this.prop.getProperty (colorindexfrompropertiesfile);
+		if(readingsettinginprop != null)
+			this.displayedcolumncolorindex = Color.decode( readingsettinginprop );
+	}
+	/*
+	 * 
+	 */
+	public void enableAverageCjeCjlColor() 
+	{
+		String readingsettinginprop  = this.prop.getProperty ("CjeAverageColumnColor ");
+        this.displayedcolumncolorindex = Color.decode( readingsettinginprop );
+        this.lastdisplayedcolumncolorindex = Color.decode( readingsettinginprop );
 	}
 	/*
 	 * 

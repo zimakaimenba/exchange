@@ -3,6 +3,9 @@ package com.exchangeinfomanager.bankuaifengxi.CategoryBar;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -11,12 +14,15 @@ import java.time.LocalDate;
 
 import java.time.temporal.ChronoUnit;
 
+import javax.swing.JMenuItem;
+
 import org.apache.log4j.Logger;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.annotations.CategoryTextAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -39,13 +45,9 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	protected DefaultCategoryDataset averagelinechartdataset; //大盘周平均成交额
-	private  TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
-	
 	public BanKuaiFengXiCategoryBarChartCjePnl() 
 	{
-		super ();
+		super ("CJE");
 		super.plot.setRenderer(0,new CustomRendererForCje() );
         super.plot.setRenderer(3, new BanKuaiFengXiCategoryLineRenderer ());
         
@@ -55,13 +57,67 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
         ValueAxis rangeaxis = plot.getRangeAxis(0);
         super.plot.setRangeAxis(4, rangeaxis);
         super.plot.getRenderer(4).setSeriesPaint(1, Color.CYAN );
+        
+        createGuiAndEvents ();
 	}
-	/*
-	 * 
-	 */
-	public TDXNodes getSettingSpecificSuperBanKuai ()
+	private static final long serialVersionUID = 1L;
+	private  TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
+	private Boolean displayaveragedailycje = false;
+	protected JMenuItem mntmHideZdt;
+	protected JMenuItem mntmHideQueKouData;
+	protected JMenuItem mntmAveDailyCjeLineData;
+	protected JMenuItem mntmCompareAveCjeWithSpecificNode;
+	
+	private void createGuiAndEvents ()
 	{
-		return shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
+		mntmHideZdt = new JMenuItem("突出涨跌停数据");
+		chartPanel.getPopupMenu().add(mntmHideZdt);
+        mntmHideQueKouData = new JMenuItem("突出缺口数据");
+        chartPanel.getPopupMenu().add(mntmHideQueKouData);
+        mntmAveDailyCjeLineData = new JMenuItem("突出周日平均成交额");
+		chartPanel.getPopupMenu().add(mntmAveDailyCjeLineData);
+		mntmCompareAveCjeWithSpecificNode = new JMenuItem("对比大盘周日平均成交额");
+		chartPanel.getPopupMenu().add(mntmCompareAveCjeWithSpecificNode);
+		
+	   	mntmAveDailyCjeLineData.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE, getCurDisplayedNode().getMyOwnCode(), "averagedailycjeline" );
+		            pcs.firePropertyChange(evtzd);
+				}
+				
+			});
+	    	
+	    	mntmHideZdt.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING, getCurDisplayedNode().getMyOwnCode(), "zhangdieting" );
+		            pcs.firePropertyChange(evtzd);
+				}
+				
+			});
+	    	mntmHideQueKouData.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					
+					PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA, getCurDisplayedNode().getMyOwnCode(), "quekou" );
+		            pcs.firePropertyChange(evtqk);
+			
+				}
+				
+			});
+	    	
+	    	mntmCompareAveCjeWithSpecificNode.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.COMPAREAVERAGEDAILYCJEWITHDAPAN, getCurDisplayedNode().getMyOwnCode(), "compareaveragedailycjewithdapan" );
+		            pcs.firePropertyChange(evtzd);
+				}
+				
+			});
+		
 	}
 	/*
 	 * 
@@ -69,6 +125,12 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	public void updatedDate (TDXNodes node, LocalDate startdate, LocalDate enddate,String period)
 	{
 		super.setCurDisplayNode( node,startdate, enddate, period );
+		
+		if(node.getType() == BkChanYeLianTreeNode.DAPAN) {
+//	        mntmCjeCjlZblineDate.setEnabled(false);
+//	        mntmClearLineData.setEnabled(false);
+	        mntmCompareAveCjeWithSpecificNode.setEnabled(false);
+		}
 		
 		this.preparingdisplayDataToGui (node,startdate,enddate,period);
 	}
@@ -98,7 +160,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			if(super.shouldDrawZhangDieTingLine() ) {
 				Integer zdt = displayZhangDieTingLineDataToGui(nodexdata,startdate,enddate,period);
 			}
-			if(super.shouldDrawAverageDailyCjeOfWeekLine() ) {
+			if(this.shouldDrawAverageDailyCjeOfWeekLine() ) {
 				((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 				 Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdata,startdate,enddate,period);
 			}
@@ -108,13 +170,13 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			Double leftrangeaxix = displayAverageBarDataToGui (nodexdata,startdate,enddate,period);
 //			Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
 			Double avecjeaxix = displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
-			setBarDisplayedColor(new Color(204,155,153) );
+			((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).setBarDisplayedColor( "CjeAverageColumnColor" );
 		}
 		
-		if(super.shouldDisplayZhanBiInLine() ) {
-			this.resetLineDate ();
-			this.dipalyCjeCjlZBLineDataToGui (nodexdata,startdate,enddate,period);
-		}
+//		if(super.shouldDisplayZhanBiInLine() ) {
+//			this.resetLineDate ();
+//			this.dipalyCjeCjlZBLineDataToGui (nodexdata,startdate,enddate,period);
+//		}
 
 		super.barchart.setNotify(true);
 	}
@@ -666,6 +728,20 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		if(averagelinechartdataset != null)
 			averagelinechartdataset.clear();
 	}
+	/*
+	 * 
+	 */
+	public TDXNodes getSettingSpecificSuperBanKuai ()
+	{
+		return shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
+	}
+	public void setDrawAverageDailyCjeOfWeekLine(Boolean draw) {
+		this.displayaveragedailycje = draw;
+	}
+	public boolean shouldDrawAverageDailyCjeOfWeekLine() {
+		// TODO Auto-generated method stub
+		return this.displayaveragedailycje;
+	}
 
 	@Override
     public void highLightSpecificBarColumn (LocalDate selecteddate)
@@ -734,8 +810,21 @@ class CustomRendererForCje extends BanKuaiFengXiCategoryBarRenderer
     {
         super();
         super.displayedmaxwklevel = 3;
-        super.displayedcolumncolorindex = Color.ORANGE;
-        super.lastdisplayedcolumncolorindex = Color.ORANGE;
+        try {
+        	String readingsettinginprop  = super.prop.getProperty ("CjeColumnColor");
+            if(readingsettinginprop != null) {
+            	super.displayedcolumncolorindex = Color.decode( readingsettinginprop );
+                super.lastdisplayedcolumncolorindex = Color.decode( readingsettinginprop );
+            } else {
+            	super.displayedcolumncolorindex = Color.RED;
+                super.lastdisplayedcolumncolorindex = Color.RED;
+            }
+        } catch (java.lang.NullPointerException e) {
+        	super.displayedcolumncolorindex = Color.RED;
+            super.lastdisplayedcolumncolorindex = Color.RED;
+        }
+        
+        this.setBarPainter(new StandardBarPainter());
         
 		CustomCategoryToolTipGeneratorForChenJiaoEr custotooltip = new CustomCategoryToolTipGeneratorForChenJiaoEr();
 		this.setBaseToolTipGenerator(custotooltip);
@@ -819,8 +908,6 @@ class BkfxItemLabelGeneratorForCje extends BkfxItemLabelGenerator
 	}
 	
 }
-
-
 
 class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryBarToolTipGenerator  
 {

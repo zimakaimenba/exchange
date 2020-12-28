@@ -702,6 +702,20 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
+	@Override
+	public Double getAverageDailyChengJiaoLiangOfWeek(LocalDate requireddate, int difference) 
+	{
+		Double cje = this.getChengJiaoLiang(requireddate, 0);
+		if(cje != null) {
+			Integer daynum = this.getExchangeDaysNumberForthePeriod(requireddate, 0);
+			if(daynum != null)
+				return cje/daynum;
+			else
+				return cje/5;
+		} else
+			return null;
+	}
+
 
 }
 

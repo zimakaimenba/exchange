@@ -51,6 +51,7 @@ import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
+import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjlPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
@@ -73,29 +74,29 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	private TDXNodes displaynode;
 //	private SystemConfigration sysconfig;
 	private TDXNodes nodebankuai;
-	private AllCurrentTdxBKAndStoksTree allbksks;
-	private Boolean exportuserselectedinfotocsv;
+//	private AllCurrentTdxBKAndStoksTree allbksks;
+//	private Boolean exportuserselectedinfotocsv;
 	private String globeperiod;
 
-	public BanKuaiFengXiLargePnl (TDXNodes nodebkbelonged, TDXNodes node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period)
+	public BanKuaiFengXiLargePnl (TDXNodes nodebkbelonged, TDXNodes node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period,String guitype)
 	{
 		this.nodebankuai = nodebkbelonged;
 		this.displaynode = node;
 		this.globeperiod = period;
-		initialzieSysconf ();
+//		initialzieSysconf ();
 
-		createGui (nodebkbelonged);
+		createGui (nodebkbelonged, guitype);
 		createEvents ();
 
 
 		updateData (nodebkbelonged, node,displayedstartdate1,displayedenddate1,period);
 	}
 	
-	private void initialzieSysconf ()
-	{
-//		sysconfig = SystemConfigration.getInstance();
-		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-	}
+//	private void initialzieSysconf ()
+//	{
+////		sysconfig = SystemConfigration.getInstance();
+//		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
+//	}
 	/*
 	 * 板块和个股的K线，可以同时显示，用以对比研究
 	 */
@@ -309,7 +310,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 			String period) 
 	{
 		if(nodebkbelogned != null) {
-			this.nodebkcjezblargepnl.setDrawAverageDailyCjeOfWeekLine(true);
+//			this.nodebkcjezblargepnl.setDrawAverageDailyCjeOfWeekLine(true);
 			//实践后决定永远显示大盘的成交量。
 			BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
@@ -349,13 +350,13 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
 //	private BanKuaiFengXiNodeCombinedCategoryPnl centerPanel;
 	private JPanel centerPanel;
-	private BanKuaiFengXiNodeCombinedCategoryPnl nodecombinedpnl;
+	public BanKuaiFengXiNodeCombinedCategoryPnl nodecombinedpnl;
 	private BanKuaiFengXiCategoryBarChartPnl nodebkcjezblargepnl;
 	private JPanel tfldselectedmsg;
 	private BanKuaiFengXiCandlestickPnl nodekpnl;
 	private JPopupMenu saveImage;
 	private JMenuItem mntmsaveimage; 
-	private void createGui(BkChanYeLianTreeNode nodebkbelonged) 
+	private void createGui(BkChanYeLianTreeNode nodebkbelonged, String guitype) 
 	{
 		this.setLayout(new BorderLayout());
 
@@ -366,11 +367,14 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.Y_AXIS));
 		this.centerPanel.setPreferredSize(new Dimension(1800, 705)); //设置显示框的大小
 		
-		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical","CJE");
+		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical",guitype);
 		this.nodecombinedpnl.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上日均成交额，下占比线
 		
-		this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
-		this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
+		if(guitype.toUpperCase().equals("CJE"))
+			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
+		else
+			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjlPnl ();
+//		this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
 		
 //		if(nodebkbelonged.getType() == BkChanYeLianTreeNode.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
 //			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
