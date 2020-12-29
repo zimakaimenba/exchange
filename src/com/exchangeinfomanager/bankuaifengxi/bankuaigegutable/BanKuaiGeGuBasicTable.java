@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -28,6 +29,7 @@ import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAdd
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiandGeGuTableBasic;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
@@ -39,11 +41,11 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.TableFilterHeader;
 
-public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGeGuMatchConditionListener
+public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic implements  BanKuaiGeGuMatchConditionListener
 {
-	public BanKuaiGeGuBasicTable (StockInfoManager stockmanager1)
+	public BanKuaiGeGuBasicTable (StockInfoManager stockmanager1,String propertiesfilepath)
 	{
-		super ();
+		super (propertiesfilepath);
 
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.newsdbopt = new StockCalendarAndNewDbOperation ();
@@ -52,11 +54,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 		createMenu ();
 		createEvents ();
 		
-		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
-		
-//		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-//		this.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(30);
-//		this.getColumnModel().getColumn(0).setPreferredWidth(10);
+//		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuBasicTable.class);
@@ -71,6 +69,8 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 	protected JMenuItem menuItemGeguInfo;
 	protected JMenuItem menuItemLongTou;
 	protected JPopupMenu popupMenuGeguNews;
+//	protected Properties prop;
+
 	
 	TableFilterHeader filterHeader;
 //	private JMenuItem menuItemQiangShi;
@@ -254,7 +254,7 @@ public abstract class BanKuaiGeGuBasicTable extends JTable implements  BanKuaiGe
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
 		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuBasicTableModel) this.getModel()).getStock(model_row);
 
-		LocalDate fxdate = ((BanKuaiGeGuBasicTableModel)this.getModel()).getShowCurDate();
+		LocalDate fxdate = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDisplayedDate();
 		
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);

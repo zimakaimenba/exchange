@@ -755,6 +755,7 @@ import com.udojava.evalex.Expression;
 
 		return maxweek;
 	}
+	
 	/*
 	 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率，
 	 */
@@ -970,6 +971,39 @@ import com.udojava.evalex.Expression;
 			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 				return 100.0;
 			}
+		}
+	 	@Override
+		public Integer getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference)
+		{
+			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			if(curperiod == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( curperiod);
+			if( curcjlrecord == null) 
+				return null;
+			
+			int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
+			Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
+			
+			int maxweek = 0;
+			int index = nodevol.getIndex(curperiod );
+			for(int i = index-1;i >=0; i--) {
+				
+				TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( i );
+				if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
+					return maxweek;
+				
+				LocalDate lastdate = lastcjlrecord.getPeriod().getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				int lastexchangedaynum = this.getExchangeDaysNumberForthePeriod(lastdate, 0);
+				Double lastcje = lastcjlrecord.getValue().doubleValue() / lastexchangedaynum;
+				if(curcje > lastcje)
+					maxweek ++;
+				else
+					break;
+			}
+
+			return maxweek;
 		}
 	 @Override
 		public Integer getChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
@@ -1650,13 +1684,12 @@ import com.udojava.evalex.Expression;
 		
 		Double curcje = this.getChengJiaoEr(requireddate, 0);
 		Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate, 0);
-		Integer cjemaxwk =  this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+		Integer cjemaxwk =  this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
 		Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate,0);//成交额大盘变化贡献率
 		
 		Double curcjl = this.getChengJiaoLiang(requireddate, 0);
 		Double avecjl = this.getAverageDailyChengJiaoLiangOfWeek (requireddate, 0);
-		Integer cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
-//		Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
+		Integer cjlmaxwk = this.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
 		
 		Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate,0);
 		

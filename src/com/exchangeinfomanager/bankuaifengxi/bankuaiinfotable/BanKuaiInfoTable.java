@@ -78,8 +78,8 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
 	private StockInfoManager stockmanager;
-	private BanKuaiAndStockTree allbkskstree;
-	private TableFilterHeader filterHeader;
+//	private BanKuaiAndStockTree allbkskstree;
+//	private TableFilterHeader filterHeader;
 	
 	
 	private Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
@@ -91,7 +91,10 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel (super.prop);
 		this.setModel(bkmodel);
 		
-		this.allbkskstree = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree();
+		super.setColumnPreferredWidth ();
+		super.createTableHeaderTooltips ();
+		
+//		this.allbkskstree = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree();
 		this.stockmanager = stockmanager1;
 		
 		this.createEvents ();
@@ -235,7 +238,6 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 					 org.jsoup.nodes.Element tdel3 = trelline.appendElement("td");
 					 tdel3.appendText(cjedpmaxwk.toString());
 				}	 
- 			
 		}
 		 
 		return doc.toString();
@@ -279,18 +281,16 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 	 */
 	private void tableMouseClickActions (MouseEvent arg0)
 	{
-
-        		 int  view_row = this.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
-				 int  view_col = this.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
-				 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
-				 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
+      		 int  view_row = this.rowAtPoint(arg0.getPoint()); //获得视图中的行索引
+			 int  view_col = this.columnAtPoint(arg0.getPoint()); //获得视图中的列索引
+			 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
+			 int  model_col = this.convertColumnIndexToModel(view_col);//将视图中的列索引转化为数据模型中的列索引
 				 
-        		if (arg0.getClickCount() == 1) {
-        		}
-        		 if (arg0.getClickCount() == 2) {
-        			 showGeGuInfoWin ();
-				 }
-
+       		if (arg0.getClickCount() == 1) {
+       		}
+       		if (arg0.getClickCount() == 2) {
+       			 showGeGuInfoWin ();
+			}
 	}
 	
 	/*

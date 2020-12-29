@@ -130,7 +130,8 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 //	        mntmCjeCjlZblineDate.setEnabled(false);
 //	        mntmClearLineData.setEnabled(false);
 	        mntmCompareAveCjeWithSpecificNode.setEnabled(false);
-		}
+		} else
+			mntmCompareAveCjeWithSpecificNode.setEnabled(true);
 		
 		this.preparingdisplayDataToGui (node,startdate,enddate,period);
 	}
@@ -441,13 +442,13 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			Double cje = nodexdata.getChengJiaoEr(tmpdate, 0);
 			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 			if(cje != null) {
-				linechartdataset.setValue(cje,super.getRowKey(), wkfriday);
+				super.linechartdataset.setValue(cje,super.getRowKey(), wkfriday);
 				
 				if(cje > highestHigh)
 					highestHigh = cje;
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
-					linechartdataset.setValue(0.0,super.getRowKey(),wkfriday);
+					super.linechartdataset.setValue(0.0,super.getRowKey(),wkfriday);
 			}
 
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
@@ -545,13 +546,13 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			Double avecje = nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday, 0);
 				
 				if(avecje != null) {
-					linechartdataset.setValue(avecje,"AverageDailyCje", wkfriday);
+					super.linechartdataset.setValue(avecje,"AverageDailyCje", wkfriday);
 					
 					if(avecje > avecjeaxix)
 						avecjeaxix = avecje;
 				} else {
 					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
-						linechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
+						super.linechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
 				}
 				
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
@@ -893,7 +894,7 @@ class BkfxItemLabelGeneratorForCje extends BkfxItemLabelGenerator
 		
 		String result = "";
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
-			NumberFormat nf = this.getNumberFormat();
+//			NumberFormat nf = this.getNumberFormat();
 //			result =  nf.format(dataset.getValue(row, column));
 			result =  maxweek.toString();
 		} 

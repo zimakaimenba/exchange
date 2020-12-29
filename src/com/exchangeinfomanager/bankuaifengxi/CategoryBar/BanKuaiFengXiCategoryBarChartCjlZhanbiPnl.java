@@ -113,6 +113,9 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		if(node.getType() == BkChanYeLianTreeNode.DAPAN) {
 	        mntmCjlZblineDate.setEnabled(false);
 	        mntmClearLineData.setEnabled(false);
+		} else {
+			mntmCjlZblineDate.setEnabled(true);
+	        mntmClearLineData.setEnabled(true);
 		}
 		
 		preparingdisplayDataToGui (node,startdate,enddate,period);
@@ -394,6 +397,15 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		super.plot.getRenderer(3).setSeriesPaint(2, Color.RED.darker() );
 	}
 
+	public void resetLineDate ()
+	{
+		super.resetLineDate();
+		if(linechartdatasetforcjlzb != null)
+			linechartdatasetforcjlzb.clear();
+		
+		plot.getRangeAxis(3).setRange(0.0, 1.0);
+	}
+	
 	public void setDisplayZhanBiInLine (Boolean draw)
 	{
 		this.displayzhanbishujuinline = draw;
@@ -446,6 +458,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 //		}
 		
 	}
+	
 
 }
 /*
@@ -523,27 +536,25 @@ class BkfxItemLabelGeneratorForCjlZhanBi extends BkfxItemLabelGenerator
 
 	@Override
 	public String generateLabel(CategoryDataset dataset, int row, int column) {
-//		String selected =  dataset.getColumnKey(column).toString();
-//		
-//    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-////    	if(selecteddate.equals(LocalDate.parse("2018-11-16"))) {
-////    		String result2 = "";
-////    	}
-//    	
-//		Integer maxweek = nodexdata.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
-//		Integer minweek = nodexdata.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(selecteddate,0);
-//		
-//		String result = "";
-//		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
+		String selected =  dataset.getColumnKey(column).toString();
+		
+    	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
+    	
+		Integer maxweek = nodexdata.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
+		Integer minweek = nodexdata.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(selecteddate,0);
+		
+		String result = "";
+		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
 //			NumberFormat nf = this.getNumberFormat();
 //			result =  nf.format(dataset.getValue(row, column));
-//		} else if (minweek != null && minweek != 0 && minweek >=  super.displayedminwklevel) {
+			result = maxweek.toString(); //ÏÔÊ¾Õ¼±ÈMAXWEEK
+		} else if (minweek != null && minweek != 0 && minweek >=  super.displayedminwklevel) {
 //			NumberFormat nf = this.getNumberFormat();
 //			result =  nf.format(dataset.getValue(row, column));
-//		}
-//		
-//		return result;
-		return null;
+			result = "-" + minweek.toString();
+		}
+		
+		return result;
 	}
 
 	@Override

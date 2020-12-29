@@ -108,7 +108,8 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 //	        mntmCjeCjlZblineDate.setEnabled(false);
 //	        mntmClearLineData.setEnabled(false);
 	        mntmCompareAveCjlWithSpecificNode.setEnabled(false);
-		}
+		} else
+			mntmCompareAveCjlWithSpecificNode.setEnabled(true);
 		
 		this.preparingdisplayDataToGui (node,startdate,enddate,period);
 	}
@@ -625,7 +626,7 @@ class CustomRendererForCjl extends BanKuaiFengXiCategoryBarRenderer
 		
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	 
-		Integer maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
+		Integer maxweek = nodexdata.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(selecteddate,0);
 		
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel)
 			return new Color(0,204,204);
@@ -664,15 +665,16 @@ class BkfxItemLabelGeneratorForCjl extends BkfxItemLabelGenerator
 
     	Integer maxweek;
     	try{
-    		maxweek = nodexdata.getChenJiaoErMaxWeekOfSuperBanKuai(selecteddate,0);
+    		maxweek = nodexdata.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(selecteddate,0);
     	} catch ( java.lang.NullPointerException e) {
     		return null;
     	}
 		
 		String result = "";
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel) {
-			NumberFormat nf = this.getNumberFormat();
-			result =  nf.format(dataset.getValue(row, column));
+//			NumberFormat nf = this.getNumberFormat();
+//			result =  nf.format(dataset.getValue(row, column));
+			result =  maxweek.toString();
 		} 
 		
 		return result;

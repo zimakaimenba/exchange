@@ -716,6 +716,12 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			return null;
 	}
 
+	@Override
+	public Integer getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }
 

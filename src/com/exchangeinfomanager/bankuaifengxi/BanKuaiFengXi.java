@@ -373,7 +373,7 @@ public class BanKuaiFengXi extends JDialog
     	svsdp.getNodeData("",requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
     	svsdp = null;
     	SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-		List<TDXNodes> bkwithcje = svsbk.getBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
+		List<BkChanYeLianTreeNode> bkwithcje = svsbk.getBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai( bkwithcje );
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,0,globeperiod);
 		
@@ -592,7 +592,7 @@ public class BanKuaiFengXi extends JDialog
 		LocalDate cursetdate = dateChooser.getLocalDate(); 
 		if(!CommonUtility.isInSameWeek(selectdate,cursetdate) ) {
 			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-			List<TDXNodes> bkwithcje = svsbk.getBanKuaiFenXiQualifiedNodes(selectdate, globeperiod, globecalwholeweek,false);
+			List<BkChanYeLianTreeNode> bkwithcje = svsbk.getBanKuaiFenXiQualifiedNodes(selectdate, globeperiod, globecalwholeweek,false);
 			svsbk = null;
 			((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).addBanKuai( bkwithcje );
 			((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).refresh(selectdate,0,globeperiod);
@@ -601,7 +601,7 @@ public class BanKuaiFengXi extends JDialog
 			if( ((BanKuai)bkcur).getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股，
 //				refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
 				
-				LocalDate formerdate = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getShowCurDate();
+				LocalDate formerdate = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getCurDisplayedDate();
 				if(formerdate != null) { //前面有显示过，把她挪到tab 4
 					//显示选定周+1股票排名情况
 					((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingplusone.getModel()).refresh(((BanKuai)bkcur), formerdate,globeperiod);

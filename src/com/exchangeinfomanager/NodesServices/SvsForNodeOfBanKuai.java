@@ -48,10 +48,10 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	/*
 	 * 
 	 */
-	public List<TDXNodes> getBanKuaiFenXiQualifiedNodes (LocalDate checkdate,
+	public List<BkChanYeLianTreeNode> getBanKuaiFenXiQualifiedNodes (LocalDate checkdate,
 			 String globeperiod, Boolean globecalwholeweek, Boolean forcetogetnodedataagain)
 	{
-		List<TDXNodes> bkwithcje = new ArrayList<TDXNodes> ();
+		List<BkChanYeLianTreeNode> bkwithcje = new ArrayList<BkChanYeLianTreeNode> ();
 		
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) allbkstk.getModel().getRoot();
 		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);

@@ -43,7 +43,7 @@ public class BanKuaiGeGuBasicTableRenderer extends DefaultTableCellRenderer
 		Color foreground = Color.BLACK;
 		
 		Stock stock = stockofbank.getStock();
-		LocalDate requireddate = tablemodel.getShowCurDate();
+		LocalDate requireddate = tablemodel.getCurDisplayedDate();
 	    String period = tablemodel.getCurDisplayPeriod();
 	    BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
 		
@@ -128,7 +128,7 @@ public class BanKuaiGeGuBasicTableRenderer extends DefaultTableCellRenderer
 	protected Color rendererOperationsForColumnBackgroundHighLight ( StockOfBanKuai stockofbank, String column_keyword, String predefinedcolor ) 
 	{
 		Stock stock = stockofbank.getStock();
-		LocalDate requireddate = tablemodel.getShowCurDate();
+		LocalDate requireddate = tablemodel.getCurDisplayedDate();
 	    String period = tablemodel.getCurDisplayPeriod();
 	    BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
 		

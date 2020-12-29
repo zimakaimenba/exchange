@@ -113,6 +113,9 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		if(node.getType() == BkChanYeLianTreeNode.DAPAN) {
 			mntmCjeZblineDate.setEnabled(false);
 	        mntmClearLineData.setEnabled(false);
+		} else {
+			mntmCjeZblineDate.setEnabled(true);
+	        mntmClearLineData.setEnabled(true);
 		}
 		
 		preparingdisplayDataToGui (node,startdate,enddate,period);
@@ -713,9 +716,6 @@ class BkfxItemLabelGeneratorForCjeZhanBi extends BkfxItemLabelGenerator
 		String selected =  dataset.getColumnKey(column).toString();
 		
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-//    	if(selecteddate.equals(LocalDate.parse("2018-11-16"))) {
-//    		String result2 = "";
-//    	}
     	
 		Integer maxweek = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(selecteddate,0);
 		Integer minweek = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(selecteddate,0);

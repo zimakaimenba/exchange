@@ -86,6 +86,7 @@ public interface NodeXPeriodData
 	public Integer getChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference);
 	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,	int difference);
 	Double getAverageDailyChengJiaoLiangOfWeek(LocalDate requireddate, int difference);
+	public Integer getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference);
 //	public Integer getAverageDailyCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference);
 //	public Integer getCjlDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate,int difference,int settindpgmaxwk);
 	
@@ -125,12 +126,12 @@ public interface NodeXPeriodData
 			 
 			 "成交额",
 			 "周平均成交额",
-			 "成交额MaxWK",
+			 "周平均成交额MaxWK",
 			 "成交额大盘贡献率",
 			 
 			 "成交量",
 			 "周平均成交量",
-			 "成交量MaxWK",
+			 "周平均成交量MaxWK",
 //			 "成交量大盘贡献率",
 			 
 			 "涨跌幅",

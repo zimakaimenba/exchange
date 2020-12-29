@@ -463,6 +463,11 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public Integer getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	

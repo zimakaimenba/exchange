@@ -15,6 +15,7 @@ import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.NodeChenJiaoErComparator;
 import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -38,29 +39,70 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	
 //	private static Logger logger = Logger.getLogger(BanKuaiInfoTableModel.class);
 	
-	protected void createTableTitleStrings ()
-	{
-		String[] jtableTitleStrings = new String[7];
-		
-		String column_name0  = prop.getProperty ("0column_name");
-		String column_name1  = prop.getProperty ("1column_name");
-		String column_name2  = prop.getProperty ("2column_name");
-		String column_name3  = prop.getProperty ("3column_name");
-		String column_name4  = prop.getProperty ("4column_name");
-		String column_name5  = prop.getProperty ("5column_name");
-		String column_name6  = prop.getProperty ("6column_name");
-		
-		
-		jtableTitleStrings[0] = column_name0 ;
-		jtableTitleStrings[1] =	column_name1;
-		jtableTitleStrings[2] = column_name2;
-		jtableTitleStrings[3] = column_name3;
-		jtableTitleStrings[4] =	column_name4;
-		jtableTitleStrings[5] =	column_name5;
-		jtableTitleStrings[6] =	column_name6;
-
-		super.setTableHeader(jtableTitleStrings);
-	}
+//	protected void createTableTitleStrings ()
+//	{
+//		String[] jtableTitleStrings = new String[11];
+//		
+//		String column_name0  = prop.getProperty ("0column_name");
+//		String column_name1  = prop.getProperty ("1column_name");
+//		String column_name2  = prop.getProperty ("2column_name");
+//		String column_name3  = prop.getProperty ("3column_name");
+//		String column_name4  = prop.getProperty ("4column_name");
+//		String column_name5  = prop.getProperty ("5column_name");
+//		String column_name6  = prop.getProperty ("6column_name");
+//		
+//		String column_name7  = prop.getProperty ("7column_name");
+//		String column_name8  = prop.getProperty ("8column_name");
+//		String column_name9  = prop.getProperty ("9column_name");
+//		String column_name10  = prop.getProperty ("10column_name");
+//		
+//		if(column_name0 != null)
+//			jtableTitleStrings[0] = column_name0 ;
+//		else
+//			jtableTitleStrings[0] = "NULL";
+//		if(column_name1 != null)
+//			jtableTitleStrings[1] = column_name1 ;
+//		else
+//			jtableTitleStrings[1] = "NULL";
+//		if(column_name2 != null)
+//			jtableTitleStrings[2] = column_name2 ;
+//		else
+//			jtableTitleStrings[2] = "NULL";
+//		if(column_name3 != null)
+//			jtableTitleStrings[3] = column_name3 ;
+//		else
+//			jtableTitleStrings[3] = "NULL";
+//		if(column_name4 != null)
+//			jtableTitleStrings[4] = column_name4 ;
+//		else
+//			jtableTitleStrings[4] = "NULL";
+//		if(column_name5 != null)
+//			jtableTitleStrings[5] = column_name5 ;
+//		else
+//			jtableTitleStrings[5] = "NULL";
+//		if(column_name6 != null)
+//			jtableTitleStrings[6] = column_name6 ;
+//		else
+//			jtableTitleStrings[7] = "NULL";
+//		if(column_name7 != null)
+//			jtableTitleStrings[7] = column_name7 ;
+//		else
+//			jtableTitleStrings[7] = "NULL";
+//		if(column_name8 != null)
+//			jtableTitleStrings[8] = column_name8 ;
+//		else
+//			jtableTitleStrings[8] = "NULL";
+//		if(column_name9 != null)
+//			jtableTitleStrings[9] = column_name9 ;
+//		else
+//			jtableTitleStrings[9] = "NULL";
+//		if(column_name10 != null)
+//			jtableTitleStrings[10] = column_name10 ;
+//		else
+//			jtableTitleStrings[10] = "NULL";
+//
+//		super.setTableHeader(jtableTitleStrings);
+//	}
 	
 	/*
 	 * 
@@ -84,11 +126,11 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	public void addBanKuai ( BanKuai bankuai)
 	{
 		if(entryList == null)
-			entryList = new ArrayList<TDXNodes> ();
+			entryList = new ArrayList<BkChanYeLianTreeNode> ();
 		
 		entryList.add(bankuai);
 	}
-	public void addBanKuai ( List<TDXNodes> bankuaiwithcje)
+	public void addBanKuai ( List<BkChanYeLianTreeNode> bankuaiwithcje)
 	{
 		entryList = bankuaiwithcje;
 	}
@@ -96,292 +138,130 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 
 	public Object getValueAt(int rowIndex, int columnIndex) 
     {
-    	if(entryList.isEmpty())
-    		return null;
-
-    	Object value = "??";
-		switch (columnIndex) {
-        case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
-        	String column_kw0  = prop.getProperty ("0column_info_keyword");
-        	value = getColomnValue (column_kw0, rowIndex);
-        	value = reformateDoubleValue (columnIndex, value, "0column_info_value_decimal" );
-            break;
-            
-        case 1: 
-        	String column_kw1  = prop.getProperty ("1column_info_keyword");
-        	value = getColomnValue (column_kw1, rowIndex);
-        	value = reformateDoubleValue (columnIndex, value, "1column_info_value_decimal" );
-        	break;
-        	
-        case 2: // "板块成交额贡献",
-        	String column_kw2  = prop.getProperty ("2column_info_keyword");
-        	value = getColomnValue (column_kw2, rowIndex);
-        	value = reformateDoubleValue (columnIndex, value, "2column_info_value_decimal" );
-        	break;
-        	
-        case 3://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
-        	String column_kw3  = prop.getProperty ("3column_info_keyword");
-        	value = getColomnValue (column_kw3, rowIndex);
-        	value = reformateDoubleValue (columnIndex, value, "3column_info_value_decimal" );
-        	break;            	
-            
-        case 4:
-        	String column_kw4  = prop.getProperty ("4column_info_keyword");
-        	value = getColomnValue (column_kw4, rowIndex);
-        	value = reformateDoubleValue (columnIndex, value, "4column_info_value_decimal" );
-            break;
-            
-        case 5://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
-        	String column_kw5  = prop.getProperty ("5column_info_keyword");
-        	value = getColomnValue (column_kw5, rowIndex);
-        	value = reformateDoubleValue (columnIndex, value, "5column_info_value_decimal" );
-            break;
-        case 6:
-        	String column_kw6  = prop.getProperty ("6column_info_keyword");
-        	value = getColomnValue (column_kw6, rowIndex);
-        	value = reformateDoubleValue (columnIndex, value, "6column_info_value_decimal" );
-            break;
-        
-    	}
+		Object value = super.getValueAt(rowIndex, columnIndex);
+//    	if(entryList.isEmpty())
+//    		return null;
+//
+//    	Object value = "??";
+//		switch (columnIndex) {
+//        case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+//        	String column_kw0  = prop.getProperty ("0column_info_keyword");
+//        	value = getColomnValue (column_kw0, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "0column_info_value_decimal" );
+//            break;
+//            
+//        case 1: 
+//        	String column_kw1  = prop.getProperty ("1column_info_keyword");
+//        	value = getColomnValue (column_kw1, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "1column_info_value_decimal" );
+//        	break;
+//        	
+//        case 2: // "板块成交额贡献",
+//        	String column_kw2  = prop.getProperty ("2column_info_keyword");
+//        	value = getColomnValue (column_kw2, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "2column_info_value_decimal" );
+//        	break;
+//        	
+//        case 3://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+//        	String column_kw3  = prop.getProperty ("3column_info_keyword");
+//        	value = getColomnValue (column_kw3, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "3column_info_value_decimal" );
+//        	break;            	
+//            
+//        case 4:
+//        	String column_kw4  = prop.getProperty ("4column_info_keyword");
+//        	value = getColomnValue (column_kw4, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "4column_info_value_decimal" );
+//            break;
+//            
+//        case 5://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+//        	String column_kw5  = prop.getProperty ("5column_info_keyword");
+//        	value = getColomnValue (column_kw5, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "5column_info_value_decimal" );
+//            break;
+//        case 6:
+//        	String column_kw6  = prop.getProperty ("6column_info_keyword");
+//        	value = getColomnValue (column_kw6, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "6column_info_value_decimal" );
+//            break;
+//        case 7:
+//        	String column_kw7  = prop.getProperty ("7column_info_keyword");
+//        	value = getColomnValue (column_kw7, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "7column_info_value_decimal" );
+//            break;
+//        case 8:
+//        	String column_kw8  = prop.getProperty ("8column_info_keyword");
+//        	value = getColomnValue (column_kw8, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "8column_info_value_decimal" );
+//            break;
+//        case 9:
+//        	String column_kw9  = prop.getProperty ("9column_info_keyword");
+//        	value = getColomnValue (column_kw9, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "9column_info_value_decimal" );
+//            break;
+//        case 10:
+//        	String column_kw10  = prop.getProperty ("10column_info_keyword");
+//        	value = getColomnValue (column_kw10, rowIndex);
+//        	value = reformateDoubleValue (columnIndex, value, "10column_info_value_decimal" );
+//            break;
+//    	}
     	
     	return value;
     }
 	
 	 public Class<?> getColumnClass(int columnIndex) { 
-	      Class clazz = String.class;
-	      switch (columnIndex) {
-	      	case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
-	      		String column_kwt0  = prop.getProperty ("0column_info_valuetype");
-	        	clazz = getColomnValueType (column_kwt0, columnIndex);
-               break;
-	        case 1:
-	        	String column_kwt1  = prop.getProperty ("1column_info_valuetype");
-	        	clazz = getColomnValueType (column_kwt1, columnIndex);
-               break;	
-	        case 2:
-	        	String column_kwt2  = prop.getProperty ("2column_info_valuetype");
-	        	clazz = getColomnValueType (column_kwt2, columnIndex);
-               break;
-	        case 3:
-	        	String column_kwt3  = prop.getProperty ("3column_info_valuetype");
-	        	clazz = getColomnValueType (column_kwt3, columnIndex);
-               break;
-	        case 4:
-	        	String column_kwt4  = prop.getProperty ("4column_info_valuetype");
-	        	clazz = getColomnValueType (column_kwt4, columnIndex);
-               break;
-	        case 5:
-	        	String column_kwt5  = prop.getProperty ("5column_info_valuetype");
-	        	clazz = getColomnValueType (column_kwt5, columnIndex);
-               break;
-	        case 6:
-	        	String column_kwt6  = prop.getProperty ("6column_info_valuetype");
-	        	clazz = getColomnValueType (column_kwt6, columnIndex);
-               break;
-	        
-	      }
+		 Class<?> clazz = super.getColumnClass(columnIndex);
+//	      Class clazz = String.class;
+//	      switch (columnIndex) {
+//	      	case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+//	      		String column_kwt0  = prop.getProperty ("0column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt0, columnIndex);
+//               break;
+//	        case 1:
+//	        	String column_kwt1  = prop.getProperty ("1column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt1, columnIndex);
+//               break;	
+//	        case 2:
+//	        	String column_kwt2  = prop.getProperty ("2column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt2, columnIndex);
+//               break;
+//	        case 3:
+//	        	String column_kwt3  = prop.getProperty ("3column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt3, columnIndex);
+//               break;
+//	        case 4:
+//	        	String column_kwt4  = prop.getProperty ("4column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt4, columnIndex);
+//               break;
+//	        case 5:
+//	        	String column_kwt5  = prop.getProperty ("5column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt5, columnIndex);
+//               break;
+//	        case 6:
+//	        	String column_kwt6  = prop.getProperty ("6column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt6, columnIndex);
+//               break;
+//	        case 7:
+//	        	String column_kwt7  = prop.getProperty ("7column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt7, columnIndex);
+//               break;
+//	        case 8:
+//	        	String column_kwt8  = prop.getProperty ("8column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt8, columnIndex);
+//               break;
+//	        case 9:
+//	        	String column_kwt9  = prop.getProperty ("9column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt9, columnIndex);
+//               break;
+//	        case 10:
+//	        	String column_kwt10  = prop.getProperty ("10column_info_valuetype");
+//	        	clazz = getColomnValueType (column_kwt10, columnIndex);
+//               break;
+//	      }
 	      
 	      return clazz;
-}
-	    
-//	    public Object getValueAt(int rowIndex, int columnIndex) 
-//	    {
-//	    	if(entryList.isEmpty() )
-//	    		return null;
-//	    	
-//	    	BanKuai bankuai = null;
-//	    	DaPan dapan = null;
-//	    	try {
-//	    		bankuai = (BanKuai) entryList.get( rowIndex );
-//	    		dapan = (DaPan)bankuai.getRoot();
-//	    	} catch (java.lang.IndexOutOfBoundsException e) {
-//	    		e.printStackTrace();
-//	    		return null;
-//	    	}
-//	    	NodeXPeriodData bkxdata = bankuai.getNodeXPeroidData(this.curperiod);
-//	    	logger.debug(bankuai.getMyOwnName() + bankuai.getMyOwnCode() );
-//	    	
-////	    	if(bankuai.getMyOwnCode().equals("159932"))
-////	    		logger.debug("可能错误");
-//	    	
-//	    	Object value = "??";
-//	    	switch (columnIndex) {
-//            case 0:
-//            	String bkcode = bankuai.getMyOwnCode();
-//                value = bkcode;
-//                break;
-//            case 1:
-//            	String thisbkname = bankuai.getMyOwnName();
-//            	value = thisbkname;
-//            	break;
-//            case 2: //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-//            	Double zhanbigrowthrate = bkxdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum,0);// fxjg.getGgBkCjeZhanbiGrowthRate();
-//            	value = zhanbigrowthrate;
-//            	
-//            	zhanbigrowthrate = null;
-//            	bkxdata = null;
-//            	bankuai = null;
-//            			
-//            	break;
-//            case 3: //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-//            	Double zhanbi = bkxdata.getChenJiaoErZhanBi(showzhbiwknum, 0);
-//            	value = zhanbi;
-//            	
-//            	zhanbi = null;
-//            	bkxdata = null;
-//            	bankuai = null;
-//            	
-//            	break;
-////            case 4:
-////            	Double cjlzhanbigrowthrate = bkxdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showzhbiwknum,0);
-////            	value = cjlzhanbigrowthrate;
-////            	
-////            	cjlzhanbigrowthrate = null;
-////            	bkxdata = null;
-////            	bankuai = null;
-////            	break;
-//            case 4:
-//            	Integer cjlzhanbimaxwk = bkxdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showzhbiwknum, 0);
-//            	value = cjlzhanbimaxwk;
-//            	
-////            	cjlzhanbimaxwk = null;
-////            	bkxdata = null;
-////            	bankuai = null;
-//            	
-//            	break;
-//            case 5:
-//            	Double cjegrowthrate = bkxdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(dapan,showzhbiwknum,0);
-//            	value = cjegrowthrate;
-//            	
-////            	cjegrowthrate = null;
-////            	bkxdata = null;
-////            	bankuai = null;
-//            	
-//            	break;
-//
-//            case 6: 
-//            	if(bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) {
-//            		Integer avgdailycjemaxwk = bkxdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showzhbiwknum,0);
-//            		value = avgdailycjemaxwk;
-//            	} else 
-//            		value = -5000;
-//            	
-//            		break;
-//           case 7:
-//        	   if(bankuai.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) || bankuai.getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) {
-//	           		Integer avgdailycjemaxwk = bkxdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(showzhbiwknum,0);
-//	           		value = avgdailycjemaxwk;
-//           		} else 
-//           			value = -5000;
-//        	   
-//           		break;
-//	       }
-//
-//	    	return value;
-//	    
-//	  }
-
-//     public Class<?> getColumnClass(int columnIndex) {
-//		      Class clazz = String.class;
-//		      switch (columnIndex) {
-//		      case 0://"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-//		    	  clazz = String.class;
-//		    	  break;
-//		        case 1:
-//			          clazz = String.class;
-//			          break;
-//		        case 2:
-//			          clazz = Double.class;
-//			          break;
-//		        case 3:
-//			          clazz = Double.class;
-//			          break;
-//		        case 4:
-//			          clazz = Integer.class;
-//			          break;
-//		        case 5:
-//			          clazz = Double.class;
-//			          break;
-//		        case 6:
-//			          clazz = Integer.class;
-//			          break;
-//		        case 7:
-//		        	clazz = Integer.class;
-//			          break;		
-//		      }
-//		      
-//		      return clazz;
-//	 }
-	    
-//	    public String getColumnName(int column) { 
-//	    	return jtableTitleStrings[column];
-//	    }//设置表格列名 
-//		
-//
-//	    public boolean isCellEditable(int row,int column) {
-//	    	return false;
-//		}
-//	    public String getBanKuaiCode (int row) 
-//	    {
-//	    	return (String)this.getValueAt(row,0);
-//	    }
-//	    public String getBanKuaiName (int row) 
-//	    {
-//	    	return (String)this.getValueAt(row,1);
-//	    } 
-//	    public BanKuai getBanKuai (int row)
-//	    {
-//	    	return (BanKuai) this.entryList.get(row);
-//	    }
-//	    public List<TDXNodes> getAllBanKuai ()
-//	    {
-//	    	return this.entryList;
-//	    }
-
-//	    public Integer getBanKuaiRowIndex (String neededfindstring) 
-//	    {
-//	    	if(entryList == null)
-//	    		return null;
-//	    	
-//	    	for(TDXNodes tmpnode : this.entryList) {
-//	    		if(tmpnode.getMyOwnCode().equals(neededfindstring) || tmpnode.getMyOwnName().equals(neededfindstring) )
-//	    			return this.entryList.indexOf(tmpnode);
-//	    	}
-////	    		int index = -1;
-////	    		HanYuPinYing hypy = new HanYuPinYing ();
-////	    		
-////	    		for(int i=0;i<this.getRowCount();i++) {
-////	    			String bkcode = (String)this.getValueAt(i, 0);
-////	    			String bkname = (String)this.getValueAt(i,1); 
-////	    			if(bkcode.trim().equals(neededfindstring) ) {
-////	    				index = i;
-////	    				break;
-////	    			}
-////
-////	    			String namehypy = hypy.getBanKuaiNameOfPinYin(bkname );
-////			   		if(namehypy.toLowerCase().equals(neededfindstring.trim().toLowerCase())) {
-////			   			index = i;
-////			   			break;
-////			   		}
-////	    		}
-////	    	hypy = null;
-//	   		return null;
-//	    }
-
-//		public String[] getTableHeader() 
-//		{
-//			return this.jtableTitleStrings;
-//		}
-//		
-//		public void setDisplayMatchCondition (BanKuaiGeGuMatchCondition cond)
-//	    {
-//	    	  this.condition = cond;
-//	    }
-//	    public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
-//	    {
-//	    	return this.condition;
-//	    }
-
+	 }
+	
 }
 
 

@@ -27,26 +27,29 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 	
 
 	private String systeminstalledpath;
-	private Properties prop;
+//	private Properties prop;
 	private BanKuaiGeGuExternalInfoTableRendererFromPropertiesFile renderer;
 
 	public BanKuaiGeGuExternalInfoTableFromPropertiesFile (StockInfoManager stockmanager1)
 	{
-		super (stockmanager1);
+		super (stockmanager1,"/config/bankuaigeguexternalinfo.properties");
 		
-		setPropertiesInfo ();
+//		setPropertiesInfo ();
 		BanKuaiGeGuExternalInfoTableModelFromPropertiesFile bkgegumapmdl = new BanKuaiGeGuExternalInfoTableModelFromPropertiesFile(prop);
 		this.setModel(bkgegumapmdl);
 		
 		this.renderer =  new BanKuaiGeGuExternalInfoTableRendererFromPropertiesFile (prop);
+		
+		super.setColumnPreferredWidth ();
+		super.createTableHeaderTooltips ();
 
 		//http://esus.com/creating-a-jtable-with-headers-with-jtooltips/
-		JTableToolTipHeader header = new JTableToolTipHeader(this.getColumnModel() );
-	    header.setToolTipStrings(bkgegumapmdl.getTableHeader());
-	    header.setToolTipText("Default ToolTip TEXT");
-	    this.setTableHeader(header);
+//		JTableToolTipHeader header = new JTableToolTipHeader(this.getColumnModel() );
+//	    header.setToolTipStrings(bkgegumapmdl.getTableHeader());
+//	    header.setToolTipText("Default ToolTip TEXT");
+//	    this.setTableHeader(header);
 			    
-	    setColumnPreferredWidth ();
+//	    setColumnPreferredWidth ();
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
 		this.setRowSorter(sorter);
@@ -65,92 +68,95 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 
 	}
 	
-	private void setPropertiesInfo ()
-	{
-
-		File directory = new File("");//设定为当前文件夹
-		try{
-//		    logger.debug(directory.getCanonicalPath());//获取标准的路径
-//		    logger.debug(directory.getAbsolutePath());//获取绝对路径
-//		    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
-		    Properties properties = System.getProperties();
-		    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-		} catch(Exception e) {
-			System.exit(0);
-		}
-		
-//		FileInputStream inputStream = null;
-		String propxmlFileName = null ;
-		try {
-//			Properties properties = System.getProperties();
+//	private void setPropertiesInfo ()
+//	{
+//
+//		File directory = new File("");//设定为当前文件夹
+//		try{
+////		    logger.debug(directory.getCanonicalPath());//获取标准的路径
+////		    logger.debug(directory.getAbsolutePath());//获取绝对路径
+////		    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
+//		    Properties properties = System.getProperties();
 //		    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-//		    
-//			Properties prop = new Properties();
-//			String propFileName =  this.systeminstalledpath  + "/config/config.properties";
-//			inputStream = new FileInputStream(propFileName);
+//		} catch(Exception e) {
+//			System.exit(0);
+//		}
+//		
+////		FileInputStream inputStream = null;
+//		String propxmlFileName = null ;
+//		try {
+////			Properties properties = System.getProperties();
+////		    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
+////		    
+////			Properties prop = new Properties();
+////			String propFileName =  this.systeminstalledpath  + "/config/config.properties";
+////			inputStream = new FileInputStream(propFileName);
+////			if (inputStream != null) {
+////				prop.load(inputStream);
+////			} else {
+////				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+////			}
+//			
+//			prop = new Properties();
+//			String propFileName = this.systeminstalledpath  + "/config/bankuaigeguexternalinfo.properties";
+//			FileInputStream inputStream = new FileInputStream(propFileName);
 //			if (inputStream != null) {
 //				prop.load(inputStream);
-//			} else {
-//				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
-//			}
-			
-			prop = new Properties();
-			String propFileName = this.systeminstalledpath  + "/config/bankuaigeguexternalinfo.properties";
-			FileInputStream inputStream = new FileInputStream(propFileName);
-			if (inputStream != null) {
-				prop.load(inputStream);
-			} 
-			inputStream.close();
-			
-//			createTableHeaderTooltips (prop);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			
-		}
-	}
-	
-	private void setColumnPreferredWidth ()
-	{
-		String column_width0  = prop.getProperty ("0column_preferredWidth");
-		if(column_width0 != null) {
-			this.getColumnModel().getColumn(0).setPreferredWidth(Integer.valueOf(column_width0) );
-		}
-		String column_width1  = prop.getProperty ("0column_preferredWidth");
-		if(column_width1 != null) {
-			this.getColumnModel().getColumn(1).setPreferredWidth(Integer.valueOf(column_width1) );
-		}
-		String column_width2  = prop.getProperty ("2column_preferredWidth");
-		if(column_width2 != null) {
-			this.getColumnModel().getColumn(2).setPreferredWidth(Integer.valueOf(column_width2) );
-		}
-		String column_width3  = prop.getProperty ("3column_preferredWidth");
-		if(column_width3 != null) {
-			this.getColumnModel().getColumn(3).setPreferredWidth(Integer.valueOf(column_width3) );
-		}
-		String column_width4  = prop.getProperty ("4column_preferredWidth");
-		if(column_width4 != null) {
-			this.getColumnModel().getColumn(4).setPreferredWidth(Integer.valueOf(column_width4) );
-		}
-		String column_width5  = prop.getProperty ("5column_preferredWidth");
-		if(column_width5 != null) {
-			this.getColumnModel().getColumn(5).setPreferredWidth(Integer.valueOf(column_width5) );
-		}
-		String column_width6  = prop.getProperty ("6column_preferredWidth");
-		if(column_width6 != null) {
-			this.getColumnModel().getColumn(6).setPreferredWidth(Integer.valueOf(column_width6) );
-		}
-		String column_width7  = prop.getProperty ("7column_preferredWidth");
-		if(column_width7 != null) {
-			this.getColumnModel().getColumn(7).setPreferredWidth(Integer.valueOf(column_width7) );
-		}
-//		this.getColumnModel().getColumn(1).setPreferredWidth(110);
-//		this.getColumnModel().getColumn(7).setPreferredWidth(30);
-//		this.getColumnModel().getColumn(4).setPreferredWidth(40);
-//		this.getColumnModel().getColumn(6).setPreferredWidth(40);
-		
-	}
+//			} 
+//			inputStream.close();
+//			
+////			createTableHeaderTooltips (prop);
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			
+//		}
+//	}
+//	protected void createTableHeaderTooltips (Properties prop)
+//	{
+//		
+//	}
+//	private void setColumnPreferredWidth ()
+//	{
+//		String column_width0  = prop.getProperty ("0column_preferredWidth");
+//		if(column_width0 != null) {
+//			this.getColumnModel().getColumn(0).setPreferredWidth(Integer.valueOf(column_width0) );
+//		}
+//		String column_width1  = prop.getProperty ("0column_preferredWidth");
+//		if(column_width1 != null) {
+//			this.getColumnModel().getColumn(1).setPreferredWidth(Integer.valueOf(column_width1) );
+//		}
+//		String column_width2  = prop.getProperty ("2column_preferredWidth");
+//		if(column_width2 != null) {
+//			this.getColumnModel().getColumn(2).setPreferredWidth(Integer.valueOf(column_width2) );
+//		}
+//		String column_width3  = prop.getProperty ("3column_preferredWidth");
+//		if(column_width3 != null) {
+//			this.getColumnModel().getColumn(3).setPreferredWidth(Integer.valueOf(column_width3) );
+//		}
+//		String column_width4  = prop.getProperty ("4column_preferredWidth");
+//		if(column_width4 != null) {
+//			this.getColumnModel().getColumn(4).setPreferredWidth(Integer.valueOf(column_width4) );
+//		}
+//		String column_width5  = prop.getProperty ("5column_preferredWidth");
+//		if(column_width5 != null) {
+//			this.getColumnModel().getColumn(5).setPreferredWidth(Integer.valueOf(column_width5) );
+//		}
+//		String column_width6  = prop.getProperty ("6column_preferredWidth");
+//		if(column_width6 != null) {
+//			this.getColumnModel().getColumn(6).setPreferredWidth(Integer.valueOf(column_width6) );
+//		}
+//		String column_width7  = prop.getProperty ("7column_preferredWidth");
+//		if(column_width7 != null) {
+//			this.getColumnModel().getColumn(7).setPreferredWidth(Integer.valueOf(column_width7) );
+//		}
+////		this.getColumnModel().getColumn(1).setPreferredWidth(110);
+////		this.getColumnModel().getColumn(7).setPreferredWidth(30);
+////		this.getColumnModel().getColumn(4).setPreferredWidth(40);
+////		this.getColumnModel().getColumn(6).setPreferredWidth(40);
+//		
+//	}
 	
 	private JMenuItem menuItemQuanZhong;
 

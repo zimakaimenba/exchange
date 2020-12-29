@@ -30,13 +30,11 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		createTableTitleStrings ();
 	}
 	
-	protected abstract void createTableTitleStrings();
-	
 	private static Logger logger = Logger.getLogger(BandKuaiAndGeGuTableBasicModel.class);
 	
 	protected String[] jtableTitleStrings ;
 	protected BanKuai curbk;
-	protected List<TDXNodes> entryList;
+	protected List<BkChanYeLianTreeNode> entryList;
 	protected LocalDate showwknum;
 	protected int difference;
 	protected String curperiod;
@@ -50,6 +48,70 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	public String[] getTableHeader ()
 	{
 		return this.jtableTitleStrings;
+	}
+	protected void createTableTitleStrings ()
+	{
+		String[] jtableTitleStrings = new String[11];
+		
+		String column_name0  = prop.getProperty ("0column_name");
+		String column_name1  = prop.getProperty ("1column_name");
+		String column_name2  = prop.getProperty ("2column_name");
+		String column_name3  = prop.getProperty ("3column_name");
+		String column_name4  = prop.getProperty ("4column_name");
+		String column_name5  = prop.getProperty ("5column_name");
+		String column_name6  = prop.getProperty ("6column_name");
+		
+		String column_name7  = prop.getProperty ("7column_name");
+		String column_name8  = prop.getProperty ("8column_name");
+		String column_name9  = prop.getProperty ("9column_name");
+		String column_name10  = prop.getProperty ("10column_name");
+		
+		if(column_name0 != null)
+			jtableTitleStrings[0] = column_name0 ;
+		else
+			jtableTitleStrings[0] = "NULL";
+		if(column_name1 != null)
+			jtableTitleStrings[1] = column_name1 ;
+		else
+			jtableTitleStrings[1] = "NULL";
+		if(column_name2 != null)
+			jtableTitleStrings[2] = column_name2 ;
+		else
+			jtableTitleStrings[2] = "NULL";
+		if(column_name3 != null)
+			jtableTitleStrings[3] = column_name3 ;
+		else
+			jtableTitleStrings[3] = "NULL";
+		if(column_name4 != null)
+			jtableTitleStrings[4] = column_name4 ;
+		else
+			jtableTitleStrings[4] = "NULL";
+		if(column_name5 != null)
+			jtableTitleStrings[5] = column_name5 ;
+		else
+			jtableTitleStrings[5] = "NULL";
+		if(column_name6 != null)
+			jtableTitleStrings[6] = column_name6 ;
+		else
+			jtableTitleStrings[7] = "NULL";
+		if(column_name7 != null)
+			jtableTitleStrings[7] = column_name7 ;
+		else
+			jtableTitleStrings[7] = "NULL";
+		if(column_name8 != null)
+			jtableTitleStrings[8] = column_name8 ;
+		else
+			jtableTitleStrings[8] = "NULL";
+		if(column_name9 != null)
+			jtableTitleStrings[9] = column_name9 ;
+		else
+			jtableTitleStrings[9] = "NULL";
+		if(column_name10 != null)
+			jtableTitleStrings[10] = column_name10 ;
+		else
+			jtableTitleStrings[10] = "NULL";
+
+		this.setTableHeader(jtableTitleStrings);
 	}
 	/*
 	 * 
@@ -89,7 +151,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		}
 	    
 	    
-	    public List<TDXNodes> getAllNodes ()
+	    public List<BkChanYeLianTreeNode> getAllNodes ()
 	    {
 	    	return this.entryList;
 	    }
@@ -152,21 +214,16 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	    		return index;
 	    }
 
-	    public void removeAllRows ()
-	    {
-	    	if(entryList != null) {
-	    		this.entryList.clear();
-		    	this.fireTableDataChanged();
-	    	}
-	    }
 
-	
 	protected Object getColomnValue(String column_keyword, int rowIndex) 
 	{
+		if(column_keyword == null)
+			return null;
+		
 		  Object value = "??";
 		  BkChanYeLianTreeNode node = entryList.get(rowIndex);
-		  BkChanYeLianTreeNode datanode; BkChanYeLianTreeNode datasupernode;
-		  DaPan dapan;
+//		  BkChanYeLianTreeNode datanode; BkChanYeLianTreeNode datasupernode;
+//		  DaPan dapan;
 		  
 		  NodeXPeriodData nodexdata = null;
 		  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
@@ -174,25 +231,8 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			  nodexdata = stock.getNodeXPeroidData(curperiod);
 		  } else if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
 			  nodexdata = ((BanKuai) node).getNodeXPeroidData (curperiod);
-			  dapan = (DaPan)node.getRoot();
+//			  dapan = (DaPan)node.getRoot();
 		  }
-		  
-//		  StockOfBanKuai curdisplaystockofbankuai = (StockOfBanKuai) entryList.get(rowIndex);
-////		  String bkcode = curbk.getMyOwnCode();
-//		  Stock stock = curdisplaystockofbankuai.getStock();
-////		    DaPan dapan = (DaPan)stock.getRoot();
-//		  NodeXPeriodData stockxdata = stock.getNodeXPeroidData(period);
-//		  
-//		  BanKuai bankuai = null;
-//	    	DaPan dapan = null;
-//	    	try {
-//	    		bankuai = (BanKuai) entryList.get( rowIndex );
-//	    		dapan = (DaPan)bankuai.getRoot();
-//	    	} catch (java.lang.IndexOutOfBoundsException e) {
-//	    		e.printStackTrace();
-//	    		return null;
-//	    	}
-//	    	NodeXPeriodData bkxdata = bankuai.getNodeXPeroidData(this.curperiod);
 		    
 		  switch (column_keyword) {
 		       case "nodecode":
@@ -218,13 +258,23 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		       		value = cjedpgrowthrate;
 		       	  else	value = -1;
 		     	  break;
+		       case "cjlzbgrowrate":
+			     	  Double cjldpgrowthrate = nodexdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
+			       	  if(cjldpgrowthrate != null)
+			       		value = cjldpgrowthrate;
+			       	  else	value = -1;
+			     	  break;
 		       case "chengjiaoerzhanbi":
-		    	   Double zhanbi = nodexdata.getChenJiaoErZhanBi(showwknum, 0);
-           		   value = zhanbi;
+		    	   Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(showwknum, 0);
+           		   value = cjezhanbi;
+		    	   break;
+		       case "chengjiaoliangzhanbi":
+		    	   Double cjlzhanbi = nodexdata.getChenJiaoLiangZhanBi(showwknum, 0);
+           		   value = cjlzhanbi;
 		    	   break;
 		       case "CjeZbDpMaxWk":
-		     	  Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
 			          try{
+			        	  Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
 			          		if(cjedpmaxwk > 0) {
 			              		value = cjedpmaxwk;
 			              		break;
@@ -237,15 +287,40 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			          		e.printStackTrace();
 			          }
 			          break;
+		       case "CjlZbDpMaxWk":
+				      try{
+				    	  Integer cjldpmaxwk = nodexdata.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+				          		if(cjldpmaxwk > 0) {
+				              		value = cjldpmaxwk;
+				              		break;
+				              	} else	if(cjldpmaxwk == 0) {
+				              		Integer cjldpminwk = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
+				              		value = 0 - cjldpminwk;
+				              		break;
+				              	}
+				       } catch (java.lang.NullPointerException e) {
+				          		e.printStackTrace();
+				       }
+				       break;
 		       case "NCjeZbDpMinWk":
-		     	  Integer cjldpgrowthrate = nodexdata.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);//.getGgdpzhanbigrowthrate();
-		       	  value = cjldpgrowthrate;
+		     	  Integer nCjeZbDpMinWk = nodexdata.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);//.getGgdpzhanbigrowthrate();
+		       	  value = nCjeZbDpMinWk;
 		       	  break;
 		       case "averagecjemaxwk" :
-		     	  Integer cjldpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
-		       	  if(cjldpmaxwk != null && cjldpmaxwk > 0) 
-		       		value = cjldpmaxwk;
-		          else value = 0;
+		    	   try {
+		    		   Integer cjedpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+				       	  if(cjedpmaxwk != null && cjedpmaxwk > 0) 
+				       		value = cjedpmaxwk;
+				          else value = 0;
+		    	   } catch (Exception e) {e.printStackTrace();   }
+		       	  break;
+		       case "averagecjlmaxwk" :
+		    	   try {
+		    		   Integer cjldpmaxwk = nodexdata.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+				       	  if(cjldpmaxwk != null && cjldpmaxwk > 0) 
+				       		value = cjldpmaxwk;
+				          else value = 0;
+		    	   } catch (Exception e) {e.printStackTrace();   }
 		       	  break;
 		       case "highlevelpanxurank" :
 		     	  Integer paiming = this.entryList.indexOf(node) + 1;
@@ -268,9 +343,13 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 				    	value = hsl;
 				    	break;
 		       case "chenjiaoer" :
-		      	 Double curcje  = nodexdata.getChengJiaoEr(showwknum, 0) / 100000000;
-		   	     value = curcje;
-		   	     break;
+			      	 Double curcje  = nodexdata.getChengJiaoEr(showwknum, 0) / 100000000;
+			   	     value = curcje;
+			   	     break;
+		       case "chenjiaoliang" :
+			      	 Double curcjl  = nodexdata.getChengJiaoLiang(showwknum, 0) / 100000000;
+			   	     value = curcjl;
+			   	     break;
 		  }
 		  
 		  return value;
@@ -316,6 +395,9 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			        case "DOUBLE":
 				          clazz = Double.class;
 				          break;
+			        case "BOOLEAN":
+				          clazz = Boolean.class;
+				          break;
 	  	  }
 	  	  
 	  	  return clazz;
@@ -329,6 +411,130 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	  {
 			return this.matchcond;
 	  }
+	  
+	  public Object getValueAt(int rowIndex, int columnIndex) 
+	    {
+	    	if(entryList.isEmpty())
+	    		return null;
+
+	    	Object value = "??";
+			switch (columnIndex) {
+	        case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+	        	String column_kw0  = prop.getProperty ("0column_info_keyword");
+	        	value = getColomnValue (column_kw0, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "0column_info_value_decimal" );
+	            break;
+	            
+	        case 1: 
+	        	String column_kw1  = prop.getProperty ("1column_info_keyword");
+	        	value = getColomnValue (column_kw1, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "1column_info_value_decimal" );
+	        	break;
+	        	
+	        case 2: // "板块成交额贡献",
+	        	String column_kw2  = prop.getProperty ("2column_info_keyword");
+	        	value = getColomnValue (column_kw2, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "2column_info_value_decimal" );
+	        	break;
+	        	
+	        case 3://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+	        	String column_kw3  = prop.getProperty ("3column_info_keyword");
+	        	value = getColomnValue (column_kw3, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "3column_info_value_decimal" );
+	        	break;            	
+	            
+	        case 4:
+	        	String column_kw4  = prop.getProperty ("4column_info_keyword");
+	        	value = getColomnValue (column_kw4, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "4column_info_value_decimal" );
+	            break;
+	            
+	        case 5://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+	        	String column_kw5  = prop.getProperty ("5column_info_keyword");
+	        	value = getColomnValue (column_kw5, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "5column_info_value_decimal" );
+	            break;
+	        case 6:
+	        	String column_kw6  = prop.getProperty ("6column_info_keyword");
+	        	value = getColomnValue (column_kw6, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "6column_info_value_decimal" );
+	            break;
+	        case 7:
+	        	String column_kw7  = prop.getProperty ("7column_info_keyword");
+	        	value = getColomnValue (column_kw7, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "7column_info_value_decimal" );
+	            break;
+	        case 8:
+	        	String column_kw8  = prop.getProperty ("8column_info_keyword");
+	        	value = getColomnValue (column_kw8, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "8column_info_value_decimal" );
+	            break;
+	        case 9:
+	        	String column_kw9  = prop.getProperty ("9column_info_keyword");
+	        	value = getColomnValue (column_kw9, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "9column_info_value_decimal" );
+	            break;
+	        case 10:
+	        	String column_kw10  = prop.getProperty ("10column_info_keyword");
+	        	value = getColomnValue (column_kw10, rowIndex);
+	        	value = reformateDoubleValue (columnIndex, value, "10column_info_value_decimal" );
+	            break;
+	    	}
+	    	
+	    	return value;
+	    }
+		
+		 public Class<?> getColumnClass(int columnIndex) { 
+		      Class clazz = String.class;
+		      switch (columnIndex) {
+		      	case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
+		      		String column_kwt0  = prop.getProperty ("0column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt0, columnIndex);
+	               break;
+		        case 1:
+		        	String column_kwt1  = prop.getProperty ("1column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt1, columnIndex);
+	               break;	
+		        case 2:
+		        	String column_kwt2  = prop.getProperty ("2column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt2, columnIndex);
+	               break;
+		        case 3:
+		        	String column_kwt3  = prop.getProperty ("3column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt3, columnIndex);
+	               break;
+		        case 4:
+		        	String column_kwt4  = prop.getProperty ("4column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt4, columnIndex);
+	               break;
+		        case 5:
+		        	String column_kwt5  = prop.getProperty ("5column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt5, columnIndex);
+	               break;
+		        case 6:
+		        	String column_kwt6  = prop.getProperty ("6column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt6, columnIndex);
+	               break;
+		        case 7:
+		        	String column_kwt7  = prop.getProperty ("7column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt7, columnIndex);
+	               break;
+		        case 8:
+		        	String column_kwt8  = prop.getProperty ("8column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt8, columnIndex);
+	               break;
+		        case 9:
+		        	String column_kwt9  = prop.getProperty ("9column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt9, columnIndex);
+	               break;
+		        case 10:
+		        	String column_kwt10  = prop.getProperty ("10column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt10, columnIndex);
+	               break;
+		      }
+		      
+		      return clazz;
+		 }
 
 		
 }
