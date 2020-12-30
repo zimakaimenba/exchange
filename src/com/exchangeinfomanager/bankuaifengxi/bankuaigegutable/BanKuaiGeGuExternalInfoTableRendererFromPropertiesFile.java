@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Properties;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -31,17 +32,18 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+import com.google.common.base.Strings;
 
 public class BanKuaiGeGuExternalInfoTableRendererFromPropertiesFile extends BanKuaiGeGuBasicTableRenderer 
 {
-	private Properties prop;
+//	private Properties prop;
 //	private BanKuaiGeGuExternalInfoTableModelFromPropertiesFile tablemodel;
 
 	public BanKuaiGeGuExternalInfoTableRendererFromPropertiesFile(Properties prop) 
 	{
-		super ();
+		super (prop);
 		
-		this.prop = prop;
+//		this.prop = prop;
 	}
 	
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
@@ -57,104 +59,116 @@ public class BanKuaiGeGuExternalInfoTableRendererFromPropertiesFile extends BanK
 	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuBasicTableModel)table.getModel() ).getStock(modelRow);
 	    Stock stock = stockofbank.getStock();
 	    
-	    if(stock.wetherHasReiewedToday() ) {
-        	Font defaultFont = this.getFont();
-        	Font font = new Font(defaultFont.getName(), Font.BOLD + Font.ITALIC,defaultFont.getSize());
-        	comp.setFont(font);
-        }
+//	    if(stock.wetherHasReiewedToday() ) {
+//        	Font defaultFont = this.getFont();
+//        	Font font = new Font(defaultFont.getName(), Font.BOLD + Font.ITALIC,defaultFont.getSize());
+//        	comp.setFont(font);
+//        }
 	    
 	    
 	    Color foreground = Color.BLACK, background = Color.white;
+	    Object[] textbackgroundforegroundfont = super.getTableCellRendererBackgroundForegroundColor(table, stockofbank, value, row, col);
+	    String valuepect = (String)textbackgroundforegroundfont[0];
+	    if(!Strings.isNullOrEmpty(valuepect))
+	    	((JLabel)comp).setText(valuepect);
 	    
-	    switch (col) {
-        case 0:
-        	String column_bg_kw0  = prop.getProperty ("0column_background_highlight_keyword");
-        	String column_bg_color0  = prop.getProperty ("0column_background_hightlight_color");
-        	
-        	String column_fg_kw0  = prop.getProperty ("0column_foreground_highlight_keyword");
-        	String column_fg_color0  = prop.getProperty ("0column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw0 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw0,column_fg_color0);
-        	if(column_bg_kw0 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw0, column_bg_color0);
-//        	rendererOperationsForColumnInfomation (stock,column_kw0);
-        	break;
-        case 1:
-        	String column_bg_kw1  = prop.getProperty ("1column_background_highlight_keyword");
-        	String column_bg_color1  = prop.getProperty ("1column_background_hightlight_color");
-        	
-        	String column_fg_kw1  = prop.getProperty ("1column_foreground_highlight_keyword");
-        	String column_fg_color1  = prop.getProperty ("1column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw1 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw1,column_fg_color1);
-        	if(column_bg_kw1 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw1, column_bg_color1);
-//        	rendererOperationsForColumnInfomation (stock,column_kw0);
-        	break;
-        case 2:
-        	String column_bg_kw2  = prop.getProperty ("2column_background_highlight_keyword");
-        	String column_bg_color2  = prop.getProperty ("2column_background_hightlight_color");
-        	
-        	String column_fg_kw2  = prop.getProperty ("2column_foreground_highlight_keyword");
-        	String column_fg_color2  = prop.getProperty ("2column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw2 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw2,column_fg_color2);
-        	if(column_bg_kw2 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw2, column_bg_color2);
-//        	rendererOperationsForColumnInfomation (stock,column_kw0);
-        	break;
-        case 3:
-        	String column_bg_kw3  = prop.getProperty ("3column_background_highlight_keyword");
-        	String column_bg_color3  = prop.getProperty ("3column_background_hightlight_color");
-        	
-        	String column_fg_kw3  = prop.getProperty ("3column_foreground_highlight_keyword");
-        	String column_fg_color3  = prop.getProperty ("3column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw3 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw3,column_fg_color3);
-        	if(column_bg_kw3 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw3, column_bg_color3);
-//        	rendererOperationsForColumnInfomation (stock,column_kw0);
-        	break;
-        case 4:
-        	String column_bg_kw4  = prop.getProperty ("4column_background_highlight_keyword");
-        	String column_bg_color4  = prop.getProperty ("4column_background_hightlight_color");
-        	
-        	String column_fg_kw4  = prop.getProperty ("4column_foreground_highlight_keyword");
-        	String column_fg_color4  = prop.getProperty ("4column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw4 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw4,column_fg_color4);
-        	if(column_bg_kw4 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw4, column_bg_color4);
-//        	rendererOperationsForColumnInfomation (stock,column_kw0);
-        	break;
-        case 5:
-        	String column_bg_kw5  = prop.getProperty ("5column_background_highlight_keyword");
-        	String column_bg_color5  = prop.getProperty ("5column_background_hightlight_color");
-        	
-        	String column_fg_kw5  = prop.getProperty ("5column_foreground_highlight_keyword");
-        	String column_fg_color5  = prop.getProperty ("5column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw5 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw5,column_fg_color5 );
-        	if(column_bg_kw5 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw5, column_bg_color5);
-//        	rendererOperationsForColumnInfomation (stock,column_kw0);
-        	break;
-	    };
-	    
-	    String columnname = tablemodel.getColumnName(col);
-	    if( columnname.equals("名称") ) { //个股名称
-	    	if(table.isRowSelected(row))
-	    		background = new Color(102,102,255);
-	    } 
-	    
+	    background = (Color)textbackgroundforegroundfont[1];
 	    comp.setBackground(background);
-    	comp.setForeground(foreground);
+	    
+	    foreground = (Color)textbackgroundforegroundfont[2];
+	    comp.setForeground(foreground);
+	    
+	    Font font = (Font)textbackgroundforegroundfont[3];
+	    comp.setFont(font);
+//	    switch (col) {
+//        case 0:
+//        	String column_bg_kw0  = prop.getProperty ("0column_background_highlight_keyword");
+//        	String column_bg_color0  = prop.getProperty ("0column_background_hightlight_color");
+//        	
+//        	String column_fg_kw0  = prop.getProperty ("0column_foreground_highlight_keyword");
+//        	String column_fg_color0  = prop.getProperty ("0column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw0 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw0,column_fg_color0);
+//        	if(column_bg_kw0 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw0, column_bg_color0);
+////        	rendererOperationsForColumnInfomation (stock,column_kw0);
+//        	break;
+//        case 1:
+//        	String column_bg_kw1  = prop.getProperty ("1column_background_highlight_keyword");
+//        	String column_bg_color1  = prop.getProperty ("1column_background_hightlight_color");
+//        	
+//        	String column_fg_kw1  = prop.getProperty ("1column_foreground_highlight_keyword");
+//        	String column_fg_color1  = prop.getProperty ("1column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw1 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw1,column_fg_color1);
+//        	if(column_bg_kw1 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw1, column_bg_color1);
+////        	rendererOperationsForColumnInfomation (stock,column_kw0);
+//        	break;
+//        case 2:
+//        	String column_bg_kw2  = prop.getProperty ("2column_background_highlight_keyword");
+//        	String column_bg_color2  = prop.getProperty ("2column_background_hightlight_color");
+//        	
+//        	String column_fg_kw2  = prop.getProperty ("2column_foreground_highlight_keyword");
+//        	String column_fg_color2  = prop.getProperty ("2column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw2 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw2,column_fg_color2);
+//        	if(column_bg_kw2 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw2, column_bg_color2);
+////        	rendererOperationsForColumnInfomation (stock,column_kw0);
+//        	break;
+//        case 3:
+//        	String column_bg_kw3  = prop.getProperty ("3column_background_highlight_keyword");
+//        	String column_bg_color3  = prop.getProperty ("3column_background_hightlight_color");
+//        	
+//        	String column_fg_kw3  = prop.getProperty ("3column_foreground_highlight_keyword");
+//        	String column_fg_color3  = prop.getProperty ("3column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw3 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw3,column_fg_color3);
+//        	if(column_bg_kw3 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw3, column_bg_color3);
+////        	rendererOperationsForColumnInfomation (stock,column_kw0);
+//        	break;
+//        case 4:
+//        	String column_bg_kw4  = prop.getProperty ("4column_background_highlight_keyword");
+//        	String column_bg_color4  = prop.getProperty ("4column_background_hightlight_color");
+//        	
+//        	String column_fg_kw4  = prop.getProperty ("4column_foreground_highlight_keyword");
+//        	String column_fg_color4  = prop.getProperty ("4column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw4 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw4,column_fg_color4);
+//        	if(column_bg_kw4 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw4, column_bg_color4);
+////        	rendererOperationsForColumnInfomation (stock,column_kw0);
+//        	break;
+//        case 5:
+//        	String column_bg_kw5  = prop.getProperty ("5column_background_highlight_keyword");
+//        	String column_bg_color5  = prop.getProperty ("5column_background_hightlight_color");
+//        	
+//        	String column_fg_kw5  = prop.getProperty ("5column_foreground_highlight_keyword");
+//        	String column_fg_color5  = prop.getProperty ("5column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw5 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (stockofbank,column_fg_kw5,column_fg_color5 );
+//        	if(column_bg_kw5 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (stockofbank,column_bg_kw5, column_bg_color5);
+////        	rendererOperationsForColumnInfomation (stock,column_kw0);
+//        	break;
+//	    };
+//	    
+//	    String columnname = tablemodel.getColumnName(col);
+//	    if( columnname.equals("名称") ) { //个股名称
+//	    	if(table.isRowSelected(row))
+//	    		background = new Color(102,102,255);
+//	    } 
+//	    
+//	    comp.setBackground(background);
+//    	comp.setForeground(foreground);
     	
 	    return comp;
 	}

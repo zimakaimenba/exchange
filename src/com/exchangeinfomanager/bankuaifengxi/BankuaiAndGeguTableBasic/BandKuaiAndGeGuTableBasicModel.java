@@ -39,7 +39,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	protected int difference;
 	protected String curperiod;
 	
-	private BanKuaiGeGuMatchCondition matchcond;
+	protected BanKuaiGeGuMatchCondition matchcond;
 	
 	public void setTableHeader (String[] jtableTitleStrings1)
 	{
@@ -52,64 +52,13 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	protected void createTableTitleStrings ()
 	{
 		String[] jtableTitleStrings = new String[11];
-		
-		String column_name0  = prop.getProperty ("0column_name");
-		String column_name1  = prop.getProperty ("1column_name");
-		String column_name2  = prop.getProperty ("2column_name");
-		String column_name3  = prop.getProperty ("3column_name");
-		String column_name4  = prop.getProperty ("4column_name");
-		String column_name5  = prop.getProperty ("5column_name");
-		String column_name6  = prop.getProperty ("6column_name");
-		
-		String column_name7  = prop.getProperty ("7column_name");
-		String column_name8  = prop.getProperty ("8column_name");
-		String column_name9  = prop.getProperty ("9column_name");
-		String column_name10  = prop.getProperty ("10column_name");
-		
-		if(column_name0 != null)
-			jtableTitleStrings[0] = column_name0 ;
-		else
-			jtableTitleStrings[0] = "NULL";
-		if(column_name1 != null)
-			jtableTitleStrings[1] = column_name1 ;
-		else
-			jtableTitleStrings[1] = "NULL";
-		if(column_name2 != null)
-			jtableTitleStrings[2] = column_name2 ;
-		else
-			jtableTitleStrings[2] = "NULL";
-		if(column_name3 != null)
-			jtableTitleStrings[3] = column_name3 ;
-		else
-			jtableTitleStrings[3] = "NULL";
-		if(column_name4 != null)
-			jtableTitleStrings[4] = column_name4 ;
-		else
-			jtableTitleStrings[4] = "NULL";
-		if(column_name5 != null)
-			jtableTitleStrings[5] = column_name5 ;
-		else
-			jtableTitleStrings[5] = "NULL";
-		if(column_name6 != null)
-			jtableTitleStrings[6] = column_name6 ;
-		else
-			jtableTitleStrings[7] = "NULL";
-		if(column_name7 != null)
-			jtableTitleStrings[7] = column_name7 ;
-		else
-			jtableTitleStrings[7] = "NULL";
-		if(column_name8 != null)
-			jtableTitleStrings[8] = column_name8 ;
-		else
-			jtableTitleStrings[8] = "NULL";
-		if(column_name9 != null)
-			jtableTitleStrings[9] = column_name9 ;
-		else
-			jtableTitleStrings[9] = "NULL";
-		if(column_name10 != null)
-			jtableTitleStrings[10] = column_name10 ;
-		else
-			jtableTitleStrings[10] = "NULL";
+		for(int i=0;i<=10;i++) {
+			String column_name  = prop.getProperty (String.valueOf(i) + "column_name");
+			if(column_name != null)
+				jtableTitleStrings[i] = column_name ;
+			else
+				jtableTitleStrings[i] = "NULL";
+		}
 
 		this.setTableHeader(jtableTitleStrings);
 	}

@@ -6,30 +6,29 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.text.NumberFormat;
-import java.time.DayOfWeek;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ScrollUtil;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.TableCellListener;
-import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
+
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.commonlib.checkboxtree.CheckBoxTree;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 import com.exchangeinfomanager.License.License;
-import com.exchangeinfomanager.News.CreateNewsDialog;
+
 import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
@@ -50,27 +49,20 @@ import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeInfoPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeJiBenMianService;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodesRelatedNewsServices;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
-import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
-import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
 import com.exchangeinfomanager.TagManagment.NodeLabelMatrixManagement;
 import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
-import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSetting;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.JDialogOfBanKuaiChanYeLian;
-import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
-import com.exchangeinfomanager.bankuaifengxi.BanKaiFengXi_2560ScrenResolution;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.GeGuTDXFengXi;
 import com.exchangeinfomanager.bankuaifengxi.GetNodeDataFromDbWhenSystemIdle;
 import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
-import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuTableFromPropertiesFile;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxNodeRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -264,7 +256,6 @@ public class StockInfoManager
 	private AccountDbOperation acntdbopt;
 	private BanKuaiGuanLi bkgldialog = null;
 	private BanKuaiFengXi bkfx ;
-	private BanKaiFengXi_2560ScrenResolution bkfx2560;
 	private GeGuTDXFengXi ggfx ;
 	private SearchDialog searchdialog;
 	private WeeklyExportFileFengXi effx;

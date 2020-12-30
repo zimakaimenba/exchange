@@ -51,13 +51,6 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 	private BanKuaiGeGuTableRendererFromPropertiesFile renderer;
 	private String systeminstalledpath;
 	String[] jtableTitleStringsTooltips = new String[8];
-//	private String reformateStrings (String str)
-//	{
-//		if(str.toUpperCase().equals("NULL"))
-//			return "";
-//		else
-//			return str;
-//	}
 
 	/*
 	 * (non-Javadoc)

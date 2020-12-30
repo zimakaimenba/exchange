@@ -72,6 +72,19 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
     	this.fireTableDataChanged();
 	}
 	
+	public Object getValueAt(int rowIndex, int columnIndex) 
+	{
+			Object value = super.getValueAt(rowIndex, columnIndex);
+    	
+	    	return value;
+	}
+	
+	public Class<?> getColumnClass(int columnIndex) 
+	{ 
+			Class clazz = super.getColumnClass(columnIndex);
+			return clazz;
+	 }
+	
 	/*
 	 * 
 	 */
@@ -132,28 +145,6 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	{
 		this.intersectionbankuai = bk;
 	}
-	/*
-	 * 
-	 */
-	public int getStockCurWeight(int rowIndex) 
-	{
-		int weight = (Integer)this.getValueAt(rowIndex, 2);
-		return weight;
-	}
-	/*
-	   * 
-	   */
-	  public void setStockCurWeight(int row, int newweight) 
-	  {
-		  if(entryList.isEmpty())
-	    		return ;
-		  
-		  StockOfBanKuai stock = (StockOfBanKuai) entryList.get(row);
-		  ((StockOfBanKuai)stock).setStockQuanZhong(newweight);
-//		  String stockcode = stock.getMyOwnCode();
-//	      curbk.setGeGuSuoShuBanKuaiWeight(stockcode,newweight);
-		  this.fireTableDataChanged();
-	  }
 	    public String getStockCode (int row) 
 	    {
 	    	return (String)this.getValueAt(row,0);
@@ -216,15 +207,15 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 			return this.tags ;
 		}
 		
-		public void setDisplayMatchCondition(BanKuaiGeGuMatchCondition expc) 
-		{
-			this.matchcond = expc;
-			
-		}
-		public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
-		{
-			return this.matchcond;
-		}
+//		public void setDisplayMatchCondition(BanKuaiGeGuMatchCondition expc) 
+//		{
+//			this.matchcond = expc;
+//			
+//		}
+//		public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
+//		{
+//			return this.matchcond;
+//		}
 	    
 				
 
