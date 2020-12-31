@@ -53,23 +53,13 @@ public class Stock extends TDXNodes {
 		
 	}
 	
-	private Boolean hasreviewedtoday; 
+	 
 	private static Logger logger = Logger.getLogger(Stock.class);
 	
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; 
 	private Set<BkChanYeLianTreeNode> suoShuCurSysBanKuai; 
 	
-	public void setHasReviewedToday ()
-	{
-		this.hasreviewedtoday = true;
-	}
-	public Boolean wetherHasReiewedToday ()
-	{
-		if(this.hasreviewedtoday == null)
-			return false;
-		else
-			return this.hasreviewedtoday;
-	}
+	
 	
 	public void addNewChiCangAccount (AccountInfoBasic acnt)
 	{

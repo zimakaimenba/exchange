@@ -34,7 +34,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 		BanKuaiGeGuTableModelFromPropertiesFile bkgegumapmdl = new BanKuaiGeGuTableModelFromPropertiesFile(prop);
 		this.setModel(bkgegumapmdl);
 		
-		this.renderer =  new BanKuaiGeGuTableRendererFromPropertiesFile (prop); 
+		this.renderer =  new BanKuaiGeGuBasicTableRenderer (prop); 
 		
 		super.setColumnPreferredWidth ();
 		super.createTableHeaderTooltips ();
@@ -48,7 +48,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableFromPropertiesFile.class);
 	
-	private BanKuaiGeGuTableRendererFromPropertiesFile renderer;
+	private BanKuaiGeGuBasicTableRenderer renderer;
 	private String systeminstalledpath;
 	String[] jtableTitleStringsTooltips = new String[8];
 

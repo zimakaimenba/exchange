@@ -45,6 +45,9 @@ public class RuleOfChenJiaoEr
 	    
 	    NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 	    Double curcje = nodexdata.getChengJiaoEr(evadate, 0);
+	    if(curcje == null)
+	    	return false;
+	    
 	    if( curcje >= cjemin && curcje <= cjemax ) 
 	    	return true;
     	

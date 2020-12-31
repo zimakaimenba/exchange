@@ -13,6 +13,7 @@ import org.jeasy.rules.annotation.Rule;
 import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
@@ -32,6 +33,9 @@ public class RuleOfMA
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
+		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
+			return false;
+		
 		NodeXPeriodData nodexdataday = evanode.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		DayOfWeek dayOfWeek = evadate.getDayOfWeek();
 	    int dayOfWeekIntValue = dayOfWeek.getValue();

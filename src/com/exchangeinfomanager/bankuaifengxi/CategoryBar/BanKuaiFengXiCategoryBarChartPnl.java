@@ -203,15 +203,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		
 		displaydatestarted = start;
 		displaydateended = end;
-		
-		if(curdisplayednode1.getType() == BkChanYeLianTreeNode.DAPAN) {
-//			mntmHideZdt.setEnabled(false); 
-//	        mntmHideQueKouData.setEnabled(false);
-//	        mntmAveDailyCjeLineData.setEnabled(false);
-//	        mntmCjeCjlZblineDate.setEnabled(false);
-//	        mntmClearLineData.setEnabled(false);
-//	        mntmCompareAveCjeWithSpecificNode.setEnabled(false);
-		}
 	}
 	public TDXNodes getCurDisplayedNode ()
 	{

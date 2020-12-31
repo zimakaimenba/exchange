@@ -28,7 +28,7 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 
 	private String systeminstalledpath;
 //	private Properties prop;
-	private BanKuaiGeGuExternalInfoTableRendererFromPropertiesFile renderer;
+	private BanKuaiGeGuBasicTableRenderer renderer;
 
 	public BanKuaiGeGuExternalInfoTableFromPropertiesFile (StockInfoManager stockmanager1)
 	{
@@ -38,7 +38,7 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 		BanKuaiGeGuExternalInfoTableModelFromPropertiesFile bkgegumapmdl = new BanKuaiGeGuExternalInfoTableModelFromPropertiesFile(prop);
 		this.setModel(bkgegumapmdl);
 		
-		this.renderer =  new BanKuaiGeGuExternalInfoTableRendererFromPropertiesFile (prop);
+		this.renderer =  new BanKuaiGeGuBasicTableRenderer (prop);
 		
 		super.setColumnPreferredWidth ();
 		super.createTableHeaderTooltips ();

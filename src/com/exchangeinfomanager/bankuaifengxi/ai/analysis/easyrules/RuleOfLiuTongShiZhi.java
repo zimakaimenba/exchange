@@ -11,6 +11,7 @@ import org.jeasy.rules.annotation.Rule;
 
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
@@ -27,6 +28,9 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
+		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
+			return false;
+		
 		Double ltszmin ;
 	    Double ltszmax ;
 	    try {

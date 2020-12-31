@@ -36,9 +36,9 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	 */
 	public void refresh  (LocalDate curselectdate,int difference2, String period)
 	{
-		this.showwknum = curselectdate;
-		this.difference = difference2;
-		this.curperiod = period;
+		super.showwknum = curselectdate;
+		super.difference = difference2;
+		super.curperiod = period;
 
 		try{
 			if(entryList != null) //∞¥≥…Ωª∂Ó≈≈–Ú

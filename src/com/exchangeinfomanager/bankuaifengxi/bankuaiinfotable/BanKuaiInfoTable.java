@@ -1,14 +1,11 @@
 package com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
-import java.text.ParseException;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,61 +13,31 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 
-import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.ToolTipManager;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
+
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
-import org.jeasy.rules.api.Facts;
-import org.jeasy.rules.api.Rules;
-import org.jeasy.rules.api.RulesEngine;
-import org.jeasy.rules.core.DefaultRulesEngine;
-import org.jfree.data.time.ohlc.OHLCItem;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.ta4j.core.Bar;
+
 
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsCacheListener;
-import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
-import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiandGeGuTableBasic;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuZhangFu;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTongShiZhi;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfWeeklyAverageChenJiaoErMaxWk;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
-import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
-import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
-import com.google.common.collect.Range;
-
-import net.coderazzi.filters.gui.AutoChoices;
-import net.coderazzi.filters.gui.TableFilterHeader;
 
 
 public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKuaiGeGuMatchConditionListener , NewsCacheListener
@@ -83,6 +50,7 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 	
 	
 	private Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
+	private BanKuaiInfoTableRenderer renderer;
 
 	public BanKuaiInfoTable(StockInfoManager stockmanager1) 
 	{
@@ -96,6 +64,8 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 		
 //		this.allbkskstree = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree();
 		this.stockmanager = stockmanager1;
+		
+		this.renderer =  new BanKuaiInfoTableRenderer (prop);
 		
 		this.createEvents ();
 		
@@ -116,6 +86,14 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 //		this.getColumnModel().getColumn(2).setPreferredWidth(35);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.swing.JTable#getCellRenderer(int, int)
+	 */
+	public TableCellRenderer getCellRenderer(int row, int column) 
+	{
+		return renderer;
+	}
 	
 //	public void resetTableHeaderFilter ()
 //	{
@@ -297,181 +275,181 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#prepareRenderer(javax.swing.table.TableCellRenderer, int, int)
 	 */
-	private Border outsidepos = new MatteBorder(1, 0, 1, 0, Color.RED);
-	private Border insidepos = new EmptyBorder(0, 1, 0, 1);
-	private Border highlightpos = new CompoundBorder(outsidepos, insidepos);
-	
-	private Border outsideneg = new MatteBorder(1, 0, 1, 0, Color.GREEN);
-	private Border insideneg = new EmptyBorder(0, 1, 0, 1);
-	private Border highlightneg = new CompoundBorder(outsideneg, insideneg);
-	
-	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-		
-	        Component comp = super.prepareRenderer(renderer, row, col);
-	        JComponent jc = (JComponent)comp;
-	        
-	        BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
-	        if(tablemodel.getRowCount() == 0) {
-	        	return null;
-	        }
-	        
-	        LocalDate curdate = tablemodel.getCurDisplayedDate();
-	       
-	        int modelRow = convertRowIndexToModel(row);
-	        BanKuai bankuai = (BanKuai) tablemodel.getNode(modelRow);
-	        
-	        String bktype = bankuai.getBanKuaiLeiXing();
-	        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
-	        	Font defaultFont = this.getFont();
-	        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
-	        	comp.setFont(font);
-	        }
-	        
-	      //为不同情况突出显示不同的颜色
-	        Color foreground = super.getForeground(), background = Color.white;
-	        if(!bankuai.isExportTowWlyFile() )
-        		foreground = Color.GRAY;
-	        
-	        int rowcurselected = this.getSelectedRow();
-	        if(rowcurselected != -1) {
-	        	int modelRowcurselected = this.convertRowIndexToModel(rowcurselected);
-	        	String bkcode =   bankuai.getMyOwnCode();
-				BanKuai bkcurselected = (BanKuai) ((BanKuaiInfoTableModel)this.getModel()).getNode(modelRowcurselected);  
-		        Set<String> socialsetpos = bkcurselected.getSocialFriendsSetPostive();
-		        if(socialsetpos.contains(bkcode)) {
-		        		jc.setBorder( highlightpos );
-	        	}
-		        Set<String> socialsetneg = bkcurselected.getSocialFriendsSetNegtive();
-		        if(socialsetneg.contains(bkcode)) {
-		        		jc.setBorder( highlightneg );
-	        	}	
-	        }
-	       
-	        if (comp instanceof JLabel && col == 0) {
-	        	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-	        	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (curdate,0);
-			    if(zhangdiefu != null  && zhangdiefu > 0 )
-			    	background = Color.RED;
-			    else if(zhangdiefu != null  &&  zhangdiefu < 0 )
-			    	background = Color.GREEN;
-			    else
-			    	background = Color.WHITE;
-	        	
-	        } 
-	        
-	        BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
-	        RuleOfCjeZbDpMaxWk dpmaxwkRule = null;
-	        RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = null;
-	        if(matchcond != null) {
-	        	Facts facts = new Facts();
-		        facts.put("evanode", bankuai);
-		        facts.put("evadate", curdate);
-		        facts.put("evadatedifference", 0);
-		        facts.put("evaperiod", NodeGivenPeriodDataItem.WEEK);
-		        facts.put("evacond", matchcond);
-		        
-		        Rules rules = new Rules();
-		        
-		        dpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
-		        rules.register(dpmaxwkRule);
-		        
-		        averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
-		        rules.register(averagecjemaxwkRule);
-		        
-		     // fire rules on known facts
-		        RulesEngine rulesEngine = new DefaultRulesEngine();
-		        rulesEngine.fire(rules, facts);
-	        }
-
-//	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
+//	private Border outsidepos = new MatteBorder(1, 0, 1, 0, Color.RED);
+//	private Border insidepos = new EmptyBorder(0, 1, 0, 1);
+//	private Border highlightpos = new CompoundBorder(outsidepos, insidepos);
+//	
+//	private Border outsideneg = new MatteBorder(1, 0, 1, 0, Color.GREEN);
+//	private Border insideneg = new EmptyBorder(0, 1, 0, 1);
+//	private Border highlightneg = new CompoundBorder(outsideneg, insideneg);
+//	
+//	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+//		
+//	        Component comp = super.prepareRenderer(renderer, row, col);
+//	        JComponent jc = (JComponent)comp;
+//	        
+//	        BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
+//	        if(tablemodel.getRowCount() == 0) {
+//	        	return null;
+//	        }
+//	        
+//	        LocalDate curdate = tablemodel.getCurDisplayedDate();
+//	       
+//	        int modelRow = convertRowIndexToModel(row);
+//	        BanKuai bankuai = (BanKuai) tablemodel.getNode(modelRow);
+//	        
+//	        String bktype = bankuai.getBanKuaiLeiXing();
+//	        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
+//	        	Font defaultFont = this.getFont();
+//	        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+//	        	comp.setFont(font);
+//	        }
+//	        
+//	      //为不同情况突出显示不同的颜色
+//	        Color foreground = super.getForeground(), background = Color.white;
+//	        if(!bankuai.isExportTowWlyFile() )
+//        		foreground = Color.GRAY;
+//	        
+//	        int rowcurselected = this.getSelectedRow();
+//	        if(rowcurselected != -1) {
+//	        	int modelRowcurselected = this.convertRowIndexToModel(rowcurselected);
+//	        	String bkcode =   bankuai.getMyOwnCode();
+//				BanKuai bkcurselected = (BanKuai) ((BanKuaiInfoTableModel)this.getModel()).getNode(modelRowcurselected);  
+//		        Set<String> socialsetpos = bkcurselected.getSocialFriendsSetPostive();
+//		        if(socialsetpos.contains(bkcode)) {
+//		        		jc.setBorder( highlightpos );
+//	        	}
+//		        Set<String> socialsetneg = bkcurselected.getSocialFriendsSetNegtive();
+//		        if(socialsetneg.contains(bkcode)) {
+//		        		jc.setBorder( highlightneg );
+//	        	}	
+//	        }
+//	       
+//	        if (comp instanceof JLabel && col == 0) {
+//	        	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+//	        	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (curdate,0);
+//			    if(zhangdiefu != null  && zhangdiefu > 0 )
+//			    	background = Color.RED;
+//			    else if(zhangdiefu != null  &&  zhangdiefu < 0 )
+//			    	background = Color.GREEN;
+//			    else
+//			    	background = Color.WHITE;
+//	        	
+//	        } 
+//	        
+//	        BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
+//	        RuleOfCjeZbDpMaxWk dpmaxwkRule = null;
+//	        RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = null;
+//	        if(matchcond != null) {
+//	        	Facts facts = new Facts();
+//		        facts.put("evanode", bankuai);
+//		        facts.put("evadate", curdate);
+//		        facts.put("evadatedifference", 0);
+//		        facts.put("evaperiod", NodeGivenPeriodDataItem.WEEK);
+//		        facts.put("evacond", matchcond);
+//		        
+//		        Rules rules = new Rules();
+//		        
+//		        dpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
+//		        rules.register(dpmaxwkRule);
+//		        
+//		        averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
+//		        rules.register(averagecjemaxwkRule);
+//		        
+//		     // fire rules on known facts
+//		        RulesEngine rulesEngine = new DefaultRulesEngine();
+//		        rulesEngine.fire(rules, facts);
+//	        }
+//
+////	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
+////	        	try {
+////	        		background = new Color(51,204,255);
+////	        	} catch (java.lang.NullPointerException e) {
+////	        		background = Color.WHITE;
+////	        	}
+////	        }
+//	        if (comp instanceof JLabel &&   col == 4  ) {
 //	        	try {
-//	        		background = new Color(51,204,255);
+//	        		background = dpmaxwkRule.getBackGround();
 //	        	} catch (java.lang.NullPointerException e) {
 //	        		background = Color.WHITE;
 //	        	}
 //	        }
-	        if (comp instanceof JLabel &&   col == 4  ) {
-	        	try {
-	        		background = dpmaxwkRule.getBackGround();
-	        	} catch (java.lang.NullPointerException e) {
-	        		background = Color.WHITE;
-	        	}
-	        }
-	        if (comp instanceof JLabel && ( col == 6  ) ) {
-	        	try {
-	        		background = averagecjemaxwkRule.getBackGround();
-		        } catch (java.lang.NullPointerException e) {
-	        		background = Color.WHITE;
-	        	}
-	        }
-//	        if (comp instanceof JLabel && ( col == 7  ) ) {
-//	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-//	        	Integer avgdailycjemaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(curdate,0);
-//	        	if(avgdailycjemaxwk != null && avgdailycjemaxwk > 0) 
-//	        		background = Color.RED;
-//			    else if ( avgdailycjemaxwk != null && avgdailycjemaxwk <= 0 )
-//			       	background = Color.GREEN;
-//			    else
-//			       	background = Color.WHITE;
+//	        if (comp instanceof JLabel && ( col == 6  ) ) {
+//	        	try {
+//	        		background = averagecjemaxwkRule.getBackGround();
+//		        } catch (java.lang.NullPointerException e) {
+//	        		background = Color.WHITE;
+//	        	}
 //	        }
-	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-	        if (comp instanceof JLabel && (col == 2 ||  col == 3   )) {
-            	String value =  ((JLabel)comp).getText();
-            	if(value == null || value.length() == 0)
-            		return null;
-            	
-            	String valuepect = null;
-            	try {
-            		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value).doubleValue();
-            		 
-            		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
- 	    	    	 percentFormat.setMinimumFractionDigits(1);
-	            	 valuepect = percentFormat.format (formatevalue );
-            	} catch (java.lang.NumberFormatException e)   	{
-            		e.printStackTrace();
-            	} catch (ParseException e) {
-					e.printStackTrace();
-				}
-            	((JLabel)comp).setText(valuepect);
-	        }
-	        
-	        if( col == 1  ) { //关注/在板块文件中 这2个操作互斥，优先关注板块的颜色
-	        	
-	        	try {
-	        		NodesTreeRelated tmptreerelated = bankuai.getNodeTreeRelated();
-	        		Boolean matchmodel = tmptreerelated.selfIsMatchModel(curdate);
-	        		if(matchmodel )
-			        	background = Color.ORANGE;
-			        else
-			        	background = Color.white;
-	        		
-	        		Range<LocalDate> indqgz = bankuai.isInDuanQiGuanZhuRange (curdate);
-	        		if(indqgz != null)
-	        			background = new Color(102,178,255);
-	        		
-	        		if(this.isRowSelected(row))
-	    	    		background = new Color(102,102,255);
-	        		
-	        		Range<LocalDate> inqsgz = bankuai.isInQiangShiBanKuaiRange (curdate);
-	        		if(inqsgz != null)
-	        			foreground = Color.RED;
-	        		
-	        		Range<LocalDate> inrsgz = bankuai.isInRuoShiBanKuaiRange (curdate);
-	        		if(inrsgz != null)
-	        			foreground = Color.GREEN;
-		        	
-	        	} catch (java.lang.NullPointerException e) {
-	        		background = Color.white;
-	        		foreground = Color.BLACK;
-	        	}
-
-	        }
-	        
-	       comp.setBackground(background);
-	       comp.setForeground(foreground);
-
-	       return comp;
-	}
+////	        if (comp instanceof JLabel && ( col == 7  ) ) {
+////	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+////	        	Integer avgdailycjemaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(curdate,0);
+////	        	if(avgdailycjemaxwk != null && avgdailycjemaxwk > 0) 
+////	        		background = Color.RED;
+////			    else if ( avgdailycjemaxwk != null && avgdailycjemaxwk <= 0 )
+////			       	background = Color.GREEN;
+////			    else
+////			       	background = Color.WHITE;
+////	        }
+//	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
+//	        if (comp instanceof JLabel && (col == 2 ||  col == 3   )) {
+//            	String value =  ((JLabel)comp).getText();
+//            	if(value == null || value.length() == 0)
+//            		return null;
+//            	
+//            	String valuepect = null;
+//            	try {
+//            		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value).doubleValue();
+//            		 
+//            		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+// 	    	    	 percentFormat.setMinimumFractionDigits(1);
+//	            	 valuepect = percentFormat.format (formatevalue );
+//            	} catch (java.lang.NumberFormatException e)   	{
+//            		e.printStackTrace();
+//            	} catch (ParseException e) {
+//					e.printStackTrace();
+//				}
+//            	((JLabel)comp).setText(valuepect);
+//	        }
+//	        
+//	        if( col == 1  ) { //关注/在板块文件中 这2个操作互斥，优先关注板块的颜色
+//	        	
+//	        	try {
+//	        		NodesTreeRelated tmptreerelated = bankuai.getNodeTreeRelated();
+//	        		Boolean matchmodel = tmptreerelated.selfIsMatchModel(curdate);
+//	        		if(matchmodel )
+//			        	background = Color.ORANGE;
+//			        else
+//			        	background = Color.white;
+//	        		
+//	        		Range<LocalDate> indqgz = bankuai.isInDuanQiGuanZhuRange (curdate);
+//	        		if(indqgz != null)
+//	        			background = new Color(102,178,255);
+//	        		
+//	        		if(this.isRowSelected(row))
+//	    	    		background = new Color(102,102,255);
+//	        		
+//	        		Range<LocalDate> inqsgz = bankuai.isInQiangShiBanKuaiRange (curdate);
+//	        		if(inqsgz != null)
+//	        			foreground = Color.RED;
+//	        		
+//	        		Range<LocalDate> inrsgz = bankuai.isInRuoShiBanKuaiRange (curdate);
+//	        		if(inrsgz != null)
+//	        			foreground = Color.GREEN;
+//		        	
+//	        	} catch (java.lang.NullPointerException e) {
+//	        		background = Color.white;
+//	        		foreground = Color.BLACK;
+//	        	}
+//
+//	        }
+//	        
+//	       comp.setBackground(background);
+//	       comp.setForeground(foreground);
+//
+//	       return comp;
+//	}
 	@Override
 	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
 	{

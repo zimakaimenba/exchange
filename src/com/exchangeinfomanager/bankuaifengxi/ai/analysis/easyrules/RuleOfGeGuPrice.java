@@ -11,6 +11,7 @@ import org.jeasy.rules.annotation.Rule;
 import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
@@ -28,6 +29,9 @@ public class RuleOfGeGuPrice
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
+		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
+			return false;
+		
 		Double pricemin = evacond.getSettingSotckPriceMin();
     	Double pricemax = evacond.getSettingSotckPriceMax();
     	

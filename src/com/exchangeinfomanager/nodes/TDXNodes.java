@@ -34,6 +34,18 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	private List<Range<LocalDate>> ruoshirange;
 	private List<Range<LocalDate>> dqguangzhurange;
 	
+	private Boolean hasreviewedtoday;
+	public void setHasReviewedToday ()
+	{
+		this.hasreviewedtoday = true;
+	}
+	public Boolean wetherHasReiewedToday ()
+	{
+		if(this.hasreviewedtoday == null)
+			return false;
+		else
+			return this.hasreviewedtoday;
+	}
 	public void addNewDuanQiGuanZhuRange (Range<LocalDate> inter) 
 	{
 //		for(int i=0; i<qiangshiinterval.size();i++) {

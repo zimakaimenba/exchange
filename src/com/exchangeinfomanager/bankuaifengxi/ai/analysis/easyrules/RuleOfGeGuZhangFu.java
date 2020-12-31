@@ -10,8 +10,10 @@ import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 
 @Rule(name = "GeGuZhangFu Rule", description = "if it rains then take an umbrella" )
 public class RuleOfGeGuZhangFu 
@@ -26,6 +28,9 @@ public class RuleOfGeGuZhangFu
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
+		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK )
+			return false;
+		
 		Double zfmax = evacond.getSettingZhangFuMax();
     	Double zfmin = evacond.getSettingZhangFuMin();
     	
@@ -42,7 +47,7 @@ public class RuleOfGeGuZhangFu
     		zfmin = 1000000.0;
     		zfmax = -1000000.0;
     	}
-    	
+//    	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) evanode.getNodeXPeroidData(evaperiod);
     	StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 //		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
     	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, evadatedifference);

@@ -72,15 +72,12 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic imp
 //	protected Properties prop;
 
 	
-	TableFilterHeader filterHeader;
+//	protected TableFilterHeader filterHeader;
 //	private JMenuItem menuItemQiangShi;
 //
 //	private JMenuItem menuItemRuoShi;
 	
-	public void resetTableHeaderFilter ()
-	{
-		filterHeader.resetFilter();
-	}
+	
 	/*
 	 * 
 	 */

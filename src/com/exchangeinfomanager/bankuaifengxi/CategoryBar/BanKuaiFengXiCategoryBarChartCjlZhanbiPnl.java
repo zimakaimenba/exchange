@@ -18,6 +18,7 @@ import org.jfree.chart.annotations.CategoryPointerAnnotation;
 import org.jfree.chart.annotations.CategoryTextAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
@@ -414,7 +415,16 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		else
 			this.mntmCjlZblineDate.setText("占比柱图转线图");
 	}
-	
+	public void resetDate ()
+	{
+		super.resetDate();
+		
+		if(linechartdatasetforcjlzb != null)
+			linechartdatasetforcjlzb.clear();
+		
+//		CategoryItemRenderer fourthrenderer = plot.getRenderer(2);
+//		((BanKuaiFengXiCategoryCjeZhanbiLineRenderer)fourthrenderer).setKLearningClusterBaseLineId (-1);
+	}
 	public Boolean shouldDisplayZhanBiInLine ()
 	{
 		return this.displayzhanbishujuinline;
