@@ -400,7 +400,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		
 	}
 	/*
-	 * 
+	 * 注意：这里传过来的node有可能是stockofbankuai,要转为stock
 	 */
 	protected Color rendererOperationsForColumnBackgroundHighLight ( TDXNodes node, String column_keyword, String predefinedcolor ) 
 	{
@@ -454,7 +454,11 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		Color background = Color.white;
 		switch (column_keyword) {
         case "zhangdiefu":
-        	NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
+        	NodeXPeriodData nodexdata;
+        	if(node instanceof StockOfBanKuai)
+        		 nodexdata = ((StockOfBanKuai)node).getStock().getNodeXPeroidData(period);
+    	    else
+    	    	 nodexdata = node.getNodeXPeroidData(period);
 		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
 		    if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
 		    	background = Color.decode( predefinedcolor );
@@ -464,7 +468,11 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         	
         case "infengxifile":
-        	NodesTreeRelated stofbktree = node.getNodeTreeRelated();
+        	NodesTreeRelated stofbktree ;
+        	if(node instanceof StockOfBanKuai)
+        		stofbktree = ((StockOfBanKuai)node).getStock().getNodeTreeRelated();
+        	else
+        		stofbktree = node.getNodeTreeRelated();
         	if(stofbktree == null)
         		background = Color.white;
         	else {

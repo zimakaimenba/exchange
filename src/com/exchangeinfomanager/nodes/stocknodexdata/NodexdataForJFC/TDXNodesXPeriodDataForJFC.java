@@ -338,61 +338,62 @@ import com.udojava.evalex.Expression;
 		int itemcount = this.nodeohlc.getItemCount();
 		String nodeperiod = this.getNodeperiodtype();
 		
-		RegularTimePeriod curperiod = null;
-		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-//			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
-			curperiod = new org.jfree.data.time.Week (lastdayofweek);
-		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-//			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
-			requireddate = super.adjustDate(requireddate); //make sure always check Monday to Friday
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
-			curperiod = new org.jfree.data.time.Day (lastdayofweek);
-		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-		}
-
-		Integer curindex = null;
-		for(int i=0;i<itemcount;i++) {
-			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-			if(dataitemp.equals(curperiod) )
-				curindex = i ;
-		}
-		
-		if(curindex == null)
-			return null;
-
-		try {
-			Integer requiredindex = curindex + difference;
-//			RegularTimePeriod reqdataitemp = this.nodeohlc.getPeriod(requiredindex);
-			OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(requiredindex );
-			if(result != null) {
-//				RegularTimePeriod ep = result.getPeriod();
-				return result.getPeriod();
-			}
-		} catch ( java.lang.IndexOutOfBoundsException e) {
-			return null;
-		}
-		
-		
-//		RegularTimePeriod period = null;
+//		RegularTimePeriod curperiod = null;
 //		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-//			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
-//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
-//			period = new org.jfree.data.time.Week (lastdayofweek);
+////			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
+//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+//			curperiod = new org.jfree.data.time.Week (lastdayofweek);
 //		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-//			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
-//			expectdate = super.adjustDate(expectdate);
-//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
-//			period = new org.jfree.data.time.Day (lastdayofweek);
+////			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
+//			requireddate = super.adjustDate(requireddate); //make sure always check Monday to Friday
+//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+//			curperiod = new org.jfree.data.time.Day (lastdayofweek);
 //		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
 //		}
 //
-//		int curindex = 0;
+//		Integer curindex = null;
 //		for(int i=0;i<itemcount;i++) {
 //			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-//			if(dataitemp.equals(period) ) {
-//				curindex = i;
-//				
+//			if(dataitemp.equals(curperiod) )
+//				curindex = i ;
+//		}
+//		
+//		if(curindex == null)
+//			return null;
+//
+//		try {
+//			Integer requiredindex = curindex + difference;
+////			RegularTimePeriod reqdataitemp = this.nodeohlc.getPeriod(requiredindex);
+//			OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(requiredindex );
+//			if(result != null) {
+////				RegularTimePeriod ep = result.getPeriod();
+//				return result.getPeriod();
+//			}
+//		} catch ( java.lang.IndexOutOfBoundsException e) {
+//			return null;
+//		}
+		
+		
+		RegularTimePeriod period = null;
+		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
+			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
+			expectdate = super.adjustDate(expectdate); //先确保日期是在交易日内
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
+			period = new org.jfree.data.time.Week (lastdayofweek);
+		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
+			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
+			expectdate = super.adjustDate(expectdate);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
+			period = new org.jfree.data.time.Day (lastdayofweek);
+		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
+		}
+
+		int curindex = 0;
+		for(int i=0;i<itemcount;i++) {
+			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
+			if(dataitemp.equals(period) ) {
+				curindex = i;
+				return period;
 //				try {
 //					OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(curindex);
 //					if(result != null) {
@@ -402,10 +403,10 @@ import com.udojava.evalex.Expression;
 //				} catch ( java.lang.IndexOutOfBoundsException e) {
 //					return null;
 //				}
-//				
+				
 //				break;
-//			}
-//		}
+			}
+		}
 		
 		return null;
 	}
@@ -1127,7 +1128,7 @@ import com.udojava.evalex.Expression;
 				amodata[i] = close;
 			}
 			
-			requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
+//			requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
 			RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriodForOHLC(requireddate,difference);
 			Integer itemindex = this.nodeamo.getIndex(expectedperiod);
 			
@@ -1253,7 +1254,7 @@ import com.udojava.evalex.Expression;
 	 */
 	 public Double[] getNodeOhlcMA (LocalDate  requireddate,int difference)
 	 {
-		requireddate = super.adjustDate(requireddate); //先确保日期是在交易周内
+//		requireddate = super.adjustDate(requireddate); //先确保日期是在交易周内
 		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriodForOHLC(requireddate,difference);
 		if(expectedperiod == null)
 			return null;
@@ -1567,20 +1568,22 @@ import com.udojava.evalex.Expression;
 	  */
 	 public Boolean checkCloseComparingToMAFormula (String maformula, LocalDate requireddate, int difference)
 	 {
-		 LocalDate tmpdate = requireddate.with(DayOfWeek.FRIDAY);
-		    
-		 OHLCItem ohlcdata;
-		 do { //日线数据比较复杂 ，用户选择的日子可能不是交易日，可能是停牌日，就直接算周五，如果周五没有数据，往前1天，直到有数据为止或本周结束
-		    	ohlcdata = this.getSpecificDateOHLCData(tmpdate, 0);
-		    	if(ohlcdata != null)  //没有停牌
+		 DayOfWeek dayOfWeek = requireddate.getDayOfWeek();
+		 int dayOfWeekIntValue = dayOfWeek.getValue();
+		 OHLCItem ohlcdata = null; Double[] dailyma = null;
+		 for(int i = 0;i < dayOfWeekIntValue;i++) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的最新天
+			 	ohlcdata = this.getSpecificDateOHLCData (requireddate,0-i);
+		    	if(ohlcdata != null) {
+		    		LocalDate expectdate = requireddate.plus(0-i,ChronoUnit.DAYS);
+					expectdate = super.adjustDate(expectdate);
+					requireddate = expectdate;
 		    		break;
-		    	
-		    	tmpdate = tmpdate.minus(1,ChronoUnit.DAYS);
-		 } while (CommonUtility.isInSameWeek(requireddate, tmpdate) );
+		    	}
+		 }
 		    
 		 if (ohlcdata != null) {
 		    	Double close = (Double)ohlcdata.getCloseValue();
-		    	Double[] maresult = this.getNodeOhlcMA(tmpdate, difference);
+		    	Double[] maresult = this.getNodeOhlcMA(requireddate, 0);
 			    Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
 			    if( result != null )
 			    	return result;

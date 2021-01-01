@@ -1,12 +1,22 @@
 package com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
+
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.TDXNodes;
 
 import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.TableFilterHeader;
@@ -17,6 +27,8 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable
 	protected Properties prop;
 	protected TableFilterHeader filterHeader;
 	String[] jtableTitleStringsTooltips = new String[11];
+//	JMenuItem mntmResetFilter;
+	private JMenuItem menuItemfiltersetting;
 
 	public BanKuaiandGeGuTableBasic (String propertiesfile)
 	{
@@ -25,8 +37,27 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable
 		setPropertiesInfo (propertiesfile);
 		
 		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
+		JPopupMenu popupMenu = new JPopupMenu();
+		
+		menuItemfiltersetting = new JMenuItem("…Ë÷√Filter");
+		popupMenu.add(menuItemfiltersetting);
+		
+		filterHeader.setComponentPopupMenu(popupMenu);
+		
+		createEvents ();
 	}
 	
+	private void createEvents() 
+	{
+		menuItemfiltersetting.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            }
+        });
+		
+	}
+
 	public void resetTableHeaderFilter ()
 	{
 		filterHeader.resetFilter();

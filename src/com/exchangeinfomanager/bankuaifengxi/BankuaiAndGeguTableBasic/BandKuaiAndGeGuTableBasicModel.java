@@ -299,6 +299,14 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			      	 Double curcjl  = nodexdata.getChengJiaoLiang(showwknum, 0) / 100000000;
 			   	     value = curcjl;
 			   	     break;
+		       case "dayujunxian" :
+		    	   String displayma = matchcond.getSettingMaFormula();
+		    	   Boolean checkresult = nodexdata.checkCloseComparingToMAFormula(displayma,showwknum,0);
+				    if( checkresult != null && checkresult) 
+				    	value = Boolean.valueOf(checkresult);
+				    else
+				    	value = Boolean.valueOf(false);
+		    	   break;
 		  }
 		  
 		  return value;
