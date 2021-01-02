@@ -386,7 +386,11 @@ public class ImportTDXData extends JDialog {
 		}
 		
 		if(ckbxbuquanshuju.isSelected() && !Strings.isNullOrEmpty( txfldbqsjnodecode.getText() ) ) {
+			System.out.println("------补全股票数据开始" + LocalTime.now() );
+			long start=System.currentTimeMillis(); //获取开始时间
 			checkNodeTimeLineInDbWithInDataFile ( txfldbqsjnodecode.getText()  );
+			long end=System.currentTimeMillis(); //获取结束时间
+			System.out.println("......补全股票数据结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
 
 		
