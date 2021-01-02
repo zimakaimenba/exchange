@@ -128,7 +128,6 @@ public class JStockComboBox extends  JComboBox<String>
 	 */
 	public BkChanYeLianTreeNode updateUserSelectedNode (String nodecode)
 	{
-//		BkChanYeLianTreeNode nodeshouldbedisplayed = preSearch (nodecode,nodetype);
 		BkChanYeLianTreeNode nodeshouldbedisplayed1 = bkstktree.getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
 		BkChanYeLianTreeNode nodeshouldbedisplayed2 = bkstktree.getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
 		

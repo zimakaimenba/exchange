@@ -105,7 +105,7 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 						,"Warning",JOptionPane.WARNING_MESSAGE);
 			
 			if(weight != newweight) {
-				bkdbopt.setStockWeightInBanKuai (bkcode,"",stockcode,newweight);
+				bkdbopt.setStockWeightInBanKuai (bkcode,stockcode,newweight);
 				( (BanKuaiGeGuExternalInfoTableModelFromPropertiesFile)this.getModel() ).setStockCurWeight (modelRow,newweight);
 			}
 		} catch (java.lang.NumberFormatException e) {
