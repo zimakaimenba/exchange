@@ -127,9 +127,13 @@ public class NodeInfoToCsv extends JPanel
 				} else {
 					nodetimeframeMultimap.put(node, newtimeinterval);
 				}
+				
+				((NodeInfoTableModel)nodelisttable.getModel()).refresh(nodetimeframeMultimap);
 		
 	}
-		
+	/*
+	 * 	
+	 */
 	public void clearCsvDataSet ()
 	{
 		nodecontentArrayList.clear();
@@ -321,7 +325,7 @@ public class NodeInfoToCsv extends JPanel
 
 class NodeInfoTableModel extends DefaultTableModel 
 {
-	private ArrayList<AccountInfoBasic> accountslist;
+	private Multimap<BkChanYeLianTreeNode,Interval> nodeslist;
 
 	
 	String[] jtableTitleStrings = { "代码", "名称","启始时间","终止时间"};
@@ -330,21 +334,20 @@ class NodeInfoTableModel extends DefaultTableModel
 	{
 	}
 
-	public void refresh  (ArrayList<AccountInfoBasic> arrayList,String stockcode)
+	public void refresh  (Multimap<BkChanYeLianTreeNode,Interval> nodeslist1)
 	{
-		this.accountslist = arrayList;
+		this.nodeslist = nodeslist1;
 
-		
 		this.fireTableDataChanged();
 	}
 	 public int getRowCount() 
 	 {
-		 if(this.accountslist == null)
+		 if(this.nodeslist == null)
 			 return 0;
-		 else if(this.accountslist.isEmpty()  )
+		 else if(this.nodeslist.isEmpty()  )
 			 return 0;
 		 else
-			 return this.accountslist.size();
+			 return this.nodeslist.size();
 	 }
 
 	    @Override
@@ -355,7 +358,7 @@ class NodeInfoTableModel extends DefaultTableModel
 	    
 	    public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
-	    	if(accountslist.isEmpty())
+	    	if(nodeslist.isEmpty())
 	    		return null;
 	    	
 	    	Object value = "??";
@@ -419,24 +422,10 @@ class NodeInfoTableModel extends DefaultTableModel
 	    	return true;
 		}
 	    
-	    public void deleteAllRows()
-	    {
-//	    	if(this.accountslist == null)
-//				 return ;
-//			 else 
-//				 accountslist.clear();
-	    	int rowCount = this.getRowCount();
-	    	//Remove rows one by one from the end of the table
-//	    	for (int i = rowCount - 1; i >= 0; i--) {
-	    	    
-	    	
-	    	this.fireTableDataChanged();
-	    }
-	    
 	    public void removeAllRows ()
 	    {
-	    	if(accountslist != null) {
-	    		this.accountslist.clear();
+	    	if(nodeslist != null) {
+	    		this.nodeslist.clear();
 		    	this.fireTableDataChanged();
 	    	}
 	    	

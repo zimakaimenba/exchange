@@ -428,6 +428,8 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference)
 	 {
 		 String[] supcsv = super.getNodeXDataCsvData(superbk, requireddate, 0);
+		 if(supcsv == null)
+			 return null;
 		 
 		 Double hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);
 		 Double liutongshizhi = this.getSpecificTimeLiuTongShiZhi(requireddate, 0);

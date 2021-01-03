@@ -36,6 +36,7 @@ import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Search.SearchDialog;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
@@ -60,9 +61,11 @@ import com.exchangeinfomanager.bankuaichanyelian.JDialogOfBanKuaiChanYeLian;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.GeGuTDXFengXi;
 import com.exchangeinfomanager.bankuaifengxi.GetNodeDataFromDbWhenSystemIdle;
+import com.exchangeinfomanager.bankuaifengxi.NodeInfoToCsv;
 import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxNodeRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -95,7 +98,7 @@ import java.util.Date;
 
 import java.util.HashMap;
 import java.util.HashSet;
-
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
@@ -123,12 +126,15 @@ import com.google.common.base.Strings;
 import com.exchangeinfomanager.database.*;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
+import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
 import com.exchangeinfomanager.gui.subgui.GengGaiZhangHu;
 import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.DataBaseConfigration;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
@@ -412,6 +418,44 @@ public class StockInfoManager
         	String stockcode = cBxstockcode.getSelectedItem().toString().substring(0, 6);
         	showWeeklyFenXiWizardDialog (selectdate);
 		}
+	}
+	/*
+	 * 
+	 */
+	private void exportTDXNodesDataToCsv (TDXNodes node)
+	{
+		NodeInfoToCsv nodeinfotocsv = new NodeInfoToCsv ();
+		
+		DateRangeSelectPnl datachoose = new DateRangeSelectPnl (52); 
+		JOptionPane.showMessageDialog(null, datachoose,"为" + node.getMyOwnName() + "选择导出时间段", JOptionPane.OK_CANCEL_OPTION);
+		LocalDate nodestart = datachoose.getDatachoosestart();
+		LocalDate nodeend = datachoose.getDatachooseend();
+
+		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
+			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+			node = (TDXNodes) svsbk.getNodeData(node, nodestart, nodeend, NodeGivenPeriodDataItem.WEEK, true);
+			svsbk.syncNodeData(node);
+			svsbk = null;
+		} else
+		if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
+			SvsForNodeOfStock svsstk = new SvsForNodeOfStock	();
+			node = (TDXNodes) svsstk.getNodeData(node, nodestart, nodeend, NodeGivenPeriodDataItem.WEEK, true);
+			svsstk.syncNodeData(node);
+			svsstk = null;
+		}
+		SvsForNodeOfDaPan	svsdp = new SvsForNodeOfDaPan ();
+		svsdp.getNodeData("999999", nodestart, nodeend, NodeGivenPeriodDataItem.WEEK, true);
+		svsdp = null;
+//		allbksks.getDaPan(nodestart, nodeend, globeperiod, globecalwholeweek);
+		
+		nodeinfotocsv.addNodeToCsvList(node, nodestart, nodeend);
+		
+		JOptionPane.showMessageDialog(null, nodeinfotocsv,  "导出数据到CSV", JOptionPane.OK_CANCEL_OPTION);
+		nodeinfotocsv.clearCsvDataSet();
+		
+		nodestart = null;
+		nodeend = null;
+		datachoose = null;
 	}
 	/*
 	 * 
@@ -1128,12 +1172,13 @@ public class StockInfoManager
 			}
 		});
 		
-		btnDongcaiyanbao.addMouseListener(new MouseAdapter() 
+		btnexportcsv.addMouseListener(new MouseAdapter() 
 		{
 			@Override
 			public void mousePressed(MouseEvent e) 
 			{
-
+				BkChanYeLianTreeNode node = cBxstockcode.getUserInputNode();
+    			exportTDXNodesDataToCsv ((TDXNodes)node);
 			}
 
 		});
@@ -2073,7 +2118,7 @@ public class StockInfoManager
 //			txtfldfuxg.setEnabled(true);
 			
 			btnCaiwufengxi.setEnabled(true);
-			btnDongcaiyanbao.setEnabled(true);
+			btnexportcsv.setEnabled(true);
 			btnRongzirongquan.setEnabled(true);
 			btnXueqiu.setEnabled(true);
 			btnhudongyi.setEnabled(true);
@@ -2255,7 +2300,7 @@ public class StockInfoManager
 	private JButton btnhudongyi;
 	private JButton btnXueqiu;
 	private JButton btnRongzirongquan;
-	private JButton btnDongcaiyanbao;
+	private JButton btnexportcsv;
 	private JButton btnCaiwufengxi;
 	private JStockComboBox cBxstockcode;
 	private JButton btnSlack;
@@ -2711,11 +2756,11 @@ public class StockInfoManager
 		btnCaiwufengxi.setToolTipText("\u8D22\u52A1\u5206\u6790");
 		btnCaiwufengxi.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/analysis_23.570881226054px_1202840_easyicon.net.png")));
 		
-		btnDongcaiyanbao = new JButton("");
+		btnexportcsv = new JButton("");
 		
-		btnDongcaiyanbao.setEnabled(false);
-		btnDongcaiyanbao.setToolTipText("\u4E1C\u8D22\u7814\u62A5");
-		btnDongcaiyanbao.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/gnome_documents_24px_1173881_easyicon.net.png")));
+		btnexportcsv.setEnabled(false);
+		btnexportcsv.setToolTipText("\u5BFC\u51FACSV");
+		btnexportcsv.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/csvfile.png")));
 		
 		btnRongzirongquan = new JButton("");
 		
@@ -2775,9 +2820,9 @@ public class StockInfoManager
 							.addGap(104))
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addComponent(btnhudongyi, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
-							.addGap(6)
-							.addComponent(btnDongcaiyanbao, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnexportcsv, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnSlack, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnXueQiu, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
@@ -2785,23 +2830,23 @@ public class StockInfoManager
 				.addGroup(gl_panel_2.createSequentialGroup()
 					.addGap(383)
 					.addComponent(btnXueqiu)
-					.addContainerGap(61, Short.MAX_VALUE))
+					.addContainerGap(62, Short.MAX_VALUE))
 		);
 		gl_panel_2.setVerticalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnexportcsv, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING, false)
 							.addComponent(btnhudongyi, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addComponent(cBxstockcode, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 31, Short.MAX_VALUE)
 							.addComponent(btnSearchCode, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE))
 						.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING, false)
 							.addComponent(btnXueQiu, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(btnSlack, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(btnDongcaiyanbao, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+							.addComponent(btnSlack, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING)
-						.addComponent(btnCaiwufengxi, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(btnCaiwufengxi, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
 						.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 							.addComponent(txtFldStockName, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
 							.addComponent(btngengxinxx, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
