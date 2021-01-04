@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 
+import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -46,13 +48,25 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable
 		
 		createEvents ();
 	}
+	/*
+	 * 
+	 */
+	private void filterSetting ()
+	{
+		BanKuaiAndGeGuTablesFilterSetting filterdlg = new BanKuaiAndGeGuTablesFilterSetting (this,prop,this.filterHeader);
+		filterdlg.setModal(false);
+		filterdlg.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		filterdlg.toFront();
+		filterdlg.setVisible(true);
+		
+	}
 	
 	private void createEvents() 
 	{
 		menuItemfiltersetting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	
+            	filterSetting ();
             }
         });
 		
@@ -158,6 +172,20 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable
 			else column_foreground_highlight_info = "";
 			
 			jtableTitleStringsTooltips[i] = column_name + "(" + column_background_highlight_info + "." + column_foreground_highlight_info +  ")";
+		}
+	}
+	
+	protected void setColumnPredefinedFilter ()
+	{
+		for(int i=0;i<=10;i++) {
+			String column_name = prop.getProperty (String.valueOf(i) + "column_name");
+			if(column_name == null || column_name.toUpperCase().equals("NULL")   )
+					continue;
+			String column_predefinedfileter  = prop.getProperty (String.valueOf(i) + "column_info_predefinedfilter");
+			if(column_predefinedfileter == null)
+				continue;
+			
+			filterHeader.getFilterEditor(i).setContent(column_predefinedfileter);
 		}
 	}
 

@@ -42,7 +42,7 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 		
 		super.setColumnPreferredWidth ();
 		super.createTableHeaderTooltips ();
-
+		super.setColumnPredefinedFilter ();
 		//http://esus.com/creating-a-jtable-with-headers-with-jtooltips/
 //		JTableToolTipHeader header = new JTableToolTipHeader(this.getColumnModel() );
 //	    header.setToolTipStrings(bkgegumapmdl.getTableHeader());
