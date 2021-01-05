@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import java.util.List;
-
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.GroupLayout;
@@ -41,6 +41,9 @@ import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ObjectArrays;
+import com.google.common.collect.Table;
+import com.google.common.collect.Table.Cell;
+import com.toedter.calendar.JCalendar;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -73,7 +76,7 @@ public class NodeInfoToCsv extends JPanel
 		createEvents ();
 		nodecontentArrayList = new ArrayList<String[]> ();
 		
-		nodetimeframeMultimap = ArrayListMultimap.create(); 
+		nodetimeframeMultimap = ArrayListMultimap.create();
 	}
 	
 	private List<String[]> nodecontentArrayList ;
@@ -326,18 +329,41 @@ public class NodeInfoToCsv extends JPanel
 class NodeInfoTableModel extends DefaultTableModel 
 {
 	private Multimap<BkChanYeLianTreeNode,Interval> nodeslist;
-
+//	private Table<String,String,Interval> csvnodelist;
+//	ArrayList<Cell<String, String, Interval>> datalist;
+	List<BkChanYeLianTreeNode> nodes ; 
 	
 	String[] jtableTitleStrings = { "代码", "名称","启始时间","终止时间"};
+	private Object[][] data;
 	
-	NodeInfoTableModel ()
-	{
+	NodeInfoTableModel (){
 	}
 
-	public void refresh  (Multimap<BkChanYeLianTreeNode,Interval> nodeslist1)
+	public void refresh  (Multimap<BkChanYeLianTreeNode,Interval> nodelst)
 	{
-		this.nodeslist = nodeslist1;
-
+		this.nodeslist = nodelst;
+		Map<BkChanYeLianTreeNode, Collection<Interval>> dataMap = nodeslist.asMap();
+		nodes = new ArrayList<BkChanYeLianTreeNode> (dataMap.keySet() );
+		
+		data = null;
+		data = new Object[this.getRowCount()][4];
+		int rowcount = 0;
+		for(Map.Entry<BkChanYeLianTreeNode, Collection<Interval>> ent : dataMap.entrySet() ) {
+			 BkChanYeLianTreeNode tmpnode = ent.getKey();
+			 Collection<Interval> datainterval = ent.getValue();
+			 for(Interval tmpitvl : datainterval) {
+				 LocalDate exportstart = java.time.LocalDate.of( tmpitvl.getStart().getYear(),tmpitvl.getStart().getMonthOfYear(),tmpitvl.getStart().getDayOfMonth() );
+				 LocalDate exportend = java.time.LocalDate.of( tmpitvl.getEnd().getYear(),tmpitvl.getEnd().getMonthOfYear(),tmpitvl.getEnd().getDayOfMonth() );
+				 JLocalDateChooser stdc = new JLocalDateChooser ();
+				 stdc.setLocalDate(exportstart);
+				 JLocalDateChooser sted = new JLocalDateChooser ();
+				 sted.setLocalDate(exportend);
+				 Object[] rowdata = {tmpnode.getMyOwnCode(), tmpnode.getMyOwnName(),stdc.getLocalDate(), sted.getLocalDate()};
+				 data[rowcount] = rowdata;
+				 rowcount ++;
+			 }
+		}
+		
 		this.fireTableDataChanged();
 	}
 	 public int getRowCount() 
@@ -346,8 +372,15 @@ class NodeInfoTableModel extends DefaultTableModel
 			 return 0;
 		 else if(this.nodeslist.isEmpty()  )
 			 return 0;
-		 else
-			 return this.nodeslist.size();
+		 else {
+			 	int size =0;
+			 	Map<BkChanYeLianTreeNode, Collection<Interval>> dataMap = nodeslist.asMap();
+				for(Map.Entry<BkChanYeLianTreeNode, Collection<Interval>> ent : dataMap.entrySet()){
+					 Collection<Interval> datainterval = ent.getValue();
+					 size = size + datainterval.size();
+				}
+			 return size;
+		 }
 	 }
 
 	    @Override
@@ -362,25 +395,19 @@ class NodeInfoTableModel extends DefaultTableModel
 	    		return null;
 	    	
 	    	Object value = "??";
-	    	AccountInfoBasic account = accountslist.get(rowIndex);
-	    	StockChiCangInfo tmpstkcc = account.getStockChiCangInfoIndexOf ("");
+	    	
 	    	switch (columnIndex) {
             case 0:
-                value = account.getAccountName();
+                value = data[rowIndex][0];
                 break;
             case 1:
-            	NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(); 
-            	
-                value = currencyFormat.format(0-tmpstkcc.getChicangchenben()); //因为成本为负
-
+            	value = data[rowIndex][1]; 
                 break;
             case 2:
-            	//NumberFormat currencyFormat1 = NumberFormat.getCurrencyInstance();
-            	value = new JLocalDateChooser ();
+            	value = data[rowIndex][2];
                 break;
             case 3:
-            	NumberFormat currencyFormat2 = NumberFormat.getCurrencyInstance();
-                value = new JLocalDateChooser (); 
+            	value = data[rowIndex][3]; 
                 break;
 
 	    	}
@@ -398,10 +425,10 @@ class NodeInfoTableModel extends DefaultTableModel
 			          clazz = String.class;
 			          break;
 		        case 2:
-			          clazz = JLocalDateChooser.class;
+			          clazz = 	LocalDate.class;
 			          break;
 		        case 3:
-			          clazz = JLocalDateChooser.class;
+			          clazz = LocalDate.class;
 			          break;
 		      }
 		      
