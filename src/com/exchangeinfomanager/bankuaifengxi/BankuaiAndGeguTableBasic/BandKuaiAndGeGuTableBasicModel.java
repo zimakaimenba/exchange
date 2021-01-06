@@ -18,6 +18,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel 
 {
@@ -169,18 +170,21 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		if(column_keyword == null)
 			return null;
 		
+		column_keyword = column_keyword.trim();
+		
 		  Object value = "??";
 		  BkChanYeLianTreeNode node = entryList.get(rowIndex);
 //		  BkChanYeLianTreeNode datanode; BkChanYeLianTreeNode datasupernode;
 //		  DaPan dapan;
 		  
-		  NodeXPeriodData nodexdata = null;
+		  NodeXPeriodData nodexdatawk = null; NodeXPeriodData nodexdataday = null;
 		  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
 			  Stock stock = ((StockOfBanKuai)node).getStock();
-			  nodexdata = stock.getNodeXPeroidData(curperiod);
+			  nodexdatawk = stock.getNodeXPeroidData(curperiod);
+			  nodexdataday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		  } else if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
-			  nodexdata = ((BanKuai) node).getNodeXPeroidData (curperiod);
-//			  dapan = (DaPan)node.getRoot();
+			  nodexdatawk = ((BanKuai) node).getNodeXPeroidData (curperiod);
+			  nodexdataday = ((BanKuai) node).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		  }
 		    
 		  switch (column_keyword) {
@@ -195,40 +199,40 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		     	  break;
 		     	  
 		       case "bankuaichengjiaoergongxian":
-		     	  Double cjechangegrowthrate = nodexdata.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
+		     	  Double cjechangegrowthrate = nodexdatawk.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
 		       	  if(cjechangegrowthrate != null)
 		       		value = cjechangegrowthrate;
 		       	  else	value = -1.0;
 		     	  break;
 		     	  
 		       case "cjezbgrowrate":
-		     	  Double cjedpgrowthrate = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
+		     	  Double cjedpgrowthrate = nodexdatawk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
 		       	  if(cjedpgrowthrate != null)
 		       		value = cjedpgrowthrate;
 		       	  else	value = -1;
 		     	  break;
 		       case "cjlzbgrowrate":
-			     	  Double cjldpgrowthrate = nodexdata.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
+			     	  Double cjldpgrowthrate = nodexdatawk.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
 			       	  if(cjldpgrowthrate != null)
 			       		value = cjldpgrowthrate;
 			       	  else	value = -1;
 			     	  break;
 		       case "chengjiaoerzhanbi":
-		    	   Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(showwknum, 0);
+		    	   Double cjezhanbi = nodexdatawk.getChenJiaoErZhanBi(showwknum, 0);
            		   value = cjezhanbi;
 		    	   break;
 		       case "chengjiaoliangzhanbi":
-		    	   Double cjlzhanbi = nodexdata.getChenJiaoLiangZhanBi(showwknum, 0);
+		    	   Double cjlzhanbi = nodexdatawk.getChenJiaoLiangZhanBi(showwknum, 0);
            		   value = cjlzhanbi;
 		    	   break;
 		       case "CjeZbDpMaxWk":
 			          try{
-			        	  Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+			        	  Integer cjedpmaxwk = nodexdatawk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
 			          		if(cjedpmaxwk > 0) {
 			              		value = cjedpmaxwk;
 			              		break;
 			              	} else	if(cjedpmaxwk == 0) {
-			              		Integer cjedpminwk = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
+			              		Integer cjedpminwk = nodexdatawk.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
 			              		value = 0 - cjedpminwk;
 			              		break;
 			              	}
@@ -238,12 +242,12 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			          break;
 		       case "CjlZbDpMaxWk":
 				      try{
-				    	  Integer cjldpmaxwk = nodexdata.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+				    	  Integer cjldpmaxwk = nodexdatawk.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
 				          		if(cjldpmaxwk > 0) {
 				              		value = cjldpmaxwk;
 				              		break;
 				              	} else	if(cjldpmaxwk == 0) {
-				              		Integer cjldpminwk = nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
+				              		Integer cjldpminwk = nodexdatawk.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
 				              		value = 0 - cjldpminwk;
 				              		break;
 				              	}
@@ -252,12 +256,12 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 				       }
 				       break;
 		       case "NCjeZbDpMinWk":
-		     	  Integer nCjeZbDpMinWk = nodexdata.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);//.getGgdpzhanbigrowthrate();
+		     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);//.getGgdpzhanbigrowthrate();
 		       	  value = nCjeZbDpMinWk;
 		       	  break;
 		       case "averagecjemaxwk" :
 		    	   try {
-		    		   Integer cjedpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+		    		   Integer cjedpmaxwk = nodexdatawk.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
 				       	  if(cjedpmaxwk != null && cjedpmaxwk > 0) 
 				       		value = cjedpmaxwk;
 				          else value = 0;
@@ -265,7 +269,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		       	  break;
 		       case "averagecjlmaxwk" :
 		    	   try {
-		    		   Integer cjldpmaxwk = nodexdata.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+		    		   Integer cjldpmaxwk = nodexdatawk.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
 				       	  if(cjldpmaxwk != null && cjldpmaxwk > 0) 
 				       		value = cjldpmaxwk;
 				          else value = 0;
@@ -284,29 +288,36 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			        	}
 		     	  break;
 		       case "CjeLianXuZhang": //周日平均成交额MAXWK
-			        	Integer cjemaxwk = nodexdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(showwknum,0);//.getGgbkcjemaxweek(); 
+			        	Integer cjemaxwk = nodexdatawk.getAverageDailyCjeLianXuFangLiangPeriodNumber(showwknum,0);//.getGgbkcjemaxweek(); 
 			        	value = cjemaxwk;
 			        	break;
 		       case "huanshoulv": //周日平均成交额MAXWK
-			        	Double hsl = ((StockNodesXPeriodData)nodexdata).getSpecificTimeHuanShouLv(showwknum, 0);
+			        	Double hsl = ((StockNodesXPeriodData)nodexdatawk).getSpecificTimeHuanShouLv(showwknum, 0);
 				    	value = hsl;
 				    	break;
 		       case "chenjiaoer" :
-			      	 Double curcje  = nodexdata.getChengJiaoEr(showwknum, 0) / 100000000;
+			      	 Double curcje  = nodexdatawk.getChengJiaoEr(showwknum, 0) / 100000000;
 			   	     value = curcje;
 			   	     break;
 		       case "chenjiaoliang" :
-			      	 Double curcjl  = nodexdata.getChengJiaoLiang(showwknum, 0) / 100000000;
+			      	 Double curcjl  = nodexdatawk.getChengJiaoLiang(showwknum, 0) / 100000000;
 			   	     value = curcjl;
 			   	     break;
 		       case "dayujunxian" :
 		    	   String displayma = matchcond.getSettingMaFormula();
-		    	   Boolean checkresult = nodexdata.checkCloseComparingToMAFormula(displayma,showwknum,0);
+		    	   
+		    	   Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,showwknum,0);
 				    if( checkresult != null && checkresult) 
 				    	value = Boolean.valueOf(checkresult);
-				    else
+				    else if( checkresult != null && !checkresult)
 				    	value = Boolean.valueOf(false);
+				    
 		    	   break;
+		       case "zhangdiefu" :
+			      	 Double zhangdiefu  = nodexdatawk.getSpecificOHLCZhangDieFu(showwknum, 0)  ;
+			      	 if(zhangdiefu != null)
+			      		 value = zhangdiefu;
+			   	     break;
 		  }
 		  
 		  return value;

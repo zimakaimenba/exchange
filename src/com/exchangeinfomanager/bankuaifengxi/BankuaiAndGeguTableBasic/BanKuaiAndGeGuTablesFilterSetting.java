@@ -25,6 +25,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 public class BanKuaiAndGeGuTablesFilterSetting extends JDialog 
 {
@@ -48,6 +50,7 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 	private BanKuaiandGeGuTableBasic bkggtable;
 	private JButton okButton;
 	JUpdatedTextField[] filtertxtfldcollection = new JUpdatedTextField[11]; 
+	private JPanel pnlfilter;
 
 	/**
 	 * Create the dialog.
@@ -103,7 +106,6 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 			
 			JUpdatedTextField filterField = (JUpdatedTextField) JTextFactory.createTextField();
 			filterField.setMouseLeftClearEnabled(false);
-//			Object obj = filterHeader.getFilterEditor(i).getContent().getClass();
 			try {
 				String  curfilter = (String) (filterHeader.getFilterEditor(i).getContent());
 				filterField.setText(curfilter);
@@ -111,12 +113,17 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 			} catch (Exception e) {
 				filterPanel.add(filterField);
 			}
-			
-//			Class<?> columnclass = ((BandKuaiAndGeGuTableBasicModel)this.bkggtable.getModel()).getColumnClass(i);
-			
+
 			filtertxtfldcollection[i] = filterField; 
 	        this.contentPanel.add(filterPanel);
 		}
+		
+//		this.pnlfilter.revalidate();
+//		this.pnlfilter.repaint();
+//		this.contentPanel.revalidate();
+//		this.contentPanel.repaint();
+//		this.revalidate();
+//		this.repaint();
 		
 	}
 	private void createGui ()
@@ -126,6 +133,16 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 		contentPanel.setLayout(new BoxLayout(this.contentPanel, BoxLayout.PAGE_AXIS));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		{
+			JScrollPane scrollPane = new JScrollPane();
+			scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			contentPanel.add(scrollPane);
+			{
+				pnlfilter = new JPanel();
+				pnlfilter.setLayout(new BoxLayout(this.pnlfilter, BoxLayout.PAGE_AXIS));
+				scrollPane.setViewportView(pnlfilter);
+			}
+		}
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));

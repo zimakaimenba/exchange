@@ -473,17 +473,14 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 				liutongshizhidanwei = FormatDoubleToShort.getNumberChineseDanWei(liutongshizhi);
 				liutongshizhi = FormatDoubleToShort.formateDoubleToShort( liutongshizhi);
 				
-				try{
+				try {
 		    		DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
 		        	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
 		        	percentFormat.setMinimumFractionDigits(4);
 					org.jsoup.nodes.Element li5 =  dl.get(0).appendElement("li");
 					li5.appendText( "流通周平均市值" + decimalformate.format(liutongshizhi) + liutongshizhidanwei );
-				} catch (java.lang.IllegalArgumentException e) {
-					
-				} catch (java.lang.IndexOutOfBoundsException e) {
-					e.printStackTrace();
-				}
+				} catch (java.lang.IllegalArgumentException e)  {
+				} catch (java.lang.IndexOutOfBoundsException e) { e.printStackTrace();}
 		}
     	
 			 
@@ -495,12 +492,8 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 					org.jsoup.nodes.Element li4 = dl.get(0).appendElement("li");
 					li4.appendText( "换手率" + String.format("%.3f", hsl) );
 				}
-				
 			} catch (java.lang.IllegalArgumentException e ) {
-
-			} catch (java.lang.NullPointerException ex) {
-
-			}
+			} catch (java.lang.NullPointerException ex) {}
 		
 		return doc.toString();
 	}

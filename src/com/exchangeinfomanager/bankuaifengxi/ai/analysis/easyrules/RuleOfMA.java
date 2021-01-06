@@ -34,7 +34,7 @@ public class RuleOfMA
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
-			return false;
+			return true;
 		
 		NodeXPeriodData nodexdataday = evanode.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		DayOfWeek dayOfWeek = evadate.getDayOfWeek();
@@ -47,8 +47,6 @@ public class RuleOfMA
 	    }
 		
 		if (dailyma != null) {
-//			OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdataday).getSpecificDateOHLCData (evadate,0);
-//			Double close = ohlcdata.getCloseValue();
 			//用周K线的CLOSE
 			StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 			OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
@@ -63,7 +61,8 @@ public class RuleOfMA
 				analysisresultforvoice = analysisresultforvoice + "股价大于MA250。";
 			else
 				analysisresultforvoice = analysisresultforvoice + "股价小于MA250。";
-		}
+		} else
+			return true; //没有均线数据，可能是系统没有导入，所以就不还任何判断，默认为有。
 		
 		String displayma = evacond.getSettingMaFormula();
     	if (!Strings.isNullOrEmpty(displayma)) {

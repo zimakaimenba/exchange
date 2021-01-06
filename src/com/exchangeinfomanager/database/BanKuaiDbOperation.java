@@ -3489,17 +3489,11 @@ public class BanKuaiDbOperation
 				
 				stockperiodrecord = null;
 			}
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    	try {
-				rs.close();
-				rs = null;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    } finally {
+	    	try { rs.close(); rs = null;
+			} catch (SQLException e) {e.printStackTrace();}
 	    	
 	    	bkcjltable = null;
 	    	nodewkperioddata = null; 
@@ -3911,16 +3905,11 @@ public class BanKuaiDbOperation
 					
 					if(linenumber == 1) //计算第一行的日期，给周K线的计算使用
 						lastdaydate = curlinedate.with(fieldCH, 6); //
-				} catch (java.time.format.DateTimeParseException e) {
-					break;
-				}
+				} catch (java.time.format.DateTimeParseException e) {break;}
+				
 				try {
-					if(curlinedate.isBefore(requiredstartday) || curlinedate.isAfter(requiredendday) )
-						continue;
-					
-				} catch (java.lang.NullPointerException e) {
-//					e.printStackTrace();
-					continue;
+					if(curlinedate.isBefore(requiredstartday) || curlinedate.isAfter(requiredendday) ) continue;		
+				} catch (java.lang.NullPointerException e) { continue;
 				}
 				// 为生成ohlc的时间做处理
 				java.sql.Date sqldate = null;
@@ -3929,9 +3918,7 @@ public class BanKuaiDbOperation
 					String formatstr = volamooutput.get(2).trim();
 					DateFormat format = new SimpleDateFormat(formatstr, Locale.CHINA);
 					 sqldate = new java.sql.Date(format.parse(recordsdate).getTime()  );
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
+				} catch (ParseException e) { e.printStackTrace(); }
 				org.jfree.data.time.Day recordday = new org.jfree.data.time.Day (sqldate);
 				ZonedDateTime zdtime = sqldate.toLocalDate().atStartOfDay(ZoneOffset.UTC);
 					
@@ -3980,10 +3967,7 @@ public class BanKuaiDbOperation
 			this.calTDXNodesWeekyHighestAndLowestZhangFuForJFC (stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);;
 			
 			nodenewohlc = null;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (IOException e) {e.printStackTrace();}
 
 		return stock;
 	}
@@ -4198,14 +4182,10 @@ public class BanKuaiDbOperation
 		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
 		if(spcohlcdataindex != null) {
 			OHLCItem wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
-			
-			if(! (wkohlcdata.getCloseValue() == 0 &&
-				wkohlcdata.getHighValue() == 0 &&
-				wkohlcdata.getLowValue() == 0 &&
-				wkohlcdata.getOpenValue() == 0) ) 
-			{
+			double wkclose = wkohlcdata.getCloseValue(); double wkhigh = wkohlcdata.getHighValue();
+			double wklow = wkohlcdata.getLowValue(); double wkopen = wkohlcdata.getOpenValue() ;
+			if(! (wkclose == 0 && wkhigh == 0 && wklow == 0 && wkopen	== 0) ) 
 				return tdxnode; //都不是0，说明正确的数据已经在前面找出来了，直接退出。
-			}
 		} 
 		
 		try { //都是0，就把原来的数据移除，然后把新数据放进去

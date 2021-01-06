@@ -426,6 +426,8 @@ import com.udojava.evalex.Expression;
 	{
 		int itemcount = this.nodeohlc.getItemCount();
 		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForOHLC (requireddate,difference);
+		if(curperiod == null)
+			return null;
 		
 		for(int i=0;i<itemcount;i++) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
@@ -451,6 +453,12 @@ import com.udojava.evalex.Expression;
 			curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
 			
 			double curclose = curohlc.getCloseValue();
+			if(curclose == 0.0) { //0.0可能是没有数据，也可能是前复权导致的，要判断一下
+				double curhigh = curohlc.getHighValue();
+				double curlow = curohlc.getLowValue();
+				if(curhigh == 0.0 && curlow == 0.0) //完全没有波动不合理，说明没有数据
+					return null;
+			}
 			
 			OHLCItem lastholc = null; Double lastclose = 0.0;
 			try {
@@ -467,7 +475,7 @@ import com.udojava.evalex.Expression;
 			
 			return zhangfu;
 		} catch (java.lang.NullPointerException e) {
-			String code = super.getNodeCode();
+//			String code = super.getNodeCode();
 			e.printStackTrace();
 		}
 		
@@ -1570,7 +1578,7 @@ import com.udojava.evalex.Expression;
 	 {
 		 DayOfWeek dayOfWeek = requireddate.getDayOfWeek();
 		 int dayOfWeekIntValue = dayOfWeek.getValue();
-		 OHLCItem ohlcdata = null; Double[] dailyma = null;
+		 OHLCItem ohlcdata = null;
 		 for(int i = 0;i < dayOfWeekIntValue;i++) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的最新天
 			 	ohlcdata = this.getSpecificDateOHLCData (requireddate,0-i);
 		    	if(ohlcdata != null) {
@@ -1965,7 +1973,7 @@ import com.udojava.evalex.Expression;
 		    	 curcjl = FormatDoubleToShort.formateDoubleToShort (avecurcjl);
 				 org.jsoup.nodes.Element liavecjl = dl.appendElement("li");
 				 org.jsoup.nodes.Element fontavecjl = liavecjl.appendElement("font");
-				 fontavecjl.appendText("成交量" + decimalformate.format(avecurcjl) + avecjldanwei);
+				 fontavecjl.appendText("周平均成交量" + decimalformate.format(avecurcjl) + avecjldanwei);
 				 fontavecjl.attr("color", "#641E16");
 				 //
 				 Integer cjlmaxwk = null;

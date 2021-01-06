@@ -73,8 +73,10 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
         String tip = null;
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
+        int modelRow = this.convertRowIndexToModel(rowIndex);
         int colIndex = columnAtPoint(p);
-        StockOfBanKuai stkofbk = ((BanKuaiGeGuTableModelFromPropertiesFile)this.getModel()).getStock(rowIndex);
+        
+        StockOfBanKuai stkofbk = ((BanKuaiGeGuTableModelFromPropertiesFile)this.getModel()).getStock(modelRow);
         if(colIndex == 0) { // highlight the zhangfu of the week
         	String period = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDisplayPeriod();
         	LocalDate requireddate = ((BanKuaiGeGuTableModelFromPropertiesFile)this.getModel()).getCurDisplayedDate ();
@@ -83,7 +85,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
         	if(zhangdiefu != null) {
         		zhangdiefu = zhangdiefu * 100;
         		tip = "ÖÜÕÇ·ù" + zhangdiefu .toString() + "%";
-        	}
+        	} 
         } else if(colIndex == 1) { //highlight when the stock was added to the bankuai
         	Set<Interval> timeinbk = stkofbk.getInAndOutBanKuaiInterval ();
         	String timett = "";
@@ -98,7 +100,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
         	tip = timett;
         } else {
         	try {
-        		tip =  getValueAt(rowIndex, colIndex).toString();
+        		tip =  getValueAt(modelRow, colIndex).toString();
         	} catch ( java.lang.NullPointerException ex) {}
         }
 //        try {
