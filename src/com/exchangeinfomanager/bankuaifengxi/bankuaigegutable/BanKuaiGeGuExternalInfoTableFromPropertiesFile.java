@@ -92,7 +92,7 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 		
 //		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
 		BanKuai bkcode = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDispalyBandKuai();
-		String stockcode = ((BanKuaiGeGuBasicTableModel)(this.getModel())).getStockCode(modelRow);
+		String stockcode = ((BanKuaiGeGuBasicTableModel)(this.getModel())).getNodeCode(modelRow);
 		int weight = ((BanKuaiGeGuExternalInfoTableModelFromPropertiesFile)(this.getModel())).getStockCurWeight (modelRow);
 		
 		String weightresult = JOptionPane.showInputDialog(null,"请输入股票在该板块权重！\n\r"

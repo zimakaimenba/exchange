@@ -78,7 +78,7 @@ public class BanKuaiGeGuBasicTableRenderer extends BanKuaiAndGeguTableBasicRende
 	    tablemodel =  (BandKuaiAndGeGuTableBasicModel)table.getModel() ;
    	    
 	    int modelRow = table.convertRowIndexToModel(row);
-	    StockOfBanKuai stockofbank = ( (BanKuaiGeGuBasicTableModel)table.getModel() ).getStock(modelRow);
+	    StockOfBanKuai stockofbank = (StockOfBanKuai) ( (BanKuaiGeGuBasicTableModel)table.getModel() ).getNode(modelRow);
 	    Stock stock = stockofbank.getStock();
 	    
 	    //对于临时个股表，可以突出显示出正表中该板块的所有个股

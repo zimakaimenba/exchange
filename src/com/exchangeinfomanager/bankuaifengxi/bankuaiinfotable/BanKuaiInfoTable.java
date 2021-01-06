@@ -37,6 +37,7 @@ import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiandGeGuTableBasic;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 
 
@@ -94,11 +95,6 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 	{
 		return renderer;
 	}
-	
-//	public void resetTableHeaderFilter ()
-//	{
-//		filterHeader.resetFilter();
-//	}
 	/*
 	 * 
 	 */
@@ -154,22 +150,6 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
         return tip;
     }
     
-  //Implement table header tool tips.
-//  	String[] jtableTitleStringsTooltips = { "板块代码", "名称","CJE占比增长率","CJE占比","CJLZBMAXWK","大盘成交额增长贡献率","周日平均成交额MAXWK","周日平均成交额连续(成交额上周变化升降)"};
-//      protected JTableHeader createDefaultTableHeader() 
-//      {
-//          return new JTableHeader(columnModel) {
-//              public String getToolTipText(MouseEvent e) {
-//                  String tip = null;
-//                  java.awt.Point p = e.getPoint();
-//                  int index = columnModel.getColumnIndexAtX(p.x);
-//                  int realIndex = 
-//                          columnModel.getColumn(index).getModelIndex();
-//                  return jtableTitleStringsTooltips[realIndex];
-//              }
-//          };
-//      }
-    
 	private String createHtmlTipsOfSocailFriends(BanKuai bankuai, Set<String> socialset) 
 	{
 		String html = "";
@@ -195,26 +175,34 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 						 if(rowIndex == -1)
 							 continue;
 						 modelRow = this.convertRowIndexToView(rowIndex);
-					 } catch (java.lang.NullPointerException e) {
-//						 e.printStackTrace();
-					 }
+					 } catch (java.lang.NullPointerException e) {e.printStackTrace(); }
 					 
-					 String frbkcode = (String) this.getValueAt(modelRow, 0);
-					 String frbkname = (String) this.getValueAt(modelRow, 1);
-					 Double cjezbchangerate = (Double)this.getValueAt(modelRow, 2);
-					 Integer cjedpmaxwk = (Integer)this.getValueAt(modelRow, 4);
-		    		 
-		    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-		 	    	 percentFormat.setMinimumFractionDigits(1);
-		        	 String cjezbchangeratepect = percentFormat.format (cjezbchangerate );
-		        	 
-		        	 org.jsoup.nodes.Element trelline = tableel.appendElement("tr");
+					 BkChanYeLianTreeNode frbk = tablemodel.getNode(friend);
+					 String frbkcode = frbk.getMyOwnCode();
+					 String frbkname = frbk.getMyOwnName();
+					 org.jsoup.nodes.Element trelline = tableel.appendElement("tr");
 					 org.jsoup.nodes.Element tdel1 = trelline.appendElement("td");
-					 tdel1.appendText(frbkcode + frbkname); 
-					 org.jsoup.nodes.Element tdel2 = trelline.appendElement("td");
+					 tdel1.appendText(frbkcode + frbkname);
+					 
+					 Integer kwcolumnindex = tablemodel.getKeyWrodColumnIndex("cjezbgrowrate");
+					 Double cjezbchangerate = (Double)this.getValueAt(modelRow, kwcolumnindex);
+					 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+		 	    	 percentFormat.setMinimumFractionDigits(2);
+		        	 String cjezbchangeratepect = percentFormat.format (cjezbchangerate );
+		        	 org.jsoup.nodes.Element tdel2 = trelline.appendElement("td");
 					 tdel2.appendText(cjezbchangeratepect);
-					 org.jsoup.nodes.Element tdel3 = trelline.appendElement("td");
-					 tdel3.appendText(cjedpmaxwk.toString());
+		        	 
+//					 Integer kwcolumnindex2 = tablemodel.getKeyWrodColumnIndex("cjlzbgrowrate");
+//					 Integer cjedpmaxwk;
+//					if(kwcolumnindex2 != null) {
+//						cjedpmaxwk = (Double)this.getValueAt(modelRow, kwcolumnindex2);
+//						org.jsoup.nodes.Element tdel3 = trelline.appendElement("td");
+//						tdel3.appendText(cjedpmaxwk.toString());
+//					} else {
+//						org.jsoup.nodes.Element tdel3 = trelline.appendElement("td");
+//						tdel3.appendText("没有相关数据");
+//					}
+						
 				}	 
 		}
 		 
@@ -271,185 +259,6 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 			}
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JTable#prepareRenderer(javax.swing.table.TableCellRenderer, int, int)
-	 */
-//	private Border outsidepos = new MatteBorder(1, 0, 1, 0, Color.RED);
-//	private Border insidepos = new EmptyBorder(0, 1, 0, 1);
-//	private Border highlightpos = new CompoundBorder(outsidepos, insidepos);
-//	
-//	private Border outsideneg = new MatteBorder(1, 0, 1, 0, Color.GREEN);
-//	private Border insideneg = new EmptyBorder(0, 1, 0, 1);
-//	private Border highlightneg = new CompoundBorder(outsideneg, insideneg);
-//	
-//	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-//		
-//	        Component comp = super.prepareRenderer(renderer, row, col);
-//	        JComponent jc = (JComponent)comp;
-//	        
-//	        BanKuaiInfoTableModel tablemodel = (BanKuaiInfoTableModel)this.getModel(); 
-//	        if(tablemodel.getRowCount() == 0) {
-//	        	return null;
-//	        }
-//	        
-//	        LocalDate curdate = tablemodel.getCurDisplayedDate();
-//	       
-//	        int modelRow = convertRowIndexToModel(row);
-//	        BanKuai bankuai = (BanKuai) tablemodel.getNode(modelRow);
-//	        
-//	        String bktype = bankuai.getBanKuaiLeiXing();
-//	        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
-//	        	Font defaultFont = this.getFont();
-//	        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
-//	        	comp.setFont(font);
-//	        }
-//	        
-//	      //为不同情况突出显示不同的颜色
-//	        Color foreground = super.getForeground(), background = Color.white;
-//	        if(!bankuai.isExportTowWlyFile() )
-//        		foreground = Color.GRAY;
-//	        
-//	        int rowcurselected = this.getSelectedRow();
-//	        if(rowcurselected != -1) {
-//	        	int modelRowcurselected = this.convertRowIndexToModel(rowcurselected);
-//	        	String bkcode =   bankuai.getMyOwnCode();
-//				BanKuai bkcurselected = (BanKuai) ((BanKuaiInfoTableModel)this.getModel()).getNode(modelRowcurselected);  
-//		        Set<String> socialsetpos = bkcurselected.getSocialFriendsSetPostive();
-//		        if(socialsetpos.contains(bkcode)) {
-//		        		jc.setBorder( highlightpos );
-//	        	}
-//		        Set<String> socialsetneg = bkcurselected.getSocialFriendsSetNegtive();
-//		        if(socialsetneg.contains(bkcode)) {
-//		        		jc.setBorder( highlightneg );
-//	        	}	
-//	        }
-//	       
-//	        if (comp instanceof JLabel && col == 0) {
-//	        	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-//	        	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (curdate,0);
-//			    if(zhangdiefu != null  && zhangdiefu > 0 )
-//			    	background = Color.RED;
-//			    else if(zhangdiefu != null  &&  zhangdiefu < 0 )
-//			    	background = Color.GREEN;
-//			    else
-//			    	background = Color.WHITE;
-//	        	
-//	        } 
-//	        
-//	        BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
-//	        RuleOfCjeZbDpMaxWk dpmaxwkRule = null;
-//	        RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = null;
-//	        if(matchcond != null) {
-//	        	Facts facts = new Facts();
-//		        facts.put("evanode", bankuai);
-//		        facts.put("evadate", curdate);
-//		        facts.put("evadatedifference", 0);
-//		        facts.put("evaperiod", NodeGivenPeriodDataItem.WEEK);
-//		        facts.put("evacond", matchcond);
-//		        
-//		        Rules rules = new Rules();
-//		        
-//		        dpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
-//		        rules.register(dpmaxwkRule);
-//		        
-//		        averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
-//		        rules.register(averagecjemaxwkRule);
-//		        
-//		     // fire rules on known facts
-//		        RulesEngine rulesEngine = new DefaultRulesEngine();
-//		        rulesEngine.fire(rules, facts);
-//	        }
-//
-////	        if (comp instanceof JLabel && ( col == 3 ||   col == 4  )) {
-////	        	try {
-////	        		background = new Color(51,204,255);
-////	        	} catch (java.lang.NullPointerException e) {
-////	        		background = Color.WHITE;
-////	        	}
-////	        }
-//	        if (comp instanceof JLabel &&   col == 4  ) {
-//	        	try {
-//	        		background = dpmaxwkRule.getBackGround();
-//	        	} catch (java.lang.NullPointerException e) {
-//	        		background = Color.WHITE;
-//	        	}
-//	        }
-//	        if (comp instanceof JLabel && ( col == 6  ) ) {
-//	        	try {
-//	        		background = averagecjemaxwkRule.getBackGround();
-//		        } catch (java.lang.NullPointerException e) {
-//	        		background = Color.WHITE;
-//	        	}
-//	        }
-////	        if (comp instanceof JLabel && ( col == 7  ) ) {
-////	        	NodeXPeriodData nodexdata = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-////	        	Integer avgdailycjemaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(curdate,0);
-////	        	if(avgdailycjemaxwk != null && avgdailycjemaxwk > 0) 
-////	        		background = Color.RED;
-////			    else if ( avgdailycjemaxwk != null && avgdailycjemaxwk <= 0 )
-////			       	background = Color.GREEN;
-////			    else
-////			       	background = Color.WHITE;
-////	        }
-//	        //"板块代码", "名称","CJE占比增长率","CJE占比","CJL占比增长率","CJL占比","大盘成交额增长贡献率","成交额排名"
-//	        if (comp instanceof JLabel && (col == 2 ||  col == 3   )) {
-//            	String value =  ((JLabel)comp).getText();
-//            	if(value == null || value.length() == 0)
-//            		return null;
-//            	
-//            	String valuepect = null;
-//            	try {
-//            		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value).doubleValue();
-//            		 
-//            		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-// 	    	    	 percentFormat.setMinimumFractionDigits(1);
-//	            	 valuepect = percentFormat.format (formatevalue );
-//            	} catch (java.lang.NumberFormatException e)   	{
-//            		e.printStackTrace();
-//            	} catch (ParseException e) {
-//					e.printStackTrace();
-//				}
-//            	((JLabel)comp).setText(valuepect);
-//	        }
-//	        
-//	        if( col == 1  ) { //关注/在板块文件中 这2个操作互斥，优先关注板块的颜色
-//	        	
-//	        	try {
-//	        		NodesTreeRelated tmptreerelated = bankuai.getNodeTreeRelated();
-//	        		Boolean matchmodel = tmptreerelated.selfIsMatchModel(curdate);
-//	        		if(matchmodel )
-//			        	background = Color.ORANGE;
-//			        else
-//			        	background = Color.white;
-//	        		
-//	        		Range<LocalDate> indqgz = bankuai.isInDuanQiGuanZhuRange (curdate);
-//	        		if(indqgz != null)
-//	        			background = new Color(102,178,255);
-//	        		
-//	        		if(this.isRowSelected(row))
-//	    	    		background = new Color(102,102,255);
-//	        		
-//	        		Range<LocalDate> inqsgz = bankuai.isInQiangShiBanKuaiRange (curdate);
-//	        		if(inqsgz != null)
-//	        			foreground = Color.RED;
-//	        		
-//	        		Range<LocalDate> inrsgz = bankuai.isInRuoShiBanKuaiRange (curdate);
-//	        		if(inrsgz != null)
-//	        			foreground = Color.GREEN;
-//		        	
-//	        	} catch (java.lang.NullPointerException e) {
-//	        		background = Color.white;
-//	        		foreground = Color.BLACK;
-//	        	}
-//
-//	        }
-//	        
-//	       comp.setBackground(background);
-//	       comp.setForeground(foreground);
-//
-//	       return comp;
-//	}
 	@Override
 	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
 	{

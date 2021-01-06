@@ -380,6 +380,21 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			return this.matchcond;
 	  }
 	  
+	  public Integer getKeyWrodColumnIndex (String keywords)
+	  {
+		  Integer columnIndex = null;
+		  for(int i=0;i<=10;i++) {
+			  String column_kw_i  = prop.getProperty (String.valueOf(i) + "column_info_keyword");
+			  if(column_kw_i != null) 
+				  if(column_kw_i.equalsIgnoreCase(keywords)) {
+					  columnIndex = i;
+					  break;
+				  }
+		  }
+		  
+		  return columnIndex;
+	  }
+	  
 	  public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
 	    	if(entryList.isEmpty())

@@ -771,7 +771,7 @@ public class BanKuaiFengXi extends JDialog
 		nodecode = nodecode.substring(0,6);
 		if(((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
 
-			 rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(nodecode);
+			 rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getNodeRowIndex(nodecode);
 			 
 			if(rowindex >= 0) {
 				found = true;
@@ -795,7 +795,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
 
-			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getStockRowIndex(nodecode);
+			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getNodeRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -810,7 +810,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
 
-			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getStockRowIndex(nodecode);
+			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getNodeRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -825,7 +825,7 @@ public class BanKuaiFengXi extends JDialog
 
 		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
 
-			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getStockRowIndex(nodecode);
+			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getNodeRowIndex(nodecode);
 			if(rowindex >=0){
 				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -839,7 +839,7 @@ public class BanKuaiFengXi extends JDialog
 
 		if(((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
 
-			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getStockRowIndex(nodecode);
+			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getNodeRowIndex(nodecode);
 			if(rowindex >=0)  {
 				int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -854,7 +854,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		if(  ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getRowCount() >0 ) {
 
-			rowindex = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getStockRowIndex(nodecode);
+			rowindex = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getNodeRowIndex(nodecode);
 			if(rowindex >= 0) {
 				int modelRow = tableExternalInfo.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -867,7 +867,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 		if(((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getRowCount() >0 ) {
 
-			rowindex = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getStockRowIndex(nodecode);
+			rowindex = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getNodeRowIndex(nodecode);
 			if(rowindex >= 0) {
 				int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
 //				int modelRow = rowindex;
@@ -1698,7 +1698,7 @@ public class BanKuaiFengXi extends JDialog
 					return;
 				}
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
-				StockOfBanKuai stock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+				StockOfBanKuai stock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode(modelRow);
 
         		QiangShi qs =  new 	QiangShi(stock.getStock(), "描述", LocalDate.now(), LocalDate.now(), "详细描述", "强势个股",new HashSet<>(),"URL");
         		ServicesForNews svsqs = new QiangShiServices ();
@@ -1720,7 +1720,7 @@ public class BanKuaiFengXi extends JDialog
 					return;
 				}
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
-				StockOfBanKuai stock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
+				StockOfBanKuai stock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode(modelRow);
 
         		QiangShi qs =  new 	QiangShi(stock.getStock(), "描述", LocalDate.now(), LocalDate.now(), "详细描述", "强势个股",new HashSet<>(),"URL");
         		ServicesForNews svsqs = new RuoShiServices ();
@@ -2037,7 +2037,7 @@ public class BanKuaiFengXi extends JDialog
             	
             	int row = tableGuGuZhanBiInBk.getSelectedRow();
     			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-    			StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode (modelRow);
     			
     			String mrjh = JOptionPane.showInputDialog(null,"请输入明日计划内容:","明日计划", JOptionPane.QUESTION_MESSAGE);
     			if(mrjh.isEmpty()) 
@@ -2053,7 +2053,7 @@ public class BanKuaiFengXi extends JDialog
             	
             	int row = tableGuGuZhanBiInBk.getSelectedRow();
     			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-    			StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode (modelRow);
     			List<TDXNodes> tmplist = new ArrayList<TDXNodes> ();
     			tmplist.add(selectstock.getStock() );
     			exportTDXNodesDataToCsv (tmplist,"single");
@@ -2066,7 +2066,7 @@ public class BanKuaiFengXi extends JDialog
             	
             	int row = tableGuGuZhanBiInBk.getSelectedRow();
     			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-    			StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode (modelRow);
     			Stock stock = selectstock.getStock();
     			NodesTreeRelated filetree = stock.getNodeTreeRelated ();
     			if(filetree.selfIsMatchModel(dateChooser.getLocalDate() ) ) 
@@ -2083,7 +2083,7 @@ public class BanKuaiFengXi extends JDialog
             	
             	int row = tableGuGuZhanBiInBk.getSelectedRow();
     			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-    			StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+    			StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode (modelRow);
     			Stock stock = selectstock.getStock();
     			NodesTreeRelated filetree = stock.getNodeTreeRelated ();
     			if(filetree.selfIsMatchModel(dateChooser.getLocalDate() ) ) 
@@ -2696,7 +2696,7 @@ public class BanKuaiFengXi extends JDialog
 	                	clearGeGuTablesFilter ();
 	                	findInputedNodeInTable (curstockcode);
 	                	
-	                	StockOfBanKuai sob = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStock(curstockcode.substring(0, 6));
+	                	StockOfBanKuai sob = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getNode(curstockcode.substring(0, 6));
 	                	hightlightSpecificSector (sob);
 	                }
 	            }
@@ -2711,7 +2711,7 @@ public class BanKuaiFengXi extends JDialog
                 	clearGeGuTablesFilter ();
                 	findInputedNodeInTable (curstockcode);
                 	
-                	StockOfBanKuai sob = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStock(curstockcode.substring(0, 6));
+                	StockOfBanKuai sob = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getNode(curstockcode.substring(0, 6));
                 	hightlightSpecificSector (sob);
                 }
                 
@@ -2916,7 +2916,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode (modelRow);
 				
 				if (arg0.getClickCount() == 1) { //用户点击一下
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2944,7 +2944,7 @@ public class BanKuaiFengXi extends JDialog
 				clearTheGuiBeforDisplayNewInfoSection3 ();
 				
 				int modelRow = tableTempGeGu.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getNode (modelRow);
 				
 				if (arg0.getClickCount() == 1) { //用户点击一下
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2970,7 +2970,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tablexuandingzhou.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getNode (modelRow);
 				
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -2993,7 +2993,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tablexuandingminustwo.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).getNode (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -3016,7 +3016,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tablexuandingminusone.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).getNode (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -3039,7 +3039,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tablexuandingplusone.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).getNode (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -3062,7 +3062,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				
 				int modelRow = tableExternalInfo.convertRowIndexToModel(row);
-				StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).getStock (modelRow);
+				StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).getNode (modelRow);
 	
 				if (arg0.getClickCount() == 1) {
 					int col = tableGuGuZhanBiInBk.columnAtPoint(arg0.getPoint());
@@ -3143,7 +3143,7 @@ public class BanKuaiFengXi extends JDialog
 	{
 		BanKuai tempbankuai = null;
 		
-		List<BkChanYeLianTreeNode> curstocksintable = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getAllStocks();
+		List<BkChanYeLianTreeNode> curstocksintable = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getAllNodes();
 		if( curstocksintable != null && curstocksintable.size() >0) {
 			int extraresult = JOptionPane.showConfirmDialog(null,"临时个股表当前不为空，点击 是 先清空表，点击 否 把新个股添加表中." , "Warning!", JOptionPane.OK_CANCEL_OPTION);
 			if(extraresult == JOptionPane.OK_OPTION) { //其他导出条件
@@ -3351,7 +3351,7 @@ public class BanKuaiFengXi extends JDialog
 			return;
 		}
 		int ggmodelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(ggrow);
-		StockOfBanKuai selectstock = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getStock (ggmodelRow);
+		StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode (ggmodelRow);
 
 		SvsForNodeOfStock svsstk = new SvsForNodeOfStock	();
 		Number[] result = svsstk.getTDXNodeNoneFixPeriodDpMinMaxWk(selectstock.getStock(), searchstart, searchend);
@@ -5079,11 +5079,11 @@ public class BanKuaiFengXi extends JDialog
 	        
 	        BanKuai interbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
 		    if(interbk!= null) {
-		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
+		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getAllNodes();
 		    	int rownum = allstks.size();
 		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
 		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-		    			Integer rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+		    			Integer rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getNodeRowIndex(tmpnode.getMyOwnCode() );
 						if( rowindex  != null && rowindex >=0 ) {
 							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
 //							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
@@ -5148,11 +5148,11 @@ public class BanKuaiFengXi extends JDialog
 	        BanKuaiGeGuTableModelFromPropertiesFile tableTempGeGuModel = ((BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel()); 
 	        BanKuai interbk = tableTempGeGuModel.getInterSetctionBanKuai();
 		    if(interbk!= null) {
-		    	List<BkChanYeLianTreeNode> allstks = tableTempGeGuModel.getAllStocks();
+		    	List<BkChanYeLianTreeNode> allstks = tableTempGeGuModel.getAllNodes();
 		    	int rownum = allstks.size();
 		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
 		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-		    			Integer rowindex = tableTempGeGuModel.getStockRowIndex(tmpnode.getMyOwnCode() );
+		    			Integer rowindex = tableTempGeGuModel.getNodeRowIndex(tmpnode.getMyOwnCode() );
 						if( rowindex  != null && rowindex >=0 ) {
 							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
 //							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;

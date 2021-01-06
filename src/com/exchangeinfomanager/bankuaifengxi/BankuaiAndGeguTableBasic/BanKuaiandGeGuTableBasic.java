@@ -54,7 +54,7 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable
 	private void filterSetting ()
 	{
 		BanKuaiAndGeGuTablesFilterSetting filterdlg = new BanKuaiAndGeGuTablesFilterSetting (this,prop,this.filterHeader);
-		filterdlg.setModal(false);
+		filterdlg.setModal(true);
 		filterdlg.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		filterdlg.toFront();
 		filterdlg.setVisible(true);

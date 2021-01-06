@@ -76,7 +76,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
         int modelRow = this.convertRowIndexToModel(rowIndex);
         int colIndex = columnAtPoint(p);
         
-        StockOfBanKuai stkofbk = ((BanKuaiGeGuTableModelFromPropertiesFile)this.getModel()).getStock(modelRow);
+        StockOfBanKuai stkofbk = (StockOfBanKuai) ((BanKuaiGeGuTableModelFromPropertiesFile)this.getModel()).getNode(modelRow);
         if(colIndex == 0) { // highlight the zhangfu of the week
         	String period = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDisplayPeriod();
         	LocalDate requireddate = ((BanKuaiGeGuTableModelFromPropertiesFile)this.getModel()).getCurDisplayedDate ();

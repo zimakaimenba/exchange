@@ -190,7 +190,7 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic imp
 		}
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuBasicTableModel) this.getModel()).getStock(model_row);
+		StockOfBanKuai stockofbankuai = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel) this.getModel()).getNode(model_row);
 	
 		stockofbankuai.setBkLongTou(!stockofbankuai.isBkLongTou());
 
@@ -203,7 +203,7 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic imp
 		 int  view_row = this.getSelectedRow();
 		 int  model_row = this.convertRowIndexToModel(view_row);//将视图中的行索引转化为数据模型中的行索引
 		 
-		 StockOfBanKuai stockofbk = ((BanKuaiGeGuBasicTableModel)this.getModel()).getStock(model_row);
+		 StockOfBanKuai stockofbk = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)this.getModel()).getNode(model_row);
 		 this.stockmanager.getcBxstockcode().updateUserSelectedNode(stockofbk.getStock() );
 		 this.stockmanager.toFront();
 	}
@@ -249,7 +249,7 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic imp
 		}
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		StockOfBanKuai stockofbankuai = ((BanKuaiGeGuBasicTableModel) this.getModel()).getStock(model_row);
+		StockOfBanKuai stockofbankuai = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel) this.getModel()).getNode(model_row);
 
 		LocalDate fxdate = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDisplayedDate();
 		
@@ -283,7 +283,8 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic imp
 		}
 		
 		int  model_row = this.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
-		Stock stock = ((BanKuaiGeGuBasicTableModel) this.getModel()).getStock (model_row).getStock();
+		StockOfBanKuai stockofbk = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel) this.getModel()).getNode (model_row);
+		Stock stock = stockofbk.getStock();
 		
 		JDialogForTagSearchMatrixPanelForAddSysNewsToNode newlog 
 			= new JDialogForTagSearchMatrixPanelForAddSysNewsToNode (  stock);
