@@ -46,11 +46,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	
 	protected Object[] getTableCellRendererBackgroundForegroundColor (JTable table, TDXNodes node,Object value, int row,  int col)
 	{
-//		Stock stock = stockofbank.getStock();
-		Stock stock ;
-		if(node instanceof StockOfBanKuai)
-			stock = ((StockOfBanKuai)node).getStock();
-		
 		Color foreground = Color.BLACK, background = Color.white; String valuetext ="";
 	    String current_column_bg_kw = null;
 	    switch (col) {
@@ -257,18 +252,26 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	
 	    };
 	    
+		Stock stock = null ; Boolean reviewedtoday = false; 
+		if(node instanceof StockOfBanKuai) {
+			stock = ((StockOfBanKuai)node).getStock();
+			if(stock.wetherHasReiewedToday())
+				reviewedtoday = true;
+		} else
+			reviewedtoday = node.wetherHasReiewedToday();
+	    
 	    Font font = this.getFont();
-	    if(node.wetherHasReiewedToday() && table.isRowSelected(row) ) {
+	    if(reviewedtoday && table.isRowSelected(row) ) {
         	Font defaultFont = this.getFont();
         	 font = new Font(defaultFont.getName(), Font.ITALIC,defaultFont.getSize());
         	
         } else
-        if(node.wetherHasReiewedToday() && !table.isRowSelected(row) && current_column_bg_kw != null && !current_column_bg_kw.equalsIgnoreCase("infengxifile") ) { //已经浏览过的个股，全部灰色，不会混淆，更加清晰
+        if(reviewedtoday && !table.isRowSelected(row) && ( current_column_bg_kw == null || !current_column_bg_kw.equalsIgnoreCase("infengxifile") ) ) { //已经浏览过的个股，全部灰色，不会混淆，更加清晰
             	Font defaultFont = this.getFont();
             	font = new Font(defaultFont.getName(), Font.ITALIC,defaultFont.getSize());
             	background = Color.gray;
         } else
-        if (node.wetherHasReiewedToday() && !table.isRowSelected(row) && current_column_bg_kw != null && current_column_bg_kw.equalsIgnoreCase("infengxifile") ) {//已经浏览过的个股，全部灰色，不会混淆，更加清晰
+        if (reviewedtoday && !table.isRowSelected(row) && current_column_bg_kw != null && current_column_bg_kw.equalsIgnoreCase("infengxifile") ) {//已经浏览过的个股，全部灰色，不会混淆，更加清晰
         	Font defaultFont = this.getFont();
         	font = new Font(defaultFont.getName(), Font.ITALIC,defaultFont.getSize());
         	if(background == Color.WHITE)

@@ -512,6 +512,7 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanebk.setSelectedIndex(0);
 		tabbedPanebkzb.setSelectedIndex(0);
 		
+		selectedbk.setHasReviewedToday(true);
 		LocalDate curselectdate = null;
 		try{
 			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -1138,7 +1139,7 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void refreshTDXGeGuZhanBi (Stock selectstock)
 	{
-		selectstock.setHasReviewedToday();
+		selectstock.setHasReviewedToday(true);
 		
 		LocalDate curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 //		selectstock = allbksks.getStock(selectstock,CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,

@@ -35,9 +35,9 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	private List<Range<LocalDate>> dqguangzhurange;
 	
 	private Boolean hasreviewedtoday;
-	public void setHasReviewedToday ()
+	public void setHasReviewedToday (Boolean reviewedornot)
 	{
-		this.hasreviewedtoday = true;
+		this.hasreviewedtoday = reviewedornot;
 	}
 	public Boolean wetherHasReiewedToday ()
 	{
