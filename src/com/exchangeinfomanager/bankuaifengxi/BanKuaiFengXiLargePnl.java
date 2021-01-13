@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -78,7 +79,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //	private Boolean exportuserselectedinfotocsv;
 	private String globeperiod;
 
-	public BanKuaiFengXiLargePnl (TDXNodes nodebkbelonged, TDXNodes node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period,String guitype)
+	public BanKuaiFengXiLargePnl (TDXNodes nodebkbelonged, TDXNodes node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period,String guitype, Properties prop)
 	{
 		this.nodebankuai = nodebkbelonged;
 		this.displaynode = node;
@@ -86,6 +87,8 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //		initialzieSysconf ();
 
 		createGui (nodebkbelonged, guitype);
+		this.nodecombinedpnl.setProperties(prop);
+		
 		createEvents ();
 
 
@@ -313,19 +316,15 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 //			this.nodebkcjezblargepnl.setDrawAverageDailyCjeOfWeekLine(true);
 			//实践后决定永远显示大盘的成交量。
 			BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			this.nodebkcjezblargepnl.updatedDate(treeroot, displayedstartdate1, displayedenddate1, period);
+			DaPan dapan = (DaPan) treeofbkstk.getModel().getRoot();
+			nodecombinedpnl.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (dapan);
+			this.nodebkcjezblargepnl.updatedDate(dapan, displayedstartdate1, displayedenddate1, period);
 		}
 		
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
 		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  NodeGivenPeriodDataItem.DAY);
 		
 		ServicesForNewsLabel svslabel = new NewsLabelServices ();
-//		ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
-//    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,displayedstartdate1,displayedenddate1);
-//    	svsdqgz.setCache(dqgzcache);
-//    	nodekpnl.displayZhiShuGuanJianRiQiToGui(dqgzcache.produceNews());
-    	
     	ServicesForNews svsnews = new NewsServices ();
     	NewsCache newcache = new NewsCache (node.getMyOwnCode(),svsnews,svslabel,displayedstartdate1,displayedenddate1);
     	svsnews.setCache(newcache);
@@ -369,20 +368,12 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		
 		this.nodecombinedpnl = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical",guitype);
 		this.nodecombinedpnl.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上日均成交额，下占比线
+		nodecombinedpnl.setDisplayZhanBiInLine(true);
 		
 		if(guitype.toUpperCase().equals("CJE"))
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
 		else
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjlPnl ();
-//		this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
-		
-//		if(nodebkbelonged.getType() == BkChanYeLianTreeNode.TDXBK) {//如果上级node是板块，显示是板块的成交额占比
-//			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjeZhanbiPnl ();
-//			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.RED.brighter());
-//		} else if(nodebkbelonged.getType() == BkChanYeLianTreeNode.DAPAN) {//如果上级node是大盘，显示是大盘的成交量
-//			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
-//			this.nodebkcjezblargepnl.setBarDisplayedColor(Color.orange);
-//		}
 		
 		this.centerPanel.add(this.nodecombinedpnl);
 		this.centerPanel.add(this.nodebkcjezblargepnl);

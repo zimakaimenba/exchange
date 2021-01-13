@@ -570,6 +570,10 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	
 	public Boolean shouldDisplayZhanBiInLine ()
 	{
+		if(this.displayzhanbishujuinline == null )
+			return false;
+		else
+			
 		return this.displayzhanbishujuinline;
 	}
 	

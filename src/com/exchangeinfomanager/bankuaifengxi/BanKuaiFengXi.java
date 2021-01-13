@@ -496,7 +496,7 @@ public class BanKuaiFengXi extends JDialog
 		svsdp = null;
 
 		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
-		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (dapan); 
+//		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (dapan); 
 		//板块自身占比
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 				tmplistener.updatedDate(dapan, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
@@ -534,7 +534,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		//显示K线
 		paneldayCandle.displayQueKou(false);
-		refreshKXianOfTDXNodeWithSuperBanKuai ( selectedbk, zhishubk );
+		refreshKXianOfTDXNodeWithSuperBanKuai ( selectedbk, zhishubk, NodeGivenPeriodDataItem.DAY );
 		
 		//板块所属个股
 		if(selectedbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
@@ -552,7 +552,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
 		DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (treeroot); 
+		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot); 
 		//板块自身占比
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
@@ -679,7 +679,7 @@ public class BanKuaiFengXi extends JDialog
 			
 			paneldayCandle.displayQueKou(true);
 //			refreshKXianOfTDXNodeWithSuperBanKuai (selectstock, selectstock.getBanKuai() ); //个股对板块的K线
-			refreshKXianOfTDXNodeWithSuperBanKuai (selectstock, null ); //如果bankuai = null,则优先显示K线和成交量
+			refreshKXianOfTDXNodeWithSuperBanKuai (selectstock, null, NodeGivenPeriodDataItem.DAY ); //如果bankuai = null,则优先显示K线和成交量
 			
 			//同步板块和个股高亮的日期
 			LocalDate curselecteddate = panelbkwkcjezhanbi.getCurSelectedDate();
@@ -1142,9 +1142,8 @@ public class BanKuaiFengXi extends JDialog
 		selectstock.setHasReviewedToday(true);
 		
 		LocalDate curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		selectstock = allbksks.getStock(selectstock,CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate,
-//				NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
-		
+		DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
+		panelGgDpCjeZhanBi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot); 
 		
 		for (BarChartPanelDataChangedListener tmplistener : barchartpanelstockdatachangelisteners) {
 			tmplistener.updatedDate(selectstock, CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate, globeperiod);
@@ -1153,7 +1152,7 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 板块和个股的K线，可以同时显示，用以对比研究
 	 */
-	private void refreshKXianOfTDXNodeWithSuperBanKuai (TDXNodes selectnode,TDXNodes superbankuai)
+	private void refreshKXianOfTDXNodeWithSuperBanKuai (TDXNodes selectnode,TDXNodes superbankuai,String displayperiod)
 	{
 		LocalDate curselectdate = dateChooser.getLocalDate();
 		if(this.globecalwholeweek)
@@ -1176,11 +1175,11 @@ public class BanKuaiFengXi extends JDialog
 						 NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
 				 svsbk.syncNodeData(superbankuai);
 				 
-				 paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
+				 paneldayCandle.updatedDate(superbankuai,tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,displayperiod);
 			 } else //没有superbankuai,
-				 paneldayCandle.updatedDate(tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
+				 paneldayCandle.updatedDate(tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,displayperiod );
 		 } else
-			 paneldayCandle.updatedDate(tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
+			 paneldayCandle.updatedDate(tmpnode,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,displayperiod );
 
 		
 		ServicesForNewsLabel svslabel = new NewsLabelServices ();
@@ -1824,7 +1823,7 @@ public class BanKuaiFengXi extends JDialog
         				BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
                     	
         				paneldayCandle.displayQueKou(true);
-        				refreshKXianOfTDXNodeWithSuperBanKuai ( stockofbank, selectedbk );
+        				refreshKXianOfTDXNodeWithSuperBanKuai ( stockofbank, selectedbk, NodeGivenPeriodDataItem.DAY );
                 		
                 		
                     } else if(zhishuinfo.toLowerCase().equals("dapanzhishu") ) {
@@ -1842,7 +1841,7 @@ public class BanKuaiFengXi extends JDialog
                     		paneldayCandle.displayQueKou(true);
                     	else
                     		paneldayCandle.displayQueKou(false);
-                    	refreshKXianOfTDXNodeWithSuperBanKuai ( stockofbank, zhishubk );
+                    	refreshKXianOfTDXNodeWithSuperBanKuai ( stockofbank, zhishubk , NodeGivenPeriodDataItem.DAY);
                     	
                     } else if(zhishuinfo.toLowerCase().equals("zhishuguanjianriqi") ) {
 //                		Collection<InsertedMeeting> zhishukeylists = newsdbopt.getZhiShuKeyDates(null, null);
@@ -2503,7 +2502,7 @@ public class BanKuaiFengXi extends JDialog
     				Boolean result = source.equals(BanKuaiFengXiCategoryBarChartCjePnl.class);
     				if(source.equals(BanKuaiFengXiCategoryBarChartCjePnl.class) ) {
     					String readingsettinginprop  = prop.getProperty ("readoutfxresultinvoice");
-    					if(readingsettinginprop.toUpperCase().equals("TRUE"))
+    					if(readingsettinginprop != null  && readingsettinginprop.toUpperCase().equals("TRUE"))
     						readAnalysisResult ( null,  selectstock, datekey );
     				}
     				
@@ -3631,11 +3630,11 @@ public class BanKuaiFengXi extends JDialog
 		
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK  ) {
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod,guitype);
+			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod,guitype,this.prop);
 			
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, overlapldstartday, overlapldendday, globeperiod,guitype);
+			largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, overlapldstartday, overlapldendday, globeperiod,guitype,this.prop);
 		}
 		
 		if(datekey != null)
@@ -4199,10 +4198,12 @@ public class BanKuaiFengXi extends JDialog
 		this.panelGgDpCjeZhanBi.setDrawQueKouLine(false);
 		this.panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
 		this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true);
+		this.panelGgDpCjeZhanBi.setDisplayZhanBiInLine(true);
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
 		
 		
 		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
+		this.panelggdpcjlwkzhanbi.setDisplayZhanBiInLine(true);
 		
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		
@@ -4223,11 +4224,13 @@ public class BanKuaiFengXi extends JDialog
 		);
 		
 		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
+		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
+		this.panelbkwkcjezhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
 //		panelbkwkcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
-		
+
 		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
+		this.pnlbkwkcjlzhanbi.setDisplayZhanBiInLine(true);
 		
 		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
 		panel_2.setLayout(gl_panel_2);
@@ -4896,11 +4899,12 @@ public class BanKuaiFengXi extends JDialog
 		this.panelGgDpCjeZhanBi.setDrawQueKouLine(false);
 		this.panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
 		this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true);
+		this.panelGgDpCjeZhanBi.setDisplayZhanBiInLine(true);
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
 		
 		
 		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
-		
+		this.panelggdpcjlwkzhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		
 		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
@@ -4921,12 +4925,14 @@ public class BanKuaiFengXi extends JDialog
 		);
 		
 		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
+		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
+		this.panelbkwkcjezhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
 //		panelbkwkcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
+
 		
 		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
-		
+		this.pnlbkwkcjlzhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
 		panel_2.setLayout(gl_panel_2);
 		
@@ -5581,6 +5587,11 @@ public class BanKuaiFengXi extends JDialog
 				lblNewLabel.setName(zhishucode);
 			else
 				lblNewLabel.setName("NoCode");
+			propname = "kuaijiezhishu" + String.valueOf(i) + "_color";
+			String zhishucolor  = prop.getProperty (propname);
+			if(zhishucolor != null )
+				lblNewLabel.setForeground( Color.decode(zhishucolor)  );
+			
 			pnlZhiShu.add(lblNewLabel);
 			pnlZhiShu.add(new JLabel("  "));
 			

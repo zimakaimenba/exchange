@@ -146,7 +146,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCandlestickPnl.class);
 	public static final String ZHISHU_PROPERTY = "combinedzhishu";
-//	private SystemConfigration sysconfig;
 	protected TDXNodes curdisplayednode;
 	protected TDXNodes curdisplayedsupernode;
 	protected String globeperiod;
@@ -173,6 +172,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	
 	private List<ValueMarker> categorymarkerlist; //指数关键日期的marker
 	private JMenuItem mntmamo;
+	private JMenuItem mntmktransferdayandweek;
 
 	public TDXNodes getCurDisplayedNode ()
 	{
@@ -235,7 +235,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			displayQueKouToChart ();
 		
 		if(node.getType() == TDXNodes.TDXGG && this.displaymacddivergence )
-			displayMACDDivergenceToChart (NodeGivenPeriodDataItem.DAY);
+			displayMACDDivergenceToChart (period);
 		
 		if(this.checkDatesShunXu (startdate,enddate) )
 			setPanelTitle ( node, startdate, enddate);
@@ -266,7 +266,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			displayQueKouToChart ();
 		
 		if(node.getType() == TDXNodes.TDXGG && this.displaymacddivergence )
-			displayMACDDivergenceToChart (NodeGivenPeriodDataItem.DAY);
+			displayMACDDivergenceToChart (period);
 		
 		setPanelTitle ( node, requirestart, requireend);
 		
@@ -1212,15 +1212,30 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			}
 		});
 		
+		mntmktransferdayandweek.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				transferKxianBetweenDayAndWeek ();
+			}
+		});
 		mntmamo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				mntmbankuai.setText("叠加板块指数");
-//				mntmzhishu.setText("叠加指定大盘指数");
-//				mntmamo.setText("X 叠加成交额");
-
 				combinedAMO ();
 			}
 		});
+	}
+	/*
+	 * 
+	 */
+	protected void transferKxianBetweenDayAndWeek()
+	{
+		// TODO Auto-generated method stub
+		if(this.globeperiod == NodeGivenPeriodDataItem.DAY) {
+//			kk
+		} else 
+		if(this.globeperiod == NodeGivenPeriodDataItem.WEEK) {
+			
+		}
+		
 	}
 	protected void combinedAMO() 
 	{
@@ -1233,17 +1248,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	}
 	protected void combinedZhiShuKXian(String zhishu) 
 	{
-//		PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, oldText, this.dateselected.toString() + this.tooltipselected );
-//        this.firePropertyChange(evt);
-		
-//		String danpanzhishu = JOptionPane.showInputDialog(null,"请输入叠加的大盘指数","叠加指数", JOptionPane.QUESTION_MESSAGE);
 		try {
 			this.firePropertyChange(ZHISHU_PROPERTY, "", zhishu);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	/*
 	 * 
@@ -1324,10 +1333,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		ChartFactory.setChartTheme(standardChartTheme);
 		
 //		JPopupMenu popupMenu = new JPopupMenu();
+		mntmktransferdayandweek = new JMenuItem("日K/周K转换");
 		mntmamo = new JMenuItem("叠加成交额");
 		mntmbankuai = new JMenuItem("叠加板块指数");
 		mntmzhishu = new JMenuItem("叠加指定大盘指数");
-
+		chartPanel.getPopupMenu().add(mntmktransferdayandweek);
 		chartPanel.getPopupMenu().add(mntmamo);
 		chartPanel.getPopupMenu().add(mntmbankuai);
 		chartPanel.getPopupMenu().add(mntmzhishu);
@@ -1399,7 +1409,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		if(selecteddate == null)
 			return;
 		
-		this.highLightSpecificDateCandleStick(selecteddate, NodeGivenPeriodDataItem.DAY, true);
+		this.highLightSpecificDateCandleStick(selecteddate, this.globeperiod, true);
 	}
 	@Override
 	public void highLightSpecificBarColumn(Integer columnindex) {

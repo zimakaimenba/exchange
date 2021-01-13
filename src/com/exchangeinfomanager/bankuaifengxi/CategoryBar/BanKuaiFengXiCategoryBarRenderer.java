@@ -44,8 +44,6 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
         
         this.setBarPainter(new StandardBarPainter());
         this.setShadowVisible(false);
-        
-//        setupProperties ();
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarRenderer.class);

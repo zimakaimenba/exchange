@@ -172,7 +172,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	public void setDisplayZhanBiInLine (Boolean draw)
 	{
 //		cjecjlpnlup.setDisplayZhanBiInLine(draw) ;
-		((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine(draw) ;
+		if(this.pnltype.equalsIgnoreCase("CJE"))
+			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine(draw) ;
+		else
+			((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine(draw) ;
 	}
 	public void setDrawAverageDailyCjeOfWeekLine  (Boolean draw)
 	{
@@ -180,16 +183,16 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).setDrawAverageDailyCjeOfWeekLine(draw) ;
 		else
 			((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).setDrawAverageDailyCjlOfWeekLine(draw) ;
-		
-//		cjecjlpnlup.setDisplayZhanBiInLine(false) ;
-//		((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine(draw) ;
 	}
 	/*
 	 * 
 	 */
-	public void setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (TDXNodes supernode) 
+	public void setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (TDXNodes supernode) 
 	{
-		((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje( supernode);
+		if(this.pnltype.toUpperCase().equals("CJE"))
+			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl( supernode);
+		else
+			((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl( supernode);
 	}
 	/*
 	 * 
@@ -317,7 +320,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = ((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).getSettingSpecificSuperBanKuai();
 			if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) {
 				DaPan treeroot = (DaPan) this.curdisplayednode.getRoot();
-				((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (treeroot);
+				((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot);
 				shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = treeroot;
 			}
 			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
@@ -350,7 +353,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).getSettingSpecificSuperBanKuai();
 			if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) {
 				DaPan treeroot = (DaPan) this.curdisplayednode.getRoot();
-				((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjlInsteadOfSelfCjl (treeroot);
+				((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot);
 				shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = treeroot;
 			}
 			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);

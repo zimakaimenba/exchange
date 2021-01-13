@@ -61,7 +61,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
         createGuiAndEvents ();
 	}
 	private static final long serialVersionUID = 1L;
-	private  TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
+	protected  TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
 	private Boolean displayaveragedailycje = false;
 	protected JMenuItem mntmHideZdt;
 	protected JMenuItem mntmHideQueKouData;
@@ -795,7 +795,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	/*
 	 * 
 	 */
-	public void setDisplayBarOfSpecificBanKuaiCjeInsteadOfSelfCje (TDXNodes supernode) 
+	public void setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (TDXNodes supernode) 
 	{
 		this.shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = supernode;
 	}

@@ -143,7 +143,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		
 		Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
 		
-		if(this.shouldDisplayZhanBiInLine() != null && this.shouldDisplayZhanBiInLine() ) {
+		if( this.shouldDisplayZhanBiInLine() ) {
 			super.resetLineDate ();
 			this.dipalyCjlZBLineDataToGui ( super.getCurDisplayedNode().getNodeXPeroidData(period),period );
 		}
@@ -427,7 +427,10 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 	}
 	public Boolean shouldDisplayZhanBiInLine ()
 	{
-		return this.displayzhanbishujuinline;
+		if(displayzhanbishujuinline == null)
+			return false;
+		else
+			return this.displayzhanbishujuinline;
 	}
 
 	@Override

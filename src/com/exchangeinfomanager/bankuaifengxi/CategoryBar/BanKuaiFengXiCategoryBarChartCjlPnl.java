@@ -99,7 +99,10 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 	{
 		return shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje;
 	}
-	
+	public void setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (TDXNodes supernode) 
+	{
+		this.shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = supernode;
+	}
 	public void updatedDate (TDXNodes node, LocalDate startdate, LocalDate enddate,String period)
 	{
 		super.setCurDisplayNode( node,startdate, enddate, period );
@@ -517,10 +520,6 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 				averagelinechartdataset.clear();
 		}
 		
-		public void setDisplayBarOfSpecificBanKuaiCjlInsteadOfSelfCjl (TDXNodes supernode) 
-		{
-			this.shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = supernode;
-		}
 		public void setDrawAverageDailyCjlOfWeekLine(Boolean draw) {
 			this.displayaveragedailycjl  = draw;
 			
