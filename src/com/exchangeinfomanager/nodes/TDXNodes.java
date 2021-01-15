@@ -48,10 +48,6 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	}
 	public void addNewDuanQiGuanZhuRange (Range<LocalDate> inter) 
 	{
-//		for(int i=0; i<qiangshiinterval.size();i++) {
-//			Interval tmpin = qiangshiinterval.get(i);
-//			
-//		}
 		if(dqguangzhurange == null)
 			dqguangzhurange = new ArrayList<> ();
 		

@@ -13,6 +13,8 @@ import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.table.JTableHeader;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
@@ -20,10 +22,11 @@ import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTa
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 
+import net.coderazzi.filters.IFilterObserver;
 import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.TableFilterHeader;
 
-public abstract class BanKuaiandGeGuTableBasic extends JTable 
+public abstract class BanKuaiandGeGuTableBasic extends JTable implements  IFilterObserver
 {
 	private String systeminstalledpath;
 	protected Properties prop;
@@ -39,11 +42,10 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable
 		setPropertiesInfo (propertiesfile);
 		
 		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
+
 		JPopupMenu popupMenu = new JPopupMenu();
-		
 		menuItemfiltersetting = new JMenuItem("…Ë÷√Filter");
 		popupMenu.add(menuItemfiltersetting);
-		
 		filterHeader.setComponentPopupMenu(popupMenu);
 		
 		createEvents ();
@@ -63,6 +65,13 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable
 	
 	private void createEvents() 
 	{
+//		filterHeader.getTable().getRowSorter().addRowSorterListener(new RowSorterListener() {
+//            @Override
+//            public void sorterChanged(RowSorterEvent e) {
+//                System.out.println(e.getPreviousRowCount());
+//            }
+//         });
+		
 		menuItemfiltersetting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

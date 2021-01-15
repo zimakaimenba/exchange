@@ -100,7 +100,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
         	tip = timett;
         } else {
         	try {
-        		tip =  getValueAt(modelRow, colIndex).toString();
+        		tip =  getValueAt(rowIndex, colIndex).toString();
         	} catch ( java.lang.NullPointerException ex) {}
         }
 //        try {

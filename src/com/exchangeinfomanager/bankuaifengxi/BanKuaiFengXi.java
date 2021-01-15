@@ -496,7 +496,7 @@ public class BanKuaiFengXi extends JDialog
 		svsdp = null;
 
 		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
-//		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (dapan); 
+		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (dapan); 
 		//板块自身占比
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
 				tmplistener.updatedDate(dapan, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
@@ -694,7 +694,7 @@ public class BanKuaiFengXi extends JDialog
 			showReminderMessage (bkfxremind.getStockremind());
 			//语言播报
 			String readingsettinginprop  = prop.getProperty ("readoutfxresultinvoice");
-			if(readinfoout && readingsettinginprop.toUpperCase().equals("TRUE"))
+			if(readingsettinginprop != null && readingsettinginprop.toUpperCase().equals("TRUE") && readinfoout)
 				readAnalysisResult ( selectstock.getBanKuai(),  selectstock.getStock(), this.dateChooser.getLocalDate() );
 			
 			hourglassCursor = null;
@@ -784,7 +784,7 @@ public class BanKuaiFengXi extends JDialog
 						tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
 						tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
 					} catch (java.lang.IllegalArgumentException ex) {
-						ex.printStackTrace();
+//						ex.printStackTrace();
 					}
 					
 					//在当前表就有的话，就把相关PANEL清空
@@ -5583,10 +5583,13 @@ public class BanKuaiFengXi extends JDialog
 			propname = "kuaijiezhishu" + String.valueOf(i) + "_code";
 			String zhishucode  = prop.getProperty (propname);
 			JLabel lblNewLabel = new JLabel(zhishuname);
-			if(zhishucode != null)
+			if(zhishucode != null) {
 				lblNewLabel.setName(zhishucode);
-			else
+				lblNewLabel.setToolTipText(zhishucode);
+			} else {
 				lblNewLabel.setName("NoCode");
+				lblNewLabel.setToolTipText("NoCode");
+			}
 			propname = "kuaijiezhishu" + String.valueOf(i) + "_color";
 			String zhishucolor  = prop.getProperty (propname);
 			if(zhishucolor != null )

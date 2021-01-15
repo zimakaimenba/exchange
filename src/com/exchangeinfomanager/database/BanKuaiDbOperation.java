@@ -2376,13 +2376,16 @@ public class BanKuaiDbOperation
 				continue;
 			
 			String tmpbkcode = bk.getMyOwnCode();
-			String bkfilename = (filenamerule.replaceAll("YY",cys.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
-			File tmpbkfile = new File(exportath + "/" + bkfilename);
-			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead()) {  
+			File tmpbkfile = null; String bkfilename = null;
+			if(bk.getMyOwnCode().equalsIgnoreCase("000852"))  //通达信不知道为什么，中证1000的每日交易数据输出文件不一样
+				 bkfilename = "62000852.TXT";
+			else 
+				bkfilename = (filenamerule.replaceAll("YY",cys.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
+			tmpbkfile = new File(exportath + "/" + bkfilename);
+			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead())   
 			    continue; 
-			} 
 
-				CachedRowSetImpl  rs = null;
+			CachedRowSetImpl  rs = null;
 				LocalDate ldlastestdbrecordsdate = null;
 				try { 				
 					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME"
@@ -2598,6 +2601,18 @@ public class BanKuaiDbOperation
 						List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
 
                         if( tmplinelist.size() ==7 && !tmplinelist.get(5).equals("0")) { //有可能是半天数据，有0，不完整，不能录入,对个股来说，半天数据也有，要特别处理
+                        	String open = tmplinelist.get(1).trim();
+                        	String high = tmplinelist.get(2).trim();
+                        	String low  = tmplinelist.get(3).trim();
+                        	String close= tmplinelist.get(4).trim();
+                        	String vol = tmplinelist.get(5).trim();
+                        	String amo = tmplinelist.get(6).trim();
+                        	
+                        	if(tmpbkcode.equalsIgnoreCase("000852")) {//中证1000的文件，vol and amo 数据没有精确到个位
+                        		vol = String.valueOf( Double.parseDouble(vol) * 10000 );
+                        		amo = String.valueOf( Double.parseDouble(amo) * 1000000 );
+                        	}
+                        		
                         	LocalDate curlinedate = null;
                     		try {
                     			String beforparsedate = tmplinelist.get(0);
@@ -2607,12 +2622,12 @@ public class BanKuaiDbOperation
                         			String sqlinsertstat = "INSERT INTO " + inserttablename +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额) values ("
                     						+ "'" + tmpbkcode.trim() + "'" + ","
                     						+ "'" +  curlinedate + "'" + ","
-                    						+ "'" +  tmplinelist.get(1).trim() + "'" + "," 
-                    						+ "'" +  tmplinelist.get(2).trim() + "'" + "," 
-                    						+ "'" +  tmplinelist.get(3).trim() + "'" + "," 
-                    						+ "'" +  tmplinelist.get(4).trim() + "'" + "," 
-                    						+ "'" +  tmplinelist.get(5).trim() + "'" + "," 
-                    						+ "'" +  tmplinelist.get(6).trim() + "'"  
+                    						+ "'" +  open + "'" + "," 
+                    						+ "'" +  high + "'" + "," 
+                    						+ "'" +  low + "'" + "," 
+                    						+ "'" +  close + "'" + "," 
+                    						+ "'" +  vol + "'" + "," 
+                    						+ "'" +  amo + "'"  
                     						+ ")"
                     						;
                         			logger.debug(sqlinsertstat);

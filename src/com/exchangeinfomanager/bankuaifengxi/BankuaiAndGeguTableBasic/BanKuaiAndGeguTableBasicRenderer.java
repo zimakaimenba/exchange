@@ -33,6 +33,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+import com.google.common.collect.Range;
 
 public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 {
@@ -259,6 +260,11 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 				reviewedtoday = true;
 		} else
 			reviewedtoday = node.wetherHasReiewedToday();
+		
+		LocalDate curdisplaydate = ((BandKuaiAndGeGuTableBasicModel)table.getModel()).getCurDisplayedDate();
+		Range<LocalDate> range = ((TDXNodes)node).isInDuanQiGuanZhuRange (curdisplaydate); 
+        if(range != null)  
+        	background = new Color(102,178,255);
 	    
 	    Font font = this.getFont();
 	    if(reviewedtoday && table.isRowSelected(row) ) {
@@ -286,6 +292,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			if(rowselectedindex != null && col == Integer.parseInt(rowselectedindex.trim() ) )  //	    if( columnname.equals("名称") ) { //个股名称
 	    		background = new Color(102,102,255);
 	    }
+	    
 	    Object[] textbackgroundforegroundfont = {valuetext,background, foreground, font};
 	    return textbackgroundforegroundfont;
 	}
