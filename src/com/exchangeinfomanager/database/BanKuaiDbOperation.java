@@ -5628,10 +5628,13 @@ public class BanKuaiDbOperation
 //		 return true;
 //		}
 
-		public Stock getTDXBanKuaiForAStock(Stock stockbasicinfo) 
+		public Stock getTDXBanKuaiForAStock(Stock stock) 
 		{
+			if(stock.getGeGuCurSuoShuTDXSysBanKuaiList() != null && !stock.getGeGuCurSuoShuTDXSysBanKuaiList().isEmpty() )
+				return  stock;
+			
 			BanKuaiAndStockTree treeofstkbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks() ;
-			String stockcode = stockbasicinfo.getMyOwnCode();
+			String stockcode = stock.getMyOwnCode();
 			Set<BkChanYeLianTreeNode> stockbanks = new HashSet<>();
 
 			String sqlquerystat =null;
@@ -5649,43 +5652,42 @@ public class BanKuaiDbOperation
 					" \r\n" + 
 					"SELECT gpfg.`板块代码` 板块代码, tdxbk.`板块名称` 板块名称  ,  gpfg.`股票权重`\r\n" + 
 					"FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk \r\n" + 
+					" WHERE 股票代码= '" + stockcode + "'AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)" +
+					"\r\n" +
+					"UNION \r\n" + 
+					" \r\n" + 
+					"SELECT gpfg.`板块代码` 板块代码, tdxbk.`板块名称` 板块名称  ,  gpfg.`股票权重`\r\n" + 
+					"FROM 股票通达信交易所指数对应表 gpfg, 通达信板块列表 tdxbk \r\n" + 
 					" WHERE 股票代码= '" + stockcode + "'AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)"
 					;
 			
-			logger.debug(sqlquerystat);
+			
 			CachedRowSetImpl rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
 			try  {     
 		        while(rs_gn.next()) {
 		        	String bkcode = rs_gn.getString("板块代码");
 		        	Integer quanzhong = rs_gn.getInt("股票权重");
 		        	BanKuai bk = (BanKuai)treeofstkbk.getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
-		        	Stock tmpstock = (Stock)treeofstkbk.getSpecificNodeByHypyOrCode (stockbasicinfo.getMyOwnCode(),BkChanYeLianTreeNode.TDXGG);
+		        	Stock tmpstock = (Stock)treeofstkbk.getSpecificNodeByHypyOrCode (stock.getMyOwnCode(),BkChanYeLianTreeNode.TDXGG);
 					StockOfBanKuai bkofst = new StockOfBanKuai(bk,tmpstock);
 					bkofst.setStockQuanZhong (quanzhong);
 					bk.addNewBanKuaiGeGu(bkofst);
 		        	stockbanks.add(bk);
 		        } 
 		        
-		    }catch(java.lang.NullPointerException e){ 
-		    	e.printStackTrace();
-		    	
-		    }catch(Exception e) {
-		    	e.printStackTrace();
+		    } catch(java.lang.NullPointerException e){	e.printStackTrace();
+		    } catch(Exception e) {e.printStackTrace();
 		    } finally {
 		    	if(rs_gn != null) {
-		    		try {
-						rs_gn.close();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+		    		try {rs_gn.close();
+					} catch (SQLException e) {	e.printStackTrace();}
 		    		rs_gn = null;
-		    	}
-		    }
+		    }	}
+		    
+			stock.setGeGuCurSuoShuTDXSysBanKuaiList(stockbanks);
 			
-			stockbasicinfo.setGeGuCurSuoShuTDXSysBanKuaiList(stockbanks);
 			
-			return stockbasicinfo;
+			return stock;
 		}
 
 		public String getStockCodeByName(String stockname) 

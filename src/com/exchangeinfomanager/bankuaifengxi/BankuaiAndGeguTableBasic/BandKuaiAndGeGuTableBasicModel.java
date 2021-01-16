@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -178,6 +179,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 //		  DaPan dapan;
 		  
 		  NodeXPeriodData nodexdatawk = null; NodeXPeriodData nodexdataday = null;
+		  
 		  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
 			  Stock stock = ((StockOfBanKuai)node).getStock();
 			  nodexdatawk = stock.getNodeXPeroidData(curperiod);
@@ -188,6 +190,20 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		  }
 		    
 		  switch (column_keyword) {
+		  		case "suoshubankuai" :
+		  			if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
+		  				value = node.getMyOwnCode() + node.getMyOwnName();
+		  			} else 
+		  			if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
+		  				Stock stock = ((StockOfBanKuai)node).getStock();
+		  				Set<BkChanYeLianTreeNode> banklist = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
+		  				String bankuailist = "";
+		  				for(BkChanYeLianTreeNode tmpbknode : banklist) {
+		  					bankuailist = bankuailist + tmpbknode.getMyOwnCode() + tmpbknode.getMyOwnName() + ";" ; 
+		  				}
+		  				value = bankuailist;
+		  			}
+		  			break;
 		       case "nodecode":
 		     	  String stockcode = node.getMyOwnCode();
 		     	  value = stockcode;

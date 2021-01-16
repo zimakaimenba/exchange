@@ -26,7 +26,7 @@ import net.coderazzi.filters.IFilterObserver;
 import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.TableFilterHeader;
 
-public abstract class BanKuaiandGeGuTableBasic extends JTable implements  IFilterObserver
+public abstract class BanKuaiandGeGuTableBasic extends JTable 
 {
 	private String systeminstalledpath;
 	protected Properties prop;

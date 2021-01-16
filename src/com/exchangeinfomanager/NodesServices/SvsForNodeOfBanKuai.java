@@ -149,10 +149,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 			LocalDate requiredendday, String period, Boolean calwholeweek) 
 	{
 		NodeXPeriodData nodedayperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
-		if(bankuai.getMyOwnCode().equals("000852")) {
-			String tempi;
-			tempi = "";
-		}
 		
 		if(!calwholeweek) {
 			LocalDate curdate = ((BanKuai)bankuai).getNodeDataAtNotCalWholeWeekModeLastDate();

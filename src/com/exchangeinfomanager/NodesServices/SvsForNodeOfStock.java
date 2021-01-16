@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.exchangeinfomanager.Services.ServicesForNode;
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListServices;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
@@ -306,6 +307,8 @@ public class SvsForNodeOfStock implements ServicesForNode
 		if(bkohlcstartday == null && bkamostartday == null) 
 			return ;
 		
+		this.getNodeSuoShuBanKuaiList(stock); //先取得板块信息，可以用来在TABLE过滤
+		
 		if(bkohlcstartday == null) {
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
@@ -476,15 +479,6 @@ public class SvsForNodeOfStock implements ServicesForNode
 	public BkChanYeLianTreeNode getNodeSuoShuBanKuaiList (BkChanYeLianTreeNode node)
 	{
 		node = bkdbopt.getTDXBanKuaiForAStock ((Stock)node); //通达信板块信息
-		
-//		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-//		Set<BkChanYeLianTreeNode> bklist = ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList();
-//		for(BkChanYeLianTreeNode bk : bklist) {
-//			BanKuai tmpbk = (BanKuai)bk;
-//			if(tmpbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL))
-//				svsbk.getAllGeGuOfBanKuai((BanKuai) bk);
-//		}
-//		svsbk = null;
 		
 		return node;
 	}

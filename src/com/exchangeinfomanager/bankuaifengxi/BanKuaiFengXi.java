@@ -1258,9 +1258,7 @@ public class BanKuaiFengXi extends JDialog
             }
 		});
 
-		
-//		editorPanebankuai.displayBanKuaiListContentsForStock(selectstock);
-		
+		return;
 	}
 	/*
 	 * 显示用户点击bar column后应该提示的信息
@@ -2758,28 +2756,14 @@ public class BanKuaiFengXi extends JDialog
 						} catch (java.lang.StringIndexOutOfBoundsException e) {
 							logger.debug((String)combxstockcode.getSelectedItem());
 						}
-//						displayStockSuoShuBanKuai((Stock)userinputnode);
+
 					}
-					
-//					int rowindex = tableGuGuZhanBiInBk.getSelectedRow();
-//					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+
 					if(findInputedNodeInTable (nodecode)) { 
 						panelGgDpCjeZhanBi.resetDate();
 						paneldayCandle.resetDate();
 					}
-					
-//					if(!findInputedNodeInTable (nodecode)) { //如果没有找到
-//						tableGuGuZhanBiInBk.setRowSelectionInterval(rowindex,rowindex);
-//						tableGuGuZhanBiInBk.getSelectionModel().clearSelection() ; //把当前在table中选择取消，以免用户觉得已经找到
-						//既然取消了table中的个股，就需要把几个图表的信息清楚，否则用户再去双击这些图表，会出现问题。
-						
-//						panelGgDpCjeZhanBi.resetDate();
-//						paneldayCandle.resetDate();
-//					} else { //在当前表就有的话，就把相关PANEL清空
-//						panelGgDpCjeZhanBi.resetDate();
-//						paneldayCandle.resetDate();
-//					}
-						
+
 			}
 				
 				if(arg0.getStateChange() == ItemEvent.DESELECTED) {
