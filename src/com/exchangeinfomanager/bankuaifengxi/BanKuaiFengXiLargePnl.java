@@ -109,18 +109,23 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		LocalDate requirestart = nodekpnl.getDispalyStartDate();
 		
 		TDXNodes tmpnode = null;
+		if(selectnode.getType() == BkChanYeLianTreeNode.DAPAN) {
+			tmpnode = selectnode;
+		} else
 		if(selectnode.getType() == BkChanYeLianTreeNode.TDXGG) {
 //			selectnode = allbksks.getStock((Stock)selectnode,requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
 //			//日线K线走势，目前K线走势和成交量在日线和日线以上周期是分开的，所以调用时候要特别小心，以后会合并
 //			this.allbksks.syncStockData((Stock)selectnode);
 			
 			tmpnode = selectnode;
-		} else if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
+		} else 
+		if(selectnode.getType() == BkChanYeLianTreeNode.TDXBK) {
 //			selectnode = allbksks.getBanKuai( (BanKuai)selectnode, requirestart,requireend, NodeGivenPeriodDataItem.WEEK);
 //			this.allbksks.syncBanKuaiData( (BanKuai)selectnode);
 			
 			tmpnode = selectnode;
-		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
+		} else
+		if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
 //			Stock stock = allbksks.getStock( ((StockOfBanKuai)selectnode).getStock(),requirestart,requireend,NodeGivenPeriodDataItem.WEEK);
 //			this.allbksks.syncStockData( ((StockOfBanKuai)selectnode).getStock() );
 			

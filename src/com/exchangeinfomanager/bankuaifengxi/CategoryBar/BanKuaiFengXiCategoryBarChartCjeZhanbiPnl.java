@@ -591,11 +591,13 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
     		if(fourthrenderer instanceof BanKuaiFengXiCategoryCjeZhanbiLineRenderer) {
     			((BanKuaiFengXiCategoryLineRenderer)fourthrenderer).setBarColumnShouldChangeColor(indexforline);
     			
-    			NodeXPeriodData nodexdata = super.getCurDisplayedNode().getNodeXPeroidData(super.globeperiod);
-    			((TDXNodesXPeriodExternalData)nodexdata).calulateSpecificDateAMOZhanBiApacheMathKLearnResult(selecteddate);
-    			Integer selectclusteringid = ((TDXNodesXPeriodExternalData)nodexdata).getSpecificDateAMOZhanBiApacheMathKLearnClusteringID (selecteddate);
-    			if(selectclusteringid != null)
-    				((BanKuaiFengXiCategoryCjeZhanbiLineRenderer)fourthrenderer).setKLearningClusterBaseLineId (selectclusteringid);
+    			if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN  ) {
+    				NodeXPeriodData nodexdata = super.getCurDisplayedNode().getNodeXPeroidData(super.globeperiod);
+        			((TDXNodesXPeriodExternalData)nodexdata).calulateSpecificDateAMOZhanBiApacheMathKLearnResult(selecteddate);
+        			Integer selectclusteringid = ((TDXNodesXPeriodExternalData)nodexdata).getSpecificDateAMOZhanBiApacheMathKLearnClusteringID (selecteddate);
+        			if(selectclusteringid != null)
+        				((BanKuaiFengXiCategoryCjeZhanbiLineRenderer)fourthrenderer).setKLearningClusterBaseLineId (selectclusteringid);
+    			}
     		}
     	}
     	

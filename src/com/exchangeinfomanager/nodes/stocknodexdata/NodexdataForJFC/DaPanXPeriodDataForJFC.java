@@ -136,8 +136,6 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			e.printStackTrace();
 			return null;
 		}
-		
-		
 	}
 	
 	@Override
@@ -251,7 +249,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	@Override
 	public String getNodeCode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "000000";
 	}
 
 	@Override
@@ -416,15 +414,33 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		String recordsperiod = getNodeperiodtype();
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
 		return shanghaiperiodrecords.getOHLCRecordsStartDate ();
-		
 	}
 
 	@Override
 	public LocalDate getOHLCRecordsEndDate() {
 		// TODO Auto-generated method stub
-		return null;
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		return shanghaiperiodrecords.getOHLCRecordsEndDate ();
 	}
-
+	public OHLCSeries getOHLCData ()
+	{
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		return ((TDXNodesXPeriodDataForJFC)shanghaiperiodrecords).getOHLCData();
+	}
+	public TimeSeries getMA250 ()
+	{
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		return ((TDXNodesXPeriodDataForJFC)shanghaiperiodrecords).getMA250();
+	}
+	public TimeSeries getMA60 ()
+	{
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		return ((TDXNodesXPeriodDataForJFC)shanghaiperiodrecords).getMA60();
+	}
 	@Override
 	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
 	{

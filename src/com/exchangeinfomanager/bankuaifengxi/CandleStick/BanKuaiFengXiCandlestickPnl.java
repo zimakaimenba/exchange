@@ -121,6 +121,7 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.DaPanXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
@@ -229,6 +230,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		this.globeperiod = period;
 		if(node.getType() != BkChanYeLianTreeNode.DAPAN)
 			setNodeCandleStickDate2 ( node,  startdate,  enddate, period , 0);
+		else
+			setNodeCandleStickDateForDaPan ( node,  startdate,  enddate, period , 0);
 		
 //		displayZhiShuGuanJianRiQi ();
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
@@ -242,7 +245,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		else
 			setPanelTitle ( node,  enddate,startdate);
 		
-		setNodeAMOData (node, period);
+		if(node.getType() != BkChanYeLianTreeNode.DAPAN)
+			setNodeAMOData (node, period);
 		
 		candlestickChart.setNotify(true);
 	}
@@ -258,9 +262,12 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.setNotify(false);
 		this.resetDate();
 		
-		setNodeCandleStickDate2 ( node,  requirestart,  requireend, period , 0);
-		setNodeCandleStickDate2 ( superbk,  requirestart,  requireend, period , 1);
+		if(node.getType() != BkChanYeLianTreeNode.DAPAN)
+			setNodeCandleStickDate2 ( node,  requirestart,  requireend, period , 0);
+		else
+			setNodeCandleStickDateForDaPan ( node,   requirestart,  requireend, period , 0);
 		
+		setNodeCandleStickDate2 ( superbk,  requirestart,  requireend, period , 1);
 
 		if(node.getType() == TDXNodes.TDXGG && this.displayhuibuquekou )
 			displayQueKouToChart ();
@@ -271,6 +278,118 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		setPanelTitle ( node, requirestart, requireend);
 		
 //		setNodeAMOData (node,requirestart,  requireend, period);
+	}
+	private void setNodeCandleStickDateForDaPan(TDXNodes node, LocalDate requirestart, LocalDate requireend, String period,			int indexofseries) 
+	{
+
+		// TODO Auto-generated method stub
+		OHLCSeries tmpohlcSeries =  new OHLCSeries ("Kxian"); ;
+		OHLCSeriesCollection tmpcandlestickDataset;
+		tmpcandlestickDataset = (OHLCSeriesCollection)candlestickChart.getXYPlot().getDataset(indexofseries);
+		
+		TimeSeries tmpma250ts = new TimeSeries ("ma250"); 
+		TimeSeries tmpma60ts = new TimeSeries ("ma60");
+			
+		tmpohlcSeries.setNotify(false);
+		tmpcandlestickDataset.setNotify(false);
+		
+		DaPanXPeriodDataForJFC nodexdata = (DaPanXPeriodDataForJFC) node.getNodeXPeroidData(period);
+		LocalDate nodestart = nodexdata.getOHLCRecordsStartDate();
+		LocalDate nodeend = nodexdata.getOHLCRecordsEndDate();
+		if(nodestart == null)
+			return;
+		
+		Interval result = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval (nodestart,nodeend, requirestart, requireend);
+		DateTime overlapstartdt = result.getStart();
+		DateTime overlapenddt = result.getEnd();
+		
+		LocalDate overlapldstartday = LocalDate.of(overlapstartdt.getYear(), overlapstartdt.getMonthOfYear(), overlapstartdt.getDayOfMonth());
+		LocalDate overlapldendday = LocalDate.of(overlapenddt.getYear(), overlapenddt.getMonthOfYear(), overlapenddt.getDayOfMonth());
+		
+		Integer indexstart = null; //确保START/END日期都有数据
+		do {
+			indexstart = nodexdata.getIndexOfSpecificDateOHLCData(overlapldstartday, 0);
+			if(indexstart == null) {
+				if(period.equals(NodeGivenPeriodDataItem.WEEK))
+					overlapldstartday = overlapldstartday.plus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					overlapldstartday = overlapldstartday.plus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					overlapldstartday = overlapldstartday.plus(1, ChronoUnit.MONTHS) ;
+			}
+		} while (indexstart == null);
+		Integer indexend = null;
+		do {
+			indexend = nodexdata.getIndexOfSpecificDateOHLCData(overlapldendday, 0);
+			if(indexend == null) {
+				if(period.equals(NodeGivenPeriodDataItem.WEEK))
+					overlapldendday = overlapldendday.minus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					overlapldendday = overlapldendday.minus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					overlapldendday = overlapldendday.minus(1, ChronoUnit.MONTHS) ;
+			}
+		} while (indexend == null);
+		
+		double lowestLow =10000.0;  double highestHigh = 0.0;
+		for(int i= indexstart; i<= indexend; i++) {
+			OHLCItem tmpohlc =  (OHLCItem) nodexdata.getOHLCData().getDataItem(i);
+			
+			try {
+				tmpohlcSeries.add(tmpohlc);
+			} catch (org.jfree.data.general.SeriesException e) {
+				e.printStackTrace();
+			}
+			
+			Double low = tmpohlc.getLowValue();
+			Double high = tmpohlc.getHighValue();
+			
+			if(low < lowestLow && low !=0) {//股价不可能为0，为0，说明停牌，无需计算
+				lowestLow = low;
+			}
+			if(high > highestHigh && high !=0) {
+				highestHigh = high;
+			}
+			
+			RegularTimePeriod tmpperiod = tmpohlc.getPeriod();
+			TimeSeriesDataItem tmpma250 = nodexdata.getMA250().getDataItem(tmpperiod);
+			TimeSeriesDataItem tmpma60 = nodexdata.getMA60().getDataItem(tmpperiod);
+			if(tmpma250 != null)
+				tmpma250ts.add(tmpma250);
+			if(tmpma60 != null)
+				tmpma60ts.add(tmpma60);
+
+		}
+
+
+		tmpohlcSeries.setNotify(false);
+		tmpcandlestickDataset.setNotify(false);
+		
+		try {
+			candlestickChart.getXYPlot().getRangeAxis(indexofseries).setRange(lowestLow*0.98, highestHigh*1.02);
+		} catch (java.lang.IllegalArgumentException e ) {
+//			e.printStackTrace();
+		}
+		
+//		if(indexofseries == 0) {
+//			ohlcSeries = tmpohlcSeries;
+//		} else {
+//			dapanohlcSeries = tmpohlcSeries;
+//		}
+		tmpcandlestickDataset.addSeries(tmpohlcSeries);
+		this.maDataSet.addSeries(tmpma250ts);
+		this.maDataSet.addSeries(tmpma60ts);
+		
+		this.maDataSet.setNotify(true);
+		tmpohlcSeries.setNotify(true);
+        tmpcandlestickDataset.setNotify(true);
+        candlestickChart.setNotify(true);
+        tmpohlcSeries.setNotify(false);
+        tmpcandlestickDataset.setNotify(false);
+        candlestickChart.setNotify(false);
+        this.maDataSet.setNotify(false);
+	
+		
 	}
 	
 	/*
@@ -357,7 +476,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 				tmpma60ts.add(tmpma60);
 
 		}
-
 
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);

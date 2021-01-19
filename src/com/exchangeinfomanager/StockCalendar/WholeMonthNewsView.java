@@ -51,7 +51,7 @@ public class WholeMonthNewsView extends View
 	private DuanQiGuanZhuServices svsdqgz;
 	private ZhiShuBoLangServices svszsbl;
 	
-	private WholeMonthNewsComponentsView cqjlview;
+	private WholeMonthCompViewOfCQJL cqjlview;
 
 	private WholeMonthCompViewOfQRS qsview;
 
@@ -59,7 +59,7 @@ public class WholeMonthNewsView extends View
 
 	private WholeMonthCompViewOfDQGZ dqgzview;
 	
-	private WholeMonthNewsComponentsView zsblview;
+	private WholeMonthCompViewOfZSBL zsblview;
 	
 	
 	public WholeMonthNewsView(Collection<ServicesForNews> newssvs) 
@@ -75,7 +75,7 @@ public class WholeMonthNewsView extends View
 	    		
 	    		if( f instanceof ChangQiGuanZhuServices) {
 	    			svscqgz = (ChangQiGuanZhuServices) f;
-	    			cqjlview = new WholeMonthNewsComponentsView (svscqgz, "长期关注"  );
+	    			cqjlview = new WholeMonthCompViewOfCQJL (svscqgz, "长期关注"  );
 	    		} else
 	    		if( f instanceof QiangShiServices) {
 	    			svsqs = (QiangShiServices) f;

@@ -3542,10 +3542,10 @@ public class BanKuaiFengXi extends JDialog
 			return;
 		}
 		
-		if(node.getType() == BkChanYeLianTreeNode.DAPAN) {
-			JOptionPane.showMessageDialog(null,"大盘 不支持更大范围显示分析结果数据，选用上证或其他指数分析效果更佳!","Warning",JOptionPane.WARNING_MESSAGE);
-			return;
-		}
+//		if(node.getType() == BkChanYeLianTreeNode.DAPAN) {
+//			JOptionPane.showMessageDialog(null,"大盘 不支持更大范围显示分析结果数据，选用上证或其他指数分析效果更佳!","Warning",JOptionPane.WARNING_MESSAGE);
+//			return;
+//		}
 		
 		//保证显示时间范围为当前日期前后有数据的48个月(3年)
 		LocalDate curselectdate = dateChooser.getLocalDate().with(DayOfWeek.FRIDAY);
@@ -3612,11 +3612,14 @@ public class BanKuaiFengXi extends JDialog
 		else if( guisource.contains("CJE") )
 			guitype = "CJE";
 		
+		if(node.getType() == BkChanYeLianTreeNode.DAPAN  ) {
+			largeinfo = new BanKuaiFengXiLargePnl (node, node, overlapldstartday, overlapldendday, globeperiod,guitype,this.prop);
+		} else
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK  ) {
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
 			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod,guitype,this.prop);
-			
-		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
+		} else 
+		if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
 			largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, overlapldstartday, overlapldendday, globeperiod,guitype,this.prop);
 		}

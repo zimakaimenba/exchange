@@ -1,29 +1,29 @@
 package com.exchangeinfomanager.StockCalendar;
 
-import java.time.DayOfWeek;
+import java.awt.event.MouseAdapter;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
+
 
 import com.exchangeinfomanager.News.InsertedNews;
-import com.exchangeinfomanager.News.ExternalNewsType.ExternalNewsType;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
-import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ExternalNewsType;
 import com.exchangeinfomanager.Services.ServicesForNews;
 
-
-public class WholeMonthCompViewOfQRS extends WholeMonthNewsComponentsView 
+public class WholeMonthCompViewOfCQJL extends WholeMonthNewsComponentsView
 {
-
-	public WholeMonthCompViewOfQRS(ServicesForNews meetingServices, String title) 
+	public WholeMonthCompViewOfCQJL(ServicesForNews meetingServices, String title) 
 	{
 		super(meetingServices, title);
-		// TODO Auto-generated constructor stub
+	}
+	
+	protected LocalDate initView() 
+	{
+		LocalDate resultdate = super.initView();
+		return resultdate;
 	}
 	
 	public void onNewsChange(NewsCache cache) 
@@ -49,18 +49,23 @@ public class WholeMonthCompViewOfQRS extends WholeMonthNewsComponentsView
         for (News m : meetings) {
             LocalDate mDate = m.getStart();
             LocalDate eDate = ((ExternalNewsType)m).getEnd();
+            int mDateYear = mDate.getYear();
+            int mDateMonth = mDate.getMonthValue();
+            int eDateYear = eDate.getYear();
+            int eDateMonth = eDate.getMonthValue();
             
             LocalDate superdate = super.getDate();
-            LocalDate firstDayInMonth = superdate.withDayOfMonth(1);
-            LocalDate lastDayInMonth;
-            try {
-            	lastDayInMonth = superdate.withDayOfMonth(30);
-            } catch (java.time.DateTimeException e) {
-            	lastDayInMonth = superdate.withDayOfMonth(28);
-            }
+            int superdayYear = superdate.getYear();
+            int superdayMonth = superdate.getMonthValue();
             
-    		if( eDate.isBefore(firstDayInMonth) || mDate.isAfter(lastDayInMonth) )
-    			continue;
+            if (mDateYear == eDateYear) { 
+            	if( superdayMonth < mDateMonth || superdayMonth > eDateMonth )
+        			continue;
+            } else
+            if (mDateYear != eDateYear) {
+            	if( superdayMonth < mDateMonth && superdayMonth > eDateMonth )
+        			continue;
+            }
         	
             if (m.getLabels().isEmpty()) {
                 	JUpdatedLabel label = super.getFormatedLabelForNoneLabel (m);
@@ -77,5 +82,4 @@ public class WholeMonthCompViewOfQRS extends WholeMonthNewsComponentsView
             }
         }
 	}
-
 }

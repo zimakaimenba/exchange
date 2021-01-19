@@ -141,7 +141,7 @@ public class WholeMonthNewsComponentsView extends View
             String actioncode = m.getNewsOwnerCodes();
             LocalDate firstDayInMonth = mDate.withDayOfMonth(1);
             
-            if( !( cache.getServicesForNews() instanceof ChangQiGuanZhuServices) ) //除长期记录外，都要关心年是否一样
+//            if( !( cache.getServicesForNews() instanceof ChangQiGuanZhuServices) ) //除长期记录外，都要关心年是否一样
             	if ( mDate.getYear() != super.getDate().getYear()    )  
             		continue;
             
