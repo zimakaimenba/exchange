@@ -168,6 +168,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		LocalDate requirestart = startdate.with(DayOfWeek.MONDAY);
 
 		double highestHigh =0.0; //设置显示范围
+		double lowestLow = 100000.0;
 	
 		LocalDate tmpdate = requirestart;
 		do {
@@ -179,6 +180,8 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 
 				if(cjlzb > highestHigh)
 					highestHigh = cjlzb;
+				if(cjlzb < lowestLow)
+					lowestLow = cjlzb;
 				
 				//标记该NODE本周是阳线还是阴线
 				Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(wkfriday, 0);
@@ -271,7 +274,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
-		xiuShiLeftRangeAxixAfterDispalyDate (nodexdata,startdate,enddate,highestHigh,period);
+		xiuShiLeftRangeAxixAfterDispalyDate (nodexdata,startdate,enddate,highestHigh,lowestLow,period);
 		
 		return highestHigh;
 
@@ -285,7 +288,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 	 * @param period
 	 */
 	 
-	private void xiuShiLeftRangeAxixAfterDispalyDate (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, String period)
+	private void xiuShiLeftRangeAxixAfterDispalyDate (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, double highestHigh, double lowestLow, String period)
 	{
 		if(highestHigh == 0.0)
 			return;
@@ -303,7 +306,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		axis.setDisplayNode(this.getCurDisplayedNode(),period);
 		
 		try{
-			super.plot.getRangeAxis(0).setRange(0, highestHigh*1.12);
+			super.plot.getRangeAxis(0).setRange(lowestLow * 0.7, highestHigh*1.12);
 		} catch (java.lang.IllegalArgumentException e) {
 			e.printStackTrace();
 			super.plot.getRangeAxis(0).setRange(0, 1);
@@ -337,6 +340,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		LocalDate requirestart = indexrequirestart.with(DayOfWeek.SATURDAY);
 		
 		Double highestHigh = 0.0;//设置显示范围
+		Double lowestLow = 1000000.0;
 		LocalDate tmpdate = requirestart; 
 		do {
 			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
@@ -347,6 +351,8 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 				
 				if(cjlzb > highestHigh)
 					highestHigh = cjlzb;
+				if(cjlzb < lowestLow)
+					lowestLow = cjlzb;
 			} else if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
 				this.linechartdatasetforcjlzb.setValue(0.0,super.getRowKey(),wkfriday);
 
@@ -359,11 +365,11 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 		
-		this.xiuShiRightRangeAxixAfterDispalyDate(nodexdata, highestHigh, true);
+		this.xiuShiRightRangeAxixAfterDispalyDate(nodexdata, highestHigh, lowestLow,  true);
 		
 		return highestHigh;
 	}
-	private void xiuShiRightRangeAxixAfterDispalyDate (NodeXPeriodData nodexdata,Double rightrangeaxixmax, Boolean forcetochange)
+	private void xiuShiRightRangeAxixAfterDispalyDate (NodeXPeriodData nodexdata,Double rightrangeaxixmax, Double rightrangeaxixmin,  Boolean forcetochange)
 	{
 
 		if(rightrangeaxixmax == 0)
@@ -375,15 +381,15 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		Range rangeData = super.plot.getRangeAxis(3).getRange();
 		if(forcetochange || row == 1) {
 			
-			super.plot.getRangeAxis(3).setRange(0, rightrangeaxixmax*1.12);
+			super.plot.getRangeAxis(3).setRange(rightrangeaxixmin * 0.7, rightrangeaxixmax*1.12);
 		} else {
 					
 			double upbound = rangeData.getUpperBound();
 			try{
 				if(rightrangeaxixmax*1.12 > upbound)
-					super.plot.getRangeAxis(3).setRange(0, rightrangeaxixmax*1.12);
+					super.plot.getRangeAxis(3).setRange(rightrangeaxixmin * 0.7, rightrangeaxixmax*1.12);
 				else if (upbound >= rightrangeaxixmax * 200)  //原来的坐标过大，会导致小坐标的线根本看不到，也是要更换坐标的。
-					super.plot.getRangeAxis(3).setRange(0, rightrangeaxixmax*1.12);
+					super.plot.getRangeAxis(3).setRange(rightrangeaxixmin * 0.7, rightrangeaxixmax*1.12);
 				
 			} catch(java.lang.IllegalArgumentException e) {
 				super.plot.getRangeAxis(3).setRange(0, 1);

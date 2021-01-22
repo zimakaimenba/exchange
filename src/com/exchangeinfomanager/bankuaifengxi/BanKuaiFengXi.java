@@ -814,7 +814,6 @@ public class BanKuaiFengXi extends JDialog
 			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getNodeRowIndex(nodecode);
 			if(rowindex >=0) {
 				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
-//				int modelRow = rowindex;
 				int curselectrow = tablexuandingminusone.getSelectedRow();
 				if(  curselectrow != modelRow)  {
 					tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);

@@ -222,22 +222,15 @@ public class LabelTag extends JPanel
 	        public void mouseClicked(MouseEvent e) {
 	        	 super.mouseClicked(e);
 	        	 JLabel label = null;
-	        	 try {
-	        		 label = (JLabel) e.getSource();
-	        	 } catch ( java.lang.ClassCastException exc) {
-	        		 
-	        	 }
+	        	 try { label = (JLabel) e.getSource();
+	        	 } catch ( java.lang.ClassCastException exc) {}
 	        	 try {
      	    		if(  tag.isSelected() )
      	    			unselectTag (tag, (JPanel)label.getParent());
      	    		else
      	    			selectTag (tag,  (JPanel)label.getParent());
-	        	 } catch (java.lang.NullPointerException ex) {
-	        		 
-	        	 }
+	        	 } catch (java.lang.NullPointerException ex) { }
 	        }
-	        
-	        
 	}
 	
 	private void unselectTag(Tag tmptag, JPanel p)

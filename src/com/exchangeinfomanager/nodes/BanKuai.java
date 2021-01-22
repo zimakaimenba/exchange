@@ -181,7 +181,10 @@ public class BanKuai extends TDXNodes
 		
 	}
 	public String getBanKuaiLeiXing ()	{
-		return this.bankuaileixing;
+		if(bankuaileixing == null)
+			return BanKuai.HASGGWITHSELFCJL;
+		else
+			return this.bankuaileixing;
 	}
 	/*
 	 * 

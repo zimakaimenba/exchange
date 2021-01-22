@@ -4515,6 +4515,46 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
+	public Set<LocalDate> getNodeDataBaseStoredDataTimeSet (TDXNodes node)
+	{
+		HashMap<String, String> opttable; String cjltable;
+		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
+			opttable = this.getActionRelatedTables( (BanKuai)node, null);
+			cjltable = opttable.get("板块每日交易量表");
+		}
+		else {
+			opttable = this.getActionRelatedTables( null, node.getMyOwnCode() );
+			cjltable = opttable.get("股票每日交易量表");
+		}
+		
+		CachedRowSetImpl  rs = null;
+		Set<LocalDate> nodetimeset = new HashSet();
+		try { 				
+			String sqlquerystat = "SELECT  交易日期"
+					+ " FROM " + cjltable + "  WHERE  代码 = " 
+						+ "'"  + node.getMyOwnCode() + "'" 
+						;
+		    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+		    	while(rs.next()) {
+		    		java.sql.Date recordsdate = rs.getDate("交易日期"); 
+		    		nodetimeset.add(recordsdate.toLocalDate() );
+		    	}
+		 } catch(java.lang.NullPointerException e) { 	e.printStackTrace();
+		 } catch (SQLException e) {e.printStackTrace();
+		 } catch(Exception e){	e.printStackTrace();
+		 } finally {
+		    	if(rs != null)
+				try {
+					rs.close(); rs = null;
+				} catch (SQLException e) {	e.printStackTrace();	}
+		 }
+		
+		return nodetimeset;
+		
+	}
+	/*
+	 * 
+	 */
 	public Interval getNodeDataBaseStoredDataTimeRange (TDXNodes node)
 	{
 		HashMap<String, String> opttable; String cjltable;
@@ -4559,6 +4599,45 @@ public class BanKuaiDbOperation
 		Interval requiredinterval = new Interval(requiredstartdt,requiredenddt);
 		
 		return requiredinterval;
+	}
+	/*
+	 * 
+	 */
+	public Set<LocalDate> getNodeExportFileDataTimeSet (TDXNodes node)
+	{
+		Set<LocalDate> nodetimeset = new HashSet();
+		
+		List<String> volamooutput = getTDXVolFilesRule ();
+		String exportath = volamooutput.get(0);
+		String filenamerule = volamooutput.get(1);
+		String dateRule = volamooutput.get(2);
+		
+		File nodeexportfile = this.getTDXNodesTDXSystemExportFile(node);
+		BufferedReader reader;
+		String line; int linecount = 0; 
+		try {
+			reader = new BufferedReader(new FileReader(nodeexportfile.getAbsolutePath() ));
+			line = reader.readLine();
+			linecount ++;
+			while (line != null) {
+				List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
+               	LocalDate curlinedate = null;
+           		try {
+	            			String beforparsedate = tmplinelist.get(0);
+	            			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateRule);
+	            			curlinedate =  LocalDate.parse(beforparsedate,formatter) ;
+	            			nodetimeset.add(curlinedate);
+           		} catch (Exception e) {	}
+				
+				// read next line
+				line = reader.readLine();
+				linecount ++;
+			}
+			reader.close();
+		} catch (IOException e) {e.printStackTrace(); }
+		
+		return nodetimeset;
+		
 	}
 	/*
 	 * 
@@ -4663,7 +4742,12 @@ public class BanKuaiDbOperation
 		String filenamerule = volamooutput.get(1);
 		String dateRule = volamooutput.get(2);
 		
-		String bkfilename = (filenamerule.replaceAll("YY",node.getSuoShuJiaoYiSuo().toUpperCase())).replaceAll("XXXXXX", node.getMyOwnCode());
+		String bkfilename;
+		if(node.getMyOwnCode().equalsIgnoreCase("000852"))  //通达信不知道为什么，中证1000的每日交易数据输出文件不一样
+			 bkfilename = "62000852.TXT";
+		else 
+			bkfilename = (filenamerule.replaceAll("YY",node.getSuoShuJiaoYiSuo().toUpperCase())).replaceAll("XXXXXX", node.getMyOwnCode());
+
 		File tmpbkfile = new File(exportath + "/" + bkfilename);
 		
 		return tmpbkfile;
@@ -7864,7 +7948,9 @@ public class BanKuaiDbOperation
 			List<QueKou> qklist = stockdailyxdate.getPeriodQueKou();
 			
 			qklist = checkQueKouForAGivenPeriod ( stock, requiredstartday, requiredendday,qklist,NodeGivenPeriodDataItem.DAY );
-			Collections.sort(qklist, new NodeLocalDateComparator() );
+			try {
+				Collections.sort(qklist, new NodeLocalDateComparator() );
+			} catch ( java.lang.IllegalArgumentException e) {e.printStackTrace();}
 			stockdailyxdate.setPeriodQueKou(qklist);
 			
 //			//标记缺口统计的时间，
@@ -7878,7 +7964,6 @@ public class BanKuaiDbOperation
 //       		 ( (TDXNodesXPeriodData)stockxwkdate ).addQueKouTongJiJieGuo ( requiredendday, -1, null, null, null,true);
 			 
 			 return stock;
-			
 		}
 		/*
 		 *从数据库中读取个股 缺口统计信息 , 废弃

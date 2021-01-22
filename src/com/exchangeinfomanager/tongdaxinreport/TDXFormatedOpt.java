@@ -190,7 +190,7 @@ public class TDXFormatedOpt {
 	/*
 	 * 
 	 */
-	public static Boolean parserZhiShuGuanJianRiQiToTDXCode ()
+	public static Boolean parserZhiShuGuanJianRiQiToTDXCode (Boolean shoulddrawenddateinfo)
 	{
 		File tmpfilefoler = Files.createTempDir();
 		File tongdaxinfile = new File(tmpfilefoler + "指数关键日期.txt");
@@ -211,24 +211,25 @@ public class TDXFormatedOpt {
 				LocalDate enddate = null;
 				try {
 					enddate = rs.getDate("截至日期").toLocalDate();
-				} catch (java.lang.NullPointerException e) {
-					
-				}
+				} catch (java.lang.NullPointerException e) {}
 				String zhishushuoming = rs.getString("说明");
-				
+				String zhishucolor = rs.getString("关键词");
+				if(zhishucolor != null && zhishucolor.startsWith("#")) 
+					zhishucolor = "COLOR" +  zhishucolor.substring(1) ; 
+
 				if(corezhishu.contains(zhishucode)) { //核心指数肯定要显示
-					setTDXDrawLineInfo (zhishucode,zhishushuoming,"",startdate, lineinfo, remindinfo );
-					if(enddate != null && !enddate.isEqual(startdate) ) {
-						setTDXDrawLineInfo (zhishucode,zhishushuoming,"",enddate, lineinfo, remindinfo );
+					setTDXDrawLineInfo (zhishucode,zhishushuoming,"",startdate, lineinfo, remindinfo,zhishucolor );
+					if(shoulddrawenddateinfo && enddate != null && !enddate.isEqual(startdate) ) {
+						setTDXDrawLineInfo (zhishucode,zhishushuoming,"",enddate, lineinfo, remindinfo ,zhishucolor);
 					} 				
 				} else {  //板块指数只在是该板块的时候显示
 					AllCurrentTdxBKAndStoksTree allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
 					TDXNodes tmpzhishunode = (TDXNodes)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(zhishucode, BkChanYeLianTreeNode.TDXBK);
 					String extrainfo = "   AND INBLOCK('" + tmpzhishunode.getMyOwnName() + "')";
-					setTDXDrawLineInfo (zhishucode,zhishushuoming,extrainfo,startdate, lineinfo, remindinfo );
+					setTDXDrawLineInfo (zhishucode,zhishushuoming,extrainfo,startdate, lineinfo, remindinfo,zhishucolor );
 					
-					if(enddate != null) {
-						setTDXDrawLineInfo (zhishucode,zhishushuoming,extrainfo,enddate, lineinfo, remindinfo );
+					if(shoulddrawenddateinfo && enddate != null) {
+						setTDXDrawLineInfo (zhishucode,zhishushuoming,extrainfo,enddate, lineinfo, remindinfo,zhishucolor );
 					}
 				}
 				
@@ -236,48 +237,36 @@ public class TDXFormatedOpt {
 		        	return false;
 			}
 			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}  finally {
+		} catch (SQLException e) {e.printStackTrace();
+		} finally {
 					if(rs != null)
-						try {
-							rs.close();
-							rs = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-//			    	lineinfo = null;
-//					remindinfo = null;
+						try { rs.close();	rs = null;
+						} catch (SQLException e) {	e.printStackTrace(); }
 		} 
 		
 		for(String info : lineinfo)
         	try {
         			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			} catch (IOException e) {	e.printStackTrace();}
         
         for (String info : remindinfo)
-        	try {
-        			Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+        	try { Files.append( info + System.getProperty("line.separator") ,tongdaxinfile,charset);
+			} catch (IOException e) {e.printStackTrace();}
 
 		try {
 			String cmd = "rundll32 url.dll,FileProtocolHandler " + tongdaxinfile.getAbsolutePath();
 			Process p  = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
-		} catch (Exception e1) 	{
-			e1.printStackTrace();
-		}
+		} catch (Exception e1) 	{e1.printStackTrace();}
 		
 		return true;
 	}
 	
-	private static void setTDXDrawLineInfo(String zhishucode, String zhishushuoming, String extrainfo, LocalDate startdate, List<String> lineinfo, List<String> remindinfo) 
+	private static void setTDXDrawLineInfo(String zhishucode, String zhishushuoming, String extrainfo, LocalDate startdate, List<String> lineinfo, List<String> remindinfo, String colorcode) 
 	{
-		String colorcode = getColorCodeForSpecificZhiShuCode(zhishucode);
+		if(colorcode == null)
+			colorcode = "COLOR80FFFF";
+//		String colorcode = getColorCodeForSpecificZhiShuCode(zhishucode);
 		//DRAWSL(DATE = 1190506  ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF ; {2000亿加税}
 //		DRAWSL(DATE =   1190830 AND INBLOCK('酿酒')   ,CLOSE,10000,1000,2) LINETHICK1 COLOR80FFFF; {999999上证跌到前期最低点后开始反弹}
 		String lineresult = "DRAWSL(DATE =   " 

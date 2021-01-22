@@ -20,6 +20,8 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
 
 import javax.swing.GroupLayout;
@@ -42,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+import java.util.Set;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -496,6 +498,20 @@ public class ImportTDXData extends JDialog {
 	/*
 	 * 
 	 */
+	private List<LocalDate> getNodeTimeDifferenceInDBWithDataFile (TDXNodes node)
+	{
+		Set<LocalDate> nodetimesetindb = bkdbopt.getNodeDataBaseStoredDataTimeSet (node);
+		Set<LocalDate> nodetimesetinfile = bkdbopt.getNodeExportFileDataTimeSet (node);
+		
+		SetView<LocalDate> differencetime= Sets.difference(nodetimesetinfile,nodetimesetindb  );
+		List<LocalDate> differencetimelist = new ArrayList<> (differencetime);
+		Collections.sort(differencetimelist);
+		
+		return differencetimelist;
+	}
+	/*
+	 * 
+	 */
 	private void checkNodeTimeLineInDbWithInDataFile (String searchcode)
 	{
 		UserSelectingForMultiSameCodeNode userselectnode = new UserSelectingForMultiSameCodeNode(searchcode);
@@ -505,42 +521,50 @@ public class ImportTDXData extends JDialog {
 			return;
 		}
 		
-		Interval nodetimerangeindb = bkdbopt.getNodeDataBaseStoredDataTimeRange (node);
-		Interval nodetimerangeinfile = bkdbopt.getNodeExportFileDataTimeRange (node);
+		List<LocalDate> differencetimelist = getNodeTimeDifferenceInDBWithDataFile(node);
+
+		if(differencetimelist.size() > 0)
+			lblbqsjshijianduan.setText("将补全时间段从" + differencetimelist.get(0).toString() + "-" + differencetimelist.get(differencetimelist.size() -1 ) + "约" + String.valueOf(differencetimelist.size() ) + "个数据！");
+		else {
+			lblbqsjshijianduan.setText("数据完整，无需补全。");
+			return;
+		}
 		
-		java.time.LocalDate requiredstartday = java.time.LocalDate.of(nodetimerangeinfile.getStart().toLocalDate().getYear(), 
-				nodetimerangeinfile.getStart().toLocalDate().getMonthOfYear(),
-				nodetimerangeinfile.getStart().toLocalDate().getDayOfMonth());
-		java.time.LocalDate requiredendday = java.time.LocalDate.of(nodetimerangeinfile.getEnd().toLocalDate().getYear(), 
-				nodetimerangeinfile.getEnd().toLocalDate().getMonthOfYear(),
-				nodetimerangeinfile.getEnd().toLocalDate().getDayOfMonth());
-		lblbqsjsjwj.setText(requiredstartday.toString() + "--" + requiredendday.toString());
-		
-		java.time.LocalDate nodestart = java.time.LocalDate.of(nodetimerangeindb.getStart().toLocalDate().getYear(), 
-				nodetimerangeindb.getStart().toLocalDate().getMonthOfYear(),
-				nodetimerangeindb.getStart().toLocalDate().getDayOfMonth());
-		java.time.LocalDate nodeend = java.time.LocalDate.of(nodetimerangeindb.getEnd().toLocalDate().getYear(), 
-				nodetimerangeindb.getEnd().toLocalDate().getMonthOfYear(),
-				nodetimerangeindb.getEnd().toLocalDate().getDayOfMonth());
-		lblbqsjdangqian.setText(nodestart.toString() + "--" + nodeend.toString());
-		
-		
-		List<Interval> timeintersection = CommonUtility.getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval(requiredstartday, requiredendday, nodestart, nodeend);
-		lblbqsjshijianduan.setText("");
+		List<Interval> timeintersection = new ArrayList<> ();
+		LocalDate intervalstart = differencetimelist.get(0);
+		LocalDate intervalmiddle = differencetimelist.get(0);
+		for(int i=1;i<differencetimelist.size();i++) {
+			LocalDate tmpdate = differencetimelist.get(i);
+			
+			long daynumber = java.time.temporal.ChronoUnit.DAYS.between(intervalmiddle,tmpdate);
+			if(  daynumber == 1.0 ) {
+				intervalmiddle = tmpdate;
+				continue;
+			} else {
+				DateTime startdt= new DateTime(intervalstart.getYear(), intervalstart.getMonthValue(), intervalstart.getDayOfMonth(), 0, 0, 0, 0);
+				DateTime enddt = new DateTime(intervalmiddle.getYear(), intervalmiddle.getMonthValue(), intervalmiddle.getDayOfMonth(), 0, 0, 0, 0);
+				Interval nodeinterval = new Interval(startdt, enddt);
+				timeintersection.add(nodeinterval);
+				
+				intervalstart = tmpdate;
+				intervalmiddle = tmpdate;
+			}
+		}
+		//last leg will be configed here 
+		DateTime startdt= new DateTime(intervalstart.getYear(), intervalstart.getMonthValue(), intervalstart.getDayOfMonth(), 0, 0, 0, 0);
+		DateTime enddt = new DateTime(intervalmiddle.getYear(), intervalmiddle.getMonthValue(), intervalmiddle.getDayOfMonth(), 0, 0, 0, 0);
+		Interval nodeinterval = new Interval(startdt, enddt);
+		timeintersection.add(nodeinterval);
+
 		for(Interval requirediterval : timeintersection) {
-//			File exportfile = bkdbopt.getTDXNodesTDXSystemExportFile (node);
-			lblbqsjshijianduan.setText(lblbqsjshijianduan.getText() + requirediterval.toString());
 			java.time.LocalDate neededstart = java.time.LocalDate.of(requirediterval.getStart().toLocalDate().getYear(), 
 					requirediterval.getStart().toLocalDate().getMonthOfYear(),
 					requirediterval.getStart().toLocalDate().getDayOfMonth());
 			java.time.LocalDate neededend = java.time.LocalDate.of(requirediterval.getEnd().toLocalDate().getYear(), 
 					requirediterval.getEnd().toLocalDate().getMonthOfYear(),
 					requirediterval.getEnd().toLocalDate().getDayOfMonth());
-			
-			if(neededstart.isAfter(nodestart)) //现在只对以前的数据补全，近日的数据通过导入即可，无需补全
-				continue;
-			
-			bkdbopt.setVolAmoRecordsFromTDXExportFileToDatabase (node,neededstart.minus(1,ChronoUnit.DAYS),neededend,null); //开始要减少一天，保证最早数据被导入，代码的需要
+		
+			bkdbopt.setVolAmoRecordsFromTDXExportFileToDatabase (node,neededstart.minus(1,ChronoUnit.DAYS),neededend.plus(1, ChronoUnit.DAYS),null); //开始要减少一天，保证最早数据被导入，代码的需要
 		}
 	}
 	
@@ -562,30 +586,11 @@ public class ImportTDXData extends JDialog {
 						return;
 					}
 					
-					Interval nodetimerangeindb = bkdbopt.getNodeDataBaseStoredDataTimeRange (node);
-					Interval nodetimerangeinfile = bkdbopt.getNodeExportFileDataTimeRange (node);
-					
-					java.time.LocalDate requiredstartday = java.time.LocalDate.of(nodetimerangeinfile.getStart().toLocalDate().getYear(), 
-							nodetimerangeinfile.getStart().toLocalDate().getMonthOfYear(),
-							nodetimerangeinfile.getStart().toLocalDate().getDayOfMonth());
-					java.time.LocalDate requiredendday = java.time.LocalDate.of(nodetimerangeinfile.getEnd().toLocalDate().getYear(), 
-							nodetimerangeinfile.getEnd().toLocalDate().getMonthOfYear(),
-							nodetimerangeinfile.getEnd().toLocalDate().getDayOfMonth());
-					lblbqsjsjwj.setText(requiredstartday.toString() + "--" + requiredendday.toString());
-					
-					java.time.LocalDate nodestart = java.time.LocalDate.of(nodetimerangeindb.getStart().toLocalDate().getYear(), 
-							nodetimerangeindb.getStart().toLocalDate().getMonthOfYear(),
-							nodetimerangeindb.getStart().toLocalDate().getDayOfMonth());
-					java.time.LocalDate nodeend = java.time.LocalDate.of(nodetimerangeindb.getEnd().toLocalDate().getYear(), 
-							nodetimerangeindb.getEnd().toLocalDate().getMonthOfYear(),
-							nodetimerangeindb.getEnd().toLocalDate().getDayOfMonth());
-					lblbqsjdangqian.setText(nodestart.toString() + "--" + nodeend.toString());
-					
-					List<Interval> timeintersection = CommonUtility.getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval(requiredstartday, requiredendday, nodestart, nodeend);
-					lblbqsjshijianduan.setText("");
-					for(Interval requirediterval : timeintersection) {
-						lblbqsjshijianduan.setText(lblbqsjshijianduan.getText() + requirediterval.toString());
-					}
+					List<LocalDate> differencetimelist = getNodeTimeDifferenceInDBWithDataFile(node);
+					if(differencetimelist.size() > 0)
+						lblbqsjshijianduan.setText("将补全时间段从" + differencetimelist.get(0).toString() + "-" + differencetimelist.get(differencetimelist.size() -1 ) + "约" + String.valueOf(differencetimelist.size() ) + "个数据！");
+					else
+						lblbqsjshijianduan.setText("数据完整，无需补全。");
 				}
 			}
 		});

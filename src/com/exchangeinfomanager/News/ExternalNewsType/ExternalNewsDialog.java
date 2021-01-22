@@ -1,29 +1,27 @@
 package com.exchangeinfomanager.News.ExternalNewsType;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.Dialog.ModalityType;
+
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,6 +50,7 @@ import org.jsoup.Jsoup;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.Labels.ColorChooser;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.Tag.Tag;
@@ -90,10 +89,9 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	    protected NewsCache cache;
 	    protected ServicesForNews NewsService;
 	    protected LabelListDialog labelListDialog;
-//	    private BanKuaiDbOperation bkdbopt;
 
 	    private T event;
-		private JLabel kwbutton;
+		protected JLabel kwbutton;
 		private JComboBox cobxgupiaochi;
 
 	    public ExternalNewsDialog(ServicesForNews NewsService) 
@@ -113,27 +111,10 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	    	kwbutton.addMouseListener(new MouseAdapter() {
 	        	@Override
 	        	public void mouseClicked(MouseEvent arg0) {
-	        		String urlcontent = "";
-	        		if( ! newsurlField.getText().toLowerCase ().equals("slackurl")) {
-	        			
-	        			Collection<String> urlset = new HashSet<> ();
-	        			urlset.add(newsurlField.getText().trim() );
-	        			TagsServiceForURLAndFile internet = new TagsServiceForURLAndFile (urlset);
-	        			try {
-							Collection<Tag> tags = internet.getTags();
-							
-							String keywords = "";
-							for (Iterator<Tag> lit = tags.iterator(); lit.hasNext(); ) {
-						        Tag f = lit.next();
-						        
-						        keywords = keywords + f.getName() + " ";
-							}
-							keywordsField.setText(keywords );
-						} catch (SQLException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-	        		}
+	        		if( NewsService instanceof ZhiShuBoLangServices) {
+	        			createKeyWordsForZhiShuBoLang ();
+	        		} else 
+	        			createKeyWrordsGeneral ();
 	        	}
 	        });
 	    	
@@ -148,13 +129,41 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 							String result = (String) clipboard.getData(DataFlavor.stringFlavor);
 							descriptionArea.setText(descriptionArea.getText() + result);
 							
-						}catch(Exception ex)	{
-							
-						}
+						}catch(Exception ex)	{}
 					}
 				}
 			});
 			
+		}
+
+		protected void createKeyWordsForZhiShuBoLang()
+		{
+			ColorChooser colorChooser = new ColorChooser();
+			colorChooser.setVisible(true);
+            Color selectcolor = colorChooser.getColor();
+            keywordsField.setText(String.format("#%06x", selectcolor.getRGB() & 0xFFFFFF) );
+		}
+
+		protected void createKeyWrordsGeneral() 
+		{
+			String urlcontent = "";
+    		if( ! newsurlField.getText().toLowerCase ().equals("slackurl")) {
+    			
+    			Collection<String> urlset = new HashSet<> ();
+    			urlset.add(newsurlField.getText().trim() );
+    			TagsServiceForURLAndFile internet = new TagsServiceForURLAndFile (urlset);
+    			try {
+					Collection<Tag> tags = internet.getTags();
+					
+					String keywords = "";
+					for (Iterator<Tag> lit = tags.iterator(); lit.hasNext(); ) {
+				        Tag f = lit.next();
+				        
+				        keywords = keywords + f.getName() + " ";
+					}
+					keywordsField.setText(keywords );
+				} catch (SQLException e1) {	e1.printStackTrace(); }
+    		}
 		}
 
 		public JPanel getNewsPanel ()
@@ -290,8 +299,7 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	        		else if( tmpitem.getText().equals(gpc) ) {
 	        			tmpitem.setSelected(true);
 	        			this.cobxgupiaochi.setSelectedIndex(i);
-	        		}
-	        		else
+	        		} else
 	        			tmpitem.setSelected(false);
 	        	}
 	        }

@@ -49,9 +49,9 @@ public class WholeMonthNewsComponentsView extends View
 {
 
 	protected JPanel cqjlpnl = new JPanel ();
-	private ServicesForNews svsofexternalnews;
+	protected ServicesForNews svsofexternalnews;
 	protected JPanel contentpnl;
-	private String viewtitle;
+	protected String viewtitle;
 	protected JLabel titleLable;
 	protected JPanel pnlmonthnews;
 	protected JPanel pnmmonthnresnorth;
@@ -105,7 +105,7 @@ public class WholeMonthNewsComponentsView extends View
        	pnlmonthnews.setName(firstDayInMonth + "CHANGQIGUANZHU");
         pnlmonthnews.setLayout(new BorderLayout());
         pnlmonthnews.setBackground(ColorScheme.BACKGROUND);
-        pnlmonthnews.addMouseListener(new CreateController(firstDayInMonth));
+        pnlmonthnews.addMouseListener(new CreateController(firstDayInMonth)); //
         
         pnmmonthnresnorth = new JPanel();
                 
