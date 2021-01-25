@@ -110,11 +110,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 		try{
 			Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,curperiod) );
 			this.fireTableDataChanged();
-		} catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-			logger.debug("该表内容为空，表排序出错");
-		}
-		
+		} catch (java.lang.NullPointerException e) {logger.debug("该表内容为空，表排序出错");}
 	}
 	public void sortTableByTimeRangeZhangFu (LocalDate start, LocalDate end, String specificperiod)
 	{

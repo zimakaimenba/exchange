@@ -33,8 +33,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-
-
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -5767,7 +5766,7 @@ public class BanKuaiDbOperation
 					} catch (SQLException e) {	e.printStackTrace();}
 		    		rs_gn = null;
 		    }	}
-		    
+//		    Collections.sort (stockbanks);
 			stock.setGeGuCurSuoShuTDXSysBanKuaiList(stockbanks);
 			
 			

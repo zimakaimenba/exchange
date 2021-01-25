@@ -345,19 +345,27 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			return null;
 		
     	Class<?> columncl = this.getColumnClass (columnIndex);
-    	if (  columncl.equals(Double.class) ) {
+    	if (  !columncl.equals(Double.class) ) 
+    		return value;
+    	
+	    	if(value.equals("??")) 
+				return 0.0;
+	    	
     		String decimal = prop.getProperty (columnIndexForDecimal);
-    		if(decimal != null) {
+    		if(decimal == null)
+    			return value;
+    			
     			int decimalnumber = Integer.parseInt(decimal);
 //    			BigDecimal roundOff = new BigDecimal( (Double)value).setScale(decimalnumber, BigDecimal.ROUND_HALF_EVEN);
 //    			value = roundOff;
     			
     			double count = Math.pow(10, decimalnumber);
-    			Double output = Math.round(  (Double)value * count) / count;
-    			value = output;
-    		}
-    	}
-    	
+    			try {
+    				Double output = Math.round(  (Double)value * count) / count;
+    				value = output;
+    			} catch ( java.lang.ClassCastException e) {	e.printStackTrace(); return value;}
+
+    			
     	return value;
     }
 	

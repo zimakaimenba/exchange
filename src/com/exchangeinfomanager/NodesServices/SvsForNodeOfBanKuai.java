@@ -619,16 +619,15 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 			requiredendday = bkdataendday;
 	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
-			
 			SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
-			
 			bk = this.getAllGeGuOfBanKuai (bk); 
 			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
-			for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
-		    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
-		    		 Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
-	    			 svstock.syncNodeData(stock);
-		    	 }
+			if(allbkgg != null) {
+				for(BkChanYeLianTreeNode stockofbk : allbkgg)   
+			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
+			    		 Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
+		    			 svstock.syncNodeData(stock);
+			    	 }
 			}
 			
 			if(calwholeweek ) { //
