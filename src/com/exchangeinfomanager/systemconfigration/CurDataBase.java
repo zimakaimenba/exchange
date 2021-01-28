@@ -29,7 +29,7 @@ public class CurDataBase extends JPanel
 		add(label, "cell 0 1,alignx trailing");
 		
 		comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Access", "MySql", "SQL Server", "FoxPro"}));
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Access", "MySql", "SQL Server", "FoxPro","SQLite"}));
 		add(comboBox, "cell 1 1,growx");
 		add(lblNewLabel_1, "cell 0 2,alignx left,aligny center");
 		add(lblNewLabel, "cell 0 0,alignx right,aligny center");

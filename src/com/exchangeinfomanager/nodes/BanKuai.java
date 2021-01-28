@@ -54,6 +54,19 @@ public class BanKuai extends TDXNodes
 		super.nodetreerelated = new BanKuaiTreeRelated (this);
 	}
 	
+	public BanKuai(String bkcode,String name,String vendor) 
+	{
+		super(bkcode,name);
+		super.nodetype = BkChanYeLianTreeNode.TDXBK;
+		
+		super.nodewkdata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.WEEK) ;
+		super.nodedaydata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.DAY) ;
+
+		super.nodetreerelated = new BanKuaiTreeRelated (this);
+		
+		this.bkvendor = vendor;
+	}
+	
 //	private static Logger logger = Logger.getLogger(BanKuai.class);
 //	private HashMap<String, Stock> allbkge;
 	private String bankuaileixing; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据 
@@ -66,7 +79,24 @@ public class BanKuai extends TDXNodes
 	private Set<String> socialfriendspos;
 	private Set<String> socialfriendsneg;
 	private Interval bkgegusearchtimerange;
+	private String bkvendor; // dazhihui, tondaxin;
+	private Boolean importbkgegu;
 	
+	public void setBanKuaiVendor (String vendor)
+	{
+		this.bkvendor = vendor;
+	}
+	public String getBanKuaiVendor ()
+	{
+		if(this.bkvendor == null) {
+			if(this.getMyOwnCode().startsWith("99"))
+				return "DZH";
+			else
+				return "TDX";
+
+		} else
+			return this.bkvendor;
+	}
 	public void addSocialFriendsPostive (String friend)
 	{
 		if(socialfriendspos == null)
@@ -302,6 +332,19 @@ public class BanKuai extends TDXNodes
 				((StockOfBanKuai)stockofbk).setStockQuanZhong(quanzhong);
 			}
 		}
+	}
+	public void setImportBKGeGu(Boolean importgegu) 
+	{
+		if(importgegu != null)
+			this.importbkgegu = importgegu;
+		
+	}
+	public  Boolean isImportBKGeGu ()
+	{
+		if(importbkgegu == null)
+			return true;
+		else
+			return this.importbkgegu;
 	}
 	
 

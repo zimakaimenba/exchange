@@ -192,12 +192,13 @@ import javax.swing.BoxLayout;
 
 public class StockInfoManager 
 {
+	private ConnectDZHDataBase connectdzhdb;
+
 	/**
 	 * Create the application.
 	 */
 	public StockInfoManager() 
 	{
-		
 		License license = new License ();
 		if( !license.isLicenseValide() ) {
 			
@@ -233,7 +234,7 @@ public class StockInfoManager
 			JOptionPane.showMessageDialog(null,"数据库连接失败！再见！");
 			System.exit(0);
 		}
-		
+	
 		systemconfig = new SetupSystemConfiguration ();
 		accountschicangconfig = AccountAndChiCangConfiguration.getInstance();
 		acntdbopt = new AccountDbOperation();
@@ -1443,6 +1444,8 @@ public class StockInfoManager
 			{
 				accountschicangconfig.SaveAccountsInfo ();
 				connectdb.closeConnectedDb();
+				if(connectdzhdb != null)
+					connectdzhdb.closeConnectedDb();
 			}
 		});
 		

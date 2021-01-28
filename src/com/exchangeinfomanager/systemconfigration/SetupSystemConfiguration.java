@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.systemconfigration;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,10 +9,14 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Splitter;
@@ -33,6 +38,7 @@ public class SetupSystemConfiguration
 	private List<String> shengzhengstockcodeprefixlist;
 	private List<String> shanghaizhishucodeprefixlist;
 	private List<String> shengzhengzhishucodeprefixlist;
+	private String dzhinstalledpath;
 
 	private static Logger logger = Logger.getLogger(SetupSystemConfiguration.class);
 
@@ -80,6 +86,7 @@ public class SetupSystemConfiguration
 			pythoninterpreter = propxml.getProperty ("pythoninterper");
 			nameofguanzhubankuai = propxml.getProperty ("nameofguanzhubankuai");
 			tdxinstalledpath = propxml.getProperty ("tdxpah");
+			dzhinstalledpath = propxml.getProperty ("dzhpah");
 			
 			String shanghaistockcodeprefix = propxml.getProperty ("shanghaistockcodeprefix");
 			shanghaistockcodeprefixlist = Splitter.on("/").omitEmptyStrings().splitToList(shanghaistockcodeprefix);
@@ -936,6 +943,29 @@ public class SetupSystemConfiguration
 			zhishu.add("000016");
 			
 			return zhishu ;
+		}
+		
+		public String getDaZhiHuiInstalledPath ()
+		{
+			return this.dzhinstalledpath;
+		}
+		public File getDaZhiHuiBanKuaiExportFileName ()
+		{
+			String installpath = this.getDaZhiHuiInstalledPath();
+			File dir = new File(installpath);
+			
+			FileFilter csvfileFilter = new WildcardFileFilter("*.SNT", IOCase.INSENSITIVE);      			// For taking both .JPG and .jpg files (useful in *nix env)  
+			File[] csvfileList = dir.listFiles(csvfileFilter);      
+			if (csvfileList.length > 0) {          
+				/** The oldest file comes first **/     
+				Arrays.sort(csvfileList, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR); //filesList now contains all the JPG/jpg files in sorted order    
+			}
+			
+			return csvfileList[0];
+		} 
+		public String getDaZhiHuiBanKuaiFilePath ()
+		{
+			return this.dzhinstalledpath  + "/data/B$/block/";
 		}
 
 }

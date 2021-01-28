@@ -17,6 +17,7 @@ import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.Stock;
@@ -479,6 +480,9 @@ public class SvsForNodeOfStock implements ServicesForNode
 	public BkChanYeLianTreeNode getNodeSuoShuBanKuaiList (BkChanYeLianTreeNode node)
 	{
 		node = bkdbopt.getTDXBanKuaiForAStock ((Stock)node); //通达信板块信息
+		
+		BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
+		dzhdbopt.getDZHBanKuaiForAStock((Stock)node);
 		
 		return node;
 	}

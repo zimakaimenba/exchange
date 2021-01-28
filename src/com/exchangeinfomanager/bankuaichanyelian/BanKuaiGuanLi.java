@@ -26,6 +26,7 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDZHBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.StockCalendar.GBC;
@@ -351,7 +352,38 @@ public class BanKuaiGuanLi extends JDialog
 			}
 		});
 		
+		tableDzhBk.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				int row = tableDzhBk.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				((BanKuaiSocialFriendsTableModel)tableBkfriends.getModel()).deleteAllRows();
+				((BkChanYeLianTreeNodeListTableModel)tablebkgegu.getModel()).deleteAllRows();
+				
+				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableDzhBk.getModel().getValueAt(row, 0) );
+				if(selectnode.getType() != BkChanYeLianTreeNode.TDXBK)
+					return; 
+				
+				tfldsearchsysbk.setText(selectnode.getMyOwnCode());
+				
+//				LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
+//				SvsForNodeOfDZHBanKuai svsbk = new SvsForNodeOfDZHBanKuai ();
+//				selectnode = svsbk.getNodeData(selectnode, requiredstart,  LocalDate.now(), NodeGivenPeriodDataItem.WEEK,true);
+//				selectnode = svsbk.getNodeJiBenMian(selectnode);
 
+				panelsetting.setSettingNode(selectnode);
+				
+//				tablenoggbk.repaint();
+//				tableBkfriends.repaint();
+				
+//				svsbk = null;
+			}
+		});
 		
 		
 		addWindowListener(new WindowAdapter() {
@@ -442,6 +474,8 @@ public class BanKuaiGuanLi extends JDialog
 	private JMenuItem menuItemSocialFriendPostiveformiddletable;
 	private JMenuItem menuItemSocialFriendNegtiveformiddletable;
 	private JMenuItem menuItemrelatedbk;
+	private JTabbedPane tabbedPaneBk;
+	private JTreeTable tableDzhBk;
 	
 	private void initializeGui2() 
 	{
@@ -458,7 +492,7 @@ public class BanKuaiGuanLi extends JDialog
 		westbankuaipnl.setPreferredSize(new Dimension(500, 988));
 		westbankuaipnl.setLayout(new GridLayout(1, 2));
 		westbankuaipnl.setBackground(ColorScheme.GREY_LINE);
-	    
+		
 		JPanel allbkfriendspnl = JPanelFactory.createPanel(); //板块的social friend pnl
 		allbkfriendspnl.setLayout(new GridLayout(3, 1));
 		allbkfriendspnl.setPreferredSize(new Dimension(300, 988));
@@ -654,8 +688,10 @@ public class BanKuaiGuanLi extends JDialog
 			searchpnl.add(btnsearchsysbk);
 			allbkskpnl.add(searchpnl);
 			
-			
+			tabbedPaneBk = new JTabbedPane (JTabbedPane.TOP); 
+			allbkskpnl.add(tabbedPaneBk);	
 		 JScrollPane scrollPanesysbk = new JScrollPane (); //
+		 tabbedPaneBk.addTab("通达信板块", null, scrollPanesysbk, null);
 //			初始化jtreetable
 			BanKuaiDetailTableModel treetablemodel = new BanKuaiDetailTableModel (CreateExchangeTree.CreateTreeOfBanKuaiAndStocks() );
 			tableSysBk = new JTreeTable(treetablemodel) {
@@ -680,7 +716,6 @@ public class BanKuaiGuanLi extends JDialog
 				
 				public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
 				{
-					
 			        Component comp = super.prepareRenderer(renderer, row, col);
 			        JComponent jc = (JComponent)comp;
 			        
@@ -694,21 +729,63 @@ public class BanKuaiGuanLi extends JDialog
 				        	comp.setFont(font);
 				        }
 					}
-			        
 			        return comp;
 				}
-				
-
 			};
+			
 		TableRowSorter<TableModel> sorterofsysbk = new TableRowSorter<TableModel>(tableSysBk.getModel());
 		tableSysBk.setRowSorter(sorterofsysbk);
 		scrollPanesysbk.setViewportView(tableSysBk);
 		scrollPanesysbk.setPreferredSize(new Dimension(200, 615));
-		allbkskpnl.add(scrollPanesysbk);
 		JPopupMenu popupMenunosysbk = new JPopupMenu();
 		this.addPopup (tableSysBk,popupMenunosysbk);
 		menuItemrelatedbk = new JMenuItem("计算关联板块");
 		popupMenunosysbk.add(menuItemrelatedbk);
+		
+		JScrollPane scrollPanedzhsysbk = new JScrollPane (); 
+		tabbedPaneBk.addTab("大智慧板块", null, scrollPanedzhsysbk, null);
+//		初始化jtreetable
+		BanKuaiDetailTableModel dzhtreetablemodel = new BanKuaiDetailTableModel (CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks() );
+		tableDzhBk = new JTreeTable(dzhtreetablemodel) {
+			
+			private static final long serialVersionUID = 1L;
+
+			public String getToolTipText(MouseEvent e) 
+			{
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+
+                try {
+                    tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {
+                    //catch null pointer exception if mouse is over an empty line
+                }
+
+                return tip;
+            }
+			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
+			{
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        JComponent jc = (JComponent)comp;
+		        
+				BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) ( this.getModel().getValueAt(row, 0) );
+				if(node.getType() ==  BkChanYeLianTreeNode.TDXBK ) {
+					
+					String bktype = ((BanKuai)node).getBanKuaiLeiXing();
+			        if(bktype!= null && bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
+			        	Font defaultFont = this.getFont();
+			        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+			        	comp.setFont(font);
+			        }
+				}
+		        return comp;
+			}
+		};
+		scrollPanedzhsysbk.setViewportView(tableDzhBk);
+		scrollPanedzhsysbk.setPreferredSize(new Dimension(200, 615));
 		
 		
 		panelsetting = new BanKuaiShuXingSheZhi();

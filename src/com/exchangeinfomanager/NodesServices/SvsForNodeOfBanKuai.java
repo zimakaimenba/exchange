@@ -31,7 +31,6 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 
 public class SvsForNodeOfBanKuai implements ServicesForNode
 {
-
 	private BanKuaiAndStockTree allbkstk;
 	private BanKuaiDbOperation bkdbopt;
 	private CylTreeDbOperation dboptforcyltree;

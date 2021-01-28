@@ -34,7 +34,9 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 	@Override
 	public String getRequiredHtmlInfo() 
 	{
-		Set<BkChanYeLianTreeNode> suosusysbankuai = ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList();
+		Set<BkChanYeLianTreeNode> suosutdxbankuai = ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList();
+		Set<BkChanYeLianTreeNode> suosudzhbankuai = ((Stock)node).getGeGuCurSuoShuDZHSysBanKuaiList();
+//		suosutdxbankuai.addAll(suosudzhbankuai);
 		
 		DuanQiGuanZhuServices svsdqgz = new DuanQiGuanZhuServices ();
 		Collection<News> curdqgz = svsdqgz.getCurrentNews( LocalDate.now() );
@@ -55,7 +57,7 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 		 		);
 		 
 //		 boolean shuyuruoshibankuai = false;
-		 for ( java.util.Iterator<BkChanYeLianTreeNode> it = suosusysbankuai.iterator(); it.hasNext(); ) {
+		 for ( java.util.Iterator<BkChanYeLianTreeNode> it = suosutdxbankuai.iterator(); it.hasNext(); ) {
 			 BkChanYeLianTreeNode f = it.next();
 			 BanKuai bk = (BanKuai)f;
 			 Integer bkquanzhong = bk.getGeGuSuoShuBanKuaiWeight (node.getMyOwnCode() );
@@ -71,6 +73,24 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 	    			 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");
 	    	 } catch (java.lang.NullPointerException e) {
 	    		 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");
+	    	 }
+	     }
+		 for ( java.util.Iterator<BkChanYeLianTreeNode> it = suosudzhbankuai.iterator(); it.hasNext(); ) {
+			 BkChanYeLianTreeNode f = it.next();
+			 BanKuai bk = (BanKuai)f;
+			 Integer bkquanzhong = bk.getGeGuSuoShuBanKuaiWeight (node.getMyOwnCode() );
+		      
+	    	 String displayedbkformate = "\"" + bk.getMyOwnCode() + bk.getMyOwnName() + "(QZ:" + bkquanzhong.toString() + ")" + "\"";
+	    	 try {
+	    		 boolean inrsbk = false; 
+    			 if(  gzbkcodeset.contains(bk.getMyOwnCode() ) && bkquanzhong >=5 ) { //是当前关注的板块，并且权重大于5用红色标记，权重太小，说明没有什么业务
+    				 
+    				 content.append("<a style=\"color:red font-family:STHeiti \" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + "</a>   " );
+//	    			 shuyuruoshibankuai = true ;
+	    		 } else
+	    			 content.append("<a style=\"color:SlateBlue font-family:STHeiti \" href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");
+	    	 } catch (java.lang.NullPointerException e) {
+	    		 content.append("<a style=\"color:SlateBlue font-family:STHeiti \" href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");
 	    	 }
 	     } 
 	     

@@ -57,7 +57,8 @@ public class Stock extends TDXNodes {
 	private static Logger logger = Logger.getLogger(Stock.class);
 	
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; 
-	private Set<BkChanYeLianTreeNode> suoShuCurSysBanKuai; 
+	private Set<BkChanYeLianTreeNode> suoShuCurTDXBanKuai; 
+	private Set<BkChanYeLianTreeNode> suoShuCurDZHBanKuai;
 	
 	
 	
@@ -95,9 +96,43 @@ public class Stock extends TDXNodes {
 	/*
 	 * 
 	 */
+	public boolean isInDZHBanKuai (String dzhbk)
+	{
+		for(BkChanYeLianTreeNode node : this.suoShuCurDZHBanKuai) {
+			String nodecode = node.getMyOwnCode();
+			String nodename = node.getMyOwnName();
+			if(nodecode.equals(dzhbk) || nodename.equals(dzhbk))
+				return true;
+		}
+		
+		return false;
+	}
+	/**
+	 * @return 
+	 * @return the suoShuBanKuai
+	 */
+	public  Set<BkChanYeLianTreeNode> getGeGuCurSuoShuDZHSysBanKuaiList() 
+	{
+		if( this.suoShuCurDZHBanKuai == null)
+			return new HashSet<>();
+		else
+			return suoShuCurDZHBanKuai;
+	}
+
+	/**
+	 * @param stockbanks 
+	 * @param tmpsysbk the suoShuBanKuai to set
+	 */
+	public void setGeGuCurSuoShuDZHSysBanKuaiList( Set<BkChanYeLianTreeNode> stockbanks) {
+		this.suoShuCurDZHBanKuai = stockbanks;
+	}
+	
+	/*
+	 * 
+	 */
 	public boolean isInTdxBanKuai (String tdxbk)
 	{
-		for(BkChanYeLianTreeNode node : this.suoShuCurSysBanKuai) {
+		for(BkChanYeLianTreeNode node : this.suoShuCurTDXBanKuai) {
 			String nodecode = node.getMyOwnCode();
 			String nodename = node.getMyOwnName();
 			if(nodecode.equals(tdxbk) || nodename.equals(tdxbk))
@@ -112,10 +147,10 @@ public class Stock extends TDXNodes {
 	 */
 	public  Set<BkChanYeLianTreeNode> getGeGuCurSuoShuTDXSysBanKuaiList() 
 	{
-		if( this.suoShuCurSysBanKuai == null)
+		if( this.suoShuCurTDXBanKuai == null)
 			return new HashSet<>();
 		else
-			return suoShuCurSysBanKuai;
+			return suoShuCurTDXBanKuai;
 	}
 
 	/**
@@ -123,8 +158,11 @@ public class Stock extends TDXNodes {
 	 * @param tmpsysbk the suoShuBanKuai to set
 	 */
 	public void setGeGuCurSuoShuTDXSysBanKuaiList( Set<BkChanYeLianTreeNode> stockbanks) {
-		this.suoShuCurSysBanKuai = stockbanks;
+		this.suoShuCurTDXBanKuai = stockbanks;
 	}
+	
+	
+	
  
 	List<String> nodeallchanyelian ;
 	

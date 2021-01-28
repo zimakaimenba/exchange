@@ -17,4 +17,10 @@ public class CreateExchangeTree
 		AllCurrentTdxBKAndStoksTree allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
 		return allbkstks.getAllBkStocksTree();
 	}
+	
+	public static BanKuaiAndStockTree CreateTreeOfDZHBanKuaiAndStocks ()
+	{
+		AllCurrentDzhBkTree allbkstks = AllCurrentDzhBkTree.getInstance();
+		return allbkstks.getAllBkStocksTree();
+	}
 }

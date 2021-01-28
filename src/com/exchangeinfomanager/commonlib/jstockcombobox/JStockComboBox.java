@@ -48,7 +48,7 @@ public class JStockComboBox extends  JComboBox<String>
 	 */
 	private static final long serialVersionUID = 1L;
 	private SetupSystemConfiguration sysconfig;
-	private BanKuaiAndStockTree bkstktree;
+//	private BanKuaiAndStockTree bkstktree;
 //	private AllCurrentTdxBKAndStoksTree allbkstock;
 
 	public JStockComboBox() 
@@ -59,7 +59,7 @@ public class JStockComboBox extends  JComboBox<String>
 		generalSetup ();
 	}
 	
-	public JStockComboBox(int onlyselecttype) //用户可以指定只选择从数据库中读出某种类型的node
+	public JStockComboBox(int onlyselecttype) //可以指定只选择从数据库中读出某种类型的node
 	{
 		super();
 		
@@ -76,7 +76,7 @@ public class JStockComboBox extends  JComboBox<String>
 		this.setRenderer(new JStockComboBoxNodeRenderer());
 	    this.setEditor(new JStockComboBoxEditor());
 	     
-	    bkstktree = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+//	    bkstktree = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		
 		sysconfig = new SetupSystemConfiguration();
 		
@@ -128,14 +128,22 @@ public class JStockComboBox extends  JComboBox<String>
 	 */
 	public BkChanYeLianTreeNode updateUserSelectedNode (String nodecode)
 	{
-		BkChanYeLianTreeNode nodeshouldbedisplayed1 = bkstktree.getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
-		BkChanYeLianTreeNode nodeshouldbedisplayed2 = bkstktree.getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
+		BkChanYeLianTreeNode nodeshouldbedisplayed_bk = null; BkChanYeLianTreeNode nodeshouldbedisplayed_gg = null;
+		if(this.onlyselectnodetype == -1) {
+		 nodeshouldbedisplayed_gg = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
+		 nodeshouldbedisplayed_bk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
+		} else
+		if( this.onlyselectnodetype == BkChanYeLianTreeNode.TDXBK )
+			nodeshouldbedisplayed_bk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
+		else
+		if( this.onlyselectnodetype == BkChanYeLianTreeNode.TDXGG )
+			nodeshouldbedisplayed_gg = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
 		
 		BkChanYeLianTreeNode nodeshouldbedisplayed = null;
-		if(nodeshouldbedisplayed1 != null  && nodeshouldbedisplayed2 != null) { //板块和个股都有该代码出现
+		if(nodeshouldbedisplayed_bk != null  && nodeshouldbedisplayed_gg != null) { //板块和个股都有该代码出现
 			List<BkChanYeLianTreeNode> nodeslist = new ArrayList<> ();
-			nodeslist.add(nodeshouldbedisplayed1);
-			nodeslist.add(nodeshouldbedisplayed2);
+			nodeslist.add(nodeshouldbedisplayed_bk);
+			nodeslist.add(nodeshouldbedisplayed_gg);
 			
 			SelectMultiNode userselection = new SelectMultiNode(nodeslist);
 			 int exchangeresult = JOptionPane.showConfirmDialog(null, userselection, "请选择", JOptionPane.OK_CANCEL_OPTION);
@@ -150,14 +158,17 @@ public class JStockComboBox extends  JComboBox<String>
 			 }
 			
 		} else 
-		if(nodeshouldbedisplayed1 != null  ) {
-			nodeshouldbedisplayed = nodeshouldbedisplayed1;
+		if(nodeshouldbedisplayed_bk != null  ) {
+			nodeshouldbedisplayed = nodeshouldbedisplayed_bk;
 		} else
-		if (nodeshouldbedisplayed2 != null) {
-			nodeshouldbedisplayed = nodeshouldbedisplayed2;
+		if (nodeshouldbedisplayed_gg != null) {
+			nodeshouldbedisplayed = nodeshouldbedisplayed_gg;
 		} else
-		if(nodeshouldbedisplayed1 == null  && nodeshouldbedisplayed2 == null)  
-			return null;
+		if(nodeshouldbedisplayed_bk == null  && nodeshouldbedisplayed_gg == null)  { //可能是大智慧的板块了
+			BkChanYeLianTreeNode nodeshouldbedisplayed_dzh = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
+			if(nodeshouldbedisplayed_dzh != null)
+				nodeshouldbedisplayed = nodeshouldbedisplayed_dzh;
+		}
 		
 		this.updateUserSelectedNode(nodeshouldbedisplayed);
 //		if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG)
@@ -331,7 +342,7 @@ public class JStockComboBox extends  JComboBox<String>
 			StockChiCangInfo tmpstockchicanginfo = (StockChiCangInfo)entry.getValue();
 			
 			String stockcode = tmpstockchicanginfo.getChicangcode();
-			Stock node = (Stock)bkstktree.getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG); 
+			Stock node = (Stock)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG); 
 			this.updateUserSelectedNode (node);
 			result.add(stockcode);
 		} 
