@@ -8,7 +8,7 @@ import java.util.Set;
 
 import com.google.common.base.Splitter;
 
-public class BanKuaiGeGuMatchCondition 
+public class BanKuaiGeGuMatchCondition implements Cloneable
 {
 	private Set<BanKuaiGeGuMatchConditionListener> bkfxhighlightvaluesoftableslisteners;
 	private String systeminstalledpath;
@@ -25,57 +25,57 @@ public class BanKuaiGeGuMatchCondition
 	        this.bkfxhighlightvaluesoftableslisteners.add(listener);
 	 }
 	 
-	 public void setConditionFromPropertiesFiles ()
-	 {
-			File directory = new File("");//设定为当前文件夹
-			try{
-//			    logger.debug(directory.getCanonicalPath());//获取标准的路径
-//			    logger.debug(directory.getAbsolutePath());//获取绝对路径
-//			    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
-			    Properties properties = System.getProperties();
-			    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-			
-			try {
-				prop = new Properties();
-				String propFileName = this.systeminstalledpath  + "/config/bankuaifenxihighlightsetting.properties";
-				FileInputStream inputStream = new FileInputStream(propFileName);
-				if (inputStream != null) {
-					prop.load(inputStream);
-				} 
-				inputStream.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-			}
-			
-			String majunxian = prop.getProperty ("Dayujunxian");
-			this.setSettingMaFormula (majunxian.trim() );
-			
-			String cjeZbDpMaxWk = prop.getProperty ("CjeZbDpMaxWk");
-			if(cjeZbDpMaxWk != null)
-				this.setSettingDpMaxWk(Integer.parseInt(cjeZbDpMaxWk) ); 
-			
-			String cjeZbDpMinWk = prop.getProperty ("CjeZbDpMinWk");
-			if(cjeZbDpMinWk != null)
-				this.setSettingDpMinWk(Integer.parseInt(cjeZbDpMinWk));
-			
-			String liuTongShiZhiMin = prop.getProperty ("LiuTongShiZhiMin");
-			String liuTongShiZhiMax = prop.getProperty ("LiuTongShiZhiMax");
-			String averageCjeMaxWk = prop.getProperty ("AverageCjeMaxWk");
-			String huanShouLv = prop.getProperty ("HuanShouLv");
-			String zhangFuMin = prop.getProperty ("ZhangFuMin");
-			String zhangFuMax = prop.getProperty ("ZhangFuMax");
-			String guJiaMin = prop.getProperty ("GuJiaMin");
-			String guJiaMax = prop.getProperty ("GuJiaMax");
-			String chenJiaoErMin = prop.getProperty ("ChenJiaoErMin");
-			String chenJiaoErMax = prop.getProperty ("ChenJiaoErMax");
-			String lastWkDpcjezbGrowingRate = prop.getProperty ("LastWkDpcjezbGrowingRate");
-			
-			 
-		}
+//	 public void setConditionFromPropertiesFiles ()
+//	 {
+//			File directory = new File("");//设定为当前文件夹
+//			try{
+////			    logger.debug(directory.getCanonicalPath());//获取标准的路径
+////			    logger.debug(directory.getAbsolutePath());//获取绝对路径
+////			    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
+//			    Properties properties = System.getProperties();
+//			    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
+//			} catch(Exception e) {
+//				e.printStackTrace();
+//			}
+//			
+//			try {
+//				prop = new Properties();
+//				String propFileName = this.systeminstalledpath  + "/config/bankuaifenxihighlightsetting.properties";
+//				FileInputStream inputStream = new FileInputStream(propFileName);
+//				if (inputStream != null) {
+//					prop.load(inputStream);
+//				} 
+//				inputStream.close();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			} finally {
+//			}
+//			
+//			String majunxian = prop.getProperty ("Dayujunxian");
+//			this.setSettingMaFormula (majunxian.trim() );
+//			
+//			String cjeZbDpMaxWk = prop.getProperty ("CjeZbDpMaxWk");
+//			if(cjeZbDpMaxWk != null)
+//				this.setSettingDpMaxWk(Integer.parseInt(cjeZbDpMaxWk) ); 
+//			
+//			String cjeZbDpMinWk = prop.getProperty ("CjeZbDpMinWk");
+//			if(cjeZbDpMinWk != null)
+//				this.setSettingDpMinWk(Integer.parseInt(cjeZbDpMinWk));
+//			
+//			String liuTongShiZhiMin = prop.getProperty ("LiuTongShiZhiMin");
+//			String liuTongShiZhiMax = prop.getProperty ("LiuTongShiZhiMax");
+//			String averageCjeMaxWk = prop.getProperty ("AverageCjeMaxWk");
+//			String huanShouLv = prop.getProperty ("HuanShouLv");
+//			String zhangFuMin = prop.getProperty ("ZhangFuMin");
+//			String zhangFuMax = prop.getProperty ("ZhangFuMax");
+//			String guJiaMin = prop.getProperty ("GuJiaMin");
+//			String guJiaMax = prop.getProperty ("GuJiaMax");
+//			String chenJiaoErMin = prop.getProperty ("ChenJiaoErMin");
+//			String chenJiaoErMax = prop.getProperty ("ChenJiaoErMax");
+//			String lastWkDpcjezbGrowingRate = prop.getProperty ("LastWkDpcjezbGrowingRate");
+//			
+//			 
+//		}
 		 private  String toUNIXpath(String filePath) 
 		 {
 		   		    return filePath.replace('\\', '/');
@@ -124,6 +124,8 @@ public class BanKuaiGeGuMatchCondition
 		
 		private Double pricemin;
 		private Double pricemax;
+		private Double settingzszmax;
+		private Double settingzszmin;
 		
 		/*
 		 * 
@@ -168,7 +170,23 @@ public class BanKuaiGeGuMatchCondition
 			
 			return outputfilehead;
 		}
-		
+		public Double getSettingZongShiZhiMax() 
+		{
+			return settingzszmax;
+		}
+		public void setSettingZongShiZhiMax(Double seetingzszmax) {
+			this.settingzszmax = seetingzszmax;
+			
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
+		}
+		public Double getSettingZongShiZhiMin() {
+			return settingzszmin;
+		}
+		public void setSettingZongShiZhiMin(Double seetingzszmin) {
+			this.settingzszmin = seetingzszmin;
+			
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
+		}
 		public Double getSettingLiuTongShiZhiMax() 
 		{
 			return settingltszmax;
@@ -416,6 +434,8 @@ public class BanKuaiGeGuMatchCondition
 				this.zhangfumax = zhangfumax1/100;
 			else
 				this.zhangfumax = zhangfumax1;
+			
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
 		public Double getSettingZhangFuMax() 
 		{
@@ -428,6 +448,8 @@ public class BanKuaiGeGuMatchCondition
 				this.zhangfumin = zhangfumin1/100;
 			else
 				this.zhangfumin = zhangfumin1;
+			
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
 		public Double getSettingZhangFuMin() 
 		{
@@ -494,5 +516,9 @@ public class BanKuaiGeGuMatchCondition
 //		{
 //			this.averageWkCjeMaxWkLevel = averageWkCjeMaxWkLevel;
 //		}
+		
+		public Object clone() throws CloneNotSupportedException {
+	        return super.clone();
+	    }
 
 }

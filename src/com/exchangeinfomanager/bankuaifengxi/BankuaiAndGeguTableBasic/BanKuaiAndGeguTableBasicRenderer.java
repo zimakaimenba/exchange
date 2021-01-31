@@ -28,6 +28,7 @@ import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTong
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfWeeklyAverageChenJiaoErMaxWk;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfZongShiZhi;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -433,6 +434,9 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         RuleOfLiuTongShiZhi ltszRule =  new RuleOfLiuTongShiZhi ();
         rules.register(ltszRule);
         
+        RuleOfZongShiZhi zszRule = new RuleOfZongShiZhi ();
+        rules.register(zszRule);
+        
         RuleOfGeGuZhangFu zfRule = new RuleOfGeGuZhangFu ();
         rules.register(zfRule);
         
@@ -532,6 +536,13 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
         		background = ltszRule.getBackGround ();
 		    else  	background = ltszRule.getBackGround ();
+        	break;
+        case "zongshizhi":
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && ltszRule.getAnalysisResult())
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        		background = zszRule.getBackGround ();
+		    else  	background = zszRule.getBackGround ();
         	break;
         case "chengjiaoer" :
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && cjeRule.getRuleResult() )

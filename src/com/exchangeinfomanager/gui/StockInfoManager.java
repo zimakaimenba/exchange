@@ -63,6 +63,7 @@ import com.exchangeinfomanager.bankuaifengxi.GeGuTDXFengXi;
 import com.exchangeinfomanager.bankuaifengxi.GetNodeDataFromDbWhenSystemIdle;
 import com.exchangeinfomanager.bankuaifengxi.NodeInfoToCsv;
 import com.exchangeinfomanager.bankuaifengxi.PaoMaDengServices;
+
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyExportFileFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
@@ -262,7 +263,7 @@ public class StockInfoManager
 	private BanKuaiDbOperation bkdbopt;
 	private AccountDbOperation acntdbopt;
 	private BanKuaiGuanLi bkgldialog = null;
-	private BanKuaiFengXi bkfx ;
+	private BanKuaiFengXi bkfx ; ////////////////////////////////////////////////////////////////////////
 	private GeGuTDXFengXi ggfx ;
 	private SearchDialog searchdialog;
 	private WeeklyExportFileFengXi effx;
@@ -1610,6 +1611,7 @@ public class StockInfoManager
 			this.frame.setCursor(hourglassCursor2);
 	}
 	
+
 	protected void startBanKuaiFengXi() 
 	{
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);

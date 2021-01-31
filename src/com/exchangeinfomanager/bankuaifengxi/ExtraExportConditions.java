@@ -65,7 +65,7 @@ class ExtraExportConditions extends JPanel
 	public ExtraExportConditions(BanKuaiGeGuMatchCondition cond) 
 	{
 		this.cond  = cond;
-		
+
 		initializeGui ();
 		
 		huchixuanzebasic = new ArrayList<JCheckBox> ();
@@ -384,9 +384,6 @@ class ExtraExportConditions extends JPanel
 					chckbxexportyangxiangegu.setEnabled(true);
 					tfldwkzhangfumin.setEnabled(true);
 				}
-				
-
-
 			}
 		});
 
@@ -418,8 +415,6 @@ class ExtraExportConditions extends JPanel
 					tfldyangxian.setEnabled(false);
 					tfldshizhilevellianxu.setEnabled(false);
 					tfldwkyangxian.setEnabled(false);
-					
-
 				} else {
 					cbxShiZhilevelyangxian.setEnabled(true);
 					cbxShiZhilevelyangxian.setSelected(true);
@@ -439,7 +434,6 @@ class ExtraExportConditions extends JPanel
 				} else {
 					chkbxexportyangxianbk.setEnabled(true);
 				}
-
 			}
 		});
 

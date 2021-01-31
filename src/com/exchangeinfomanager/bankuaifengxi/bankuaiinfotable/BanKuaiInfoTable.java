@@ -41,7 +41,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 
 
-public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKuaiGeGuMatchConditionListener , NewsCacheListener
+public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCacheListener
 {
 	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
@@ -259,13 +259,6 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements  BanKu
 			}
 	}
 	
-	@Override
-	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
-	{
-		((BanKuaiInfoTableModel)this.getModel()).setDisplayMatchCondition(expc);
-    	this.repaint();
-		
-	}
 	@Override
 	public void onNewsChange(Collection<NewsCache> caches) {
 		System.out.print("test");

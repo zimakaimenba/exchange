@@ -9,15 +9,14 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
-
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 
-@Rule(name = "RuleOfLiuTongShiZhi Rule", description = "if it rains then take an umbrella" )
-public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBasic
+@Rule(name = "RuleOfZongShiZhi Rule", description = "if it rains then take an umbrella" )
+public class RuleOfZongShiZhi 
 {
 	private Color foreground = Color.BLACK, background = Color.white; 
 	private Boolean specialarea = false;
@@ -34,35 +33,35 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
 		Double ltszmin ;
 	    Double ltszmax ;
 	    try {
-	    	ltszmax = evacond.getSettingLiuTongShiZhiMax().doubleValue() *  100000000;
+	    	ltszmax = evacond.getSettingZongShiZhiMax().doubleValue() *  100000000;
 	    } catch (Exception e) {
 	    	ltszmax = 10000000000000.0;
 	    }
 	    try {
-	    	ltszmin = evacond.getSettingLiuTongShiZhiMin() * 100000000;
+	    	ltszmin = evacond.getSettingZongShiZhiMin() * 100000000;
 	    } catch (Exception e) {
 	    	ltszmin = 10000000000000.0;
 	    }
 	    LocalDate requireddate = evadate;
 	    String period = evaperiod;
 	    NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-	    Double curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, 0);
+	    Double curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate, 0);
 	    if(curltsz == null) //有时候周一网易的数据还没有导入，导致没有流通市值数据，先用上一周的数据顶一下，毕竟不会相差太大
-	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, -1);
+	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate, -1);
 	    try {
 		    if( curltsz >= ltszmin && curltsz <= ltszmax ) {
 		    	if(curltsz >= 1500000000.0 && curltsz <= 3900000000.0) { //对于这个范围内的个股要特别重视，特别显示
 		    		specialarea = true ;
-		    		analysisresultforvoice = analysisresultforvoice + "流通市值" + Math.floor(curltsz/100000000) + "亿。";
+		    		analysisresultforvoice = analysisresultforvoice + "总市值" + Math.floor(curltsz/100000000) + "亿。";
 		    		return true;
 		    	}
 		    	else  {
-		    		analysisresultforvoice = analysisresultforvoice + "流通市值" + Math.floor(curltsz/100000000) + "亿。";
+		    		analysisresultforvoice = analysisresultforvoice + "总市值" + Math.floor(curltsz/100000000) + "亿。";
 		    		return true;
 		    	}
 		    }
 		    else {
-		    	analysisresultforvoice = analysisresultforvoice + "流通市值" + Math.floor(curltsz/100000000) + "亿。";
+		    	analysisresultforvoice = analysisresultforvoice + "总市值" + Math.floor(curltsz/100000000) + "亿。";
 		    	return false;
 		    }
 	    } catch (java.lang.NullPointerException e) {
@@ -106,5 +105,4 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     public String getName() {
         return "ChenJiaoEr Rule";
     }
-
 }

@@ -2,7 +2,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <comment>example</comment>
-  	<entry key="tdxpah">E:/stock/zd_zszq/</entry>
+  	<entry key="tdxpah">E:/stock/zd_zszq/</entry>  
+  	<entry key="dzhpah">E:/stock/dzh365/</entry>
   	<entry key="nameofguanzhubankuai">模型验证</entry>
   	<entry key="tdxzdybkpath">//jeffauas/blocknew/</entry>
   	<entry key="zhanbifengxizhouqi">10</entry>

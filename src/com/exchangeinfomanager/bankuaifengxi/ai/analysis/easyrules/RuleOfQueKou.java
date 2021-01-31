@@ -26,6 +26,8 @@ public class RuleOfQueKou
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
+		if(evacond == null)
+			return false;
 		
 		Boolean hlqk = evacond.hasHuiBuDownQueKou();
 	    if(hlqk ) {

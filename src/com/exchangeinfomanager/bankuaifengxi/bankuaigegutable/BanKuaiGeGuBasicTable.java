@@ -41,7 +41,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.TableFilterHeader;
 
-public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic implements  BanKuaiGeGuMatchConditionListener
+public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic 
 {
 	public BanKuaiGeGuBasicTable (StockInfoManager stockmanager1,String propertiesfilepath)
 	{
@@ -303,8 +303,5 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic imp
 		   model.removeRow(i); 
 		}
 	}
-
 	
-
-
 }

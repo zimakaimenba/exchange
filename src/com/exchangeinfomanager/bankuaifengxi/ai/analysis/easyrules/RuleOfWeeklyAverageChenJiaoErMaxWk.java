@@ -29,6 +29,9 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
+		if(evacond == null)
+			return false;
+		
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
 		int dpmaxwk;
 		try {

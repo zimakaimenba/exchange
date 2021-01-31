@@ -61,14 +61,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 	{
 		return renderer;
 	}
-	
-   @Override
-	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
-    {
-    	((BanKuaiGeGuTableModelFromPropertiesFile)this.getModel()).setDisplayMatchCondition(expc);
-    	this.repaint();
-	}
-	
+
     public String getToolTipText(MouseEvent e) {
         String tip = null;
         java.awt.Point p = e.getPoint();

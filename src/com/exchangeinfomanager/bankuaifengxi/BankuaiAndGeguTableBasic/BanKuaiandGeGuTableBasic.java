@@ -18,7 +18,10 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.table.JTableHeader;
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
+import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 
@@ -26,7 +29,7 @@ import net.coderazzi.filters.IFilterObserver;
 import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.TableFilterHeader;
 
-public abstract class BanKuaiandGeGuTableBasic extends JTable 
+public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKuaiGeGuMatchConditionListener 
 {
 	private String systeminstalledpath;
 	protected Properties prop;
@@ -49,6 +52,14 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable
 		filterHeader.setComponentPopupMenu(popupMenu);
 		
 		createEvents ();
+	}
+	
+	@Override
+	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
+	{
+		((BandKuaiAndGeGuTableBasicModel)this.getModel()).setDisplayMatchCondition(expc);
+    	this.repaint();
+		
 	}
 	/*
 	 * 

@@ -27,6 +27,8 @@ public class RuleOfHuanShouLv
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
+		if(evacond == null)
+			return false;
 		
 		Double shouldhsl = evacond.getSettingHuanShouLv();
 		if(shouldhsl == null)

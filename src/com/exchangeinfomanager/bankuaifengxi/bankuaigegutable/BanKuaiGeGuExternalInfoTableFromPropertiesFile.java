@@ -112,14 +112,6 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 			return;
 		}
 	}
-	@Override
-	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
-	{
-		((BanKuaiGeGuBasicTableModel)this.getModel()).setDisplayMatchCondition(expc);
-    	this.repaint();
-		
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#getCellRenderer(int, int)

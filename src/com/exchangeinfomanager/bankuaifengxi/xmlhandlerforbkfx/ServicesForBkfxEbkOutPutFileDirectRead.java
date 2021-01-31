@@ -74,7 +74,10 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
 	}
 	public void resetBkfxFileDate (LocalDate localDate)
 	{
-		this.edbfiledate = localDate.with(DayOfWeek.FRIDAY);
+		if(localDate != null)
+			this.edbfiledate = localDate.with(DayOfWeek.FRIDAY);
+		else
+			this.edbfiledate = LocalDate.now().with(DayOfWeek.FRIDAY);
 	}
 
 	@Override

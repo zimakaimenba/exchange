@@ -26,7 +26,8 @@ public class RuleOfChenJiaoEr
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
-		
+		if(evacond == null)
+			return false;
 		Double cjemax = evacond.getSettingChenJiaoErMax();
     	Double cjemin = evacond.getSettingChenJiaoErMin();
     	if(cjemin != null && cjemax == null) {
