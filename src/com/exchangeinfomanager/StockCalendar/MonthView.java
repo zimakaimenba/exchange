@@ -275,7 +275,6 @@ public class MonthView extends View
         int i = 0;
 
         for (LocalDate d = first; i < 42; d = d.plusDays(1), i++) {
-        	JScrollPane scrollpane = new JScrollPane ();
             JPanel panel = new JPanel();
             panel.setName(d.toString());
             Color color = null;
@@ -302,6 +301,10 @@ public class MonthView extends View
             }
             panel.setBackground(color);
             
+//            JScrollPane scrollpane = new JScrollPane (panel,
+//                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+//                    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane scrollpane = new JScrollPane ();
             scrollpane.setViewportView (panel);
             scrollpane.getVerticalScrollBar().setValue(scrollpane.getVerticalScrollBar().getMaximum());
 

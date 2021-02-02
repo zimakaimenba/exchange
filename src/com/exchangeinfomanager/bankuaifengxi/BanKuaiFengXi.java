@@ -101,7 +101,7 @@ import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
-
+import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -124,6 +124,7 @@ import com.google.common.io.Files;
 
 
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -142,6 +143,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 
@@ -168,6 +170,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JFileChooser;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
@@ -386,8 +391,6 @@ public class BanKuaiFengXi extends JDialog
 		((JStockComboBoxModel)combxsearchbk.getModel() ).setCurrentDataDate(curselectdate);
 		((JStockComboBoxModel)combxstockcode.getModel() ).setCurrentDataDate(curselectdate);
 		
-		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);//设置突出显示条件
-		
 		curselectdate = null;
 		svsbk = null;
 
@@ -407,8 +410,6 @@ public class BanKuaiFengXi extends JDialog
 			combxsearchbk.updateUserSelectedNode(selectedbk);
 		
 		displayNodeInfo(selectedbk);
-		
-		refreshBanKuaiGeGuTableHightLight ();
 		
 		tabbedPanebk.setSelectedIndex(2);
 		
@@ -631,8 +632,6 @@ public class BanKuaiFengXi extends JDialog
 				((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingminustwo.getModel()).refresh(((BanKuai)bkcur), selectdate3,globeperiod);
 				tabbedPanegegu.setTitleAt(4,  selectdate3 + "(+1)");
 				
-				refreshBanKuaiGeGuTableHightLight ();
-					
 				panelLastWkGeGucjeZhanBi.updateDate(bkcur, selectdate, 0,globeperiod); //显示选定周PIE
 			}
 			
@@ -907,9 +906,7 @@ public class BanKuaiFengXi extends JDialog
 				} else
 					this.dateChooser.setDate(new Date ());
 				btnresetdate.setEnabled(false);
-				
-				
-
+				bkhlpnl.setCurrentDisplayDate(this.dateChooser.getLocalDate() ); //导出个股时候要用到当前的日期。
 	}
 //	private void setUpZhongDianGuanZhuBanKuai ()
 //	{
@@ -918,150 +915,6 @@ public class BanKuaiFengXi extends JDialog
 //		zdgzsvs.getCache().addCacheListener(tableBkZhanBi);
 //	}
 
-	/*
-	 * 对板块个股表高亮
-	 */
-	private void refreshBanKuaiGeGuTableHightLight ()
-	{
-//		setExportMainConditionBasedOnUserSelection (displayexpc);
-		
-		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);
-		
-//		bkfxhighlightvaluesoftableslisteners.forEach(l -> l.hightLightFxValues( displayexpc ) );
-
-		//对于panel来说，hightLightFxValues第一个参数不能用，因为panel 都是 节点对她的上级的占比
-//		panelGgDpCjeZhanBi.hightLightFxValues(displayexpc);
-//		panelbkwkcjezhanbi.hightLightFxValues(displayexpc);
-		
-
-	}
-	/*
-	 * 把当前的板块当周符合条件的导出
-	 */
-//	private void exportBanKuaiWithGeGuOnCondition2 ()
-//	{
-//	
-//		if(exportcond == null || exportcond.size() == 0) {
-//			JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-//			return;
-//  
-////			if(exportcond == null) { //用户设置条件后可能直接点击导出，而没有先点击加入，这里是统一界面的行为
-////				exportcond = new ArrayList<BanKuaiGeGuMatchCondition> ();
-////				initializeExportConditions ();
-////			} else
-////				initializeExportConditions ();
-//		}
-//
-//		String msg =  "导出耗时较长，请先确认条件是否正确。\n是否导出？";
-//		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
-//		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-//			return;
-//		
-//		LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		String dateshowinfilename = null;
-//		if(globeperiod == null  || globeperiod.equals(NodeGivenPeriodDataItem.WEEK))
-//			dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
-//		else if(globeperiod.equals(NodeGivenPeriodDataItem.DAY))
-//			dateshowinfilename = "day" + curselectdate.toString().replaceAll("-","");
-//		else if(globeperiod.equals(NodeGivenPeriodDataItem.MONTH))
-//			dateshowinfilename = "month" +  curselectdate.withDayOfMonth(curselectdate.lengthOfMonth()).toString().replaceAll("-","");
-//		String exportfilename = sysconfig.getTDXModelMatchExportFile () + "TDX模型个股" + dateshowinfilename + ".EBK";
-//		File filefmxx = new File( exportfilename );
-//		
-//		if( !filefmxx.getParentFile().exists() ) {  
-//            //如果目标文件所在的目录不存在，则创建父目录  
-//            logger.debug("目标文件所在目录不存在，准备创建它！");  
-//            if(!filefmxx.getParentFile().mkdirs()) {  
-//                System.out.println("创建目标文件所在目录失败！");  
-//                return ;  
-//            }  
-//        }  
-//		
-//		try {
-//				if (filefmxx.exists()) {
-//					filefmxx.delete();
-//					filefmxx.createNewFile();
-//				} else
-//					filefmxx.createNewFile();
-//		} catch (Exception e) {
-//				e.printStackTrace();
-//				return ;
-//		}
-//		
-//		this.stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
-//		
-////		pnl_paomd.refreshMessage(title+paomad);
-//		exporttask = new ExportTask2(exportcond, curselectdate,globeperiod,filefmxx);
-//		exporttask.addPropertyChangeListener(new PropertyChangeListener() {
-//		      @Override
-//		      public void propertyChange(final PropertyChangeEvent eventexport) {
-//		        switch (eventexport.getPropertyName()) {
-//		        case "progress":
-//		        	progressBarExport.setIndeterminate(false);
-//		        	progressBarExport.setString("正在导出..." + (Integer) eventexport.getNewValue() + "%(,点击取消导出)");
-//		        	progressBarExport.setToolTipText("点击取消导出");
-//		          break;
-//		        case "state":
-//		          switch ((StateValue) eventexport.getNewValue()) {
-//		          case DONE:
-//		        	exportCancelAction.putValue(Action.NAME, "导出条件个股");
-//		            try {
-//		              final int count = exporttask.get();
-//		              //保存XML
-////		              bkcyl.parseWeeklyBanKuaiFengXiFileToXmlAndPatchToCylTree (filefmxx,curselectdate.with(DayOfWeek.FRIDAY) );
-//		              
-//		              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
-////		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
-////		      			  progressBarExport.setString(" ");
-////		      			  return;
-////		      		  }
-//		      		  try {
-//		      			String path = filefmxx.getAbsolutePath();
-//		      			Runtime.getRuntime().exec("explorer.exe /select," + path);
-//		      		  } catch (IOException e1) {
-//		      				e1.printStackTrace();
-//		      		  }
-//		      		  progressBarExport.setString(" ");
-//		      		  stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-//		      		  System.gc();
-//		            } catch (final CancellationException e) {
-//		            	try {
-//							exporttask.get();
-//						} catch (InterruptedException | ExecutionException | CancellationException e1) {
-////							e1.printStackTrace();
-//						}
-//		            	progressBarExport.setIndeterminate(false);
-//		            	progressBarExport.setValue(0);
-//		            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
-//		            	progressBarExport.setString("导出设置条件个股");
-//		            	stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-//		            } catch (final Exception e) {
-////		              JOptionPane.showMessageDialog(Application.this, "The search process failed", "Search Words",
-////		                  JOptionPane.ERROR_MESSAGE);
-//		            }
-//
-//		            exporttask = null;
-//		            break;
-//		          case STARTED:
-//		          case PENDING:
-//		        	  exportCancelAction.putValue(Action.NAME, "取消导出");
-//		        	  progressBarExport.setVisible(true);
-//		        	  progressBarExport.setIndeterminate(true);
-//		            break;
-//		          }
-//		          break;
-//		        }
-//		      }
-//		    });
-//		
-//		exporttask.execute();
-////		try {
-////			exporttask.get();
-////		} catch (InterruptedException | ExecutionException e) {
-////			// TODO Auto-generated catch block
-////			e.printStackTrace();
-////		}
-//	}
 	/**
 	 * 
 	 */
@@ -1633,123 +1486,29 @@ public class BanKuaiFengXi extends JDialog
             }
         });
 		
+		stkhistorycsvfileMenu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				int row = tableGuGuZhanBiInBk.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
+				StockOfBanKuai bstkofbk = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode(modelRow);
+				getBanKuaiHistoryCsvAndAnalysisFile (bstkofbk.getStock());
+			}
+			
+			public void mouseClicked(MouseEvent e) {}
+		});
+		
 		historycsvfileMenu.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				int row = tableBkZhanBi.getSelectedRow();
-    			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-    			BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
-    			
-    			if(historycsvfileMenu.getMenuComponentCount() >0) {
-//    				Component[] mc = historycsvfileMenu.getMenuComponents();
-    				Component curmenuitem = historycsvfileMenu.getMenuComponent(0);
-    				if(curmenuitem != null  && curmenuitem.getName().contains(bk.getMyOwnCode() ))
-    					return;
-    			}
-				
-				historycsvfileMenu.removeAll();
-				
-				String installpath = sysconfig.getSystemInstalledPath();
-    			File dir = new File(installpath + "/dailydata/csv");
-    			int csvfilecount = 0;
-    			
-    			FileFilter csvfileFilter = new WildcardFileFilter("*.CSV", IOCase.INSENSITIVE);      			// For taking both .JPG and .jpg files (useful in *nix env)  
-    			File[] csvfileList = dir.listFiles(csvfileFilter);      
-    			if (csvfileList.length > 0) {          
-    				/** The oldest file comes first **/     
-    				Arrays.sort(csvfileList, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR); //filesList now contains all the JPG/jpg files in sorted order    
-    			}  
-    			for (int i = 0; i < csvfileList.length; i++) {
-    				  if (csvfileList[i].isFile()) {
-//    				    System.out.println("File " + csvfileList[i].getName());
-    				    if(csvfileList[i].getName().contains(bk.getMyOwnCode() )   ) {
-    				    	String csvsinglefilename = csvfileList[i].getName() ;
-    				    	JMenuItem menuitemhistorycsvfile = new JMenuItem (csvsinglefilename ); 
-    				    	historycsvfileMenu.add(menuitemhistorycsvfile);
-    				    	menuitemhistorycsvfile.setName(csvsinglefilename );
-    				    	menuitemhistorycsvfile.addActionListener(new ActionListener() {
-    				            @Override
-    				            public void actionPerformed(ActionEvent e) {
-    				            	JMenuItem actionmenu = (JMenuItem)e.getSource();
-    				            	String actionmenufilename = actionmenu.getName();
-    				            	try {
-    				            		
-    									String cmd = "rundll32 url.dll,FileProtocolHandler " + installpath + "/dailydata/csv/" +  actionmenufilename;
-    									Process p  = Runtime.getRuntime().exec(cmd);
-    									p.waitFor();
-    								} catch (Exception e1){
-    									e1.printStackTrace();
-    								}
-    				            	
-    				            	try {
-    					      			File filecsv = new File( installpath + "/dailydata/csv/" +  actionmenufilename );
-    				            		String path = filecsv.getAbsolutePath();
-    					      			Runtime.getRuntime().exec("explorer.exe /select," + path );
-    					      		} catch (IOException e1) {
-    					      				e1.printStackTrace();
-    					      		}
-    				            }
-    				        });
-    				    	csvfilecount ++;
-    				    }
-    				    	
-    				  } else if (csvfileList[i].isDirectory()) {
-//    				    System.out.println("Directory " + csvfileList[i].getName());
-    				  }
-    			}
-    			FileFilter xlsfileFilter = new WildcardFileFilter("*.XLS", IOCase.INSENSITIVE);      			// For taking both .JPG and .jpg files (useful in *nix env)  
-    			File[] xlsfileList = dir.listFiles(xlsfileFilter);      
-    			if (xlsfileList.length > 0) {          
-    				/** The oldest file comes first **/     
-    				Arrays.sort(xlsfileList, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR); //filesList now contains all the JPG/jpg files in sorted order    
-    			}  
-    			for (int i = 0; i < xlsfileList.length; i++) {
-    				  if (xlsfileList[i].isFile()) {
-//    				    System.out.println("File " + xlsfileList[i].getName());
-    				    if(xlsfileList[i].getName().contains(bk.getMyOwnCode() )   ) {
-    				    	String xlssinglefilename = xlsfileList[i].getName() ;
-    				    	JMenuItem menuitemhistoryxlsfile = new JMenuItem (xlssinglefilename ); 
-    				    	historycsvfileMenu.add(menuitemhistoryxlsfile);
-    				    	menuitemhistoryxlsfile.setName(xlssinglefilename );
-    				    	menuitemhistoryxlsfile.addActionListener(new ActionListener() {
-    				            @Override
-    				            public void actionPerformed(ActionEvent e) {
-    				            	JMenuItem actionmenu = (JMenuItem)e.getSource();
-    				            	String actionmenufilename = actionmenu.getName();
-    				            	try {
-    									String cmd = "rundll32 url.dll,FileProtocolHandler " + installpath + "/dailydata/csv/" +  actionmenufilename;
-    									Process p  = Runtime.getRuntime().exec(cmd);
-    									p.waitFor();
-    								} catch (Exception e1){
-    									e1.printStackTrace();
-    								}
-    				            	
-    				            	try {
-    				            		File filexls = new File( installpath + "/dailydata/csv/" +  actionmenufilename );
-    				            		String path = filexls.getAbsolutePath();
-    					      			Runtime.getRuntime().exec("explorer.exe /select," + path );
-    					      		} catch (IOException e1) {
-    					      				e1.printStackTrace();
-    					      		}
-    				            }
-    				        });
-    				    	
-    				    	csvfilecount ++;
-    				    }
-    				    	
-    				  } else if (xlsfileList[i].isDirectory()) {
-//    				    System.out.println("Directory " + xlsfileList[i].getName());
-    				  }
-    			}
-    			if(csvfilecount == 0) {
-    				JMenuItem menuitemhistorycsvfile = new JMenuItem ("没有历史CSV文件" );
-    				menuitemhistorycsvfile.setName("没有历史CSV文件");
-			    	historycsvfileMenu.add(menuitemhistorycsvfile);
-    			}
-    			
-//    			MenuElement[] selectionPath = MenuSelectionManager.defaultManager().getSelectedPath();
-//    			MenuSelectionManager.defaultManager().clearSelectedPath();
-//    			MenuSelectionManager.defaultManager().setSelectedPath(selectionPath);
+				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+				BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
+				getBanKuaiHistoryCsvAndAnalysisFile (bk);
 			}
 			
 			public void mouseClicked(MouseEvent e) {}
@@ -2654,6 +2413,129 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
+	protected void getBanKuaiHistoryCsvAndAnalysisFile(TDXNodes node) 
+	{
+		if(historycsvfileMenu.getMenuComponentCount() >0) {
+//			Component[] mc = historycsvfileMenu.getMenuComponents();
+			Component curmenuitem = historycsvfileMenu.getMenuComponent(0);
+			if(curmenuitem != null  && curmenuitem.getName().contains(node.getMyOwnCode() ))
+				return;
+		}
+		
+		historycsvfileMenu.removeAll();
+		
+		String installpath = sysconfig.getSystemInstalledPath();
+		File dir = new File(installpath + "/dailydata/csv");
+		
+		String csvandanalysisfile = bkfxsettingprop.getProperty ("csvandanalysisfile");
+		List<File> fileList = new ArrayList<> ();
+		if(csvandanalysisfile != null) {
+			List<String> fileprofrixlist = Splitter.on(",").omitEmptyStrings().splitToList(csvandanalysisfile);
+			for(String profrix : fileprofrixlist) {
+				File[] tmpfileList = dir.listFiles(new FilenameFilter() {
+				    public boolean accept(File dir, String name) {
+				    	Boolean nameqlf = name.contains(node.getMyOwnCode() );
+				    	Boolean extensionqlf = name.toUpperCase().endsWith(profrix.trim().toUpperCase() ) ; 
+				        return  nameqlf && extensionqlf;
+				    }
+				});
+//				FileFilter profrixfileFilter = new WildcardFileFilter("*." + profrix.toUpperCase(), IOCase.INSENSITIVE);      			// For taking both .JPG and .jpg files (useful in *nix env)
+//				File[] tmpfileList = dir.listFiles(profrixfileFilter);
+				if (tmpfileList.length > 0)           
+					/** The oldest file comes first **/     
+					Arrays.sort(tmpfileList, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR); //filesList now contains all the JPG/jpg files in sorted order    
+				fileList.addAll( new ArrayList<File>(Arrays.asList(tmpfileList)) );
+			}
+		}
+		for(File tmpfile : fileList) {
+			if (tmpfile.isDirectory())
+				continue;
+			if(!tmpfile.isFile())
+				continue;
+		    
+		    	String singlefilename = tmpfile.getName();
+		    	JMenuItem menuitemhistorycsvfile = new JMenuItem (singlefilename ); 
+		    	historycsvfileMenu.add(menuitemhistorycsvfile);
+		    	menuitemhistorycsvfile.setName(singlefilename );
+		    	menuitemhistorycsvfile.addActionListener(new ActionListener() {
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+		            	JMenuItem actionmenu = (JMenuItem)e.getSource();
+		            	String actionmenufilename = actionmenu.getName();
+		            	String extension = Files.getFileExtension(actionmenufilename).toUpperCase();
+		            	switch(extension) {
+		            	case "CSV" :
+		            		try {
+								String cmd = "rundll32 url.dll,FileProtocolHandler " + installpath + "/dailydata/csv/" +  actionmenufilename;
+								Process p  = Runtime.getRuntime().exec(cmd);
+								p.waitFor();
+							} catch (Exception e1){
+								e1.printStackTrace();
+							}
+			            	
+			            	try {
+				      			File filecsv = new File( installpath + "/dailydata/csv/" +  actionmenufilename );
+			            		String path = filecsv.getAbsolutePath();
+				      			Runtime.getRuntime().exec("explorer.exe /select," + path );
+				      		} catch (IOException e1) {
+				      				e1.printStackTrace();
+				      		}
+			            	
+		            		break;
+		            	case "XLS" :
+		            		try {
+								String cmd = "rundll32 url.dll,FileProtocolHandler " + installpath + "/dailydata/csv/" +  actionmenufilename;
+								Process p  = Runtime.getRuntime().exec(cmd);
+								p.waitFor();
+							} catch (Exception e1){
+								e1.printStackTrace();
+							}
+			            	
+			            	try {
+				      			File filecsv = new File( installpath + "/dailydata/csv/" +  actionmenufilename );
+			            		String path = filecsv.getAbsolutePath();
+				      			Runtime.getRuntime().exec("explorer.exe /select," + path );
+				      		} catch (IOException e1) {
+				      				e1.printStackTrace();
+				      		}
+			            	
+		            		break;
+		            	case "PBIX" :
+		            		try {
+								String cmd = "rundll32 url.dll,FileProtocolHandler " + installpath + "/dailydata/csv/" +  actionmenufilename;
+								Process p  = Runtime.getRuntime().exec(cmd);
+								p.waitFor();
+							} catch (Exception e1){
+								e1.printStackTrace();
+							}
+			            	
+//			            	try {
+//				      			File filecsv = new File( installpath + "/dailydata/csv/" +  actionmenufilename );
+//			            		String path = filecsv.getAbsolutePath();
+//				      			Runtime.getRuntime().exec("explorer.exe /select," + path );
+//				      		} catch (IOException e1) {
+//				      				e1.printStackTrace();
+//				      		}
+//			            	
+//		            		break;
+		            	}
+		            }
+		        });
+		    	
+		    
+		}
+
+		if(fileList.size() == 0) {
+			JMenuItem menuitemhistorycsvfile = new JMenuItem ("没有历史CSV文件" );
+			menuitemhistorycsvfile.setName("没有历史CSV文件");
+	    	historycsvfileMenu.add(menuitemhistorycsvfile);
+		}
+	
+	}
+
+	/*
+	 * 
+	 */
 	private void parseTempGeGuFromZhiDingBanKuaiFunciotn ()
 	{
 		String result = JOptionPane.showInputDialog("请输入板块代码");
@@ -2755,8 +2637,6 @@ public class BanKuaiFengXi extends JDialog
 			
 			tempbankuai.addNewBanKuaiGeGu(bkofst);
 		}
-		
-		setExportMainConditionBasedOnUserSelection (bkggmatchcondition); //让tempbk也具备凸显
 		
 		((BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod); 
 		
@@ -3227,19 +3107,6 @@ public class BanKuaiFengXi extends JDialog
 //		decrorateExportButton (expc3);
 //	}
 	
-	/*
-	 * 同时兼任 界面显示的选择 
-	 */
-	private void setExportMainConditionBasedOnUserSelection (BanKuaiGeGuMatchCondition expc)
-	{}
-	
-	/*
-	 * 
-	 */
-	protected void chooseParsedFile(String filename) 
-	{}
-	
-	
 		/*
 	 * 跑马灯
 	 */
@@ -3421,6 +3288,10 @@ public class BanKuaiFengXi extends JDialog
 //	private JMenu menuItemhistorycsvfile;
 
 	private JMenu historycsvfileMenu;
+
+private BkfxHightLightPnl bkhlpnl;
+
+private JMenu stkhistorycsvfileMenu;
 	
 	
 	private void initializeGuiOfNormal() {
@@ -4535,7 +4406,7 @@ public class BanKuaiFengXi extends JDialog
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			
 			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));
-			BkfxHightLightPnl bkhlpnl = new BkfxHightLightPnl (this.highlightpnlprop, this.bkggmatchcondition);
+			bkhlpnl = new BkfxHightLightPnl (this.highlightpnlprop, this.bkggmatchcondition);
 			bkhlpnl.setStockInfoManager(this.stockmanager );
 			bkhlpnl.setCurrentDisplayDate(this.dateChooser.getLocalDate() );
 			bkhlpnl.setCurrentExportPeriod(this.globeperiod);
@@ -4555,7 +4426,34 @@ public class BanKuaiFengXi extends JDialog
 	             }
 	        });
 			
-//					
+			JLabel holdbackgrounddownload = JLabelFactory.createButton("",25, 25);
+			holdbackgrounddownload.setHorizontalAlignment(SwingConstants.LEFT);
+			holdbackgrounddownload.setToolTipText("后台下载数据暂停");
+			holdbackgrounddownload.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/trafficsignal.png")));
+			holdbackgrounddownload.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) 
+				{
+					if(SwingUtilities.isLeftMouseButton(arg0) ) {
+						if(holdbackgrounddownload.getToolTipText().contains("暂停")) {
+							ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
+//							holdbackgrounddownload.setText("后台下载数据恢复");
+							holdbackgrounddownload.setToolTipText("后台下载数据恢复");
+							holdbackgrounddownload.setIcon(icon);
+						} else {
+							ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
+//							holdbackgrounddownload.setText("后台下载数据暂停");
+							holdbackgrounddownload.setToolTipText("后台下载数据暂停");
+							holdbackgrounddownload.setIcon(icon);
+						}
+						
+					} else 
+					if (SwingUtilities.isRightMouseButton(arg0)) {
+					} else if (SwingUtilities.isMiddleMouseButton(arg0)) {							
+					}
+				}
+			});
+			buttonPane.add(holdbackgrounddownload);
 		}
 		
 		reFormatGui ();
@@ -4603,12 +4501,12 @@ public class BanKuaiFengXi extends JDialog
 	   menuItemDuanQiGuanZhu = new JMenuItem("短期关注");
 	   tableBkZhanBi.getPopupMenu().add(menuItemDuanQiGuanZhu);
 	   
-	   JMenu csvMenu = new JMenu("CSV");
-	   tableBkZhanBi.getPopupMenu().add(csvMenu);
-       menuItemsiglebktocsv = new JMenuItem("导出板块到CSV");
-       csvMenu.add(menuItemsiglebktocsv);
-       historycsvfileMenu = new JMenu("历史CSV文件");
-       csvMenu.add(historycsvfileMenu);
+	   JMenu bkcsvMenu = new JMenu("CSV");
+	   tableBkZhanBi.getPopupMenu().add(bkcsvMenu);
+       menuItemsiglebktocsv = new JMenuItem("导出CSV");
+       bkcsvMenu.add(menuItemsiglebktocsv);
+       historycsvfileMenu = new JMenu("历史分析文件");
+       bkcsvMenu.add(historycsvfileMenu);
 	   
        
 //       menuItemRmvNodeFmFile = new JMenuItem("剔除出模型文件") ;
@@ -4623,8 +4521,12 @@ public class BanKuaiFengXi extends JDialog
 	   menuItemsMrjh = new JMenuItem("明日计划");
 	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsMrjh);
 	   
-       menuItemsiglestocktocsv = new JMenuItem("导出个股到CSV");
-       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsiglestocktocsv);
+	   JMenu stkcsvMenu = new JMenu("CSV");
+	   tableGuGuZhanBiInBk.getPopupMenu().add(stkcsvMenu);
+	   menuItemsiglestocktocsv = new JMenuItem("导出CSV");
+       stkcsvMenu.add(menuItemsiglestocktocsv);
+       stkhistorycsvfileMenu = new JMenu("历史分析文件");
+       stkcsvMenu.add(stkhistorycsvfileMenu);
        
        menuItemnonfixperiod = new JMenuItem("不定周期DPM??WK");
        tableGuGuZhanBiInBk.getPopupMenu().add(menuItemnonfixperiod);

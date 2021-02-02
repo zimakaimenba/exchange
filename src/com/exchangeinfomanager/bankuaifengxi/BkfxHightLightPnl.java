@@ -1010,5 +1010,3 @@ class ExportTask extends SwingWorker<Integer, String>
 		} catch (InterruptedException | ExecutionException e) {			e.printStackTrace();}
 	}
 }
-
-

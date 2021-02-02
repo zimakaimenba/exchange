@@ -7,7 +7,6 @@ import java.util.Set;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -25,10 +24,14 @@ import com.google.common.base.Strings;
 public class ExportMatchedNode
 {
 	private BanKuaiGeGuMatchCondition cond;
+	private SvsForNodeOfBanKuai svsbk;
+	private SvsForNodeOfStock svsstk;
 
 	public ExportMatchedNode (BanKuaiGeGuMatchCondition cond) 
 	{
 		this.cond = cond;
+		this.svsbk = new SvsForNodeOfBanKuai  ();
+		this.svsstk = new SvsForNodeOfStock  ();
 	}
 	
 	public Set<TDXNodes> checkTDXNodeMatchedCurSettingConditons (LocalDate exportdate, String period)
@@ -41,9 +44,6 @@ public class ExportMatchedNode
 		Set<TDXNodes> matchednodeset = new HashSet<TDXNodes> ();
 		Set<String> checkednodesset = new HashSet<String> ();
 		
-		
-		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
-//		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
 		for(int i=0;i< bankuaicount; i++) {
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
 			if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
@@ -173,11 +173,7 @@ public class ExportMatchedNode
 			 return false;
 		if( checkednodesset.contains(childnode.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
 			 return false;
-		
-		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
-		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
-		childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
-		
+	
 		//检查黄标
 		Boolean stkcheckresult = null;
 		stkcheckresult = this.checkStockMatchedCurSettingConditonsOfYellowSign( (Stock)childnode, exportdate, period);
@@ -189,6 +185,10 @@ public class ExportMatchedNode
 			checkednodesset.add( childnode.getMyOwnCode() );
 			return stkcheckresult;
 		}
+		
+		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
+//		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
+		childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 		
 		//stkcheckresult == null 说明不是到处黄标个股,做下面的，这样提高效率
 		try{

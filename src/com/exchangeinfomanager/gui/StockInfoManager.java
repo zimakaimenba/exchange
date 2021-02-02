@@ -228,7 +228,6 @@ public class StockInfoManager
 		}
 		license = null;
 
-		dbconfig = DataBaseConfigration.getInstance();
 		connectdb = ConnectDataBase.getInstance();
 		boolean localconnect = connectdb.isLocalDatabaseconnected();
 		if(localconnect == false) {
@@ -255,11 +254,9 @@ public class StockInfoManager
 	
 	private static Logger logger = Logger.getLogger(StockInfoManager.class);
 	private ConnectDataBase connectdb = null;
-	private DataBaseConfigration dbconfig = null;
 	private SetupSystemConfiguration systemconfig = null;
 	private AccountAndChiCangConfiguration accountschicangconfig;
 	private BkChanYeLianTreeNode nodeshouldbedisplayed; 
-//	private BuyCheckListTreeDialog buychklstdialog;
 	private BanKuaiDbOperation bkdbopt;
 	private AccountDbOperation acntdbopt;
 	private BanKuaiGuanLi bkgldialog = null;
@@ -273,16 +270,27 @@ public class StockInfoManager
 	private GetNodeDataFromDbWhenSystemIdle getnodedata;
 	private Thread threadgetnodedata;
 
-	public void setGetNodeDataFromDbWhenSystemIdleThreadStatus (boolean alive)  
+	public ImageIcon setGetNodeDataFromDbWhenSystemIdleThreadStatus (boolean alive)  
 	{
+		ImageIcon finishicon = new ImageIcon(BanKuaiFengXi.class.getResource("/images/finish.png"));
 		if ( !threadgetnodedata.isAlive() )
-			return;
+			return finishicon;
+		
+		ImageIcon stopicon = new ImageIcon(BanKuaiFengXi.class.getResource("/images/trafficsignal.png"));
+		ImageIcon resumeicon = new ImageIcon(BanKuaiFengXi.class.getResource("/images/trafficlight-in-green.png"));
 		
 		State status = threadgetnodedata.getState();
-		if(!alive)
+		if(!alive) {
 			getnodedata.pause();
-		if(alive)
+			mntmbkdwndata.setText("后台下载数据");
+			return resumeicon;
+		}
+		if(alive) {
 			getnodedata.resume ();
+			mntmbkdwndata.setText("X 后台下载数据");
+			return stopicon;
+		}
+		return null;
 	}
 	/*
 	 * 把持仓显示在相应的位置
@@ -490,6 +498,20 @@ public class StockInfoManager
 	 */
 	private void createEvents()
 	{
+		mntmbkdwndata.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(mntmbkdwndata.getText().contains("X")) {
+					mntmbkdwndata.setText("后台下载数据");
+					ImageIcon icon = setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
+					mntmbkdwndata.setIcon(icon);
+				} else {
+					mntmbkdwndata.setText("X 后台下载数据");
+					ImageIcon icon = setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
+					mntmbkdwndata.setIcon(icon);
+				}
+			}
+		});
+		
 		mntmFreemind.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -2355,6 +2377,7 @@ public class StockInfoManager
 	private JMenu mnThirdparty;
 	private JMenuItem mntmFreemind;
 	private JMenuItem menuItemggfx;
+	private JMenuItem mntmbkdwndata;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2966,6 +2989,11 @@ public class StockInfoManager
 		mntmNewMenuItem_1.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/search_results_30.918276374443px_1194419_easyicon.net.png")));
 		
 		menuOperationList.add(mntmNewMenuItem_1);
+		
+		mntmbkdwndata = new JMenuItem("X \u540E\u53F0\u4E0B\u8F7D\u6570\u636E");
+		
+		mntmbkdwndata.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/trafficsignal.png")));
+		menuOperationList.add(mntmbkdwndata);
 		
 		mnThirdparty = new JMenu("ThirdParty");
 		menuBar.add(mnThirdparty);
