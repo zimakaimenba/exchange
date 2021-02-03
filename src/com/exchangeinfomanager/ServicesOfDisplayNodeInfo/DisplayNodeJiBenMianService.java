@@ -43,35 +43,45 @@ public class DisplayNodeJiBenMianService implements ServicesOfNodeJiBenMianInfo
 	    String header = "<h4>\""+ curbknodecode + " " + nodename + "\"基本信息</h4>";
 	    content.append(header);
        
+	    Boolean hasinfo = false;
        	if(!Strings.isNullOrEmpty( node.getNodeJiBenMian().getGainiantishi() ) ) 
-		try {
+			try {
+				hasinfo = true;
 				content.append( "<p>"+ "概念提示:" + Strings.nullToEmpty( node.getNodeJiBenMian().getGainiantishidate().toString()) + node.getNodeJiBenMian().getGainiantishi() + "</p>" );
-		} catch (java.lang.NullPointerException e) {
-				content.append("<p>"+ "概念提示:" +  Strings.nullToEmpty( "") + node.getNodeJiBenMian().getGainiantishi() + "</p>" );
+			} catch (java.lang.NullPointerException e) {
+					content.append("<p>"+ "概念提示:" +  Strings.nullToEmpty( "") + node.getNodeJiBenMian().getGainiantishi() + "</p>" );
 		}
        	if(!Strings.isNullOrEmpty(node.getNodeJiBenMian().getFumianxiaoxi() )  )
-	       		try {
+	       	try {
+	       		hasinfo = true;
 				content.append( "<p>"+ "负面消息:" + Strings.nullToEmpty( node.getNodeJiBenMian().getFumianxiaoxidate().toString()) + node.getNodeJiBenMian().getFumianxiaoxi() + "</p>" );
-		} catch (java.lang.NullPointerException e) {
-				content.append("<p>"+ "负面消息:" +  Strings.nullToEmpty( "") + node.getNodeJiBenMian().getFumianxiaoxi() + "</p>" );
-		}
+			} catch (java.lang.NullPointerException e) {
+					content.append("<p>"+ "负面消息:" +  Strings.nullToEmpty( "") + node.getNodeJiBenMian().getFumianxiaoxi() + "</p>" );
+			}
        		
       	if(!Strings.isNullOrEmpty(node.getNodeJiBenMian().getQuanshangpingji() ) ) 
-		try {
-			content.append( "<p>"+  "券商评级" + Strings.nullToEmpty(node.getNodeJiBenMian().getQuanshangpingjidate().toString()) + " " + node.getNodeJiBenMian().getQuanshangpingji() + "</p>" );;
-		} catch (java.lang.NullPointerException ex) {
-			content.append( "<p>"+  "券商评级" + Strings.nullToEmpty("") + " " + node.getNodeJiBenMian().getQuanshangpingji() + "</p>" );;
-		}
-      	if(!Strings.isNullOrEmpty(node.getNodeJiBenMian().getZhengxiangguan() ) )
-	    		content.append( "<p>"+  "正相关及客户(#" + Strings.nullToEmpty(node.getNodeJiBenMian().getZhengxiangguan() )
+			try {
+				hasinfo = true;
+				content.append( "<p>"+  "券商评级" + Strings.nullToEmpty(node.getNodeJiBenMian().getQuanshangpingjidate().toString()) + " " + node.getNodeJiBenMian().getQuanshangpingji() + "</p>" );;
+			} catch (java.lang.NullPointerException ex) {
+				content.append( "<p>"+  "券商评级" + Strings.nullToEmpty("") + " " + node.getNodeJiBenMian().getQuanshangpingji() + "</p>" );;
+			}
+      	if(!Strings.isNullOrEmpty(node.getNodeJiBenMian().getZhengxiangguan() ) ) {
+      		hasinfo = true;
+	    	content.append( "<p>"+  "正相关及客户(#" + Strings.nullToEmpty(node.getNodeJiBenMian().getZhengxiangguan() )
 										 + " " + Strings.nullToEmpty(node.getNodeJiBenMian().getKeHuCustom() ) +  "#)" + "</p>" );
-      	if(!Strings.isNullOrEmpty(node.getNodeJiBenMian().getFuxiangguan() ) )
-	      		content.append( "<p>"+  "负相关及竞争对手(#" + Strings.nullToEmpty(node.getNodeJiBenMian().getFuxiangguan() )
-	      									 + " " + Strings.nullToEmpty(node.getNodeJiBenMian().getJingZhengDuiShou() ) + "#)" + "</p>" );
-
+      	}
+      	if(!Strings.isNullOrEmpty(node.getNodeJiBenMian().getFuxiangguan() ) ) {
+      		hasinfo = true;
+      		content.append( "<p>"+  "负相关及竞争对手(#" + Strings.nullToEmpty(node.getNodeJiBenMian().getFuxiangguan() )
+      		+ " " + Strings.nullToEmpty(node.getNodeJiBenMian().getJingZhengDuiShou() ) + "#)" + "</p>" );
+      	}
+      	
 	    htmlstring = doc.toString();
-	    return htmlstring;
-
+	    if(hasinfo)
+	    	return htmlstring;
+	    else
+	    	return null;
 	}
 
 }

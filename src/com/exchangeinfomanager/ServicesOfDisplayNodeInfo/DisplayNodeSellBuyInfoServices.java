@@ -38,16 +38,18 @@ public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianIn
 	    	svsstk = null;
 	    }
        	
-        String htmlstring = "";
+        String htmlstring = ""; Boolean hasinfo = false;
 	    org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 	    org.jsoup.select.Elements content = doc.select("body"); 
 	       
 	    content.append("<h4>\""+ curbknodecode + "" + nodename + "\"个股交易信息</h4>");
 	    Object[][] sellbuyObjects = node.getNodeJiBenMian().getZdgzMrmcZdgzYingKuiRecords();
-	    if(sellbuyObjects == null)
-	    	return doc.toString();
+	    if(sellbuyObjects == null) 
+	    	return null;
+	    
 	    
 	    for(int i=0;i<sellbuyObjects.length;i++) {
+	    	hasinfo = true;
 	    	   String output = "";
 	    	   try {
 	    		   String output1 = sellbuyObjects[i][0].toString().substring(0, 10);
@@ -69,9 +71,13 @@ public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianIn
 	    	   
 	    	   content.append( "<p>"+ output + "</p>" );
 	   }
-	       
-	   htmlstring = doc.toString();
-	   return htmlstring;
+	     
+	    if(hasinfo) {
+	    	htmlstring = doc.toString();
+	 	   return htmlstring;
+	    } else
+	    	return null;
+	   
 	}
 
 

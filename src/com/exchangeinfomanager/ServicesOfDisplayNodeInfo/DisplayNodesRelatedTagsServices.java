@@ -33,11 +33,12 @@ public class DisplayNodesRelatedTagsServices implements ServicesOfNodeJiBenMianI
 		Collection<Tag> tags = null;
 		tags = bkstkkwcache.produceTags();
 		
-		String htmlstring = "";
+		String htmlstring = ""; Boolean hasinfo = false;
 		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 		org.jsoup.select.Elements content = doc.select("body");
 		 
 		if(!tags.isEmpty() ) {
+			hasinfo = true;
 			String tagstr = "";
 			for (Iterator<Tag> it = tags.iterator(); it.hasNext(); ) {
 				Tag nodeonetag = it.next();
@@ -48,10 +49,11 @@ public class DisplayNodesRelatedTagsServices implements ServicesOfNodeJiBenMianI
 			content.append( "<p>" + tagstr + "</p> ");
 		}
 
-		
-	   	htmlstring = doc.toString();
-
-	   	return htmlstring;
+	   	if(hasinfo) {
+	   		htmlstring = doc.toString();
+	   		return htmlstring;
+	   	} else
+	   		 return null;
 	}
 
 }

@@ -45,7 +45,7 @@ public class BanKuaiDZHDbOperation
 	public BanKuaiDZHDbOperation() 
 	{
 		tdxconnectdb = ConnectDataBase.getInstance();
-		dzhconnectdb = ConnectDZHDataBase.getInstance();
+//		dzhconnectdb = ConnectDZHDataBase.getInstance();
 		sysconfig = new SetupSystemConfiguration();
 	}
 	/*

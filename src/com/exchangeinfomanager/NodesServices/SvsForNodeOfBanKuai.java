@@ -92,13 +92,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	{
 		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.TDXBK);
 	}
-//	@Override
-//	public BkChanYeLianTreeNode getNodeByNameOrCode(String nameorcode, int nodetype) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
-	@Override
+ 	@Override
 	public Collection<BkChanYeLianTreeNode> getAllNodes() 
 	{
 		Collection<BkChanYeLianTreeNode> allbks = new ArrayList<> ();

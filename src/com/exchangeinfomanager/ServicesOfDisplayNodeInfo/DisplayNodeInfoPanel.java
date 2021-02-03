@@ -16,7 +16,6 @@ import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 
 public class DisplayNodeInfoPanel extends JEditorPane //extends JPanel 
 {
-//	protected JEditorPane infoeditor;
 	private ServicesOfNodeJiBenMianInfo svsshow;
 
 	public DisplayNodeInfoPanel (ServicesOfNodeJiBenMianInfo svsdisplay)
@@ -30,7 +29,7 @@ public class DisplayNodeInfoPanel extends JEditorPane //extends JPanel
         this.setSize(420,Short.MAX_VALUE);
         
         this.setOpaque(true);
-        this.setText("<b><font face=\"Arial\" size=\"50\" align=\"center\" > Unfortunately when I display this string it is too long and doesn't wrap to new line!</font></b>");
+//        this.setText("<b><font face=\"Arial\" size=\"50\" align=\"center\" > Unfortunately when I display this string it is too long and doesn't wrap to new line!</font></b>");
         
 		setHtmlInfo ();
 		
@@ -52,12 +51,21 @@ public class DisplayNodeInfoPanel extends JEditorPane //extends JPanel
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 		 org.jsoup.select.Elements content = doc.select("body");
 		 
-//		 String htmlstr = "<p>" + svsshow.getRequiredHtmlInfo() + "</p> "; 
 		 String htmlstr =  svsshow.getRequiredHtmlInfo();
-		 content.append(htmlstr );
- 	
-		 htmlstring = doc.toString();
-		 this.setText(htmlstring);
-//		 this.setCaretPosition(this.getDocument().getLength());
+		 if(htmlstr != null) {
+			 hasinfo = true;
+			 content.append(htmlstr );
+			 	
+			 htmlstring = doc.toString();
+			 this.setText(htmlstring);
+		 } else 
+			 this.setText("");
+		 
+	}
+	
+	private Boolean hasinfo = false;
+	public Boolean isHtmlContainedUsefulInfo ()
+	{
+		return hasinfo;
 	}
 }

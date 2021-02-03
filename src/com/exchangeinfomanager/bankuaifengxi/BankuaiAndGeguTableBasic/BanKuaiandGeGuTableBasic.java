@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -8,6 +9,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
@@ -16,7 +18,9 @@ import javax.swing.JTable;
 import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 
+import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
@@ -27,9 +31,11 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 
 import net.coderazzi.filters.IFilterObserver;
 import net.coderazzi.filters.gui.AutoChoices;
+import net.coderazzi.filters.gui.IFilterEditor;
+import net.coderazzi.filters.gui.IFilterHeaderObserver;
 import net.coderazzi.filters.gui.TableFilterHeader;
 
-public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKuaiGeGuMatchConditionListener 
+public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKuaiGeGuMatchConditionListener  , IFilterHeaderObserver
 {
 	private String systeminstalledpath;
 	protected Properties prop;
@@ -45,6 +51,7 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 		setPropertiesInfo (propertiesfile);
 		
 		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
+		filterHeader.addHeaderObserver(this);
 
 		JPopupMenu popupMenu = new JPopupMenu();
 		menuItemfiltersetting = new JMenuItem("…Ë÷√Filter");
@@ -207,6 +214,41 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 			
 			filterHeader.getFilterEditor(i).setContent(column_predefinedfileter);
 		}
+		
 	}
+	
+	@Override
+	public void tableFilterUpdated (TableFilterHeader header, IFilterEditor editor, TableColumn tableColumn)
+	{
+		header.setToolTipText("");
+		String tooltipstr = header.getToolTipText(); 
+		
+		for(int i=0;i<=10;i++) {
+			String column_name = prop.getProperty (String.valueOf(i) + "column_name");
+			if(column_name == null || column_name.toUpperCase().equals("NULL")   )
+					continue;
+			
+			Object content = filterHeader.getFilterEditor(i).getContent();
+			if(content instanceof String)
+				tooltipstr = tooltipstr + column_name + ":" +  content + ";" ;
+		}
+		header.setToolTipText(tooltipstr);
+		if(!header.getToolTipText().isEmpty())
+			header.setBackground(Color.yellow);
+		else
+			header.setBackground(Color.WHITE);
+	}
+	@Override
+	public void tableFilterEditorCreated(TableFilterHeader arg0, IFilterEditor arg1, TableColumn arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void tableFilterEditorExcluded(TableFilterHeader arg0, IFilterEditor arg1, TableColumn arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 
 }

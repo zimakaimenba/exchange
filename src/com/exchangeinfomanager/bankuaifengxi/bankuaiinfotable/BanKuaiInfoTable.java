@@ -19,6 +19,7 @@ import javax.swing.SortOrder;
 import javax.swing.ToolTipManager;
 
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -38,6 +39,9 @@ import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiand
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+
+import net.coderazzi.filters.gui.IFilterEditor;
+import net.coderazzi.filters.gui.TableFilterHeader;
 
 
 
@@ -284,6 +288,5 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCa
 		System.out.print("test");
 		
 	}
-
 
 }

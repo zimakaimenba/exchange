@@ -2923,58 +2923,67 @@ public class BanKuaiFengXi extends JDialog
 		setCursor(hourglassCursor2);
 //		
 	}
-
-	/*
-	 * 
-	 */
-//	protected TimeSeries fengXiMatchedStockNumFromFormerExportedFile(ArrayList<ExportCondition> exportcond2,
-//			String globeperiod2, int parseInt) 
-//	{
-//	
-//		return null;
-//	}
 	/*
 	 * 
 	 */
 	protected void displayNodeInfo(BkChanYeLianTreeNode selectednode) 
 	{
+		JTabbedPane extrainfotabpane = new JTabbedPane(JTabbedPane.TOP);
+		
 		DisplayNodeJiBenMianService nodejbm = new DisplayNodeJiBenMianService (selectednode);
 		DisplayNodeInfoPanel displaybkjbmpnl = new DisplayNodeInfoPanel (nodejbm);
-		Dimension size = new Dimension(sclpinfosummary.getViewport().getSize().width,  displaybkjbmpnl.getContentHeight() + 10 );
-		displaybkjbmpnl.setPreferredSize(size);
-		displaybkjbmpnl.setMinimumSize(size);
-		displaybkjbmpnl.setMaximumSize(size);
-		pnlextrainfo.add (displaybkjbmpnl);
+		if(displaybkjbmpnl.isHtmlContainedUsefulInfo() ) {
+			Dimension size = new Dimension(sclpinfosummary.getViewport().getSize().width,  displaybkjbmpnl.getContentHeight() + 10 );
+			displaybkjbmpnl.setPreferredSize(size);
+			displaybkjbmpnl.setMinimumSize(size);
+			displaybkjbmpnl.setMaximumSize(size);
+			extrainfotabpane.addTab(selectednode.getMyOwnName() + "基本面", displaybkjbmpnl);
+		}
 		
 		DisplayNodesRelatedTagsServices nodetags =  new DisplayNodesRelatedTagsServices (selectednode);
 		DisplayNodeInfoPanel displaybktagspnl = new DisplayNodeInfoPanel (nodetags);
-		Dimension size4 = new Dimension(sclpinfosummary.getViewport().getSize().width,  displaybktagspnl.getContentHeight() + 10 );
-		displaybktagspnl.setPreferredSize(size4);
-		displaybktagspnl.setMinimumSize(size4);
-		displaybktagspnl.setMaximumSize(size4);
-		pnlextrainfo.add (displaybktagspnl);
+		if(displaybktagspnl.isHtmlContainedUsefulInfo() ) {
+			Dimension size4 = new Dimension(sclpinfosummary.getViewport().getSize().width,  displaybktagspnl.getContentHeight() + 10 );
+			displaybktagspnl.setPreferredSize(size4);
+			displaybktagspnl.setMinimumSize(size4);
+			displaybktagspnl.setMaximumSize(size4);
+			extrainfotabpane.addTab(selectednode.getMyOwnName() + "关键词", displaybktagspnl);
+		}
+		
+//		pnlextrainfo.add (displaybktagspnl);
 		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXBK) {
 			DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (selectednode);
 			bknews.setTimeRangeForInfoRange(this.dateChooser.getLocalDate(), this.dateChooser.getLocalDate());
 			DisplayNodeInfoPanel displaybknewspnl = new DisplayNodeInfoPanel (bknews);
-			Dimension size2 = new Dimension(sclpinfosummary.getViewport().getSize().width, displaybknewspnl.getContentHeight() + 10 );
-			displaybknewspnl.setPreferredSize(size2);
-			displaybknewspnl.setMinimumSize(size2);
-			displaybknewspnl.setMaximumSize(size2);
-			pnlextrainfo.add (displaybknewspnl);
+			if(displaybknewspnl.isHtmlContainedUsefulInfo() ) {
+				Dimension size2 = new Dimension(sclpinfosummary.getViewport().getSize().width, displaybknewspnl.getContentHeight() + 10 );
+				displaybknewspnl.setPreferredSize(size2);
+				displaybknewspnl.setMinimumSize(size2);
+				displaybknewspnl.setMaximumSize(size2);
+				
+				extrainfotabpane.addTab(selectednode.getMyOwnName() + "新闻", displaybknewspnl);
+			}
+			
+//			pnlextrainfo.add (displaybknewspnl);
 		}
 		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXGG) {
 			DisplayNodeSellBuyInfoServices nodesellbuy = new DisplayNodeSellBuyInfoServices (selectednode);
 			DisplayNodeInfoPanel displaybksbpnl = new DisplayNodeInfoPanel (nodesellbuy);
-			Dimension size3 = new Dimension(sclpinfosummary.getViewport().getSize().width, displaybksbpnl.getContentHeight() + 10);
-			displaybksbpnl.setPreferredSize(size3);
-			displaybksbpnl.setMinimumSize(size3);
-			displaybksbpnl.setMaximumSize(size3);
-			pnlextrainfo.add (displaybksbpnl);
+			if(displaybksbpnl.isHtmlContainedUsefulInfo ()) {
+				Dimension size3 = new Dimension(sclpinfosummary.getViewport().getSize().width, displaybksbpnl.getContentHeight() + 10);
+				displaybksbpnl.setPreferredSize(size3);
+				displaybksbpnl.setMinimumSize(size3);
+				displaybksbpnl.setMaximumSize(size3);
+				
+				extrainfotabpane.addTab(selectednode.getMyOwnName() + "买卖关注记录", displaybksbpnl);	
+			}
+			
+//			pnlextrainfo.add (displaybksbpnl);
 		}
 
+		pnlextrainfo.add(extrainfotabpane);
 		setUserSelectedColumnMessage( (TDXNodes)selectednode, this.dateChooser.getLocalDate());
 	}
 	/*

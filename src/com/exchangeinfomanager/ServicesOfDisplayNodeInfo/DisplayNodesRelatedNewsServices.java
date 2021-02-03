@@ -98,12 +98,13 @@ public class DisplayNodesRelatedNewsServices implements ServicesOfNodeJiBenMianI
 	}
 	private String createHtmlInfo(Collection<News> curnewlist, LocalDate monday, LocalDate sunday) 
 	{
-		String htmlstring = "";
+		String htmlstring = ""; Boolean hasinfo = false;
 		org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 		org.jsoup.select.Elements content = doc.select("body");
 		       
 		content.append( "<h4>" + node.getMyOwnCode() + " " + node.getMyOwnName() + "的新闻:" + monday + "到" + sunday + "</h4>");
 		for(News cylnew : curnewlist ) {
+			hasinfo = true;
 	   		String title = cylnew.getTitle();
 	   		String newdate = cylnew.getStart().toString(); 
 	   		String slackurl = cylnew.getNewsUrl();
@@ -113,10 +114,11 @@ public class DisplayNodesRelatedNewsServices implements ServicesOfNodeJiBenMianI
 	   			content.append( "<p>" + newdate  + title + "</p> ");
 		}
 		
-	   	htmlstring = doc.toString();
-
-	   	return htmlstring;
-
+		if(hasinfo) {
+			htmlstring = doc.toString();
+		   	return htmlstring;
+		} else
+			return null;
 	}
 	private String getNodeRequiredHtmlInfo(LocalDate start, LocalDate end) 
 	{

@@ -339,6 +339,8 @@ public class SvsForNodeOfStock implements ServicesForNode
 				if( !stock.isNodeDataAtNotCalWholeWeekMode() )
 					this.getNodeQueKouInfo(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY);
 		}
+		
+		return;
 	}
 	
 	private List<Interval> getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval

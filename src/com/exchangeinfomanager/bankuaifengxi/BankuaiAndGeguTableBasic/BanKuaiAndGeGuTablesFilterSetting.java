@@ -74,15 +74,23 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 		okButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+//				filterHeader.setToolTipText("FILTER…Ë∂®:");
 				for(int i=0;i<=10;i++) {
+					String column_name = prop.getProperty (String.valueOf(i) + "column_name");
+					
+					if(column_name == null || column_name.equalsIgnoreCase("NULL"))
+						continue;
+					
 					if( filtertxtfldcollection[i]  == null )
 						continue;
 					
 					String filtercontent = filtertxtfldcollection[i].getText();
 					if( Strings.isNullOrEmpty(filtercontent) )
 						filterHeader.getFilterEditor(i).setContent("");
-					else
+					else {
 						filterHeader.getFilterEditor(i).setContent(filtercontent);
+//						filterHeader.setToolTipText( filterHeader.getToolTipText() + column_name + ":" +  filtercontent + ",");
+					}
 				}
 				
 				dispose ();
