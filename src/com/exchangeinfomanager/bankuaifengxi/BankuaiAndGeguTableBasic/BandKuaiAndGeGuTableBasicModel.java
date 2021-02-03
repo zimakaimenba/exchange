@@ -197,10 +197,13 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		  			if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
 		  				Stock stock = ((StockOfBanKuai)node).getStock();
 		  				Set<BkChanYeLianTreeNode> banklist = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
+		  				Set<BkChanYeLianTreeNode> dzhbanklist = stock.getGeGuCurSuoShuDZHSysBanKuaiList();
+		  				banklist.addAll(dzhbanklist);
+		  				
 		  				String bankuailist = "";
-		  				for(BkChanYeLianTreeNode tmpbknode : banklist) {
+		  				for(BkChanYeLianTreeNode tmpbknode : banklist) 
 		  					bankuailist = bankuailist + tmpbknode.getMyOwnCode() + tmpbknode.getMyOwnName() + ";" ; 
-		  				}
+		  				
 		  				value = bankuailist;
 		  			}
 		  			break;

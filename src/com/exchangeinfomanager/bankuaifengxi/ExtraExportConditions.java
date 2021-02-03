@@ -58,6 +58,9 @@ class ExtraExportConditions extends JPanel
 	private JLabel lblNewLabel_1;
 	private JTextField tfldwkzhangfumax;
 	private JCheckBox chbxlwyxbenzhouyangxian;
+	private JCheckBox chckbxdpcjezbgrowingrate;
+	private JTextField tflddpcjezbgrowingratemin;
+	private JTextField tflddpcjezbgrowingratemax;
 	/**
 	 * Create the panel.
 	 */
@@ -94,135 +97,55 @@ class ExtraExportConditions extends JPanel
 		chbxlwyxbenzhouyangxian.setEnabled(false);
 		
 		JLabel lblNewLabel_3 = new JLabel("------------------------");
-		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(chkbxexportallbk)
-								.addComponent(chkbxexporbkallowedinsetting)
-								.addComponent(cbxOnlyCurBk)
-								.addComponent(chkbxzhbiup)
-								.addComponent(chkbxexportyangxianbk)
-								.addComponent(chkbxonlyexportbk)
-								.addComponent(lblNewLabel_2)
-								.addComponent(chkbxonlybkstock)
-								.addComponent(chkbxonlycurstock)
-								.addComponent(cbxExceptSt)
-								.addComponent(label_2)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addGroup(groupLayout.createSequentialGroup()
-											.addComponent(chckbxexportyangxiangegu)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(tfldwkzhangfumin, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(label_3)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(label_5)
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(tfldwkzhangfumax, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE))
-										.addGroup(groupLayout.createSequentialGroup()
-											.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-												.addGroup(groupLayout.createSequentialGroup()
-													.addComponent(cbxShiZhilevelyangxian)
-													.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-													.addComponent(tfldshizhilevelyangxian, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE))
-												.addGroup(groupLayout.createSequentialGroup()
-													.addComponent(chckbxshizhilevellianxu)
-													.addPreferredGap(ComponentPlacement.RELATED)
-													.addComponent(tfldshizhilevellianxu, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)))
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-												.addComponent(lblNewLabel)
-												.addComponent(label))))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addGroup(groupLayout.createSequentialGroup()
-											.addGap(10)
-											.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-												.addComponent(tfldwkyangxian, 0, 0, Short.MAX_VALUE)
-												.addComponent(tfldyangxian, GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
-											.addGap(18)
-											.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-												.addComponent(label_1)
-												.addComponent(lblNewLabel_1, GroupLayout.PREFERRED_SIZE, 49, GroupLayout.PREFERRED_SIZE)))
-										.addComponent(label_4)))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(lblNewLabel_3))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(chbxlwyxbenzhouyangxian))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(chckbxexportyellowbkstk)))
-					.addContainerGap(136, Short.MAX_VALUE))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(7)
-					.addComponent(chkbxexportallbk)
-					.addGap(4)
-					.addComponent(chkbxexporbkallowedinsetting)
-					.addGap(4)
-					.addComponent(cbxOnlyCurBk)
-					.addGap(4)
-					.addComponent(chkbxzhbiup)
-					.addGap(4)
-					.addComponent(chkbxexportyangxianbk)
-					.addGap(4)
-					.addComponent(chkbxonlyexportbk)
-					.addGap(4)
-					.addComponent(lblNewLabel_2)
-					.addGap(4)
-					.addComponent(chkbxonlybkstock)
-					.addGap(4)
-					.addComponent(chkbxonlycurstock)
-					.addGap(4)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(chckbxexportyangxiangegu)
-						.addComponent(tfldwkzhangfumin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(label_3)
-						.addComponent(label_5)
-						.addComponent(tfldwkzhangfumax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(label_4))
-					.addGap(4)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(cbxShiZhilevelyangxian)
-							.addComponent(tfldshizhilevelyangxian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(label)
-							.addComponent(tfldyangxian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(4)
-							.addComponent(label_1)))
-					.addGap(4)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblNewLabel_1)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(chckbxshizhilevellianxu)
-								.addComponent(tfldshizhilevellianxu, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblNewLabel)
-								.addComponent(tfldwkyangxian, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(4)
-							.addComponent(cbxExceptSt)
-							.addGap(4)
-							.addComponent(label_2)
-							.addGap(6)
-							.addComponent(chbxlwyxbenzhouyangxian)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblNewLabel_3)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(chckbxexportyellowbkstk)
-					.addGap(24))
-		);
-		setLayout(groupLayout);
+		
+		chckbxdpcjezbgrowingrate = new JCheckBox("\u5BFC\u51FA\u5468\u6210\u4EA4\u989D\u5360\u6BD4\u589E\u957F\u7387");
+		
+		tflddpcjezbgrowingratemin = new JTextField();
+		tflddpcjezbgrowingratemin.setText("90");
+		tflddpcjezbgrowingratemin.setColumns(10);
+		
+		JLabel lblNewLabel_4 = new JLabel("%  ~");
+		
+		tflddpcjezbgrowingratemax = new JTextField();
+		tflddpcjezbgrowingratemax.setColumns(10);
+		
+		JLabel label_6 = new JLabel("%");
+		setLayout(new MigLayout("", "[162px][3px][16px][7px][23px][8px][39px][15px][8px][6px][5px][24px][8px][13px][1px][20px][4px][24px][42px]", "[23px][23px][23px][23px][23px][23px][15px][23px][23px][23px][23px][23px][23px][23px][15px][23px][15px][23px]"));
+		add(chkbxexportallbk, "cell 0 0 7 1,alignx right,aligny top");
+		add(chkbxexporbkallowedinsetting, "cell 0 1 3 1,alignx right,aligny top");
+		add(cbxOnlyCurBk, "cell 0 2 7 1,alignx right,aligny top");
+		add(chkbxzhbiup, "cell 0 3 18 1,alignx right,aligny top");
+		add(chkbxexportyangxianbk, "cell 0 4 7 1,alignx right,aligny top");
+		add(chkbxonlyexportbk, "cell 0 5 3 1,alignx left,aligny top");
+		add(lblNewLabel_2, "cell 0 6,alignx left,aligny top");
+		add(chkbxonlybkstock, "cell 0 7 5 1,alignx left,aligny top");
+		add(chkbxonlycurstock, "cell 0 8,alignx left,aligny top");
+		add(chckbxdpcjezbgrowingrate, "cell 0 9,alignx left,aligny top");
+		add(cbxExceptSt, "cell 0 13,alignx left,aligny top");
+		add(label_2, "cell 0 14,alignx left,aligny top");
+		add(chckbxexportyangxiangegu, "cell 0 10 3 1,alignx right,aligny top");
+		add(tfldwkzhangfumin, "cell 4 10 3 1,growx,aligny center");
+		add(label_3, "cell 7 10,alignx center,aligny center");
+		add(label_5, "cell 9 10,alignx left,aligny center");
+		add(tfldwkzhangfumax, "cell 11 10,growx,aligny center");
+		add(cbxShiZhilevelyangxian, "cell 0 11,alignx left,aligny top");
+		add(tfldshizhilevelyangxian, "cell 2 11 3 1,growx,aligny center");
+		add(chckbxshizhilevellianxu, "cell 0 12,alignx right,aligny top");
+		add(tfldshizhilevellianxu, "cell 2 12 3 1,growx,aligny center");
+		add(lblNewLabel, "cell 6 12 6 1,alignx left,aligny center");
+		add(label, "cell 6 11 2 1,alignx left,aligny center");
+		add(tfldwkyangxian, "cell 15 12 3 1,growx,aligny top");
+		add(tfldyangxian, "cell 15 11 3 1,growx,aligny center");
+		add(label_1, "cell 18 11,alignx left,aligny center");
+		add(lblNewLabel_1, "cell 18 12,growx,aligny top");
+		add(label_4, "cell 13 10,alignx left,aligny center");
+		add(lblNewLabel_3, "cell 0 16,alignx right,aligny top");
+		add(chbxlwyxbenzhouyangxian, "cell 0 15 14 1,alignx left,aligny top");
+		add(chckbxexportyellowbkstk, "cell 0 17,alignx left,aligny top");
+		add(tflddpcjezbgrowingratemin, "cell 4 9 3 1,alignx left,aligny center");
+		add(lblNewLabel_4, "cell 7 9 3 1,alignx left,aligny center");
+		add(tflddpcjezbgrowingratemax, "cell 11 9 5 1,alignx left,aligny center");
+		add(label_6, "cell 17 9,alignx left,aligny center");
 		
 		createEvents ();
 	}
@@ -286,6 +209,21 @@ class ExtraExportConditions extends JPanel
 			this.cond.setExportGeGuZhangFuQuJian( null, null );
 		}
 		
+		if(chckbxdpcjezbgrowingrate.isSelected() ) {
+			this.cond.setExportDpCjeZbGrowingRate (true);
+			
+			Double min = null; Double max = null;
+			if( !Strings.isNullOrEmpty(tflddpcjezbgrowingratemin.getText() ) )
+				min = Double.parseDouble(tflddpcjezbgrowingratemin.getText() ) / 100;
+			else min = -1000.0;
+			if( !Strings.isNullOrEmpty(tflddpcjezbgrowingratemax.getText() ) )
+				max = Double.parseDouble(tflddpcjezbgrowingratemax.getText() ) / 100;
+			else max= 1000000000000.0;
+			this.cond.setExportDpCjeZbGrowingRateQuJian(min, max  );
+		} else {
+			this.cond.setExportDpCjeZbGrowingRateQuJian( null, null );
+		}
+		
 		if( cbxShiZhilevelyangxian.isSelected() ) {
 			this.cond.setChenJiaoErBottomForYangXianLevle( 100000000 * Double.parseDouble(tfldshizhilevelyangxian.getText() ) );
 			this.cond.setChenJiaoErBottomYangXianLevel ( Double.parseDouble(tfldyangxian.getText() ) );
@@ -309,6 +247,8 @@ class ExtraExportConditions extends JPanel
 			this.cond.setExportOnlyYellowSignBkStk (true);
 		else
 			this.cond.setExportOnlyYellowSignBkStk (false);
+		
+		
 		
 		return this.cond;
 	}
@@ -534,6 +474,9 @@ class ExtraExportConditions extends JPanel
 					chckbxexportyangxiangegu.setEnabled(false);
 					chckbxexportyangxiangegu.setSelected(false);
 					
+					chckbxdpcjezbgrowingrate.setEnabled(false);
+					chckbxdpcjezbgrowingrate.setSelected(false);
+					
 					tfldwkzhangfumin.setEnabled(false);
 
 				} else {
@@ -550,6 +493,7 @@ class ExtraExportConditions extends JPanel
 					chkbxonlybkstock.setEnabled(true);
 					chckbxexportyangxiangegu.setEnabled(true);
 					tfldwkzhangfumin.setEnabled(true);
+					chckbxdpcjezbgrowingrate.setEnabled(true);
 				}
 				
 				huchiOperationsForJCheckBox (huchixuanzebasic,chckbxexportyellowbkstk);

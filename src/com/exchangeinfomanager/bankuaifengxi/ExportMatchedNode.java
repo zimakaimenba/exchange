@@ -81,38 +81,6 @@ public class ExportMatchedNode
 				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
 				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
 					this.checkStockMatchedCurSettingConditions ((Stock)ggstock, checkednodesset, matchednodeset,exportdate,period);
-//					 if(matchednodeset.contains( (TDXNodes)ggstock ) )
-//						 continue;
-//					 if( checkednodesset.contains(ggstock.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
-//						 continue;
-//					 
-//					 ggstock = svsstk.getNodeData(ggstock,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
-//
-//					 Boolean stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA( (Stock)ggstock, exportdate, period);
-//					 if(stkcheckresult == null) {//停牌股
-//						 checkednodesset.add( ggstock.getMyOwnCode() );
-//						 continue;
-//					 }
-//					 
-//					 if(stkcheckresult  &&  this.cond.getExportYangXianGeGu() != null  ) {
-//						 svsstk.getNodeKXian( ggstock, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
-//						 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfZhangFu((Stock)ggstock, exportdate, period);
-//					 }
-//					 
-//					 if(stkcheckresult  && !Strings.isNullOrEmpty(this.cond.getSettingMaFormula() ) ) {
-//						 svsstk.getNodeKXian( ggstock, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
-//						 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfCheckMA((Stock)ggstock, exportdate, period);
-//					 }
-//					 
-//					 try{
-//					 if(stkcheckresult)
-//						 matchednodeset.add((TDXNodes) ggstock);
-//					 } catch(Exception e) {
-//						 checkednodesset.add( ggstock.getMyOwnCode() );
-//						 e.printStackTrace();
-//					 }
-//					 
-//					 checkednodesset.add( ggstock.getMyOwnCode() );
 				}
 			}
 			
@@ -121,41 +89,6 @@ public class ExportMatchedNode
 					continue;
 			
 				this.checkStockMatchedCurSettingConditions ((Stock)childnode, checkednodesset, matchednodeset,exportdate,period);
-//				if(matchednodeset.contains( (TDXNodes)childnode ) )
-//					 continue;
-//				if( checkednodesset.contains(childnode.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
-//					 continue;
-//				
-//				childnode = svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
-//				Boolean stkcheckresult = null;
-//				try{
-//				stkcheckresult = this.checkStockMatchedCurSettingConditonsWithoutCheckMA( (Stock)childnode, exportdate, period);
-//				if(stkcheckresult == null) {//停牌股
-//					 checkednodesset.add( childnode.getMyOwnCode() );
-//					 continue;
-//				}
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//				if(stkcheckresult  &&  this.cond.getExportYangXianGeGu() != null  ) {
-//					 svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
-//					 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfZhangFu((Stock)childnode, exportdate, period);
-//				 }
-//				 
-//				 if(stkcheckresult  && !Strings.isNullOrEmpty(this.cond.getSettingMaFormula() ) ) {
-//					 svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
-//					 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfCheckMA((Stock)childnode, exportdate, period);
-//				 }
-//				try{
-//				if(stkcheckresult)
-//					matchednodeset.add(  (TDXNodes)childnode);
-//				} catch(Exception e) {
-//					checkednodesset.add( childnode.getMyOwnCode() );
-//					e.printStackTrace();
-//				 }
-//					 
-//				 checkednodesset.add( childnode.getMyOwnCode() );
-				
 			}
 			
 		}
@@ -188,7 +121,11 @@ public class ExportMatchedNode
 		
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
 //		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
-		childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
+		try {
+			childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
+		} catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
+		}
 		
 		//stkcheckresult == null 说明不是到处黄标个股,做下面的，这样提高效率
 		try{
@@ -225,7 +162,7 @@ public class ExportMatchedNode
 		 }
 			 
 		 checkednodesset.add( childnode.getMyOwnCode() );
-		 svsstk = null;
+//		 svsstk = null;
 		 return stkcheckresult;
 	}
 	/*
@@ -388,6 +325,13 @@ public class ExportMatchedNode
 //		Double settinggeguyangxianuplevel = this.cond.getExportYangXianGeGu ();
 //		if(settinggeguyangxianuplevel == null)
 //			settinggeguyangxianuplevel = -200.0;
+		Double settingdpcjezbgrowingratemin = this.cond.getExportDpCjeZbGrowingRateQuJianMin();
+		if(settingdpcjezbgrowingratemin == null )
+			settingdpcjezbgrowingratemin = -1000000000.0;
+		Double settingdpcjezbgrowingratemax = this.cond.getExportDpCjeZbGrowingRateQuJianMax();
+		if(settingdpcjezbgrowingratemax == null )
+			settingdpcjezbgrowingratemax = 100000000000.0;
+		
 		
 		Boolean shouldhavedayangxian = true;
 		Double cjelevelofyangxian = this.cond.getChenJiaoErBottomForYangXianLevle();
@@ -402,13 +346,27 @@ public class ExportMatchedNode
 		Integer recordmaxbkwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(exportdate,0);
 		Integer recordmaxcjewk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(exportdate,0);
 		Double recordhsl = ((StockNodesXPeriodData)nodexdata).getSpecificTimeHuanShouLv(exportdate, 0);
+		Double recorddpcjezbgrate = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(exportdate, 0);
 //		Double recordzhangfu = nodexdata.getSpecificOHLCZhangDieFu(exportdate,0);
 		
 		//逐步计较
+		Boolean dpcjezpgratematch = null;
+		if(recorddpcjezbgrate == null)
+			dpcjezpgratematch = true;
+		else
+		if( recorddpcjezbgrate >= settingdpcjezbgrowingratemin && recorddpcjezbgrate <= settingdpcjezbgrowingratemax)
+			dpcjezpgratematch = true;
+		else
+			dpcjezpgratematch = false;
+		
 		Boolean cjematch = null;
-		if(recordcje != null  && recordcje >= settingcjemin && recordcje <= settingcjemax )
+		if(recordcje == null)
 			cjematch = true;
-		else if(recordcje != null  && ( recordcje < settingcjemin || recordcje > settingcjemax ))
+		else
+		if( recordcje >= settingcjemin && recordcje <= settingcjemax )
+			cjematch = true;
+		else 
+		if( recordcje < settingcjemin || recordcje > settingcjemax )
 			cjematch = false;
 		else 
 			cjematch = true;
@@ -443,7 +401,7 @@ public class ExportMatchedNode
 //		else 
 //			zhouzhangfumatch = false;
 		
-		if( cjematch && dpmaxwkmatch && cjewkmatch && hslmatch  ) {	
+		if( dpcjezpgratematch && cjematch && dpmaxwkmatch && cjewkmatch && hslmatch  ) {	
 			Boolean notskiptonextstock = true;
 			
 			if( shouldhavedayangxian && recordcje < cjelevelofyangxian  ) { //如果成交量小于于一定量，就必须有大阳线或者连续2周满足条件

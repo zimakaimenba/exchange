@@ -936,17 +936,14 @@ class ExportTask extends SwingWorker<Integer, String>
 			
 			setProgress(30);
 			try{
-			ExportMatchedNode exportaction = new ExportMatchedNode (expc);
-			Set<TDXNodes> outputnodes = exportaction.checkTDXNodeMatchedCurSettingConditons(selectiondate, period);
-			for(TDXNodes tmpnode : outputnodes) {
-				if(!outputnodeslist.contains(tmpnode))
-					outputnodeslist.add(tmpnode);
-			}
-			ouputfilehead2 = ouputfilehead2 + expc.getConditionsDescriptions ();
-			
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
+				ExportMatchedNode exportaction = new ExportMatchedNode (expc);
+				Set<TDXNodes> outputnodes = exportaction.checkTDXNodeMatchedCurSettingConditons(selectiondate, period);
+				for(TDXNodes tmpnode : outputnodes) {
+					if(!outputnodeslist.contains(tmpnode))
+						outputnodeslist.add(tmpnode);
+				}
+				ouputfilehead2 = ouputfilehead2 + expc.getConditionsDescriptions ();
+			} catch(Exception e) {	e.printStackTrace();}
 			
 			setProgress(50);
 		}	
@@ -958,9 +955,7 @@ class ExportTask extends SwingWorker<Integer, String>
 			Files.append("<导出日期:" + selectiondate.toString() + ">"+ System.getProperty("line.separator") ,outputfile, charset);
 			Files.append("<导出周期:" + period + ">"+ System.getProperty("line.separator") ,outputfile, charset);
 			Files.append("<" + ouputfilehead2 + ">" + System.getProperty("line.separator") ,outputfile, charset);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} 
+		} catch (IOException e1) {			e1.printStackTrace();} 
 		
 		//写入板块分析文件
 		for(BkChanYeLianTreeNode node : outputnodeslist) {

@@ -374,6 +374,8 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		
 		Boolean exportGeGuZhangfuQuJian;
 		public Boolean shouldExporGeGuWithZhangFuQuJian() {
+			if(exportGeGuZhangfuQuJian == null)
+				return false;
 			return exportGeGuZhangfuQuJian;
 		}
 		public void setExporGeGuWithZhangFuQuJian(Boolean exportgeguqujian) {
@@ -491,6 +493,9 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 			return this.settinglastwkcjezbmaxkwk ;
 		}
 		private Integer settinglastwkcjemaxkwk;
+		private Boolean shouldExportDpCjeZbGrowingRate;
+		private Double exportDpCjeZbGrowingRatemin;
+		private Double exportDpCjeZbGrowingRatemax;
 		public void setLastWkCjemaxkwk (Integer maxwk) 
 		{
 			this.settinglastwkcjemaxkwk = maxwk;
@@ -520,5 +525,28 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		public Object clone() throws CloneNotSupportedException {
 	        return super.clone();
 	    }
+
+		public void setExportDpCjeZbGrowingRate(Boolean b) 
+		{
+			this.shouldExportDpCjeZbGrowingRate = b;
+		}
+		public Boolean shouldExportDpCjeZbGrowingRate ()
+		{
+			return this.shouldExportDpCjeZbGrowingRate;
+		}
+
+		public void setExportDpCjeZbGrowingRateQuJian(Double min, Double max) 
+		{
+			this.exportDpCjeZbGrowingRatemin = min;
+			this.exportDpCjeZbGrowingRatemax = max;
+		}
+		public Double getExportDpCjeZbGrowingRateQuJianMin ()
+		{
+			return this.exportDpCjeZbGrowingRatemin;
+		}
+		public Double getExportDpCjeZbGrowingRateQuJianMax ()
+		{
+			return this.exportDpCjeZbGrowingRatemax;
+		}
 
 }
