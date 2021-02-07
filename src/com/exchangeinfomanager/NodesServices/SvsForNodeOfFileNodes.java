@@ -26,20 +26,19 @@ public class SvsForNodeOfFileNodes implements ServicesForNode
 		this.filepath = filepath;
 	}
 
-	@Override
-	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) 
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) 
+//	{
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public BkChanYeLianTreeNode getNode(String nodenames) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
-	@Override
-	public BkChanYeLianTreeNode getNode(String nodenames) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Collection<BkChanYeLianTreeNode> getAllNodes() 
 	{
 		File parsefile = new File (this.filepath);
@@ -79,11 +78,11 @@ public class SvsForNodeOfFileNodes implements ServicesForNode
 		return null;
 	}
 
-	@Override
-	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 //	@Override
 //	public BkChanYeLianTreeNode getNodeFriends(BkChanYeLianTreeNode node) {

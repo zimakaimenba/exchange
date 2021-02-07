@@ -1,20 +1,15 @@
 package com.exchangeinfomanager.nodes;
 
-import java.time.DayOfWeek;
+
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-import org.jfree.data.time.RegularTimePeriod;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.ohlc.OHLCItem;
-import org.jfree.data.time.ohlc.OHLCSeries;
 
+
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.DaPanXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+
 
 public class DaPan extends TDXNodes
 {
@@ -38,7 +33,6 @@ public class DaPan extends TDXNodes
 		
 		super.nodewkdata = new DaPanXPeriodDataForJFC (NodeGivenPeriodDataItem.WEEK,shanghai,shenzhen) ;
 		super.nodedaydata = new DaPanXPeriodDataForJFC (NodeGivenPeriodDataItem.DAY,shanghai,shenzhen) ;
-//		super.nodemonthdata = new DaPanNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 	}
 	
 	/*
@@ -51,6 +45,12 @@ public class DaPan extends TDXNodes
 			return false;
 		else
 			return true;
+	}
+	
+	public void getNodeData (LocalDate requiredstartday, LocalDate requiredendday, String period, Boolean calwholeweek)
+	{
+		SvsForNodeOfDaPan svsdp = new SvsForNodeOfDaPan ();
+		svsdp.getNodeData("000000",requiredstartday, requiredendday,period,calwholeweek);
 	}
 	
 }

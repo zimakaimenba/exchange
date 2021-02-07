@@ -26,6 +26,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -161,13 +162,13 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	public Double displayBarDataToGui(NodeXPeriodData nodexdata, LocalDate startdate, LocalDate enddate,
 			String period) 
 	{
-		DaPan dapan;
-		if(this.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-			BanKuai bk = ((StockOfBanKuai)this.getCurDisplayedNode()).getBanKuai();
-			dapan = (DaPan)bk.getRoot();
-		}
-		else
-			dapan = (DaPan)super.getCurDisplayedNode().getRoot();
+		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
+//		if(this.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
+//			BanKuai bk = ((StockOfBanKuai)this.getCurDisplayedNode()).getBanKuai();
+//			dapan = (DaPan)bk.getRoot();
+//		}
+//		else
+//			dapan = (DaPan)super.getCurDisplayedNode().getRoot();
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.MONDAY);
@@ -299,12 +300,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		if(super.barchartdataset.getColumnCount() ==0 )
 			return null;
 		
-		DaPan dapan;
-		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
-			dapan = (DaPan)bk.getRoot();
-		} else
-			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
+		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
 		
 		LocalDate indexrequirestart = (LocalDate) barchartdataset.getColumnKey(0);
 		LocalDate indexrequireend = (LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
@@ -355,12 +351,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		if(super.barchartdataset.getColumnCount() ==0 )
 			return null;
 		
-		DaPan dapan;
-		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
-			dapan = (DaPan)bk.getRoot();
-		} else
-			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
+		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
 		
 		LocalDate indexrequirestart = (LocalDate) barchartdataset.getColumnKey(0);
 		LocalDate indexrequireend = (LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
@@ -408,12 +399,12 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	{
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 		
-		DaPan dapan;
-		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
-			dapan = (DaPan)bk.getRoot();
-		} else
-			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
+		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
+//		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
+//			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
+//			dapan = (DaPan)bk.getRoot();
+//		} else
+//			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
 		LocalDate indexrequirestart = (LocalDate) barchartdataset.getColumnKey(0);
 		LocalDate indexrequireend = (LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);

@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.nodes;
 
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 //import java.time.Period;
@@ -28,13 +29,18 @@ import org.joda.time.DateTime;
 //import org.jfree.data.time.Week;
 import org.joda.time.Interval;
 
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDZHBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
+import com.exchangeinfomanager.Services.ServicesForNode;
+import com.exchangeinfomanager.Services.ServicesForNodeBanKuai;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.BanKuaiXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 
 public class BanKuai extends TDXNodes
 {
-
 	/**
 	 * 
 	 */
@@ -57,14 +63,17 @@ public class BanKuai extends TDXNodes
 	public BanKuai(String bkcode,String name,String vendor) 
 	{
 		super(bkcode,name);
-		super.nodetype = BkChanYeLianTreeNode.TDXBK;
+		
+		this.bkvendor = vendor;
+		if(vendor.toUpperCase().equalsIgnoreCase("DZH"))
+			super.nodetype = BkChanYeLianTreeNode.DZHBK;
+		else
+			super.nodetype = BkChanYeLianTreeNode.TDXBK;
 		
 		super.nodewkdata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.DAY) ;
 
 		super.nodetreerelated = new BanKuaiTreeRelated (this);
-		
-		this.bkvendor = vendor;
 	}
 	
 //	private static Logger logger = Logger.getLogger(BanKuai.class);
@@ -347,5 +356,14 @@ public class BanKuai extends TDXNodes
 			return this.importbkgegu;
 	}
 	
-
+	public ServicesForNodeBanKuai getBanKuaiService ()
+	{
+		ServicesForNodeBanKuai svsbk = null;
+		if(this.getType() == BkChanYeLianTreeNode.TDXBK)
+			 svsbk = new SvsForNodeOfBanKuai ();
+		else
+			svsbk = new SvsForNodeOfDZHBanKuai ();
+		
+		return svsbk;
+	}
 }

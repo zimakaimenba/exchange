@@ -175,8 +175,6 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		
 		  Object value = "??";
 		  BkChanYeLianTreeNode node = entryList.get(rowIndex);
-//		  BkChanYeLianTreeNode datanode; BkChanYeLianTreeNode datasupernode;
-//		  DaPan dapan;
 		  
 		  NodeXPeriodData nodexdatawk = null; NodeXPeriodData nodexdataday = null;
 		  
@@ -184,7 +182,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			  Stock stock = ((StockOfBanKuai)node).getStock();
 			  nodexdatawk = stock.getNodeXPeroidData(curperiod);
 			  nodexdataday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
-		  } else if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
+		  } else if ( node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK ) {
 			  nodexdatawk = ((BanKuai) node).getNodeXPeroidData (curperiod);
 			  nodexdataday = ((BanKuai) node).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		  }
@@ -219,22 +217,25 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		     	  
 		       case "bankuaichengjiaoergongxian":
 		     	  Double cjechangegrowthrate = nodexdatawk.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
-		       	  if(cjechangegrowthrate != null)
-		       		value = cjechangegrowthrate;
-		       	  else	value = -1.0;
+		     	 value = cjechangegrowthrate;
+//		       	  if(cjechangegrowthrate != null)
+//		       		value = cjechangegrowthrate;
+//		       	  else	value = -1.0;
 		     	  break;
 		     	  
 		       case "cjezbgrowrate":
 		     	  Double cjedpgrowthrate = nodexdatawk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
-		       	  if(cjedpgrowthrate != null)
-		       		value = cjedpgrowthrate;
-		       	  else	value = -1;
+		     	 value = cjedpgrowthrate;
+//		       	  if(cjedpgrowthrate != null)
+//		       		value = cjedpgrowthrate;
+//		       	  else	value = -10000.0;
 		     	  break;
 		       case "cjlzbgrowrate":
 			     	  Double cjldpgrowthrate = nodexdatawk.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
-			       	  if(cjldpgrowthrate != null)
-			       		value = cjldpgrowthrate;
-			       	  else	value = -1;
+			     	 value = cjldpgrowthrate;
+//			       	  if(cjldpgrowthrate != null)
+//			       		value = cjldpgrowthrate;
+//			       	  else	value = -10000.0;
 			     	  break;
 		       case "chengjiaoerzhanbi":
 		    	   Double cjezhanbi = nodexdatawk.getChenJiaoErZhanBi(showwknum, 0);
@@ -245,8 +246,9 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
            		   value = cjlzhanbi;
 		    	   break;
 		       case "CjeZbDpMaxWk":
+		    	   	  Integer cjedpmaxwk = null;
 			          try{
-			        	  Integer cjedpmaxwk = nodexdatawk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+			        	   cjedpmaxwk = nodexdatawk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
 			          		if(cjedpmaxwk > 0) {
 			              		value = cjedpmaxwk;
 			              		break;
@@ -255,13 +257,12 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			              		value = 0 - cjedpminwk;
 			              		break;
 			              	}
-			          } catch (java.lang.NullPointerException e) {
-			          		e.printStackTrace();
-			          }
+			          } catch (java.lang.NullPointerException e) {  value = null;}
 			          break;
 		       case "CjlZbDpMaxWk":
+		    	   Integer cjldpmaxwk = null;
 				      try{
-				    	  Integer cjldpmaxwk = nodexdatawk.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+				    	  		cjldpmaxwk = nodexdatawk.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
 				          		if(cjldpmaxwk > 0) {
 				              		value = cjldpmaxwk;
 				              		break;
@@ -271,7 +272,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 				              		break;
 				              	}
 				       } catch (java.lang.NullPointerException e) {
-				          		e.printStackTrace();
+				    	   value = cjldpmaxwk;
 				       }
 				       break;
 		       case "NCjeZbDpMinWk":
@@ -280,19 +281,20 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		       	  break;
 		       case "averagecjemaxwk" :
 		    	   try {
-		    		   Integer cjedpmaxwk = nodexdatawk.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
-				       	  if(cjedpmaxwk != null && cjedpmaxwk > 0) 
-				       		value = cjedpmaxwk;
+		    		   Integer averagecjemaxwk = nodexdatawk.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+				       	  if(averagecjemaxwk != null && averagecjemaxwk > 0) 
+				       		value = averagecjemaxwk;
 				          else value = 0;
 		    	   } catch (Exception e) {e.printStackTrace();   }
 		       	  break;
 		       case "averagecjlmaxwk" :
+		    	   Integer averagecjlmaxwk = null;
 		    	   try {
-		    		   Integer cjldpmaxwk = nodexdatawk.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
-				       	  if(cjldpmaxwk != null && cjldpmaxwk > 0) 
-				       		value = cjldpmaxwk;
+		    		   averagecjlmaxwk = nodexdatawk.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+				       	  if(averagecjlmaxwk != null && averagecjlmaxwk > 0) 
+				       		value = averagecjlmaxwk;
 				          else value = 0;
-		    	   } catch (Exception e) {e.printStackTrace();   }
+		    	   } catch (Exception e) {value = averagecjlmaxwk; }
 		       	  break;
 		       case "highlevelpanxurank" :
 		     	  Integer paiming = this.entryList.indexOf(node) + 1;
@@ -303,7 +305,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			        	try {
 			        		value = (Integer)stockweight;
 			        	} catch (java.lang.NullPointerException e) {
-			        		value = 0;
+			        		value = null;
 			        	}
 		     	  break;
 		       case "CjeLianXuZhang": //周日平均成交额MAXWK
@@ -351,22 +353,24 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
     	if (  !columncl.equals(Double.class) ) 
     		return value;
     	
-	    	if(value.equals("??")) 
-				return 0.0;
+	    if(value.equals("??")) 
+			return value;
 	    	
-    		String decimal = prop.getProperty (columnIndexForDecimal);
-    		if(decimal == null)
-    			return value;
+    	String decimal = prop.getProperty (columnIndexForDecimal);
+    	if(decimal == null)
+    		return value;
     			
-    			int decimalnumber = Integer.parseInt(decimal);
+    	int decimalnumber = Integer.parseInt(decimal);
 //    			BigDecimal roundOff = new BigDecimal( (Double)value).setScale(decimalnumber, BigDecimal.ROUND_HALF_EVEN);
 //    			value = roundOff;
     			
-    			double count = Math.pow(10, decimalnumber);
-    			try {
+    	double count = Math.pow(10, decimalnumber);
+    	try {
     				Double output = Math.round(  (Double)value * count) / count;
     				value = output;
-    			} catch ( java.lang.ClassCastException e) {	e.printStackTrace(); return value;}
+    	} catch ( java.lang.ClassCastException e) {	
+    		e.printStackTrace(); 
+    		return value;}
 
     			
     	return value;
@@ -545,6 +549,4 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		      
 		      return clazz;
 		 }
-
-		
 }

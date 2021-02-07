@@ -47,8 +47,13 @@ public class RuleOfGeGuZhangFu
     		zfmin = 1000000.0;
     		zfmax = -1000000.0;
     	}
-//    	TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) evanode.getNodeXPeroidData(evaperiod);
-    	StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+    	StockXPeriodDataForJFC nodexdata = null;
+    	try {
+    		nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+    	} catch (java.lang.ClassCastException e) {
+//    		e.printStackTrace();
+    		return false;
+    	}
 //		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
     	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, evadatedifference);
     	if(wkzhangdiefu != null)

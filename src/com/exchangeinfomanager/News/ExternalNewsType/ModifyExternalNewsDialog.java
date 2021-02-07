@@ -13,6 +13,7 @@ import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -76,14 +77,10 @@ public class ModifyExternalNewsDialog extends ExternalNewsDialog<ExternalNewsTyp
             try {
             	ExternalNewsType mt = getNews();
             	String owncode = mt.getNewsOwnerCodes();
-            	
-            	SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-          		SvsForNodeOfStock svsstock = new SvsForNodeOfStock (); 
-          		SvsForNodeOfDaPan svsdapan = new SvsForNodeOfDaPan (); 
-          		
-          		BkChanYeLianTreeNode bk = svsbk.getNode(owncode);
-          		BkChanYeLianTreeNode stock = svsstock.getNode(owncode);
-          		BkChanYeLianTreeNode dapan = svsdapan.getNode(owncode);
+
+          		BkChanYeLianTreeNode bk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(owncode, BkChanYeLianTreeNode.TDXBK );
+          		BkChanYeLianTreeNode stock = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(owncode, BkChanYeLianTreeNode.TDXGG );
+          		BkChanYeLianTreeNode dapan = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN );
           		
           		if(bk == null && stock == null && dapan == null) {
           			JOptionPane.showMessageDialog(null,"板块或个股代码不存在！");
@@ -99,10 +96,7 @@ public class ModifyExternalNewsDialog extends ExternalNewsDialog<ExternalNewsTyp
           			mt.setNode(dapan);
           		
             	NewsService.updateNews(mt);
-            	
-            	svsbk = null;
-            	svsstock = null;
-            	svsdapan = null;
+
             } catch (SQLException e1) {
                 e1.printStackTrace();
             } 

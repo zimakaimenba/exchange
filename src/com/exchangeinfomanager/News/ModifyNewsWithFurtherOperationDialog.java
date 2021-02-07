@@ -25,6 +25,7 @@ import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagManagment.TagSearchOnNewsTableModel;
 import com.exchangeinfomanager.TagManagment.TagSearchOnNodesTableModel;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -112,15 +113,12 @@ public class ModifyNewsWithFurtherOperationDialog extends NewsFutherOperationDia
 	  public Boolean setNews(News event)
 	  {
 	  	super.setNews( event);
-
-	  	SvsForNodeOfStock svsstock = new SvsForNodeOfStock ();
-	  	SvsForNodeOfBanKuai svsbankuai = new SvsForNodeOfBanKuai ();
 	  	
 	  	String owner = event.getNewsOwnerCodes();
 	  	List<String> ownerlist = Splitter.on("|").omitEmptyStrings().splitToList(owner); 
 	  	for(String ownercode : ownerlist) {
-	  		BkChanYeLianTreeNode stock = svsstock.getNode(ownercode);
-		  	BkChanYeLianTreeNode bankuai = svsbankuai.getNode(ownercode);
+	  		BkChanYeLianTreeNode stock = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(ownercode, BkChanYeLianTreeNode.TDXGG );
+		  	BkChanYeLianTreeNode bankuai = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(ownercode, BkChanYeLianTreeNode.TDXBK );
 		  	
 		  	if(stock != null)	searchresult.add(stock);
 		  	if(bankuai != null) searchresult.add(bankuai);

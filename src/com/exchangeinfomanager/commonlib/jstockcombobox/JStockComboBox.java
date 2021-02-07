@@ -168,6 +168,9 @@ public class JStockComboBox extends  JComboBox<String>
 			BkChanYeLianTreeNode nodeshouldbedisplayed_dzh = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
 			if(nodeshouldbedisplayed_dzh != null)
 				nodeshouldbedisplayed = nodeshouldbedisplayed_dzh;
+		} else {
+			JOptionPane.showMessageDialog(null, "未找到该个股或板块，可能代码还未被通达信/大智慧加入。");
+			return null;
 		}
 		
 		this.updateUserSelectedNode(nodeshouldbedisplayed);

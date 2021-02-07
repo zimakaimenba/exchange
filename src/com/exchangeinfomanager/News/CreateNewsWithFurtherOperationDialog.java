@@ -28,6 +28,7 @@ import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAdd
 import com.exchangeinfomanager.TagManagment.TagSearchOnNewsTableModel;
 import com.exchangeinfomanager.TagManagment.TagSearchOnNodesTableModel;
 import com.exchangeinfomanager.TagServices.TagsServiceForSystemTags;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -114,14 +115,13 @@ public class CreateNewsWithFurtherOperationDialog extends NewsFutherOperationDia
 	  	//先把news的node放进去
 	  	String owner = event.getNewsOwnerCodes();
 	  	
-	  	SvsForNodeOfDaPan svsdapan = new SvsForNodeOfDaPan ();
-	  	BkChanYeLianTreeNode dpan = svsdapan.getNode(owner);
+	  	BkChanYeLianTreeNode dpan = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN );
 	  	
 	  	SvsForNodeOfStock svsstock = new SvsForNodeOfStock ();
-	  	BkChanYeLianTreeNode stock = svsstock.getNode(owner);
+	  	BkChanYeLianTreeNode stock = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(owner, BkChanYeLianTreeNode.TDXGG );
 	  	
 	  	SvsForNodeOfBanKuai svsbankuai = new SvsForNodeOfBanKuai ();
-	  	BkChanYeLianTreeNode bankuai = svsbankuai.getNode(owner);
+	  	BkChanYeLianTreeNode bankuai = (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(owner, BkChanYeLianTreeNode.TDXBK );
 	  	if(stock != null)	searchresult.add(stock);
 	  	if(dpan != null) searchresult.add(dpan);
 	  	if(bankuai != null) searchresult.add(bankuai);
@@ -132,11 +132,12 @@ public class CreateNewsWithFurtherOperationDialog extends NewsFutherOperationDia
 		  		svsbankuai.getNodeJiBenMian(bankuai);
 		  		Set<String> frisetpos = ((BanKuai)bankuai).getSocialFriendsSetPostive();
 		  		for(String fricode : frisetpos) 
-		  			searchresult.add(svsbankuai.getNode(fricode));
+		  			searchresult.add( (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(fricode, BkChanYeLianTreeNode.TDXBK ) );
+		  		
 		  		
 		  		Set<String> frisetneg = ((BanKuai)bankuai).getSocialFriendsSetNegtive();
 		  		for(String fricode : frisetneg) 
-		  			searchresult.add(svsbankuai.getNode(fricode));
+		  			searchresult.add( (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(fricode, BkChanYeLianTreeNode.TDXBK ) );
 		  	}
 	  	}
 	  	if(chkbxaddnewtosamecyl.isSelected()) {

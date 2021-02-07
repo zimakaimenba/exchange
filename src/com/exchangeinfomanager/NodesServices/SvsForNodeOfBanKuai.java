@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.exchangeinfomanager.Services.ServicesForNode;
+import com.exchangeinfomanager.Services.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
@@ -29,84 +30,18 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
-public class SvsForNodeOfBanKuai implements ServicesForNode
+public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanKuai
 {
-	private BanKuaiAndStockTree allbkstk;
 	private BanKuaiDbOperation bkdbopt;
 	private CylTreeDbOperation dboptforcyltree;
 	private TreeOfChanYeLian cyltree;
 
 	public SvsForNodeOfBanKuai ()
 	{
-		allbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		this.cyltree = CreateExchangeTree.CreateTreeOfChanYeLian();
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
 		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
-	}
-	/*
-	 * 
-	 */
-	public List<BkChanYeLianTreeNode> getBanKuaiFenXiQualifiedNodes (LocalDate checkdate,
-			 String globeperiod, Boolean globecalwholeweek, Boolean forcetogetnodedataagain)
-	{
-		List<BkChanYeLianTreeNode> bkwithcje = new ArrayList<BkChanYeLianTreeNode> ();
-		
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) allbkstk.getModel().getRoot();
-		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);
-
-		LocalDate requirestart = CommonUtility.getSettingRangeDate(checkdate,"large").with(DayOfWeek.MONDAY);
-		for(int i=0;i< bankuaicount; i++) {
-			
-			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) allbkstk.getModel().getChild(treeroot, i);
-			if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
-				continue;
-			
-			if( !((BanKuai)childnode).isShowinbkfxgui() )
-				continue;
-			
-			if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
-					||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
-				continue;
-			
-			if(forcetogetnodedataagain)
-				childnode = this.getNodeData( (BanKuai)childnode, requirestart, checkdate,globeperiod,globecalwholeweek);
-			
-			NodeXPeriodData bkxdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-			if(bkxdata.getIndexOfSpecificDateOHLCData(checkdate, 0) != null)//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
-				bkwithcje.add( (BanKuai)childnode );
-
-		}
-		
-		return bkwithcje;
-	}
-	@Override
-	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BkChanYeLianTreeNode getNode(String nodenames)
-	{
-		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.TDXBK);
-	}
- 	@Override
-	public Collection<BkChanYeLianTreeNode> getAllNodes() 
-	{
-		Collection<BkChanYeLianTreeNode> allbks = new ArrayList<> ();
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)allbkstk.getModel().getRoot();
-		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);
-		for(int i=0;i< bankuaicount; i++) {
-			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbkstk.getModel().getChild(treeroot, i);
-			if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
-				continue;
-			
-			allbks.add(childnode);
-		}
-		
-		return allbks;
 	}
 
 	@Override
@@ -115,28 +50,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		node = bkdbopt.getBanKuaiBasicInfo ((BanKuai) node);
 		return node;
 	}
-
-	@Override
-	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) 
-	{
-		Collection<BkChanYeLianTreeNode> bklist = new ArrayList<BkChanYeLianTreeNode> ();
-		
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbkstk.getModel().getRoot();
-		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);
-		
-		for(int i=0;i< bankuaicount; i++) {
-			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbkstk.getModel().getChild(treeroot, i);
-			if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
-				continue;
-			
-			String bktype = ((BanKuai)childnode).getBanKuaiLeiXing();
-			if(subtypesset.contains(bktype))
-				bklist.add(childnode);
-		}
-		
-		return bklist;
-	}
-
 	@Override
 	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period, Boolean calwholeweek) 
@@ -224,8 +137,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 				bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
 		}
 		
-//		this.getNodeData(bankuai, requiredstartday, requiredendday, period, calwholeweek);
-		
 		return bankuai;
 	}
 
@@ -270,7 +181,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 				Integer stockdt =  stockxdate .getDieTingTongJi(tmpdate, 0);
 				if(stockdt != null)
 					dietingnum = dietingnum + stockdt;
-				
 			}
 			
 			if(zhangtingnum == 0)
@@ -300,23 +210,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		
 		bk = this.bkdbopt.getChuangYeBanZhangDieTingInfo (bk,  requiredstartday, requiredendday,  period);
-		
-//		LocalDate tmpdate = requiredstartday;
-//		do {
-//			 
-//			bk = this.bkdbopt.getChangYeBanZhangDieTingInfo (bk,  tmpdate, tmpdate.with(DayOfWeek.FRIDAY),  period);
-//			
-//			if(period.equals(NodeGivenPeriodDataItem.WEEK))
-//				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-//			else if(period.equals(NodeGivenPeriodDataItem.DAY))
-//					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-//			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
-//					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
-//			
-//		} while (tmpdate.isBefore( requiredendday) || tmpdate.isEqual(requiredendday));
-		
 		return bankuai;
-		
 	}
 	private BkChanYeLianTreeNode getShenZhenZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period) {
@@ -324,21 +218,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		
 		bk = this.bkdbopt.getShenZhenZhangDieTingInfo (bk,  requiredstartday, requiredendday,  period);
-		
-//		LocalDate tmpdate = requiredstartday;
-//		do {
-//			 
-//			bk = this.bkdbopt.getShenZhenZhangDieTingInfo (bk,  tmpdate, tmpdate.with(DayOfWeek.FRIDAY),  period);
-//			
-//			if(period.equals(NodeGivenPeriodDataItem.WEEK))
-//				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
-//			else if(period.equals(NodeGivenPeriodDataItem.DAY))
-//					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
-//			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
-//					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
-//			
-//		} while (tmpdate.isBefore( requiredendday) || tmpdate.isEqual(requiredendday));
-		
 		return bankuai;
 	}
 	private BkChanYeLianTreeNode getShangZhengZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
@@ -559,7 +438,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 
 		return bankuai;
 	}
-	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, StockOfBanKuai stockofbk,String period)
+	public StockOfBanKuai getGeGuOfBanKuaiData(BanKuai bankuai, StockOfBanKuai stockofbk,String period)
 	{
 		LocalDate bkstartday = bankuai.getNodeXPeroidData(period).getOHLCRecordsStartDate();
 		LocalDate bkendday = bankuai.getNodeXPeroidData(period).getOHLCRecordsEndDate();
@@ -574,18 +453,18 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 	/*
 	 * 
 	 */
-	public StockOfBanKuai getGeGuOfBanKuai(BanKuai bankuai, String stockcode,String period)
+	public StockOfBanKuai getGeGuOfBanKuaiData(BanKuai bankuai, String stockcode,String period)
 	{
 		StockOfBanKuai stock = bankuai.getStockOfBanKuai(stockcode);
 		if(stock == null)
 			return null;
 		
-		stock = this.getGeGuOfBanKuai( bankuai,  stock,period);
+		stock = this.getGeGuOfBanKuaiData( bankuai,  stock,period);
 		return (StockOfBanKuai) stock;
 	}
-	public StockOfBanKuai getGeGuOfBanKuai(String bkcode, String stockcode,String period) 
+	public StockOfBanKuai getGeGuOfBanKuaiData(String bkcode, String stockcode,String period) 
 	{
-		BanKuai bankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
+		BanKuai bankuai = (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode,BkChanYeLianTreeNode.TDXBK);
 		if(bankuai == null)
 			return null;
 		
@@ -593,7 +472,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		if(stock == null)
 			return null;
 		
-		stock = this.getGeGuOfBanKuai( bankuai,  stock,period);
+		stock = this.getGeGuOfBanKuaiData( bankuai,  stock,period);
 
 		return stock;
 	}
@@ -628,9 +507,8 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 				this.getNodeZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
 			}
 		} else
-		if(bk.getMyOwnCode().equals("999999")) {
+		if(bk.getMyOwnCode().equals("999999")) 
 			this.getNodeZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
-		}
 		
 		return;
 	}
@@ -664,5 +542,4 @@ public class SvsForNodeOfBanKuai implements ServicesForNode
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

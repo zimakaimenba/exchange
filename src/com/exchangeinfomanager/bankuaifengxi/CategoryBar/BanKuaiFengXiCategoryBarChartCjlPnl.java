@@ -26,6 +26,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -160,12 +161,12 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 		{
 			((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 			
-			DaPan dapan;
-			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-				BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
-				dapan = (DaPan)bk.getRoot();
-			} else
-				dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
+			DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan
+//			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
+//				BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
+//				dapan = (DaPan)bk.getRoot();
+//			} else
+//				dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 			
 			LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 			LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);

@@ -9,17 +9,10 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public interface ServicesForNode 
 {
-	public Collection<BkChanYeLianTreeNode> getAllNodes ();
-	
-	public Collection<BkChanYeLianTreeNode> getNodes (Collection<String> nodenames);
-	public BkChanYeLianTreeNode getNode (String nodenames);
-	
 	public BkChanYeLianTreeNode getNodeJiBenMian (BkChanYeLianTreeNode node);
 	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificGntxString (String requiredgntxstring);
 	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificFmxxString (String requiredfmxxstring);
 	
-	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes (Set<String> subtypesset);
-
 	public BkChanYeLianTreeNode getNodeData (BkChanYeLianTreeNode bankuai,LocalDate requiredstartday,LocalDate requiredendday,String period ,Boolean calwholeweek );
 	public BkChanYeLianTreeNode getNodeData (String bkcode,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek);
 	public BkChanYeLianTreeNode getNodeKXian (String bkcode,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek);

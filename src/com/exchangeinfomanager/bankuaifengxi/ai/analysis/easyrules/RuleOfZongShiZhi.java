@@ -45,7 +45,13 @@ public class RuleOfZongShiZhi
 	    LocalDate requireddate = evadate;
 	    String period = evaperiod;
 	    NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-	    Double curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate, 0);
+	    Double curltsz = null;
+	    try {
+	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate, 0);
+	    } catch (java.lang.ClassCastException e) {
+//    		e.printStackTrace();
+    		return false;
+    	}
 	    if(curltsz == null) //有时候周一网易的数据还没有导入，导致没有流通市值数据，先用上一周的数据顶一下，毕竟不会相差太大
 	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate, -1);
 	    try {

@@ -19,6 +19,8 @@ public class AllCurrentDzhBkTree
 	{
 		this.bkdbopt = new BanKuaiDZHDbOperation ();
 		initializeAllStocksTree ();
+		
+		setupDaPan();
 	}
 	
 	// ����ʵ��  
@@ -51,6 +53,17 @@ public class AllCurrentDzhBkTree
 	public  BanKuaiAndStockTree getAllBkStocksTree()
 	{
 		return allbkggtree;
+	}
+	
+	/*
+	 * 
+	 */
+	public void setupDaPan ()
+	{
+		DaPan treeallstockrootdapan = (DaPan)allbkggtree.getModel().getRoot();
+		BanKuai shdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("000001",BkChanYeLianTreeNode.DZHBK);
+		BanKuai szdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.DZHBK);
+		treeallstockrootdapan.setDaPanContents(shdpbankuai,szdpbankuai);
 	}
 	
 }

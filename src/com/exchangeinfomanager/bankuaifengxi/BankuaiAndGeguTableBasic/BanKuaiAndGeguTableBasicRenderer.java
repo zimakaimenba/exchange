@@ -303,6 +303,12 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
 			return "";
 		
+		if(value == null)
+			return null;
+		
+		if(value.equals("??"))
+			return (String) value;
+		
 		 //用百分比显示
     	String valuepect = "";
     	try {

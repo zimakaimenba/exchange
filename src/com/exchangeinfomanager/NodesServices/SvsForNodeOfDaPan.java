@@ -34,22 +34,22 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		servicsofbk = new SvsForNodeOfBanKuai  ();
 	}
 
-	@Override
-	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BkChanYeLianTreeNode getNode(String nodenames) {
-		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.DAPAN);
-	}
-
-	@Override
-	public Collection<BkChanYeLianTreeNode> getAllNodes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public BkChanYeLianTreeNode getNode(String nodenames) {
+//		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.DAPAN);
+//	}
+//
+//	@Override
+//	public Collection<BkChanYeLianTreeNode> getAllNodes() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeJiBenMian(BkChanYeLianTreeNode node) {
@@ -57,11 +57,11 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		return null;
 	}
 
-	@Override
-	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,

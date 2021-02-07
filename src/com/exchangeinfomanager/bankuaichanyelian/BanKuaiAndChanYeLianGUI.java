@@ -130,7 +130,7 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		pnllblsysmanagement.initializeTagsPanel (lballdbservice,allsyskwcache);
 		
 		//bankuai
-		Collection<BkChanYeLianTreeNode> allnodes = svsforbank.getAllNodes();
+		Collection<BkChanYeLianTreeNode> allnodes = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getAllNodes();
 		List<BkChanYeLianTreeNode> allbklist = new ArrayList<> (allnodes);
 		((BkChanYeLianTreeNodeListTableModel)tablebankuai.getModel()).refresh(allbklist);
 	}

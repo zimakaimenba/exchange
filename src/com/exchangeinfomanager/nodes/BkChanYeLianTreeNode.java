@@ -10,7 +10,7 @@ import com.google.common.base.Strings;
 
 public abstract class BkChanYeLianTreeNode  extends InvisibleNode 
 {
-	public static int  DAPAN = 3, TDXBK = 4,  BKGEGU = 7, TDXGG = 6, GPC = 8, SUBGPC = 9; //SUBBK = 5,
+	public static int  DAPAN = 3, TDXBK = 4,  BKGEGU = 7, TDXGG = 6, GPC = 8, SUBGPC = 9, DZHBK =10; //SUBBK = 5,
 
     public BkChanYeLianTreeNode(String myowncode, String name)
     {

@@ -1,41 +1,66 @@
 package com.exchangeinfomanager.NodesServices;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import com.exchangeinfomanager.Services.ServicesForNode;
+import com.exchangeinfomanager.Services.ServicesForNodeBanKuai;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
-import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
-public class SvsForNodeOfDZHBanKuai implements ServicesForNode 
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
+
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+
+public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeBanKuai
 {
-	private BanKuaiDZHDbOperation bkdbopt;
+	private BanKuaiDZHDbOperation dzhbkdbopt;
 	
 	public SvsForNodeOfDZHBanKuai ()
 	{
-		this.bkdbopt = new BanKuaiDZHDbOperation ();
+		this.dzhbkdbopt = new BanKuaiDZHDbOperation ();
 	}
-	@Override
-	public Collection<BkChanYeLianTreeNode> getAllNodes() {
-		// TODO Auto-generated method stub
-		return null;
+	public void syncBanKuaiAndItsStocksForSpecificTime (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek  ) throws SQLException
+	{
+		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
+			SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
+			bk = this.getAllGeGuOfBanKuai (bk); 
+			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+			if(allbkgg != null) {
+				for(BkChanYeLianTreeNode stockofbk : allbkgg)   
+			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
+			    		 Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
+		    			 svstock.syncNodeData(stock);
+			    	 }
+			}
+		}
+		
+		return;
 	}
+	/*
+	 * 
+	 */
+	public BanKuai getAllGeGuOfBanKuai (BanKuai bankuai) 
+	{
+		LocalDate bkstartday = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsStartDate();
+		LocalDate bkendday = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getOHLCRecordsEndDate();
+		
+		if(bkstartday == null || bkendday == null)  {
+			bkstartday = CommonUtility.getSettingRangeDate(LocalDate.now(), "middle");
+			bkendday = LocalDate.now();
+			
+			bankuai = dzhbkdbopt.getDZHBanKuaiGeGuOfHyGnFg (bankuai,bkstartday,bkendday);
+			bankuai.setBanKuaiGeGuTimeRange (bkstartday,bkendday);
+			return bankuai;
+		} 
 
-	@Override
-	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) {
-		// TODO Auto-generated method stub
-		return null;
+		return bankuai;
 	}
-
-	@Override
-	public BkChanYeLianTreeNode getNode(String nodenames) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public BkChanYeLianTreeNode getNodeJiBenMian(BkChanYeLianTreeNode node) 
 	{
@@ -51,12 +76,6 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode
 
 	@Override
 	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificFmxxString(String requiredfmxxstring) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -130,6 +149,21 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode
 
 	@Override
 	public List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo(String nodecode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public StockOfBanKuai getGeGuOfBanKuaiData(BanKuai bankuai, StockOfBanKuai stockofbk, String period) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public StockOfBanKuai getGeGuOfBanKuaiData(BanKuai bankuai, String stockcode, String period) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public StockOfBanKuai getGeGuOfBanKuaiData(String bkcode, String stockcode, String period) {
 		// TODO Auto-generated method stub
 		return null;
 	}

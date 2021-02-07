@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.joda.time.Interval;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.google.common.collect.Range;
 
@@ -77,10 +76,6 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	}
 	public void addNewQiangShiRange (Range<LocalDate> inter) 
 	{
-//		for(int i=0; i<qiangshiinterval.size();i++) {
-//			Interval tmpin = qiangshiinterval.get(i);
-//			
-//		}
 		if(qiangshirange == null)
 			qiangshirange = new ArrayList<> ();
 		
@@ -103,10 +98,6 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	}
 	public void addNewRuoShiRange (Range<LocalDate> inter) 
 	{
-//		for(int i=0; i<qiangshiinterval.size();i++) {
-//			Interval tmpin = qiangshiinterval.get(i);
-//			
-//		}
 		if(ruoshirange == null)
 			ruoshirange = new ArrayList<> ();
 		
@@ -199,6 +190,4 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	{
 		return this.lastdayofbxfx;
 	}
-	
-	
 }

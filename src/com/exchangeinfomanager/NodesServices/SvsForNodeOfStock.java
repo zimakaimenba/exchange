@@ -43,35 +43,35 @@ public class SvsForNodeOfStock implements ServicesForNode
 		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
 	}
 
-	@Override
-	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) 
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) 
+//	{
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public BkChanYeLianTreeNode getNode(String nodenames) 
+//	{
+//		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.TDXGG);
+//	}
 
-	@Override
-	public BkChanYeLianTreeNode getNode(String nodenames) 
-	{
-		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.TDXGG);
-	}
-
-	@Override
-	public Collection<BkChanYeLianTreeNode> getAllNodes() 
-	{
-		Collection<BkChanYeLianTreeNode> allbks = new ArrayList<> ();
-		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)allbkstk.getModel().getRoot();
-		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);
-		for(int i=0;i< bankuaicount; i++) {
-			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbkstk.getModel().getChild(treeroot, i);
-			if(childnode.getType() != BkChanYeLianTreeNode.TDXGG) 
-				continue;
-			
-			allbks.add(childnode);
-		}
-		
-		return allbks;
-	}
+//	@Override
+//	public Collection<BkChanYeLianTreeNode> getAllNodes() 
+//	{
+//		Collection<BkChanYeLianTreeNode> allbks = new ArrayList<> ();
+//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)allbkstk.getModel().getRoot();
+//		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);
+//		for(int i=0;i< bankuaicount; i++) {
+//			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbkstk.getModel().getChild(treeroot, i);
+//			if(childnode.getType() != BkChanYeLianTreeNode.TDXGG) 
+//				continue;
+//			
+//			allbks.add(childnode);
+//		}
+//		
+//		return allbks;
+//	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeJiBenMian(BkChanYeLianTreeNode node)
@@ -80,12 +80,12 @@ public class SvsForNodeOfStock implements ServicesForNode
 		return node;
 	}
 
-	@Override
-	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) 
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) 
+//	{
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode stk, LocalDate requiredstartday,

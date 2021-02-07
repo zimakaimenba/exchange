@@ -2445,30 +2445,18 @@ public class BanKuaiDbOperation
 			 while(rs1.next()) {  
 				String tmpstockcode = rs1.getString("股票代码");
 
-				String tmpstockname;
-				try {
-					tmpstockname = rs1.getString("股票名称"); //"股票名称"
-				} catch (java.lang.NullPointerException e ) {
-					tmpstockname = "";
-				}
-				
 				Integer weight = rs1.getInt("股票权重");
 				
 				Boolean longtou;
 				try{
 					longtou = rs1.getBoolean("板块龙头");
-				} catch (java.sql.SQLException e) {
-//					e.printStackTrace();
-					longtou = false;
-				}
+				} catch (java.sql.SQLException e) {longtou = false;}
 				
 				LocalDate joindate = null;
 				try{
 					joindate = rs1.getDate("加入时间").toLocalDate();
-				} catch (java.sql.SQLException ex1) {
-					continue; //
-//					ex1.printStackTrace();
-				}
+				} catch (java.sql.SQLException ex1) {continue; }
+				
 				LocalDate leftdate;
 				try {
 					leftdate = rs1.getDate("移除时间").toLocalDate().with(DayOfWeek.FRIDAY); //周线都是以周五为计算的，任何个股移出都调整到周五

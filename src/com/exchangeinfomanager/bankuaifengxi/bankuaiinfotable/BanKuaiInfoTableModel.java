@@ -59,7 +59,10 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	}
 	public void addBanKuai ( List<BkChanYeLianTreeNode> bankuaiwithcje)
 	{
-		entryList = bankuaiwithcje;
+		if(entryList == null)
+			entryList = new ArrayList<BkChanYeLianTreeNode> ();
+		
+		entryList.addAll( bankuaiwithcje );
 	}
 	
 

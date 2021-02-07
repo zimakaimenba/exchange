@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -51,7 +52,7 @@ import org.apache.log4j.Logger;
 
 import javax.swing.tree.TreeNode;
 
-
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 
@@ -116,8 +117,67 @@ public class BanKuaiAndStockTree extends JTree
 	private String currentselectedtdxbk;
 	private LocalDate currentdisplayedwk; //tree当前所显示的分析州
 	protected boolean treechangedshouldsave = false;
-//	private BkfxWeeklyFileResultXmlHandler bkfxxml;
-	
+
+	/*
+	 * 
+	 */
+	public Collection<BkChanYeLianTreeNode> getAllNodes() 
+	{
+		Collection<BkChanYeLianTreeNode> allbks = new ArrayList<> ();
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+		int bankuaicount = this.getModel().getChildCount(treeroot);
+		for(int i=0;i< bankuaicount; i++) {
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.getModel().getChild(treeroot, i);
+			if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
+				continue;
+			
+			allbks.add(childnode);
+		}
+		
+		return allbks;
+	}
+	/*
+	 * 
+	 */
+	public Collection<BkChanYeLianTreeNode> getAllRequiredNodes (int requiredtype)
+	{
+		Collection<BkChanYeLianTreeNode> bklist = new ArrayList<BkChanYeLianTreeNode> ();
+		
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+		int bankuaicount = this.getModel().getChildCount(treeroot);
+		
+		for(int i=0;i< bankuaicount; i++) {
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.getModel().getChild(treeroot, i);
+			if(childnode.getType() != requiredtype) 
+				continue;
+			
+				bklist.add(childnode);
+		}
+		
+		return bklist;
+	}
+	/*
+	 * 
+	 */
+	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheBanKuai(Set<String> subtypesset, int requiredtype) 
+	{
+		Collection<BkChanYeLianTreeNode> bklist = new ArrayList<BkChanYeLianTreeNode> ();
+		
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+		int bankuaicount = this.getModel().getChildCount(treeroot);
+		
+		for(int i=0;i< bankuaicount; i++) {
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.getModel().getChild(treeroot, i);
+			if(childnode.getType() != requiredtype) 
+				continue;
+			
+			String bktype = ((BanKuai)childnode).getBanKuaiLeiXing();
+			if(subtypesset.contains(bktype))
+				bklist.add(childnode);
+		}
+		
+		return bklist;
+	}
 	/*
 	 * 
 	 */

@@ -48,8 +48,13 @@ public class RuleOfGeGuPrice
 //    		pricemin = 1000000.0;
 //    		pricemax = -1000000.0;
 //    	}
-    	
-    	StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+    	StockXPeriodDataForJFC nodexdata = null;
+    	try {
+    		 nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+    	} catch (java.lang.ClassCastException e) {
+//    		e.printStackTrace();
+    		return false;
+    	}
 		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
 	    Double close = ohlcdata.getCloseValue();
 	    if(pricemin != null || pricemax != null ) {

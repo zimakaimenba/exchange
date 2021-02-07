@@ -32,9 +32,9 @@ import javax.swing.tree.DefaultTreeModel;
 
 import javax.swing.tree.TreePath;
 
-import org.apache.commons.io.IOCase;
+
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -52,10 +52,11 @@ import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Services.ServicesForNewsLabel;
+import com.exchangeinfomanager.Services.ServicesForNode;
+import com.exchangeinfomanager.Services.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServices;
@@ -208,7 +209,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		
-		this.sysconfig = new SetupSystemConfiguration();
 		this.nodeinfotocsv = new NodeInfoToCsv ();
 		this.bkfxremind = new BanKuaiFengXiRemindXmlHandler ();
 		this.bkggmatchcondition = new BanKuaiGeGuMatchCondition ();
@@ -241,7 +241,7 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiFengXiRemindXmlHandler bkfxremind;
 	private LocalDate lastselecteddate;
 
-	private SetupSystemConfiguration sysconfig;
+//	private SetupSystemConfiguration sysconfig;
 	private StockInfoManager stockmanager;
 	private BanKuaiGeGuMatchCondition bkggmatchcondition;
 	private VoiceEngine readengine;
@@ -379,12 +379,13 @@ public class BanKuaiFengXi extends JDialog
     	LocalDate curselectdate = dateChooser.getLocalDate(); 
     	LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"middle").with(DayOfWeek.MONDAY);
     	
-    	SvsForNodeOfDaPan	svsdp = new SvsForNodeOfDaPan ();
-    	svsdp.getNodeData("",requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
-    	svsdp = null;
-    	SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-		List<BkChanYeLianTreeNode> bkwithcje = svsbk.getBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
+    	DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+    	dapan.getNodeData(requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
+    	
+		List<BkChanYeLianTreeNode> bkwithcje = getBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
+		List<BkChanYeLianTreeNode> dzhbk = getDZHBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai( bkwithcje );
+		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai( dzhbk );
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,0,globeperiod);
 		
 		//设置下拉框的当前时间，为显示关注板块个股使用
@@ -392,9 +393,75 @@ public class BanKuaiFengXi extends JDialog
 		((JStockComboBoxModel)combxstockcode.getModel() ).setCurrentDataDate(curselectdate);
 		
 		curselectdate = null;
-		svsbk = null;
-
 		SystemAudioPlayed.playSound();
+	}
+	/*
+	 * 
+	 */
+	private List<BkChanYeLianTreeNode> getBanKuaiFenXiQualifiedNodes (LocalDate checkdate, String globeperiod, Boolean globecalwholeweek, Boolean forcetogetnodedataagain)
+	{
+		List<BkChanYeLianTreeNode> bkwithcje = new ArrayList<BkChanYeLianTreeNode> ();
+		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+		
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
+		int bankuaicount = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getChildCount(treeroot);
+
+		LocalDate requirestart = CommonUtility.getSettingRangeDate(checkdate,"large").with(DayOfWeek.MONDAY);
+		for(int i=0;i< bankuaicount; i++) {
+			
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getChild(treeroot, i);
+			if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
+				continue;
+			
+			if( !((BanKuai)childnode).isShowinbkfxgui() )
+				continue;
+			
+			if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+					||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
+				continue;
+			
+			if(forcetogetnodedataagain)
+				childnode = svsbk.getNodeData( (BanKuai)childnode, requirestart, checkdate,globeperiod,globecalwholeweek);
+			
+			NodeXPeriodData bkxdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			if(bkxdata.getIndexOfSpecificDateOHLCData(checkdate, 0) != null)//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+				bkwithcje.add( (BanKuai)childnode );
+
+		}
+		
+		return bkwithcje;
+	}
+	/*
+	 * 
+	 */
+	private List<BkChanYeLianTreeNode> getDZHBanKuaiFenXiQualifiedNodes (LocalDate checkdate, String globeperiod, Boolean globecalwholeweek, Boolean forcetogetnodedataagain)
+	{
+		List<BkChanYeLianTreeNode> bkwithcje = new ArrayList<BkChanYeLianTreeNode> ();
+//		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+		
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getModel().getRoot();
+		int bankuaicount = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getModel().getChildCount(treeroot);
+
+		LocalDate requirestart = CommonUtility.getSettingRangeDate(checkdate,"large").with(DayOfWeek.MONDAY);
+		for(int i=0;i< bankuaicount; i++) {
+			
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getModel().getChild(treeroot, i);
+			if(childnode.getType() != BkChanYeLianTreeNode.DZHBK) 
+				continue;
+			
+			if( !((BanKuai)childnode).isShowinbkfxgui() )
+				continue;
+			
+			if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+					||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
+				continue;
+			
+			
+			bkwithcje.add( (BanKuai)childnode );
+
+		}
+		
+		return bkwithcje;
 	}
 	/*
 	 * 点击一个板块
@@ -497,11 +564,9 @@ public class BanKuaiFengXi extends JDialog
 			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		SvsForNodeOfDaPan svsdp = new SvsForNodeOfDaPan ();
-		TDXNodes dapan = (TDXNodes)svsdp.getNode("000000");
-		svsdp.getNodeData(dapan, CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate,
+		DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+    	dapan.getNodeData(CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate,
 				globeperiod,this.globecalwholeweek );
-		svsdp = null;
 
 		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
 		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (dapan); 
@@ -528,20 +593,17 @@ public class BanKuaiFengXi extends JDialog
 			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-		BanKuai zhishubk =  (BanKuai) svsbk.getNode("999999");
+		ServicesForNodeBanKuai svsbk = (ServicesForNodeBanKuai) selectedbk.getBanKuaiService ();
 		//一次性同步板块数据以及所属个股数据
 		try {
 			svsbk.syncBanKuaiAndItsStocksForSpecificTime(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate,
 					globeperiod,this.globecalwholeweek);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (SQLException e) {	e.printStackTrace(); }
 		svsbk = null;
 		
 		//显示K线
 		paneldayCandle.displayQueKou(false);
+		BanKuai zhishubk =  (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK );
 		refreshKXianOfTDXNodeWithSuperBanKuai ( selectedbk, zhishubk, NodeGivenPeriodDataItem.DAY );
 		
 		//板块所属个股
@@ -600,9 +662,8 @@ public class BanKuaiFengXi extends JDialog
 		
 		LocalDate cursetdate = dateChooser.getLocalDate(); 
 		if(!CommonUtility.isInSameWeek(selectdate,cursetdate) ) {
-			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-			List<BkChanYeLianTreeNode> bkwithcje = svsbk.getBanKuaiFenXiQualifiedNodes(selectdate, globeperiod, globecalwholeweek,false);
-			svsbk = null;
+			
+			List<BkChanYeLianTreeNode> bkwithcje = getBanKuaiFenXiQualifiedNodes(selectdate, globeperiod, globecalwholeweek,false);
 			((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).addBanKuai( bkwithcje );
 			((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).refresh(selectdate,0,globeperiod);
 			
@@ -1025,6 +1086,8 @@ public class BanKuaiFengXi extends JDialog
 			tmpnode = selectnode;
 		} else if (selectnode.getType() == BkChanYeLianTreeNode.BKGEGU) {
 			tmpnode = ((StockOfBanKuai)selectnode).getStock() ;
+		} else if (selectnode.getType() == BkChanYeLianTreeNode.DZHBK) {
+			tmpnode = selectnode;
 		}
 		
 		 if(superbankuai != null  && superbankuai.getType() == BkChanYeLianTreeNode.TDXBK) {
@@ -1140,43 +1203,16 @@ public class BanKuaiFengXi extends JDialog
 
                 if (evt.getPropertyName().equals(DisplayNodeExchangeDataServicesPanel.EXPORTCSV_PROPERTY)) {
 
-//                	Multimap<String, LocalDate> nodespecificdatainfo = tfldselectedmsg.getDisplayBanKuaiSpecificDateInfo();
-//                	for (Map.Entry entry : nodespecificdatainfo.entries()) 
-//                	{ 
-//                		String nodecode = (String) entry.getKey();
-//                		LocalDate selectdate = (LocalDate) entry.getValue();
-//                		
-//                		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-//                		BanKuai bk = (BanKuai) svsbk.getNode(nodecode);
-//                		svsbk = null;
-//                		List<TDXNodes> tmplist = new ArrayList<> ();
-//                		tmplist.add(bk);
-//                		exportTDXNodesDataToCsv(tmplist,selectdate.toString());
-//                		tmplist = null;
-//                	}
-//                	nodespecificdatainfo = tfldselectedmsg.getDisplayStockSpecificDateInfo();
-//                	for (Map.Entry entry : nodespecificdatainfo.entries()) 
-//                	{ 
-//                		String nodecode = (String) entry.getKey();
-//                		LocalDate selectdate = (LocalDate) entry.getValue();
-//                		
-//                		SvsForNodeOfStock svsstk = new SvsForNodeOfStock	();
-//                		Stock stock = (Stock) svsstk.getNode(nodecode);
-//                		svsstk = null;
-//                		List<TDXNodes> tmplist = new ArrayList<TDXNodes>();
-//                		tmplist.add(stock);
-//                		exportTDXNodesDataToCsv( tmplist ,selectdate.toString());
-//                		tmplist = null;
-//                	}
+
                 }
             }
 		});
-//		tfldselectedmsg.displayNodeSpecificDateInfo(node, seldate ,this.globeperiod);
+
 	}
 	private void setUserSelectedColumnMessage(String htmlstring) 
 	{
 		pnl_paomd.refreshMessage(htmlstring);
-//		tfldselectedmsg.displayNodeSelectedInfo (htmlstring);
+
 	}
 	/*
 	 * 用户点击几个地方，显示气泡提示信息
@@ -1413,7 +1449,7 @@ public class BanKuaiFengXi extends JDialog
                     	String danpanzhishu = JOptionPane.showInputDialog(null,"请输入叠加的大盘指数", "999999");
 //                    	BanKuai zhishubk =  (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(danpanzhishu.toLowerCase(),BkChanYeLianTreeNode.TDXBK);
                     	SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-                    	BanKuai zhishubk = (BanKuai) svsbk.getNode(danpanzhishu.toLowerCase());
+                    	BanKuai zhishubk = (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(danpanzhishu.toLowerCase(), BkChanYeLianTreeNode.TDXBK );
                     	svsbk = null;
                     	if(zhishubk == null)  {
         					JOptionPane.showMessageDialog(null,"指数代码有误！","Warning",JOptionPane.WARNING_MESSAGE);
@@ -1662,10 +1698,7 @@ public class BanKuaiFengXi extends JDialog
     			//一次性同步板块数据以及所属个股数据
     			try {
     				svsbk.syncBanKuaiAndItsStocksForSpecificTime(bk, searchstart, searchend,globeperiod,globecalwholeweek);
-    			} catch (SQLException ex) {
-    				// TODO Auto-generated catch block
-    				ex.printStackTrace();
-    			}
+    			} catch (SQLException ex) {ex.printStackTrace();}
     			
 //    			NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 //    			LocalDate curohlcstart = bknodexdata.getOHLCRecordsStartDate();
@@ -1827,13 +1860,9 @@ public class BanKuaiFengXi extends JDialog
 						return;
 					}
         			
-//    	    		BanKuai bankuai = (BanKuai)allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(node.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
-					SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-					BanKuai bankuai = (BanKuai) svsbk.getNode(node.getMyOwnCode());
-					svsbk = null;
+					BanKuai bankuai = (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(node.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK );
+					
     				combxsearchbk.updateUserSelectedNode(bankuai);
-    				
-//    				tabbedPanebk.setSelectedIndex(2);
     				
     				hourglassCursor = null;
     				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -2158,52 +2187,7 @@ public class BanKuaiFengXi extends JDialog
 
 		    }
 		});
-		/*
-		 * 
-		 */
-//		editorPanebankuai.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//            public void propertyChange(PropertyChangeEvent evt) {
-//            	if (evt.getPropertyName().equals(BanKuaiListEditorPane.URLSELECTED_PROPERTY)) {
-//            		
-//            		String selbk = evt.getNewValue().toString();
-//    				String selbkcode;
-//    				if(selbk != null)
-//    					 selbkcode = selbk.trim().substring(1, 7);
-//    				else 
-//    					return;
-//
-//    				int rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNodeRowIndex(selbkcode);
-//    				if(rowindex != -1) {
-//    					
-//    					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-//    					setCursor(hourglassCursor);
-//    					
-//    					int modelRow = tableBkZhanBi.convertRowIndexToView(rowindex);
-//    					tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
-//    					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
-//    					
-//    					//找到用户选择的板块
-//    					BanKuai selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(rowindex);
-//    					unifiedOperationsAfterUserSelectABanKuai (selectedbk);
-//    					
-//    					//找不到该股票
-//    					String stockcode = combxstockcode.getSelectedItem().toString().substring(0, 6);
-//    					if(!findInputedNodeInTable (stockcode) )
-//    						JOptionPane.showMessageDialog(null,"在某个个股表内没有发现该股，可能在这个时间段内该股停牌","Warning",JOptionPane.WARNING_MESSAGE);
-//    					
-////    					Toolkit.getDefaultToolkit().beep();
-//    					hourglassCursor = null;
-//    					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-//    					setCursor(hourglassCursor2);
-//    					
-//    					SystemAudioPlayed.playSound();
-//    				} else {
-//    					JOptionPane.showMessageDialog(null,"该板块设置为不显示在板块列表中，请在 ‘重点关注与产业链’ 变更设置！","Warning",JOptionPane.WARNING_MESSAGE);
-//    				}
-//            	}
-//            }
-//        });
+
 		
 		tableGuGuZhanBiInBk.addKeyListener(new KeyAdapter() {
 			@Override
@@ -2424,7 +2408,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		historycsvfileMenu.removeAll();
 		
-		String installpath = sysconfig.getSystemInstalledPath();
+		String installpath = (new SetupSystemConfiguration()).getSystemInstalledPath();
 		File dir = new File(installpath + "/dailydata/csv");
 		
 		String csvandanalysisfile = bkfxsettingprop.getProperty ("csvandanalysisfile");
@@ -2661,7 +2645,7 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void parseTempGeGuFromFileFunciotns()
 	{
-		String parsedpath = sysconfig.getTDXModelMatchExportFile ();
+		String parsedpath = (new SetupSystemConfiguration()).getTDXModelMatchExportFile ();
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		chooser.setCurrentDirectory(new File(parsedpath) );
@@ -2862,9 +2846,8 @@ public class BanKuaiFengXi extends JDialog
 	private void exportTDXNodesDataToCsv (List<TDXNodes> nodelist, String exporttypeordate)
 	{
 		btnexportcsv.setEnabled(true);
-		
 		LocalDate curselectdate = dateChooser.getLocalDate();//dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		
+				
 		for(TDXNodes tmpnode : nodelist) {
 
 			if(exporttypeordate.toLowerCase().equals("all")) { //list里面没一个当前日期数据
@@ -2889,12 +2872,10 @@ public class BanKuaiFengXi extends JDialog
 					svsstk.syncNodeData(tmpnode);
 					svsstk = null;
 				}
-				SvsForNodeOfDaPan	svsdp = new SvsForNodeOfDaPan ();
-				svsdp.getNodeData("999999", nodestart, nodeend, this.globeperiod, this.globecalwholeweek);
-				svsdp = null;
-//				allbksks.getDaPan(nodestart, nodeend, globeperiod, globecalwholeweek);
-				
-				nodeinfotocsv.addNodeToCsvList(tmpnode, nodestart, nodeend);
+				DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+		    	dapan.getNodeData (nodestart, nodeend, this.globeperiod, this.globecalwholeweek);
+
+		    	nodeinfotocsv.addNodeToCsvList(tmpnode, nodestart, nodeend);
 				
 				nodestart = null;
 				nodeend = null;
@@ -2929,6 +2910,7 @@ public class BanKuaiFengXi extends JDialog
 	protected void displayNodeInfo(BkChanYeLianTreeNode selectednode) 
 	{
 		JTabbedPane extrainfotabpane = new JTabbedPane(JTabbedPane.TOP);
+		extrainfotabpane.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		
 		DisplayNodeJiBenMianService nodejbm = new DisplayNodeJiBenMianService (selectednode);
 		DisplayNodeInfoPanel displaybkjbmpnl = new DisplayNodeInfoPanel (nodejbm);
@@ -2950,8 +2932,6 @@ public class BanKuaiFengXi extends JDialog
 			extrainfotabpane.addTab(selectednode.getMyOwnName() + "关键词", displaybktagspnl);
 		}
 		
-//		pnlextrainfo.add (displaybktagspnl);
-		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXBK) {
 			DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (selectednode);
 			bknews.setTimeRangeForInfoRange(this.dateChooser.getLocalDate(), this.dateChooser.getLocalDate());
@@ -2964,8 +2944,6 @@ public class BanKuaiFengXi extends JDialog
 				
 				extrainfotabpane.addTab(selectednode.getMyOwnName() + "新闻", displaybknewspnl);
 			}
-			
-//			pnlextrainfo.add (displaybknewspnl);
 		}
 		
 		if(selectednode.getType() == BkChanYeLianTreeNode.TDXGG) {
@@ -2979,8 +2957,6 @@ public class BanKuaiFengXi extends JDialog
 				
 				extrainfotabpane.addTab(selectednode.getMyOwnName() + "买卖关注记录", displaybksbpnl);	
 			}
-			
-//			pnlextrainfo.add (displaybksbpnl);
 		}
 
 		pnlextrainfo.add(extrainfotabpane);
@@ -2995,12 +2971,7 @@ public class BanKuaiFengXi extends JDialog
 			JOptionPane.showMessageDialog(null,"不是整周分析模式，不支持更大范围显示分析结果数据!","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		
-//		if(node.getType() == BkChanYeLianTreeNode.DAPAN) {
-//			JOptionPane.showMessageDialog(null,"大盘 不支持更大范围显示分析结果数据，选用上证或其他指数分析效果更佳!","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
-		
+	
 		//保证显示时间范围为当前日期前后有数据的48个月(3年)
 		LocalDate curselectdate = dateChooser.getLocalDate().with(DayOfWeek.FRIDAY);
 		LocalDate requireend = curselectdate.with(DayOfWeek.MONDAY).plus(6,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
@@ -3055,9 +3026,9 @@ public class BanKuaiFengXi extends JDialog
 ////			node = this.allbksks.getDaPan (requirestart.plusWeeks(1),globeperiod); //同步大盘数据,否则在其他地方会出错
 //		}
 		
-		SvsForNodeOfDaPan	svsdp = new SvsForNodeOfDaPan ();
-		svsdp.getNodeData("", overlapldstartday, overlapldendday, globeperiod, this.globecalwholeweek);
-		svsdp = null;
+		DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+    	dapan.getNodeData(overlapldstartday, overlapldendday, globeperiod, this.globecalwholeweek);
+		
 		
 		BanKuaiFengXiLargePnl largeinfo = null;
 		String guitype = "CJE";

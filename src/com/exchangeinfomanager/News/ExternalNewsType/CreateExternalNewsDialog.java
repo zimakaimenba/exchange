@@ -73,13 +73,9 @@ public class CreateExternalNewsDialog  extends ExternalNewsDialog<ExternalNewsTy
           		return;
           	}
           	 
-          		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-          		SvsForNodeOfStock svsstock = new SvsForNodeOfStock (); 
-          		SvsForNodeOfDaPan svsdapan = new SvsForNodeOfDaPan (); 
-          		
-          		BkChanYeLianTreeNode bk = svsbk.getNode(mt.getNewsOwnerCodes());
-          		BkChanYeLianTreeNode stock = svsstock.getNode(mt.getNewsOwnerCodes());
-          		BkChanYeLianTreeNode dapan = svsdapan.getNode(mt.getNewsOwnerCodes());
+          		BkChanYeLianTreeNode bk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(mt.getNewsOwnerCodes(), BkChanYeLianTreeNode.TDXBK );
+          		BkChanYeLianTreeNode stock = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(mt.getNewsOwnerCodes(), BkChanYeLianTreeNode.TDXGG );
+          		BkChanYeLianTreeNode dapan = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.TDXBK );
           		
           		if(bk == null && stock == null && dapan == null) {
           			JOptionPane.showMessageDialog(null,"板块或个股代码不存在！");

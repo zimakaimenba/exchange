@@ -53,6 +53,7 @@ import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagManagment.NodeLabelMatrixManagement;
 import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.accountconfiguration.AccountOperation.AccountSetting;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.StockChiCangInfo;
@@ -77,10 +78,12 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingWorker.StateValue;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -146,6 +149,7 @@ import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
@@ -302,7 +306,7 @@ public class StockInfoManager
 		cBxstockcode.removeAllItems();
 		SvsForNodeOfStock svsstock = new SvsForNodeOfStock ();
 		for(String tmpsgstockcodename:tmpchicangname) {
-			BkChanYeLianTreeNode tmpstock = svsstock.getNode(tmpsgstockcodename.substring(0, 6) );
+			BkChanYeLianTreeNode tmpstock = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(tmpsgstockcodename.substring(0, 6), BkChanYeLianTreeNode.TDXGG );
 			( (JStockComboBoxModel)cBxstockcode.getModel() ).addElement(tmpstock);
 		}
 		try {
@@ -1864,10 +1868,8 @@ public class StockInfoManager
     				else
     					return;
     				
-    				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-    				BkChanYeLianTreeNode bankuai = svsbk.getNode(selbkcode);
-    				svsbk = null;
-    				
+    				BkChanYeLianTreeNode bankuai = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(selbkcode, BkChanYeLianTreeNode.TDXBK );
+
     				DisplayNodeJiBenMianService bkjbm = new DisplayNodeJiBenMianService (bankuai);
     				DisplayNodeInfoPanel displaybkpnl = new DisplayNodeInfoPanel (bkjbm);
     				Dimension size = new Dimension(scrlpanofInfo.getViewport().getSize().width, displaybkpnl.getContentHeight() + 10 );
@@ -2384,6 +2386,10 @@ public class StockInfoManager
 	 */
 	private void initializeGui() 
 	{
+		Insets insets = UIManager.getInsets("TabbedPane.contentBorderInsets");
+		insets.top = -1;
+		UIManager.put("TabbedPane.contentBorderInsets", insets);
+		
 		frame = new JFrame();
 		
 		frame.getContentPane().setForeground(Color.RED);
@@ -2535,6 +2541,7 @@ public class StockInfoManager
 		scrollPane = new JScrollPane();
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+//		tabbedPane.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		
 		//JPanel pnl_paomd = new JPanel();
 		pnl_paomd = new PaoMaDeng2();
@@ -3090,6 +3097,7 @@ public class StockInfoManager
 				    String rootPath = properties.getProperty("user.dir").replace('\\', '/');
 					System.setProperty("logfile.name",rootPath);
 					
+					UIManager.setLookAndFeel(MetalLookAndFeel.class.getName());
 					JFrame.setDefaultLookAndFeelDecorated(true);
 					StockInfoManager window = new StockInfoManager();
 //					showOnScreen(2,window.frame);
