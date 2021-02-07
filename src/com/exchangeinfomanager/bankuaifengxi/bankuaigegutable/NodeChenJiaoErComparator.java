@@ -46,6 +46,8 @@ public class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode
         try{
         	return cje2.compareTo(cje1);
         } catch (java.lang.NullPointerException e) { 	return -1;
-    	} catch ( java.lang.ClassCastException e) {	return -1;}
+    	} catch ( java.lang.ClassCastException e) {	return -1;
+    	} catch ( java.lang.IllegalArgumentException e) {	return -1; 
+    	}
     }
 }

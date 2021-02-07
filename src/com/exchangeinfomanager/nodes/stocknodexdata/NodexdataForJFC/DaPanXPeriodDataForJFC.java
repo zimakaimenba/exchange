@@ -185,6 +185,18 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			 fontavecje.appendText("周日平均成交额" + decimalformate.format(avecje) + cjedanwei);
 			 fontavecje.attr("color", "#AF7AC5");
 			 
+			 Double avecjegrowingrate = null;;
+			 try {
+				 avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate,0);
+				 if(avecjegrowingrate != null) {
+					 htmlstring = "周日均成交额增长率" + percentFormat.format (avecjegrowingrate) ;
+					 org.jsoup.nodes.Element liavecjechangerate = dl.appendElement("li");
+					 org.jsoup.nodes.Element fontavecjechangerate = liavecjechangerate.appendElement("font");
+					 fontavecjechangerate.appendText(htmlstring);
+					 fontavecjechangerate.attr("color", "#AF7AC5 ");
+				 }
+			 } catch (java.lang.NullPointerException e) {    }
+			 
 			 Integer avecjemaxwk = this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);
 			 org.jsoup.nodes.Element liavecjemaxwk = dl.appendElement("li");
 			 org.jsoup.nodes.Element fontavecjemaxwk = liavecjemaxwk.appendElement("font");
@@ -564,9 +576,9 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	@Override
 	public Double getAverageDailyChengJiaoErOfWeek(LocalDate requireddate, int difference) 
 	{
-		Double cje = this.getChengJiaoEr(requireddate, 0);
+		Double cje = this.getChengJiaoEr(requireddate, difference);
 		if(cje != null) {
-			Integer daynum = this.getExchangeDaysNumberForthePeriod(requireddate, 0);
+			Integer daynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
 			if(daynum != null)
 				return cje/daynum;
 			else
@@ -728,14 +740,24 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 				return cje/daynum;
 			else
 				return cje/5;
-		} else
-			return null;
+		} 
+		
+		return null;
 	}
 
 	@Override
 	public Integer getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Double getAverageDailyChenJiaoErGrowingRate(LocalDate requireddate, int difference) 
+	{
+		Double avecjecur = this.getAverageDailyChengJiaoErOfWeek (requireddate, difference);
+		Double avecjelast = this.getAverageDailyChengJiaoErOfWeek (requireddate, difference -1);
+		
+		return (avecjecur - avecjelast) / avecjelast;
 	}
 
 

@@ -80,6 +80,7 @@ public interface NodeXPeriodData
 	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod (LocalDate requireddate,int difference);
 	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference);
 	public Integer getAverageDailyCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference);
+	public Double getAverageDailyChenJiaoErGrowingRate(LocalDate requireddate,int difference);
 	
 	public Double getChengJiaoLiang(LocalDate requireddate, int difference);
 	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference);
@@ -138,7 +139,9 @@ public interface NodeXPeriodData
 			 "开盘价",
 			 "最高价",
 			 "最低价",
-			 "收盘价"
+			 "收盘价",
+			 
+			 "周平均成交额增长率"
 		};
 
 	

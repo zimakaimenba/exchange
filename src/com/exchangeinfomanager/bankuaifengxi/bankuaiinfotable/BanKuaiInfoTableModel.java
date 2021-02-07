@@ -44,7 +44,7 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 			if(entryList != null) //∞¥≥…Ωª∂Ó≈≈–Ú
 				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,difference,curperiod) );
 		} catch (java.lang.IllegalArgumentException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	 	
 		this.fireTableDataChanged();

@@ -36,7 +36,7 @@ import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.PrecisionNum;
 
-
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.exchangeinfomanager.nodes.DaPan;
@@ -616,9 +616,9 @@ import com.udojava.evalex.Expression;
 	 */
 	public Double getAverageDailyChengJiaoErOfWeek (LocalDate requireddate,int difference)
 	{
-		Double cje = this.getChengJiaoEr(requireddate, 0);
+		Double cje = this.getChengJiaoEr(requireddate, difference);
 		if(cje != null) {
-			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, 0);
+			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, difference);
 			if(daynum != null)
 				return cje/daynum;
 			else
@@ -809,6 +809,42 @@ import com.udojava.evalex.Expression;
 		Double cjechange = curcje - lastcje; //个股成交量的变化，如果缩量了也还是计算
 		
 		return cjechange/bkcjediff;
+	}
+	/*
+	 * 平均成交额和上周的变化率
+	 */
+	public Double getAverageDailyChenJiaoErGrowingRate(LocalDate requireddate,int difference)
+	{
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+		if(curperiod == null)
+			return null;
+		
+		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( curperiod );
+		if( curcjlrecord == null) 
+			return null;
+		
+		TimeSeriesDataItem lastcjlrecord = null;
+		int index = this.nodeamo.getIndex( curperiod );
+		try{
+			lastcjlrecord = nodeamo.getDataItem( index - 1);
+		}	catch (java.lang.IndexOutOfBoundsException ex) {
+			logger.debug("index = 0，可能新股第一周，可能是数据记录最早记录周，无法判断");
+			Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate,difference); 
+			if(reachfirstday != null && reachfirstday == true)
+				return null;
+		}
+		Double avelastwkcje = this.getAverageDailyChengJiaoErOfWeek(requireddate,difference-1);
+//		if(this.isNodeDataFuPaiAfterTingPai((DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(),requireddate,0)) { //说明是停牌后复牌了，或者新股
+//			try {
+//				Double curggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
+//				return curggcje / lastwkcje;
+//			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+//				e.printStackTrace();
+//			}
+//		}
+		
+		Double nodeavediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		return nodeavediff / avelastwkcje;
 	}
 	/*
 	 * 计算成交额日平均变化贡献率，即基于日平均成交额，板块成交额的变化占整个上级板块成交额增长量的比率，
@@ -1703,7 +1739,7 @@ import com.udojava.evalex.Expression;
 		Integer cjlmaxwk = this.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
 		
 		Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate,0);
-		
+		Double avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate,0);
 		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
 		if(indexofcur == null)
 			return null;
@@ -1725,7 +1761,14 @@ import com.udojava.evalex.Expression;
 		String strcjlmaxwk = null;
 //		String strcjlchangerate = null;
 		String strzhangfu = null;
+		String stravecjegrowingrate = null;
 		String close = null;String open = null;String high = null;String low = null;
+		
+		try {
+			stravecjegrowingrate = avecjegrowingrate.toString();
+		} catch (java.lang.NullPointerException e) {
+			stravecjegrowingrate = String.valueOf("0");
+		}
 		
 		try {
 			strcurcje = curcje.toString();
@@ -1809,7 +1852,9 @@ import com.udojava.evalex.Expression;
 		 open,
 		 high,
 		 low,
-		 close
+		 close,
+		 
+		 stravecjegrowingrate
 		}; 
 
 		String [] joined = ObjectArrays.concat(supcsv, curcsvline, String.class);
@@ -1876,13 +1921,24 @@ import com.udojava.evalex.Expression;
 				 org.jsoup.nodes.Element fontavecje = liavecje.appendElement("font");
 				 fontavecje.appendText("周日平均成交额" + decimalformate.format(avecje) + cjedanwei);
 				 fontavecje.attr("color", "#AF7AC5");
-				 //
+				 
+				 Double avecjegrowingrate = null;;
+				 try {
+					 avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate,0);
+					 if(avecjegrowingrate != null) {
+						 htmlstring = "周日均成交额增长率" + percentFormat.format (avecjegrowingrate) ;
+						 org.jsoup.nodes.Element liavecjechangerate = dl.appendElement("li");
+						 org.jsoup.nodes.Element fontavecjechangerate = liavecjechangerate.appendElement("font");
+						 fontavecjechangerate.appendText(htmlstring);
+						 fontavecjechangerate.attr("color", "#AF7AC5 ");
+					 }
+				 } catch (java.lang.NullPointerException e) {    }
+				 
+				 
 				 Integer cjemaxwk = null;
 			     try{
 			    		cjemaxwk = this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
-			     } catch (java.lang.NullPointerException e) {
-			    		
-			     }
+			     } catch (java.lang.NullPointerException e) {    }
 				 if(cjemaxwk>0) {
 					 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
 					 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
@@ -1893,9 +1949,7 @@ import com.udojava.evalex.Expression;
 				 Integer avcjelxwk = null;
 				 try {
 					 avcjelxwk = this.getAverageDailyCjeLianXuFangLiangPeriodNumber(requireddate,0);
-				 } catch (java.lang.NullPointerException e) {
-			    		
-			     }
+				 } catch (java.lang.NullPointerException e) {}
 				 if(avcjelxwk != null && avcjelxwk >0) {
 					 org.jsoup.nodes.Element liavcjelxwk = dl.appendElement("li");
 					 org.jsoup.nodes.Element fontavcjelxwk = liavcjelxwk.appendElement("font");
