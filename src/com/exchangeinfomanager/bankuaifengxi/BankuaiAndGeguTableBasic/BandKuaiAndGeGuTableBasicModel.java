@@ -12,11 +12,11 @@ import org.apache.log4j.Logger;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.DaPan;
+
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.TDXNodes;
+
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -170,14 +170,12 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	{
 		if(column_keyword == null)
 			return null;
+		 column_keyword = column_keyword.trim();
 		
-		column_keyword = column_keyword.trim();
-		
-		  Object value = "??";
+		  Object value = null;
+		  
 		  BkChanYeLianTreeNode node = entryList.get(rowIndex);
-		  
 		  NodeXPeriodData nodexdatawk = null; NodeXPeriodData nodexdataday = null;
-		  
 		  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
 			  Stock stock = ((StockOfBanKuai)node).getStock();
 			  nodexdatawk = stock.getNodeXPeroidData(curperiod);
@@ -217,25 +215,16 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		     	  
 		       case "bankuaichengjiaoergongxian":
 		     	  Double cjechangegrowthrate = nodexdatawk.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
-		     	 value = cjechangegrowthrate;
-//		       	  if(cjechangegrowthrate != null)
-//		       		value = cjechangegrowthrate;
-//		       	  else	value = -1.0;
+		     	  value = cjechangegrowthrate;
 		     	  break;
 		     	  
 		       case "cjezbgrowrate":
 		     	  Double cjedpgrowthrate = nodexdatawk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
-		     	 value = cjedpgrowthrate;
-//		       	  if(cjedpgrowthrate != null)
-//		       		value = cjedpgrowthrate;
-//		       	  else	value = -10000.0;
+		     	  value = cjedpgrowthrate;
 		     	  break;
 		       case "cjlzbgrowrate":
 			     	  Double cjldpgrowthrate = nodexdatawk.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
-			     	 value = cjldpgrowthrate;
-//			       	  if(cjldpgrowthrate != null)
-//			       		value = cjldpgrowthrate;
-//			       	  else	value = -10000.0;
+			     	  value = cjldpgrowthrate;
 			     	  break;
 		       case "chengjiaoerzhanbi":
 		    	   Double cjezhanbi = nodexdatawk.getChenJiaoErZhanBi(showwknum, 0);
@@ -262,7 +251,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		       case "CjlZbDpMaxWk":
 		    	   Integer cjldpmaxwk = null;
 				      try{
-				    	  		cjldpmaxwk = nodexdatawk.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+				    	  		cjldpmaxwk = nodexdatawk.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);
 				          		if(cjldpmaxwk > 0) {
 				              		value = cjldpmaxwk;
 				              		break;
@@ -271,26 +260,24 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 				              		value = 0 - cjldpminwk;
 				              		break;
 				              	}
-				       } catch (java.lang.NullPointerException e) {
-				    	   value = cjldpmaxwk;
-				       }
+				       } catch (java.lang.NullPointerException e) {value = cjldpmaxwk;}
 				       break;
 		       case "NCjeZbDpMinWk":
-		     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);//.getGgdpzhanbigrowthrate();
+		     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);
 		       	  value = nCjeZbDpMinWk;
 		       	  break;
 		       case "averagecjemaxwk" :
 		    	   try {
-		    		   Integer averagecjemaxwk = nodexdatawk.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+		    		   Integer averagecjemaxwk = nodexdatawk.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);
 				       	  if(averagecjemaxwk != null && averagecjemaxwk > 0) 
 				       		value = averagecjemaxwk;
 				          else value = 0;
-		    	   } catch (Exception e) {e.printStackTrace();   }
+		    	   } catch (Exception e) { value = null;  }
 		       	  break;
 		       case "averagecjlmaxwk" :
 		    	   Integer averagecjlmaxwk = null;
 		    	   try {
-		    		   averagecjlmaxwk = nodexdatawk.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
+		    		   averagecjlmaxwk = nodexdatawk.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(showwknum,0);
 				       	  if(averagecjlmaxwk != null && averagecjlmaxwk > 0) 
 				       		value = averagecjlmaxwk;
 				          else value = 0;
@@ -304,9 +291,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		     	  Integer stockweight =  curbk.getGeGuSuoShuBanKuaiWeight( node.getMyOwnCode() );
 			        	try {
 			        		value = (Integer)stockweight;
-			        	} catch (java.lang.NullPointerException e) {
-			        		value = null;
-			        	}
+			        	} catch (java.lang.NullPointerException e) {value = null;}
 		     	  break;
 		       case "CjeLianXuZhang": //周日平均成交额MAXWK
 			        	Integer cjemaxwk = nodexdatawk.getAverageDailyCjeLianXuFangLiangPeriodNumber(showwknum,0);//.getGgbkcjemaxweek(); 
@@ -325,9 +310,9 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			   	     value = curcjl;
 			   	     break;
 		       case "dayujunxian" :
-		    	   String displayma = matchcond.getSettingMaFormula();
+		    	   	String displayma = matchcond.getSettingMaFormula();
 		    	   
-		    	   Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,showwknum,0);
+		    	   	Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,showwknum,0);
 				    if( checkresult != null && checkresult) 
 				    	value = Boolean.valueOf(checkresult);
 				    else if( checkresult != null && !checkresult)
@@ -368,23 +353,20 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
     	try {
     				Double output = Math.round(  (Double)value * count) / count;
     				value = output;
-    	} catch ( java.lang.ClassCastException e) {	
-    		e.printStackTrace(); 
-    		return value;}
-
+    	} catch ( java.lang.ClassCastException e) {	e.printStackTrace();return value;}
     			
     	return value;
     }
 	
-	  protected Class<?> getColomnValueType(String column_keyword, int columnIndex)
+	  protected Class<?> getColomnValueType(String column_value_keyword, int columnIndex)
 	  {
-	  	  Class clazz = String.class;
-	  	  if(column_keyword != null)
-	  		  column_keyword = column_keyword.trim().toUpperCase();
+	  	  Class<?> clazz = String.class;
+	  	  if(column_value_keyword != null)
+	  		column_value_keyword = column_value_keyword.trim().toUpperCase();
 	  	  else
 	  		  return clazz;
-	  	  
-	  	  switch (column_keyword) {
+		  
+	  	  switch (column_value_keyword) {
 			    	case "STRING":
 				          clazz = String.class;
 				          break;

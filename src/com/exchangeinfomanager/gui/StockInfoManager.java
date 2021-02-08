@@ -193,6 +193,7 @@ import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import javax.swing.JComboBox;
 import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
+import javax.swing.JSplitPane;
 
 
 public class StockInfoManager 
@@ -1869,22 +1870,29 @@ public class StockInfoManager
     					return;
     				
     				BkChanYeLianTreeNode bankuai = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(selbkcode, BkChanYeLianTreeNode.TDXBK );
+    				if(bankuai == null)
+    					return;
 
     				DisplayNodeJiBenMianService bkjbm = new DisplayNodeJiBenMianService (bankuai);
     				DisplayNodeInfoPanel displaybkpnl = new DisplayNodeInfoPanel (bkjbm);
-    				Dimension size = new Dimension(scrlpanofInfo.getViewport().getSize().width, displaybkpnl.getContentHeight() + 10 );
-    				displaybkpnl.setPreferredSize(size);
-    				displaybkpnl.setMinimumSize(size);
-    				displaybkpnl.setMaximumSize(size);
-    				pnlextrainfo.add (displaybkpnl,0);
+    				if(displaybkpnl.isHtmlContainedUsefulInfo() ) {
+    					Dimension size = new Dimension(scrlpanofInfo.getViewport().getSize().width, displaybkpnl.getContentHeight() + 10 );
+        				displaybkpnl.setPreferredSize(size);
+        				displaybkpnl.setMinimumSize(size);
+        				displaybkpnl.setMaximumSize(size);
+        				pnlextrainfo.add (displaybkpnl,0);
+    				}
+    				
     				
     				DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (bankuai);
     				DisplayNodeInfoPanel displaybknewspnl = new DisplayNodeInfoPanel (bknews);
-    				Dimension size2 = new Dimension(scrlpanofInfo.getViewport().getSize().width, displaybknewspnl.getContentHeight() + 10 );
-    				displaybknewspnl.setPreferredSize(size2);
-    				displaybknewspnl.setMinimumSize(size2);
-    				displaybknewspnl.setMaximumSize(size2);
-    				pnlextrainfo.add (displaybknewspnl,0);
+    				if(displaybknewspnl.isHtmlContainedUsefulInfo() ) {
+    					Dimension size2 = new Dimension(scrlpanofInfo.getViewport().getSize().width, displaybknewspnl.getContentHeight() + 10 );
+        				displaybknewspnl.setPreferredSize(size2);
+        				displaybknewspnl.setMinimumSize(size2);
+        				displaybknewspnl.setMaximumSize(size2);
+        				pnlextrainfo.add (displaybknewspnl,0);
+    				}
     				
     				pnlextrainfo.revalidate();
     				pnlextrainfo.repaint();
@@ -1894,8 +1902,6 @@ public class StockInfoManager
             	}
             }
 		});
-		
-//		 editorpansuosubk.displayBanKuaiListContentsForStock((Stock)nodeshouldbedisplayed);
 	}
 	
 	private void displayBanKuaiAndStockNews()
@@ -2380,6 +2386,7 @@ public class StockInfoManager
 	private JMenuItem mntmFreemind;
 	private JMenuItem menuItemggfx;
 	private JMenuItem mntmbkdwndata;
+	private JTable tablegudong;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2403,8 +2410,6 @@ public class StockInfoManager
 
 		
 		JPanel panelStatusBar = new JPanel();
-		
-		scrlnodebankuai = new JScrollPane();
 		
 
 		
@@ -2668,10 +2673,6 @@ public class StockInfoManager
 		txtfldquanshangpj.setEnabled(false);
 		txtfldquanshangpj.setColumns(10);
 		
-		
-		
-		scrlpanofInfo = new JScrollPane();
-		
 		JLabel label_2 = new JLabel("\u540C\u6B65\u597D\u53CB\u677F\u5757");
 		
 		Vector v = new Vector();
@@ -2688,35 +2689,43 @@ public class StockInfoManager
 		cobxgpc.setFont(new Font("ËÎÌו", Font.PLAIN, 12));
 		
 		pnltags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.FULLCONTROLMODE);
+		
+		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane_1.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		GroupLayout gl_panelinfo = new GroupLayout(panelinfo);
 		gl_panelinfo.setHorizontalGroup(
 			gl_panelinfo.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panelinfo.createSequentialGroup()
-					.addGroup(gl_panelinfo.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPanefumian, Alignment.TRAILING)
-						.addComponent(scrlnodebankuai, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
-						.addGroup(Alignment.TRAILING, gl_panelinfo.createSequentialGroup()
+					.addGroup(gl_panelinfo.createParallelGroup(Alignment.TRAILING)
+						.addGroup(Alignment.LEADING, gl_panelinfo.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(tabbedPane_1, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE))
+						.addGroup(gl_panelinfo.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(scrollPanegainian))
+						.addGroup(gl_panelinfo.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(scrollPanefumian))
+						.addGroup(gl_panelinfo.createSequentialGroup()
 							.addGap(4)
 							.addComponent(lblfumianxiaoxi)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE))
-						.addGroup(Alignment.TRAILING, gl_panelinfo.createSequentialGroup()
+							.addComponent(dateChsefumian, GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))
+						.addGroup(gl_panelinfo.createSequentialGroup()
 							.addComponent(lblstockinfo)
 							.addGap(14)
-							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE))
-						.addComponent(scrollPanegainian, Alignment.TRAILING)
-						.addGroup(Alignment.TRAILING, gl_panelinfo.createSequentialGroup()
+							.addComponent(dateChsgainian, GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))
+						.addGroup(gl_panelinfo.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(lblquanshangpj)
 							.addGap(32)
 							.addComponent(dateChsquanshang, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE))
-						.addGroup(Alignment.TRAILING, gl_panelinfo.createSequentialGroup()
+							.addComponent(txtfldquanshangpj, GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE))
+						.addGroup(gl_panelinfo.createSequentialGroup()
 							.addComponent(label_2)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(cobxgpc, 0, 372, Short.MAX_VALUE))
-						.addComponent(scrlpanofInfo, Alignment.TRAILING)
+							.addComponent(cobxgpc, 0, 465, Short.MAX_VALUE))
 						.addGroup(gl_panelinfo.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(pnltags, GroupLayout.PREFERRED_SIZE, 437, GroupLayout.PREFERRED_SIZE)))
@@ -2749,15 +2758,31 @@ public class StockInfoManager
 					.addGap(4)
 					.addComponent(pnltags, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrlnodebankuai, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrlpanofInfo, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
+					.addComponent(tabbedPane_1, GroupLayout.PREFERRED_SIZE, 290, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
+		
+		JSplitPane splitPane = new JSplitPane();
+//		splitPane.setDividerLocation(0.5);
+		splitPane.setResizeWeight(.45d);
+		splitPane.setOneTouchExpandable(true);
+		tabbedPane_1.addTab("\u4FE1\u606F", null, splitPane, null);
+		
+		scrlnodebankuai = new JScrollPane();
+		splitPane.setLeftComponent(scrlnodebankuai);
+		
+		scrlpanofInfo = new JScrollPane();
+		splitPane.setRightComponent(scrlpanofInfo);
 		
 		pnlextrainfo = new JPanel();
 		scrlpanofInfo.setViewportView(pnlextrainfo);
 		pnlextrainfo.setLayout(new BoxLayout(pnlextrainfo, BoxLayout.Y_AXIS));
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		tabbedPane_1.addTab("\u80A1\u4E1C\u540D\u5355", null, scrollPane_1, null);
+		
+		tablegudong = new JTable();
+		scrollPane_1.setViewportView(tablegudong);
 		panelinfo.setLayout(gl_panelinfo);
 		
 		cBxstockcode = new JStockComboBox();

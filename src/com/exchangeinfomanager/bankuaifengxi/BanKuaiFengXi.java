@@ -3293,7 +3293,7 @@ private JMenu stkhistorycsvfileMenu;
 //		paneldayCandle.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		
+		tabbedPane.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		scrldailydata = new JScrollPane();
 		
 		editorPanebankuai = new JScrollPane();
@@ -3364,6 +3364,7 @@ private JMenu stkhistorycsvfileMenu;
 		panelLastWkGeGucjeZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPanegeguzhanbi.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		
 		this.panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
 		this.panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
@@ -3380,6 +3381,7 @@ private JMenu stkhistorycsvfileMenu;
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		
 		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPanebkzb.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.TRAILING)
@@ -3408,8 +3410,10 @@ private JMenu stkhistorycsvfileMenu;
 		panel_2.setLayout(gl_panel_2);
 		
 		tabbedPanegegu = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPanegegu.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		
 		tabbedPanebk = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPanebk.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		combxstockcode = new JStockComboBox(BkChanYeLianTreeNode.TDXGG);
 		
 		combxsearchbk = new JStockComboBox(BkChanYeLianTreeNode.TDXBK);
@@ -3701,29 +3705,6 @@ private JMenu stkhistorycsvfileMenu;
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
 		);
-				
-//		JLabel lblNewLabel = new JLabel("\u521B\u4E1A\u5927\u76D8");
-//		lblhusheng = new JLabel("\u6CAA\u6DF1300");
-//		lblkechuangban = new JLabel("科创50");
-//		lbldapan = new JLabel("大盘");
-//		JLabel lblforfuture_1 = new JLabel("New label");
-//		lblchuangyeban = new JLabel("\u521B\u4E1A\u677F");
-//		lblshanghai = new JLabel("\u4E0A\u8BC1");
-//		lblcybzongzhi = new JLabel("创业板综");
-//		lblshenzhen = new JLabel("\u6DF1\u5733\u7EFC\u5408");
-//		lblhscje = new JLabel("New label");
-//		lblfifty = new JLabel("50\u6307");
-//		pnlZhiShu.add(lblNewLabel);
-//		pnlZhiShu.add(lblhusheng);
-//		pnlZhiShu.add(lblkechuangban);
-//		pnlZhiShu.add(lbldapan);
-//		pnlZhiShu.add(lblforfuture_1);
-//		pnlZhiShu.add(lblchuangyeban);
-//		pnlZhiShu.add(lblshanghai);
-//		pnlZhiShu.add(lblcybzongzhi);
-//		pnlZhiShu.add(lblshenzhen);
-//		pnlZhiShu.add(lblhscje);
-//		pnlZhiShu.add(lblfifty);
 		
 		panel.setLayout(gl_panel);
 		contentPanel.setLayout(gl_contentPanel);
@@ -3731,221 +3712,6 @@ private JMenu stkhistorycsvfileMenu;
 			JPanel buttonPane = new JPanel();
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			
-//			ckbxma = new JCheckBox("\u7A81\u51FACLOSE vs. MA");
-//			ckbxma.setBackground(new Color(32, 178, 170));
-//			ckbxma.setSelected(true);
-//			ckbxma.setFont(new Font("宋体", Font.PLAIN, 12));
-//			ckbxma.setForeground(new Color(0, 0, 0) );
-//			
-//			
-//			tfldma = new JTextField ();//JTextFactory.createTextField();
-//			tfldma.setPreferredSize(new Dimension(30, 25));
-//			tfldma.setToolTipText("\u4F8B\uFF1A(>=250 && <60) || >30");
-//			tfldma.setForeground(new Color(0,153,153) );
-//			tfldma.setText(">=250 || >60");
-////			tfldshowcje.setColumns(4);
-//			
-//			ckboxparsefile = new JCheckBox("\u5206\u6790\u6587\u4EF6");
-//			ckboxparsefile.setBackground(Color.ORANGE);
-//			ckboxparsefile.setToolTipText("\u5206\u6790\u6587\u4EF6");
-//			ckboxparsefile.setFont(new Font("宋体", Font.PLAIN, 12));
-//			ckboxparsefile.setForeground(Color.BLACK);
-//			
-//			
-//			tfldparsedfile = new JTextField();
-//			tfldparsedfile.setForeground(Color.ORANGE);
-//			tfldparsedfile.setColumns(12);
-//			tfldparsedfile.setToolTipText(tfldparsedfile.getText());
-//			
-//			ckbxdpmaxwk = new JCheckBox("\u7A81\u51FADPMAXWK>=");
-//			ckbxdpmaxwk.setBackground(Color.RED);
-//			ckbxdpmaxwk.setSelected(true);
-//			
-//			ckbxdpmaxwk.setForeground(Color.BLACK);
-			
-//			tflddisplaydpmaxwk = new JTextField();
-//			tflddisplaydpmaxwk.setPreferredSize(new Dimension(20, 25));
-//			tflddisplaydpmaxwk.setForeground(Color.RED);
-//			tflddisplaydpmaxwk.setText("4");
-////			tflddisplaydpmaxwk.setColumns(2);
-//			
-//			chkliutongsz = new JCheckBox("\u7A81\u51FA\u6D41\u901A\u5E02\u503C(\u4EBF)");
-//			chkliutongsz.setSelected(true);
-//			chkliutongsz.setBackground(Color.MAGENTA);
-//			
-//			chkliutongsz.setForeground(Color.BLACK);
-//			
-//			tfldltszmin = new JTextField();
-//			tfldltszmin.setPreferredSize(new Dimension(30, 25));
-//			tfldltszmin.setForeground(Color.MAGENTA);
-//			tfldltszmin.setText("9");
-////			tfldltszmin.setColumns(2);
-//			
-//			ckbxcjemaxwk = new JCheckBox("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
-//			ckbxcjemaxwk.setBackground(Color.CYAN);
-//			ckbxcjemaxwk.setSelected(true);
-//			ckbxcjemaxwk.setToolTipText("\u7A81\u51FA\u5468\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK>=");
-//			ckbxcjemaxwk.setFont(new Font("宋体", Font.PLAIN, 12));
-//			ckbxcjemaxwk.setForeground(Color.BLACK);
-//			
-//			tfldcjemaxwk = new JTextField();
-//			tfldcjemaxwk.setText("3");
-//			tfldcjemaxwk.setPreferredSize(new Dimension(20, 25));
-//			tfldcjemaxwk.setForeground(Color.CYAN);
-//			tfldcjemaxwk.setColumns(2);
-			
-//			btnaddexportcond = JLabelFactory.createButton("",35, 25);
-//			btnaddexportcond = new JButton("") {
-//				 public Point getToolTipLocation(MouseEvent e) {
-//				        return new Point(20, -30);
-//				      }
-//			};
-//			btnaddexportcond.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent arg0) {
-//				}
-//			});
-//			btnaddexportcond.setHorizontalAlignment(SwingConstants.LEFT);
-//			btnaddexportcond.setToolTipText("<html>\u5BFC\u51FA\u6761\u4EF6\u8BBE\u7F6E(\u659C\u4F53\u9009\u9879\u4E0D\u5728\u5BFC\u51FA\u8303\u56F4\u5185):<br></html>");
-//			
-//			btnaddexportcond.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/add-circular-outlined-button.png")));
-//			
-//			ckbxhuanshoulv = new JCheckBox("\u7A81\u51FA\u6362\u624B\u7387>=");
-//			ckbxhuanshoulv.setBackground(Color.BLUE);
-//			ckbxhuanshoulv.setForeground(Color.BLACK);
-//			
-//			tfldhuanshoulv = new JTextField();
-//			tfldhuanshoulv.setPreferredSize(new Dimension(25, 25));
-//			tfldhuanshoulv.setText("30");
-//			tfldshowcjemax.setColumns(10);
-			
-//			progressBarExport = new JProgressBar();
-//			progressBarExport.setPreferredSize(new Dimension(85, 25));
-//			progressBarExport.addMouseListener(new MouseAdapter() {
-//				@Override
-//				public void mouseClicked(MouseEvent arg0) {
-//					if (exporttask == null) { 
-//			        	exportBanKuaiWithGeGuOnCondition2();
-////			        	String msg =  "导出常规条件设置个股还是导出当前设置个股？选择“确定”将导出常规条件设置个股。";
-////				  		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "导出选择", JOptionPane.OK_CANCEL_OPTION);
-////				  		if(exchangeresult == JOptionPane.CANCEL_OPTION) //用户选择导出当前设置 
-////				  			exportBanKuaiWithGeGuOnCondition2();
-////				  		else { //用户选择导出常规设置
-////				  			initializeNormalExportConditions ();
-////				  			exportBanKuaiWithGeGuOnCondition2();
-////				  		}
-//				  			
-//			        } else {
-//			        	exporttask.cancel(true);
-//			        }
-//				}
-//			});
-////			progressBarExport.setValue(0);
-//			progressBarExport.setString("点击导出条件个股");
-//			progressBarExport.setToolTipText("点击导出条件个股");
-//	        progressBarExport.setStringPainted(true);
-//			
-//			tfldltszmax = new JTextField();
-//			tfldltszmax.setPreferredSize(new Dimension(30, 25));
-//			tfldltszmax.setText("80");
-//			tfldltszmax.setForeground(Color.MAGENTA);
-//			tfldltszmax.setColumns(10);
-			
-//			chbxquekou = new JCheckBox("\u7A81\u51FA\u56DE\u8865\u4E0B\u8DF3/\u4E0A\u8DF3");
-//			chbxquekou.setSelected(true);
-//			chbxquekou.setBackground(Color.PINK);
-//			chbxquekou.setToolTipText("\u7A81\u51FA\u56DE\u8865\u4E0B\u8DF3/\u4E0A\u8DF3");
-//			chbxquekou.setFont(new Font("宋体", Font.PLAIN, 12));
-//			
-//			chbxquekou.setForeground(Color.BLACK);
-//			
-//			chckbxdpminwk = new JCheckBox("\u7A81\u51FADPMINWK>=");
-//			chckbxdpminwk.setBackground(Color.GREEN);
-//			chckbxdpminwk.setToolTipText("\u7A81\u51FADPMINWK>=");
-//			chckbxdpminwk.setFont(new Font("宋体", Font.PLAIN, 12));
-//			chckbxdpminwk.setForeground(Color.BLACK);
-			
-//			tflddpminwk = new JTextField();
-//			tflddpminwk.setPreferredSize(new Dimension(20, 25));
-//			tflddpminwk.setText("8");
-//			tflddpminwk.setColumns(10);
-			
-//			chbxzhangfu = new JCheckBox("突出日涨幅区间");
-//			chbxzhangfu.setBackground(Color.PINK);
-//			chbxzhangfu.setSelected(true);
-//			chbxzhangfu.setToolTipText("\u7A81\u51FA\u6DA8\u8DCC\u5E45");
-//			chbxzhangfu.setForeground(Color.BLACK);
-//			chbxzhangfu.setFont(new Font("宋体", Font.PLAIN, 12));
-//			
-//			tfldzhangfumin = new JTextField();
-//			tfldzhangfumin.setPreferredSize(new Dimension(25, 25));
-//			tfldzhangfumin.setText("7.5");
-////			tfldzhangfumin.setColumns(2);
-//			
-//			tfldzhangfumax = new JTextField();
-//			tfldzhangfumax.setPreferredSize(new Dimension(25, 25));
-//			tfldzhangfumax.setText("20");
-//			tfldzhangfumax.setColumns(2);
-			
-			JLabel morelabel = new JLabel("更多:  ");
-			Vector<JCheckBox> v = new Vector<>();
-			JCheckBox tuchupricelevel = new JCheckBox("突出股价区间",false);
-			tuchupricelevel.setForeground(Color.CYAN);
-			v.add(tuchupricelevel);
-			JCheckBox tuchucjeevel = new JCheckBox("突出成交额区间",false);
-			tuchucjeevel.setBackground(Color.YELLOW);
-			v.add(tuchucjeevel);
-			JCheckBox tuchulwcjezbzjl = new JCheckBox("突出上周CJEZB增长率区间",false);
-			tuchulwcjezbzjl.setToolTipText("突出上周CJEZB增长率区间");
-			tuchulwcjezbzjl.setForeground(new Color(254,204,51));
-			v.add(tuchulwcjezbzjl);
-			JCheckBox tuchulwcjezbmaxwk = new JCheckBox("突出上周阴线且CJEZBMaxWk>=",false);
-			tuchulwcjezbmaxwk.setToolTipText("突出上周阴线且CJEZBMaxWk");
-			tuchulwcjezbmaxwk.setForeground(new Color(254,204,51));
-			v.add(tuchulwcjezbmaxwk);
-			JCheckBox tuchulwcjemaxwk = new JCheckBox("突出上周阴线且周日平均CJEMaxWk>=",false);
-			tuchulwcjemaxwk.setToolTipText("突出上周阴线且周日平均CJEMaxWk");
-			tuchulwcjemaxwk.setForeground(new Color(254,204,51));
-			v.add(tuchulwcjemaxwk);
-			
-//			cbbxmore = new JComboCheckBox(v);
-//			cbbxmore = new JComboBox(v);
-//			cbbxmore.setPreferredSize(new Dimension(120, 25));
-//			
-//			tfldshowcje = new JTextField();
-//			tfldshowcje.setPreferredSize(new Dimension(30, 25));
-//			tfldshowcje.setText("3");
-//			tfldshowcje.setForeground(Color.BLUE);
-//			
-//			tfldshowcjemax = new JTextField();
-//			tfldshowcjemax.setText("12");
-//			tfldshowcjemax.setPreferredSize(new Dimension(30, 25));
-//			
-//			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));
-//			buttonPane.add(btnaddexportcond);
-//			buttonPane.add(progressBarExport);
-//			buttonPane.add(ckbxma);
-//			buttonPane.add(tfldma);
-//			buttonPane.add(ckbxdpmaxwk);
-//			buttonPane.add(tflddisplaydpmaxwk);
-//			buttonPane.add(chckbxdpminwk);
-//			buttonPane.add(tflddpminwk);
-//			buttonPane.add(chkliutongsz);
-//			buttonPane.add(tfldltszmin);
-//			buttonPane.add(tfldltszmax);
-//			buttonPane.add(ckbxcjemaxwk);
-//			buttonPane.add(tfldcjemaxwk);
-//			buttonPane.add(ckbxhuanshoulv);
-//			buttonPane.add(tfldhuanshoulv);
-//			buttonPane.add(chbxquekou);
-//			buttonPane.add(chbxzhangfu);
-//			buttonPane.add(tfldzhangfumin);
-//			buttonPane.add(tfldzhangfumax);
-//			buttonPane.add(ckboxparsefile);
-//			buttonPane.add(tfldparsedfile);
-//			buttonPane.add(morelabel);
-//			buttonPane.add(cbbxmore);
-//			buttonPane.add(tfldshowcje);
-//			buttonPane.add(tfldshowcjemax);
 		}
 		
 		reFormatGui ();
@@ -3972,7 +3738,7 @@ private JMenu stkhistorycsvfileMenu;
 //		paneldayCandle.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		
+		tabbedPane.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		scrldailydata = new JScrollPane();
 		
 		editorPanebankuai = new JScrollPane();
@@ -4041,7 +3807,7 @@ private JMenu stkhistorycsvfileMenu;
 		panelLastWkGeGucjeZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
-		
+		tabbedPanegeguzhanbi.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		this.panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
 		this.panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
 		this.panelGgDpCjeZhanBi.setDrawQueKouLine(false);
@@ -4056,6 +3822,7 @@ private JMenu stkhistorycsvfileMenu;
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		
 		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPanebkzb.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.TRAILING)
@@ -4085,8 +3852,9 @@ private JMenu stkhistorycsvfileMenu;
 		panel_2.setLayout(gl_panel_2);
 		
 		tabbedPanegegu = new JTabbedPane(JTabbedPane.TOP);
-		
+		tabbedPanegegu.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		tabbedPanebk = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPanebk.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		combxstockcode = new JStockComboBox(BkChanYeLianTreeNode.TDXGG);
 		
 		combxsearchbk = new JStockComboBox(BkChanYeLianTreeNode.TDXBK);
