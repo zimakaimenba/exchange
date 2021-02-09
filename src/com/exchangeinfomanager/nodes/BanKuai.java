@@ -366,4 +366,8 @@ public class BanKuai extends TDXNodes
 		
 		return svsbk;
 	}
+	public ServicesForNode getServicesForNode ()
+	{
+		return new SvsForNodeOfBanKuai ();
+	}
 }

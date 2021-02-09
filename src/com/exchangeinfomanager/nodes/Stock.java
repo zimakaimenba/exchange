@@ -23,6 +23,9 @@ import org.jfree.data.time.ohlc.OHLCSeries;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
+import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
@@ -202,6 +205,11 @@ public class Stock extends TDXNodes {
 			return true;
 		else
 			return false;
+	}
+	
+	public ServicesForNode getServicesForNode ()
+	{
+		return new SvsForNodeOfStock ();
 	}
 }
 

@@ -23,6 +23,10 @@ public interface ServicesForNode
 	public BkChanYeLianTreeNode getNodeQueKouInfo (BkChanYeLianTreeNode bk,LocalDate requiredstartday,LocalDate requiredendday,String period);
 	public void syncNodeData (BkChanYeLianTreeNode bk);
 	
+	public BkChanYeLianTreeNode getNodeCjeCjlZhanbiExtremeUpDownLevel (BkChanYeLianTreeNode node);
+	public void setNodeCjeExtremeUpDownZhanbiLevel (BkChanYeLianTreeNode node, Double min, Double max);
+	public void setNodeCjlExtremeUpDownZhanbiLevel (BkChanYeLianTreeNode node, Double min, Double max);
+	
 	List<BkChanYeLianTreeNode> getNodeChanYeLianInfo (String nodecode  );
 	List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo (String nodecode );
 	List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo (String nodecode );

@@ -12,26 +12,31 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
 import org.jfree.chart.annotations.CategoryTextAnnotation;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
+
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DatasetUtilities;
+import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
+
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
@@ -61,6 +66,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 	private DefaultCategoryDataset linechartdatasetforcjlzb;
 	protected JMenuItem mntmCjlZblineDate;
 	protected JMenuItem mntmClearLineData;
+	protected JMenuItem mntmSetZhanBiExtremeLevel;
 	private Boolean displayzhanbishujuinline = false;
 	
 	private void createGuiAndEvents () 
@@ -70,6 +76,17 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		
 		mntmClearLineData = new JMenuItem("突出占比数据");
 		chartPanel.getPopupMenu().add(mntmClearLineData);
+		
+		mntmSetZhanBiExtremeLevel =  new JMenuItem("设置Cjl占比上下限");
+		chartPanel.getPopupMenu().add(mntmSetZhanBiExtremeLevel);
+		
+	
+		mntmSetZhanBiExtremeLevel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				setupNodeZhanbiDownLevel ();				
+			}
+		});
 		
 		mntmCjlZblineDate.addActionListener(new ActionListener() {
 			@Override
@@ -101,6 +118,22 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			}
 			
 		});
+	}
+	/*
+	 * 
+	 */
+	protected void setupNodeZhanbiDownLevel() 
+	{
+		TDXNodes node = super.getCurDisplayedNode();
+		Double[] zblevel = node.getNodeCjlZhanbiLevel();
+		
+		ExtremeZhanbiSettingPnl zhanbisetting = new ExtremeZhanbiSettingPnl (zblevel,super.yaxisvaluewhenmouseclicked); 
+		JOptionPane.showMessageDialog(null, zhanbisetting,"设置占比上下限", JOptionPane.OK_CANCEL_OPTION);
+		Double min = zhanbisetting.getExtremeZhanbiMin ();
+		Double max = zhanbisetting.getExtremeZhanbiMax ();
+		ServicesForNode svs = node.getServicesForNode();
+		svs.setNodeCjlExtremeUpDownZhanbiLevel (node,min,max);
+		svs = null;
 	}
 	/*
 	 * (non-Javadoc)
@@ -158,12 +191,6 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			String period)
 	{
 		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
-//		if(this.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-//			BanKuai bk = ((StockOfBanKuai)this.getCurDisplayedNode()).getBanKuai();
-//			dapan = (DaPan)bk.getRoot();
-//		}
-//		else
-//			dapan = (DaPan)super.getCurDisplayedNode().getRoot();
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.MONDAY);
@@ -294,13 +321,15 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		if(highestHigh == 0.0)
 			return;
 		
+		Double[] zblevel = super.getCurDisplayedNode().getNodeCjlZhanbiLevel();
+		if(zblevel[0] != null && zblevel[0] < lowestLow)
+			lowestLow = zblevel[0]; 
+		if(zblevel[1] != null && zblevel[1] > highestHigh)
+			highestHigh = zblevel[1];
+		
 		BanKuaiFengXiCategoryBarRenderer render0 = (BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer(0);
 		render0.setDisplayNode(this.getCurDisplayedNode());
 		render0.setDisplayNodeXPeriod (nodexdata);
-		
-//		BanKuaiFengXiCategoryCjlZhanbiLineRenderer render2 = (BanKuaiFengXiCategoryCjeZhanbiLineRenderer)super.plot.getRenderer(2);
-//		render2.setDisplayNode(this.getCurDisplayedNode());
-//		render2.setDisplayNodeXPeriod (nodexdata);
 		
 		//如有分析结果，ticklable显示红色
 		CategoryLabelCustomizableCategoryAxis axis = (CategoryLabelCustomizableCategoryAxis)super.plot.getDomainAxis(0);
@@ -313,8 +342,8 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			super.plot.getRangeAxis(0).setRange(0, 1);
 		}
 		
-//		setPanelTitle ("成交额",enddate);
 		super.decorateXaxisWithYearOrMonth("month".trim());
+		super.decorateExtremeZhanbiLevel (zblevel);
 	}
 
 	public Double dipalyCjlZBLineDataToGui (NodeXPeriodData nodexdata,String period)
@@ -328,11 +357,6 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			return null;
 		
 		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
-//		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-//			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
-//			dapan = (DaPan)bk.getRoot();
-//		} else
-//			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
 		LocalDate indexrequirestart = (LocalDate) barchartdataset.getColumnKey(0);
 		LocalDate indexrequireend = (LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
@@ -392,12 +416,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 				else if (upbound >= rightrangeaxixmax * 200)  //原来的坐标过大，会导致小坐标的线根本看不到，也是要更换坐标的。
 					super.plot.getRangeAxis(3).setRange(rightrangeaxixmin * 0.7, rightrangeaxixmax*1.12);
 				
-			} catch(java.lang.IllegalArgumentException e) {
-				super.plot.getRangeAxis(3).setRange(0, 1);
-//				super.linechartdataset.clear();
-//				e.printStackTrace();
-				
-			}
+			} catch(java.lang.IllegalArgumentException e) {	super.plot.getRangeAxis(3).setRange(0, 1);}
 		}
 		
 		super.plot.getRenderer(3).setSeriesPaint(0, new Color(0,102,0) );
@@ -428,9 +447,6 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		
 		if(linechartdatasetforcjlzb != null)
 			linechartdatasetforcjlzb.clear();
-		
-//		CategoryItemRenderer fourthrenderer = plot.getRenderer(2);
-//		((BanKuaiFengXiCategoryCjeZhanbiLineRenderer)fourthrenderer).setKLearningClusterBaseLineId (-1);
 	}
 	public Boolean shouldDisplayZhanBiInLine ()
 	{

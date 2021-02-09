@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.annotations.CategoryPointerAnnotation;
@@ -26,6 +27,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
@@ -60,8 +62,11 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	private static Logger logger = Logger.getLogger(BanKuaiFengXiCategoryBarChartCjeZhanbiPnl.class);
 	protected JMenuItem mntmCjeZblineDate;
 	protected JMenuItem mntmClearLineData;
+	protected JMenuItem mntmSetZhanBiUpLevel;
+	protected JMenuItem mntmSetZhanBiDownLevel;
 	private Boolean displayzhanbishujuinline = false;
 	private DefaultCategoryDataset linechartdatasetforcjezb;
+	private JMenuItem mntmSetZhanBiExtremeLevel;
 	
 	private void createGuiAndEvents () 
 	{
@@ -70,6 +75,17 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 		mntmClearLineData = new JMenuItem("突出占比数据");
 		chartPanel.getPopupMenu().add(mntmClearLineData);
+		
+		mntmSetZhanBiExtremeLevel =  new JMenuItem("设置Cje占比上下限");
+		chartPanel.getPopupMenu().add(mntmSetZhanBiExtremeLevel);
+		
+	
+		mntmSetZhanBiExtremeLevel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				setupNodeZhanbiDownLevel ();				
+			}
+		});
 		
 		mntmCjeZblineDate.addActionListener(new ActionListener() {
 			@Override
@@ -86,8 +102,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJEZBTOLINE, getCurDisplayedNode().getMyOwnCode(), "cjecjlzbtoline" );
 		            pcs.firePropertyChange(evtzd);
 				}
-				
-				
 			}
 		});
 		
@@ -101,6 +115,22 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			}
 			
 		});
+	}
+	/*
+	 * 
+	 */
+	protected void setupNodeZhanbiDownLevel() 
+	{
+		TDXNodes node = super.getCurDisplayedNode();
+		Double[] zblevel = node.getNodeCjeZhanbiLevel();
+		
+		ExtremeZhanbiSettingPnl zhanbisetting = new ExtremeZhanbiSettingPnl (zblevel,super.yaxisvaluewhenmouseclicked); 
+		JOptionPane.showMessageDialog(null, zhanbisetting,"设置占比上下限", JOptionPane.OK_CANCEL_OPTION);
+		Double min = zhanbisetting.getExtremeZhanbiMin ();
+		Double max = zhanbisetting.getExtremeZhanbiMax ();
+		ServicesForNode svs = node.getServicesForNode();
+		svs.setNodeCjeExtremeUpDownZhanbiLevel (node,min,max);
+		svs = null;
 	}
 	/*
 	 * (non-Javadoc)
@@ -459,6 +489,13 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		return qkmax;
 
 	}
+	/*
+	 * 
+	 */
+	private void displayNodeCjeExtremeZhanbiLevel ()
+	{
+		Double[] zblevel = super.getCurDisplayedNode().getNodeCjeZhanbiLevel();
+	}
 	
 	/**
 	 * 
@@ -515,6 +552,12 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		if(highestHigh == 0.0)
 			return;
 		
+		Double[] zblevel = super.getCurDisplayedNode().getNodeCjeZhanbiLevel();
+		if(zblevel[0] != null && zblevel[0] < lowestLow)
+			lowestLow = zblevel[0]; 
+		if(zblevel[1] != null && zblevel[1] > highestHigh)
+			highestHigh = zblevel[1];
+		
 		BanKuaiFengXiCategoryBarRenderer render0 = (BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer(0);
 		render0.setDisplayNode(this.getCurDisplayedNode());
 		render0.setDisplayNodeXPeriod (nodexdata);
@@ -536,6 +579,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 //		setPanelTitle ("成交额",enddate);
 		super.decorateXaxisWithYearOrMonth("month".trim());
+		super.decorateExtremeZhanbiLevel (zblevel);
 	}
 
 	/*

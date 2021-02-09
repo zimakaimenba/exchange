@@ -7101,20 +7101,13 @@ public class BanKuaiDbOperation
 			        
 			        return maxdate.toLocalDate();
 			        
-			} catch(java.lang.NullPointerException e){ 
-			    	e.printStackTrace();
-			} catch (SQLException e) {
-			    	e.printStackTrace();
-			} catch(Exception e){
-			    	e.printStackTrace();
+			} catch(java.lang.NullPointerException e){ e.printStackTrace();
+			} catch (SQLException e) {e.printStackTrace();
+			} catch(Exception e){e.printStackTrace();
 			} finally {
 			    	if(rspd != null)
-						try {
-							rspd.close();
-							rspd = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+						try {rspd.close();rspd = null;
+						} catch (SQLException e) {e.printStackTrace();}
 			}
 			
 			return null;
@@ -7200,10 +7193,8 @@ public class BanKuaiDbOperation
 						;
 				try {
 					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
-				} catch(java.lang.NullPointerException e){ 
-				    	e.printStackTrace();
-				} catch(Exception e){
-				    	e.printStackTrace();
+				} catch(java.lang.NullPointerException e){e.printStackTrace();
+				} catch(Exception e){e.printStackTrace();
 				} finally {
 				    
 				}
@@ -7227,13 +7218,10 @@ public class BanKuaiDbOperation
 				try {
 					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlinsertstat);
 
-				} catch(java.lang.NullPointerException e){ 
-				    	e.printStackTrace();
-				} catch(Exception e){
-				    	e.printStackTrace();
-				} finally {
-				    
-				}
+				} catch(java.lang.NullPointerException e){e.printStackTrace();
+				} catch(Exception e){e.printStackTrace();
+				} finally {}
+				
 				if(relationship)
 					friendsetpostive.add(friendcode );
 				else
@@ -7242,15 +7230,88 @@ public class BanKuaiDbOperation
 			
 			return null;
 		}
+		/*
+		 * 
+		 */
+		public BkChanYeLianTreeNode getNodeCjeCjlExtremeZhanbiUpDownLevel(TDXNodes node) 
+		{
+			CachedRowSetImpl rspd = null;
+			try {
+				String sqlquerystat = "SELECT  * "
+						+ "FROM 板块股票占比阈值"
+						+ " WHERE 代码 = '" + node.getMyOwnCode() + "'"
+						;
+			    	rspd = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			        while(rspd.next())  {
+			        	Double cjezbmax =  rspd.getDouble("成交额占比上限");
+			        	Double cjezbmin =  rspd.getDouble("成交额占比下限");
+			        	
+			        	Double cjlzbmax =  rspd.getDouble("成交量占比上限");
+			        	Double cjlzbmin =  rspd.getDouble("成交量占比下限");
+			        	
+			        	node.setNodeCjlZhanbiLevel(cjlzbmin, cjlzbmax);
+			        	node.setNodeCjeZhanbiLevel(cjezbmin, cjezbmax);
+			        }
+			} catch(java.lang.NullPointerException e){ e.printStackTrace();
+			} catch (SQLException e) {e.printStackTrace();
+			} catch(Exception e){e.printStackTrace();
+			} finally {
+			    	if(rspd != null)
+						try {rspd.close();rspd = null;
+						} catch (SQLException e) {e.printStackTrace();}
+			}
+			
+			return node;
+		}
+		/*
+		 * 
+		 */
+		public BkChanYeLianTreeNode setNodeCjlExtremeZhanbiUpDownLevel(TDXNodes node, Double min, Double max) 
+		{
+				String sqlinsertstat = "INSERT INTO 板块股票占比阈值(代码,成交量占比下限,成交量占比上限) VALUES ("
+						+ "'" + node.getMyOwnCode().trim() + "'" + ","
+        				+ min + "," 
+   						+ max
+   						+ ")"
+   						+ " ON DUPLICATE KEY UPDATE "
+   						+ " 成交量占比下限 =" + min + "," 
+   						+ " 成交量占比上限 =" + max 
+   						;
+				try {
+					int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+				} catch (MysqlDataTruncation e) {e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();} 
+			
+			return node;
+		}
+		/*
+		 * 
+		 */
+		public BkChanYeLianTreeNode setNodeCjeExtremeZhanbiUpDownLevel(TDXNodes node, Double min, Double max) 
+		{
+			String sqlinsertstat = "INSERT INTO 板块股票占比阈值(代码,成交额占比下限,成交额占比上限) VALUES ("
+					+ "'" + node.getMyOwnCode().trim() + "'" + ","
+    				+ min + "," 
+						+ max
+						+ ")"
+						+ " ON DUPLICATE KEY UPDATE "
+						+ " 成交额占比下限 =" + min + "," 
+						+ " 成交额占比上限 =" + max 
+						;
+			try {
+				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (MysqlDataTruncation e) {e.printStackTrace();
+			} catch (SQLException e) {e.printStackTrace();} 
+		
+			return node;
+		}
 		
 }
 
 
 class NodeLocalDateComparator implements Comparator<QueKou> 
 {
-	public NodeLocalDateComparator ()
-	{
-	}
     public int compare(QueKou qk1, QueKou qk2) 
     {
     	LocalDate qk1date = qk1.getQueKouDate();
@@ -7266,5 +7327,3 @@ class NodeLocalDateComparator implements Comparator<QueKou>
         }
     }
 }
-
-//  SELECT 'a股',UPDATE_TIME FROM information_schema.tables where TABLE_SCHEMA='stockinfomanagementtest' 

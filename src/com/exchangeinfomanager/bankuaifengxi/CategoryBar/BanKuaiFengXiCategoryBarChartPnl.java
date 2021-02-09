@@ -22,12 +22,15 @@ import org.jfree.chart.entity.CategoryItemEntity;
 import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
+import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DatasetUtilities;
 import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
@@ -46,6 +49,8 @@ import java.awt.Paint;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -92,7 +97,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected DefaultCategoryDataset linechartdataset;
 	protected DefaultCategoryDataset averagelinechartdataset; //大盘周平均成交额
 	protected JFreeChart barchart;
-	private List<CategoryMarker> categorymarkerlist;
+	private List<Marker> categorymarkerlist;
+	private List<Marker> valuemarkerlist;
 	
 	private boolean displayhuibuquekou = true;
 	private boolean displayzhangdieting = true;
@@ -118,8 +124,10 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected LocalDate dateselected;
 	protected LocalDate displaydatestarted;
 	protected LocalDate displaydateended;
+	protected Double yaxisvaluewhenmouseclicked;
 	
 	protected PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	        pcs.addPropertyChangeListener(listener);
 	}
@@ -345,6 +353,12 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		
 		plot.getRangeAxis(3).setRange(0.0, 1.0);
 	}
+	protected void resetExtremeZhanbiLevelMarkerlist ()
+	{
+		for(Marker marker : this.valuemarkerlist) 
+			this.plot.removeDomainMarker(marker);
+		this.valuemarkerlist.clear();
+	}
 	public void resetDate ()
 	{
 		if(barchartdataset != null)
@@ -358,10 +372,13 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 //		if(this.linezdtchartdataset != null)
 //			this.linezdtchartdataset.clear();
 		
-		for(CategoryMarker marker : this.categorymarkerlist) {
+		for(Marker marker : this.categorymarkerlist) 
 			this.plot.removeDomainMarker(marker);
-		}
 		this.categorymarkerlist.clear();
+		
+		for(Marker marker : this.valuemarkerlist) 
+			this.plot.removeDomainMarker(marker);
+		this.valuemarkerlist.clear();
 		
 //		List<CategoryPointerAnnotation> pointerlist = this.plot.getAnnotations();
 //		for(CategoryPointerAnnotation pointer : pointerlist) 
@@ -381,40 +398,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     */
     private void createEvent ()
     {
-//    	mntmCjeCjlZblineDate.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent evt) {
-//				if(mntmCjeCjlZblineDate.getText().contains("X")) {
-//					setDisplayZhanBiInLine (false);
-//					
-//					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, curdisplayednode.getMyOwnCode(), "notcjecjlzbtoline" );
-//		            pcs.firePropertyChange(evtzd);
-//		            
-//				} else {
-//					setDisplayZhanBiInLine (true);
-//					
-//					PropertyChangeEvent evtzd = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.CJECJLZBTOLINE, curdisplayednode.getMyOwnCode(), "cjecjlzbtoline" );
-//		            pcs.firePropertyChange(evtzd);
-//				}
-//				
-//				
-//			}
-//			
-//		});
-    	
- 
-//    	mntmClearLineData.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent evt) {
-//				
-//				PropertyChangeEvent evtqk = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWBARDATA, curdisplayednode.getMyOwnCode(), "onlyshowbardata" );
-//	            pcs.firePropertyChange(evtqk);
-//		
-//			}
-//			
-//		});
-    	
-    	
     	chartPanel.addChartMouseListener(new ChartMouseListener() {
 
     	    public void chartMouseClicked(ChartMouseEvent cme) {
@@ -432,6 +415,15 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	    		
     	    	} else if (me.getClickCount() == 1) {
     	    		try {
+    	    			Point2D po = chartPanel.translateScreenToJava2D(cme.getTrigger().getPoint());
+            	        Rectangle2D plotArea = chartPanel.getScreenDataArea();
+            	        yaxisvaluewhenmouseclicked = plot.getRangeAxis(0).java2DToValue(po.getY(), plotArea, plot.getRangeAxisEdge());
+            	        
+////            	        plot.removeDomainMarker(marker);
+//            	        ValueMarker marker = new ValueMarker(chartY);
+//            	        marker.setPaint(Color.red);
+//            	        plot.addRangeMarker(3,marker, Layer.FOREGROUND);
+            	        
     	    			CategoryItemEntity xyitem = (CategoryItemEntity) cme.getEntity(); // get clicked entity
     	    	        LocalDate columnkey = LocalDate.parse(xyitem.getColumnKey().toString());
             	        String selectedtooltip = xyitem.getToolTipText();
@@ -439,10 +431,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
             	        setCurSelectedBarInfo (columnkey,selectedtooltip);
 
             	        selectchanged = true;
-        	    	} catch ( java.lang.ClassCastException e ) {
-//        	    		e.printStackTrace();
-            	        selectchanged = false;
-        	    	}
+        	    	} catch ( java.lang.ClassCastException e ) {selectchanged = false;}
 
     	    	}
     	    }
@@ -537,12 +526,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 			this.displayhuibuquekou = false;
 	}
     
-//	protected JMenuItem mntmClearLineData;
-
-//	
-
-//	private JMenuItem mntmCompareAveCjeWithSpecificNode;
-	
     @SuppressWarnings("deprecation")
 	private void createChartPanel() 
     {
@@ -605,12 +588,12 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
         barchart = new JFreeChart(plot);  
         barchart.removeLegend();
         barchart.setNotify(true);
-//        barchart.setDomainZoomable(true);
+//      barchart.setDomainZoomable(true);
 
         chartPanel = new ChartPanel(barchart);
-//         chartPanel = new TooltipChartPanel(barchart);
-//        chartPanel.setHorizontalAxisTrace(true); //十字显示
-//        chartPanel.setPreferredSize(new Dimension(1500, 350));
+//      chartPanel = new TooltipChartPanel(barchart);
+      chartPanel.setHorizontalAxisTrace(true); //十字显示
+//      chartPanel.setPreferredSize(new Dimension(1500, 350));
         chartPanel.setVerticalAxisTrace(true);
         chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
@@ -622,8 +605,26 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     {
     	return chartPanel.getPopupMenu();
     }
+    /*
+     * 
+     */
+	protected void decorateExtremeZhanbiLevel(Double[] zblevel) 
+	{
+		if(zblevel[0] != null) {
+			ValueMarker downmarker = new ValueMarker(zblevel[0]);
+			downmarker.setPaint(Color.red);
+		    plot.addRangeMarker(0,downmarker, Layer.FOREGROUND);
+		    this.categorymarkerlist.add(downmarker);
+		}
+		if(zblevel[1] != null) {
+			ValueMarker upmarker = new ValueMarker(zblevel[0]);
+			upmarker.setPaint(Color.GREEN);
+		    plot.addRangeMarker(0,upmarker, Layer.FOREGROUND);
+		    this.categorymarkerlist.add(upmarker);
+		}
+	}
 	
-    
+	
 }
 
 /*

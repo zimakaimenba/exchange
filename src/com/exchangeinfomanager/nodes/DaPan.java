@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
+import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.DaPanXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -51,6 +52,12 @@ public class DaPan extends TDXNodes
 	{
 		SvsForNodeOfDaPan svsdp = new SvsForNodeOfDaPan ();
 		svsdp.getNodeData("000000",requiredstartday, requiredendday,period,calwholeweek);
+	}
+
+	@Override
+	public ServicesForNode getServicesForNode() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

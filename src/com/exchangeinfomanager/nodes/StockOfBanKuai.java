@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
+import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockOfBanKuaiXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 /*
@@ -110,6 +111,11 @@ public class StockOfBanKuai extends TDXNodes
 	public Integer getQuanZhong ()
 	{
 		return this.quanzhong;
+	}
+	@Override
+	public ServicesForNode getServicesForNode() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

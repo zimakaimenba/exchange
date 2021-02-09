@@ -320,6 +320,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
 			bankuai = this.getNodeKXian(bankuai, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
+			this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
 			return;
 		}
 		
@@ -337,6 +338,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
 				
 				bankuai = this.getNodeKXian(bankuai, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,true);
+				this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
 		}
 		
 	}
@@ -542,4 +544,24 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public BkChanYeLianTreeNode getNodeCjeCjlZhanbiExtremeUpDownLevel(BkChanYeLianTreeNode node) {
+		node = this.bkdbopt.getNodeCjeCjlExtremeZhanbiUpDownLevel( (TDXNodes)node);
+		return node;
+	}
+
+	@Override
+	public void setNodeCjeExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
+		node = this.bkdbopt.setNodeCjeExtremeZhanbiUpDownLevel( (TDXNodes)node, min, max);
+		((BanKuai)node).setNodeCjeZhanbiLevel (min,max);
+		
+	}
+
+	@Override
+	public void setNodeCjlExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
+		node = this.bkdbopt.setNodeCjlExtremeZhanbiUpDownLevel( (TDXNodes)node, min, max);
+		((BanKuai)node).setNodeCjlZhanbiLevel (min,max);
+	}
+	
 }

@@ -501,6 +501,24 @@ public class SvsForNodeOfStock implements ServicesForNode
 		return null;
 	}
 
+	@Override
+	public BkChanYeLianTreeNode getNodeCjeCjlZhanbiExtremeUpDownLevel(BkChanYeLianTreeNode node) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setNodeCjeExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setNodeCjlExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 	
 

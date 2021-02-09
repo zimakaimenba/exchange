@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
@@ -32,6 +33,31 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	private List<Range<LocalDate>> qiangshirange;
 	private List<Range<LocalDate>> ruoshirange;
 	private List<Range<LocalDate>> dqguangzhurange;
+	
+	private Double nodecjezhanbiuplevel;
+	private Double nodecjezhanbidownlevel;
+	private Double nodecjlzhanbiuplevel;
+	private Double nodecjlzhanbidownlevel;
+	public void setNodeCjeZhanbiLevel (Double min, Double max)
+	{
+		this.nodecjezhanbidownlevel = min;
+		this.nodecjezhanbiuplevel = max;
+	}
+	public Double[] getNodeCjeZhanbiLevel ()
+	{
+		Double[] zblevel =  {nodecjezhanbidownlevel,nodecjezhanbiuplevel};
+		return zblevel;
+	}
+	public void setNodeCjlZhanbiLevel (Double min, Double max)
+	{
+		this.nodecjlzhanbidownlevel = min;
+		this.nodecjlzhanbiuplevel = max;
+	}
+	public Double[] getNodeCjlZhanbiLevel ()
+	{
+		Double[] zblevel =  {nodecjlzhanbidownlevel,nodecjlzhanbiuplevel};
+		return zblevel;
+	}
 	
 	private Boolean hasreviewedtoday;
 	public void setHasReviewedToday (Boolean reviewedornot)
@@ -190,4 +216,7 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	{
 		return this.lastdayofbxfx;
 	}
+	
+	public abstract ServicesForNode getServicesForNode ();
+	
 }
