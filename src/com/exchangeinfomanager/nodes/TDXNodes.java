@@ -40,6 +40,9 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	private Double nodecjlzhanbidownlevel;
 	public void setNodeCjeZhanbiLevel (Double min, Double max)
 	{
+		if(min == null || min == 0.0) min = null;
+		if(max == null || max == 0.0) max = null;
+		
 		this.nodecjezhanbidownlevel = min;
 		this.nodecjezhanbiuplevel = max;
 	}
@@ -50,6 +53,8 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	}
 	public void setNodeCjlZhanbiLevel (Double min, Double max)
 	{
+		if(min == null || min == 0.0) min = null;
+		if(max == null || max == 0.0) max = null;
 		this.nodecjlzhanbidownlevel = min;
 		this.nodecjlzhanbiuplevel = max;
 	}

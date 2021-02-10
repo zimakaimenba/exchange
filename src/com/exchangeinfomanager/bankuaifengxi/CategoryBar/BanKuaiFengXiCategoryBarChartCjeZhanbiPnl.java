@@ -21,10 +21,12 @@ import org.jfree.chart.annotations.CategoryPointerAnnotation;
 import org.jfree.chart.annotations.CategoryTextAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.Layer;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.Services.ServicesForNode;
@@ -53,7 +55,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		super.plot.setDataset(2, linechartdatasetforcjezb);
 		super.plot.setRenderer(2, new BanKuaiFengXiCategoryCjeZhanbiLineRenderer () );
         ValueAxis rangeaxis = plot.getRangeAxis(0);
-        super.plot.setRangeAxis(2, rangeaxis);
+//        super.plot.setRangeAxis(2, rangeaxis);
         
         createGuiAndEvents ();
 	}
@@ -71,13 +73,13 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	private void createGuiAndEvents () 
 	{
 		mntmCjeZblineDate = new JMenuItem("占比柱图转线图");
-		chartPanel.getPopupMenu().add(mntmCjeZblineDate);
+		chartPanel.getPopupMenu().add(mntmCjeZblineDate,0);
 		
 		mntmClearLineData = new JMenuItem("突出占比数据");
-		chartPanel.getPopupMenu().add(mntmClearLineData);
+		chartPanel.getPopupMenu().add(mntmClearLineData,1);
 		
 		mntmSetZhanBiExtremeLevel =  new JMenuItem("设置Cje占比上下限");
-		chartPanel.getPopupMenu().add(mntmSetZhanBiExtremeLevel);
+		chartPanel.getPopupMenu().add(mntmSetZhanBiExtremeLevel,2);
 		
 	
 		mntmSetZhanBiExtremeLevel.addActionListener(new ActionListener() {
@@ -126,11 +128,14 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 		ExtremeZhanbiSettingPnl zhanbisetting = new ExtremeZhanbiSettingPnl (zblevel,super.yaxisvaluewhenmouseclicked); 
 		JOptionPane.showMessageDialog(null, zhanbisetting,"设置占比上下限", JOptionPane.OK_CANCEL_OPTION);
+		
 		Double min = zhanbisetting.getExtremeZhanbiMin ();
 		Double max = zhanbisetting.getExtremeZhanbiMax ();
 		ServicesForNode svs = node.getServicesForNode();
 		svs.setNodeCjeExtremeUpDownZhanbiLevel (node,min,max);
 		svs = null;
+		
+		super.redecorateExtremeZhanbiLevel(node.getNodeCjeZhanbiLevel());
 	}
 	/*
 	 * (non-Javadoc)
@@ -489,14 +494,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		return qkmax;
 
 	}
-	/*
-	 * 
-	 */
-	private void displayNodeCjeExtremeZhanbiLevel ()
-	{
-		Double[] zblevel = super.getCurDisplayedNode().getNodeCjeZhanbiLevel();
-	}
-	
 	/**
 	 * 
 	 * @param nodexdata
@@ -510,14 +507,12 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			return;
 		
 		int row = super.linechartdataset.getRowCount();
-		int column = super.linechartdataset.getColumnCount();
+//		int column = super.linechartdataset.getColumnCount();
 		
 		Range rangeData = super.plot.getRangeAxis(3).getRange();
-		if(forcetochange || row == 1) {
-			
+		if(forcetochange || row == 1) 
 			super.plot.getRangeAxis(3).setRange(rightrangeaxixmin * 0.7, rightrangeaxixmax*1.12);
-		} else {
-					
+		else {
 			double upbound = rangeData.getUpperBound();
 			try{
 				if(rightrangeaxixmax*1.12 > upbound)
@@ -525,11 +520,9 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 				else if (upbound >= rightrangeaxixmax * 200)  //原来的坐标过大，会导致小坐标的线根本看不到，也是要更换坐标的。
 					super.plot.getRangeAxis(3).setRange(rightrangeaxixmin * 0.7, rightrangeaxixmax*1.12);
 				
-			} catch(java.lang.IllegalArgumentException e) {
-				super.plot.getRangeAxis(3).setRange(0, 1);
+			} catch(java.lang.IllegalArgumentException e) {	super.plot.getRangeAxis(3).setRange(0, 1);
 //				super.linechartdataset.clear();
 //				e.printStackTrace();
-				
 			}
 		}
 		
@@ -577,9 +570,22 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			super.plot.getRangeAxis(0).setRange(0, 1);
 		}
 		
+//		if(zblevel[0] != null) {
+//			ValueMarker downmarker = new ValueMarker(zblevel[0]);
+//			downmarker.setPaint(Color.red);
+//		    plot.addRangeMarker(0,downmarker, Layer.FOREGROUND);
+//		    super.valuemarkerlist.add(downmarker);
+//		}
+//		if(zblevel[1] != null) {
+//			ValueMarker upmarker = new ValueMarker(zblevel[1]);
+//			upmarker.setPaint(Color.GREEN);
+//		    plot.addRangeMarker(0,upmarker, Layer.FOREGROUND);
+//		    super.valuemarkerlist.add(upmarker);
+//		}
+		
 //		setPanelTitle ("成交额",enddate);
 		super.decorateXaxisWithYearOrMonth("month".trim());
-		super.decorateExtremeZhanbiLevel (zblevel);
+		super.redecorateExtremeZhanbiLevel (zblevel);
 	}
 
 	/*

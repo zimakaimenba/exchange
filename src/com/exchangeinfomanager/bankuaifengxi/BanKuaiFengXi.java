@@ -4287,7 +4287,7 @@ private JMenu stkhistorycsvfileMenu;
        tableGuGuZhanBiInBk.getPopupMenu().add(stockbiaojiMenu);
        
        menuItemnonshowselectbkinfo = new JMenuItem("同时分析选定周数据");
-       panelbkwkcjezhanbi.addMenuItem (menuItemnonshowselectbkinfo,null);
+       panelbkwkcjezhanbi.addMenuItem (menuItemnonshowselectbkinfo,0);
        
        JPopupMenu popupMenuGeguNews = new JPopupMenu () ;
        menuItemTempGeGuFromFile = new JMenuItem("文件导入");

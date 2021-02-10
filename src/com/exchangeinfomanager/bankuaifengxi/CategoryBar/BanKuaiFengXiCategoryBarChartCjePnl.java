@@ -72,13 +72,13 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	private void createGuiAndEvents ()
 	{
 		mntmHideZdt = new JMenuItem("突出涨跌停数据");
-		chartPanel.getPopupMenu().add(mntmHideZdt);
+		chartPanel.getPopupMenu().add(mntmHideZdt,0);
         mntmHideQueKouData = new JMenuItem("突出缺口数据");
-        chartPanel.getPopupMenu().add(mntmHideQueKouData);
+        chartPanel.getPopupMenu().add(mntmHideQueKouData,1);
         mntmAveDailyCjeLineData = new JMenuItem("突出周日平均成交额");
-		chartPanel.getPopupMenu().add(mntmAveDailyCjeLineData);
+		chartPanel.getPopupMenu().add(mntmAveDailyCjeLineData,2);
 		mntmCompareAveCjeWithSpecificNode = new JMenuItem("对比大盘周日平均成交额");
-		chartPanel.getPopupMenu().add(mntmCompareAveCjeWithSpecificNode);
+		chartPanel.getPopupMenu().add(mntmCompareAveCjeWithSpecificNode,3);
 		
 	   	mntmAveDailyCjeLineData.addActionListener(new ActionListener() {
 				@Override

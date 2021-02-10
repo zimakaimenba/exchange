@@ -70,9 +70,9 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 	private void createGuiAndEvents ()
 	{
         mntmAveDailyCjlLineData = new JMenuItem("突出周日平均成交量");
-		chartPanel.getPopupMenu().add(mntmAveDailyCjlLineData);
+		chartPanel.getPopupMenu().add(mntmAveDailyCjlLineData,0);
 		mntmCompareAveCjlWithSpecificNode = new JMenuItem("对比大盘周日平均成交量");
-		chartPanel.getPopupMenu().add(mntmCompareAveCjlWithSpecificNode);
+		chartPanel.getPopupMenu().add(mntmCompareAveCjlWithSpecificNode,1);
 		
 	   	mntmAveDailyCjlLineData.addActionListener(new ActionListener() {
 				@Override

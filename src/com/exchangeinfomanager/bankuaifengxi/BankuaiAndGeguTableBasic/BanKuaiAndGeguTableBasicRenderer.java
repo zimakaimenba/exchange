@@ -362,15 +362,30 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         RulesEngine lwrulesEngine = new DefaultRulesEngine();
         try {
         	lwrulesEngine.fire(lwrules, lwfacts);
-        } catch (Exception ex  ) {
-        	ex.printStackTrace();
-        }
+        } catch (Exception ex  ) {ex.printStackTrace();}
         
         NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
     	Double lwzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
     	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
-    	
 		switch (column_keyword) {
+		case "extremecjlzhanbi" :
+			Double[] extremecjl = node.getNodeCjlZhanbiLevel();
+			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
+			if(extremecjl[0] != null && zhanbi < extremecjl[0])
+				foreground = Color.RED;
+			else
+			if(extremecjl[1] != null && zhanbi > extremecjl[1])
+				foreground = Color.GREEN;
+			break;
+		case "extremecjezhanbi" :
+			Double[] extremecje = node.getNodeCjeZhanbiLevel();
+			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
+			if(extremecje[0] != null && cjezhanbi < extremecje[0])
+				foreground = Color.RED;
+			else
+			if(extremecje[1] != null && cjezhanbi > extremecje[1])
+				foreground = Color.GREEN;
+			break;
         case "quanzhonginbankuai":
 	    	Integer weight = ((StockOfBanKuai)node).getBanKuai().getGeGuSuoShuBanKuaiWeight( node.getMyOwnCode() );
 	    	if(weight == null)
@@ -392,7 +407,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	foreground = lwcjezbgr.getForeGround();
         	break;
         case "lastwkdpcjezbmatch":
-        	
 	    	if(lwzhangdiefu != null &&  lwzhangdiefu <0 && lwdpmaxwkRule.getRuleResult() && zhangdiefu !=null &&  zhangdiefu >0 )
 	    		foreground = Color.YELLOW;
         	break;
@@ -471,10 +485,30 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         RulesEngine rulesEngine = new DefaultRulesEngine();
         rulesEngine.fire(rules, facts);
         
+        NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
 		Color background = Color.white;
 		switch (column_keyword) {
+		case "extremecjlzhanbi" :
+			Double[] extremecjl = node.getNodeCjlZhanbiLevel();
+			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
+			if(extremecjl[0] != null && zhanbi < extremecjl[0])
+				background = Color.RED;
+			else
+			if(extremecjl[1] != null && zhanbi > extremecjl[1])
+				background = Color.GREEN;
+			break;
+			
+		case "extremecjezhanbi" :
+			Double[] extremecje = node.getNodeCjeZhanbiLevel();
+			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
+			if(extremecje[0] != null && cjezhanbi < extremecje[0])
+				background = Color.RED;
+			else
+			if(extremecje[1] != null && cjezhanbi > extremecje[1])
+				background = Color.GREEN;
+			break;
+			
         case "zhangdiefu":
-        	NodeXPeriodData nodexdata;
         	if(node instanceof StockOfBanKuai)
         		 nodexdata = ((StockOfBanKuai)node).getStock().getNodeXPeroidData(period);
     	    else

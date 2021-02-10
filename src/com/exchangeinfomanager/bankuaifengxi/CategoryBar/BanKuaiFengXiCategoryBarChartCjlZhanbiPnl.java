@@ -56,7 +56,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		super.plot.setDataset(2, linechartdatasetforcjlzb);
 		super.plot.setRenderer(2, new BanKuaiFengXiCategoryCjeZhanbiLineRenderer () );
         ValueAxis rangeaxis = plot.getRangeAxis(0);
-        super.plot.setRangeAxis(2, rangeaxis);
+//        super.plot.setRangeAxis(2, rangeaxis);
         
         createGuiAndEvents ();
 	}
@@ -72,13 +72,13 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 	private void createGuiAndEvents () 
 	{
 		mntmCjlZblineDate = new JMenuItem("占比柱图转线图");
-		chartPanel.getPopupMenu().add(mntmCjlZblineDate);
+		chartPanel.getPopupMenu().add(mntmCjlZblineDate,0);
 		
 		mntmClearLineData = new JMenuItem("突出占比数据");
-		chartPanel.getPopupMenu().add(mntmClearLineData);
+		chartPanel.getPopupMenu().add(mntmClearLineData,1);
 		
 		mntmSetZhanBiExtremeLevel =  new JMenuItem("设置Cjl占比上下限");
-		chartPanel.getPopupMenu().add(mntmSetZhanBiExtremeLevel);
+		chartPanel.getPopupMenu().add(mntmSetZhanBiExtremeLevel,2);
 		
 	
 		mntmSetZhanBiExtremeLevel.addActionListener(new ActionListener() {
@@ -134,6 +134,8 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		ServicesForNode svs = node.getServicesForNode();
 		svs.setNodeCjlExtremeUpDownZhanbiLevel (node,min,max);
 		svs = null;
+		
+		super.redecorateExtremeZhanbiLevel(node.getNodeCjlZhanbiLevel());
 	}
 	/*
 	 * (non-Javadoc)
@@ -343,7 +345,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		}
 		
 		super.decorateXaxisWithYearOrMonth("month".trim());
-		super.decorateExtremeZhanbiLevel (zblevel);
+		super.redecorateExtremeZhanbiLevel (zblevel);
 	}
 
 	public Double dipalyCjlZBLineDataToGui (NodeXPeriodData nodexdata,String period)

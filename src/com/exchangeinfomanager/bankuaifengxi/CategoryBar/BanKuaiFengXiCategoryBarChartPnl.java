@@ -98,7 +98,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected DefaultCategoryDataset averagelinechartdataset; //大盘周平均成交额
 	protected JFreeChart barchart;
 	private List<Marker> categorymarkerlist;
-	private List<Marker> valuemarkerlist;
+	protected List<Marker> valuemarkerlist;
 	
 	private boolean displayhuibuquekou = true;
 	private boolean displayzhangdieting = true;
@@ -356,7 +356,9 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected void resetExtremeZhanbiLevelMarkerlist ()
 	{
 		for(Marker marker : this.valuemarkerlist) 
-			this.plot.removeDomainMarker(marker);
+			this.plot.removeRangeMarker(marker);
+		
+//		this.plot.clearDomainMarkers();
 		this.valuemarkerlist.clear();
 	}
 	public void resetDate ()
@@ -364,27 +366,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		if(barchartdataset != null)
 			barchartdataset.clear();
 		
-		if(linechartdataset != null)
-			linechartdataset.clear();
-		
-		plot.getRangeAxis(3).setRange(0, 1.12);
-		
-//		if(this.linezdtchartdataset != null)
-//			this.linezdtchartdataset.clear();
+		resetLineDate ();
 		
 		for(Marker marker : this.categorymarkerlist) 
 			this.plot.removeDomainMarker(marker);
 		this.categorymarkerlist.clear();
 		
-		for(Marker marker : this.valuemarkerlist) 
-			this.plot.removeDomainMarker(marker);
-		this.valuemarkerlist.clear();
-		
-//		List<CategoryPointerAnnotation> pointerlist = this.plot.getAnnotations();
-//		for(CategoryPointerAnnotation pointer : pointerlist) 
-//			this.plot.removeAnnotation(pointer);
-		
-//		if(!this.isAllowDrawAnnoation())
+		resetExtremeZhanbiLevelMarkerlist ();
+
 		this.plot.clearAnnotations();
 		
 		this.chartPanel.removeAll();
@@ -592,13 +581,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 
         chartPanel = new ChartPanel(barchart);
 //      chartPanel = new TooltipChartPanel(barchart);
-      chartPanel.setHorizontalAxisTrace(true); //十字显示
+//      chartPanel.setHorizontalAxisTrace(true); //十字显示
 //      chartPanel.setPreferredSize(new Dimension(1500, 350));
         chartPanel.setVerticalAxisTrace(true);
         chartPanel.setDomainZoomable(true);
         this.add(chartPanel);
         
 		this.categorymarkerlist = new ArrayList<> ();
+		this.valuemarkerlist = new ArrayList<> ();
    }
  
     protected  JPopupMenu getPopupMenu() 
@@ -608,20 +598,24 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     /*
      * 
      */
-	protected void decorateExtremeZhanbiLevel(Double[] zblevel) 
+	protected void redecorateExtremeZhanbiLevel(Double[] zblevel) 
 	{
+		resetExtremeZhanbiLevelMarkerlist ();
+		barchart.setNotify(false);
 		if(zblevel[0] != null) {
 			ValueMarker downmarker = new ValueMarker(zblevel[0]);
 			downmarker.setPaint(Color.red);
 		    plot.addRangeMarker(0,downmarker, Layer.FOREGROUND);
-		    this.categorymarkerlist.add(downmarker);
+		    this.valuemarkerlist.add(downmarker);
 		}
 		if(zblevel[1] != null) {
-			ValueMarker upmarker = new ValueMarker(zblevel[0]);
+			ValueMarker upmarker = new ValueMarker(zblevel[1]);
 			upmarker.setPaint(Color.GREEN);
 		    plot.addRangeMarker(0,upmarker, Layer.FOREGROUND);
-		    this.categorymarkerlist.add(upmarker);
+		    this.valuemarkerlist.add(upmarker);
 		}
+		barchart.setNotify(true);
+		this.barchart.fireChartChanged();//必须有这句
 	}
 	
 	

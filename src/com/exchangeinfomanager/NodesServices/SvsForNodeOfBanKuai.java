@@ -320,7 +320,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
 			bankuai = this.getNodeKXian(bankuai, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
-			this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
+//			this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
 			return;
 		}
 		
@@ -338,7 +338,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
 				
 				bankuai = this.getNodeKXian(bankuai, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,true);
-				this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
+//				this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
 		}
 		
 	}

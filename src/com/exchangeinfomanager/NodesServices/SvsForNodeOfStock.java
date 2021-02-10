@@ -21,6 +21,7 @@ import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -503,19 +504,20 @@ public class SvsForNodeOfStock implements ServicesForNode
 
 	@Override
 	public BkChanYeLianTreeNode getNodeCjeCjlZhanbiExtremeUpDownLevel(BkChanYeLianTreeNode node) {
-		// TODO Auto-generated method stub
-		return null;
+		node = this.bkdbopt.getNodeCjeCjlExtremeZhanbiUpDownLevel( (TDXNodes)node);
+		return node;
 	}
 
 	@Override
 	public void setNodeCjeExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
-		// TODO Auto-generated method stub
-		
+		node = this.bkdbopt.setNodeCjeExtremeZhanbiUpDownLevel( (TDXNodes)node, min, max);
+		((Stock)node).setNodeCjeZhanbiLevel (min,max);
 	}
 
 	@Override
 	public void setNodeCjlExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
-		// TODO Auto-generated method stub
+		node = this.bkdbopt.setNodeCjlExtremeZhanbiUpDownLevel( (TDXNodes)node, min, max);
+		((Stock)node).setNodeCjlZhanbiLevel (min,max);
 		
 	}
 

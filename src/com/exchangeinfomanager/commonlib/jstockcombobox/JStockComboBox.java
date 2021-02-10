@@ -165,13 +165,14 @@ public class JStockComboBox extends  JComboBox<String>
 			nodeshouldbedisplayed = nodeshouldbedisplayed_gg;
 		} else
 		if(nodeshouldbedisplayed_bk == null  && nodeshouldbedisplayed_gg == null)  { //可能是大智慧的板块了
-			BkChanYeLianTreeNode nodeshouldbedisplayed_dzh = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
+			BkChanYeLianTreeNode nodeshouldbedisplayed_dzh = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.DZHBK);
 			if(nodeshouldbedisplayed_dzh != null)
 				nodeshouldbedisplayed = nodeshouldbedisplayed_dzh;
-		} else {
-			JOptionPane.showMessageDialog(null, "未找到该个股或板块，可能代码还未被通达信/大智慧加入。");
-			return null;
-		}
+			else {
+				JOptionPane.showMessageDialog(null, "未找到该个股或板块，可能代码还未被通达信/大智慧加入。");
+				return null;
+			}
+		} 
 		
 		this.updateUserSelectedNode(nodeshouldbedisplayed);
 //		if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG)

@@ -179,9 +179,33 @@ public class BanKuaiDbOperation
 		
 		String sqlquerystat;
 		if(!jys.toLowerCase().equals("all"))
-			 sqlquerystat = "SELECT *   FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
+			 sqlquerystat = 
+							"SELECT * \r\n" + 
+							"FROM\r\n" + 
+							" (\r\n" + 
+							"SELECT *   FROM 通达信板块列表 WHERE 指数所属交易所 = '\" + jys +\"'" + 
+							") AS node\r\n" + 
+							"\r\n" + 
+							"LEFT   JOIN \r\n" + 
+							"(SELECT * FROM 板块股票占比阈值 \r\n" + 
+							") AS nodezbextremelevel\r\n" + 
+							"\r\n" + 
+							"ON node.板块ID = nodezbextremelevel.代码"
+							;
 		else
-			 sqlquerystat = "SELECT *   FROM 通达信板块列表 	"  ;
+			 sqlquerystat = 
+						"SELECT * \r\n" + 
+						"FROM\r\n" + 
+						" (\r\n" + 
+						"SELECT *   FROM 通达信板块列表" + 
+						") AS node\r\n" + 
+						"\r\n" + 
+						"LEFT   JOIN \r\n" + 
+						"(SELECT * FROM 板块股票占比阈值 \r\n" + 
+						") AS nodezbextremelevel\r\n" + 
+						"\r\n" + 
+						"ON node.板块ID = nodezbextremelevel.代码"
+						;
 		
 		CachedRowSetImpl rs = null;
 	    try {  
@@ -196,6 +220,8 @@ public class BanKuaiDbOperation
 	        	tmpbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
 	        	tmpbk.setShowincyltree(rs.getBoolean("产业链树"));
 	        	tmpbk.setExportTowWlyFile(rs.getBoolean("周分析文件"));
+	        	tmpbk.setNodeCjlZhanbiLevel (rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
+	        	tmpbk.setNodeCjeZhanbiLevel (rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
 	        	
 	        	tmpsysbankuailiebiaoinfo.add(tmpbk);
 	        }
@@ -1658,8 +1684,15 @@ public class BanKuaiDbOperation
 	{
 		ArrayList<Stock> tmpsysbankuailiebiaoinfo = new ArrayList<Stock> ();
 
-		String sqlquerystat = "SELECT 股票代码,股票名称,已退市,所属交易所,股票通达信基本面信息对应表.`上市日期SSDATE`"
-				+ " FROM A股 LEFT JOIN 股票通达信基本面信息对应表 ON 股票通达信基本面信息对应表.`股票代码GPDM` = a股.`股票代码`"									
+		String sqlquerystat = "SELECT * FROM \r\n" + 
+				"(\r\n" + 
+				"SELECT 股票代码,股票名称,已退市,所属交易所,股票通达信基本面信息对应表.`上市日期SSDATE` \r\n" + 
+				"FROM A股 \r\n" + 
+				"LEFT JOIN 股票通达信基本面信息对应表 \r\n" + 
+				"ON 股票通达信基本面信息对应表.`股票代码GPDM` = a股.`股票代码`\r\n" + 
+				") node\r\n" + 
+				"LEFT JOIN 板块股票占比阈值\r\n" + 
+				"ON node.股票代码 = 板块股票占比阈值.`代码`"									
 				;   
 		logger.debug(sqlquerystat);
 		CachedRowSetImpl rs = null;
@@ -1675,9 +1708,10 @@ public class BanKuaiDbOperation
 	        			LocalDate shangshiriqi = rs.getDate("上市日期SSDATE").toLocalDate();
 	        			if(!shangshiriqi.equals(LocalDate.parse("1992-01-01"))) //通达信把所有暂时没有上市交易的股票上市日期都定义为1992-0101
 	        				tmpbk.getNodeJiBenMian().setShangShiRiQi( shangshiriqi );
-	        		} catch (java.lang.NullPointerException e) {
-	        			
-	        		}
+	        		} catch (java.lang.NullPointerException e) {}
+	        		tmpbk.setNodeCjeZhanbiLevel(rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
+	        		tmpbk.setNodeCjlZhanbiLevel(rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
+	        		
 		        	tmpsysbankuailiebiaoinfo.add(tmpbk);
 	        	} else {
 	        		logger.debug(rs.getString("股票代码") + "已经退市");
@@ -2697,22 +2731,13 @@ public class BanKuaiDbOperation
 				
 				
 			}
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
+		}catch(java.lang.NullPointerException e){e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
 	    }  finally {
 	    	try {
-				rs.close();
-				rsfx.close();
-				rs = null;
-				rsfx = null;
-				bkcjltable = null;
-//				System.gc();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				rs.close();	rsfx.close();
+				rs = null;rsfx = null;bkcjltable = null;
+			} catch (SQLException e) {e.printStackTrace();}
 	    }
 
 		return bankuai;
@@ -2915,7 +2940,7 @@ public class BanKuaiDbOperation
 				"\r\n" + 
 				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
 						+ " sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
-						+ " sum( " + bkcjltable + ".`成交量`) AS 板块周交易量,  \r\n"
+						+ " sum( " + bkcjltable + ".`成交量`) /100 AS 板块周交易量,  \r\n"
 						+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
 						+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
 						+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
@@ -2935,13 +2960,8 @@ public class BanKuaiDbOperation
 				" GROUP BY YEARWEEK(t.workday,2)"
 				;
 				
-		try {
-			logger.debug("为板块:" + stock.getMyOwnCode() + stock.getMyOwnName() + "寻找从" + selecteddatestart.toString() + "到" + selecteddateend.toString() + "占比数据！");
-		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
-		
+	
 		CachedRowSetImpl rs = null;
-//		CachedRowSetImpl rsfx = null;
-//		CachedRowSetImpl rsgz = null;
 		Boolean hasfengxiresult = false;
 		try {
 			//交易数据
@@ -7290,14 +7310,17 @@ public class BanKuaiDbOperation
 		 */
 		public BkChanYeLianTreeNode setNodeCjeExtremeZhanbiUpDownLevel(TDXNodes node, Double min, Double max) 
 		{
-			String sqlinsertstat = "INSERT INTO 板块股票占比阈值(代码,成交额占比下限,成交额占比上限) VALUES ("
+			int nodetype = node.getType();
+			String sqlinsertstat = "INSERT INTO 板块股票占比阈值(代码,node类型,成交额占比下限,成交额占比上限) VALUES ("
 					+ "'" + node.getMyOwnCode().trim() + "'" + ","
+					+ nodetype + ","
     				+ min + "," 
 						+ max
 						+ ")"
 						+ " ON DUPLICATE KEY UPDATE "
 						+ " 成交额占比下限 =" + min + "," 
-						+ " 成交额占比上限 =" + max 
+						+ " 成交额占比上限 =" + max + ","
+						+ " node类型 = " + nodetype
 						;
 			try {
 				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);

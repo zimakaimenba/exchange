@@ -828,12 +828,13 @@ import com.udojava.evalex.Expression;
 		try{
 			lastcjlrecord = nodeamo.getDataItem( index - 1);
 		}	catch (java.lang.IndexOutOfBoundsException ex) {
-			logger.debug("index = 0，可能新股第一周，可能是数据记录最早记录周，无法判断");
 			Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate,difference); 
 			if(reachfirstday != null && reachfirstday == true)
 				return null;
 		}
 		Double avelastwkcje = this.getAverageDailyChengJiaoErOfWeek(requireddate,difference-1);
+		if(avelastwkcje == null)
+			return 1.0;
 //		if(this.isNodeDataFuPaiAfterTingPai((DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(),requireddate,0)) { //说明是停牌后复牌了，或者新股
 //			try {
 //				Double curggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
@@ -844,7 +845,10 @@ import com.udojava.evalex.Expression;
 //		}
 		
 		Double nodeavediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
-		return nodeavediff / avelastwkcje;
+		if(nodeavediff != null)
+			return nodeavediff / avelastwkcje;
+		else
+			return 1.0;
 	}
 	/*
 	 * 计算成交额日平均变化贡献率，即基于日平均成交额，板块成交额的变化占整个上级板块成交额增长量的比率，

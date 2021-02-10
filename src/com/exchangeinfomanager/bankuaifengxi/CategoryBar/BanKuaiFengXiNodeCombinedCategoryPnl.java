@@ -104,10 +104,12 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener#updatedDate(com.exchangeinfomanager.nodes.TDXNodes, java.time.LocalDate, java.time.LocalDate, java.lang.String)
 	 */
-	public void addMenuItem (JMenuItem menuitem,String position)
+	public void addMenuItem (JMenuItem menuitem,Integer position)
 	{
 		if(position == null) 
 			cjecjlzbpnldown.getPopupMenu().add(menuitem);
+		else
+			cjecjlzbpnldown.getPopupMenu().add(menuitem,position);
 	}
 
 	@Override
