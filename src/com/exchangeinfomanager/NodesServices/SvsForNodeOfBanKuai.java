@@ -162,6 +162,8 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		BanKuai bk = (BanKuai) bankuai;
 		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		if(allbkgg == null)
+			return bk;
 		
 		LocalDate tmpdate = requiredstartday;
 		do {
@@ -248,9 +250,10 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			LocalDate requiredendday, String period) 
 	{
 		BanKuai bk = (BanKuai) bankuai;
-//		bk = this.getAllGeGuOfBanKuai (bk,period); //��ȡ���������Ǹð��ĸ���
 		NodeXPeriodData bkwkdate = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		if(allbkgg == null)
+			return bankuai;
 		
 		LocalDate tmpdate = requiredstartday;
 		do {

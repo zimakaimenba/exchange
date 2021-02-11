@@ -261,13 +261,12 @@ public class ImportTDXData extends JDialog {
 			try {
 				System.out.println("------导入上海指数/板块当日成交信息开始" + LocalTime.now());
 				
-				File resulttmpfilebkamppreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ("sh");
-//				System.out.println("导入上海板块当日成交信息.....结束");
-				List<String> lines = Files.readLines(resulttmpfilebkamppreck, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-			} catch (IOException e) {e.printStackTrace();
+//				File resulttmpfilebkamppreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ("sh");
+////				System.out.println("导入上海板块当日成交信息.....结束");
+//				List<String> lines = Files.readLines(resulttmpfilebkamppreck, sysconfig.charSet());
+//				for (String line : lines) {
+//		        	tfldresult.append(line+"\n");
+//		        }
 			} catch (java.lang.NullPointerException e) {}
 			
 			try {
@@ -275,23 +274,21 @@ public class ImportTDXData extends JDialog {
 				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb("sh");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println(".......导入上海指数/板块当日成交信息结束" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
-				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-			} catch (IOException e) {e.printStackTrace();
+//				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
+//				for (String line : lines) {
+//		        	tfldresult.append(line+"\n");
+//		        }
 			} catch (java.lang.NullPointerException e) {}
 			
 			try {
 				System.out.println("------导入深圳指数板块当日成交信息开始" + LocalTime.now() );
-				File resulttmpfilezhishupreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ("sz");
-//				System.out.println("导入上海指数板块当日成交信息.....结束");
-				List<String> lines = Files.readLines(resulttmpfilezhishupreck, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-				resulttmpfilezhishupreck = null;
-			} catch (IOException e) {e.printStackTrace();
+//				File resulttmpfilezhishupreck = bkdbopt.preCheckTDXBanKuaiVolAmoToDb ("sz");
+////				System.out.println("导入上海指数板块当日成交信息.....结束");
+//				List<String> lines = Files.readLines(resulttmpfilezhishupreck, sysconfig.charSet());
+//				for (String line : lines) {
+//		        	tfldresult.append(line+"\n");
+//		        }
+//				resulttmpfilezhishupreck = null;
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 			
 			try {
@@ -299,15 +296,12 @@ public class ImportTDXData extends JDialog {
 				File resulttmpfilezsamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb ("sz");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入深圳指数板块当日成交信息结束" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
-				List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
+//				List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
+//				for (String line : lines) {
+//		        	tfldresult.append(line+"\n");
+//		        }
 				resulttmpfilezsamo = null;
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-			}
+			} catch (java.lang.NullPointerException e) {			}
 			
 			
 			chbxdaorutdxsysbkvol.setEnabled(false);
@@ -321,15 +315,12 @@ public class ImportTDXData extends JDialog {
 				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sz");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入深圳股票当日成交信息结束于" + LocalTime.now() + "......导入耗费时间： "+(end-start)+"ms \r\n");
-				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-				lines = null;
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-			}
+//				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
+//				for (String line : lines) {
+//		        	tfldresult.append(line+"\n");
+//		        }
+//				lines = null;
+			} catch (java.lang.NullPointerException e) {}
 			
 			cbxImportSzGeGuVol.setEnabled(false);
 			
@@ -341,15 +332,12 @@ public class ImportTDXData extends JDialog {
 				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sh");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入上海股票当日成交信息结束于" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
-				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
-				for (String line : lines) {
-		        	tfldresult.append(line+"\n");
-		        }
-				lines = null;
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-			}
+//				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
+//				for (String line : lines) {
+//		        	tfldresult.append(line+"\n");
+//		        }
+//				lines = null;
+			} catch (java.lang.NullPointerException e) {}
 			
 			cbxImportShGeGuVol.setEnabled(false);
 		}
@@ -650,38 +638,16 @@ public class ImportTDXData extends JDialog {
 						cbxImportSzGeGuVol.setSelected(false);
 						ckbxnetease.setSelected(false);
 						
-						chbxdaorutdxsysbk.setEnabled(false);
-						cbximporttdxgeguinfo.setEnabled(false);
-						chbxdaorutdxsysbkvol.setEnabled(false);
-						cbxImportShGeGuVol.setEnabled(false);
-						cbxImportSzGeGuVol.setEnabled(false);
-						ckbxnetease.setEnabled(false);
+						chbxdaorutdxsysbk.setEnabled(true);
+						cbximporttdxgeguinfo.setEnabled(true);
+						chbxdaorutdxsysbkvol.setEnabled(true);
+						cbxImportShGeGuVol.setEnabled(true);
+						cbxImportSzGeGuVol.setEnabled(true);
+						ckbxnetease.setEnabled(true);
 						
 						lblstatus.setText("交易日9:00-16:35期间不可以导入和成交量相关信息！");
 					}
-				} else {
-					String msg =  "交易时段导入交易数据可能导致数据缺失！\n是否继续？";
-					int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导入？", JOptionPane.OK_CANCEL_OPTION);
-					if(exchangeresult == JOptionPane.CANCEL_OPTION)
-							return;
-					
-//					chbxdaorutdxsysbk.setSelected(true);
-//					cbximporttdxgeguinfo.setSelected(true);
-//					chbxdaorutdxsysbkvol.setSelected(true);
-//					cbxImportShGeGuVol.setSelected(true);
-//					cbxImportSzGeGuVol.setSelected(true);
-//					ckbxnetease.setSelected(true);
-					
-					chbxdaorutdxsysbk.setEnabled(true);
-					cbximporttdxgeguinfo.setEnabled(true);
-					chbxdaorutdxsysbkvol.setEnabled(true);
-					cbxImportShGeGuVol.setEnabled(true);
-					cbxImportSzGeGuVol.setEnabled(true);
-					ckbxnetease.setEnabled(true);
-					
-					lblstatus.setText("交易日9:00-16:35期间导入成交量相关信息可能导致数据缺失！");
-				}
-				
+				} 
 			}
 		});
 		
@@ -894,9 +860,7 @@ public class ImportTDXData extends JDialog {
 		tfldoutzdyfile.setEditable(false);
 		tfldoutzdyfile.setColumns(10);
 		
-		chkbxforenotimportatwork = new JCheckBox("\u4EA4\u6613\u65E59:00-16:35\u671F\u95F4\u4E0D\u53EF\u4EE5\u5BFC\u5165\u548C\u6210\u4EA4\u91CF\u76F8\u5173\u4FE1\u606F\uFF01");
-		chkbxforenotimportatwork.setEnabled(false);
-		chkbxforenotimportatwork.setSelected(true);
+		chkbxforenotimportatwork = new JCheckBox("\u5047\u65E5(\u4EA4\u6613\u65E59:00-16:35\u671F\u95F4\u4E0D\u53EF\u4EE5\u5BFC\u5165\u548C\u6210\u4EA4\u91CF\u76F8\u5173\u4FE1\u606F\uFF01)");
 		
 		JSeparator separator = new JSeparator();
 		

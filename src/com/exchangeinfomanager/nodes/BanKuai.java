@@ -230,11 +230,10 @@ public class BanKuai extends TDXNodes
 	 */
 	public void addNewBanKuaiGeGu (StockOfBanKuai stockofbk) 
 	{
-		if(this.stockofbklist == null) {
+		if(this.stockofbklist == null) 
 			this.stockofbklist = new ArrayList<> ();
-			this.stockofbklist.add(stockofbk);
-		}
-		else if( this.stockofbklist.indexOf(stockofbk) < 0 )
+
+		if( this.stockofbklist.indexOf(stockofbk) < 0 )
 			this.stockofbklist.add(stockofbk);
 	}
 	 /**
@@ -261,7 +260,9 @@ public class BanKuai extends TDXNodes
 	public Set<BkChanYeLianTreeNode> getSpecificPeriodStockOfBanKuai(LocalDate requireddate,int difference) 
 	{
 		Set<BkChanYeLianTreeNode> result = new HashSet<> ();
-
+		if(this.stockofbklist == null)
+			return result;
+		
 		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
 		
 			if(  ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requireddate)) 

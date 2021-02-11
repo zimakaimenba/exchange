@@ -183,7 +183,7 @@ public class BanKuaiDbOperation
 							"SELECT * \r\n" + 
 							"FROM\r\n" + 
 							" (\r\n" + 
-							"SELECT *   FROM 通达信板块列表 WHERE 指数所属交易所 = '\" + jys +\"'" + 
+							"SELECT *   FROM 通达信板块列表 WHERE 指数所属交易所 = '" + jys +"'" + 
 							") AS node\r\n" + 
 							"\r\n" + 
 							"LEFT   JOIN \r\n" + 
@@ -1822,6 +1822,7 @@ public class BanKuaiDbOperation
 			e1.printStackTrace();
 		}
 		
+		allsysbk = null;
 		return tmprecordfile;
 	}
 	/*
@@ -1939,7 +1940,7 @@ public class BanKuaiDbOperation
 	public File refreshTDXBanKuaiVolAmoToDb (String cys)
 	{
 		File tmpreportfolder = Files.createTempDir();
-		File tmprecordfile = new File(tmpreportfolder + "同步通达信上海板块成交量报告.tmp");
+		File tmprecordfile = new File(tmpreportfolder + "同步板块成交量报告.tmp");
 		
 		List<String> volamooutput = getTDXVolFilesRule ();
 		String exportath = volamooutput.get(0);
