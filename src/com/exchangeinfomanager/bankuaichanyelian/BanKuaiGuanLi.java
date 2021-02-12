@@ -366,7 +366,7 @@ public class BanKuaiGuanLi extends JDialog
 				((BkChanYeLianTreeNodeListTableModel)tablebkgegu.getModel()).deleteAllRows();
 				
 				BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableDzhBk.getModel().getValueAt(row, 0) );
-				if(selectnode.getType() != BkChanYeLianTreeNode.TDXBK)
+				if(selectnode.getType() != BkChanYeLianTreeNode.DZHBK)
 					return; 
 				
 				tfldsearchsysbk.setText(selectnode.getMyOwnCode());
@@ -772,7 +772,7 @@ public class BanKuaiGuanLi extends JDialog
 		        JComponent jc = (JComponent)comp;
 		        
 				BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) ( this.getModel().getValueAt(row, 0) );
-				if(node.getType() ==  BkChanYeLianTreeNode.TDXBK ) {
+				if(node.getType() ==  BkChanYeLianTreeNode.DZHBK ) {
 					
 					String bktype = ((BanKuai)node).getBanKuaiLeiXing();
 			        if(bktype!= null && bktype.equals(BanKuai.NOGGWITHSELFCJL)) {

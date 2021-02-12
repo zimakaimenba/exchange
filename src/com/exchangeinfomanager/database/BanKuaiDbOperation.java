@@ -5855,7 +5855,7 @@ public class BanKuaiDbOperation
 		/*
 		 * 设置板块的属性: 是否导入数据，是否出现在板块分析界面中，是否导出到Gephi
 		 */
-		public void updateBanKuaiOperationsSetting(String nodecode, boolean importdailydata, boolean exporttogephi, 
+		public void updateBanKuaiOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
 				boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg)
 		{
 			String sqlupdatestat = "UPDATE 通达信板块列表 SET " +
@@ -5865,12 +5865,13 @@ public class BanKuaiDbOperation
 								" 产业链树=" + showincyltree + ","  +
 								" 周分析文件 = " + exporttowkfile + ","  +
 								" 导入板块个股 = " + importbkgg +
-								" WHERE 板块ID='" + nodecode + "'"
+								" WHERE 板块ID='" + node.getMyOwnCode() + "'"
 								;
 	   		try {
 				int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 			} catch (MysqlDataTruncation e) {e.printStackTrace();
 			} catch (SQLException e) {e.printStackTrace();}
+	   		
 		}
 		/*
 		 * 导入网易股票行情接口的数据，
@@ -7330,6 +7331,7 @@ public class BanKuaiDbOperation
 		
 			return node;
 		}
+		
 		
 }
 

@@ -16,6 +16,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.exchangeinfomanager.Services.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -40,7 +41,7 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	private JCheckBox cbxnotbkfx;
 	private JCheckBox cbxnotshowincyltree;
 	private BkChanYeLianTreeNode settingnode;
-	private BanKuaiDbOperation bkdbopt;
+//	private BanKuaiDbOperation bkdbopt;
 	private JCheckBox chkbxnotexportwklyfile;
 	private JCheckBox chbxnotimportgegu;
 	
@@ -51,7 +52,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	public BanKuaiShuXingSheZhi(BkChanYeLianTreeNode node) 
 	{
 		this.settingnode = node;
-		this.bkdbopt = new BanKuaiDbOperation ();
 		
 		initializeGui ();
 		createEvetns ();
@@ -62,8 +62,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	
 	public BanKuaiShuXingSheZhi() 
 	{
-		this.bkdbopt = new BanKuaiDbOperation ();
-		
 		initializeGui ();
 		createEvetns ();
 	}
@@ -91,7 +89,7 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	{
 		this.settingnode = node;
 		
-		if(settingnode.getType() == BkChanYeLianTreeNode.TDXBK) {
+		if(settingnode.getType() == BkChanYeLianTreeNode.TDXBK || settingnode.getType() == BkChanYeLianTreeNode.DZHBK) {
 			
 			cbxnotimport.setEnabled(true);
 			cbxnotbkfx.setEnabled(true);
@@ -122,22 +120,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	}
 	private void createEvetns() 
 	{
-//		chkbxnotexportwklyfile.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) {
-//				Set<String> codeet = new HashSet<String> ();
-//				codeet.add(settingnode.getMyOwnCode());
-//				Multimap<?, ?> result = cyltree.checkBanKuaiSuoSuTwelveDaLei (codeet );
-//				
-//				if(result != null && result.size() > 0) {
-//						chkbxnotexportwklyfile.setSelected(false);
-//						JOptionPane.showMessageDialog(null,"该板块在重大关注中。\r\n 请先在重点关注中删除该板块再改变板块分析设置!","Warning",JOptionPane.WARNING_MESSAGE);
-//						chkbxnotexportwklyfile.setSelected(  !((BanKuai)settingnode).isExportTowWlyFile()  );
-//						return;
-//				}
-//			}
-//		});
-		
 		chkbxnotexportwklyfile.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
 				buttonapplybksetting.setEnabled(true);
@@ -189,10 +171,8 @@ public class BanKuaiShuXingSheZhi extends JPanel
 		buttonapplybksetting.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				
-				if(settingnode.getType() == BkChanYeLianTreeNode.TDXBK) {
 					applaySetttingToDb ();
-				}
+
 			}
 		});
 		
@@ -200,30 +180,21 @@ public class BanKuaiShuXingSheZhi extends JPanel
 
 	protected void applaySetttingToDb() 
 	{
-		if( ((BanKuai)settingnode).getBanKuaiVendor().toUpperCase().equals("TDX"))
-			bkdbopt.updateBanKuaiOperationsSetting (settingnode.getMyOwnCode(),!cbxnotimport.isSelected(),
+		
+		ServicesForNodeBanKuai svsbk = ((BanKuai)settingnode).getBanKuaiService ();
+		svsbk.updateBanKuaiBasicOperationsSettings(settingnode,!cbxnotimport.isSelected(),
 					!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected(),
 					!cbxnotshowincyltree.isSelected(),
 					!chkbxnotexportwklyfile.isSelected(),
 					!chbxnotimportgegu.isSelected()
 					);
-		else
-		if( ((BanKuai)settingnode).getBanKuaiVendor().toUpperCase().equals("DZH")) {
-			BanKuaiDZHDbOperation dzhbkdbopt  = new BanKuaiDZHDbOperation ();
-			dzhbkdbopt.updateBanKuaiOperationsSettings (settingnode.getMyOwnCode(),!cbxnotimport.isSelected(),
-					!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected(),
-					!cbxnotshowincyltree.isSelected(),
-					!chkbxnotexportwklyfile.isSelected(),
-					!chbxnotimportgegu.isSelected()
-					);
-		}
 
-		((BanKuai)settingnode).setImportdailytradingdata(!cbxnotimport.isSelected());
-		((BanKuai)settingnode).setExporttogehpi(!cbxnotgephi.isSelected());
-		((BanKuai)settingnode).setShowinbkfxgui(!cbxnotbkfx.isSelected());
-		((BanKuai)settingnode).setShowincyltree(!cbxnotshowincyltree.isSelected());
-		((BanKuai)settingnode).setExportTowWlyFile(!chkbxnotexportwklyfile.isSelected());
-		((BanKuai)settingnode).setImportBKGeGu(!chbxnotimportgegu.isSelected());
+//		((BanKuai)settingnode).setImportdailytradingdata(!cbxnotimport.isSelected());
+//		((BanKuai)settingnode).setExporttogehpi(!cbxnotgephi.isSelected());
+//		((BanKuai)settingnode).setShowinbkfxgui(!cbxnotbkfx.isSelected());
+//		((BanKuai)settingnode).setShowincyltree(!cbxnotshowincyltree.isSelected());
+//		((BanKuai)settingnode).setExportTowWlyFile(!chkbxnotexportwklyfile.isSelected());
+//		((BanKuai)settingnode).setImportBKGeGu(!chbxnotimportgegu.isSelected());
 		
 		buttonapplybksetting.setEnabled(false);
 		

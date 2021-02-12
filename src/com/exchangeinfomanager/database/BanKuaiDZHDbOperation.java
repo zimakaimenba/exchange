@@ -369,17 +369,17 @@ public class BanKuaiDZHDbOperation
 	/*
 	 * 
 	 */
-	public void updateBanKuaiOperationsSettings(String nodecode, boolean importdailydata, boolean exporttogephi, 
+	public void updateBanKuaiOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
 			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg)
 	{
 		String sqlupdatestat = "UPDATE 大智慧板块列表  SET " +
 							" 导入交易数据=" + importdailydata  + "," +
 //							" 导出Gephi=" + exporttogephi +  ","  +
-//							" 板块分析=" + showinbkfx +  ","  +
+							" 板块分析=" + showinbkfx +  ","  +
 //							" 产业链树=" + showincyltree + ","  +
 //							" 周分析文件 = " + exporttowkfile + ","  +
 							" 导入板块个股 = " + importbkgg +
-							" WHERE 板块ID='" + nodecode + "'"
+							" WHERE 板块ID='" + node.getMyOwnCode() + "'"
 							;
    		try {
 			int autoIncKeyFromApi = tdxconnectdb.sqlUpdateStatExecute(sqlupdatestat);

@@ -182,5 +182,19 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public BkChanYeLianTreeNode updateBanKuaiBasicOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
+			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg)
+	{
+		dzhbkdbopt.updateBanKuaiOperationsSettings (node,importdailydata,exporttogephi,showinbkfx,showincyltree,exporttowkfile,importbkgg);
+		((BanKuai)node).setImportdailytradingdata(importdailydata);
+		((BanKuai)node).setExporttogehpi(exporttogephi);
+		((BanKuai)node).setShowinbkfxgui(showinbkfx);
+		((BanKuai)node).setShowincyltree(showincyltree);
+		((BanKuai)node).setExportTowWlyFile(exporttowkfile);
+		((BanKuai)node).setImportBKGeGu(importbkgg);
+		
+		return node;
+	}
 
 }

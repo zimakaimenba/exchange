@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
 public interface ServicesForNodeBanKuai 
@@ -13,4 +14,6 @@ public interface ServicesForNodeBanKuai
 	public StockOfBanKuai getGeGuOfBanKuaiData(BanKuai bankuai, StockOfBanKuai stockofbk,String period);
 	public StockOfBanKuai getGeGuOfBanKuaiData(BanKuai bankuai, String stockcode,String period);
 	public StockOfBanKuai getGeGuOfBanKuaiData(String bkcode, String stockcode,String period);
+	public BkChanYeLianTreeNode updateBanKuaiBasicOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
+			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg);
 }
