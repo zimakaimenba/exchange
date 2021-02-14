@@ -1667,6 +1667,26 @@ public class BanKuaiFengXi extends JDialog
         		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByChenJiaoEr();
             }
         });
+        menuItemcancelreviewedtoday.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//            	int row = tableBkZhanBi.getSelectedRow();
+//    			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+//    			BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
+    			
+    			List<BkChanYeLianTreeNode> allgegu = ((BanKuaiGeGuTableModelFromPropertiesFile)tableGuGuZhanBiInBk.getModel()).getAllNodes();
+    			if(allgegu == null  || allgegu.size() == 0)
+    				return ;
+    			
+    			for(BkChanYeLianTreeNode tmpnode : allgegu) 
+    				((StockOfBanKuai)tmpnode).getStock().setHasReviewedToday(false);
+    			
+    			tableGuGuZhanBiInBk.repaint();
+    			
+            }
+        });
+        
         menuItemtimerangezhangfu.addActionListener(new ActionListener() {
 
             @Override
@@ -2854,7 +2874,12 @@ public class BanKuaiFengXi extends JDialog
 				nodeinfotocsv.addNodeToCsvList(tmpnode, curselectdate, curselectdate);
 			} else
 			if(exporttypeordate.toLowerCase().equals("single") ) {
-				DateRangeSelectPnl datachoose = new DateRangeSelectPnl (52); 
+				String csvexportdefaulttimerangebymonthes = bkfxsettingprop.getProperty ("csvexportdefaulttimerangebymonthes");
+				Integer timerange = 52;
+				if(csvexportdefaulttimerangebymonthes != null) 
+					timerange = Integer.parseInt(csvexportdefaulttimerangebymonthes);
+				
+				DateRangeSelectPnl datachoose = new DateRangeSelectPnl (timerange); 
 				JOptionPane.showMessageDialog(null, datachoose,"为" + tmpnode.getMyOwnName() + "选择导出时间段", JOptionPane.OK_CANCEL_OPTION);
 				LocalDate nodestart = datachoose.getDatachoosestart();
 				LocalDate nodeend = datachoose.getDatachooseend();
@@ -3272,6 +3297,8 @@ public class BanKuaiFengXi extends JDialog
 private BkfxHightLightPnl bkhlpnl;
 
 private JMenu stkhistorycsvfileMenu;
+
+private JMenuItem menuItemcancelreviewedtoday;
 	
 	
 	private void initializeGuiOfNormal() {
@@ -4225,6 +4252,9 @@ private JMenu stkhistorycsvfileMenu;
        jPopupMenuoftabbedpane.add(menuItemchengjiaoer);
        jPopupMenuoftabbedpane.add(menuItemtimerangezhangfu);
 //       jPopupMenuoftabbedpane.add(menuItemstocktocsv);
+       
+       menuItemcancelreviewedtoday = new JMenuItem("取消已经阅读状态"); //系统默认按成交额排名
+       jPopupMenuoftabbedpane.add(menuItemcancelreviewedtoday);
        
 //       jPopupMenuoftabbedpanebk = new JPopupMenu();
 //       menuItembktocsv = new JMenuItem("导出所有板块到CSV");
