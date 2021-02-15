@@ -84,6 +84,7 @@ import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePn
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.VoiceEngine;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.WeeklyAnalysis;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTable;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuExternalInfoTableFromPropertiesFile;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTable;
@@ -254,6 +255,8 @@ public class BanKuaiFengXi extends JDialog
 //	private Set<BarChartPanelDataChangedListener> barchartpanelstockofbankuaidatachangelisteners;
 	private Set<BarChartPanelDataChangedListener> barchartpanelstockdatachangelisteners;
 
+	private Set<BanKuaiGeGuBasicTable> tablebkggtableset;
+
 	private void setupBkfxHighLightSettingProperties ()
 	{
 
@@ -324,7 +327,15 @@ public class BanKuaiFengXi extends JDialog
 		this.barchartpanelbankuaidatachangelisteners = new HashSet<>();
 		this.piechartpanelbankuaidatachangelisteners = new HashSet<>();
 		this.barchartpanelstockdatachangelisteners = new HashSet<>();
+		this.tablebkggtableset = new HashSet<>();
 		
+		this.tablebkggtableset.add(tableGuGuZhanBiInBk);
+		this.tablebkggtableset.add(tableExternalInfo);
+		this.tablebkggtableset.add(tablexuandingzhou);
+		this.tablebkggtableset.add(tablexuandingminusone);
+		this.tablebkggtableset.add(tablexuandingminustwo);
+		this.tablebkggtableset.add(tablexuandingplusone);
+		this.tablebkggtableset.add(tableTempGeGu);
 		
 		barchartpanelbankuaidatachangelisteners.add(panelbkwkcjezhanbi);
 		barchartpanelbankuaidatachangelisteners.add(pnlbkwkcjlzhanbi);
@@ -742,7 +753,7 @@ public class BanKuaiFengXi extends JDialog
 			
 			this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上边是日均成交额，下边是占比线
 			
-			findInputedNodeInTable ( selectstock.getMyOwnCode() );
+//			findInputedNodeInTable ( selectstock.getMyOwnCode() );
 			hightlightSpecificSector (selectstock); //餅圖
 //			refreshGeGuFengXiResult (selectstock); //个股对板块的数据
 			
@@ -826,13 +837,7 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void clearGeGuTablesFilter ()
 	{
-		tableGuGuZhanBiInBk.resetTableHeaderFilter();
-		tablexuandingzhou.resetTableHeaderFilter();
-		tablexuandingminusone.resetTableHeaderFilter();
-		tablexuandingminustwo.resetTableHeaderFilter();
-		tablexuandingplusone.resetTableHeaderFilter();
-		tableExternalInfo.resetTableHeaderFilter();
-		tableTempGeGu.resetTableHeaderFilter();
+		tablebkggtableset.forEach(l -> l.resetTableHeaderFilter());
 	}
 	/*
 	 * 在个股表中发现输入的个股,返回在主表中是否发现改个股
@@ -841,116 +846,24 @@ public class BanKuaiFengXi extends JDialog
 	{
 		Boolean found = false; int rowindex;
 		nodecode = nodecode.substring(0,6);
-		if(((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getRowCount() > 0) {
-
-			 rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getNodeRowIndex(nodecode);
-			 
-			if(rowindex >= 0) {
-				found = true;
-				
-				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
-				int curselectrow = tableGuGuZhanBiInBk.getSelectedRow();
-				if(  curselectrow != modelRow) {
-					try {
-						tableGuGuZhanBiInBk.setRowSelectionInterval(modelRow, modelRow);
-						tableGuGuZhanBiInBk.scrollRectToVisible(new Rectangle(tableGuGuZhanBiInBk.getCellRect(modelRow, 0, true)));
-					} catch (java.lang.IllegalArgumentException ex) {
-//						ex.printStackTrace();
-					}
+		
+		for(BanKuaiGeGuBasicTable tmptable : tablebkggtableset ) {
+			if(  ((BanKuaiGeGuBasicTableModel)tmptable.getModel() ).getRowCount() > 0 ) {
+				rowindex = ((BanKuaiGeGuBasicTableModel)tmptable.getModel() ).getNodeRowIndex(nodecode);
+				if(rowindex >= 0) {
+					found = true;
 					
-					//在当前表就有的话，就把相关PANEL清空
-					panelGgDpCjeZhanBi.resetDate();
+					int modelRow = tmptable.convertRowIndexToView(rowindex);
+					int curselectrow = tmptable.getSelectedRow();
+					if(  curselectrow != modelRow) {
+						try {
+							tmptable.setRowSelectionInterval(modelRow, modelRow);
+							tmptable.scrollRectToVisible(new Rectangle(tmptable.getCellRect(modelRow, 0, true)));
+						} catch (java.lang.IllegalArgumentException ex) {}
+					} 
 				}
-			}
-		}
-		
-		
-		if( ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getRowCount() >0) {
+		}}
 
-			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel() ).getNodeRowIndex(nodecode);
-			if(rowindex >=0) {
-				int modelRow = tablexuandingzhou.convertRowIndexToView(rowindex);
-//				int modelRow = rowindex;
-				int curselectrow = tablexuandingzhou.getSelectedRow();
-				if( curselectrow != modelRow) {
-					tablexuandingzhou.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingzhou.scrollRectToVisible(new Rectangle(tablexuandingzhou.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		
-		
-		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getRowCount() >0 ) {
-
-			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel() ).getNodeRowIndex(nodecode);
-			if(rowindex >=0) {
-				int modelRow = tablexuandingminusone.convertRowIndexToView(rowindex);
-				int curselectrow = tablexuandingminusone.getSelectedRow();
-				if(  curselectrow != modelRow)  {
-					tablexuandingminusone.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingminusone.scrollRectToVisible(new Rectangle(tablexuandingminusone.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		
-
-		if( ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getRowCount() > 0) {
-
-			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel() ).getNodeRowIndex(nodecode);
-			if(rowindex >=0){
-				int modelRow = tablexuandingminustwo.convertRowIndexToView(rowindex);
-//				int modelRow = rowindex;
-				int curselectrow = tablexuandingminustwo.getSelectedRow();
-				if(  curselectrow != modelRow) {
-					tablexuandingminustwo.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingminustwo.scrollRectToVisible(new Rectangle(tablexuandingminustwo.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-
-		if(((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getRowCount() > 0) {
-
-			rowindex = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel() ).getNodeRowIndex(nodecode);
-			if(rowindex >=0)  {
-				int modelRow = tablexuandingplusone.convertRowIndexToView(rowindex);
-//				int modelRow = rowindex;
-				int curselectrow = tablexuandingplusone.getSelectedRow();
-				if(   curselectrow != modelRow)  {
-					tablexuandingplusone.setRowSelectionInterval(modelRow, modelRow);
-					tablexuandingplusone.scrollRectToVisible(new Rectangle(tablexuandingplusone.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		
-		
-		if(  ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getRowCount() >0 ) {
-
-			rowindex = ((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel() ).getNodeRowIndex(nodecode);
-			if(rowindex >= 0) {
-				int modelRow = tableExternalInfo.convertRowIndexToView(rowindex);
-//				int modelRow = rowindex;
-				int curselectrow = tableExternalInfo.getSelectedRow();
-				if(  curselectrow != modelRow) {
-					tableExternalInfo.setRowSelectionInterval(modelRow, modelRow);
-					tableExternalInfo.scrollRectToVisible(new Rectangle(tableExternalInfo.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		if(((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getRowCount() >0 ) {
-
-			rowindex = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel() ).getNodeRowIndex(nodecode);
-			if(rowindex >= 0) {
-				int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
-//				int modelRow = rowindex;
-				int curselectrow = tableTempGeGu.getSelectedRow();
-				if(  curselectrow != modelRow) {
-					tableTempGeGu.setRowSelectionInterval(modelRow, modelRow);
-					tableTempGeGu.scrollRectToVisible(new Rectangle(tableTempGeGu.getCellRect(modelRow, 0, true)));
-				}
-			}
-		}
-		
-		
 		return found;
 	}
 	/*
@@ -973,13 +886,6 @@ public class BanKuaiFengXi extends JDialog
 				btnresetdate.setEnabled(false);
 				bkhlpnl.setCurrentDisplayDate(this.dateChooser.getLocalDate() ); //导出个股时候要用到当前的日期。
 	}
-//	private void setUpZhongDianGuanZhuBanKuai ()
-//	{
-//		ServicesForNews zdgzsvs = this.dateChooser.getStockCalendar().getDuanQiGuanZhuService();
-//		//DuanQiGuanZhuServices
-//		zdgzsvs.getCache().addCacheListener(tableBkZhanBi);
-//	}
-
 	/**
 	 * 
 	 */
@@ -1536,7 +1442,7 @@ public class BanKuaiFengXi extends JDialog
 				}
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
 				StockOfBanKuai bstkofbk = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode(modelRow);
-				getBanKuaiHistoryCsvAndAnalysisFile (bstkofbk.getStock());
+				getBanKuaiHistoryCsvAndAnalysisFile ((JMenu)e.getSource(),bstkofbk.getStock());
 			}
 			
 			public void mouseClicked(MouseEvent e) {}
@@ -1548,7 +1454,7 @@ public class BanKuaiFengXi extends JDialog
 				int row = tableBkZhanBi.getSelectedRow();
 				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
 				BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
-				getBanKuaiHistoryCsvAndAnalysisFile (bk);
+				getBanKuaiHistoryCsvAndAnalysisFile ((JMenu)e.getSource(),bk);
 			}
 			
 			public void mouseClicked(MouseEvent e) {}
@@ -1686,8 +1592,8 @@ public class BanKuaiFengXi extends JDialog
     			for(BkChanYeLianTreeNode tmpnode : allgegu) 
     				((StockOfBanKuai)tmpnode).getStock().setHasReviewedToday(false);
     			
-    			tableGuGuZhanBiInBk.repaint();
-    			
+    			tablebkggtableset.forEach(l -> l.repaint());
+    			    			
             }
         });
         
@@ -2421,16 +2327,16 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
-	protected void getBanKuaiHistoryCsvAndAnalysisFile(TDXNodes node) 
+	protected void getBanKuaiHistoryCsvAndAnalysisFile(JMenu jMenu, TDXNodes node) 
 	{
-		if(historycsvfileMenu.getMenuComponentCount() >0) {
+		if(jMenu.getMenuComponentCount() >0) {
 //			Component[] mc = historycsvfileMenu.getMenuComponents();
 			Component curmenuitem = historycsvfileMenu.getMenuComponent(0);
 			if(curmenuitem != null  && curmenuitem.getName().contains(node.getMyOwnCode() ))
 				return;
 		}
 		
-		historycsvfileMenu.removeAll();
+		jMenu.removeAll();
 		
 		String installpath = (new SetupSystemConfiguration()).getSystemInstalledPath();
 		File dir = new File(installpath + "/dailydata/csv");
@@ -2463,7 +2369,7 @@ public class BanKuaiFengXi extends JDialog
 		    
 		    	String singlefilename = tmpfile.getName();
 		    	JMenuItem menuitemhistorycsvfile = new JMenuItem (singlefilename ); 
-		    	historycsvfileMenu.add(menuitemhistorycsvfile);
+		    	jMenu.add(menuitemhistorycsvfile);
 		    	menuitemhistorycsvfile.setName(singlefilename );
 		    	menuitemhistorycsvfile.addActionListener(new ActionListener() {
 		            @Override
@@ -2536,7 +2442,7 @@ public class BanKuaiFengXi extends JDialog
 		if(fileList.size() == 0) {
 			JMenuItem menuitemhistorycsvfile = new JMenuItem ("没有历史CSV文件" );
 			menuitemhistorycsvfile.setName("没有历史CSV文件");
-	    	historycsvfileMenu.add(menuitemhistorycsvfile);
+			jMenu.add(menuitemhistorycsvfile);
 		}
 	
 	}
