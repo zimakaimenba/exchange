@@ -62,7 +62,11 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 		if(entryList == null)
 			entryList = new ArrayList<BkChanYeLianTreeNode> ();
 		
-		entryList.addAll( bankuaiwithcje );
+		for(BkChanYeLianTreeNode tmpnode : bankuaiwithcje) 
+			if(!this.entryList.contains(tmpnode) )
+				entryList.add(tmpnode);
+		
+//		entryList.addAll( bankuaiwithcje );
 	}
 	
 

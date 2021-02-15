@@ -490,12 +490,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	 */
 	public void setCurSelectedBarInfo (LocalDate newdate,String selectedtooltip) 
 	{
-//        String oldText = this.dateselected + this.tooltipselected;
         this.dateselected = newdate ;
-//        int column = barchartdataset.getColumnIndex(newdate);
-//        int row = barchartdataset.getRowIndex(newdate);
-//        Number value = barchartdataset.getValue(row, column);
-        
 
         PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  this.dateselected );
         pcs.firePropertyChange(evt);

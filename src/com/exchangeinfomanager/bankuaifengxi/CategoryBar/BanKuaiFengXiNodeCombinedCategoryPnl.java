@@ -50,6 +50,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			this.horizonlayout = false;
 		
 		this.pnltype = cjeorcjl;
+		this.setName(cjeorcjl);
 		
 		initializeSystem ();
 	}
@@ -57,6 +58,7 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	{
 		this.horizonlayout = false;
 		this.pnltype = cjeorcjl;
+		this.setName(cjeorcjl);
 		
 		initializeSystem ();
 	}

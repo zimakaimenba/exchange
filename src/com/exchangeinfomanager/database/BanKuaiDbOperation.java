@@ -123,53 +123,7 @@ public class BanKuaiDbOperation
 	private  SetupSystemConfiguration sysconfig;
 	private AllCurrentTdxBKAndStoksTree allbksks;
 	private static Logger logger = Logger.getLogger(BanKuaiDbOperation.class);
-	/*
-	 * 
-	 */
-	public BanKuai getBanKuaiBasicInfo(BanKuai bkbasicinfo)
-	{
-		String bkcode = bkbasicinfo.getMyOwnCode();
-		CachedRowSetImpl rsagu = null;
-		try {
-			 String sqlquerystat = "select 板块名称, 概念时间,概念板块提醒,负面消息时间,负面消息,券商评级时间,券商评级提醒,正相关及客户,负相关及竞争对手,客户,竞争对手 "
-			 		+ " FROM 通达信板块列表  B "
-//					+ " RIGHT JOIN 通达信板块社交关系表 F ON (F.板块左 = m.板块ID OR F.板块右 = m.板块ID)  "
-			 		+ "WHERE B.板块ID = '" + bkcode +"' \r\n"  
-		 			;
-			logger.debug(sqlquerystat);
-			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
-			while(rsagu.next())
-				setSingleNodeInfo (bkbasicinfo,rsagu);
-			
-			
-			sqlquerystat = "SELECT * FROM 通达信板块社交关系表 F"
-					+ " WHERE (F.板块左 = '" + bkcode + "' OR F.板块右 = '" + bkcode + "')"
-					;
-			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
-			while(rsagu.next()) {
-				String friendcodeleft = rsagu.getString("板块左"); 
-				String friendcoderight = rsagu.getString("板块右");
-				Boolean relationship = rsagu.getBoolean("关系");
-				if(relationship == null)
-					relationship = true;
-				if(!friendcodeleft.equals(bkcode) && relationship )
-					bkbasicinfo.addSocialFriendsPostive(friendcodeleft);
-				if(!friendcoderight.equals(bkcode) && relationship )
-					bkbasicinfo.addSocialFriendsPostive(friendcoderight);
-				if(!friendcodeleft.equals(bkcode) && !relationship )
-					bkbasicinfo.addSocialFriendsNegtive(friendcodeleft);
-				if(!friendcoderight.equals(bkcode) && !relationship )
-					bkbasicinfo.addSocialFriendsNegtive(friendcoderight);	
-			}
-		} catch (Exception e) { e.printStackTrace();
-		} finally {
-			try {	rsagu.close();
-			} catch (SQLException e) {	e.printStackTrace();}
-			rsagu = null;
-		}
-		
-		return bkbasicinfo;
-	}
+	
 	/*
 	 * 
 	 */
@@ -233,6 +187,103 @@ public class BanKuaiDbOperation
 	    
 	    return tmpsysbankuailiebiaoinfo;
 	}
+//	/*
+//	 * 找出通达信定义的所有板块.不包括交易所的指数板块
+//	 */
+//	private HashSet<String> getTDXBanKuaiSet(String jys)
+//	{
+//		HashSet<String> tmpsysbankuailiebiaoinfo = new HashSet<String>();
+//		
+//		String sqlquerystat;
+//		if(!jys.toLowerCase().equals("all"))
+//			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述  FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
+//		else
+//			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述 FROM 通达信板块列表 	"  ;
+//		logger.debug(sqlquerystat);
+//		CachedRowSetImpl rs = null;
+//	    try {  
+//	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+//	    	
+//	        rs.last();  
+//	        int rows = rs.getRow();  
+////	        data = new Object[rows][];    
+////	        int columnCount = 3;//列数  
+//	        rs.first();  
+//	        //int k = 0;  
+//	        //while(rs.next())
+//	        for(int j=0;j<rows;j++) {  
+//	        	String bkcode = rs.getString("板块ID");
+//	        	tmpsysbankuailiebiaoinfo.add(bkcode);
+//	        	
+//	            rs.next();
+//	        }
+//	        
+//	    }catch(java.lang.NullPointerException e){ 
+//	    	e.printStackTrace();
+//	    } catch (SQLException e) {
+//	    	e.printStackTrace();
+//	    }catch(Exception e){
+//	    	e.printStackTrace();
+//	    } finally {
+//	    	if(rs != null)
+//				try {
+//					rs.close();
+//					rs = null;
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//	    } 
+//	    
+//	    return tmpsysbankuailiebiaoinfo;
+//	}
+	/*
+	 * 
+	 */
+	public BanKuai getBanKuaiBasicInfo(BanKuai bkbasicinfo)
+	{
+		String bkcode = bkbasicinfo.getMyOwnCode();
+		CachedRowSetImpl rsagu = null;
+		try {
+			 String sqlquerystat = "select 板块名称, 概念时间,概念板块提醒,负面消息时间,负面消息,券商评级时间,券商评级提醒,正相关及客户,负相关及竞争对手,客户,竞争对手 "
+			 		+ " FROM 通达信板块列表  B "
+//					+ " RIGHT JOIN 通达信板块社交关系表 F ON (F.板块左 = m.板块ID OR F.板块右 = m.板块ID)  "
+			 		+ "WHERE B.板块ID = '" + bkcode +"' \r\n"  
+		 			;
+			logger.debug(sqlquerystat);
+			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
+			while(rsagu.next())
+				setSingleNodeInfo (bkbasicinfo,rsagu);
+			
+			
+			sqlquerystat = "SELECT * FROM 通达信板块社交关系表 F"
+					+ " WHERE (F.板块左 = '" + bkcode + "' OR F.板块右 = '" + bkcode + "')"
+					;
+			rsagu = connectdb.sqlQueryStatExecute(sqlquerystat);
+			while(rsagu.next()) {
+				String friendcodeleft = rsagu.getString("板块左"); 
+				String friendcoderight = rsagu.getString("板块右");
+				Boolean relationship = rsagu.getBoolean("关系");
+				if(relationship == null)
+					relationship = true;
+				if(!friendcodeleft.equals(bkcode) && relationship )
+					bkbasicinfo.addSocialFriendsPostive(friendcodeleft);
+				if(!friendcoderight.equals(bkcode) && relationship )
+					bkbasicinfo.addSocialFriendsPostive(friendcoderight);
+				if(!friendcodeleft.equals(bkcode) && !relationship )
+					bkbasicinfo.addSocialFriendsNegtive(friendcodeleft);
+				if(!friendcoderight.equals(bkcode) && !relationship )
+					bkbasicinfo.addSocialFriendsNegtive(friendcoderight);	
+			}
+		} catch (Exception e) { e.printStackTrace();
+		} finally {
+			try {	rsagu.close();
+			} catch (SQLException e) {	e.printStackTrace();}
+			rsagu = null;
+		}
+		
+		return bkbasicinfo;
+	}
+	
 	/*
 	 * 
 	 */
@@ -860,26 +911,13 @@ public class BanKuaiDbOperation
 				
 			}
 			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return -1;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return -1;
+		} catch (FileNotFoundException e) {e.printStackTrace();return -1;
+		} catch (IOException e) {e.printStackTrace();return -1;
 		} finally {
-			try {
-				fr.close();
-				fr = null;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				bufr.close();
-				bufr = null;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			try {fr.close();				fr = null;
+			} catch (IOException e) {e.printStackTrace();}
+			try {bufr.close();bufr = null;
+			} catch (IOException e) {e.printStackTrace();
 			}
 		}
 		 
@@ -1451,7 +1489,10 @@ public class BanKuaiDbOperation
 	private int refreshTDXZhiShuShangHaiLists(File tmprecordfile)
 	{
 		//先从数据库中读取现有所有的上海指数
-		HashSet<String> curallshbk = this.getTDXBanKuaiSet("sh");
+		Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,"sh");
+		Set<String> curallshbk = new HashSet<> ();
+		for(BkChanYeLianTreeNode tmpnode : requiredbk)
+			curallshbk.add(tmpnode.getMyOwnCode());
 		
 		//从文件中读取最新的指数
 		Set<String> allinsertbk = new HashSet<> (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
@@ -1555,7 +1596,7 @@ public class BanKuaiDbOperation
 			 }
 		 }
 		 differencebankuaiold = null;
-		
+		 curallshbk = null;
 		return 1;
 	}
 	/*
@@ -1564,7 +1605,10 @@ public class BanKuaiDbOperation
 	private int refreshTDXZhiShuShenZhenLists(File tmprecordfile)
 	{
 		//先从数据库中读取现有所有的上海指数
-		HashSet<String> curallszbk = this.getTDXBanKuaiSet("sz");
+		Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,"sz");
+		Set<String> curallszbk = new HashSet<> ();
+		for(BkChanYeLianTreeNode tmpnode : requiredbk)
+			curallszbk.add(tmpnode.getMyOwnCode());
 				
 		//从文件中读取最新的指数
 		HashSet allinsertbk = new HashSet (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
@@ -1672,6 +1716,7 @@ public class BanKuaiDbOperation
 			 }
 		 }
 		 differencebankuaiold = null;
+		 curallszbk = null;
 		 return -1;
 	}
 
@@ -1727,59 +1772,11 @@ public class BanKuaiDbOperation
 	    
 	    return tmpsysbankuailiebiaoinfo;
 	}
-	/*
-	 * 找出通达信定义的所有板块.不包括交易所的指数板块
-	 */
-	private HashSet<String> getTDXBanKuaiSet(String jys)
-	{
-		HashSet<String> tmpsysbankuailiebiaoinfo = new HashSet<String>();
-		
-		String sqlquerystat;
-		if(!jys.toLowerCase().equals("all"))
-			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述  FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
-		else
-			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述 FROM 通达信板块列表 	"  ;
-		logger.debug(sqlquerystat);
-		CachedRowSetImpl rs = null;
-	    try {  
-	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-	    	
-	        rs.last();  
-	        int rows = rs.getRow();  
-//	        data = new Object[rows][];    
-//	        int columnCount = 3;//列数  
-	        rs.first();  
-	        //int k = 0;  
-	        //while(rs.next())
-	        for(int j=0;j<rows;j++) {  
-	        	String bkcode = rs.getString("板块ID");
-	        	tmpsysbankuailiebiaoinfo.add(bkcode);
-	        	
-	            rs.next();
-	        }
-	        
-	    }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
-	    } finally {
-	    	if(rs != null)
-				try {
-					rs.close();
-					rs = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-	    } 
-	    
-	    return tmpsysbankuailiebiaoinfo;
-	}
+	
 	/*
 	 * 检查数据库中的通达信板块哪些有记录文件，哪些没有。 
 	 */
-	public File preCheckTDXBanKuaiVolAmoToDb (String cys)
+	public File preCheckTDXBanKuaiVolAmoToDb (String jys)
 	{
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步通达信板上海块成交量预检查.tmp");
@@ -1795,15 +1792,18 @@ public class BanKuaiDbOperation
 //			header = true;
 //		else header = false;
 		
-		HashSet<String> allsysbk = this.getTDXBanKuaiSet (cys.toLowerCase());
-		ArrayList<String> allbkcode = new ArrayList<String>(allsysbk );
+		Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,jys);
+		ArrayList<String> allbkcode = new ArrayList<String>( );
+		for(BkChanYeLianTreeNode tmpnode : requiredbk)
+			allbkcode.add(tmpnode.getMyOwnCode());
+		
 		int found =0 ; int notfound = 0;
 		try {
 			Files.append("系统共有"+ allbkcode.size() + "个板块！"+ System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		
 			for(String tmpbkcode:allbkcode) {
 //				String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
-				String bkfilename = (filenamerule.replaceAll("YY",cys.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
+				String bkfilename = (filenamerule.replaceAll("YY",jys.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
 				
 				File tmpbkfile = new File(exportath + "/" + bkfilename);
 					
@@ -1822,7 +1822,7 @@ public class BanKuaiDbOperation
 			e1.printStackTrace();
 		}
 		
-		allsysbk = null;
+		allbkcode = null;
 		return tmprecordfile;
 	}
 	/*
@@ -1831,8 +1831,10 @@ public class BanKuaiDbOperation
 	 */
 	public void refreshTDXSystemBanKuaiLeiXing () 
 	{
-		List<BanKuai> curallbk = this.getTDXBanKuaiList("all");
-		for ( BanKuai bankuai : curallbk) {
+		Collection<BkChanYeLianTreeNode> curallbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getAllRequiredNodes(BkChanYeLianTreeNode.TDXBK);
+	
+		for ( BkChanYeLianTreeNode tmpnode : curallbk) {
+			BanKuai bankuai = (BanKuai)tmpnode;
 			String leixing = bankuai.getBanKuaiLeiXing();
 		    if(leixing != null && leixing.equals(BanKuai.HASGGWITHSELFCJL) )  //最完整的板块类型，不用在更新了
 		    	continue;
@@ -1953,8 +1955,11 @@ public class BanKuaiDbOperation
 		else
 			cjltablename = "通达信交易所指数每日交易信息";
 		
-		 List<BanKuai> allbklist = this.getTDXBanKuaiList(cys.toLowerCase()); //这样可以判断哪些板块无需导入每日数据
-		 for(BanKuai bk :  allbklist ) {
+//		 List<BanKuai> allbklist = this.getTDXBanKuaiList(cys.toLowerCase()); //这样可以判断哪些板块无需导入每日数据
+		 Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,cys);
+		 for(BkChanYeLianTreeNode tmpnode :  requiredbk ) {
+			 
+			BanKuai bk = (BanKuai) tmpnode;
 			if(!bk.isImportdailytradingdata())
 				continue;
 			
@@ -1993,8 +1998,6 @@ public class BanKuaiDbOperation
 				
 				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,ldlastestdbrecordsdate,cjltablename,dateRule,tmprecordfile);
 		}
-		
-		allbklist = null;
 		
 		return tmprecordfile;
 	}
@@ -6375,8 +6378,10 @@ public class BanKuaiDbOperation
 					e.printStackTrace();
 			 }
 			//检查个股板块记录条数和大盘记录条数是否一致
-			List<BanKuai> allbklist = this.getTDXBanKuaiList("sh"); 
-			for(BanKuai bk : allbklist ) {
+//			List<BanKuai> allbklist = this.getTDXBanKuaiList("sh"); 
+			Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,"SH");
+			for( BkChanYeLianTreeNode tmpnode: requiredbk ) {
+				BanKuai bk = (BanKuai) tmpnode;
 				if(!bk.isImportdailytradingdata()) //这样可以判断哪些板块无需导入每日数据
 					continue;
 				
@@ -6418,10 +6423,10 @@ public class BanKuaiDbOperation
 				}
 				
 			}
-			allbklist = null;
-			allbklist = this.getTDXBanKuaiList("sz"); 
-			for(BanKuai bk :  allbklist ) {
-//				String bkcys = allsysbk.get(tmpbkcode).getSuoShuJiaoYiSuo().trim().toUpperCase();
+			Collection<BkChanYeLianTreeNode> requiredszbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,"SZ"); 
+			for(BkChanYeLianTreeNode tmpnode:  requiredszbk ) {
+				BanKuai bk = (BanKuai) tmpnode;
+
 				if(!bk.isImportdailytradingdata()) //这样可以判断哪些板块无需导入每日数据
 					continue;
 				

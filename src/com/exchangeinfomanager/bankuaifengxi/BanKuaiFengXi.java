@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Vector;
+
 
 import java.util.stream.Collectors;
 
@@ -357,6 +357,8 @@ public class BanKuaiFengXi extends JDialog
 		this.bkggmatchcondition.addCacheListener(tableselectedwkbkzb);
 		this.bkggmatchcondition.addCacheListener(panelbkwkcjezhanbi);
 		this.bkggmatchcondition.addCacheListener(panelGgDpCjeZhanBi);
+		this.bkggmatchcondition.addCacheListener(panelggdpcjlwkzhanbi);
+		this.bkggmatchcondition.addCacheListener(pnlbkwkcjlzhanbi);
 		
 		((BandKuaiAndGeGuTableBasicModel)tableGuGuZhanBiInBk.getModel()).setDisplayMatchCondition (bkggmatchcondition);
 		((BandKuaiAndGeGuTableBasicModel)tableExternalInfo.getModel()).setDisplayMatchCondition (bkggmatchcondition);
@@ -494,6 +496,8 @@ public class BanKuaiFengXi extends JDialog
 			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(null); 
 		
 		bkggmatchcondition.setSettingBanKuai(selectedbk.getMyOwnCode()); //为可能导出做准备
+		
+		setFirstSelectedTab ();
 	}
 	/*
 	 * 
@@ -3428,11 +3432,9 @@ private JMenuItem menuItemcancelreviewedtoday;
 		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
 		this.panelbkwkcjezhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
-//		panelbkwkcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
 		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
 		this.pnlbkwkcjlzhanbi.setDisplayZhanBiInLine(true);
-		
 		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
 		panel_2.setLayout(gl_panel_2);
 		
@@ -4233,6 +4235,26 @@ private JMenuItem menuItemcancelreviewedtoday;
 		
 		reFormatGui ();
 
+	}
+	/*
+	 * 
+	 */
+	private void setFirstSelectedTab ()
+	{
+		String BanKuaiTabPanelFirstSelectedTab  = bkfxsettingprop.getProperty ("BanKuaiTabPanelFirstSelectedTab");
+		if(BanKuaiTabPanelFirstSelectedTab != null && BanKuaiTabPanelFirstSelectedTab.equalsIgnoreCase("CJE"))
+			tabbedPanebkzb.setSelectedIndex(0);
+		else
+			tabbedPanebkzb.setSelectedIndex(1);
+
+		String GeGuTabPanelFirstSelectedTab  = bkfxsettingprop.getProperty ("GeGuTabPanelFirstSelectedTab");
+		if(GeGuTabPanelFirstSelectedTab != null && GeGuTabPanelFirstSelectedTab.equalsIgnoreCase("CJE"))
+			tabbedPanegeguzhanbi.setSelectedIndex(0);
+		else
+			tabbedPanegeguzhanbi.setSelectedIndex(1);
+
+		
+		
 	}
 	/*
 	 * 个股表里的板块占比MAX暂时不用，先隐藏

@@ -55,6 +55,7 @@ import javax.swing.tree.TreeNode;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
 
 /*
  * 系统维护2棵树，1个是所有板块和个股在一颗树上。第二个树父节点是板块，板块下面是属于该板块的所有个股。
@@ -157,7 +158,7 @@ public class BanKuaiAndStockTree extends JTree
 		return bklist;
 	}
 	/*
-	 * 
+	 *读出通达信板块或大智慧板块的子板块 
 	 */
 	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheBanKuai(Set<String> subtypesset, int requiredtype) 
 	{
@@ -178,6 +179,52 @@ public class BanKuaiAndStockTree extends JTree
 		
 		return bklist;
 	}
+	/*
+	 * 
+	 */
+	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodesByJiaoYiSuo (int requiredtype, String jys)
+	{
+		Collection<BkChanYeLianTreeNode> bklist = new ArrayList<BkChanYeLianTreeNode> ();
+		
+		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+		int bankuaicount = this.getModel().getChildCount(treeroot);
+		
+		for(int i=0;i< bankuaicount; i++) {
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.getModel().getChild(treeroot, i);
+			if(childnode.getType() != requiredtype) 
+				continue;
+			
+			if( !((TDXNodes)childnode).getSuoShuJiaoYiSuo().equalsIgnoreCase(jys) )
+				continue;
+			
+			bklist.add(childnode);
+		}
+		
+		return bklist;
+	}
+//	/*
+//	 * 找到nodecode下所有requirenodetype的节点名称
+//	 */
+//	public Set<String> getSpecificTypeNodesSubCodesSet (String nodecode, int nodetype, int requirenodetype)
+//	{
+//		Set<String> nodesset = new HashSet<String> ();
+//		
+//		BkChanYeLianTreeNode treeroot = this.getSpecificNodeByHypyOrCode(nodecode, nodetype);
+//		
+//		if(treeroot == null)
+//			return null;
+//		
+//	    @SuppressWarnings("unchecked")
+//		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();
+//	    while (e.hasMoreElements() ) {
+//	    	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) e.nextElement();
+//	    	if(node.getType() == requirenodetype) {
+//	    		nodesset.add(node.getMyOwnCode());
+//	    	}
+//	    }
+//	    
+//	    return nodesset;
+//	}
 	/*
 	 * 
 	 */
@@ -375,29 +422,7 @@ public class BanKuaiAndStockTree extends JTree
 			}
 		return null;
 	}
-	/*
-	 * 找到nodecode下所有requirenodetype的节点名称
-	 */
-	public Set<String> getSpecificTypeNodesSubCodesSet (String nodecode, int nodetype, int requirenodetype)
-	{
-		Set<String> nodesset = new HashSet<String> ();
-		
-		BkChanYeLianTreeNode treeroot = this.getSpecificNodeByHypyOrCode(nodecode, nodetype);
-		
-		if(treeroot == null)
-			return null;
-		
-	    @SuppressWarnings("unchecked")
-		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();
-	    while (e.hasMoreElements() ) {
-	    	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) e.nextElement();
-	    	if(node.getType() == requirenodetype) {
-	    		nodesset.add(node.getMyOwnCode());
-	    	}
-	    }
-	    
-	    return nodesset;
-	}
+	
 	
 	
 }

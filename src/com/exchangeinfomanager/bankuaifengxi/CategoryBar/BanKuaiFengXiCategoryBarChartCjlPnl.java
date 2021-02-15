@@ -52,6 +52,9 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 	public BanKuaiFengXiCategoryBarChartCjlPnl() 
 	{
 		super ("CJL");
+		
+		chartPanel.setHorizontalAxisTrace(true); // Æ◊÷œ‘ æ
+		
 		super.plot.setRenderer(0,new CustomRendererForCjl() );
 		super.plot.setRenderer(3, new BanKuaiFengXiCategoryLineRenderer ());
 	        
