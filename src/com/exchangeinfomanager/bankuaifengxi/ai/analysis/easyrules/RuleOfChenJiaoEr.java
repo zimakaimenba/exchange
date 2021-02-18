@@ -28,22 +28,19 @@ public class RuleOfChenJiaoEr
 	{
 		if(evacond == null)
 			return false;
+		
 		Double cjemax = evacond.getSettingChenJiaoErMax();
     	Double cjemin = evacond.getSettingChenJiaoErMin();
-    	if(cjemin != null && cjemax == null) {
+    	
+    	if(cjemax == null && cjemin == null ) 
+    		return false;
+    	
+    	if( cjemax == null) 
     		cjemax = 1000000000000.0;
-		} else
-		if(cjemax != null && cjemin == null) {
+		
+		if( cjemin == null) 
 			cjemin  = 0.0;
-		} else
-		if(cjemin == null && cjemax == null) {
-			cjemax = 1000000000000.0;
-			cjemin = 1000000000000.0;
-		}
-    	cjemax = cjemax * 100000000.0;
-		cjemin = cjemin * 100000000.0;
-    
-	    
+			    
 	    NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 	    Double curcje = nodexdata.getChengJiaoEr(evadate, 0);
 	    if(curcje == null)

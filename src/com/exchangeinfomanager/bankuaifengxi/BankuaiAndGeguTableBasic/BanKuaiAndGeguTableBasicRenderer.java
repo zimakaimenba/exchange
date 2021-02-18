@@ -21,8 +21,9 @@ import com.exchangeinfomanager.bankuaifengxi.CandleStick.CandleStickColorFactory
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfChenJiaoEr;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbGrowingRate;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuDailyHighestZhangFuInWeek;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuZhangFu;
+
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfHuanShouLv;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTongShiZhi;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
@@ -457,7 +458,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         RuleOfZongShiZhi zszRule = new RuleOfZongShiZhi ();
         rules.register(zszRule);
         
-        RuleOfGeGuZhangFu zfRule = new RuleOfGeGuZhangFu ();
+        RuleOfGeGuDailyHighestZhangFuInWeek zfRule = new RuleOfGeGuDailyHighestZhangFuInWeek ();
         rules.register(zfRule);
         
         RuleOfGeGuPrice priceRule = new RuleOfGeGuPrice ();

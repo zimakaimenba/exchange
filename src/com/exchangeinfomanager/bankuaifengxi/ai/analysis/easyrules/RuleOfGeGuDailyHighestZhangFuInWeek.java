@@ -16,7 +16,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriod
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC;
 
 @Rule(name = "GeGuZhangFu Rule", description = "if it rains then take an umbrella" )
-public class RuleOfGeGuZhangFu 
+public class RuleOfGeGuDailyHighestZhangFuInWeek 
 {
 	private String analysisresultforvoice = "";
 	private Color foreground = Color.BLACK, background = Color.white;
@@ -28,25 +28,20 @@ public class RuleOfGeGuZhangFu
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
-		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK )
-			return false;
+//		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK )
+//			return false;
 		
 		Double zfmax = evacond.getSettingZhangFuMax();
     	Double zfmin = evacond.getSettingZhangFuMin();
     	
-    	if(zfmax == null && zfmin == null ) {
+    	if(zfmax == null && zfmin == null ) 
     		return false;
-    	} else
-		if(zfmax == null && zfmin != null )
+    	
+		if(zfmax == null  )
 	    		zfmax = 1000000.0;
-    	else 
-    	if(zfmax != null && zfmin == null )
+    	if( zfmin == null )
     		zfmin = -1000000.0;
-    	else
-    	if(zfmax == null && zfmin == null ) {
-    		zfmin = 1000000.0;
-    		zfmax = -1000000.0;
-    	}
+    	
     	StockXPeriodDataForJFC nodexdata = null;
     	try {
     		nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
@@ -64,7 +59,7 @@ public class RuleOfGeGuZhangFu
 			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" +  Math.floor(wkhighdiefu * 100);
 		
 		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, evadatedifference);
-		if(zfmax != null || zfmin != null ) {
+		
 			if(wkhighzhangfu == null)
 		    	return false;
 		    else if( wkhighzhangfu >= zfmin && wkhighzhangfu <= zfmax ) {
@@ -73,8 +68,7 @@ public class RuleOfGeGuZhangFu
 		    }
 		    else
 		    	return false;
-		} else
-			return false;
+		 
 	}
 	
 	@Action

@@ -473,47 +473,29 @@ public class BkfxHightLightPnl extends JPanel {
 		case "LiuTongShiZhi":
 			JTextField txtfldltszmin = getHighlightTextField(keyword + "MIN");
 			JTextField txtfldltszmax = getHighlightTextField(keyword + "MAX");
+			Double showltszmin = null; Double showltszmax = null;
 			if(ckbxhighlight.isSelected()) {
-				Double showltszmin;Double showltszmax;
-				if( !Strings.isNullOrEmpty(txtfldltszmin.getText()) ) {
+				if( !Strings.isNullOrEmpty(txtfldltszmin.getText()) ) 
 					showltszmin =  Double.parseDouble( txtfldltszmin.getText() );
-				} else
-					showltszmin = null;
-				
-				if( !Strings.isNullOrEmpty(txtfldltszmax.getText()) ) {
+
+				if( !Strings.isNullOrEmpty(txtfldltszmax.getText()) ) 
 					showltszmax = Double.parseDouble( txtfldltszmax.getText() );
-				} else
-					showltszmax = null;
-				
-				globeexpc.setSettingLiuTongShiZhiMin(showltszmin );
-				globeexpc.setSettingLiuTongShiZhiMax(showltszmax );
-			} else {
-				globeexpc.setSettingLiuTongShiZhiMin(null );
-				globeexpc.setSettingLiuTongShiZhiMax(null );
-			}
-			
+			} 
+			globeexpc.setSettingLiuTongShiZhi(showltszmin ,showltszmax);
+
 			break;
 		case "ZongShiZhi":
 			JTextField txtfldzszmin = getHighlightTextField(keyword + "MIN");
 			JTextField txtfldzszmax = getHighlightTextField(keyword + "MAX");
+			Double showzszmin = null;Double showzszmax = null;
 			if(ckbxhighlight.isSelected()) {
-				Double showltszmin;Double showltszmax;
-				if( !Strings.isNullOrEmpty(txtfldzszmin.getText()) ) {
-					showltszmin =  Double.parseDouble( txtfldzszmin.getText() );
-				} else
-					showltszmin = null;
+				if( !Strings.isNullOrEmpty(txtfldzszmin.getText()) ) 
+					showzszmin =  Double.parseDouble( txtfldzszmin.getText() );
 				
-				if( !Strings.isNullOrEmpty(txtfldzszmax.getText()) ) {
-					showltszmax = Double.parseDouble( txtfldzszmax.getText() );
-				} else
-					showltszmax = null;
-				
-				globeexpc.setSettingZongShiZhiMin(showltszmin );
-				globeexpc.setSettingZongShiZhiMax(showltszmax );
-			} else {
-				globeexpc.setSettingZongShiZhiMin(null );
-				globeexpc.setSettingZongShiZhiMax(null );
-			}
+				if( !Strings.isNullOrEmpty(txtfldzszmax.getText()) ) 
+					showzszmax = Double.parseDouble( txtfldzszmax.getText() );
+			}	
+			globeexpc.setSettingZongShiZhix(showzszmin,showzszmax );
 			
 			break;
 		case "CjeZbDpMaxWk":
@@ -526,9 +508,9 @@ public class BkfxHightLightPnl extends JPanel {
 			break;
 		case "CjeZbDpMinWk":
 			JTextField txtflddpminwk = getHighlightTextField(keyword);
-			if(ckbxhighlight.isSelected() ) {
+			if(ckbxhighlight.isSelected() ) 
 				globeexpc.setSettingDpMinWk(Integer.parseInt(txtflddpminwk.getText())  );
-			} else
+			else
 				globeexpc.setSettingDpMinWk (null);
 			
 			break;
@@ -558,26 +540,17 @@ public class BkfxHightLightPnl extends JPanel {
 			
 			break;
 		case "ZhangDieFu":
+			Double zdfmin = null; Double zdfmax = null;
 			if(ckbxhighlight.isSelected() ) {
 				JTextField tfldzhangfumin = getHighlightTextField(keyword + "MIN");
 				JTextField tfldzhangfumax = getHighlightTextField(keyword + "MAX");
-				if( !Strings.isNullOrEmpty(tfldzhangfumin.getText()) ) {
-					String showzfmin = tfldzhangfumin.getText() ;
-					globeexpc.setSettingZhangFuMin (Double.parseDouble(showzfmin) );
-				} else {
-					globeexpc.setSettingZhangFuMin (null);
-				}
-				
-				if( !Strings.isNullOrEmpty(tfldzhangfumax.getText()) ) {
-					String showzfmax = tfldzhangfumax.getText() ;
-					globeexpc.setSettingZhangFuMax (Double.parseDouble(showzfmax) );
-				} else {
-					globeexpc.setSettingZhangFuMax (null );
-				}
-			} else {
-				globeexpc.setSettingZhangFuMax (null );
-				globeexpc.setSettingZhangFuMin (null );
+				if( !Strings.isNullOrEmpty(tfldzhangfumin.getText()) ) 
+					zdfmin = Double.parseDouble( tfldzhangfumin.getText() );
+				if( !Strings.isNullOrEmpty(tfldzhangfumax.getText()) ) 
+					zdfmax = Double.parseDouble( tfldzhangfumax.getText() );
 			}
+			
+			globeexpc.setSettingZhangFu (zdfmin, zdfmax );
 			break;
 		}
 		
@@ -635,56 +608,39 @@ public class BkfxHightLightPnl extends JPanel {
 		String keyword = ckbxhighlight.getName() ;
 		switch (keyword) {
 		case "GuJia":
+			Double pricemin = null; Double pricemax = null;
 			if(ckbxhighlight.isSelected() ) {
-				double pricemin = 0; double pricemax = 0;
-				if(Strings.isNullOrEmpty(tfldextramin.getText()  ) )  
-					pricemin = -1;
-				else
+				if(!Strings.isNullOrEmpty(tfldextramin.getText()  ) )  
 					pricemin = Double.parseDouble(tfldextramin.getText()  );
 				
-				if(Strings.isNullOrEmpty(tfldextramax.getText()  ) )  
-					pricemax = 1000000;
-				else
+				if(!Strings.isNullOrEmpty(tfldextramax.getText()  ) )  
 					pricemax = Double.parseDouble(tfldextramax.getText()  );
-				this.globeexpc.setSettingStockPriceLevel(pricemin,pricemax);
-			} else	
-				globeexpc.setSettingStockPriceLevel(null,null);
-			
+			} 
+			this.globeexpc.setSettingStockPriceLevel(pricemin,pricemax);
 			break;
 		case "ChenJiaoEr" :
+			Double showcjemin = null; Double showcjemax = null;
 			if(ckbxhighlight.isSelected()) {
-				String showcjemin; String showcjemax;
-				if( !Strings.isNullOrEmpty(tfldextramin.getText().trim()) ) {
-					showcjemin =  tfldextramin.getText() ;
-					globeexpc.setSettingChenJiaoErMin (Double.parseDouble(showcjemin) );
-				} else {
-					globeexpc.setSettingChenJiaoErMin (null );
-				}
 				
-				if( !Strings.isNullOrEmpty(tfldextramax.getText().trim()) ) {
-					showcjemax =  tfldextramax.getText() ;
-					globeexpc.setSettingChenJiaoErMax (Double.parseDouble(showcjemax) );
-				} else 
-					globeexpc.setSettingChenJiaoErMax (null );
+				if( !Strings.isNullOrEmpty(tfldextramin.getText().trim()) ) 
+					showcjemin =  Double.parseDouble( tfldextramin.getText()  );
 				
-			} else {
-				globeexpc.setSettingChenJiaoErMax (null );
-				globeexpc.setSettingChenJiaoErMin (null );
+				if( !Strings.isNullOrEmpty(tfldextramax.getText().trim()) ) 
+					showcjemax = Double.parseDouble(  tfldextramax.getText() );
 			}
+			globeexpc.setSettingChenJiaoEr (showcjemin, showcjemax);
 			break;
 		case "LastWkDpcjezbGrowingRate":
+			Double showcjegrmin = null; Double showcjegrmax = null;
 			if(ckbxhighlight.isSelected()) {
-				Double showcjemin = null; Double showcjemax = null;
-				if( !Strings.isNullOrEmpty(tfldextramin.getText().trim()) && !tfldextramin.getText().trim().equalsIgnoreCase("MIN")  ) 
-					showcjemin =  Double.parseDouble(tfldextramin.getText() );
-				 
 				
+				if( !Strings.isNullOrEmpty(tfldextramin.getText().trim()) && !tfldextramin.getText().trim().equalsIgnoreCase("MIN")  ) 
+					showcjegrmin =  Double.parseDouble(tfldextramin.getText() );
+
 				if( !Strings.isNullOrEmpty(tfldextramax.getText().trim()) && !tfldextramax.getText().trim().equalsIgnoreCase("MAX")  ) 
-					showcjemax =  Double.parseDouble(tfldextramax.getText() );
-				 
-				globeexpc.setCjezbGrowingRate (showcjemin, showcjemax);
-			} else 
-				globeexpc.setCjezbGrowingRate (null,null );
+					showcjegrmax =  Double.parseDouble(tfldextramax.getText() );
+			} 
+			globeexpc.setCjezbGrowingRate (showcjegrmin, showcjegrmax);
 			break;
 		}
 	}
@@ -905,14 +861,12 @@ class ExportTask extends SwingWorker<Integer, String>
 {
 	private LocalDate selectiondate;
 	private File outputfile;
-//	private BanKuaiAndStockTree bkcyltree;
 	private List<BanKuaiGeGuMatchCondition> expclist;
 	private String period;
 	 
 	
 	public ExportTask (List<BanKuaiGeGuMatchCondition> exportcond,LocalDate selectiondate,String period,File outputfile)
 	{
-//		this.bkcyltree = treeofbkstk;
 		this.expclist = exportcond;
 		this.selectiondate = selectiondate;
 		this.period = period;
@@ -929,7 +883,6 @@ class ExportTask extends SwingWorker<Integer, String>
 		ArrayList<TDXNodes> outputnodeslist = new ArrayList<TDXNodes> ();
 		
 		String ouputfilehead2 = "";
-	//	int progressint = 30;
 		for(BanKuaiGeGuMatchCondition expc : expclist) {
 			if (isCancelled()) 
 				 return null;

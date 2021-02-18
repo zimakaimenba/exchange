@@ -33,12 +33,12 @@ public class RuleOfZongShiZhi
 		Double ltszmin ;
 	    Double ltszmax ;
 	    try {
-	    	ltszmax = evacond.getSettingZongShiZhiMax().doubleValue() *  100000000;
+	    	ltszmax = evacond.getSettingZongShiZhiMax().doubleValue() ;
 	    } catch (Exception e) {
 	    	ltszmax = 10000000000000.0;
 	    }
 	    try {
-	    	ltszmin = evacond.getSettingZongShiZhiMin() * 100000000;
+	    	ltszmin = evacond.getSettingZongShiZhiMin() ;
 	    } catch (Exception e) {
 	    	ltszmin = 10000000000000.0;
 	    }

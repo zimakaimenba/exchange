@@ -2101,13 +2101,16 @@ public class BanKuaiFengXi extends JDialog
 						clearTheGuiBeforDisplayNewInfoSection2 ();
 						clearTheGuiBeforDisplayNewInfoSection3 ();
 						
-						cyltreecopy.setCurrentDisplayedWk (newdate);
-			    		DefaultTreeModel treeModel = (DefaultTreeModel) cyltreecopy.getModel();
-			    		treeModel.reload();
+//						cyltreecopy.setCurrentDisplayedWk (newdate);
+//			    		DefaultTreeModel treeModel = (DefaultTreeModel) cyltreecopy.getModel();
+//			    		treeModel.reload();
 			    		
 			    		gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (NodeGivenPeriodDataItem.WEEK);
 			    		
+			    		
+						
 			    		lastselecteddate = newdate;
+			    		bkhlpnl.setCurrentDisplayDate(lastselecteddate );
 			    		
 			    		hourglassCursor = null;
 			    		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);

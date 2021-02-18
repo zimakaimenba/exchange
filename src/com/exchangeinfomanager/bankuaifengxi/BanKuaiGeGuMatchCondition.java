@@ -174,49 +174,57 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		{
 			return settingzszmax;
 		}
-		public void setSettingZongShiZhiMax(Double seetingzszmax) {
-			this.settingzszmax = seetingzszmax;
+		public void setSettingZongShiZhix(Double seetingzszmin , Double seetingzszmax) {
+			if(seetingzszmax != null)
+				this.settingzszmax = seetingzszmax * 100000000.0;
+			else
+				this.settingzszmax = seetingzszmax;
+			
+			if(seetingzszmin != null)
+				this.settingzszmin = seetingzszmin * 100000000.0;
+			else
+				this.settingzszmin = seetingzszmin;
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
 		public Double getSettingZongShiZhiMin() {
 			return settingzszmin;
 		}
-		public void setSettingZongShiZhiMin(Double seetingzszmin) {
-			this.settingzszmin = seetingzszmin;
-			
-			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
-		}
 		public Double getSettingLiuTongShiZhiMax() 
 		{
 			return settingltszmax;
 		}
-		public void setSettingLiuTongShiZhiMax(Double seetingltszmax) {
-			this.settingltszmax = seetingltszmax;
+		public void setSettingLiuTongShiZhi(Double seetingltszmin, Double seetingltszmax) {
+			if(seetingltszmax != null)
+				this.settingltszmax = seetingltszmax * 10000000.0;
+			else
+				this.settingltszmax = seetingltszmax;
+			
+			if(seetingltszmin != null)
+				this.settingltszmin = seetingltszmin * 10000000.0;
+			else
+				this.settingltszmin = seetingltszmin;
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
 		public Double getSettingLiuTongShiZhiMin() {
 			return settingltszmin;
 		}
-		public void setSettingLiuTongShiZhiMin(Double seetingltszmin) {
-			this.settingltszmin = seetingltszmin;
-			
-			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
-		}
 		public Double getSettingChenJiaoErMax() {
 			return settingcjemax;
-		}
-		public void setSettingChenJiaoErMax(Double settingcjemax) {
-			this.settingcjemax = settingcjemax;
-			
-			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
 		public Double getSettingChenJiaoErMin() {
 			return settingcjemin;
 		}
-		public void setSettingChenJiaoErMin(Double settingcjemin) {
-			this.settingcjemin = settingcjemin;
+		public void setSettingChenJiaoEr(Double settingcjemin, Double settingcjemax) {
+			if(settingcjemin  != null)
+				this.settingcjemin = settingcjemin * 100000000.0;
+			else
+				this.settingcjemin = settingcjemin;
+			if(settingcjemax != null)
+				this.settingcjemax = settingcjemax * 100000000.0;
+			else
+				this.settingcjemax = settingcjemax;
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
@@ -224,7 +232,7 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 			return settingdpmaxwk;
 		}
 		public void setSettingDpMaxWk(Integer settindpgmaxwk) {
-			this.settingdpmaxwk = settindpgmaxwk;
+			this.settingdpmaxwk = settindpgmaxwk ;
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
@@ -430,12 +438,17 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 			this.exportST = exportST;
 		}
 
-		public void setSettingZhangFuMax(Double zhangfumax1) 
+		public void setSettingZhangFu(Double zhangfumin1, Double zhangfumax1) 
 		{
 			if (zhangfumax1 != null)
 				this.zhangfumax = zhangfumax1/100;
 			else
 				this.zhangfumax = zhangfumax1;
+			
+			if(zhangfumin1 != null)
+				this.zhangfumin = zhangfumin1/100;
+			else
+				this.zhangfumin = zhangfumin1;
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
@@ -444,15 +457,6 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 			return this.zhangfumax ;
 		}
 
-		public void setSettingZhangFuMin(Double zhangfumin1) 
-		{
-			if(zhangfumin1 != null)
-				this.zhangfumin = zhangfumin1/100;
-			else
-				this.zhangfumin = zhangfumin1;
-			
-			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
-		}
 		public Double getSettingZhangFuMin() 
 		{
 			return this.zhangfumin;

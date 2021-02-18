@@ -120,7 +120,7 @@ public class ExportMatchedNode
 		}
 		
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
-//		SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
+
 		try {
 			childnode = (Stock) svsstk.getNodeData( (Stock)childnode,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 		} catch (java.lang.NullPointerException e) {
@@ -143,12 +143,12 @@ public class ExportMatchedNode
 				svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 		
 		if(stkcheckresult  &&  this.cond.shouldExporGeGuWithZhangFuQuJian()   ) {
-//			 svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
+
 			 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfZhangFu((Stock)childnode, exportdate, period);
 		 }
 		 
 		 if(stkcheckresult  && !Strings.isNullOrEmpty(this.cond.getSettingMaFormula() ) ) {
-//			 svsstk.getNodeKXian( childnode, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
+
 			 stkcheckresult = this.checkStockMatchedCurSettingConditonsOfCheckMA((Stock)childnode, exportdate, period);
 		 }
 		 
