@@ -259,31 +259,24 @@ public class BanKuaiFengXi extends JDialog
 
 	private void setupBkfxHighLightSettingProperties ()
 	{
-
 		// TODO Auto-generated method stub
 		File directory = new File("");//设定为当前文件夹
 		String systeminstalledpath = null;
 		try{
 		    Properties properties = System.getProperties();
 		    systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-		} catch(Exception e) {
-			System.exit(0);
-		}
+		} catch(Exception e) {System.exit(0);}
 		
-//		FileInputStream inputStream = null;
-		String propxmlFileName = null ;
 		try {
 			highlightpnlprop = new Properties();
-			String propFileName = systeminstalledpath  + "/config/bkfxhighlightsetting.properties";
+			String propFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxHighlightPnlInfoSettingFile")  + "/";
 			FileInputStream inputStream = new FileInputStream(propFileName);
-			if (inputStream != null) {
+			if (inputStream != null) 
 				highlightpnlprop.load(inputStream);
-			} 
+			 
 			inputStream.close();
 			
-		} catch (Exception e) {	e.printStackTrace();
-		} finally {}
-	
+		} catch (Exception e) {	e.printStackTrace();} finally {}
 	}
 	
 	private void setupBkfxSettingProperties() 
@@ -294,24 +287,18 @@ public class BanKuaiFengXi extends JDialog
 		try{
 		    Properties properties = System.getProperties();
 		    systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-		} catch(Exception e) {
-			System.exit(0);
-		}
+		} catch(Exception e) {System.exit(0);}
 		
-//		FileInputStream inputStream = null;
-		String propxmlFileName = null ;
 		try {
 			bkfxsettingprop = new Properties();
-			String propFileName = systeminstalledpath  + "/config/bankuaifenxisetting.properties";
+			String propFileName =  (new SetupSystemConfiguration()).getBankuaifenxiSettingPropertiesFile();
 			FileInputStream inputStream = new FileInputStream(propFileName);
-			if (inputStream != null) {
+			if (inputStream != null) 
 				bkfxsettingprop.load(inputStream);
-			} 
+			 
 			inputStream.close();
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {}
+		} catch (Exception e) {	e.printStackTrace();} finally {}
 	}
 	private  String toUNIXpath(String filePath) 
    	{
@@ -497,7 +484,9 @@ public class BanKuaiFengXi extends JDialog
 		
 		cyltreecopy.searchAndLocateNodeInTree (selectedbk);
 		
-		showReminderMessage (bkfxremind.getBankuairemind() );
+		String ShowBanKuaiRemindInfo   = bkfxsettingprop.getProperty ("ShowBanKuaiRemindInfo");
+		if(ShowBanKuaiRemindInfo  != null && ShowBanKuaiRemindInfo .toUpperCase().equals("TRUE") )
+				showReminderMessage (bkfxremind.getBankuairemind() );
 		
 		((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股突出和当前板块交集个股做准备
 		BanKuai tmpbk = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
@@ -665,7 +654,9 @@ public class BanKuaiFengXi extends JDialog
 		
 		setUserSelectedColumnMessage(bkcur,selectdate);
 		
-		showReminderMessage (bkfxremind.getBankuaicolumnremind() );
+		String ShowSelectBanKuaiColumnRemindInfo    = bkfxsettingprop.getProperty ("ShowSelectBanKuaiColumnRemindInfo");
+		if(ShowSelectBanKuaiColumnRemindInfo   != null && ShowSelectBanKuaiColumnRemindInfo  .toUpperCase().equals("TRUE") )
+			showReminderMessage (bkfxremind.getBankuaicolumnremind() );
 
 		//根据设置，显示选定周分析数据
 		if(!menuItemnonshowselectbkinfo.getText().contains("X"))
@@ -773,7 +764,9 @@ public class BanKuaiFengXi extends JDialog
 			//在产业链树上寻找该个股
 			cyltreecopy.searchAndLocateNodeInTree (selectstock.getStock());
 			
-			showReminderMessage (bkfxremind.getStockremind());
+			String ShouwGeGuRemindInfo     = bkfxsettingprop.getProperty ("ShouwGeGuRemindInfo");
+			if(ShouwGeGuRemindInfo    != null && ShouwGeGuRemindInfo   .toUpperCase().equals("TRUE") )
+				showReminderMessage (bkfxremind.getStockremind());
 			//语言播报
 			String readingsettinginprop  = bkfxsettingprop.getProperty ("readoutfxresultinvoice");
 			if(readingsettinginprop != null && readingsettinginprop.toUpperCase().equals("TRUE") && readinfoout)
@@ -1229,7 +1222,7 @@ public class BanKuaiFengXi extends JDialog
 			public void actionPerformed(ActionEvent evt) {
 				int row = tableGuGuZhanBiInBk.getSelectedRow();
 				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null,"请选择一个个股","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
@@ -1251,7 +1244,7 @@ public class BanKuaiFengXi extends JDialog
 			public void actionPerformed(ActionEvent evt) {
 				int row = tableGuGuZhanBiInBk.getSelectedRow();
 				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null,"请选择一个个股","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row); 
@@ -1938,7 +1931,10 @@ public class BanKuaiFengXi extends JDialog
     				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
     				
     				setUserSelectedColumnMessage(selectstock, datekey);
-    				showReminderMessage (bkfxremind.getStockcolumnremind() );
+    				
+    				String ShowSelectGeGuColumnRemindInfo    = bkfxsettingprop.getProperty ("ShowSelectGeGuColumnRemindInfo");
+    				if(ShowSelectGeGuColumnRemindInfo   != null && ShowSelectGeGuColumnRemindInfo  .toUpperCase().equals("TRUE") )
+    					showReminderMessage (bkfxremind.getStockcolumnremind() );
     				
     				Class<? extends Object> source = evt.getSource().getClass();
     				Boolean result = source.equals(BanKuaiFengXiCategoryBarChartCjePnl.class);
@@ -3087,15 +3083,6 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiGeGuTableFromPropertiesFile tablexuandingplusone;
 	private BanKuaiGeGuTableFromPropertiesFile tableTempGeGu;
 	
-//	private BanKuaiInfoTable tableselectedwkbkzb;
-//	private BanKuaiGeGuTable tablexuandingzhou;
-//	private BanKuaiGeGuTable tablexuandingminustwo; //new BanKuaiGeGuTable (this.stockmanager);
-//	private BanKuaiGeGuTable tablexuandingminusone;
-//	private BanKuaiGeGuTable tablexuandingplusone;
-//	private BanKuaiGeGuTable tableGuGuZhanBiInBk;
-//	private BanKuaiGeGuExternalInfoTable tableExternalInfo;
-//	private BanKuaiGeGuTable tableTempGeGu;
-	
 	
 	private final JPanel contentPanel = new JPanel();
 	private JStockCalendarDateChooser dateChooser; //https://toedter.com/jcalendar/
@@ -3110,33 +3097,11 @@ public class BanKuaiFengXi extends JDialog
 	private JTabbedPane tabbedPanegegu;
 	
 	private JTabbedPane tabbedPanegeguzhanbi;
-//	private JTextArea tfldselectedmsg;
+
 	private JPanel tfldselectedmsg;
 	private JStockComboBox combxsearchbk;
 
-//	private DisplayBkGgInfoEditorPane editorPanenodeinfo;
-//	private JCheckBox ckboxparsefile;	
-//	private JCheckBox ckbxdpmaxwk;
-//	private JCheckBox ckbxma;
-//	private JCheckBox ckbxhuanshoulv;
-//	private JCheckBox chckbxdpminwk;
-//	private JCheckBox chbxquekou;
-//	private JCheckBox chkliutongsz;
-//	private JCheckBox ckbxcjemaxwk;	
-//	private JCheckBox chbxzhangfu;
-	
-//	private JTextField tflddisplaydpmaxwk;
-//	private JTextField tfldltszmin;
-//	private JTextField tfldcjemaxwk;
-//	private JTextField tflddpminwk;
-//	private JTextField tfldhuanshoulv;
-//	private JTextField tfldshowcjemax;
-//	private JTextField tfldshowcje;
-//	private JTextField tfldparsedfile;
-//	private JTextField tfldma;
-//	private JTextField tfldltszmax;
-//	private JTextField tfldzhangfumin;
-//	private JTextField tfldzhangfumax;
+
 
 
 	private PaoMaDeng2 pnl_paomd;
@@ -3146,7 +3111,6 @@ public class BanKuaiFengXi extends JDialog
 	private Action bkfxCancelAction;
 
 	
-//	private JLabel btnaddexportcond;
 	
 
 	private BanKuaiAndStockTree cyltreecopy;
@@ -3413,14 +3377,16 @@ private JMenuItem menuItemcancelreviewedtoday;
 		tabbedPanebk.addTab("\u5F53\u524D\u5468", null, sclpleft, null);
 		tabbedPanebk.setBackgroundAt(0, Color.ORANGE);
 		
-		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager);	
+
+		String bkzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxBanKuaiTableInfoSettingFile")  + "/";
+		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);	
 		
 		sclpleft.setViewportView(tableBkZhanBi);
 		
 		scrollPane_1 = new JScrollPane();
 		tabbedPanebk.addTab("\u9009\u5B9A\u5468", null, scrollPane_1, null);
 		
-		tableselectedwkbkzb = new BanKuaiInfoTable(this.stockmanager);
+		tableselectedwkbkzb = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
 		scrollPane_1.setViewportView(tableselectedwkbkzb);
 		
 		sclpinfosummary = new JScrollPane();
@@ -3454,11 +3420,12 @@ private JMenuItem menuItemcancelreviewedtoday;
 		scrollPane.setViewportView(cyltreecopy);
 		
 		
-		
+		String ggzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuTableInfoSettingFile")  + "/";
+		String ggexternaltablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuExternalTableInfoSettingFile")  + "/";
 		JScrollPane scrollPanedangqian = new JScrollPane();
 		tabbedPanegegu.addTab("当前周", null, scrollPanedangqian, null);
 		tabbedPanegegu.setBackgroundAt(0, Color.ORANGE);
-		tableGuGuZhanBiInBk = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tableGuGuZhanBiInBk = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 //		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
 //		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
@@ -3501,34 +3468,34 @@ private JMenuItem menuItemcancelreviewedtoday;
 		
 		JScrollPane scrollPanGeGuExtralInfo = new JScrollPane();
 		tabbedPanegegu.addTab("\u5176\u4ED6\u4FE1\u606F", null, scrollPanGeGuExtralInfo, null);
-		tableExternalInfo = new BanKuaiGeGuExternalInfoTableFromPropertiesFile (this.stockmanager);
+		tableExternalInfo = new BanKuaiGeGuExternalInfoTableFromPropertiesFile (this.stockmanager,ggexternaltablepropFileName);
 		scrollPanGeGuExtralInfo.setViewportView(tableExternalInfo);
 		
 		JScrollPane scrollPanexuanding = new JScrollPane();
 		tabbedPanegegu.addTab("选定周", null, scrollPanexuanding, null);
 		tabbedPanegegu.setBackgroundAt(2, UIManager.getColor("MenuItem.selectionBackground"));
-		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
 		JScrollPane scrollPanexuandingminusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
 //		tabbedPanegegu.setBackgroundAt(3, Color.LIGHT_GRAY);
-		tablexuandingminusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tablexuandingminusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
 		
 		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
-		tablexuandingminustwo = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tablexuandingminustwo = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
 		
 		JScrollPane scrollPanexuandingplusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
 		
-		tablexuandingplusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tablexuandingplusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
 		
 		JScrollPane scrollPaneTempGeGu = new JScrollPane();
-		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
 		
 //		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL);
@@ -3852,14 +3819,15 @@ private JMenuItem menuItemcancelreviewedtoday;
 		tabbedPanebk.addTab("\u5F53\u524D\u5468", null, sclpleft, null);
 		tabbedPanebk.setBackgroundAt(0, Color.ORANGE);
 		
-		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager);	
+		String bkzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxBanKuaiTableInfoSettingFile")  + "/";
+		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);	
 		
 		sclpleft.setViewportView(tableBkZhanBi);
 		
 		scrollPane_1 = new JScrollPane();
 		tabbedPanebk.addTab("\u9009\u5B9A\u5468", null, scrollPane_1, null);
 		
-		tableselectedwkbkzb = new BanKuaiInfoTable(this.stockmanager);
+		tableselectedwkbkzb = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
 		scrollPane_1.setViewportView(tableselectedwkbkzb);
 		
 		sclpinfosummary = new JScrollPane();
@@ -3893,11 +3861,12 @@ private JMenuItem menuItemcancelreviewedtoday;
 		scrollPane.setViewportView(cyltreecopy);
 		
 		
-		
+		String ggzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuTableInfoSettingFile")  + "/";
+		String ggexternaltablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuExternalTableInfoSettingFile")  + "/";
 		JScrollPane scrollPanedangqian = new JScrollPane();
 		tabbedPanegegu.addTab("当前周", null, scrollPanedangqian, null);
 		tabbedPanegegu.setBackgroundAt(0, Color.ORANGE);
-		tableGuGuZhanBiInBk = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tableGuGuZhanBiInBk = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 //		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
 //		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
 		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
@@ -3940,34 +3909,34 @@ private JMenuItem menuItemcancelreviewedtoday;
 		
 		JScrollPane scrollPanGeGuExtralInfo = new JScrollPane();
 		tabbedPanegegu.addTab("\u5176\u4ED6\u4FE1\u606F", null, scrollPanGeGuExtralInfo, null);
-		tableExternalInfo = new BanKuaiGeGuExternalInfoTableFromPropertiesFile (this.stockmanager);
+		tableExternalInfo = new BanKuaiGeGuExternalInfoTableFromPropertiesFile (this.stockmanager,ggexternaltablepropFileName);
 		scrollPanGeGuExtralInfo.setViewportView(tableExternalInfo);
 		
 		JScrollPane scrollPanexuanding = new JScrollPane();
 		tabbedPanegegu.addTab("选定周", null, scrollPanexuanding, null);
 //		tabbedPanegegu.setBackgroundAt(10, UIManager.getColor("MenuItem.selectionBackground"));
-		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPanexuanding.setViewportView(tablexuandingzhou);
 		
 		JScrollPane scrollPanexuandingminusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
 //		tabbedPanegegu.setBackgroundAt(3, Color.LIGHT_GRAY);
-		tablexuandingminusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tablexuandingminusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
 		
 		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
-		tablexuandingminustwo = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tablexuandingminustwo = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
 		
 		JScrollPane scrollPanexuandingplusone = new JScrollPane();
 		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
 		
-		tablexuandingplusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tablexuandingplusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
 		
 		JScrollPane scrollPaneTempGeGu = new JScrollPane();
-		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager);
+		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
 		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
 		
 		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL); //如果要使用windowbuilder修改界面，这里需要修改
@@ -4199,17 +4168,16 @@ private JMenuItem menuItemcancelreviewedtoday;
        biaojiMenu .add(menuItemAddRmvBkToRedSign );
        menuItemAddRmvBkToYellow = new JMenuItem("设置/取消黄标");
        biaojiMenu .add(menuItemAddRmvBkToYellow );
-       tableBkZhanBi.getPopupMenu().add(biaojiMenu);
-       
-      
        
        menuItemQiangShibk = new JMenuItem("强势板块");
-//	   tableBkZhanBi.getPopupMenu().add(menuItemQiangShibk);
+	   biaojiMenu .add(menuItemQiangShibk);
 	   menuItemRuoShibk = new JMenuItem("弱势板块");
-//	   tableBkZhanBi.getPopupMenu().add(menuItemRuoShibk);
+	   biaojiMenu .add(menuItemRuoShibk);
 	   menuItemDuanQiGuanZhu = new JMenuItem("短期关注");
-	   tableBkZhanBi.getPopupMenu().add(menuItemDuanQiGuanZhu);
-	   
+	   biaojiMenu .add(menuItemDuanQiGuanZhu);
+       
+       tableBkZhanBi.getPopupMenu().add(biaojiMenu);
+   	   
 	   JMenu bkcsvMenu = new JMenu("CSV");
 	   tableBkZhanBi.getPopupMenu().add(bkcsvMenu);
        menuItemsiglebktocsv = new JMenuItem("导出CSV");
@@ -4222,11 +4190,6 @@ private JMenuItem menuItemcancelreviewedtoday;
 //       menuItemRmvNodeFmFile.setEnabled(false);
 //       tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRmvNodeFmFile);
 		
-	   menuItemQiangShigg = new JMenuItem("设为强势个股");
-	   menuItemRuoShigg = new JMenuItem("设为弱势个股");
-//	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemQiangShigg);
-//	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemRuoShigg);
-	   
 	   menuItemsMrjh = new JMenuItem("明日计划");
 	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsMrjh);
 	   
@@ -4245,6 +4208,10 @@ private JMenuItem menuItemcancelreviewedtoday;
        stockbiaojiMenu .add(menuItemAddRmvStockToRed );
        menuItemAddRmvStockToYellow = new JMenuItem("设置/取消黄标");
        stockbiaojiMenu .add(menuItemAddRmvStockToYellow );
+       menuItemQiangShigg = new JMenuItem("设为强势个股");
+	   menuItemRuoShigg = new JMenuItem("设为弱势个股");
+	   stockbiaojiMenu .add(menuItemQiangShigg);
+	   stockbiaojiMenu .add(menuItemRuoShigg);
        tableGuGuZhanBiInBk.getPopupMenu().add(stockbiaojiMenu);
        
        menuItemnonshowselectbkinfo = new JMenuItem("同时分析选定周数据");

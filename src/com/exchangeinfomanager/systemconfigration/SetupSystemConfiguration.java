@@ -39,6 +39,8 @@ public class SetupSystemConfiguration
 	private List<String> shanghaizhishucodeprefixlist;
 	private List<String> shengzhengzhishucodeprefixlist;
 	private String dzhinstalledpath;
+	private String BankuaifenxiSettingPropertiesFile;
+	private String BkfxHighlightPnlInfoSettingFile;
 
 	private static Logger logger = Logger.getLogger(SetupSystemConfiguration.class);
 
@@ -100,11 +102,10 @@ public class SetupSystemConfiguration
 			String shengzhengzhishucodeprefix = propxml.getProperty ("shengzhengzhishucodeprefix");
 			shengzhengzhishucodeprefixlist = Splitter.on("/").omitEmptyStrings().splitToList(shengzhengzhishucodeprefix);
 			
-		} catch (Exception e) {
-			logger.info("property file '" + propxmlFileName + "' not found in the classpath") ;
-		} finally {
+			BankuaifenxiSettingPropertiesFile = propxml.getProperty ("BankuaifenxiSettingPropertiesFile");
 			
-		}
+			
+		} catch (Exception e) {		logger.info("property file '" + propxmlFileName + "' not found in the classpath") ;	} finally {}
 		
 	}
 	public Charset charSet ()
@@ -120,7 +121,12 @@ public class SetupSystemConfiguration
 	 {
 		 return this.LinceseMac;
 	 }
-	 
+	 public String getBankuaifenxiSettingPropertiesFile ()
+	 {
+		 String path = this.getSystemInstalledPath() + "/config/" + BankuaifenxiSettingPropertiesFile + "/";
+		 return path;
+	 }
+
 	 public String getTdxFoxProFileSource ()
 	 {
 //		 //"Provider=vfpoledb;Data Source=C:\\path\\to\\Data\\;Collating Sequence=general;";
@@ -170,10 +176,7 @@ public class SetupSystemConfiguration
 		 if (java.nio.file.Files.notExists(Paths.get(path))) {
 			 try {
 				java.nio.file.Files.createDirectories(Paths.get(path));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} catch (IOException e) {e.printStackTrace();	}
 		 }
 		 return path; 
 	 } 

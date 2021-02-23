@@ -27,9 +27,9 @@ import net.coderazzi.filters.gui.TableFilterHeader;
 
 public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable 
 { 
-	public BanKuaiGeGuTableFromPropertiesFile (StockInfoManager stockmanager1)
+	public BanKuaiGeGuTableFromPropertiesFile (StockInfoManager stockmanager1,String propfile)
 	{
-		super (stockmanager1,"/config/bankuaigegu2.properties");
+		super (stockmanager1,propfile);
 		
 		BanKuaiGeGuTableModelFromPropertiesFile bkgegumapmdl = new BanKuaiGeGuTableModelFromPropertiesFile(prop);
 		this.setModel(bkgegumapmdl);

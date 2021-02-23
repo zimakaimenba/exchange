@@ -123,43 +123,23 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 
 		File directory = new File("");//设定为当前文件夹
 		try{
-//		    logger.debug(directory.getCanonicalPath());//获取标准的路径
-//		    logger.debug(directory.getAbsolutePath());//获取绝对路径
-//		    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
 		    Properties properties = System.getProperties();
 		    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
 		} catch(Exception e) {
 			System.exit(0);
 		}
 		
-//		FileInputStream inputStream = null;
-		String propxmlFileName = null ;
 		try {
-//			Properties properties = System.getProperties();
-//		    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-//		    
-//			Properties prop = new Properties();
-//			String propFileName =  this.systeminstalledpath  + "/config/config.properties";
-//			inputStream = new FileInputStream(propFileName);
-//			if (inputStream != null) {
-//				prop.load(inputStream);
-//			} else {
-//				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
-//			}
-			
 			prop = new Properties();
-			String propFileName = this.systeminstalledpath  + propertiesfile;
+//			String propFileName = this.systeminstalledpath  + propertiesfile;
+			String propFileName = propertiesfile;
 			FileInputStream inputStream = new FileInputStream(propFileName);
 			if (inputStream != null) {
 				prop.load(inputStream);
 			} 
 			inputStream.close();
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			
-		}
+		} catch (Exception e) {			e.printStackTrace();		} finally {}
 	}
 
 	private  String toUNIXpath(String filePath) 

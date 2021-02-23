@@ -30,9 +30,9 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 //	private Properties prop;
 	private BanKuaiGeGuBasicTableRenderer renderer;
 
-	public BanKuaiGeGuExternalInfoTableFromPropertiesFile (StockInfoManager stockmanager1)
+	public BanKuaiGeGuExternalInfoTableFromPropertiesFile (StockInfoManager stockmanager1, String propfile)
 	{
-		super (stockmanager1,"/config/bankuaigeguexternalinfo.properties");
+		super (stockmanager1,propfile);
 		
 //		setPropertiesInfo ();
 		BanKuaiGeGuExternalInfoTableModelFromPropertiesFile bkgegumapmdl = new BanKuaiGeGuExternalInfoTableModelFromPropertiesFile(prop);

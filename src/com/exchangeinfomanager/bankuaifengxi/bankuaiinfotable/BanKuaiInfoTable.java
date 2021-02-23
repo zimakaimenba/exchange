@@ -57,9 +57,9 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCa
 	private Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 	private BanKuaiInfoTableRenderer renderer;
 
-	public BanKuaiInfoTable(StockInfoManager stockmanager1) 
+	public BanKuaiInfoTable(StockInfoManager stockmanager1,String propfile) 
 	{
-		super ("/config/bankuaiweeklyfxdata.properties");
+		super (propfile);
 		
 		BanKuaiInfoTableModel bkmodel = new BanKuaiInfoTableModel (super.prop);
 		this.setModel(bkmodel);
